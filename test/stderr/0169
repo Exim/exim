@@ -17,6 +17,7 @@ appendfile: mode=600 notify_comsat=0 quota=52428800 warning=41%
   message_suffix=\n
   maildir_use_size_file=no
   locking by lockfile fcntl 
+de-tainting path 'TESTSUITE/test-mail/userx'
 lock name: TESTSUITE/test-mail/userx.lock
 hitch name: TESTSUITE/test-mail/userx.lock.test.ex.dddddddd.pppppppp
 lock file created

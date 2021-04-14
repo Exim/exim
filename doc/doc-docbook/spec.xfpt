@@ -22998,6 +22998,11 @@ If &%file%& or &%directory%& is set for a delivery from a redirection, it is
 used to determine the file or directory name for the delivery. Normally, the
 contents of &$address_file$& are used in some way in the string expansion.
 .endlist
+If the &%create_file%& option is set to a path which
+matches (see the option definition below for details)
+a file or directory name
+for the delivery, that name becomes de-tainted.
+
 .cindex "tainted data" "in filenames"
 .cindex appendfile "tainted data"
 Tainted data may not be used for a file or directory name.
@@ -23145,13 +23150,33 @@ directories defined by the &%directory%& option. In the case of maildir
 delivery, it applies to the top level directory, not the maildir directories
 beneath.
 
+.new
 The option must be set to one of the words &"anywhere"&, &"inhome"&, or
-&"belowhome"&. In the second and third cases, a home directory must have been
-set for the transport. This option is not useful when an explicit filename is
+&"belowhome"&, or to an absolute path.
+.wen
+
+In the second and third cases, a home directory must have been
+set for the transport, and the file or directory being created must
+reside within it.
+The "belowhome" checking additionally checks for attempts to use "../"
+to evade the testing.
+This option is not useful when an explicit filename is
 given for normal mailbox deliveries. It is intended for the case when filenames
 are generated from users' &_.forward_& files. These are usually handled
 by an &(appendfile)& transport called &%address_file%&. See also
 &%file_must_exist%&.
+
+.new
+In the fourth case,
+the value given for this option must be an absolute path for an
+existing directory.
+The value is used for checking instead of a home directory;
+checking is done in "belowhome" mode.
+
+.cindex "tainted data" "de-tainting"
+If "belowhome" checking is used, the file or directory path
+becomes de-tainted.
+.wen
 
 
 .option directory appendfile string&!! unset
@@ -23164,6 +23189,11 @@ into a new file or files in or below the given directory, instead of being
 appended to a single mailbox file. A number of different formats are provided
 (see &%maildir_format%& and &%mailstore_format%&), and see section
 &<<SECTopdir>>& for further details of this form of delivery.
+
+.new
+The result of expansion must not be tainted, unless the &%create_file%& option
+specifies a path.
+.wen
 
 
 .option directory_file appendfile string&!! "see below"
@@ -23196,6 +23226,11 @@ of a redirection (see section &<<SECTfildiropt>>&). The &%file%& option
 specifies a single file, to which the message is appended. One or more of
 &%use_fcntl_lock%&, &%use_flock_lock%&, or &%use_lockfile%& must be set with
 &%file%&.
+
+.new
+The result of expansion must not be tainted, unless the &%create_file%& option
+specifies a path.
+.wen
 
 .cindex "NFS" "lock file"
 .cindex "locking files"

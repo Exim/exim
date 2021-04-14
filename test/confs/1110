@@ -1,4 +1,4 @@
-# Exim test configuration 1110
+# Exim test configuration 2019
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -47,7 +47,8 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
 .ifdef _HAVE_GNUTLS
   headers_add = TLS: cipher=$tls_cipher peerdn/cn '${listextract {-1} {<, $tls_in_peerdn}}'
 .endif

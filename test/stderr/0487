@@ -32,7 +32,7 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<userx@test.ex>
-processing "accept" (TESTSUITE/test-config 33)
+processing "accept" (TESTSUITE/test-config 34)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
@@ -150,6 +150,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   message_suffix=\n
   maildir_use_size_file=no
   locking by lockfile fcntl 
+de-tainting path 'TESTSUITE/test-mail/userx'
 lock name: TESTSUITE/test-mail/userx.lock
 hitch name: TESTSUITE/test-mail/userx.lock.test.ex.dddddddd.pppppppp
 lock file created

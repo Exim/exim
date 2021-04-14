@@ -26,7 +26,8 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   user = CALLER
   headers_add = interface-port: $interface_port\n\
                 received-port:  $received_port

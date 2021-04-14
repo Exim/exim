@@ -24,14 +24,16 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  directory = DIR/test-mail/${bless:$local_part}
+  directory = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   maildir_format
   quota = 1.5K
   user = CALLER
 
 local_delivery2:
   driver = appendfile
-  directory = DIR/test-mail/${bless:$local_part}/
+  directory = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   maildir_format
   quota = 1.5K
   user = CALLER

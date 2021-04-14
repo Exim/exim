@@ -38,15 +38,15 @@ check local_parts = 1
 1 in "1"? yes (matched "1")
 check acl = TESTSUITE/aux-fixed/0386.acl1
  read ACL from file TESTSUITE/aux-fixed/0386.acl1
- processing "accept" (TESTSUITE/test-config 43)
+ processing "accept" (TESTSUITE/test-config 44)
  check hosts = :
 host in ":"? no (end of list)
  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "deny" (TESTSUITE/test-config 43)
+ processing "deny" (TESTSUITE/test-config 44)
  check local_parts = ^.*[@%!/|]
 1 in "^.*[@%!/|]"? no (end of list)
  deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "require" (TESTSUITE/test-config 43)
+ processing "require" (TESTSUITE/test-config 44)
  l_message: Invalid sender
    message: Couldn't verify the sender
  check verify = sender/defer_ok
@@ -72,7 +72,7 @@ routed by r1 router
  ----------- end verify ------------
  sender x@y verified ok
  require: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "deny" (TESTSUITE/test-config 43)
+ processing "deny" (TESTSUITE/test-config 44)
    message: No such user here
  deny: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
  end of ACL "TESTSUITE/aux-fixed/0386.acl1": DENY
@@ -94,15 +94,15 @@ check local_parts = 1
 1 in "1"? yes (matched "1")
 check acl = TESTSUITE/aux-fixed/0386.acl1
  using ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "accept" (TESTSUITE/test-config 43)
+ processing "accept" (TESTSUITE/test-config 44)
  check hosts = :
 host in ":"? no (end of list)
  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "deny" (TESTSUITE/test-config 43)
+ processing "deny" (TESTSUITE/test-config 44)
  check local_parts = ^.*[@%!/|]
 1 in "^.*[@%!/|]"? no (end of list)
  deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "require" (TESTSUITE/test-config 43)
+ processing "require" (TESTSUITE/test-config 44)
  l_message: Invalid sender
    message: Couldn't verify the sender
  check verify = sender/defer_ok
@@ -127,7 +127,7 @@ routed by r1 router
  ----------- end verify ------------
  sender x@y verified ok
  require: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "deny" (TESTSUITE/test-config 43)
+ processing "deny" (TESTSUITE/test-config 44)
    message: No such user here
  deny: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
  end of ACL "TESTSUITE/aux-fixed/0386.acl1": DENY
@@ -188,7 +188,7 @@ check local_parts = 2
 2 in "2"? yes (matched "2")
 check acl = TESTSUITE/aux-fixed/0386.acl2
  read ACL from file TESTSUITE/aux-fixed/0386.acl2
- processing "warn" (TESTSUITE/test-config 43)
+ processing "warn" (TESTSUITE/test-config 44)
    message: X-Warning: $sender_host_address is listed at $dnslist_domain\nX-Warning: $dnslist_text
  l_message: found in $dnslist_domain: $dnslist_text
  check dnslists = rbl.test.ex 
@@ -205,7 +205,7 @@ DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) succeeded
 LOG: MAIN
   H=[V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
 created log directory TESTSUITE/spool/log
- processing "accept" (TESTSUITE/test-config 43)
+ processing "accept" (TESTSUITE/test-config 44)
  accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
  end of ACL "TESTSUITE/aux-fixed/0386.acl2": ACCEPT
 accept: condition test succeeded in ACL "chk_rcpt"
@@ -324,6 +324,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   message_suffix=\n
   maildir_use_size_file=no
   locking by lockfile fcntl 
+de-tainting path 'TESTSUITE/test-mail/2'
 lock name: TESTSUITE/test-mail/2.lock
 hitch name: TESTSUITE/test-mail/2.lock.test.ex.dddddddd.pppppppp
 lock file created
@@ -383,7 +384,7 @@ check local_parts = 2
 2 in "2"? yes (matched "2")
 check acl = TESTSUITE/aux-fixed/0386.acl2
  using ACL "TESTSUITE/aux-fixed/0386.acl2"
- processing "warn" (TESTSUITE/test-config 43)
+ processing "warn" (TESTSUITE/test-config 44)
    message: X-Warning: $sender_host_address is listed at $dnslist_domain\nX-Warning: $dnslist_text
  l_message: found in $dnslist_domain: $dnslist_text
  check dnslists = rbl.test.ex 
@@ -394,7 +395,7 @@ DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
  warn: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
 LOG: MAIN
   H=[V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
- processing "accept" (TESTSUITE/test-config 43)
+ processing "accept" (TESTSUITE/test-config 44)
  accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
  end of ACL "TESTSUITE/aux-fixed/0386.acl2": ACCEPT
 accept: condition test succeeded in ACL "chk_rcpt"
@@ -512,6 +513,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   message_suffix=\n
   maildir_use_size_file=no
   locking by lockfile fcntl 
+de-tainting path 'TESTSUITE/test-mail/2'
 lock name: TESTSUITE/test-mail/2.lock
 hitch name: TESTSUITE/test-mail/2.lock.test.ex.dddddddd.pppppppp
 lock file created

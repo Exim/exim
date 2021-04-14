@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2018 */
+/* Copyright (c) University of Cambridge 1995 - 2020 */
 /* Copyright (c) The Exim maintainers 2020 */
 /* See the file NOTICE for conditions of use and distribution. */
 
@@ -112,70 +112,27 @@ BOOL appendfile_transport_entry(transport_instance *tblock, address_item *addr) 
 /* Default private options block for the appendfile transport. */
 
 appendfile_transport_options_block appendfile_transport_option_defaults = {
-  NULL,           /* filename */
-  NULL,           /* dirname */
-  US"q${base62:$tod_epoch}-$inode", /* dirfilename */
-  NULL,           /* message_prefix (default reset in init if not bsmtp) */
-  NULL,           /* message_suffix (ditto) */
-  US"anywhere",   /* create_file_string (string value for create_file) */
-  NULL,           /* quota */
-  NULL,           /* quota_directory */
-  NULL,           /* quota_filecount */
-  NULL,           /* quota_size_regex */
-  NULL,           /* quota_warn_threshold */
-  NULL,           /* mailbox_size_string */
-  NULL,           /* mailbox_filecount_string */
-  NULL,           /* expand_maildir_use_size_file */
-  US"^(?:cur|new|\\..*)$",  /* maildir_dir_regex */
-  NULL,           /* maildir_tag */
-  NULL,           /* maildirfolder_create_regex */
-  NULL,           /* mailstore_prefix */
-  NULL,           /* mailstore_suffix */
-  NULL,           /* check_string (default changed for non-bsmtp file)*/
-  NULL,           /* escape_string (ditto) */
-  NULL,           /* file_format */
-  0,              /* quota_value */
-  0,              /* quota_warn_threshold_value */
-  -1,             /* mailbox_size_value */
-  -1,             /* mailbox_filecount_value */
-  0,              /* quota_filecount_value */
-  APPENDFILE_MODE,           /* mode */
-  APPENDFILE_DIRECTORY_MODE, /* dirmode */
-  APPENDFILE_LOCKFILE_MODE,  /* lockfile_mode */
-  30*60,          /* lockfile_timeout */
-  0,              /* lock_fcntl_timeout */
-  0,              /* lock_flock_timeout */
-  10,             /* lock_retries */
-   3,             /* lock_interval */
-  10,             /* maildir_retries */
-  create_anywhere,/* create_file */
-  0,              /* options */
-  FALSE,          /* allow_fifo */
-  FALSE,          /* allow_symlink */
-  FALSE,          /* check_group */
-  TRUE,           /* check_owner */
-  TRUE,           /* create_directory */
-  FALSE,          /* notify_comsat */
-  TRUE,           /* use_lockfile */
-  FALSE,          /* set_use_lockfile */
-  TRUE,           /* use_fcntl */
-  FALSE,          /* set_use_fcntl */
-  FALSE,          /* use_flock */
-  FALSE,          /* set_use_flock */
-  FALSE,          /* use_mbx_lock */
-  FALSE,          /* set_use_mbx_lock */
-  FALSE,          /* use_bsmtp */
-  FALSE,          /* use_crlf */
-  FALSE,          /* file_must_exist */
-  TRUE,           /* mode_fail_narrower */
-  FALSE,          /* maildir_format */
-  FALSE,          /* maildir_use_size_file */
-  FALSE,          /* mailstore_format */
-  FALSE,          /* mbx_format */
-  FALSE,          /* quota_warn_threshold_is_percent */
-  TRUE,           /* quota_is_inclusive */
-  FALSE,          /* quota_no_check */
-  FALSE           /* quota_filecount_no_check */
+  /* all non-mentioned members zero/null/false */
+  .dirfilename = US"q${base62:$tod_epoch}-$inode",
+  .create_file_string = US"anywhere",
+  .maildir_dir_regex = US"^(?:cur|new|\\..*)$",
+  .mailbox_size_value = -1,
+  .mailbox_filecount_value = -1,
+  .mode = APPENDFILE_MODE,
+  .dirmode = APPENDFILE_DIRECTORY_MODE,
+  .lockfile_mode = APPENDFILE_LOCKFILE_MODE,
+  .lockfile_timeout = 30*60,
+  .lock_retries = 10,
+   .lock_interval = 3,
+  .maildir_retries = 10,
+  .create_file = create_anywhere,
+  .check_owner = TRUE,
+  .create_directory = TRUE,
+  .notify_comsat = FALSE,
+  .use_lockfile = TRUE,
+  .use_fcntl = TRUE,
+  .mode_fail_narrower = TRUE,
+  .quota_is_inclusive = TRUE,
 };
 
 
@@ -235,17 +192,15 @@ mailbox_filecount */
 
 for (int i = 0; i < 5; i++)
   {
-  double d;
+  double d = default_value;
   int no_check = 0;
   uschar *which = NULL;
 
-  if (q == NULL) d = default_value;
-  else
+  if (q)
     {
-    uschar *rest;
-    uschar *s = expand_string(q);
+    uschar * rest, * s;
 
-    if (!s)
+    if (!(s =  expand_string(q)))
       {
       *errmsg = string_sprintf("Expansion of \"%s\" in %s transport failed: "
         "%s", q, tblock->name, expand_string_message);
@@ -315,8 +270,8 @@ for (int i = 0; i < 5; i++)
       break;
 
     case 2:
-    if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4)
-	which = US"quota_warn_threshold";
+      if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4)
+	  which = US"quota_warn_threshold";
       ob->quota_warn_threshold_value = (off_t)d;
       q = ob->mailbox_size_string;
       default_value = -1.0;
@@ -362,6 +317,7 @@ appendfile_transport_init(transport_instance *tblock)
 {
 appendfile_transport_options_block *ob =
   (appendfile_transport_options_block *)(tblock->options_block);
+uschar * s;
 
 /* Set up the setup entry point, to be called in the privileged state */
 
@@ -460,20 +416,17 @@ if (tblock->uid_set && !tblock->gid_set && !tblock->expand_gid)
 /* If "create_file" is set, check that a valid option is given, and set the
 integer variable. */
 
-if (ob->create_file_string)
+if ((s = ob->create_file_string ) && *s)
   {
-  int value = 0;
-  if (Ustrcmp(ob->create_file_string, "anywhere") == 0)
-    value = create_anywhere;
-  else if (Ustrcmp(ob->create_file_string, "belowhome") == 0)
-    value = create_belowhome;
-  else if (Ustrcmp(ob->create_file_string, "inhome") == 0)
-    value = create_inhome;
+  int val = 0;
+  if (Ustrcmp(s, "anywhere") == 0)			val = create_anywhere;
+  else if (*s == '/' || Ustrcmp(s, "belowhome") == 0)	val = create_belowhome;
+  else if (Ustrcmp(s, "inhome") == 0)			val = create_inhome;
   else
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-      "invalid value given for \"file_create\" for the %s transport: %s",
-        tblock->name, ob->create_file_string);
-  ob->create_file = value;
+      "invalid value given for \"file_create\" for the %s transport: '%s'",
+      tblock->name, s);
+  ob->create_file = val;
   }
 
 /* If quota_warn_threshold is set, set up default for warn_message. It may
@@ -936,28 +889,28 @@ we can't do any tests.
 Arguments:
   filename     the file name
   create_file  the ob->create_file option
+  deliver_dir  the delivery directory
 
 Returns:       TRUE if creation is permitted
 */
 
 static BOOL
-check_creation(uschar *filename, int create_file)
+check_creation(uschar *filename, int create_file, const uschar * deliver_dir)
 {
 BOOL yield = TRUE;
 
-if (deliver_home  &&  create_file != create_anywhere)
+if (deliver_dir  &&  create_file != create_anywhere)
   {
-  int len = Ustrlen(deliver_home);
+  int len = Ustrlen(deliver_dir);
   uschar *file = filename;
 
   while (file[0] == '/' && file[1] == '/') file++;
-  if (Ustrncmp(file, deliver_home, len) != 0 || file[len] != '/' ||
-       ( Ustrchr(file+len+2, '/') != NULL &&
-         (
-         create_file != create_belowhome ||
-         Ustrstr(file+len, "/../") != NULL
-         )
-       )
+  if (  Ustrncmp(file, deliver_dir, len) != 0
+     || file[len] != '/'
+     ||    Ustrchr(file+len+2, '/') != NULL
+	&& (  create_file != create_belowhome
+	   || Ustrstr(file+len, "/../") != NULL
+	   )
      ) yield = FALSE;
 
   /* If yield is TRUE, the file name starts with the home directory, and does
@@ -995,10 +948,10 @@ if (deliver_home  &&  create_file != create_anywhere)
     if (rp)
       {
       uschar hdbuffer[PATH_MAX+1];
-      uschar *rph = deliver_home;
+      const uschar * rph = deliver_dir;
       int rlen = Ustrlen(big_buffer);
 
-      if ((rp = US realpath(CS deliver_home, CS hdbuffer)))
+      if ((rp = US realpath(CS deliver_dir, CS hdbuffer)))
         {
         rph = hdbuffer;
         len = Ustrlen(rph);
@@ -1009,7 +962,7 @@ if (deliver_home  &&  create_file != create_anywhere)
         {
         yield = FALSE;
         DEBUG(D_transport) debug_printf("Real path \"%s\" does not match \"%s\"\n",
-          big_buffer, deliver_home);
+          big_buffer, deliver_dir);
         }
       }
     }
@@ -1179,6 +1132,7 @@ appendfile_transport_entry(
 appendfile_transport_options_block *ob =
   (appendfile_transport_options_block *)(tblock->options_block);
 struct stat statbuf;
+const uschar * deliver_dir;
 uschar *fdname = NULL;
 uschar *filename = NULL;
 uschar *hitchname = NULL;
@@ -1282,12 +1236,6 @@ if (!(path = expand_string(fdname)))
     expand_string_message);
   goto ret_panic;
   }
-if (is_tainted(path))
-  {
-  addr->message = string_sprintf("Tainted '%s' (file or directory "
-    "name for %s transport) not permitted", path, tblock->name);
-  goto ret_panic;
-  }
 
 if (path[0] != '/')
   {
@@ -1364,6 +1312,12 @@ if (f.dont_deliver)
   return FALSE;
   }
 
+/* If an absolute path was given for create_file the it overrides deliver_home
+(here) and de-taints the filename (below, after check_creation() */
+
+deliver_dir = *ob->create_file_string == '/'
+  ? ob->create_file_string : deliver_home;
+
 /* Handle the case of a file name. If the file name is /dev/null, we can save
 ourselves some effort and just give a success return right away. */
 
@@ -1380,10 +1334,20 @@ if (!isdirectory)
     }
 
   /* Set the name of the file to be opened, and the file to which the data
-  is written, and find out if we are permitted to create a non-existent file. */
+  is written, and find out if we are permitted to create a non-existent file.
+  If the create_file option is an absolute path and the file was within it,
+  de-taint.  Chaeck for a tainted path. */
 
+  if (  (allow_creation_here = check_creation(path, ob->create_file, deliver_dir))
+     && ob->create_file == create_belowhome)
+    if (is_tainted(path))
+      {
+      DEBUG(D_transport) debug_printf("de-tainting path '%s'\n", path);
+      path = string_copy_taint(path, FALSE);
+      }
+
+  if (is_tainted(path)) goto tainted_ret_panic;
   dataname = filename = path;
-  allow_creation_here = check_creation(filename, ob->create_file);
 
   /* If ob->create_directory is set, attempt to create the directories in
   which this mailbox lives, but only if we are permitted to create the file
@@ -1399,7 +1363,7 @@ if (!isdirectory)
       addr->basic_errno = errno;
       addr->message =
         string_sprintf("failed to create directories for %s: %s", path,
-          strerror(errno));
+          exim_errstr(errno));
       DEBUG(D_transport) debug_printf("%s transport: %s\n", tblock->name, path);
       return FALSE;
       }
@@ -2200,16 +2164,31 @@ scanning is expensive; for maildirs some fudges have been invented:
 
 else
   {
-  uschar *check_path = path;    /* Default quota check path */
+  uschar *check_path;		/* Default quota check path */
   const pcre *regex = NULL;     /* Regex for file size from file name */
 
-  if (!check_creation(string_sprintf("%s/any", path), ob->create_file))
+  if (!check_creation(string_sprintf("%s/any", path),
+		      ob->create_file, deliver_dir))
     {
     addr->basic_errno = ERRNO_BADCREATE;
     addr->message = string_sprintf("tried to create file in %s, but "
       "file creation outside the home directory is not permitted", path);
     goto RETURN;
     }
+
+  /* If the create_file option is an absolute path and the file was within
+  it, de-taint. Otherwise check for taint. */
+
+  if (is_tainted(path))
+    if (ob->create_file == create_belowhome)
+      {
+      DEBUG(D_transport) debug_printf("de-tainting path '%s'\n", path);
+      path = string_copy_taint(path, FALSE);
+      }
+    else
+      goto tainted_ret_panic;
+
+  check_path = path;
 
   #ifdef SUPPORT_MAILDIR
   /* For a maildir delivery, ensure that all the relevant directories exist,
@@ -3319,6 +3298,9 @@ put in the first address of a batch. */
 
 return FALSE;
 
+tainted_ret_panic:
+  addr->message = string_sprintf("Tainted '%s' (file or directory "
+      "name for %s transport) not permitted", path, tblock->name);
 ret_panic:
   addr->transport_return = PANIC;
   return FALSE;

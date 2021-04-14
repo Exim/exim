@@ -121,6 +121,7 @@ appendfile: mode=600 notify_comsat=0 quota=500 warning=0
   message_prefix=null
   message_suffix=null
   maildir_use_size_file=yes
+de-tainting path 'TESTSUITE/test-mail/nofile'
 ensuring maildir directories exist in TESTSUITE/test-mail/nofile
 created directory TESTSUITE/test-mail/nofile
 created directory TESTSUITE/test-mail/nofile/tmp
@@ -305,6 +306,7 @@ appendfile: mode=600 notify_comsat=0 quota=500 warning=0
   message_prefix=null
   message_suffix=null
   maildir_use_size_file=yes
+de-tainting path 'TESTSUITE/test-mail/userx'
 ensuring maildir directories exist in TESTSUITE/test-mail/userx
 created directory TESTSUITE/test-mail/userx/tmp
 created directory TESTSUITE/test-mail/userx/new
@@ -491,6 +493,7 @@ appendfile: mode=600 notify_comsat=0 quota=500 warning=0
   message_prefix=null
   message_suffix=null
   maildir_use_size_file=yes
+de-tainting path 'TESTSUITE/test-mail/userx'
 ensuring maildir directories exist in TESTSUITE/test-mail/userx
 using regex for maildir directory selection: ^(?:cur|new|\..*)$
 looking for maildirsize in TESTSUITE/test-mail/userx
@@ -691,6 +694,7 @@ appendfile: mode=600 notify_comsat=0 quota=500 warning=0
   message_prefix=null
   message_suffix=null
   maildir_use_size_file=yes
+de-tainting path 'TESTSUITE/test-mail/userx'
 ensuring maildir directories exist in TESTSUITE/test-mail/userx
 using regex for maildir directory selection: ^(?:cur|new|\..*)$
 looking for maildirsize in TESTSUITE/test-mail/userx

@@ -24,8 +24,10 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  directory = DIR/test-mail
-  directory_file = ${bless:$local_part}
+  directory = DIR/test-mail/subdir
+  create_directory
+  directory_file = $local_part
+  create_file = DIR/test-mail
   user = CALLER
 
 

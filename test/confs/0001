@@ -517,7 +517,7 @@ appendfile:
   directory_mode = 0700
   envelope_to_add
   escape_string = xyz
-  file = /home/${bless:$local_part}/inbox
+  file = /home/$local_part/inbox
   file_format = "From : appendfile"
   no_file_must_exist
   group = MAILGROUP

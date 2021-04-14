@@ -14,7 +14,8 @@ begin transports
 
 t1:
   driver = appendfile
-  file = DIR/test-mail/${if eq{$address_data}{}{${bless:$local_part}}{$address_data}}
+  file = DIR/test-mail/${if eq{$address_data}{}{$local_part}{$address_data}}
+  create_file = DIR/test-mail
   user = CALLER
 
 # ----- Routers -----

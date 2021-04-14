@@ -84,7 +84,8 @@ bad_tpt:
 
 tofile:
   driver = appendfile
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   user = CALLER
   event_action = ${acl {ev_log}}
 

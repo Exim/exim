@@ -42,7 +42,8 @@ begin transports
 
 appendfile:
   driver = appendfile
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   headers_add = host_lookup_failed: $host_lookup_failed\n\
                 host_lookup_deferred: $host_lookup_deferred
   user = CALLER

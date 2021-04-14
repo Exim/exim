@@ -603,7 +603,7 @@ LOG: H=[8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too deep: p
 >>> processing "accept" (TESTSUITE/test-config 85)
 >>> check acl = TESTSUITE/aux-fixed/0023.acl1
 >>>  read ACL from file TESTSUITE/aux-fixed/0023.acl1
->>>  processing "accept" (TESTSUITE/test-config 271)
+>>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = y
 >>> y in "y"? yes (matched "y")
 >>>  check local_parts = x
@@ -616,7 +616,7 @@ LOG: H=[8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too deep: p
 >>> processing "accept" (TESTSUITE/test-config 85)
 >>> check acl = TESTSUITE/aux-fixed/0023.acl1
 >>>  using ACL "TESTSUITE/aux-fixed/0023.acl1"
->>>  processing "accept" (TESTSUITE/test-config 271)
+>>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = y
 >>> y in "y"? yes (matched "y")
 >>>  check local_parts = x
@@ -630,7 +630,7 @@ LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x1@y>
 >>> processing "accept" (TESTSUITE/test-config 85)
 >>> check acl = TESTSUITE/aux-fixed/0023.acl1
 >>>  using ACL "TESTSUITE/aux-fixed/0023.acl1"
->>>  processing "accept" (TESTSUITE/test-config 271)
+>>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = y
 >>> y in "y"? yes (matched "y")
 >>>  check local_parts = x
@@ -1344,7 +1344,7 @@ LOG: H=[44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferr
 >>> processing "accept" (TESTSUITE/test-config 226)
 >>> check !acl = TESTSUITE/aux-fixed/0023.acl2
 >>>  read ACL from file TESTSUITE/aux-fixed/0023.acl2
->>>  processing "accept" (TESTSUITE/test-config 271)
+>>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = b
 >>> y in "b"? no (end of list)
 >>>  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl2"
@@ -1355,7 +1355,7 @@ LOG: H=[44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferr
 >>> processing "accept" (TESTSUITE/test-config 226)
 >>> check !acl = TESTSUITE/aux-fixed/0023.acl2
 >>>  using ACL "TESTSUITE/aux-fixed/0023.acl2"
->>>  processing "accept" (TESTSUITE/test-config 271)
+>>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = b
 >>> b in "b"? yes (matched "b")
 >>>  check local_parts = a

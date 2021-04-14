@@ -1,5 +1,7 @@
 # Exim test configuration 0593
 
+OPT=
+
 .include DIR/aux-var/std_conf_prefix
 
 
@@ -25,16 +27,17 @@ check_recipient:
 begin routers
 
 localuser:
-  driver = accept
-  check_local_user
-  transport = local_delivery
+  driver =	accept
+  transport =	local_delivery
+  errors_to =
 
 # ----- Transports -----
 
 begin transports
 
 local_delivery:
-  driver = appendfile
-  file = DIR/test-mail/$local_part
+  driver =	appendfile
+  file =	DIR/test-mail/$local_part
+  create_file =	OPT
 
 # End

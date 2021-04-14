@@ -58,7 +58,8 @@ local_delivery:
   driver = appendfile
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   headers_add = "X-body-linecount: $body_linecount\n\
                  X-message-linecount: $message_linecount\n\
                  X-received-count: $received_count"

@@ -50,7 +50,8 @@ begin transports
 # Successful local transport
 ut1:
   driver = appendfile
-  file = DIR/test-mail/${bless:$local_part}-u
+  file = DIR/test-mail/$local_part-u
+  create_file = DIR/test-mail
   user = CALLER
   return_path_add
   envelope_to_add
@@ -83,7 +84,8 @@ ut4:
 # Real delivery
 real:
   driver = appendfile
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   user = CALLER
   return_path_add
   envelope_to_add

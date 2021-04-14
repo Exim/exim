@@ -35,7 +35,8 @@ begin transports
 local_delivery:
   driver = appendfile
   envelope_to_add
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   return_path = ${if eq{$return_path}{trakill@test.ex}{}fail}
   return_path_add
   user = CALLER

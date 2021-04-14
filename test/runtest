@@ -749,7 +749,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/remote delivery process \d+ ended/remote delivery process pppp ended/;
 
   # Pid in temp file in appendfile transport
-  s"test-mail/temp\.\d+\."test-mail/temp.pppp.";
+  s"test-mail/(subdir/)?temp\K\.\d+\.".pppp.";
 
   # Optional pid in log lines
   s/^(\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d)(\.\d{3}|)(\s[+-]\d{4}|)(\s\[\d+\])/

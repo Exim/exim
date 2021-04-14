@@ -17,7 +17,7 @@ userforward:
   allow_filter
   user = CALLER
   local_parts = userx : CALLER
-  file = DIR/aux-fixed/0016.filter.${bless:$local_part}
+  file = DIR/aux-fixed/0016.filter.$local_part_data
   local_part_suffix = +*
   local_part_suffix_optional
   reply_transport = address_reply
@@ -43,7 +43,8 @@ local_delivery:
 		X-local_part_suffix: $local_part_suffix\n\
 		X-local_part_suffix_v: $local_part_suffix_v
   return_path_add
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
 
 address_reply:
   driver = autoreply

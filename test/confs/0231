@@ -51,13 +51,15 @@ begin transports
 
 local_delivery_rewrite:
   driver = appendfile
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   headers_rewrite = a@test.ex a-rewrite@test.ex
   user = CALLER
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   user = CALLER
 
 smtp_rewrite:

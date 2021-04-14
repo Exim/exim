@@ -84,7 +84,8 @@ local_delivery:
   driver = appendfile
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   return_path_add
   current_directory = /
   user = CALLER
@@ -93,7 +94,8 @@ hackfree_local_delivery:
   driver = appendfile
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   check_string =
   return_path_add
   user = CALLER
@@ -105,7 +107,8 @@ bsmtp_local_delivery:
   use_bsmtp
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   return_path_add
   user = CALLER
   current_directory = /
@@ -116,7 +119,8 @@ bsmtp_local_delivery_filtered:
   use_bsmtp
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   return_path_add
   transport_filter = /bin/sh -c "echo 'X-Filtered: just checking'; cat"
   user = CALLER
@@ -136,7 +140,8 @@ filtered_local_delivery:
   driver = appendfile
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   return_path_add
   transport_filter = /bin/sh -c "echo 'X-Filtered: just checking'; cat"
   current_directory = /
@@ -146,7 +151,8 @@ mmdf_local_delivery:
   driver = appendfile
   check_string = "\1\1\1\1\n"
   escape_string = "\1\1\1\1 \n"
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   message_prefix = "\1\1\1\1\n"
   message_suffix = "\1\1\1\1\n"
   user = CALLER

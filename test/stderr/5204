@@ -242,7 +242,7 @@ some.name in helo_lookup_domains? no (end of list)
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts? no (end of list)
-processing "accept" (TESTSUITE/test-config 78)
+processing "accept" (TESTSUITE/test-config 79)
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "FAIL cannot route this one (FAIL)"@some.host

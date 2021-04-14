@@ -1,7 +1,19 @@
 # tainted data for appendfile file option
+#
+# This should trap
 exim -bs -odi
 mail from:someone@some.domain
-rcpt to:CALLER@HOSTNAME
+rcpt to:fred@HOSTNAME
+data
+.
+quit
+****
+#
+# taint trap defated by using create_file
+# goes on to fail on perms
+exim -bs -odi -DOPT=DIR/test-mail
+mail from:someone@some.domain
+rcpt to:bill@HOSTNAME
 data
 .
 quit

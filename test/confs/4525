@@ -107,7 +107,8 @@ send_to_server:
 
 file:
   driver =	appendfile
-  file =	DIR/test-mail/${bless:$local_part}
+  file =	DIR/test-mail/$local_part
+  create_file =	DIR/test-mail
   user =	CALLER
 
 # End

@@ -42,7 +42,8 @@ begin transports
 
 t0:
   driver = appendfile
-  file = DIR/test-mail/${bless:$local_part}
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
   user = CALLER
 
 t1:
