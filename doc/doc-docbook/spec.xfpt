@@ -18341,8 +18341,12 @@ if the OpenSSL build supports TLS extensions and the TLS client sends the
 Server Name Indication extension, then this option and others documented in
 &<<SECTtlssni>>& will be re-expanded.
 
-If this option is unset or empty a fresh self-signed certificate will be
-generated for every connection.
+If this option is unset or empty a self-signed certificate will be
+.new
+used.
+Under Linux this is generated at daemon startup; on other platforms it will be
+generated fresh for every connection.
+.wen
 
 .option tls_crl main string&!! unset
 .cindex "TLS" "server certificate revocation list"
