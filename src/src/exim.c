@@ -1010,6 +1010,9 @@ g = string_cat(NULL, US"Support for:");
 #ifdef EXPERIMENTAL_DSN_INFO
   g = string_cat(g, US" Experimental_DSN_info");
 #endif
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+  g = string_cat(g, US" Experimental_ESMTP_Limits");
+#endif
 #ifdef EXPERIMENTAL_QUEUEFILE
   g = string_cat(g, US" Experimental_QUEUEFILE");
 #endif
@@ -2257,7 +2260,7 @@ on the second character (the one after '-'), to save some effort. */
 	case 'P':
 
 	  /* -bP config: we need to setup here, because later,
-	   * when list_options is checked, the config is read already */
+	  when list_options is checked, the config is read already */
 	  if (*argrest)
 	    badarg = TRUE;
 	  else if (argv[i+1] && Ustrcmp(argv[i+1], "config") == 0)
@@ -2787,6 +2790,17 @@ on the second character (the one after '-'), to save some effort. */
     /* -MCK: the peer offered CHUNKING.  Must precede -MC */
 
 	case 'K': smtp_peer_options |= OPTION_CHUNKING; break;
+
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+    /* -MCL: peer used LIMITS RCPTMAX and/or RCPTDOMAINMAX */
+	case 'L': if (++i < argc) continue_limit_mail = Uatoi(argv[i]);
+		  else badarg = TRUE;
+		  if (++i < argc) continue_limit_rcpt = Uatoi(argv[i]);
+		  else badarg = TRUE;
+		  if (++i < argc) continue_limit_rcptdom = Uatoi(argv[i]);
+		  else badarg = TRUE;
+		  break;
+#endif
 
     /* -MCP: set the smtp_use_pipelining flag; this is useful only when
     it preceded -MC (see above) */

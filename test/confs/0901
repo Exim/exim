@@ -17,6 +17,9 @@ tls_advertise_hosts = ${if eq {SRV}{tls} {*}}
 .ifdef _HAVE_DMARC
 dmarc_tld_file =
 .endif
+.ifdef _OPT_MAIN_LIMITS_ADVERTISE_HOSTS
+limits_advertise_hosts = !*
+.endif
 
 pipelining_advertise_hosts = :
 

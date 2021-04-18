@@ -4346,6 +4346,19 @@ while (done <= 0)
 	  g = string_catn(g, US"-SIZE\r\n", 7);
 	  }
 
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+	if (  (mailmax > 0 || recipients_max)
+	   && verify_check_host(&limits_advertise_hosts) == OK)
+	  {
+	  g = string_fmt_append(g, "%.3s-LIMITS", smtp_code);
+	  if (mailmax > 0)
+	    g = string_fmt_append(g, " MAILMAX=%d", mailmax);
+	  if (recipients_max)
+	    g = string_fmt_append(g, " RCPTMAX=%d", recipients_max);
+	  g = string_catn(g, US"\r\n", 2);
+	  }
+#endif
+
 	/* Exim does not do protocol conversion or data conversion. It is 8-bit
 	clean; if it has an 8-bit character in its hand, it just sends it. It
 	cannot therefore specify 8BITMIME and remain consistent with the RFCs.

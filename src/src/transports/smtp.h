@@ -171,15 +171,25 @@ typedef struct {
   BOOL pending_BDAT:1;
   BOOL RCPT_452:1;
   BOOL good_RCPT:1;
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+  BOOL single_rcpt_domain:1;
+#endif
   BOOL completed_addr:1;
   BOOL send_rset:1;
   BOOL send_quit:1;
   BOOL send_tlsclose:1;
 
+  unsigned	peer_offered;
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+  unsigned	peer_limit_mail;
+  unsigned	peer_limit_rcpt;
+  unsigned	peer_limit_rcptdom;
+#endif
+
+  unsigned	max_mail;
   int		max_rcpt;
   int		cmd_count;
 
-  unsigned	peer_offered;
   unsigned	avoid_option;
   uschar *	igquotstr;
   uschar *	helo_data;
@@ -188,6 +198,11 @@ typedef struct {
   uschar *	helo_response;
 #endif
 #ifndef DISABLE_PIPE_CONNECT
+  /* Info about the EHLO response stored to / retrieved from cache.  When
+  operating early-pipe, we use the cached values.  For each of plaintext and
+  crypted we store bitmaps for ESMTP features and AUTH methods.  If the LIMITS
+  extension is built and usable them at least one of the limits values cached
+  is nonzero, and we use the values to constrain the connection. */
   ehlo_resp_precis	ehlo_resp;
 #endif
 

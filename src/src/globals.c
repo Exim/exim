@@ -710,6 +710,10 @@ unsigned chunking_data_left    = 0;
 chunking_state_t chunking_state= CHUNKING_NOT_OFFERED;
 const pcre *regex_CHUNKING     = NULL;
 
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+const pcre *regex_LIMITS        = NULL;
+#endif
+
 uschar *client_authenticator   = NULL;
 uschar *client_authenticated_id = NULL;
 uschar *client_authenticated_sender = NULL;
@@ -742,6 +746,11 @@ uschar *continue_hostname      = NULL;
 uschar *continue_host_address  = NULL;
 int     continue_sequence      = 1;
 uschar *continue_transport     = NULL;
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+unsigned continue_limit_mail   = 0;
+unsigned continue_limit_rcpt   = 0;
+unsigned continue_limit_rcptdom= 0;
+#endif
 
 uschar *csa_status             = NULL;
 cut_t   cutthrough = {
@@ -1001,6 +1010,9 @@ uschar *keep_environment       = NULL;
 int     keep_malformed         = 4*24*60*60;    /* 4 days */
 
 uschar *eldap_dn               = NULL;
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+uschar *limits_advertise_hosts = US"*";
+#endif
 int     load_average           = -2;
 uschar *local_from_prefix      = NULL;
 uschar *local_from_suffix      = NULL;

@@ -1,0 +1,36 @@
+# Exim test configuration 4714
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+log_selector = +received_recipients
+queue_run_in_order
+
+acl_smtp_rcpt = accept
+
+# ----- Routers -----
+
+begin routers
+
+send_to_server:
+  driver =	accept
+  transport =	to_server
+
+# ----- Transports -----
+
+begin transports
+
+to_server:
+  driver =	smtp
+  allow_localhost
+  hosts =	127.0.0.1
+  port =	PORT_D
+
+# ----- Retry -----
+
+begin retry
+* * F,5d,10s
+
+# End

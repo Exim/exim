@@ -32,11 +32,11 @@ tls_ocsp_file =   PEM DIR/tmp/ocsp/double_r.ocsp.pem
 
 
 .ifdef _HAVE_GNUTLS
-tls_require_ciphers = ${if eq {LIMIT}{TLS1.2} {NORMAL:!VERS-ALL:+VERS-TLS1.2} {}}
+tls_require_ciphers = ${if eq {TRUSTED}{TLS1.2} {NORMAL:!VERS-ALL:+VERS-TLS1.2} {}}
 .endif
 .ifdef _HAVE_OPENSSL
-.ifdef  LIMIT
-openssl_options = ${if eq {LIMIT}{TLS1.2} {+no_tlsv1_3} {}}
+.ifdef  TRUSTED
+openssl_options = ${if eq {TRUSTED}{TLS1.2} {+no_tlsv1_3} {}}
 .endif
 .endif
 
@@ -81,7 +81,7 @@ remote_delivery:
   hosts_require_tls =		*
 
 .ifdef _HAVE_GNUTLS
-  tls_require_ciphers =		${if eq {LIMIT}{TLS1.2} \
+  tls_require_ciphers =		${if eq {TRUSTED}{TLS1.2} \
 				  {NONE:\
 				      +SIGN-RSA-SHA256:+VERS-TLS-ALL:+ECDHE-RSA:+DHE-RSA:+RSA\
 				  :+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509} \

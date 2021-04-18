@@ -3940,6 +3940,16 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that a
 remote host supports the ESMTP &_CHUNKING_& extension.
 
+.new
+.vitem &%-MCL%&
+.oindex "&%-MCL%&"
+This option is not intended for use by external callers. It is used internally
+by Exim in conjunction with the &%-MC%& option. It signifies that the server to
+which Exim is connected advertised limits on numbers of mails, recipients or
+recipient domains.
+The limits are given by the following three arguments.
+.wen
+
 .vitem &%-MCP%&
 .oindex "&%-MCP%&"
 This option is not intended for use by external callers. It is used internally
@@ -25725,7 +25735,7 @@ has advertised support for IGNOREQUOTA in its response to the LHLO command.
 This option limits the number of RCPT commands that are sent in a single
 SMTP message transaction. Each set of addresses is treated independently, and
 so can cause parallel connections to the same host if &%remote_max_parallel%&
-permits this.
+permits this. A value setting of zero disables the limit.
 
 
 .new

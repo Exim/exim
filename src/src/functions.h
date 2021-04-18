@@ -593,8 +593,11 @@ extern BOOL    transport_check_waiting(const uschar *, const uschar *, int, usch
 extern void    transport_init(void);
 extern void    transport_do_pass_socket(const uschar *, const uschar *,
 		 const uschar *, uschar *, int);
-extern BOOL    transport_pass_socket(const uschar *, const uschar *, const uschar *, uschar *,
-                 int);
+extern BOOL    transport_pass_socket(const uschar *, const uschar *, const uschar *, uschar *, int
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+			, unsigned, unsigned, unsigned
+#endif
+			);
 extern uschar *transport_rcpt_address(address_item *, BOOL);
 extern BOOL    transport_set_up_command(const uschar ***, uschar *,
 		 BOOL, int, address_item *, uschar *, uschar **);

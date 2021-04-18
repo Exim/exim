@@ -342,7 +342,7 @@ return yield;
 
 
 /* Read a record.  If the length is not as expected then delete it, write
-an error log line and return NULL.
+an error log line, delete the record and return NULL.
 Use this for fixed-size records (so not retry or wait records).
 
 Arguments:

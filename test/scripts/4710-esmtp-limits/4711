@@ -1,0 +1,138 @@
+# ESMTP LIMITS extension, client RCPTMAX
+#
+# Baseline: no RCPTMAX advertised, can send 5 RCPT commands
+server PORT_D
+220 Hi there
+EHLO
+250-yeah mate
+250 LIMITS MAILMAX=10
+MAIL FROM
+250 mail cmd good
+RCPT TO
+250 rcpt cmd 1 good
+RCPT TO
+250 rcpt cmd 2 good
+RCPT TO
+250 rcpt cmd 3 good
+RCPT TO
+250 rcpt cmd 4 good
+RCPT TO
+250 rcpt cmd 5 good
+DATA
+352 go ahead
+.
+250 message received
+QUIT
+220 bye
+****
+exim -odi a@test.ex b@test.ex c@test.ex d@test.ex e@test.ex
+****
+#
+# RCPTMAX advertised, limits RCPT commands
+# Client should immediate-retry fusther MAIL transaction for remaning rcpts
+server PORT_D
+220 Hi there
+EHLO
+250-yeah mate
+250 LIMITS RCPTMAX=2
+MAIL FROM
+250 mail cmd good
+RCPT TO
+250 rcpt cmd 1 good
+RCPT TO
+250 rcpt cmd 2 good
+DATA
+352 go ahead
+.
+250 message received
+MAIL FROM
+250 mail cmd good
+RCPT TO
+250 rcpt cmd 3 good
+RCPT TO
+250 rcpt cmd 4 good
+DATA
+352 go ahead
+.
+250 message received
+MAIL FROM
+250 mail cmd good
+RCPT TO
+250 rcpt cmd 5 good
+DATA
+352 go ahead
+.
+250 message received
+QUIT
+220 bye
+****
+exim -odi a@test.ex b@test.ex c@test.ex d@test.ex e@test.ex
+****
+#
+# RCPTMAX advertised, overrides larger tpt max_rcpt and limits RCPT commands
+server PORT_D
+220 Hi there
+EHLO
+250-yeah mate
+250 LIMITS RCPTMAX=2
+MAIL FROM
+250 mail cmd good
+RCPT TO
+250 rcpt cmd 1 good
+RCPT TO
+250 rcpt cmd 2 good
+DATA
+352 go ahead
+.
+250 message received
+MAIL FROM
+250 mail cmd good
+RCPT TO
+250 rcpt cmd 3 good
+DATA
+352 go ahead
+.
+250 message received
+QUIT
+220 bye
+****
+exim -odi -DRCPT_MSG=3 a@test.ex b@test.ex c@test.ex
+****
+#
+# RCPTMAX advertised, does not override smaller tpt max_rcpt which limits RCPT commands
+# Client make a separate conn for the second transaction
+server PORT_D 2
+220 Hi there
+EHLO
+250-yeah mate
+250 LIMITS RCPTMAX=3
+MAIL FROM
+250 mail cmd good
+RCPT TO
+250 rcpt cmd 1 good
+RCPT TO
+250 rcpt cmd 2 good
+DATA
+352 go ahead
+.
+250 message received
+QUIT
+220 bye
+*eof
+220 Hi there
+EHLO
+250-yeah mate
+250 LIMITS RCPTMAX=3
+MAIL FROM
+250 mail cmd good
+RCPT TO
+250 rcpt cmd 3 good
+DATA
+352 go ahead
+.
+250 message received
+QUIT
+220 bye
+****
+exim -odi -DRCPT_MSG=2 a@test.ex b@test.ex c@test.ex
+****

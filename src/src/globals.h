@@ -434,6 +434,12 @@ extern uschar *continue_hostname;      /* Host for continued delivery */
 extern uschar *continue_host_address;  /* IP address for ditto */
 extern int     continue_sequence;      /* Sequence num for continued delivery */
 extern uschar *continue_transport;     /* Transport for continued delivery */
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+extern unsigned continue_limit_mail;   /* Peer advertised limit */
+extern unsigned continue_limit_rcpt;
+extern unsigned continue_limit_rcptdom;
+#endif
+
 
 extern uschar *csa_status;             /* Client SMTP Authorization result */
 
@@ -652,6 +658,9 @@ extern uschar *keep_environment;       /* Whitelist for environment variables */
 extern int     keep_malformed;         /* Time to keep malformed messages */
 
 extern uschar *eldap_dn;               /* Where LDAP DNs are left */
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+extern uschar *limits_advertise_hosts; /* for banner/EHLO pipelining */
+#endif
 extern int     load_average;           /* Most recently read load average */
 extern BOOL    local_from_check;       /* For adding Sender: (global value) */
 extern uschar *local_from_prefix;      /* Permitted prefixes */
@@ -854,6 +863,9 @@ extern const pcre  *regex_check_dns_names; /* For DNS name checking */
 extern const pcre  *regex_From;        /* For recognizing "From_" lines */
 extern const pcre  *regex_CHUNKING;    /* For recognizing CHUNKING (RFC 3030) */
 extern const pcre  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+extern const pcre  *regex_LIMITS; /* For recognizing LIMITS */
+#endif
 extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
 extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
 #ifndef DISABLE_PIPE_CONNECT

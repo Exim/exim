@@ -1,0 +1,36 @@
+# Exim test configuration 4710
+#
+
+exim_path = EXIM_PATH
+keep_environment = USER
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+.ifdef _HAVE_PIPE_CONNECT
+pipelining_connect_advertise_hosts = :
+.endif
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
+# ----- Main settings -----
+
+.ifdef CONTROL
+limits_advertise_hosts = :
+.endif
+.ifdef MAXNM
+smtp_accept_max_per_connection = ${if eq {127.0.0.1}{$sender_host_address} {MAXNM}{44}}
+.endif
+.ifdef RCPT_MSG
+recipients_max = RCPT_MSG
+.endif
+
+# ----- ACL -----
+
+begin acl
+
+# End

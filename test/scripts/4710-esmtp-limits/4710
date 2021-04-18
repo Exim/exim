@@ -1,0 +1,86 @@
+# ESMTP LIMITS extension, server
+#
+# Baseline: advertised by default
+exim -DSERVER=server -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-LIMITS MAILMAX=1000
+??? 250
+****
+killdaemon
+#
+# not advertised when disabled
+exim -DSERVER=server -DCONTROL=disable -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+****
+killdaemon
+#
+# smtp_accept_max_per_connection controls the MAILMAX value advertised, and is expanded
+exim -DSERVER=server -DMAXNM=42 -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-LIMITS MAILMAX=42
+??? 250
+****
+client HOSTIPV4 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-LIMITS MAILMAX=44
+??? 250
+****
+killdaemon
+#
+#
+# not advertised when zero and no RCPTMAX
+exim -DSERVER=server -DMAXNM=0 -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250
+****
+killdaemon
+#
+# reeipients_max controls an advertised RCPTMAX
+exim -DSERVER=server -DRCPT_MSG=5 -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-LIMITS MAILMAX=1000 RCPTMAX=5
+??? 250
+****
+killdaemon
+#
+# RCPTMAX can appear on its own
+exim -DSERVER=server -DMAXNM=0 -DRCPT_MSG=5 -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-LIMITS RCPTMAX=5
+??? 250
+****
+killdaemon

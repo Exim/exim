@@ -1,6 +1,6 @@
 # Exim test configuration 0453
 
-LIMIT=
+ERROR_DETAILS=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -11,7 +11,7 @@ primary_hostname = myhost.test.ex
 
 qualify_domain = test.ex
 
-LIMIT
+ERROR_DETAILS
 
 
 # End

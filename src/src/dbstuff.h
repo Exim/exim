@@ -792,13 +792,21 @@ typedef struct {
 
 #ifndef DISABLE_PIPE_CONNECT
 /* This structure records the EHLO responses, cleartext and crypted,
-for an IP, as bitmasks (cf. OPTION_TLS) */
+for an IP, as bitmasks (cf. OPTION_TLS).  For LIMITS, also values
+advertised for MAILMAX, RCPTMAX and RCPTDOMAINMAX; zero meaning no
+value advertised. */
 
 typedef struct {
   unsigned short cleartext_features;
   unsigned short crypted_features;
   unsigned short cleartext_auths;
   unsigned short crypted_auths;
+
+# ifdef EXPERIMENTAL_ESMTP_LIMITS
+  unsigned int limit_mail;
+  unsigned int limit_rcpt;
+  unsigned int limit_rcptdom;
+# endif
 } ehlo_resp_precis;
 
 typedef struct {

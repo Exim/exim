@@ -1880,8 +1880,20 @@ void
 transport_do_pass_socket(const uschar *transport_name, const uschar *hostname,
   const uschar *hostaddress, uschar *id, int socket_fd)
 {
-int i = 27;
+int i = 13;
 const uschar **argv;
+
+#ifndef DISABLE_TLS
+if (smtp_peer_options & OPTION_TLS) i += 6;
+#endif
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+if (continue_limit_mail || continue_limit_rcpt || continue_limit_rcptdom)
+				    i += 4;
+#endif
+if (queue_run_pid != (pid_t)0)	    i += 3;
+#ifdef SUPPORT_SOCKS
+if (proxy_session)		    i += 5;
+#endif
 
 /* Set up the calling arguments; use the standard function for the basics,
 but we have a number of extras that may be added. */
@@ -1914,6 +1926,16 @@ if (smtp_peer_options & OPTION_TLS)
     }
   else
     argv[i++] = US"-MCT";
+#endif
+
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+if (continue_limit_rcpt || continue_limit_rcptdom)
+  {
+  argv[i++] = US"-MCL";
+  argv[i++] = string_sprintf("%u", continue_limit_mail);
+  argv[i++] = string_sprintf("%u", continue_limit_rcpt);
+  argv[i++] = string_sprintf("%u", continue_limit_rcptdom);
+  }
 #endif
 
 if (queue_run_pid != (pid_t)0)
@@ -1976,12 +1998,22 @@ Returns:          FALSE if fork fails; TRUE otherwise
 
 BOOL
 transport_pass_socket(const uschar *transport_name, const uschar *hostname,
-  const uschar *hostaddress, uschar *id, int socket_fd)
+  const uschar *hostaddress, uschar *id, int socket_fd
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+  , unsigned peer_limit_mail, unsigned peer_limit_rcpt, unsigned peer_limit_rcptdom
+#endif
+  )
 {
 pid_t pid;
 int status;
 
 DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
+
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+continue_limit_mail = peer_limit_mail;
+continue_limit_rcpt = peer_limit_rcpt;
+continue_limit_rcptdom = peer_limit_rcptdom;
+#endif
 
 if ((pid = exim_fork(US"continued-transport-interproc")) == 0)
   {

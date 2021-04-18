@@ -1,0 +1,28 @@
+# Exim test configuration 4712
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+# ----- Routers -----
+
+begin routers
+
+send_to_server:
+  driver =	accept
+  transport =	to_server
+
+# ----- Transports -----
+
+begin transports
+
+to_server:
+  driver =	smtp
+  allow_localhost
+  hosts =	127.0.0.1
+  port =	PORT_D
+
+# End

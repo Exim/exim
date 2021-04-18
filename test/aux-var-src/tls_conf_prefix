@@ -24,3 +24,6 @@ pipelining_connect_advertise_hosts = :
 .ifdef _HAVE_DMARC
 dmarc_tld_file =
 .endif
+.ifdef _EXP_LIMITS
+limits_advertise_hosts = !*
+.endif

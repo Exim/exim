@@ -1020,6 +1020,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # ARC is not always supported by the build
     next if /^arc_sign =/;
 
+    # LIMITS is not always supported by the build
+    next if /^limits_advertise_hosts =/;
+
     # TLS resumption is not always supported by the build
     next if /^tls_resumption_hosts =/;
     next if /^-tls_resumption/;
@@ -1284,6 +1287,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Experimental_REQUIRETLS
     next if / in tls_advertise_requiretls?\? no \(end of list\)/;
+
+    # Experimental_LIMITS
+    next if / in limits_advertise_hosts?\? no \(matched "!\*"\)/;
 
     # TCP Fast Open
     next if /^(ppppp )?setsockopt FASTOPEN: Network Error/;

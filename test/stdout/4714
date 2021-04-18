@@ -1,0 +1,117 @@
+
+******** SERVER ********
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+220 Hi there
+EHLO the.local.host.name
+250-yeah mate
+250 LIMITS MAILMAX=5 RCPTMAX=1
+MAIL FROM:<CALLER@the.local.host.name>
+250 mail cmd 1 good
+RCPT TO:<r1_1.test.ex@the.local.host.name>
+250 rcpt cmd good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: message 1
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 message 1 received
+MAIL FROM:<CALLER@the.local.host.name>
+250 mail cmd 2 good
+RCPT TO:<r1_2.test.ex@the.local.host.name>
+250 rcpt cmd good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: message 1
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 message 2 received
+MAIL FROM:<CALLER@the.local.host.name>
+250 mail cmd 3 good
+RCPT TO:<r3_1.test.ex@the.local.host.name>
+250 rcpt cmd good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: message 3
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 message 3 received
+MAIL FROM:<CALLER@the.local.host.name>
+250 mail cmd 4 good
+RCPT TO:<r3_2.test.ex@the.local.host.name>
+250 rcpt cmd good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: message 3
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 message 4 received
+MAIL FROM:<CALLER@the.local.host.name>
+250 mail cmd 5 good
+RCPT TO:<r2_1.test.ex@the.local.host.name>
+250 rcpt cmd good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: message 2
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 message 5 received
+QUIT
+221 bye
+Expected EOF read from client
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+220 Hi there
+EHLO the.local.host.name
+250-yeah mate
+250
+MAIL FROM:<CALLER@the.local.host.name>
+250 mail cmd 1 good
+RCPT TO:<r2_2.test.ex@the.local.host.name>
+250 rcpt cmd good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: message 2
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 message 6 received
+QUIT
+221 bye
+Expected EOF read from client
+End of script

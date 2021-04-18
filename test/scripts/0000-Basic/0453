@@ -9,7 +9,7 @@ helo
 helo
 ****
 1
-exim -DLIMIT=smtp_max_synprot_errors=1 -bs
+exim -DERROR_DETAILS=smtp_max_synprot_errors=1 -bs
 mail from:<>
 mail from:<>
 mail from:<>

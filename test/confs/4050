@@ -25,6 +25,9 @@ tls_advertise_hosts =
 .ifdef _HAVE_DMARC
 dmarc_tld_file =
 .endif
+.ifdef _OPT_MAIN_LIMITS_ADVERTISE_HOSTS
+limits_advertise_hosts = !*
+.endif
 
 pipelining_connect_advertise_hosts = CONNECTCOND
 retry_data_expire = RETRY

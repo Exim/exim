@@ -1,0 +1,86 @@
+
+******** SERVER ********
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+220 Hi there
+EHLO the.local.host.name
+250-yeah mate
+250 LIMITS MAILMAX=10
+MAIL FROM:<CALLER@the.local.host.name>
+250 mail cmd good
+RCPT TO:<a@a.test.ex>
+250 rcpt cmd 1 good
+RCPT TO:<b@b.test.ex>
+250 rcpt cmd 2 good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 message received
+QUIT
+220 bye
+End of script
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+220 Hi there
+EHLO the.local.host.name
+250-yeah mate
+250 LIMITS MAILMAX=10 RCPTDOMAINMAX=100
+MAIL FROM:<CALLER@the.local.host.name>
+250 mail cmd good
+RCPT TO:<a@a.test.ex>
+250 rcpt cmd 1 good
+RCPT TO:<a2@a.test.ex>
+250 rcpt cmd 2 good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 message received
+MAIL FROM:<CALLER@the.local.host.name>
+250 second mail cmd good
+RCPT TO:<b@b.test.ex>
+250 rcpt cmd 1 good
+RCPT TO:<b2@b.test.ex>
+250 rcpt cmd 2 good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 second message received
+MAIL FROM:<CALLER@the.local.host.name>
+250 third mail cmd good
+RCPT TO:<c@c.test.ex>
+250 rcpt cmd 1 good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 third message received
+QUIT
+220 bye
+End of script

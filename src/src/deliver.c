@@ -8570,6 +8570,9 @@ f.tcp_fastopen_ok = TRUE;
 
 
 
+/* Called from a commandline, or from the daemon, to do a delivery.
+We need to regain privs; do this by exec of the exim binary. */
+
 void
 delivery_re_exec(int exec_type)
 {
