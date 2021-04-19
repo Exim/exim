@@ -5593,11 +5593,12 @@ while (more)
           parse_extract_address(s, &errmess, &start, &end, &domain, FALSE);
 
 #ifdef SUPPORT_I18N
-	if (string_is_utf8(recipient))
-	  message_smtputf8 = TRUE;
-	else
-	  allow_utf8_domains = b;
+        if (recipient)
+          if (string_is_utf8(recipient)) message_smtputf8 = TRUE;
+          else allow_utf8_domains = b;
 	}
+#else
+        ;
 #endif
         if (domain == 0 && !f.allow_unqualified_recipient)
           {

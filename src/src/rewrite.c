@@ -468,8 +468,9 @@ while (*s)
   {
   uschar *sprev;
   uschar *ss = parse_find_address_end(s, FALSE);
-  uschar *recipient, *new, *errmess;
+  uschar *recipient, *new;
   rmark loop_reset_point = store_mark();
+  uschar *errmess = NULL;
   BOOL changed = FALSE;
   int terminator = *ss;
   int start, end, domain;
@@ -486,10 +487,19 @@ while (*s)
   while (isspace(*s)) s++;
 
   /* There isn't much we can do for syntactic disasters at this stage.
-  Pro tem (possibly for ever) ignore them. */
+  Pro tem (possibly for ever) ignore them.
+  If we got nothing, they there was any sort of error: non-parsable address,
+  empty address, overlong addres. Sometimes the result matters, sometimes not.
+  It seems this function is called for *any* header we see. */
+
 
   if (!recipient)
     {
+    if (rewrite_rules || routed_old)
+      {
+      log_write(0, LOG_MAIN, "rewrite: %s", errmess);
+      exim_exit(EXIT_FAILURE);
+      }
     loop_reset_point = store_reset(loop_reset_point);
     continue;
     }
