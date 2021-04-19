@@ -25882,7 +25882,7 @@ Recipients:
   r3@test.ex
 search_tidyup called
 >>Headers received:
-To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+To: localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
 
 address match test: subject=r3@test.ex pattern=^.{40,}@*
 r3@test.ex in "^.{40,}@*"? no (end of list)
@@ -25937,11 +25937,11 @@ CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
  lookup failed
 rewritten sender = CALLER@myhost.test.ex
 rewrite_one_header: type=T:
-  To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
-address match test: subject=localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example pattern=^.{40,}@*
-localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example in "^.{40,}@*"? yes (matched "^.{40,}@*")
+  To: localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+address match test: subject=localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example pattern=^.{40,}@*
+localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example in "^.{40,}@*"? yes (matched "^.{40,}@*")
 LOG: address_rewrite MAIN
-  "localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example" from to: rewritten as "deny_me@test.example" by rule 1
+  "localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example" from to: rewritten as "deny_me@test.example" by rule 1
 address match test: subject=deny_me@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 deny_me@test.example in "*@*"? yes (matched "*@*")
@@ -25995,7 +25995,7 @@ CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
  lookup failed
 search_tidyup called
 >>Headers after rewriting and local additions:
-* To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+* To: localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
 T To: deny_me@rwtest.example
 I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 F From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -26016,3 +26016,80 @@ LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
+Sender: CALLER@myhost.test.ex
+Recipients:
+  r4@test.ex
+search_tidyup called
+>>Headers received:
+To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+
+address match test: subject=r4@test.ex pattern=^.{40,}@*
+r4@test.ex in "^.{40,}@*"? no (end of list)
+address match test: subject=r4@test.ex pattern=*@*
+test.ex in "*"? yes (matched "*")
+r4@test.ex in "*@*"? yes (matched "*@*")
+ search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
+ search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   key="test.ex" partial=2 affix=*. starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0471.rw
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="test.ex" opts=NULL
+ file lookup required for test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+ trying partial match *.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.test.ex" opts=NULL
+ file lookup required for *.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+address match test: subject=CALLER@myhost.test.ex pattern=*@*
+myhost.test.ex in "*"? yes (matched "*")
+CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
+ search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   key="myhost.test.ex" partial=2 affix=*. starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0471.rw
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="myhost.test.ex" opts=NULL
+ file lookup required for myhost.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+ trying partial match *.myhost.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.myhost.test.ex" opts=NULL
+ file lookup required for *.myhost.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+ trying partial match *.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.test.ex" opts=NULL
+ cached data used for lookup of *.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+rewritten sender = CALLER@myhost.test.ex
+rewrite_one_header: type=T:
+  To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+LOG: MAIN
+  rewrite: address is ridiculously long: localpart_with_256_chars_567890123456789012345678901234567890123...
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>

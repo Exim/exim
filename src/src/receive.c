@@ -2562,11 +2562,12 @@ if (extract_recip)
           &domain, FALSE);
 
 #ifdef SUPPORT_I18N
-	if (string_is_utf8(recipient))
-	  message_smtputf8 = TRUE;
-	else
-	  allow_utf8_domains = b;
+        if (recipient)
+          if (string_is_utf8(recipient)) message_smtputf8 = TRUE;
+          else allow_utf8_domains = b;
 	}
+#else
+        ;
 #endif
 
         /* Keep a list of all the bad addresses so we can send a single
