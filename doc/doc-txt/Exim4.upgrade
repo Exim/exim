@@ -468,11 +468,12 @@ Generic Router Options
 . The way that require_files works has been changed. Each item in the list is
   now separately expanded as the test proceeds. The use of leading ! and +
   characters is unchanged. However, user and group checking is done differently.
-  Previously, seteuid() was used, but seteuid() is no longer used in Exim (see
-  "Security" below). Instead, Exim now scans along the components of the file
-  path and checks the access for the given uid and gid. It expects "x" access
-  on directories and "r" on the final file. This means that file access control
-  lists (on those operating systems that have them) are ignored.
+  Previously, seteuid() was used, but seteuid() is no longer used (see
+  "Security" below) for checking the files required by this option. Instead,
+  Exim now scans along the components of the file path and checks the access
+  for the given uid and gid. It expects "x" access on directories and "r" on
+  the final file. This means that file access control lists (on those
+  operating systems that have them) are ignored.
 
 
 Other Consequences of the Director/Router Merge
@@ -1380,8 +1381,11 @@ Security
 --------
 
 Exim 3 could be run in a variety of ways as far as security was concerned. This
-has all been simplified in Exim 4. The security-conscious might like to know
-that it no longer makes any use of the seteuid() function.
+has all been simplified in Exim 4. Exim dropped the use of seteuid() in
+most places. But recent (2020-10/2021-04) vulnerabilities forced us to
+re-introduce seteuid() for opening the database files (hint files) as secure as
+possible. For future (>= 4.95) versions we work on a solution that
+does not need the seteuid call.
 
 . A UID and GID are required to be specified when Exim is compiled. They can be
   now specified by name as well as by number, so the relevant options are now
