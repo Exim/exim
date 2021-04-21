@@ -313,7 +313,6 @@ return DMARC_HIST_OK;
 }
 
 
->>>>>>> a378ff99d... CVE-2020-28007: Link attack in Exim's log directory
 /* dmarc_process adds the envelope sender address to the existing
 context (if any), retrieves the result, sets up expansion
 strings and evaluates the condition outcome. */
