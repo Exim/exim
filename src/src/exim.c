@@ -496,7 +496,7 @@ while (exim_tvcmp(&now_tv, tgt_tv) <= 0)
   /* Be prapared to go around if the kernel does not implement subtick
   granularity (GNU Hurd) */
 
-  (void)gettimeofday(&now_tv, NULL);
+  exim_gettime(&now_tv);
   now_true_usec = now_tv.tv_usec;
   now_tv.tv_usec = (now_true_usec/resolution) * resolution;
   }
