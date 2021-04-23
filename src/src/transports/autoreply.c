@@ -407,8 +407,8 @@ if (oncelog && *oncelog && to)
   uschar *m;
   time_t then = 0;
 
-  if (m = is_tainted2(oncelog, 0, "Tainted '%s' (once file for %s transport)"
-      " not permitted", oncelog, tblock->name))
+  if ((m = is_tainted2(oncelog, 0, "Tainted '%s' (once file for %s transport)"
+      " not permitted", oncelog, tblock->name)))
     {
     addr->transport_return = DEFER;
     addr->basic_errno = EACCES;
@@ -518,8 +518,8 @@ if (oncelog && *oncelog && to)
     {
     uschar *m;
     int log_fd;
-    if (m = is_tainted2(logfile, 0, "Tainted '%s' (logfile for %s transport)"
-	" not permitted", logfile, tblock->name))
+    if ((m = is_tainted2(logfile, 0, "Tainted '%s' (logfile for %s transport)"
+	" not permitted", logfile, tblock->name)))
       {
       addr->transport_return = DEFER;
       addr->basic_errno = EACCES;
@@ -551,8 +551,8 @@ if (oncelog && *oncelog && to)
 if (file)
   {
   uschar *m;
-  if (m = is_tainted2(file, 0, "Tainted '%s' (file for %s transport)"
-      " not permitted", file, tblock->name))
+  if ((m = is_tainted2(file, 0, "Tainted '%s' (file for %s transport)"
+      " not permitted", file, tblock->name)))
     {
     addr->transport_return = DEFER;
     addr->basic_errno = EACCES;

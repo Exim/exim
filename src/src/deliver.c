@@ -6149,12 +6149,11 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
           {
           uschar *tmp = expand_string(tpname);
           address_file = address_pipe = NULL;
-          uschar *m;
           if (!tmp)
             p->message = string_sprintf("failed to expand \"%s\" as a "
               "system filter transport name", tpname);
           { uschar *m;
-	  if (m = is_tainted2(tmp, 0, "Tainted values '%s' " "for transport '%s' as a system filter", tmp, tpname))
+	  if ((m = is_tainted2(tmp, 0, "Tainted values '%s' " "for transport '%s' as a system filter", tmp, tpname)))
             p->message = m;
           }
           tpname = tmp;

@@ -4384,7 +4384,7 @@ f.expand_string_forcedfail = FALSE;
 expand_string_message = US"";
 
 { uschar *m;
-if (m = is_tainted2(string, LOG_MAIN|LOG_PANIC, "Tainted string '%s' in expansion", s))
+if ((m = is_tainted2(string, LOG_MAIN|LOG_PANIC, "Tainted string '%s' in expansion", s)))
   {
   expand_string_message = m;
   goto EXPAND_FAILED;
@@ -7629,10 +7629,12 @@ while (*s != 0)
 	/* Manually track tainting, as we deal in individual chars below */
 
 	if (is_tainted(sub))
+          {
 	  if (yield->s && yield->ptr)
 	    gstring_rebuffer(yield);
 	  else
 	    yield->s = store_get(yield->size = Ustrlen(sub), TRUE);
+          }
 
 	/* Check the UTF-8, byte-by-byte */
 
@@ -8193,6 +8195,7 @@ that is a bad idea, because expand_string_message is in dynamic store. */
 EXPAND_FAILED:
 if (left) *left = s;
 DEBUG(D_expand)
+  {
   DEBUG(D_noutf8)
     {
     debug_printf_indent("|failed to expand: %s\n", string);
@@ -8212,6 +8215,7 @@ DEBUG(D_expand)
     if (f.expand_string_forcedfail)
       debug_printf_indent(UTF8_UP_RIGHT "failure was forced\n");
     }
+  }
 if (resetok_p && !resetok) *resetok_p = FALSE;
 expand_level--;
 return NULL;

@@ -103,7 +103,7 @@ if (Ustrncmp(query, "servers", 7) == 0)
       }
 
     { uschar *m;
-    if (m = is_tainted2(server, 0, "Tainted %s server '%s'", name, server))
+    if ((m = is_tainted2(server, 0, "Tainted %s server '%s'", name, server)))
      {
       *errmsg = m;
       return DEFER;
@@ -161,7 +161,7 @@ else
 	}
 
       { uschar *m;
-      if (is_tainted2(server, 0, "Tainted %s server '%s'", name, server))
+      if ((m = is_tainted2(server, 0, "Tainted %s server '%s'", name, server)))
         {
         *errmsg = m;
         return DEFER;

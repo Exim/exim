@@ -1287,8 +1287,8 @@ if (!(path = expand_string(fdname)))
   goto ret_panic;
   }
 { uschar *m;
-if (m = is_tainted2(path, 0, "Tainted '%s' (file or directory "
-          "name for %s transport) not permitted", path, tblock->name))
+if ((m = is_tainted2(path, 0, "Tainted '%s' (file or directory "
+          "name for %s transport) not permitted", path, tblock->name)))
   {
   addr->message = m;
   goto ret_panic;
