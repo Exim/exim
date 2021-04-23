@@ -1126,7 +1126,7 @@ if (f.running_in_test_harness && f.testsuite_delays) millisleep(millisec);
 /******************************************************************************/
 /* Taint-checked file opens */
 static inline uschar *
-is_tainted2(const void *p, int lflags, const uschar* fmt, ...)
+is_tainted2(const void *p, int lflags, const char* fmt, ...)
 {
 va_list ap;
 uschar *msg;

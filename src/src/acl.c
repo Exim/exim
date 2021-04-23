@@ -3704,7 +3704,7 @@ for (; cb; cb = cb->next)
     case ACLC_QUEUE:
       {
       uschar *m;
-      if (m = is_tainted2(arg, 0, "Tainted name '%s' for queue not permitted", arg))
+      if ((m = is_tainted2(arg, 0, "Tainted name '%s' for queue not permitted", arg)))
         {
         *log_msgptr = m;
         return ERROR;

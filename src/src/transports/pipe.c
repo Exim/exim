@@ -594,8 +594,8 @@ if (!cmd || !*cmd)
   }
 
 { uschar *m;
-if (m = is_tainted2(cmd, 0, "Tainted '%s' (command "
-    "for %s transport) not permitted", cmd, tblock->name))
+if ((m = is_tainted2(cmd, 0, "Tainted '%s' (command "
+    "for %s transport) not permitted", cmd, tblock->name)))
   {
   addr->transport_return = PANIC;
   addr->message = m;
