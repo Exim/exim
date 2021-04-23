@@ -701,18 +701,36 @@ return total_written;
 }
 
 
-
-static void
-set_file_path(void)
+void
+set_file_path(BOOL *multiple)
 {
+uschar *s;
 int sep = ':';              /* Fixed separator - outside use */
-uschar *t;
-const uschar *tt = US LOG_FILE_PATH;
-while ((t = string_nextinlist(&tt, &sep, log_buffer, LOG_BUFFER_SIZE)))
+uschar *ss = *log_file_path ? log_file_path : LOG_FILE_PATH;
+
+logging_mode = 0;
+while ((s = string_nextinlist(&ss, &sep, log_buffer, LOG_BUFFER_SIZE)))
   {
-  if (Ustrcmp(t, "syslog") == 0 || t[0] == 0) continue;
-  file_path = string_copy(t);
-  break;
+  if (Ustrcmp(s, "syslog") == 0)
+    logging_mode |= LOG_MODE_SYSLOG;
+  else if (logging_mode & LOG_MODE_FILE)  /* we know a file already */
+    {
+    if (multiple) *multiple = TRUE;
+    }
+  else
+    {
+    logging_mode |= LOG_MODE_FILE;
+
+    /* If a non-empty path is given, use it */
+
+    if (*s)
+      file_path = string_copy(s);
+
+    /* If the path is empty, we want to use the first non-empty, non-
+    syslog item in LOG_FILE_PATH, if there is one, since the value of
+    log_file_path may have been set at runtime. If there is no such item,
+    use the ultimate default in the spool directory. */
+    }
   }
 }
 
@@ -720,7 +738,11 @@ while ((t = string_nextinlist(&tt, &sep, log_buffer, LOG_BUFFER_SIZE)))
 void
 mainlog_close(void)
 {
-if (mainlogfd < 0) return;
+/* avoid closing it if it is closed already or if we do not see a chance
+to open the file mainlog later again */
+if (mainlogfd < 0 /* already closed */
+   || !(geteuid() == 0 || geteuid() == exim_uid))
+  return;
 (void)close(mainlogfd);
 mainlogfd = -1;
 mainlog_inode = 0;
@@ -835,38 +857,7 @@ if (!path_inspected)
   /* If nothing has been set, don't waste effort... the default values for the
   statics are file_path="" and logging_mode = LOG_MODE_FILE. */
 
-  if (*log_file_path)
-    {
-    int sep = ':';              /* Fixed separator - outside use */
-    uschar *s;
-    const uschar *ss = log_file_path;
-
-    logging_mode = 0;
-    while ((s = string_nextinlist(&ss, &sep, log_buffer, LOG_BUFFER_SIZE)))
-      {
-      if (Ustrcmp(s, "syslog") == 0)
-        logging_mode |= LOG_MODE_SYSLOG;
-      else if (logging_mode & LOG_MODE_FILE)
-	multiple = TRUE;
-      else
-        {
-        logging_mode |= LOG_MODE_FILE;
-
-        /* If a non-empty path is given, use it */
-
-        if (*s)
-          file_path = string_copy(s);
-
-        /* If the path is empty, we want to use the first non-empty, non-
-        syslog item in LOG_FILE_PATH, if there is one, since the value of
-        log_file_path may have been set at runtime. If there is no such item,
-        use the ultimate default in the spool directory. */
-
-        else
-	  set_file_path();  /* Empty item in log_file_path */
-        }    /* First non-syslog item in log_file_path */
-      }      /* Scan of log_file_path */
-    }
+  if (*log_file_path) set_file_path(&multiple);
 
   /* If no modes have been selected, it is a major disaster */
 
@@ -1484,7 +1475,7 @@ if (opts)
 resulting in certain setup not having been done.  Hack this for now so we
 do not segfault; note that nondefault log locations will not work */
 
-if (!*file_path) set_file_path();
+if (!*file_path) set_file_path(NULL);
 
 open_log(&fd, lt_debug, tag_name);
 
@@ -1506,5 +1497,12 @@ debug_file = NULL;
 unlink_log(lt_debug);
 }
 
+void
+open_logs(const char *m)
+{
+set_file_path(NULL);
+open_log(&mainlogfd, lt_main, 0);
+open_log(&rejectlogfd, lt_reject, 0);
+}
 
 /* End of log.c */
