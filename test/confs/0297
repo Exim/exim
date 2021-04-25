@@ -17,7 +17,7 @@ begin routers
 
 r1:
   driver = redirect
-  data = ${bless:$local_part}
+  data = $local_part
   file_transport = ${if eq {$address_file}{/a/b/c}{tf1}{tf2}}
   directory_transport = ${if match{$address_file}{//\$}{td2}{td1}}
   user = CALLER

@@ -19,12 +19,10 @@ r1:
   domains = lists.test.ex
   local_part_suffix = -request
   local_part_suffix_optional
-  senders = ${if eq {$local_part_suffix}{-request}{*}\
-            {\
-            ${if exists {DIR/aux-fixed/TESTNUM/$local_part}\
-             {lsearch;${bless:DIR/aux-fixed/TESTNUM/$local_part}}{*}}\
-            }}
-  file = DIR/aux-fixed/TESTNUM/${bless:$local_part$local_part_suffix}
+  senders = ${if eq {$local_part_suffix}{-request} \
+	      {*} \
+	      {${lookup {$local_part} dsearch,ret=full {DIR/aux-fixed/TESTNUM} {$value}{*}}} }
+  file = ${lookup {$local_part$local_part_suffix} dsearch,ret=full {DIR/aux-fixed/TESTNUM} {$value}fail}
   forbid_pipe
   forbid_file
   one_time

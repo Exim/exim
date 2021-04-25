@@ -33,7 +33,7 @@ r1 router skipped: local_parts mismatch
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
 calling r2 router
-rda_interpret (file): 'TESTSUITE/non-exist/${bless:$local_part}'
+rda_interpret (file): 'TESTSUITE/non-exist/bbbb'
 expanded: 'TESTSUITE/non-exist/bbbb'
 TESTSUITE/non-exist/bbbb does not exist
 ignore_enotdir set => skip checking parent directory
@@ -61,7 +61,7 @@ forced failure in expansion of "${if eq {a}{b}{x}fail}" (address_data): decline 
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
 calling r1 router
-rda_interpret (file): 'TESTSUITE/non-exist/${bless:$local_part}'
+rda_interpret (file): 'TESTSUITE/non-exist/aaaa'
 expanded: 'TESTSUITE/non-exist/aaaa'
 TESTSUITE/non-exist/aaaa does not exist
 checking parent directory

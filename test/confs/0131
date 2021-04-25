@@ -25,7 +25,7 @@ forward:
   driver = redirect
   allow_filter
   no_check_local_user
-  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}
+  file = ${lookup {TESTNUM.$local_part} dsearch,ret=full {DIR/aux-fixed} {$value}fail}
   retry_use_local_part
   user = CALLER
   address_data = $address_data-forward

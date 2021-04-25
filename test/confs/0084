@@ -20,7 +20,7 @@ smart:
 
 forward:
   driver = redirect
-  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}
+  file = ${lookup {TESTNUM.$local_part} dsearch,ret=full {DIR/aux-fixed}}
   redirect_router = localuser
   require_files = DIR/aux-fixed/TESTNUM.$local_part
   retry_use_local_part

@@ -32,14 +32,13 @@ exeter_listr:
   no_check_local_user
   domains = listr.test.ex
   errors_to = ${local_part}-request@test.ex
-  file = DIR/aux-fixed/TESTNUM.list.${bless:$local_part}
+  file = ${lookup {TESTNUM.list.$local_part} dsearch,ret=full {DIR/aux-fixed} {$value}fail}
   forbid_file
   forbid_pipe
   one_time
   require_files = DIR/aux-fixed/TESTNUM.restrict.${local_part}
   retry_use_local_part
-  senders = ${if exists{DIR/aux-fixed/TESTNUM.restrict.${local_part}} \
-    {${bless:DIR/aux-fixed/TESTNUM.restrict.${local_part}}}{zzzz}}
+  senders = ${lookup {TESTNUM.restrict.$local_part} dsearch,ret=full {DIR/aux-fixed} {$value} {zzzz}}
   syntax_errors_to = ${local_part}-request@test.ex
 
 exeter_listf:

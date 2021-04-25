@@ -22,10 +22,14 @@ bounces:
 
 notallowed:
   driver = redirect
+  domains = no.test.ex
   allow_defer
   caseful_local_part
-  data = $local_part
-  domains = no.test.ex
+  data = ${extract {$local_part} \
+	  { file1=/a/b/c \
+	    pipe1=|/p/q/r \
+	    file2=DIR/test-mail/file \
+	    pipe2=|DIR/aux-fixed/showenv}}
   forbid_file
   forbid_pipe
   hide_child_in_errmsg
@@ -35,7 +39,11 @@ allowed:
   driver = redirect
   allow_defer
   caseful_local_part
-  data = ${bless:$local_part}
+  data = ${extract {$local_part} \
+	  { file1=/a/b/c \
+	    pipe1=|/p/q/r \
+	    file2=DIR/test-mail/file \
+	    pipe2=|DIR/aux-fixed/showenv}}
   file_transport = address_file
   hide_child_in_errmsg
   pipe_transport = address_pipe

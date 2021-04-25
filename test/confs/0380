@@ -25,13 +25,13 @@ r0:
 r1:
   driver = redirect
   local_parts = aaaa
-  file = DIR/non-exist/${bless:$local_part}
+  file = DIR/non-exist/aaaa
 
 r2:
   driver = redirect
   local_parts = bbbb
   ignore_enotdir
-  file = DIR/non-exist/${bless:$local_part}
+  file = DIR/non-exist/bbbb
 
 r3:
   driver = accept

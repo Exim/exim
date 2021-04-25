@@ -39,7 +39,7 @@ data3:
 acl_rcpt:
   warn	 set acl_m_1 = ${acl {data}}
   accept endpass
-         acl = ${bless:${tr{$local_part}{:}{\n}}}
+         acl = ${tr{$local_part}{:}{\n}}
   deny   message = this message should not occur
 
 

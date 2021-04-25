@@ -4106,7 +4106,7 @@ if (is_tainted(acl_text) && !f.running_in_test_harness)
   *log_msgptr = US"internal configuration error";
   return ERROR;
   }
-#endi
+#endif
 
 /* Handle the case of a string that does not contain any spaces. Look for a
 named ACL among those read from the configuration, or a previously read file.

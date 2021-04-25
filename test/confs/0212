@@ -58,7 +58,7 @@ alias:
 forward:
   driver = redirect
   no_check_local_user
-  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}.forward
+  file = ${lookup {TESTNUM.$local_part.forward} dsearch,ret=full {DIR/aux-fixed} {$value}fail}
   retry_use_local_part
 
 all:

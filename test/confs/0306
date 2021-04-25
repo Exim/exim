@@ -27,14 +27,15 @@ r1:
   driver = redirect
   domains = lists.test.ex
   local_part_suffix = -request
-  file = DIR/aux-fixed/TESTNUM/${bless:$local_part$local_part_suffix}
+  file = ${lookup {$local_part$local_part_suffix} dsearch,ret=full {DIR/aux-fixed/TESTNUM} {$value}fail}
 
 r2:
   driver = redirect
   domains = lists.test.ex
-  senders = ${if exists {DIR/aux-fixed/TESTNUM/$local_part}\
-             {lsearch;${bless:DIR/aux-fixed/TESTNUM/$local_part}}{*}}
-  file = DIR/aux-fixed/TESTNUM/${bless:$local_part}
+  senders = ${if exists {DIR/aux-fixed/TESTNUM/$local_part} \
+             {lsearch;${lookup {$local_part} dsearch,ret=full {DIR/aux-fixed/TESTNUM}}} \
+	     {*}}
+  file = ${lookup {$local_part} dsearch,ret=full {DIR/aux-fixed/TESTNUM} {$value}fail}
   forbid_pipe
   forbid_file
   one_time

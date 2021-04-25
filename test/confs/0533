@@ -16,7 +16,7 @@ r1:
   driver = redirect
   local_part_prefix = file-
   local_part_suffix = =*
-  data = DIR/test-mail/${substr_1:$local_part_suffix}
+  data = DIR/test-mail/${extract {${substr_1:$local_part_suffix}} {mbox=mbox mbox2=mbox2}}
   file_transport = t1
 
 r2:
@@ -24,7 +24,7 @@ r2:
   local_part_prefix = pipe-
   local_part_suffix = =*
   caseful_local_part = true
-  data = |${bless:${substr_1:$local_part_suffix}}
+  data = |DIR/bin/${extract {$local_part} {userx=iefbr14 usery=iefbr14 userz=../bin/iefbr14}}
   pipe_transport = t2
 
 

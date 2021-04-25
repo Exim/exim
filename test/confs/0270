@@ -30,14 +30,14 @@ r1:
   skip_syntax_errors
   local_parts = ^list
   syntax_errors_to = postmaster@test.ex
-  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}
+  file = ${lookup {TESTNUM.$local_part} dsearch,ret=full {DIR/aux-fixed} {$value}fail}
 
 r1a:
   driver = redirect
   skip_syntax_errors
   local_parts = ^nmlist
   syntax_errors_to = postmaster@test.ex
-  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}
+  file = ${lookup {TESTNUM.$local_part} dsearch,ret=full {DIR/aux-fixed} {$value}fail}
   no_more
 
 r2:
@@ -47,7 +47,7 @@ r2:
   syntax_errors_to = postmaster@test.ex
   syntax_errors_text = "There's an error in your filter file.\n\
                         The file has been ignored."
-  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}
+  file = ${lookup {TESTNUM.$local_part} dsearch,ret=full {DIR/aux-fixed} {$value}fail}
   allow_filter
   router_home_directory = DIR/
   user = CALLER

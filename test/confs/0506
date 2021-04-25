@@ -20,7 +20,7 @@ r1:
   user = EXIMUSER
   ALLOW
   FORBID
-  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}
+  file = ${lookup {TESTNUM.$local_part} dsearch,ret=full {DIR/aux-fixed} {$value}fail}
 
 
 # ----- Retry -----
