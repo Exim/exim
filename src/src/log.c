@@ -706,7 +706,7 @@ set_file_path(BOOL *multiple)
 {
 uschar *s;
 int sep = ':';              /* Fixed separator - outside use */
-uschar *ss = *log_file_path ? log_file_path : LOG_FILE_PATH;
+const uschar *ss = *log_file_path ? log_file_path : US LOG_FILE_PATH;
 
 logging_mode = 0;
 while ((s = string_nextinlist(&ss, &sep, log_buffer, LOG_BUFFER_SIZE)))
@@ -1498,7 +1498,7 @@ unlink_log(lt_debug);
 }
 
 void
-open_logs(const char *m)
+open_logs(void)
 {
 set_file_path(NULL);
 open_log(&mainlogfd, lt_main, 0);

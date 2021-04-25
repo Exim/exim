@@ -175,7 +175,7 @@ Returns:     OK, FAIL, or DEFER
 */
 
 void
-openlogs();
+open_logs(void);
 
 static int
 appendfile_transport_setup(transport_instance *tblock, address_item *addrlist,
@@ -192,7 +192,7 @@ uid = uid;
 gid = gid;
 
 /* we can't wait until we're not privileged anymore */
-open_logs("appendfile");
+open_logs();
 
 if (ob->expand_maildir_use_size_file)
 	ob->maildir_use_size_file = expand_check_condition(ob->expand_maildir_use_size_file,
