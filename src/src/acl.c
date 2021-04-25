@@ -4088,6 +4088,26 @@ while (isspace(*ss)) ss++;
 
 acl_text = ss;
 
+#ifdef notyet_taintwarn
+if (  !f.running_in_test_harness
+   &&  is_tainted2(acl_text, LOG_MAIN|LOG_PANIC,
+			  "attempt to use tainted ACL text \"%s\"", acl_text))
+  {
+  /* Avoid leaking info to an attacker */
+  *log_msgptr = US"internal configuration error";
+  return ERROR;
+  }
+#else
+if (is_tainted(acl_text) && !f.running_in_test_harness)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "attempt to use tainted ACL text \"%s\"", acl_text);
+  /* Avoid leaking info to an attacker */
+  *log_msgptr = US"internal configuration error";
+  return ERROR;
+  }
+#endi
+
 /* Handle the case of a string that does not contain any spaces. Look for a
 named ACL among those read from the configuration, or a previously read file.
 It is possible that the pointer to the ACL is NULL if the configuration
@@ -4111,14 +4131,6 @@ if (Ustrchr(ss, ' ') == NULL)
   else if (*ss == '/')
     {
     struct stat statbuf;
-    if (is_tainted(ss))
-      {
-      log_write(0, LOG_MAIN|LOG_PANIC,
-	"attempt to open tainted ACL file name \"%s\"", ss);
-      /* Avoid leaking info to an attacker */
-      *log_msgptr = US"internal configuration error";
-      return ERROR;
-      }
     if ((fd = Uopen(ss, O_RDONLY, 0)) < 0)
       {
       *log_msgptr = string_sprintf("failed to open ACL file \"%s\": %s", ss,

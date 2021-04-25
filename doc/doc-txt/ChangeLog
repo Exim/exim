@@ -241,6 +241,10 @@ JH/50 Bug 2672: QT elements in log lines, unless disabled, now exclude the
       The historical behaviour can be restored by disabling (a new) log_selector
       "queue_time_exclusive".
 
+JH/51 Taint-check ACL line.  Previously, only filenames (for out-of-line ACL
+      content) were specifically tested for.  Now, also cover epxansions
+      rerulting in acl names and inline ACL content.
+
 
 
 Exim version 4.94
