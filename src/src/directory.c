@@ -44,8 +44,10 @@ uschar c = 1;
 struct stat statbuf;
 uschar * path;
 
+/* does not work with 4.94
 if (is_tainted2(name, LOG_MAIN|LOG_PANIC, "Tainted path '%s' for new directory", name))
   { p = US"create"; path = US name; errno = EACCES; goto bad; }
+*/
 
 if (parent)
   {
