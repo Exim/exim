@@ -488,18 +488,34 @@ while (*s)
 
   /* There isn't much we can do for syntactic disasters at this stage.
   Pro tem (possibly for ever) ignore them.
-  If we got nothing, they there was any sort of error: non-parsable address,
+  If we got nothing, then there was any sort of error: non-parsable address,
   empty address, overlong addres. Sometimes the result matters, sometimes not.
   It seems this function is called for *any* header we see. */
 
 
   if (!recipient)
     {
+#if 0
+    /* FIXME:
+    This was(!) an attempt tho handle empty rewrits, but seemingly it
+    needs more effort to decide if the returned empty address matters.
+    Now this will now break test 471 again.
+
+    471 fails now because it uses an overlong address, for wich parse_extract_address()
+    returns an empty address (which was not expected).
+
+    Checking the output and exit if rewrite_rules or routed_old are present
+    isn't a good idea either: It's enough to have *any* rewrite rule
+    in the configuration plus "To: undisclosed recpients:;" to exit(), which
+    is not what we want.
+    */
+
     if (rewrite_rules || routed_old)
       {
       log_write(0, LOG_MAIN, "rewrite: %s", errmess);
       exim_exit(EXIT_FAILURE);
       }
+#endif
     loop_reset_point = store_reset(loop_reset_point);
     continue;
     }
