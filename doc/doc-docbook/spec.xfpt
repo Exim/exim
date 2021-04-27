@@ -38141,7 +38141,7 @@ implying the use of a default path.
 When Exim encounters an empty item in the list, it searches the list defined by
 LOG_FILE_PATH, and uses the first item it finds that is neither empty nor
 &"syslog"&. This means that an empty item in &%log_file_path%& can be used to
-mean &"use the path specified at build time"&. It no such item exists, log
+mean &"use the path specified at build time"&. If no such item exists, log
 files are written in the &_log_& subdirectory of the spool directory. This is
 equivalent to the setting:
 .code
