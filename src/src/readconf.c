@@ -419,7 +419,7 @@ options_from_list(optionlist_config, nelem(optionlist_config), US"MAIN", NULL);
 void
 options_auths(void)
 {
-uschar buf[64];
+uschar buf[EXIM_DRIVERNAME_MAX];
 
 options_from_list(optionlist_auths, optionlist_auths_size, US"AUTHENTICATORS", NULL);
 
@@ -436,7 +436,7 @@ for (struct auth_info * ai = auths_available; ai->driver_name[0]; ai++)
 void
 options_logging(void)
 {
-uschar buf[64];
+uschar buf[EXIM_DRIVERNAME_MAX];
 
 for (bit_table * bp = log_options; bp < log_options + log_options_count; bp++)
   {
@@ -681,7 +681,7 @@ Returns:       FALSE iff fatal error
 BOOL
 macro_read_assignment(uschar *s)
 {
-uschar name[64];
+uschar name[EXIM_DRIVERNAME_MAX];
 int namelen = 0;
 BOOL redef = FALSE;
 macro_item *m;
@@ -1175,15 +1175,25 @@ uschar *
 readconf_readname(uschar *name, int len, uschar *s)
 {
 int p = 0;
+BOOL broken = FALSE;
 
 if (isalpha(Uskip_whitespace(&s)))
   while (isalnum(*s) || *s == '_')
     {
     if (p < len-1) name[p++] = *s;
+    else {
+      broken = TRUE;
+      break;
+    }
     s++;
     }
 
 name[p] = 0;
+if (broken) {
+  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+            "exim item name too long (>%d), unable to use \"%s\" (truncated)",
+            len, name);
+}
 Uskip_whitespace(&s);
 return s;
 }
@@ -1308,7 +1318,7 @@ Returns:    pointer to an option entry, or NULL if not found
 */
 
 static optionlist *
-find_option(uschar *name, optionlist *ol, int last)
+find_option(const uschar *name, optionlist *ol, int last)
 {
 int first = 0;
 while (last > first)
@@ -1347,10 +1357,10 @@ Returns:        a pointer to the boolean flag.
 */
 
 static BOOL *
-get_set_flag(uschar *name, optionlist *oltop, int last, void *data_block)
+get_set_flag(const uschar *name, optionlist *oltop, int last, void *data_block)
 {
 optionlist *ol;
-uschar name2[64];
+uschar name2[EXIM_DRIVERNAME_MAX];
 sprintf(CS name2, "*set_%.50s", name);
 if (!(ol = find_option(name2, oltop, last)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
@@ -1623,8 +1633,8 @@ uschar *inttype = US"";
 uschar *sptr;
 uschar *s = buffer;
 uschar **str_target;
-uschar name[64];
-uschar name2[64];
+uschar name[EXIM_DRIVERNAME_MAX];
+uschar name2[EXIM_DRIVERNAME_MAX];
 
 /* There may be leading spaces; thereafter, we expect an option name starting
 with a letter. */
@@ -2083,7 +2093,7 @@ switch (type)
   case opt_bool_set:
   if (*s != 0)
     {
-    s = readconf_readname(name2, 64, s);
+    s = readconf_readname(name2, EXIM_DRIVERNAME_MAX, s);
     if (strcmpic(name2, US"true") == 0 || strcmpic(name2, US"yes") == 0)
       boolvalue = TRUE;
     else if (strcmpic(name2, US"false") == 0 || strcmpic(name2, US"no") == 0)
@@ -2420,7 +2430,7 @@ Returns:         boolean success
 */
 
 static BOOL
-print_ol(optionlist *ol, uschar *name, void *options_block,
+print_ol(optionlist *ol, const uschar *name, void *options_block,
   optionlist *oltop, int last, BOOL no_labels)
 {
 struct passwd *pw;
@@ -2430,7 +2440,7 @@ void *value;
 uid_t *uidlist;
 gid_t *gidlist;
 uschar *s;
-uschar name2[64];
+uschar name2[EXIM_DRIVERNAME_MAX];
 
 if (!ol)
   {
@@ -2730,7 +2740,7 @@ Returns:      Boolean success
 */
 
 BOOL
-readconf_print(uschar *name, uschar *type, BOOL no_labels)
+readconf_print(const uschar *name, uschar *type, BOOL no_labels)
 {
 BOOL names_only = FALSE;
 optionlist *ol2 = NULL;
@@ -2869,7 +2879,7 @@ if (!type)
 
   else
     return print_ol(find_option(name,
-      optionlist_config, nelem(optionlist_config)),
+		      optionlist_config, nelem(optionlist_config)),
       name, NULL, optionlist_config, nelem(optionlist_config), no_labels);
   }
 
@@ -3701,7 +3711,7 @@ uschar *buffer;
 
 while ((buffer = get_config_line()))
   {
-  uschar name[64];
+  uschar name[EXIM_DRIVERNAME_MAX];
   uschar *s;
 
   /* Read the first name on the line and test for the start of a new driver. A
@@ -4229,7 +4239,7 @@ acl_line = get_config_line();
 
 while(acl_line)
   {
-  uschar name[64];
+  uschar name[EXIM_DRIVERNAME_MAX];
   tree_node *node;
   uschar *error;
 

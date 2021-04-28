@@ -489,6 +489,13 @@ if (recipients_count >= recipients_list_max)
   {
   recipient_item *oldlist = recipients_list;
   int oldmax = recipients_list_max;
+
+  const int safe_recipients_limit = INT_MAX / 2 / sizeof(recipient_item);
+  if (recipients_list_max < 0 || recipients_list_max >= safe_recipients_limit)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Too many recipients: %d", recipients_list_max);
+    }
+
   recipients_list_max = recipients_list_max ? 2*recipients_list_max : 50;
   recipients_list = store_get(recipients_list_max * sizeof(recipient_item), FALSE);
   if (oldlist != NULL)
@@ -2123,7 +2130,8 @@ OVERSIZE:
         if (newsender)
           {
           if (domain == 0 && newsender[0] != 0)
-            newsender = rewrite_address_qualify(newsender, FALSE);
+	    /* deconst ok as newsender was not const */
+            newsender = US rewrite_address_qualify(newsender, FALSE);
 
           if (filter_test != FTEST_NONE || receive_check_set_sender(newsender))
             {
@@ -2503,7 +2511,7 @@ if (extract_recip)
     {
     while (recipients_count-- > 0)
       {
-      uschar *s = rewrite_address(recipients_list[recipients_count].address,
+      const uschar * s = rewrite_address(recipients_list[recipients_count].address,
         TRUE, TRUE, global_rewrite_rules, rewrite_existflags);
       tree_add_nonrecipient(s);
       }
@@ -2554,11 +2562,12 @@ if (extract_recip)
           &domain, FALSE);
 
 #ifdef SUPPORT_I18N
-	if (string_is_utf8(recipient))
-	  message_smtputf8 = TRUE;
-	else
-	  allow_utf8_domains = b;
+        if (recipient)
+          if (string_is_utf8(recipient)) message_smtputf8 = TRUE;
+          else allow_utf8_domains = b;
 	}
+#else
+        ;
 #endif
 
         /* Keep a list of all the bad addresses so we can send a single
@@ -2790,8 +2799,8 @@ recipients will get here only if the conditions were right (allow_unqualified_
 recipient is TRUE). */
 
 for (int i = 0; i < recipients_count; i++)
-  recipients_list[i].address =
-    rewrite_address(recipients_list[i].address, TRUE, TRUE,
+  recipients_list[i].address =	/* deconst ok as src was not cont */
+    US rewrite_address(recipients_list[i].address, TRUE, TRUE,
       global_rewrite_rules, rewrite_existflags);
 
 /* If there is no From: header, generate one for local (without
@@ -2966,7 +2975,8 @@ it has already been rewritten as part of verification for SMTP input. */
 
 if (global_rewrite_rules && !sender_address_unrewritten && *sender_address)
   {
-  sender_address = rewrite_address(sender_address, FALSE, TRUE,
+  /* deconst ok as src was not const */
+  sender_address = US rewrite_address(sender_address, FALSE, TRUE,
     global_rewrite_rules, rewrite_existflags);
   DEBUG(D_receive|D_rewrite)
     debug_printf("rewritten sender = %s\n", sender_address);

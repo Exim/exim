@@ -10,9 +10,9 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept logwrite = rcpt acl: macro: _DKIM_SIGN_HEADERS
+acl_smtp_rcpt = accept logwrite = rcpt_acl: macro: _DKIM_SIGN_HEADERS
 acl_smtp_dkim = accept logwrite = dkim_acl: signer: $dkim_cur_signer bits: $dkim_key_length h=$dkim_headernames
-acl_smtp_data = accept logwrite = data acl: dkim status $dkim_verify_status
+acl_smtp_data = accept logwrite = data_acl: dkim status $dkim_verify_status
 
 dkim_verify_signers = $dkim_signers
 dkim_verify_min_keysizes = rsa=512 ed25519=250

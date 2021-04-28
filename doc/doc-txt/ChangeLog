@@ -163,6 +163,63 @@ JH/44 Bug 2701: Fix list-expansion of dns_ipv4_lookup.  Previously, it did
       dnssec_require_domains, dnssec_request_domains, srv_fail_domains,
       mx_fail_domains.
 
+HS/01 Enforce absolute PID file path name.
+
+HS/02 Handle SIGINT as we handle SIGTERM: terminate the Exim process.
+
+PP/01 Add a too-many-bad-recipients guard to the default config's RCPT ACL.
+
+PP/02 Bug 2643: Correct TLS DH constants.
+      A missing NUL termination in our code-generation tool had led to some
+      incorrect Diffie-Hellman constants in the Exim source.
+      Reported by kylon94, code-gen tool fix by Simon Arlott.
+
+PP/03 Impose security length checks on various command-line options.
+      Fixes CVE-2020-SPRSS reported by Qualys.
+
+PP/04 Fix Linux security issue CVE-2020-SLCWD and guard against PATH_MAX
+      better.  Reported by Qualys.
+
+PP/05 Fix security issue CVE-2020-PFPSN and guard against cmdline invoker
+      providing a particularly obnoxious sender full name.
+      Reported by Qualys.
+
+PP/06 Fix CVE-2020-28016 (PFPZA): Heap out-of-bounds write in parse_fix_phrase()
+
+PP/07 Refuse to allocate too little memory, block negative/zero allocations.
+      Security guard.
+
+PP/08 Change default for recipients_max from unlimited to 50,000.
+
+PP/09 Fix security issue with too many recipients on a message (to remove a
+      known security problem if someone does set recipients_max to unlimited,
+      or if local additions add to the recipient list).
+      Fixes CVE-2020-RCPTL reported by Qualys.
+
+PP/10 Fix security issue in SMTP verb option parsing
+      Fixes CVE-2020-EXOPT reported by Qualys.
+
+PP/11 Fix security issue in BDAT state confusion.
+      Ensure we reset known-good where we know we need to not be reading BDAT
+      data, as a general case fix, and move the places where we switch to BDAT
+      mode until after various protocol state checks.
+      Fixes CVE-2020-BDATA reported by Qualys.
+
+HS/03 Die on "/../" in msglog file names
+
+QS/01 Creation of (database) files in $spool_dir: only uid=0 or the uid of
+      the Exim runtime user are allowed to create files.
+
+QS/02 PID file creation/deletion: only possible if uid=0 or uid is the Exim
+      runtime user.
+
+QS/03 When reading the output from interpreted forward files we do not
+      pass the pipe between the parent and the interpreting process to
+      executed child processes (if any).
+
+QS/04 Always die if requested from internal logging, even is logging is
+      disabled.
+
 
 Exim version 4.94
 -----------------
