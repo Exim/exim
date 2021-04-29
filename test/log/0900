@@ -10,3 +10,4 @@
 2017-07-30 18:51:05.712 10HmbB-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
 2017-07-30 18:51:05.712 H=(tester) [127.0.0.1] F=<someone@some.domain> rejected RCPT <dummy@reject.ex>: relay not permitted
 2017-07-30 18:51:05.712 rejected from <someone@some.domain> H=(tester) [127.0.0.1]: Non-CRLF-terminated header, under CHUNKING: message abandoned
+2017-07-30 18:51:05.712 10HmbC-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
