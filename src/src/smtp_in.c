@@ -843,6 +843,7 @@ int
 bdat_ungetc(int ch)
 {
 chunking_data_left++;
+bdat_push_receive_functions();  /* we're not done yet, calling push is safe, because it checks the state before pushing anything */
 return lwr_receive_ungetc(ch);
 }
 
