@@ -843,6 +843,7 @@ int
 bdat_ungetc(int ch)
 {
 chunking_data_left++;
+bdat_push_receive_functions();  /* we're not done yet, calling push is safe, because it checks the state before pushing anything */
 return lwr_receive_ungetc(ch);
 }
 
@@ -2477,7 +2478,7 @@ TCP_SYN_RCV (as of 12.1) so no idea about data-use. */
 
 if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_FASTOPEN, &is_fastopen, &len) == 0)
   {
-  if (is_fastopen) 
+  if (is_fastopen)
     {
     DEBUG(D_receive)
       debug_printf("TFO mode connection (TCP_FASTOPEN getsockopt)\n");
@@ -5859,7 +5860,7 @@ while (done <= 0)
 	/* If not serializing, do the exec right away. Otherwise, fork down
 	into another process. */
 
-	if (  !smtp_etrn_serialize 
+	if (  !smtp_etrn_serialize
 	   || (pid = exim_fork(US"etrn-serialised-command")) == 0)
 	  {
 	  DEBUG(D_exec) debug_print_argv(argv);
