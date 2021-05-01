@@ -1044,38 +1044,6 @@ exim_exit(EXIT_SUCCESS, US"");
 }
 
 
-/* Called by the daemon; exec a child to get the pid file deleted
-since we may require privs for the containing directory */
-
-static void
-daemon_die(void)
-{
-int pid;
-
-DEBUG(D_any) debug_printf("SIGTERM/SIGINT seen\n");
-#if defined(SUPPORT_TLS) && (defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT))
-tls_watch_invalidate();
-#endif
-
-if (f.running_in_test_harness || write_pid)
-  {
-  if ((pid = fork()) == 0)
-    {
-    if (override_pid_file_path)
-      (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, 3,
-	"-oP", override_pid_file_path, "-oPX");
-    else
-      (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, 1, "-oPX");
-
-    /* Control never returns here. */
-    }
-  if (pid > 0)
-    child_close(pid, 1);
-  }
-exim_exit(EXIT_SUCCESS, US"");
-}
-
-
 
 /*************************************************
 *              Exim Daemon Mainline              *
