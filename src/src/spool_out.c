@@ -108,6 +108,18 @@ return fd;
 *          Write the header spool file           *
 *************************************************/
 
+static const uschar *
+zap_newlines(const uschar *s)
+{
+uschar *z, *p;
+
+if (Ustrchr(s, '\n') == NULL) return s;
+
+p = z = string_copy(s);
+while ((p = Ustrchr(p, '\n')) != NULL) *p++ = ' ';
+return z;
+}
+
 /* Returns the size of the file for success; zero for failure. The file is
 written under a temporary name, and then renamed. It's done this way so that it
 works with re-writing the file on message deferral as well as for the initial
@@ -210,7 +222,7 @@ if (body_zerocount > 0) fprintf(fp, "-body_zerocount %d\n", body_zerocount);
 if (authenticated_id)
   fprintf(fp, "-auth_id %s\n", authenticated_id);
 if (authenticated_sender)
-  fprintf(fp, "-auth_sender %s\n", authenticated_sender);
+  fprintf(fp, "-auth_sender %s\n", zap_newlines(authenticated_sender));
 
 if (f.allow_unqualified_recipient) fprintf(fp, "-allow_unqualified_recipient\n");
 if (f.allow_unqualified_sender) fprintf(fp, "-allow_unqualified_sender\n");
@@ -283,19 +295,20 @@ fprintf(fp, "%d\n", recipients_count);
 for (i = 0; i < recipients_count; i++)
   {
   recipient_item *r = recipients_list + i;
+  const uschar *address = zap_newlines(r->address);
 
   DEBUG(D_deliver) debug_printf("DSN: Flags :%d\n", r->dsn_flags);
 
   if (r->pno < 0 && r->errors_to == NULL && r->dsn_flags == 0)
-    fprintf(fp, "%s\n", r->address);
+    fprintf(fp, "%s\n", address);
   else
     {
-    uschar * errors_to = r->errors_to ? r->errors_to : US"";
+    const uschar * errors_to = r->errors_to ? zap_newlines(r->errors_to) : US"";
     /* for DSN SUPPORT extend exim 4 spool in a compatible way by
     adding new values upfront and add flag 0x02 */
     uschar * orcpt = r->orcpt ? r->orcpt : US"";
 
-    fprintf(fp, "%s %s %d,%d %s %d,%d#3\n", r->address, orcpt, Ustrlen(orcpt),
+    fprintf(fp, "%s %s %d,%d %s %d,%d#3\n", address, orcpt, Ustrlen(orcpt),
       r->dsn_flags, errors_to, Ustrlen(errors_to), r->pno);
     }
 

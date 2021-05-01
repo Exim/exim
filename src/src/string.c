@@ -1147,6 +1147,18 @@ To try to keep things reasonable, we use increments whose size depends on the
 existing length of the string. */
 
 unsigned inc = oldsize < 4096 ? 127 : 1023;
+
+if (g->ptr < 0 || g->ptr > g->size || g->size >= INT_MAX/2)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+      "internal error in gstring_grow (ptr %d size %d)", g->ptr, g->size);
+
+if (count <= 0) return;
+
+if (count >= INT_MAX/2 - g->ptr)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+      "internal error in gstring_grow (ptr %d count %d)", g->ptr, count);
+
+
 g->size = ((p + count + inc) & ~inc) + 1;
 
 /* Try to extend an existing allocation. If the result of calling
@@ -1194,6 +1206,10 @@ string_catn(gstring * g, const uschar *s, int count)
 {
 int p;
 
+if (count < 0)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+      "internal error in string_catn (count %d)", count);
+
 if (!g)
   {
   unsigned inc = count < 4096 ? 127 : 1023;
@@ -1201,8 +1217,13 @@ if (!g)
   g = string_get(size);
   }
 
+if (g->ptr < 0 || g->ptr > g->size)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+      "internal error in string_catn (ptr %d size %d)", g->ptr, g->size);
+
 p = g->ptr;
-if (p + count >= g->size)
+
+if (count >= g->size - p)
   gstring_grow(g, p, count);
 
 /* Because we always specify the exact number of characters to copy, we can

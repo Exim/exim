@@ -602,6 +602,10 @@ if (n > 0)
 #endif
 }
 
+/* Forward declarations */
+static inline void bdat_push_receive_functions(void);
+static inline void bdat_pop_receive_functions(void);
+
 
 /* Get a byte from the smtp input, in CHUNKING mode.  Handle ack of the
 previous BDAT chunk and getting new ones when we run out.  Uses the
@@ -634,9 +638,7 @@ for(;;)
   if (chunking_data_left > 0)
     return lwr_receive_getc(chunking_data_left--);
 
-  receive_getc = lwr_receive_getc;
-  receive_getbuf = lwr_receive_getbuf;
-  receive_ungetc = lwr_receive_ungetc;
+  bdat_pop_receive_functions();
 #ifndef DISABLE_DKIM
   dkim_save = dkim_collect_input;
   dkim_collect_input = 0;
@@ -740,9 +742,7 @@ next_cmd:
 	  goto repeat_until_rset;
 	  }
 
-      receive_getc = bdat_getc;
-      receive_getbuf = bdat_getbuf;	/* r~getbuf is never actually used */
-      receive_ungetc = bdat_ungetc;
+      bdat_push_receive_functions();
 #ifndef DISABLE_DKIM
       dkim_collect_input = dkim_save;
 #endif
@@ -775,9 +775,7 @@ while (chunking_data_left)
   if (!bdat_getbuf(&n)) break;
   }
 
-receive_getc = lwr_receive_getc;
-receive_getbuf = lwr_receive_getbuf;
-receive_ungetc = lwr_receive_ungetc;
+bdat_pop_receive_functions();
 
 if (chunking_state != CHUNKING_LAST)
   {
@@ -787,6 +785,45 @@ if (chunking_state != CHUNKING_LAST)
 }
 
 
+static inline void
+bdat_push_receive_functions(void)
+{
+/* push the current receive_* function on the "stack", and
+replace them by bdat_getc(), which in turn will use the lwr_receive_*
+functions to do the dirty work. */
+if (lwr_receive_getc == NULL)
+  {
+  lwr_receive_getc = receive_getc;
+  lwr_receive_getbuf = receive_getbuf;
+  lwr_receive_ungetc = receive_ungetc;
+  }
+else
+  {
+  DEBUG(D_receive) debug_printf("chunking double-push receive functions\n");
+  }
+
+receive_getc = bdat_getc;
+receive_getbuf = bdat_getbuf;
+receive_ungetc = bdat_ungetc;
+}
+
+static inline void
+bdat_pop_receive_functions(void)
+{
+if (lwr_receive_getc == NULL)
+  {
+  DEBUG(D_receive) debug_printf("chunking double-pop receive functions\n");
+  return;
+  }
+
+receive_getc = lwr_receive_getc;
+receive_getbuf = lwr_receive_getbuf;
+receive_ungetc = lwr_receive_ungetc;
+
+lwr_receive_getc = NULL;
+lwr_receive_getbuf = NULL;
+lwr_receive_ungetc = NULL;
+}
 
 
 /*************************************************
@@ -805,6 +842,9 @@ Returns:       the character
 int
 smtp_ungetc(int ch)
 {
+if (smtp_inptr <= smtp_inbuffer)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "buffer underflow in smtp_ungetc");
+
 *--smtp_inptr = ch;
 return ch;
 }
@@ -814,6 +854,7 @@ int
 bdat_ungetc(int ch)
 {
 chunking_data_left++;
+bdat_push_receive_functions();  /* we're not done yet, calling push is safe, because it checks the state before pushing anything */
 return lwr_receive_ungetc(ch);
 }
 
@@ -1984,29 +2025,35 @@ static BOOL
 extract_option(uschar **name, uschar **value)
 {
 uschar *n;
-uschar *v = smtp_cmd_data + Ustrlen(smtp_cmd_data) - 1;
-while (isspace(*v)) v--;
+uschar *v;
+if (Ustrlen(smtp_cmd_data) <= 0) return FALSE;
+v = smtp_cmd_data + Ustrlen(smtp_cmd_data) - 1;
+while (v > smtp_cmd_data && isspace(*v)) v--;
 v[1] = 0;
+
 while (v > smtp_cmd_data && *v != '=' && !isspace(*v))
   {
   /* Take care to not stop at a space embedded in a quoted local-part */
-
-  if (*v == '"') do v--; while (*v != '"' && v > smtp_cmd_data+1);
+  if (*v == '"')
+    {
+    do v--; while (v > smtp_cmd_data && *v != '"');
+    if (v <= smtp_cmd_data) return FALSE;
+    }
   v--;
   }
+if (v <= smtp_cmd_data) return FALSE;
 
 n = v;
 if (*v == '=')
   {
-  while(isalpha(n[-1])) n--;
+  while (n > smtp_cmd_data && isalpha(n[-1])) n--;
   /* RFC says SP, but TAB seen in wild and other major MTAs accept it */
-  if (!isspace(n[-1])) return FALSE;
+  if (n <= smtp_cmd_data || !isspace(n[-1])) return FALSE;
   n[-1] = 0;
   }
 else
   {
   n++;
-  if (v == smtp_cmd_data) return FALSE;
   }
 *v++ = 0;
 *name = n;
@@ -4984,6 +5031,8 @@ while (done <= 0)
 
     case RCPT_CMD:
       HAD(SCH_RCPT);
+      if (rcpt_count < 0 || rcpt_count >= INT_MAX/2)
+        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Too many recipients: %d", rcpt_count);
       rcpt_count++;
       was_rcpt = fl.rcpt_in_progress = TRUE;
 
@@ -5322,10 +5371,10 @@ while (done <= 0)
 	  }
 	if (f.smtp_in_pipelining_advertised && last_was_rcpt)
 	  smtp_printf("503 Valid RCPT command must precede %s\r\n", FALSE,
-	    smtp_names[smtp_connection_had[smtp_ch_index-1]]);
+	    smtp_names[smtp_connection_had[SMTP_HBUFF_PREV(smtp_ch_index)]]);
 	else
 	  done = synprot_error(L_smtp_protocol_error, 503, NULL,
-	    smtp_connection_had[smtp_ch_index-1] == SCH_DATA
+	    smtp_connection_had[SMTP_HBUFF_PREV(smtp_ch_index)] == SCH_DATA
 	    ? US"valid RCPT command must precede DATA"
 	    : US"valid RCPT command must precede BDAT");
 

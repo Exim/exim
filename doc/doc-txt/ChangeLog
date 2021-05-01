@@ -11,9 +11,20 @@ JH/42 Bug 2545: Fix CHUNKING for all RCPT commands rejected.  Previously we
       carried on and emitted a BDAT command, even when PIPELINING was not
       active.
 
+QS/01 Creation of (database) files in $spool_dir: only uid=0 or the uid of
+      the Exim runtime user are allowed to create files.
 
 Exim version 4.92.2
 -------------------
+QS/02 PID file creation/deletion: only possible if uid=0 or uid is the Exim
+      runtime user.
+
+QS/01 Creation of (database) files in $spool_dir: only uid=0 or the euid of
+      the Exim runtime user are allowed to create files.
+
+QS/02 PID file creation/deletion: only possible if uid=0 or uid is the Exim
+      runtime user.
+
 
 HS/01 Handle trailing backslash gracefully. (CVE-2019-15846)
 

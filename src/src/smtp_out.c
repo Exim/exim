@@ -389,7 +389,7 @@ if (ob->socks_proxy)
   {
   int sock = socks_sock_connect(sc->host, sc->host_af, port, sc->interface,
 				sc->tblock, ob->connect_timeout);
-  
+
   if (sock >= 0)
     {
     if (early_data && early_data->data && early_data->len)
@@ -590,7 +590,7 @@ Arguments:
   timeout   the timeout to use when reading a packet
 
 Returns:    length of a line that has been put in the buffer
-            -1 otherwise, with errno set
+            -1 otherwise, with errno set, and inblock->ptr adjusted
 */
 
 static int
@@ -631,6 +631,7 @@ for (;;)
       {
       *p = 0;                     /* Leave malformed line for error message */
       errno = ERRNO_SMTPFORMAT;
+      inblock->ptr = ptr;
       return -1;
       }
     }
@@ -656,6 +657,7 @@ for (;;)
 /* Get here if there has been some kind of recv() error; errno is set, but we
 ensure that the result buffer is empty before returning. */
 
+inblock->ptr = inblock->ptrend = inblock->buffer;
 *buffer = 0;
 return -1;
 }

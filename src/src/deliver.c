@@ -331,6 +331,10 @@ open_msglog_file(uschar *filename, int mode, uschar **error)
 {
 int fd, i;
 
+if (Ustrstr(filename, US"/../"))
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+      "Attempt to open msglog file path with upward-traversal: '%s'", filename);
+
 for (i = 2; i > 0; i--)
   {
   fd = Uopen(filename,

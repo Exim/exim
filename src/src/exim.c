@@ -227,18 +227,8 @@ int fd;
 
 os_restarting_signal(sig, usr1_handler);
 
-if ((fd = Uopen(process_log_path, O_APPEND|O_WRONLY, LOG_MODE)) < 0)
-  {
-  /* If we are already running as the Exim user, try to create it in the
-  current process (assuming spool_directory exists). Otherwise, if we are
-  root, do the creation in an exim:exim subprocess. */
-
-  int euid = geteuid();
-  if (euid == exim_uid)
-    fd = Uopen(process_log_path, O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
-  else if (euid == root_uid)
-    fd = log_create_as_exim(process_log_path);
-  }
+if (!process_log_path) return;
+fd = log_open_as_exim(process_log_path);
 
 /* If we are neither exim nor root, or if we failed to create the log file,
 give up. There is not much useful we can do with errors, since we don't want
@@ -3054,8 +3044,16 @@ for (i = 1; i < argc; i++)
 
     /* -oP <name>: set pid file path for daemon */
 
-    else if (Ustrcmp(argrest, "P") == 0)
-      override_pid_file_path = argv[++i];
+    else if (*argrest == 'P')
+      {
+	if (!f.running_in_test_harness && real_uid != root_uid && real_uid != exim_uid)
+	  exim_fail("exim: only uid=%d or uid=%d can use -oP and -oPX "
+                    "(uid=%d euid=%d | %d)\n",
+                    root_uid, exim_uid, getuid(), geteuid(), real_uid);
+	if (Ustrcmp(argrest, "P") == 0) override_pid_file_path = argv[++i];
+	else if (Ustrcmp(argrest, "PX") == 0) delete_pid_file();
+	else badarg = TRUE;
+      }
 
     /* -or <n>: set timeout for non-SMTP acceptance
        -os <n>: set timeout for SMTP acceptance */
@@ -3664,6 +3662,9 @@ during readconf_main() some expansion takes place already. */
 /* Store the initial cwd before we change directories.  Can be NULL if the
 dir has already been unlinked. */
 initial_cwd = os_getcwd(NULL, 0);
+if (initial_cwd && strlen(CCS initial_cwd) >= BIG_BUFFER_SIZE) {
+  exim_fail("exim: initial cwd is far too long\n");
+}
 
 /* checking:
     -be[m] expansion test        -
@@ -3950,11 +3951,9 @@ if (  (debug_selector & D_any  ||  LOGGING(arguments))
     p += 13;
   else
     {
-    Ustrncpy(p + 4, initial_cwd, big_buffer_size-5);
-    p += 4 + Ustrlen(initial_cwd);
-    /* in case p is near the end and we don't provide enough space for
-     * string_format to be willing to write. */
-    *p = '\0';
+    p += 4;
+    snprintf(CS p, big_buffer_size - (p - big_buffer), "%s", CCS initial_cwd);
+    p += strlen(CCS p);
     }
 
   (void)string_format(p, big_buffer_size - (p - big_buffer), " %d args:", argc);

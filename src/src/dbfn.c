@@ -59,6 +59,66 @@ log_write(0, LOG_MAIN, "Berkeley DB error: %s", msg);
 
 
 
+static enum {
+  PRIV_DROPPING, PRIV_DROPPED,
+  PRIV_RESTORING, PRIV_RESTORED
+} priv_state = PRIV_RESTORED;
+
+static uid_t priv_euid;
+static gid_t priv_egid;
+static gid_t priv_groups[EXIM_GROUPLIST_SIZE + 1];
+static int priv_ngroups;
+
+/* Inspired by OpenSSH's temporarily_use_uid(). Thanks! */
+
+static void
+priv_drop_temp(const uid_t temp_uid, const gid_t temp_gid)
+{
+if (priv_state != PRIV_RESTORED) _exit(EXIT_FAILURE);
+priv_state = PRIV_DROPPING;
+
+priv_euid = geteuid();
+if (priv_euid == root_uid)
+  {
+  priv_egid = getegid();
+  priv_ngroups = getgroups(nelem(priv_groups), priv_groups);
+  if (priv_ngroups < 0) _exit(EXIT_FAILURE);
+
+  if (priv_ngroups > 0 && setgroups(1, &temp_gid) != 0) _exit(EXIT_FAILURE);
+  if (setegid(temp_gid) != 0) _exit(EXIT_FAILURE);
+  if (seteuid(temp_uid) != 0) _exit(EXIT_FAILURE);
+
+  if (geteuid() != temp_uid) _exit(EXIT_FAILURE);
+  if (getegid() != temp_gid) _exit(EXIT_FAILURE);
+  }
+
+priv_state = PRIV_DROPPED;
+}
+
+/* Inspired by OpenSSH's restore_uid(). Thanks! */
+
+static void
+priv_restore(void)
+{
+if (priv_state != PRIV_DROPPED) _exit(EXIT_FAILURE);
+priv_state = PRIV_RESTORING;
+
+if (priv_euid == root_uid)
+  {
+  if (seteuid(priv_euid) != 0) _exit(EXIT_FAILURE);
+  if (setegid(priv_egid) != 0) _exit(EXIT_FAILURE);
+  if (priv_ngroups > 0 && setgroups(priv_ngroups, priv_groups) != 0) _exit(EXIT_FAILURE);
+
+  if (geteuid() != priv_euid) _exit(EXIT_FAILURE);
+  if (getegid() != priv_egid) _exit(EXIT_FAILURE);
+  }
+
+priv_state = PRIV_RESTORED;
+}
+
+
+
+
 /*************************************************
 *          Open and lock a database file         *
 *************************************************/
@@ -89,7 +149,6 @@ dbfn_open(uschar *name, int flags, open_db *dbblock, BOOL lof)
 {
 int rc, save_errno;
 BOOL read_only = flags == O_RDONLY;
-BOOL created = FALSE;
 flock_t lock_data;
 uschar dirname[256], filename[256];
 
@@ -111,12 +170,13 @@ exists, there is no error. */
 snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
 snprintf(CS filename, sizeof(filename), "%s/%s.lockfile", dirname, name);
 
+priv_drop_temp(exim_uid, exim_gid);
 if ((dbblock->lockfd = Uopen(filename, O_RDWR, EXIMDB_LOCKFILE_MODE)) < 0)
   {
-  created = TRUE;
   (void)directory_make(spool_directory, US"db", EXIMDB_DIRECTORY_MODE, TRUE);
   dbblock->lockfd = Uopen(filename, O_RDWR|O_CREAT, EXIMDB_LOCKFILE_MODE);
   }
+priv_restore();
 
 if (dbblock->lockfd < 0)
   {
@@ -165,57 +225,17 @@ it easy to pin this down, there are now debug statements on either side of the
 open call. */
 
 snprintf(CS filename, sizeof(filename), "%s/%s", dirname, name);
-EXIM_DBOPEN(filename, dirname, flags, EXIMDB_MODE, &(dbblock->dbptr));
 
+priv_drop_temp(exim_uid, exim_gid);
+EXIM_DBOPEN(filename, dirname, flags, EXIMDB_MODE, &(dbblock->dbptr));
 if (!dbblock->dbptr && errno == ENOENT && flags == O_RDWR)
   {
   DEBUG(D_hints_lookup)
     debug_printf_indent("%s appears not to exist: trying to create\n", filename);
-  created = TRUE;
   EXIM_DBOPEN(filename, dirname, flags|O_CREAT, EXIMDB_MODE, &(dbblock->dbptr));
   }
-
 save_errno = errno;
-
-/* If we are running as root and this is the first access to the database, its
-files will be owned by root. We want them to be owned by exim. We detect this
-situation by noting above when we had to create the lock file or the database
-itself. Because the different dbm libraries use different extensions for their
-files, I don't know of any easier way of arranging this than scanning the
-directory for files with the appropriate base name. At least this deals with
-the lock file at the same time. Also, the directory will typically have only
-half a dozen files, so the scan will be quick.
-
-This code is placed here, before the test for successful opening, because there
-was a case when a file was created, but the DBM library still returned NULL
-because of some problem. It also sorts out the lock file if that was created
-but creation of the database file failed. */
-
-if (created && geteuid() == root_uid)
-  {
-  DIR *dd;
-  struct dirent *ent;
-  uschar *lastname = Ustrrchr(filename, '/') + 1;
-  int namelen = Ustrlen(name);
-
-  *lastname = 0;
-  dd = opendir(CS filename);
-
-  while ((ent = readdir(dd)))
-    if (Ustrncmp(ent->d_name, name, namelen) == 0)
-      {
-      struct stat statbuf;
-      Ustrcpy(lastname, ent->d_name);
-      if (Ustat(filename, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
-        {
-        DEBUG(D_hints_lookup) debug_printf_indent("ensuring %s is owned by exim\n", filename);
-        if (Uchown(filename, exim_uid, exim_gid))
-          DEBUG(D_hints_lookup) debug_printf_indent("failed setting %s to owned by exim\n", filename);
-        }
-      }
-
-  closedir(dd);
-  }
+priv_restore();
 
 /* If the open has failed, return NULL, leaving errno set. If lof is TRUE,
 log the event - also for debugging - but debug only if the file just doesn't

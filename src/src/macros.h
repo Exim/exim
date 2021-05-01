@@ -154,6 +154,7 @@ enough to hold all the headers from a normal kind of message. */
 /* The size of the circular buffer that remembers recent SMTP commands */
 
 #define SMTP_HBUFF_SIZE 20
+#define SMTP_HBUFF_PREV(n)	((n) ? (n)-1 : SMTP_HBUFF_SIZE-1)
 
 /* The initial size of a big buffer for use in various places. It gets put
 into big_buffer_size and in some circumstances increased. It should be at least

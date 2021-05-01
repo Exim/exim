@@ -4464,7 +4464,8 @@ switch (where)
     /* Drop cutthrough conns, and drop heldopen verify conns if
     the previous was not DATA */
     {
-    uschar prev = smtp_connection_had[smtp_ch_index-2];
+    uschar prev =
+      smtp_connection_had[SMTP_HBUFF_PREV(SMTP_HBUFF_PREV(smtp_ch_index))];
     BOOL dropverify = !(prev == SCH_DATA || prev == SCH_BDAT);
 
     cancel_cutthrough_connection(dropverify, US"quit or conndrop");

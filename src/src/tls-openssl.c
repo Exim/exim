@@ -2910,16 +2910,12 @@ a store reset there, so use POOL_PERM. */
 
 if (!ct_ctx && (more || corked))
   {
-#ifdef EXPERIMENTAL_PIPE_CONNECT
   int save_pool = store_pool;
   store_pool = POOL_PERM;
-#endif
 
   corked = string_catn(corked, buff, len);
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
   store_pool = save_pool;
-#endif
 
   if (more)
     {
