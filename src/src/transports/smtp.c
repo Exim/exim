@@ -2015,7 +2015,7 @@ if (continue_hostname && continue_proxy_cipher)
       {
       case OK:		sx->conn_args.dane = TRUE;
 			ob->tls_tempfail_tryclear = FALSE;	/* force TLS */
-			ob->tls_sni = sx->first_addr->domain;	/* force SNI */
+                        ob->tls_sni = sx->conn_args.host->name; /* force SNI */
 			break;
       case FAIL_FORCED:	break;
       default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
@@ -2097,7 +2097,7 @@ if (!continue_hostname)
 	  {
 	  case OK:		sx->conn_args.dane = TRUE;
 				ob->tls_tempfail_tryclear = FALSE;	/* force TLS */
-				ob->tls_sni = sx->first_addr->domain;	/* force SNI */
+				ob->tls_sni = sx->conn_args.host->name; /* force SNI */
 				break;
 	  case FAIL_FORCED:	break;
 	  default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
