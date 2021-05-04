@@ -17,6 +17,7 @@
 # endif /* SUPPORT_SPF */
 
 /* prototypes */
+void dmarc_version_report(FILE *);
 int dmarc_init();
 int dmarc_store_data(header_line *);
 int dmarc_process();

@@ -1138,6 +1138,9 @@ show_db_version(fp);
 #ifdef SUPPORT_I18N
   utf8_version_report(fp);
 #endif
+#ifdef SUPPORT_DMARC
+  dmarc_version_report(fp);
+#endif
 #ifdef SUPPORT_SPF
   spf_lib_version_report(fp);
 #endif

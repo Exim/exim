@@ -51,21 +51,34 @@ static dmarc_exim_p dmarc_policy_description[] = {
   { US"reject",     DMARC_RECORD_P_REJECT },
   { NULL,           0 }
 };
+
+
+void 
+dmarc_version_report(FILE *f)
+{ 
+const char *implementation, *version;
+
+fprintf(f, "Library version: dmarc: Compile: %d.%d.%d.%d\n",
+  (OPENDMARC_LIB_VERSION & 0xff000000) >> 24, (OPENDMARC_LIB_VERSION & 0x00ff0000) >> 16,
+  (OPENDMARC_LIB_VERSION & 0x0000ff00) >> 8, OPENDMARC_LIB_VERSION & 0x000000ff);
+}
+
+
 /* Accept an error_block struct, initialize if empty, parse to the
- * end, and append the two strings passed to it.  Used for adding
- * variable amounts of value:pair data to the forensic emails. */
+end, and append the two strings passed to it.  Used for adding
+variable amounts of value:pair data to the forensic emails. */
 
 static error_block *
 add_to_eblock(error_block *eblock, uschar *t1, uschar *t2)
 {
 error_block *eb = store_malloc(sizeof(error_block));
-if (eblock == NULL)
+if (!eblock)
   eblock = eb;
 else
   {
   /* Find the end of the eblock struct and point it at eb */
   error_block *tmp = eblock;
-  while(tmp->next != NULL)
+  while(tmp->next)
     tmp = tmp->next;
   tmp->next = eb;
   }
@@ -76,8 +89,8 @@ return eblock;
 }
 
 /* dmarc_init sets up a context that can be re-used for several
-   messages on the same SMTP connection (that come from the
-   same host with the same HELO string) */
+messages on the same SMTP connection (that come from the
+same host with the same HELO string) */
 
 int
 dmarc_init()
