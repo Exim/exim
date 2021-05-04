@@ -258,7 +258,7 @@ ipv6norm:   ${ipv6norm:2a00::1}
 ipv6norm:   ${ipv6norm:2a00:eadf:0000:0000:0000:0000:0001:0000}
 ipv6norm:   ${ipv6norm:2a00:eadf:0000:0001:0000:0000:0000:0000}
 ipv6norm:   ${ipv6norm:2a00:0:0:0::}
-ipv6norm:   ${ipv6norm:2a00:2:3:4:5:6:7:8}
+ipv6norm:   ${ipv6norm:2a00:2:3:4:5:6:7:8}trailing_text
 nhash:  ${nhash_24:monty} ${nhash_8_63:monty python}
 lc/uc:  ${lc:The Quick} ${uc: Brown Fox}
 length: ${length_10:The quick brown fox} ${l_10:abc}

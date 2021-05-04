@@ -163,6 +163,9 @@ JH/44 Bug 2701: Fix list-expansion of dns_ipv4_lookup.  Previously, it did
       dnssec_require_domains, dnssec_request_domains, srv_fail_domains,
       mx_fail_domains.
 
+JH/52 Fix ${ip6norm:} operator.  Previously, any trailing line text was dropped,
+      making it unusable in complex expressions.
+
 
 Exim version 4.94
 -----------------
