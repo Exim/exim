@@ -245,6 +245,10 @@ JH/51 Taint-check ACL line.  Previously, only filenames (for out-of-line ACL
       content) were specifically tested for.  Now, also cover epxansions
       rerulting in acl names and inline ACL content.
 
+JH/52 Fix ${ip6norm:} operator.  Previously, any trailing line text was dropped,
+      making it unusable in complex expressions.
+    
+
 
 
 Exim version 4.94

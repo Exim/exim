@@ -240,7 +240,7 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > ipv6norm:   2a00:eadf::1:0
 > ipv6norm:   2a00:eadf:0:1::
 > ipv6norm:   2a00::
-> ipv6norm:   2a00:2:3:4:5:6:7:8
+> ipv6norm:   2a00:2:3:4:5:6:7:8trailing_text
 > nhash:  19 0/61
 > lc/uc:  the quick  BROWN FOX
 > length: The quick  abc
