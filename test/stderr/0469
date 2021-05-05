@@ -24,7 +24,7 @@ DNS lookup of mxt1c.test.ex (MX) succeeded
 DNS lookup of dontqualify (A) using fakens
 DNS lookup of dontqualify (A) gave NO_DATA
 returning DNS_NODATA
-DNS: no SOA record found for neg-TTL
+DNS: couldn't fake dnsa len
  writing neg-cache entry for dontqualify-A-xxxx, ttl -1
 fully qualified name = mxt1c.test.ex
 host_find_bydns yield = HOST_FIND_FAILED (0); returned hosts:

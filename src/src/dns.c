@@ -691,9 +691,11 @@ packet length has been lost inside libresolv, so we have to guess a
 replacement value. (The only way to fix this properly would be to
 re-implement res_search() and res_query() so that they don't muddle their
 success and packet length return values.) For added safety we only reset
-the packet length if the packet header looks plausible. */
+the packet length if the packet header looks plausible.
 
-static void
+Return TRUE iff it seemed ok */
+
+static BOOL
 fake_dnsa_len_for_fail(dns_answer * dnsa, int type)
 {
 const HEADER * h = (const HEADER *)dnsa->answer;
@@ -710,7 +712,11 @@ if (  h->qr == 1				/* a response */
   DEBUG(D_dns) debug_printf("faking res_search(%s) response length as %d\n",
     dns_text_type(type), (int)sizeof(dnsa->answer));
   dnsa->answerlen = sizeof(dnsa->answer);
+  return TRUE;
   }
+DEBUG(D_dns) debug_printf("DNS: couldn't fake dnsa len\n");
+/* Maybe we should just do a second lookup for an SOA? */
+return FALSE;
 }
 
 
@@ -724,7 +730,7 @@ dns_expire_from_soa(dns_answer * dnsa, int type)
 {
 dns_scan dnss;
 
-fake_dnsa_len_for_fail(dnsa, type);
+if (!fake_dnsa_len_for_fail(dnsa, type)) return 0;
 
 for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
      rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
@@ -1201,7 +1207,7 @@ switch (type)
 
     if (rc == DNS_NOMATCH)
       {
-      fake_dnsa_len_for_fail(dnsa, T_CSA);
+      if (!fake_dnsa_len_for_fail(dnsa, T_CSA)) return DNS_NOMATCH;
 
       for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
 	   rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
