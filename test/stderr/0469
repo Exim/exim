@@ -25,6 +25,7 @@ DNS lookup of dontqualify (A) using fakens
 DNS lookup of dontqualify (A) gave NO_DATA
 returning DNS_NODATA
 DNS: couldn't fake dnsa len
+DNS: no SOA record found for neg-TTL
  writing neg-cache entry for dontqualify-A-xxxx, ttl -1
 fully qualified name = mxt1c.test.ex
 host_find_bydns yield = HOST_FIND_FAILED (0); returned hosts:

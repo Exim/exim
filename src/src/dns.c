@@ -730,37 +730,37 @@ dns_expire_from_soa(dns_answer * dnsa, int type)
 {
 dns_scan dnss;
 
-if (!fake_dnsa_len_for_fail(dnsa, type)) return 0;
+if (fake_dnsa_len_for_fail(dnsa, type))
+  for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
+       rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
+      ) if (rr->type == T_SOA)
+    {
+    const uschar * p = rr->data;
+    uschar discard_buf[256];
+    int len;
+    unsigned long ttl;
 
-for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
-     rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
-    ) if (rr->type == T_SOA)
-  {
-  const uschar * p = rr->data;
-  uschar discard_buf[256];
-  int len;
-  unsigned long ttl;
+    /* Skip the mname & rname strings */
 
-  /* Skip the mname & rname strings */
+    if ((len = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
+	p, (DN_EXPAND_ARG4_TYPE)discard_buf, 256)) < 0)
+      break;
+    p += len;
+    if ((len = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
+	p, (DN_EXPAND_ARG4_TYPE)discard_buf, 256)) < 0)
+      break;
+    p += len;
 
-  if ((len = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-      p, (DN_EXPAND_ARG4_TYPE)discard_buf, 256)) < 0)
-    break;
-  p += len;
-  if ((len = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-      p, (DN_EXPAND_ARG4_TYPE)discard_buf, 256)) < 0)
-    break;
-  p += len;
+    /* Skip the SOA serial, refresh, retry & expire.  Grab the TTL */
 
-  /* Skip the SOA serial, refresh, retry & expire.  Grab the TTL */
+    if (p > dnsa->answer + dnsa->answerlen - 5 * INT32SZ)
+      break;
+    p += 4 * INT32SZ;
+    GETLONG(ttl, p);
 
-  if (p > dnsa->answer + dnsa->answerlen - 5 * INT32SZ)
-    break;
-  p += 4 * INT32SZ;
-  GETLONG(ttl, p);
+    return time(NULL) + ttl;
+    }
 
-  return time(NULL) + ttl;
-  }
 DEBUG(D_dns) debug_printf("DNS: no SOA record found for neg-TTL\n");
 return 0;
 }
@@ -1205,18 +1205,7 @@ switch (type)
     If the TLD and the 2LD exist but the explicit CSA record lookup failed, then
     the AUTHORITY SOA will be the 2LD's or a subdomain thereof. */
 
-    if (rc == DNS_NOMATCH)
-      {
-      if (!fake_dnsa_len_for_fail(dnsa, T_CSA)) return DNS_NOMATCH;
-
-      for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
-	   rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
-	  )
-	if (rr->type != T_SOA) continue;
-	else if (strcmpic(rr->name, US"") == 0 ||
-		 strcmpic(rr->name, tld) == 0) return DNS_NOMATCH;
-	else break;
-      }
+    if (rc == DNS_NOMATCH) return DNS_NOMATCH;
 
     for (i = 0; i < limit; i++)
       {

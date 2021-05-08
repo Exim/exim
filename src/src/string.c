@@ -960,7 +960,7 @@ else
 	&& (g->ptr == 1 || g->s[g->ptr-2] != '\\') )
     g->ptr--;
   buffer = string_from_gstring(g);
-  gstring_release_unused_trc(g, func, line);
+  gstring_release_unused_trc(g, CCS func, line);
   }
 
 /* Update the current pointer and return the new string */
