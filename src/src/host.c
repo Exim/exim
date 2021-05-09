@@ -1197,9 +1197,9 @@ for (c = buffer, k = -1, i = 0; i < 8; i++)
   c++;
   }
 
-c[-1] = '\0';	/* drop trailing colon */
+*--c = '\0';	/* drop trailing colon */
 
-/* debug_printf("%s: D k %d <%s> <%s>\n", __FUNCTION__, k, d, d + 2*(k+1)); */
+/* debug_printf("%s: D k %d <%s> <%s>\n", __FUNCTION__, k, buffer, buffer + 2*(k+1)); */
 if (k >= 0)
   {			/* collapse */
   c = d + 2*(k+1);
