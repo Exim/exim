@@ -220,6 +220,9 @@ QS/03 When reading the output from interpreted forward files we do not
 QS/04 Always die if requested from internal logging, even is logging is
       disabled.
 
+JH/52 Fix ${ip6norm:} operator.  Previously, any trailing line text was dropped,
+      making it unusable in complex expressions.
+
 
 Exim version 4.94
 -----------------
