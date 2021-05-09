@@ -3848,9 +3848,11 @@ headers.)
 .cindex "Solaris" "&'mail'& command"
 .cindex "dot" "in incoming non-SMTP message"
 This option, which has the same effect as &%-oi%&, specifies that a dot on a
-line by itself should not terminate an incoming, non-SMTP message. I can find
-no documentation for this option in Solaris 2.4 Sendmail, but the &'mailx'&
-command in Solaris 2.4 uses it. See also &%-ti%&.
+line by itself should not terminate an incoming, non-SMTP message.
+Solaris 2.4 (SunOS 5.4) Sendmail has a similar &%-i%& processing option
+&url(https://docs.oracle.com/cd/E19457-01/801-6680-1M/801-6680-1M.pdf),
+p. 1M-529), and therefore a &%-oi%& command line option, which both are used
+by its &'mailx'& command.
 
 .vitem &%-L%&&~<&'tag'&>
 .oindex "&%-L%&"
@@ -4170,8 +4172,9 @@ the standard output. This option can be used only by an admin user.
 
 .vitem &%-m%&
 .oindex "&%-m%&"
-This is apparently a synonym for &%-om%& that is accepted by Sendmail, so Exim
-treats it that way too.
+This is a synonym for &%-om%& that is accepted by Sendmail
+(&url(https://docs.oracle.com/cd/E19457-01/801-6680-1M/801-6680-1M.pdf)
+p. 1M-258), so Exim treats it that way too.
 
 .vitem &%-N%&
 .oindex "&%-N%&"
@@ -8502,7 +8505,7 @@ will store a result in the &$local_part_data$& variable.
 .vitem domains
 .new
 A &%domains%& router option or &%domains%& ACL condition
-will store a result in the &$domain_data$& variable
+will store a result in the &$domain_data$& variable.
 .wen
 .vitem senders
 A &%senders%& router option or &%senders%& ACL condition
@@ -8855,7 +8858,7 @@ If the pattern starts with the name of a lookup type
 of either kind (single-key or query-style) it may be
 followed by a comma and options,
 The options are lookup-type specific and consist of a comma-separated list.
-Each item starts with a tag and and equals "=".
+Each item starts with a tag and and equals "=" sign.
 
 .next
 .cindex "domain list" "matching literal domain name"
@@ -8974,9 +8977,13 @@ accept hosts = @[]
 .endd
 .next
 .cindex "CIDR notation"
-If the pattern is an IP address followed by a slash and a mask length (for
-example 10.11.42.0/24), it is matched against the IP address of the subject
-host under the given mask. This allows, an entire network of hosts to be
+If the pattern is an IP address followed by a slash and a mask length, for
+example
+.code
+10.11.42.0/24
+.endd
+, it is matched against the IP address of the subject
+host under the given mask. This allows an entire network of hosts to be
 included (or excluded) by a single item. The mask uses CIDR notation; it
 specifies the number of address bits that must match, starting from the most
 significant end of the address.
@@ -10165,7 +10172,7 @@ They are visible in DKIM, PRDR and DATA ACLs.
 Header lines that are added in a RCPT ACL (for example)
 are saved until the message's incoming header lines are available, at which
 point they are added.
-When any of the above ACLs ar
+When any of the above ACLs are
 running, however, header lines added by earlier ACLs are visible.
 
 Upper case and lower case letters are synonymous in header names. If the
@@ -10441,10 +10448,11 @@ additional arguments need be given; the maximum number permitted, including the
 name of the subroutine, is nine.
 
 The return value of the subroutine is inserted into the expanded string, unless
-the return value is &%undef%&. In that case, the expansion fails in the same
-way as an explicit &"fail"& on a lookup item. The return value is a scalar.
-Whatever you return is evaluated in a scalar context. For example, if you
-return the name of a Perl vector, the return value is the size of the vector,
+the return value is &%undef%&. In that case, the entire expansion is
+forced to fail, in the same way as an explicit &"fail"& on a lookup item
+does (see section &<<SECTforexpfai>>&).  Whatever you return is evaluated
+in a scalar context, thus the return value is a scalar.  For example, if you
+return a Perl vector, the return value is the size of the vector,
 not its contents.
 
 If the subroutine exits by calling Perl's &%die%& function, the expansion fails
@@ -10494,7 +10502,7 @@ For more discussion and an example, see section &<<SECTverifyPRVS>>&.
 .cindex "expansion" "inserting an entire file"
 .cindex "file" "inserting into expansion"
 .cindex "&%readfile%& expansion item"
-The filename and end-of-line string are first expanded separately. The file is
+The filename and end-of-line (eol) string are first expanded separately. The file is
 then read, and its contents replace the entire item. All newline characters in
 the file are replaced by the end-of-line string if it is present. Otherwise,
 newlines are left in the string.
@@ -10531,7 +10539,7 @@ ${readsocket{inet:[::1]:1234}{request string}}
 Only a single host name may be given, but if looking it up yields more than
 one IP address, they are each tried in turn until a connection is made. For
 both kinds of socket, Exim makes a connection, writes the request string
-unless it is an empty string; and no terminating NUL is ever sent)
+(unless it is an empty string; no terminating NUL is ever sent)
 and reads from the socket until an end-of-file
 is read. A timeout of 5 seconds is applied. Additional, optional arguments
 extend what can be done. Firstly, you can vary the timeout. For example:
@@ -10997,7 +11005,7 @@ is controlled by the &%print_topbitchars%& option.
 .vitem &*${escape8bit:*&<&'string'&>&*}*&
 .cindex "expansion" "escaping 8-bit characters"
 .cindex "&%escape8bit%& expansion item"
-If the string contains and characters with the most significant bit set,
+If the string contains any characters with the most significant bit set,
 they are converted to escape sequences starting with a backslash.
 Backslashes and DEL characters are also converted.
 
@@ -11464,7 +11472,7 @@ Now deprecated, a synonym for the &%base64%& expansion operator.
 .cindex "expansion" "string length"
 .cindex "string" "length in expansion"
 .cindex "&%strlen%& expansion item"
-The item is replace by the length of the expanded string, expressed as a
+The item is replaced by the length of the expanded string, expressed as a
 decimal number. &*Note*&: Do not confuse &%strlen%& with &%length%&.
 All measurement is done in bytes and is not UTF-8 aware.
 
@@ -38993,10 +39001,12 @@ it is too big.
 .cindex "log" "frozen messages; skipped"
 .cindex "frozen messages" "logging skipping"
 &%skip_delivery%&: A log line is written whenever a message is skipped during a
-queue run because it is frozen or because another process is already delivering
-it.
+queue run because it another process is already delivering it or because
+it is frozen.
 .cindex "&""spool file is locked""&"
-The message that is written is &"spool file is locked"&.
+.cindex "&""message is frozen""&"
+The message that is written is either &"spool file is locked"& or
+&"message is frozen"&.
 .next
 .cindex "log" "smtp confirmation"
 .cindex "SMTP" "logging confirmation"
