@@ -3688,7 +3688,7 @@ else
   {
   struct rlimit rlp;
 
-  #ifdef RLIMIT_NOFILE
+#ifdef RLIMIT_NOFILE
   if (getrlimit(RLIMIT_NOFILE, &rlp) < 0)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "getrlimit(RLIMIT_NOFILE) failed: %s",
@@ -3711,9 +3711,9 @@ else
           strerror(errno));
       }
     }
-  #endif
+#endif
 
-  #ifdef RLIMIT_NPROC
+#ifdef RLIMIT_NPROC
   if (getrlimit(RLIMIT_NPROC, &rlp) < 0)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "getrlimit(RLIMIT_NPROC) failed: %s",
@@ -3721,20 +3721,20 @@ else
     rlp.rlim_cur = rlp.rlim_max = 0;
     }
 
-  #ifdef RLIM_INFINITY
+# ifdef RLIM_INFINITY
   if (rlp.rlim_cur != RLIM_INFINITY && rlp.rlim_cur < 1000)
     {
     rlp.rlim_cur = rlp.rlim_max = RLIM_INFINITY;
-  #else
+# else
   if (rlp.rlim_cur < 1000)
     {
     rlp.rlim_cur = rlp.rlim_max = 1000;
-  #endif
+# endif
     if (setrlimit(RLIMIT_NPROC, &rlp) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC, "setrlimit(RLIMIT_NPROC) failed: %s",
         strerror(errno));
     }
-  #endif
+#endif
   }
 
 /* Exim is normally entered as root (but some special configurations are
@@ -3857,6 +3857,7 @@ is equivalent to the ability to modify a setuid binary!
 This needs to happen before we read the main configuration. */
 init_lookup_list();
 
+/*XXX this excrescence could move to the testsuite standard config setup file */
 #ifdef SUPPORT_I18N
 if (f.running_in_test_harness) smtputf8_advertise_hosts = NULL;
 #endif
@@ -3895,18 +3896,20 @@ issues (currently about tls_advertise_hosts and keep_environment not being
 defined) */
 
   {
+  int old_pool = store_pool;
 #ifdef MEASURE_TIMING
   struct timeval t0, diff;
   (void)gettimeofday(&t0, NULL);
 #endif
 
+  store_pool = POOL_CONFIG;
   readconf_main(checking || list_options);
+  store_pool = old_pool;
 
 #ifdef MEASURE_TIMING
   report_time_since(&t0, US"readconf_main (delta)");
 #endif
   }
-
 
 /* Now in directory "/" */
 
@@ -4494,7 +4497,13 @@ if (msg_action_arg > 0 && msg_action != MSG_DELIVER && msg_action != MSG_LOAD)
   event_action gets expanded */
 
   if (msg_action == MSG_REMOVE)
+    {
+    int old_pool = store_pool;
+    store_pool = POOL_CONFIG;
     readconf_rest();
+    store_pool = old_pool;
+    store_writeprotect(POOL_CONFIG);
+    }
 
   if (!one_msg_action)
     {
@@ -4519,12 +4528,16 @@ Now, since the intro of the ${acl } expansion, ACL definitions may be
 needed in transports so we lost the optimisation. */
 
   {
+  int old_pool = store_pool;
 #ifdef MEASURE_TIMING
   struct timeval t0, diff;
   (void)gettimeofday(&t0, NULL);
 #endif
 
+  store_pool = POOL_CONFIG;
   readconf_rest();
+  store_pool = old_pool;
+  store_writeprotect(POOL_CONFIG);
 
 #ifdef MEASURE_TIMING
   report_time_since(&t0, US"readconf_rest (delta)");

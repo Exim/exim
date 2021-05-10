@@ -3142,55 +3142,54 @@ while((filename = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
 
   /* Cut out all the fancy processing unless specifically wanted */
 
-  #if defined(CONFIGURE_FILE_USE_NODE) || defined(CONFIGURE_FILE_USE_EUID)
+#if defined(CONFIGURE_FILE_USE_NODE) || defined(CONFIGURE_FILE_USE_EUID)
   uschar *suffix = filename + Ustrlen(filename);
 
   /* Try for the node-specific file if a node name exists */
 
-  #ifdef CONFIGURE_FILE_USE_NODE
+# ifdef CONFIGURE_FILE_USE_NODE
   struct utsname uts;
   if (uname(&uts) >= 0)
     {
-    #ifdef CONFIGURE_FILE_USE_EUID
+#  ifdef CONFIGURE_FILE_USE_EUID
     sprintf(CS suffix, ".%ld.%.256s", (long int)original_euid, uts.nodename);
-    config_file = Ufopen(filename, "rb");
-    if (config_file == NULL)
-    #endif  /* CONFIGURE_FILE_USE_EUID */
+    if (!(config_file = Ufopen(filename, "rb")))
+#  endif  /* CONFIGURE_FILE_USE_EUID */
       {
       sprintf(CS suffix, ".%.256s", uts.nodename);
       config_file = Ufopen(filename, "rb");
       }
     }
-  #endif  /* CONFIGURE_FILE_USE_NODE */
+# endif  /* CONFIGURE_FILE_USE_NODE */
 
   /* Otherwise, try the generic name, possibly with the euid added */
 
-  #ifdef CONFIGURE_FILE_USE_EUID
-  if (config_file == NULL)
+# ifdef CONFIGURE_FILE_USE_EUID
+  if (!config_file)
     {
     sprintf(CS suffix, ".%ld", (long int)original_euid);
     config_file = Ufopen(filename, "rb");
     }
-  #endif  /* CONFIGURE_FILE_USE_EUID */
+# endif  /* CONFIGURE_FILE_USE_EUID */
 
   /* Finally, try the unadorned name */
 
-  if (config_file == NULL)
+  if (!config_file)
     {
     *suffix = 0;
     config_file = Ufopen(filename, "rb");
     }
-  #else  /* if neither defined */
+#else  /* if neither defined */
 
   /* This is the common case when the fancy processing is not included. */
 
   config_file = Ufopen(filename, "rb");
-  #endif
+#endif
 
   /* If the file does not exist, continue to try any others. For any other
   error, break out (and die). */
 
-  if (config_file != NULL || errno != ENOENT) break;
+  if (config_file || errno != ENOENT) break;
   }
 
 /* On success, save the name for verification; config_filename is used when
@@ -3213,39 +3212,37 @@ if (config_file)
     config_main_directory = last_slash == filename ? US"/" : string_copyn(filename, last_slash - filename);
   else
     {
-      /* relative configuration file name: working dir + / + basename(filename) */
+    /* relative configuration file name: working dir + / + basename(filename) */
 
-      uschar buf[PATH_MAX];
-      gstring * g;
+    uschar buf[PATH_MAX];
+    gstring * g;
 
-      if (os_getcwd(buf, PATH_MAX) == NULL)
-        {
-        perror("exim: getcwd");
-        exit(EXIT_FAILURE);
-        }
-      g = string_cat(NULL, buf);
+    if (os_getcwd(buf, PATH_MAX) == NULL)
+      {
+      perror("exim: getcwd");
+      exit(EXIT_FAILURE);
+      }
+    g = string_cat(NULL, buf);
 
-      /* If the dir does not end with a "/", append one */
-      if (g->s[g->ptr-1] != '/')
-        g = string_catn(g, US"/", 1);
+    /* If the dir does not end with a "/", append one */
+    if (g->s[g->ptr-1] != '/')
+      g = string_catn(g, US"/", 1);
 
-      /* If the config file contains a "/", extract the directory part */
-      if (last_slash)
-        g = string_catn(g, filename, last_slash - filename);
+    /* If the config file contains a "/", extract the directory part */
+    if (last_slash)
+      g = string_catn(g, filename, last_slash - filename);
 
-      config_main_directory = string_from_gstring(g);
+    config_main_directory = string_from_gstring(g);
     }
   config_directory = config_main_directory;
   }
 else
-  {
   if (!filename)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "non-existent configuration file(s): "
       "%s", config_main_filelist);
   else
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
       string_open_failed("configuration file %s", filename));
-  }
 
 /* Now, once we found and opened our configuration file, we change the directory
 to a safe place. Later we change to $spool_directory. */
@@ -3265,19 +3262,19 @@ if (f.trusted_config && Ustrcmp(filename, US"/dev/null"))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to stat configuration file %s",
       big_buffer);
 
-  if ((statbuf.st_uid != root_uid                /* owner not root */
-       #ifdef CONFIGURE_OWNER
-       && statbuf.st_uid != config_uid           /* owner not the special one */
-       #endif
-         ) ||                                    /* or */
-      (statbuf.st_gid != root_gid                /* group not root & */
-       #ifdef CONFIGURE_GROUP
-       && statbuf.st_gid != config_gid           /* group not the special one */
-       #endif
-       && (statbuf.st_mode & 020) != 0) ||       /* group writeable  */
-                                                 /* or */
-      ((statbuf.st_mode & 2) != 0))              /* world writeable  */
-
+  if (    statbuf.st_uid != root_uid		/* owner not root */
+#ifdef CONFIGURE_OWNER
+       && statbuf.st_uid != config_uid		/* owner not the special one */
+#endif
+     ||						/* or */
+	  statbuf.st_gid != root_gid		/* group not root & */
+#ifdef CONFIGURE_GROUP
+       && statbuf.st_gid != config_gid		/* group not the special one */
+#endif
+       && (statbuf.st_mode & 020) != 0		/* group writeable  */
+     ||						/* or */
+       (statbuf.st_mode & 2) != 0		/* world writeable  */
+     )
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Exim configuration file %s has the "
       "wrong owner, group, or mode", big_buffer);
 
@@ -3324,11 +3321,11 @@ while ((s = get_config_line()))
     read_named_list(&hostlist_anchor, &hostlist_count,
       MAX_NAMED_LIST, t+8, US"host list", hide);
 
-  else if (Ustrncmp(t, US"addresslist", 11) == 0)
+  else if (Ustrncmp(t, "addresslist", 11) == 0)
     read_named_list(&addresslist_anchor, &addresslist_count,
       MAX_NAMED_LIST, t+11, US"address list", hide);
 
-  else if (Ustrncmp(t, US"localpartlist", 13) == 0)
+  else if (Ustrncmp(t, "localpartlist", 13) == 0)
     read_named_list(&localpartlist_anchor, &localpartlist_count,
       MAX_NAMED_LIST, t+13, US"local part list", hide);
 
@@ -3347,7 +3344,7 @@ if (local_sender_retain && local_from_check)
 /* If the timezone string is empty, set it to NULL, implying no TZ variable
 wanted. */
 
-if (timezone_string != NULL && *timezone_string == 0) timezone_string = NULL;
+if (timezone_string && !*timezone_string) timezone_string = NULL;
 
 /* The max retry interval must not be greater than 24 hours. */
 
@@ -3492,7 +3489,7 @@ if (syslog_facility_str)
 
 /* Expand pid_file_path */
 
-if (*pid_file_path != 0)
+if (*pid_file_path)
   {
   if (!(s = expand_string(pid_file_path)))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand pid_file_path "
@@ -3502,7 +3499,7 @@ if (*pid_file_path != 0)
 
 /* Set default value of process_log_path */
 
-if (!process_log_path || *process_log_path =='\0')
+if (!process_log_path || !*process_log_path)
   process_log_path = string_sprintf("%s/exim-process.info", spool_directory);
 
 /* Compile the regex for matching a UUCP-style "From_" line in an incoming
@@ -3554,7 +3551,7 @@ if (errors_reply_to)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "error in errors_reply_to (%s): %s", errors_reply_to, errmess);
 
-  if (domain == 0)
+  if (!domain)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "errors_reply_to (%s) does not contain a domain", errors_reply_to);
   }
@@ -3562,8 +3559,7 @@ if (errors_reply_to)
 /* If smtp_accept_queue or smtp_accept_max_per_host is set, then
 smtp_accept_max must also be set. */
 
-if (smtp_accept_max == 0 &&
-    (smtp_accept_queue > 0 || smtp_accept_max_per_host != NULL))
+if (smtp_accept_max == 0 && (smtp_accept_queue > 0 || smtp_accept_max_per_host))
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "smtp_accept_max must be set if smtp_accept_queue or "
     "smtp_accept_max_per_host is set");
@@ -3584,7 +3580,7 @@ if (host_number_string)
         host_number_string, expand_string_message);
   n = Ustrtol(s, &end, 0);
   while (isspace(*end)) end++;
-  if (*end != 0)
+  if (*end)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "localhost_number value is not a number: %s", s);
   if (n > LOCALHOST_MAX)

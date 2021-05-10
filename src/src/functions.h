@@ -527,6 +527,7 @@ extern int     stdin_ungetc(int);
 
 extern void    store_exit(void);
 extern void    store_init(void);
+extern void    store_writeprotect(int);
 
 extern gstring *string_append(gstring *, int, ...) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele(gstring *, uschar, const uschar *) WARN_UNUSED_RESULT;

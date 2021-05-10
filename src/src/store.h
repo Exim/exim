@@ -13,9 +13,10 @@
 
 /* Define symbols for identifying the store pools. */
 
-#define NPOOLS 8
+#define NPOOLS 10
 enum { POOL_MAIN,
        POOL_PERM,
+       POOL_CONFIG,
        POOL_SEARCH,
        POOL_MESSAGE,
 
@@ -23,6 +24,7 @@ enum { POOL_MAIN,
 
        POOL_TAINT_MAIN = POOL_TAINT_BASE,
        POOL_TAINT_PERM,
+       POOL_TAINT_CONFIG,
        POOL_TAINT_SEARCH,
        POOL_TAINT_MESSAGE };
 
