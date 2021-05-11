@@ -440,11 +440,27 @@ AA a-aa        A V4NET.0.0.100
 ; | openssl dgst -sha512 \
 ; | awk '{print $2}'
 ;
+DNSSEC mxnodane             MX  1  nodane
 DNSSEC mxdane512ee          MX  1  dane512ee
 DNSSEC mxdane512ee1         MX  1  dane512ee
 mxnondane512ee              MX  1  dane512ee
 DNSSEC dane512ee            A      HOSTIPV4
+DNSSEC nodane               A      HOSTIPV4
+
 DNSSEC _1225._tcp.dane512ee TLSA  3 1 2 c0c2fc12e9fe1abf0ae7b1f2ad2798a4689668db8cf7f7b771a43bf8a4f1d9741ef103bad470b1201157150fbd6182054b0170e90ce66b944a82a0a9c81281af
+
+# mx of mxdane owns a secure A and TLSA record
+# used in 5802
+DNSSEC mxdane               MX  1  dane512ee
+
+# mx of mxdanesecchain is a CNAME, with a secure target, that owns a secure A and TLSA record
+DNSSEC mxdanesecchain       MX  1  danesecchain
+DNSSEC danesecchain         CNAME  dane512ee
+
+# mx of mxdaneinsecchain is CNAME, with an insecure target that own a secure A and TLSA record
+# DANE should report a failure if the message is for ...@mxdaneinsecurechain
+DNSSEC mxdaneinsecchain     MX  1  daneinsecchain
+daneinsecchain              CNAME  dane512ee
 
 ; A-only, sha256
 ;

@@ -1,0 +1,92 @@
+# Exim test configuration 5802
+# DANE and MX chains
+
+SERVER=
+OPT=
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+.ifndef OPT
+acl_smtp_rcpt = accept
+.else
+acl_smtp_rcpt = accept verify = recipient/callout
+.endif
+
+log_selector =  +received_recipients +tls_certificate_verified +tls_sni
+
+queue_run_in_order
+
+tls_advertise_hosts = *
+.ifdef _HAVE_GNUTLS
+# needed to force generation
+tls_dhparam = historic
+.endif
+
+# Set certificate only if server
+CDIR1 = DIR/aux-fixed/exim-ca/example.net/server1.example.net
+CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
+
+
+tls_certificate = ${if eq {SERVER}{server} \
+	{${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}} {eq {DETAILS}{ee}}} \
+		{CDIR2/fullchain.pem}\
+		{CDIR1/fullchain.pem}}}\
+	fail}
+
+tls_privatekey = ${if eq {SERVER}{server} \
+	{${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}} {eq {DETAILS}{ee}}} \
+		{CDIR2/server1.example.com.unlocked.key}\
+		{CDIR1/server1.example.net.unlocked.key}}}\
+	fail}
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver =	dnslookup
+  condition =	${if eq {SERVER}{}}
+  dnssec_request_domains = *
+  self =	send
+  transport =	send_to_server
+  errors_to =	""
+  no_more
+
+server:
+  driver =	redirect
+  data =	:blackhole:
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver =		smtp
+  allow_localhost
+  port =		PORT_D
+  hosts_try_fastopen =	:
+
+.ifdef REQUIRE_DANE
+  hosts_require_dane =	*
+.else
+  hosts_try_dane     =	*
+.endif
+  tls_sni =		OPT
+  tls_verify_certificates =
+
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

@@ -1,0 +1,28 @@
+### Routing
+t@mxdanesecchain.test.ex
+  router = client, transport = send_to_server
+  host dane512ee.test.ex [ip4.ip4.ip4.ip4] MX=1 AD
+t@mxdaneinsecchain.test.ex
+  router = client, transport = send_to_server
+  host dane512ee.test.ex [ip4.ip4.ip4.ip4] MX=1
+### Two recipients, different domains through same DANE MX host
+### Two recipients: 1st: DANE, 2nd no-DANE, SNI is expected for the 1st only
+### One recipient to MX whith a secure CNAME chain, SNI should use CNAME target
+### Same, but to MX whith a insecure CNAME chain, should fail, no SNI expected
+### Same, but to MX whith a insecure CNAME chain, should pass, no SNI expected
+### Two messages, 1st secure CHAIN, 2nd with insecure chain, 1st must use DANE, but 2nd
+### Two messages, 1st insecure CHAIN, 2nd with secure chain, 1st must not use DANE, but 2nd
+### Two messages, 1st secure CHAIN, 2nd with insecure chain, 1st must use DANE, 2nd fail
+### Two messages, 1st insecure CHAIN, 2nd with secure chain, 1st must fail, 2nd pass
+
+******** SERVER ********
+### Routing
+### Two recipients, different domains through same DANE MX host
+### Two recipients: 1st: DANE, 2nd no-DANE, SNI is expected for the 1st only
+### One recipient to MX whith a secure CNAME chain, SNI should use CNAME target
+### Same, but to MX whith a insecure CNAME chain, should fail, no SNI expected
+### Same, but to MX whith a insecure CNAME chain, should pass, no SNI expected
+### Two messages, 1st secure CHAIN, 2nd with insecure chain, 1st must use DANE, but 2nd
+### Two messages, 1st insecure CHAIN, 2nd with secure chain, 1st must not use DANE, but 2nd
+### Two messages, 1st secure CHAIN, 2nd with insecure chain, 1st must use DANE, 2nd fail
+### Two messages, 1st insecure CHAIN, 2nd with secure chain, 1st must fail, 2nd pass

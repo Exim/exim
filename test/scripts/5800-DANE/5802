@@ -1,0 +1,52 @@
+# DANE client: SNI and Chains
+exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
+****
+
+# BASELINE
+
+### Routing
+# They should have the same destination host, but should differ
+# in their AD status.
+exim -bt t@mxdanesecchain.test.ex t@mxdaneinsecchain.test.ex
+****
+
+### Two recipients, different domains through same DANE MX host
+exim -odf t0@mxdane512ee.test.ex t0@mxdane512ee1.test.ex
+****
+
+### Two recipients: 1st: DANE, 2nd no-DANE, SNI is expected for the 1st only
+exim -odf t1@mxdane512ee.test.ex t1@mxnodane.test.ex
+****
+
+### One recipient to MX whith a secure CNAME chain, SNI should use CNAME target
+exim -DREQUIRE_DANE -odf t2@mxdanesecchain.test.ex
+****
+### Same, but to MX whith a insecure CNAME chain, should fail, no SNI expected
+exim -DREQUIRE_DANE -odf t3@mxdaneinsecchain.test.ex
+****
+### Same, but to MX whith a insecure CNAME chain, should pass, no SNI expected
+exim -odf t4@mxdaneinsecchain.test.ex
+****
+
+# multiple recipients
+# try DANE
+
+### Two messages, 1st secure CHAIN, 2nd with insecure chain, 1st must use DANE, but 2nd
+exim -odf t5@mxdanesecchain.test.ex t5@mxdaneinsecchain.test.ex
+****
+### Two messages, 1st insecure CHAIN, 2nd with secure chain, 1st must not use DANE, but 2nd
+exim -odf t6@mxdaneinsecchain.test.ex t6@mxdanesecchain.test.ex
+****
+
+# multiple recipients
+# require DANE
+
+### Two messages, 1st secure CHAIN, 2nd with insecure chain, 1st must use DANE, 2nd fail
+exim -DREQUIRE_DANE -odf t7@mxdanesecchain.test.ex t7@mxdaneinsecchain.test.ex
+****
+### Two messages, 1st insecure CHAIN, 2nd with secure chain, 1st must fail, 2nd pass
+exim -DREQUIRE_DANE -odf t8@mxdaneinsecchain.test.ex t8@mxdanesecchain.test.ex
+****
+
+killdaemon
+no_msglog_check

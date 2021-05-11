@@ -521,8 +521,12 @@ while (one && two)
   else if (one->port != two->port)
     return FALSE;
 
-  /* Hosts matched */
+#ifdef SUPPORT_DANE
+  /* DNSSEC equality */
+  if (one->dnssec != two->dnssec) return FALSE;
+#endif
 
+  /* Hosts matched */
   one = one->next;
   two = two->next;
   }
