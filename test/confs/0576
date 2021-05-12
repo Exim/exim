@@ -7,6 +7,8 @@ SERVER =
 log_selector = +received_recipients +sender_on_delivery
 
 acl_smtp_rcpt = rcpt
+acl_not_smtp_start = not_smtp
+
 queue_only
 queue_run_in_order
 
@@ -18,6 +20,10 @@ rcpt:
   accept
     queue = ${extract {$local_part} {normal="" alternate=alternate lowpri=lowpri}}
     logwrite = using queue '$queue_name'
+
+not_smtp:
+  accept
+    queue = example
 
 #---------------
 
