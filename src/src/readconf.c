@@ -3662,7 +3662,12 @@ for (driver_info * dd = drivers_available; dd->driver_name[0] != 0;
     {
     int len = dd->options_len;
     d->info = dd;
+  {
+  int old_pool = store_pool;
+  store_pool = POOL_PERM;
     d->options_block = store_get(len, FALSE);
+  store_pool = old_pool;
+  }
     memcpy(d->options_block, dd->options_block, len);
     for (int i = 0; i < *(dd->options_count); i++)
       dd->options[i].type &= ~opt_set;
