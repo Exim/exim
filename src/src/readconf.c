@@ -3775,7 +3775,12 @@ while ((buffer = get_config_line()))
     /* Set up a new driver instance data block on the chain, with
     its default values installed. */
 
+  {
+  int old_pool = store_pool;
+  if (Ustrncmp(class, "router", 7) == 0) store_pool = POOL_PERM;
     d = store_get(instance_size, FALSE);
+  store_pool = old_pool;
+  }
     memcpy(d, instance_default, instance_size);
     *p = d;
     p = &d->next;
