@@ -3011,7 +3011,12 @@ read_named_list(tree_node **anchorp, int *numberp, int max, uschar *s,
 BOOL forcecache = FALSE;
 uschar *ss;
 tree_node *t;
-namedlist_block * nb = store_get(sizeof(namedlist_block), FALSE);
+int old_pool = store_pool;
+namedlist_block * nb;
+
+store_pool = POOL_PERM;
+nb = store_get(sizeof(namedlist_block), FALSE);
+store_pool = old_pool;
 
 if (Ustrncmp(s, "_cache", 6) == 0)
   {
