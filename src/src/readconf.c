@@ -4260,7 +4260,7 @@ while(acl_line)
   if (*p != ':' || name[0] == 0)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "missing or malformed ACL name");
 
-  node = store_get(sizeof(tree_node) + Ustrlen(name), is_tainted(name));
+  node = store_get_perm(sizeof(tree_node) + Ustrlen(name), is_tainted(name));
   Ustrcpy(node->name, name);
   if (!tree_insertnode(&acl_anchor, node))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
