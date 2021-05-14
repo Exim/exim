@@ -1275,7 +1275,7 @@ for (;;)
     syntax error has been skipped. I now think it is the wrong approach, but
     have left this here just in case, and for the record. */
 
-    #ifdef NEVER
+#ifdef NEVER
     if (count > 0) return FF_DELIVERED;   /* Something was generated */
 
     if (syntax_errors == NULL ||          /* Not skipping syntax errors, or */
@@ -1285,8 +1285,7 @@ for (;;)
     *error = string_sprintf("no addresses generated: syntax error in %s: %s",
        (*syntax_errors)->text2, (*syntax_errors)->text1);
     return FF_ERROR;
-    #endif
-
+#endif
     }
 
   /* Find the end of the next address. Quoted strings in addresses may contain
@@ -1323,13 +1322,7 @@ for (;;)
 
   len = ss - s;
 
-  DEBUG(D_route)
-    {
-    int save = s[len];
-    s[len] = 0;
-    debug_printf("extract item: %s\n", s);
-    s[len] = save;
-    }
+  DEBUG(D_route) debug_printf("extract item: %.*s\n", len, s);
 
   /* Handle special addresses if permitted. If the address is :unknown:
   ignore it - this is for backward compatibility with old alias files. You
@@ -1350,7 +1343,7 @@ for (;;)
   else if (Ustrncmp(s, ":fail:", 6) == 0)
     { special = FF_FAIL; specopt = RDO_FAIL; }  /* specbit is 0 */
 
-  if (special != 0)
+  if (special)
     {
     uschar *ss = Ustrchr(s+1, ':') + 1;
     if ((options & specopt) == specbit)
@@ -1358,10 +1351,9 @@ for (;;)
       *error = string_sprintf("\"%.*s\" is not permitted", len, s);
       return FF_ERROR;
       }
-    while (*ss != 0 && isspace(*ss)) ss++;
-    while (s[len] != 0 && s[len] != '\n') len++;
-    s[len] = 0;
-    *error = string_copy(ss);
+    while (*ss && isspace(*ss)) ss++;
+    while (s[len] && s[len] != '\n') len++;
+    *error = string_copyn(ss, s + len - ss);
     return special;
     }
 
