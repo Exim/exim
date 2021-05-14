@@ -1368,8 +1368,8 @@ if (!isdirectory)
   if (ob->create_directory && allow_creation_here)
     {
     uschar *p = Ustrrchr(path, '/');
-    *p = '\0';
-    if (!directory_make(NULL, path, ob->dirmode, FALSE))
+    p = string_copyn(path, p - path);
+    if (!directory_make(NULL, p, ob->dirmode, FALSE))
       {
       addr->basic_errno = errno;
       addr->message =
@@ -1378,7 +1378,6 @@ if (!isdirectory)
       DEBUG(D_transport) debug_printf("%s transport: %s\n", tblock->name, path);
       return FALSE;
       }
-    *p = '/';
     }
 
   /* If file_format is set we must check that any existing file matches one of
