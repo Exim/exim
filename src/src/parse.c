@@ -65,7 +65,7 @@ Returns:   pointer past the end of the address
 */
 
 uschar *
-parse_find_address_end(uschar *s, BOOL nl_ends)
+parse_find_address_end(const uschar *s, BOOL nl_ends)
 {
 BOOL source_routing = *s == '@';
 int no_term = source_routing? 1 : 0;
@@ -121,7 +121,7 @@ while (*s != 0 && (*s != ',' || no_term > 0) && (*s != '\n' || !nl_ends))
     }
   }
 
-return s;
+return US s;
 }
 
 
@@ -1233,7 +1233,7 @@ Returns:      FF_DELIVERED      addresses extracted
 */
 
 int
-parse_forward_list(uschar *s, int options, address_item **anchor,
+parse_forward_list(const uschar *s, int options, address_item **anchor,
   uschar **error, const uschar *incoming_domain, uschar *directory,
   error_block **syntax_errors)
 {
@@ -1247,7 +1247,7 @@ for (;;)
   int special = 0;
   int specopt = 0;
   int specbit = 0;
-  uschar *ss, *nexts;
+  const uschar *ss, *nexts;
   address_item *addr;
   BOOL inquote = FALSE;
 
@@ -1366,7 +1366,7 @@ for (;;)
     {
     uschar *filebuf;
     uschar filename[256];
-    uschar *t = s+9;
+    const uschar * t = s+9;
     int flen = len - 9;
     int frc;
     struct stat statbuf;
