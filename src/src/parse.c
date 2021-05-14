@@ -1579,18 +1579,17 @@ for (;;)
     {
     int start, end, domain;
     const uschar *recipient = NULL;
-    int save = s[len];
-    s[len] = 0;
+    uschar * s_ltd = string_copyn(s, len);
 
     /* If it starts with \ and the rest of it parses as a valid mail address
     without a domain, carry on with that address, but qualify it with the
     incoming domain. Otherwise arrange for the address to fall through,
     causing an error message on the re-parse. */
 
-    if (*s == '\\')
+    if (*s_ltd == '\\')
       {
       recipient =
-        parse_extract_address(s+1, error, &start, &end, &domain, FALSE);
+        parse_extract_address(s_ltd+1, error, &start, &end, &domain, FALSE);
       if (recipient)
         recipient = domain != 0 ? NULL :
           string_sprintf("%s@%s", recipient, incoming_domain);
@@ -1599,17 +1598,17 @@ for (;;)
     /* Try parsing the item as an address. */
 
     if (!recipient) recipient =
-      parse_extract_address(s, error, &start, &end, &domain, FALSE);
+      parse_extract_address(s_ltd, error, &start, &end, &domain, FALSE);
 
     /* If item starts with / or | and is not a valid address, or there
     is no domain, treat it as a file or pipe. If it was a quoted item,
     remove the quoting occurrences of \ within it. */
 
-    if ((*s == '|' || *s == '/') && (recipient == NULL || domain == 0))
+    if ((*s_ltd == '|' || *s_ltd == '/') && (recipient == NULL || domain == 0))
       {
-      uschar *t = store_get(Ustrlen(s) + 1, is_tainted(s));
+      uschar *t = store_get(Ustrlen(s_ltd) + 1, is_tainted(s_ltd));
       uschar *p = t;
-      uschar *q = s;
+      uschar *q = s_ltd;
       while (*q != 0)
         {
         if (inquote)
@@ -1622,7 +1621,7 @@ for (;;)
       *p = 0;
       addr = deliver_make_addr(t, TRUE);
       setflag(addr, af_pfr);                   /* indicates pipe/file/reply */
-      if (*s != '|') setflag(addr, af_file);   /* indicates file */
+      if (*s_ltd != '|') setflag(addr, af_file);   /* indicates file */
       }
 
     /* Item must be an address. Complain if not, else qualify, rewrite and set
@@ -1634,36 +1633,33 @@ for (;;)
 
     else
       {
-      if (recipient == NULL)
+      if (!recipient)
         {
         if (Ustrcmp(*error, "empty address") == 0)
           {
           *error = NULL;
-          s[len] = save;
           s = nexts;
           continue;
           }
 
-        if (syntax_errors != NULL)
+        if (syntax_errors)
           {
           error_block *e = store_get(sizeof(error_block), FALSE);
           error_block *last = *syntax_errors;
-          if (last == NULL) *syntax_errors = e; else
+          if (!last) *syntax_errors = e; else
             {
-            while (last->next != NULL) last = last->next;
+            while (last->next) last = last->next;
             last->next = e;
             }
           e->next = NULL;
           e->text1 = *error;
-          e->text2 = string_copy(s);
-          s[len] = save;
+          e->text2 = s_ltd;
           s = nexts;
           continue;
           }
         else
           {
-          *error = string_sprintf("%s in \"%s\"", *error, s);
-          s[len] = save;   /* _after_ using it for *error */
+          *error = string_sprintf("%s in \"%s\"", *error, s_ltd);
           return FF_ERROR;
           }
         }
@@ -1678,10 +1674,8 @@ for (;;)
       addr = deliver_make_addr(US recipient, TRUE);  /* TRUE => copy recipient, so deconst ok */
       }
 
-    /* Restore the final character in the original data, and add to the
-    output chain. */
+    /* Add the original data to the output chain. */
 
-    s[len] = save;
     addr->next = *anchor;
     *anchor = addr;
     count++;
