@@ -3011,12 +3011,7 @@ read_named_list(tree_node **anchorp, int *numberp, int max, uschar *s,
 BOOL forcecache = FALSE;
 uschar *ss;
 tree_node *t;
-int old_pool = store_pool;
-namedlist_block * nb;
-
-store_pool = POOL_PERM;
-nb = store_get(sizeof(namedlist_block), FALSE);
-store_pool = old_pool;
+namedlist_block * nb = store_get_perm(sizeof(namedlist_block), FALSE);
 
 if (Ustrncmp(s, "_cache", 6) == 0)
   {
@@ -3662,12 +3657,7 @@ for (driver_info * dd = drivers_available; dd->driver_name[0] != 0;
     {
     int len = dd->options_len;
     d->info = dd;
-  {
-  int old_pool = store_pool;
-  store_pool = POOL_PERM;
-    d->options_block = store_get(len, FALSE);
-  store_pool = old_pool;
-  }
+    d->options_block = store_get_perm(len, FALSE);
     memcpy(d->options_block, dd->options_block, len);
     for (int i = 0; i < *(dd->options_count); i++)
       dd->options[i].type &= ~opt_set;
@@ -3780,12 +3770,7 @@ while ((buffer = get_config_line()))
     /* Set up a new driver instance data block on the chain, with
     its default values installed. */
 
-  {
-  int old_pool = store_pool;
-  if (Ustrncmp(class, "router", 7) == 0) store_pool = POOL_PERM;
-    d = store_get(instance_size, FALSE);
-  store_pool = old_pool;
-  }
+    d = store_get_perm(instance_size, FALSE);
     memcpy(d, instance_default, instance_size);
     *p = d;
     p = &d->next;
