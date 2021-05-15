@@ -3015,7 +3015,7 @@ else
 
 p = s + Ustrlen(s);
 while (p > s && isspace(p[-1])) p--;
-*p = 0;
+s = string_copyn(s, p-s);
 
 /* It seems that CC:Mail is braindead, and assumes that the greeting message
 is all contained in a single IP packet. The original code wrote out the
