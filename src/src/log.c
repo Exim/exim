@@ -455,7 +455,7 @@ return fd;
 it does not exist. This may be called recursively on failure, in order to open
 the panic log.
 
-The directory is in the static variable file_path. This is static so that it
+The directory is in the static variable file_path. This is static so that
 the work of sorting out the path is done just once per Exim process.
 
 Exim is normally configured to avoid running as root wherever possible, the log
@@ -732,34 +732,32 @@ if (*ss)
       logging_mode |= LOG_MODE_SYSLOG;
     else if (!(logging_mode & LOG_MODE_FILE))  /* no file yet */
       {
-      /* If a non-empty path is given, use it */
-
-      if (*s)
-	file_path = string_copy(s);
-
-      /* If handling the config option, and the element is empty, we want to use
-      the first non-empty, non-syslog item in LOG_FILE_PATH, if there is one,
-      since the value of log_file_path may have been set at runtime. If there is
-      no such item, use the ultimate default in the spool directory. */
-
-      else if (*log_file_path && LOG_FILE_PATH[0])
-	{
-	ss = US LOG_FILE_PATH;
-	continue;
-	}
-
       logging_mode |= LOG_MODE_FILE;
+      if (*s) file_path = string_copy(s);     /* If a non-empty path is given, use it */
       }
-    else
-      if (multiple) *multiple = TRUE;
+    else if (multiple) *multiple = TRUE;
     }
-  else
-    logging_mode = LOG_MODE_FILE;
+else
+  logging_mode = LOG_MODE_FILE;
 
 /* Set up the ultimate default if necessary. */
 
 if (logging_mode & LOG_MODE_FILE  &&  !*file_path)
-  file_path = string_sprintf("%s/log/%%slog", spool_directory);
+  if (LOG_FILE_PATH[0])
+    {
+      /* If we still do not have a file_path, we take
+      the first non-empty, non-syslog item in LOG_FILE_PATH, if there is
+      one.  If there is no such item, use the ultimate default in the
+      spool directory. */
+
+       for (ss = US LOG_FILE_PATH;
+            s = string_nextinlist(&ss, &sep, log_buffer, LOG_BUFFER_SIZE);)
+          {
+            if (*s != '/') continue;
+            file_path = string_copy(s);
+          }
+    }
+  else file_path = string_sprintf("%s/log/%%slog", spool_directory);
 }
 
 
@@ -882,10 +880,9 @@ if (!path_inspected)
 
   store_pool = POOL_PERM;
 
-  /* If nothing has been set, don't waste effort... the default values for the
-  statics are file_path="" and logging_mode = LOG_MODE_FILE. */
-
-  if (*log_file_path) set_file_path(&multiple);
+  /* make sure that we have a valid log file path in "file_path",
+  the open_log() later relies on it */
+  set_file_path(&multiple);
 
   /* If no modes have been selected, it is a major disaster */
 
