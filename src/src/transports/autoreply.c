@@ -175,18 +175,21 @@ return ss;
 list. Any that are found are removed.
 
 Arguments:
-  listptr     points to the list of addresses
+  list        list of addresses to be checked
   never_mail  an address list, already expanded
 
-Returns:      nothing
+Returns:      edited replacement address list, or NULL, or original
 */
 
-static void
-check_never_mail(uschar **listptr, const uschar *never_mail)
+static uschar *
+check_never_mail(uschar * list, const uschar * never_mail)
 {
-uschar *s = *listptr;
+rmark reset_point = store_mark();
+uschar * newlist = string_copy(list);
+uschar * s = newlist;
+BOOL hit = FALSE;
 
-while (*s != 0)
+while (*s)
   {
   uschar *error, *next;
   uschar *e = parse_find_address_end(s, FALSE);
@@ -220,6 +223,7 @@ while (*s != 0)
     {
     DEBUG(D_transport)
       debug_printf("discarding recipient %s (matched never_mail)\n", next);
+    hit = TRUE;
     if (terminator == ',') e++;
     memmove(s, e, Ustrlen(e) + 1);
     }
@@ -230,18 +234,31 @@ while (*s != 0)
     }
   }
 
+/* If no addresses were removed, retrieve the memory used and return
+the original. */
+
+if (!hit)
+  {
+  store_reset(reset_point);
+  return list;
+  }
+
 /* Check to see if we removed the last address, leaving a terminating comma
 that needs to be removed */
 
-s = *listptr + Ustrlen(*listptr);
-while (s > *listptr && (isspace(s[-1]) || s[-1] == ',')) s--;
+s = newlist + Ustrlen(newlist);
+while (s > newlist && (isspace(s[-1]) || s[-1] == ',')) s--;
 *s = 0;
 
-/* Check to see if there any addresses left; if not, set NULL */
+/* Check to see if there any addresses left; if not, return NULL */
 
-s = *listptr;
-while (s != 0 && isspace(*s)) s++;
-if (*s == 0) *listptr = NULL;
+s = newlist;
+while (s && isspace(*s)) s++;
+if (*s)
+  return newlist;
+
+store_reset(reset_point);
+return NULL;
 }
 
 
@@ -372,9 +389,9 @@ if (ob->never_mail)
     return FALSE;
     }
 
-  if (to) check_never_mail(&to, never_mail);
-  if (cc) check_never_mail(&cc, never_mail);
-  if (bcc) check_never_mail(&bcc, never_mail);
+  if (to) to = check_never_mail(to, never_mail);
+  if (cc) cc = check_never_mail(cc, never_mail);
+  if (bcc) bcc = check_never_mail(bcc, never_mail);
 
   if (!to && !cc && !bcc)
     {
