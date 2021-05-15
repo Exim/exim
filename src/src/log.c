@@ -287,8 +287,11 @@ if (fd < 0 && errno == ENOENT)
   uschar *lastslash = Ustrrchr(name, '/');
   *lastslash = 0;
   created = directory_make(NULL, name, LOG_DIRECTORY_MODE, FALSE);
-  DEBUG(D_any) debug_printf("%s log directory %s\n",
-    created ? "created" : "failed to create", name);
+  DEBUG(D_any)
+    if (created)
+      debug_printf("created log directory %s\n", name);
+    else
+      debug_printf("failed to create log directory %s: %s\n", name, strerror(errno));
   *lastslash = '/';
   if (created) fd = Uopen(name, flags, LOG_MODE);
   }
@@ -394,9 +397,7 @@ int fd = -1;
 const uid_t euid = geteuid();
 
 if (euid == exim_uid)
-  {
   fd = log_open_already_exim(name);
-  }
 else if (euid == root_uid)
   {
   int sock[2];
@@ -499,17 +500,24 @@ switch (type)
     it gets statted to see if it has been cycled. With a datestamp, the datestamp
     will be compared. The static slot for saving it is the same size as buffer,
     and the text has been checked above to fit, so this use of strcpy() is OK. */
+
     Ustrcpy(mainlog_name, buffer);
     if (string_datestamp_offset > 0)
       mainlog_datestamp = mainlog_name + string_datestamp_offset;
+    break;
+
   case lt_reject:
     /* Ditto for the reject log */
+
     Ustrcpy(rejectlog_name, buffer);
     if (string_datestamp_offset > 0)
       rejectlog_datestamp = rejectlog_name + string_datestamp_offset;
+    break;
+
   case lt_debug:
     /* and deal with the debug log (which keeps the datestamp, but does not
     update it) */
+
     Ustrcpy(debuglog_name, buffer);
     if (tag)
       {
@@ -519,10 +527,13 @@ switch (type)
       if (ok2)
         Ustrcpy(debuglog_name, buffer);
       }
+    break;
+
   default:
     /* Remove any datestamp if this is the panic log. This is rare, so there's no
   need to optimize getting the datestamp length. We remove one non-alphanumeric
   char afterwards if at the start, otherwise one before. */
+
     if (string_datestamp_offset >= 0)
       {
       uschar * from = buffer + string_datestamp_offset;
@@ -539,6 +550,7 @@ switch (type)
       due to overlap we must use memmove() not Ustrcpy(). */
       memmove(from, to, Ustrlen(to)+1);
       }
+    break;
   }
 
 /* If the file name is too long, it is an unrecoverable disaster */
@@ -552,9 +564,7 @@ if (!ok)
 *fd = log_open_as_exim(buffer);
 
 if (*fd >= 0)
-  {
   return;
-  }
 
 euid = geteuid();
 
@@ -706,6 +716,10 @@ return total_written;
 }
 
 
+/* Pull the file out of the configured or the compiled-in list.
+Called for an empty log_file_path element, for debug logging activation
+when file_path has not previously been set, and from the appenfile transport setup. */
+
 void
 set_file_path(BOOL *multiple)
 {
@@ -713,30 +727,42 @@ uschar *s;
 int sep = ':';              /* Fixed separator - outside use */
 const uschar *ss = *log_file_path ? log_file_path : US LOG_FILE_PATH;
 
-logging_mode = 0;
-while ((s = string_nextinlist(&ss, &sep, log_buffer, LOG_BUFFER_SIZE)))
-  {
-  if (Ustrcmp(s, "syslog") == 0)
-    logging_mode |= LOG_MODE_SYSLOG;
-  else if (logging_mode & LOG_MODE_FILE)  /* we know a file already */
+if (*ss)
+  for (logging_mode = 0;
+       s = string_nextinlist(&ss, &sep, log_buffer, LOG_BUFFER_SIZE); )
     {
-    if (multiple) *multiple = TRUE;
+    if (Ustrcmp(s, "syslog") == 0)
+      logging_mode |= LOG_MODE_SYSLOG;
+    else if (!(logging_mode & LOG_MODE_FILE))  /* no file yet */
+      {
+      /* If a non-empty path is given, use it */
+
+      if (*s)
+	file_path = string_copy(s);
+
+      /* If handling the config option, and the element is empty, we want to use
+      the first non-empty, non-syslog item in LOG_FILE_PATH, if there is one,
+      since the value of log_file_path may have been set at runtime. If there is
+      no such item, use the ultimate default in the spool directory. */
+
+      else if (*log_file_path && LOG_FILE_PATH[0])
+	{
+	ss = US LOG_FILE_PATH;
+	continue;
+	}
+
+      logging_mode |= LOG_MODE_FILE;
+      }
+    else
+      if (multiple) *multiple = TRUE;
     }
   else
-    {
-    logging_mode |= LOG_MODE_FILE;
+    logging_mode = LOG_MODE_FILE;
 
-    /* If a non-empty path is given, use it */
+/* Set up the ultimate default if necessary. */
 
-    if (*s)
-      file_path = string_copy(s);
-
-    /* If the path is empty, we want to use the first non-empty, non-
-    syslog item in LOG_FILE_PATH, if there is one, since the value of
-    log_file_path may have been set at runtime. If there is no such item,
-    use the ultimate default in the spool directory. */
-    }
-  }
+if (logging_mode & LOG_MODE_FILE  &&  !*file_path)
+  file_path = string_sprintf("%s/log/%%slog", spool_directory);
 }
 
 
@@ -870,11 +896,8 @@ if (!path_inspected)
     die(US"Neither syslog nor file logging set in log_file_path",
         US"Unexpected logging failure");
 
-  /* Set up the ultimate default if necessary. Then revert to the old store
-  pool, and record that we've sorted out the path. */
+  /* Revert to the old store pool, and record that we've sorted out the path. */
 
-  if (logging_mode & LOG_MODE_FILE  &&  !file_path[0])
-    file_path = string_sprintf("%s/log/%%slog", spool_directory);
   store_pool = old_pool;
   path_inspected = TRUE;
 
@@ -1228,6 +1251,7 @@ if (flags & LOG_PANIC)
 
   if (logging_mode & LOG_MODE_FILE)
     {
+    if (!*file_path) set_file_path(NULL);
     panic_recurseflag = TRUE;
     open_log(&paniclogfd, lt_panic, NULL);  /* Won't return on failure */
     panic_recurseflag = FALSE;
@@ -1505,10 +1529,12 @@ debug_file = NULL;
 unlink_log(lt_debug);
 }
 
+/* Called from the appendfile transport setup. */
 void
 open_logs(void)
 {
 set_file_path(NULL);
+if (!(logging_mode & LOG_MODE_FILE)) return;
 open_log(&mainlogfd, lt_main, 0);
 open_log(&rejectlogfd, lt_reject, 0);
 }
