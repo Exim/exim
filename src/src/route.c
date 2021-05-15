@@ -288,7 +288,12 @@ for (router_instance * r = routers; r; r = r->next)
 
   /* Build a host list if fallback hosts is set. */
 
-  host_build_hostlist(&(r->fallback_hostlist), r->fallback_hosts, FALSE);
+    {
+    int old_pool = store_pool;
+    store_pool = POOL_PERM;
+    host_build_hostlist(&r->fallback_hostlist, r->fallback_hosts, FALSE);
+    store_pool = old_pool;
+    }
 
   /* Check redirect_router and pass_router are valid */
 

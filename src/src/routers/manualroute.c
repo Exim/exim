@@ -259,7 +259,7 @@ if (ob->route_list)
   int sep = -(';');             /* Default is semicolon */
   listptr = ob->route_list;
 
-  while ((route_item = string_nextinlist(&listptr, &sep, NULL, 0)) != NULL)
+  while ((route_item = string_nextinlist(&listptr, &sep, NULL, 0)))
     {
     int rc;
 
@@ -468,7 +468,7 @@ if (!addr->host_list)
 defined for these hosts. It will be a remote one, as a local transport is
 dealt with above. However, we don't need one if verifying only. */
 
-if (transport == NULL && verify == v_none)
+if (!transport && verify == v_none)
     {
     log_write(0, LOG_MAIN, "Error in %s router: no transport defined",
       rblock->name);
