@@ -3673,6 +3673,16 @@ return NULL;   /* never obeyed */
 
 
 
+static void
+driver_init_fini(driver_instance * d, const uschar * class)
+{
+if (!d->driver_name)
+  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+    "no driver defined for %s \"%s\"", class, d->name);
+(d->info->init)(d);
+}
+
+
 /*************************************************
 *             Initialize driver list             *
 *************************************************/
@@ -3733,11 +3743,8 @@ while ((buffer = get_config_line()))
     {
     if (d)
       {
-      if (!d->driver_name)
-        log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-          "no driver defined for %s \"%s\"", class, d->name);
       /* s is using big_buffer, so this call had better not */
-      (d->info->init)(d);
+      driver_init_fini(d, class);
       d = NULL;
       }
     if (!macro_read_assignment(buffer)) exim_exit(EXIT_FAILURE);
@@ -3753,12 +3760,7 @@ while ((buffer = get_config_line()))
     /* Finish off initializing the previous driver. */
 
     if (d)
-      {
-      if (!d->driver_name)
-        log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-          "no driver defined for %s \"%s\"", class, d->name);
-      (d->info->init)(d);
-      }
+      driver_init_fini(d, class);
 
     /* Check that we haven't already got a driver of this name */
 
@@ -3822,12 +3824,7 @@ while ((buffer = get_config_line()))
 /* Run the initialization function for the final driver. */
 
 if (d)
-  {
-  if (!d->driver_name)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-      "no driver defined for %s \"%s\"", class, d->name);
-  (d->info->init)(d);
-  }
+  driver_init_fini(d, class);
 }
 
 

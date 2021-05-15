@@ -355,6 +355,7 @@ void
 smtp_transport_init(transport_instance *tblock)
 {
 smtp_transport_options_block *ob = SOB tblock->options_block;
+int old_pool = store_pool;
 
 /* Retry_use_local_part defaults FALSE if unset */
 
@@ -390,7 +391,9 @@ if (ob->hosts_override && ob->hosts) tblock->overrides_hosts = TRUE;
 /* If there are any fallback hosts listed, build a chain of host items
 for them, but do not do any lookups at this time. */
 
-host_build_hostlist(&(ob->fallback_hostlist), ob->fallback_hosts, FALSE);
+store_pool = POOL_PERM;
+host_build_hostlist(&ob->fallback_hostlist, ob->fallback_hosts, FALSE);
+store_pool = old_pool;
 }
 
 
