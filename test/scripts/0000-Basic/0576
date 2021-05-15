@@ -119,4 +119,8 @@ exim -bp -qGalternate
 exim -bp -qGthird
 ****
 #
+# Immediate delivery, via alternate queue
+exim -odi q_set_by_nonsmtp_acl@test.ex
+****
+#
 no_stderr_check

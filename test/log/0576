@@ -28,6 +28,9 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 moved from (alternate) input, msglog to (third) input, msglog
 1999-03-02 09:44:33 10HmbB-0005vi-00 moved from (third) input, msglog to input, msglog
 1999-03-02 09:44:33 10HmbC-0005vi-00 moved from (third) input, msglog to input, msglog
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss Q=example for q_set_by_nonsmtp_acl@test.ex
+1999-03-02 09:44:33 10HmbD-0005vi-00 => q_set_by_nonsmtp_acl <q_set_by_nonsmtp_acl@test.ex> F=<CALLER@the.local.host.name> Q=example R=all T=dump
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, -qGlowpri/3s, not listening for SMTP

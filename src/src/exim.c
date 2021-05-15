@@ -2789,9 +2789,11 @@ on the second character (the one after '-'), to save some effort. */
 		  else badarg = TRUE;
 		  break;
 
-    /* -MCG: set the queue name, to a non-default value */
+    /* -MCG: set the queue name, to a non-default value. Arguably, anything
+       from the commandline should be tainted - but we will need an untainted
+       value for the spoolfile when doing a -odi delivery process. */
 
-	case 'G': if (++i < argc) queue_name = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_DRIVERNAME_MAX, "-MCG"), TRUE);
+	case 'G': if (++i < argc) queue_name = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_DRIVERNAME_MAX, "-MCG"), FALSE);
 		  else badarg = TRUE;
 		  break;
 
