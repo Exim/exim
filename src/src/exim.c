@@ -211,6 +211,19 @@ exit(1);
 }
 
 
+/***********************************************
+*            Handler for SIGSEGV               *
+***********************************************/
+
+static void
+segv_handler(int sig)
+{
+log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (maybe attempt to write to immutable memory)");
+signal(SIGSEGV, SIG_DFL);
+kill(getpid(), sig);
+}
+
+
 /*************************************************
 *             Handler for SIGUSR1                *
 *************************************************/
@@ -1805,7 +1818,8 @@ descriptive text. */
 
 process_info = store_get(PROCESS_INFO_SIZE, TRUE);	/* tainted */
 set_process_info("initializing");
-os_restarting_signal(SIGUSR1, usr1_handler);
+os_restarting_signal(SIGUSR1, usr1_handler);		/* exiwhat */
+signal(SIGSEGV, segv_handler);				/* log faults */
 
 /* If running in a dockerized environment, the TERM signal is only
 delegated to the PID 1 if we request it by setting an signal handler */
@@ -5464,15 +5478,15 @@ that SIG_IGN works. */
 
 if (!f.synchronous_delivery)
   {
-  #ifdef SA_NOCLDWAIT
+#ifdef SA_NOCLDWAIT
   struct sigaction act;
   act.sa_handler = SIG_IGN;
   sigemptyset(&(act.sa_mask));
   act.sa_flags = SA_NOCLDWAIT;
   sigaction(SIGCHLD, &act, NULL);
-  #else
+#else
   signal(SIGCHLD, SIG_IGN);
-  #endif
+#endif
   }
 
 /* Save the current store pool point, for resetting at the start of
