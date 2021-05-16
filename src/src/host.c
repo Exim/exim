@@ -1581,7 +1581,7 @@ Put it in permanent memory. */
 
   if (hosts->h_aliases)
     {
-    int count = 1;
+    int count = 1;  /* need 1 more for terminating NULL */
     uschar **ptr;
 
     for (uschar ** aliases = USS hosts->h_aliases; *aliases; aliases++) count++;
@@ -1690,7 +1690,7 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
       {
       uschar **aptr = NULL;
       int ssize = 264;
-      int count = 0;
+      int count = 1;  /* need 1 more for terminating NULL */
       int old_pool = store_pool;
 
       sender_host_dnssec = dns_is_secure(dnsa);
