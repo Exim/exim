@@ -4419,25 +4419,28 @@ print_config(BOOL admin, BOOL terse)
 {
 const int TS = terse ? 0 : 2;
 int indent = 0;
+rmark r = NULL;
 
-for (config_line_item * i = config_lines; i; i = i->next)
+for (const config_line_item * i = config_lines; i; i = i->next)
   {
-  uschar *current;
-  uschar *p;
+  uschar * current, * p;
+
+  if (r) store_reset(r);
+  r = store_mark();
 
   /* skip over to the first non-space */
-  for (current = i->line; *current && isspace(*current); ++current)
+  for (current = string_copy(i->line); *current && isspace(*current); ++current)
     ;
 
-  if (*current == '\0')
+  if (!*current)
     continue;
 
   /* Collapse runs of spaces. We stop this if we encounter one of the
-   * following characters: "'$, as this may indicate careful formatting */
-  for (p = current; *p; ++p)
+  following characters: "'$, as this may indicate careful formatting */
+
+  for (p = current; *p; p++) if (isspace(*p))
     {
     uschar *next;
-    if (!isspace(*p)) continue;
     if (*p != ' ') *p = ' ';
 
     for (next = p; isspace(*next); ++next)
@@ -4491,6 +4494,7 @@ for (config_line_item * i = config_lines; i; i = i->next)
     /* rest is public */
     printf("%*s%s\n", indent, "", current);
   }
+if (r) store_reset(r);
 }
 
 #endif	/*!MACRO_PREDEF*/
