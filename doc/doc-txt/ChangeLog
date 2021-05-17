@@ -316,6 +316,9 @@ JH/54 DMARC: recent versions of the OpenDMARC library appear to have broken
 
 JH/55 TLS: as server, reject connections with ALPN indicating non-smtp use.
 
+JH/56 Make the majority of info read from config files readonly, for defence-in-
+      depth against exploits.  Suggestion by Qualsy.
+
 
 Exim version 4.94
 -----------------
