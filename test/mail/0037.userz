@@ -5,7 +5,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: Test 1
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -19,7 +20,8 @@ Envelope-to: system-filter
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaY-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: should fail this
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -35,7 +37,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbA-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: should freeze this
 Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -51,7 +54,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbC-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: reply to this
 Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -67,7 +71,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbU-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: should freeze this
 Message-Id: <E10HmbU-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -83,7 +88,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbW-0005vi-00
-	for readfile@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for readfile@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbW-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -98,7 +104,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmcA-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: should defer this
 Message-Id: <E10HmcA-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>

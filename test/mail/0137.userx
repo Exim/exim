@@ -2,7 +2,8 @@ From t1@foo Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <t1@foo>)
 	id 10HmaX-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: First
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <t1@foo>
@@ -16,7 +17,8 @@ From t1@foo Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <t1@foo>)
 	id 10HmaY-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: Second
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 From: CALLER_NAME <t1@foo>
@@ -30,7 +32,8 @@ From t2@foo Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <t2@foo>)
 	id 10HmaZ-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: Third
 Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
 From: CALLER_NAME <t2@foo>
@@ -44,7 +47,8 @@ From t3@foo Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <t3@foo>)
 	id 10HmbA-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: Fourth
 Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 From: CALLER_NAME <t3@foo>

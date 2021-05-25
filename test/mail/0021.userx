@@ -1,7 +1,8 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbD-0005vi-00
-	for userx@test1; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test1;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: userx@test1
@@ -20,7 +21,8 @@ checks incoming messages on this system. The following error was given:
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test1>)
 	id 10HmaY-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 From: userx@test1
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -31,7 +33,8 @@ From ok@test1 Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <ok@test1>)
 	id 10HmbE-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
 From: ok@test1
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -42,7 +45,8 @@ From ok@test3 Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <ok@test3>)
 	id 10HmbG-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbG-0005vi-00@myhost.test.ex>
 From: ok@test3
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -52,7 +56,8 @@ Test message 4.
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbJ-0005vi-00
-	for userx@test1; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test1;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: userx@test1
@@ -69,7 +74,8 @@ checks incoming messages on this system. The following error was given:
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbK-0005vi-00
-	for userx@test1; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test1;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: userx@test1
@@ -89,7 +95,8 @@ checks incoming messages on this system. The following error was given:
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test1>)
 	id 10HmbC-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
 From: userx@test1
 Date: Tue, 2 Mar 1999 09:44:33 +0000

@@ -11,10 +11,10 @@ EHLO
 250 OK
 MAIL FROM
 RCPT TO
-BDAT 313 LAST
+BDAT 315 LAST
 250 OK mail
 250 OK rcpt
-*data 313
+*data 315
 QUIT
 250 OK chunked message data
 221 Closing connection
@@ -39,8 +39,8 @@ MAIL FROM
 250 OK mail
 RCPT TO
 250 OK rcpt
-BDAT 315 LAST
-*data 315
+BDAT 317 LAST
+*data 317
 250 OK chunked message data
 QUIT
 221 Closing connection
@@ -68,8 +68,8 @@ MAIL FROM
 250 OK mail
 RCPT TO
 250 OK rcpt
-BDAT 319 LAST
-*data 319
+BDAT 321 LAST
+*data 321
 QUIT
 451 Service not available
 221 Closing connection
@@ -98,8 +98,8 @@ MAIL FROM
 250 OK mail
 RCPT TO
 250 OK rcpt
-BDAT 319 LAST
-*data 319
+BDAT 321 LAST
+*data 321
 QUIT
 550 content rejected
 221 Closing connection
@@ -126,8 +126,8 @@ MAIL FROM
 250 OK mail
 RCPT TO
 250 OK rcpt
-BDAT 317 LAST
-*data 317
+BDAT 319 LAST
+*data 319
 >*eof
 ****
 sudo exim -d-all+transport -odi -bs

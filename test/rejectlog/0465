@@ -3,7 +3,8 @@ Envelope-from: <>
 Envelope-to: <abc@xyz>
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 	id 10HmaX-0005vi-00
-	for abc@xyz; Tue, 2 Mar 1999 09:44:33 +0000
+	for abc@xyz;
+	Tue, 2 Mar 1999 09:44:33 +0000
 T To: abc@xyz.
 I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000

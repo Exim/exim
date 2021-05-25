@@ -10,7 +10,7 @@ MAIL FROM:<>
 250 OK
 RCPT TO:<a@test.ex>
 250 OK
-BDAT 295
+BDAT 297
 250 OK nonlast bdat
 BDAT 8380 LAST
 250 OK bdat
@@ -28,7 +28,7 @@ MAIL FROM:<>
 250 OK
 RCPT TO:<d@test.ex>
 250 OK
-BDAT 295
+BDAT 297
 500 oops bdat-nonlast
 QUIT
 225 OK
@@ -42,7 +42,7 @@ EHLO testhost.test.ex
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<p@test.ex>
-BDAT 295
+BDAT 297
 250 OK mail
 250 OK rcpt
 250 OK nonlast bdat
@@ -61,7 +61,7 @@ EHLO testhost.test.ex
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<s@test.ex>
-BDAT 295
+BDAT 297
 550 unacceptable mail-from
 550 rcpt ungood lacking mail-from
 500 bdat (nonlast) ungood lacking mail-from
@@ -77,7 +77,7 @@ EHLO testhost.test.ex
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<t@test.ex>
-BDAT 295
+BDAT 297
 250 OK mail
 550 no such recipient
 500 oops nonlast bdat - no rcpt
@@ -94,7 +94,7 @@ EHLO testhost.test.ex
 MAIL FROM:<>
 RCPT TO:<t1@test.ex>
 RCPT TO:<t2@test.ex>
-BDAT 279
+BDAT 281
 250 OK mail
 550 no such recipient
 250 good recipient
@@ -113,7 +113,7 @@ EHLO testhost.test.ex
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<u@test.ex>
-BDAT 295
+BDAT 297
 250 OK mail
 250 OK rcpt
 500 oops nonlast bdat
@@ -129,7 +129,7 @@ EHLO testhost.test.ex
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<v@test.ex>
-BDAT 295
+BDAT 297
 250 OK mail
 250 OK rcpt
 250 OK nonlast bdat
@@ -147,7 +147,7 @@ EHLO testhost.test.ex
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<u@test.ex>
-BDAT 295
+BDAT 297
 250 OK mail
 250 OK rcpt
 400 oops nonlast bdat
@@ -167,7 +167,7 @@ BDAT 8191
 250 OK mail
 250 OK rcpt
 250 OK nonlast bdat
-BDAT 807 LAST
+BDAT 809 LAST
 250 OK bdat
 QUIT
 225 OK

@@ -1,7 +1,8 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 From: Mailer-Daemon@test.ex
 Reply-To: postmaster@test.ex
 To: CALLER@test.ex
@@ -35,7 +36,8 @@ to correct the fault described above.
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

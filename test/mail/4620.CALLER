@@ -2,10 +2,12 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from localhost ([127.0.0.1] helo=the.local.host.name)
 	by the.local.host.name with esmtp (Exim x.yz)
 	id 10HmbA-0005vi-00
-	for SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmaZ-0005vi-00
-	for SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: remote_user@remote.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@the.local.host.name>
@@ -45,11 +47,13 @@ Received: from localhost ([127.0.0.1] helo=the.local.host.name)
 	by the.local.host.name with esmtp (Exim x.yz)
 	(envelope-from <SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex>)
 	id 10HmaY-0005vi-00
-	for remote_user@remote.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for remote_user@remote.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
 	id 10HmaX-0005vi-00
-	for redirect@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for redirect@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

@@ -19,7 +19,8 @@ P Received: from [V4NET.0.0.4] (ident=root)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <uncheckable@localhost1>)
 	id 10HmaX-0005vi-00
-	for z@remote.domain; Tue, 2 Mar 1999 09:44:33 +0000
+	for z@remote.domain;
+	Tue, 2 Mar 1999 09:44:33 +0000
 F From: abcd@x.y.z
 1999-03-02 09:44:33 10HmaY-0005vi-00 H=[V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
 Envelope-from: <uncheckable@localhost1>
@@ -28,7 +29,8 @@ P Received: from [V4NET.0.0.4] (ident=root)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <uncheckable@localhost1>)
 	id 10HmaY-0005vi-00
-	for z@remote.domain; Tue, 2 Mar 1999 09:44:33 +0000
+	for z@remote.domain;
+	Tue, 2 Mar 1999 09:44:33 +0000
 F From: abcd@x.y.z
 1999-03-02 09:44:33 H=[V4NET.0.0.5] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: relay not permitted
 1999-03-02 09:44:33 H=[V4NET.0.0.5] U=root sender verify fail for <ok@localhost1>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<postmaster@localhost1>: 550 Don't like postmaster

@@ -441,7 +441,8 @@ Data file written for message 10HmaX-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaX-0005vi-00
-	for ph10@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for ph10@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
 DSN: **** SPOOL_OUT - address: <ph10@myhost.test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
@@ -471,7 +472,7 @@ Non-recipients:
 ---- End of tree ----
 recipients_count=1
 **** SPOOL_IN - No additional fields
-body_linecount=1 message_linecount=7
+body_linecount=1 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   ph10@myhost.test.ex 

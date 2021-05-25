@@ -4,7 +4,8 @@ Envelope-to: <userx@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test1>)
 	id 10HmaY-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 F From: userx@test1
   Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -14,7 +15,8 @@ Envelope-to: <userx@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <ok@test2>)
 	id 10HmaZ-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 F From: ok@test2
   Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -24,7 +26,8 @@ Envelope-to: <userx@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <ok@test4>)
 	id 10HmbA-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 F From: ok@test4
   Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -42,7 +45,8 @@ Envelope-to: <userx@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test1>)
 	id 10HmbB-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 F From: userx@test1
   Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -52,7 +56,8 @@ Envelope-to: <userx@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test1>)
 	id 10HmbC-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
 F From: userx@test1
   Date: Tue, 2 Mar 1999 09:44:33 +0000

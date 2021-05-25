@@ -1,7 +1,8 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: pipe1@no.test.ex,
   file1@no.test.ex
 Auto-Submitted: auto-replied
@@ -46,7 +47,8 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaX-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -58,7 +60,8 @@ Message 1
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbA-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: pipe2@yes.test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
@@ -115,7 +118,8 @@ USER=pipe2
 >From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaZ-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -139,7 +143,8 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaZ-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

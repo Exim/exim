@@ -2,7 +2,8 @@
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbB-0005vi-00
-	for mmdf_userz@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for mmdf_userz@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -13,7 +14,8 @@ Test message with mmdf_ prefix
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbC-0005vi-00
-	for userz@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userz@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -24,7 +26,8 @@ Second test message, no prefix.
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbD-0005vi-00
-	for userz@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userz@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

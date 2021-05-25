@@ -119,7 +119,8 @@ Connection request from [127.0.0.1]
 <	by myhost.test.ex with local-esmtp (Exim x.yz)
 <	(envelope-from <CALLER@myhost.test.ex>)
 <	id 10HmbD-0005vi-00
-<	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+<	for userx@test.ex;
+<	Tue, 2 Mar 1999 09:44:33 +0000
 <Date: Tue, 2 Mar 1999 09:44:33 +0000
 <Subject: message should be accepted
 <Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>

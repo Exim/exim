@@ -4,7 +4,8 @@ Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmaZ-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: page+userx@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
@@ -46,7 +47,8 @@ Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
-	for page+userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for page+userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -61,7 +63,8 @@ Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbC-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: page+userx@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
@@ -104,7 +107,8 @@ Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbA-0005vi-00
-	for page+ux@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for page+ux@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

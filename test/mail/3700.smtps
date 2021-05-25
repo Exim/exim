@@ -7,11 +7,13 @@ Received: from localhost ([127.0.0.1] helo=myhost.test.ex)
 	(Exim x.yz)
 	(envelope-from <ok@test.ex>)
 	id 10HmbA-0005vi-00
-	for smtps@y; Tue, 2 Mar 1999 09:44:33 +0000
+	for smtps@y;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <ok@test.ex>)
 	id 10HmaY-0005vi-00
-	for smtps@y; Tue, 2 Mar 1999 09:44:33 +0000
+	for smtps@y;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 From: ok@test.ex
 Date: Tue, 2 Mar 1999 09:44:33 +0000

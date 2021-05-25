@@ -6,7 +6,8 @@ Received: from [V4NET.11.12.22] (ident=CALLER)
 	by the.local.host.name with smtp (Exim x.yz)
 	(envelope-from <postmaster@exim.test.ex>)
 	id 10HmaX-0005vi-00
-	for userx@exim.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@exim.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 DNSlist: rbl4.test.ex This is a test blacklisting4 message V4NET.11.12.22
 DNSlist: rbl5.test.ex This is a test blacklisting5 message V4NET.11.12.22
 

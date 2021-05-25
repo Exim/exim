@@ -5,7 +5,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
 	id 10HmaX-0005vi-00
-	for CALLER@the.local.host.name; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@the.local.host.name;
+	Tue, 2 Mar 1999 09:44:33 +0000
 x-test-header-good1: 1234567890qwertzuiopasdfghjklyxcvbnm,.-QWERTZUIOP+*ASDFGHJKL#'YXCVBNM,.-;:_
 x-test-header-good2: √ü√º√∂√§‚Ç¨√ú√ñ√Ñ¬¥‡§ë‡§ï‡§ú·êÅ·ëå·ëï´ùÜ´üò
 x-test-header-too-short: √.√.√.√§-‚Ç.-√ú.√..√.-¬.-‡..-‡§.-‡§.-·ê.-·ë.-·..-´ù..´ü.
@@ -18,7 +19,7 @@ From: CALLER@the.local.host.name
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-local-user: uid=CALLER_UID gid=CALLER_GID
 X-body-linecount: 3
-X-message-linecount: 17
+X-message-linecount: 18
 X-received-count: 1
 
 This is a test message.
@@ -32,14 +33,15 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
 	id 10HmaY-0005vi-00
-	for CALLER@the.local.host.name; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@the.local.host.name;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: second
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 From: CALLER@the.local.host.name
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-local-user: uid=CALLER_UID gid=CALLER_GID
 X-body-linecount: 1
-X-message-linecount: 9
+X-message-linecount: 10
 X-received-count: 1
 
 This is a second test message.

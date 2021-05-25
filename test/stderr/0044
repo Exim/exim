@@ -132,7 +132,8 @@ P Received: from [V4NET.11.12.13] (helo=exim.test.ex)
 	by the.local.host.name with esmtp (Exim x.yz)
 	(envelope-from <postmaster@exim.test.ex>)
 	id 10HmaX-0005vi-00
-	for postmaster@exim.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for postmaster@exim.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.13] P=esmtp S=sss
 SMTP>> 250 OK id=10HmaX-0005vi-00

@@ -1,7 +1,8 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for not_limited@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for not_limited@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: fred@undeliverable.org
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -40,7 +41,8 @@ Return-path: <not_limited@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <not_limited@myhost.test.ex>)
 	id 10HmaX-0005vi-00
-	for fred@undeliverable.org; Tue, 2 Mar 1999 09:44:33 +0000
+	for fred@undeliverable.org;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: not_limited@myhost.test.ex

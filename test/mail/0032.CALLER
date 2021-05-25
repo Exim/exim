@@ -4,7 +4,8 @@ Envelope-to: CALLER@myhost.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by myhost.ex with local (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for CALLER@myhost.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: userx@mxt1.test.ex
 Auto-Submitted: auto-replied
 From: MailProgram <xyz@some.where>
@@ -43,7 +44,8 @@ Return-path: <CALLER@myhost.ex>
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
 	id 10HmaX-0005vi-00
-	for userx@mxt1.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@mxt1.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@myhost.ex>
 From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

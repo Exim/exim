@@ -3,7 +3,8 @@ Return-path: <>
 Envelope-to: postmaster@test.ex
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for postmaster@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: postmaster@test.ex
@@ -24,7 +25,8 @@ Return-path: <>
 Envelope-to: postmaster@test.ex
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00
-	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for postmaster@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: postmaster@test.ex
@@ -45,7 +47,8 @@ Return-path: <>
 Envelope-to: postmaster@test.ex
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbC-0005vi-00
-	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for postmaster@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: postmaster@test.ex
@@ -68,7 +71,8 @@ Return-path: <>
 Envelope-to: postmaster@test.ex
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbE-0005vi-00
-	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for postmaster@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: postmaster@test.ex
@@ -89,7 +93,8 @@ Return-path: <>
 Envelope-to: postmaster@test.ex
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbH-0005vi-00
-	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for postmaster@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: postmaster@test.ex
@@ -112,7 +117,8 @@ Return-path: <>
 Envelope-to: postmaster@test.ex
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbJ-0005vi-00
-	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for postmaster@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: postmaster@test.ex

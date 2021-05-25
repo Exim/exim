@@ -3,7 +3,8 @@ Received: from CALLER (helo=test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaY-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 From: J Caesar <jcaesar@test.ex>
 To: a-list00@exim.org
@@ -136,7 +137,8 @@ Received: from CALLER (helo=test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaZ-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 From: J Caesar <jcaesar@test.ex>
 To: a-list00@exim.org
@@ -185,7 +187,8 @@ Received: from CALLER (helo=test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbA-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 From: J Caesar <jcaesar@test.ex>
 To: a-list00@exim.org
@@ -223,7 +226,8 @@ Received: from CALLER (helo=test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbB-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 From: J Caesar <jcaesar@test.ex>
 To: a-list00@exim.org
@@ -259,7 +263,8 @@ Received: from CALLER (helo=test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbC-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 From: J Caesar <jcaesar@test.ex>
 To: a-list00@exim.org
@@ -300,7 +305,8 @@ Received: from CALLER (helo=test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbD-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-ID: <20041217133501.GA3058@test.ex>
 Subject: Nasty5
@@ -366,7 +372,8 @@ Received: from CALLER (helo=test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbE-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 From: J Caesar <jcaesar@test.ex>
 To: a-list00@exim.org

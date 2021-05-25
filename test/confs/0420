@@ -10,7 +10,7 @@ qualify_domain = test.ex
 
 queue_only
 acl_smtp_rcpt = accept
-acl_smtp_data =	accept logwrite = h: <$h_Received:>
+acl_smtp_data =	accept logwrite = ${quote:h: <$h_Received:>}
 
 received_header_text = ${if eq{$sender_address}{x@y}{}{Received: some text}}
 

@@ -6,7 +6,8 @@ Received: from forum.rome ([1.1.1.1] ident=jc44bc)
 	by the.local.host.name with latin (Exim x.yz)
 	(envelope-from <jc@rome>)
 	id 10HmaX-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-interface: 2.2.2.2
 
 This is a test message.
@@ -18,7 +19,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from jc44bc by the.local.host.name with local (Exim x.yz)
 	(envelope-from <jc@rome>)
 	id 10HmaY-0005vi-00
-	for userx@test.x; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.x;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 From: Julius Caesar <jc@rome>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

@@ -5,7 +5,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local-bsmtp (Exim x.yz)
 	(envelope-from <someone@some.where>)
 	id 10HmaX-0005vi-00
-	for CALLER@the.local.host.name; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@the.local.host.name;
+	Tue, 2 Mar 1999 09:44:33 +0000
 from: someone@some.where
 To: CALLER@the.local.host.name
 Subject: testing

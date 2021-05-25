@@ -148,6 +148,7 @@ server PORT_D
 <\x09(envelope-from <
 <\x09id
 <\x09for userx@test.ex;
+<\x09
 <Date:
 <Subject: message should be accepted
 <Message-Id: <

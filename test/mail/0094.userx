@@ -3,7 +3,8 @@ Received: from [V4NET.11.12.13] (ident=root)
 	by the.local.host.name with smtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaX-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 host_lookup_failed: 1
 host_lookup_deferred: 0
 
@@ -14,7 +15,8 @@ Received: from [99.99.99.99] (ident=root)
 	by the.local.host.name with smtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaY-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 host_lookup_failed: 0
 host_lookup_deferred: 1
 
@@ -25,7 +27,8 @@ Received: from [V4NET.99.99.96] (ident=root)
 	by the.local.host.name with smtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaZ-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 host_lookup_failed: 0
 host_lookup_deferred: 1
 

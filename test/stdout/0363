@@ -14,7 +14,8 @@ DATA
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
-	for Aa%Bb@Cc; Tue, 2 Mar 1999 09:44:33 +0000
+	for Aa%Bb@Cc;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: aa%bb@cc
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>

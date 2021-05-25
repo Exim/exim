@@ -226,7 +226,8 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
 	id 10HmaX-0005vi-00
-	for 2@b; Tue, 2 Mar 1999 09:44:33 +0000
+	for 2@b;
+	Tue, 2 Mar 1999 09:44:33 +0000
 >>Headers added by MAIL or RCPT ACL:
   X-Warning: V4NET.11.12.13 is listed at rbl.test.ex
   X-Warning: This is a test blacklisting message
@@ -264,7 +265,7 @@ Non-recipients:
 ---- End of tree ----
 recipients_count=1
 **** SPOOL_IN - No additional fields
-body_linecount=1 message_linecount=7
+body_linecount=1 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   2@b 
@@ -416,7 +417,8 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
 	id 10HmaY-0005vi-00
-	for 2@b; Tue, 2 Mar 1999 09:44:33 +0000
+	for 2@b;
+	Tue, 2 Mar 1999 09:44:33 +0000
 >>Headers added by MAIL or RCPT ACL:
   X-Warning: V4NET.11.12.13 is listed at rbl.test.ex
   X-Warning: This is a test blacklisting message
@@ -454,7 +456,7 @@ Non-recipients:
 ---- End of tree ----
 recipients_count=1
 **** SPOOL_IN - No additional fields
-body_linecount=1 message_linecount=7
+body_linecount=1 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   2@b 

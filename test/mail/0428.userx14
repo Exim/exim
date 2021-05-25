@@ -4,7 +4,8 @@ Envelope-to: userx14-suffix2@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <someone@test.ex>)
-	id 10HmbN-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmbN-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbN-0005vi-00@mail.test.ex>
 From: someone@test.ex
 Date: Tue, 2 Mar 1999 09:44:33 +0000

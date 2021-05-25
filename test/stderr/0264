@@ -21,7 +21,7 @@ Non-recipients:
 ---- End of tree ----
 recipients_count=1
 **** SPOOL_IN - No additional fields
-body_linecount=0 message_linecount=7
+body_linecount=0 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   rz.b@outside 

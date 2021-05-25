@@ -5,7 +5,8 @@ Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmaX-0005vi-00
-	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=1; a=rsa-sha256; cv=none; d=test.ex; s=sel; t=1521752658; b=
         xcIN0OEpAc3s8riODm31Q6JgmIECch3iVd1LXWwsypGpCY2UFFuo5HhCEf4a043q
         YZ+zn/MbFFkvwIqleeQkJ7S5UcvfM8dv/V4YnwAe+JD8r79glh/FRq6uKlc0ixLS
@@ -34,7 +35,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmaZ-0005vi-00
-	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=1; cv=none; a=rsa-sha256; d=test.ex; s=sel;
 	 b=DaGjkoR0m1B7KxZMbkzZFTviDSdrEf+VX4N7wo/f6PCDHEnt3fiIg646KrbgQHZQG23rVlPm72
 	  AaJMBhVpewKjPtdc/7fNY3Kgyp4ttwug8jMEGYU1cgaJjkx3Xp/HMk52b3HVnPvV900YNrmfGC
@@ -53,7 +55,8 @@ Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmaY-0005vi-00
-	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for za@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: Test
 
 This is a test body.
@@ -66,7 +69,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbC-0005vi-00
-	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=2; cv=pass; a=rsa-sha256; d=test.ex; s=sel;
 	 b=gQvDl2aKy+MEWgwP9A31sLHf4b6zOSwZhglgBrO2apeKFIRv54YTKVe44/6D0iJurZM8mjndMy
 	  u78sFMRrBb6zm99rUiEg48TDqIXOCJkSBpArs2liF34HdzpCsJxMgIIhxxNyVzjGGQdQCvSxm6
@@ -87,7 +91,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbB-0005vi-00
-	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for za@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=1; cv=none; a=rsa-sha256; d=test.ex; s=sel;
 	 b=DaGjkoR0m1B7KxZMbkzZFTviDSdrEf+VX4N7wo/f6PCDHEnt3fiIg646KrbgQHZQG23rVlPm72
 	  AaJMBhVpewKjPtdc/7fNY3Kgyp4ttwug8jMEGYU1cgaJjkx3Xp/HMk52b3HVnPvV900YNrmfGC
@@ -106,7 +111,8 @@ Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbA-0005vi-00
-	for zza@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for zza@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: Test
 
 This is a test body.
@@ -119,7 +125,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbG-0005vi-00
-	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=3; cv=pass; a=rsa-sha256; d=test.ex; s=sel;
 	 b=advgCcXZhwJFZi5rzQgnThsSOX6MsCpnXWxyub3UbuQI5RonZOw7SwEVJ2j4Q32z1d54wws1/c
 	  2MJeB2ChZUy+J0rNrXLEWsZZtOrQDx1fEaGL7sXC8RYshnkboBiN8lbkuoZHUZWPILKIWd5V2M
@@ -140,7 +147,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbF-0005vi-00
-	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for za@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=2; cv=pass; a=rsa-sha256; d=test.ex; s=sel;
 	 b=odwQlZ9ZCMTWG30i3IPycNo+3kLWIngjWVJKGF8d8CfNEIEeK7ao89Wy9bPEwcnXHYN2HnDjtL
 	  UXPiuo0BLPS4UCAvVdBd1Kr/rUHfoIysIFF6OggChI2ZeUqRlkD1GRV7C5LACsDrGR+HQQzXPI
@@ -161,7 +169,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbE-0005vi-00
-	for mza@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for mza@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=1; cv=none; a=rsa-sha256; d=test.ex; s=sel;
 	 b=DaGjkoR0m1B7KxZMbkzZFTviDSdrEf+VX4N7wo/f6PCDHEnt3fiIg646KrbgQHZQG23rVlPm72
 	  AaJMBhVpewKjPtdc/7fNY3Kgyp4ttwug8jMEGYU1cgaJjkx3Xp/HMk52b3HVnPvV900YNrmfGC
@@ -180,7 +189,8 @@ Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbD-0005vi-00
-	for zmza@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for zmza@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: Test
 
 This is a test body.
@@ -197,7 +207,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbL-0005vi-00
-	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=3; cv=fail; a=rsa-sha256; d=test.ex; s=sel;
 	 b=SwyS6CAxe1WUpQ6/gjhehp05c2J3qn5TgqiEzNZENLQ0LmoFesan/Hs/WUXsu68TWbk12zSYGl
 	  j8SymB40wpTVbyI0nB9X3f/EV35apVdZCCbb7fhDcItiaveQAYAQjupnD1Gzf7bvkFnHUNIyvc
@@ -218,7 +229,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbK-0005vi-00
-	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for za@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Authentication-Results: test.ex;
 	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
 	arc=pass (i=2) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
@@ -226,7 +238,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbJ-0005vi-00
-	for mza@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for mza@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=2; cv=pass; a=rsa-sha256; d=test.ex; s=sel;
 	 b=gQvDl2aKy+MEWgwP9A31sLHf4b6zOSwZhglgBrO2apeKFIRv54YTKVe44/6D0iJurZM8mjndMy
 	  u78sFMRrBb6zm99rUiEg48TDqIXOCJkSBpArs2liF34HdzpCsJxMgIIhxxNyVzjGGQdQCvSxm6
@@ -247,7 +260,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbI-0005vi-00
-	for zmza@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for zmza@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=1; cv=none; a=rsa-sha256; d=test.ex; s=sel;
 	 b=DaGjkoR0m1B7KxZMbkzZFTviDSdrEf+VX4N7wo/f6PCDHEnt3fiIg646KrbgQHZQG23rVlPm72
 	  AaJMBhVpewKjPtdc/7fNY3Kgyp4ttwug8jMEGYU1cgaJjkx3Xp/HMk52b3HVnPvV900YNrmfGC
@@ -266,7 +280,8 @@ Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbH-0005vi-00
-	for zzmza@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for zzmza@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: Test
 
 This is a test body.
@@ -283,7 +298,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbO-0005vi-00
-	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Authentication-Results: test.ex;
 	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
 	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
@@ -291,7 +307,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbN-0005vi-00
-	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for za@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=1; cv=none; a=rsa-sha256; d=test.ex; s=sel;
 	 b=DaGjkoR0m1B7KxZMbkzZFTviDSdrEf+VX4N7wo/f6PCDHEnt3fiIg646KrbgQHZQG23rVlPm72
 	  AaJMBhVpewKjPtdc/7fNY3Kgyp4ttwug8jMEGYU1cgaJjkx3Xp/HMk52b3HVnPvV900YNrmfGC
@@ -310,7 +327,8 @@ Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbM-0005vi-00
-	for zza@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for zza@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: Test
 
 This is a test body.
@@ -326,7 +344,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbQ-0005vi-00
-	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=2; cv=fail; a=rsa-sha256; d=test.ex; s=sel;
 	 b=e1ldkzDyxJIvQd+ZOylCkekKOj3WVUZiptsJYuoiM0tsBRoiHA5O6RDwrNzCQxRWT05PzW3GBy
 	  Dkiejo2w30n9QBueQH4h8BvCl/QMlmmdaIy02ZKqfvtp1hxR125TREXdigK9ULQZF4rIrDma5S
@@ -353,7 +372,8 @@ Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbP-0005vi-00
-	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for za@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Received: from dragon.trusteddomain.org (localhost [127.0.0.1])
 	by dragon.trusteddomain.org (8.14.5/8.14.5) with ESMTP id w121YG2q036577;
 	Tue, 2 Mar 1999 09:44:33 +0000 (PST)
@@ -487,14 +507,16 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbS-0005vi-00
-	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Authentication-Results: test.ex;
 	arc=none
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbR-0005vi-00
-	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for za@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: Test
 
 This is a test body.

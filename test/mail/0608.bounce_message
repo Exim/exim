@@ -1,7 +1,8 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbD-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: a@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -40,7 +41,8 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbC-0005vi-00
-	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 1.1 - Default deny message
 Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -52,7 +54,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbF-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: b@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -92,7 +95,8 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbE-0005vi-00
-	for b@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for b@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 1.2 - Specified deny message file
 Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -104,7 +108,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbG-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: c@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -143,7 +148,8 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaX-0005vi-00
-	for c@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for c@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 1.3 - Specified, missing deny message file
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -155,7 +161,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbH-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: d@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -194,7 +201,8 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaY-0005vi-00
-	for d@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for d@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 1.4 - Specified, non-absolute
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -206,7 +214,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbI-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: e@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -245,7 +254,8 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaZ-0005vi-00
-	for e@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for e@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 1.5 - Specified, expansion empty
 Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -257,7 +267,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbJ-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: f@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -296,7 +307,8 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbA-0005vi-00
-	for f@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for f@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 1.6 - Specified, expansion tainted
 Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -308,7 +320,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbL-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: g@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -348,7 +361,8 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbK-0005vi-00
-	for g@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for g@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 1.7 - Specified, expansion good
 Message-Id: <E10HmbK-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -360,7 +374,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbP-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
@@ -408,7 +423,8 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbM-0005vi-00
-	for delay_p@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for delay_p@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 2.1 - Default delay message
 Message-Id: <E10HmbM-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -420,7 +436,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbQ-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
@@ -461,7 +478,8 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbN-0005vi-00
-	for delay_q@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for delay_q@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 2.2 - Specified delay message file
 Message-Id: <E10HmbN-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -473,7 +491,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbR-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
@@ -521,7 +540,8 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbB-0005vi-00
-	for delay_r@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for delay_r@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 2.3 - Specified, missing delay message file
 Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -533,7 +553,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbS-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
@@ -574,7 +595,8 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbO-0005vi-00
-	for delay_s@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for delay_s@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 2.7 - Specified, expansion good
 Message-Id: <E10HmbO-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>

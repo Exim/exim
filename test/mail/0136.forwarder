@@ -1,7 +1,8 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmaZ-0005vi-00
-	for forwarder@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for forwarder@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: unknown@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
@@ -44,7 +45,8 @@ Content-type: message/rfc822
 Return-path: <abcd@x.y.z>
 Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <abcd@x.y.z>)
-	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaX-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: abcd@x.y.z
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -56,7 +58,8 @@ Test message.
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbC-0005vi-00
-	for forwarder@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for forwarder@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: unknown@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
@@ -99,7 +102,8 @@ Content-type: text/rfc822-headers
 Return-path: <abcd@x.y.z>
 Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <abcd@x.y.z>)
-	id 10HmbA-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmbA-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 From: abcd@x.y.z
 Date: Tue, 2 Mar 1999 09:44:33 +0000

@@ -4,7 +4,8 @@ Received: from [127.0.0.1]
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 tls-certificate-verified: 0
 TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=
 
@@ -16,7 +17,8 @@ Received: from [127.0.0.1]
 	(Exim x.yz)
 	(envelope-from <"name with spaces"@test.ex>)
 	id 10HmaY-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 tls-certificate-verified: 0
 TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=
 
@@ -28,7 +30,8 @@ Received: from [ip4.ip4.ip4.ip4]
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaZ-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 tls-certificate-verified: 1
 TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=CN=server2.example.com
 
@@ -40,7 +43,8 @@ Received: from [127.0.0.1]
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbA-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 tls-certificate-verified: 0
 TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=
 
@@ -53,7 +57,8 @@ Received: from [127.0.0.1]
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbB-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 tls-certificate-verified: 0
 TLS: cipher=TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx peerdn=
 

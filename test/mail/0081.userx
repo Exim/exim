@@ -5,7 +5,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@exim.test.ex>)
 	id 10HmaX-0005vi-00
-	for userx@exim.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@exim.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-one: This is the first text.
 To: userx@exim.test.ex
 X-one: This is the second text.

@@ -5,7 +5,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
 	id 10HmaX-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@myhost.ex>
 From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -19,7 +20,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
 	id 10HmbC-0005vi-00
-	for userx@domain1.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@domain1.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbC-0005vi-00@myhost.ex>
 From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -33,7 +35,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
 	id 10HmbH-0005vi-00
-	for userx@xx.domain5.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@xx.domain5.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbH-0005vi-00@myhost.ex>
 From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -47,7 +50,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
 	id 10HmbI-0005vi-00
-	for userx@domain6.yy.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@domain6.yy.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbI-0005vi-00@myhost.ex>
 From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

@@ -21,7 +21,8 @@ SomeOne-rewritten@test.ex
 dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER-rewritten@test.ex>)
 	id 10HmaX-0005vi-00
-	for SomeOne-rewritten@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for SomeOne-rewritten@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ddd* From: userx@test.ex
 dddF From: userx-rewritten@test.ex
 047I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
@@ -53,7 +54,8 @@ OtherOne-rewritten@test.ex
 dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER-rewritten@test.ex>)
 	id 10HmaY-0005vi-00
-	for OtherOne-rewritten@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for OtherOne-rewritten@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ddd* From: usery@test.ex
 dddF From: usery-rewritten@test.ex
 047I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
@@ -85,7 +87,8 @@ ThirdOne-rewritten@test.ex
 dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER-rewritten@test.ex>)
 	id 10HmaZ-0005vi-00
-	for ThirdOne-rewritten@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for ThirdOne-rewritten@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 047I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 ddd* X-rewrote-original-recipient: ThirdOne@test.ex
 ddd* From: CALLER_NAME <CALLER@test.ex>

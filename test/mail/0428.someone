@@ -4,7 +4,8 @@ Envelope-to: someone@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	id 10HmbM-0005vi-00
-	for someone@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for someone@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 From: userx13@test.ex
 To: someone@test.ex
 Subject: Automated reply

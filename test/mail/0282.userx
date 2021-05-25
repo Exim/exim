@@ -3,7 +3,8 @@ Received: from [127.0.0.1] (port=1111 helo=rhu.barb)
 	by myhost.test.ex with esmtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaX-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 interface-port: 1225
 received-port:  1225
 
@@ -14,7 +15,8 @@ Received: from [127.0.0.1] (port=1112 helo=rhu.barb)
 	by myhost.test.ex with esmtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaY-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 interface-port: 1226
 received-port:  1226
 

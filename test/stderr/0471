@@ -25709,7 +25709,8 @@ Data file written for message 10HmaX-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaX-0005vi-00
-	for r1@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for r1@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
 DSN: **** SPOOL_OUT - address: <r1@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
@@ -25866,7 +25867,8 @@ Data file written for message 10HmaY-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaY-0005vi-00
-	for r2@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for r2@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-0005vi-00
 DSN: **** SPOOL_OUT - address: <r2@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
@@ -26022,7 +26024,8 @@ Data file written for message 10HmaZ-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaZ-0005vi-00
-	for r3@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for r3@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaZ-0005vi-00
 DSN: **** SPOOL_OUT - address: <r3@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaZ-0005vi-00-H

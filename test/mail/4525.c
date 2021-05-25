@@ -3,7 +3,8 @@ Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=myhost.test.ex)
 	by myhost.test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbC-0005vi-00
-	for c@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for c@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
 	s=sel; h=From; bh=bzHKix52TV0ojCi2kd18gmIw/tcd5TnhO3QM+89xwyk=; b=LcQAFwKN9DL
 	wCbK0mcUtjmEoLaNUjwHmVrilQI1nBWJDoDUzpUl96U8YzdS/+Xut+pdS/YZf3m/Qbcw6ohO9pEmM
@@ -12,7 +13,8 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbB-0005vi-00
-	for c@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for c@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 From: nobody@example.com
 Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 Sender: CALLER_NAME <CALLER@myhost.test.ex>
@@ -29,7 +31,8 @@ Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=myhost.test.ex)
 	by myhost.test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbG-0005vi-00
-	for c@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for c@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
 	s=sel; h=From; bh=bzHKix52TV0ojCi2kd18gmIw/tcd5TnhO3QM+89xwyk=; b=LcQAFwKN9DL
 	wCbK0mcUtjmEoLaNUjwHmVrilQI1nBWJDoDUzpUl96U8YzdS/+Xut+pdS/YZf3m/Qbcw6ohO9pEmM
@@ -38,7 +41,8 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbF-0005vi-00
-	for c@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for c@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 From: nobody@example.com
 Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
 Sender: CALLER_NAME <CALLER@myhost.test.ex>

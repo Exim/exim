@@ -4,7 +4,8 @@ Envelope-to: यहलोगहिन्दीक्योंनहींबो�
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local; Tue, 2 Mar 1999 09:44:33 +0000
+	for यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: userz@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@the.local.host.name>
@@ -46,7 +47,8 @@ Received: from CALLER (helo=client.ffail)
 	by the.local.host.name with utf8local-esmtp (Exim x.yz)
 	(envelope-from <यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local>)
 	id 10HmaX-0005vi-00
-	for userz@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userz@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local

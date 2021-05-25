@@ -1,7 +1,8 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbD-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: userx@non-local.example
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
@@ -39,10 +40,12 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with scanned-ok (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbC-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmbC-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbB-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmbB-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

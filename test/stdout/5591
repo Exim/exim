@@ -14,7 +14,7 @@ RCPT TO:<usery@testhost.test.ex>
 250 OK
 RCPT TO:<userz@testhost.test.ex>
 250 OK
-BDAT 285 LAST
+BDAT 287 LAST
 353 prdr responses coming up
 250 first rcpt was good
 250 second rcpt was good

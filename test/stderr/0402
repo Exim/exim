@@ -151,7 +151,8 @@ Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaX-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -197,7 +198,7 @@ recipients_count=5
 **** SPOOL_IN - No additional fields
 **** SPOOL_IN - No additional fields
 **** SPOOL_IN - No additional fields
-body_linecount=0 message_linecount=6
+body_linecount=0 message_linecount=7
 DSN: set orcpt:   flags: 0x0
 DSN: set orcpt:   flags: 0x0
 DSN: set orcpt:   flags: 0x0

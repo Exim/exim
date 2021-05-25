@@ -2,7 +2,8 @@ From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaX-0005vi-00
-	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -13,7 +14,8 @@ From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaY-0005vi-00
-	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 quota: 0
 threshold: 10
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
@@ -26,7 +28,8 @@ From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaZ-0005vi-00
-	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 quota: 10K
 threshold: 900
 Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
@@ -38,7 +41,8 @@ A test message
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00
-	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From : p@q
 Reply-To: a@b
@@ -53,7 +57,8 @@ From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbB-0005vi-00
-	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 quota: 2200
 threshold: 90%
 Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
@@ -65,7 +70,8 @@ This is a test message
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbC-0005vi-00
-	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Reply-To: x@y
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -83,7 +89,8 @@ From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbD-0005vi-00
-	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -193,7 +200,8 @@ From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbE-0005vi-00
-	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

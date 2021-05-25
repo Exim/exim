@@ -1,7 +1,8 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: system-filter
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
@@ -61,7 +62,8 @@ USER=system-filter
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
-	for alice@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for alice@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: alice@test.ex
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
@@ -86,7 +88,8 @@ Return-path: <CALLER@test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
-	for alice@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for alice@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: alice@test.ex
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
@@ -98,7 +101,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: system-filter
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
@@ -157,7 +161,8 @@ USER=system-filter
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaZ-0005vi-00
-	for jabberwocky@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for jabberwocky@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: jabberwocky@test.ex
 Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
@@ -182,7 +187,8 @@ Return-path: <CALLER@test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaZ-0005vi-00
-	for jabberwocky@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for jabberwocky@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: jabberwocky@test.ex
 Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
@@ -194,7 +200,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbC-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: redking@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
@@ -254,7 +261,8 @@ USER=redking
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbB-0005vi-00
-	for redking@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for redking@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: redking@test.ex
 Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
@@ -279,7 +287,8 @@ Return-path: <CALLER@test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbB-0005vi-00
-	for redking@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for redking@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: redking@test.ex
 Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>

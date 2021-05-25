@@ -51,7 +51,8 @@ P Received: from [V4NET.9.8.7]
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
 	id 10HmbF-0005vi-00
-	for warn_empty@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for warn_empty@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= x@y H=[V4NET.9.8.7] P=smtp S=sss
 SMTP>> 250 OK id=10HmbF-0005vi-00
@@ -118,7 +119,8 @@ P Received: from [V4NET.9.8.7]
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
 	id 10HmbG-0005vi-00
-	for warn_log@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for warn_log@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= x@y H=[V4NET.9.8.7] P=smtp S=sss
 SMTP>> 250 OK id=10HmbG-0005vi-00
@@ -183,7 +185,8 @@ P Received: from [V4NET.9.8.7]
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
 	id 10HmbH-0005vi-00
-	for warn_user@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for warn_user@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 >>Headers added by MAIL or RCPT ACL:
   X-ACL-Warn: warn user message
 >>

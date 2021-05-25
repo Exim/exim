@@ -57,7 +57,8 @@ Connection request from [127.0.0.1]
 <	by myhost.test.ex with local-esmtp (Exim x.yz)
 <	(envelope-from <fromuser@myhost.test.ex>)
 <	id 10HmaX-0005vi-00
-<	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+<	for userx@test.ex;
+<	Tue, 2 Mar 1999 09:44:33 +0000
 <Content-type: text/plain
 <Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 <From: fromuser@myhost.test.ex
@@ -101,7 +102,8 @@ Connection request from [127.0.0.1]
 <	by myhost.test.ex with local-esmtp (Exim x.yz)
 <	(envelope-from <fromuser@myhost.test.ex>)
 <	id 10HmaY-0005vi-00
-<	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+<	for userx@test.ex;
+<	Tue, 2 Mar 1999 09:44:33 +0000
 <Content-type: text/plain
 <Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 <From: fromuser@myhost.test.ex
@@ -146,7 +148,8 @@ Connection request from [127.0.0.1]
 <	by myhost.test.ex with local-esmtp (Exim x.yz)
 <	(envelope-from <fromuser@myhost.test.ex>)
 <	id 10HmaZ-0005vi-00
-<	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+<	for userx@test.ex;
+<	Tue, 2 Mar 1999 09:44:33 +0000
 <Content-type: text/plain
 <Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 <From: fromuser@myhost.test.ex
@@ -190,7 +193,8 @@ Connection request from [127.0.0.1]
 <	by myhost.test.ex with local-esmtp (Exim x.yz)
 <	(envelope-from <fromuser@myhost.test.ex>)
 <	id 10HmbA-0005vi-00
-<	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+<	for userx@test.ex;
+<	Tue, 2 Mar 1999 09:44:33 +0000
 <Content-type: text/plain
 <Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 <From: fromuser@myhost.test.ex

@@ -1,4 +1,4 @@
-# Expansion test for DANE.
+# Expansion test for DANE
 #
 # Some systems seem to use 1-byte fields for the leading
 # 3 fields in a TLSA record, others 2-bytes.

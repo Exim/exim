@@ -492,7 +492,7 @@ if (recipients_count >= recipients_list_max)
   int oldmax = recipients_list_max;
   recipients_list_max = recipients_list_max ? 2*recipients_list_max : 50;
   recipients_list = store_get(recipients_list_max * sizeof(recipient_item), FALSE);
-  if (oldlist != NULL)
+  if (oldlist)
     memcpy(recipients_list, oldlist, oldmax * sizeof(recipient_item));
   }
 
@@ -1516,11 +1516,10 @@ return TRUE;
 void
 received_header_gen(void)
 {
-uschar *received;
-uschar *timestamp;
-header_line *received_header= header_list;
+uschar * received;
+uschar * timestamp = expand_string(US"${tod_full}");
+header_line * received_header= header_list;
 
-timestamp = expand_string(US"${tod_full}");
 if (recipients_count == 1) received_for = recipients_list[0].address;
 received = expand_string(received_header_text);
 received_for = NULL;
@@ -1539,14 +1538,14 @@ so all we have to do is fill in the text pointer, and set the type. However, if
 the result of the expansion is an empty string, we leave the header marked as
 "old" so as to refrain from adding a Received header. */
 
-if (received[0] == 0)
+if (!received[0])
   {
   received_header->text = string_sprintf("Received: ; %s\n", timestamp);
   received_header->type = htype_old;
   }
 else
   {
-  received_header->text = string_sprintf("%s; %s\n", received, timestamp);
+  received_header->text = string_sprintf("%s;\n\t%s\n", received, timestamp);
   received_header->type = htype_received;
   }
 

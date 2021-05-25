@@ -4,7 +4,8 @@ Received: from [127.0.0.1] (helo=rhu.barb)
 	(Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaX-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn/cn ''
 
 This is a test encrypted message.
@@ -15,7 +16,8 @@ Received: from [ip4.ip4.ip4.ip4]
 	(Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaY-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn/cn 'CN=Phil Pennock'
 
 This is a test encrypted message from a verified host.

@@ -1,7 +1,8 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbH-0005vi-00
-	for userz@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userz@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: userz@myhost.test.ex

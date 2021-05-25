@@ -6,5 +6,6 @@ Envelope-to: <userp@test.ex>
     <userq@test.ex>
 P Received: from [127.0.0.1] (helo=rhu.barb)
 	by myhost.test.ex with esmtp (Exim x.yz)
-	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaX-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 S Sender: sender@some.where

@@ -4,7 +4,8 @@ Envelope-to: CALLER@the.local.host.name
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local-bsmtp (Exim x.yz)
 	(envelope-from <someone@some.where>)
-	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaZ-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 From:<someone@some.where>
 To: Recipients not given:;
 X-Test: (=?iso-8859-8?b?7eXs+SDv4SDp7Oj08A==?=)
@@ -14,7 +15,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message Headers:
 Received: from CALLER by the.local.host.name with local-bsmtp (Exim x.yz)
 	(envelope-from <someone@some.where>)
-	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaZ-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 From:<someone@some.where>
 To: Recipients not given:;
 X-Test: (םולש ןב ילטפנ)
@@ -24,7 +26,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 Raw Message Headers:
 Received: from CALLER by the.local.host.name with local-bsmtp (Exim x.yz)
 	(envelope-from <someone@some.where>)
-	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaZ-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 From:<someone@some.where>
 To: Recipients not given:;
 X-Test: (=?iso-8859-8?b?7eXs+SDv4SDp7Oj08A==?=)

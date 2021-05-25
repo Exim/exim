@@ -14,7 +14,8 @@ DATA
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbD-0005vi-00
-	for userx@domain.com; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@domain.com;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ..dotheader: This is perfectly legal
 Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -45,7 +46,8 @@ X-Filtered: just checking
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbM-0005vi-00
-	for userx@filtered.com; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@filtered.com;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ..dotheader: This is perfectly legal
 Message-Id: <E10HmbM-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>

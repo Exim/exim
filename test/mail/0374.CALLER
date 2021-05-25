@@ -3,7 +3,8 @@ Return-path: <>
 Envelope-to: CALLER@myhost.test.ex
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: d3@myhost.test.ex,
   b1@myhost.test.ex
 Auto-Submitted: auto-replied
@@ -52,7 +53,8 @@ Content-type: message/rfc822
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaX-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

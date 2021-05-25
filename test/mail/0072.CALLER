@@ -4,7 +4,8 @@ Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: CALLER_NAME <CALLER@test.ex>
 In-Reply-To: <E10HmaX-0005vi-00@the.local.host.name>
 References: <E10HmaX-0005vi-00@the.local.host.name>
@@ -21,7 +22,8 @@ Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbB-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: CALLER_NAME <CALLER@test.ex>
 In-Reply-To: <E10HmbA-0005vi-00@the.local.host.name>
 References: <E10HmbA-0005vi-00@the.local.host.name>
@@ -37,7 +39,8 @@ Test auto reply to third message
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbA-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: third message
 Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -51,7 +54,8 @@ Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbD-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: CALLER_NAME <CALLER@test.ex>
 In-Reply-To: <E10HmbC-0005vi-00@the.local.host.name>
 References: <E10HmbC-0005vi-00@the.local.host.name>
@@ -72,7 +76,8 @@ Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbF-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: CALLER_NAME <CALLER@test.ex>
 In-Reply-To: <E10HmbE-0005vi-00@the.local.host.name>
 References: <E10HmbE-0005vi-00@the.local.host.name>
@@ -88,7 +93,8 @@ Test auto reply to third message
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbE-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: third message
 Message-Id: <E10HmbE-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -101,7 +107,8 @@ Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbH-0005vi-00
-	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: =?ISO-8859-1?Q?CALLER=40test=2Eex?= <CALLER@test.ex>
 In-Reply-To: <E10HmbG-0005vi-00@the.local.host.name>
 References: <E10HmbG-0005vi-00@the.local.host.name>

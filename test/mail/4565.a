@@ -9,7 +9,8 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmaY-0005vi-00
-	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=1; cv=none; a=rsa-sha256; d=test.ex; s=sel;
 	 b=1J94ImExSjtnwHY/c/aN3BX/xlnQfi6CPdGQvbeSdsbCCEtOqK9547tA54tYFh8beeVECAR0xu
 	  9fCSAjZ/0WM7mrxKNMbWkoHNoejUhNkcxJOtFmiS/0JKPQGk8HTE7FHLbogUQvEJoVBBnqo6xW
@@ -41,7 +42,8 @@ Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmaX-0005vi-00
-	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for za@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=example.com; s=sel; h=List-Archive;
 	 bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=; b=uslVEq1LzHDR2ACoSTiErsGhe

@@ -71,7 +71,8 @@ DATA
 .
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
-<<< 	id 10HmbD-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+<<< 	id 10HmbD-0005vi-00;
+<<< 	Tue, 2 Mar 1999 09:44:33 +0000
 <<< script: 05
 <<< Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -128,7 +129,8 @@ DATA
 .
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
-<<< 	id 10HmbF-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+<<< 	id 10HmbF-0005vi-00;
+<<< 	Tue, 2 Mar 1999 09:44:33 +0000
 <<< script: 06
 <<< Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -201,7 +203,8 @@ DATA
 .
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
-<<< 	id 10HmbI-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+<<< 	id 10HmbI-0005vi-00;
+<<< 	Tue, 2 Mar 1999 09:44:33 +0000
 <<< script: 08
 <<< Message-Id: <E10HmbI-0005vi-00@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -239,7 +242,8 @@ DATA
 .
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
-<<< 	id 10HmbJ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+<<< 	id 10HmbJ-0005vi-00;
+<<< 	Tue, 2 Mar 1999 09:44:33 +0000
 <<< script: 09
 <<< Message-Id: <E10HmbJ-0005vi-00@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>

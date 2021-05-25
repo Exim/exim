@@ -99,7 +99,8 @@ Data file written for message 10HmaX-0005vi-00
 P Received: from [V4NET.2.3.4]
 	by myhost.test.ex with esmtp (Exim x.yz)
 	id 10HmaX-0005vi-00
-	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+	for x@y;
+	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= <> H=([V4NET.2.3.4]) [V4NET.2.3.4] P=esmtp S=sss
 SMTP>> 250 OK id=10HmaX-0005vi-00
@@ -172,7 +173,8 @@ Data file written for message 10HmaY-0005vi-00
 P Received: from host.name.tld ([V4NET.2.3.4])
 	by myhost.test.ex with esmtp (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+	for x@y;
+	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= <> H=host.name.tld [V4NET.2.3.4] P=esmtp S=sss
 SMTP>> 250 OK id=10HmaY-0005vi-00

@@ -1,7 +1,8 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00
-	for anyone@anywhere; Tue, 2 Mar 1999 09:44:33 +0000
+	for anyone@anywhere;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: list1@lists.test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -40,7 +41,8 @@ Return-path: <anyone@anywhere>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <anyone@anywhere>)
 	id 10HmaZ-0005vi-00
-	for list1@lists.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for list1@lists.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 From: anyone@anywhere
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -51,7 +53,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbC-0005vi-00
-	for anyone@anywhere; Tue, 2 Mar 1999 09:44:33 +0000
+	for anyone@anywhere;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: nonlist@lists.test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -90,7 +93,8 @@ Return-path: <anyone@anywhere>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <anyone@anywhere>)
 	id 10HmbB-0005vi-00
-	for nonlist@lists.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for nonlist@lists.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 From: anyone@anywhere
 Date: Tue, 2 Mar 1999 09:44:33 +0000

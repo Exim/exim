@@ -5,7 +5,8 @@ Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmaX-0005vi-00
-	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=2; cv=none; a=rsa-sha256; d=test.ex; s=r201803;
       b=HxjMzNcj7OX+I9Vr1Xr14AGgAci/CI8JxspaeoNT7TBsiOAtZ+YDBBSqXe6fqX3mHQEwpnXrdz
        PCMIU1SF3ZiBtqWaLBPhStfuNQl5cw+TWXC60rOwCD2bxuBqubM/3AZLMPzIpm62MUYUUGaxwi

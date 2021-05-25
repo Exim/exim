@@ -77,7 +77,8 @@ Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for abc@domain; Tue, 2 Mar 1999 09:44:33 +0000
+	for abc@domain;
+	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check_data"
 processing "accept" (TESTSUITE/test-config 20)
 check verify = header_syntax
@@ -144,7 +145,8 @@ Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 	id 10HmaX-0005vi-00
-	for abc@xyz; Tue, 2 Mar 1999 09:44:33 +0000
+	for abc@xyz;
+	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check_data"
 processing "accept" (TESTSUITE/test-config 20)
 check verify = header_syntax

@@ -6,7 +6,8 @@ Received: from [V4NET.11.12.13] (helo=exim.test.ex ident=CALLER)
 	by the.local.host.name with esmtp (Exim x.yz)
 	(envelope-from <postmaster@exim.test.ex>)
 	id 10HmaX-0005vi-00
-	for userx@exim.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@exim.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Warning: V4NET.11.12.13 is blacklisted at rbl.test.ex
 
 test message data
@@ -19,7 +20,8 @@ Received: from [V4NET.11.12.14] (helo=exim.test.ex ident=CALLER)
 	by the.local.host.name with esmtp (Exim x.yz)
 	(envelope-from <postmaster@exim.test.ex>)
 	id 10HmaY-0005vi-00
-	for postmaster@exim.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for postmaster@exim.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Warning: V4NET.11.12.14 is blacklisted at rbl.test.ex
 X-Warning: V4NET.11.12.14 is blacklisted at rbl2.test.ex
 
@@ -32,7 +34,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <postmaster@exim.test.ex>)
 	id 10HmaZ-0005vi-00
-	for userx@exim.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@exim.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 sysmail: yes
 Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
 From: postmaster@exim.test.ex
@@ -46,7 +49,8 @@ Envelope-to: userx@exim.test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	id 10HmbA-0005vi-00
-	for userx@exim.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@exim.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: userx@exim.test.ex
 In-Reply-To: <E10HmaZ-0005vi-00@the.local.host.name>
 References: <E10HmaZ-0005vi-00@the.local.host.name>

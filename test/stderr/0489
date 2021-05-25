@@ -22,7 +22,8 @@ Data file written for message 10HmaX-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaX-0005vi-00
-	for X@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for X@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
@@ -54,7 +55,8 @@ Data file written for message 10HmaY-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaY-0005vi-00
-	for X@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for X@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-0005vi-00
 Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
@@ -85,7 +87,8 @@ Data file written for message 10HmaZ-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaZ-0005vi-00
-	for X@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for X@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaZ-0005vi-00
 Renaming spool header file: TESTSUITE/spool//input//10HmaZ-0005vi-00-H
 Size of headers = sss
@@ -116,7 +119,8 @@ Data file written for message 10HmbA-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbA-0005vi-00
-	for X@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for X@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbA-0005vi-00
 Renaming spool header file: TESTSUITE/spool//input//10HmbA-0005vi-00-H
 Size of headers = sss
@@ -147,7 +151,8 @@ Data file written for message 10HmbB-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbB-0005vi-00
-	for X@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for X@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbB-0005vi-00
 Renaming spool header file: TESTSUITE/spool//input//10HmbB-0005vi-00-H
 Size of headers = sss
@@ -178,7 +183,8 @@ Data file written for message 10HmbC-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbC-0005vi-00
-	for X@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for X@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbC-0005vi-00
 Renaming spool header file: TESTSUITE/spool//input//10HmbC-0005vi-00-H
 Size of headers = sss
@@ -209,7 +215,8 @@ Data file written for message 10HmbD-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbD-0005vi-00
-	for X@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for X@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbD-0005vi-00
 Renaming spool header file: TESTSUITE/spool//input//10HmbD-0005vi-00-H
 Size of headers = sss
@@ -240,7 +247,8 @@ Data file written for message 10HmbE-0005vi-00
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbE-0005vi-00
-	for X@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for X@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbE-0005vi-00
 Renaming spool header file: TESTSUITE/spool//input//10HmbE-0005vi-00-H
 Size of headers = sss

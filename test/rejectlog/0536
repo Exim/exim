@@ -22,7 +22,8 @@ Envelope-to: <user1@myhost.test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <user1@test.ex>)
 	id 10HmaX-0005vi-00
-	for user1@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for user1@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 F From: user1@test.ex
   Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -32,7 +33,8 @@ Envelope-to: <user1@myhost.test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <user2@test.ex>)
 	id 10HmaY-0005vi-00
-	for user1@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for user1@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 F From: user2@test.ex
   Date: Tue, 2 Mar 1999 09:44:33 +0000

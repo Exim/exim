@@ -19,7 +19,8 @@ Connection request from [127.0.0.1]
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
 	id 10HmbD-0005vi-00
-	for nocache2@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for nocache2@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -48,7 +49,8 @@ Connection request from [127.0.0.1]
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
 	id 10HmbE-0005vi-00
-	for withcache2@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for withcache2@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbE-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -93,7 +95,8 @@ Connection request from [127.0.0.1]
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
 	id 10HmbG-0005vi-00
-	for nocache3@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for nocache3@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbG-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -122,7 +125,8 @@ Connection request from [127.0.0.1]
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
 	id 10HmbH-0005vi-00
-	for withcache3@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for withcache3@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbH-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -209,7 +213,8 @@ Connection request from [127.0.0.1]
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
 	id 10HmbO-0005vi-00
-	for withcache23@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for withcache23@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbO-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -239,7 +244,8 @@ Connection request from [127.0.0.1]
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
 	id 10HmbP-0005vi-00
-	for extchange@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for extchange@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbP-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

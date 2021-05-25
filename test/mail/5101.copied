@@ -3,7 +3,8 @@ Envelope-to: userx@myhost.test.ex,
  jill@myhost.test.ex
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaX-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 mailbox: copied
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -17,7 +18,8 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Envelope-to: CALLER@myhost.test.ex
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: jack@myhost.test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -57,7 +59,8 @@ Content-type: message/rfc822
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaX-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 mailbox: copied
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
@@ -71,7 +74,8 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Envelope-to: CALLER@myhost.test.ex
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00
-	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for CALLER@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: jack@myhost.test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
@@ -111,7 +115,8 @@ Content-type: message/rfc822
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmaZ-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

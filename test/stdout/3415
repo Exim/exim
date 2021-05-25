@@ -175,7 +175,8 @@ dddP Received: from [127.0.0.1] (helo=rhu.barb)
 	by myhost.test.ex with esmtpa (Exim x.yz)
 	(envelope-from <username@myhost.test.ex>)
 	id 10HmaX-0005vi-00
-	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+	for x@y;
+	Tue, 2 Mar 1999 09:44:33 +0000
 047I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 dddF From: a@y
 dddS Sender: username@myhost.test.ex
@@ -203,7 +204,8 @@ x@y
 dddP Received: from [127.0.0.1] (helo=rhu.barb)
 	by myhost.test.ex with esmtpa (Exim x.yz)
 	id 10HmaY-0005vi-00
-	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+	for x@y;
+	Tue, 2 Mar 1999 09:44:33 +0000
 047I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 dddF From: username@myhost.test.ex
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -230,7 +232,8 @@ x@y
 dddP Received: from [127.0.0.1] (helo=rhu.barb)
 	by myhost.test.ex with esmtpa (Exim x.yz)
 	id 10HmaZ-0005vi-00
-	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+	for x@y;
+	Tue, 2 Mar 1999 09:44:33 +0000
 047I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 dddF From: username@another.domain
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -257,7 +260,8 @@ x@y
 dddP Received: from [127.0.0.1] (helo=rhu.barb)
 	by myhost.test.ex with esmtpa (Exim x.yz)
 	id 10HmbA-0005vi-00
-	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+	for x@y;
+	Tue, 2 Mar 1999 09:44:33 +0000
 047I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 dddF From: username@auth.id.domain
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -284,7 +288,8 @@ x@y
 dddP Received: from [127.0.0.1] (helo=rhu.barb)
 	by myhost.test.ex with esmtpa (Exim x.yz)
 	id 10HmbB-0005vi-00
-	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+	for x@y;
+	Tue, 2 Mar 1999 09:44:33 +0000
 dddF From: abc@x.y.z
 047I Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 dddS Sender: username@auth.id.domain

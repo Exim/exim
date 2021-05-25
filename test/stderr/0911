@@ -40,7 +40,7 @@ transport_check_waiting entered
  no messages waiting for 127.0.0.1
 transport_check_waiting: FALSE
 will pipeline QUIT
-  SMTP+> BDAT 313 LAST
+  SMTP+> BDAT 315 LAST
 cmd buf flush ddd bytes (more expected)
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=300 (more expected)
@@ -104,7 +104,7 @@ cmd buf flush ddd bytes
 sync_responses expect rcpt for nopipe@test.ex
   SMTP<< 250 OK rcpt
          will write message using CHUNKING
-  SMTP+> BDAT 315 LAST
+  SMTP+> BDAT 317 LAST
 cmd buf flush ddd bytes (more expected)
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=300
@@ -169,7 +169,7 @@ transport_check_waiting entered
  no messages waiting for 127.0.0.1
 transport_check_waiting: FALSE
 will pipeline QUIT
-  SMTP+> BDAT 319 LAST
+  SMTP+> BDAT 321 LAST
 cmd buf flush ddd bytes (more expected)
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=300 (more expected)
@@ -238,7 +238,7 @@ transport_check_waiting entered
  no messages waiting for 127.0.0.1
 transport_check_waiting: FALSE
 will pipeline QUIT
-  SMTP+> BDAT 319 LAST
+  SMTP+> BDAT 321 LAST
 cmd buf flush ddd bytes (more expected)
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=300 (more expected)
@@ -307,7 +307,7 @@ transport_check_waiting entered
  no messages waiting for 127.0.0.1
 transport_check_waiting: FALSE
 will pipeline QUIT
-  SMTP+> BDAT 317 LAST
+  SMTP+> BDAT 319 LAST
 cmd buf flush ddd bytes (more expected)
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=300 (more expected)

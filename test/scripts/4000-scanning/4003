@@ -20,6 +20,7 @@ server 7833
 <	(envelope
 <	id
 <	for
+<	
 <Content-type: text/plain
 <Message-Id:
 <From:
@@ -80,6 +81,7 @@ server 7833
 <	(envelope
 <	id
 <	for
+<	
 <Content-type: text/plain
 <Message-Id:
 <From:
@@ -138,6 +140,7 @@ server -i 2 7833
 <	(envelope
 <	id
 <	for
+<	
 <Content-type: text/plain
 <Message-Id:
 <From:
@@ -197,6 +200,7 @@ server 7833
 <	(envelope
 <	id
 <	for
+<	
 <Content-type: text/plain
 <Message-Id:
 <From:

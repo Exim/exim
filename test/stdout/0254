@@ -21,7 +21,8 @@ userx@myhost.test.ex
 dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaX-0005vi-00
-	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 054I Resent-Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 ddd* From: f
 dddF From: f@myhost.test.ex
@@ -59,7 +60,8 @@ userx@myhost.test.ex
 dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaY-0005vi-00
-	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 045  Resent-Date: Tue, 2 Mar 1999 09:44:33 +0000
 054I Resent-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 ddd* From: f
@@ -90,7 +92,8 @@ userx@myhost.test.ex
 dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaZ-0005vi-00
-	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@myhost.test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 045  Resent-Date: Tue, 2 Mar 1999 09:44:33 +0000
 054I Resent-Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 ddd* From: userx

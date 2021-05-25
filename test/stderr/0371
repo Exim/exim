@@ -85,7 +85,8 @@ P Received: from [V4NET.0.0.0] (helo=something)
 	by mail.test.ex with esmtp (Exim x.yz)
 	(envelope-from <x@y>)
 	id 10HmaX-0005vi-00
-	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+	for x@y;
+	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "data"
 processing "accept" (TESTSUITE/test-config 37)
 check set acl_m0 = $acl_m0; data

@@ -5,7 +5,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: first message
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -19,7 +20,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaZ-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: second message
 Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -33,7 +35,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbA-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: third message
 Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -47,7 +50,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbC-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: fourth message
 X-nltest: xxxx
 Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
@@ -60,7 +64,8 @@ Return-path: <>
 Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	id 10HmbD-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmbD-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: userx@test.ex,  abey seedy <abcd@test.ex>
 In-Reply-To: <E10HmbC-0005vi-00@the.local.host.name>
 References: <E10HmbC-0005vi-00@the.local.host.name>
@@ -78,7 +83,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbE-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: fifth message
 Reply-to: userx@test.ex,
   abcd@test.ex
@@ -92,7 +98,8 @@ Return-path: <>
 Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	id 10HmbF-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmbF-0005vi-00;
+	Tue, 2 Mar 1999 09:44:33 +0000
 To: userx@test.ex,   abcd@test.ex
 In-Reply-To: <E10HmbE-0005vi-00@the.local.host.name>
 References: <E10HmbE-0005vi-00@the.local.host.name>

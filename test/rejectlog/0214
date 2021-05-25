@@ -7,7 +7,8 @@ P Received: from [127.0.0.1]
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y.x>)
 	id 10HmaX-0005vi-00
-	for x@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for x@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 F From: Me <x@y.z>
   Comment: This was really seen!
 T To: bad@address;bad@address;bad@address;bad@address;bad@address;bad@address;

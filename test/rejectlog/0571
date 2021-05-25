@@ -4,7 +4,8 @@ Envelope-to: <ok1@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <ted@29.29.0.com>)
 	id 10HmaX-0005vi-00
-	for ok1@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+	for ok1@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 F From: ted@29.29.0.com
   Date: Tue, 2 Mar 1999 09:44:33 +0000
