@@ -21515,7 +21515,7 @@ The text is not included in the response to an EXPN command. In non-SMTP cases
 the text is included in the error message that Exim generates.
 
 .cindex "SMTP" "error codes"
-By default, Exim sends a 451 SMTP code for a &':defer:'&, and 550 for
+By default for verify, Exim sends a 451 SMTP code for a &':defer:'&, and 550 for
 &':fail:'&. However, if the message starts with three digits followed by a
 space, optionally followed by an extended code of the form &'n.n.n'&, also
 followed by a space, and the very first digit is the same as the default error
