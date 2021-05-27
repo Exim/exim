@@ -27,7 +27,7 @@ Returns:  nothing
 */
 
 void
-tree_add_nonrecipient(uschar *s)
+tree_add_nonrecipient(const uschar *s)
 {
 rmark rpoint = store_mark();
 tree_node *node = store_get(sizeof(tree_node) + Ustrlen(s), is_tainted(s));
@@ -52,7 +52,7 @@ Returns:  nothing
 */
 
 void
-tree_add_duplicate(uschar *s, address_item *addr)
+tree_add_duplicate(const uschar *s, address_item *addr)
 {
 rmark rpoint = store_mark();
 tree_node *node = store_get(sizeof(tree_node) + Ustrlen(s), is_tainted(s));
@@ -74,7 +74,7 @@ Returns:     nothing
 */
 
 void
-tree_add_unusable(host_item *h)
+tree_add_unusable(const host_item *h)
 {
 rmark rpoint = store_mark();
 tree_node *node;

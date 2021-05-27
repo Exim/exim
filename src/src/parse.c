@@ -12,7 +12,7 @@
 #include "exim.h"
 
 
-static uschar *last_comment_position;
+static const uschar *last_comment_position;
 
 
 
@@ -143,21 +143,21 @@ Argument:  pointer to an address, possibly unqualified
 Returns:   pointer to the last @ in an address, or NULL if none
 */
 
-uschar *
-parse_find_at(uschar *s)
+const uschar *
+parse_find_at(const uschar *s)
 {
-uschar *t = s + Ustrlen(s);
+const uschar * t = s + Ustrlen(s);
 while (--t >= s)
-  {
   if (*t == '@')
     {
     int backslash_count = 0;
-    uschar *tt = t - 1;
+    const uschar *tt = t - 1;
     while (tt > s && *tt-- == '\\') backslash_count++;
     if ((backslash_count & 1) == 0) return t;
     }
-  else if (*t == '\"') return NULL;
-  }
+  else if (*t == '\"')
+    return NULL;
+
 return NULL;
 }
 
@@ -191,8 +191,8 @@ Argument: current character pointer
 Returns:  new character pointer
 */
 
-static uschar *
-skip_comment(uschar *s)
+static const uschar *
+skip_comment(const uschar *s)
 {
 last_comment_position = s;
 while (*s)
@@ -232,8 +232,8 @@ Arguments:
 Returns:     new character pointer
 */
 
-static uschar *
-read_domain(uschar *s, uschar *t, uschar **errorptr)
+static const uschar *
+read_domain(const uschar *s, uschar *t, uschar **errorptr)
 {
 uschar *tt = t;
 s = skip_comment(s);
@@ -406,8 +406,8 @@ Arguments:
 Returns:   new character pointer
 */
 
-static uschar *
-read_local_part(uschar *s, uschar *t, uschar **error, BOOL allow_null)
+static const uschar *
+read_local_part(const uschar *s, uschar *t, uschar **error, BOOL allow_null)
 {
 uschar *tt = t;
 *error = NULL;
@@ -491,8 +491,8 @@ Arguments:
 Returns:     new character pointer
 */
 
-static uschar *
-read_route(uschar *s, uschar *t, uschar **errorptr)
+static const uschar *
+read_route(const uschar *s, uschar *t, uschar **errorptr)
 {
 BOOL commas = FALSE;
 *errorptr = NULL;
@@ -545,8 +545,8 @@ Arguments:
 Returns:     new character pointer
 */
 
-static uschar *
-read_addr_spec(uschar *s, uschar *t, int term, uschar **errorptr,
+static const uschar *
+read_addr_spec(const uschar *s, uschar *t, int term, uschar **errorptr,
   uschar **domainptr)
 {
 s = read_local_part(s, t, errorptr, FALSE);
@@ -616,12 +616,12 @@ Returns:      points to the extracted address, or NULL on error
 #define FAILED(s) { *errorptr = s; goto PARSE_FAILED; }
 
 uschar *
-parse_extract_address(uschar *mailbox, uschar **errorptr, int *start, int *end,
+parse_extract_address(const uschar *mailbox, uschar **errorptr, int *start, int *end,
   int *domain, BOOL allow_null)
 {
 uschar *yield = store_get(Ustrlen(mailbox) + 1, is_tainted(mailbox));
-uschar *startptr, *endptr;
-uschar *s = US mailbox;
+const uschar *startptr, *endptr;
+const uschar *s = US mailbox;
 uschar *t = US yield;
 
 *domain = 0;
@@ -808,11 +808,11 @@ while (isspace(endptr[-1])) endptr--;
 *end = endptr - US mailbox;
 
 /* Although this code has no limitation on the length of address extracted,
-other parts of Exim may have limits, and in any case, RFC 2821 limits local
-parts to 64 and domains to 255, so we do a check here, giving an error if the
-address is ridiculously long. */
+other parts of Exim may have limits, and in any case, RFC 5321 limits email
+addresses to 256, so we do a check here, giving an error if the address is
+ridiculously long. */
 
-if (*end - *start > ADDRESS_MAXLENGTH)
+if (*end - *start > EXIM_EMAILADDR_MAX)
   {
   *errorptr = string_sprintf("address is ridiculously long: %.64s...", yield);
   return NULL;
@@ -984,7 +984,12 @@ if (i < len)
 
 /* No non-printers; use the RFC 822 quoting rules */
 
-buffer = store_get(len*4, is_tainted(phrase));
+if (len <= 0 || len >= INT_MAX/4)
+  {
+  return string_copy_taint(CUS"", is_tainted(phrase));
+  }
+
+buffer = store_get((len+1)*4, is_tainted(phrase));
 
 s = phrase;
 end = s + len;
@@ -1129,9 +1134,12 @@ while (s < end)
             {
             if (ss >= end) ss--;
             *t++ = '(';
-            Ustrncpy(t, s, ss-s);
-            t += ss-s;
-            s = ss;
+            if (ss > s)
+              {
+              Ustrncpy(t, s, ss-s);
+              t += ss-s;
+              s = ss;
+              }
             }
           }
 
@@ -1582,7 +1590,7 @@ for (;;)
   else
     {
     int start, end, domain;
-    uschar *recipient = NULL;
+    const uschar *recipient = NULL;
     int save = s[len];
     s[len] = 0;
 
@@ -1678,8 +1686,8 @@ for (;;)
       recipient = ((options & RDO_REWRITE) != 0)?
         rewrite_address(recipient, TRUE, FALSE, global_rewrite_rules,
           rewrite_existflags) :
-        rewrite_address_qualify(recipient, TRUE);
-      addr = deliver_make_addr(recipient, TRUE);  /* TRUE => copy recipient */
+        rewrite_address_qualify(recipient, TRUE);	/*XXX loses track of const */
+      addr = deliver_make_addr(US recipient, TRUE);  /* TRUE => copy recipient, so deconst ok */
       }
 
     /* Restore the final character in the original data, and add to the
@@ -1713,8 +1721,8 @@ Arguments:
 Returns:       points after the processed message-id or NULL on error
 */
 
-uschar *
-parse_message_id(uschar *str, uschar **yield, uschar **error)
+const uschar *
+parse_message_id(const uschar *str, uschar **yield, uschar **error)
 {
 uschar *domain = NULL;
 uschar *id;
@@ -1754,8 +1762,7 @@ while (*id) id++;
 *id++ = 0;
 store_release_above(id);
 
-str = skip_comment(str);
-return str;
+return skip_comment(str);
 }
 
 
@@ -1773,16 +1780,16 @@ Arguments:
 Returns:       points after the processed date or NULL on error
 */
 
-static uschar *
-parse_number(uschar *str, int *n, int digits)
+static const uschar *
+parse_number(const uschar *str, int *n, int digits)
 {
-  *n=0;
-  while (digits--)
+*n=0;
+while (digits--)
   {
-    if (*str<'0' || *str>'9') return NULL;
-    *n=10*(*n)+(*str++-'0');
+  if (*str<'0' || *str>'9') return NULL;
+  *n=10*(*n)+(*str++-'0');
   }
-  return str;
+return str;
 }
 
 
@@ -1799,8 +1806,8 @@ Arguments:
 Returns:       points after the parsed day or NULL on error
 */
 
-static uschar *
-parse_day_of_week(uschar *str)
+static const uschar *
+parse_day_of_week(const uschar * str)
 {
 /*
 day-of-week     =       ([FWS] day-name) / obs-day-of-week
@@ -1815,17 +1822,16 @@ static const uschar *day_name[7]={ US"mon", US"tue", US"wed", US"thu", US"fri", 
 int i;
 uschar day[4];
 
-str=skip_comment(str);
-for (i=0; i<3; ++i)
+str = skip_comment(str);
+for (i = 0; i < 3; ++i)
   {
-  if ((day[i]=tolower(*str))=='\0') return NULL;
+  if ((day[i] = tolower(*str)) == '\0') return NULL;
   ++str;
   }
-day[3]='\0';
-for (i=0; i<7; ++i) if (Ustrcmp(day,day_name[i])==0) break;
-if (i==7) return NULL;
-str=skip_comment(str);
-return str;
+day[3] = '\0';
+for (i = 0; i<7; ++i) if (Ustrcmp(day,day_name[i]) == 0) break;
+if (i == 7) return NULL;
+return skip_comment(str);
 }
 
 
@@ -1845,8 +1851,8 @@ Arguments:
 Returns:       points after the processed date or NULL on error
 */
 
-static uschar *
-parse_date(uschar *str, int *d, int *m, int *y)
+static const uschar *
+parse_date(const uschar *str, int *d, int *m, int *y)
 {
 /*
 date            =       day month year
@@ -1868,36 +1874,39 @@ day             =       ([FWS] 1*2DIGIT) / obs-day
 obs-day         =       [CFWS] 1*2DIGIT [CFWS]
 */
 
-uschar *c,*n;
+const uschar * s, * n;
 static const uschar *month_name[]={ US"jan", US"feb", US"mar", US"apr", US"may", US"jun", US"jul", US"aug", US"sep", US"oct", US"nov", US"dec" };
 int i;
 uschar month[4];
 
-str=skip_comment(str);
-if ((str=parse_number(str,d,1))==NULL) return NULL;
-if (*str>='0' && *str<='9') *d=10*(*d)+(*str++-'0');
-c=skip_comment(str);
-if (c==str) return NULL;
-else str=c;
-for (i=0; i<3; ++i) if ((month[i]=tolower(*(str+i)))=='\0') return NULL;
-month[3]='\0';
-for (i=0; i<12; ++i) if (Ustrcmp(month,month_name[i])==0) break;
-if (i==12) return NULL;
+str = skip_comment(str);
+if ((str = parse_number(str,d,1)) == NULL) return NULL;
+
+if (*str>='0' && *str<='9') *d = 10*(*d)+(*str++-'0');
+s = skip_comment(str);
+if (s == str) return NULL;
+str = s;
+
+for (i = 0; i<3; ++i) if ((month[i]=tolower(*(str+i))) == '\0') return NULL;
+month[3] = '\0';
+for (i = 0; i<12; ++i) if (Ustrcmp(month,month_name[i]) == 0) break;
+if (i == 12) return NULL;
 str+=3;
-*m=i;
-c=skip_comment(str);
-if (c==str) return NULL;
-else str=c;
-if ((n=parse_number(str,y,4)))
+*m = i;
+s = skip_comment(str);
+if (s == str) return NULL;
+str=s;
+
+if ((n = parse_number(str,y,4)))
   {
-  str=n;
+  str = n;
   if (*y<1900) return NULL;
-  *y=*y-1900;
+  *y = *y-1900;
   }
-else if ((n=parse_number(str,y,2)))
+else if ((n = parse_number(str,y,2)))
   {
-  str=skip_comment(n);
-  while (*(str-1)==' ' || *(str-1)=='\t') --str; /* match last FWS later */
+  str = skip_comment(n);
+  while (*(str-1) == ' ' || *(str-1) == '\t') --str; /* match last FWS later */
   if (*y<50) *y+=100;
   }
 else return NULL;
@@ -1922,8 +1931,8 @@ Arguments:
 Returns:       points after the processed time or NULL on error
 */
 
-static uschar *
-parse_time(uschar *str, int *h, int *m, int *s, int *z)
+static const uschar *
+parse_time(const uschar *str, int *h, int *m, int *s, int *z)
 {
 /*
 time            =       time-of-day FWS zone
@@ -1958,61 +1967,61 @@ obs-zone        =       "UT" / "GMT" /          ; Universal Time
                         %d107-122               ; upper and lower case
 */
 
-uschar *c;
+const uschar * c;
 
-str=skip_comment(str);
-if ((str=parse_number(str,h,2))==NULL) return NULL;
-str=skip_comment(str);
+str = skip_comment(str);
+if ((str = parse_number(str,h,2)) == NULL) return NULL;
+str = skip_comment(str);
 if (*str!=':') return NULL;
 ++str;
-str=skip_comment(str);
-if ((str=parse_number(str,m,2))==NULL) return NULL;
-c=skip_comment(str);
-if (*str==':')
+str = skip_comment(str);
+if ((str = parse_number(str,m,2)) == NULL) return NULL;
+c = skip_comment(str);
+if (*str == ':')
   {
   ++str;
-  str=skip_comment(str);
-  if ((str=parse_number(str,s,2))==NULL) return NULL;
-  c=skip_comment(str);
+  str = skip_comment(str);
+  if ((str = parse_number(str,s,2)) == NULL) return NULL;
+  c = skip_comment(str);
   }
-if (c==str) return NULL;
+if (c == str) return NULL;
 else str=c;
-if (*str=='+' || *str=='-')
+if (*str == '+' || *str == '-')
   {
   int neg;
 
-  neg=(*str=='-');
+  neg = (*str == '-');
   ++str;
-  if ((str=parse_number(str,z,4))==NULL) return NULL;
-  *z=(*z/100)*3600+(*z%100)*60;
-  if (neg) *z=-*z;
+  if ((str = parse_number(str,z,4)) == NULL) return NULL;
+  *z = (*z/100)*3600+(*z%100)*60;
+  if (neg) *z = -*z;
   }
 else
   {
   char zone[5];
-  struct { const char *name; int off; } zone_name[10]=
+  struct { const char *name; int off; } zone_name[10] =
   { {"gmt",0}, {"ut",0}, {"est",-5}, {"edt",-4}, {"cst",-6}, {"cdt",-5}, {"mst",-7}, {"mdt",-6}, {"pst",-8}, {"pdt",-7}};
   int i,j;
 
-  for (i=0; i<4; ++i)
+  for (i = 0; i<4; ++i)
     {
-    zone[i]=tolower(*(str+i));
+    zone[i] = tolower(*(str+i));
     if (zone[i]<'a' || zone[i]>'z') break;
     }
-  zone[i]='\0';
-  for (j=0; j<10 && strcmp(zone,zone_name[j].name); ++j);
+  zone[i] = '\0';
+  for (j = 0; j<10 && strcmp(zone,zone_name[j].name); ++j);
   /* Besides zones named in the grammar, RFC 2822 says other alphabetic */
   /* time zones should be treated as unknown offsets. */
   if (j<10)
     {
-    *z=zone_name[j].off*3600;
+    *z = zone_name[j].off*3600;
     str+=i;
     }
   else if (zone[0]<'a' || zone[1]>'z') return 0;
   else
     {
     while ((*str>='a' && *str<='z') || (*str>='A' && *str<='Z')) ++str;
-    *z=0;
+    *z = 0;
     }
   }
 return str;
@@ -2032,8 +2041,8 @@ Arguments:
 Returns:       points after the processed date-time or NULL on error
 */
 
-uschar *
-parse_date_time(uschar *str, time_t *t)
+const uschar *
+parse_date_time(const uschar *str, time_t *t)
 {
 /*
 date-time       =       [ day-of-week "," ] date FWS time [CFWS]
@@ -2045,27 +2054,26 @@ extern char **environ;
 char **old_environ;
 static char gmt0[]="TZ=GMT0";
 static char *gmt_env[]={ gmt0, (char*)0 };
-uschar *try;
+const uschar * try;
 
-if ((try=parse_day_of_week(str)))
+if ((try = parse_day_of_week(str)))
   {
-  str=try;
+  str = try;
   if (*str!=',') return 0;
   ++str;
   }
-if ((str=parse_date(str,&tm.tm_mday,&tm.tm_mon,&tm.tm_year))==NULL) return NULL;
+if ((str = parse_date(str,&tm.tm_mday,&tm.tm_mon,&tm.tm_year)) == NULL) return NULL;
 if (*str!=' ' && *str!='\t') return NULL;
-while (*str==' ' || *str=='\t') ++str;
-if ((str=parse_time(str,&tm.tm_hour,&tm.tm_min,&tm.tm_sec,&zone))==NULL) return NULL;
-tm.tm_isdst=0;
-old_environ=environ;
-environ=gmt_env;
-*t=mktime(&tm);
-environ=old_environ;
-if (*t==-1) return NULL;
+while (*str == ' ' || *str == '\t') ++str;
+if ((str = parse_time(str,&tm.tm_hour,&tm.tm_min,&tm.tm_sec,&zone)) == NULL) return NULL;
+tm.tm_isdst = 0;
+old_environ = environ;
+environ = gmt_env;
+*t = mktime(&tm);
+environ = old_environ;
+if (*t == -1) return NULL;
 *t-=zone;
-str=skip_comment(str);
-return str;
+return skip_comment(str);
 }
 
 

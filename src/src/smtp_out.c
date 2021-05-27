@@ -692,7 +692,7 @@ Arguments:
   timelimit deadline for reading the lime, seconds past epoch
 
 Returns:    length of a line that has been put in the buffer
-            -1 otherwise, with errno set
+            -1 otherwise, with errno set, and inblock->ptr adjusted
 */
 
 static int
@@ -733,6 +733,7 @@ for (;;)
       {
       *p = 0;                     /* Leave malformed line for error message */
       errno = ERRNO_SMTPFORMAT;
+      inblock->ptr = ptr;
       return -1;
       }
     }
@@ -758,6 +759,7 @@ for (;;)
 /* Get here if there has been some kind of recv() error; errno is set, but we
 ensure that the result buffer is empty before returning. */
 
+inblock->ptr = inblock->ptrend = inblock->buffer;
 *buffer = 0;
 return -1;
 }

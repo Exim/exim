@@ -233,18 +233,8 @@ int fd;
 
 os_restarting_signal(sig, usr1_handler);
 
-if ((fd = Uopen(process_log_path, O_APPEND|O_WRONLY, LOG_MODE)) < 0)
-  {
-  /* If we are already running as the Exim user, try to create it in the
-  current process (assuming spool_directory exists). Otherwise, if we are
-  root, do the creation in an exim:exim subprocess. */
-
-  int euid = geteuid();
-  if (euid == exim_uid)
-    fd = Uopen(process_log_path, O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
-  else if (euid == root_uid)
-    fd = log_create_as_exim(process_log_path);
-  }
+if (!process_log_path) return;
+fd = log_open_as_exim(process_log_path);
 
 /* If we are neither exim nor root, or if we failed to create the log file,
 give up. There is not much useful we can do with errors, since we don't want
@@ -758,6 +748,25 @@ va_list ap;
 va_start(ap, fmt);
 vfprintf(stderr, fmt, ap);
 exit(EXIT_FAILURE);
+}
+
+/* fail if a length is too long */
+static inline void
+exim_len_fail_toolong(int itemlen, int maxlen, const char *description)
+{
+if (itemlen <= maxlen)
+  return;
+fprintf(stderr, "exim: length limit exceeded (%d > %d) for: %s\n",
+        itemlen, maxlen, description);
+exit(EXIT_FAILURE);
+}
+
+/* only pass through the string item back to the caller if it's short enough */
+static inline const uschar *
+exim_str_fail_toolong(const uschar *item, int maxlen, const char *description)
+{
+exim_len_fail_toolong(Ustrlen(item), maxlen, description);
+return item;
 }
 
 /* exim_chown_failure() called from exim_chown()/exim_fchown() on failure
@@ -1540,10 +1549,11 @@ Arguments:
 */
 
 static void
-expansion_test_line(uschar * line)
+expansion_test_line(const uschar * line)
 {
 int len;
 BOOL dummy_macexp;
+uschar * s;
 
 Ustrncpy(big_buffer, line, big_buffer_size);
 big_buffer[big_buffer_size-1] = '\0';
@@ -1557,7 +1567,7 @@ if (isupper(big_buffer[0]))
     printf("Defined macro '%s'\n", mlast->name);
   }
 else
-  if ((line = expand_string(big_buffer))) printf("%s\n", CS line);
+  if ((s = expand_string(big_buffer))) printf("%s\n", CS s);
   else printf("Failed: %s\n", expand_string_message);
 }
 
@@ -1641,10 +1651,10 @@ uschar *cmdline_syslog_name = NULL;
 uschar *start_queue_run_id = NULL;
 uschar *stop_queue_run_id = NULL;
 uschar *expansion_test_message = NULL;
-uschar *ftest_domain = NULL;
-uschar *ftest_localpart = NULL;
-uschar *ftest_prefix = NULL;
-uschar *ftest_suffix = NULL;
+const uschar *ftest_domain = NULL;
+const uschar *ftest_localpart = NULL;
+const uschar *ftest_prefix = NULL;
+const uschar *ftest_suffix = NULL;
 uschar *log_oneline = NULL;
 uschar *malware_test_file = NULL;
 uschar *real_sender_address;
@@ -1738,6 +1748,9 @@ f.running_in_test_harness =
   *running_status == '<' && Ustrcmp(running_status, "<<<testing>>>") == 0;
 if (f.running_in_test_harness)
   debug_store = TRUE;
+
+/* Protect against abusive argv[0] */
+exim_str_fail_toolong(argv[0], PATH_MAX, "argv[0]");
 
 /* The C standard says that the equivalent of setlocale(LC_ALL, "C") is obeyed
 at the start of a program; however, it seems that some environments do not
@@ -2140,10 +2153,10 @@ on the second character (the one after '-'), to save some effort. */
 	    {
 	    if (++i >= argc)
 	      exim_fail("exim: string expected after %s\n", arg);
-	    if (Ustrcmp(argrest, "d") == 0) ftest_domain = argv[i];
-	    else if (Ustrcmp(argrest, "l") == 0) ftest_localpart = argv[i];
-	    else if (Ustrcmp(argrest, "p") == 0) ftest_prefix = argv[i];
-	    else if (Ustrcmp(argrest, "s") == 0) ftest_suffix = argv[i];
+	    if (Ustrcmp(argrest, "d") == 0) ftest_domain = exim_str_fail_toolong(argv[i], EXIM_DOMAINNAME_MAX, "-bfd");
+	    else if (Ustrcmp(argrest, "l") == 0) ftest_localpart = exim_str_fail_toolong(argv[i], EXIM_LOCALPART_MAX, "-bfl");
+	    else if (Ustrcmp(argrest, "p") == 0) ftest_prefix = exim_str_fail_toolong(argv[i], EXIM_LOCALPART_MAX, "-bfp");
+	    else if (Ustrcmp(argrest, "s") == 0) ftest_suffix = exim_str_fail_toolong(argv[i], EXIM_LOCALPART_MAX, "-bfs");
 	    else badarg = TRUE;
 	    }
 	  break;
@@ -2153,7 +2166,7 @@ on the second character (the one after '-'), to save some effort. */
 	  if (!*argrest || Ustrcmp(argrest, "c") == 0)
 	    {
 	    if (++i >= argc) { badarg = TRUE; break; }
-	    sender_host_address = string_copy_taint(argv[i], TRUE);
+	    sender_host_address = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_IPADDR_MAX, "-bh"), TRUE);
 	    host_checking = checking = f.log_testing_mode = TRUE;
 	    f.host_checking_callout = *argrest == 'c';
 	    message_logs = FALSE;
@@ -2611,7 +2624,7 @@ on the second character (the one after '-'), to save some effort. */
     case 'F':
     if (!*argrest)
       if (++i < argc) argrest = argv[i]; else { badarg = TRUE; break; }
-    originator_name = string_copy_taint(argrest, TRUE);
+    originator_name = string_copy_taint(exim_str_fail_toolong(argrest, EXIM_HUMANNAME_MAX, "-F"), TRUE);
     f.sender_name_forced = TRUE;
     break;
 
@@ -2637,6 +2650,7 @@ on the second character (the one after '-'), to save some effort. */
       uschar *errmess;
       if (!*argrest)
         if (i+1 < argc) argrest = argv[++i]; else { badarg = TRUE; break; }
+      (void) exim_str_fail_toolong(argrest, EXIM_DISPLAYMAIL_MAX, "-f");
       if (!*argrest)
         *(sender_address = store_get(1, FALSE)) = '\0';  /* Ensure writeable memory */
       else
@@ -2733,9 +2747,9 @@ on the second character (the one after '-'), to save some effort. */
       if (msg_action_arg >= 0)
         exim_fail("exim: incompatible arguments\n");
 
-      continue_transport = string_copy_taint(argv[++i], TRUE);
-      continue_hostname = string_copy_taint(argv[++i], TRUE);
-      continue_host_address = string_copy_taint(argv[++i], TRUE);
+      continue_transport = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-C internal transport"), TRUE);
+      continue_hostname = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_HOSTNAME_MAX, "-C internal hostname"), TRUE);
+      continue_host_address = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_IPADDR_MAX, "-C internal hostaddr"), TRUE);
       continue_sequence = Uatoi(argv[++i]);
       msg_action = MSG_DELIVER;
       msg_action_arg = ++i;
@@ -2780,7 +2794,7 @@ on the second character (the one after '-'), to save some effort. */
     /* -MCd: for debug, set a process-purpose string */
 
 	case 'd': if (++i < argc)
-		    process_purpose = string_copy_taint(argv[i], TRUE);
+		    process_purpose = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_DRIVERNAME_MAX, "-MCd"), TRUE);
 		  else badarg = TRUE;
 		  break;
 
@@ -2788,7 +2802,7 @@ on the second character (the one after '-'), to save some effort. */
        from the commandline should be tainted - but we will need an untainted
        value for the spoolfile when doing a -odi delivery process. */
 
-	case 'G': if (++i < argc) queue_name = string_copy_taint(argv[i], FALSE);
+	case 'G': if (++i < argc) queue_name = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_DRIVERNAME_MAX, "-MCG"), FALSE);
 		  else badarg = TRUE;
 		  break;
 
@@ -2861,7 +2875,7 @@ on the second character (the one after '-'), to save some effort. */
 	case 'r':
 	case 's': if (++i < argc)
 		    {
-		    continue_proxy_sni = string_copy_taint(argv[i], TRUE);
+		    continue_proxy_sni = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_HOSTNAME_MAX, "-MCr/-MCs"), TRUE);
 		    if (argrest[1] == 'r') continue_proxy_dane = TRUE;
 		    }
 		  else badarg = TRUE;
@@ -2873,13 +2887,13 @@ on the second character (the one after '-'), to save some effort. */
     and the TLS cipher. */
 
 	case 't': if (++i < argc)
-		    sending_ip_address = string_copy_taint(argv[i], TRUE);
+		    sending_ip_address = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_IPADDR_MAX, "-MCt IP"), TRUE);
 		  else badarg = TRUE;
 		  if (++i < argc)
 		    sending_port = (int)(Uatol(argv[i]));
 		  else badarg = TRUE;
 		  if (++i < argc)
-		    continue_proxy_cipher = string_copy_taint(argv[i], TRUE);
+		    continue_proxy_cipher = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_CIPHERNAME_MAX, "-MCt cipher"), TRUE);
 		  else badarg = TRUE;
 		  /*FALLTHROUGH*/
 
@@ -2906,6 +2920,7 @@ on the second character (the one after '-'), to save some effort. */
     following options which are followed by a single message id, and which
     act on that message. Some of them use the "recipient" addresses as well.
        -Mar  add recipient(s)
+       -MG   move to a different queue
        -Mmad mark all recipients delivered
        -Mmd  mark recipients(s) delivered
        -Mes  edit sender
@@ -2941,7 +2956,7 @@ on the second character (the one after '-'), to save some effort. */
    else if (Ustrcmp(argrest, "G") == 0)
       {
       msg_action = MSG_SETQUEUE;
-      queue_name_dest = string_copy_taint(argv[++i], TRUE);
+      queue_name_dest = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-MG"), TRUE);
       }
     else if (Ustrcmp(argrest, "mad") == 0)
       {
@@ -3154,27 +3169,27 @@ on the second character (the one after '-'), to save some effort. */
 	/* -oMa: Set sender host address */
 
 	if (Ustrcmp(argrest, "a") == 0)
-	  sender_host_address = string_copy_taint(argv[++i], TRUE);
+	  sender_host_address = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_IPADDR_MAX, "-oMa"), TRUE);
 
 	/* -oMaa: Set authenticator name */
 
 	else if (Ustrcmp(argrest, "aa") == 0)
-	  sender_host_authenticated = string_copy_taint(argv[++i], TRUE);
+	  sender_host_authenticated = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-oMaa"), TRUE);
 
 	/* -oMas: setting authenticated sender */
 
 	else if (Ustrcmp(argrest, "as") == 0)
-	  authenticated_sender = string_copy_taint(argv[++i], TRUE);
+	  authenticated_sender = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMas"), TRUE);
 
 	/* -oMai: setting authenticated id */
 
 	else if (Ustrcmp(argrest, "ai") == 0)
-	  authenticated_id = string_copy_taint(argv[++i], TRUE);
+	  authenticated_id = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMas"), TRUE);
 
 	/* -oMi: Set incoming interface address */
 
 	else if (Ustrcmp(argrest, "i") == 0)
-	  interface_address = string_copy_taint(argv[++i], TRUE);
+	  interface_address = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_IPADDR_MAX, "-oMi"), TRUE);
 
 	/* -oMm: Message reference */
 
@@ -3194,19 +3209,19 @@ on the second character (the one after '-'), to save some effort. */
 	  if (received_protocol)
 	    exim_fail("received_protocol is set already\n");
 	  else
-	    received_protocol = string_copy_taint(argv[++i], TRUE);
+	    received_protocol = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-oMr"), TRUE);
 
 	/* -oMs: Set sender host name */
 
 	else if (Ustrcmp(argrest, "s") == 0)
-	  sender_host_name = string_copy_taint(argv[++i], TRUE);
+	  sender_host_name = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_HOSTNAME_MAX, "-oMs"), TRUE);
 
 	/* -oMt: Set sender ident */
 
 	else if (Ustrcmp(argrest, "t") == 0)
 	  {
 	  sender_ident_set = TRUE;
-	  sender_ident = string_copy_taint(argv[++i], TRUE);
+	  sender_ident = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_IDENTUSER_MAX, "-oMt"), TRUE);
 	  }
 
 	/* Else a bad argument */
@@ -3231,6 +3246,10 @@ on the second character (the one after '-'), to save some effort. */
 	 -oPX:       delete pid file of daemon */
 
       case 'P':
+	if (!f.running_in_test_harness && real_uid != root_uid && real_uid != exim_uid)
+	  exim_fail("exim: only uid=%d or uid=%d can use -oP and -oPX "
+                    "(uid=%d euid=%d | %d)\n",
+                    root_uid, exim_uid, getuid(), geteuid(), real_uid);
 	if (!*argrest) override_pid_file_path = argv[++i];
 	else if (Ustrcmp(argrest, "X") == 0) delete_pid_file();
 	else badarg = TRUE;
@@ -3256,10 +3275,11 @@ on the second character (the one after '-'), to save some effort. */
 	break;
 
       /* -oX <list>: Override local_interfaces and/or default daemon ports */
+      /* Limits: Is there a real limit we want here?  1024 is very arbitrary. */
 
       case 'X':
 	if (*argrest) badarg = TRUE;
-	else override_local_interfaces = string_copy_taint(argv[++i], TRUE);
+	else override_local_interfaces = string_copy_taint(exim_str_fail_toolong(argv[++i], 1024, "-oX"), TRUE);
 	break;
 
       /* -oY: Override creation of daemon notifier socket */
@@ -3307,9 +3327,10 @@ on the second character (the one after '-'), to save some effort. */
         exim_fail("received_protocol is set already\n");
 
       if (!hn)
-        received_protocol = string_copy_taint(argrest, TRUE);
+        received_protocol = string_copy_taint(exim_str_fail_toolong(argrest, EXIM_DRIVERNAME_MAX, "-p<protocol>"), TRUE);
       else
         {
+        (void) exim_str_fail_toolong(argrest, (EXIM_DRIVERNAME_MAX+1+EXIM_HOSTNAME_MAX), "-p<protocol>:<host>");
         received_protocol = string_copyn_taint(argrest, hn - argrest, TRUE);
         sender_host_name = string_copy_taint(hn + 1, TRUE);
         }
@@ -3365,6 +3386,7 @@ on the second character (the one after '-'), to save some effort. */
       {
       int i;
       for (argrest++, i = 0; argrest[i] && argrest[i] != '/'; ) i++;
+      exim_len_fail_toolong(i, EXIM_DRIVERNAME_MAX, "-q*G<name>");
       queue_name = string_copyn(argrest, i);
       argrest += i;
       if (*argrest == '/') argrest++;
@@ -3394,7 +3416,10 @@ on the second character (the one after '-'), to save some effort. */
 
 
     case 'R':   /* Synonymous with -qR... */
-    receiving_message = FALSE;
+      {
+      const uschar *tainted_selectstr;
+
+      receiving_message = FALSE;
 
     /* -Rf:   As -R (below) but force all deliveries,
        -Rff:  Ditto, but also thaw all frozen messages,
@@ -3405,27 +3430,30 @@ on the second character (the one after '-'), to save some effort. */
     in all cases provided there are no further characters in this
     argument. */
 
-    if (*argrest)
-      for (int i = 0; i < nelem(rsopts); i++)
-        if (Ustrcmp(argrest, rsopts[i]) == 0)
-          {
-          if (i != 2) f.queue_run_force = TRUE;
-          if (i >= 2) f.deliver_selectstring_regex = TRUE;
-          if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
-          argrest += Ustrlen(rsopts[i]);
-          }
+      if (*argrest)
+	for (int i = 0; i < nelem(rsopts); i++)
+	  if (Ustrcmp(argrest, rsopts[i]) == 0)
+	    {
+	    if (i != 2) f.queue_run_force = TRUE;
+	    if (i >= 2) f.deliver_selectstring_regex = TRUE;
+	    if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
+	    argrest += Ustrlen(rsopts[i]);
+	    }
 
     /* -R: Set string to match in addresses for forced queue run to
     pick out particular messages. */
 
-    if (*argrest)
-      deliver_selectstring = string_copy_taint(argrest, TRUE);
-    else if (i+1 < argc)
-      deliver_selectstring = string_copy_taint(argv[++i], TRUE);
-    else
-      exim_fail("exim: string expected after -R\n");
+      /* Avoid attacks from people providing very long strings, and do so before
+      we make copies. */
+      if (*argrest)
+	tainted_selectstr = argrest;
+      else if (i+1 < argc)
+	tainted_selectstr = argv[++i];
+      else
+	exim_fail("exim: string expected after -R\n");
+      deliver_selectstring = string_copy_taint(exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-R"), TRUE);
+      }
     break;
-
 
     /* -r: an obsolete synonym for -f (see above) */
 
@@ -3433,7 +3461,10 @@ on the second character (the one after '-'), to save some effort. */
     /* -S: Like -R but works on sender. */
 
     case 'S':   /* Synonymous with -qS... */
-    receiving_message = FALSE;
+      {
+      const uschar *tainted_selectstr;
+
+      receiving_message = FALSE;
 
     /* -Sf:   As -S (below) but force all deliveries,
        -Sff:  Ditto, but also thaw all frozen messages,
@@ -3444,25 +3475,27 @@ on the second character (the one after '-'), to save some effort. */
     in all cases provided there are no further characters in this
     argument. */
 
-    if (*argrest)
-      for (int i = 0; i < nelem(rsopts); i++)
-        if (Ustrcmp(argrest, rsopts[i]) == 0)
-          {
-          if (i != 2) f.queue_run_force = TRUE;
-          if (i >= 2) f.deliver_selectstring_sender_regex = TRUE;
-          if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
-          argrest += Ustrlen(rsopts[i]);
-          }
+      if (*argrest)
+	for (int i = 0; i < nelem(rsopts); i++)
+	  if (Ustrcmp(argrest, rsopts[i]) == 0)
+	    {
+	    if (i != 2) f.queue_run_force = TRUE;
+	    if (i >= 2) f.deliver_selectstring_sender_regex = TRUE;
+	    if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
+	    argrest += Ustrlen(rsopts[i]);
+	    }
 
     /* -S: Set string to match in addresses for forced queue run to
     pick out particular messages. */
 
-    if (*argrest)
-      deliver_selectstring_sender = string_copy_taint(argrest, TRUE);
-    else if (i+1 < argc)
-      deliver_selectstring_sender = string_copy_taint(argv[++i], TRUE);
-    else
-      exim_fail("exim: string expected after -S\n");
+      if (*argrest)
+	tainted_selectstr = argrest;
+      else if (i+1 < argc)
+	tainted_selectstr = argv[++i];
+      else
+	exim_fail("exim: string expected after -S\n");
+      deliver_selectstring_sender = string_copy_taint(exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-S"), TRUE);
+      }
     break;
 
     /* -Tqt is an option that is exclusively for use by the testing suite.
@@ -3544,10 +3577,12 @@ on the second character (the one after '-'), to save some effort. */
         exim_fail("exim: string expected after -X\n");
     break;
 
+    /* -z: a line of text to log */
+
     case 'z':
     if (!*argrest)
       if (++i < argc)
-	log_oneline = string_copy_taint(argv[i], TRUE);
+	log_oneline = string_copy_taint(exim_str_fail_toolong(argv[i], 2048, "-z logtext"), TRUE);
       else
         exim_fail("exim: file name expected after %s\n", argv[i-1]);
     break;
@@ -3837,6 +3872,11 @@ during readconf_main() some expansion takes place already. */
 /* Store the initial cwd before we change directories.  Can be NULL if the
 dir has already been unlinked. */
 initial_cwd = os_getcwd(NULL, 0);
+if (!initial_cwd && errno)
+  exim_fail("exim: getting initial cwd failed: %s\n", strerror(errno));
+
+if (initial_cwd && (strlen(CCS initial_cwd) >= BIG_BUFFER_SIZE))
+  exim_fail("exim: initial cwd is far too long (%d)\n", Ustrlen(CCS initial_cwd));
 
 /* checking:
     -be[m] expansion test        -
@@ -4124,11 +4164,9 @@ if (  (debug_selector & D_any  ||  LOGGING(arguments))
     p += 13;
   else
     {
-    Ustrncpy(p + 4, initial_cwd, big_buffer_size-5);
-    p += 4 + Ustrlen(initial_cwd);
-    /* in case p is near the end and we don't provide enough space for
-     * string_format to be willing to write. */
-    *p = '\0';
+    p += 4;
+    snprintf(CS p, big_buffer_size - (p - big_buffer), "%s", CCS initial_cwd);
+    p += Ustrlen(CCS p);
     }
 
   (void)string_format(p, big_buffer_size - (p - big_buffer), " %d args:", argc);
@@ -4515,14 +4553,14 @@ if (test_retry_arg >= 0)
   retry_config *yield;
   int basic_errno = 0;
   int more_errno = 0;
-  uschar *s1, *s2;
+  const uschar *s1, *s2;
 
   if (test_retry_arg >= argc)
     {
     printf("-brt needs a domain or address argument\n");
     exim_exit(EXIT_FAILURE);
     }
-  s1 = argv[test_retry_arg++];
+  s1 = exim_str_fail_toolong(argv[test_retry_arg++], EXIM_EMAILADDR_MAX, "-brt");
   s2 = NULL;
 
   /* If the first argument contains no @ and no . it might be a local user
@@ -4538,13 +4576,13 @@ if (test_retry_arg >= 0)
   /* There may be an optional second domain arg. */
 
   if (test_retry_arg < argc && Ustrchr(argv[test_retry_arg], '.') != NULL)
-    s2 = argv[test_retry_arg++];
+    s2 = exim_str_fail_toolong(argv[test_retry_arg++], EXIM_DOMAINNAME_MAX, "-brt 2nd");
 
   /* The final arg is an error name */
 
   if (test_retry_arg < argc)
     {
-    uschar *ss = argv[test_retry_arg];
+    const uschar *ss = exim_str_fail_toolong(argv[test_retry_arg], EXIM_DRIVERNAME_MAX, "-brt 3rd");
     uschar *error =
       readconf_retry_error(ss, ss + Ustrlen(ss), &basic_errno, &more_errno);
     if (error != NULL)
@@ -4646,11 +4684,11 @@ if (list_options)
 	 Ustrcmp(argv[i], "macro") == 0 ||
 	 Ustrcmp(argv[i], "environment") == 0))
       {
-      fail |= !readconf_print(argv[i+1], argv[i], flag_n);
+      fail |= !readconf_print(exim_str_fail_toolong(argv[i+1], EXIM_DRIVERNAME_MAX, "-bP name"), argv[i], flag_n);
       i++;
       }
     else
-      fail = !readconf_print(argv[i], NULL, flag_n);
+      fail = !readconf_print(exim_str_fail_toolong(argv[i], EXIM_DRIVERNAME_MAX, "-bP item"), NULL, flag_n);
     }
   exim_exit(fail ? EXIT_FAILURE : EXIT_SUCCESS);
   }
@@ -4695,6 +4733,7 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
     pid_t pid;
     /*XXX This use of argv[i] for msg_id should really be tainted, but doing
     that runs into a later copy into the untainted global message_id[] */
+    /*XXX Do we need a length limit check here? */
     if (i == argc - 1)
       (void)deliver_message(argv[i], forced_delivery, deliver_give_up);
     else if ((pid = exim_fork(US"cmdline-delivery")) == 0)
@@ -4900,7 +4939,7 @@ if (test_rewrite_arg >= 0)
     printf("-brw needs an address argument\n");
     exim_exit(EXIT_FAILURE);
     }
-  rewrite_test(argv[test_rewrite_arg]);
+  rewrite_test(exim_str_fail_toolong(argv[test_rewrite_arg], EXIM_EMAILADDR_MAX, "-brw"));
   exim_exit(EXIT_SUCCESS);
   }
 
@@ -4993,7 +5032,7 @@ if (verify_address_mode || f.address_test_mode)
     while (recipients_arg < argc)
       {
       /* Supplied addresses are tainted since they come from a user */
-      uschar * s = string_copy_taint(argv[recipients_arg++], TRUE);
+      uschar * s = string_copy_taint(exim_str_fail_toolong(argv[recipients_arg++], EXIM_DISPLAYMAIL_MAX, "address verification"), TRUE);
       while (*s)
         {
         BOOL finished = FALSE;
@@ -5010,7 +5049,7 @@ if (verify_address_mode || f.address_test_mode)
     {
     uschar * s = get_stdinput(NULL, NULL);
     if (!s) break;
-    test_address(string_copy_taint(s, TRUE), flags, &exit_value);
+    test_address(string_copy_taint(exim_str_fail_toolong(s, EXIM_DISPLAYMAIL_MAX, "address verification (stdin)"), TRUE), flags, &exit_value);
     }
 
   route_tidyup();
@@ -5027,11 +5066,15 @@ if (expansion_test)
   dns_init(FALSE, FALSE, FALSE);
   if (msg_action_arg > 0 && msg_action == MSG_LOAD)
     {
-    uschar spoolname[256];  /* Not big_buffer; used in spool_read_header() */
+    uschar * spoolname;
     if (!f.admin_user)
       exim_fail("exim: permission denied\n");
-    message_id = argv[msg_action_arg];
-    (void)string_format(spoolname, sizeof(spoolname), "%s-H", message_id);
+    message_id = US exim_str_fail_toolong(argv[msg_action_arg], MESSAGE_ID_LENGTH, "message-id");
+    /* Checking the length of the ID is sufficient to validate it.
+    Get an untainted version so file opens can be done. */
+    message_id = string_copy_taint(message_id, FALSE);
+
+    spoolname = string_sprintf("%s-H", message_id);
     if ((deliver_datafile = spool_open_datafile(message_id)) < 0)
       printf ("Failed to load message datafile %s\n", message_id);
     if (spool_read_header(spoolname, TRUE, FALSE) != spool_read_OK)
@@ -5070,7 +5113,7 @@ if (expansion_test)
 
   if (recipients_arg < argc)
     while (recipients_arg < argc)
-      expansion_test_line(argv[recipients_arg++]);
+      expansion_test_line(exim_str_fail_toolong(argv[recipients_arg++], EXIM_EMAILADDR_MAX, "recipient"));
 
   /* Read stdin */
 
@@ -5513,7 +5556,9 @@ while (more)
       {
       int start, end, domain;
       uschar * errmess;
-      uschar * s = string_copy_taint(list[i], TRUE);
+      /* There can be multiple addresses, so EXIM_DISPLAYMAIL_MAX (tuned for 1) is too short.
+       * We'll still want to cap it to something, just in case. */
+      uschar * s = string_copy_taint(exim_str_fail_toolong(list[i], BIG_BUFFER_SIZE, "address argument"), TRUE);
 
       /* Loop for each comma-separated address */
 
@@ -5548,11 +5593,12 @@ while (more)
           parse_extract_address(s, &errmess, &start, &end, &domain, FALSE);
 
 #ifdef SUPPORT_I18N
-	if (string_is_utf8(recipient))
-	  message_smtputf8 = TRUE;
-	else
-	  allow_utf8_domains = b;
+        if (recipient)
+          if (string_is_utf8(recipient)) message_smtputf8 = TRUE;
+          else allow_utf8_domains = b;
 	}
+#else
+        ;
 #endif
         if (domain == 0 && !f.allow_unqualified_recipient)
           {
@@ -5650,10 +5696,10 @@ while (more)
     {
     deliver_domain = ftest_domain ? ftest_domain : qualify_domain_recipient;
     deliver_domain_orig = deliver_domain;
-    deliver_localpart = ftest_localpart ? ftest_localpart : originator_login;
+    deliver_localpart = ftest_localpart ? US ftest_localpart : originator_login;
     deliver_localpart_orig = deliver_localpart;
-    deliver_localpart_prefix = ftest_prefix;
-    deliver_localpart_suffix = ftest_suffix;
+    deliver_localpart_prefix = US ftest_prefix;
+    deliver_localpart_suffix = US ftest_suffix;
     deliver_home = originator_home;
 
     if (!return_path)

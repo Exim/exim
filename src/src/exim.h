@@ -135,6 +135,51 @@ making unique names. */
 # endif
 #endif
 
+/* RFC 5321 specifies that the maximum length of a local-part is 64 octets
+and the maximum length of a domain is 255 octets, but then also defines
+the maximum length of a forward/reverse path as 256 not 64+1+255.
+For an IP address, the maximum is 45 without a scope and we don't work
+with scoped addresses, so go with that.  (IPv6 with mapped IPv4).
+
+A hostname maximum length is in practice the same as the domainname, for
+the same core reasons (maximum length of a DNS name), but the semantics
+are different and seeing "DOMAIN" in source is confusing when talking about
+hostnames; so we define a second macro.  We'll use RFC 2181 as the reference
+for this one.
+
+There is no known (to me) specification on the maximum length of a human name
+in email addresses and we should be careful about imposing such a limit on
+received email, but in terms of limiting what untrusted callers specify, or
+local generation, having a limit makes sense.  Err on the side of generosity.
+
+For a display mail address, we have a human name, an email in brackets,
+possibly some (Comments), so it needs to be at least 512+3 and some more to
+avoid extraneous errors.
+Since the sane SMTP line length limit is 998, constraining such parameters to
+be 1024 seems generous and unlikely to spuriously reject legitimate
+invocations.
+
+The driver name is a name of a router/transport/authenticator etc in the
+configuration file.  We also use this for some other short strings, such
+as queue names.
+Also TLS ciphersuite name (no real known limit since the protocols use
+integers, but max seen in reality is 45 octets).
+
+RFC 1413 gives us the 512 limit on IDENT protocol userids.
+*/
+
+#define EXIM_EMAILADDR_MAX     256
+#define EXIM_LOCALPART_MAX      64
+#define EXIM_DOMAINNAME_MAX    255
+#define EXIM_IPADDR_MAX         45
+#define EXIM_HOSTNAME_MAX      255
+#define EXIM_HUMANNAME_MAX     256
+#define EXIM_DISPLAYMAIL_MAX  1024
+#define EXIM_DRIVERNAME_MAX     64
+#define EXIM_CIPHERNAME_MAX     64
+#define EXIM_IDENTUSER_MAX     512
+
+
 #include <sys/types.h>
 #include <sys/file.h>
 #include <dirent.h>

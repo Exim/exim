@@ -50,5 +50,5 @@ ppppp LOG: lost_incoming_connection MAIN
 ppppp   unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
 ppppp >>>>>>>>>>>>>>>> Exim pid=pppp (daemon-accept) terminating with rc=1 >>>>>>>>>>>>>>>>
 ppppp 1 SMTP accept process running
-ppppp SIGTERM seen
+ppppp SIGTERM/SIGINT seen
 ppppp >>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -227,6 +227,7 @@ struct global_flags f =
 	.authentication_local   = FALSE,
 
 	.background_daemon      = TRUE,
+	.bdat_readers_wanted    = FALSE,
 
 	.chunking_offered       = FALSE,
 	.config_changed         = FALSE,
@@ -1295,7 +1296,7 @@ uschar *recipient_verify_failure = NULL;
 int     recipients_count       = 0;
 recipient_item  *recipients_list = NULL;
 int     recipients_list_max    = 0;
-int     recipients_max         = 0;
+int     recipients_max         = 50000;
 const pcre *regex_AUTH         = NULL;
 const pcre *regex_check_dns_names = NULL;
 const pcre *regex_From         = NULL;

@@ -471,6 +471,7 @@ if (pid == 0)
   signal(SIGCHLD, SIG_IGN);
   #endif
   signal(SIGTERM, SIG_DFL);
+  signal(SIGINT, SIG_DFL);
 
   /* Attempt to get an id from the sending machine via the RFC 1413
   protocol. We do this in the sub-process in order not to hold up the
@@ -697,6 +698,7 @@ if (pid == 0)
         signal(SIGHUP,  SIG_DFL);
         signal(SIGCHLD, SIG_DFL);
         signal(SIGTERM, SIG_DFL);
+        signal(SIGINT, SIG_DFL);
 
         if (geteuid() != root_uid && !deliver_drop_privilege)
           {
@@ -930,7 +932,6 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
 }
 
 
-
 static void
 set_pid_file_path(void)
 {
@@ -939,6 +940,135 @@ if (override_pid_file_path)
 
 if (!*pid_file_path)
   pid_file_path = string_sprintf("%s/exim-daemon.pid", spool_directory);
+
+if (pid_file_path[0] != '/')
+  log_write(0, LOG_PANIC_DIE, "pid file path %s must be absolute\n", pid_file_path);
+}
+
+
+enum pid_op { PID_WRITE, PID_CHECK, PID_DELETE };
+
+/* Do various pid file operations as safe as possible. Ideally we'd just
+drop the privileges for creation of the pid file and not care at all about removal of
+the file. FIXME.
+Returns: true on success, false + errno==EACCES otherwise
+*/
+static BOOL
+operate_on_pid_file(const enum pid_op operation, const pid_t pid)
+{
+char pid_line[sizeof(int) * 3 + 2];
+const int pid_len = snprintf(pid_line, sizeof(pid_line), "%d\n", (int)pid);
+BOOL lines_match = FALSE;
+
+char * path = NULL;
+char * base = NULL;
+char * dir = NULL;
+
+const int dir_flags = O_RDONLY | O_NONBLOCK;
+const int base_flags = O_NOFOLLOW | O_NONBLOCK;
+const mode_t base_mode = 0644;
+struct stat sb;
+
+int cwd_fd = -1;
+int dir_fd = -1;
+int base_fd = -1;
+
+BOOL success = FALSE;
+errno = EACCES;
+
+set_pid_file_path();
+if (!f.running_in_test_harness && real_uid != root_uid && real_uid != exim_uid) goto cleanup;
+if (pid_len < 2 || pid_len >= (int)sizeof(pid_line)) goto cleanup;
+
+path = CS string_copy(pid_file_path);
+if ((base = Ustrrchr(path, '/')) == NULL) /* should not happen, but who knows */
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "pid file path \"%s\" does not contain a '/'", pid_file_path);
+
+dir = (base != path) ? path : "/";
+*base++ = '\0';
+
+if (!dir || !*dir || *dir != '/') goto cleanup;
+if (!base || !*base || strchr(base, '/') != NULL) goto cleanup;
+
+cwd_fd = open(".", dir_flags);
+if (cwd_fd < 0 || fstat(cwd_fd, &sb) != 0 || !S_ISDIR(sb.st_mode)) goto cleanup;
+dir_fd = open(dir, dir_flags);
+if (dir_fd < 0 || fstat(dir_fd, &sb) != 0 || !S_ISDIR(sb.st_mode)) goto cleanup;
+
+/* emulate openat */
+if (fchdir(dir_fd) != 0) goto cleanup;
+base_fd = open(base, O_RDONLY | base_flags);
+if (fchdir(cwd_fd) != 0)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
+
+if (base_fd >= 0)
+  {
+  char line[sizeof(pid_line)];
+  ssize_t len = -1;
+
+  if (fstat(base_fd, &sb) != 0 || !S_ISREG(sb.st_mode)) goto cleanup;
+  if ((sb.st_mode & 07777) != base_mode || sb.st_nlink != 1) goto cleanup;
+  if (sb.st_size < 2 || sb.st_size >= (off_t)sizeof(line)) goto cleanup;
+
+  len = read(base_fd, line, sizeof(line));
+  if (len != (ssize_t)sb.st_size) goto cleanup;
+  line[len] = '\0';
+
+  if (strspn(line, "0123456789") != (size_t)len-1) goto cleanup;
+  if (line[len-1] != '\n') goto cleanup;
+  lines_match = (len == pid_len && strcmp(line, pid_line) == 0);
+  }
+
+if (operation == PID_WRITE)
+  {
+  if (!lines_match)
+    {
+    if (base_fd >= 0)
+      {
+      int error = -1;
+      /* emulate unlinkat */
+      if (fchdir(dir_fd) != 0) goto cleanup;
+      error = unlink(base);
+      if (fchdir(cwd_fd) != 0)
+        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
+      if (error) goto cleanup;
+      (void)close(base_fd);
+      base_fd = -1;
+     }
+    /* emulate openat */
+    if (fchdir(dir_fd) != 0) goto cleanup;
+    base_fd = open(base, O_WRONLY | O_CREAT | O_EXCL | base_flags, base_mode);
+    if (fchdir(cwd_fd) != 0)
+        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
+    if (base_fd < 0) goto cleanup;
+    if (fchmod(base_fd, base_mode) != 0) goto cleanup;
+    if (write(base_fd, pid_line, pid_len) != pid_len) goto cleanup;
+    DEBUG(D_any) debug_printf("pid written to %s\n", pid_file_path);
+    }
+  }
+else
+  {
+  if (!lines_match) goto cleanup;
+  if (operation == PID_DELETE)
+    {
+    int error = -1;
+    /* emulate unlinkat */
+    if (fchdir(dir_fd) != 0) goto cleanup;
+    error = unlink(base);
+    if (fchdir(cwd_fd) != 0)
+        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
+    if (error) goto cleanup;
+    }
+  }
+
+success = TRUE;
+errno = 0;
+
+cleanup:
+if (cwd_fd >= 0) (void)close(cwd_fd);
+if (dir_fd >= 0) (void)close(dir_fd);
+if (base_fd >= 0) (void)close(base_fd);
+return success;
 }
 
 
@@ -948,28 +1078,12 @@ as a direct child of the daemon.  Does not return. */
 void
 delete_pid_file(void)
 {
-uschar * daemon_pid = string_sprintf("%d\n", (int)getppid());
-FILE * f;
+const BOOL success = operate_on_pid_file(PID_DELETE, getppid());
 
-set_pid_file_path();
-if ((f = Ufopen(pid_file_path, "rb")))
-  {
-  if (  fgets(CS big_buffer, big_buffer_size, f)
-	&& Ustrcmp(daemon_pid, big_buffer) == 0
-     )
-    if (Uunlink(pid_file_path) == 0)
-      {
-      DEBUG(D_any)
-	debug_printf("%s unlink: %s\n", pid_file_path, strerror(errno));
-      }
-    else
-      DEBUG(D_any)
-	debug_printf("unlinked %s\n", pid_file_path);
-  fclose(f);
-  }
-else
-  DEBUG(D_any)
-    debug_printf("%s\n", string_open_failed("pid file %s", pid_file_path));
+DEBUG(D_any)
+  debug_printf("delete pid file %s %s: %s\n", pid_file_path,
+    success ? "success" : "failure", strerror(errno));
+
 exim_exit(EXIT_SUCCESS);
 }
 
@@ -982,7 +1096,7 @@ daemon_die(void)
 {
 int pid;
 
-DEBUG(D_any) debug_printf("SIGTERM seen\n");
+DEBUG(D_any) debug_printf("SIGTERM/SIGINT seen\n");
 #if !defined(DISABLE_TLS) && (defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT))
 tls_watch_invalidate();
 #endif
@@ -1058,7 +1172,7 @@ len = offsetof(struct sockaddr_un, sun_path) + 1
 DEBUG(D_any) debug_printf(" @%s\n", sa_un.sun_path+1);
 #else			/* filesystem-visible and persistent; will neeed removal */
 len = offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s", 
+  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s",
 	      expand_string(notifier_socket));
 DEBUG(D_any) debug_printf(" %s\n", sa_un.sun_path);
 #endif
@@ -1836,22 +1950,14 @@ The variable daemon_write_pid is used to control this. */
 
 if (f.running_in_test_harness || write_pid)
   {
-  FILE *f;
-
-  set_pid_file_path();
-  if ((f = modefopen(pid_file_path, "wb", 0644)))
-    {
-    (void)fprintf(f, "%d\n", (int)getpid());
-    (void)fclose(f);
-    DEBUG(D_any) debug_printf("pid written to %s\n", pid_file_path);
-    }
-  else
-    DEBUG(D_any)
-      debug_printf("%s\n", string_open_failed("pid file %s", pid_file_path));
+  const enum pid_op operation = (f.running_in_test_harness
+     || real_uid == root_uid
+     || (real_uid == exim_uid && !override_pid_file_path)) ? PID_WRITE : PID_CHECK;
+  if (!operate_on_pid_file(operation, getpid()))
+    DEBUG(D_any) debug_printf("%s pid file %s: %s\n", (operation == PID_WRITE) ? "write" : "check", pid_file_path, strerror(errno));
   }
 
 /* Set up the handler for SIGHUP, which causes a restart of the daemon. */
-
 sighup_seen = FALSE;
 signal(SIGHUP, sighup_handler);
 
@@ -1888,6 +1994,7 @@ os_non_restarting_signal(SIGCHLD, main_sigchld_handler);
 
 sigterm_seen = FALSE;
 os_non_restarting_signal(SIGTERM, main_sigterm_handler);
+os_non_restarting_signal(SIGINT, main_sigterm_handler);
 
 /* If we are to run the queue periodically, pretend the alarm has just gone
 off. This will cause the first queue-runner to get kicked off straight away. */
@@ -2175,6 +2282,7 @@ for (;;)
           signal(SIGHUP,  SIG_DFL);
           signal(SIGCHLD, SIG_DFL);
           signal(SIGTERM, SIG_DFL);
+          signal(SIGINT, SIG_DFL);
 
           /* Re-exec if privilege has been given up, unless deliver_drop_
           privilege is set. Reset SIGALRM before exec(). */
@@ -2415,7 +2523,7 @@ for (;;)
           accept_retry_errno = errno;
           accept_retry_select_failed = select_failed;
           }
-        else if (  errno != accept_retry_errno 
+        else if (  errno != accept_retry_errno
 		|| select_failed != accept_retry_select_failed
 		|| accept_retry_count >= 50)
             {

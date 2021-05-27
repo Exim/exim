@@ -466,7 +466,7 @@ receive_timeout                      time            0s            main         
 received_header_text                 string*         +             main
 received_headers_max                 integer         30            main
 recipient_unqualified_hosts          host list       unset         main              4.00 replacing receiver_unqualified_hosts
-recipients_max                       integer         0             main              1.60
+recipients_max                       integer         50000         main              1.60 default changed in 4.95 (was 0)
 recipients_max_reject                boolean         false         main              1.70
 redirect_router                      string          unset         routers           4.00
 remote_max_parallel                  integer         1             main

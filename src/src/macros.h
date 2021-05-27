@@ -154,7 +154,9 @@ enough to hold all the headers from a normal kind of message. */
 
 /* The initial size of a big buffer for use in various places. It gets put
 into big_buffer_size and in some circumstances increased. It should be at least
-as long as the maximum path length. */
+as long as the maximum path length PLUS room for string additions.
+Let's go with "at least twice as large as maximum path length".
+*/
 
 #ifdef AUTH_HEIMDAL_GSSAPI
 		/* RFC 4121 section 5.2, SHOULD support 64K input buffers */
@@ -163,10 +165,12 @@ as long as the maximum path length. */
 # define __BIG_BUFFER_SIZE 16384
 #endif
 
-#if defined PATH_MAX && PATH_MAX > __BIG_BUFFER_SIZE
-# define BIG_BUFFER_SIZE PATH_MAX
-#elif defined MAXPATHLEN && MAXPATHLEN > __BIG_BUFFER_SIZE
-# define BIG_BUFFER_SIZE MAXPATHLEN
+#ifndef PATH_MAX
+/* exim.h will have ensured this exists before including us. */
+# error headers confusion, PATH_MAX missing in macros.h
+#endif
+#if (PATH_MAX*2) > __BIG_BUFFER_SIZE
+# define BIG_BUFFER_SIZE (PATH_MAX*2)
 #else
 # define BIG_BUFFER_SIZE __BIG_BUFFER_SIZE
 #endif
@@ -179,12 +183,6 @@ as long as the maximum path length. */
 written on the spool, it gets read into big_buffer. */
 
 #define LOCAL_SCAN_MAX_RETURN (BIG_BUFFER_SIZE - 24)
-
-/* A limit to the length of an address. RFC 2821 limits the local part to 64
-and the domain to 255, so this should be adequate, taking into account quotings
-etc. */
-
-#define ADDRESS_MAXLENGTH 512
 
 /* The length of the base names of spool files, which consist of an internal
 message id with a trailing "-H" or "-D" added. */

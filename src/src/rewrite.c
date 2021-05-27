@@ -59,12 +59,12 @@ Arguments:
 Returns:         fully-qualified address
 */
 
-uschar *
-rewrite_address_qualify(uschar *s, BOOL is_recipient)
+const uschar *
+rewrite_address_qualify(const uschar *s, BOOL is_recipient)
 {
-return (parse_find_at(s) != NULL)? s :
-  string_sprintf("%s@%s", s,
-    is_recipient? qualify_domain_recipient : qualify_domain_sender);
+return parse_find_at(s)
+  ? s : string_sprintf("%s@%s", s,
+	  is_recipient ? qualify_domain_recipient : qualify_domain_sender);
 }
 
 
@@ -96,12 +96,12 @@ Returns:         new address if rewritten; the input address if no change;
                  rewritten address is returned, not just the active bit.
 */
 
-uschar *
-rewrite_one(uschar *s, int flag, BOOL *whole, BOOL add_header, uschar *name,
+const uschar *
+rewrite_one(const uschar *s, int flag, BOOL *whole, BOOL add_header, uschar *name,
   rewrite_rule *rewrite_rules)
 {
-uschar *yield = s;
-uschar *subject = s;
+const uschar *yield = s;
+const uschar *subject = s;
 uschar *domain = NULL;
 BOOL done = FALSE;
 int rule_number = 1;
@@ -119,7 +119,8 @@ for (rewrite_rule * rule = rewrite_rules;
   int count = 0;
   uschar *save_localpart;
   const uschar *save_domain;
-  uschar *error, *new, *newparsed;
+  uschar *error, *new;
+  const uschar * newparsed;
 
   /* Come back here for a repeat after a successful rewrite. We do this
   only so many times. */
@@ -181,7 +182,7 @@ for (rewrite_rule * rule = rewrite_rules;
     set up as an expansion variable */
 
     domain[-1] = 0;
-    deliver_localpart = subject;
+    deliver_localpart = US subject;
     deliver_domain = domain;
 
     new = expand_string(rule->replacement);
@@ -386,15 +387,16 @@ Arguments:
 Returns:         possibly rewritten address
 */
 
-uschar *
-rewrite_address(uschar *s, BOOL is_recipient, BOOL add_header,
+const uschar *
+rewrite_address(const uschar *s, BOOL is_recipient, BOOL add_header,
   rewrite_rule *rewrite_rules, int existflags)
 {
-int flag = is_recipient? rewrite_envto : rewrite_envfrom;
+int flag = is_recipient ? rewrite_envto : rewrite_envfrom;
+
 s = rewrite_address_qualify(s, is_recipient);
-if ((existflags & flag) != 0)
+if (existflags & flag)
   {
-  uschar *new = rewrite_one(s, flag, NULL, add_header, is_recipient?
+  const uschar *new = rewrite_one(s, flag, NULL, add_header, is_recipient?
     US"original-recipient" : US"sender", rewrite_rules);
   if (new != s) s = new;
   }
@@ -466,8 +468,9 @@ while (*s)
   {
   uschar *sprev;
   uschar *ss = parse_find_address_end(s, FALSE);
-  uschar *recipient, *new, *errmess;
+  uschar *recipient, *new;
   rmark loop_reset_point = store_mark();
+  uschar *errmess = NULL;
   BOOL changed = FALSE;
   int terminator = *ss;
   int start, end, domain;
@@ -484,10 +487,35 @@ while (*s)
   while (isspace(*s)) s++;
 
   /* There isn't much we can do for syntactic disasters at this stage.
-  Pro tem (possibly for ever) ignore them. */
+  Pro tem (possibly for ever) ignore them.
+  If we got nothing, then there was any sort of error: non-parsable address,
+  empty address, overlong addres. Sometimes the result matters, sometimes not.
+  It seems this function is called for *any* header we see. */
+
 
   if (!recipient)
     {
+#if 0
+    /* FIXME:
+    This was(!) an attempt tho handle empty rewrits, but seemingly it
+    needs more effort to decide if the returned empty address matters.
+    Now this will now break test 471 again.
+
+    471 fails now because it uses an overlong address, for wich parse_extract_address()
+    returns an empty address (which was not expected).
+
+    Checking the output and exit if rewrite_rules or routed_old are present
+    isn't a good idea either: It's enough to have *any* rewrite rule
+    in the configuration plus "To: undisclosed recpients:;" to exit(), which
+    is not what we want.
+    */
+
+    if (rewrite_rules || routed_old)
+      {
+      log_write(0, LOG_MAIN, "rewrite: %s", errmess);
+      exim_exit(EXIT_FAILURE);
+      }
+#endif
     loop_reset_point = store_reset(loop_reset_point);
     continue;
     }
@@ -526,7 +554,8 @@ while (*s)
     {
     BOOL is_recipient =
       (flag & (rewrite_sender | rewrite_from | rewrite_replyto)) == 0;
-    new = rewrite_address_qualify(recipient, is_recipient);
+    /* deconst ok as recipient was notconst */
+    new = US rewrite_address_qualify(recipient, is_recipient);
     changed = (new != recipient);
     recipient = new;
 
@@ -549,7 +578,8 @@ while (*s)
   if (existflags & flag)
     {
     BOOL whole;
-    new = rewrite_one(recipient, flag, &whole, FALSE, NULL, rewrite_rules);
+    /* deconst ok as recipient was notconst */
+    new = US rewrite_one(recipient, flag, &whole, FALSE, NULL, rewrite_rules);
     if (new != recipient)
       {
       changed = TRUE;
@@ -741,7 +771,8 @@ Argument: the address to test
 Returns:  nothing
 */
 
-void rewrite_test(uschar *s)
+void
+rewrite_test(const uschar *s)
 {
 uschar *recipient, *error;
 int start, end, domain;
@@ -758,8 +789,8 @@ pretending it is a sender. */
 
 if ((rewrite_existflags & rewrite_smtp) != 0)
   {
-  uschar *new = rewrite_one(s, rewrite_smtp|rewrite_smtp_sender, NULL, FALSE,
-    US"", global_rewrite_rules);
+  const uschar * new = rewrite_one(s, rewrite_smtp|rewrite_smtp_sender, NULL,
+    FALSE, US"", global_rewrite_rules);
   if (new != s)
     {
     if (*new == 0)
@@ -792,7 +823,7 @@ for (int i = 0; i < 8; i++)
   {
   BOOL whole = FALSE;
   int flag = 1 << i;
-  uschar *new = rewrite_one(recipient, flag, &whole, FALSE, US"",
+  const uschar * new = rewrite_one(recipient, flag, &whole, FALSE, US"",
     global_rewrite_rules);
   printf("%s: ", rrname[i]);
   if (*new == 0)

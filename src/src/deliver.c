@@ -334,7 +334,7 @@ static int
 open_msglog_file(uschar *filename, int mode, uschar **error)
 {
 if (Ustrstr(filename, US"/../"))
-  log_write(0, LOG_MAIN|LOG_PANIC,
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "Attempt to open msglog file path with upward-traversal: '%s'\n", filename);
 
 for (int i = 2; i > 0; i--)
@@ -2097,9 +2097,9 @@ return FALSE;
 
 /* Each local delivery is performed in a separate process which sets its
 uid and gid as specified. This is a safer way than simply changing and
-restoring using seteuid(); there is a body of opinion that seteuid() cannot be
-used safely. From release 4, Exim no longer makes any use of it. Besides, not
-all systems have seteuid().
+restoring using seteuid(); there is a body of opinion that seteuid()
+cannot be used safely. From release 4, Exim no longer makes any use of
+it for delivery. Besides, not all systems have seteuid().
 
 If the uid/gid are specified in the transport_instance, they are used; the
 transport initialization must ensure that either both or neither are set.

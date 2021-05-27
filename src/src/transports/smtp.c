@@ -2475,8 +2475,8 @@ goto SEND_QUIT;
       int n = sizeof(sx->buffer);
       uschar * rsp = sx->buffer;
 
-      if (sx->esmtp_sent && (n = Ustrlen(sx->buffer)) < sizeof(sx->buffer)/2)
-	{ rsp = sx->buffer + n + 1; n = sizeof(sx->buffer) - n; }
+      if (sx->esmtp_sent && (n = Ustrlen(sx->buffer) + 1) < sizeof(sx->buffer)/2)
+	{ rsp = sx->buffer + n; n = sizeof(sx->buffer) - n; }
 
       if (smtp_write_command(sx, SCMD_FLUSH, "HELO %s\r\n", sx->helo_data) < 0)
 	goto SEND_FAILED;

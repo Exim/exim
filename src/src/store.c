@@ -268,6 +268,17 @@ store_get_3(int size, BOOL tainted, const char *func, int linenumber)
 {
 int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
 
+/* Ensure we've been asked to allocate memory.
+A negative size is a sign of a security problem.
+A zero size might be also suspect, but our internal usage deliberately
+does this to return a current watermark value for a later release of
+allocated store. */
+
+if (size < 0 || size >= INT_MAX/2)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+            "bad memory allocation requested (%d bytes) at %s %d",
+            size, func, linenumber);
+
 /* Round up the size to a multiple of the alignment. Although this looks a
 messy statement, because "alignment" is a constant expression, the compiler can
 do a reasonable job of optimizing, especially if the value of "alignment" is a
@@ -416,6 +427,11 @@ store_extend_3(void *ptr, BOOL tainted, int oldsize, int newsize,
 int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
 int inc = newsize - oldsize;
 int rounded_oldsize = oldsize;
+
+if (oldsize < 0 || newsize < oldsize || newsize >= INT_MAX/2)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+            "bad memory extension requested (%d -> %d bytes) at %s %d",
+            oldsize, newsize, func, linenumber);
 
 /* Check that the block being extended was already of the required taint status;
 refuse to extend if not. */
@@ -784,6 +800,11 @@ if (is_tainted(block) != tainted)
   die_tainted(US"store_newblock", CUS func, linenumber);
 #endif
 
+if (len < 0 || len > newsize)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+            "bad memory extension requested (%d -> %d bytes) at %s %d",
+            len, newsize, func, linenumber);
+
 newtext = store_get(newsize, tainted);
 memcpy(newtext, block, len);
 if (release_ok) store_release_3(block, pool, func, linenumber);
@@ -813,6 +834,11 @@ static void *
 internal_store_malloc(int size, const char *func, int line)
 {
 void * yield;
+
+if (size < 0 || size >= INT_MAX/2)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+            "bad memory allocation requested (%d bytes) at %s %d",
+            size, func, line);
 
 size += sizeof(int);	/* space to store the size, used under debug */
 if (size < 16) size = 16;

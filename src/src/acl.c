@@ -486,7 +486,7 @@ static control_def controls_list[] = {
   { US"no_delay_flush",          FALSE,
 	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
   },
-  
+
 [CONTROL_NO_ENFORCE_SYNC] =
   { US"no_enforce_sync",         FALSE,
 	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
@@ -744,7 +744,7 @@ while ((s = (*func)()))
   int v, c;
   BOOL negated = FALSE;
   uschar *saveline = s;
-  uschar name[64];
+  uschar name[EXIM_DRIVERNAME_MAX];
 
   /* Conditions (but not verbs) are allowed to be negated by an initial
   exclamation mark. */

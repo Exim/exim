@@ -316,8 +316,7 @@ extern int     ip_streamsocket(const uschar *, uschar **, int, host_item *);
 extern int     ipv6_nmtoa(int *, uschar *);
 
 extern uschar *local_part_quote(uschar *);
-extern int     log_create(uschar *);
-extern int     log_create_as_exim(uschar *);
+extern int     log_open_as_exim(uschar *);
 extern void    log_close_all(void);
 
 extern macro_item * macro_create(const uschar *, const uschar *, BOOL);
@@ -371,16 +370,18 @@ extern FILE   *modefopen(const uschar *, const char *, mode_t);
 
 extern int     open_cutthrough_connection( address_item * addr );
 
-extern uschar *parse_extract_address(uschar *, uschar **, int *, int *, int *,
+extern uschar *parse_extract_address(const uschar *, uschar **, int *, int *, int *,
                  BOOL);
 extern int     parse_forward_list(uschar *, int, address_item **, uschar **,
                  const uschar *, uschar *, error_block **);
 extern uschar *parse_find_address_end(uschar *, BOOL);
-extern uschar *parse_find_at(uschar *);
+extern const uschar *parse_find_at(const uschar *);
 extern const uschar *parse_fix_phrase(const uschar *, int);
-extern uschar *parse_message_id(uschar *, uschar **, uschar **);
+extern const uschar *parse_message_id(const uschar *, uschar **, uschar **);
 extern const uschar *parse_quote_2047(const uschar *, int, uschar *, BOOL);
-extern uschar *parse_date_time(uschar *str, time_t *t);
+extern const uschar *parse_date_time(const uschar *str, time_t *t);
+extern void priv_drop_temp(const uid_t, const gid_t);
+extern void priv_restore(void);
 extern int     vaguely_random_number(int);
 #ifndef DISABLE_TLS
 extern int     vaguely_random_number_fallback(int);
@@ -408,7 +409,7 @@ extern void    readconf_driver_init(uschar *, driver_instance **,
 extern uschar *readconf_find_option(void *);
 extern void    readconf_main(BOOL);
 extern void    readconf_options_from_list(optionlist *, unsigned, const uschar *, uschar *);
-extern BOOL    readconf_print(uschar *, uschar *, BOOL);
+extern BOOL    readconf_print(const uschar *, uschar *, BOOL);
 extern uschar *readconf_printtime(int);
 extern uschar *readconf_readname(uschar *, int, uschar *);
 extern int     readconf_readtime(const uschar *, int, BOOL);
@@ -434,14 +435,14 @@ extern retry_config *retry_find_config(const uschar *, const uschar *, int, int)
 extern BOOL    retry_ultimate_address_timeout(uschar *, const uschar *,
                  dbdata_retry *, time_t);
 extern void    retry_update(address_item **, address_item **, address_item **);
-extern uschar *rewrite_address(uschar *, BOOL, BOOL, rewrite_rule *, int);
-extern uschar *rewrite_address_qualify(uschar *, BOOL);
+extern const uschar *rewrite_address(const uschar *, BOOL, BOOL, rewrite_rule *, int);
+extern const uschar *rewrite_address_qualify(const uschar *, BOOL);
 extern header_line *rewrite_header(header_line *,
                const uschar *, const uschar *,
                rewrite_rule *, int, BOOL);
-extern uschar *rewrite_one(uschar *, int, BOOL *, BOOL, uschar *,
+extern const uschar *rewrite_one(const uschar *, int, BOOL *, BOOL, uschar *,
                  rewrite_rule *);
-extern void    rewrite_test(uschar *);
+extern void    rewrite_test(const uschar *);
 extern uschar *rfc2047_decode2(uschar *, BOOL, uschar *, int, int *, int *,
                  uschar **);
 extern int     route_address(address_item *, address_item **, address_item **,
@@ -609,9 +610,9 @@ extern BOOL    transport_headers_send(transport_ctx *,
                  BOOL (*)(transport_ctx *, uschar *, int));
 extern gstring * transport_show_supported(gstring *);
 extern BOOL    transport_write_message(transport_ctx *, int);
-extern void    tree_add_duplicate(uschar *, address_item *);
-extern void    tree_add_nonrecipient(uschar *);
-extern void    tree_add_unusable(host_item *);
+extern void    tree_add_duplicate(const uschar *, address_item *);
+extern void    tree_add_nonrecipient(const uschar *);
+extern void    tree_add_unusable(const host_item *);
 extern void    tree_dup(tree_node **, tree_node *);
 extern int     tree_insertnode(tree_node **, tree_node *);
 extern tree_node *tree_search(tree_node *, const uschar *);

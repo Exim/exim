@@ -265,14 +265,19 @@ overwrite it temporarily if it is necessary to create the directory.
 Returns:       a file descriptor, or < 0 on failure (errno set)
 */
 
-int
-log_create(uschar *name)
+static int
+log_open_already_exim(uschar * const name)
 {
-int fd = Uopen(name,
-#ifdef O_CLOEXEC
-	O_CLOEXEC |
-#endif
-	O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
+int fd = -1;
+const int flags = O_WRONLY | O_APPEND | O_CREAT | O_NONBLOCK;
+
+if (geteuid() != exim_uid)
+  {
+  errno = EACCES;
+  return -1;
+  }
+
+fd = Uopen(name, flags, LOG_MODE);
 
 /* If creation failed, attempt to build a log directory in case that is the
 problem. */
@@ -286,13 +291,84 @@ if (fd < 0 && errno == ENOENT)
   DEBUG(D_any) debug_printf("%s log directory %s\n",
     created ? "created" : "failed to create", name);
   *lastslash = '/';
-  if (created) fd = Uopen(name,
-#ifdef O_CLOEXEC
-			O_CLOEXEC |
-#endif
-		       	O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
+  if (created) fd = Uopen(name, flags, LOG_MODE);
   }
 
+return fd;
+}
+
+
+
+/* Inspired by OpenSSH's mm_send_fd(). Thanks! */
+
+static int
+log_send_fd(const int sock, const int fd)
+{
+struct msghdr msg;
+union {
+  struct cmsghdr hdr;
+  char buf[CMSG_SPACE(sizeof(int))];
+} cmsgbuf;
+struct cmsghdr *cmsg;
+struct iovec vec;
+char ch = 'A';
+ssize_t n;
+
+memset(&msg, 0, sizeof(msg));
+memset(&cmsgbuf, 0, sizeof(cmsgbuf));
+msg.msg_control = &cmsgbuf.buf;
+msg.msg_controllen = sizeof(cmsgbuf.buf);
+
+cmsg = CMSG_FIRSTHDR(&msg);
+cmsg->cmsg_len = CMSG_LEN(sizeof(int));
+cmsg->cmsg_level = SOL_SOCKET;
+cmsg->cmsg_type = SCM_RIGHTS;
+*(int *)CMSG_DATA(cmsg) = fd;
+
+vec.iov_base = &ch;
+vec.iov_len = 1;
+msg.msg_iov = &vec;
+msg.msg_iovlen = 1;
+
+while ((n = sendmsg(sock, &msg, 0)) == -1 && errno == EINTR);
+if (n != 1) return -1;
+return 0;
+}
+
+/* Inspired by OpenSSH's mm_receive_fd(). Thanks! */
+
+static int
+log_recv_fd(const int sock)
+{
+struct msghdr msg;
+union {
+  struct cmsghdr hdr;
+  char buf[CMSG_SPACE(sizeof(int))];
+} cmsgbuf;
+struct cmsghdr *cmsg;
+struct iovec vec;
+ssize_t n;
+char ch = '\0';
+int fd = -1;
+
+memset(&msg, 0, sizeof(msg));
+vec.iov_base = &ch;
+vec.iov_len = 1;
+msg.msg_iov = &vec;
+msg.msg_iovlen = 1;
+
+memset(&cmsgbuf, 0, sizeof(cmsgbuf));
+msg.msg_control = &cmsgbuf.buf;
+msg.msg_controllen = sizeof(cmsgbuf.buf);
+
+while ((n = recvmsg(sock, &msg, 0)) == -1 && errno == EINTR);
+if (n != 1 || ch != 'A') return -1;
+
+cmsg = CMSG_FIRSTHDR(&msg);
+if (cmsg == NULL) return -1;
+if (cmsg->cmsg_type != SCM_RIGHTS) return -1;
+fd = *(const int *)CMSG_DATA(cmsg);
+if (fd < 0) return -1;
 return fd;
 }
 
@@ -313,41 +389,60 @@ Returns:       a file descriptor, or < 0 on failure (errno set)
 */
 
 int
-log_create_as_exim(uschar *name)
+log_open_as_exim(uschar * const name)
 {
-pid_t pid = exim_fork(US"logfile-create");
-int status = 1;
 int fd = -1;
+const uid_t euid = geteuid();
 
-/* In the subprocess, change uid/gid and do the creation. Return 0 from the
-subprocess on success. If we don't check for setuid failures, then the file
-can be created as root, so vulnerabilities which cause setuid to fail mean
-that the Exim user can use symlinks to cause a file to be opened/created as
-root. We always open for append, so can't nuke existing content but it would
-still be Rather Bad. */
-
-if (pid == 0)
+if (euid == exim_uid)
   {
-  if (setgid(exim_gid) < 0)
-    die(US"exim: setgid for log-file creation failed, aborting",
-      US"Unexpected log failure, please try later");
-  if (setuid(exim_uid) < 0)
-    die(US"exim: setuid for log-file creation failed, aborting",
-      US"Unexpected log failure, please try later");
-  _exit((log_create(name) < 0)? 1 : 0);
+  fd = log_open_already_exim(name);
+  }
+else if (euid == root_uid)
+  {
+  int sock[2];
+  if (socketpair(AF_UNIX, SOCK_STREAM, 0, sock) == 0)
+    {
+    const pid_t pid = exim_fork(US"logfile-open");
+    if (pid == 0)
+      {
+      (void)close(sock[0]);
+      if (setgroups(1, &exim_gid) != 0) _exit(EXIT_FAILURE);
+      if (setgid(exim_gid) != 0) _exit(EXIT_FAILURE);
+      if (setuid(exim_uid) != 0) _exit(EXIT_FAILURE);
+
+      if (getuid() != exim_uid || geteuid() != exim_uid) _exit(EXIT_FAILURE);
+      if (getgid() != exim_gid || getegid() != exim_gid) _exit(EXIT_FAILURE);
+
+      fd = log_open_already_exim(name);
+      if (fd < 0) _exit(EXIT_FAILURE);
+      if (log_send_fd(sock[1], fd) != 0) _exit(EXIT_FAILURE);
+      (void)close(sock[1]);
+      _exit(EXIT_SUCCESS);
+      }
+
+    (void)close(sock[1]);
+    if (pid > 0)
+      {
+      fd = log_recv_fd(sock[0]);
+      while (waitpid(pid, NULL, 0) == -1 && errno == EINTR);
+      }
+    (void)close(sock[0]);
+    }
   }
 
-/* If we created a subprocess, wait for it. If it succeeded, try the open. */
-
-while (pid > 0 && waitpid(pid, &status, 0) != pid);
-if (status == 0) fd = Uopen(name,
-#ifdef O_CLOEXEC
-			O_CLOEXEC |
-#endif
-		       	O_APPEND|O_WRONLY, LOG_MODE);
-
-/* If we failed to create a subprocess, we are in a bad way. We return
-with fd still < 0, and errno set, letting the caller handle the error. */
+if (fd >= 0)
+  {
+  int flags;
+  flags = fcntl(fd, F_GETFD);
+  if (flags != -1) (void)fcntl(fd, F_SETFD, flags | FD_CLOEXEC);
+  flags = fcntl(fd, F_GETFL);
+  if (flags != -1) (void)fcntl(fd, F_SETFL, flags & ~O_NONBLOCK);
+  }
+else
+  {
+  errno = EACCES;
+  }
 
 return fd;
 }
@@ -462,51 +557,16 @@ if (!ok)
   die(US"exim: log file path too long: aborting",
       US"Logging failure; please try later");
 
-/* We now have the file name. Try to open an existing file. After a successful
-open, arrange for automatic closure on exec(), and then return. */
+/* We now have the file name. After a successful open, return. */
 
-*fd = Uopen(buffer,
-#ifdef O_CLOEXEC
-		O_CLOEXEC |
-#endif
-	       	O_APPEND|O_WRONLY, LOG_MODE);
+*fd = log_open_as_exim(buffer);
 
 if (*fd >= 0)
   {
-#ifndef O_CLOEXEC
-  (void)fcntl(*fd, F_SETFD, fcntl(*fd, F_GETFD) | FD_CLOEXEC);
-#endif
   return;
   }
-
-/* Open was not successful: try creating the file. If this is a root process,
-we must do the creating in a subprocess set to exim:exim in order to ensure
-that the file is created with the right ownership. Otherwise, there can be a
-race if another Exim process is trying to write to the log at the same time.
-The use of SIGUSR1 by the exiwhat utility can provoke a lot of simultaneous
-writing. */
 
 euid = geteuid();
-
-/* If we are already running as the Exim user (even if that user is root),
-we can go ahead and create in the current process. */
-
-if (euid == exim_uid) *fd = log_create(buffer);
-
-/* Otherwise, if we are root, do the creation in an exim:exim subprocess. If we
-are neither exim nor root, creation is not attempted. */
-
-else if (euid == root_uid) *fd = log_create_as_exim(buffer);
-
-/* If we now have an open file, set the close-on-exec flag and return. */
-
-if (*fd >= 0)
-  {
-#ifndef O_CLOEXEC
-  (void)fcntl(*fd, F_SETFD, fcntl(*fd, F_GETFD) | FD_CLOEXEC);
-#endif
-  return;
-  }
 
 /* Creation failed. There are some circumstances in which we get here when
 the effective uid is not root or exim, which is the problem. (For example, a
@@ -903,6 +963,7 @@ if (!(flags & (LOG_MAIN|LOG_PANIC|LOG_REJECT)))
 if (f.disable_logging)
   {
   DEBUG(D_any) debug_printf("log writing disabled\n");
+  if ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE) exim_exit(EXIT_FAILURE);
   return;
   }
 

@@ -304,6 +304,35 @@ dsn_ret = 0;
 dsn_envid = NULL;
 }
 
+static void *
+fgets_big_buffer(FILE *fp)
+{
+int len = 0;
+
+big_buffer[0] = 0;
+if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) return NULL;
+
+while ((len = Ustrlen(big_buffer)) == big_buffer_size-1
+      && big_buffer[len-1] != '\n')
+  {
+  uschar *newbuffer;
+  int newsize;
+
+  if (big_buffer_size >= BIG_BUFFER_SIZE * 4) return NULL;
+  newsize = big_buffer_size * 2;
+  newbuffer = store_get_perm(newsize, FALSE);
+  memcpy(newbuffer, big_buffer, len);
+
+  big_buffer = newbuffer;
+  big_buffer_size = newsize;
+  if (Ufgets(big_buffer + len, big_buffer_size - len, fp) == NULL) return NULL;
+  }
+
+if (len <= 0 || big_buffer[len-1] != '\n') return NULL;
+return big_buffer;
+}
+
+
 
 /*************************************************
 *             Read spool header file             *
@@ -454,26 +483,13 @@ If the line starts with "--" the content of the variable is tainted.  */
 
 for (;;)
   {
-  int len;
   BOOL tainted;
   uschar * var;
   const uschar * p;
 
-  if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
+  if (fgets_big_buffer(fp) == NULL) goto SPOOL_READ_ERROR;
   if (big_buffer[0] != '-') break;
-  while (  (len = Ustrlen(big_buffer)) == big_buffer_size-1
-	&& big_buffer[len-1] != '\n'
-	)
-    {	/* buffer not big enough for line; certs make this possible */
-    uschar * buf;
-    if (big_buffer_size >= BIG_BUFFER_SIZE*4) goto SPOOL_READ_ERROR;
-    buf = store_get_perm(big_buffer_size *= 2, FALSE);
-    memcpy(buf, big_buffer, --len);
-    big_buffer = buf;
-    if (Ufgets(big_buffer+len, big_buffer_size-len, fp) == NULL)
-      goto SPOOL_READ_ERROR;
-    }
-  big_buffer[len-1] = 0;
+  big_buffer[Ustrlen(big_buffer)-1] = 0;
 
   tainted = big_buffer[1] == '-';
   var =  big_buffer + (tainted ? 2 : 1);
@@ -774,7 +790,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   uschar *errors_to = NULL;
   uschar *p;
 
-  if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
+  if (fgets_big_buffer(fp) == NULL) goto SPOOL_READ_ERROR;
   nn = Ustrlen(big_buffer);
   if (nn < 2) goto SPOOL_FORMAT_ERROR;
 

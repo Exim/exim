@@ -593,6 +593,11 @@ if (n > 0)
 }
 
 
+/* Forward declarations */
+static inline void bdat_push_receive_functions(void);
+static inline void bdat_pop_receive_functions(void);
+
+
 /* Get a byte from the smtp input, in CHUNKING mode.  Handle ack of the
 previous BDAT chunk and getting new ones when we run out.  Uses the
 underlying smtp_getc or tls_getc both for that and for getting the
@@ -624,9 +629,7 @@ for(;;)
   if (chunking_data_left > 0)
     return lwr_receive_getc(chunking_data_left--);
 
-  receive_getc = lwr_receive_getc;
-  receive_getbuf = lwr_receive_getbuf;
-  receive_ungetc = lwr_receive_ungetc;
+  bdat_pop_receive_functions();
 #ifndef DISABLE_DKIM
   dkim_save = dkim_collect_input;
   dkim_collect_input = 0;
@@ -730,9 +733,7 @@ next_cmd:
 	  goto repeat_until_rset;
 	  }
 
-      receive_getc = bdat_getc;
-      receive_getbuf = bdat_getbuf;	/* r~getbuf is never actually used */
-      receive_ungetc = bdat_ungetc;
+      bdat_push_receive_functions();
 #ifndef DISABLE_DKIM
       dkim_collect_input = dkim_save;
 #endif
@@ -765,9 +766,7 @@ while (chunking_data_left)
   if (!bdat_getbuf(&n)) break;
   }
 
-receive_getc = lwr_receive_getc;
-receive_getbuf = lwr_receive_getbuf;
-receive_ungetc = lwr_receive_ungetc;
+bdat_pop_receive_functions();
 
 if (chunking_state != CHUNKING_LAST)
   {
@@ -777,7 +776,44 @@ if (chunking_state != CHUNKING_LAST)
 }
 
 
+static inline void
+bdat_push_receive_functions(void)
+{
+/* push the current receive_* function on the "stack", and
+replace them by bdat_getc(), which in turn will use the lwr_receive_*
+functions to do the dirty work. */
+if (lwr_receive_getc == NULL)
+  {
+  lwr_receive_getc = receive_getc;
+  lwr_receive_getbuf = receive_getbuf;
+  lwr_receive_ungetc = receive_ungetc;
+  }
+else
+  {
+  DEBUG(D_receive) debug_printf("chunking double-push receive functions\n");
+  }
 
+receive_getc = bdat_getc;
+receive_getbuf = bdat_getbuf;
+receive_ungetc = bdat_ungetc;
+}
+
+static inline void
+bdat_pop_receive_functions(void)
+{
+if (lwr_receive_getc == NULL)
+  {
+  DEBUG(D_receive) debug_printf("chunking double-pop receive functions\n");
+  return;
+  }
+receive_getc = lwr_receive_getc;
+receive_getbuf = lwr_receive_getbuf;
+receive_ungetc = lwr_receive_ungetc;
+
+lwr_receive_getc = NULL;
+lwr_receive_getbuf = NULL;
+lwr_receive_ungetc = NULL;
+}
 
 /*************************************************
 *          SMTP version of ungetc()              *
@@ -795,6 +831,9 @@ Returns:       the character
 int
 smtp_ungetc(int ch)
 {
+if (smtp_inptr <= smtp_inbuffer)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "buffer underflow in smtp_ungetc");
+
 *--smtp_inptr = ch;
 return ch;
 }
@@ -804,6 +843,7 @@ int
 bdat_ungetc(int ch)
 {
 chunking_data_left++;
+bdat_push_receive_functions();  /* we're not done yet, calling push is safe, because it checks the state before pushing anything */
 return lwr_receive_ungetc(ch);
 }
 
@@ -1967,29 +2007,35 @@ static BOOL
 extract_option(uschar **name, uschar **value)
 {
 uschar *n;
-uschar *v = smtp_cmd_data + Ustrlen(smtp_cmd_data) - 1;
-while (isspace(*v)) v--;
+uschar *v;
+if (Ustrlen(smtp_cmd_data) <= 0) return FALSE;
+v = smtp_cmd_data + Ustrlen(smtp_cmd_data) - 1;
+while (v > smtp_cmd_data && isspace(*v)) v--;
 v[1] = 0;
+
 while (v > smtp_cmd_data && *v != '=' && !isspace(*v))
   {
   /* Take care to not stop at a space embedded in a quoted local-part */
-
-  if (*v == '"') do v--; while (*v != '"' && v > smtp_cmd_data+1);
+  if (*v == '"')
+    {
+    do v--; while (v > smtp_cmd_data && *v != '"');
+    if (v <= smtp_cmd_data) return FALSE;
+    }
   v--;
   }
+if (v <= smtp_cmd_data) return FALSE;
 
 n = v;
 if (*v == '=')
   {
-  while(isalpha(n[-1])) n--;
+  while (n > smtp_cmd_data && isalpha(n[-1])) n--;
   /* RFC says SP, but TAB seen in wild and other major MTAs accept it */
-  if (!isspace(n[-1])) return FALSE;
+  if (n <= smtp_cmd_data || !isspace(n[-1])) return FALSE;
   n[-1] = 0;
   }
 else
   {
   n++;
-  if (v == smtp_cmd_data) return FALSE;
   }
 *v++ = 0;
 *name = n;
@@ -2205,9 +2251,11 @@ while (done <= 0)
 
       /* Apply SMTP rewrite */
 
-      raw_sender = ((rewrite_existflags & rewrite_smtp) != 0)?
-	rewrite_one(smtp_cmd_data, rewrite_smtp|rewrite_smtp_sender, NULL, FALSE,
-	  US"", global_rewrite_rules) : smtp_cmd_data;
+      raw_sender = rewrite_existflags & rewrite_smtp
+	/* deconst ok as smtp_cmd_data was not const */
+        ? US rewrite_one(smtp_cmd_data, rewrite_smtp|rewrite_smtp_sender, NULL,
+		      FALSE, US"", global_rewrite_rules)
+	: smtp_cmd_data;
 
       /* Extract the address; the TRUE flag allows <> as valid */
 
@@ -2227,7 +2275,8 @@ while (done <= 0)
          && sender_address[0] != 0 && sender_address[0] != '@')
 	if (f.allow_unqualified_sender)
 	  {
-	  sender_address = rewrite_address_qualify(sender_address, FALSE);
+	  /* deconst ok as sender_address was not const */
+	  sender_address = US rewrite_address_qualify(sender_address, FALSE);
 	  DEBUG(D_receive) debug_printf("unqualified address %s accepted "
 	    "and rewritten\n", raw_sender);
 	  }
@@ -2266,7 +2315,8 @@ while (done <= 0)
       recipient address */
 
       recipient = rewrite_existflags & rewrite_smtp
-	? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
+	/* deconst ok as smtp_cmd_data was not const */
+	? US rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
 		      global_rewrite_rules)
 	: smtp_cmd_data;
 
@@ -2285,7 +2335,8 @@ while (done <= 0)
 	  {
 	  DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
 	    recipient);
-	  recipient = rewrite_address_qualify(recipient, TRUE);
+	  /* deconst ok as recipient was not const */
+	  recipient = US rewrite_address_qualify(recipient, TRUE);
 	  }
 	/* The function moan_smtp_batch() does not return. */
 	else
@@ -2527,6 +2578,9 @@ receive_ungetc = smtp_ungetc;
 receive_feof = smtp_feof;
 receive_ferror = smtp_ferror;
 receive_smtp_buffered = smtp_buffered;
+lwr_receive_getc = NULL;
+lwr_receive_getbuf = NULL;
+lwr_receive_ungetc = NULL;
 smtp_inptr = smtp_inend = smtp_inbuffer;
 smtp_had_eof = smtp_had_error = 0;
 
@@ -3812,7 +3866,8 @@ if (f.allow_unqualified_recipient || strcmpic(*recipient, US"postmaster") == 0)
   DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
     *recipient);
   rd = Ustrlen(recipient) + 1;
-  *recipient = rewrite_address_qualify(*recipient, TRUE);
+  /* deconst ok as *recipient was not const */
+  *recipient = US rewrite_address_qualify(*recipient, TRUE);
   return rd;
   }
 smtp_printf("501 %s: recipient address must contain a domain\r\n", FALSE,
@@ -3952,6 +4007,14 @@ cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
 #ifndef DISABLE_TLS
 cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = TRUE;
 #endif
+
+if (lwr_receive_getc != NULL)
+  {
+  /* This should have already happened, but if we've gotten confused,
+  force a reset here. */
+  DEBUG(D_receive) debug_printf("WARNING: smtp_setup_msg had to restore receive functions to lowers\n");
+  bdat_pop_receive_functions();
+  }
 
 /* Set the local signal handler for SIGTERM - it tries to end off tidily */
 
@@ -4855,7 +4918,8 @@ while (done <= 0)
       TRUE flag allows "<>" as a sender address. */
 
       raw_sender = rewrite_existflags & rewrite_smtp
-	? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
+	/* deconst ok as smtp_cmd_data was not const */
+	? US rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
 		      global_rewrite_rules)
 	: smtp_cmd_data;
 
@@ -4917,7 +4981,8 @@ while (done <= 0)
 	if (f.allow_unqualified_sender)
 	  {
 	  sender_domain = Ustrlen(sender_address) + 1;
-	  sender_address = rewrite_address_qualify(sender_address, FALSE);
+	  /* deconst ok as sender_address was not const */
+	  sender_address = US rewrite_address_qualify(sender_address, FALSE);
 	  DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
 	    raw_sender);
 	  }
@@ -4987,6 +5052,10 @@ while (done <= 0)
 
     case RCPT_CMD:
       HAD(SCH_RCPT);
+      /* We got really to many recipients. A check against configured
+      limits is done later */
+      if (rcpt_count < 0 || rcpt_count >= INT_MAX/2)
+        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Too many recipients: %d", rcpt_count);
       rcpt_count++;
       was_rcpt = fl.rcpt_in_progress = TRUE;
 
@@ -5109,7 +5178,8 @@ while (done <= 0)
       as a recipient address */
 
       recipient = rewrite_existflags & rewrite_smtp
-	? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
+	/* deconst ok as smtp_cmd_data was not const */
+	? US rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
 	    global_rewrite_rules)
 	: smtp_cmd_data;
 
@@ -5142,7 +5212,7 @@ while (done <= 0)
 
       /* Check maximum allowed */
 
-      if (rcpt_count > recipients_max && recipients_max > 0)
+      if (rcpt_count+1 < 0 || rcpt_count > recipients_max && recipients_max > 0)
 	{
 	if (recipients_max_reject)
 	  {
@@ -5287,16 +5357,7 @@ while (done <= 0)
       DEBUG(D_receive) debug_printf("chunking state %d, %d bytes\n",
 				    (int)chunking_state, chunking_data_left);
 
-      /* push the current receive_* function on the "stack", and
-      replace them by bdat_getc(), which in turn will use the lwr_receive_*
-      functions to do the dirty work. */
-      lwr_receive_getc = receive_getc;
-      lwr_receive_getbuf = receive_getbuf;
-      lwr_receive_ungetc = receive_ungetc;
-
-      receive_getc = bdat_getc;
-      receive_ungetc = bdat_ungetc;
-
+      f.bdat_readers_wanted = TRUE; /* FIXME: redundant vs chunking_state? */
       f.dot_ends = FALSE;
 
       goto DATA_BDAT;
@@ -5305,6 +5366,7 @@ while (done <= 0)
     case DATA_CMD:
       HAD(SCH_DATA);
       f.dot_ends = TRUE;
+      f.bdat_readers_wanted = FALSE;
 
     DATA_BDAT:		/* Common code for DATA and BDAT */
 #ifndef DISABLE_PIPE_CONNECT
@@ -5333,7 +5395,10 @@ while (done <= 0)
 	    : US"valid RCPT command must precede BDAT");
 
 	if (chunking_state > CHUNKING_OFFERED)
+	  {
+	  bdat_push_receive_functions();
 	  bdat_flush_data();
+	  }
 	break;
 	}
 
@@ -5342,6 +5407,12 @@ while (done <= 0)
 	sender_address = NULL;  /* This will allow a new MAIL without RSET */
 	sender_address_unrewritten = NULL;
 	smtp_printf("554 Too many recipients\r\n", FALSE);
+
+	if (chunking_state > CHUNKING_OFFERED)
+	  {
+	  bdat_push_receive_functions();
+	  bdat_flush_data();
+	  }
 	break;
 	}
 
@@ -5378,6 +5449,9 @@ while (done <= 0)
 	  smtp_printf(
 	    "354 Enter message, ending with \".\" on a line by itself\r\n", FALSE);
 	}
+
+      if (f.bdat_readers_wanted)
+	bdat_push_receive_functions();
 
 #ifdef TCP_QUICKACK
       if (smtp_in)	/* all ACKs needed to ramp window up for bulk data */

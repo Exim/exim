@@ -458,6 +458,20 @@ acl_check_rcpt:
 
   require verify        = sender
 
+  # Reject all RCPT commands after too many bad recipients
+  # This is partly a defense against spam abuse and partly attacker abuse.
+  # Real senders should manage, by the time they get to 10 RCPT directives,
+  # to have had at least half of them be real addresses.
+  #
+  # This is a lightweight check and can protect you against repeated
+  # invocations of more heavy-weight checks which would come after it.
+
+  deny    condition     = ${if and {\
+                        {>{$rcpt_count}{10}}\
+                        {<{$recipients_count}{${eval:$rcpt_count/2}}} }}
+          message       = Rejected for too many bad recipients
+          logwrite      = REJECT [$sender_host_address]: bad recipient count high [${eval:$rcpt_count-$recipients_count}]
+
   # Accept if the message comes from one of the hosts for which we are an
   # outgoing relay. It is assumed that such hosts are most likely to be MUAs,
   # so we set control=submission to make Exim treat the message as a

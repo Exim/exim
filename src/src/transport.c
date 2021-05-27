@@ -959,10 +959,10 @@ if (!(tctx->options & topt_no_headers))
 
   if (tctx->options & topt_add_return_path)
     {
-    uschar buffer[ADDRESS_MAXLENGTH + 20];
-    int n = sprintf(CS buffer, "Return-path: <%.*s>\n", ADDRESS_MAXLENGTH,
-      return_path);
-    if (!write_chunk(tctx, buffer, n)) goto bad;
+    int n;
+    uschar * s = string_sprintf("Return-path: <%.*s>\n%n",
+                          EXIM_EMAILADDR_MAX, return_path, &n);
+    if (!write_chunk(tctx, s, n)) goto bad;
     }
 
   /* Add envelope-to: if requested */
@@ -1729,7 +1729,7 @@ while (1)
     {
     msgq[i].bKeep = TRUE;
 
-    Ustrncpy_nt(msgq[i].message_id, host_record->text + (i * MESSAGE_ID_LENGTH), 
+    Ustrncpy_nt(msgq[i].message_id, host_record->text + (i * MESSAGE_ID_LENGTH),
       MESSAGE_ID_LENGTH);
     msgq[i].message_id[MESSAGE_ID_LENGTH] = 0;
     }

@@ -51,6 +51,8 @@
 .set ACL "access control lists (ACLs)"
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"
 
+.set drivernamemax "64"
+
 .macro copyyear
 2020
 .endmacro
@@ -17392,7 +17394,7 @@ or if the message was submitted locally (not using TCP/IP), and the &%-bnq%&
 option was not set.
 
 
-.option recipients_max main integer 0
+.option recipients_max main integer 50000
 .cindex "limit" "number of recipients"
 .cindex "recipient" "maximum number"
 If this option is set greater than zero, it specifies the maximum number of
@@ -18802,6 +18804,11 @@ which the preconditions are tested. The order of expansion of the options that
 provide data for a transport is: &%errors_to%&, &%headers_add%&,
 &%headers_remove%&, &%transport%&.
 
+.new
+The name of a router is limited to be &drivernamemax; ASCII characters long;
+prior to Exim 4.95 names would be silently truncated at this length, but now
+it is enforced.
+.wen
 
 
 .option address_data routers string&!! unset
@@ -22345,6 +22352,12 @@ and &$original_domain$& is never set.
 .scindex IIDgenoptra1 "generic options" "transport"
 .scindex IIDgenoptra2 "options" "generic; for transports"
 .scindex IIDgenoptra3 "transport" "generic options for"
+.new
+The name of a transport is limited to be &drivernamemax; ASCII characters long;
+prior to Exim 4.95 names would be silently truncated at this length, but now
+it is enforced.
+.wen
+
 The following generic options apply to all transports:
 
 
@@ -27180,6 +27193,12 @@ to a server. This is a common way for a server to recognize clients that are
 permitted to use it as a relay. SMTP authentication is not of relevance to the
 transfer of mail between servers that have no managerial connection with each
 other.
+
+.new
+The name of an authenticator is limited to be &drivernamemax; ASCII characters long;
+prior to Exim 4.95 names would be silently truncated at this length, but now
+it is enforced.
+.wen
 
 .cindex "AUTH" "description of"
 .cindex "ESMTP extensions" AUTH
