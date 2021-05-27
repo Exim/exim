@@ -1,4 +1,4 @@
 1999-03-02 09:44:33 rbl.test.ex/<;1.2.3.4;V4NET.11.12.13
-1999-03-02 09:44:33 DNS list lookup for ten-1 at test.ex returned V4NET.0.0.1; not in 127.0/8 and discarded
+1999-03-02 09:44:33 DNS list lookup for ten-1 at test.ex returned V4NET.0.0.1; invalid address discarded
 1999-03-02 09:44:33 test.ex/a.b.c.d::ten-1::localhost
 1999-03-02 09:44:33 U=CALLER rejected connection in "connect" ACL
