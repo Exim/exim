@@ -953,26 +953,20 @@ drop the privileges for creation of the pid file and not care at all about remov
 the file. FIXME.
 Returns: true on success, false + errno==EACCES otherwise
 */
+
 static BOOL
 operate_on_pid_file(const enum pid_op operation, const pid_t pid)
 {
 char pid_line[sizeof(int) * 3 + 2];
 const int pid_len = snprintf(pid_line, sizeof(pid_line), "%d\n", (int)pid);
 BOOL lines_match = FALSE;
-
-char * path = NULL;
-char * base = NULL;
-char * dir = NULL;
+uschar * path, * base, * dir;
 
 const int dir_flags = O_RDONLY | O_NONBLOCK;
 const int base_flags = O_NOFOLLOW | O_NONBLOCK;
 const mode_t base_mode = 0644;
 struct stat sb;
-
-int cwd_fd = -1;
-int dir_fd = -1;
-int base_fd = -1;
-
+int cwd_fd, dir_fd, base_fd;
 BOOL success = FALSE;
 errno = EACCES;
 
@@ -980,24 +974,24 @@ set_pid_file_path();
 if (!f.running_in_test_harness && real_uid != root_uid && real_uid != exim_uid) goto cleanup;
 if (pid_len < 2 || pid_len >= (int)sizeof(pid_line)) goto cleanup;
 
-path = CS string_copy(pid_file_path);
-if ((base = Ustrrchr(path, '/')) == NULL) /* should not happen, but who knows */
+path = string_copy(pid_file_path);
+if ((base = Ustrrchr(path, '/')) == NULL)	/* should not happen, but who knows */
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "pid file path \"%s\" does not contain a '/'", pid_file_path);
 
-dir = (base != path) ? path : "/";
+dir = base != path ? path : US"/";
 *base++ = '\0';
 
 if (!dir || !*dir || *dir != '/') goto cleanup;
-if (!base || !*base || strchr(base, '/') != NULL) goto cleanup;
+if (!base || !*base || Ustrchr(base, '/') != NULL) goto cleanup;
 
 cwd_fd = open(".", dir_flags);
 if (cwd_fd < 0 || fstat(cwd_fd, &sb) != 0 || !S_ISDIR(sb.st_mode)) goto cleanup;
-dir_fd = open(dir, dir_flags);
+dir_fd = open(CS dir, dir_flags);
 if (dir_fd < 0 || fstat(dir_fd, &sb) != 0 || !S_ISDIR(sb.st_mode)) goto cleanup;
 
 /* emulate openat */
 if (fchdir(dir_fd) != 0) goto cleanup;
-base_fd = open(base, O_RDONLY | base_flags);
+base_fd = open(CS base, O_RDONLY | base_flags);
 if (fchdir(cwd_fd) != 0)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
 
@@ -1016,7 +1010,7 @@ if (base_fd >= 0)
 
   if (strspn(line, "0123456789") != (size_t)len-1) goto cleanup;
   if (line[len-1] != '\n') goto cleanup;
-  lines_match = (len == pid_len && strcmp(line, pid_line) == 0);
+  lines_match = len == pid_len && strcmp(line, pid_line) == 0;
   }
 
 if (operation == PID_WRITE)
@@ -1028,7 +1022,7 @@ if (operation == PID_WRITE)
       int error = -1;
       /* emulate unlinkat */
       if (fchdir(dir_fd) != 0) goto cleanup;
-      error = unlink(base);
+      error = unlink(CS base);
       if (fchdir(cwd_fd) != 0)
         log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
       if (error) goto cleanup;
@@ -1037,7 +1031,7 @@ if (operation == PID_WRITE)
      }
     /* emulate openat */
     if (fchdir(dir_fd) != 0) goto cleanup;
-    base_fd = open(base, O_WRONLY | O_CREAT | O_EXCL | base_flags, base_mode);
+    base_fd = open(CS base, O_WRONLY | O_CREAT | O_EXCL | base_flags, base_mode);
     if (fchdir(cwd_fd) != 0)
         log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
     if (base_fd < 0) goto cleanup;
@@ -1054,7 +1048,7 @@ else
     int error = -1;
     /* emulate unlinkat */
     if (fchdir(dir_fd) != 0) goto cleanup;
-    error = unlink(base);
+    error = unlink(CS base);
     if (fchdir(cwd_fd) != 0)
         log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
     if (error) goto cleanup;
