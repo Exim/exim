@@ -316,7 +316,7 @@ extern int     ip_streamsocket(const uschar *, uschar **, int, host_item *);
 extern int     ipv6_nmtoa(int *, uschar *);
 
 extern uschar *local_part_quote(uschar *);
-extern int     log_open_as_exim(uschar *);
+extern int     log_open_as_exim(uschar * const);
 extern void    log_close_all(void);
 
 extern macro_item * macro_create(const uschar *, const uschar *, BOOL);
