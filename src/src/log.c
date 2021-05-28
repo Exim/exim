@@ -403,7 +403,7 @@ else if (euid == root_uid)
   int sock[2];
   if (socketpair(AF_UNIX, SOCK_STREAM, 0, sock) == 0)
     {
-    const pid_t pid = exim_fork(US"logfile-open");
+    const pid_t pid = fork();
     if (pid == 0)
       {
       (void)close(sock[0]);
