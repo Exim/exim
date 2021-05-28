@@ -299,9 +299,12 @@ return fd;
 
 
 
-/* Inspired by OpenSSH's mm_send_fd(). Thanks! */
+/* Inspired by OpenSSH's mm_send_fd(). Thanks!
+Send fd over socketpair.
+Return: true iff good.
+*/
 
-static int
+static BOOL
 log_send_fd(const int sock, const int fd)
 {
 struct msghdr msg;
@@ -310,8 +313,8 @@ union {
   char buf[CMSG_SPACE(sizeof(int))];
 } cmsgbuf;
 struct cmsghdr *cmsg;
-struct iovec vec;
 char ch = 'A';
+struct iovec vec = {.iov_base = &ch, .iov_len = 1};
 ssize_t n;
 
 memset(&msg, 0, sizeof(msg));
@@ -325,17 +328,16 @@ cmsg->cmsg_level = SOL_SOCKET;
 cmsg->cmsg_type = SCM_RIGHTS;
 *(int *)CMSG_DATA(cmsg) = fd;
 
-vec.iov_base = &ch;
-vec.iov_len = 1;
 msg.msg_iov = &vec;
 msg.msg_iovlen = 1;
 
 while ((n = sendmsg(sock, &msg, 0)) == -1 && errno == EINTR);
-if (n != 1) return -1;
-return 0;
+return n == 1;
 }
 
-/* Inspired by OpenSSH's mm_receive_fd(). Thanks! */
+/* Inspired by OpenSSH's mm_receive_fd(). Thanks!
+Return fd passed over socketpair, or -1 on error.
+*/
 
 static int
 log_recv_fd(const int sock)
@@ -346,14 +348,12 @@ union {
   char buf[CMSG_SPACE(sizeof(int))];
 } cmsgbuf;
 struct cmsghdr *cmsg;
-struct iovec vec;
-ssize_t n;
 char ch = '\0';
-int fd = -1;
+struct iovec vec = {.iov_base = &ch, .iov_len = 1};
+ssize_t n;
+int fd;
 
 memset(&msg, 0, sizeof(msg));
-vec.iov_base = &ch;
-vec.iov_len = 1;
 msg.msg_iov = &vec;
 msg.msg_iovlen = 1;
 
@@ -361,14 +361,12 @@ memset(&cmsgbuf, 0, sizeof(cmsgbuf));
 msg.msg_control = &cmsgbuf.buf;
 msg.msg_controllen = sizeof(cmsgbuf.buf);
 
-while ((n = recvmsg(sock, &msg, 0)) == -1 && errno == EINTR);
+while ((n = recvmsg(sock, &msg, 0)) == -1 && errno == EINTR) ;
 if (n != 1 || ch != 'A') return -1;
 
-cmsg = CMSG_FIRSTHDR(&msg);
-if (cmsg == NULL) return -1;
+if (!(cmsg = CMSG_FIRSTHDR(&msg))) return -1;
 if (cmsg->cmsg_type != SCM_RIGHTS) return -1;
-fd = *(const int *)CMSG_DATA(cmsg);
-if (fd < 0) return -1;
+if ((fd = *(const int *)CMSG_DATA(cmsg)) < 0) return -1;
 return fd;
 }
 
@@ -395,9 +393,7 @@ int fd = -1;
 const uid_t euid = geteuid();
 
 if (euid == exim_uid)
-  {
   fd = log_open_already_exim(name);
-  }
 else if (euid == root_uid)
   {
   int sock[2];
@@ -407,16 +403,16 @@ else if (euid == root_uid)
     if (pid == 0)
       {
       (void)close(sock[0]);
-      if (setgroups(1, &exim_gid) != 0) _exit(EXIT_FAILURE);
-      if (setgid(exim_gid) != 0) _exit(EXIT_FAILURE);
-      if (setuid(exim_uid) != 0) _exit(EXIT_FAILURE);
+      if (  setgroups(1, &exim_gid) != 0
+         || setgid(exim_gid) != 0
+         || setuid(exim_uid) != 0
 
-      if (getuid() != exim_uid || geteuid() != exim_uid) _exit(EXIT_FAILURE);
-      if (getgid() != exim_gid || getegid() != exim_gid) _exit(EXIT_FAILURE);
+         || getuid() != exim_uid || geteuid() != exim_uid
+         || getgid() != exim_gid || getegid() != exim_gid
 
-      fd = log_open_already_exim(name);
-      if (fd < 0) _exit(EXIT_FAILURE);
-      if (log_send_fd(sock[1], fd) != 0) _exit(EXIT_FAILURE);
+         || (fd = log_open_already_exim(name)) < 0
+         || !log_send_fd(sock[1], fd)
+	 ) _exit(EXIT_FAILURE);
       (void)close(sock[1]);
       _exit(EXIT_SUCCESS);
       }
@@ -440,9 +436,7 @@ if (fd >= 0)
   if (flags != -1) (void)fcntl(fd, F_SETFL, flags & ~O_NONBLOCK);
   }
 else
-  {
   errno = EACCES;
-  }
 
 return fd;
 }
