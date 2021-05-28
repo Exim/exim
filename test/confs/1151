@@ -11,8 +11,8 @@ tls_advertise_hosts = *
 tls_certificate = DIR/tmp/certs/servercert
 tls_privatekey = DIR/tmp/certs/serverkey
 tls_try_verify_hosts = *
-tls_verify_certificates = DIR/aux-fixed/cert2
-#tls_verify_certificates = system,cache
+
+tls_verify_certificates = DIR/aux-fixed/exim-ca/example.org/server2.example.org/ca_chain.pem
 
 queue_only
 log_selector = +millisec
@@ -37,7 +37,9 @@ smtp:
   allow_localhost
   port =		PORT_D
   hosts_try_fastopen =	:
-  tls_certificate =	DIR/aux-fixed/cert2
+  tls_certificate =	DIR/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.pem
+  tls_privatekey =	DIR/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.unlocked.key
+
   tls_verify_certificates =	DIR/aux-fixed/cert1
   tls_verify_cert_hostnames =	:
 

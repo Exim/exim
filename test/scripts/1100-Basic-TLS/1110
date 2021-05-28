@@ -22,7 +22,7 @@ This is a test encrypted message.
 quit
 ??? 221
 ****
-client-anytls -tls-on-connect HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
+client-anytls -tls-on-connect HOSTIPV4 PORT_D aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.pem aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.unlocked.key
 ??? 220
 mail from:<userx@test.ex>
 ??? 250

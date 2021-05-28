@@ -23,9 +23,6 @@ tls_advertise_hosts = *
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
-tls_verify_hosts = *
-tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
-
 
 # so we can decode in wireshark
 tls_require_ciphers = NORMAL:-KX-ALL:+RSA
@@ -52,8 +49,6 @@ send_to_server:
   hosts_try_fastopen =	:
   OPTION
   port = PORT_D
-  tls_certificate = DIR/aux-fixed/cert2
-  tls_privatekey = DIR/aux-fixed/cert2
   tls_verify_certificates = DIR/aux-fixed/cert2
   tls_try_verify_hosts =
 

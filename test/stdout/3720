@@ -1,6 +1,6 @@
 Connecting to 127.0.0.1 port 1225 ... connected
-Certificate file = TESTSUITE/aux-fixed/cert2
-Key file = TESTSUITE/aux-fixed/cert2
+Certificate file = aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.pem
+Key file = aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.unlocked.key
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO tester
@@ -34,7 +34,7 @@ Succeeded in starting TLS
 <<< 250-AUTH EXTERNAL
 ??? 250 HELP
 <<< 250 HELP
->>> AUTH EXTERNAL UGhpbCBQZW5ub2Nr
+>>> AUTH EXTERNAL c2VydmVyMi5leGFtcGxlLm9yZw==
 ??? 235
 <<< 235 Authentication succeeded
 >>> quit

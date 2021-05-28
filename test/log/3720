@@ -6,6 +6,6 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 Auth ACL called, after smtp cmd "AUTH EXTERNAL UGhpbCBQZW5ub2Nr"
-1999-03-02 09:44:33 Auth ACL called, after smtp cmd "AUTH EXTERNAL UGhpbCBQZW5ub2Nr"
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= ok@test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtpsa X=TLS_proto_and_cipher CV=yes A=ext_ccert_cn:Phil Pennock S=sss id=E10HmaX-0005vi-00@myhost.test.ex for x@y
+1999-03-02 09:44:33 Auth ACL called, after smtp cmd "AUTH EXTERNAL c2VydmVyMi5leGFtcGxlLm9yZw=="
+1999-03-02 09:44:33 Auth ACL called, after smtp cmd "AUTH EXTERNAL c2VydmVyMi5leGFtcGxlLm9yZw=="
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= ok@test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtpsa X=TLS_proto_and_cipher CV=yes A=ext_ccert_cn:server2.example.org S=sss id=E10HmaX-0005vi-00@myhost.test.ex for x@y

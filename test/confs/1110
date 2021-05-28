@@ -1,4 +1,4 @@
-# Exim test configuration 2019
+# Exim test configuration 1110
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -17,7 +17,7 @@ tls_certificate = DIR/aux-fixed/cert1
 tls_privatekey = DIR/aux-fixed/cert1
 
 tls_verify_hosts = HOSTIPV4
-tls_verify_certificates = DIR/aux-fixed/cert2
+tls_verify_certificates = DIR/aux-fixed/exim-ca/example.org/server2.example.org/ca_chain.pem
 
 
 # ------ ACL ------

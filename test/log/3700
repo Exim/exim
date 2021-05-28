@@ -10,9 +10,9 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D and for SMTPS on port PORT_S
 1999-03-02 09:44:33 Auth ACL called, after smtp cmd "STARTTLS"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= ok@test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtpsa X=TLS_proto_and_cipher CV=yes A=tls:"Phil Pennock" S=sss id=E10HmaX-0005vi-00@myhost.test.ex for x@y
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= ok@test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtpsa X=TLS_proto_and_cipher CV=yes A=tls:server2.example.org S=sss id=E10HmaX-0005vi-00@myhost.test.ex for x@y
 1999-03-02 09:44:33 Auth ACL called, after smtp cmd ""
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= ok@test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtpsa X=TLS_proto_and_cipher CV=yes A=tls:"Phil Pennock" S=sss id=E10HmaY-0005vi-00@myhost.test.ex for smtps@y
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= ok@test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtpsa X=TLS_proto_and_cipher CV=yes A=tls:server2.example.org S=sss id=E10HmaY-0005vi-00@myhost.test.ex for smtps@y
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => x <x@y> R=server_r T=file
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed

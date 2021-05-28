@@ -25,7 +25,7 @@ tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
 tls_verify_hosts = *
-tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
+tls_verify_certificates = DIR/aux-fixed/exim-ca/example.org/server2.example.org/ca_chain.pem
 
 
 # ----- Routers -----
@@ -49,8 +49,9 @@ send_to_server:
   hosts = 127.0.0.1
   port = PORT_D
   hosts_try_fastopen =	:
-  tls_certificate = DIR/aux-fixed/cert2
-  tls_privatekey = DIR/aux-fixed/cert2
+  tls_certificate =	DIR/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.pem
+  tls_privatekey =	DIR/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.unlocked.key
+
   tls_verify_certificates = DIR/aux-fixed/cert2
   tls_try_verify_hosts =
 

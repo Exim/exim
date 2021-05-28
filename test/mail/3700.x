@@ -1,7 +1,7 @@
 From ok@test.ex Tue Mar 02 09:44:33 1999
 Authentication-Results: myhost.test.ex;
 	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
-	auth=pass (tls) x509.auth="Phil Pennock"
+	auth=pass (tls) x509.auth=server2.example.org
 Received: from localhost ([127.0.0.1] helo=myhost.test.ex)
 	by myhost.test.ex with esmtpsa (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)

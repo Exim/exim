@@ -19,10 +19,11 @@ queue_run_in_order
 trusted_users = CALLER
 
 tls_advertise_hosts = *
-tls_certificate = DIR/aux-fixed/cert1
+tls_certificate = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
+tls_privatekey =  DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
 
 tls_verify_hosts = *
-tls_verify_certificates = DIR/aux-fixed/cert2
+tls_verify_certificates = DIR/aux-fixed/exim-ca/example.org/server2.example.org/ca_chain.pem
 
 
 # ----- ACL -----
@@ -54,7 +55,7 @@ ext_ccert_cn:
   server_set_id =	$auth1
   server_debug_print =	+++TLS \$auth1="$auth1"
 
-  client_send =		"Phil Pennock"
+  client_send =		"server2.example.org"
 
 
 # ----- Routers -----
@@ -81,8 +82,10 @@ t1:
   port = PORT_D
   hosts_try_fastopen =	:
   allow_localhost
-  tls_certificate =		DIR/aux-fixed/cert2
-  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_certificate =		DIR/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.pem
+  tls_privatekey =		DIR/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.unlocked.key
+
+  tls_verify_certificates =	DIR/aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem
   tls_verify_cert_hostnames =	:
   hosts_try_auth =		*
 

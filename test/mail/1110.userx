@@ -18,7 +18,7 @@ Received: from [ip4.ip4.ip4.ip4]
 	id 10HmaY-0005vi-00
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn/cn 'CN=Phil Pennock'
+TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn/cn 'CN=server2.example.org'
 
 This is a test encrypted message from a verified host.
 

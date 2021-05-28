@@ -32,8 +32,8 @@ Succeeded in starting TLS
 <<< 221 myhost.test.ex closing connection
 End of script
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
-Certificate file = aux-fixed/cert2
-Key file = aux-fixed/cert2
+Certificate file = aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.pem
+Key file = aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.unlocked.key
 Attempting to start TLS
 Succeeded in starting TLS
 ??? 220

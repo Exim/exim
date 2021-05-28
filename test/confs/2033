@@ -1,4 +1,4 @@
-# Exim test configuration 1162
+# Exim test configuration 2033
 # TLS client: verify certificate from server - name-fails
 
 SERVER=
@@ -34,9 +34,6 @@ tls_advertise_hosts = *
 
 tls_certificate = ${if eq {SERVER}{server}{CERT1}fail}
 tls_privatekey = ${if eq {SERVER}{server}{KEY1}fail}
-
-tls_verify_hosts = *
-tls_verify_certificates = ${if eq {SERVER}{server}{CERT2}fail}
 
 
 # ----- Routers -----
@@ -103,8 +100,6 @@ send_to_server_failcert:
   port = PORT_D
   hosts_try_fastopen =	:
   hosts_require_tls = HOSTIPV4
-  tls_certificate = CERT2
-  tls_privatekey = CERT2
 
   tls_verify_certificates = CA2
 
@@ -116,8 +111,6 @@ send_to_server_retry:
   port = PORT_D
   hosts_try_fastopen =	:
   hosts_require_tls = HOSTIPV4
-  tls_certificate = CERT2
-  tls_privatekey = CERT2
 
   tls_verify_certificates = \
     ${if eq{$host_address}{127.0.0.1}{CA1}{CA2}}
@@ -130,8 +123,6 @@ send_to_server_crypt:
   port = PORT_D
   hosts_try_fastopen =	:
   hosts_require_tls = HOSTIPV4
-  tls_certificate = CERT2
-  tls_privatekey = CERT2
 
   tls_verify_certificates = CA2
   tls_try_verify_hosts = *
@@ -144,8 +135,6 @@ send_to_server_req_fail:
   hosts = HOSTNAME
   port = PORT_D
   hosts_try_fastopen =	:
-  tls_certificate = CERT2
-  tls_privatekey = CERT2
 
   tls_verify_certificates = CA2
   tls_verify_hosts = *
@@ -158,8 +147,6 @@ send_to_server_req_failname:
   hosts = HOSTNAME
   port = PORT_D
   hosts_try_fastopen =	:
-  tls_certificate = CERT2
-  tls_privatekey = CERT2
 
   tls_verify_certificates = CA1
   tls_verify_cert_hostnames = *
@@ -173,8 +160,6 @@ send_to_server_req_passname:
   hosts = server1.example.com
   port = PORT_D
   hosts_try_fastopen =	:
-  tls_certificate = CERT2
-  tls_privatekey = CERT2
 
   tls_verify_certificates = CA1
   tls_verify_cert_hostnames = *
@@ -188,8 +173,6 @@ send_to_server_req_failcarryon:
   hosts = HOSTNAME
   port = PORT_D
   hosts_try_fastopen =	:
-  tls_certificate = CERT2
-  tls_privatekey = CERT2
 
   tls_verify_certificates = CA1
   tls_verify_cert_hostnames = *
