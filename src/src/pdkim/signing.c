@@ -219,7 +219,8 @@ else
     default:		return US"nonhandled hash type";
     }
 
-  if ((rc = gnutls_pubkey_verify_hash2(verify_ctx->key, algo, 0, &k, &s)) < 0)
+  if ((rc = gnutls_pubkey_verify_hash2(verify_ctx->key, algo,
+	      GNUTLS_VERIFY_ALLOW_BROKEN, &k, &s)) < 0)
     ret = US gnutls_strerror(rc);
   }
 
