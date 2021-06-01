@@ -4,11 +4,11 @@ cpu family	: 6
 model		: 94
 model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
 stepping	: 3
-microcode	: 0xc6
-cpu MHz		: 3164.675
+microcode	: 0xe2
+cpu MHz		: 3336.606
 cache size	: 8192 KB
 physical id	: 0
-siblings	: 8
+siblings	: 4
 core id		: 0
 cpu cores	: 4
 apicid		: 0
@@ -17,9 +17,10 @@ fpu		: yes
 fpu_exception	: yes
 cpuid level	: 22
 wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp flush_l1d
-bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
-bogomips	: 5424.00
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp md_clear flush_l1d
+vmx flags	: vnmi preemption_timer invvpid ept_x_only ept_ad ept_1gb flexpriority tsc_offset vtpr mtf vapic ept vpid unrestricted_guest ple shadow_vmcs pml
+bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs taa itlb_multihit srbds
+bogomips	: 5399.81
 clflush size	: 64
 cache_alignment	: 64
 address sizes	: 39 bits physical, 48 bits virtual
@@ -31,11 +32,11 @@ cpu family	: 6
 model		: 94
 model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
 stepping	: 3
-microcode	: 0xc6
-cpu MHz		: 3247.036
+microcode	: 0xe2
+cpu MHz		: 3350.869
 cache size	: 8192 KB
 physical id	: 0
-siblings	: 8
+siblings	: 4
 core id		: 1
 cpu cores	: 4
 apicid		: 2
@@ -44,9 +45,10 @@ fpu		: yes
 fpu_exception	: yes
 cpuid level	: 22
 wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp flush_l1d
-bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
-bogomips	: 5424.00
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp md_clear flush_l1d
+vmx flags	: vnmi preemption_timer invvpid ept_x_only ept_ad ept_1gb flexpriority tsc_offset vtpr mtf vapic ept vpid unrestricted_guest ple shadow_vmcs pml
+bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs taa itlb_multihit srbds
+bogomips	: 5399.81
 clflush size	: 64
 cache_alignment	: 64
 address sizes	: 39 bits physical, 48 bits virtual
@@ -58,11 +60,11 @@ cpu family	: 6
 model		: 94
 model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
 stepping	: 3
-microcode	: 0xc6
-cpu MHz		: 3201.327
+microcode	: 0xe2
+cpu MHz		: 2700.000
 cache size	: 8192 KB
 physical id	: 0
-siblings	: 8
+siblings	: 4
 core id		: 2
 cpu cores	: 4
 apicid		: 4
@@ -71,9 +73,10 @@ fpu		: yes
 fpu_exception	: yes
 cpuid level	: 22
 wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp flush_l1d
-bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
-bogomips	: 5424.00
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp md_clear flush_l1d
+vmx flags	: vnmi preemption_timer invvpid ept_x_only ept_ad ept_1gb flexpriority tsc_offset vtpr mtf vapic ept vpid unrestricted_guest ple shadow_vmcs pml
+bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs taa itlb_multihit srbds
+bogomips	: 5399.81
 clflush size	: 64
 cache_alignment	: 64
 address sizes	: 39 bits physical, 48 bits virtual
@@ -85,11 +88,11 @@ cpu family	: 6
 model		: 94
 model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
 stepping	: 3
-microcode	: 0xc6
-cpu MHz		: 3216.241
+microcode	: 0xe2
+cpu MHz		: 2700.000
 cache size	: 8192 KB
 physical id	: 0
-siblings	: 8
+siblings	: 4
 core id		: 3
 cpu cores	: 4
 apicid		: 6
@@ -98,201 +101,94 @@ fpu		: yes
 fpu_exception	: yes
 cpuid level	: 22
 wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp flush_l1d
-bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
-bogomips	: 5424.00
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp md_clear flush_l1d
+vmx flags	: vnmi preemption_timer invvpid ept_x_only ept_ad ept_1gb flexpriority tsc_offset vtpr mtf vapic ept vpid unrestricted_guest ple shadow_vmcs pml
+bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs taa itlb_multihit srbds
+bogomips	: 5399.81
 clflush size	: 64
 cache_alignment	: 64
 address sizes	: 39 bits physical, 48 bits virtual
 power management:
 
-processor	: 4
-vendor_id	: GenuineIntel
-cpu family	: 6
-model		: 94
-model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
-stepping	: 3
-microcode	: 0xc6
-cpu MHz		: 3153.150
-cache size	: 8192 KB
-physical id	: 0
-siblings	: 8
-core id		: 0
-cpu cores	: 4
-apicid		: 1
-initial apicid	: 1
-fpu		: yes
-fpu_exception	: yes
-cpuid level	: 22
-wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp flush_l1d
-bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
-bogomips	: 5424.00
-clflush size	: 64
-cache_alignment	: 64
-address sizes	: 39 bits physical, 48 bits virtual
-power management:
-
-processor	: 5
-vendor_id	: GenuineIntel
-cpu family	: 6
-model		: 94
-model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
-stepping	: 3
-microcode	: 0xc6
-cpu MHz		: 3215.404
-cache size	: 8192 KB
-physical id	: 0
-siblings	: 8
-core id		: 1
-cpu cores	: 4
-apicid		: 3
-initial apicid	: 3
-fpu		: yes
-fpu_exception	: yes
-cpuid level	: 22
-wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp flush_l1d
-bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
-bogomips	: 5424.00
-clflush size	: 64
-cache_alignment	: 64
-address sizes	: 39 bits physical, 48 bits virtual
-power management:
-
-processor	: 6
-vendor_id	: GenuineIntel
-cpu family	: 6
-model		: 94
-model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
-stepping	: 3
-microcode	: 0xc6
-cpu MHz		: 3107.617
-cache size	: 8192 KB
-physical id	: 0
-siblings	: 8
-core id		: 2
-cpu cores	: 4
-apicid		: 5
-initial apicid	: 5
-fpu		: yes
-fpu_exception	: yes
-cpuid level	: 22
-wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp flush_l1d
-bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
-bogomips	: 5424.00
-clflush size	: 64
-cache_alignment	: 64
-address sizes	: 39 bits physical, 48 bits virtual
-power management:
-
-processor	: 7
-vendor_id	: GenuineIntel
-cpu family	: 6
-model		: 94
-model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
-stepping	: 3
-microcode	: 0xc6
-cpu MHz		: 3152.578
-cache size	: 8192 KB
-physical id	: 0
-siblings	: 8
-core id		: 3
-cpu cores	: 4
-apicid		: 7
-initial apicid	: 7
-fpu		: yes
-fpu_exception	: yes
-cpuid level	: 22
-wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp flush_l1d
-bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
-bogomips	: 5424.00
-clflush size	: 64
-cache_alignment	: 64
-address sizes	: 39 bits physical, 48 bits virtual
-power management:
-
-            CPU0       CPU1       CPU2       CPU3       CPU4       CPU5       CPU6       CPU7       
-   0:         23          0          0          0          0          0          0          0  IR-IO-APIC    2-edge      timer
-   1:          0          0          0          0          0      20896          0          0  IR-IO-APIC    1-edge      i8042
-   8:          0          0          0          0          0          0          1          0  IR-IO-APIC    8-edge      rtc0
-   9:          0      17259          0          0          0          0          0          0  IR-IO-APIC    9-fasteoi   acpi
-  12:          0          0          0          0     975537          0          0          0  IR-IO-APIC   12-edge      i8042
-  16:          0          0          0          0          0          1          0          0  IR-IO-APIC   16-fasteoi   i801_smbus
- 120:          0          0          0          0          0          0          0          0  DMAR-MSI    0-edge      dmar0
- 121:          0          0          0          0          0          0          0          0  DMAR-MSI    1-edge      dmar1
- 122:          0          0      30204     286555          0          0          0          0  IR-PCI-MSI 376832-edge      ahci[0000:00:17.0]
- 123:          0          0          0         54          0          0          0          0  IR-PCI-MSI 327680-edge      xhci_hcd
- 124:          0          0          0          0          0          0          0        459  IR-PCI-MSI 2097152-edge      rtsx_pci
- 125:          0        168          0          0          0          0          0      60676  IR-PCI-MSI 520192-edge      enp0s31f6
- 126:          0          0       3771          0          0          0     457557          0  IR-PCI-MSI 32768-edge      i915
- 127:          0          0          0         18          0          0          0          0  IR-PCI-MSI 1048576-edge      nvkm
- 128:          0          0          0          0         52          0          0          0  IR-PCI-MSI 360448-edge      mei_me
- 129:          0          0          0          0          0          0         45          0  IR-PCI-MSI 1572864-edge      iwlwifi
- 130:          0          0          0          0          0          0          0        636  IR-PCI-MSI 514048-edge      snd_hda_intel:card0
- NMI:         16         14         15         17         17         14         15         14   Non-maskable interrupts
- LOC:     912103     935689     937695     989339    1036579     900977     963828     944405   Local timer interrupts
- SPU:          0          0          0          0          0          0          0          0   Spurious interrupts
- PMI:         16         14         15         17         17         14         15         14   Performance monitoring interrupts
- IWI:          0          0          0          0          3          0          1          0   IRQ work interrupts
- RTR:          4          0          0          0          0          0          0          0   APIC ICR read retries
- RES:     243892      93357      40221      24354      17705      13147      11663      11184   Rescheduling interrupts
- CAL:      33867      31854      33696      32831      33585      33534      32145      32434   Function call interrupts
- TLB:      16415      15608      17440      17663      21127      17152      16593      16540   TLB shootdowns
- TRM:          0          0          0          0          0          0          0          0   Thermal event interrupts
- THR:          0          0          0          0          0          0          0          0   Threshold APIC interrupts
- DFR:          0          0          0          0          0          0          0          0   Deferred Error APIC interrupts
- MCE:          0          0          0          0          0          0          0          0   Machine check exceptions
- MCP:         29         30         30         30         30         30         30         30   Machine check polls
- HYP:          0          0          0          0          0          0          0          0   Hypervisor callback interrupts
- HRE:          0          0          0          0          0          0          0          0   Hyper-V reenlightenment interrupts
- HVS:          0          0          0          0          0          0          0          0   Hyper-V stimer0 interrupts
+            CPU0       CPU1       CPU2       CPU3       
+   0:         16          0          0          0  IR-IO-APIC    2-edge      timer
+   1:       6495          0          0        413  IR-IO-APIC    1-edge      i8042
+   8:          1          0          0          0  IR-IO-APIC    8-edge      rtc0
+   9:      10208       6724          0          0  IR-IO-APIC    9-fasteoi   acpi
+  12:    1604003          0     508743          0  IR-IO-APIC   12-edge      i8042
+  16:          1          3          0          0  IR-IO-APIC   16-fasteoi   i801_smbus
+ 120:          0          0          0          0  DMAR-MSI    0-edge      dmar0
+ 121:          0          0          0          0  DMAR-MSI    1-edge      dmar1
+ 126:        930          0          0     332424  IR-PCI-MSI 376832-edge      ahci[0000:00:17.0]
+ 127:          0          7          0         16  IR-PCI-MSI 327680-edge      xhci_hcd
+ 128:         38        174          0          0  IR-PCI-MSI 2097152-edge      rtsx_pci
+ 129:          0         39          0          0  IR-PCI-MSI 360448-edge      mei_me
+ 130:         28          0          0          5  IR-PCI-MSI 1048576-edge      nvkm
+ 131:    1352449          0     395394          0  IR-PCI-MSI 32768-edge      i915
+ 132:          0        104          0          0  IR-PCI-MSI 514048-edge      snd_hda_intel:card0
+ 133:          0       2702          7          0  IR-PCI-MSI 520192-edge      enp0s31f6
+ 134:        995      71213          0     120277  IR-PCI-MSI 1572864-edge      iwlwifi
+ NMI:         98        111         98         88   Non-maskable interrupts
+ LOC:    4606375    3980864    3688639    3532825   Local timer interrupts
+ SPU:          0          0          0          0   Spurious interrupts
+ PMI:         98        111         98         88   Performance monitoring interrupts
+ IWI:     628191      44368     237642      44906   IRQ work interrupts
+ RTR:          0          0          0          0   APIC ICR read retries
+ RES:     197392     198643     185327     177754   Rescheduling interrupts
+ CAL:     484341     477418     459299     488518   Function call interrupts
+ TLB:     782251     815197     819102     831529   TLB shootdowns
+ TRM:          0          0          0          0   Thermal event interrupts
+ THR:          0          0          0          0   Threshold APIC interrupts
+ DFR:          0          0          0          0   Deferred Error APIC interrupts
+ MCE:          0          0          0          0   Machine check exceptions
+ MCP:         29         30         30         30   Machine check polls
  ERR:          0
  MIS:          0
- PIN:          0          0          0          0          0          0          0          0   Posted-interrupt notification event
- NPI:          0          0          0          0          0          0          0          0   Nested posted-interrupt event
- PIW:          0          0          0          0          0          0          0          0   Posted-interrupt wakeup event
-MemTotal:       16284452 kB
-MemFree:        10017268 kB
-MemAvailable:   13198904 kB
-Buffers:          264676 kB
-Cached:          3332548 kB
+ PIN:          0          0          0          0   Posted-interrupt notification event
+ NPI:          0          0          0          0   Nested posted-interrupt event
+ PIW:          0          0          0          0   Posted-interrupt wakeup event
+MemTotal:       16247944 kB
+MemFree:         5600716 kB
+MemAvailable:   12597152 kB
+Buffers:          537944 kB
+Cached:          6974676 kB
 SwapCached:            0 kB
-Active:          3262260 kB
-Inactive:        2461476 kB
-Active(anon):    2128188 kB
-Inactive(anon):   249756 kB
-Active(file):    1134072 kB
-Inactive(file):  2211720 kB
-Unevictable:          80 kB
-Mlocked:              80 kB
-SwapTotal:       8212476 kB
-SwapFree:        8212476 kB
-Dirty:               836 kB
-Writeback:             0 kB
-AnonPages:       2126728 kB
-Mapped:           482028 kB
-Shmem:            251440 kB
-Slab:             324616 kB
-SReclaimable:     173204 kB
-SUnreclaim:       151412 kB
-KernelStack:       10096 kB
-PageTables:        39776 kB
+Active:          3773728 kB
+Inactive:        5981624 kB
+Active(anon):       3092 kB
+Inactive(anon):  2760640 kB
+Active(file):    3770636 kB
+Inactive(file):  3220984 kB
+Unevictable:      286976 kB
+Mlocked:              48 kB
+SwapTotal:      12406776 kB
+SwapFree:       12406776 kB
+Dirty:               772 kB
+Writeback:            48 kB
+AnonPages:       2529724 kB
+Mapped:           842524 kB
+Shmem:            520996 kB
+KReclaimable:     342932 kB
+Slab:             449876 kB
+SReclaimable:     342932 kB
+SUnreclaim:       106944 kB
+KernelStack:       11632 kB
+PageTables:        30048 kB
 NFS_Unstable:          0 kB
 Bounce:                0 kB
 WritebackTmp:          0 kB
-CommitLimit:    16354700 kB
-Committed_AS:    6618696 kB
+CommitLimit:    20530748 kB
+Committed_AS:    6314716 kB
 VmallocTotal:   34359738367 kB
-VmallocUsed:           0 kB
+VmallocUsed:       56260 kB
 VmallocChunk:          0 kB
-Percpu:             4256 kB
+Percpu:             8800 kB
 HardwareCorrupted:     0 kB
-AnonHugePages:    806912 kB
+AnonHugePages:         0 kB
 ShmemHugePages:        0 kB
 ShmemPmdMapped:        0 kB
+FileHugePages:         0 kB
+FilePmdMapped:         0 kB
 CmaTotal:              0 kB
 CmaFree:               0 kB
 HugePages_Total:       0
@@ -301,14 +197,16 @@ HugePages_Rsvd:        0
 HugePages_Surp:        0
 Hugepagesize:       2048 kB
 Hugetlb:               0 kB
-DirectMap4k:      282088 kB
-DirectMap2M:     7968768 kB
-DirectMap1G:     9437184 kB
+DirectMap4k:      325096 kB
+DirectMap2M:     8974336 kB
+DirectMap1G:     8388608 kB
 Inter-|   Receive                                                |  Transmit
  face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed
- vnet0: 1155867    4102    0    0    0     0          0         0   960100   10308    0    0    0     0       0          0
-wlp3s0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
-virbr0: 1098439    4102    0    0    0     0          0         0   735824    6022    0    0    0     0       0          0
-    lo: 7424702   45950    0    0    0     0          0         0  7424702   45950    0    0    0     0       0          0
+    lo:  757127    7251    0    0    0     0          0         0   757127    7251    0    0    0     0       0          0
+enp0s31f6:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
+wlp3s0: 128940701  122404    0    0    0     0          0         0 19223478  102392    0    0    0     0       0          0
+virbr2:  442398    6834    0    0    0     0          0        16 17312033   12683    0    0    0     0       0          0
+virbr2-nic:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
+virbr0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
 virbr0-nic:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
-enp0s31f6: 39251323   34779    0    0    0     0          0         0  5044761   25668    0    0    0     0       0          0
+tun_wiz: 76309369   78385    0    0    0     0          0         0  7300826   68100    0    0    0     0       0          0

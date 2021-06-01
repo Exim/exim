@@ -1,4 +1,4 @@
 WARNING for Exim Testsuite:
 
 If you change these certificates you will also need to update the TLSA records in dnszone-src/db.test.ex
-and dnszones-src/db.example.com
+and dnszones-src/db.example.com  (the commands are next to each one).

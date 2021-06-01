@@ -52,7 +52,7 @@ alternatename.server1 CNAME server1
 ;
 ;
 DNSSEC danebroken7  A       127.0.0.1
-DNSSEC _1225._tcp.danebroken7 TLSA 2 0 1 3110db5e73708d6fc3ffed8dcd1eef2bcd3c35d8da86ed048a332cb9d9538a0f
+DNSSEC _1225._tcp.danebroken7 TLSA 2 0 1 7b7f27746dafe59e5b419ee4c5ea97f04fcf100f65567d92b1b91f88cf199055
 
 ; the same, EE-mode
 ;
@@ -60,6 +60,6 @@ DNSSEC _1225._tcp.danebroken7 TLSA 2 0 1 3110db5e73708d6fc3ffed8dcd1eef2bcd3c35d
 ; | openssl pkey -pubin -outform DER | openssl dgst -sha256 | awk '{print $2}'
 ;
 DNSSEC danebroken8  A       127.0.0.1
-DNSSEC _1225._tcp.danebroken8 TLSA 3 1 1 5384398f502c423736dcc42295808f7a84769eb96d009816fa077e00bebc768e
+DNSSEC _1225._tcp.danebroken8 TLSA 3 1 1 403071b52f61ba0ab13013b68a97b08325ce8d5e13ba6b6b6f42c2da89ed1b21
 
 ; End

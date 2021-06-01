@@ -4,3 +4,5 @@ V	130110200751Z		67	unknown	CN=expired1.example.org
 V	130110200751Z		c9	unknown	CN=server2.example.org
 V	130110200751Z		ca	unknown	CN=revoked2.example.org
 V	130110200751Z		cb	unknown	CN=expired2.example.org
+V	130110200751Z		42	unknown	CN=clica Signing Cert rsa
+V	130110200751Z		41	unknown	CN=clica CA rsa
