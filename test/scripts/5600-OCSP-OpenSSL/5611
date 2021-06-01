@@ -2,7 +2,7 @@
 #
 #
 # Client works when we request but don't require OCSP stapling and none comes
-exim -bd -oX PORT_D -DSERVER=server -DRETURN=/dev/null
+exim -bd -oX PORT_D -DSERVER=server -DRETURN=""
 ****
 exim norequire@test.ex
 test message.
@@ -35,7 +35,7 @@ killdaemon
 #
 #
 # Client fails on lack of required stapled info
-exim -bd -oX PORT_D -DSERVER=server -DRETURN=/dev/null
+exim -bd -oX PORT_D -DSERVER=server -DRETURN=""
 ****
 exim CALLER@test.ex
 test message.

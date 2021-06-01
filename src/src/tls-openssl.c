@@ -903,10 +903,12 @@ DEBUG(D_tls)
 	  str = where & SSL_CB_READ ? US"read" : US"write",
 	  SSL_alert_type_string_long(ret), SSL_alert_desc_string_long(ret));
   else if (where & SSL_CB_EXIT)
-     if (ret == 0)
-	debug_printf("%s: failed in %s\n", str, SSL_state_string_long(s));
-     else if (ret < 0)
-	debug_printf("%s: error in %s\n", str, SSL_state_string_long(s));
+    {
+    if (ret == 0)
+      debug_printf("%s: failed in %s\n", str, SSL_state_string_long(s));
+    else if (ret < 0)
+      debug_printf("%s: error in %s\n", str, SSL_state_string_long(s));
+    }
   else if (where & SSL_CB_HANDSHAKE_START)
      debug_printf("%s: hshake start: %s\n", str, SSL_state_string_long(s));
   else if (where & SSL_CB_HANDSHAKE_DONE)
@@ -1247,10 +1249,14 @@ int status, reason, i;
 DEBUG(D_tls)
   debug_printf("tls_ocsp_file (%s)  '%s'\n", is_pem ? "PEM" : "DER", filename);
 
+if (!filename || !*filename) return;
+
+ERR_clear_error();
 if (!(bio = BIO_new_file(CS filename, "rb")))
   {
-  DEBUG(D_tls) debug_printf("Failed to open OCSP response file \"%s\"\n",
-      filename);
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "Failed to open OCSP response file \"%s\": %.100s",
+    filename, ERR_reason_error_string(ERR_get_error()));
   return;
   }
 
@@ -1261,8 +1267,8 @@ if (is_pem)
   long len;
   if (!PEM_read_bio(bio, &dummy, &dummy, &data, &len))
     {
-    DEBUG(D_tls) debug_printf("Failed to read PEM file \"%s\"\n",
-	filename);
+    log_write(0, LOG_MAIN|LOG_PANIC, "Failed to read PEM file \"%s\": %.100s",
+      filename, ERR_reason_error_string(ERR_get_error()));
     return;
     }
   freep = data;
@@ -1275,7 +1281,8 @@ BIO_free(bio);
 
 if (!resp)
   {
-  DEBUG(D_tls) debug_printf("Error reading OCSP response.\n");
+  log_write(0, LOG_MAIN|LOG_PANIC, "Error reading OCSP response from \"%s\": %s",
+      filename, ERR_reason_error_string(ERR_get_error()));
   return;
   }
 
@@ -3117,7 +3124,7 @@ if (rc <= 0)
     /* Handle genuine errors */
     case SSL_ERROR_SSL:
       {
-      uschar * s = US"SSL_accept";
+      uschar * s = NULL;
       int r = ERR_GET_REASON(ERR_peek_error());
       if (  r == SSL_R_WRONG_VERSION_NUMBER
 #ifdef SSL_R_VERSION_TOO_LOW
@@ -3125,7 +3132,7 @@ if (rc <= 0)
 #endif
          || r == SSL_R_UNKNOWN_PROTOCOL || r == SSL_R_UNSUPPORTED_PROTOCOL)
 	s = string_sprintf("%s (%s)", s, SSL_get_version(ssl));
-      (void) tls_error(s, NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
+      (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : s, errstr);
       return FAIL;
       }
 
