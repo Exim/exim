@@ -309,6 +309,11 @@ QS/03 When reading the output from interpreted forward files we do not
 QS/04 Always die if requested from internal logging, even is logging is
       disabled.
 
+JH/54 DMARC: recent versions of the OpenDMARC library appear to have broken
+      the API; compilation noo longer completes with DMARC support included.
+      This affects 1.4.1-1 on Fedora 33 (1.3.2-3 is functional); and has
+      been reported on other platforms.
+
 
 Exim version 4.94
 -----------------
