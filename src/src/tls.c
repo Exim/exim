@@ -158,8 +158,8 @@ return FALSE;
 # endif
 # ifdef EXIM_HAVE_KEVENT
 {
-uschar * s;
-int fd1, fd2, i, cnt = 0;
+uschar * s, * t;
+int fd1, fd2, i, j, cnt = 0;
 struct stat sb;
 #ifdef OpenBSD
 struct kevent k_dummy;
@@ -209,11 +209,14 @@ for (;;)
 
   if (!(S_ISLNK(sb.st_mode))) break;
 
-  s = store_get(1024, FALSE);
-  if ((i = readlink(CCS filename, (void *)s, 1024)) < 0) { s = US"readlink"; goto bad; }
-  filename = s;
-  *(s += i) = '\0';
-  store_release_above(s+1);
+  t = store_get(1024, FALSE);
+  Ustrncpy(t, s, 1022);
+  j = Ustrlen(s);
+  t[j++] = '/';
+  if ((i = readlink(CCS filename, (void *)(t+j), 1023-j)) < 0) { s = US"readlink"; goto bad; }
+  filename = t;
+  *(t += i+j) = '\0';
+  store_release_above(t+1);
   }
 
 #ifdef OpenBSD
