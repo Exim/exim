@@ -2504,13 +2504,13 @@ for (;;)
           if (FD_ISSET(lfd, &fds))
             {
 	    EXIM_SOCKLEN_T alen = sizeof(accepted);
+#if defined(TCP_INFO)
 	    struct tcp_info ti;
 	    socklen_t tlen = sizeof(ti);
 
 	    /* If monitoring the backlog is wanted, grab for later logging */
 
 	    smtp_listen_backlog = 0;
-#if defined(TCP_INFO)
 	    if (  smtp_backlog_monitor > 0
 	       && getsockopt(lfd, IPPROTO_TCP, TCP_INFO, &ti, &tlen) == 0)
 	      {
