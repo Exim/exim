@@ -462,14 +462,14 @@ if (pid == 0)
   (void)fcntl(dup_accept_socket, F_SETFD,
               fcntl(dup_accept_socket, F_GETFD) | FD_CLOEXEC);
 
-  #ifdef SA_NOCLDWAIT
+#ifdef SA_NOCLDWAIT
   act.sa_handler = SIG_IGN;
   sigemptyset(&(act.sa_mask));
   act.sa_flags = SA_NOCLDWAIT;
   sigaction(SIGCHLD, &act, NULL);
-  #else
+#else
   signal(SIGCHLD, SIG_IGN);
-  #endif
+#endif
   signal(SIGTERM, SIG_DFL);
   signal(SIGINT, SIG_DFL);
 
@@ -1296,6 +1296,15 @@ return FALSE;
 }
 
 
+
+
+static void
+add_listener_socket(int fd, fd_set * fds, int * fd_max)
+{
+FD_SET(fd, fds);
+if (fd > *fd_max) *fd_max = fd;
+}
+
 /*************************************************
 *              Exim Daemon Mainline              *
 *************************************************/
@@ -1322,10 +1331,11 @@ There are no arguments to this function, and it never returns. */
 void
 daemon_go(void)
 {
-struct passwd *pw;
-int *listen_sockets = NULL;
-int listen_socket_count = 0;
-ip_address_item *addresses = NULL;
+struct passwd * pw;
+int * listen_sockets = NULL;
+int listen_socket_count = 0, listen_fd_max = 0;
+fd_set select_listen;
+ip_address_item * addresses = NULL;
 time_t last_connection_time = (time_t)0;
 int local_queue_run_max = atoi(CS expand_string(queue_run_max));
 
@@ -1336,6 +1346,7 @@ debugging lines get the pid added. */
 
 DEBUG(D_any|D_v) debug_selector |= D_pid;
 
+FD_ZERO(&select_listen);
 if (f.inetd_wait_mode)
   {
   listen_socket_count = 1;
@@ -1372,6 +1383,9 @@ if (f.inetd_wait_mode)
     if (setsockopt(3, IPPROTO_TCP, TCP_NODELAY, US &on, sizeof(on)))
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to set socket NODELAY: %s",
 	strerror(errno));
+
+  FD_SET(3, &select_listen);
+  listen_fd_max = 3;
   }
 
 
@@ -1382,11 +1396,11 @@ if (f.inetd_wait_mode || f.daemon_listen)
   for those OS for which this is necessary the first time it is called (in
   order to perform an "open" on the kernel memory file). */
 
-  #ifdef LOAD_AVG_NEEDS_ROOT
+#ifdef LOAD_AVG_NEEDS_ROOT
   if (queue_only_load >= 0 || smtp_load_reserve >= 0 ||
        (deliver_queue_load_max >= 0 && deliver_drop_privilege))
     (void)os_getloadavg();
-  #endif
+#endif
   }
 
 
@@ -1760,8 +1774,8 @@ if (f.daemon_listen && !f.inetd_wait_mode)
   for (ipa = addresses, sk = 0; sk < listen_socket_count; ipa = ipa->next, sk++)
     {
     BOOL wildcard;
-    ip_address_item *ipa2;
-    int af;
+    ip_address_item * ipa2;
+    int fd, af;
 
     if (Ustrchr(ipa->address, ':') != NULL)
       {
@@ -1774,7 +1788,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
       wildcard = ipa->address[0] == 0;
       }
 
-    if ((listen_sockets[sk] = ip_socket(SOCK_STREAM, af)) < 0)
+    if ((listen_sockets[sk] = fd = ip_socket(SOCK_STREAM, af)) < 0)
       {
       if (check_special_case(0, addresses, ipa, FALSE))
         {
@@ -1792,7 +1806,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
 #ifdef IPV6_V6ONLY
     if (af == AF_INET6 && wildcard &&
-        setsockopt(listen_sockets[sk], IPPROTO_IPV6, IPV6_V6ONLY, CS (&on),
+        setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, CS (&on),
           sizeof(on)) < 0)
       log_write(0, LOG_MAIN, "Setting IPV6_V6ONLY on daemon's IPv6 wildcard "
         "socket failed (%s): carrying on without it", strerror(errno));
@@ -1802,7 +1816,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
     is being handled.  Without this, a connection will prevent reuse of the
     smtp port for listening. */
 
-    if (setsockopt(listen_sockets[sk], SOL_SOCKET, SO_REUSEADDR,
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR,
                    US (&on), sizeof(on)) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "setting SO_REUSEADDR on socket "
         "failed when starting daemon: %s", strerror(errno));
@@ -1810,7 +1824,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
     /* Set TCP_NODELAY; Exim does its own buffering. There is a switch to
     disable this because it breaks some broken clients. */
 
-    if (tcp_nodelay) setsockopt(listen_sockets[sk], IPPROTO_TCP, TCP_NODELAY,
+    if (tcp_nodelay) setsockopt(fd, IPPROTO_TCP, TCP_NODELAY,
       US (&on), sizeof(on));
 
     /* Now bind the socket to the required port; if Exim is being restarted
@@ -1829,12 +1843,12 @@ if (f.daemon_listen && !f.inetd_wait_mode)
     for(;;)
       {
       uschar *msg, *addr;
-      if (ip_bind(listen_sockets[sk], af, ipa->address, ipa->port) >= 0) break;
+      if (ip_bind(fd, af, ipa->address, ipa->port) >= 0) break;
       if (check_special_case(errno, addresses, ipa, TRUE))
         {
         DEBUG(D_any) debug_printf("wildcard IPv4 bind() failed after IPv6 "
           "listen() success; EADDRINUSE ignored\n");
-        (void)close(listen_sockets[sk]);
+        (void)close(fd);
         goto SKIP_SOCKET;
         }
       msg = US strerror(errno);
@@ -1862,30 +1876,31 @@ if (f.daemon_listen && !f.inetd_wait_mode)
       else
         debug_printf("listening on %s port %d\n", ipa->address, ipa->port);
 
+    /* Start listening on the bound socket, establishing the maximum backlog of
+    connections that is allowed. On success, add to the set of sockets for select
+    and continue to the next address. */
+
 #if defined(TCP_FASTOPEN) && !defined(__APPLE__)
     if (  f.tcp_fastopen_ok
-       && setsockopt(listen_sockets[sk], IPPROTO_TCP, TCP_FASTOPEN,
+       && setsockopt(fd, IPPROTO_TCP, TCP_FASTOPEN,
 		    &smtp_connect_backlog, sizeof(smtp_connect_backlog)))
       {
       DEBUG(D_any) debug_printf("setsockopt FASTOPEN: %s\n", strerror(errno));
       f.tcp_fastopen_ok = FALSE;
       }
 #endif
-
-    /* Start listening on the bound socket, establishing the maximum backlog of
-    connections that is allowed. On success, continue to the next address. */
-
-    if (listen(listen_sockets[sk], smtp_connect_backlog) >= 0)
+    if (listen(fd, smtp_connect_backlog) >= 0)
       {
 #if defined(TCP_FASTOPEN) && defined(__APPLE__)
       if (  f.tcp_fastopen_ok
-	 && setsockopt(listen_sockets[sk], IPPROTO_TCP, TCP_FASTOPEN,
-		      &on, sizeof(on)))
+	 && setsockopt(fd, IPPROTO_TCP, TCP_FASTOPEN, &on, sizeof(on)))
 	{
 	DEBUG(D_any) debug_printf("setsockopt FASTOPEN: %s\n", strerror(errno));
 	f.tcp_fastopen_ok = FALSE;
 	}
 #endif
+
+      add_listener_socket(fd, &select_listen, &listen_fd_max);
       continue;
       }
 
@@ -1903,7 +1918,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
     DEBUG(D_any) debug_printf("wildcard IPv4 listen() failed after IPv6 "
       "listen() success; EADDRINUSE ignored\n");
-    (void)close(listen_sockets[sk]);
+    (void)close(fd);
 
     /* Come here if there has been a problem with the socket which we
     are going to ignore. We remove the address from the chain, and back up the
@@ -1951,7 +1966,19 @@ if (f.running_in_test_harness || write_pid)
     DEBUG(D_any) debug_printf("%s pid file %s: %s\n", (operation == PID_WRITE) ? "write" : "check", pid_file_path, strerror(errno));
   }
 
+/* Add ancillary sockets to the set for select */
+
+#ifndef DISABLE_TLS
+if (tls_watch_fd >= 0)
+  add_listener_socket(tls_watch_fd, &select_listen, &listen_fd_max);
+#endif
+if (daemon_notifier_fd >= 0)
+  add_listener_socket(daemon_notifier_fd, &select_listen, &listen_fd_max);
+
+listen_fd_max++;
+
 /* Set up the handler for SIGHUP, which causes a restart of the daemon. */
+
 sighup_seen = FALSE;
 signal(SIGHUP, sighup_handler);
 
@@ -2398,28 +2425,8 @@ for (;;)
   if (f.daemon_listen)
     {
     int lcount;
-    int max_socket = 0;
     BOOL select_failed = FALSE;
-    fd_set select_listen;
-
-    FD_ZERO(&select_listen);
-#ifndef DISABLE_TLS
-    if (tls_watch_fd >= 0)
-      {
-      FD_SET(tls_watch_fd, &select_listen);
-      if (tls_watch_fd > max_socket) max_socket = tls_watch_fd;
-      }
-#endif
-    if (daemon_notifier_fd >= 0)
-      {
-      FD_SET(daemon_notifier_fd, &select_listen);
-      if (daemon_notifier_fd > max_socket) max_socket = daemon_notifier_fd;
-      }
-    for (int sk = 0; sk < listen_socket_count; sk++)
-      {
-      FD_SET(listen_sockets[sk], &select_listen);
-      if (listen_sockets[sk] > max_socket) max_socket = listen_sockets[sk];
-      }
+    fd_set fds = select_listen;
 
     DEBUG(D_any) debug_printf("Listening...\n");
 
@@ -2436,7 +2443,7 @@ for (;;)
       errno = EINTR;
       }
     else
-      lcount = select(max_socket + 1, (SELECT_ARG2_TYPE *)&select_listen,
+      lcount = select(listen_fd_max, (SELECT_ARG2_TYPE *)&fds,
         NULL, NULL, NULL);
 
     if (lcount < 0)
@@ -2474,28 +2481,27 @@ for (;;)
       if (!select_failed)
 	{
 #if !defined(DISABLE_TLS) && (defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT))
-	if (tls_watch_fd >= 0 && FD_ISSET(tls_watch_fd, &select_listen))
+	if (tls_watch_fd >= 0 && FD_ISSET(tls_watch_fd, &fds))
 	  {
-	  FD_CLR(tls_watch_fd, &select_listen);
+	  FD_CLR(tls_watch_fd, &fds);
           tls_watch_trigger_time = time(NULL);	/* Set up delayed event */
 	  tls_watch_discard_event(tls_watch_fd);
 	  break;	/* to top of daemon loop */
 	  }
 #endif
-	if (  daemon_notifier_fd >= 0
-	   && FD_ISSET(daemon_notifier_fd, &select_listen))
+	if (daemon_notifier_fd >= 0 && FD_ISSET(daemon_notifier_fd, &fds))
 	  {
-	  FD_CLR(daemon_notifier_fd, &select_listen);
+	  FD_CLR(daemon_notifier_fd, &fds);
 	  sigalrm_seen = daemon_notification();
 	  break;	/* to top of daemon loop */
 	  }
         for (int sk = 0; sk < listen_socket_count; sk++)
-          if (FD_ISSET(listen_sockets[sk], &select_listen))
+          if (FD_ISSET(listen_sockets[sk], &fds))
             {
             len = sizeof(accepted);
             accept_socket = accept(listen_sockets[sk],
               (struct sockaddr *)&accepted, &len);
-            FD_CLR(listen_sockets[sk], &select_listen);
+            FD_CLR(listen_sockets[sk], &fds);
             break;
             }
 	}
