@@ -1,0 +1,10 @@
+# multiple listener sockets ready
+#
+exim -bd -DSERVER=server -oX '<, PORT_D,PORT_D2'
+****
+exim a@test.ex b@test.ex c@test.ex
+Subject: test mail
+****
+#
+sleep 8
+killdaemon

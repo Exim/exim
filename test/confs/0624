@@ -1,0 +1,44 @@
+# Exim test configuration 0624
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+log_selector =	+received_recipients +outgoing_port +millisec
+
+smtp_accept_max_per_host = ${acl {delay}}10
+remote_max_parallel = 3
+
+acl_smtp_rcpt = discard
+
+# ----- ACL -----
+begin acl
+
+delay:
+  accept
+	 delay = 2s
+
+# ----- Routers -----
+begin routers
+r:
+	driver =	accept
+	transport =	smtp
+
+# ----- Trnasport -----
+begin transports
+smtp:
+	driver =	smtp
+	hosts =		127.0.0.1
+	port =		${if eq {c}{$local_part} {PORT_D2}{PORT_D}}
+	allow_localhost
+	max_rcpt =	1
+
+# ----- Retry -----
+begin retry
+* * F,5d,1d
+
+# End
+
