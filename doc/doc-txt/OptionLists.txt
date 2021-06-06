@@ -538,6 +538,7 @@ smtp_accept_queue                    integer         0             main
 smtp_accept_queue_per_connection     integer         10            main              2.03
 smtp_accept_reserve                  integer         0             main
 smtp_active_hostname                 string*         unset         main              4.33
+smtp_backlog_monitor                 integer         0             main              4.95
 smtp_banner                          string*         +             main
 smtp_check_spool_space               boolean         true          main              2.10
 smtp_connect_backlog                 integer         5             main

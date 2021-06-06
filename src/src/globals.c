@@ -1471,6 +1471,7 @@ int     smtp_accept_queue      = 0;
 int     smtp_accept_queue_per_connection = 10;
 int     smtp_accept_reserve    = 0;
 uschar *smtp_active_hostname   = NULL;
+int	smtp_backlog_monitor   = 0;
 uschar *smtp_banner            = US"$smtp_active_hostname ESMTP "
                              "Exim $version_number $tod_full"
                              "\0<---------------Space to patch smtp_banner->";
@@ -1483,6 +1484,7 @@ int     smtp_connect_backlog   = 20;
 double  smtp_delay_mail        = 0.0;
 double  smtp_delay_rcpt        = 0.0;
 FILE   *smtp_in                = NULL;
+int     smtp_listen_backlog    = 0;
 int     smtp_load_reserve      = -1;
 int     smtp_mailcmd_count     = 0;
 FILE   *smtp_out               = NULL;

@@ -1,13 +1,13 @@
-# Exim test configuration 0624
+# Exim test configuration 0625
 
 .include DIR/aux-var/std_conf_prefix
-
 
 # ----- Main settings -----
 
 domainlist local_domains = test.ex
 qualify_domain = test.ex
 log_selector =	+received_recipients +outgoing_port +millisec
+smtp_backlog_monitor = 1
 
 smtp_accept_max_per_host = ${acl {delay}}10
 remote_max_parallel = 3
@@ -32,7 +32,7 @@ begin transports
 smtp:
 	driver =	smtp
 	hosts =		127.0.0.1
-	port =		${if eq {c}{$local_part} {PORT_D2}{PORT_D}}
+	port =		PORT_D
 	allow_localhost
 	hosts_try_fastopen =
 	max_rcpt =	1

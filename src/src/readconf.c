@@ -309,6 +309,7 @@ static optionlist optionlist_config[] = {
   { "smtp_accept_queue_per_connection", opt_int, {&smtp_accept_queue_per_connection} },
   { "smtp_accept_reserve",      opt_int,         {&smtp_accept_reserve} },
   { "smtp_active_hostname",     opt_stringptr,   {&raw_active_hostname} },
+  { "smtp_backlog_monitor",     opt_int,         {&smtp_backlog_monitor} },
   { "smtp_banner",              opt_stringptr,   {&smtp_banner} },
   { "smtp_check_spool_space",   opt_bool,        {&smtp_check_spool_space} },
   { "smtp_connect_backlog",     opt_int,         {&smtp_connect_backlog} },

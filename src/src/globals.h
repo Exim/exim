@@ -945,6 +945,7 @@ extern int     smtp_accept_queue;      /* Queue after so many connections */
 extern int     smtp_accept_queue_per_connection; /* Queue after so many msgs */
 extern int     smtp_accept_reserve;    /* Reserve these SMTP connections */
 extern uschar *smtp_active_hostname;   /* Hostname for this message */
+extern int     smtp_backlog_monitor;   /* listen backlog level to log */
 extern uschar *smtp_banner;            /* Banner string (to be expanded) */
 extern BOOL    smtp_check_spool_space; /* TRUE to check SMTP SIZE value */
 extern int     smtp_ch_index;          /* Index in smtp_connection_had */
@@ -959,6 +960,7 @@ extern BOOL    smtp_enforce_sync;      /* Enforce sync rules */
 extern uschar *smtp_etrn_command;      /* Command to run */
 extern BOOL    smtp_etrn_serialize;    /* Only one at once */
 extern FILE   *smtp_in;                /* Incoming SMTP input file */
+extern int     smtp_listen_backlog;    /* Current listener socket backlog, if monitored */
 extern int     smtp_load_reserve;      /* Only from reserved if load > this */
 extern int     smtp_mailcmd_count;     /* Count of MAIL commands */
 extern int     smtp_max_synprot_errors;/* Max syntax/protocol errors */

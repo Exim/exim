@@ -396,11 +396,17 @@ if (pid == 0)
   int save_debug_selector = debug_selector;
   BOOL local_queue_only;
   BOOL session_local_queue_only;
-  #ifdef SA_NOCLDWAIT
+#ifdef SA_NOCLDWAIT
   struct sigaction act;
-  #endif
+#endif
 
   smtp_accept_count++;    /* So that it includes this process */
+
+  /* If the listen backlog was over the monitoring level, log it. */
+
+  if (smtp_listen_backlog > smtp_backlog_monitor)
+    log_write(0, LOG_MAIN, "listen backlog %d I=[%s]:%d",
+		smtp_listen_backlog, interface_address, interface_port);
 
   /* May have been modified for the subprocess */
 
@@ -685,6 +691,7 @@ if (pid == 0)
         (void)fclose(smtp_in);
 	(void)close(fileno(smtp_out));
         (void)fclose(smtp_out);
+	smtp_in = smtp_out = NULL;
 
         /* Don't ever molest the parent's SSL connection, but do clean up
         the data structures if necessary. */
@@ -2493,12 +2500,31 @@ for (;;)
 	  }
 	while (check_lsk < listen_socket_count)
 	  {
-	  int sk = check_lsk++;
-          if (FD_ISSET(listen_sockets[sk], &fds))
+	  int lfd = listen_sockets[check_lsk++];
+          if (FD_ISSET(lfd, &fds))
             {
-	    EXIM_SOCKLEN_T len = sizeof(accepted);
-            accept_socket = accept(listen_sockets[sk],
-              (struct sockaddr *)&accepted, &len);
+	    EXIM_SOCKLEN_T alen = sizeof(accepted);
+	    struct tcp_info ti;
+	    socklen_t tlen = sizeof(ti);
+
+	    /* If monitoring the backlog is wanted, grab for later logging */
+
+	    smtp_listen_backlog = 0;
+#if defined(TCP_INFO)
+	    if (  smtp_backlog_monitor > 0
+	       && getsockopt(lfd, IPPROTO_TCP, TCP_INFO, &ti, &tlen) == 0)
+	      {
+	      DEBUG(D_interface) debug_printf("listen fd %d queue max %u curr %u\n",
+# ifdef EXIM_HAVE_TCPI_UNACKED
+		      lfd, ti.tcpi_sacked, ti.tcpi_unacked);
+	      smtp_listen_backlog = ti.tcpi_unacked;
+# elif defined(__FreeBSD__)	/* This does not work. Investigate kernel sourcecode. */
+		      lfd, ti.__tcpi_sacked, ti.__tcpi_unacked);
+	      smtp_listen_backlog = ti.__tcpi_unacked;
+# endif
+	      }
+#endif
+            accept_socket = accept(lfd, (struct sockaddr *)&accepted, &alen);
             break;
             }
 	  }

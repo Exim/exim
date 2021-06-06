@@ -14714,6 +14714,7 @@ listed in more than one group.
 .row &%notifier_socket%&             "override compiled-in value"
 .row &%pid_file_path%&               "override compiled-in value"
 .row &%queue_run_max%&               "maximum simultaneous queue runners"
+.row &%smtp_backlog_monitor%&        "level to log listen baclog"
 .endtable
 
 
@@ -17732,6 +17733,14 @@ messages, it is also used as the default for HELO commands in callout
 verification if there is no remote transport from which to obtain a
 &%helo_data%& value.
 
+.option smtp_backlog_monitor main integer 0
+.cindex "connection backlog" monitoring
+If this option is set to greater than zero, and the backlog of available
+TCP connections on a socket listening for SMTP is larger than it, a line
+is logged giving the value and the socket address and port.
+The value is retrived jsut before an accept call.
+This facility is only available on Linux.
+
 .option smtp_banner main string&!! "see below"
 .cindex "SMTP" "welcome banner"
 .cindex "banner for SMTP"
@@ -17762,7 +17771,7 @@ is zero). If there isn't enough space, a temporary error code is returned.
 
 
 .option smtp_connect_backlog main integer 20
-.cindex "connection backlog"
+.cindex "connection backlog" "set maximum"
 .cindex "SMTP" "connection backlog"
 .cindex "backlog of connections"
 This option specifies a maximum number of waiting SMTP connections. Exim passes
