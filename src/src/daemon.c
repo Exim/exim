@@ -973,7 +973,7 @@ const int dir_flags = O_RDONLY | O_NONBLOCK;
 const int base_flags = O_NOFOLLOW | O_NONBLOCK;
 const mode_t base_mode = 0644;
 struct stat sb;
-int cwd_fd, dir_fd, base_fd;
+int cwd_fd = -1, dir_fd = -1, base_fd = -1;
 BOOL success = FALSE;
 errno = EACCES;
 
@@ -2522,8 +2522,8 @@ for (;;)
 		      lfd, ti.__tcpi_sacked, ti.__tcpi_unacked);
 	      smtp_listen_backlog = ti.__tcpi_unacked;
 # endif
-	      }
 #endif
+	      }
             accept_socket = accept(lfd, (struct sockaddr *)&accepted, &alen);
             break;
             }
