@@ -275,7 +275,7 @@ subprocess because it might take time. */
 if (smtp_load_reserve >= 0)
   {
   load_average = OS_GETLOADAVG();
-  if (smtp_reserve_hosts == NULL && load_average > smtp_load_reserve)
+  if (!smtp_reserve_hosts && load_average > smtp_load_reserve)
     {
     DEBUG(D_any) debug_printf("rejecting SMTP connection: load average = %.2f\n",
       (double)load_average/1000.0);
@@ -374,7 +374,7 @@ if (LOGGING(smtp_connection))
   {
   uschar *list = hosts_connection_nolog;
   memset(sender_host_cache, 0, sizeof(sender_host_cache));
-  if (list != NULL && verify_check_host(&list) == OK)
+  if (list && verify_check_host(&list) == OK)
     save_log_selector &= ~L_smtp_connection;
   else
     log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %s "
@@ -2212,13 +2212,6 @@ report_time_since(&timestamp_startup, US"daemon loop start");	/* testcase 0022 *
 
 for (;;)
   {
-  #if HAVE_IPV6
-  struct sockaddr_in6 accepted;
-  #else
-  struct sockaddr_in accepted;
-  #endif
-
-  EXIM_SOCKLEN_T len;
   pid_t pid;
 
   if (sigterm_seen)
@@ -2424,7 +2417,7 @@ for (;;)
 
   if (f.daemon_listen)
     {
-    int lcount;
+    int check_lsk = 0, lcount;
     BOOL select_failed = FALSE;
     fd_set fds = select_listen;
 
@@ -2477,13 +2470,17 @@ for (;;)
     while (lcount-- > 0)
       {
       int accept_socket = -1;
+#if HAVE_IPV6
+      struct sockaddr_in6 accepted;
+#else
+      struct sockaddr_in accepted;
+#endif
 
       if (!select_failed)
 	{
 #if !defined(DISABLE_TLS) && (defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT))
 	if (tls_watch_fd >= 0 && FD_ISSET(tls_watch_fd, &fds))
 	  {
-	  FD_CLR(tls_watch_fd, &fds);
           tls_watch_trigger_time = time(NULL);	/* Set up delayed event */
 	  tls_watch_discard_event(tls_watch_fd);
 	  break;	/* to top of daemon loop */
@@ -2491,19 +2488,20 @@ for (;;)
 #endif
 	if (daemon_notifier_fd >= 0 && FD_ISSET(daemon_notifier_fd, &fds))
 	  {
-	  FD_CLR(daemon_notifier_fd, &fds);
 	  sigalrm_seen = daemon_notification();
 	  break;	/* to top of daemon loop */
 	  }
-        for (int sk = 0; sk < listen_socket_count; sk++)
+	while (check_lsk < listen_socket_count)
+	  {
+	  int sk = check_lsk++;
           if (FD_ISSET(listen_sockets[sk], &fds))
             {
-            len = sizeof(accepted);
+	    EXIM_SOCKLEN_T len = sizeof(accepted);
             accept_socket = accept(listen_sockets[sk],
               (struct sockaddr *)&accepted, &len);
-            FD_CLR(listen_sockets[sk], &fds);
             break;
             }
+	  }
 	}
 
       /* If select or accept has failed and this was not caused by an
@@ -2526,18 +2524,18 @@ for (;;)
         else if (  errno != accept_retry_errno
 		|| select_failed != accept_retry_select_failed
 		|| accept_retry_count >= 50)
-            {
-            log_write(0, LOG_MAIN | (accept_retry_count >= 50 ? LOG_PANIC : 0),
-              "%d %s() failure%s: %s",
-              accept_retry_count,
-              accept_retry_select_failed ? "select" : "accept",
-              accept_retry_count == 1 ? "" : "s",
-              strerror(accept_retry_errno));
-            log_close_all();
-            accept_retry_count = 0;
-            accept_retry_errno = errno;
-            accept_retry_select_failed = select_failed;
-            }
+	  {
+	  log_write(0, LOG_MAIN | (accept_retry_count >= 50 ? LOG_PANIC : 0),
+	    "%d %s() failure%s: %s",
+	    accept_retry_count,
+	    accept_retry_select_failed ? "select" : "accept",
+	    accept_retry_count == 1 ? "" : "s",
+	    strerror(accept_retry_errno));
+	  log_close_all();
+	  accept_retry_count = 0;
+	  accept_retry_errno = errno;
+	  accept_retry_select_failed = select_failed;
+	  }
         accept_retry_count++;
         }
       else if (accept_retry_count > 0)
