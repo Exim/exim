@@ -1607,14 +1607,12 @@ expire = now = 0;
 
 /* Parse the signing specification */
 
-if (  !(identity = string_nextinlist(&signspec, &sep, NULL, 0)) || !*identity
-   || !(selector = string_nextinlist(&signspec, &sep, NULL, 0)) || !*selector
-   || !(privkey = string_nextinlist(&signspec, &sep, NULL, 0))  || !*privkey
-   )
-  {
-  s = !*identity ? US"identity" : !*selector ? US"selector" : US"private-key";
-  goto bad_arg_ret;
-  }
+if (!(identity = string_nextinlist(&signspec, &sep, NULL, 0)) || !*identity)
+  { s = US"identity"; goto bad_arg_ret; }
+if (!(selector = string_nextinlist(&signspec, &sep, NULL, 0)) || !*selector)
+  { s = US"selector"; goto bad_arg_ret; }
+if (!(privkey = string_nextinlist(&signspec, &sep, NULL, 0))  || !*privkey)
+  { s = US"privkey"; goto bad_arg_ret; }
 if (!arc_valid_id(identity))
   { s = US"identity"; goto bad_arg_ret; }
 if (!arc_valid_id(selector))

@@ -220,7 +220,7 @@ const uschar * state;
 uschar buf[24];
 socks_opts proxies[32];			/* max #proxies handled */
 unsigned nproxies;
-socks_opts * sob;
+socks_opts * sob = NULL;
 unsigned size;
 blob early_data;
 
@@ -257,6 +257,7 @@ for (nproxies = 0;
   while ((option = string_nextinlist(&proxy_spec, &subsep, NULL, 0)))
     socks_option(sob, option);
   }
+if (!sob) return -1;
 
 /* Set up the socks protocol method-selection message,
 for sending on connection */
