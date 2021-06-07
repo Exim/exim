@@ -2504,7 +2504,7 @@ for (;;)
           if (FD_ISSET(lfd, &fds))
             {
 	    EXIM_SOCKLEN_T alen = sizeof(accepted);
-#if defined(TCP_INFO)
+#ifdef TCP_INFO
 	    struct tcp_info ti;
 	    socklen_t tlen = sizeof(ti);
 
@@ -2514,16 +2514,17 @@ for (;;)
 	    if (  smtp_backlog_monitor > 0
 	       && getsockopt(lfd, IPPROTO_TCP, TCP_INFO, &ti, &tlen) == 0)
 	      {
-	      DEBUG(D_interface) debug_printf("listen fd %d queue max %u curr %u\n",
 # ifdef EXIM_HAVE_TCPI_UNACKED
+	      DEBUG(D_interface) debug_printf("listen fd %d queue max %u curr %u\n",
 		      lfd, ti.tcpi_sacked, ti.tcpi_unacked);
 	      smtp_listen_backlog = ti.tcpi_unacked;
 # elif defined(__FreeBSD__)	/* This does not work. Investigate kernel sourcecode. */
+	      DEBUG(D_interface) debug_printf("listen fd %d queue max %u curr %u\n",
 		      lfd, ti.__tcpi_sacked, ti.__tcpi_unacked);
 	      smtp_listen_backlog = ti.__tcpi_unacked;
 # endif
-#endif
 	      }
+#endif
             accept_socket = accept(lfd, (struct sockaddr *)&accepted, &alen);
             break;
             }
