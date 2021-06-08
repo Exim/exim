@@ -1813,8 +1813,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
 #ifdef IPV6_V6ONLY
     if (af == AF_INET6 && wildcard &&
-        setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, CS (&on),
-          sizeof(on)) < 0)
+        setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on)) < 0)
       log_write(0, LOG_MAIN, "Setting IPV6_V6ONLY on daemon's IPv6 wildcard "
         "socket failed (%s): carrying on without it", strerror(errno));
 #endif  /* IPV6_V6ONLY */
@@ -1823,16 +1822,14 @@ if (f.daemon_listen && !f.inetd_wait_mode)
     is being handled.  Without this, a connection will prevent reuse of the
     smtp port for listening. */
 
-    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR,
-                   US (&on), sizeof(on)) < 0)
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "setting SO_REUSEADDR on socket "
         "failed when starting daemon: %s", strerror(errno));
 
     /* Set TCP_NODELAY; Exim does its own buffering. There is a switch to
     disable this because it breaks some broken clients. */
 
-    if (tcp_nodelay) setsockopt(fd, IPPROTO_TCP, TCP_NODELAY,
-      US (&on), sizeof(on));
+    if (tcp_nodelay) setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on));
 
     /* Now bind the socket to the required port; if Exim is being restarted
     it may not always be possible to bind immediately, even with SO_REUSEADDR
@@ -1972,17 +1969,6 @@ if (f.running_in_test_harness || write_pid)
   if (!operate_on_pid_file(operation, getpid()))
     DEBUG(D_any) debug_printf("%s pid file %s: %s\n", (operation == PID_WRITE) ? "write" : "check", pid_file_path, strerror(errno));
   }
-
-/* Add ancillary sockets to the set for select */
-
-#ifndef DISABLE_TLS
-if (tls_watch_fd >= 0)
-  add_listener_socket(tls_watch_fd, &select_listen, &listen_fd_max);
-#endif
-if (daemon_notifier_fd >= 0)
-  add_listener_socket(daemon_notifier_fd, &select_listen, &listen_fd_max);
-
-listen_fd_max++;
 
 /* Set up the handler for SIGHUP, which causes a restart of the daemon. */
 
@@ -2198,6 +2184,17 @@ spf_init();
 #ifndef DISABLE_TLS
 tls_daemon_init();
 #endif
+
+/* Add ancillary sockets to the set for select */
+
+#ifndef DISABLE_TLS
+if (tls_watch_fd >= 0)
+  add_listener_socket(tls_watch_fd, &select_listen, &listen_fd_max);
+#endif
+if (daemon_notifier_fd >= 0)
+  add_listener_socket(daemon_notifier_fd, &select_listen, &listen_fd_max);
+
+listen_fd_max++;
 
 /* Close the log so it can be renamed and moved. In the few cases below where
 this long-running process writes to the log (always exceptional conditions), it
