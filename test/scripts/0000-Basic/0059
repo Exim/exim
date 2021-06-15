@@ -1,5 +1,6 @@
 # Relay by hostlist !*
 exim -bh V4NET.0.0.1
+helo test
 mail from:<userx@somehost.example.com>
 rcpt to:<userx@test.ex>
 rcpt to:<userx@anotherhost.example.com>

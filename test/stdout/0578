@@ -1,16 +1,20 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.1]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.1]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.1]
 250 OK
 451 Could not complete sender verify callout
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.1]
 250 OK
 550-Verification failed for <bad@localhost>
 550-Called:   127.0.0.1
@@ -19,12 +23,14 @@
 550 Sender verify failed
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.1]
 250 OK
 550-Verification failed for <bad@localhost>
 550-Previous (cached) callout verification failure
 550 Sender verify failed
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.1]
 250 OK
 550-Callback setup failed while verifying <ok@localhost>
 550-Called:   127.0.0.1
@@ -38,6 +44,7 @@
 550 Sender verify failed
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.1]
 250 OK
 550-Callback setup failed while verifying <ok@localhost>
 550-(result of an earlier callout reused).
@@ -49,6 +56,7 @@
 550 Sender verify failed
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.2]
 250 OK
 550-Postmaster verification failed while checking <ok@otherhost>
 550-Called:   127.0.0.1
@@ -60,6 +68,7 @@
 550 Sender verify failed
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.2]
 250 OK
 550-Postmaster verification failed while checking <ok@otherhost>
 550-(result of earlier verification reused).
@@ -69,82 +78,101 @@
 550 Sender verify failed
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.2]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.2]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.3]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.3]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.4]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.4]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.4]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.4]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.2]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.2]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.3]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.3]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.3]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.5]
 250 OK
 451 Could not complete sender verify callout
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.6]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.7]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmaX-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.8]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmaY-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.9]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.10]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection

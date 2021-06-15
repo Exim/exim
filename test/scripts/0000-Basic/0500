@@ -1,11 +1,13 @@
 # predata ACL
 exim -odi -bs
+helo test
 mail from:<x@y>
 rcpt to:<userx@y>
 data
 quit
 ****
 exim -odi -bs
+helo test
 mail from:<postmaster@y>
 rcpt to:<userx@y>
 data

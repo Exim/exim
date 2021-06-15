@@ -16,6 +16,7 @@ QUIT
 ****
 #
 exim -bs -odi
+helo test
 mail from:<userg@ok.example>
 rcpt to:<userg@test.ex>
 quit
@@ -39,6 +40,7 @@ QUIT
 ****
 #
 exim -bs -odi
+helo test
 mail from:<userh@ok.example>
 rcpt to:<userh@test.ex>
 data

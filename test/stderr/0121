@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
@@ -19,8 +20,8 @@
 >>> ----------- end verify ------------
 >>> require: condition test failed in ACL "check_recipient"
 >>> end of ACL "check_recipient": not OK
-LOG: H=[127.0.0.1] sender verify fail for <unknown@test.ex>: Unrouteable address
-LOG: H=[127.0.0.1] F=<unknown@test.ex> rejected RCPT <userx@test.ex>: Sender verify failed
+LOG: H=(test) [127.0.0.1] sender verify fail for <unknown@test.ex>: Unrouteable address
+LOG: H=(test) [127.0.0.1] F=<unknown@test.ex> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
@@ -33,8 +34,8 @@ LOG: H=[127.0.0.1] F=<unknown@test.ex> rejected RCPT <userx@test.ex>: Sender ver
 >>> ----------- end verify ------------
 >>> require: condition test failed in ACL "check_recipient"
 >>> end of ACL "check_recipient": not OK
-LOG: H=[127.0.0.1] sender verify fail for <userx@unknown.dom.ain>: unrouteable mail domain "unknown.dom.ain"
-LOG: H=[127.0.0.1] F=<userx@unknown.dom.ain> rejected RCPT <userx@test.ex>: Sender verify failed
+LOG: H=(test) [127.0.0.1] sender verify fail for <userx@unknown.dom.ain>: unrouteable mail domain "unknown.dom.ain"
+LOG: H=(test) [127.0.0.1] F=<userx@unknown.dom.ain> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
@@ -49,8 +50,8 @@ LOG: H=[127.0.0.1] F=<userx@unknown.dom.ain> rejected RCPT <userx@test.ex>: Send
 >>> ----------- end verify ------------
 >>> require: condition test failed in ACL "check_recipient"
 >>> end of ACL "check_recipient": not OK
-LOG: H=[127.0.0.1] sender verify fail for <"unknown with spaces"@test.ex>: Unrouteable address
-LOG: H=[127.0.0.1] F=<"unknown with spaces"@test.ex> rejected RCPT <userx@test.ex>: Sender verify failed
+LOG: H=(test) [127.0.0.1] sender verify fail for <"unknown with spaces"@test.ex>: Unrouteable address
+LOG: H=(test) [127.0.0.1] F=<"unknown with spaces"@test.ex> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
@@ -84,7 +85,7 @@ LOG: H=[127.0.0.1] F=<"unknown with spaces"@test.ex> rejected RCPT <userx@test.e
 >>> no more routers
 >>> require: condition test failed in ACL "check_message"
 >>> end of ACL "check_message": not OK
-LOG: 10HmaX-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
+LOG: 10HmaX-0005vi-00 H=(test) [127.0.0.1] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
@@ -111,7 +112,7 @@ LOG: 10HmaX-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: there
 >>> verifying From: header address <>
 >>> require: condition test failed in ACL "check_message"
 >>> end of ACL "check_message": not OK
-LOG: 10HmaY-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: syntax error in 'From:' header when scanning for sender: missing or malformed local part in "<>"
+LOG: 10HmaY-0005vi-00 H=(test) [127.0.0.1] F=<userx@test.ex> rejected after DATA: syntax error in 'From:' header when scanning for sender: missing or malformed local part in "<>"
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
@@ -125,8 +126,8 @@ LOG: 10HmaY-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: synta
 >>>   message: forced defer
 >>> ----------- end verify ------------
 >>> require: condition test deferred in ACL "check_recipient"
-LOG: H=[127.0.0.1] sender verify defer for <defer@test.ex>: forced defer
-LOG: H=[127.0.0.1] F=<defer@test.ex> temporarily rejected RCPT <userx@test.ex>: Could not complete sender verify
+LOG: H=(test) [127.0.0.1] sender verify defer for <defer@test.ex>: forced defer
+LOG: H=(test) [127.0.0.1] F=<defer@test.ex> temporarily rejected RCPT <userx@test.ex>: Could not complete sender verify
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
@@ -160,7 +161,7 @@ LOG: H=[127.0.0.1] F=<defer@test.ex> temporarily rejected RCPT <userx@test.ex>: 
 >>> defer router: defer for defer@test.ex
 >>>   message: forced defer
 >>> require: condition test deferred in ACL "check_message"
-LOG: 10HmaZ-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> temporarily rejected after DATA: all attempts to verify a sender in a header line deferred
+LOG: 10HmaZ-0005vi-00 H=(test) [127.0.0.1] F=<userx@test.ex> temporarily rejected after DATA: all attempts to verify a sender in a header line deferred
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)

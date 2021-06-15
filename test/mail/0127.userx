@@ -66,7 +66,8 @@ From CALLER@myhost.ex Tue Mar 02 09:44:33 1999
 Return-path: <CALLER@myhost.ex>
 Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
-Received: from CALLER by myhost.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
 	id 10HmbB-0005vi-00
 	for userx@test.ex;
@@ -146,7 +147,8 @@ From CALLER@myhost.ex Tue Mar 02 09:44:33 1999
 Return-path: <CALLER@myhost.ex>
 Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
-Received: from CALLER by myhost.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
 	id 10HmbG-0005vi-00
 	for userx@test.ex;

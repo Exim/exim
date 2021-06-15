@@ -4,6 +4,7 @@
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello test [V4NET.10.10.10]
 250 OK
 250 Accepted
 250 Accepted

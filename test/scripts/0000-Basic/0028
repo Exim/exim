@@ -2,6 +2,7 @@
 #
 # SIZE unset - should reject at DATA time
 exim -bs
+helo test
 mail from:<x@y>
 rcpt to:<userx@test.ex>
 data

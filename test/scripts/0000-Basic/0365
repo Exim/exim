@@ -2,6 +2,7 @@
 need_ipv4
 #
 exim -bs
+helo test
 mail from:<>
 rcpt to:<x@y>
 data
@@ -37,6 +38,7 @@ rset
 quit
 ****
 exim -DDETAILS=true -DSELECTOR=-rejected_header -bs
+helo test
 mail from:<>
 rcpt to:<x@y>
 data

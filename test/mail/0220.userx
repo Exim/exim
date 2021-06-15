@@ -23,7 +23,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 
 From foo@bar Tue Mar 02 09:44:33 1999
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <foo@bar>)
 	id 10HmbA-0005vi-00
 	for userx@test.ex;

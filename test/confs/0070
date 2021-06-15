@@ -9,6 +9,7 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 acl_smtp_rcpt = rcpt
+hosts_require_helo =
 helo_verify_hosts = ten-1.test.ex : ten-3.test.ex : HVH
 helo_try_verify_hosts = ten-2.test.ex
 log_selector = -host_lookup_failed

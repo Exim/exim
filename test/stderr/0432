@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
@@ -47,6 +48,12 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+test in helo_lookup_domains? no (end of list)
+sender_fullhost = (test) [1.2.3.4]
+sender_rcvhost = [1.2.3.4] (helo=test)
+set_process_info: pppp handling incoming connection from (test) [1.2.3.4]
+SMTP>> 250 myhost.test.ex Hello test [1.2.3.4]
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -130,7 +137,7 @@ SMTP>> 250 OK
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from [1.2.3.4] closed by QUIT
+  SMTP connection from (test) [1.2.3.4] closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -157,6 +164,12 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+test in helo_lookup_domains? no (end of list)
+sender_fullhost = (test) [1.2.3.4]
+sender_rcvhost = [1.2.3.4] (helo=test)
+set_process_info: pppp handling incoming connection from (test) [1.2.3.4]
+SMTP>> 250 myhost.test.ex Hello test [1.2.3.4]
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -208,7 +221,7 @@ SMTP>> 250 OK
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from [1.2.3.4] closed by QUIT
+  SMTP connection from (test) [1.2.3.4] closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog? no (option unset)
@@ -219,6 +232,7 @@ search_tidyup called
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
@@ -245,6 +259,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
@@ -291,6 +306,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
@@ -315,5 +331,5 @@ MUNGED: ::1 will be omitted in what follows
 >>> SMTP timeout
 >>> ----------- end verify ------------
 >>> accept: condition test deferred in ACL "mail"
-LOG: H=[1.2.3.4] sender verify defer for <p1@q>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : SMTP timeout after EHLO myhost.test.ex
-LOG: H=[1.2.3.4] temporarily rejected MAIL <p1@q>: Could not complete sender verify callout
+LOG: H=(test) [1.2.3.4] sender verify defer for <p1@q>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : SMTP timeout after EHLO myhost.test.ex
+LOG: H=(test) [1.2.3.4] temporarily rejected MAIL <p1@q>: Could not complete sender verify callout

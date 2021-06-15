@@ -640,6 +640,7 @@ extern uschar *host_lookup_order;      /* Order of host lookup types */
 extern uschar *host_lookup_msg;        /* Text for why it failed */
 extern int     host_number;            /* For sharing spools */
 extern uschar *host_number_string;     /* For expanding */
+extern uschar *hosts_require_helo;     /* check for HELO/EHLO before MAIL */
 extern uschar *host_reject_connection; /* Reject these hosts */
 extern tree_node *hostlist_anchor;     /* Tree of defined host lists */
 extern int     hostlist_count;         /* Number defined */
@@ -963,6 +964,7 @@ extern FILE   *smtp_in;                /* Incoming SMTP input file */
 extern int     smtp_listen_backlog;    /* Current listener socket backlog, if monitored */
 extern int     smtp_load_reserve;      /* Only from reserved if load > this */
 extern int     smtp_mailcmd_count;     /* Count of MAIL commands */
+extern int     smtp_mailcmd_max;       /* Limit for MAIL commands */
 extern int     smtp_max_synprot_errors;/* Max syntax/protocol errors */
 extern int     smtp_max_unknown_commands; /* As it says */
 extern uschar *smtp_names[];	       /* decode for command codes */

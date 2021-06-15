@@ -4,6 +4,7 @@
 no_msglog_check
 #
 exim -bs
+HELO test
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO: <normal@test.ex>
 DATA
@@ -44,6 +45,7 @@ exim -DSERVER=server -qGlowpri/3s
 ****
 sleep 1
 exim -bs
+HELO test
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO: <lowpri@test.ex>
 DATA
@@ -58,6 +60,7 @@ killdaemon
 #
 # third-party queue transfer
 exim -bs
+HELO test
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO: <alternate@test.ex>
 DATA
@@ -76,6 +79,7 @@ exim -q
 # Native queue transfer
 ### load messages
 exim -bs
+HELO test
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO: <normal@test.ex>
 DATA

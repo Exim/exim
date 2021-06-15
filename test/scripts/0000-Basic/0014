@@ -29,6 +29,7 @@ To: userx, jules@box1.plc.example,
 Reply-to: jules@box3.plc.example   
 ****
 exim -odi -bs -oMa 10.0.0.2
+helo test
 mail from:<jules@box3.plc.example>
 rcpt to:<userx@test.ex>
 quit

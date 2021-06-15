@@ -12,6 +12,8 @@ exim -d-all+acl -DSERVER=server -odq -bd -oX PORT_D
 # Server delays 4s before accepting RCPT
 client 127.0.0.1 PORT_D
 ??? 220
+helo test
+??? 250
 mail from:<x@y.test.ex>
 ??? 250
 rcpt to:<delay4_accept@y.test.ex>
@@ -24,6 +26,8 @@ quit
 # but client closes connection
 client 127.0.0.1 PORT_D
 ??? 220
+helo test
+??? 250
 mail from:<x@y.test.ex>
 ??? 250
 rcpt to:<delay4_accept@y.test.ex>

@@ -14,6 +14,7 @@ r4: $local_part_data = LOCAL PART DATA
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "a1"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check domains = +test_domains
@@ -33,4 +34,4 @@ r4: $local_part_data = LOCAL PART DATA
 >>>   message: \$domain_data=$domain_data \$local_part_data=$local_part_data
 >>> deny: condition test succeeded in ACL "a1"
 >>> end of ACL "a1": DENY
-LOG: H=[V4NET.0.0.0] F=<a@b.c> rejected RCPT xxx@a.b.c: $domain_data=DOMAIN DATA $local_part_data=LOCAL PART DATA
+LOG: H=(test) [V4NET.0.0.0] F=<a@b.c> rejected RCPT xxx@a.b.c: $domain_data=DOMAIN DATA $local_part_data=LOCAL PART DATA

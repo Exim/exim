@@ -9,6 +9,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 93)
 >>> check verify = recipient/callout
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -62,7 +63,7 @@
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
-LOG: unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
+LOG: unexpected disconnection while reading SMTP command from (test) [127.0.0.1] D=qqs
 ### TLSA (2 0 1) (DANE-TA CERT SHA2-256)
 ### TLSA (2 1 1)
 ### A server with a nonverifying cert and no TLSA

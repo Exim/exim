@@ -17,6 +17,7 @@ QUIT
 221 bye
 ****
 exim -odf -bs
+helo test
 mail from:<postmaster@y>
 rcpt to:<x@y>
 data
@@ -45,6 +46,7 @@ QUIT
 221 bye
 ****
 exim -odf -bs
+helo test
 mail from:<postmaster@y>
 rcpt to:<x@test.ex>
 data

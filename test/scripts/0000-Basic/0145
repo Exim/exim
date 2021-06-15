@@ -3,11 +3,13 @@
 exim -bt x@mxt10.test.ex
 ****
 exim -bh V4NET.9.8.7
+helo test
 mail from:<x@mxt10.test.ex>
 rcpt to:<x@y>
 quit
 ****
 exim -bh V4NET.9.8.7
+helo test
 mail from:<x@ten-1.test.ex>
 rcpt to:<x@mxt10.test.ex>
 quit

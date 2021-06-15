@@ -994,6 +994,7 @@ uschar *host_reject_connection = NULL;
 tree_node *hostlist_anchor     = NULL;
 int     hostlist_count         = 0;
 uschar *hosts_treat_as_local   = NULL;
+uschar *hosts_require_helo     = US"*";
 uschar *hosts_connection_nolog = NULL;
 
 int     ignore_bounce_errors_after = 10*7*24*60*60;  /* 10 weeks */
@@ -1487,6 +1488,7 @@ FILE   *smtp_in                = NULL;
 int     smtp_listen_backlog    = 0;
 int     smtp_load_reserve      = -1;
 int     smtp_mailcmd_count     = 0;
+int     smtp_mailcmd_max       = -1;
 FILE   *smtp_out               = NULL;
 uschar *smtp_etrn_command      = NULL;
 int     smtp_max_synprot_errors= 3;

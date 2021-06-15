@@ -1,5 +1,5 @@
 From x@y.x Tue Mar 02 09:44:33 1999
-Received: from [ip4.ip4.ip4.ip4] (port=1113)
+Received: from [ip4.ip4.ip4.ip4] (port=1113 helo=test)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y.x>)
 	id 10HmaY-0005vi-00
@@ -9,7 +9,7 @@ Port: 1113
 
 
 From x@y.x Tue Mar 02 09:44:33 1999
-Received: from [127.0.0.1] (port=1114)
+Received: from [127.0.0.1] (port=1114 helo=test)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y.x>)
 	id 10HmaZ-0005vi-00
@@ -29,7 +29,7 @@ Port: 1115
 
 
 From x@y.x Tue Mar 02 09:44:33 1999
-Received: from [V4NET.9.8.7] (port=1111 ident=root)
+Received: from [V4NET.9.8.7] (port=1111 helo=test ident=root)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y.x>)
 	id 10HmaX-0005vi-00

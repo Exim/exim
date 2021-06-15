@@ -29,6 +29,7 @@ test message data
 quit
 ****
 exim -odi -bs
+helo test
 mail from:<postmaster@exim.test.ex>
 rcpt to:<userx@exim.test.ex>
 data

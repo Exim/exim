@@ -6,6 +6,7 @@ exim -bd -DSERVER=server -oX PORT_D
 ****
 # cmdline -bs send, rcpt-time defer
 exim -bs
+helo test
 mail from:<>
 rcpt to:<rcpt_defer@test.ex>
 quit
@@ -14,6 +15,7 @@ sleep 3
 #
 # cmdline -bs send, data-time defer
 exim -bs
+helo test
 mail from:<>
 rcpt to:<data_defer@test.ex>
 data

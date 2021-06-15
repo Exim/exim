@@ -55,6 +55,8 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<userx@test.ex>
 ??? 250
 rcpt to:<userx@test.ex>
@@ -74,6 +76,8 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<userx@test.ex>
 ??? 250
 rcpt to:<userx@test.ex>
@@ -110,6 +114,8 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<userx@test.ex>
 ??? 250
 rcpt to:<userx@test.ex>
@@ -153,6 +159,8 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<userx@test.ex>
 ??? 250
 rcpt to:<userx@test.ex>
@@ -172,6 +180,8 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<userx@test.ex>
 ??? 250
 rcpt to:<userx@test.ex>

@@ -52,6 +52,7 @@ ${lookup pgsql {SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');}}
 ${lookup pgsql {delete from them where id='aaaa'}}
 ****
 exim -d -bh 10.0.0.0
+helo test
 mail from:<a@b>
 rcpt to:<c@d>
 rcpt to:<c@d>

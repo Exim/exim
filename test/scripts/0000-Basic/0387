@@ -1,5 +1,6 @@
 # Partial matching and lookup name decoding
 exim -bs
+helo test
 mail from:<x@a.b.c>
 rcpt to:<x@y>
 rset
@@ -8,16 +9,19 @@ rcpt to:<x@y>
 quit
 ****
 exim -bs -oMa 10.9.8.7
+helo test
 mail from:<x@b.c.a>
 rcpt to:<x@y>
 quit
 ****
 exim -bs -oMa 192.168.4.5
+helo test
 mail from:<x@b.c.a>
 rcpt to:<x@y>
 quit
 ****
 exim -bs -oMa 1.2.3.4
+helo test
 mail from:<x@b.c.a>
 rcpt to:<x@y>
 quit

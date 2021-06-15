@@ -1,5 +1,6 @@
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
-Received: from CALLER by mail.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by mail.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
 	for x@local;

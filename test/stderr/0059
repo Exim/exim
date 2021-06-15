@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -33,5 +34,5 @@
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
-LOG: H=[V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
-LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=[V4NET.0.0.1] P=smtp S=sss
+LOG: H=(test) [V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
+LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.0.0.1] P=smtp S=sss

@@ -14,6 +14,7 @@ tls_advertise_hosts = *
 tls_certificate = DIR/aux-fixed/cert1
 tls_privatekey = DIR/aux-fixed/cert1
 tls_remember_esmtp = REMEMBER
+hosts_require_helo =
 
 
 # ----- Authenticators -----

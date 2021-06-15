@@ -2,6 +2,7 @@
 #
 # Syntax OK, non-null sender => should be accepted
 exim -odq -bs
+helo test
 mail from:<x@y>
 rcpt to:<x@y>
 data
@@ -11,6 +12,7 @@ quit
 ****
 # Syntax error in header => should fail
 exim -odq -bs
+helo test
 mail from:<x@y>
 rcpt to:<x@y>
 data
@@ -22,6 +24,7 @@ quit
 ****
 # Syntax error (version 2) in header => should fail
 exim -odq -bs
+helo test
 mail from:<x@y>
 rcpt to:<x@y>
 data
@@ -35,6 +38,7 @@ quit
 ****
 # Syntax error in header => should fail even with null sender
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<x@y>
 data
@@ -46,6 +50,7 @@ quit
 ****
 # Null sender, invalid sender in header => fail
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<x@y>
 data
@@ -57,6 +62,7 @@ quit
 ****
 # Null sender, valid sender in header => accept
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<x@y>
 data
@@ -69,6 +75,7 @@ quit
 ****
 # Syntax OK, non-null sender, but bad data => reject
 exim -odq -bs
+helo test
 mail from:<x@y>
 rcpt to:<x@y>
 data
@@ -78,6 +85,7 @@ quit
 ****
 # Syntax OK, non-null sender, good data
 exim -odi -bs
+helo test
 mail from:<x@y>
 rcpt to:<userx@test.ex>
 data
@@ -87,6 +95,7 @@ quit
 ****
 # -bh test: Syntax error in header => should fail
 exim -bh 10.0.0.0
+helo test
 mail from:<x@y>
 rcpt to:<x@y>
 data
@@ -98,6 +107,7 @@ quit
 ****
 # -bh test: Syntax OK, non-null sender, but bad data => reject
 exim -bh 10.0.0.0
+helo test
 mail from:<x@y>
 rcpt to:<x@y>
 data
@@ -107,6 +117,7 @@ quit
 ****
 # Group syntax in reply-to header
 exim -odi -bs
+helo test
 mail from:<x@y>
 rcpt to:<userx@test.ex>
 data
@@ -120,6 +131,7 @@ quit
 # Group syntax in reply-to header, but no address (falls back to From: for
 # header_sender check - From: is valid)
 exim -odi -bs
+helo test
 mail from:<>
 rcpt to:<userx@test.ex>
 data
@@ -134,6 +146,7 @@ quit
 # Group syntax in reply-to header, but no address (falls back to From: for
 # header_sender check - but there is no From:)
 exim -odi -bs
+helo test
 mail from:<>
 rcpt to:<userx@test.ex>
 data

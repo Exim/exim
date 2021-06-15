@@ -2,7 +2,8 @@ From CALLER@the.local.host.name Tue Mar 02 09:44:33 1999
 Return-path: <CALLER@the.local.host.name>
 Envelope-to: CALLER@the.local.host.name
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
-Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
 	id 10HmaX-0005vi-00
 	for CALLER@the.local.host.name;
@@ -19,7 +20,7 @@ From: CALLER@the.local.host.name
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-local-user: uid=CALLER_UID gid=CALLER_GID
 X-body-linecount: 3
-X-message-linecount: 18
+X-message-linecount: 19
 X-received-count: 1
 
 This is a test message.
@@ -30,7 +31,8 @@ From CALLER@the.local.host.name Tue Mar 02 09:44:33 1999
 Return-path: <CALLER@the.local.host.name>
 Envelope-to: CALLER@the.local.host.name
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
-Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
 	id 10HmaY-0005vi-00
 	for CALLER@the.local.host.name;
@@ -41,7 +43,7 @@ From: CALLER@the.local.host.name
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-local-user: uid=CALLER_UID gid=CALLER_GID
 X-body-linecount: 1
-X-message-linecount: 10
+X-message-linecount: 11
 X-received-count: 1
 
 This is a second test message.

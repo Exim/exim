@@ -1,5 +1,6 @@
 # .. in header lines (SMTP and otherwise)
 exim -bs
+HELO test
 MAIL FROM:<userx@test.ex>
 RCPT TO:<userx@test.ex>
 DATA
@@ -11,6 +12,7 @@ This line follows ..
 quit
 ****
 exim -bs
+HELO test
 MAIL FROM:<userx@test.ex>
 RCPT TO:<userx@test.ex>
 DATA

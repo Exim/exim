@@ -1,5 +1,6 @@
 # Caseless address blocking
 exim -bh 1.1.1.1
+helo test
 mail from:<a@b.c>
 rcpt to:<x@test.ex>
 rset

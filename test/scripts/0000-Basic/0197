@@ -6,6 +6,7 @@ Test one.
 .
 ****
 exim -odi -bs
+helo test
 mail from:<doesn't@matter>
 rcpt to:<x@copy.domain>
 rcpt to:<y@copy.domain>

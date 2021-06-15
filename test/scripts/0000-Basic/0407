@@ -15,6 +15,7 @@ exim -DHEADER_MAXSIZE=header_maxsize=2M x@y <DIR/test-data
 exim -DHEADER_MAXSIZE=header_maxsize=2M -DHEADER_LINE_MAXSIZE=header_line_maxsize=1024 x@y <DIR/test-data
 ****
 exim -DHEADER_LINE_MAXSIZE=header_line_maxsize=20 -bs
+helo test
 mail from:<x@y>
 rcpt to:<x@y>
 data

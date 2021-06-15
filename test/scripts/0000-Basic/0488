@@ -1,5 +1,6 @@
 # Multiple headers in one warn message
 exim -odq -bs
+HELO test
 MAIL FROM:<>
 RCPT TO:<userx@test.ex>
 DATA

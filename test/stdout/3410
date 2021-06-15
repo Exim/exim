@@ -4,6 +4,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [5.6.9.1]
 250 OK
 550 You must authenticate
 250 Reset OK
@@ -23,6 +24,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [5.6.10.1]
 250 OK
 550 Administrative prohibition
 250 Reset OK

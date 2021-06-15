@@ -24,6 +24,12 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
 mail from:<CALLER@test.ex>
 ??? 250
 rcpt to:<CALLER@test.ex>
@@ -47,6 +53,8 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<"name with spaces"@test.ex>
 ??? 250
 rcpt to:<CALLER@test.ex>
@@ -94,6 +102,8 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<CALLER@test.ex>
 ??? 250
 rcpt to:<CALLER@test.ex>
@@ -124,6 +134,8 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<CALLER@test.ex>
 ??? 250
 rcpt to:<CALLER@test.ex>
@@ -151,6 +163,8 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<CALLER@test.ex>
 ??? 250
 rcpt to:<CALLER@test.ex>

@@ -5,6 +5,7 @@ exim -DSERVER=server -bd -oX PORT_D
 ****
 #
 exim -bs
+HELO test
 MAIL FROM:<t1@dustyshoes.tld>
 RCPT TO:<fred@anotherone.tld>
 DATA

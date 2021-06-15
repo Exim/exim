@@ -1,5 +1,6 @@
 # Extra ACLs: freeze/defer/drop/queue/delay/$host_data
 exim -d -bh V4NET.9.8.7
+helo test
 mail from:<x@y>
 rcpt to:<warn_empty@test.ex>
 data
@@ -9,6 +10,7 @@ Testing
 quit
 ****
 exim -d -bh V4NET.9.8.7
+helo test
 mail from:<x@y>
 rcpt to:<warn_log@test.ex>
 data
@@ -18,6 +20,7 @@ Testing
 quit
 ****
 exim -d -bh V4NET.9.8.7
+helo test
 mail from:<x@y>
 rcpt to:<warn_user@test.ex>
 data
@@ -27,6 +30,7 @@ Testing
 quit
 ****
 exim -bh V4NET.9.8.7
+helo test
 mail from:<x@y>
 rcpt to:<defer@y>
 rcpt to:<accept@y>
@@ -35,17 +39,20 @@ rcpt to:<rhubarb@y>
 quit
 ****
 exim -bh V4NET.9.8.7
+helo test
 mail from:<>
 rcpt to:<defer_senders@y>
 quit
 ****
 exim -bh V4NET.9.8.7
+helo test
 mail from:<x@y>
 rcpt to:<delay_accept@y>
 rcpt to:<delay_warn@y>
 quit
 ****
 exim -bh V4NET.9.8.7
+helo test
 mail from:<x@y>
 rcpt to:<host_check@y>
 rcpt to:<host_check@y>
@@ -54,6 +61,7 @@ rcpt to:<host_check2@y>
 quit
 ****
 exim -bs -N -odi
+helo test
 mail from:<x@y>
 rcpt to:<accept@y>
 rcpt to:<freeze@y>
@@ -83,12 +91,14 @@ Testing 4
 quit
 ****
 exim -bh V4NET.9.8.7
+helo test
 mail from:<x@y>
 rcpt to:<nested_drop@y>
 rcpt to:<rhubarb@y>
 quit
 ****
 exim -bh V4NET.9.8.7
+helo test
 mail from:<x@y>
 rcpt to:<nested_drop_require@y>
 rcpt to:<rhubarb@y>
@@ -100,6 +110,8 @@ exim -DSERVER=server -odq -bd -oX PORT_D
 ****
 client -t5 127.0.0.1 PORT_D
 ??? 220
+helo test
+??? 250
 mail from:<x@y>
 ??? 250
 rcpt to:<accept@y>

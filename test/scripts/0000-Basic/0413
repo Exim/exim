@@ -33,6 +33,7 @@ QUIT
 250 OK
 ****
 exim -odi -bs
+helo test
 mail from:<r1@domain1>
 rset
 mail from:<r2@domain2>

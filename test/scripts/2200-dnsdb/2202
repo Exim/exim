@@ -1,6 +1,7 @@
 # dns_again_means_nonexist
 munge dnssec
 exim -d -bh HOSTIPV4
+helo test
 mail from:<xx@cioce.test.again.dns>
 rcpt to:<a@b>
 quit

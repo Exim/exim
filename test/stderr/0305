@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl1"
 >>> processing "accept" (TESTSUITE/test-config 18)
 >>> check domains = +ok_domains
@@ -20,4 +21,4 @@
 >>> junk.junk in "+ok_domains"? no (end of list)
 >>> accept: condition test failed in ACL "acl1"
 >>> end of ACL "acl1": implicit DENY
-LOG: H=[V4NET.2.3.4] F=<x@y> rejected RCPT <x@junk.junk>
+LOG: H=(test) [V4NET.2.3.4] F=<x@y> rejected RCPT <x@junk.junk>

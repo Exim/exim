@@ -5,6 +5,7 @@ exim -odi userx
 From foo@bar Fri Jan  5 12:35 GMT 1996
 ****
 exim -odi -bs
+HELO test
 MAIL FROM:<foo@bar>
 RCPT TO:<userx@test.ex>
 DATA

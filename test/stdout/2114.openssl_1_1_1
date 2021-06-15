@@ -92,6 +92,9 @@ Key file = aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com
 <<< 220 TLS go ahead
 Attempting to start TLS
 Succeeded in starting TLS
+>>> helo test
+??? 250
+<<< 250 myhost.test.ex Hello test [ip4.ip4.ip4.ip4]
 >>> mail from:<userx@test.ex>
 ??? 250
 <<< 250 OK
@@ -126,6 +129,9 @@ Key file = aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com
 <<< 220 TLS go ahead
 Attempting to start TLS
 Succeeded in starting TLS
+>>> helo test
+??? 250
+<<< 250 myhost.test.ex Hello test [127.0.0.1]
 >>> mail from:<userx@test.ex>
 ??? 250
 <<< 250 OK
@@ -192,6 +198,9 @@ Key file = aux-fixed/exim-ca/example.net/server1.example.net/server1.example.net
 <<< 220 TLS go ahead
 Attempting to start TLS
 Succeeded in starting TLS
+>>> helo test
+??? 250
+<<< 250 myhost.test.ex Hello test [127.0.0.1]
 >>> mail from:<userx@test.ex>
 ??? 250
 <<< 250 OK
@@ -258,6 +267,9 @@ Key file = aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.c
 <<< 220 TLS go ahead
 Attempting to start TLS
 Succeeded in starting TLS
+>>> helo test
+??? 250
+<<< 250 myhost.test.ex Hello test [127.0.0.1]
 >>> mail from:<userx@test.ex>
 ??? 250
 <<< 250 OK
@@ -292,6 +304,9 @@ Key file = aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com
 <<< 220 TLS go ahead
 Attempting to start TLS
 Succeeded in starting TLS
+>>> helo test
+??? 250
+<<< 250 myhost.test.ex Hello test [ip4.ip4.ip4.ip4]
 >>> mail from:<userx@test.ex>
 ??? 250
 <<< 250 OK

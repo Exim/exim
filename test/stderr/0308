@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_0_0"
 >>> processing "accept" (TESTSUITE/test-config 17)
 >>> check hosts = *.test.ex
@@ -27,6 +28,7 @@ LOG: no host name found for IP address V4NET.0.0.97
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_0_0"
 >>> processing "accept" (TESTSUITE/test-config 17)
 >>> check hosts = *.test.ex

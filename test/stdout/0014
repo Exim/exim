@@ -63,6 +63,7 @@ reply-to: jules@box3.plc.example
 env-from: "jules@box3.plc.example-is-not-known"@plc.example
   env-to: unknown@plc.example
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test [10.0.0.2]
 250 OK
 550-Verification failed for <"jules@box3.plc.example-is-not-known"@plc.example>
 550-Unrouteable mail domain "plc.example"

@@ -22,6 +22,7 @@ Sender: Sender in original <sender@original.ex>
 This is a test message 4.
 ****
 exim -bs -odi
+helo test
 mail from:userx@cus.cam.ac.uk
 rcpt to:userx@test.ex
 data
@@ -63,6 +64,7 @@ From: From person <from@some.where>
 This is a test message 10.
 ****
 exim -bs -odi
+helo test
 mail from:userx@somehost.test.ex
 rcpt to:userx@test.ex
 data

@@ -1,6 +1,7 @@
 # verify = header_names_ascii
 # 1. Headers are good, make sure no misfires.
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@exim.test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -24,6 +25,7 @@ QUIT
 ****
 # 2. A non-ASCII in header name, uses default rejection message
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@exim.test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -48,6 +50,7 @@ QUIT
 # 3. A non-ASCII character in header name, different from sets an acl variable
 #    causing custom log message
 exim -bh V4NET.10.10.10
+helo test
 mail from:<usery@exim.test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -71,6 +74,7 @@ QUIT
 ****
 # 4. A non-ASCII character in header name, uses default rejection message
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@exim.test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -94,6 +98,7 @@ QUIT
 ****
 # 5. Headers are good, Unicode in message body, make sure no misfires.
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@exim.test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -120,6 +125,7 @@ QUIT
 # 6. Headers are good, Unicode in a header content *and* message body,
 #    make sure no misfires.
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@exim.test.ex>
 rcpt to:<userx@test.ex>
 data

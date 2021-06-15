@@ -8,6 +8,7 @@ LOG: no host name found for IP address V4NET.11.12.13
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> check hosts = :
@@ -28,7 +29,7 @@ LOG: no host name found for IP address V4NET.11.12.13
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
-LOG: H=[V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
+LOG: H=(test) [V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? yes (matched "0.0.0.0/0")
 >>> looking up host name for V4NET.0.0.1
@@ -60,7 +61,7 @@ LOG: H=[V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: rel
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
-LOG: H=ten-1.test.ex [V4NET.0.0.1] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
+LOG: H=ten-1.test.ex (test) [V4NET.0.0.1] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -107,6 +108,11 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+sender_fullhost = oneback.test.ex (test) [V4NET.99.99.90]
+sender_rcvhost = oneback.test.ex ([V4NET.99.99.90] helo=test)
+set_process_info: pppp handling incoming connection from oneback.test.ex (test) [V4NET.99.99.90]
+SMTP>> 250 the.local.host.name Hello oneback.test.ex [V4NET.99.99.90]
 SMTP<< mail from:<userx@test.ex>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -147,10 +153,10 @@ deny: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": DENY
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
-  H=oneback.test.ex [V4NET.99.99.90] F=<userx@test.ex> rejected RCPT <userx@cam.ac.uk>: relay not permitted
+  H=oneback.test.ex (test) [V4NET.99.99.90] F=<userx@test.ex> rejected RCPT <userx@cam.ac.uk>: relay not permitted
 SMTP<< quit
 SMTP>> 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from oneback.test.ex [V4NET.99.99.90] closed by QUIT
+  SMTP connection from oneback.test.ex (test) [V4NET.99.99.90] closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

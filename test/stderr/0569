@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
@@ -26,7 +27,7 @@
 >>> processing "accept" (TESTSUITE/test-config 27)
 >>> accept: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": ACCEPT
-LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
+LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -35,6 +36,7 @@ LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
@@ -53,7 +55,7 @@ LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> check verify = header_names_ascii
 >>> require: condition test failed in ACL "check_message"
 >>> end of ACL "check_message": not OK
-LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "﻿Received" found
+LOG: 10HmbA-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "﻿Received" found
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -62,6 +64,7 @@ LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
@@ -80,7 +83,7 @@ LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> check verify = header_names_ascii
 >>> require: condition test failed in ACL "check_message"
 >>> end of ACL "check_message": not OK
-LOG: 10HmbB-0005vi-00 H=[V4NET.10.10.10] F=<usery@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
+LOG: 10HmbB-0005vi-00 H=(test) [V4NET.10.10.10] F=<usery@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -89,6 +92,7 @@ LOG: 10HmbB-0005vi-00 H=[V4NET.10.10.10] F=<usery@exim.test.ex> rejected after D
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
@@ -107,7 +111,7 @@ LOG: 10HmbB-0005vi-00 H=[V4NET.10.10.10] F=<usery@exim.test.ex> rejected after D
 >>> check verify = header_names_ascii
 >>> require: condition test failed in ACL "check_message"
 >>> end of ACL "check_message": not OK
-LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
+LOG: 10HmbC-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -116,6 +120,7 @@ LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
@@ -136,7 +141,7 @@ LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> processing "accept" (TESTSUITE/test-config 27)
 >>> accept: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": ACCEPT
-LOG: 10HmaY-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
+LOG: 10HmaY-0005vi-00 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -145,6 +150,7 @@ LOG: 10HmaY-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
@@ -165,4 +171,4 @@ LOG: 10HmaY-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> processing "accept" (TESTSUITE/test-config 27)
 >>> accept: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": ACCEPT
-LOG: 10HmaZ-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
+LOG: 10HmaZ-0005vi-00 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss

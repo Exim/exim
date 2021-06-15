@@ -14,12 +14,14 @@ QUIT
 ****
 # sender
 sudo exim -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<ok@localhost>
 RCPT TO:<z@test.ex>
 QUIT
 ****
 # sender, no callout
 sudo exim -v -bs -oMa V4NET.0.0.2
+HELO test
 MAIL FROM:<unchecked@localhost>
 RCPT TO:<z@test.ex>
 QUIT
@@ -37,6 +39,7 @@ QUIT
 ****
 # sender, refused
 sudo exim -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<bad@localhost>
 RCPT TO:<z@test.ex>
 QUIT
@@ -54,6 +57,7 @@ QUIT
 ****
 # sender, tmperr
 sudo exim -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@test.ex>
 QUIT
@@ -69,6 +73,7 @@ QUIT
 ****
 # sender, err on mailfrom
 sudo exim -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<uncheckable2@localhost1>
 RCPT TO:<z@test.ex>
 QUIT
@@ -85,6 +90,7 @@ QUIT
 ****
 # sender, multiline err on mailfrom
 sudo exim -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@test.ex>
 QUIT
@@ -100,6 +106,7 @@ QUIT
 ****
 # sender, err on mailfrom, with bad char
 sudo exim -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<uncheckable2@localhost1>
 RCPT TO:<z@test.ex>
 QUIT
@@ -117,6 +124,7 @@ QUIT
 ****
 # recipient, refused
 sudo exim -v -bs -oMa V4NET.0.0.3
+HELO test
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@remote.domain>
 QUIT
@@ -135,6 +143,7 @@ QUIT
 ****
 # recipient, refused
 sudo exim -v -bs -oMa V4NET.0.0.3
+HELO test
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@remote.domain>
 QUIT
@@ -152,12 +161,14 @@ QUIT
 ****
 # recipient, refused, badchar in resp
 sudo exim -v -bs -oMa V4NET.0.0.3
+HELO test
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@remote.domain>
 QUIT
 ****
 # recipient, no conneect
 sudo exim -v -bs -oMa V4NET.0.0.3
+HELO test
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@remote.domain>
 QUIT
@@ -174,6 +185,7 @@ QUIT
 250 OK
 ****
 sudo exim -v -bs -oMa V4NET.0.0.4
+HELO test
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@remote.domain>
 DATA
@@ -193,6 +205,7 @@ QUIT
 250 OK
 ****
 sudo exim -v -bs -oMa V4NET.0.0.4
+HELO test
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@remote.domain>
 DATA
@@ -218,6 +231,7 @@ QUIT
 250 OK
 ****
 sudo exim -v -bs -oMa V4NET.0.0.5
+HELO test
 MAIL FROM:<ok@localhost1>
 RCPT TO:<z@remote.domain>
 QUIT
@@ -240,6 +254,7 @@ QUIT
 250 OK
 ****
 sudo exim -v -bs -oMa V4NET.0.0.5
+HELO test
 MAIL FROM:<ok@localhost1>
 RCPT TO:<z@remote.domain>
 QUIT
@@ -348,6 +363,7 @@ QUIT
 250 OK
 ****
 sudo exim -v -bs -oMa V4NET.0.0.3
+HELO test
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@remote.lmtp>
 QUIT
@@ -355,11 +371,13 @@ QUIT
 server PORT_S
 ****
 sudo exim -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<bad@localhost1>
 RCPT TO:<z@test.ex>
 QUIT
 ****
 sudo exim -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<bad@localhost1>
 RCPT TO:<z@test.ex>
 QUIT

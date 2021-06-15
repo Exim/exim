@@ -1,5 +1,6 @@
 # remove_header modifier in ACLs
 exim -bs -odi
+helo test
 mail from:<mailok@test.ex>
 rcpt to:<rcptok@test.ex>
 rcpt to:<notok@test.ex>

@@ -1,5 +1,6 @@
 # verify = header_sender & sender
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -12,6 +13,7 @@ Subject: testing
 QUIT
 ****
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -25,6 +27,7 @@ Subject: testing
 QUIT
 ****
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -37,6 +40,7 @@ Subject: testing
 QUIT
 ****
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -49,6 +53,7 @@ Subject: testing
 QUIT
 ****
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 data

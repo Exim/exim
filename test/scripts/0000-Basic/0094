@@ -1,16 +1,19 @@
 # Reverse lookup failures
 munge dnssec
 exim -bh V4NET.11.12.13
+helo test
 mail from:<userx@cam.ac.uk>
 rcpt to:<userx@cam.ac.uk>
 quit
 ****
 exim -bh V4NET.0.0.1
+helo test
 mail from:<userx@cam.ac.uk>
 rcpt to:<userx@cam.ac.uk>
 quit
 ****
 sudo exim -odi -oMa V4NET.11.12.13 -bs
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -19,12 +22,14 @@ This is a test message
 quit
 ****
 exim -d -bh V4NET.99.99.90
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 rcpt to:<userx@cam.ac.uk>
 quit
 ****
 sudo exim -odi -oMa 99.99.99.99 -bs
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -33,6 +38,7 @@ This is a test message
 quit
 ****
 sudo exim -odi -oMa V4NET.99.99.96 -bs
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 data

@@ -1,5 +1,6 @@
 # ACL with sender=address
 exim -bs
+helo test
 mail from:<ok@test.ex>
 rcpt to:<a@b1>
 rset

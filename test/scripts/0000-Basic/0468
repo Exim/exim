@@ -1,5 +1,6 @@
 # $message_body in multiple SMTP messages
 exim -bs
+helo test
 mail from:<>
 rcpt to:<x@y>
 data

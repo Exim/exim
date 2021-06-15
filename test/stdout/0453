@@ -4,6 +4,7 @@
 501 Syntactically invalid HELO argument(s)
 501 Syntactically invalid HELO argument(s)
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test
 250 OK
 503 sender already given
 503-sender already given

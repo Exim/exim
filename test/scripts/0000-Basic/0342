@@ -2,6 +2,7 @@
 need_ipv4
 #
 exim -bh 1.2.3.4
+helo test
 mail from:<x@y>
 rcpt to:<x@ten-1>
 quit

@@ -4,6 +4,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [1.2.3.4]
 250 OK
 250 Accepted
 250 Accepted
@@ -19,6 +20,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [1.2.3.5]
 250 OK
 250 Accepted
 550 relay not permitted
@@ -34,6 +36,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [1.2.4.5]
 250 OK
 250 Accepted
 250 Accepted
@@ -49,6 +52,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [1.3.2.4]
 250 OK
 250 Accepted
 550 relay not permitted
@@ -64,6 +68,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [131.111.8.2]
 250 OK
 250 Accepted
 250 Accepted
@@ -79,6 +84,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [192.152.98.3]
 250 OK
 250 Accepted
 250 Accepted
@@ -94,6 +100,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [192.153.98.4]
 250 OK
 250 Accepted
 250 Accepted

@@ -1,5 +1,6 @@
 # verify = not_blind
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 data
@@ -8,6 +9,7 @@ To: a@b.c, himself <userx@dom.com>
 quit
 ****
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 data
@@ -16,6 +18,7 @@ To: a@b.c, himself <usery@dom.com>, HIMSELF <USERX@dom.com>
 quit
 ****
 exim -DERROR_DETAILS=smtp_return_error_details -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 data
@@ -24,6 +27,7 @@ To: a@b.c, himself <usery@dom.com>
 quit
 ****
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 rcpt to:<usery@dom.com>
@@ -34,6 +38,7 @@ Cc: unqualified, userx@dom.com, x@y.z
 quit
 ****
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 rcpt to:<usery@dom.com>
@@ -45,6 +50,7 @@ Cc: unqualified, userx@dom.com, x@y.z
 quit
 ****
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 rcpt to:<usery@dom.com>

@@ -1,5 +1,6 @@
 # acl adding positioned headers
 exim -odi -bs
+helo test
 Mail From:<some@ne>
 rcpt To: <someone@el.se>
 data

@@ -1,10 +1,12 @@
 # lookup defer (senders and hosts conditions in ACL)
 exim -bh 1.2.3.4
+helo test
 mail from:<userx@external.test.ex>
 rcpt to:<userx@test.ex>
 quit
 ****
 exim -bh 4.3.2.1
+helo test
 mail from:<userx@external.test.ex>
 rcpt to:<userx@test.ex>
 quit

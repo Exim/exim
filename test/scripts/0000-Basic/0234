@@ -2,6 +2,7 @@
 need_ipv4
 #
 exim -bh V4NET.0.0.0
+helo test
 mail from:<a@b>
 rcpt to:<c@d>
 rcpt to:<e@mxt1.test.ex>
@@ -9,6 +10,7 @@ rcpt to:<f@mxt6.test.ex>
 quit
 ****
 sudo exim -bs -oMa V4NET.0.0.0
+helo test
 mail from:<a@b>
 rcpt to:<c@d>
 rcpt to:<e@mxt1.test.ex>

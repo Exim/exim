@@ -1,5 +1,6 @@
 # recipients_max_reject
 exim -bh V4NET.10.10.10
+helo test
 mail from:<x@y>
 rcpt to:<a@b>
 rcpt to:<a@b>

@@ -314,6 +314,7 @@ hosts_randomize                      boolean         false         manualroute  
                                                      false         smtp              3.14
 hosts_require_auth                   host list       unset         smtp              4.00
 hosts_require_dane                   host list       unset         smtp              4.91 (4.85 experimental)
+hosts_require_helo		     host list	     "*"	   main		     4.95
 hosts_require_ocsp                   host list       unset         smtp              4.82 if experimental_ocsp
 hosts_require_tls                    host list       unset         smtp              3.20
 hosts_treat_as_local                 domain list     unset         main              1.95

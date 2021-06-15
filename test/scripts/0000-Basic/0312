@@ -1,5 +1,6 @@
 # RBL timeout logging
 exim -bh V4NET.0.0.1
+helo test
 mail from:<userx@x>
 rcpt to:<userx@y>
 quit

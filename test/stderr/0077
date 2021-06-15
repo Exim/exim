@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! @ : ! localhost
@@ -31,6 +32,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! @ : ! localhost
@@ -53,6 +55,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! @ : ! localhost
@@ -65,4 +68,4 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "! @ : ! localhost"? yes (end of list)
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
-LOG: H=[V4NET.0.0.1] F=<x@test.ex> rejected RCPT <x@test.ex>
+LOG: H=(test) [V4NET.0.0.1] F=<x@test.ex> rejected RCPT <x@test.ex>

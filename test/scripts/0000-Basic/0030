@@ -1,5 +1,6 @@
 # Use of $address_data in ACL
 exim -bs
+helo test
 mail from:<>
 rcpt to:<ok@test.ex>
 rcpt to:<notok@test.ex>

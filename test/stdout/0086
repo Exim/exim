@@ -4,6 +4,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.10.10.10]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
@@ -15,6 +16,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.10.10.10]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
@@ -26,6 +28,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.10.10.10]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
@@ -37,6 +40,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.10.10.10]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
@@ -48,6 +52,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.10.10.10]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
@@ -59,6 +64,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.10.10.9]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself

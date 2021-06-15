@@ -2,6 +2,7 @@
 #
 # Invalid sender, should reject both
 exim -bs
+helo test
 mail from:<x@y>
 rcpt to:<userx@test.ex>
 rcpt to:<postmaster@test.ex>
@@ -9,6 +10,7 @@ quit
 ****
 # Valid sender, should only reject userx
 exim -bs
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 rcpt to:<postmaster@test.ex>
@@ -16,6 +18,7 @@ quit
 ****
 # ACL misconfigurations at RCPT time
 exim -bs
+helo test
 mail from:<>
 rcpt to:<"deny verify = header_syntax"@test.ex>
 rcpt to:<"deny verify = junk"@test.ex>
@@ -26,6 +29,7 @@ quit
 ****
 # ACL misconfiguration at DATA time
 exim -bs
+helo test
 mail from:<>
 rcpt to:<data@test.ex>
 data
@@ -35,6 +39,7 @@ quit
 ****
 # ACL misconfiguration at DATA time
 exim -bs
+helo test
 mail from:<>
 rcpt to:<data@test.ex>
 data
@@ -44,6 +49,7 @@ quit
 ****
 # ACL misconfiguration at DATA time
 exim -bs
+helo test
 mail from:<>
 rcpt to:<data@test.ex>
 data

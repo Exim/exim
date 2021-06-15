@@ -1,5 +1,6 @@
 # strip_trailing_dot
 exim -d -bs
+helo test
 mail from:<>
 rcpt to:<abc@domain.>
 quit
@@ -8,6 +9,7 @@ quit
 exim -f abc@somewhere. xxx
 ****
 exim -DOPT=strip_trailing_dot -d -bs
+helo test
 mail from:<>
 rcpt to:<abc@domain.>
 data
@@ -18,6 +20,7 @@ quit
 exim -DOPT=strip_trailing_dot -f abc@somewhere. xxx@yyy.
 ****
 exim -d -bs
+helo test
 mail from:<>
 rcpt to:<abc@xyz>
 data

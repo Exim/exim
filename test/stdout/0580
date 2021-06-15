@@ -1,10 +1,12 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmaX-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test
 250 OK
 250 Accepted
 250 Accepted
@@ -12,6 +14,7 @@
 250 OK id=10HmaY-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test
 250 OK
 250 Accepted
 250 Accepted
@@ -19,6 +22,7 @@
 250 OK id=10HmaZ-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test
 250 OK
 250 Accepted
 250 Accepted
@@ -26,6 +30,7 @@
 250 OK id=10HmbA-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test
 250 OK
 250 Accepted
 250 Accepted
@@ -45,7 +50,8 @@ RCPT TO:<usery@test.ex>
 250 OK
 DATA
 354 hit me
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaX-0005vi-00
 	for usery@test.ex;
@@ -86,7 +92,8 @@ RCPT TO:<usery2@test.ex>
 250 OK
 DATA
 354 hit me
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaY-0005vi-00;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -126,7 +133,8 @@ RCPT TO:<usery@test.ex>
 250 OK
 DATA
 354 hit me
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaZ-0005vi-00;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -154,7 +162,8 @@ RCPT TO:<usery5@test.ex>
 250 OK
 DATA
 354 hit me
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbA-0005vi-00;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -180,7 +189,8 @@ RCPT TO:<remote@test.ex>
 250 OK
 DATA
 354 hit me
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbB-0005vi-00;
 	Tue, 2 Mar 1999 09:44:33 +0000

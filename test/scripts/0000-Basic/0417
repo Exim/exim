@@ -2,12 +2,14 @@
 need_ipv4
 #
 exim -bs
+helo test
 mail from:<x@host.test.again.dns>
 rcpt to:<x@y>
 rcpt to:<a@b>
 quit
 ****
 exim -DRETURN_ERROR_DETAILS=true -bs
+helo test
 mail from:<x@host.test.again.dns>
 rcpt to:<x@y>
 rcpt to:<a@b>

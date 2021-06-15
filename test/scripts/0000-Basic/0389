@@ -1,5 +1,6 @@
 # warn with log_message but no message
 exim -bs
+helo test
 mail from:x@y
 rcpt to:x@y
 data

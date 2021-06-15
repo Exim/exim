@@ -2,6 +2,7 @@
 need_ipv4
 #
 exim -bh V4NET.0.0.0
+helo test
 mail from:<ok@sender>
 rcpt to:<oklist@listr.test.ex>
 rset
@@ -13,6 +14,8 @@ exim -DSERVER=server -bd -oX PORT_D
 ****
 client HOSTIPV4 PORT_D
 ??? 220
+helo test
+??? 250
 mail from:<ok@sender>
 ??? 250
 rcpt to:<oklist@listr.test.ex>

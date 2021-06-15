@@ -43,7 +43,8 @@ Status: 5.0.0
 Content-type: message/rfc822
 
 Return-path: <abcd@x.y.z>
-Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <abcd@x.y.z>)
 	id 10HmaX-0005vi-00;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -100,7 +101,8 @@ Status: 5.0.0
 Content-type: text/rfc822-headers
 
 Return-path: <abcd@x.y.z>
-Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <abcd@x.y.z>)
 	id 10HmbA-0005vi-00;
 	Tue, 2 Mar 1999 09:44:33 +0000

@@ -1,7 +1,8 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<> rejected after DATA: '>' missing at end of address: failing address in "From:" header is: <bad@syntax
 Envelope-from: <>
 Envelope-to: <x@y>
-P Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+P Received: from CALLER (helo=test)
+	by the.local.host.name with local-smtp (Exim x.yz)
 	id 10HmaX-0005vi-00
 	for x@y;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -11,7 +12,8 @@ I Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 1999-03-02 09:44:33 10HmaY-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
 Envelope-from: <>
 Envelope-to: <x@y>
-P Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+P Received: from CALLER (helo=test)
+	by the.local.host.name with local-smtp (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for x@y;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -23,7 +25,8 @@ I Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 1999-03-02 09:44:33 10HmaZ-0005vi-00 U=CALLER F=<nosyntax@x> rejected after DATA
 Envelope-from: <nosyntax@x>
 Envelope-to: <x@y>
-P Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+P Received: from CALLER (helo=test)
+	by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <nosyntax@x>)
 	id 10HmaZ-0005vi-00
 	for x@y;
@@ -34,7 +37,8 @@ I Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
 1999-03-02 09:44:33 10HmbA-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
 Envelope-from: <>
 Envelope-to: <x@y>
-P Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+P Received: from CALLER (helo=test)
+	by the.local.host.name with local-smtp (Exim x.yz)
 	id 10HmbA-0005vi-00
 	for x@y;
 	Tue, 2 Mar 1999 09:44:33 +0000

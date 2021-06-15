@@ -10,6 +10,7 @@ helo
 ****
 1
 exim -DERROR_DETAILS=smtp_max_synprot_errors=1 -bs
+helo test
 mail from:<>
 mail from:<>
 mail from:<>

@@ -14,18 +14,21 @@ ${lookup sqlite,file=DIR/aux-fixed/sqlitedb{select * from them where id='its';}}
 ${lookup sqlite,file=DIR/aux-fixed/sqlitedb{select * from them where name='${quote_sqlite:it's}';}}
 ****
 exim -d -DOPT=y -bh 10.0.0.0
+helo test
 mail from:<a@b>
 rcpt to:<c@d>
 rcpt to:<c@d>
 quit
 ****
 exim -d -bh 10.0.0.0
+helo test
 mail from:<a@b>
 rcpt to:<c@d>
 rcpt to:<c@d>
 quit
 ****
 exim -d -bh 10.10.10.10
+helo test
 mail from:<a@b>
 rcpt to:<c@d>
 rcpt to:<c@d>

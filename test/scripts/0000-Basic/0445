@@ -1,5 +1,6 @@
 # :fail: with looked up empty string
 exim -bh 1.2.3.4
+helo test
 mail from:<lp1@x.y>
 rcpt to:<zz@x.y>
 rset

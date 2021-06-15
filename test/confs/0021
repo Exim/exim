@@ -2,6 +2,7 @@
 
 SERVER=
 BR=
+HVH=
 LOG_SELECTOR=
 
 .include DIR/aux-var/std_conf_prefix
@@ -22,6 +23,7 @@ acl_smtp_mail = mail
 acl_smtp_rcpt = rcpt
 
 BR
+HVH
 log_selector = LOG_SELECTOR
 
 qualify_domain = test.ex

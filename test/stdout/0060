@@ -4,6 +4,7 @@
 **** This is not for real!
 
 220 myhost.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.ex Hello test [V4NET.0.0.1]
 250 OK
 250 Accepted
 250 Accepted
@@ -19,6 +20,7 @@
 **** This is not for real!
 
 220 myhost.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.ex Hello test [V4NET.0.0.2]
 250 OK
 250 Accepted
 550 relay not permitted
@@ -34,6 +36,7 @@
 **** This is not for real!
 
 220 myhost.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.ex Hello test [V4NET.0.0.5]
 250 OK
 250 Accepted
 250 Accepted
@@ -49,6 +52,7 @@
 **** This is not for real!
 
 220 myhost.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.ex Hello test [V4NET.0.0.6]
 250 OK
 250 Accepted
 250 Accepted
@@ -64,6 +68,7 @@
 **** This is not for real!
 
 220 myhost.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.ex Hello test [V4NET.255.0.1]
 250 OK
 250 Accepted
 550 relay not permitted
@@ -79,6 +84,7 @@
 **** This is not for real!
 
 220 myhost.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.ex Hello test [V4NET.255.0.2]
 250 OK
 250 Accepted
 550 relay not permitted
@@ -94,6 +100,7 @@
 **** This is not for real!
 
 220 myhost.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.ex Hello test [V4NET.255.0.3]
 250 OK
 250 Accepted
 550 relay not permitted
@@ -109,6 +116,7 @@
 **** This is not for real!
 
 220 myhost.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.ex Hello test [V4NET.255.0.4]
 250 OK
 250 Accepted
 550 relay not permitted

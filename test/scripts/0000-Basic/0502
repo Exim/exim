@@ -1,5 +1,6 @@
 # ACL for QUIT
 exim -bs
+helo test
 mail from:<x@y>
 rcpt to:<a@y>
 rcpt to:<b@y>
@@ -20,6 +21,7 @@ exim -bs -DLAST='deny message = Your message here'
 quit
 ****
 exim -bs -DLAST=''
+helo test
 mail from:<a@b>
 quit
 ****

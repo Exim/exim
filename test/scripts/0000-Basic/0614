@@ -8,6 +8,7 @@ exim -DSERVER=server -bd -oX PORT_D
 ****
 #
 exim -bs
+helo test
 mail from:ralph@dustyshoes.tld
 rcpt to:bob@anotherone.tld
 data

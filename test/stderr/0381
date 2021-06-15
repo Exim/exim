@@ -27,6 +27,12 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+test in helo_lookup_domains? no (end of list)
+sender_fullhost = (test) [V4NET.99.99.97]
+sender_rcvhost = [V4NET.99.99.97] (helo=test ident=CALLER)
+set_process_info: pppp handling incoming connection from (test) [V4NET.99.99.97] U=CALLER
+SMTP>> 250 myhost.test.ex Hello CALLER at test [V4NET.99.99.97]
 SMTP<< mail from:<notgov@test.ex>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -53,8 +59,9 @@ x.co.uk.test.ex V4NET.99.99.97 mx=-1 sort=xx
 checking addresses for x.co.uk.test.ex
 Forward DNS security status: unverified
   V4NET.99.99.97 OK
-sender_fullhost = x.gov.uk.test.ex [V4NET.99.99.97]
-sender_rcvhost = x.gov.uk.test.ex ([V4NET.99.99.97] ident=CALLER)
+sender_fullhost = x.gov.uk.test.ex (test) [V4NET.99.99.97]
+sender_rcvhost = x.gov.uk.test.ex
+	([V4NET.99.99.97] helo=test ident=CALLER)
 host in "*.gov.uk.test.ex"? yes (matched "*.gov.uk.test.ex")
 warn: condition test succeeded in ACL "check_rcpt"
 processing "warn" (TESTSUITE/test-config 18)

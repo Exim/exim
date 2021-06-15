@@ -1,5 +1,6 @@
 # check illegally placed ACL control modifiers
 exim -DACL=smtp_data -DCONTROL=submission -bs
+helo test
 mail from:<>
 rcpt to:<userx@x.y>
 data
@@ -8,6 +9,7 @@ Rhubarb
 quit
 ****
 exim -DACL=smtp_predata -DCONTROL=submission -bs
+helo test
 mail from:<>
 rcpt to:<userx@x.y>
 data

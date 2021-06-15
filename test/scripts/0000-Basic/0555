@@ -1,5 +1,6 @@
 # Long response lines for fakedefer/fakereject
 exim -bs
+helo test
 mail from:<>
 rcpt to:<userx@test.ex>
 data
@@ -10,6 +11,7 @@ quit
 exim -bs -DFAKE='fakedefer/This is a rather long customised message that \
                  should get automatically split up into more than one \
                  response line.' 
+helo test
 mail from:<>
 rcpt to:<userx@test.ex>
 data

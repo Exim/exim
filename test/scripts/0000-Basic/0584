@@ -2,6 +2,7 @@
 #
 # pass
 exim -DOPT=userx@test.ex -bh 127.0.0.1
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -12,12 +13,14 @@ QUIT
 ****
 # fail
 exim -DOPT=fail@test.ex -bh 127.0.0.1
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 QUIT
 ****
 # check can use tainted data
 exim -DOPT='$sender_address/defer_ok' -bh 127.0.0.1
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 data

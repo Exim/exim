@@ -14,6 +14,7 @@ exim -bp
 ****
 0
 exim -odq -bs
+HELO test
 MAIL FROM:<>
 RCPT TO:<x@[1.2.3.4]>
 RCPT TO:<x@[ipv4:1.2.3.4]>

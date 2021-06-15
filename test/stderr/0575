@@ -22,6 +22,12 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+test in helo_lookup_domains? no (end of list)
+sender_fullhost = (test) [V4NET.0.0.0]
+sender_rcvhost = [V4NET.0.0.0] (helo=test)
+set_process_info: pppp handling incoming connection from (test) [V4NET.0.0.0]
+SMTP>> 250 mail.test.ex Hello test [V4NET.0.0.0]
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -42,19 +48,19 @@ search_tidyup called
 Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
-P Received: from [V4NET.0.0.0]
+P Received: from [V4NET.0.0.0] (helo=test)
 	by mail.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
 	id 10HmaX-0005vi-00
 	for x@y;
 	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
-  <= x@y H=[V4NET.0.0.0] P=smtp S=sss
+  <= x@y H=(test) [V4NET.0.0.0] P=smtp S=sss
 SMTP>> 250 OK id=10HmaX-0005vi-00
 smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 mail.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from [V4NET.0.0.0] closed by QUIT
+  SMTP connection from (test) [V4NET.0.0.0] closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

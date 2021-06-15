@@ -1,5 +1,6 @@
 # comments and +caseful in local part lists
 exim -odq -bs
+helo test
 mail from:<x@y>
 rcpt to:<lp1@z>
 rcpt to:<LP1@z>

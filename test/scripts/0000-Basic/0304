@@ -1,5 +1,6 @@
 # address lists
 exim -bh 1.2.3.4
+helo test
 mail from:<>
 rcpt to:<b1@x>
 rcpt to:<b2@x>

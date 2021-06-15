@@ -1,5 +1,6 @@
 # ACL basic auth tests
 exim -bh 5.6.9.1
+helo test
 mail from:<x@y>
 rcpt to:<x@y>
 rset
@@ -10,6 +11,7 @@ rcpt to:<x@y>
 quit
 ****
 exim -bh 5.6.10.1
+helo test
 mail from:<x@y>
 rcpt to:<x@y>
 rset

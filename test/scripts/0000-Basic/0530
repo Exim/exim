@@ -33,6 +33,7 @@ In-Reply-To: <i1@b>
 # an SMTP interface.
 #
 exim -odi -bs
+helo test
 mail from:<CALLER@test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -41,6 +42,7 @@ Subject: no Message-id, no References, no In-Reply-to
 quit
 ****
 exim -odi -bs
+helo test
 mail from:<CALLER@test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -50,6 +52,7 @@ In-Reply-To: <i1@b>
 quit
 ****
 exim -odi -bs
+helo test
 mail from:<CALLER@test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -60,6 +63,7 @@ In-Reply-To: <i1@b>
 quit
 ****
 exim -odi -bs
+helo test
 mail from:<CALLER@test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -69,6 +73,7 @@ References: <r1@b> <r2@b> <r3@b> <r4@b> <r5@b>
 quit
 ****
 exim -odi -bs
+helo test
 mail from:<CALLER@test.ex>
 rcpt to:<userx@test.ex>
 data

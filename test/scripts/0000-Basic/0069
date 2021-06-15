@@ -2,41 +2,49 @@
 need_ipv4
 #
 exim -bh V4NET.0.0.1
+helo test
 mail from:<x@y>
 rcpt to:<x@test.ex>
 quit
 ****
 exim -bh V4NET.0.0.13
+helo test
 MAIL FROM:<userx>
 rcpt to:<x@test.ex>
 quit
 ****
 exim -bh V4NET.0.0.13
+helo test
 MAIL FROM:<userx@test.ex>
 rcpt to:<y@test.ex>
 quit
 ****
 exim -bh V4NET.0.0.13
+helo test
 MAIL FROM:<userx@test.ex>
 rcpt to:<z@test.ex>
 quit
 ****
 exim -bh V4NET.0.0.13 -DLOG_SELECTOR=log_selector=+unknown_in_list
+helo test
 MAIL FROM:<userx@test.ex>
 rcpt to:<y@test.ex>
 quit
 ****
 exim -bh V4NET.0.0.13
+helo test
 MAIL FROM:<userx>
 rcpt to:<a@test.ex>
 quit
 ****
 exim -bh V4NET.0.0.13
+helo test
 MAIL FROM:<userx@test.ex>
 rcpt to:<b@test.ex>
 quit
 ****
 exim -bh V4NET.0.0.13
+helo test
 MAIL FROM:<userx@test.ex>
 rcpt to:<c@test.ex>
 quit

@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_rcpt_1"
 >>> processing "require" (TESTSUITE/test-config 19)
 >>>   message: domain doesn't match @ or @[]
@@ -26,4 +27,4 @@
 >>> mxt11a.test.ex in "<+ @mx_any/ignore=<;127.0.0.1;::1"? no (end of list)
 >>> require: condition test failed in ACL "acl_rcpt_6"
 >>> end of ACL "acl_rcpt_6": not OK
-LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <6@mxt11a.test.ex>: domain doesn't match @mx_any/ignore=<;127.0.0.1;::1
+LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <6@mxt11a.test.ex>: domain doesn't match @mx_any/ignore=<;127.0.0.1;::1

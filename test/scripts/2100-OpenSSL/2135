@@ -9,6 +9,7 @@ exim -bd -DSERVER=server -oX PORT_D
 # "proxied TLS", and the DATA smtp command only done by the transport process.
 # cmdline -bs send
 exim -d-all+transport -bs
+helo test
 mail from:<usera@ok.example>
 rcpt to:<userb@test.ex>
 data

@@ -15,6 +15,7 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1]
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 27)
 >>> check hosts = :
@@ -31,7 +32,7 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1]
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: SMTP data timeout (message abandoned) on connection from [V4NET.0.0.1] F=<userx@test.ex>
+LOG: SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -78,6 +79,12 @@ host in helo_accept_junk_hosts? no (option unset)
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+test in helo_lookup_domains? no (end of list)
+sender_fullhost = (test) [V4NET.0.0.1]
+sender_rcvhost = [V4NET.0.0.1] (helo=test)
+set_process_info: pppp handling incoming connection from (test) [V4NET.0.0.1]
+SMTP>> 250 myhost.test.ex Hello test [V4NET.0.0.1]
 SMTP<< mail from:userx@test.ex
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -106,7 +113,7 @@ SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
 LOG: lost_incoming_connection MAIN
-  SMTP data timeout (message abandoned) on connection from [V4NET.0.0.1] F=<userx@test.ex>
+  SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex>
 SMTP>> 421 myhost.test.ex SMTP incoming data timeout - closing connection.
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>
@@ -120,6 +127,7 @@ exim: timed out while reading - message abandoned
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 27)
 >>> check hosts = :
@@ -141,8 +149,8 @@ exim: timed out while reading - message abandoned
 >>> ----------- end verify ------------
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
-LOG: H=[V4NET.0.0.1] F=<userx@test.ex> rejected RCPT verify@test.ex: Unrouteable address
-LOG: SMTP command timeout on connection from [V4NET.0.0.1]
+LOG: H=(test) [V4NET.0.0.1] F=<userx@test.ex> rejected RCPT verify@test.ex: Unrouteable address
+LOG: SMTP command timeout on connection from (test) [V4NET.0.0.1]
 An error was detected while processing a file of BSMTP input.
 The error message was:
 

@@ -1,5 +1,6 @@
 # control = suppress_local_fixups
 exim -odi -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 data
@@ -7,6 +8,7 @@ data
 quit
 ****
 exim -odi -bs
+helo test
 mail from:<>
 rcpt to:<usery@dom.com>
 data

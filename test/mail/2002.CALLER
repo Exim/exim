@@ -1,6 +1,6 @@
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
-Received: from [127.0.0.1]
-	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
@@ -12,7 +12,7 @@ TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=
 This is a test encrypted message.
 
 From "name with spaces"@test.ex Tue Mar 02 09:44:33 1999
-Received: from [127.0.0.1]
+Received: from [127.0.0.1] (helo=test)
 	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <"name with spaces"@test.ex>)
@@ -25,7 +25,7 @@ TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=
 This is a test encrypted message.
 
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
-Received: from [ip4.ip4.ip4.ip4]
+Received: from [ip4.ip4.ip4.ip4] (helo=test)
 	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
@@ -38,7 +38,7 @@ TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=CN=server2.example.com
 This is a test encrypted message from a verified host.
 
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
-Received: from [127.0.0.1]
+Received: from [127.0.0.1] (helo=test)
 	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
@@ -52,7 +52,7 @@ This is a test encrypted message.
 It should be sent under the RSA server cert and with an RSA cipher.
 
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
-Received: from [127.0.0.1]
+Received: from [127.0.0.1] (helo=test)
 	by myhost.test.ex with smtps (TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)

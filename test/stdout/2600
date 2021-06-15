@@ -18,6 +18,7 @@ after" id=newline
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [10.0.0.0]
 250 OK
 550 relay not permitted
 550 relay not permitted
@@ -28,6 +29,7 @@ after" id=newline
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [10.0.0.0]
 250 OK
 550 relay not permitted
 550 relay not permitted
@@ -38,6 +40,7 @@ after" id=newline
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [10.10.10.10]
 250 OK
 250 Accepted
 250 Accepted

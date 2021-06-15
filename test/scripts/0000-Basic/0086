@@ -1,5 +1,6 @@
 # verify = header_syntax
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@exim.test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -12,6 +13,7 @@ Subject: testing
 QUIT
 ****
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@exim.test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -26,6 +28,7 @@ Subject: testing
 QUIT
 ****
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@exim.test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -40,6 +43,7 @@ Subject: testing
 QUIT
 ****
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@exim.test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -94,6 +98,7 @@ Cc: "abcd@x.y.z (missing quote),
 QUIT
 ****
 exim -bh V4NET.10.10.10
+helo test
 mail from:<userx@exim.test.ex>
 rcpt to:<userx@test.ex>
 data
@@ -106,6 +111,7 @@ Subject: testing
 QUIT
 ****
 exim -bh V4NET.10.10.9
+helo test
 mail from:<userx@exim.test.ex>
 rcpt to:<userx@test.ex>
 data

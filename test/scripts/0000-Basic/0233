@@ -5,6 +5,7 @@ Rhubarb
 ****
 # ACL freezes these two, tell for the second, and third, not for the first
 exim -odi -bs
+helo test
 mail from:<a@test.ex>
 rcpt to:<userz@test.ex>
 data

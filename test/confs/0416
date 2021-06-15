@@ -7,6 +7,7 @@
 
 primary_hostname = mail.test.ex
 qualify_domain = test.ex
+hosts_require_helo =
 queue_only
 no_queue_only_override
 

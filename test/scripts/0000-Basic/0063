@@ -1,5 +1,6 @@
 # Relay by hostlist regex match
 exim -bh V4NET.0.0.1
+helo test
 mail from:<userx@somehost.example.com>
 rcpt to:<userx@test.ex>
 rcpt to:<userx@anotherhost.example.com>
@@ -8,6 +9,7 @@ data
 quit
 ****
 exim -bh V4NET.0.0.2
+helo test
 mail from:<userx@somehost.example.com>
 rcpt to:<userx@test.ex>
 rcpt to:<userx@anotherhost.example.com>

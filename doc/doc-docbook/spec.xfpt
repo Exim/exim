@@ -25641,6 +25641,11 @@ There will be no fallback to in-clear communication.
 See the &%dnssec_request_domains%& router and transport options.
 See section &<<SECDANE>>&.
 
+.option hosts_require_helo smtp "host list&!!" *
+.cindex "HELO/EHLO" requiring
+Exim will require an accepted HELO or EHLO command from a host matching
+this list, before accepting a MAIL command.
+
 .option hosts_require_ocsp smtp "host list&!!" unset
 .cindex "TLS" "requiring for certain servers"
 Exim will request, and check for a valid Certificate Status being given, on a

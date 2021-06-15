@@ -13,6 +13,7 @@ QUIT
 250 OK
 ****
 exim -odi -bs
+helo test
 mail from:<x@remote>
 rcpt to:<x@local>
 data
@@ -32,6 +33,7 @@ QUIT
 250 OK
 ****
 exim -odi -bs
+helo test
 mail from:<z@remote>
 rcpt to:<deny@local>
 quit
@@ -48,12 +50,14 @@ QUIT
 250 OK
 ****
 exim -d -odi -bs
+helo test
 mail from:<qq@remote>
 rcpt to:<abc@local>
 rcpt to:<xyz@local>
 quit
 ****
 exim -odi -bs
+helo test
 mail from:<>
 rcpt to:<abc@local>
 rcpt to:<xyz@local>

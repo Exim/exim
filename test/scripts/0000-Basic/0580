@@ -20,6 +20,7 @@ QUIT
 ****
 #
 exim -bs -odi
+helo test
 mail from:<userx@ok.example>
 rcpt to:<usery@test.ex>
 data
@@ -62,6 +63,7 @@ QUIT
 ****
 #
 exim -bs -odi
+helo test
 mail from:<userx@ok.example>
 rcpt to:<usery@test.ex>
 rcpt to:<usery2@test.ex>
@@ -104,6 +106,7 @@ QUIT
 ****
 #
 exim -bs -odi
+helo test
 mail from:<userx@ok.example>
 rcpt to:<usery3@test.ex>
 rcpt to:<usery@test.ex>
@@ -136,6 +139,7 @@ QUIT
 ****
 #
 exim -bs -odi
+helo test
 mail from:<userx@ok.example>
 rcpt to:<usery4@test.ex>
 rcpt to:<usery5@test.ex>
@@ -164,6 +168,7 @@ QUIT
 221 bye
 ****
 exim -bs -odi
+helo test
 mail from:<useri@ok.example>
 rcpt to:<remote@test.ex>
 rcpt to:<local@test.ex>

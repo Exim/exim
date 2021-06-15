@@ -2,6 +2,7 @@
 #
 # -bs to simple local delivery
 exim -bs -odi
+helo test
 mail from:CALLER@HOSTNAME
 rcpt to:CALLER@HOSTNAME
 data
@@ -20,6 +21,7 @@ This is the last line.
 quit
 ****
 exim -bs -odi
+helo test
 mail from:CALLER@HOSTNAME
 rcpt to:CALLER@HOSTNAME
 data

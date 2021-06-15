@@ -12,6 +12,7 @@ QUIT
 221 Bye
 ****
 exim -bs
+helo test
 mail from:<userx@broken.example>
 quit
 ****
@@ -28,12 +29,14 @@ QUIT
 221 Bye
 ****
 exim -bs
+helo test
 mail from:<userx@ok.example>
 rcpt to:<usery@broken.example>
 quit
 ****
 # A final check that the cache works for sender address
 exim -bs
+helo test
 mail from:<userx@broken.example>
 quit
 ****

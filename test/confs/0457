@@ -2,6 +2,7 @@
 
 .include DIR/aux-var/std_conf_prefix
 
+hosts_require_helo =
 
 # ----- Main settings -----
 

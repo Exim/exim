@@ -4,6 +4,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello ten-1.test.ex [V4NET.0.0.1]
 250 OK
 550 Administrative prohibition
 221 myhost.test.ex closing connection
@@ -13,6 +14,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.0.0.13]
 250 OK
 550 Administrative prohibition
 221 myhost.test.ex closing connection
@@ -22,6 +24,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.0.0.13]
 250 OK
 550 "Denied"
 221 myhost.test.ex closing connection
@@ -31,6 +34,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.0.0.13]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
@@ -40,6 +44,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.0.0.13]
 250 OK
 550 "Denied"
 221 myhost.test.ex closing connection
@@ -49,6 +54,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.0.0.13]
 250 OK
 550 Administrative prohibition
 221 myhost.test.ex closing connection
@@ -58,6 +64,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.0.0.13]
 250 OK
 451 Temporary local problem - please try later
 221 myhost.test.ex closing connection
@@ -67,6 +74,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.0.0.13]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection

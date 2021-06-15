@@ -6,6 +6,7 @@ perl aux-fixed/0601.udpserver
 ****
 #
 exim -bs -odi
+helo test
 mail from:someone@some.domain
 rcpt to:CALLER@HOSTNAME
 data

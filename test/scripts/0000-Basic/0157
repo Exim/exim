@@ -1,5 +1,6 @@
 # relay by sender and host
 exim -bh V4NET.0.0.1
+helo test
 mail from:<x@y.z>
 rcpt to:<a@b.c>
 rset
@@ -8,6 +9,7 @@ rcpt to:<a@b.c>
 quit
 ****
 exim -bh V4NET.0.0.2
+helo test
 mail from:<x@y.z>
 rcpt to:<a@b.c>
 rset
@@ -16,6 +18,7 @@ rcpt to:<a@b.c>
 quit
 ****
 exim -bh V4NET.0.0.3
+helo test
 mail from:<x@y.z>
 rcpt to:<a@b.c>
 rset

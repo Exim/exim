@@ -6,12 +6,13 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_1_2_3_4"
 >>> processing "deny" (TESTSUITE/test-config 17)
 >>> check senders = testdb;defer
 >>> userx@external.test.ex in "testdb;defer"? list match deferred for testdb;defer
 >>> deny: condition test deferred in ACL "acl_1_2_3_4"
-LOG: H=[1.2.3.4] F=<userx@external.test.ex> temporarily rejected RCPT <userx@test.ex>: testdb lookup forced DEFER
+LOG: H=(test) [1.2.3.4] F=<userx@external.test.ex> temporarily rejected RCPT <userx@test.ex>: testdb lookup forced DEFER
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -20,6 +21,7 @@ LOG: H=[1.2.3.4] F=<userx@external.test.ex> temporarily rejected RCPT <userx@tes
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_4_3_2_1"
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> check hosts = :
@@ -29,4 +31,4 @@ LOG: H=[1.2.3.4] F=<userx@external.test.ex> temporarily rejected RCPT <userx@tes
 >>> check hosts = testdb;defer
 >>> host in "testdb;defer"? list match deferred for testdb;defer
 >>> deny: condition test deferred in ACL "acl_4_3_2_1"
-LOG: H=[4.3.2.1] F=<userx@external.test.ex> temporarily rejected RCPT <userx@test.ex>: testdb lookup forced DEFER
+LOG: H=(test) [4.3.2.1] F=<userx@external.test.ex> temporarily rejected RCPT <userx@test.ex>: testdb lookup forced DEFER

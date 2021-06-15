@@ -16,6 +16,8 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+SMTP>> 250 myhost.test.ex Hello CALLER at test
 SMTP<< mail from:<>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -49,6 +51,8 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+SMTP>> 250 myhost.test.ex Hello CALLER at test
 SMTP<< mail from:<>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -75,7 +79,8 @@ I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 Data file name: TESTSUITE/spool//input//10HmaY-0005vi-00-D
 Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line
-P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+P Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for abc@domain;
 	Tue, 2 Mar 1999 09:44:33 +0000
@@ -117,6 +122,8 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+SMTP>> 250 myhost.test.ex Hello CALLER at test
 SMTP<< mail from:<>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -143,7 +150,8 @@ I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
-P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+P Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	id 10HmaX-0005vi-00
 	for abc@xyz;
 	Tue, 2 Mar 1999 09:44:33 +0000

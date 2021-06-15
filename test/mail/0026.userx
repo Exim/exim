@@ -1,5 +1,6 @@
 From x@y Tue Mar 02 09:44:33 1999
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <x@y>)
 	id 10HmbF-0005vi-00
 	for userx@test.ex;
@@ -12,7 +13,8 @@ X-warning: this is a test warning
 Message 7
 
 From x@y Tue Mar 02 09:44:33 1999
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <x@y>)
 	id 10HmbG-0005vi-00
 	for userx@test.ex;
@@ -27,7 +29,8 @@ X-warning: this is a test warning
 Message 10
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	id 10HmbH-0005vi-00
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000

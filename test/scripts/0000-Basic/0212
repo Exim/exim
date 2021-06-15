@@ -14,6 +14,7 @@ file
 "smartuser.b@test.ex,a@test.ex"@test.ex
 ****
 exim -bs -oMa V4NET.0.0.0
+helo test
 mail from:<userx@test.ex>
 rcpt to:<a@test.ex>
 rcpt to:<b@test.ex>

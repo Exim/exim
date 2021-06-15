@@ -5,6 +5,8 @@ exim -DSERVER=server -bd -oX PORT_D
 ****
 client HOSTIPV4 PORT_D
 ??? 220
+helo test
+??? 250
 mail from:<x@y.x>
 ??? 250
 rcpt to:<x@test.ex>
@@ -19,6 +21,8 @@ quit
 ****
 client 127.0.0.1 PORT_D
 ??? 220
+helo test
+??? 250
 mail from:<x@y.x>
 ??? 250
 rcpt to:<x@test.ex>
@@ -48,6 +52,7 @@ quit
 ****
 killdaemon
 sudo exim -bs -oMa V4NET.9.8.7.1234
+helo test
 mail from:<x@y.x>
 rcpt to:<x@test.ex>
 data
@@ -68,6 +73,7 @@ quit
 exim -DSERVER=server -bd -oX PORT_D
 ****
 sudo exim -DOPT -bs -oMa V4NET.9.8.7.1225
+helo test
 mail from:<x@y.x>
 rcpt to:<x@test.ex>
 data

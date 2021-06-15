@@ -1,5 +1,6 @@
 # Sender verification SMTP (envelope and header)
 exim -bh 127.0.0.1
+helo test
 mail from:<unknown@test.ex>
 rcpt to:<userx@test.ex>
 rset

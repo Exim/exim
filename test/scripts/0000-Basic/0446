@@ -4,6 +4,7 @@ Received: the first received: line
 Received: the second received: line
 ****
 exim -odi -bs
+helo test
 mail from:<>
 rcpt to:userx@test.ex
 data

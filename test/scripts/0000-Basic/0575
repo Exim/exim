@@ -1,6 +1,7 @@
 # -bh and msglog
 # no logfiles, says the docs
 exim -d -bh V4NET.0.0.0
+helo test
 mail from:<x@y>
 rcpt to:<x@y>
 data

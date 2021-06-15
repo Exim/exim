@@ -128,7 +128,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 Not: a header line
 
 From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbF-0005vi-00
 	for userx@test.ex;
@@ -145,7 +146,8 @@ CR.CR
 terminate the message
 
 From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbG-0005vi-00
 	for userx@test.ex;

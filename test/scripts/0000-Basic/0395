@@ -23,6 +23,7 @@ To: userx
 # Same tests for BSMTP
 2
 exim -odi -bnq -bS
+helo test
 mail from: userx
 rcpt to: userx
 data
@@ -33,6 +34,7 @@ quit
 ****
 2
 exim -odi -bnq -bS
+helo test
 mail from: userx@origin.ex
 rcpt to: userx
 data
@@ -42,6 +44,7 @@ To: userx
 quit
 ****
 exim -odi -bnq -bS
+helo test
 mail from: userx@origin.ex
 rcpt to: userx@test.ex
 data
@@ -51,6 +54,7 @@ To: userx
 quit
 ****
 exim -odi -bS
+helo test
 mail from: userx@origin.ex
 rcpt to: userx@test.ex
 data
@@ -60,6 +64,7 @@ To: userx
 quit
 ****
 exim -odi -bnq -bs
+helo test
 mail from: userx@origin.ex
 rcpt to: userx
 data
@@ -69,6 +74,7 @@ To: userx
 quit
 ****
 exim -odi -bnq -bs
+helo test
 mail from: userx@origin.ex
 rcpt to: userx@test.ex
 data
@@ -78,6 +84,7 @@ To: userx
 quit
 ****
 exim -odi -bs
+helo test
 mail from: userx@origin.ex
 rcpt to: userx@test.ex
 data

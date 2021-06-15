@@ -1,3 +1,4 @@
+helo test
 Mail from: x@y
 rcpt to: userx@test.ex
 data

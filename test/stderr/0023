@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
@@ -64,7 +65,7 @@
 >>> z in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": implicit DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <z@z>
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <z@z>
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
@@ -161,7 +162,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <z@z>
 >>> deny.test.ex in "deny.test.ex"? yes (matched "deny.test.ex")
 >>> deny: condition test succeeded in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@deny.test.ex>: DOMAIN EXPLICITLY DENIED
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@deny.test.ex>: DOMAIN EXPLICITLY DENIED
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
@@ -188,14 +189,14 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@deny.test.ex>: DOMAIN EXPLICITLY DENIE
 >>> refuse.test.ex in "!refuse.test.ex"? no (matched "!refuse.test.ex")
 >>> accept: condition test failed in ACL "acl_1_2_3"
 >>> accept: endpass encountered - denying access
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@refuse.test.ex>: refuse.test.ex gets refused
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@refuse.test.ex>: refuse.test.ex gets refused
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
 >>> nopass in "!nopass"? no (matched "!nopass")
 >>> require: condition test failed in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": not OK
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@nopass>
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@nopass>
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
@@ -207,7 +208,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@nopass>
 >>> wontpass in "!wontpass"? no (matched "!wontpass")
 >>> require: condition test failed in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": not OK
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@wontpass>: x@wontpass shall not pass
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@wontpass>: x@wontpass shall not pass
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -216,13 +217,14 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@wontpass>: x@wontpass shall not pass
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_7"
 >>> processing "accept" (TESTSUITE/test-config 64)
 >>> check domains = lsearch;TESTSUITE/aux-fixed/0023.doms
 >>> y in "lsearch;TESTSUITE/aux-fixed/0023.doms"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_7"
 >>> end of ACL "acl_5_6_7": implicit DENY
-LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@y>
+LOG: H=(test) [5.6.7.8] F=<x@y> rejected RCPT <x@y>
 >>> using ACL "acl_5_6_7"
 >>> processing "accept" (TESTSUITE/test-config 64)
 >>> check domains = lsearch;TESTSUITE/aux-fixed/0023.doms
@@ -231,7 +233,7 @@ LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@y>
 >>> x in "userx : spqr"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_7"
 >>> end of ACL "acl_5_6_7": implicit DENY
-LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
+LOG: H=(test) [5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> using ACL "acl_5_6_7"
 >>> processing "accept" (TESTSUITE/test-config 64)
 >>> check domains = lsearch;TESTSUITE/aux-fixed/0023.doms
@@ -256,6 +258,7 @@ LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 91)
 >>> check hosts = +ok9_hosts
@@ -277,6 +280,7 @@ LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 91)
 >>> check hosts = +ok9_hosts
@@ -289,7 +293,7 @@ LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> host in "9.9.9.0/26"? yes (matched "9.9.9.0/26")
 >>> deny: condition test succeeded in ACL "acl_9_9_9"
 >>> end of ACL "acl_9_9_9": DENY
-LOG: H=[9.9.9.8] F=<x@y> rejected RCPT <x@y>: don't like this host
+LOG: H=(test) [9.9.9.8] F=<x@y> rejected RCPT <x@y>: don't like this host
 >>> using ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 91)
 >>> check hosts = +ok9_hosts
@@ -301,7 +305,7 @@ LOG: H=[9.9.9.8] F=<x@y> rejected RCPT <x@y>: don't like this host
 >>> host in "9.9.9.0/26"? yes (matched "9.9.9.0/26")
 >>> deny: condition test succeeded in ACL "acl_9_9_9"
 >>> end of ACL "acl_9_9_9": DENY
-LOG: H=[9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
+LOG: H=(test) [9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -310,6 +314,7 @@ LOG: H=[9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 91)
 >>> check hosts = +ok9_hosts
@@ -349,6 +354,7 @@ LOG: H=[9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_8"
 >>> processing "accept" (TESTSUITE/test-config 68)
 >>> check senders = user1@domain1 : domain2 : +ok_senders
@@ -357,7 +363,7 @@ LOG: H=[9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>> x@y in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
-LOG: H=[5.6.8.1] F=<x@y> rejected RCPT <x@y>
+LOG: H=(test) [5.6.8.1] F=<x@y> rejected RCPT <x@y>
 >>> using ACL "acl_5_6_8"
 >>> processing "accept" (TESTSUITE/test-config 68)
 >>> check senders = user1@domain1 : domain2 : +ok_senders
@@ -365,7 +371,7 @@ LOG: H=[5.6.8.1] F=<x@y> rejected RCPT <x@y>
 >>> x@y in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
-LOG: H=[5.6.8.1] F=<x@y> rejected RCPT <y@x>
+LOG: H=(test) [5.6.8.1] F=<x@y> rejected RCPT <y@x>
 >>> using ACL "acl_5_6_8"
 >>> processing "accept" (TESTSUITE/test-config 68)
 >>> check senders = user1@domain1 : domain2 : +ok_senders
@@ -382,7 +388,7 @@ LOG: H=[5.6.8.1] F=<x@y> rejected RCPT <y@x>
 >>> user2@domain1 in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
-LOG: H=[5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
+LOG: H=(test) [5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
 >>> using ACL "acl_5_6_8"
 >>> processing "accept" (TESTSUITE/test-config 68)
 >>> check senders = user1@domain1 : domain2 : +ok_senders
@@ -415,6 +421,7 @@ LOG: H=[5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_11"
 >>> processing "accept" (TESTSUITE/test-config 71)
 >>> check condition = ${if match{$local_part}{^x}{yes}{no}}
@@ -436,7 +443,7 @@ LOG: H=[5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
 >>>   message: "local part of wrong type\n(quotes are literal)
 >>> deny: condition test succeeded in ACL "acl_5_6_11"
 >>> end of ACL "acl_5_6_11": DENY
-LOG: H=[5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
+LOG: H=(test) [5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -445,6 +452,7 @@ LOG: H=[5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_12"
 >>> processing "accept" (TESTSUITE/test-config 75)
 >>> check hosts = 5.6.12.1
@@ -473,7 +481,7 @@ LOG: H=[5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>>  end of ACL "acl_5_6_12A": implicit DENY
 >>> accept: condition test failed in ACL "acl_5_6_12"
 >>> accept: endpass encountered - denying access
-LOG: H=[5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
+LOG: H=(test) [5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -482,6 +490,7 @@ LOG: H=[5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_12"
 >>> processing "accept" (TESTSUITE/test-config 75)
 >>> check hosts = 5.6.12.1
@@ -506,6 +515,7 @@ LOG: H=[5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_8_8_8"
 >>> processing "accept" (TESTSUITE/test-config 88)
 >>> check acl = acl_8_8_8
@@ -590,7 +600,7 @@ LOG: H=[5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>>   accept: condition test error in ACL "acl_8_8_8"
 >>>  accept: condition test error in ACL "acl_8_8_8"
 >>> accept: condition test error in ACL "acl_8_8_8"
-LOG: H=[8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too deep: possible loop
+LOG: H=(test) [8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too deep: possible loop
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -599,6 +609,7 @@ LOG: H=[8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too deep: p
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_13"
 >>> processing "accept" (TESTSUITE/test-config 85)
 >>> check acl = TESTSUITE/aux-fixed/0023.acl1
@@ -625,7 +636,7 @@ LOG: H=[8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too deep: p
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
 >>> accept: condition test failed in ACL "acl_5_6_13"
 >>> end of ACL "acl_5_6_13": implicit DENY
-LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x1@y>
+LOG: H=(test) [5.6.13.1] F=<x@y> rejected RCPT <x1@y>
 >>> using ACL "acl_5_6_13"
 >>> processing "accept" (TESTSUITE/test-config 85)
 >>> check acl = TESTSUITE/aux-fixed/0023.acl1
@@ -639,7 +650,7 @@ LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x1@y>
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
 >>> accept: condition test failed in ACL "acl_5_6_13"
 >>> end of ACL "acl_5_6_13": implicit DENY
-LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x2@y>
+LOG: H=(test) [5.6.13.1] F=<x@y> rejected RCPT <x2@y>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -648,6 +659,7 @@ LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x2@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_11_12"
 >>> processing "deny" (TESTSUITE/test-config 105)
 >>>   message: host in DNS list $dnslist_domain: $dnslist_text
@@ -660,7 +672,7 @@ LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x2@y>
 >>> => that means V4NET.11.12.13 is listed at rbl.test.ex
 >>> deny: condition test succeeded in ACL "acl_V4NET_11_12"
 >>> end of ACL "acl_V4NET_11_12": DENY
-LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x@y>: DNSLIST (rbl.test.ex: This is a test blacklisting message)
+LOG: H=(test) [V4NET.11.12.13] F=<x@y> rejected RCPT <x@y>: DNSLIST (rbl.test.ex: This is a test blacklisting message)
 >>> using ACL "acl_V4NET_11_12"
 >>> processing "deny" (TESTSUITE/test-config 105)
 >>>   message: host in DNS list $dnslist_domain: $dnslist_text
@@ -672,7 +684,7 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x@y>: DNSLIST (rbl.test.ex: This 
 >>> => that means V4NET.11.12.13 is listed at rbl.test.ex
 >>> deny: condition test succeeded in ACL "acl_V4NET_11_12"
 >>> end of ACL "acl_V4NET_11_12": DENY
-LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This is a test blacklisting message)
+LOG: H=(test) [V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This is a test blacklisting message)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -681,6 +693,7 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_11_12"
 >>> processing "deny" (TESTSUITE/test-config 105)
 >>>   message: host in DNS list $dnslist_domain: $dnslist_text
@@ -716,6 +729,7 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_20_20_20"
 >>> processing "accept" (TESTSUITE/test-config 111)
 >>>   message: sender verify failure
@@ -729,8 +743,8 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_20_20_20"
 >>> accept: endpass encountered - denying access
-LOG: H=[20.20.20.20] sender verify fail for <x@y>: Unrouteable address
-LOG: H=[20.20.20.20] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
+LOG: H=(test) [20.20.20.20] sender verify fail for <x@y>: Unrouteable address
+LOG: H=(test) [20.20.20.20] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> using ACL "acl_20_20_20"
 >>> processing "accept" (TESTSUITE/test-config 111)
 >>>   message: sender verify failure
@@ -738,7 +752,7 @@ LOG: H=[20.20.20.20] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> using cached sender verify result
 >>> accept: condition test failed in ACL "acl_20_20_20"
 >>> accept: endpass encountered - denying access
-LOG: H=[20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
+LOG: H=(test) [20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -747,6 +761,7 @@ LOG: H=[20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_20_20_20"
 >>> processing "accept" (TESTSUITE/test-config 111)
 >>>   message: sender verify failure
@@ -769,7 +784,7 @@ LOG: H=[20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_20_20_20"
 >>> accept: endpass encountered - denying access
-LOG: H=[20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
+LOG: H=(test) [20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> using ACL "acl_20_20_20"
 >>> processing "accept" (TESTSUITE/test-config 111)
 >>>   message: sender verify failure
@@ -794,6 +809,7 @@ LOG: H=[20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_21_21_21"
 >>> processing "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
@@ -814,7 +830,7 @@ LOG: H=[20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_21_21_21"
 >>> end of ACL "acl_21_21_21": implicit DENY
-LOG: H=[21.21.21.21] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
+LOG: H=(test) [21.21.21.21] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> using ACL "acl_21_21_21"
 >>> processing "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
@@ -844,7 +860,7 @@ LOG: H=[21.21.21.21] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_21_21_21"
 >>> end of ACL "acl_21_21_21": implicit DENY
-LOG: H=[21.21.21.21] F=<userx@y> rejected RCPT <fail@y>: here is a fail message
+LOG: H=(test) [21.21.21.21] F=<userx@y> rejected RCPT <fail@y>: here is a fail message
 >>> using ACL "acl_21_21_21"
 >>> processing "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
@@ -857,15 +873,15 @@ LOG: H=[21.21.21.21] F=<userx@y> rejected RCPT <fail@y>: here is a fail message
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_21_21_21"
 >>> end of ACL "acl_21_21_21": implicit DENY
-LOG: H=[21.21.21.21] sender verify fail for <x@y>: Unrouteable address
-LOG: H=[21.21.21.21] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
+LOG: H=(test) [21.21.21.21] sender verify fail for <x@y>: Unrouteable address
+LOG: H=(test) [21.21.21.21] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> using ACL "acl_21_21_21"
 >>> processing "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
 >>> using cached sender verify result
 >>> accept: condition test failed in ACL "acl_21_21_21"
 >>> end of ACL "acl_21_21_21": implicit DENY
-LOG: H=[21.21.21.21] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
+LOG: H=(test) [21.21.21.21] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "acl_21_21_21"
 >>> processing "accept" (TESTSUITE/test-config 118)
@@ -880,8 +896,8 @@ LOG: H=[21.21.21.21] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_21_21_21"
 >>> end of ACL "acl_21_21_21": implicit DENY
-LOG: H=[21.21.21.21] sender verify fail for <fail@y>: here is a fail message
-LOG: H=[21.21.21.21] F=<fail@y> rejected RCPT <x@y>: Sender verify failed
+LOG: H=(test) [21.21.21.21] sender verify fail for <fail@y>: here is a fail message
+LOG: H=(test) [21.21.21.21] F=<fail@y> rejected RCPT <x@y>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -890,13 +906,14 @@ LOG: H=[21.21.21.21] F=<fail@y> rejected RCPT <x@y>: Sender verify failed
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_22_22_22"
 >>> processing "accept" (TESTSUITE/test-config 123)
 >>> check recipients = x@y
 >>> userx@y in "x@y"? no (end of list)
 >>> accept: condition test failed in ACL "acl_22_22_22"
 >>> end of ACL "acl_22_22_22": implicit DENY
-LOG: H=[22.22.22.22] F=<userx@y> rejected RCPT <userx@y>
+LOG: H=(test) [22.22.22.22] F=<userx@y> rejected RCPT <userx@y>
 >>> using ACL "acl_22_22_22"
 >>> processing "accept" (TESTSUITE/test-config 123)
 >>> check recipients = x@y
@@ -912,6 +929,7 @@ LOG: H=[22.22.22.22] F=<userx@y> rejected RCPT <userx@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_23_23_23"
 >>> processing "deny" (TESTSUITE/test-config 126)
 >>> check hosts = 23.23.23.0
@@ -927,8 +945,8 @@ LOG: H=[22.22.22.22] F=<userx@y> rejected RCPT <userx@y>
 >>> ----------- end verify ------------
 >>> deny: condition test succeeded in ACL "acl_23_23_23"
 >>> end of ACL "acl_23_23_23": DENY
-LOG: H=[23.23.23.0] sender verify fail for <x@y>: Unrouteable address
-LOG: H=[23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
+LOG: H=(test) [23.23.23.0] sender verify fail for <x@y>: Unrouteable address
+LOG: H=(test) [23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>> using ACL "acl_23_23_23"
 >>> processing "deny" (TESTSUITE/test-config 126)
 >>> check hosts = 23.23.23.0
@@ -954,6 +972,7 @@ LOG: H=[23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_23_23_23"
 >>> processing "deny" (TESTSUITE/test-config 126)
 >>> check hosts = 23.23.23.0
@@ -970,13 +989,14 @@ LOG: H=[23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_24_24_24"
 >>> processing "warn" (TESTSUITE/test-config 132)
 >>>   message: X-Warn: sender didn't verify
 >>> check condition = yes
 >>> warn: condition test succeeded in ACL "acl_24_24_24"
 >>> end of ACL "acl_24_24_24": implicit DENY
-LOG: H=[24.24.24.24] F=<x@y> rejected RCPT <userx@y>
+LOG: H=(test) [24.24.24.24] F=<x@y> rejected RCPT <userx@y>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -985,6 +1005,7 @@ LOG: H=[24.24.24.24] F=<x@y> rejected RCPT <userx@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_25_25_25"
 >>> processing "deny" (TESTSUITE/test-config 136)
 >>>   message: denying domains=x
@@ -992,7 +1013,7 @@ LOG: H=[24.24.24.24] F=<x@y> rejected RCPT <userx@y>
 >>> y in "x"? no (end of list)
 >>> deny: condition test failed in ACL "acl_25_25_25"
 >>> end of ACL "acl_25_25_25": implicit DENY
-LOG: H=[25.25.25.25] F=<x@y> rejected RCPT <x@y>
+LOG: H=(test) [25.25.25.25] F=<x@y> rejected RCPT <x@y>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -1001,6 +1022,7 @@ LOG: H=[25.25.25.25] F=<x@y> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_26_26_26"
 >>> processing "deny" (TESTSUITE/test-config 140)
 >>> check senders = :
@@ -1021,7 +1043,7 @@ LOG: H=[25.25.25.25] F=<x@y> rejected RCPT <x@y>
 >>>                 = yes
 >>> deny: condition test succeeded in ACL "acl_26_26_26"
 >>> end of ACL "acl_26_26_26": DENY
-LOG: H=[26.26.26.26] F=<> rejected RCPT <y@y>: bounce messages can have only one recipient
+LOG: H=(test) [26.26.26.26] F=<> rejected RCPT <y@y>: bounce messages can have only one recipient
 >>> using ACL "acl_26_26_26"
 >>> processing "deny" (TESTSUITE/test-config 140)
 >>> check senders = :
@@ -1031,7 +1053,7 @@ LOG: H=[26.26.26.26] F=<> rejected RCPT <y@y>: bounce messages can have only one
 >>>                 = yes
 >>> deny: condition test succeeded in ACL "acl_26_26_26"
 >>> end of ACL "acl_26_26_26": DENY
-LOG: H=[26.26.26.26] F=<> rejected RCPT <z@y>: bounce messages can have only one recipient
+LOG: H=(test) [26.26.26.26] F=<> rejected RCPT <z@y>: bounce messages can have only one recipient
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -1040,6 +1062,7 @@ LOG: H=[26.26.26.26] F=<> rejected RCPT <z@y>: bounce messages can have only one
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_27_27_27"
 >>> processing "deny" (TESTSUITE/test-config 147)
 >>> check hosts = ${if eq {1}{0}{}fail}
@@ -1056,6 +1079,7 @@ LOG: H=[26.26.26.26] F=<> rejected RCPT <z@y>: bounce messages can have only one
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_28_28_28"
 >>> processing "accept" (TESTSUITE/test-config 151)
 >>> check sender_domains = : okdomain
@@ -1075,7 +1099,7 @@ LOG: H=[26.26.26.26] F=<> rejected RCPT <z@y>: bounce messages can have only one
 >>> baddomain in ": okdomain"? no (end of list)
 >>> accept: condition test failed in ACL "acl_28_28_28"
 >>> end of ACL "acl_28_28_28": implicit DENY
-LOG: H=[28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
+LOG: H=(test) [28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -1084,6 +1108,7 @@ LOG: H=[28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_0_0"
 >>> processing "require" (TESTSUITE/test-config 97)
 >>> check verify = reverse_host_lookup
@@ -1107,6 +1132,7 @@ LOG: H=[28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_0_0"
 >>> processing "require" (TESTSUITE/test-config 97)
 >>> check verify = reverse_host_lookup
@@ -1115,7 +1141,7 @@ LOG: H=[28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 LOG: no host name found for IP address V4NET.0.0.97
 >>> require: condition test failed in ACL "acl_V4NET_0_0"
 >>> end of ACL "acl_V4NET_0_0": not OK
-LOG: H=[V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for reverse lookup check (failed to find host name from IP address)
+LOG: H=(test) [V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for reverse lookup check (failed to find host name from IP address)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -1124,6 +1150,7 @@ LOG: H=[V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for reverse l
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_99_99"
 >>> processing "accept" (TESTSUITE/test-config 100)
 >>> check local_parts = defer_ok
@@ -1137,7 +1164,7 @@ LOG: H=[V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for reverse l
 >>> x.test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> temporary error for host name lookup
 >>> accept: condition test deferred in ACL "acl_V4NET_99_99"
-LOG: H=[V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferred for reverse lookup check
+LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferred for reverse lookup check
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -1146,6 +1173,7 @@ LOG: H=[V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferr
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_99_99"
 >>> processing "accept" (TESTSUITE/test-config 100)
 >>> check local_parts = defer_ok
@@ -1166,6 +1194,7 @@ LOG: H=[V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferr
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_29_29_29"
 >>> processing "deny" (TESTSUITE/test-config 154)
 >>> check dnslists = test.ex/$sender_address_domain
@@ -1177,7 +1206,7 @@ LOG: H=[V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferr
 >>> => that means localhost is listed at test.ex
 >>> deny: condition test succeeded in ACL "acl_29_29_29"
 >>> end of ACL "acl_29_29_29": DENY
-LOG: H=[29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
+LOG: H=(test) [29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>> using ACL "acl_29_29_29"
 >>> processing "deny" (TESTSUITE/test-config 154)
 >>> check dnslists = test.ex/$sender_address_domain
@@ -1199,6 +1228,7 @@ LOG: H=[29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_30_30_30"
 >>> processing "deny" (TESTSUITE/test-config 161)
 >>>   message: domain=$dnslist_domain\nvalue=$dnslist_value\nmatched=$dnslist_matched\ntext="$dnslist_text"
@@ -1211,7 +1241,7 @@ LOG: H=[29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>> => that means ten-1 is listed at test.ex
 >>> deny: condition test succeeded in ACL "acl_30_30_30"
 >>> end of ACL "acl_30_30_30": DENY
-LOG: H=[30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
+LOG: H=(test) [30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
 >>> using ACL "acl_30_30_30"
 >>> processing "deny" (TESTSUITE/test-config 161)
 >>>   message: domain=$dnslist_domain\nvalue=$dnslist_value\nmatched=$dnslist_matched\ntext="$dnslist_text"
@@ -1240,7 +1270,7 @@ LOG: H=[30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
 >>> => that means 13.12.11.V4NET.rbl is listed at test.ex
 >>> deny: condition test succeeded in ACL "acl_30_30_30"
 >>> end of ACL "acl_30_30_30": DENY
-LOG: H=[30.30.30.30] F=<a@13.12.11.V4NET.rbl> rejected RCPT <x@y>: domain=test.ex
+LOG: H=(test) [30.30.30.30] F=<a@13.12.11.V4NET.rbl> rejected RCPT <x@y>: domain=test.ex
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -1249,6 +1279,7 @@ LOG: H=[30.30.30.30] F=<a@13.12.11.V4NET.rbl> rejected RCPT <x@y>: domain=test.e
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_31_31_31"
 >>> processing "deny" (TESTSUITE/test-config 167)
 >>> check dnslists = test.ex/$sender_address_domain+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
@@ -1267,6 +1298,7 @@ LOG: dnslist query is too long (ignored): y+extra+extra+extra+extra+extra+extra+
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_33_33_33"
 >>> processing "accept" (TESTSUITE/test-config 184)
 >>>   message: sender verify failure
@@ -1280,7 +1312,7 @@ LOG: dnslist query is too long (ignored): y+extra+extra+extra+extra+extra+extra+
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_33_33_33"
 >>> accept: endpass encountered - denying access
-LOG: H=[33.33.33.33] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
+LOG: H=(test) [33.33.33.33] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> using ACL "acl_33_33_33"
 >>> processing "accept" (TESTSUITE/test-config 184)
 >>>   message: sender verify failure
@@ -1288,7 +1320,7 @@ LOG: H=[33.33.33.33] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> using cached sender verify result
 >>> accept: condition test failed in ACL "acl_33_33_33"
 >>> accept: endpass encountered - denying access
-LOG: H=[33.33.33.33] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
+LOG: H=(test) [33.33.33.33] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -1297,6 +1329,7 @@ LOG: H=[33.33.33.33] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_44_44_44"
 >>> processing "warn" (TESTSUITE/test-config 192)
 >>> check dnslists = test.again.dns
@@ -1328,7 +1361,7 @@ LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: ass
 >>> dnslists: using result of previous lookup
 LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: returned DEFER
 >>> warn: condition test deferred in ACL "acl_44_44_44"
-LOG: H=[44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferred
+LOG: H=(test) [44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferred
 >>> processing "accept" (TESTSUITE/test-config 196)
 >>> accept: condition test succeeded in ACL "acl_44_44_44"
 >>> end of ACL "acl_44_44_44": ACCEPT
@@ -1340,6 +1373,7 @@ LOG: H=[44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferr
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_60_60_60"
 >>> processing "accept" (TESTSUITE/test-config 226)
 >>> check !acl = TESTSUITE/aux-fixed/0023.acl2
@@ -1364,4 +1398,4 @@ LOG: H=[44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferr
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl2": ACCEPT
 >>> accept: condition test failed in ACL "acl_60_60_60"
 >>> end of ACL "acl_60_60_60": implicit DENY
-LOG: H=[60.60.60.60] F=<x@y> rejected RCPT <a@b>
+LOG: H=(test) [60.60.60.60] F=<x@y> rejected RCPT <a@b>

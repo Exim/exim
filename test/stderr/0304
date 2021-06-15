@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -48,7 +49,7 @@
 >>> b1@x in "b1@x"? yes (matched "b1@x")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<> rejected RCPT <b1@x>: failed 7
+LOG: H=(test) [1.2.3.4] F=<> rejected RCPT <b1@x>: failed 7
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -98,7 +99,7 @@ LOG: H=[1.2.3.4] F=<> rejected RCPT <b1@x>: failed 7
 >>> b2@x in "b2@x"? yes (matched "b2@x")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<> rejected RCPT <b2@x>: failed 8
+LOG: H=(test) [1.2.3.4] F=<> rejected RCPT <b2@x>: failed 8
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -172,7 +173,7 @@ LOG: H=[1.2.3.4] F=<> rejected RCPT <b2@x>: failed 8
 >>> abc@w.x.y.z in "^abc.*@.*\.x\.y\.z : a@b"? yes (matched "^abc.*@.*\.x\.y\.z")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@w.x.y.z>: failed 1
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <abc@w.x.y.z>: failed 1
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -180,7 +181,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@w.x.y.z>: failed 1
 >>> abcdef@q.x.y.z in "^abc.*@.*\.x\.y\.z : a@b"? yes (matched "^abc.*@.*\.x\.y\.z")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abcdef@q.x.y.z>: failed 1
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <abcdef@q.x.y.z>: failed 1
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -189,7 +190,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abcdef@q.x.y.z>: failed 1
 >>> a@b in "^abc.*@.*\.x\.y\.z : a@b"? yes (matched "a@b")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <a@b>: failed 1
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <a@b>: failed 1
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -265,7 +266,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <a@b>: failed 1
 >>> x@a.b.c in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0304.d1")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@a.b.c>: failed 2
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@a.b.c>: failed 2
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -278,7 +279,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@a.b.c>: failed 2
 >>> abc@d.e.f in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0304.d1")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@d.e.f>: failed 2
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <abc@d.e.f>: failed 2
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -359,7 +360,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@d.e.f>: failed 2
 >>> abc@at.1 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? yes (matched "@@lsearch;TESTSUITE/aux-fixed/0304.d2")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@at.1>: failed 3
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <abc@at.1>: failed 3
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -377,7 +378,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@at.1>: failed 3
 >>> xyz@at.1 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? yes (matched "@@lsearch;TESTSUITE/aux-fixed/0304.d2")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <xyz@at.1>: failed 3
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <xyz@at.1>: failed 3
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -395,7 +396,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <xyz@at.1>: failed 3
 >>> abcxyz@at.1 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? yes (matched "@@lsearch;TESTSUITE/aux-fixed/0304.d2")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abcxyz@at.1>: failed 3
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <abcxyz@at.1>: failed 3
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -482,7 +483,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abcxyz@at.1>: failed 3
 >>> x@domain.only in "domain.only : *.domain2.only"? yes (matched "domain.only")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@domain.only>: failed 4
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@domain.only>: failed 4
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -507,7 +508,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@domain.only>: failed 4
 >>> x@abc.domain2.only in "domain.only : *.domain2.only"? yes (matched "*.domain2.only")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@abc.domain2.only>: failed 4
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@abc.domain2.only>: failed 4
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -601,7 +602,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@abc.domain2.only>: failed 4
 >>> abc@domain3 in "abc@domain3 : xyz@*.domain4"? yes (matched "abc@domain3")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@domain3>: failed 5
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <abc@domain3>: failed 5
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -632,7 +633,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@domain3>: failed 5
 >>> xyz@x.domain4 in "abc@domain3 : xyz@*.domain4"? yes (matched "xyz@*.domain4")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <xyz@x.domain4>: failed 5
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <xyz@x.domain4>: failed 5
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -797,7 +798,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <xyz@x.domain4>: failed 5
 >>> pqr@myhost.test.ex in "pqr@@"? yes (matched "pqr@@")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <pqr@myhost.test.ex>: failed 6
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <pqr@myhost.test.ex>: failed 6
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -913,7 +914,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <pqr@myhost.test.ex>: failed 6
 >>> a@domain5 in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? yes (matched "*@lsearch;TESTSUITE/aux-fixed/0304.d3")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <a@domain5>: failed 9
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <a@domain5>: failed 9
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -972,7 +973,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <a@domain5>: failed 9
 >>> xyz@domain6 in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? yes (matched "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <xyz@domain6>: failed 10
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <xyz@domain6>: failed 10
 >>> using ACL "acl1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>>   message: failed 1
@@ -1098,4 +1099,4 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <xyz@domain6>: failed 10
 >>> x@domain7 in "lsearch*@;TESTSUITE/aux-fixed/0304.d5"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0304.d5")
 >>> deny: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": DENY
-LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@domain7>: failed 11
+LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@domain7>: failed 11

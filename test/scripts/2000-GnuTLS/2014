@@ -51,6 +51,8 @@ ehlo rhu3.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<userx@test.ex>
 ??? 250
 rcpt to:<userx@test.ex>
@@ -70,6 +72,8 @@ ehlo rhu4.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<userx@test.ex>
 ??? 250
 rcpt to:<userx@test.ex>
@@ -107,6 +111,8 @@ ehlo rhu6.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<userx@test.ex>
 ??? 250
 rcpt to:<userx@test.ex>
@@ -134,7 +140,7 @@ ehlo rhu7.barb
 ??? 250
 starttls
 ??? 220
-mail from:<userx@test.ex>
+helo test
 ??? 554
 ****
 ### Revoked certificate, certificate optional at TLS time, reject at ACL time
@@ -149,6 +155,8 @@ ehlo rhu8.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<userx@test.ex>
 ??? 250
 rcpt to:<userx@test.ex>
@@ -168,6 +176,8 @@ ehlo rhu9.barb
 ??? 250
 starttls
 ??? 220
+helo test
+??? 250
 mail from:<userx@test.ex>
 ??? 250
 rcpt to:<userx@test.ex>

@@ -1,5 +1,6 @@
 # host lookup failure error message
 exim -bh V4NET.0.0.97
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@external.test.ex>
 rset

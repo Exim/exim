@@ -1,4 +1,5 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test [V4NET.0.0.0]
 250 OK
 250 Accepted
 550-Verification failed for <x@y>
@@ -11,6 +12,7 @@
 250 OK id=10HmaX-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test [V4NET.0.0.0]
 250 OK
 250 Accepted
 250 Accepted
@@ -22,6 +24,7 @@
 250 OK id=10HmaY-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test [V4NET.255.255.0]
 250 OK
 550 unknown user
 550 Unrouteable address
@@ -31,6 +34,7 @@
 250 OK id=10HmaZ-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test [V4NET.11.12.13]
 250 OK
 250 Accepted
 550-rejected because V4NET.11.12.13 is in a black list at rbl.test.ex
@@ -41,6 +45,7 @@
 250 OK id=10HmbA-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test [V4NET.11.12.16]
 250 OK
 250 Accepted
 250 Accepted
@@ -49,6 +54,7 @@
 250 OK id=10HmbB-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test
 250 OK
 250 Accepted
 250 Accepted

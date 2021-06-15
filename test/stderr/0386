@@ -27,6 +27,12 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+test in helo_lookup_domains? no (end of list)
+sender_fullhost = (test) [V4NET.9.8.7]
+sender_rcvhost = [V4NET.9.8.7] (helo=test)
+set_process_info: pppp handling incoming connection from (test) [V4NET.9.8.7]
+SMTP>> 250 myhost.test.ex Hello test [V4NET.9.8.7]
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -80,7 +86,7 @@ accept: condition test failed in ACL "chk_rcpt"
 accept: endpass encountered - denying access
 SMTP>> 550 No such user here
 LOG: MAIN REJECT
-  H=[V4NET.9.8.7] F=<x@y> rejected RCPT <1@b>: No such user here
+  H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <1@b>: No such user here
 SMTP<< rset
 SMTP>> 250 Reset OK
 SMTP<< mail from:<x@y>
@@ -135,11 +141,11 @@ accept: condition test failed in ACL "chk_rcpt"
 accept: endpass encountered - denying access
 SMTP>> 550 No such user here
 LOG: MAIN REJECT
-  H=[V4NET.9.8.7] F=<x@y> rejected RCPT <1@b>: No such user here
+  H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <1@b>: No such user here
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from [V4NET.9.8.7] closed by QUIT
+  SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -173,6 +179,12 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+test in helo_lookup_domains? no (end of list)
+sender_fullhost = (test) [V4NET.11.12.13]
+sender_rcvhost = [V4NET.11.12.13] (helo=test ident=CALLER)
+set_process_info: pppp handling incoming connection from (test) [V4NET.11.12.13] U=CALLER
+SMTP>> 250 myhost.test.ex Hello CALLER at test [V4NET.11.12.13]
 SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -203,7 +215,7 @@ DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) succeeded
 => that means V4NET.11.12.13 is listed at rbl.test.ex
  warn: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
 LOG: MAIN
-  H=[V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
+  H=(test) [V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
 created log directory TESTSUITE/spool/log
  processing "accept" (TESTSUITE/test-config 44)
  accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
@@ -222,7 +234,7 @@ search_tidyup called
 Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
-P Received: from [V4NET.11.12.13] (ident=CALLER)
+P Received: from [V4NET.11.12.13] (helo=test ident=CALLER)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
 	id 10HmaX-0005vi-00
@@ -237,7 +249,7 @@ DSN: **** SPOOL_OUT - address: <2@b> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
-  <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
+  <= x@y H=(test) [V4NET.11.12.13] U=CALLER P=smtp S=sss
 SMTP>> 250 OK id=10HmaX-0005vi-00
 search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
@@ -257,8 +269,8 @@ set_process_info: pppp delivering 10HmaX-0005vi-00
 Trying spool file TESTSUITE/spool//input//10HmaX-0005vi-00-D
 reading spool file 10HmaX-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=x@y
-sender_fullhost = [V4NET.11.12.13]
-sender_rcvhost = [V4NET.11.12.13] (ident=CALLER)
+sender_fullhost = (test) [V4NET.11.12.13]
+sender_rcvhost = [V4NET.11.12.13] (helo=test ident=CALLER)
 sender_local=0 ident=CALLER
 Non-recipients:
  Empty Tree
@@ -394,7 +406,7 @@ DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 => that means V4NET.11.12.13 is listed at rbl.test.ex
  warn: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
 LOG: MAIN
-  H=[V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
+  H=(test) [V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
  processing "accept" (TESTSUITE/test-config 44)
  accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
  end of ACL "TESTSUITE/aux-fixed/0386.acl2": ACCEPT
@@ -412,7 +424,7 @@ search_tidyup called
 Data file name: TESTSUITE/spool//input//10HmaY-0005vi-00-D
 Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line
-P Received: from [V4NET.11.12.13] (ident=CALLER)
+P Received: from [V4NET.11.12.13] (helo=test ident=CALLER)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
 	id 10HmaY-0005vi-00
@@ -427,7 +439,7 @@ DSN: **** SPOOL_OUT - address: <2@b> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0
 Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
-  <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
+  <= x@y H=(test) [V4NET.11.12.13] U=CALLER P=smtp S=sss
 SMTP>> 250 OK id=10HmaY-0005vi-00
 search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaY-0005vi-00
@@ -447,8 +459,8 @@ set_process_info: pppp delivering 10HmaY-0005vi-00
 Trying spool file TESTSUITE/spool//input//10HmaY-0005vi-00-D
 reading spool file 10HmaY-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=x@y
-sender_fullhost = [V4NET.11.12.13]
-sender_rcvhost = [V4NET.11.12.13] (ident=CALLER)
+sender_fullhost = (test) [V4NET.11.12.13]
+sender_rcvhost = [V4NET.11.12.13] (helo=test ident=CALLER)
 sender_local=0 ident=CALLER
 Non-recipients:
  Empty Tree

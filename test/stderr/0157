@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check hosts = :
@@ -24,7 +25,7 @@
 >>> x@y.z in "userx@test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> accept: endpass encountered - denying access
-LOG: H=[V4NET.0.0.1] F=<x@y.z> rejected RCPT <a@b.c>: invalid sender
+LOG: H=(test) [V4NET.0.0.1] F=<x@y.z> rejected RCPT <a@b.c>: invalid sender
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check hosts = :
@@ -52,6 +53,7 @@ LOG: H=[V4NET.0.0.1] F=<x@y.z> rejected RCPT <a@b.c>: invalid sender
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check hosts = :
@@ -99,6 +101,7 @@ LOG: H=[V4NET.0.0.1] F=<x@y.z> rejected RCPT <a@b.c>: invalid sender
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check hosts = :
@@ -122,7 +125,7 @@ LOG: H=[V4NET.0.0.1] F=<x@y.z> rejected RCPT <a@b.c>: invalid sender
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
-LOG: H=[V4NET.0.0.3] F=<x@y.z> rejected RCPT <a@b.c>: relay not permitted
+LOG: H=(test) [V4NET.0.0.3] F=<x@y.z> rejected RCPT <a@b.c>: relay not permitted
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check hosts = :
@@ -145,4 +148,4 @@ LOG: H=[V4NET.0.0.3] F=<x@y.z> rejected RCPT <a@b.c>: relay not permitted
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
-LOG: H=[V4NET.0.0.3] F=<userx@test.ex> rejected RCPT <a@b.c>: relay not permitted
+LOG: H=(test) [V4NET.0.0.3] F=<userx@test.ex> rejected RCPT <a@b.c>: relay not permitted

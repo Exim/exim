@@ -4,6 +4,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [127.0.0.1]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
@@ -18,6 +19,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [127.0.0.1]
 250 OK
 550-Verification failed for <fail@test.ex>
 550-Unrouteable address
@@ -29,6 +31,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [127.0.0.1]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself

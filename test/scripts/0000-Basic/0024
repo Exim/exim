@@ -8,6 +8,7 @@
 # deny   x@ten-2.test.ex (good address, but sender verify failed)
 #
 exim -odi -oMa V4NET.0.0.0 -bs
+helo test
 mail from:<x@y>
 rcpt to:<postmaster@test.ex>
 rcpt to:<userx@test.ex>
@@ -27,6 +28,7 @@ quit
 # deny   x@ten-2.test.ex (good address, but not relay domain or host)
 # accept EAI local part
 exim -odi -oMa V4NET.0.0.0 -bs
+helo test
 mail from:<userx@test.ex>
 rcpt to:<postmaster@test.ex>
 rcpt to:<userx@test.ex>
@@ -45,6 +47,7 @@ quit
 # accept x@ten-1.test.ex (good relay address)
 # accept x@ten-2.test.ex (good non-relay address, relay host)
 exim -odi -oMa V4NET.255.255.0 -bs
+helo test
 mail from:<userx@test.ex>
 rcpt to:<bad@test.ex>
 rcpt to:<x@y>
@@ -59,6 +62,7 @@ quit
 # accept postmaster@test.ex (postmaster at local domain)
 # deny   anything else
 exim -odi -oMa V4NET.11.12.13 -bs
+helo test
 mail from:<userx@test.ex>
 rcpt to:<postmaster@test.ex>
 rcpt to:<userx@test.ex>
@@ -72,6 +76,7 @@ quit
 # accept postmaster@test.ex (postmaster at local domain)
 # deny   anything else
 exim -odi -oMa V4NET.11.12.16 -bs
+helo test
 mail from:<userx@test.ex>
 rcpt to:<postmaster@test.ex>
 rcpt to:<userx@test.ex>
@@ -84,6 +89,7 @@ quit
 # Local SMTP - should accept everything
 #
 exim -odi -bs
+helo test
 mail from:<x@y>
 rcpt to:<postmaster@test.ex>
 rcpt to:<userx@test.ex>

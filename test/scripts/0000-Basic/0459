@@ -1,5 +1,6 @@
 # unwanted search error messages in ACLs
 exim -bs
+helo test
 mail from:<>
 rcpt to:outer@xx
 quit

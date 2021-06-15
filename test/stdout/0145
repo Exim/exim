@@ -5,6 +5,7 @@ x@mxt10.test.ex is undeliverable: all relevant MX records point to non-existent 
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.9.8.7]
 250 OK
 550-Verification failed for <x@mxt10.test.ex>
 550-It appears that the DNS operator for mxt10.test.ex
@@ -18,6 +19,7 @@ x@mxt10.test.ex is undeliverable: all relevant MX records point to non-existent 
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.9.8.7]
 250 OK
 550-It appears that the DNS operator for mxt10.test.ex
 550-has installed an invalid MX record with an IP address

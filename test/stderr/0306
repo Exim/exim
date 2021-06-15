@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
 >>> processing "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
@@ -51,7 +52,7 @@
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "rcpt"
 >>> accept: endpass encountered - denying access
-LOG: H=[1.2.3.4] F=<anyone@anywhere> rejected RCPT <list1@lists.test.ex>: list1@lists.test.ex is a closed mailing list
+LOG: H=(test) [1.2.3.4] F=<anyone@anywhere> rejected RCPT <list1@lists.test.ex>: list1@lists.test.ex is a closed mailing list
 >>> using ACL "rcpt"
 >>> processing "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
@@ -68,4 +69,4 @@ LOG: H=[1.2.3.4] F=<anyone@anywhere> rejected RCPT <list1@lists.test.ex>: list1@
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "rcpt"
 >>> accept: endpass encountered - denying access
-LOG: H=[1.2.3.4] F=<anyone@anywhere> rejected RCPT <nonlist@lists.test.ex>: nonlist@lists.test.ex is a closed mailing list
+LOG: H=(test) [1.2.3.4] F=<anyone@anywhere> rejected RCPT <nonlist@lists.test.ex>: nonlist@lists.test.ex is a closed mailing list

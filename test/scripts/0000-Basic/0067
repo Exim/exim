@@ -1,5 +1,6 @@
 # sender_reject (various, including @@)
 exim -bh 1.2.3.4
+helo test
 mail from:<userx@somehost.example.com>
 rcpt to:<x@test.ex>
 rset

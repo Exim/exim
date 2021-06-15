@@ -50,7 +50,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
-Received: from CALLER by the.local.host.name with local-bsmtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by the.local.host.name with local-bsmtp (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbC-0005vi-00
 	for userx@test.ex;
@@ -63,7 +64,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
-Received: from CALLER by the.local.host.name with local-bsmtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by the.local.host.name with local-bsmtp (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbD-0005vi-00
 	for userx@test.ex;
@@ -76,7 +78,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
-Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbE-0005vi-00
 	for userx@test.ex;
@@ -89,7 +92,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
-Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbF-0005vi-00
 	for userx@test.ex;

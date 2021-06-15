@@ -1,15 +1,18 @@
 # reset search_error_message for next router
 exim -bs
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.again.dns>
 quit
 ****
 exim -bh 1.2.3.4
+helo test
 mail from:<userx@test.ex>
 rcpt to:<userx@test.again.dns>
 quit
 ****
 exim -bh 1.2.3.4
+helo test
 mail from:<userx@test.ex>
 rcpt to:<r1-userx@test.again.dns>
 quit

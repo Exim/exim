@@ -1,4 +1,5 @@
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello CALLER at test
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself

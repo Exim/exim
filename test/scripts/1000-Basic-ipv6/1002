@@ -1,5 +1,6 @@
 # @ items in domain lists and host lists
 exim -bh V4NET.1.1.1
+helo test
 mail from:<x@y>
 rcpt to:<1@[::1]>
 rcpt to:<6@mxt11a.test.ex>

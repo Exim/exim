@@ -24,6 +24,8 @@ quit
 ****
 client-anytls -tls-on-connect HOSTIPV4 PORT_D aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.pem aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.unlocked.key
 ??? 220
+helo test
+??? 250
 mail from:<userx@test.ex>
 ??? 250
 rcpt to:<userx@test.ex>

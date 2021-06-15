@@ -1,17 +1,19 @@
 # smtp_accept_{max,queue}_per_connection
 exim -odi -v -bs
-mail from:<x@y>
+helo test
+mail from:<x1@y>
 rcpt to:<one@z>
 data
 .
-mail from:<x@y>
+mail from:<x2@y>
 rcpt to:<two@z>
 data
 .
-mail from:<x@y>
+mail from:<x3@y>
 quit
 ****
 exim -odi -v -bs
+helo test
 mail from:<x@y>
 rset
 mail from:<x@y>

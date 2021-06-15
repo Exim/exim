@@ -2,6 +2,7 @@
 need_ipv4
 #
 exim -bh V4NET.0.0.0
+helo test
 mail from:<user@bad.domain>
 rcpt to:<userx@test.ex>
 data
@@ -9,6 +10,7 @@ data
 quit
 ****
 exim -bh V4NET.0.0.0
+helo test
 mail from:<user@bad.domain2>
 rcpt to:<userx@test.ex>
 data
@@ -16,6 +18,7 @@ data
 quit
 ****
 exim -bh V4NET.0.0.0
+helo test
 mail from:<user@ten-1.test.ex>
 rcpt to:<userx@test.ex>
 data

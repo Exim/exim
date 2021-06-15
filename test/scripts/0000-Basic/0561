@@ -2,6 +2,7 @@
 need_ipv4
 #
 exim -bs
+helo test
 mail from:<>
 rcpt to:<userx@test.ex>
 data
@@ -28,6 +29,7 @@ sleep 1
 killdaemon
 #
 exim -bs -DQOLL=false
+helo test
 mail from:<>
 rcpt to:<userx@test.ex>
 data

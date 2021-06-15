@@ -22,6 +22,12 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
+SMTP<< helo test
+test in helo_lookup_domains? no (end of list)
+sender_fullhost = (test) [ip4.ip4.ip4.ip4]
+sender_rcvhost = [ip4.ip4.ip4.ip4] (helo=test)
+set_process_info: pppp handling incoming connection from (test) [ip4.ip4.ip4.ip4]
+SMTP>> 250 myhost.test.ex Hello test [ip4.ip4.ip4.ip4]
 SMTP<< mail from:<xx@cioce.test.again.dns>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -59,8 +65,8 @@ the.local.host.name ip4.ip4.ip4.ip4 mx=-1 sort=xx
 checking addresses for the.local.host.name
 Forward DNS security status: unverified
   ip4.ip4.ip4.ip4 OK
-sender_fullhost = the.local.host.name [ip4.ip4.ip4.ip4]
-sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4])
+sender_fullhost = the.local.host.name (test) [ip4.ip4.ip4.ip4]
+sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4] helo=test)
 using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
 DNS lookup of cioce.test.again.dns (A) using fakens
 DNS lookup of cioce.test.again.dns (A) gave TRY_AGAIN
@@ -70,19 +76,19 @@ DNS: couldn't fake dnsa len
 DNS: no SOA record found for neg-TTL
  writing neg-cache entry for cioce.test.again.dns-A-xxxx, ttl -1
 host_fake_gethostbyname(af=inet) returned 1 (HOST_NOT_FOUND)
-no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name [ip4.ip4.ip4.ip4])
+no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
 LOG: host_lookup_failed MAIN
-  no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name [ip4.ip4.ip4.ip4])
+  no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
 failed to find IP address for cioce.test.again.dns: item ignored by +ignore_unknown
 host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "? no (end of list)
 accept: condition test failed in ACL "rcpt"
 end of ACL "rcpt": implicit DENY
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT
-  H=the.local.host.name [ip4.ip4.ip4.ip4] F=<xx@cioce.test.again.dns> rejected RCPT <a@b>
+  H=the.local.host.name (test) [ip4.ip4.ip4.ip4] F=<xx@cioce.test.again.dns> rejected RCPT <a@b>
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from the.local.host.name [ip4.ip4.ip4.ip4] closed by QUIT
+  SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4] closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

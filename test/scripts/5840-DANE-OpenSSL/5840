@@ -16,6 +16,7 @@ exim -qf
 #
 ### Recipient callout
 exim -DOPT=callout -bhc 127.0.0.1
+HELO test
 MAIL FROM: <t3@myhost.test.ex>
 RCPT TO: <rcptuser@dane256ee.test.ex>
 ****

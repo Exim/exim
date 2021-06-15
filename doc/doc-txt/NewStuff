@@ -54,6 +54,8 @@ Version 4.95
 15. Main option "smtp_backlog_monitor", to set a level abve which listen
     socket backlogs are logged.
 
+16. Main option "hosts_require_helo", requiring HELO or EHLO before MAIL.
+
 Version 4.94
 ------------
 

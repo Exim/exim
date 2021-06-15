@@ -7,6 +7,7 @@
 
 domainlist local_domains = exim.test.ex
 trusted_users = CALLER
+hosts_require_helo =
 
 acl_smtp_helo = check_helo
 acl_smtp_rcpt = check_recipient

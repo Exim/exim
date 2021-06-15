@@ -1051,6 +1051,7 @@ exim -d -bh V4NET.0.0.2
 ****
 # Test $reply_address
 exim -bh V4NET.0.0.0
+helo test
 mail from:<>
 rcpt to:<some@body>
 data
@@ -1081,6 +1082,7 @@ quit
 ****
 # Check RFC 2047 decoding with (default) length check
 exim -bh V4NET.0.0.0
+helo test
 mail from:<>
 rcpt to:<some@body>
 data
@@ -1090,6 +1092,7 @@ quit
 ****
 # Check RFC 2047 decoding with length check disabled
 exim -DLENCHECK=check_rfc2047_length=false -bh V4NET.0.0.0
+helo test
 mail from:<>
 rcpt to:<some@body>
 data

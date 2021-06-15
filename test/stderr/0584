@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 20)
 >>> check verify = sender=userx@test.ex
@@ -20,7 +21,7 @@
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
-LOG: 10HmaX-0005vi-00 <= userx@test.ex H=[127.0.0.1] P=smtp S=sss
+LOG: 10HmaX-0005vi-00 <= userx@test.ex H=(test) [127.0.0.1] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -29,6 +30,7 @@ LOG: 10HmaX-0005vi-00 <= userx@test.ex H=[127.0.0.1] P=smtp S=sss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 20)
 >>> check verify = sender=fail@test.ex
@@ -39,8 +41,8 @@ LOG: 10HmaX-0005vi-00 <= userx@test.ex H=[127.0.0.1] P=smtp S=sss
 >>> ----------- end verify ------------
 >>> require: condition test failed in ACL "check_recipient"
 >>> end of ACL "check_recipient": not OK
-LOG: H=[127.0.0.1] sender verify fail for <fail@test.ex>: Unrouteable address
-LOG: H=[127.0.0.1] F=<userx@test.ex> rejected RCPT <userx@test.ex>: Sender verify failed
+LOG: H=(test) [127.0.0.1] sender verify fail for <fail@test.ex>: Unrouteable address
+LOG: H=(test) [127.0.0.1] F=<userx@test.ex> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -49,6 +51,7 @@ LOG: H=[127.0.0.1] F=<userx@test.ex> rejected RCPT <userx@test.ex>: Sender verif
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 20)
 >>> check verify = sender=$sender_address/defer_ok
@@ -64,4 +67,4 @@ LOG: H=[127.0.0.1] F=<userx@test.ex> rejected RCPT <userx@test.ex>: Sender verif
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
-LOG: 10HmaY-0005vi-00 <= userx@test.ex H=[127.0.0.1] P=smtp S=sss
+LOG: 10HmaY-0005vi-00 <= userx@test.ex H=(test) [127.0.0.1] P=smtp S=sss

@@ -139,7 +139,7 @@ static struct {
 #endif
   BOOL dsn_advertised			:1;
   BOOL esmtp				:1;
-  BOOL helo_required			:1;
+  BOOL helo_verify_required		:1;
   BOOL helo_verify			:1;
   BOOL helo_seen			:1;
   BOOL helo_accept_junk			:1;
@@ -153,7 +153,7 @@ static struct {
   BOOL smtputf8_advertised		:1;
 #endif
 } fl = {
-  .helo_required = FALSE,
+  .helo_verify_required = FALSE,
   .helo_verify = FALSE,
   .smtp_exit_function_called = FALSE,
 };
@@ -2936,8 +2936,8 @@ if (!f.sender_host_unknown)
   /* Determine whether HELO/EHLO is required for this host. The requirement
   can be hard or soft. */
 
-  fl.helo_required = verify_check_host(&helo_verify_hosts) == OK;
-  if (!fl.helo_required)
+  fl.helo_verify_required = verify_check_host(&helo_verify_hosts) == OK;
+  if (!fl.helo_verify_required)
     fl.helo_verify = verify_check_host(&helo_try_verify_hosts) == OK;
 
   /* Determine whether this hosts is permitted to send syntactic junk
@@ -3981,7 +3981,6 @@ int
 smtp_setup_msg(void)
 {
 int done = 0;
-int mailmax = -1;
 BOOL toomany = FALSE;
 BOOL discarded = FALSE;
 BOOL last_was_rej_mail = FALSE;
@@ -4251,7 +4250,7 @@ while (done <= 0)
       /* If sender_host_unknown is true, we have got here via the -bs interface,
       not called from inetd. Otherwise, we are running an IP connection and the
       host address will be set. If the helo name is the primary name of this
-      host and we haven't done a reverse lookup, force one now. If helo_required
+      host and we haven't done a reverse lookup, force one now. If helo_verify_required
       is set, ensure that the HELO name matches the actual host. If helo_verify
       is set, do the same check, but softly. */
 
@@ -4279,19 +4278,19 @@ while (done <= 0)
 	  tls_in.active.sock >= 0 ? " TLS" : "", host_and_ident(FALSE));
 
 	/* Verify if configured. This doesn't give much security, but it does
-	make some people happy to be able to do it. If helo_required is set,
+	make some people happy to be able to do it. If helo_verify_required is set,
 	(host matches helo_verify_hosts) failure forces rejection. If helo_verify
 	is set (host matches helo_try_verify_hosts), it does not. This is perhaps
 	now obsolescent, since the verification can now be requested selectively
 	at ACL time. */
 
 	f.helo_verified = f.helo_verify_failed = sender_helo_dnssec = FALSE;
-	if (fl.helo_required || fl.helo_verify)
+	if (fl.helo_verify_required || fl.helo_verify)
 	  {
 	  BOOL tempfail = !smtp_verify_helo();
 	  if (!f.helo_verified)
 	    {
-	    if (fl.helo_required)
+	    if (fl.helo_verify_required)
 	      {
 	      smtp_printf("%d %s argument does not match calling host\r\n", FALSE,
 		tempfail? 451 : 550, hello);
@@ -4348,7 +4347,7 @@ while (done <= 0)
 #endif
 
       /* Expand the per-connection message count limit option */
-      mailmax = expand_mailmax(smtp_accept_max_per_connection);
+      smtp_mailcmd_max = expand_mailmax(smtp_accept_max_per_connection);
 
       smtp_code = US"250 ";        /* Default response code plus space*/
       if (!user_msg)
@@ -4410,12 +4409,12 @@ while (done <= 0)
 	  }
 
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
-	if (  (mailmax > 0 || recipients_max)
+	if (  (smtp_mailcmd_max > 0 || recipients_max)
 	   && verify_check_host(&limits_advertise_hosts) == OK)
 	  {
 	  g = string_fmt_append(g, "%.3s-LIMITS", smtp_code);
-	  if (mailmax > 0)
-	    g = string_fmt_append(g, " MAILMAX=%d", mailmax);
+	  if (smtp_mailcmd_max > 0)
+	    g = string_fmt_append(g, " MAILMAX=%d", smtp_mailcmd_max);
 	  if (recipients_max)
 	    g = string_fmt_append(g, " RCPTMAX=%d", recipients_max);
 	  g = string_catn(g, US"\r\n", 2);
@@ -4639,15 +4638,16 @@ while (done <= 0)
       env_mail_type_t * mail_args;       /* Sanity check & validate args */
 
       if (!fl.helo_seen)
-	if (fl.helo_required)
+	if (  fl.helo_verify_required
+	   || verify_check_host(&hosts_require_helo) == OK)
 	  {
 	  smtp_printf("503 HELO or EHLO required\r\n", FALSE);
 	  log_write(0, LOG_MAIN|LOG_REJECT, "rejected MAIL from %s: no "
 	    "HELO/EHLO given", host_and_ident(FALSE));
 	  break;
 	  }
-	else if (mailmax < 0)
-	  mailmax = expand_mailmax(smtp_accept_max_per_connection);
+	else if (smtp_mailcmd_max < 0)
+	  smtp_mailcmd_max = expand_mailmax(smtp_accept_max_per_connection);
 
       if (sender_address)
 	{
@@ -4666,7 +4666,7 @@ while (done <= 0)
       /* Check to see if the limit for messages per connection would be
       exceeded by accepting further messages. */
 
-      if (mailmax > 0 && smtp_mailcmd_count > mailmax)
+      if (smtp_mailcmd_max > 0 && smtp_mailcmd_count > smtp_mailcmd_max)
 	{
 	smtp_printf("421 too many messages in this connection\r\n", FALSE);
 	log_write(0, LOG_MAIN|LOG_REJECT, "rejected MAIL command %s: too many "

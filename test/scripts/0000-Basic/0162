@@ -1,5 +1,6 @@
 # failing header with very long apparent address
 exim -odq -bs
+helo test
 mail from:<u2@test.ex>
 rcpt to:<u3@test.ex>
 data

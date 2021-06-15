@@ -1,5 +1,5 @@
 From userx@test.ex Tue Mar 02 09:44:33 1999
-Received: from [V4NET.0.0.0] (ident=CALLER)
+Received: from [V4NET.0.0.0] (helo=test ident=CALLER)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaY-0005vi-00;
@@ -8,7 +8,7 @@ Received: from [V4NET.0.0.0] (ident=CALLER)
 Message 2
 
 From userx@test.ex Tue Mar 02 09:44:33 1999
-Received: from [V4NET.11.12.16] (ident=CALLER)
+Received: from [V4NET.11.12.16] (helo=test ident=CALLER)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmbB-0005vi-00;

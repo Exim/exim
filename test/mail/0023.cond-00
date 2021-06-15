@@ -1,5 +1,5 @@
 From userx@test.ex Tue Mar 02 09:44:33 1999
-Received: from [56.56.56.56] (ident=CALLER)
+Received: from [56.56.56.56] (helo=test ident=CALLER)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmbI-0005vi-00

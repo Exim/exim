@@ -1,4 +1,5 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
@@ -14,6 +15,7 @@ CALLER UID GID
 ddddddddd 0
 -received_time_usec .uuuuuu
 -received_time_complete tttt.uuuuuu
+--helo_name test
 -ident CALLER
 -received_protocol local-smtp
 -body_linecount 2
@@ -27,7 +29,8 @@ XX
 1
 bb@test.ex
 
-dddP Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+dddP Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaY-0005vi-00
 	for bb@test.ex;

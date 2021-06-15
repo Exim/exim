@@ -2,6 +2,7 @@
 need_ipv4
 #
 exim -bh 1.2.3.4
+helo test
 mail from:<x@y>
 quit
 ****
@@ -17,14 +18,17 @@ QUIT
 220 OK
 ****
 exim -d -bhc 1.2.3.4
+helo test
 mail from:<x@y>
 quit
 ****
 exim -d -bhc 1.2.3.4
+helo test
 mail from:<x@y>
 quit
 ****
 exim -bhc 1.2.3.4
+helo test
 mail from:<x@y>
 quit
 ****
@@ -40,6 +44,7 @@ QUIT
 220 OK
 ****
 exim -bhc 1.2.3.4
+helo test
 mail from:<a@b>
 quit
 ****
@@ -51,6 +56,7 @@ EHLO
 *eof
 ****
 exim -bhc 1.2.3.4
+helo test
 mail from:<p1@q>
 quit
 ****

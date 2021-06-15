@@ -14,6 +14,7 @@
 >>> processing "accept" (TESTSUITE/test-config 34)
 >>> accept: condition test succeeded in ACL "check_connect"
 >>> end of ACL "check_connect": ACCEPT
+>>> test in helo_lookup_domains? no (end of list)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
 >>> processing "deny" (TESTSUITE/test-config 67)
@@ -47,7 +48,7 @@
 >>> test.ex in "! +local_domains"? no (matched "! +local_domains")
 >>> list in "userx"? no (end of list)
 >>> no more routers
-LOG: ETRN #abcd received from [10.0.0.2]
+LOG: ETRN #abcd received from (test) [10.0.0.2]
 >>> using ACL "check_etrn"
 >>> processing "deny" (TESTSUITE/test-config 53)
 >>> check hosts = +auth_hosts
@@ -60,7 +61,7 @@ LOG: ETRN #abcd received from [10.0.0.2]
 >>> processing "warn" (TESTSUITE/test-config 57)
 >>> l_message: accepted ETRN $smtp_command_argument
 >>> warn: condition test succeeded in ACL "check_etrn"
-LOG: H=[10.0.0.2] Warning: accepted ETRN #abcd
+LOG: H=(test) [10.0.0.2] Warning: accepted ETRN #abcd
 >>> processing "accept" (TESTSUITE/test-config 58)
 >>> accept: condition test succeeded in ACL "check_etrn"
 >>> end of ACL "check_etrn": ACCEPT

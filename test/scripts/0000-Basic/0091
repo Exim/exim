@@ -1,5 +1,6 @@
 # sender_verify_hosts
 exim -bh V4NET.0.0.1
+helo test
 mail from:<junk@jink.jonk.test.ex>
 rcpt to:<root@test.ex>
 data
@@ -8,6 +9,7 @@ From: <junk@jink.jonk.test.ex>
 quit
 ****
 exim -bh V4NET.0.0.2
+helo test
 mail from:<junk@jink.jonk.test.ex>
 rcpt to:<root@test.ex>
 data
@@ -15,6 +17,7 @@ data
 quit
 ****
 exim -bh V4NET.0.0.2
+helo test
 mail from:<userx@test.ex>
 rcpt to:<root@test.ex>
 data
@@ -23,6 +26,7 @@ From: <junk@jink.jonk.test.ex>
 quit
 ****
 exim -bh V4NET.0.0.2
+helo test
 mail from:<userx@test.ex>
 rcpt to:<root@test.ex>
 data

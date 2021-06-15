@@ -26,7 +26,7 @@ exim -bs -oMa 10.9.8.7
 ****
 exim -DLOG_SELECTOR=-connection_reject -bs -oMa 10.9.8.7
 ****
-exim -d-all+acl+lists -bs -oMa 10.9.8.8
+exim -d-all+acl+lists -DHVH=hosts_require_helo=: -bs -oMa 10.9.8.8
 mail from:<bad@test1>
 mail from:<ok@test1>
 rcpt to:<x@y>
@@ -42,7 +42,7 @@ exim -bs -oMa 10.9.8.10
 helo x.y.z
 quit
 ****
-exim -d-all+acl+lists -odi -bs -oMa 10.9.8.8
+exim -d-all+acl+lists -DHVH=hosts_require_helo=: -odi -bs -oMa 10.9.8.8
 mail from:<ok@test3>
 rcpt to:<x@y>
 data
@@ -63,7 +63,7 @@ exim -DBR=no_bounce_return_body -odi -f userx@test1 userx
 Test message 1.
 .
 ****
-exim -odi -bs -oMa 10.9.8.8
+exim -DHVH=hosts_require_helo=: -odi -bs -oMa 10.9.8.8
 ehlo test.ex
 mail from: <ok@test3> SIZE=1234
 rcpt to:<x@y>
@@ -73,7 +73,7 @@ Some message
 quit
 ****
 #
-# Test returncode and logginf for no extractable recipients
+# Test returncode and logging for no extractable recipients
 1
 exim -odi -t
 From: userx@test1

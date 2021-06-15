@@ -4,6 +4,7 @@
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello test [V4NET.11.12.13]
 250 OK
 550 relay not permitted
 221 the.local.host.name closing connection
@@ -13,10 +14,12 @@
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello ten-1.test.ex [V4NET.0.0.1]
 250 OK
 550 relay not permitted
 221 the.local.host.name closing connection
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello root at test [V4NET.11.12.13]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
@@ -28,17 +31,20 @@
 **** This is not for real!
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello oneback.test.ex [V4NET.99.99.90]
 250 OK
 250 Accepted
 550 relay not permitted
 221 the.local.host.name closing connection
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello root at test [99.99.99.99]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmaY-0005vi-00
 221 the.local.host.name closing connection
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello root at test [V4NET.99.99.96]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself

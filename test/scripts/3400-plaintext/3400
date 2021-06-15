@@ -1,5 +1,6 @@
 # plaintext server tests
 exim -bh 10.0.0.2
+helo test
 mail from:<junk@jink.jonk.test.ex>
 rset
 vrfy userx@test.ex

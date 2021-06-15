@@ -13,30 +13,31 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect"
-processing "deny" (TESTSUITE/test-config 50)
+processing "deny" (TESTSUITE/test-config 52)
 check hosts = : 10.9.8.7
 host in ": 10.9.8.7"? no (end of list)
 deny: condition test failed in ACL "connect"
-processing "drop" (TESTSUITE/test-config 51)
+processing "drop" (TESTSUITE/test-config 53)
 l_message: forcibly dropped
 check hosts = 10.9.8.9
 host in "10.9.8.9"? no (end of list)
 drop: condition test failed in ACL "connect"
-processing "accept" (TESTSUITE/test-config 53)
+processing "accept" (TESTSUITE/test-config 55)
 check logwrite = $sender_host_address accepted by connect ACL
                = 10.9.8.8 accepted by connect ACL
 LOG: MAIN
   10.9.8.8 accepted by connect ACL
 accept: condition test succeeded in ACL "connect"
 end of ACL "connect": ACCEPT
+host in hosts_require_helo? no (end of list)
 using ACL "mail"
-processing "warn" (TESTSUITE/test-config 61)
+processing "warn" (TESTSUITE/test-config 63)
   message: added header line
 check senders = ok@test3
 address match test: subject=bad@test1 pattern=ok@test3
 bad@test1 in "ok@test3"? no (end of list)
 warn: condition test failed in ACL "mail"
-processing "accept" (TESTSUITE/test-config 63)
+processing "accept" (TESTSUITE/test-config 65)
 check senders = ok@test1 : ok@test3
 address match test: subject=bad@test1 pattern=ok@test1
 address match test: subject=bad@test1 pattern=ok@test3
@@ -45,15 +46,16 @@ accept: condition test failed in ACL "mail"
 end of ACL "mail": implicit DENY
 LOG: MAIN REJECT
   H=[10.9.8.8] U=CALLER rejected MAIL <bad@test1>
+host in hosts_require_helo? no (end of list)
 using ACL "mail"
-processing "warn" (TESTSUITE/test-config 61)
+processing "warn" (TESTSUITE/test-config 63)
   message: added header line
 check senders = ok@test3
 address match test: subject=ok@test1 pattern=ok@test3
 test1 in "test3"? no (end of list)
 ok@test1 in "ok@test3"? no (end of list)
 warn: condition test failed in ACL "mail"
-processing "accept" (TESTSUITE/test-config 63)
+processing "accept" (TESTSUITE/test-config 65)
 check senders = ok@test1 : ok@test3
 address match test: subject=ok@test1 pattern=ok@test1
 test1 in "test1"? yes (matched "test1")
@@ -69,7 +71,7 @@ LOG: MAIN REJECT
 accept: condition test succeeded in ACL "mail"
 end of ACL "mail": ACCEPT
 using ACL "rcpt"
-processing "accept" (TESTSUITE/test-config 68)
+processing "accept" (TESTSUITE/test-config 70)
 check senders = +ok_senders
 address match test: subject=ok@test1 pattern=ok@somewhere
 test1 in "somewhere"? no (end of list)
@@ -88,7 +90,7 @@ LOG: PANIC
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
 using ACL "rcpt"
-processing "accept" (TESTSUITE/test-config 68)
+processing "accept" (TESTSUITE/test-config 70)
 check senders = +ok_senders
 cached yes match for +ok_senders
 cached lookup data = test1
@@ -121,31 +123,32 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect"
-processing "deny" (TESTSUITE/test-config 50)
+processing "deny" (TESTSUITE/test-config 52)
 check hosts = : 10.9.8.7
 host in ": 10.9.8.7"? no (end of list)
 deny: condition test failed in ACL "connect"
-processing "drop" (TESTSUITE/test-config 51)
+processing "drop" (TESTSUITE/test-config 53)
 l_message: forcibly dropped
 check hosts = 10.9.8.9
 host in "10.9.8.9"? no (end of list)
 drop: condition test failed in ACL "connect"
-processing "accept" (TESTSUITE/test-config 53)
+processing "accept" (TESTSUITE/test-config 55)
 check logwrite = $sender_host_address accepted by connect ACL
                = 10.9.8.8 accepted by connect ACL
 LOG: MAIN
   10.9.8.8 accepted by connect ACL
 accept: condition test succeeded in ACL "connect"
 end of ACL "connect": ACCEPT
+host in hosts_require_helo? no (end of list)
 using ACL "mail"
-processing "warn" (TESTSUITE/test-config 61)
+processing "warn" (TESTSUITE/test-config 63)
   message: added header line
 check senders = ok@test3
 address match test: subject=ok@test3 pattern=ok@test3
 test3 in "test3"? yes (matched "test3")
 ok@test3 in "ok@test3"? yes (matched "ok@test3")
 warn: condition test succeeded in ACL "mail"
-processing "accept" (TESTSUITE/test-config 63)
+processing "accept" (TESTSUITE/test-config 65)
 check senders = ok@test1 : ok@test3
 address match test: subject=ok@test3 pattern=ok@test1
 test3 in "test1"? no (end of list)
@@ -163,7 +166,7 @@ LOG: MAIN REJECT
 accept: condition test succeeded in ACL "mail"
 end of ACL "mail": ACCEPT
 using ACL "rcpt"
-processing "accept" (TESTSUITE/test-config 68)
+processing "accept" (TESTSUITE/test-config 70)
 check senders = +ok_senders
 address match test: subject=ok@test3 pattern=ok@somewhere
 test3 in "somewhere"? no (end of list)

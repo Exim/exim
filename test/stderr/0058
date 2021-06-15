@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check domains = +local_domains
@@ -18,7 +19,7 @@
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=[V4NET.0.0.1] P=smtp S=sss
+LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.0.0.1] P=smtp S=sss
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check domains = +local_domains
@@ -30,4 +31,4 @@ LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=[V4NET.0.0.1] P=smtp S=sss
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts" - cached)
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=[V4NET.0.0.1] P=smtp S=sss
+LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.0.0.1] P=smtp S=sss

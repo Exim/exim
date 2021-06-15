@@ -1,7 +1,7 @@
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
 LOG: MAIN
-  <= <> H=host.name [1.2.3.4] U=CALLER P=smtp S=sss
+  <= <> H=host.name (test) [1.2.3.4] U=CALLER P=smtp S=sss
 delivering 10HmaY-0005vi-00
 ----- System filter -----
   acl_c0="value for c0 is ip: 1.2.3.4"
@@ -62,7 +62,7 @@ LOG: MAIN
 LOG: MAIN
   Completed
 LOG: MAIN
-  <= <> H=host.name [1.2.3.4] U=CALLER P=smtp S=sss
+  <= <> H=host.name (test) [1.2.3.4] U=CALLER P=smtp S=sss
 delivering 10HmaZ-0005vi-00
 ----- System filter -----
   acl_c0="value for c0 is ip: 1.2.3.4"

@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -36,7 +37,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=[1.2.3.4] P=smtp S=sss
+LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=(test) [1.2.3.4] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -45,6 +46,7 @@ LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=[1.2.3.4] P=smtp S=sss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -78,8 +80,8 @@ MUNGED: ::1 will be omitted in what follows
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
-LOG: H=[1.2.3.5] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
-LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=[1.2.3.5] P=smtp S=sss
+LOG: H=(test) [1.2.3.5] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
+LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=(test) [1.2.3.5] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -88,6 +90,7 @@ LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=[1.2.3.5] P=smtp S=sss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -118,7 +121,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=[1.2.4.5] P=smtp S=sss
+LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=(test) [1.2.4.5] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -127,6 +130,7 @@ LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=[1.2.4.5] P=smtp S=sss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -163,8 +167,8 @@ LOG: no host name found for IP address 1.3.2.4
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
-LOG: H=[1.3.2.4] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
-LOG: 10HmbA-0005vi-00 <= userx@somehost.example.com H=[1.3.2.4] P=smtp S=sss
+LOG: H=(test) [1.3.2.4] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
+LOG: 10HmbA-0005vi-00 <= userx@somehost.example.com H=(test) [1.3.2.4] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -173,6 +177,7 @@ LOG: 10HmbA-0005vi-00 <= userx@somehost.example.com H=[1.3.2.4] P=smtp S=sss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -203,7 +208,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmbB-0005vi-00 <= userx@somehost.example.com H=[131.111.8.2] P=smtp S=sss
+LOG: 10HmbB-0005vi-00 <= userx@somehost.example.com H=(test) [131.111.8.2] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -212,6 +217,7 @@ LOG: 10HmbB-0005vi-00 <= userx@somehost.example.com H=[131.111.8.2] P=smtp S=sss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -242,7 +248,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmbC-0005vi-00 <= userx@somehost.example.com H=[192.152.98.3] P=smtp S=sss
+LOG: 10HmbC-0005vi-00 <= userx@somehost.example.com H=(test) [192.152.98.3] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -251,6 +257,7 @@ LOG: 10HmbC-0005vi-00 <= userx@somehost.example.com H=[192.152.98.3] P=smtp S=ss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -286,7 +293,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmbD-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex [V4NET.0.0.1] P=smtp S=sss
+LOG: 10HmbD-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex (test) [V4NET.0.0.1] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -295,6 +302,7 @@ LOG: 10HmbD-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex [V4NET.0.0.1
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -325,8 +333,8 @@ MUNGED: ::1 will be omitted in what follows
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
-LOG: H=[V4NET.11.12.13] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
-LOG: 10HmbE-0005vi-00 <= userx@somehost.example.com H=[V4NET.11.12.13] P=smtp S=sss
+LOG: H=(test) [V4NET.11.12.13] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
+LOG: 10HmbE-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.11.12.13] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -335,6 +343,7 @@ LOG: 10HmbE-0005vi-00 <= userx@somehost.example.com H=[V4NET.11.12.13] P=smtp S=
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
@@ -365,4 +374,4 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmbF-0005vi-00 <= userx@somehost.example.com H=[V4NET.0.0.3] P=smtp S=sss
+LOG: 10HmbF-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.0.0.3] P=smtp S=sss

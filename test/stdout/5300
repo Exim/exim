@@ -7,6 +7,7 @@ x@[127.0.0.1]
           zz@test.ex
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test
 250 OK
 250 Accepted
 250 Accepted

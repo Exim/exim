@@ -37,7 +37,8 @@ Status: 5.0.0
 Content-type: message/rfc822
 
 Return-path: <"abc@def"@unknown.domain>
-Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+Received: from CALLER (helo=test)
+	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <"abc@def"@unknown.domain>)
 	id 10HmaZ-0005vi-00
 	for unknown@test.ex;

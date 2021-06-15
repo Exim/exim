@@ -16,6 +16,7 @@ ehlo a.b.c
 ehlo a.b.c
 ****
 exim -bs
+helo test
 rset
 mail from:<x@y>
 rcpt to:<x@y>

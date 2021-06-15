@@ -181,6 +181,7 @@ static optionlist optionlist_config[] = {
 #ifdef SUPPORT_PROXY
   { "hosts_proxy",              opt_stringptr,   {&hosts_proxy} },
 #endif
+  { "hosts_require_helo",       opt_stringptr,   {&hosts_require_helo} },
   { "hosts_treat_as_local",     opt_stringptr,   {&hosts_treat_as_local} },
 #ifdef LOOKUP_IBASE
   { "ibase_servers",            opt_stringptr,   {&ibase_servers} },

@@ -43,6 +43,7 @@ QUIT
 250 OK
 ****
 exim -odq -bs
+helo test
 mail from:<>
 RCPT TO:<abc@yes1> 
 RCPT TO:<def@yes2> 

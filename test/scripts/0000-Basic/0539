@@ -1,5 +1,6 @@
 # log_reject_target
 exim -bs
+helo test
 mail from:<main@test.ex>
 mail from:<reject@test.ex>
 mail from:<both@test.ex>

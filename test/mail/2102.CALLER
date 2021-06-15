@@ -1,6 +1,6 @@
 From a@test.ex Tue Mar 02 09:44:33 1999
-Received: from [127.0.0.1]
-	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <a@test.ex>)
 	id 10HmaX-0005vi-00
@@ -12,8 +12,8 @@ TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=
 This is a test encrypted message.
 
 From "name with spaces"@test.ex Tue Mar 02 09:44:33 1999
-Received: from [127.0.0.1]
-	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <"name with spaces"@test.ex>)
 	id 10HmaY-0005vi-00
@@ -25,8 +25,8 @@ TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=
 This is a test encrypted message.
 
 From b@test.ex Tue Mar 02 09:44:33 1999
-Received: from [ip4.ip4.ip4.ip4]
-	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+Received: from [ip4.ip4.ip4.ip4] (helo=rhu.barb)
+	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <b@test.ex>)
 	id 10HmaZ-0005vi-00
@@ -38,8 +38,8 @@ TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=/CN=server2.example.com
 This is a test encrypted message from a verified host.
 
 From c@test.ex Tue Mar 02 09:44:33 1999
-Received: from [127.0.0.1]
-	by myhost.test.ex with smtps (TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx)
+Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtps (TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <c@test.ex>)
 	id 10HmbA-0005vi-00

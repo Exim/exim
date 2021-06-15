@@ -13,11 +13,13 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<ok@localhost>
 RCPT TO:<z@test.ex>
 QUIT
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<ok@localhost>
 RCPT TO:<z@test.ex>
 QUIT
@@ -26,6 +28,7 @@ QUIT
 sleep 2
 # Should want to connect, but fail
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<ok@localhost>
 RCPT TO:<z@test.ex>
 QUIT
@@ -43,11 +46,13 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<bad@localhost>
 RCPT TO:<z@test.ex>
 QUIT
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<bad@localhost>
 RCPT TO:<z@test.ex>
 QUIT
@@ -63,11 +68,13 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<ok@localhost>
 RCPT TO:<z@test.ex>
 QUIT
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+HELO test
 MAIL FROM:<ok@localhost>
 RCPT TO:<z@test.ex>
 QUIT
@@ -91,11 +98,13 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+HELO test
 MAIL FROM:<ok@otherhost>
 RCPT TO:<z@test.ex>
 QUIT
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+HELO test
 MAIL FROM:<ok@otherhost>
 RCPT TO:<z@test.ex>
 QUIT
@@ -119,11 +128,13 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+HELO test
 MAIL FROM:<ok@otherhost2>
 RCPT TO:<z@test.ex>
 QUIT
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+HELO test
 MAIL FROM:<ok@otherhost2>
 RCPT TO:<z@test.ex>
 QUIT
@@ -141,11 +152,13 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.3
+HELO test
 MAIL FROM:<ok@otherhost3>
 RCPT TO:<z@test.ex>
 QUIT
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.3
+HELO test
 MAIL FROM:<otherok@otherhost3>
 RCPT TO:<z@test.ex>
 QUIT
@@ -163,11 +176,13 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.4
+HELO test
 MAIL FROM:<ok@otherhost4>
 RCPT TO:<z@test.ex>
 QUIT
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.4
+HELO test
 MAIL FROM:<ok@otherhost4>
 RCPT TO:<z@test.ex>
 QUIT
@@ -197,11 +212,13 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.4
+HELO test
 MAIL FROM:<ok@otherhost41>
 RCPT TO:<z@test.ex>
 QUIT
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.4
+HELO test
 MAIL FROM:<ok@otherhost41>
 RCPT TO:<z@test.ex>
 QUIT
@@ -226,6 +243,7 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+HELO test
 MAIL FROM:<ok@otherhost21>
 RCPT TO:<z@test.ex>
 QUIT
@@ -242,6 +260,7 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+HELO test
 MAIL FROM:<ok2@otherhost21>
 RCPT TO:<z@test.ex>
 QUIT
@@ -265,6 +284,7 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.3
+HELO test
 MAIL FROM:<ok@otherhost31>
 RCPT TO:<z@test.ex>
 QUIT
@@ -281,6 +301,7 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.3
+HELO test
 MAIL FROM:<okok@otherhost31>
 RCPT TO:<z@test.ex>
 QUIT
@@ -305,6 +326,7 @@ QUIT
 250 OK
 ****
 sudo exim -DPEX=1s -d-all+verify -v -bs -oMa V4NET.0.0.3
+HELO test
 MAIL FROM:<okokok@otherhost31>
 RCPT TO:<z@test.ex>
 QUIT
@@ -320,6 +342,7 @@ RCPT TO
 *sleep 2
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.5
+HELO test
 MAIL FROM:<okok@otherhost51>
 RCPT TO:<z@test.ex>
 QUIT
@@ -343,6 +366,7 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.6
+HELO test
 MAIL FROM:<okokok@otherhost52>
 RCPT TO:<z@test.ex>
 QUIT
@@ -360,6 +384,7 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -odq -v -bs -oMa V4NET.0.0.7
+HELO test
 MAIL FROM:<ok7@otherhost53>
 RCPT TO:<z@test.ex>
 DATA
@@ -378,6 +403,7 @@ RCPT TO
 *sleep 2
 ****
 sudo exim -d-all+verify -odq -v -bs -oMa V4NET.0.0.8
+HELO test
 MAIL FROM:<ok7@otherhost53>
 RCPT TO:<z@test.ex>
 DATA
@@ -406,6 +432,7 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.9
+HELO test
 MAIL FROM:<ok@otherhost9>
 RCPT TO:<z@test.ex>
 QUIT
@@ -435,6 +462,7 @@ QUIT
 250 OK
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.10
+HELO test
 MAIL FROM:<ok@otherhost10>
 RCPT TO:<z@test.ex>
 QUIT

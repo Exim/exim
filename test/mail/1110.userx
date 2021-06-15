@@ -11,8 +11,8 @@ TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn/cn ''
 This is a test encrypted message.
 
 From userx@test.ex Tue Mar 02 09:44:33 1999
-Received: from [ip4.ip4.ip4.ip4]
-	by myhost.test.ex with smtp (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+Received: from [ip4.ip4.ip4.ip4] (helo=test)
+	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaY-0005vi-00

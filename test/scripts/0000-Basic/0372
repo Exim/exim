@@ -1,5 +1,6 @@
 # Preservation of ACL variables
 exim -v -odi -bs -oMa 1.2.3.4 -oMs host.name
+helo test
 mail from:<>
 rcpt to:<x@y>
 data
@@ -11,6 +12,7 @@ data
 quit
 ****
 exim -DSTRICT=strict_acl_vars -odi -bs -oMa 4.3.2.1 -oMs host2.name
+helo test
 mail from:<>
 rcpt to:<a@b>
 data

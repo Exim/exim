@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! V4NET.0.0.1
@@ -28,7 +29,7 @@
 >>> no more routers
 >>> require: condition test failed in ACL "check_message"
 >>> end of ACL "check_message": not OK
-LOG: 10HmaY-0005vi-00 H=[V4NET.0.0.1] F=<junk@jink.jonk.test.ex> rejected after DATA: there is no valid sender in any header line
+LOG: 10HmaY-0005vi-00 H=(test) [V4NET.0.0.1] F=<junk@jink.jonk.test.ex> rejected after DATA: there is no valid sender in any header line
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -37,6 +38,7 @@ LOG: 10HmaY-0005vi-00 H=[V4NET.0.0.1] F=<junk@jink.jonk.test.ex> rejected after 
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! V4NET.0.0.1
@@ -49,8 +51,8 @@ LOG: 10HmaY-0005vi-00 H=[V4NET.0.0.1] F=<junk@jink.jonk.test.ex> rejected after 
 >>> ----------- end verify ------------
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
-LOG: H=[V4NET.0.0.2] sender verify fail for <junk@jink.jonk.test.ex>: Unrouteable address
-LOG: H=[V4NET.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <root@test.ex>: Sender verify failed
+LOG: H=(test) [V4NET.0.0.2] sender verify fail for <junk@jink.jonk.test.ex>: Unrouteable address
+LOG: H=(test) [V4NET.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <root@test.ex>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -59,6 +61,7 @@ LOG: H=[V4NET.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <root@test.ex>: Se
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! V4NET.0.0.1
@@ -88,7 +91,7 @@ LOG: H=[V4NET.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <root@test.ex>: Se
 >>> no more routers
 >>> require: condition test failed in ACL "check_message"
 >>> end of ACL "check_message": not OK
-LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.2] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
+LOG: 10HmaZ-0005vi-00 H=(test) [V4NET.0.0.2] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -97,6 +100,7 @@ LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.2] F=<userx@test.ex> rejected after DATA: the
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! V4NET.0.0.1
@@ -129,4 +133,4 @@ LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.2] F=<userx@test.ex> rejected after DATA: the
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> accept: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": ACCEPT
-LOG: 10HmaX-0005vi-00 <= userx@test.ex H=[V4NET.0.0.2] P=smtp S=sss
+LOG: 10HmaX-0005vi-00 <= userx@test.ex H=(test) [V4NET.0.0.2] P=smtp S=sss

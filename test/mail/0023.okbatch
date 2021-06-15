@@ -2,7 +2,7 @@ From rcpttest@test.ex Tue Mar 02 09:44:33 1999
 Envelope-to: ok1@test.ex,
  ok2@test.ex,
  ok3@test.ex
-Received: from [56.56.58.58] (ident=CALLER)
+Received: from [56.56.58.58] (helo=test ident=CALLER)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <rcpttest@test.ex>)
 	id 10HmbN-0005vi-00;

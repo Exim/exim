@@ -4,6 +4,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.1.1.1]
 250 OK
 250 Accepted
 250 Accepted
@@ -29,6 +30,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.10.10.10]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
@@ -38,6 +40,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [127.0.0.1]
 250 OK
 250 Accepted
 221 myhost.test.ex closing connection
@@ -47,6 +50,7 @@
 **** This is not for real!
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [V4NET.1.1.1]
 250 OK
 250 Accepted
 550 domain doesn't match @mx_primary

@@ -2,6 +2,7 @@
 #
 # Accept: the env rcpt matches a header To:
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 data
@@ -11,6 +12,7 @@ quit
 ****
 ### Reject: no match
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 data
@@ -20,6 +22,7 @@ quit
 ****
 ### Reject, with specific SMTP message
 exim -DERROR_DETAILS=smtp_return_error_details -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 data
@@ -29,6 +32,7 @@ quit
 ****
 ### Accept, matches in header CC:
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 rcpt to:<usery@dom.com>
@@ -40,6 +44,7 @@ quit
 ****
 ### Reject: To: & CC: combo, an env rcpt missing
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 rcpt to:<usery@dom.com>
@@ -52,6 +57,7 @@ quit
 ****
 ### Accept: Resent-To: & Resent-CC: combo
 exim -odq -bs
+helo test
 mail from:<>
 rcpt to:<userx@dom.com>
 rcpt to:<usery@dom.com>

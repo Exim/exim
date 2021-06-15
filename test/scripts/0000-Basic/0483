@@ -1,5 +1,6 @@
 # $sender_data and $recipient_data
 exim -bs -d-all+route
+helo test
 mail from:<sender@domain1>
 rcpt to:<recip@domain2>
 rcpt to:<other@domain2>

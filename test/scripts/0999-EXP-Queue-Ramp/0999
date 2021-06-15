@@ -15,6 +15,7 @@ exim -DSERVER=server -bd -q30m -odd -oX PORT_D
 ****
 #
 exim -bs
+helo test
 mail from:ralph@dustyshoes.tld
 rcpt to:bob@anotherone.tld
 data

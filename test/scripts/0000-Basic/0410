@@ -1,5 +1,6 @@
 # address_data and router_name in ACLs after verification
 exim -bs
+helo test
 MAIL FROM:<oksender@y>
 rcpt to:<child@test.ex>
 rcpt to:<orig@test.ex>
