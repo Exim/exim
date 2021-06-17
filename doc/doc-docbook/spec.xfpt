@@ -14714,7 +14714,7 @@ listed in more than one group.
 .row &%notifier_socket%&             "override compiled-in value"
 .row &%pid_file_path%&               "override compiled-in value"
 .row &%queue_run_max%&               "maximum simultaneous queue runners"
-.row &%smtp_backlog_monitor%&        "level to log listen baclog"
+.row &%smtp_backlog_monitor%&        "level to log listen backlog"
 .endtable
 
 
