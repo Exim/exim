@@ -2760,18 +2760,23 @@ if (tlsp->peercert)
 /* Load certs from file, return TRUE on success */
 
 static BOOL
-chain_from_pem_file(const uschar * file, STACK_OF(X509) * verify_stack)
+chain_from_pem_file(const uschar * file, STACK_OF(X509) ** vp)
 {
 BIO * bp;
+STACK_OF(X509) * verify_stack = *vp;
 X509 * x;
 
-while (sk_X509_num(verify_stack) > 0)
-  X509_free(sk_X509_pop(verify_stack));
+if (verify_stack)
+  while (sk_X509_num(verify_stack) > 0)
+    X509_free(sk_X509_pop(verify_stack));
+else
+  verify_stack = sk_X509_new_null();
 
 if (!(bp = BIO_new_file(CS file, "r"))) return FALSE;
-while ((x = PEM_read_bio_X509(bp, NULL, 0, NULL)))
+for (X509 * x; x = PEM_read_bio_X509(bp, NULL, 0, NULL); )
   sk_X509_push(verify_stack, x);
 BIO_free(bp);
+*vp = verify_stack;
 return TRUE;
 }
 #endif
@@ -2826,6 +2831,13 @@ if (expcerts && *expcerts)
 	{ file = NULL; dir = expcerts; }
       else
 	{
+	STACK_OF(X509) * verify_stack =
+#ifndef DISABLE_OCSP
+	  !host ? state_server.verify_stack :
+#endif
+	  NULL;
+	STACK_OF(X509) ** vp = &verify_stack;
+
 	file = expcerts; dir = NULL;
 #ifndef DISABLE_OCSP
 	/* In the server if we will be offering an OCSP proof, load chain from
@@ -2834,11 +2846,10 @@ if (expcerts && *expcerts)
 /*XXX Glitch!   The file here is tls_verify_certs: the chain for verifying the client cert.
 This is inconsistent with the need to verify the OCSP proof of the server cert.
 */
-
 	if (  !host
 	   && statbuf.st_size > 0
 	   && state_server.u_ocsp.server.file
-	   && !chain_from_pem_file(file, state_server.verify_stack)
+	   && !chain_from_pem_file(file, vp)
 	   )
 	  {
 	  log_write(0, LOG_MAIN|LOG_PANIC,
