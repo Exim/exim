@@ -15,7 +15,11 @@ acl_smtp_helo = check_helo
 acl_smtp_rcpt = check_recipient
 log_selector = +received_recipients +tls_resumption +tls_peerdn
 
+.ifdef _OPT_OPENSSL_NO_TLSV1_3_X
 openssl_options = +no_sslv2 +no_sslv3 +single_dh_use OPTION
+.else
+openssl_options = +no_sslv2 +no_sslv3 +single_dh_use
+.endif
 tls_advertise_hosts = *
 
 # Set certificate only if server

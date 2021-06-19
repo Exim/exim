@@ -1,0 +1,4 @@
+support OpenSSL
+running IPv4
+support TLS_resume
+feature _OPT_OPENSSL_NO_TLSV1_3_X
