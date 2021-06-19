@@ -3408,29 +3408,35 @@ if (tlsp->host_resumable)
 	  debug_printf("decoding session: %s\n", ssl_errstring);
 	  }
 	}
-#ifdef EXIM_HAVE_SESSION_TICKET
-      else if ( SSL_SESSION_get_ticket_lifetime_hint(ss) + dt->time_stamp
-	       < time(NULL))
-	{
-	DEBUG(D_tls) debug_printf("session expired\n");
-	dbfn_delete(dbm_file, key);
-	}
-#endif
-      else if (!SSL_set_session(ssl, ss))
-	{
-	DEBUG(D_tls)
-	  {
-	  ERR_error_string_n(ERR_get_error(),
-	    ssl_errstring, sizeof(ssl_errstring));
-	  debug_printf("applying session to ssl: %s\n", ssl_errstring);
-	  }
-	}
       else
 	{
-	DEBUG(D_tls) debug_printf("good session\n");
-	tlsp->resumption |= RESUME_CLIENT_SUGGESTED;
-	tlsp->verify_override = dt->verify_override;
-	tlsp->ocsp = dt->ocsp;
+	unsigned long lifetime =
+#ifdef EXIM_HAVE_SESSION_TICKET
+	  SSL_SESSION_get_ticket_lifetime_hint(ss);
+#else			/* Use, fairly arbitrilarily, what we as server would */
+	  f.running_in_test_harness ? 6 : ssl_session_timeout;
+#endif
+	if (lifetime + dt->time_stamp < time(NULL))
+	  {
+	  DEBUG(D_tls) debug_printf("session expired\n");
+	  dbfn_delete(dbm_file, key);
+	  }
+	else if (!SSL_set_session(ssl, ss))
+	  {
+	  DEBUG(D_tls)
+	    {
+	    ERR_error_string_n(ERR_get_error(),
+	      ssl_errstring, sizeof(ssl_errstring));
+	    debug_printf("applying session to ssl: %s\n", ssl_errstring);
+	    }
+	  }
+	else
+	  {
+	  DEBUG(D_tls) debug_printf("good session\n");
+	  tlsp->resumption |= RESUME_CLIENT_SUGGESTED;
+	  tlsp->verify_override = dt->verify_override;
+	  tlsp->ocsp = dt->ocsp;
+	  }
 	}
       }
     else
