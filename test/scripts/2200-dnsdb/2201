@@ -19,7 +19,7 @@ exim -DSERVER=server -d-all+dnsbl -bd -oX PORT_D
 exim -q
 ****
 #
-killdaemon
 millisleep 500
+killdaemon
 no_msglog_check
 #
