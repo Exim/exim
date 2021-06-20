@@ -180,7 +180,6 @@ struct {
 } lf = {.do_shutdown = TRUE};
 uschar * eol = NULL;
 int timeout = 5;
-FILE * fp;
 gstring * yield;
 int ret = DEFER;
 
@@ -248,16 +247,23 @@ that reads a file can be used.  If we're using a stdio buffered read,
 and might need later write ops on the socket, the stdio must be in
 writable mode or the underlying socket goes non-writable. */
 
-if (!cctx->tls_ctx)
-  fp = fdopen(cctx->sock, lf.do_shutdown ? "rb" : "wb");
-
 sigalrm_seen = FALSE;
-ALARM(timeout);
-yield =
-#ifndef DISABLE_TLS
-  cctx->tls_ctx ? cat_file_tls(cctx->tls_ctx, NULL, eol) :
+#ifdef DISABLE_TLS
+if (TRUE)
+#else
+if (!cctx->tls_ctx)
 #endif
-		  cat_file(fp, NULL, eol);
+  {
+  FILE * fp = fdopen(cctx->sock, lf.do_shutdown ? "rb" : "wb");
+  ALARM(timeout);
+  yield = cat_file(fp, NULL, eol);
+  }
+else
+  {
+  ALARM(timeout);
+  yield = cat_file_tls(cctx->tls_ctx, NULL, eol);
+  }
+
 ALARM_CLR(0);
 
 if (sigalrm_seen)
