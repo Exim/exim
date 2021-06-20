@@ -22,54 +22,51 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 -> d@test.ex <D@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbE-0005vi-00"
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 
-2017-07-30 18:51:05.712 10HmbH-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
-2017-07-30 18:51:05.712 10HmbH-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
-2017-07-30 18:51:05.712 10HmbH-0005vi-00 Completed
-2017-07-30 18:51:05.712 10HmaY-0005vi-00 Completed
-2017-07-30 18:51:05.712 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for e@test.ex
-2017-07-30 18:51:05.712 10HmaZ-0005vi-00 ** e@test.ex: Unrouteable address
-2017-07-30 18:51:05.712 10HmaZ-0005vi-00 Failed to expand bounce_message_file: '$acl_m_unset'
-
-2017-07-30 18:51:05.712 10HmbI-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
-2017-07-30 18:51:05.712 10HmbI-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
-2017-07-30 18:51:05.712 10HmbI-0005vi-00 Completed
-2017-07-30 18:51:05.712 10HmaZ-0005vi-00 Completed
-2017-07-30 18:51:05.712 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for f@test.ex
-2017-07-30 18:51:05.712 10HmbA-0005vi-00 ** f@test.ex: Unrouteable address
-2017-07-30 18:51:05.712 10HmbA-0005vi-00 Tainted bounce_message_file after expansion: 'TESTSUITE/aux-fixed/0622.CALLER@myhost.test.ex'
-
-2017-07-30 18:51:05.712 10HmbJ-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
-2017-07-30 18:51:05.712 10HmbJ-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
-2017-07-30 18:51:05.712 10HmbJ-0005vi-00 Completed
-2017-07-30 18:51:05.712 10HmbA-0005vi-00 Completed
-2017-07-30 18:51:05.712 10HmbK-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for g@test.ex
-2017-07-30 18:51:05.712 10HmbK-0005vi-00 ** g@test.ex: Unrouteable address
-2017-07-30 18:51:05.712 10HmbL-0005vi-00 <= <> R=10HmbK-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
-2017-07-30 18:51:05.712 10HmbL-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
-2017-07-30 18:51:05.712 10HmbL-0005vi-00 Completed
-2017-07-30 18:51:05.712 10HmbK-0005vi-00 Completed
-2017-07-30 18:51:05.712 10HmbM-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for delay_p@test.ex
-2017-07-30 18:51:05.712 10HmbM-0005vi-00 == delay_p@test.ex R=delay defer (-1): deliberate for test purposes
-2017-07-30 18:51:05.712 10HmbN-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for delay_q@test.ex
-2017-07-30 18:51:05.712 10HmbN-0005vi-00 == delay_q@test.ex R=delay defer (-1): deliberate for test purposes
-2017-07-30 18:51:05.712 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for delay_r@test.ex
-2017-07-30 18:51:05.712 10HmbB-0005vi-00 == delay_r@test.ex R=delay defer (-1): deliberate for test purposes
-2017-07-30 18:51:05.712 10HmbO-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for delay_s@test.ex
-2017-07-30 18:51:05.712 10HmbO-0005vi-00 == delay_s@test.ex R=delay defer (-1): deliberate for test purposes
-2017-07-30 18:51:05.712 10HmbM-0005vi-00 == delay_p@test.ex R=delay defer (-1): deliberate for test purposes
-2017-07-30 18:51:05.712 10HmbP-0005vi-00 <= <> R=10HmbM-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
-2017-07-30 18:51:05.712 10HmbP-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
-2017-07-30 18:51:05.712 10HmbP-0005vi-00 Completed
-2017-07-30 18:51:05.712 10HmbN-0005vi-00 == delay_q@test.ex R=delay defer (-1): deliberate for test purposes
-2017-07-30 18:51:05.712 10HmbQ-0005vi-00 <= <> R=10HmbN-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
-2017-07-30 18:51:05.712 10HmbQ-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
-2017-07-30 18:51:05.712 10HmbQ-0005vi-00 Completed
-2017-07-30 18:51:05.712 10HmbB-0005vi-00 == delay_r@test.ex R=delay defer (-1): deliberate for test purposes
-2017-07-30 18:51:05.712 10HmbB-0005vi-00 Failed to open TESTSUITE/aux-fixed/0622.nonexist.tmpl for warning message texts: No such file or directory
-2017-07-30 18:51:05.712 10HmbR-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
-2017-07-30 18:51:05.712 10HmbR-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
-2017-07-30 18:51:05.712 10HmbR-0005vi-00 Completed
-2017-07-30 18:51:05.712 10HmbO-0005vi-00 == delay_s@test.ex R=delay defer (-1): deliberate for test purposes
-2017-07-30 18:51:05.712 10HmbS-0005vi-00 <= <> R=10HmbO-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
-2017-07-30 18:51:05.712 10HmbS-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
-2017-07-30 18:51:05.712 10HmbS-0005vi-00 Completed
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <B@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <C@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <D@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <E@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <F@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp L S=sss id=E10HmaX-0005vi-00@myhost.test.ex for A@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <A@test.ex> R=server
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <C@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <D@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp L S=sss id=E10HmaX-0005vi-00@myhost.test.ex for B@test.ex E@test.ex F@test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <F@test.ex> R=server
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <E@test.ex> R=server
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <B@test.ex> R=server
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp L S=sss id=E10HmaX-0005vi-00@myhost.test.ex for C@test.ex D@test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <D@test.ex> R=server
+1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <C@test.ex> R=server
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <B@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <C@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <D@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <E@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <F@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp L- S=sss id=E10HmbB-0005vi-00@myhost.test.ex for A@test.ex
+1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <A@test.ex> R=server
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <C@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <D@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp L- S=sss id=E10HmbB-0005vi-00@myhost.test.ex for B@test.ex E@test.ex F@test.ex
+1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <F@test.ex> R=server
+1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <E@test.ex> R=server
+1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <B@test.ex> R=server
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp L- S=sss id=E10HmbB-0005vi-00@myhost.test.ex for C@test.ex D@test.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <D@test.ex> R=server
+1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <C@test.ex> R=server
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
