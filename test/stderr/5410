@@ -211,16 +211,6 @@ end of inline ACL: ACCEPT
   	for $received_for}}
   ├──expanding: with $received_protocol 
   ╰─────result: with local-esmtp 
- ├──condition: def:tls_in_ver
- ├─────result: false
-  ╭───scanning:  ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding:  ($tls_in_ver)
-  ├─────result:  ()
-  ╰───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
   ╭considering: (envelope-from <$sender_address>)
@@ -453,16 +443,6 @@ end of inline ACL: ACCEPT
   	for $received_for}}
   ├──expanding: with $received_protocol 
   ╰─────result: with local-esmtp 
- ├──condition: def:tls_in_ver
- ├─────result: false
-  ╭───scanning:  ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding:  ($tls_in_ver)
-  ├─────result:  ()
-  ╰───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
   ╭considering: (envelope-from <$sender_address>)
@@ -695,16 +675,6 @@ end of inline ACL: ACCEPT
   	for $received_for}}
   ├──expanding: with $received_protocol 
   ╰─────result: with local-esmtp 
- ├──condition: def:tls_in_ver
- ├─────result: false
-  ╭───scanning:  ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding:  ($tls_in_ver)
-  ├─────result:  ()
-  ╰───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
   ╭considering: (envelope-from <$sender_address>)
