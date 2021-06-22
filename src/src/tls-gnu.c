@@ -120,7 +120,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #endif
 
 #if GNUTLS_VERSION_NUMBER >= 0x030200
-# define EXIM_HAVE_ALPN
+# ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
+#  define EXIM_HAVE_ALPN
+# endif
 #endif
 
 #ifndef DISABLE_OCSP
@@ -1142,12 +1144,12 @@ tls_server_certstatus_cb(gnutls_session_t session, unsigned int htype,
   unsigned when, unsigned int incoming, const gnutls_datum_t * msg)
 {
 DEBUG(D_tls) debug_printf("Sending certificate-status\n");		/*XXX we get this for tls1.2 but not for 1.3 */
-#ifdef SUPPORT_SRV_OCSP_STACK
+# ifdef SUPPORT_SRV_OCSP_STACK
 tls_in.ocsp = exim_testharness_disable_ocsp_validity_check
   ? OCSP_VFY_NOT_TRIED : OCSP_VFIED;	/* We know that GnuTLS verifies responses */
-#else
+# else
 tls_in.ocsp = OCSP_VFY_NOT_TRIED;
-#endif
+# endif
 return 0;
 }
 
