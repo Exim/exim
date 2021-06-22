@@ -48,6 +48,7 @@ functions from the OpenSSL library. */
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 # define EXIM_HAVE_OCSP_RESP_COUNT
 # define OPENSSL_AUTO_SHA256
+# define EXIM_HAVE_ALPN
 #else
 # define EXIM_HAVE_EPHEM_RSA_KEX
 # define EXIM_HAVE_RAND_PSEUDO
@@ -418,9 +419,6 @@ setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host,
     uschar ** errstr );
 
 /* Callbacks */
-#ifdef EXIM_HAVE_OPENSSL_TLSEXT
-static int tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg);
-#endif
 #ifndef DISABLE_OCSP
 static int tls_server_stapling_cb(SSL *s, void *arg);
 #endif
@@ -2137,6 +2135,53 @@ bad: return SSL_TLSEXT_ERR_ALERT_FATAL;
 
 
 
+#ifdef EXIM_HAVE_ALPN
+/*************************************************
+*        Callback to handle ALPN                 *
+*************************************************/
+
+/* SSL_CTX_set_alpn_select_cb() */
+/* Called on server when client offers ALPN, after the SNI callback.
+If set and not e?smtp then we dump the connection */
+
+static int
+tls_server_alpn_cb(SSL *ssl, const uschar ** out, uschar * outlen,
+  const uschar * in, unsigned int inlen, void * arg)
+{
+const exim_openssl_state_st * state = arg;
+
+DEBUG(D_tls)
+  {
+  debug_printf("Received TLS ALPN offer:");
+  for (int pos = 0, siz; pos < inlen; pos += siz+1)
+    {
+    siz = in[pos];
+    if (pos + 1 + siz > inlen) siz = inlen - pos - 1;
+    debug_printf(" '%.*s'", siz, in + pos + 1);
+    }
+  debug_printf("\n");
+  }
+
+/* Look for an acceptable ALPN */
+if (  inlen > 1		/* at least one name */
+   && in[0]+1 == inlen	/* filling the vector, so exactly one name */
+   && (  Ustrncmp(in+1, "smtp", in[0]) == 0
+      || Ustrncmp(in+1, "esmtp", in[0]) == 0
+   )  )
+  {
+  *out = in;			/* we checked for exactly one, so can just point to it */
+  *outlen = inlen;
+  return SSL_TLSEXT_ERR_OK;	/* use ALPN */
+  }
+
+/* Reject unacceptable ALPN */
+/* This will be fatal to the TLS conn; would be nice to kill TCP also */
+return SSL_TLSEXT_ERR_ALERT_FATAL;
+}
+#endif	/* EXIM_HAVE_ALPN */
+
+
+
 #ifndef DISABLE_OCSP
 
 /*************************************************
@@ -2604,6 +2649,9 @@ if (!host)		/* server */
   tls_certificate */
   SSL_CTX_set_tlsext_servername_callback(ctx, tls_servername_cb);
   SSL_CTX_set_tlsext_servername_arg(ctx, state);
+# ifdef EXIM_HAVE_ALPN
+  SSL_CTX_set_alpn_select_cb(ctx, tls_server_alpn_cb, state);
+# endif
   }
 # ifndef DISABLE_OCSP
 else			/* client */

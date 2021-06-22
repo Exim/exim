@@ -119,6 +119,10 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # endif
 #endif
 
+#if GNUTLS_VERSION_NUMBER >= 0x030200
+# define EXIM_HAVE_ALPN
+#endif
+
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
 #endif
@@ -278,9 +282,13 @@ static BOOL gnutls_buggy_ocsp = FALSE;
 static BOOL exim_testharness_disable_ocsp_validity_check = FALSE;
 #endif
 
+#ifdef EXIM_HAVE_ALPN
+static BOOL server_seen_alpn = FALSE;
+#endif
 #ifdef EXIM_HAVE_TLS_RESUME
 static gnutls_datum_t server_sessticket_key;
 #endif
+
 
 /* ------------------------------------------------------------------------ */
 /* macros */
@@ -1062,10 +1070,18 @@ tls_server_clienthello_ext(void * ctx, unsigned tls_id,
   const unsigned char *data, unsigned size)
 {
 /* https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml */
-if (tls_id == 5)	/* status_request */
+switch (tls_id)
   {
-  DEBUG(D_tls) debug_printf("Seen status_request extension from client\n");
-  tls_in.ocsp = OCSP_NOT_RESP;
+  case 5:	/* status_request */
+    DEBUG(D_tls) debug_printf("Seen status_request extension from client\n");
+    tls_in.ocsp = OCSP_NOT_RESP;
+    break;
+#ifdef EXIM_HAVE_ALPN
+  case 16:	/* Application Layer Protocol Notification */
+    DEBUG(D_tls) debug_printf("Seen ALPN extension from client\n");
+    server_seen_alpn = TRUE;
+    break;
+#endif
   }
 return 0;
 }
@@ -2791,6 +2807,26 @@ if (gnutls_session_is_resumed(state->session))
   }
 }
 #endif
+
+
+#ifdef EXIM_HAVE_ALPN
+static void
+tls_server_set_acceptable_alpns(exim_gnutls_state_st * state)
+{
+int rc;
+gnutls_datum_t protocols[2] = {[0] = {.data = US"smtp", .size = 4},
+			       [1] = {.data = US"esmtp", .size = 5}};
+
+/* Set non-mandatory set of protocol names */
+if (!(rc = gnutls_alpn_set_protocols(state->session, protocols, 2, 0)))
+  gnutls_handshake_set_hook_function(state->session,
+    GNUTLS_HANDSHAKE_ANY, GNUTLS_HOOK_POST, tls_server_hook_cb);
+else
+  DEBUG(D_tls)
+    debug_printf("setting alpn protocols: %s\n", US gnutls_strerror(rc));
+}
+#endif
+
 /* ------------------------------------------------------------------------ */
 /* Exported functions */
 
@@ -2846,6 +2882,10 @@ DEBUG(D_tls) debug_printf("initialising GnuTLS as a server\n");
   report_time_since(&t0, US"server tls_init (delta)");
 #endif
   }
+
+#ifdef EXIM_HAVE_ALPN
+tls_server_set_acceptable_alpns(state);
+#endif
 
 #ifdef EXIM_HAVE_TLS_RESUME
 tls_server_resume_prehandshake(state);
@@ -2961,6 +3001,32 @@ tls_server_resume_posthandshake(state);
 #endif
 
 DEBUG(D_tls) post_handshake_debug(state);
+
+#ifdef EXIM_HAVE_ALPN
+if (server_seen_alpn)
+  {
+  /* The client offered ALPN.  We were set up with a nonmandatory list;
+  see what was negotiated.  We require a match now, given that something
+  was offered. */
+  gnutls_datum_t p = {.size = 0};
+  int rc = gnutls_alpn_get_selected_protocol(state->session, &p);
+  if (!rc || rc == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE)
+    {
+    if (p.size == 0)
+      {
+      *errstr = US"ALPN rejected";
+      return FAIL;
+      }
+    else
+      DEBUG(D_tls)
+	debug_printf("ALPN negotiated: %.*s\n", (int)p.size, p.data);
+    }
+  else
+    DEBUG(D_tls)
+      debug_printf("getting alpn protocol: %s\n", US gnutls_strerror(rc));
+
+  }
+#endif
 
 /* Verify after the fact */
 
