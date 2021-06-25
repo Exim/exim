@@ -3195,7 +3195,7 @@ which sometimes uses smtp_printf() and sometimes smtp_respond(). */
 
 if (fl.rcpt_in_progress)
   {
-  if (rcpt_smtp_response == NULL)
+  if (!rcpt_smtp_response)
     rcpt_smtp_response = string_copy(msg);
   else if (fl.rcpt_smtp_response_same &&
            Ustrcmp(rcpt_smtp_response, msg) != 0)
@@ -3210,7 +3210,7 @@ not the whole MAIL/RCPT/DATA response set. */
 for (;;)
   {
   uschar *nl = Ustrchr(msg, '\n');
-  if (nl == NULL)
+  if (!nl)
     {
     smtp_printf("%.3s%c%.*s%s\r\n", !final, code, final ? ' ':'-', esclen, esc, msg);
     return;

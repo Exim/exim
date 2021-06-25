@@ -54,10 +54,7 @@ gstring * g = string_get_tainted(256, TRUE);
 
 lookup_dnssec_authenticated = NULL;
 if (dns_lookup(dnsa, name, T_TXT, NULL) != DNS_SUCCEED)
-  {
-  store_free_dns_answer(dnsa);
-  return NULL;	/*XXX better error detail?  logging? */
-  }
+  goto bad;
 
 /* Search for TXT record */
 
@@ -65,12 +62,8 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
      rr;
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
   if (rr->type == T_TXT)
-    {
-    int rr_offset = 0;
-
-    /* Copy record content to the answer buffer */
-
-    while (rr_offset < rr->size)
+    {			/* Copy record content to the answer buffer */
+    for (int rr_offset = 0; rr_offset < rr->size; )
       {
       uschar len = rr->data[rr_offset++];
 
@@ -81,7 +74,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
       rr_offset += len;
       }
 
-    /* check if this looks like a DKIM record */
+    /* Check if this looks like a DKIM record */
     if (Ustrncmp(g->s, "v=", 2) != 0 || strncasecmp(CS g->s, "v=dkim", 6) == 0)
       {
       store_free_dns_answer(dnsa);
@@ -89,7 +82,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
       return string_from_gstring(g);
       }
 
-    if (g) g->ptr = 0;		/* overwrite previous record */
+    g->ptr = 0;		/* overwrite previous record */
     }
 
 bad:

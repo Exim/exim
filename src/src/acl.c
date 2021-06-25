@@ -3540,7 +3540,7 @@ for (; cb; cb = cb->next)
       }
     break;
 
-    #ifndef DISABLE_DKIM
+#ifndef DISABLE_DKIM
     case ACLC_DKIM_SIGNER:
     if (dkim_cur_signer)
       rc = match_isinlist(dkim_cur_signer,
@@ -3553,7 +3553,7 @@ for (; cb; cb = cb->next)
     rc = match_isinlist(dkim_verify_status,
                         &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
     break;
-    #endif
+#endif
 
 #ifdef SUPPORT_DMARC
     case ACLC_DMARC_STATUS:
