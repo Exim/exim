@@ -748,6 +748,13 @@ FIXED_NEVER_USERS=root
 
 # WHITELIST_D_MACROS=TLS:SPOOL
 
+# The next setting enables a main config option
+# "allow_insecure_tainted_data" to turn taint failures into warnings.
+# Though this option is new, it is deprecated already now, and will be
+# ignored in future releases of Exim. It is meant as mitigation for
+# upgrading old (possibly insecure) configurations to more secure ones.
+ALLOW_INSECURE_TAINTED_DATA=yes
+
 #------------------------------------------------------------------------------
 # Exim has support for the AUTH (authentication) extension of the SMTP
 # protocol, as defined by RFC 2554. If you don't know what SMTP authentication

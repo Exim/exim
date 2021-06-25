@@ -404,14 +404,15 @@ recipient cache. */
 
 if (oncelog && *oncelog && to)
   {
+  uschar *m;
   time_t then = 0;
 
-  if (is_tainted(oncelog))
+  if ((m = is_tainted2(oncelog, 0, "Tainted '%s' (once file for %s transport)"
+      " not permitted", oncelog, tblock->name)))
     {
     addr->transport_return = DEFER;
     addr->basic_errno = EACCES;
-    addr->message = string_sprintf("Tainted '%s' (once file for %s transport)"
-      " not permitted", oncelog, tblock->name);
+    addr->message = m;
     goto END_OFF;
     }
 
@@ -515,13 +516,14 @@ if (oncelog && *oncelog && to)
 
   if (then != 0 && (once_repeat_sec <= 0 || now - then < once_repeat_sec))
     {
+    uschar *m;
     int log_fd;
-    if (is_tainted(logfile))
+    if ((m = is_tainted2(logfile, 0, "Tainted '%s' (logfile for %s transport)"
+	" not permitted", logfile, tblock->name)))
       {
       addr->transport_return = DEFER;
       addr->basic_errno = EACCES;
-      addr->message = string_sprintf("Tainted '%s' (logfile for %s transport)"
-	" not permitted", logfile, tblock->name);
+      addr->message = m;
       goto END_OFF;
       }
 
@@ -548,12 +550,13 @@ if (oncelog && *oncelog && to)
 /* We are going to send a message. Ensure any requested file is available. */
 if (file)
   {
-  if (is_tainted(file))
+  uschar *m;
+  if ((m = is_tainted2(file, 0, "Tainted '%s' (file for %s transport)"
+      " not permitted", file, tblock->name)))
     {
     addr->transport_return = DEFER;
     addr->basic_errno = EACCES;
-    addr->message = string_sprintf("Tainted '%s' (file for %s transport)"
-      " not permitted", file, tblock->name);
+    addr->message = m;
     return FALSE;
     }
   if (!(ff = Ufopen(file, "rb")) && !ob->file_optional)

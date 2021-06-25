@@ -491,6 +491,9 @@ enum logbit {
   Li_smtp_mailauth,
   Li_smtp_no_mail,
   Li_subject,
+#ifdef ALLOW_INSECURE_TAINTED_DATA
+  Li_tainted,
+#endif
   Li_tls_certificate_verified,
   Li_tls_cipher,
   Li_tls_peerdn,

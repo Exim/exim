@@ -1,0 +1,7 @@
+# Allow insecure tainted data
+exim -DALLOW_TAINTED=no -f hans@example.com -be 
+${lookup{$sender_address_local_part}lsearch{DIR/aux-fixed/0990/$sender_address_domain}{yes}{no}}
+****
+exim -DALLOW_TAINTED=yes -f hans@example.com -be 
+${lookup{$sender_address_local_part}lsearch{DIR/aux-fixed/0990/$sender_address_domain}{yes}{no}}
+****
