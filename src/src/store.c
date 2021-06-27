@@ -41,6 +41,9 @@ The following different types of store are recognized:
   a single message transaction but needed for longer than the use of the main
   pool permits.  Currently this means only receive-time DKIM information.
 
+- There is a dedicated pool for configuration data read from the config file(s).
+  Once complete, it is made readonly.
+
 . Orthogonal to the three pool types, there are two classes of memory: untainted
   and tainted.  The latter is used for values derived from untrusted input, and
   the string-expansion mechanism refuses to operate on such values (obviously,
@@ -165,21 +168,24 @@ static int max_nonpool_malloc;	/* max value for nonpool_malloc */
 static const uschar * pooluse[NPOOLS] = {
 [POOL_MAIN] =		US"main",
 [POOL_PERM] =		US"perm",
+[POOL_CONFIG] =		US"config",
 [POOL_SEARCH] =		US"search",
 [POOL_MESSAGE] =	US"message",
 [POOL_TAINT_MAIN] =	US"main",
 [POOL_TAINT_PERM] =	US"perm",
-[POOL_TAINT_SEARCH] =	US"search",
+[POOL_TAINT_CONFIG] =	US"config",
 [POOL_TAINT_SEARCH] =	US"search",
 [POOL_TAINT_MESSAGE] =	US"message",
 };
 static const uschar * poolclass[NPOOLS] = {
 [POOL_MAIN] =		US"untainted",
 [POOL_PERM] =		US"untainted",
+[POOL_CONFIG] =		US"untainted",
 [POOL_SEARCH] =		US"untainted",
 [POOL_MESSAGE] =	US"untainted",
 [POOL_TAINT_MAIN] =	US"tainted",
 [POOL_TAINT_PERM] =	US"tainted",
+[POOL_TAINT_CONFIG] =	US"tainted",
 [POOL_TAINT_SEARCH] =	US"tainted",
 [POOL_TAINT_MESSAGE] =	US"tainted",
 };
@@ -244,6 +250,22 @@ log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Taint mismatch, %s: %s %d\n",
 }
 
 
+
+/******************************************************************************/
+void
+store_writeprotect(int pool)
+{
+for (storeblock * b = chainbase[pool]; b; b = b->next)
+  {
+#ifndef COMPILE_UTILITY
+  if (mprotect(b, ALIGNED_SIZEOF_STOREBLOCK + b->length, PROT_READ) != 0)
+    DEBUG(D_any) debug_printf("config block mprotect: (%d) %s\n", errno, strerror(errno))
+#endif
+    ;
+  }
+}
+
+/******************************************************************************/
 
 /*************************************************
 *       Get a block from the current pool        *
@@ -324,7 +346,13 @@ if (size > yield_length[pool])
     if (++nblocks[pool] > maxblocks[pool])
       maxblocks[pool] = nblocks[pool];
 
-    newblock = internal_store_malloc(mlength, func, linenumber);
+    if (pool == POOL_CONFIG)
+      {
+      long pgsize = sysconf(_SC_PAGESIZE);
+      posix_memalign((void **)&newblock, pgsize, (mlength + pgsize - 1) & ~(pgsize - 1));
+      }
+    else
+      newblock = internal_store_malloc(mlength, func, linenumber);
     newblock->next = NULL;
     newblock->length = length;
 #ifndef RESTRICTED_MEMORY
@@ -483,7 +511,8 @@ not call with a pointer returned by store_get().  Both the untainted and tainted
 pools corresposding to store_pool are reset.
 
 Arguments:
-  r           place to back up to
+  ptr         place to back up to
+  pool	      pool holding the pointer
   func        function from which called
   linenumber  line number in source file
 
@@ -561,7 +590,8 @@ if (  yield_length[pool] < STOREPOOL_MIN_SIZE
   }
 
 bb = b->next;
-b->next = NULL;
+if (pool != POOL_CONFIG)
+  b->next = NULL;
 
 while ((b = bb))
   {
@@ -576,7 +606,8 @@ while ((b = bb))
   nbytes[pool] -= siz;
   pool_malloc -= siz;
   nblocks[pool]--;
-  internal_store_free(b, func, linenumber);
+  if (pool != POOL_CONFIG)
+    internal_store_free(b, func, linenumber);
 
 #ifndef RESTRICTED_MEMORY
   if (store_block_order[pool] > 13) store_block_order[pool]--;

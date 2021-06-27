@@ -4529,7 +4529,6 @@ tls_openssl_options_parse(uschar *option_spec, long *results)
 {
 long result, item;
 uschar * exp, * end;
-uschar keep_c;
 BOOL adding, item_parsed;
 
 /* Server: send no (<= TLS1.2) session tickets */
@@ -4571,11 +4570,8 @@ for (uschar * s = exp; *s; /**/)
     return FALSE;
     }
   adding = *s++ == '+';
-  for (end = s; (*end != '\0') && !isspace(*end); ++end) /**/ ;
-  keep_c = *end;
-  *end = '\0';
-  item_parsed = tls_openssl_one_option_parse(s, &item);
-  *end = keep_c;
+  for (end = s; *end && !isspace(*end); ) end++;
+  item_parsed = tls_openssl_one_option_parse(string_copyn(s, end-s), &item);
   if (!item_parsed)
     {
     DEBUG(D_tls) debug_printf("openssl option setting unrecognised: \"%s\"\n", s);

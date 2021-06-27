@@ -757,7 +757,7 @@ switch (prop)
     for memory wiping, so expanding strings will leave stuff laying around.
     But no need to compound the problem, so get rid of the one we can. */
 
-    memset(tmps, '\0', strlen(tmps));
+    if (US tmps != s) memset(tmps, '\0', strlen(tmps));
     cbrc = GSASL_OK;
     break;
 

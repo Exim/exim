@@ -6554,14 +6554,19 @@ while (addr_new)           /* Loop until all addresses dealt with */
 
       /* Treat /dev/null as a special case and abandon the delivery. This
       avoids having to specify a uid on the transport just for this case.
-      Arrange for the transport name to be logged as "**bypassed**". */
+      Arrange for the transport name to be logged as "**bypassed**".
+      Copy the transport for this fairly unusual case rather than having
+      to make all transports mutable. */
 
       if (Ustrcmp(addr->address, "/dev/null") == 0)
         {
-        uschar *save = addr->transport->name;
-        addr->transport->name = US"**bypassed**";
+	transport_instance * save_t = addr->transport;
+	transport_instance * t = store_get(sizeof(*t), is_tainted(save_t));
+	*t = *save_t;
+	t->name = US"**bypassed**";
+	addr->transport = t;
         (void)post_process_one(addr, OK, LOG_MAIN, EXIM_DTYPE_TRANSPORT, '=');
-        addr->transport->name = save;
+        addr->transport= save_t;
         continue;   /* with the next new address */
         }
 

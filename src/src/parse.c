@@ -65,7 +65,7 @@ Returns:   pointer past the end of the address
 */
 
 uschar *
-parse_find_address_end(uschar *s, BOOL nl_ends)
+parse_find_address_end(const uschar *s, BOOL nl_ends)
 {
 BOOL source_routing = *s == '@';
 int no_term = source_routing? 1 : 0;
@@ -121,7 +121,7 @@ while (*s != 0 && (*s != ',' || no_term > 0) && (*s != '\n' || !nl_ends))
     }
   }
 
-return s;
+return US s;
 }
 
 
@@ -1233,7 +1233,7 @@ Returns:      FF_DELIVERED      addresses extracted
 */
 
 int
-parse_forward_list(uschar *s, int options, address_item **anchor,
+parse_forward_list(const uschar *s, int options, address_item **anchor,
   uschar **error, const uschar *incoming_domain, uschar *directory,
   error_block **syntax_errors)
 {
@@ -1247,7 +1247,7 @@ for (;;)
   int special = 0;
   int specopt = 0;
   int specbit = 0;
-  uschar *ss, *nexts;
+  const uschar *ss, *nexts;
   address_item *addr;
   BOOL inquote = FALSE;
 
@@ -1275,7 +1275,7 @@ for (;;)
     syntax error has been skipped. I now think it is the wrong approach, but
     have left this here just in case, and for the record. */
 
-    #ifdef NEVER
+#ifdef NEVER
     if (count > 0) return FF_DELIVERED;   /* Something was generated */
 
     if (syntax_errors == NULL ||          /* Not skipping syntax errors, or */
@@ -1285,8 +1285,7 @@ for (;;)
     *error = string_sprintf("no addresses generated: syntax error in %s: %s",
        (*syntax_errors)->text2, (*syntax_errors)->text1);
     return FF_ERROR;
-    #endif
-
+#endif
     }
 
   /* Find the end of the next address. Quoted strings in addresses may contain
@@ -1323,13 +1322,7 @@ for (;;)
 
   len = ss - s;
 
-  DEBUG(D_route)
-    {
-    int save = s[len];
-    s[len] = 0;
-    debug_printf("extract item: %s\n", s);
-    s[len] = save;
-    }
+  DEBUG(D_route) debug_printf("extract item: %.*s\n", len, s);
 
   /* Handle special addresses if permitted. If the address is :unknown:
   ignore it - this is for backward compatibility with old alias files. You
@@ -1350,7 +1343,7 @@ for (;;)
   else if (Ustrncmp(s, ":fail:", 6) == 0)
     { special = FF_FAIL; specopt = RDO_FAIL; }  /* specbit is 0 */
 
-  if (special != 0)
+  if (special)
     {
     uschar *ss = Ustrchr(s+1, ':') + 1;
     if ((options & specopt) == specbit)
@@ -1358,10 +1351,9 @@ for (;;)
       *error = string_sprintf("\"%.*s\" is not permitted", len, s);
       return FF_ERROR;
       }
-    while (*ss != 0 && isspace(*ss)) ss++;
-    while (s[len] != 0 && s[len] != '\n') len++;
-    s[len] = 0;
-    *error = string_copy(ss);
+    while (*ss && isspace(*ss)) ss++;
+    while (s[len] && s[len] != '\n') len++;
+    *error = string_copyn(ss, s + len - ss);
     return special;
     }
 
@@ -1374,7 +1366,7 @@ for (;;)
     {
     uschar *filebuf;
     uschar filename[256];
-    uschar *t = s+9;
+    const uschar * t = s+9;
     int flen = len - 9;
     int frc;
     struct stat statbuf;
@@ -1587,18 +1579,17 @@ for (;;)
     {
     int start, end, domain;
     const uschar *recipient = NULL;
-    int save = s[len];
-    s[len] = 0;
+    uschar * s_ltd = string_copyn(s, len);
 
     /* If it starts with \ and the rest of it parses as a valid mail address
     without a domain, carry on with that address, but qualify it with the
     incoming domain. Otherwise arrange for the address to fall through,
     causing an error message on the re-parse. */
 
-    if (*s == '\\')
+    if (*s_ltd == '\\')
       {
       recipient =
-        parse_extract_address(s+1, error, &start, &end, &domain, FALSE);
+        parse_extract_address(s_ltd+1, error, &start, &end, &domain, FALSE);
       if (recipient)
         recipient = domain != 0 ? NULL :
           string_sprintf("%s@%s", recipient, incoming_domain);
@@ -1607,17 +1598,17 @@ for (;;)
     /* Try parsing the item as an address. */
 
     if (!recipient) recipient =
-      parse_extract_address(s, error, &start, &end, &domain, FALSE);
+      parse_extract_address(s_ltd, error, &start, &end, &domain, FALSE);
 
     /* If item starts with / or | and is not a valid address, or there
     is no domain, treat it as a file or pipe. If it was a quoted item,
     remove the quoting occurrences of \ within it. */
 
-    if ((*s == '|' || *s == '/') && (recipient == NULL || domain == 0))
+    if ((*s_ltd == '|' || *s_ltd == '/') && (recipient == NULL || domain == 0))
       {
-      uschar *t = store_get(Ustrlen(s) + 1, is_tainted(s));
+      uschar *t = store_get(Ustrlen(s_ltd) + 1, is_tainted(s_ltd));
       uschar *p = t;
-      uschar *q = s;
+      uschar *q = s_ltd;
       while (*q != 0)
         {
         if (inquote)
@@ -1630,7 +1621,7 @@ for (;;)
       *p = 0;
       addr = deliver_make_addr(t, TRUE);
       setflag(addr, af_pfr);                   /* indicates pipe/file/reply */
-      if (*s != '|') setflag(addr, af_file);   /* indicates file */
+      if (*s_ltd != '|') setflag(addr, af_file);   /* indicates file */
       }
 
     /* Item must be an address. Complain if not, else qualify, rewrite and set
@@ -1642,36 +1633,33 @@ for (;;)
 
     else
       {
-      if (recipient == NULL)
+      if (!recipient)
         {
         if (Ustrcmp(*error, "empty address") == 0)
           {
           *error = NULL;
-          s[len] = save;
           s = nexts;
           continue;
           }
 
-        if (syntax_errors != NULL)
+        if (syntax_errors)
           {
           error_block *e = store_get(sizeof(error_block), FALSE);
           error_block *last = *syntax_errors;
-          if (last == NULL) *syntax_errors = e; else
+          if (!last) *syntax_errors = e; else
             {
-            while (last->next != NULL) last = last->next;
+            while (last->next) last = last->next;
             last->next = e;
             }
           e->next = NULL;
           e->text1 = *error;
-          e->text2 = string_copy(s);
-          s[len] = save;
+          e->text2 = s_ltd;
           s = nexts;
           continue;
           }
         else
           {
-          *error = string_sprintf("%s in \"%s\"", *error, s);
-          s[len] = save;   /* _after_ using it for *error */
+          *error = string_sprintf("%s in \"%s\"", *error, s_ltd);
           return FF_ERROR;
           }
         }
@@ -1686,10 +1674,8 @@ for (;;)
       addr = deliver_make_addr(US recipient, TRUE);  /* TRUE => copy recipient, so deconst ok */
       }
 
-    /* Restore the final character in the original data, and add to the
-    output chain. */
+    /* Add the original data to the output chain. */
 
-    s[len] = save;
     addr->next = *anchor;
     *anchor = addr;
     count++;

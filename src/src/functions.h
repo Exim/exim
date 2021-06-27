@@ -372,9 +372,9 @@ extern int     open_cutthrough_connection( address_item * addr );
 
 extern uschar *parse_extract_address(const uschar *, uschar **, int *, int *, int *,
                  BOOL);
-extern int     parse_forward_list(uschar *, int, address_item **, uschar **,
+extern int     parse_forward_list(const uschar *, int, address_item **, uschar **,
                  const uschar *, uschar *, error_block **);
-extern uschar *parse_find_address_end(uschar *, BOOL);
+extern uschar *parse_find_address_end(const uschar *, BOOL);
 extern const uschar *parse_find_at(const uschar *);
 extern const uschar *parse_fix_phrase(const uschar *, int);
 extern const uschar *parse_message_id(const uschar *, uschar **, uschar **);
@@ -527,6 +527,7 @@ extern int     stdin_ungetc(int);
 
 extern void    store_exit(void);
 extern void    store_init(void);
+extern void    store_writeprotect(int);
 
 extern gstring *string_append(gstring *, int, ...) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele(gstring *, uschar, const uschar *) WARN_UNUSED_RESULT;
