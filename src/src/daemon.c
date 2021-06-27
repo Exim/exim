@@ -2462,7 +2462,14 @@ for (;;)
 
 #ifndef DISABLE_TLS
       /* Create or rotate any required keys; handle (delayed) filewatch event */
-      tls_daemon_tick();
+      for (int old_tfd = tls_daemon_tick(); old_tfd >= 0; )
+	{
+	FD_CLR(old_tfd, &select_listen);
+	if (old_tfd == listen_fd_max - 1) listen_fd_max = old_tfd;
+	if (tls_watch_fd >= 0)
+	  add_listener_socket(tls_watch_fd, &select_listen, &listen_fd_max);
+	break;
+	}
 #endif
       errno = select_errno;
       }

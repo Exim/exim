@@ -58,7 +58,7 @@ extern void    tls_client_creds_reload(BOOL);
 extern void    tls_close(void *, int);
 extern BOOL    tls_could_read(void);
 extern void    tls_daemon_init(void);
-extern void    tls_daemon_tick(void);
+extern int     tls_daemon_tick(void);
 extern BOOL    tls_dropprivs_validate_require_cipher(BOOL);
 extern BOOL    tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);

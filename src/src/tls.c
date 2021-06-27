@@ -359,11 +359,18 @@ opt_unset_or_noexpand(const uschar * opt)
 
 
 
-/* Called every time round the daemon loop */
+/* Called every time round the daemon loop.
 
-void
+If we reloaded fd-watcher, return the old watch fd
+having modified the global for the new one. Otherwise
+return -1.
+*/
+
+int
 tls_daemon_tick(void)
 {
+int old_watch_fd = tls_watch_fd;
+
 tls_per_lib_daemon_tick();
 #if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 if (tls_creds_expire && time(NULL) >= tls_creds_expire)
@@ -375,6 +382,7 @@ if (tls_creds_expire && time(NULL) >= tls_creds_expire)
   DEBUG(D_tls) debug_printf("selfsign cert rotate\n");
   tls_creds_expire = 0;
   tls_daemon_creds_reload();
+  return old_watch_fd;
   }
 else if (tls_watch_trigger_time && time(NULL) >= tls_watch_trigger_time + 5)
   {
@@ -386,8 +394,10 @@ else if (tls_watch_trigger_time && time(NULL) >= tls_watch_trigger_time + 5)
   DEBUG(D_tls) debug_printf("watch triggered\n");
   tls_watch_trigger_time = tls_creds_expire = 0;
   tls_daemon_creds_reload();
+  return old_watch_fd;
   }
 #endif
+return -1;
 }
 
 /* Called once at daemon startup */
