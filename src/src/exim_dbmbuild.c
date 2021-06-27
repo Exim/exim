@@ -70,6 +70,16 @@ struct global_flags	f;
 unsigned int		log_selector[1];
 uschar *		queue_name;
 BOOL			split_spool_directory;
+
+
+/* These introduced by the taintwarn handling */
+rmark
+store_mark_3(const char *func, int linenumber)
+{ return NULL; }
+#ifdef ALLOW_INSECURE_TAINTED_DATA
+BOOL    allow_insecure_tainted_data;
+#endif
+
 /******************************************************************************/
 
 
