@@ -255,14 +255,11 @@ log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Taint mismatch, %s: %s %d\n",
 void
 store_writeprotect(int pool)
 {
+#if !defined(COMPILE_UTILITY) && !defined(MISSING_POSIX_MEMALIGN)
 for (storeblock * b = chainbase[pool]; b; b = b->next)
-  {
-#ifndef COMPILE_UTILITY
   if (mprotect(b, ALIGNED_SIZEOF_STOREBLOCK + b->length, PROT_READ) != 0)
-    DEBUG(D_any) debug_printf("config block mprotect: (%d) %s\n", errno, strerror(errno))
+    DEBUG(D_any) debug_printf("config block mprotect: (%d) %s\n", errno, strerror(errno));
 #endif
-    ;
-  }
 }
 
 /******************************************************************************/
@@ -346,12 +343,14 @@ if (size > yield_length[pool])
     if (++nblocks[pool] > maxblocks[pool])
       maxblocks[pool] = nblocks[pool];
 
+#ifndef MISSING_POSIX_MEMALIGN
     if (pool == POOL_CONFIG)
       {
       long pgsize = sysconf(_SC_PAGESIZE);
       posix_memalign((void **)&newblock, pgsize, (mlength + pgsize - 1) & ~(pgsize - 1));
       }
     else
+#endif
       newblock = internal_store_malloc(mlength, func, linenumber);
     newblock->next = NULL;
     newblock->length = length;

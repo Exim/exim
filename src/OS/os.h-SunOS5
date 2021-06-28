@@ -38,6 +38,10 @@ it seems. */
 # define MISSING_UNSETENV_3
 #endif
 
+#if _POSIX_C_SOURCE < 200809L
+# define MISSING_POSIX_MEMALIGN
+#endif
+
 
 /* SunOS5 doesn't accept getcwd(NULL, 0) to auto-allocate
 a buffer */
