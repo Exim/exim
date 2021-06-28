@@ -4102,7 +4102,7 @@ else
       sx->send_quit = FALSE;	/* avoid sending it later */
 
 #ifndef DISABLE_TLS
-      if (sx->cctx.tls_ctx)	/* need to send TLS Cloe Notify */
+      if (sx->cctx.tls_ctx)	/* need to send TLS Close Notify */
 	{
 # ifdef EXIM_TCP_CORK		/* Use _CORK to get Close Notify in FIN segment */
 	(void) setsockopt(sx->cctx.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));

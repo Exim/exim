@@ -659,5 +659,13 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
 # define EXIM_TCP_CORK TCP_NOPUSH
 #endif
 
+/* LibreSSL seems to not push out the SMTP response to QUIT with our usual
+handling which is trying to get the client to FIN first so that the server does
+not get the TIME_WAIT */
+
+#if !defined(DISABLE_TLS) && defined(USE_OPENSSL) && defined(LIBRESSL_VERSION_NUMBER)
+# define SERVERSIDE_CLOSE_NOWAIT
+#endif
+
 #endif
 /* End of exim.h */
