@@ -41736,6 +41736,9 @@ You may deny messages when this occurs.
 .vitem &%temperror%&
 This indicates a temporary error during all processing, including Exim's
 SPF processing.  You may defer messages when this occurs.
+
+.vitem &%invalid%&
+There was an error during processing of the SPF lookup
 .endlist
 
 You can prefix each string with an exclamation mark to  invert
@@ -41783,8 +41786,8 @@ variables:
 .vitem &$spf_result$&
 .vindex &$spf_result$&
   This contains the outcome of the SPF check in string form,
-  one of pass, fail, softfail, none, neutral, permerror or
-  temperror.
+  currently one of pass, fail, softfail, none, neutral, permerror,
+  temperror, or &"(invalid)"&.
 
 .vitem &$spf_result_guessed$&
 .vindex &$spf_result_guessed$&
