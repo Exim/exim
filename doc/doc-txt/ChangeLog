@@ -320,6 +320,10 @@ JH/56 Make the majority of info read from config files readonly, for defence-in-
       depth against exploits.  Suggestion by Qualsy.
       Not supported on Solaris 10.
 
+JH/57 Fix control=fakreject for a custom message containing tainted data.
+      Previously this resulted in a log complaint, due to a re-expansion present
+      since fakereject was originally introduced.
+
 
 Exim version 4.94
 -----------------

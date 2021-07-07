@@ -3235,13 +3235,15 @@ for (; cb; cb = cb->next)
 
 	case CONTROL_FAKEREJECT:
 	  cancel_cutthrough_connection(TRUE, US"fakereject");
-	  case CONTROL_FAKEDEFER:
+	case CONTROL_FAKEDEFER:
 	  fake_response = (control_type == CONTROL_FAKEDEFER) ? DEFER : FAIL;
 	  if (*p == '/')
 	    {
 	    const uschar *pp = p + 1;
 	    while (*pp) pp++;
-	    fake_response_text = expand_string(string_copyn(p+1, pp-p-1));
+	    /* The entire control= line was expanded at top so no need to expand
+	    the part after the / */
+	    fake_response_text = string_copyn(p+1, pp-p-1);
 	    p = pp;
 	    }
 	   else /* Explicitly reset to default string */
