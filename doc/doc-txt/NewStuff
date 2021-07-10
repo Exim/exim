@@ -40,7 +40,7 @@ Version 4.95
 
 11. Faster TLS startup.  When various configuration options contain no
     expandable elements, the information can be preloaded and cached rather
-    than the provious behaviour of always loading at startup time for every
+    than the previous behaviour of always loading at startup time for every
     connection.  This helps particularly for the CA bundle.
 
 12. Proxy Protocol Timeout is configurable via "proxy_protocol_timeout"

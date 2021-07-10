@@ -38,7 +38,7 @@ JH/06 Bug 2594: Change the name used for certificate name checks in the smtp
 JH/07 Bug 2597: Fix a resource leak.  Using a lookup in obtaining a value for
       smtp_accept_max_per_host allocated resources which were not released
       when the limit was exceeded.  This eventually crashed the daemon.  Fix
-      by adding a relase action in that path.
+      by adding a release action in that path.
 
 JH/08 Bug 2598: Fix verify ACL condition.  The options for the condition are
       expanded; previously using tainted values was rejected.  Fix by using
@@ -75,7 +75,7 @@ JH/15 Bug 2620: Fix "spam" ACL condition.  Previously, tainted values for the
 
 JH/16 Bug 2615: Fix pause during message reception, on systems that have been
       suspended/resumed.  The Linux CLOCK_MONOTONIC does not account for time
-      spent suspended, ignoring the Posix definition.  Previously we assumed
+      spent suspended, ignoring the POSIX definition.  Previously we assumed
       it did and a constant offset from real time could be used as a correction.
       Change to using the same clock source for the start-of-message and the
       post-message next-tick-wait.  Also change to using CLOCK_BOOTTIME if it
@@ -83,12 +83,12 @@ JH/16 Bug 2615: Fix pause during message reception, on systems that have been
 
 JH/17 Bug 2295: Fix DKIM signing to always semicolon-terminate.  Although the
       RFC says it is optional some validators care.  The missing char was not
-      intended but triggered by a line-wrap alignement.  Discovery and fix by
+      intended but triggered by a line-wrap alignment.  Discovery and fix by
       Guillaume Outters, hacked on by JH.
 
 JH/18 Bug 2617: Fix a taint trap in parse_fix_phrase().  Previously when the
       name being quoted was tainted a trap would be taken.  Fix by using
-      dynamicaly created buffers.  The routine could have been called by a
+      dynamically created buffers.  The routine could have been called by a
       rewrite with the "h" flag, by using the "-F" command-line option, or
       by using a "name=" option on a control=submission ACL modifier.
 
@@ -146,15 +146,15 @@ JH/29 Bug 2675: add outgoing-interface I= element to deferred "==" log lines,
 
 JH/30 Bug 2677: fix matching of long addresses. Since 4.93 a limit of 256 was
       applied. This resulted, if any header-line rewrite rules were configured,
-      in a panic-log trigerrable by sending a message with a long address in
-      a header.	Fix by increaing the arbitrary limit to larger than a single
+      in a panic-log triggerable by sending a message with a long address in
+      a header.	Fix by increasing the arbitrary limit to larger than a single
       (dewrapped) 5322 header line maximum size.
 
 JH/31 The ESMTP option name advertised for the SUPPORT_EARLY_PIPE build option
       is changed from X_PIPE_CONNECT to PIPE_CONNECT. This is in line with
       RFC 6648 which deprecates X- options in protocols as a general practice.
       Changeover between the implementations is handled by the mechanisms
-      alrready coded.
+      already coded.
 
 JH/32 Bug 2599: fix delay of delivery to a local address where there is also
       a remote which uses callout/hold.  Previously the local was queued.
@@ -182,7 +182,7 @@ JH/37 Enforce the expected size, for fixed-size records read from hints-DB
 
 JH/38 When logging an AUTH failure, as server, do not include sensitive
       information. Previously, the credentials would be included if given
-      as part of the AUTH command line and an ACL denied authentidcation.
+      as part of the AUTH command line and an ACL denied authentication.
 
 JH/39 Bug 2691: fix $local_part_data.  When the matching list element
       referred to a file, bad data was returned.  This likely also affected
@@ -236,14 +236,14 @@ JH/49 Bug 2710: when using SOCKS for additional messages after the first (a
       transport executions.  This also mean that the log lines for the
       messages can show the proxy information.
 
-JH/50 Bug 2672: QT elements in log lines, unless disabled, now exclude the 
+JH/50 Bug 2672: QT elements in log lines, unless disabled, now exclude the
       receive time.  With modern systems the difference is significant.
       The historical behaviour can be restored by disabling (a new) log_selector
       "queue_time_exclusive".
 
 JH/51 Taint-check ACL line.  Previously, only filenames (for out-of-line ACL
-      content) were specifically tested for.  Now, also cover epxansions
-      rerulting in acl names and inline ACL content.
+      content) were specifically tested for.  Now, also cover expansions
+      resulting in ACL names and inline ACL content.
 
 JH/52 Fix ${ip6norm:} operator.  Previously, any trailing line text was dropped,
       making it unusable in complex expressions.
@@ -317,7 +317,7 @@ JH/54 DMARC: recent versions of the OpenDMARC library appear to have broken
 JH/55 TLS: as server, reject connections with ALPN indicating non-smtp use.
 
 JH/56 Make the majority of info read from config files readonly, for defence-in-
-      depth against exploits.  Suggestion by Qualsy.
+      depth against exploits.  Suggestion by Qualys.
       Not supported on Solaris 10.
 
 JH/57 Fix control=fakreject for a custom message containing tainted data.
