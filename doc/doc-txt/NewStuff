@@ -51,55 +51,14 @@ Version 4.95
 14. Log selector "queue_size_exclusive", enabled by default, to exclude the
     time taken for reception from QT log elements.
 
-15. Main option "smtp_backlog_monitor", to set a level abve which listen
+15. Main option "smtp_backlog_monitor", to set a level above which listen
     socket backlogs are logged.
 
 16. Main option "hosts_require_helo", requiring HELO or EHLO before MAIL.
 
-Version 4.95
-------------
-
- 1. The fast-ramp two phase queue run support, previously experimental, is
-    now supported by default.
-
- 2. The native SRS support, previously experimental, is now supported. It is
-    not built unless specified in the Local/Makefile.
-
- 3. TLS resumption support, previously experimental, is now supported and
-    included in default builds.
-
- 4. Single-key LMDB lookups, previously experimental, are now supported.
-    The support is not built unless specified in the Local/Makefile.
-
- 5. Option "message_linelength_limit" on the smtp transport to enforce (by
-    default) the RFC 998 character limit.
-
- 6. An option to ignore the cache on a lookup.
-
- 7. Quota checking during reception (i.e. at SMTP time) for appendfile-
-    transport-managed quotas.
-
- 8. Sqlite lookups accept a "file=<path>" option to specify a per-operation
-    db file, replacing the previous prefix to the SQL string (which had
-    issues when the SQL used tainted values).
-
- 9. Lsearch lookups accept a "ret=full" option, to return both the portion
-    of the line matching the key, and the remainder.
-
-10. A command-line option to have a daemon not create a notifier socket.
-
-11. Faster TLS startup.  When various configuration options contain no
-    expandable elements, the information can be preloaded and cached rather
-    than the provious behaviour of always loading at startup time for every
-    connection.  This helps particularly for the CA bundle.
-
-12. Proxy Protocol Timeout is configurable via "proxy_protocol_timeout"
-    main config option.
-
-13. Option "smtp_accept_msx_per_connection" is now expanded.
-
-13. A main config option "allow_insecure_tainted_data" allows to turn
+17. A main config option "allow_insecure_tainted_data" allows to turn
     taint errors into warnings.
+
 
 Version 4.94
 ------------
