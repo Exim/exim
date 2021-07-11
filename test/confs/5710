@@ -63,6 +63,10 @@ ev_msg:
 	 logwrite =       ${certextract {subj_altname}  {$tls_out_peercert}{SAN <$value>}{(no SAN)}}
 #	 logwrite =       ${certextract {ocsp_uri}	{$tls_out_peercert} {OCU <$value>}{(no OCU)}}
 	 logwrite =       ${certextract {crl_uri}	{$tls_out_peercert} {CRU <$value>}{(no CRU)}}
+	 logwrite =
+	 # output list separator changes
+	 logwrite =       ${certextract {subj_altname,>:,dns}  {$tls_out_peercert}{SAN <$value>}{(no SAN)}}
+	 logwrite =       ${certextract {subj_altname,dns,>:}  {$tls_out_peercert}{SAN <$value>}{(no SAN)}}
 
 logger:
   accept condition = ${if eq {msg} {${listextract{1}{$event_name}}}}

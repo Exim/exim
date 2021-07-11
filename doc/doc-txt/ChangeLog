@@ -324,6 +324,9 @@ JH/57 Fix control=fakreject for a custom message containing tainted data.
       Previously this resulted in a log complaint, due to a re-expansion present
       since fakereject was originally introduced.
 
+JH/58 GnuTLS: Fix certextract expansion.  If a second modifier after a tag
+      modifier was given, a loop resulted.
+
 
 Exim version 4.94
 -----------------

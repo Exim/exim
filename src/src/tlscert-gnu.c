@@ -288,13 +288,13 @@ uschar * tag = US"";
 uschar * ele;
 int match = -1;
 
-while (mod)
+if (mod) while (*mod)
   {
   if (*mod == '>' && *++mod) sep = *mod++;
-  else if (Ustrcmp(mod, "dns")==0) { match = GNUTLS_SAN_DNSNAME; mod += 3; }
-  else if (Ustrcmp(mod, "uri")==0) { match = GNUTLS_SAN_URI; mod += 3; }
-  else if (Ustrcmp(mod, "mail")==0) { match = GNUTLS_SAN_RFC822NAME; mod += 4; }
-  else continue;
+  else if (Ustrncmp(mod, "dns", 3)==0) { match = GNUTLS_SAN_DNSNAME; mod += 3; }
+  else if (Ustrncmp(mod, "uri", 3)==0) { match = GNUTLS_SAN_URI; mod += 3; }
+  else if (Ustrncmp(mod, "mail", 4)==0) { match = GNUTLS_SAN_RFC822NAME; mod += 4; }
+  else break;
 
   if (*mod++ != ',')
     break;

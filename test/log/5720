@@ -20,6 +20,8 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no SAN)
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no OCU)
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no CRU)
+1999-03-02 09:44:33 10HmaX-0005vi-00 (no SAN)
+1999-03-02 09:44:33 10HmaX-0005vi-00 (no SAN)
 1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session: (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmaX-0005vi-00 smtp:ehlo 250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-8BITMIME\n250-PIPELINING\n250-STARTTLS\n250 HELP
 1999-03-02 09:44:33 10HmaX-0005vi-00 cipher_ 
@@ -54,6 +56,8 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=*.test.ex;DNS=alternatename.server1.example.com;DNS=server1.example.com;DNS=alternatename2.server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 OCU <http://oscp.example.com/>
 1999-03-02 09:44:33 10HmaY-0005vi-00 CRU <http://crl.example.com/latest.crl>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <*.test.ex:alternatename.server1.example.com:server1.example.com:alternatename2.server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <*.test.ex:alternatename.server1.example.com:server1.example.com:alternatename2.server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
