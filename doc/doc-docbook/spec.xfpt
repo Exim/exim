@@ -18354,7 +18354,7 @@ using the &%tls_certificate%& option.  If TLS support for incoming connections
 is not required the &%tls_advertise_hosts%& option should be set empty.
 
 
-.option tls_certificate main string list&!! unset
+.option tls_certificate main "string list&!!" unset
 .cindex "TLS" "server certificate; location of"
 .cindex "certificate" "server, location of"
 The value of this option is expanded, and must then be a list of absolute paths to
@@ -18565,7 +18565,7 @@ further details, see section &<<SECTsupobssmt>>&.
 
 
 
-.option tls_privatekey main string list&!! unset
+.option tls_privatekey main "string list&!!" unset
 .cindex "TLS" "server private key; location of"
 The value of this option is expanded, and must then be a list of absolute paths to
 files which contains the server's private keys.
@@ -25303,7 +25303,7 @@ of the message. Its value must not be zero. See also &%final_timeout%&.
 
 .option dkim_canon smtp string&!! unset
 DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
-.option dkim_domain smtp string list&!! unset
+.option dkim_domain smtp "string list&!!" unset
 DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
 .option dkim_hash smtp string&!! sha256
 DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
