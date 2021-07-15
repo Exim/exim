@@ -46,7 +46,7 @@ Version 4.95
 12. Proxy Protocol Timeout is configurable via "proxy_protocol_timeout"
     main config option.
 
-13. Option "smtp_accept_msx_per_connection" is now expanded.
+13. Option "smtp_accept_max_per_connection" is now expanded.
 
 14. Log selector "queue_size_exclusive", enabled by default, to exclude the
     time taken for reception from QT log elements.
