@@ -1507,6 +1507,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/session: \K\((SSL_connect|gnutls_handshake)\): timed out/(tls lib connect fn): timed out/;
     s/TLS error on connection from .*\K\((SSL_accept|gnutls_handshake)\): timed out/(tls lib accept fn): timed out/;
     s/TLS error on connection from .*\K(SSL_accept: TCP connection closed by peer|\(gnutls_handshake\): The TLS connection was non-properly terminated.)/(tls lib accept fn): TCP connection closed by peer/;
+    s/TLS session: \K\(gnutls_handshake\): No supported application protocol could be negotiated/(SSL_connect): error: <<detail omitted>>/;
+    s/\(gnutls_handshake\): No common application protocol could be negotiated./(SSL_accept): error: <<detail omitted>>/;
     }
 
   # ======== mail ========

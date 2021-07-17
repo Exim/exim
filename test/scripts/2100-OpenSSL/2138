@@ -1,0 +1,35 @@
+# TLS: ALPN: mandatory
+#
+# Plain server
+exim -DSERVER=server -bd -oX PORT_D
+****
+# Client requires ALPN (success)
+exim -DCONTROL=smtp -DREQUIRE=y -odf client_require@test.ex
+****
+killdaemon
+#
+# Server can be told to ignore (bad) ALPN from client
+exim -DSERVER=server -DSTRICT="" -bd -oX PORT_D
+****
+# Client requires ALPN (fail)
+exim -DCONTROL=http -DREQUIRE=y -odf client_require_fail@test.ex
+****
+exim -Mrm $msg1
+****
+sudo rm -f DIR/spool/db/retry
+killdaemon
+#
+#
+# Server can be told ALPN mandatory
+exim -DSERVER=server -DREQUIRE=y -bd -oX PORT_D
+****
+# Client supplies ALPN, good
+exim -DCONTROL=smtp -odf server_require_good@test.ex
+****
+# Client does not supply ALPN, fails
+exim -odf server_require_bad@test.ex
+****
+killdaemon
+#
+no_msglog_check
+no_stdout_check

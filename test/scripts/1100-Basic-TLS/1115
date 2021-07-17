@@ -1,0 +1,50 @@
+# TLS: ALPN
+gnutls
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# Basic: is good ALPN set on tpt acceptable to server
+exim -DCONTROL=smtp -odf a@test.ex
+Test message.
+****
+#
+# Bad ALPN rejected
+exim -DCONTROL=http -odf b@test.ex
+****
+exim -Mrm $msg1
+****
+sudo rm -f DIR/spool/db/retry
+#
+# Multiple ALPN rejected
+exim -DCONTROL=smtp:smtp -odf c@test.ex
+****
+exim -Mrm $msg1
+****
+sudo rm -f DIR/spool/db/retry
+#
+# Empty client option is ok
+exim -DCONTROL="" -odf d@test.ex
+****
+# Content-free client option is ok
+exim -DCONTROL=" " -odf e@test.ex
+****
+killdaemon
+#
+# Server can be told to ignore (bad) ALPN from client
+exim -DSERVER=server -DSTRICT="" -bd -oX PORT_D
+****
+exim -DCONTROL=http -odf f@test.ex
+****
+killdaemon
+#
+# Server can be told custom names list
+exim -DSERVER=server -DSTRICT='${if eq {$sender_host_address}{HOSTIPV4} {smtp:weird} {smtp}}' -bd -oX PORT_D
+****
+exim -DCONTROL=weird -odf g@test.ex
+****
+killdaemon
+#
+#
+no_msglog_check
+no_stdout_check
+millisleep 500

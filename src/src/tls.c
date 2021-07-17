@@ -685,7 +685,6 @@ else if ((subjdn = tls_cert_subject(cert, NULL)))
 return FALSE;
 }
 
-
 /* Environment cleanup: The GnuTLS library uses SSLKEYLOGFILE in the environment
 and writes a file by that name.  Our OpenSSL code does the same, using keying
 info from the library API.

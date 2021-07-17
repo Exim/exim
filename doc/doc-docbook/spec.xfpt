@@ -14829,8 +14829,10 @@ listed in more than one group.
 .table2
 .row &%gnutls_compat_mode%&          "use GnuTLS compatibility mode"
 .row &%gnutls_allow_auto_pkcs11%&    "allow GnuTLS to autoload PKCS11 modules"
+.row &%hosts_require_alpn%&          "mandatory ALPN"
 .row &%openssl_options%&             "adjust OpenSSL compatibility options"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
+.row &%tls_alpn%&		     "acceptable protocol names"
 .row &%tls_certificate%&             "location of server certificate"
 .row &%tls_crl%&                     "certificate revocation list"
 .row &%tls_dh_max_bits%&             "clamp D-H bit count suggestion"
@@ -16330,6 +16332,20 @@ hosts_connection_nolog = :
 .endd
 If the &%smtp_connection%& log selector is not set, this option has no effect.
 
+
+.new
+.option hosts_require_alpn main "host list&!!" unset
+.cindex ALPN "require negotiation in server"
+.cindex TLS ALPN
+.cindex TLS "Application Layer Protocol Names"
+If the TLS library supports ALPN
+then a successful negotiation of ALPN will be required for any client
+matching the list, for TLS to be used.
+See also the &%tls_alpn%& option.
+
+&*Note*&: prevention of fallback to in-clear connection is not
+managed by this option, and should be done separately.
+.wen
 
 
 .option hosts_proxy main "host list&!!" unset
@@ -18355,6 +18371,19 @@ chapter &<<CHAPTLS>>& for details of Exim's support for TLS.
 Note that the default value requires that a certificate be supplied
 using the &%tls_certificate%& option.  If TLS support for incoming connections
 is not required the &%tls_advertise_hosts%& option should be set empty.
+
+
+.new
+.option tls_alpn main "string list&!!" "smtp : esmtp"
+.cindex TLS "Application Layer Protocol Names"
+.cindex TLS ALPN
+.cindex ALPN "set acceptable names for server"
+If this option is set,
+the TLS library supports ALPN,
+and the client offers either more than
+ALPN name or a name which does not match the list,
+the TLS connection is declined.
+.wen
 
 
 .option tls_certificate main "string list&!!" unset
@@ -25657,6 +25686,20 @@ Exim will request a Certificate Status on a
 TLS session for any host that matches this list.
 &%tls_verify_certificates%& should also be set for the transport.
 
+.new
+.option hosts_require_alpn smtp "host list&!!" unset
+.cindex ALPN "require negotiation in client"
+.cindex TLS ALPN
+.cindex TLS "Application Layer Protocol Names"
+If the TLS library supports ALPN
+then a successful negotiation of ALPN will be required for any host
+matching the list, for TLS to be used.
+See also the &%tls_alpn%& option.
+
+&*Note*&: prevention of fallback to in-clear connection is not
+managed by this option; see &%hosts_require_tls%&.
+.wen
+
 .option hosts_require_dane smtp "host list&!!" unset
 .cindex DANE "transport options"
 .cindex DANE "requiring for certain servers"
@@ -25938,6 +25981,21 @@ the use of the SIZE option altogether.
 .cindex proxy SOCKS
 This option enables use of SOCKS proxies for connections made by the
 transport.  For details see section &<<SECTproxySOCKS>>&.
+
+
+.new
+.option tls_alpn smtp string&!! unset
+.cindex TLS "Application Layer Protocol Names"
+.cindex TLS ALPN
+.cindex ALPN "set name in client"
+If this option is set
+and the TLS library supports ALPN,
+the value given is used.
+
+As of writing no value has been standardised for email use.
+The authors suggest using &"smtp"&.
+.wen
+
 
 
 .option tls_certificate smtp string&!! unset
@@ -29869,6 +29927,34 @@ see &`-servername`& in the output, then OpenSSL has support.
 When Exim is built against GnuTLS, SNI support is available as of GnuTLS
 0.5.10.  (Its presence predates the current API which Exim uses, so if Exim
 built, then you have SNI support).
+
+.new
+.cindex TLS ALPN
+.cindex ALPN "general information"
+.cindex TLS "Application Layer Protocol Names"
+There is a TLS feature related to SNI
+called Application Layer Protocol Name (ALPN).
+This is intended to declare, or select, what protocol layer will be using a TLS
+connection.
+The client for the connection proposes a set of protocol names, and
+the server responds with a selected one.
+It is not, as of 2021, commonly used for SMTP connections.
+However, to guard against misirected or malicious use of web clients
+(which often do use ALPN) against MTA ports, Exim by default check that
+there is no incompatible ALPN specified by a client for a TLS connection.
+If there is, the connection is rejected.
+
+As a client Exim does not supply ALPN by default.
+The behaviour of both client and server can be configured using the options
+&%tls_alpn%& and &%hosts_require_alpn%&.
+There are no variables providing observability.
+Some feature-specific logging may appear on denied connections, but this
+depends on the behavious of the peer
+(not all peers can send a feature-specific TLS Alert).
+
+This feature is available when Exim is built with
+OpenSSL 1.1.0 or later or GnuTLS 3.2.0 or later.
+.wen
 
 
 

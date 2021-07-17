@@ -48,6 +48,7 @@ typedef struct {
   uschar	*dscp;
   uschar	*serialize_hosts;
   uschar	*hosts_try_auth;
+  uschar	*hosts_require_alpn;
   uschar	*hosts_require_auth;
   uschar	*hosts_try_chunking;
 #ifdef SUPPORT_DANE
@@ -101,6 +102,7 @@ typedef struct {
   uschar	*socks_proxy;
 #endif
 #ifndef DISABLE_TLS
+  uschar	*tls_alpn;
   uschar	*tls_certificate;
   uschar	*tls_crl;
   uschar	*tls_privatekey;

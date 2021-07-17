@@ -285,7 +285,7 @@ static BOOL exim_testharness_disable_ocsp_validity_check = FALSE;
 #endif
 
 #ifdef EXIM_HAVE_ALPN
-static BOOL server_seen_alpn = FALSE;
+static int server_seen_alpn = -1;	/* count of names */
 #endif
 #ifdef EXIM_HAVE_TLS_RESUME
 static gnutls_datum_t server_sessticket_key;
@@ -388,10 +388,15 @@ return host ? FAIL : DEFER;
 
 
 static int
-tls_error_gnu(const uschar *prefix, int err, const host_item *host,
+tls_error_gnu(exim_gnutls_state_st * state, const uschar *prefix, int err,
   uschar ** errstr)
 {
-return tls_error(prefix, US gnutls_strerror(err), host, errstr);
+return tls_error(prefix,
+  state && err == GNUTLS_E_FATAL_ALERT_RECEIVED
+  ? US gnutls_alert_get_name(gnutls_alert_get(state->session))
+  : US gnutls_strerror(err),
+  state ? state->host : NULL,
+  errstr);
 }
 
 static int
@@ -451,12 +456,12 @@ To prevent this, we init PKCS11 first, which is the documented approach. */
 
 if (!gnutls_allow_auto_pkcs11)
   if ((rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL)))
-    return tls_error_gnu(US"gnutls_pkcs11_init", rc, NULL, errstr);
+    return tls_error_gnu(NULL, US"gnutls_pkcs11_init", rc, errstr);
 #endif
 
 #ifndef GNUTLS_AUTO_GLOBAL_INIT
 if ((rc = gnutls_global_init()))
-  return tls_error_gnu(US"gnutls_global_init", rc, NULL, errstr);
+  return tls_error_gnu(UNULL, S"gnutls_global_init", rc, errstr);
 #endif
 
 #if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
@@ -715,7 +720,7 @@ host_item *host = NULL; /* dummy for macros */
 DEBUG(D_tls) debug_printf("Initialising GnuTLS server params\n");
 
 if ((rc = gnutls_dh_params_init(&dh_server_params)))
-  return tls_error_gnu(US"gnutls_dh_params_init", rc, host, errstr);
+  return tls_error_gnu(NULL, US"gnutls_dh_params_init", rc, errstr);
 
 if (!expand_check(tls_dhparam, US"tls_dhparam", &exp_tls_dhparam, errstr))
   return DEFER;
@@ -745,7 +750,7 @@ else
 if (m.data)
   {
   if ((rc = gnutls_dh_params_import_pkcs3(dh_server_params, &m, GNUTLS_X509_FMT_PEM)))
-    return tls_error_gnu(US"gnutls_dh_params_import_pkcs3", rc, host, errstr);
+    return tls_error_gnu(NULL, US"gnutls_dh_params_import_pkcs3", rc, errstr);
   DEBUG(D_tls) debug_printf("Loaded fixed standard D-H parameters\n");
   return OK;
   }
@@ -829,7 +834,7 @@ if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
   rc = gnutls_dh_params_import_pkcs3(dh_server_params, &m, GNUTLS_X509_FMT_PEM);
   store_free(m.data);
   if (rc)
-    return tls_error_gnu(US"gnutls_dh_params_import_pkcs3", rc, host, errstr);
+    return tls_error_gnu(NULL, US"gnutls_dh_params_import_pkcs3", rc, errstr);
   DEBUG(D_tls) debug_printf("read D-H parameters from file \"%s\"\n", filename);
   }
 
@@ -884,7 +889,7 @@ if (rc < 0)
     debug_printf("requesting generation of %d bit Diffie-Hellman prime ...\n",
         dh_bits_gen);
   if ((rc = gnutls_dh_params_generate2(dh_server_params, dh_bits_gen)))
-    return tls_error_gnu(US"gnutls_dh_params_generate2", rc, host, errstr);
+    return tls_error_gnu(NULL, US"gnutls_dh_params_generate2", rc, errstr);
 
   /* gnutls_dh_params_export_pkcs3() will tell us the exact size, every time,
   and I confirmed that a NULL call to get the size first is how the GnuTLS
@@ -895,8 +900,8 @@ if (rc < 0)
   if (  (rc = gnutls_dh_params_export_pkcs3(dh_server_params,
 		GNUTLS_X509_FMT_PEM, m.data, &sz))
      && rc != GNUTLS_E_SHORT_MEMORY_BUFFER)
-    return tls_error_gnu(US"gnutls_dh_params_export_pkcs3(NULL) sizing",
-	      rc, host, errstr);
+    return tls_error_gnu(NULL, US"gnutls_dh_params_export_pkcs3(NULL) sizing",
+	      rc, errstr);
   m.size = sz;
   if (!(m.data = store_malloc(m.size)))
     return tls_error_sys(US"memory allocation failed", errno, NULL, errstr);
@@ -906,7 +911,7 @@ if (rc < 0)
       m.data, &sz)))
     {
     store_free(m.data);
-    return tls_error_gnu(US"gnutls_dh_params_export_pkcs3() real", rc, host, errstr);
+    return tls_error_gnu(NULL, US"gnutls_dh_params_export_pkcs3() real", rc, errstr);
     }
   m.size = sz; /* shrink by 1, probably */
 
@@ -1011,7 +1016,7 @@ out:
   return rc;
 
 err:
-  rc = tls_error_gnu(where, rc, NULL, errstr);
+  rc = tls_error_gnu(state, where, rc, errstr);
   goto out;
 }
 
@@ -1032,9 +1037,9 @@ tls_add_certfile(exim_gnutls_state_st * state, const host_item * host,
 int rc = gnutls_certificate_set_x509_key_file(state->lib_state.x509_cred,
     CCS certfile, CCS keyfile, GNUTLS_X509_FMT_PEM);
 if (rc < 0)
-  return tls_error_gnu(
+  return tls_error_gnu(state,
     string_sprintf("cert/key setup: cert=%s key=%s", certfile, keyfile),
-    rc, host, errstr);
+    rc, errstr);
 return -rc;
 }
 
@@ -1069,19 +1074,34 @@ return 0;
 /* Make a note that we saw a status-request */
 static int
 tls_server_clienthello_ext(void * ctx, unsigned tls_id,
-  const unsigned char *data, unsigned size)
+  const uschar * data, unsigned size)
 {
 /* https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml */
 switch (tls_id)
   {
-  case 5:	/* status_request */
+  case 5:	/* Status Request */
     DEBUG(D_tls) debug_printf("Seen status_request extension from client\n");
     tls_in.ocsp = OCSP_NOT_RESP;
     break;
 #ifdef EXIM_HAVE_ALPN
   case 16:	/* Application Layer Protocol Notification */
-    DEBUG(D_tls) debug_printf("Seen ALPN extension from client\n");
-    server_seen_alpn = TRUE;
+    /* The format of "data" here doesn't seem to be documented, but appears
+    to be a 2-byte field with a (redundant, given the "size" arg) total length
+    then a sequence of one-byte size then string (not nul-term) names.  The
+    latter is as described in OpenSSL documentation. */
+
+    DEBUG(D_tls) debug_printf("Seen ALPN extension from client (s=%u):", size);
+    for (const uschar * s = data+2; s-data < size-1; s += *s + 1)
+      {
+      server_seen_alpn++;
+      DEBUG(D_tls) debug_printf(" '%.*s'", (int)*s, s+1);
+      }
+    DEBUG(D_tls) debug_printf("\n");
+    if (server_seen_alpn > 1)
+      {
+      DEBUG(D_tls) debug_printf("TLS: too many ALPNs presented in handshake\n");
+      return GNUTLS_E_NO_APPLICATION_PROTOCOL;
+      }
     break;
 #endif
   }
@@ -1279,9 +1299,9 @@ while (cfile = string_nextinlist(&clist, &csep, NULL, 0))
 	if  ((rc = gnutls_certificate_set_ocsp_status_request_file2(
 		  state->lib_state.x509_cred, CCS ofile, gnutls_cert_index,
 		  ocsp_fmt)) < 0)
-	  return tls_error_gnu(
+	  return tls_error_gnu(state,
 		  US"gnutls_certificate_set_ocsp_status_request_file2",
-		  rc, NULL, errstr);
+		  rc, errstr);
 	DEBUG(D_tls)
 	  debug_printf(" %d response%s loaded\n", rc, rc>1 ? "s":"");
 
@@ -1299,9 +1319,9 @@ while (cfile = string_nextinlist(&clist, &csep, NULL, 0))
 	if ((rc = gnutls_certificate_set_ocsp_status_request_function2(
 		     state->lib_state.x509_cred, gnutls_cert_index,
 		     server_ocsp_stapling_cb, ofile)))
-	    return tls_error_gnu(
+	    return tls_error_gnu(state,
 		  US"gnutls_certificate_set_ocsp_status_request_function2",
-		  rc, NULL, errstr);
+		  rc, errstr);
 	else
 #  endif
 	  {
@@ -1403,7 +1423,7 @@ else
   }
 
 if (cert_count < 0)
-  return tls_error_gnu(US"setting certificate trust", cert_count, host, errstr);
+  return tls_error_gnu(state, US"setting certificate trust", cert_count, errstr);
 DEBUG(D_tls)
   debug_printf("Added %d certificate authorities\n", cert_count);
 
@@ -1418,8 +1438,8 @@ int cert_count;
 DEBUG(D_tls) debug_printf("loading CRL file = %s\n", crl);
 if ((cert_count = gnutls_certificate_set_x509_crl_file(state->lib_state.x509_cred,
     CS crl, GNUTLS_X509_FMT_PEM)) < 0)
-  return tls_error_gnu(US"gnutls_certificate_set_x509_crl_file",
-	    cert_count, state->host, errstr);
+  return tls_error_gnu(state, US"gnutls_certificate_set_x509_crl_file",
+	    cert_count, errstr);
 
 DEBUG(D_tls) debug_printf("Processed %d CRLs\n", cert_count);
 return OK;
@@ -1730,8 +1750,8 @@ if (!state->lib_state.x509_cred)
   {
   if ((rc = gnutls_certificate_allocate_credentials(
 	(gnutls_certificate_credentials_t *) &state->lib_state.x509_cred)))
-    return tls_error_gnu(US"gnutls_certificate_allocate_credentials",
-	    rc, host, errstr);
+    return tls_error_gnu(state, US"gnutls_certificate_allocate_credentials",
+	    rc, errstr);
   creds_basic_init(state->lib_state.x509_cred, !host);
   }
 
@@ -1935,7 +1955,7 @@ if (!state->host)
 
 if ((rc = gnutls_credentials_set(state->session,
 	    GNUTLS_CRD_CERTIFICATE, state->lib_state.x509_cred)))
-  return tls_error_gnu(US"gnutls_credentials_set", rc, host, errstr);
+  return tls_error_gnu(state, US"gnutls_credentials_set", rc, errstr);
 
 return OK;
 }
@@ -2015,7 +2035,7 @@ else
   state->tls_crl =		tls_crl;
   }
 if (rc)
-  return tls_error_gnu(US"gnutls_init", rc, host, errstr);
+  return tls_error_gnu(state, US"gnutls_init", rc, errstr);
 
 state->tls_require_ciphers =	require_ciphers;
 state->host = host;
@@ -2044,7 +2064,7 @@ if (host)
     sz = Ustrlen(state->tlsp->sni);
     if ((rc = gnutls_server_name_set(state->session,
 	  GNUTLS_NAME_DNS, state->tlsp->sni, sz)))
-      return tls_error_gnu(US"gnutls_server_name_set", rc, host, errstr);
+      return tls_error_gnu(state, US"gnutls_server_name_set", rc, errstr);
     }
   }
 else if (state->tls_sni)
@@ -2074,10 +2094,10 @@ if (!state->lib_state.pri_string)
     }
 
   if ((rc = creds_load_pristring(state, p, &errpos)))
-    return tls_error_gnu(string_sprintf(
+    return tls_error_gnu(state, string_sprintf(
 			"gnutls_priority_init(%s) failed at offset %ld, \"%.6s..\"",
 			p, errpos - CS p, errpos),
-		    rc, host, errstr);
+		    rc, errstr);
   }
 else
   {
@@ -2087,7 +2107,7 @@ else
 
 
 if ((rc = gnutls_priority_set(state->session, state->lib_state.pri_cache)))
-  return tls_error_gnu(US"gnutls_priority_set", rc, host, errstr);
+  return tls_error_gnu(state, US"gnutls_priority_set", rc, errstr);
 
 /* This also sets the server ticket expiration time to the same, and
 the STEK rotation time to 3x. */
@@ -2285,7 +2305,7 @@ if ((ct = gnutls_certificate_type_get(session)) != GNUTLS_CRT_X509)
       DEBUG(D_tls) debug_printf("TLS: peer cert problem: %s: %s\n", \
 	(Label), gnutls_strerror(rc)); \
       if (state->verify_requirement >= VERIFY_REQUIRED) \
-	return tls_error_gnu((Label), rc, state->host, errstr); \
+	return tls_error_gnu(state, (Label), rc, errstr); \
       return OK; \
       } \
     } while (0)
@@ -2808,26 +2828,70 @@ if (gnutls_session_is_resumed(state->session))
   DEBUG(D_tls) debug_printf("Session resumed\n");
   }
 }
-#endif
+#endif	/* EXIM_HAVE_TLS_RESUME */
 
 
 #ifdef EXIM_HAVE_ALPN
+/* Expand and convert an Exim list to a gnutls_datum list.  False return for fail.
+NULL plist return for silent no-ALPN.
+*/
+
+static BOOL
+tls_alpn_plist(const uschar * tls_alpn, const gnutls_datum_t ** plist, unsigned * plen,
+  uschar ** errstr)
+{
+uschar * exp_alpn;
+
+if (!expand_check(tls_alpn, US"tls_alpn", &exp_alpn, errstr))
+  return FALSE;
+
+if (!exp_alpn)
+  {
+  DEBUG(D_tls) debug_printf("Setting TLS ALPN forced to fail, not sending\n");
+  *plist = NULL;
+  }
+else
+  {
+  const uschar * list = exp_alpn;
+  int sep = 0;
+  unsigned cnt = 0;
+  gnutls_datum_t * p;
+  uschar * s;
+
+  while (string_nextinlist(&list, &sep, NULL, 0)) cnt++;
+
+  p = store_get(sizeof(gnutls_datum_t) * cnt, is_tainted(exp_alpn));
+  list = exp_alpn;
+  for (int i = 0; s = string_nextinlist(&list, &sep, NULL, 0); i++)
+    { p[i].data = s; p[i].size = Ustrlen(s); }
+  *plist = (*plen = cnt) ? p : NULL;
+  }
+return TRUE;
+}
+
 static void
-tls_server_set_acceptable_alpns(exim_gnutls_state_st * state)
+tls_server_set_acceptable_alpns(exim_gnutls_state_st * state, uschar ** errstr)
 {
 int rc;
-gnutls_datum_t protocols[2] = {[0] = {.data = US"smtp", .size = 4},
-			       [1] = {.data = US"esmtp", .size = 5}};
+const gnutls_datum_t * plist;
+unsigned plen;
 
-/* Set non-mandatory set of protocol names */
-if (!(rc = gnutls_alpn_set_protocols(state->session, protocols, 2, 0)))
-  gnutls_handshake_set_hook_function(state->session,
-    GNUTLS_HANDSHAKE_ANY, GNUTLS_HOOK_POST, tls_server_hook_cb);
-else
-  DEBUG(D_tls)
-    debug_printf("setting alpn protocols: %s\n", US gnutls_strerror(rc));
+if (tls_alpn_plist(tls_alpn, &plist, &plen, errstr) && plist)
+  {
+  /* This seems to be only mandatory if the client sends an ALPN extension;
+  not trying ALPN is ok. Need to decide how to support server-side must-alpn. */
+
+  server_seen_alpn = 0;
+  if (!(rc = gnutls_alpn_set_protocols(state->session, plist, plen,
+					GNUTLS_ALPN_MANDATORY)))
+    gnutls_handshake_set_hook_function(state->session,
+      GNUTLS_HANDSHAKE_ANY, GNUTLS_HOOK_POST, tls_server_hook_cb);
+  else
+    DEBUG(D_tls)
+      debug_printf("setting alpn protocols: %s\n", US gnutls_strerror(rc));
+  }
 }
-#endif
+#endif	/* EXIM_HAVE_ALPN */
 
 /* ------------------------------------------------------------------------ */
 /* Exported functions */
@@ -2886,7 +2950,7 @@ DEBUG(D_tls) debug_printf("initialising GnuTLS as a server\n");
   }
 
 #ifdef EXIM_HAVE_ALPN
-tls_server_set_acceptable_alpns(state);
+tls_server_set_acceptable_alpns(state, errstr);
 #endif
 
 #ifdef EXIM_HAVE_TLS_RESUME
@@ -2977,7 +3041,7 @@ if (rc != GNUTLS_E_SUCCESS)
     }
   else
     {
-    tls_error_gnu(US"gnutls_handshake", rc, NULL, errstr);
+    tls_error_gnu(state, US"gnutls_handshake", rc, errstr);
     (void) gnutls_alert_send_appropriate(state->session, rc);
     gnutls_deinit(state->session);
     gnutls_certificate_free_credentials(state->lib_state.x509_cred);
@@ -3005,29 +3069,30 @@ tls_server_resume_posthandshake(state);
 DEBUG(D_tls) post_handshake_debug(state);
 
 #ifdef EXIM_HAVE_ALPN
-if (server_seen_alpn)
+if (server_seen_alpn > 0)
   {
-  /* The client offered ALPN.  We were set up with a nonmandatory list;
-  see what was negotiated.  We require a match now, given that something
-  was offered. */
-  gnutls_datum_t p = {.size = 0};
-  int rc = gnutls_alpn_get_selected_protocol(state->session, &p);
-  if (!rc || rc == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE)
-    {
-    if (p.size == 0)
-      {
-      *errstr = US"ALPN rejected";
-      return FAIL;
-      }
-    else
-      DEBUG(D_tls)
+  DEBUG(D_tls)
+    {		/* The client offered ALPN.  See what was negotiated. */
+    gnutls_datum_t p = {.size = 0};
+    int rc = gnutls_alpn_get_selected_protocol(state->session, &p);
+    if (!rc)
 	debug_printf("ALPN negotiated: %.*s\n", (int)p.size, p.data);
+    else
+	debug_printf("getting alpn protocol: %s\n", US gnutls_strerror(rc));
+
+    }
+  }
+else if (server_seen_alpn == 0)
+  if (verify_check_host(&hosts_require_alpn) == OK)
+    {
+    gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_NO_APPLICATION_PROTOCOL);
+    tls_error(US"handshake", US"ALPN required but not negotiated", NULL, errstr);
+    return FAIL;
     }
   else
-    DEBUG(D_tls)
-      debug_printf("getting alpn protocol: %s\n", US gnutls_strerror(rc));
-
-  }
+    DEBUG(D_tls) debug_printf("TLS: no ALPN presented in handshake\n");
+else
+  DEBUG(D_tls) debug_printf("TLS: was not watching for ALPN\n");
 #endif
 
 /* Verify after the fact */
@@ -3367,6 +3432,28 @@ if (!cipher_list)
 #endif
   }
 
+if (ob->tls_alpn)
+#ifdef EXIM_HAVE_ALPN
+  {
+  const gnutls_datum_t * plist;
+  unsigned plen;
+
+  if (!tls_alpn_plist(ob->tls_alpn, &plist, &plen, errstr))
+    return FALSE;
+  if (plist)
+    if (gnutls_alpn_set_protocols(state->session, plist, plen, 0) != 0)
+      {
+      tls_error(US"alpn init", NULL, state->host, errstr);
+      return FALSE;
+      }
+    else
+      DEBUG(D_tls) debug_printf("Setting TLS ALPN '%s'\n", ob->tls_alpn);
+  }
+#else
+  log_write(0, LOG_MAIN, "ALPN unusable with this GnuTLS library version; ignoring \"%s\"\n",
+          ob->tls_alpn);
+#endif
+
   {
   int dh_min_bits = ob->tls_dh_min_bits;
   if (dh_min_bits < EXIM_CLIENT_DH_MIN_MIN_BITS)
@@ -3435,7 +3522,7 @@ if (request_ocsp)
   if ((rc = gnutls_ocsp_status_request_enable_client(state->session,
 		    NULL, 0, NULL)) != OK)
     {
-    tls_error_gnu(US"cert-status-req", rc, state->host, errstr);
+    tls_error_gnu(state, US"cert-status-req", rc, errstr);
     return FALSE;
     }
   tlsp->ocsp = OCSP_NOT_RESP;
@@ -3477,7 +3564,7 @@ if (rc != GNUTLS_E_SUCCESS)
     tls_error(US"gnutls_handshake", US"timed out", state->host, errstr);
     }
   else
-    tls_error_gnu(US"gnutls_handshake", rc, state->host, errstr);
+    tls_error_gnu(state, US"gnutls_handshake", rc, errstr);
   return FALSE;
   }
 
@@ -3522,9 +3609,9 @@ if (request_ocsp)
 	gnutls_free(printed.data);
 	}
       else
-	(void) tls_error_gnu(US"ocsp decode", rc, state->host, errstr);
+	(void) tls_error_gnu(state, US"ocsp decode", rc, errstr);
     if (idx == 0 && rc)
-      (void) tls_error_gnu(US"ocsp decode", rc, state->host, errstr);
+      (void) tls_error_gnu(state, US"ocsp decode", rc, errstr);
     }
 
   if (gnutls_ocsp_status_request_is_checked(state->session, 0) == 0)
@@ -3544,6 +3631,24 @@ if (request_ocsp)
 
 #ifdef EXIM_HAVE_TLS_RESUME
 tls_client_resume_posthandshake(state, tlsp, host);
+#endif
+
+#ifdef EXIM_HAVE_ALPN
+if (ob->tls_alpn)	/* We requested. See what was negotiated. */
+  {
+  gnutls_datum_t p = {.size = 0};
+
+  if (gnutls_alpn_get_selected_protocol(state->session, &p) == 0)
+    { DEBUG(D_tls) debug_printf("ALPN negotiated: '%.*s'\n", (int)p.size, p.data); }
+  else if (verify_check_given_host(CUSS &ob->hosts_require_alpn, host) == OK)
+    {
+    gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_NO_APPLICATION_PROTOCOL);
+    tls_error(US"handshake", US"ALPN required but not negotiated", state->host, errstr);
+    return FALSE;
+    }
+  else
+    DEBUG(D_tls) debug_printf("No ALPN negotiated");
+  }
 #endif
 
 /* Sets various Exim expansion variables; may need to adjust for ACL callouts */

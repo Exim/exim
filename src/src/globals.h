@@ -125,8 +125,10 @@ extern tls_support tls_out;
 #ifndef DISABLE_TLS
 extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */
 extern BOOL    gnutls_allow_auto_pkcs11; /* Let GnuTLS autoload PKCS11 modules */
+extern uschar *hosts_require_alpn;     /* Mandatory ALPN successful nogitiation */
 extern uschar *openssl_options;        /* OpenSSL compatibility options */
 extern const pcre *regex_STARTTLS;     /* For recognizing STARTTLS settings */
+extern uschar *tls_alpn;	       /* ALPN names acceptable */
 extern uschar *tls_certificate;        /* Certificate file */
 extern uschar *tls_crl;                /* CRL File */
 extern int     tls_dh_max_bits;        /* don't accept higher lib suggestions */

@@ -55,6 +55,7 @@ hosts_max_try = 5
 hosts_max_try_hardlimit = 50
 no_hosts_override
 no_hosts_randomize
+hosts_require_alpn = 
 hosts_require_auth = 
 hosts_try_auth = 
 hosts_try_chunking = *

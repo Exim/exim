@@ -359,6 +359,9 @@ typedef struct {
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
 static SSL_CTX *server_sni = NULL;
 #endif
+#ifdef EXIM_HAVE_ALPN
+static BOOL server_seen_alpn = FALSE;
+#endif
 
 static char ssl_errstring[256];
 
@@ -2140,9 +2143,9 @@ bad: return SSL_TLSEXT_ERR_ALERT_FATAL;
 *        Callback to handle ALPN                 *
 *************************************************/
 
-/* SSL_CTX_set_alpn_select_cb() */
-/* Called on server when client offers ALPN, after the SNI callback.
-If set and not e?smtp then we dump the connection */
+/* Called on server if tls_alpn nonblank after expansion,
+when client offers ALPN, after the SNI callback.
+If set and not matching the list then we dump the connection */
 
 static int
 tls_server_alpn_cb(SSL *ssl, const uschar ** out, uschar * outlen,
@@ -2150,6 +2153,7 @@ tls_server_alpn_cb(SSL *ssl, const uschar ** out, uschar * outlen,
 {
 const exim_openssl_state_st * state = arg;
 
+server_seen_alpn = TRUE;
 DEBUG(D_tls)
   {
   debug_printf("Received TLS ALPN offer:");
@@ -2159,23 +2163,32 @@ DEBUG(D_tls)
     if (pos + 1 + siz > inlen) siz = inlen - pos - 1;
     debug_printf(" '%.*s'", siz, in + pos + 1);
     }
-  debug_printf("\n");
+  debug_printf(".  Our list: '%s'\n", tls_alpn);
   }
 
 /* Look for an acceptable ALPN */
+
 if (  inlen > 1		/* at least one name */
    && in[0]+1 == inlen	/* filling the vector, so exactly one name */
-   && (  Ustrncmp(in+1, "smtp", in[0]) == 0
-      || Ustrncmp(in+1, "esmtp", in[0]) == 0
-   )  )
+   )
   {
-  *out = in;			/* we checked for exactly one, so can just point to it */
-  *outlen = inlen;
-  return SSL_TLSEXT_ERR_OK;	/* use ALPN */
+  const uschar * list = tls_alpn;
+  int sep = 0;
+  for (uschar * name; name = string_nextinlist(&list, &sep, NULL, 0); )
+    if (Ustrncmp(in+1, name, in[0]) == 0)
+      {
+      *out = in;			/* we checked for exactly one, so can just point to it */
+      *outlen = inlen;
+      return SSL_TLSEXT_ERR_OK;		/* use ALPN */
+      }
   }
 
-/* Reject unacceptable ALPN */
-/* This will be fatal to the TLS conn; would be nice to kill TCP also */
+/* More than one name from clilent, or name did not match our list. */
+
+/* This will be fatal to the TLS conn; would be nice to kill TCP also.
+Maybe as an option in future; for now leave control to the config (must-tls). */
+
+DEBUG(D_tls) debug_printf("TLS ALPN rejected\n");
 return SSL_TLSEXT_ERR_ALERT_FATAL;
 }
 #endif	/* EXIM_HAVE_ALPN */
@@ -2649,8 +2662,20 @@ if (!host)		/* server */
   tls_certificate */
   SSL_CTX_set_tlsext_servername_callback(ctx, tls_servername_cb);
   SSL_CTX_set_tlsext_servername_arg(ctx, state);
+
 # ifdef EXIM_HAVE_ALPN
-  SSL_CTX_set_alpn_select_cb(ctx, tls_server_alpn_cb, state);
+  if (tls_alpn && *tls_alpn)
+    {
+    uschar * exp_alpn;
+    if (  expand_check(tls_alpn, US"tls_alpn", &exp_alpn, errstr)
+       && *exp_alpn && !isblank(*exp_alpn))
+      {
+      tls_alpn = exp_alpn;	/* subprocess so ok to overwrite */
+      SSL_CTX_set_alpn_select_cb(ctx, tls_server_alpn_cb, state);
+      }
+    else
+      tls_alpn = NULL;
+    }
 # endif
   }
 # ifndef DISABLE_OCSP
@@ -3226,6 +3251,30 @@ if (SSL_session_reused(ssl))
   }
 #endif
 
+#ifdef EXIM_HAVE_ALPN
+/* If require-alpn, check server_seen_alpn here.  Else abort TLS */
+if (!tls_alpn || !*tls_alpn)
+  { DEBUG(D_tls) debug_printf("TLS: was not watching for ALPN\n"); }
+else if (!server_seen_alpn)
+  if (verify_check_host(&hosts_require_alpn) == OK)
+    {
+    /* We'd like to send a definitive Alert but OpenSSL provides no facility */
+    SSL_shutdown(ssl);
+    tls_error(US"handshake", NULL, US"ALPN required but not negotiated", errstr);
+    return FAIL;
+    }
+  else
+    { DEBUG(D_tls) debug_printf("TLS: no ALPN presented in handshake\n"); }
+else DEBUG(D_tls)
+  {
+  const uschar * name;
+  unsigned len;
+  SSL_get0_alpn_selected(ssl, &name, &len);
+  debug_printf("ALPN negotiated: '%.*s'\n", (int)*name, name+1);
+  }
+#endif
+
+
 /* TLS has been set up. Record data for the connection,
 adjust the input functions to read via TLS, and initialize things. */
 
@@ -3593,6 +3642,47 @@ if (SSL_session_reused(exim_client_ctx->ssl))
 #endif	/* !DISABLE_TLS_RESUME */
 
 
+#ifdef EXIM_HAVE_ALPN
+/* Expand and convert an Exim list to an ALPN list.  False return for fail.
+NULL plist return for silent no-ALPN.
+*/
+
+static BOOL
+tls_alpn_plist(const uschar * tls_alpn, const uschar ** plist, unsigned * plen,
+  uschar ** errstr)
+{
+uschar * exp_alpn;
+
+if (!expand_check(tls_alpn, US"tls_alpn", &exp_alpn, errstr))
+  return FALSE;
+
+if (!exp_alpn)
+  {
+  DEBUG(D_tls) debug_printf("Setting TLS ALPN forced to fail, not sending\n");
+  *plist = NULL;
+  }
+else
+  {
+  /* The server implementation only accepts exactly one protocol name
+  but it's little extra code complexity in the client. */
+
+  const uschar * list = exp_alpn;
+  uschar * p = store_get(Ustrlen(exp_alpn), is_tainted(exp_alpn)), * s, * t;
+  int sep = 0;
+  uschar len;
+
+  for (t = p; s = string_nextinlist(&list, &sep, NULL, 0); t += len)
+    {
+    *t++ = len = (uschar) Ustrlen(s);
+    memcpy(t, s, len);
+    }
+  *plist = (*plen = t - p) ? p : NULL;
+  }
+return TRUE;
+}
+#endif	/* EXIM_HAVE_ALPN */
+
+
 /*************************************************
 *    Start a TLS session in a client             *
 *************************************************/
@@ -3778,6 +3868,28 @@ if (ob->tls_sni)
     }
   }
 
+if (ob->tls_alpn)
+#ifdef EXIM_HAVE_ALPN
+  {
+  const uschar * plist;
+  unsigned plen;
+
+  if (!tls_alpn_plist(ob->tls_alpn, &plist, &plen, errstr))
+    return FALSE;
+  if (plist)
+    if (SSL_set_alpn_protos(exim_client_ctx->ssl, plist, plen) != 0)
+      {
+      tls_error(US"alpn init", host, NULL, errstr);
+      return FALSE;
+      }
+    else
+      DEBUG(D_tls) debug_printf("Setting TLS ALPN '%s'\n", ob->tls_alpn);
+  }
+#else
+  log_write(0, LOG_MAIN, "ALPN unusable with this OpenSSL library version; ignoring \"%s\"\n",
+          ob->alpn);
+#endif
+
 #ifdef SUPPORT_DANE
 if (conn_args->dane)
   if (dane_tlsa_load(exim_client_ctx->ssl, host, &conn_args->tlsa_dnsa, errstr) != OK)
@@ -3855,6 +3967,24 @@ DEBUG(D_tls)
 
 #ifndef DISABLE_TLS_RESUME
 tls_client_resume_posthandshake(exim_client_ctx, tlsp);
+#endif
+
+#ifdef EXIM_HAVE_ALPN
+if (ob->tls_alpn)	/* We requested. See what was negotiated. */
+  {
+  const uschar * name;
+  unsigned len;
+
+  SSL_get0_alpn_selected(exim_client_ctx->ssl, &name, &len);
+  if (len > 0)
+    { DEBUG(D_tls) debug_printf("ALPN negotiated %u: '%.*s'\n", len, (int)*name, name+1); }
+  else if (verify_check_given_host(CUSS &ob->hosts_require_alpn, host) == OK)
+    {
+    /* Would like to send a relevant fatal Alert, but OpenSSL has no API */
+    tls_error(US"handshake", host, US"ALPN required but not negotiated", errstr);
+    return FALSE;
+    }
+  }
 #endif
 
 #ifdef SSL_get_extms_support

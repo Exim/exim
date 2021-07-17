@@ -84,6 +84,7 @@ optionlist smtp_transport_options[] = {
 #if !defined(DISABLE_TLS) && !defined(DISABLE_OCSP)
   { "hosts_request_ocsp",   opt_stringptr, LOFF(hosts_request_ocsp) },
 #endif
+  { "hosts_require_alpn",   opt_stringptr, LOFF(hosts_require_alpn) },
   { "hosts_require_auth",   opt_stringptr, LOFF(hosts_require_auth) },
 #ifndef DISABLE_TLS
 # ifdef SUPPORT_DANE
@@ -123,6 +124,7 @@ optionlist smtp_transport_options[] = {
   { "socks_proxy",          opt_stringptr, LOFF(socks_proxy) },
 #endif
 #ifndef DISABLE_TLS
+  { "tls_alpn",             opt_stringptr, LOFF(tls_alpn) },
   { "tls_certificate",      opt_stringptr, LOFF(tls_certificate) },
   { "tls_crl",              opt_stringptr, LOFF(tls_crl) },
   { "tls_dh_min_bits",      opt_int,	   LOFF(tls_dh_min_bits) },

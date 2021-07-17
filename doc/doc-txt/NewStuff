@@ -57,7 +57,9 @@ Version 4.95
 16. Main option "hosts_require_helo", requiring HELO or EHLO before MAIL.
 
 17. A main config option "allow_insecure_tainted_data" allows to turn
-    taint errors into warnings.
+
+18. TLS ALPN handling.  By default, refuse TLS connections that try to specify
+    a non-smtp (eg. http) use.  Options for customising.
 
 
 Version 4.94

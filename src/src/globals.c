@@ -124,9 +124,11 @@ uschar *dsn_advertise_hosts    = NULL;
 #ifndef DISABLE_TLS
 BOOL    gnutls_compat_mode     = FALSE;
 BOOL    gnutls_allow_auto_pkcs11 = FALSE;
+uschar *hosts_require_alpn     = NULL;
 uschar *openssl_options        = NULL;
 const pcre *regex_STARTTLS     = NULL;
 uschar *tls_advertise_hosts    = US"*";
+uschar *tls_alpn	       = US"smtp:esmtp";
 uschar *tls_certificate        = NULL;
 uschar *tls_crl                = NULL;
 /* This default matches NSS DH_MAX_P_BITS value at current time (2012), because

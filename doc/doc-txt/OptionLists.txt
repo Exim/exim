@@ -314,6 +314,8 @@ hosts_pipe_connect		     host_list	     unset	   smtp		     4.93 if experimental
 hosts_randomize                      boolean         false         manualroute       4.00
                                                      false         smtp              3.14
 hosts_require_auth                   host list       unset         smtp              4.00
+hosts_require_alpn                   host list       unset         main              4.95
+								   smtp              4.95
 hosts_require_dane                   host list       unset         smtp              4.91 (4.85 experimental)
 hosts_require_helo		     host list	     "*"	   main		     4.95
 hosts_require_ocsp                   host list       unset         smtp              4.82 if experimental_ocsp
@@ -598,7 +600,8 @@ timeout_defer                        boolean         false         pipe         
 timeout_frozen_after                 time            0s            main              3.20
 timezone                             string          +             main              3.15
 tls_advertise_hosts                  host list       *             main              3.20
-tls_advertise_requiretls             host list       *             main              4.92 if experimental_requiretls
+tls_alpn			     string*	     unset	   main		     4.95
+								   smtp		     4.95
 tls_certificate                      string*         unset         main              3.20
                                                      unset         smtp              3.20
 tls_dh_max_bits                      integer         2236          main              4.80

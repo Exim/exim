@@ -184,6 +184,7 @@ static optionlist optionlist_config[] = {
 #ifdef SUPPORT_PROXY
   { "hosts_proxy",              opt_stringptr,   {&hosts_proxy} },
 #endif
+  { "hosts_require_alpn",       opt_stringptr,   {&hosts_require_alpn} },
   { "hosts_require_helo",       opt_stringptr,   {&hosts_require_helo} },
   { "hosts_treat_as_local",     opt_stringptr,   {&hosts_treat_as_local} },
 #ifdef LOOKUP_IBASE
@@ -378,6 +379,7 @@ static optionlist optionlist_config[] = {
   { "timezone",                 opt_stringptr,   {&timezone_string} },
   { "tls_advertise_hosts",      opt_stringptr,   {&tls_advertise_hosts} },
 #ifndef DISABLE_TLS
+  { "tls_alpn",		        opt_stringptr,   {&tls_alpn} },
   { "tls_certificate",          opt_stringptr,   {&tls_certificate} },
   { "tls_crl",                  opt_stringptr,   {&tls_crl} },
   { "tls_dh_max_bits",          opt_int,         {&tls_dh_max_bits} },
