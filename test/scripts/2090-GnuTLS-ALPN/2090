@@ -15,9 +15,7 @@ exim -DSERVER=server -DSTRICT="" -bd -oX PORT_D
 # Client requires ALPN (fail)
 exim -DCONTROL=http -DREQUIRE=y -odf client_require_fail@test.ex
 ****
-exim -Mrm $msg1
-****
-sudo rm -f DIR/spool/db/retry
+sudo rm -f DIR/spool/db/retry DIR/spool/input/*-D DIR/spool/input/*-H
 killdaemon
 #
 #

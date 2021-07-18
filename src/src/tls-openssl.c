@@ -48,7 +48,6 @@ functions from the OpenSSL library. */
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 # define EXIM_HAVE_OCSP_RESP_COUNT
 # define OPENSSL_AUTO_SHA256
-# define EXIM_HAVE_ALPN
 #else
 # define EXIM_HAVE_EPHEM_RSA_KEX
 # define EXIM_HAVE_RAND_PSEUDO
@@ -81,6 +80,7 @@ change this guard and punt the issue for a while longer. */
 #  ifndef DISABLE_OCSP
 #   define EXIM_HAVE_OCSP
 #  endif
+#  define EXIM_HAVE_ALPN /* fail ret from hshake-cb is ignored by LibreSSL */
 # else
 #  define EXIM_NEED_OPENSSL_INIT
 # endif
@@ -2154,8 +2154,6 @@ static int
 tls_server_alpn_cb(SSL *ssl, const uschar ** out, uschar * outlen,
   const uschar * in, unsigned int inlen, void * arg)
 {
-const exim_openssl_state_st * state = arg;
-
 server_seen_alpn = TRUE;
 DEBUG(D_tls)
   {
@@ -2840,7 +2838,6 @@ chain_from_pem_file(const uschar * file, STACK_OF(X509) ** vp)
 {
 BIO * bp;
 STACK_OF(X509) * verify_stack = *vp;
-X509 * x;
 
 if (verify_stack)
   while (sk_X509_num(verify_stack) > 0)
@@ -3273,7 +3270,10 @@ else DEBUG(D_tls)
   const uschar * name;
   unsigned len;
   SSL_get0_alpn_selected(ssl, &name, &len);
-  debug_printf("ALPN negotiated: '%.*s'\n", (int)*name, name+1);
+  if (len && name)
+    debug_printf("ALPN negotiated: '%.*s'\n", (int)*name, name+1);
+  else
+    debug_printf(ALPN: no protocol negotiated\n);
   }
 #endif
 
