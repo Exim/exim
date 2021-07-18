@@ -1,0 +1,3 @@
+support OpenSSL
+running IPv4
+feature _HAVE_TLS_ALPN

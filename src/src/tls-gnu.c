@@ -154,6 +154,9 @@ builtin_macro_create(US"_HAVE_TLS_OCSP_LIST");
 #if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 builtin_macro_create(US"_HAVE_TLS_CA_CACHE");
 # endif
+# ifdef EXIM_HAVE_ALPN
+builtin_macro_create(US"_HAVE_TLS_ALPN");
+# endif
 }
 #else
 

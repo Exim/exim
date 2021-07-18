@@ -307,6 +307,9 @@ builtin_macro_create(US"_TLS_BAD_MULTICERT_IN_OURCERT");
 builtin_macro_create(US"_HAVE_TLS_OCSP");
 builtin_macro_create(US"_HAVE_TLS_OCSP_LIST");
 # endif
+# ifdef EXIM_HAVE_ALPN
+builtin_macro_create(US"_HAVE_TLS_ALPN");
+# endif
 }
 #else
 

@@ -29953,7 +29953,8 @@ depends on the behavious of the peer
 (not all peers can send a feature-specific TLS Alert).
 
 This feature is available when Exim is built with
-OpenSSL 1.1.0 or later or GnuTLS 3.2.0 or later.
+OpenSSL 1.1.0 or later or GnuTLS 3.2.0 or later;
+the macro _HAVE_TLS_ALPN will be defined when this is so.
 .wen
 
 
