@@ -184,7 +184,9 @@ static optionlist optionlist_config[] = {
 #ifdef SUPPORT_PROXY
   { "hosts_proxy",              opt_stringptr,   {&hosts_proxy} },
 #endif
+#ifndef DISABLE_TLS
   { "hosts_require_alpn",       opt_stringptr,   {&hosts_require_alpn} },
+#endif
   { "hosts_require_helo",       opt_stringptr,   {&hosts_require_helo} },
   { "hosts_treat_as_local",     opt_stringptr,   {&hosts_treat_as_local} },
 #ifdef LOOKUP_IBASE
