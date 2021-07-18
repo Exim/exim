@@ -3273,7 +3273,7 @@ else DEBUG(D_tls)
   if (len && name)
     debug_printf("ALPN negotiated: '%.*s'\n", (int)*name, name+1);
   else
-    debug_printf(ALPN: no protocol negotiated\n);
+    debug_printf(ALPN: no protocol negotiated\n");
   }
 #endif
 
