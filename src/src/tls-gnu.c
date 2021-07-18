@@ -461,7 +461,7 @@ if (!gnutls_allow_auto_pkcs11)
 
 #ifndef GNUTLS_AUTO_GLOBAL_INIT
 if ((rc = gnutls_global_init()))
-  return tls_error_gnu(UNULL, S"gnutls_global_init", rc, errstr);
+  return tls_error_gnu(NULL, US"gnutls_global_init", rc, errstr);
 #endif
 
 #if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
