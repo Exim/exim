@@ -3887,7 +3887,7 @@ if (ob->tls_alpn)
   }
 #else
   log_write(0, LOG_MAIN, "ALPN unusable with this OpenSSL library version; ignoring \"%s\"\n",
-          ob->alpn);
+          ob->tls_alpn);
 #endif
 
 #ifdef SUPPORT_DANE
