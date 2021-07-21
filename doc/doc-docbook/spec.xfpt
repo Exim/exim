@@ -41869,10 +41869,14 @@ variables:
 
 .vitem &$spf_received$&
 .vindex &$spf_received$&
-  This contains a complete Received-SPF: header that can be
-  added to the message. Please note that according to the SPF
-  draft, this header must be added at the top of the header
-  list. Please see section 10 on how you can do this.
+  This contains a complete Received-SPF: header (name and
+  content) that can be added to the message. Please note that
+  according to the SPF draft, this header must be added at the
+  top of the header list, i.e. with
+.code
+add_header = :at_start:$spf_received
+.endd
+  See section &<<SECTaddheadacl>>& for further details.
 
   Note: in case of "Best-guess" (see below), the convention is
   to put this string in a header called X-SPF-Guess: instead.
