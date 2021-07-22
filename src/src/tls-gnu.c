@@ -1526,9 +1526,14 @@ else if (  !tls_certificate && !tls_privatekey
 else
   DEBUG(D_tls) debug_printf("TLS: not preloading server certs\n");
 
-/* If tls_verify_certificates is non-empty and has no $, load CAs */
+/* If tls_verify_certificates is non-empty and has no $, load CAs.
+If none was configured and we can't handle "system", treat as empty. */
 
-if (opt_set_and_noexpand(tls_verify_certificates))
+if (  opt_set_and_noexpand(tls_verify_certificates)
+#ifndef SUPPORT_SYSDEFAULT_CABUNDLE
+   && Ustrcmp(tls_verify_certificates, "system") != 0
+#endif
+   )
   {
   if (tls_set_watch(tls_verify_certificates, FALSE))
     {
@@ -1632,7 +1637,14 @@ else
   DEBUG(D_tls)
     debug_printf("TLS: not preloading client certs, for transport '%s'\n", t->name);
 
-if (opt_set_and_noexpand(ob->tls_verify_certificates))
+/* If tls_verify_certificates is non-empty and has no $, load CAs.
+If none was configured and we can't handle "system", treat as empty. */
+
+if (  opt_set_and_noexpand(ob->tls_verify_certificates)
+#ifndef SUPPORT_SYSDEFAULT_CABUNDLE
+   && Ustrcmp(ob->tls_verify_certificates, "system") != 0
+#endif
+   )
   {
   if (!watch || tls_set_watch(ob->tls_verify_certificates, FALSE))
     {
@@ -1848,7 +1860,8 @@ else
 provided. Experiment shows that, if the certificate file is empty, an unhelpful
 error message is provided. However, if we just refrain from setting anything up
 in that case, certificate verification fails, which seems to be the correct
-behaviour. */
+behaviour.
+If none was configured and we can't handle "system", treat as empty. */
 
 if (!state->lib_state.cabundle)
   {

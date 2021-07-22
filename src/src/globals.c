@@ -147,11 +147,7 @@ uschar *tls_require_ciphers    = NULL;
 uschar *tls_resumption_hosts   = NULL;
 # endif
 uschar *tls_try_verify_hosts   = NULL;
-#if defined(SUPPORT_SYSDEFAULT_CABUNDLE) || !defined(USE_GNUTLS)
 uschar *tls_verify_certificates= US"system";
-#else
-uschar *tls_verify_certificates= NULL;
-#endif
 uschar *tls_verify_hosts       = NULL;
 int     tls_watch_fd	       = -1;
 time_t  tls_watch_trigger_time = (time_t)0;

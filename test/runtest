@@ -1096,6 +1096,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^GnuTLS<2>: added \d+ protocols, \d+ ciphersuites, \d+ sig algos and \d+ groups into priority list$/;
     next if /^GnuTLS<2>: (Disabling X.509 extensions|signing structure using RSA-SHA256)/;
     next if /^GnuTLS.*(wrap_nettle_mpi_print|gnutls_subject_alt_names_get|get_alt_name)/;
+    next if /^GnuTLS<[23]>: (p11|ASSERT: pkcs11.c|Initializing needed PKCS #11 modules)/;
+    next if /^Added \d{3} certificate authorities/;
+    next if /^TLS: not preloading CRL for server/;
 
     # only kevent platforms (FreeBSD, OpenBSD) say this
     next if /^watch dir/;
