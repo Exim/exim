@@ -37,6 +37,10 @@ features_crypto(void)
 #ifdef SIGN_GNUTLS
 # define EXIM_GNUTLS_LIBRARY_LOG_LEVEL 3
 
+# ifndef GNUTLS_VERIFY_ALLOW_BROKEN
+#  define GNUTLS_VERIFY_ALLOW_BROKEN 0
+# endif
+
 
 /* Logging function which can be registered with
  *   gnutls_global_set_log_function()
