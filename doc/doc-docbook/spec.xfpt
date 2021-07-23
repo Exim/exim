@@ -13115,7 +13115,22 @@ While running a per message ACL (mail/rcpt/predata), &$message_size$&
 contains the size supplied on the MAIL command, or -1 if no size was given. The
 value may not, of course, be truthful.
 
-.vitem &$mime_$&&'xxx'&
+.vitem &$mime_anomaly_level$& &&&
+       &$mime_anomaly_text$& &&&
+       &$mime_boundary$& &&&
+       &$mime_charset$& &&&
+       &$mime_content_description$& &&&
+       &$mime_content_disposition$& &&&
+       &$mime_content_id$& &&&
+       &$mime_content_size$& &&&
+       &$mime_content_transfer_encoding$& &&&
+       &$mime_content_type$& &&&
+       &$mime_decoded_filename$& &&&
+       &$mime_filename$& &&&
+       &$mime_is_coverletter$& &&&
+       &$mime_is_multipart$& &&&
+       &$mime_is_rfc822$& &&&
+       &$mime_part_count$&
 A number of variables whose names start with &$mime$& are
 available when Exim is compiled with the content-scanning extension. For
 details, see section &<<SECTscanmimepart>>&.
@@ -13228,18 +13243,10 @@ For details see chapter &<<SECTproxyInbound>>&.
 This variable is set to &"yes"& if PRDR was requested by the client for the
 current message, otherwise &"no"&.
 
-.vitem &$prvscheck_address$&
-This variable is used in conjunction with the &%prvscheck%& expansion item,
-which is described in sections &<<SECTexpansionitems>>& and
-&<<SECTverifyPRVS>>&.
-
-.vitem &$prvscheck_keynum$&
-This variable is used in conjunction with the &%prvscheck%& expansion item,
-which is described in sections &<<SECTexpansionitems>>& and
-&<<SECTverifyPRVS>>&.
-
-.vitem &$prvscheck_result$&
-This variable is used in conjunction with the &%prvscheck%& expansion item,
+.vitem &$prvscheck_address$& &&&
+       &$prvscheck_keynum$& &&&
+       &$prvscheck_result$&
+These variables are used in conjunction with the &%prvscheck%& expansion item,
 which is described in sections &<<SECTexpansionitems>>& and
 &<<SECTverifyPRVS>>&.
 
