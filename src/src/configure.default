@@ -147,15 +147,15 @@ acl_smtp_data =         acl_check_data
 # spamd_address = 127.0.0.1 783
 
 
-# If Exim is compiled with support for TLS, you may want to enable the
-# following options so that Exim allows clients to make encrypted
-# connections. In the authenticators section below, there are template
-# configurations for plaintext username/password authentication. This kind
-# of authentication is only safe when used within a TLS connection, so the
-# authenticators will only work if the following TLS settings are turned on
-# as well.
+# If Exim is compiled with support for TLS, you may want to change the
+# following option so that Exim disallows certain clients from makeing encrypted
+# connections. The default is to allow all.
+# In the authenticators section below, there are template configurations for
+# plaintext username/password authentication. This kind of authentication is
+# only safe when used within a TLS connection, so the authenticators will only
+# work if TLS is allowed here.
 
-# Allow any client to use TLS.
+# This is equivalent to the default.
 
 # tls_advertise_hosts = *
 
