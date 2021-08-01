@@ -1,0 +1,99 @@
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 test.ex Hello test [127.0.0.1]
+250 OK
+550 Administrative prohibition
+221 test.ex closing connection
++++++++++++++++++++++++++++
+127.0.0.1	07-Mar-2000 12:21:52
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 test.ex Hello test [127.0.0.1]
+250 OK
+250 Accepted
+221 test.ex closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 test.ex Hello test [127.0.0.1]
+250 OK
+250 Accepted
+221 test.ex closing connection
+
+**** SMTP testing session as if from host ip4.ip4.ip4.ip4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 test.ex Hello test [ip4.ip4.ip4.ip4]
+250 OK
+550 Administrative prohibition
+221 test.ex closing connection
++++++++++++++++++++++++++++
+ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
+127.0.0.1	07-Mar-2000 12:21:52
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 test.ex Hello test [127.0.0.1]
+250 OK
+550 Administrative prohibition
+221 test.ex closing connection
++++++++++++++++++++++++++++
+127.0.0.1_foo	07-Mar-2000 12:21:52
+ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
+127.0.0.1	07-Mar-2000 12:21:52
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 test.ex Hello test [127.0.0.1]
+250 OK
+250 Accepted
+221 test.ex closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 test.ex Hello test [127.0.0.1]
+250 OK
+250 Accepted
+221 test.ex closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 test.ex Hello test [127.0.0.1]
+250 OK
+550 Administrative prohibition
+221 test.ex closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 test.ex Hello test [127.0.0.1]
+250 OK
+250 Accepted
+221 test.ex closing connection

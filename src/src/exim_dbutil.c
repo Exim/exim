@@ -21,7 +21,9 @@ argument is the name of the database file. The available names are:
   misc:       miscellaneous hints data
   wait-<t>:   message waiting information; <t> is a transport name
   callout:    callout verification cache
+  ratelimit:  ACL 'ratelimit' condition
   tls:	      TLS session resumption cache
+  seen:	      ACL 'seen' condition
 
 There are a number of common subroutines, followed by three main programs,
 whose inclusion is controlled by -D on the compilation command. */
@@ -38,6 +40,7 @@ whose inclusion is controlled by -D on the compilation command. */
 #define type_callout   4
 #define type_ratelimit 5
 #define type_tls       6
+#define type_seen      7
 
 
 /* This is used by our cut-down dbfn_open(). */
@@ -126,7 +129,7 @@ static void
 usage(uschar *name, uschar *options)
 {
 printf("Usage: exim_%s%s  <spool-directory> <database-name>\n", name, options);
-printf("  <database-name> = retry | misc | wait-<transport-name> | callout | ratelimit | tls\n");
+printf("  <database-name> = retry | misc | wait-<transport-name> | callout | ratelimit | tls | seen\n");
 exit(1);
 }
 
@@ -150,6 +153,7 @@ if (argc == 3)
   if (Ustrcmp(argv[2], "callout") == 0) return type_callout;
   if (Ustrcmp(argv[2], "ratelimit") == 0) return type_ratelimit;
   if (Ustrcmp(argv[2], "tls") == 0) return type_tls;
+  if (Ustrcmp(argv[2], "seen") == 0) return type_seen;
   }
 usage(name, options);
 return -1;              /* Never obeyed */
@@ -581,6 +585,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
   dbdata_ratelimit *ratelimit;
   dbdata_ratelimit_unique *rate_unique;
   dbdata_tls_session *session;
+  dbdata_seen *seen;
   int count_bad = 0;
   int length;
   uschar *t;
@@ -719,6 +724,11 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
       case type_tls:
 	session = (dbdata_tls_session *)value;
 	printf("  %s %.*s\n", keybuffer, length, session->session);
+	break;
+
+      case type_seen:
+	seen = (dbdata_seen *)value;
+	printf("%s\t%s\n", keybuffer, print_time(seen->time_stamp));
 	break;
       }
     }
