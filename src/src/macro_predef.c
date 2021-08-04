@@ -279,11 +279,12 @@ due to conflicts with other common macros. */
 # endif
 #endif
 
+features_acl();
+features_crypto();
+
 #ifdef WITH_CONTENT_SCAN
 features_malware();
 #endif
-
-features_crypto();
 }
 
 static void

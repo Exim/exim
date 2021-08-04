@@ -10,6 +10,7 @@
 
 #include "exim.h"
 
+#ifndef MACRO_PREDEF
 
 /* Default callout timeout */
 
@@ -52,6 +53,8 @@ static int msgcond[] = {
   [ACL_REQUIRE] =	BIT(FAIL) | BIT(FAIL_DROP),
   [ACL_WARN] =		BIT(OK)
   };
+
+#endif
 
 /* ACL condition and modifier codes - keep in step with the table that
 follows.
@@ -338,6 +341,24 @@ static condition_def conditions[] = {
 };
 
 
+#ifdef MACRO_PREDEF
+# include "macro_predef.h"
+void
+features_acl(void)
+{
+for (condition_def * c = conditions; c < conditions + nelem(conditions); c++)
+  {
+  uschar buf[64], * p, * s;
+  int n = sprintf(CS buf, "_ACL_%s_", c->is_modifier ? "MOD" : "COND");
+  for (p = buf + n, s = c->name; *s; s++) *p++ = toupper(*s);
+  *p = '\0';
+  builtin_macro_create(buf);
+  }
+}
+#endif
+
+
+#ifndef MACRO_PREDEF
 
 /* Return values from decode_control(); used as index so keep in step
 with the controls_list table that follows! */
@@ -4694,6 +4715,7 @@ if (is_tainted(value)) putc('-', f);
 fprintf(f, "-acl%c %s %d\n%s\n", name[0], name+1, Ustrlen(value), value);
 }
 
+#endif	/* !MACRO_PREDEF */
 /* vi: aw ai sw=2
 */
 /* End of acl.c */

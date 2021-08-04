@@ -113,7 +113,7 @@ MACRO_HSRC = macro_predef.h os.h globals.h config.h macros.h \
 
 OBJ_MACRO = macro_predef.o \
 	macro-globals.o macro-readconf.o macro-route.o macro-transport.o macro-drtables.o \
-	macro-tls.o \
+	macro-acl.o macro-tls.o \
 	macro-appendfile.o macro-autoreply.o macro-lmtp.o macro-pipe.o macro-queuefile.o \
 	macro-smtp.o macro-accept.o macro-dnslookup.o macro-ipliteral.o macro-iplookup.o \
 	macro-manualroute.o macro-queryprogram.o macro-redirect.o \
@@ -141,6 +141,9 @@ macro-transport.o:	transport.c
 macro-drtables.o :	drtables.c
 	@echo "$(CC) -DMACRO_PREDEF drtables.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ drtables.c
+macro-acl.o:	acl.c
+	@echo "$(CC) -DMACRO_PREDEF acl.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ acl.c
 macro-tls.o:	tls.c tls-gnu.c tls-openssl.c
 	@echo "$(CC) -DMACRO_PREDEF tls.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ tls.c
