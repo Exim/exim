@@ -22498,6 +22498,14 @@ header, Exim has a configuration option (&%envelope_to_remove%&) which requests
 its removal from incoming messages, so that delivered messages can safely be
 resent to other recipients.
 
+.new
+&*Note:*& If used on a transport handling multiple recipients
+(the smtp transport unless &%rcpt_max%& is 1, the appendfile, pipe or lmtp
+transport if &%batch_max%& is greater than 1)
+then information about Bcc recipients will be leaked.
+Doing so is generally not advised.
+.wen
+
 
 .option event_action transports string&!! unset
 .cindex events
