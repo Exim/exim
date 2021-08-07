@@ -61,6 +61,8 @@ Version 4.95
 18. TLS ALPN handling.  By default, refuse TLS connections that try to specify
     a non-smtp (eg. http) use.  Options for customising.
 
+19. Support for MacOS (darwin) has been dropped.
+
 
 Version 4.94
 ------------

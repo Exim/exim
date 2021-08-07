@@ -81,7 +81,6 @@ Makefile: ../OS/Makefile-Base ../OS/Makefile-Default \
 # Build (link) the os.h file
 
 os.h:	$(SCRIPTS)/Configure-os.h \
-	$(O)/os.h-Darwin	\
 	$(O)/os.h-FreeBSD	\
 	$(O)/os.h-GNU		\
 	$(O)/os.h-Linux		\
