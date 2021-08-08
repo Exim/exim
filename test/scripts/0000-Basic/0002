@@ -248,6 +248,8 @@ mask:   ${mask:192.168.10.206/33}
 mask:   ${mask:192.168.10.206/0}
 mask:   ${mask:192.168.10.206}
 mask:   ${mask:a.b.c.d}
+mask:   ${mask:2a00:2:3:4:5:6:7:8/79}
+mask_n: ${mask_n:2a00:2:3:4:5:6:7:8/79}
 ipv6denorm: ${ipv6denorm:::1}
 ipv6denorm: ${ipv6denorm:fe00::1}
 ipv6denorm: ${ipv6denorm:192.168.0.1}

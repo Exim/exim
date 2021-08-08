@@ -7333,11 +7333,11 @@ while (*s)
         int count;
         uschar *endptr;
         int binary[4];
-        int mask, maskoffset;
-        int type = string_is_ip_address(sub, &maskoffset);
+        int type, mask, maskoffset;
+	BOOL normalised;
         uschar buffer[64];
 
-        if (type == 0)
+        if ((type = string_is_ip_address(sub, &maskoffset)) == 0)
           {
           expand_string_message = string_sprintf("\"%s\" is not an IP address",
            sub);
@@ -7353,12 +7353,17 @@ while (*s)
 
         mask = Ustrtol(sub + maskoffset + 1, &endptr, 10);
 
-        if (*endptr != 0 || mask < 0 || mask > ((type == 4)? 32 : 128))
+        if (*endptr || mask < 0 || mask > (type == 4 ? 32 : 128))
           {
           expand_string_message = string_sprintf("mask value too big in \"%s\"",
             sub);
           goto EXPAND_FAILED;
           }
+
+	/* If an optional 'n' was given, ipv6 gets normalised output:
+	colons rather than dots, and zero-compressed. */
+
+	normalised = arg && *arg == 'n';
 
         /* Convert the address to binary integer(s) and apply the mask */
 
@@ -7368,8 +7373,14 @@ while (*s)
 
         /* Convert to masked textual format and add to output. */
 
-        yield = string_catn(yield, buffer,
-          host_nmtoa(count, binary, mask, buffer, '.'));
+	if (type == 4 || !normalised)
+	  yield = string_catn(yield, buffer,
+	    host_nmtoa(count, binary, mask, buffer, '.'));
+	else
+	  {
+	  ipv6_nmtoa(binary, buffer);
+	  yield = string_fmt_append(yield, "%s/%d", buffer, mask);
+	  }
         continue;
         }
 

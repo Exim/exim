@@ -230,6 +230,8 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > mask:   0.0.0.0/0
 > Failed: missing mask value in "192.168.10.206"
 > Failed: "a.b.c.d" is not an IP address
+> mask:   2a00.0002.0003.0004.0004.0000.0000.0000/79
+> mask_n: 2a00:2:3:4:4::/79
 > ipv6denorm: 0000:0000:0000:0000:0000:0000:0000:0001
 > ipv6denorm: fe00:0000:0000:0000:0000:0000:0000:0001
 > ipv6denorm: 0000:0000:0000:0000:0000:ffff:c0a8:0001

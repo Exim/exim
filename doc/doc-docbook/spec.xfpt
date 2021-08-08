@@ -11228,7 +11228,8 @@ empty.
 The parsing correctly handles SMTPUTF8 Unicode in the string.
 
 
-.vitem &*${mask:*&<&'IP&~address'&>&*/*&<&'bit&~count'&>&*}*&
+.vitem &*${mask:*&<&'IP&~address'&>&*/*&<&'bit&~count'&>&*}*& &&&
+       &*${mask_n:*&<&'IP&~address'&>&*/*&<&'bit&~count'&>&*}*&
 .cindex "masked IP address"
 .cindex "IP address" "masking"
 .cindex "CIDR notation"
@@ -11242,8 +11243,14 @@ the result back to text, with mask appended. For example,
 .code
 ${mask:10.111.131.206/28}
 .endd
-returns the string &"10.111.131.192/28"&. Since this operation is expected to
-be mostly used for looking up masked addresses in files, the result for an IPv6
+returns the string &"10.111.131.192/28"&.
+
+Since this operation is expected to
+be mostly used for looking up masked addresses in files, the
+.new
+normal
+.wen
+result for an IPv6
 address uses dots to separate components instead of colons, because colon
 terminates a key string in lsearch files. So, for example,
 .code
@@ -11253,6 +11260,10 @@ returns the string
 .code
 3ffe.ffff.836f.0a00.000a.0800.2000.0000/99
 .endd
+.new
+If the optional form &*mask_n*& is used, IPv6 address result are instead
+returned in normailsed form, using colons and with zero-compression.
+.wen
 Letters in IPv6 addresses are always output in lower case.
 
 

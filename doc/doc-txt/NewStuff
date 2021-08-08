@@ -11,6 +11,8 @@ Version 4.96
 
  1. A new ACL condition: seen. Records/tests a timestamp against a key.
 
+ 2. A variant of the "mask" expansion operator to give normalised IPv6.
+
 
 Version 4.95
 ------------
