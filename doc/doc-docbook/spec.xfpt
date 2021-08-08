@@ -33089,7 +33089,7 @@ An update is done if the test is for &"since"&.
 Creates and updates are marked with the current time.
 
 Finally, a &"before"& test which succeeds, and for which the record
-is old enough, will be refreshed with a timstamp of the test time.
+is old enough, will be refreshed with a timestamp of the test time.
 This can prevent tidying of the database from removing the entry.
 The interval for this is, by default, 10 days.
 An explicit interval can be set using a
