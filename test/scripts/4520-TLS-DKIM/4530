@@ -1,0 +1,92 @@
+# DKIM signing
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# single header signed
+exim -DOPT=From -odf a@test.ex
+From: nobody@example.com
+From: second@example.com
+
+content
+****
+#
+# single header, oversigned, with timestamps
+exim -DOPT=From:From -DTIMES=10 -odf b@test.ex
+From: nobody@example.com
+
+content
+****
+#
+# no header, multi-sign
+exim -DOPT=From:=X-Mine -odf b10@test.ex
+From: nobody@example.com
+
+content
+****
+#
+# double header, multi-sign
+exim -DOPT=From:=X-Mine -odf b12@test.ex
+From: nobody@example.com
+X-mine: one
+X-mine: two
+
+content
+****
+#
+#
+# no header, always-oversign
+exim -DOPT=+X-Mine -odf b20@test.ex
+From: nobody@example.com
+
+content
+****
+#
+# double header, always-oversign
+exim -DOPT=+X-Mine -odf b22@test.ex
+From: nobody@example.com
+X-mine: one
+X-mine: two
+
+content
+****
+#
+## default header set
+# cannot test that as it includes Date: so results in a varying signature
+#exim -DHEADERS_MAXSIZE=y -odf c@test.ex
+#From: nobody@example.com
+#
+#content
+#****
+##
+# check that on signing we warn in debug mode about verify problems
+exim -d-all+acl -DOPT=From -DSELECTOR=sel_bad -odf d@test.ex
+From: nobody@example.com
+
+content
+****
+#
+# check dkim_strict results in a defer (even with an expansion)
+exim -DOPT=From '-DSTRICT=${if ={1}{1}{true}}' '-DTIMES=${bogus}' -odf '-f<>' e0@test.ex
+From: nobody@example.com
+
+content
+****
+#
+# check that an empty dkim_privatekey overrides dkim_strict
+exim -DOPT=From -DSTRICT=true -DSELECTOR=none -odf e@test.ex
+From: nobody@example.com
+
+content
+****
+#
+# single header signed, body line starting with dot
+exim -DOPT=From -odf f@test.ex
+From: nobody@example.com
+
+..content
+****
+#
+millisleep 500
+killdaemon
+no_msglog_check
