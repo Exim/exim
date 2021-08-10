@@ -1,28 +1,47 @@
-# Exim test configuration 4520
+# Exim test configuration 4515
 
 SERVER=
 OPT=
 FAKE =
 
-.include DIR/aux-var/std_conf_prefix
+keep_environment = PATH
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+spool_directory = DIR/spool
+
+.ifdef SERVER
+log_file_path = DIR/spool/log/SERVER%slog
+.else
+log_file_path = DIR/spool/log/%slog
+.endif
+
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+dns_cname_loops = 9
+chunking_advertise_hosts = *
+
+.ifdef _HAVE_PIPE_CONNECT
+pipelining_connect_advertise_hosts = :
+.endif
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+tls_advertise_hosts =
 
 primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept logwrite = rcpt_acl: macro: _DKIM_SIGN_HEADERS
+acl_smtp_rcpt = accept logwrite = rcpt acl: macro: _DKIM_SIGN_HEADERS
 acl_smtp_dkim = accept logwrite = dkim_acl: signer: $dkim_cur_signer bits: $dkim_key_length h=$dkim_headernames
-acl_smtp_data = accept logwrite = data_acl: dkim status $dkim_verify_status
+acl_smtp_data = accept logwrite = data acl: dkim status $dkim_verify_status
 
 dkim_verify_signers = $dkim_signers
-dkim_verify_min_keysizes = rsa=512 ed25519=250
-.ifdef FILTER
-dkim_verify_minimal = true
-.endif
 
 DDIR=DIR/aux-fixed/dkim
 
-log_selector = -dkim +dkim_verbose +received_recipients
+log_selector = +received_recipients
+
 
 # ----- Routers
 
@@ -47,6 +66,13 @@ send_to_server:
   hosts = HOSTIPV4
   port = PORT_D
   hosts_try_fastopen =	:
+
+.ifdef FILTER
+  transport_filter =	/bin/cat - DIR/aux-fixed/TESTNUM.mlistfooter
+.endif
+.ifndef ALLOW
+  hosts_try_chunking = :
+.endif
 
   dkim_domain =		test.ex
 .ifdef SELECTOR
