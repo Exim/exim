@@ -1,0 +1,15 @@
+# DKIM signing, sha512
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# default header set
+exim -DOPT=+From -DVALUE=sha512 -odf a@test.ex
+From: nobody@example.com
+
+content
+****
+#
+millisleep 500
+killdaemon
+no_msglog_check

@@ -1,0 +1,47 @@
+# Exim test configuration 4520
+
+SERVER=
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept encrypted = *
+acl_smtp_dkim = check_dkim
+acl_smtp_data = check_data
+
+log_selector = +dkim_verbose
+dkim_verify_hashes = sha256 : sha512 : sha1
+.ifdef MSIZE
+dkim_verify_min_keysizes = MSIZE
+.endif
+
+queue_only
+queue_run_in_order
+
+
+begin acl
+
+check_dkim:
+.ifdef BAD
+  warn	logwrite =	${lookup dnsdb{defer_never,txt=_adsp._domainkey.$dkim_cur_signer}{$value}{unknown}}
+.endif
+.ifdef OPTION
+  warn	condition =	${if eq {$dkim_algo}{rsa-sha1}}
+	condition =	${if eq {$dkim_verify_status}{pass}}
+	logwrite =	NOTE: forcing dkim verify fail (was pass)
+	set dkim_verify_status = fail
+	set dkim_verify_reason = hash too weak
+.endif
+  warn
+	logwrite = signer: $dkim_cur_signer bits: $dkim_key_length
+.ifndef STRICT
+  accept
+.endif
+
+check_data:
+  accept logwrite = ${authresults {$primary_hostname}}
+
+# End

@@ -1,0 +1,78 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+dropping to exim gid; retaining priv uid
+Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:1225 ...  connected
+  SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+  SMTP>> EHLO myhost.test.ex
+cmd buf flush ddd bytes
+  SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
+         250-SIZE 52428800
+         250-8BITMIME
+         250-PIPELINING
+         250-STARTTLS
+         250 HELP
+  SMTP>> STARTTLS
+cmd buf flush ddd bytes
+  SMTP<< 220 TLS go ahead
+LOG: MAIN
+  [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=Exim Developers/CN=myhost.test.ex
+LOG: MAIN
+  [ip4.ip4.ip4.ip4] SSL verify error: certificate name mismatch: DN="/C=UK/O=Exim Developers/CN=myhost.test.ex" H="ip4.ip4.ip4.ip4"
+  SMTP>> EHLO myhost.test.ex
+cmd buf flush ddd bytes
+  SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
+         250-SIZE 52428800
+         250-8BITMIME
+         250-PIPELINING
+         250 HELP
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP|> RCPT TO:<d@test.ex>
+  SMTP>> DATA
+cmd buf flush ddd bytes
+  SMTP<< 250 OK
+  SMTP<< 250 Accepted
+  SMTP<< 354 Enter message, ending with "." on a line by itself
+DKIM (checking verify key)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+DKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ sel_bad._domainkey.test.ex.
+ Raw record: v=DKIM1\;{SP}p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+lCgFhhSkinZKcFNeRzjYdW8vT29Rbb3NadvTFwAd+cVLPFwZL8H5tUD/7JbUPqNTCPxmpgIL+V5T4tEZMorHatvvUM2qfcpQ45IfsZ+YdhbIiAslHCpy4xNxIR3zylgqRUF4+Dtsaqy3a5LhwMiKCLrnzhXk1F1hxwIDAQAB
+ v=DKIM1\
+ p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+lCgFhhSkinZKcFNeRzjYdW8vT29Rbb3NadvTFwAd+cVLPFwZL8H5tUD/7JbUPqNTCPxmpgIL+V5T4tEZMorHatvvUM2qfcpQ45IfsZ+YdhbIiAslHCpy4xNxIR3zylgqRUF4+Dtsaqy3a5LhwMiKCLrnzhXk1F1hxwIDAQAB
+ Bad v= field
+ Error while parsing public key record
+WARNING: bad dkim key in dns
+DKIM (finished checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+content{CR}{LF}
+DKIM: finish bodyhash 1/1/-1 len 9
+DKIM [test.ex] Body bytes (relaxed) hashed: 9
+DKIM [test.ex] Body sha256 computed: fc06f48221d98ad6106c3845b33a2a41152482ab9e697f736ad26db4853fa657
+DKIM >> Headers to be signed:                            >>>>>>>>>>>>
+ From
+DKIM >> Header data for hash, canonicalized (relaxed), in sequence >>
+from:nobody@example.com{CR}{LF}
+DKIM >> Signed DKIM-Signature header, pre-canonicalized >>>>>>>>>>>>>
+DKIM-Signature:{SP}v=1;{SP}a=rsa-sha256;{SP}q=dns/txt;{SP}c=relaxed/relaxed;{SP}d=test.ex;{CR}{LF}{TB}s=sel_bad;{SP}h=From;{SP}bh=/Ab0giHZitYQbDhFszoqQRUkgqueaX9zatJttIU/plc=;{SP}b=;
+DKIM >> Signed DKIM-Signature header, canonicalized (relaxed) >>>>>>>
+dkim-signature:v=1;{SP}a=rsa-sha256;{SP}q=dns/txt;{SP}c=relaxed/relaxed;{SP}d=test.ex;{SP}s=sel_bad;{SP}h=From;{SP}bh=/Ab0giHZitYQbDhFszoqQRUkgqueaX9zatJttIU/plc=;{SP}b=;
+DKIM [test.ex] Header sha256 computed: 241e16230df5723d899cfae9474c6b376a2ab1f81d1094e358f50ffd0e0067b3
+  SMTP>> QUIT
+cmd buf flush ddd bytes
+  SMTP<< 250 OK id=10HmbL-0005vi-00
+  SMTP<< 221 myhost.test.ex closing connection
+  SMTP(close)>>
+LOG: MAIN
+  => d@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbL-0005vi-00"
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+1999-03-02 09:44:33 10HmaX-0005vi-00 failed to expand dkim_timestamps: unknown variable in "${bogus}"
+
+******** SERVER ********
