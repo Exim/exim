@@ -67,7 +67,7 @@ extern uschar *tls_field_from_dn(uschar *, const uschar *);
 extern void    tls_free_cert(void **);
 extern int     tls_getc(unsigned);
 extern uschar *tls_getbuf(unsigned *);
-extern void    tls_get_cache(void);
+extern void    tls_get_cache(unsigned);
 extern BOOL    tls_import_cert(const uschar *, void **);
 extern BOOL    tls_is_name_for_cert(const uschar *, void *);
 # ifdef USE_OPENSSL
@@ -493,7 +493,7 @@ extern BOOL    smtp_get_interface(uschar *, int, address_item *,
 extern BOOL    smtp_get_port(uschar *, address_item *, int *, uschar *);
 extern int     smtp_getc(unsigned);
 extern uschar *smtp_getbuf(unsigned *);
-extern void    smtp_get_cache(void);
+extern void    smtp_get_cache(unsigned);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);

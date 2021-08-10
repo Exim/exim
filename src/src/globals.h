@@ -164,7 +164,7 @@ extern uschar * (*lwr_receive_getbuf)(unsigned *);
 extern int (*lwr_receive_ungetc)(int);
 extern int (*receive_getc)(unsigned);
 extern uschar * (*receive_getbuf)(unsigned *);
-extern void (*receive_get_cache)(void);
+extern void (*receive_get_cache)(unsigned);
 extern int (*receive_ungetc)(int);
 extern int (*receive_feof)(void);
 extern int (*receive_ferror)(void);

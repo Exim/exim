@@ -21,10 +21,6 @@ cmd buf flush ddd bytes
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
   SMTP<< 220 TLS go ahead
-LOG: MAIN
-  [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=Exim Developers/CN=myhost.test.ex
-LOG: MAIN
-  [ip4.ip4.ip4.ip4] SSL verify error: certificate name mismatch: DN="/C=UK/O=Exim Developers/CN=myhost.test.ex" H="ip4.ip4.ip4.ip4"
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
@@ -68,7 +64,7 @@ cmd buf flush ddd bytes
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 LOG: MAIN
-  => d@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbL-0005vi-00"
+  => d@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbL-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>

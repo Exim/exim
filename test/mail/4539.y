@@ -7,10 +7,10 @@ Received: from localhost ([127.0.0.1] helo=testhost.test.ex)
 	for y@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
-	s=sel; h=Subject; bh=CVpkzY75tV/NCKk5pPx4GnM3NX83xwCiT0xVwo0G1Rs=; b=JTYpVY1D
-	sO37MibaZTC2CgpQAZlz/lRefFQv3Q7JM4D0aUfseT24Xg+kxv3xc5guSzKWQzycm3zie366tHape
-	lu70O4/5+Dyr0f/FKjmYxT+ALcIzuVN7Rty2JioBG07aryqJqmcR0xpmiggctb/h/2a/JGRKPcDWO
-	psj50XQNQ=;
+	s=sel; h=Subject; bh=qrFAgZTdNItSIrBZpDPHl7T6nHDpDTlw6cFlhULnt3c=; b=XGR6pjWM
+	PEWqcZj6/UQcH54guCxLNrtBaOS6Bve1+prubUxn6u3FdP+deLkkZTMrgf2LUMg3APxC4moIREkTt
+	7JmnHBYDEeNOsV8Zpg95yRp+8BIEAqBGddOIs2KzUb3Ua0B2gbVd8Ovc2hrMu+JJPx9CE1mlHtHIw
+	txPmCs15I=;
 Received: from [127.0.0.1] (helo=xxx)
 	by testhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
@@ -26,5 +26,6 @@ X-received-count: 2
 Line 1: This is a simple test.
 Line 2: This is a simple test.
 .Line 3 has a leading dot
+extra32chars234567890123456789
 last line: 4
 

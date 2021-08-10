@@ -128,13 +128,16 @@ dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt, dot_stuffing);
 dkim_collect_input = dkim_verify_ctx ? DKIM_MAX_SIGNATURES : 0;
 dkim_collect_error = NULL;
 
-/* Start feed up with any cached data */
-receive_get_cache();
+/* Start feed up with any cached data, but limited to message data */
+receive_get_cache(chunking_state == CHUNKING_LAST
+		  ? chunking_data_left : GETC_BUFFER_UNLIMITED);
 
 store_pool = dkim_verify_oldpool;
 }
 
 
+/* Submit a chunk of data for verification input.
+Only use the data when the feed is activated. */
 void
 dkim_exim_verify_feed(uschar * data, int len)
 {

@@ -22,6 +22,9 @@ dkim_verify_minimal = true
 
 DDIR=DIR/aux-fixed/dkim
 
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey = DIR/aux-fixed/cert1
+
 log_selector = -dkim +dkim_verbose +received_recipients
 
 # ----- Routers
@@ -48,6 +51,9 @@ send_to_server:
   port = PORT_D
   hosts_try_fastopen =	:
   hosts_require_tls =	*
+  tls_verify_certificates =   DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
+
 
   dkim_domain =		test.ex
 .ifdef SELECTOR

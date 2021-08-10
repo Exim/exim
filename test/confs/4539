@@ -1,4 +1,4 @@
-# Exim test configuration 0906
+# Exim test configuration 4539
 SERVER=
 
 exim_path = EXIM_PATH
@@ -91,6 +91,8 @@ remote_smtp:
   port =	PORT_D
   hosts_try_fastopen = :
   allow_localhost
+  tls_verify_certificates =   DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
 
 remote_smtp_dkim:
   driver = smtp
@@ -98,6 +100,8 @@ remote_smtp_dkim:
   port =	PORT_D
   hosts_try_fastopen = :
   allow_localhost
+  tls_verify_certificates =   DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
 
 .ifdef OPT
   dkim_domain =		test.ex

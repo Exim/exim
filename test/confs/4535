@@ -27,6 +27,8 @@ pipelining_connect_advertise_hosts = :
 dmarc_tld_file =
 .endif
 tls_advertise_hosts = *
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey = DIR/aux-fixed/cert1
 
 primary_hostname = myhost.test.ex
 
@@ -67,6 +69,8 @@ send_to_server:
   port = PORT_D
   hosts_try_fastopen =	:
   hosts_require_tls =	*
+  tls_verify_certificates =   DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
 
 .ifdef FILTER
   transport_filter =	/bin/cat - DIR/aux-fixed/TESTNUM.mlistfooter

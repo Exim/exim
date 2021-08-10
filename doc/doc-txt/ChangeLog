@@ -327,6 +327,11 @@ JH/57 Fix control=fakreject for a custom message containing tainted data.
 JH/58 GnuTLS: Fix certextract expansion.  If a second modifier after a tag
       modifier was given, a loop resulted.
 
+JH/59 DKIM: Fix small-message verification under TLS with chunking. If a
+      pipelined SMTP command followed the BDAT LAST then it would be
+      incorrrectly treated as part of the message body, causing a verification
+      fail.
+
 
 Exim version 4.94
 -----------------
