@@ -7423,6 +7423,12 @@ lookups. However, because (apart from the daemon) Exim operates as a collection
 of independent, short-lived processes, this caching applies only within a
 single Exim process. There is no inter-process lookup caching facility.
 
+.new
+If an option &"cache=no_rd"& is used on the lookup then
+the cache is only written to, cached data is not used for the operation
+and a real lookup is done.
+.wen
+
 For single-key lookups, Exim keeps the relevant files open in case there is
 another lookup that needs them. In some types of configuration this can lead to
 many files being kept open for messages with many recipients. To avoid hitting
