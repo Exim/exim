@@ -435,7 +435,7 @@ if ((s = ob->create_file_string ) && *s)
   else if (Ustrcmp(s, "inhome") == 0)			val = create_inhome;
   else
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-      "invalid value given for \"file_create\" for the %s transport: '%s'",
+      "invalid value given for \"create_file\" for the %s transport: '%s'",
       tblock->name, s);
   ob->create_file = val;
   }
