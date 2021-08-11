@@ -12998,7 +12998,7 @@ when the ACL &%malware%& condition is true (see section &<<SECTscanvirus>>&).
 This variable contains the number of bytes in the longest line that was
 received as part of the message, not counting the line termination
 character(s).
-It is not valid if the &%spool_files_wireformat%& option is used.
+It is not valid if the &%spool_wireformat%& option is used.
 
 .vitem &$message_age$&
 .cindex "message" "age of"
@@ -13042,7 +13042,7 @@ separates the body from the header. Newlines are included in the count. See
 also &$message_size$&, &$body_linecount$&, and &$body_zerocount$&.
 
 If the spool file is wireformat
-(see the &%spool_files_wireformat%& main option)
+(see the &%spool_wireformat%& main option)
 the CRLF line-terminators are included in the count.
 
 .vitem &$message_exim_id$&
@@ -13095,7 +13095,7 @@ deny condition = \
 In the MAIL and RCPT ACLs, the value is zero because at that stage the
 message has not yet been received.
 
-This variable is not valid if the &%spool_files_wireformat%& option is used.
+This variable is not valid if the &%spool_wireformat%& option is used.
 
 .vitem &$message_size$&
 .cindex "size" "of message"
@@ -35281,11 +35281,11 @@ C variables are as follows:
 .vlist
 .vitem &*int&~body_linecount*&
 This variable contains the number of lines in the message's body.
-It is not valid if the &%spool_files_wireformat%& option is used.
+It is not valid if the &%spool_wireformat%& option is used.
 
 .vitem &*int&~body_zerocount*&
 This variable contains the number of binary zero bytes in the message's body.
-It is not valid if the &%spool_files_wireformat%& option is used.
+It is not valid if the &%spool_wireformat%& option is used.
 
 .vitem &*unsigned&~int&~debug_selector*&
 This variable is set to zero when no debugging is taking place. Otherwise, it
