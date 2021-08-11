@@ -3267,11 +3267,13 @@ return buf;
 
 
 void
-tls_get_cache()
+tls_get_cache(unsigned lim)
 {
 #ifndef DISABLE_DKIM
 exim_gnutls_state_st * state = &state_server;
 int n = state->xfer_buffer_hwm - state->xfer_buffer_lwm;
+if (n > lim)
+  n = lim;
 if (n > 0)
   dkim_exim_verify_feed(state->xfer_buffer+state->xfer_buffer_lwm, n);
 #endif

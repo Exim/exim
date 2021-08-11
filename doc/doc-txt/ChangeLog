@@ -231,6 +231,11 @@ JH/57 Fix control=fakreject for a custom message containing tainted data.
       Previously this resulted in a log complaint, due to a re-expansion present
       since fakereject was originally introduced.
 
+JH/59 DKIM: Fix small-message verification under TLS with chunking. If a
+      pipelined SMTP command followed the BDAT LAST then it would be
+      incorrrectly treated as part of the message body, causing a verification
+      fail.
+
 
 Exim version 4.94
 -----------------

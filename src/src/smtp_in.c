@@ -583,10 +583,12 @@ return buf;
 }
 
 void
-smtp_get_cache(void)
+smtp_get_cache(unsigned lim)
 {
 #ifndef DISABLE_DKIM
 int n = smtp_inend - smtp_inptr;
+if (n > lim)
+  n = lim;
 if (n > 0)
   dkim_exim_verify_feed(smtp_inptr, n);
 #endif
@@ -661,7 +663,9 @@ for(;;)
   if (chunking_state == CHUNKING_LAST)
     {
 #ifndef DISABLE_DKIM
+    dkim_collect_input = dkim_save;
     dkim_exim_verify_feed(NULL, 0);	/* notify EOD */
+    dkim_collect_input = 0;
 #endif
     return EOD;
     }

@@ -3566,10 +3566,12 @@ return buf;
 
 
 void
-tls_get_cache()
+tls_get_cache(unsigned lim)
 {
 #ifndef DISABLE_DKIM
 int n = ssl_xfer_buffer_hwm - ssl_xfer_buffer_lwm;
+if (n > lim)
+  n = lim;
 if (n > 0)
   dkim_exim_verify_feed(ssl_xfer_buffer+ssl_xfer_buffer_lwm, n);
 #endif
