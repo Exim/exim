@@ -39936,8 +39936,13 @@ in a transport)
 .section "exim_dumpdb" "SECTdumpdb"
 .cindex "&'exim_dumpdb'&"
 The entire contents of a database are written to the standard output by the
-&'exim_dumpdb'& program, which has no options or arguments other than the
-spool and database names. For example, to dump the retry database:
+&'exim_dumpdb'& program,
+.new
+taking as arguments the spool and database names.
+An option &'-z'& may be given to regest times in UTC;
+otherwise times are in the local timezone.
+.wen
+For example, to dump the retry database:
 .code
 exim_dumpdb /var/spool/exim retry
 .endd
@@ -40023,7 +40028,7 @@ databases is likely to keep on increasing.
 .cindex "&'exim_fixdb'&"
 The &'exim_fixdb'& program is a utility for interactively modifying databases.
 Its main use is for testing Exim, but it might also be occasionally useful for
-getting round problems in a live system. It has no options, and its interface
+getting round problems in a live system. Its interface
 is somewhat crude. On entry, it prompts for input with a right angle-bracket. A
 key of a database record can then be entered, and the data for that record is
 displayed.
@@ -40039,6 +40044,12 @@ by new data, for example:
 resets the time of the next delivery attempt. Time values are given as a
 sequence of digit pairs for year, month, day, hour, and minute. Colons can be
 used as optional separators.
+
+.new
+Both displayed and input times are in the local timezone by default.
+If an option &'-z'& is used on the command line, displayed times
+are in UTC.
+.wen
 
 
 

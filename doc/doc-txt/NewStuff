@@ -13,6 +13,8 @@ Version 4.96
 
  2. A variant of the "mask" expansion operator to give normalised IPv6.
 
+ 3. UTC output option for exim_dumpdb, exim_fixdb
+
 
 Version 4.95
 ------------

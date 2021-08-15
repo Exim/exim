@@ -17,13 +17,13 @@ maintaining Exim hints databases.
 In all cases, the first argument is the name of the spool directory. The second
 argument is the name of the database file. The available names are:
 
-  retry:      retry delivery information
-  misc:       miscellaneous hints data
-  wait-<t>:   message waiting information; <t> is a transport name
-  callout:    callout verification cache
-  ratelimit:  ACL 'ratelimit' condition
-  tls:	      TLS session resumption cache
-  seen:	      ACL 'seen' condition
+  callout:	callout verification cache
+  misc:		miscellaneous hints data
+  ratelimit:	record for ACL "ratelimit" condition
+  retry:	etry delivery information
+  seen:		imestamp records for ACL "seen" condition
+  tls:		TLS session resumption cache
+  wait-<t>:	message waiting information; <t> is a transport name
 
 There are a number of common subroutines, followed by three main programs,
 whose inclusion is controlled by -D on the compilation command. */
@@ -46,6 +46,8 @@ whose inclusion is controlled by -D on the compilation command. */
 /* This is used by our cut-down dbfn_open(). */
 
 uschar *spool_directory;
+
+BOOL utc = FALSE;
 
 
 /******************************************************************************/
@@ -130,7 +132,7 @@ usage(uschar *name, uschar *options)
 {
 printf("Usage: exim_%s%s  <spool-directory> <database-name>\n", name, options);
 printf("  <database-name> = retry | misc | wait-<transport-name> | callout | ratelimit | tls | seen\n");
-exit(1);
+exit(EXIT_FAILURE);
 }
 
 
@@ -145,19 +147,36 @@ second of them to be sure it is a known database name. */
 static int
 check_args(int argc, uschar **argv, uschar *name, uschar *options)
 {
-if (argc == 3)
+uschar * aname = argv[optind + 1];
+if (argc - optind == 2)
   {
-  if (Ustrcmp(argv[2], "retry") == 0) return type_retry;
-  if (Ustrcmp(argv[2], "misc") == 0) return type_misc;
-  if (Ustrncmp(argv[2], "wait-", 5) == 0) return type_wait;
-  if (Ustrcmp(argv[2], "callout") == 0) return type_callout;
-  if (Ustrcmp(argv[2], "ratelimit") == 0) return type_ratelimit;
-  if (Ustrcmp(argv[2], "tls") == 0) return type_tls;
-  if (Ustrcmp(argv[2], "seen") == 0) return type_seen;
+  if (Ustrcmp(aname, "retry") == 0)		return type_retry;
+  if (Ustrcmp(aname, "misc") == 0)		return type_misc;
+  if (Ustrncmp(aname, "wait-", 5) == 0)	return type_wait;
+  if (Ustrcmp(aname, "callout") == 0)		return type_callout;
+  if (Ustrcmp(aname, "ratelimit") == 0)	return type_ratelimit;
+  if (Ustrcmp(aname, "tls") == 0)		return type_tls;
+  if (Ustrcmp(aname, "seen") == 0)		return type_seen;
   }
 usage(name, options);
 return -1;              /* Never obeyed */
 }
+
+
+static void
+options(int argc, uschar * argv[], uschar * name)
+{
+int opt;
+
+opterr = 0;
+while ((opt = getopt(argc, (char * const *)argv, "z")) != -1)
+  switch (opt)
+  {
+  case 'z':	utc = TRUE; break;
+  default:	usage(name, US" [-z]");
+  }
+}
+
 
 
 
@@ -200,7 +219,7 @@ static uschar time_buffer[sizeof("09-xxx-1999 hh:mm:ss  ")];
 uschar *
 print_time(time_t t)
 {
-struct tm *tmstr = localtime(&t);
+struct tm *tmstr = utc ? gmtime(&t) : localtime(&t);
 Ustrftime(time_buffer, sizeof(time_buffer), "%d-%b-%Y %H:%M:%S", tmstr);
 return time_buffer;
 }
@@ -214,8 +233,8 @@ return time_buffer;
 uschar *
 print_cache(int value)
 {
-return (value == ccache_accept)? US"accept" :
-       (value == ccache_reject)? US"reject" :
+return value == ccache_accept ? US"accept" :
+       value == ccache_reject ? US"reject" :
        US"unknown";
 }
 
@@ -563,12 +582,15 @@ uschar **argv = USS cargv;
 uschar keybuffer[1024];
 
 store_init();
+options(argc, argv, US"dumpdb");
 
 /* Check the arguments, and open the database */
 
-dbdata_type = check_args(argc, argv, US"dumpdb", US"");
-spool_directory = argv[1];
-if (!(dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE, TRUE)))
+dbdata_type = check_args(argc, argv, US"dumpdb", US" [-z]");
+argc -= optind; argv += optind;
+spool_directory = argv[0];
+
+if (!(dbm = dbfn_open(argv[1], O_RDONLY, &dbblock, FALSE, TRUE)))
   exit(1);
 
 /* Scan the file, formatting the information for each entry. Note
@@ -776,22 +798,29 @@ If the record name is omitted from (2) or (3), the previously used record name
 is re-used. */
 
 
-int main(int argc, char **cargv)
+int
+main(int argc, char **cargv)
 {
 int dbdata_type;
 uschar **argv = USS cargv;
 uschar buffer[256];
 uschar name[256];
 rmark reset_point;
+uschar * aname;
 
 store_init();
+options(argc, argv, US"fixdb");
 name[0] = 0;  /* No name set */
 
 /* Sort out the database type, verify what we are working on and then process
 user requests */
 
-dbdata_type = check_args(argc, argv, US"fixdb", US"");
-printf("Modifying Exim hints database %s/db/%s\n", argv[1], argv[2]);
+dbdata_type = check_args(argc, argv, US"fixdb", US" [-z]");
+argc -= optind; argv += optind;
+spool_directory = argv[0];
+aname = argv[1];
+
+printf("Modifying Exim hints database %s/db/%s\n", spool_directory, aname);
 
 for(; (reset_point = store_mark()); store_reset(reset_point))
   {
@@ -838,9 +867,8 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
   if (field[0] != 0)
     {
     int verify = 1;
-    spool_directory = argv[1];
 
-    if (!(dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE, TRUE)))
+    if (!(dbm = dbfn_open(aname, O_RDWR, &dbblock, FALSE, TRUE)))
       continue;
 
     if (Ustrcmp(field, "d") == 0)
@@ -1009,8 +1037,7 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
 
   /* Handle a read request, or verify after an update. */
 
-  spool_directory = argv[1];
-  if (!(dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE, TRUE)))
+  if (!(dbm = dbfn_open(aname, O_RDONLY, &dbblock, FALSE, TRUE)))
     continue;
 
   if (!(record = dbfn_read_with_length(dbm, name, &oldlength)))
@@ -1140,7 +1167,8 @@ typedef struct key_item {
 } key_item;
 
 
-int main(int argc, char **cargv)
+int
+main(int argc, char **cargv)
 {
 struct stat statbuf;
 int maxkeep = 30 * 24 * 60 * 60;
