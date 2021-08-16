@@ -4436,6 +4436,21 @@ if (!sx->ok)
 	message_error = Ustrncmp(smtp_command,"end ",4) == 0;
 	break;
 
+#ifndef DISABLE_DKIM
+      case EACCES:
+	/* DKIM signing failure: avoid thinking we pipelined quit,
+	just abandon the message and close the socket. */
+
+	message_error = FALSE;
+# ifndef DISABLE_TLS
+	if (sx->cctx.tls_ctx)
+	  {
+	  tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_WAIT);
+	  sx->cctx.tls_ctx = NULL;
+	  }
+# endif
+	break;
+#endif
       default:
 	message_error = FALSE;
 	break;
