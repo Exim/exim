@@ -518,6 +518,10 @@ switch (type)
     Ustrcpy(debuglog_name, buffer);
     if (tag)
       {
+      if (is_tainted(tag))
+	die(US"exim: tainted tag for debug log filename",
+	      US"Logging failure; please try later");
+
       /* this won't change the offset of the datestamp */
       ok2 = string_format(buffer, sizeof(buffer), "%s%s",
         debuglog_name, tag);
@@ -558,9 +562,7 @@ if (!ok)
 
 /* We now have the file name. After a successful open, return. */
 
-*fd = log_open_as_exim(buffer);
-
-if (*fd >= 0)
+if ((*fd = log_open_as_exim(buffer)) >= 0)
   return;
 
 euid = geteuid();
