@@ -500,7 +500,7 @@ else
 /* For an unnamed list, use the expanded version in comments */
 #define LIST_LIMIT_PR 2048
 
-HDEBUG(D_any) if (!ot) 
+HDEBUG(D_any) if (!ot)
   {
   int n, m;
   gstring * g = string_fmt_append(NULL, "%s in \"%n%.*s%n\"",
@@ -1284,7 +1284,7 @@ provided that "caseless" is set. (It is FALSE for calls for matching rewriting
 patterns.) Otherwise just the domain is lower cases. A magic item "+caseful" in
 the list can be used to restore a caseful copy of the local part from the
 original address.
-Limit the subject address size to avoid mem-exhastion attacks.  The size chosen
+Limit the subject address size to avoid mem-exhaustion attacks.  The size chosen
 is historical (we used to use big_buffer here). */
 
 if ((len = Ustrlen(address)) > BIG_BUFFER_SIZE) len = BIG_BUFFER_SIZE;
