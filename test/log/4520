@@ -84,10 +84,10 @@
 1999-03-02 09:44:33 10HmbL-0005vi-00 DKIM: d=test.ex s=sel_bad c=relaxed/relaxed a=rsa-sha256 b=1024 [invalid - syntax error in public key record]
 1999-03-02 09:44:33 10HmbL-0005vi-00 data_acl: dkim status invalid
 1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmbK-0005vi-00@myhost.test.ex for d@test.ex
-1999-03-02 09:44:33 10HmbL-0005vi-00 => d <d@test.ex> R=server_store T=file
-1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
 1999-03-02 09:44:33 rcpt_acl: macro: From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive
 1999-03-02 09:44:33 SMTP connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] lost while reading message data (header)
+1999-03-02 09:44:33 10HmbL-0005vi-00 => d <d@test.ex> R=server_store T=file
+1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
 1999-03-02 09:44:33 rcpt_acl: macro: From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive
 1999-03-02 09:44:33 10HmbN-0005vi-00 data_acl: dkim status 
 1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmbM-0005vi-00@myhost.test.ex for e@test.ex
