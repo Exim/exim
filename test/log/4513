@@ -1,0 +1,13 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for a@test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 => a@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 rcpt_acl: macro: From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive
+1999-03-02 09:44:33 10HmaY-0005vi-00 dkim_acl: signer: test.ex bits: 1024 h=From:From
+1999-03-02 09:44:33 10HmaY-0005vi-00 DKIM: d=test.ex s=sel c=relaxed/relaxed a=rsa-sha512 b=1024 [verification succeeded]
+1999-03-02 09:44:33 10HmaY-0005vi-00 data_acl: dkim status pass
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex for a@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 => a <a@test.ex> R=server_store T=file
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

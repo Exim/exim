@@ -1,84 +1,47 @@
 # Exim test configuration 4520
 
 SERVER=
-OPT=
-FAKE =
 
-.include DIR/aux-var/std_conf_prefix
+.include DIR/aux-var/tls_conf_prefix
 
 primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept logwrite = rcpt_acl: macro: _DKIM_SIGN_HEADERS
-acl_smtp_dkim = accept logwrite = dkim_acl: signer: $dkim_cur_signer bits: $dkim_key_length h=$dkim_headernames
-acl_smtp_data = accept logwrite = data_acl: dkim status $dkim_verify_status
+acl_smtp_rcpt = accept encrypted = *
+acl_smtp_dkim = check_dkim
+acl_smtp_data = check_data
 
-dkim_verify_signers = $dkim_signers
-dkim_verify_min_keysizes = rsa=512 ed25519=250
-.ifdef FILTER
-dkim_verify_minimal = true
+log_selector = +dkim_verbose
+dkim_verify_hashes = sha256 : sha512 : sha1
+.ifdef MSIZE
+dkim_verify_min_keysizes = MSIZE
 .endif
 
-DDIR=DIR/aux-fixed/dkim
+queue_only
+queue_run_in_order
 
-log_selector = -dkim +dkim_verbose +received_recipients
 
-# ----- Routers
+begin acl
 
-begin routers
-
-server_store:
-  driver =	accept
-  condition =	${if eq {SERVER}{server}{yes}{no}}
-  transport =	file
-
-client:
-  driver =	accept
-  transport =	send_to_server
-
-# ----- Transports
-
-begin transports
-
-send_to_server:
-  driver = smtp
-  allow_localhost
-  hosts = HOSTIPV4
-  port = PORT_D
-  hosts_try_fastopen =	:
-
-  dkim_domain =		test.ex
-.ifdef SELECTOR
-  dkim_selector =	SELECTOR
-.else
-  dkim_selector =	sel
+check_dkim:
+.ifdef BAD
+  warn	logwrite =	${lookup dnsdb{defer_never,txt=_adsp._domainkey.$dkim_cur_signer}{$value}{unknown}}
+.endif
+.ifdef OPTION
+  warn	condition =	${if eq {$dkim_algo}{rsa-sha1}}
+	condition =	${if eq {$dkim_verify_status}{pass}}
+	logwrite =	NOTE: forcing dkim verify fail (was pass)
+	set dkim_verify_status = fail
+	set dkim_verify_reason = hash too weak
+.endif
+  warn
+	logwrite = signer: $dkim_cur_signer bits: $dkim_key_length
+.ifndef STRICT
+  accept
 .endif
 
-  dkim_private_key =	${extract {${length_3:$dkim_selector}} {\
-				ses=dkim512.private \
-				sel=dkim.private \
-				sed=dkim_ed25519.private \
-				}{DDIR/$value}}
-
-.ifndef HEADERS_MAXSIZE
-  dkim_sign_headers =	OPT
-.else
-  dkim_identity =	allheaders@$dkim_domain
-.endif
-.ifdef VALUE
-  dkim_hash =		VALUE
-.endif
-.ifdef STRICT
-  dkim_strict =		STRICT
-.endif
-.ifdef TIMES
-  dkim_timestamps =	TIMES
-.endif
-
-file:
-  driver =	appendfile
-  file =	DIR/test-mail/${bless:$local_part}
-  user =	CALLER
+check_data:
+  accept logwrite = ${authresults {$primary_hostname}}
 
 # End

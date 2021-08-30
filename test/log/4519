@@ -1,0 +1,21 @@
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 => z <z@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 => y <y@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_S port PORT_D
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=esmtp S=sss for z@test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 DKIM: d=test.ex s=sel c=relaxed/relaxed a=rsa-sha256 b=1024 [verification succeeded]
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtp K S=sss DKIM=test.ex for z@test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => z@test.ex R=to_server T=remote_smtp_dkim H=127.0.0.1 [127.0.0.1] K C="250- 6nn byte chunk, total 6nn\\n250 OK id=10HmaX-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=esmtp K S=sss for y@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 DKIM: d=test.ex s=sel c=relaxed/relaxed a=rsa-sha256 b=1024 [verification succeeded]
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtp K S=sss DKIM=test.ex for y@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmbA-0005vi-00 => y@test.ex R=to_server T=remote_smtp_dkim H=127.0.0.1 [127.0.0.1] K C="250- 6nn byte chunk, total 6nn\\n250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
