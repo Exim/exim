@@ -1789,15 +1789,19 @@ if (sender_host_address) dmarc_init();	/* initialize libopendmarc */
 
 /* Remember the time of reception. Exim uses time+pid for uniqueness of message
 ids, and fractions of a second are required. See the comments that precede the
-message id creation below. */
+message id creation below.
+We use a routine that if possible uses a monotonic clock, and can be used again
+after reception for the tick-wait even under the Linux non-Posix behaviour. */
 
 exim_gettime(&message_id_tv);
 
 /* For other uses of the received time we can operate with granularity of one
 second, and for that we use the global variable received_time. This is for
-things like ultimate message timeouts. */
+things like ultimate message timeouts.
+For this we do not care about the Linux suspend/resume problem, so rather than
+use exim_gettime() everywhere we use a plain gettimeofday() here. */
 
-received_time = message_id_tv;
+gettimeofday(&received_time, NULL);
 
 /* If SMTP input, set the special handler for timeouts. The alarm() calls
 happen in the smtp_getc() function when it refills its buffer. */
@@ -4325,7 +4329,10 @@ pid can be re-used within our time interval. We can't shorten the interval
 without re-designing the message-id. See comments above where the message id is
 created. This is Something For The Future.
 Do this wait any time we have created a message-id, even if we rejected the
-message.  This gives unique IDs for logging done by ACLs. */
+message.  This gives unique IDs for logging done by ACLs.
+The initial timestamp must have been obtained via exim_gettime() to avoid
+issues on Linux with suspend/resume.
+It would be Nicer to only pause before a follow-on message. */
 
 if (id_resolution != 0)
   {
