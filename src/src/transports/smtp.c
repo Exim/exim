@@ -3079,7 +3079,7 @@ return OK;
 
   SEND_FAILED:
     code = '4';
-    message = US string_sprintf("send() to %s [%s] failed: %s",
+    message = US string_sprintf("smtp send to %s [%s] failed: %s",
       sx->conn_args.host->name, sx->conn_args.host->address, strerror(errno));
     sx->send_quit = FALSE;
     yield = DEFER;
@@ -4400,7 +4400,7 @@ if (!sx->ok)
     {
     save_errno = errno;
     code = '4';
-    message = string_sprintf("send() to %s [%s] failed: %s",
+    message = string_sprintf("smtp send to %s [%s] failed: %s",
       host->name, host->address, message ? message : US strerror(save_errno));
     sx->send_quit = FALSE;
     goto FAILED;
@@ -4584,7 +4584,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
       if (sx->send_rset)
 	if (! (sx->ok = smtp_write_command(sx, SCMD_FLUSH, "RSET\r\n") >= 0))
 	  {
-	  msg = US string_sprintf("send() to %s [%s] failed: %s", host->name,
+	  msg = US string_sprintf("smtp send to %s [%s] failed: %s", host->name,
 	    host->address, strerror(errno));
 	  sx->send_quit = FALSE;
 	  }
