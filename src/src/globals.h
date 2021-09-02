@@ -724,7 +724,6 @@ extern uschar  message_id_option[];    /* -E<message-id> for use as option */
 extern uschar *message_id_external;    /* External form of following */
 extern uschar *message_id_domain;      /* Expanded to form domain-part of message_id */
 extern uschar *message_id_text;        /* Expanded to form message_id */
-extern struct timeval message_id_tv;   /* Time used to create last message_id */
 extern int     message_linecount;      /* As it says */
 extern BOOL    message_logs;           /* TRUE to write message logs */
 extern int     message_size;           /* Size of message */

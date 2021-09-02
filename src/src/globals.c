@@ -1167,7 +1167,6 @@ uschar *message_headers        = NULL;
 uschar *message_id;
 uschar *message_id_domain      = NULL;
 uschar *message_id_text        = NULL;
-struct timeval message_id_tv   = { 0, 0 };
 uschar  message_id_option[MESSAGE_ID_LENGTH + 3];
 uschar *message_id_external;
 int     message_linecount      = 0;

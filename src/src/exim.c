@@ -444,9 +444,10 @@ function prepares for the time when things are faster - and it also copes with
 clocks that go backwards.
 
 Arguments:
-  tgt_tv       A timeval which was used to create uniqueness; its usec field
+  prev_tv      A timeval which was used to create uniqueness; its usec field
                  has been rounded down to the value of the resolution.
                  We want to be sure the current time is greater than this.
+		 On return, updated to current (rounded down).
   resolution   The resolution that was used to divide the microseconds
                  (1 for maildir, larger for message ids)
 
@@ -454,7 +455,7 @@ Returns:       nothing
 */
 
 void
-exim_wait_tick(struct timeval * tgt_tv, int resolution)
+exim_wait_tick(struct timeval * prev_tv, int resolution)
 {
 struct timeval now_tv;
 long int now_true_usec;
@@ -463,13 +464,13 @@ exim_gettime(&now_tv);
 now_true_usec = now_tv.tv_usec;
 now_tv.tv_usec = (now_true_usec/resolution) * resolution;
 
-while (exim_tvcmp(&now_tv, tgt_tv) <= 0)
+while (exim_tvcmp(&now_tv, prev_tv) <= 0)
   {
   struct itimerval itval;
   itval.it_interval.tv_sec = 0;
   itval.it_interval.tv_usec = 0;
-  itval.it_value.tv_sec = tgt_tv->tv_sec - now_tv.tv_sec;
-  itval.it_value.tv_usec = tgt_tv->tv_usec + resolution - now_true_usec;
+  itval.it_value.tv_sec = prev_tv->tv_sec - now_tv.tv_sec;
+  itval.it_value.tv_usec = prev_tv->tv_usec + resolution - now_true_usec;
 
   /* We know that, overall, "now" is less than or equal to "then". Therefore, a
   negative value for the microseconds is possible only in the case when "now"
@@ -487,7 +488,7 @@ while (exim_tvcmp(&now_tv, tgt_tv) <= 0)
     if (!f.running_in_test_harness)
       {
       debug_printf("tick check: " TIME_T_FMT ".%06lu " TIME_T_FMT ".%06lu\n",
-        tgt_tv->tv_sec, (long) tgt_tv->tv_usec,
+        prev_tv->tv_sec, (long) prev_tv->tv_usec,
        	now_tv.tv_sec, (long) now_tv.tv_usec);
       debug_printf("waiting " TIME_T_FMT ".%06lu sec\n",
         itval.it_value.tv_sec, (long) itval.it_value.tv_usec);
@@ -503,6 +504,7 @@ while (exim_tvcmp(&now_tv, tgt_tv) <= 0)
   now_true_usec = now_tv.tv_usec;
   now_tv.tv_usec = (now_true_usec/resolution) * resolution;
   }
+*prev_tv = now_tv;
 }
 
 
