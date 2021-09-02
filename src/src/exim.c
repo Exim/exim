@@ -1644,7 +1644,6 @@ BOOL list_queue = FALSE;
 BOOL list_options = FALSE;
 BOOL list_config = FALSE;
 BOOL local_queue_only;
-BOOL more = TRUE;
 BOOL one_msg_action = FALSE;
 BOOL opt_D_used = FALSE;
 BOOL queue_only_set = FALSE;
@@ -5498,7 +5497,7 @@ real_sender_address = sender_address;
 messages to be read (SMTP input), or FALSE otherwise (not SMTP, or SMTP channel
 collapsed). */
 
-while (more)
+for (BOOL more = TRUE; more; )
   {
   rmark reset_point = store_mark();
   message_id[0] = 0;
@@ -5540,10 +5539,10 @@ while (more)
       /* Now get the data for the message */
 
       more = receive_msg(extract_recipients);
-      if (message_id[0] == 0)
+      if (!message_id[0])
         {
 	cancel_cutthrough_connection(TRUE, US"receive dropped");
-        if (more) goto moreloop;
+        if (more) goto MORELOOP;
         smtp_log_no_mail();               /* Log no mail if configured */
         exim_exit(EXIT_FAILURE);
         }
@@ -5709,7 +5708,7 @@ while (more)
     for real; when reading the headers of a message for filter testing,
     it is TRUE if the headers were terminated by '.' and FALSE otherwise. */
 
-    if (message_id[0] == 0) exim_exit(EXIT_FAILURE);
+    if (!message_id[0]) exim_exit(EXIT_FAILURE);
     }  /* Non-SMTP message reception */
 
   /* If this is a filter testing run, there are headers in store, but
@@ -5902,11 +5901,11 @@ while (more)
   finished subprocesses here, in case there are lots of messages coming in
   from the same source. */
 
-  #ifndef SIG_IGN_WORKS
+#ifndef SIG_IGN_WORKS
   while (waitpid(-1, NULL, WNOHANG) > 0);
-  #endif
+#endif
 
-moreloop:
+MORELOOP:
   return_path = sender_address = NULL;
   authenticated_sender = NULL;
   deliver_localpart_orig = NULL;
