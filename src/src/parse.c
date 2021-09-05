@@ -224,16 +224,20 @@ If allow_domain_literals is TRUE, a "domain" may also be an IP address enclosed
 in []. Make sure the output is set to the null string if there is a syntax
 error as well as if there is no domain at all.
 
+Optionally, msg_id domain literals ( printable-ascii enclosed in [] )
+are permitted.
+
 Arguments:
   s          current character pointer
   t          where to put the domain
+  msg_id_literals     flag for relaxed domain-literal processing
   errorptr   put error message here on failure (*t will be 0 on exit)
 
 Returns:     new character pointer
 */
 
 static const uschar *
-read_domain(const uschar *s, uschar *t, uschar **errorptr)
+read_domain(const uschar *s, uschar *t, BOOL msg_id_literals, uschar **errorptr)
 {
 uschar *tt = t;
 s = skip_comment(s);
@@ -259,7 +263,11 @@ if (*s == '[')
     t += 5;
     s += 5;
     }
-  while (*s == '.' || *s == ':' || isxdigit(*s)) *t++ = *s++;
+
+  if (msg_id_literals)
+    while (*s >= 33 && *s <= 90 || *s >= 94 && *s <= 126) *t++ = *s++;
+  else
+    while (*s == '.' || *s == ':' || isxdigit(*s)) *t++ = *s++;
 
   if (*s == ']') *t++ = *s++; else
     {
@@ -267,7 +275,7 @@ if (*s == '[')
     *tt = 0;
     }
 
-  if (!allow_domain_literals)
+  if (!allow_domain_literals && !msg_id_literals)
     {
     *errorptr = US"domain literals not allowed";
     *tt = 0;
@@ -500,7 +508,7 @@ BOOL commas = FALSE;
 while (*s == '@')
   {
   *t++ = '@';
-  s = read_domain(s+1, t, errorptr);
+  s = read_domain(s+1, t, FALSE, errorptr);
   if (*t == 0) return s;
   t += Ustrlen((const uschar *)t);
   if (*s != ',') break;
@@ -559,7 +567,7 @@ if (*errorptr == NULL)
       t += Ustrlen((const uschar *)t);
       *t++ = *s++;
       *domainptr = t;
-      s = read_domain(s, t, errorptr);
+      s = read_domain(s, t, FALSE, errorptr);
       }
 return s;
 }
@@ -649,7 +657,7 @@ if (*s != '@' && *s != '<')
   {
   if (*s == 0 || *s == ';')
     {
-    if (*t == 0) FAILED(US"empty address");
+    if (!*t) FAILED(US"empty address");
     endptr = last_comment_position;
     goto PARSE_SUCCEEDED;              /* Bare local part */
     }
@@ -740,7 +748,7 @@ if (*s == '<')
     }
 
   endptr = s;
-  if (*errorptr != NULL) goto PARSE_FAILED;
+  if (*errorptr) goto PARSE_FAILED;
   while (bracket_count-- > 0) if (*s++ != '>')
     {
     *errorptr = s[-1] == 0
@@ -759,14 +767,14 @@ should be the domain. However, for flexibility we allow for a route-address
 not enclosed in <> as well, which is indicated by an empty first local
 part preceding '@'. The source routing is, however, ignored. */
 
-else if (*t == 0)
+else if (!*t)
   {
   uschar *domainptr = yield;
   s = read_route(s, t, errorptr);
-  if (*errorptr != NULL) goto PARSE_FAILED;
+  if (*errorptr) goto PARSE_FAILED;
   *t = 0;         /* Ensure route is ignored - probably overkill */
   s = read_addr_spec(s, t, 0, errorptr, &domainptr);
-  if (*errorptr != NULL) goto PARSE_FAILED;
+  if (*errorptr) goto PARSE_FAILED;
   *domain = domainptr - yield;
   endptr = last_comment_position;
   if (*domain == 0) FAILED(US"domain missing in source-routed address");
@@ -779,8 +787,8 @@ else
   t += Ustrlen((const uschar *)t);
   *t++ = *s++;
   *domain = t - yield;
-  s = read_domain(s, t, errorptr);
-  if (*t == 0) goto PARSE_FAILED;
+  s = read_domain(s, t, TRUE, errorptr);
+  if (!*t) goto PARSE_FAILED;
   endptr = last_comment_position;
   }
 
@@ -789,7 +797,7 @@ through for other cases. Endptr may have been moved over whitespace, so
 move it back past white space if necessary. */
 
 PARSE_SUCCEEDED:
-if (*s != 0)
+if (*s)
   {
   if (f.parse_found_group && *s == ';')
     {

@@ -1663,7 +1663,6 @@ int  process_info_len = Ustrlen(process_info);
 int  error_rc = error_handling == ERRORS_SENDER
 	? errors_sender_rc : EXIT_FAILURE;
 int  header_size = 256;
-int  start, end, domain;
 int  id_resolution = 0;
 int  had_zero = 0;
 int  prevlines_length = 0;
@@ -4084,6 +4083,8 @@ if (  LOGGING(msg_id) && msgid_header
   uschar * old_id;
   BOOL save_allow_domain_literals = allow_domain_literals;
   allow_domain_literals = TRUE;
+  int start, end, domain;
+
   old_id = parse_extract_address(Ustrchr(msgid_header->text, ':') + 1,
     &errmsg, &start, &end, &domain, FALSE);
   allow_domain_literals = save_allow_domain_literals;

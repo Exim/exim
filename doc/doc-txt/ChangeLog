@@ -332,6 +332,10 @@ JH/59 DKIM: Fix small-message verification under TLS with chunking. If a
       incorrrectly treated as part of the message body, causing a verification
       fail.
 
+JH/60 Bug 2805: Fix logging of domain-literals in Message_ID: headers. They
+      require looser validation rules than those for 821-level addresses,
+      which only permit IP addresses.
+
 
 Exim version 4.94
 -----------------

@@ -9,6 +9,15 @@ Message-ID: original1235@example.com
 body
 ****
 #
+# check for 822-rules for domain-listeral in Message_ID:
+exim -DLOG_SELECTOR=+received_recipients -t
+From: CALLER@test.ex
+To: a2@test.ex
+Message-ID: original1235@[foobar]
+
+body
+****
+#
 # msg_id is on by default; check it can be disabled
 exim -DLOG_SELECTOR=+received_recipients-msg_id -t
 From: CALLER@test.ex
