@@ -12808,13 +12808,11 @@ option in the &(appendfile)& transport. The variable contains the inode number
 of the temporary file which is about to be renamed. It can be used to construct
 a unique name for the file.
 
-.vitem &$interface_address$&
+.vitem &$interface_address$& &&&
+       &$interface_port$&
 .vindex "&$interface_address$&"
-This is an obsolete name for &$received_ip_address$&.
-
-.vitem &$interface_port$&
 .vindex "&$interface_port$&"
-This is an obsolete name for &$received_port$&.
+These are ebsolete names for &$received_ip_address$& and &$received_port$&.
 
 .vitem &$item$&
 .vindex "&$item$&"
@@ -13321,11 +13319,13 @@ variable contains that address when the &'Received:'& header line is being
 built. The value is copied after recipient rewriting has happened, but before
 the &[local_scan()]& function is run.
 
-.vitem &$received_ip_address$&
+.vitem &$received_ip_address$& &&&
+       &$received_port$&
 .vindex "&$received_ip_address$&"
-As soon as an Exim server starts processing an incoming TCP/IP connection, this
-variable is set to the address of the local IP interface, and &$received_port$&
-is set to the local port number. (The remote IP address and port are in
+.vindex "&$received_port$&"
+As soon as an Exim server starts processing an incoming TCP/IP connection, these
+variables are set to the address and port on the local IP interface.
+(The remote IP address and port are in
 &$sender_host_address$& and &$sender_host_port$&.) When testing with &%-bh%&,
 the port value is -1 unless it has been set using the &%-oMi%& command line
 option.
@@ -13337,10 +13337,6 @@ values of &$received_ip_address$& and &$received_port$& are saved with any
 messages that are received, thus making these variables available at delivery
 time.
 For outbound connections see &$sending_ip_address$&.
-
-.vitem &$received_port$&
-.vindex "&$received_port$&"
-See &$received_ip_address$&.
 
 .vitem &$received_protocol$&
 .vindex "&$received_protocol$&"

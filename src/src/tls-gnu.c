@@ -1079,7 +1079,8 @@ static int
 tls_server_clienthello_ext(void * ctx, unsigned tls_id,
   const uschar * data, unsigned size)
 {
-/* https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml */
+/* The values for tls_id are documented here:
+https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml */
 switch (tls_id)
   {
   case 5:	/* Status Request */

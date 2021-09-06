@@ -329,7 +329,7 @@ JH/58 GnuTLS: Fix certextract expansion.  If a second modifier after a tag
 
 JH/59 DKIM: Fix small-message verification under TLS with chunking. If a
       pipelined SMTP command followed the BDAT LAST then it would be
-      incorrrectly treated as part of the message body, causing a verification
+      incorrectly treated as part of the message body, causing a verification
       fail.
 
 JH/60 Bug 2805: Fix logging of domain-literals in Message_ID: headers. They
