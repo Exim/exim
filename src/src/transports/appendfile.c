@@ -662,14 +662,14 @@ the log, because we are running as an unprivileged user here.
 Arguments:
   dirname       the name of the directory
   countptr      where to add the file count (because this function recurses)
-  regex         a compiled regex to get the size from a name
+  re            a compiled regex to get the size from a name
 
 Returns:        the sum of the sizes of the stattable files
                 zero if the directory cannot be opened
 */
 
 off_t
-check_dir_size(const uschar * dirname, int *countptr, const pcre *regex)
+check_dir_size(const uschar * dirname, int * countptr, const pcre2_code * re)
 {
 DIR *dir;
 off_t sum = 0;
@@ -688,14 +688,18 @@ for (struct dirent *ent; ent = readdir(dir); )
 
   /* If there's a regex, try to find the size using it */
 
-  if (regex)
+  if (re)
     {
-    int ovector[6];
-    if (pcre_exec(regex, NULL, CS name, Ustrlen(name), 0, 0, ovector,6) >= 2)
+    pcre2_match_data * md = pcre2_match_data_create(2, pcre_gen_ctx);
+    int rc = pcre2_match(re, (PCRE2_SPTR)name, PCRE2_ZERO_TERMINATED,
+			  0, 0, md, pcre_mtc_ctx);
+    PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
+    if (  rc >= 0
+       && (rc = pcre2_get_ovector_count(md)) >= 2)
       {
       uschar *endptr;
-      off_t size = (off_t)Ustrtod(name + ovector[2], &endptr);
-      if (endptr == name + ovector[3])
+      off_t size = (off_t)Ustrtod(name + ovec[2], &endptr);
+      if (endptr == name + ovec[3])
         {
         sum += size;
         DEBUG(D_transport)
@@ -722,7 +726,7 @@ for (struct dirent *ent; ent = readdir(dir); )
     if ((statbuf.st_mode & S_IFMT) == S_IFREG)
       sum += statbuf.st_size / statbuf.st_nlink;
     else if ((statbuf.st_mode & S_IFMT) == S_IFDIR)
-      sum += check_dir_size(path, &count, regex);
+      sum += check_dir_size(path, &count, re);
   }
 
 closedir(dir);
@@ -2175,7 +2179,7 @@ scanning is expensive; for maildirs some fudges have been invented:
 else
   {
   uschar *check_path;		/* Default quota check path */
-  const pcre *regex = NULL;     /* Regex for file size from file name */
+  const pcre2_code * re = NULL;     /* Regex for file size from file name */
 
   if (!check_creation(string_sprintf("%s/any", path),
 		      ob->create_file, deliver_dir))
@@ -2218,18 +2222,20 @@ else
 
   if (ob->quota_value > 0 || THRESHOLD_CHECK || ob->maildir_use_size_file)
     {
-    const uschar *error;
-    int offset;
+    PCRE2_SIZE offset;
+    int err;
 
     /* Compile the regex if there is one. */
 
     if (ob->quota_size_regex)
       {
-      if (!(regex = pcre_compile(CS ob->quota_size_regex, PCRE_COPT,
-	  CCSS &error, &offset, NULL)))
+      if (!(re = pcre2_compile((PCRE2_SPTR)ob->quota_size_regex,
+		  PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_cmp_ctx)))
         {
+	uschar errbuf[128];
+	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
         addr->message = string_sprintf("appendfile: regular expression "
-          "error: %s at offset %d while compiling %s", error, offset,
+          "error: %s at offset %l while compiling %s", errbuf, (long)offset,
           ob->quota_size_regex);
         return FALSE;
         }
@@ -2304,19 +2310,21 @@ else
   #ifdef SUPPORT_MAILDIR
   if (ob->maildir_use_size_file)
     {
-    const pcre *dir_regex = NULL;
-    const uschar *error;
-    int offset;
+    const pcre2_code * dir_regex = NULL;
+    PCRE2_SIZE offset;
+    int err;
 
     if (ob->maildir_dir_regex)
       {
       int check_path_len = Ustrlen(check_path);
 
-      if (!(dir_regex = pcre_compile(CS ob->maildir_dir_regex, PCRE_COPT,
-	  CCSS &error, &offset, NULL)))
+      if (!(dir_regex = pcre2_compile((PCRE2_SPTR)ob->maildir_dir_regex,
+	    PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_cmp_ctx)))
         {
+	uschar errbuf[128];
+	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
         addr->message = string_sprintf("appendfile: regular expression "
-          "error: %s at offset %d while compiling %s", error, offset,
+          "error: %s at offset %l while compiling %s", errbuf, (long)offset,
           ob->maildir_dir_regex);
         return FALSE;
         }
@@ -2335,7 +2343,7 @@ else
         uschar *s = path + check_path_len;
         while (*s == '/') s++;
         s = *s ? string_sprintf("%s/new", s) : US"new";
-        if (pcre_exec(dir_regex, NULL, CS s, Ustrlen(s), 0, 0, NULL, 0) < 0)
+	if (!regex_match(dir_regex, s, -1, NULL))
           {
           disable_quota = TRUE;
           DEBUG(D_transport) debug_printf("delivery directory does not match "
@@ -2356,7 +2364,7 @@ else
       off_t size;
       int filecount;
 
-      if ((maildirsize_fd = maildir_ensure_sizefile(check_path, ob, regex, dir_regex,
+      if ((maildirsize_fd = maildir_ensure_sizefile(check_path, ob,  re, dir_regex,
 	  &size, &filecount)) == -1)
         {
         addr->basic_errno = errno;
@@ -2381,7 +2389,7 @@ else
  *    (void)unlink(CS string_sprintf("%s/maildirsize", check_path));
  *    if (THRESHOLD_CHECK)
  *      mailbox_size = maildir_compute_size(check_path, &mailbox_filecount, &old_latest,
- *        regex, dir_regex, FALSE);
+ *         re, dir_regex, FALSE);
  *    }
 */
 
@@ -2403,7 +2411,7 @@ else
     int filecount = 0;
     DEBUG(D_transport)
       debug_printf("quota checks on directory %s\n", check_path);
-    size = check_dir_size(check_path, &filecount, regex);
+    size = check_dir_size(check_path, &filecount,  re);
     if (mailbox_size < 0) mailbox_size = size;
     if (mailbox_filecount < 0) mailbox_filecount = filecount;
     }

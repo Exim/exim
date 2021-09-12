@@ -426,8 +426,9 @@ extern void    receive_swallow_smtp(void);
 #ifdef WITH_CONTENT_SCAN
 extern int     regex(const uschar **);
 #endif
-extern BOOL    regex_match_and_setup(const pcre *, const uschar *, int, int);
-extern const pcre *regex_must_compile(const uschar *, BOOL, BOOL);
+extern BOOL    regex_match(const pcre2_code *, const uschar *, int, uschar **);
+extern BOOL    regex_match_and_setup(const pcre2_code *, const uschar *, int, int);
+extern const pcre2_code *regex_must_compile(const uschar *, BOOL, BOOL);
 extern void    retry_add_item(address_item *, uschar *, int);
 extern BOOL    retry_check_address(const uschar *, host_item *, uschar *, BOOL,
                  uschar **, uschar **);

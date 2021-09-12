@@ -32,7 +32,6 @@ int i;
 work. */
 
 for (i = 0; i <= 1; i++)
-
   {
   int first = 1;
   int count = 0;
@@ -69,13 +68,18 @@ for (i = 0; i <= 1; i++)
       buffer[p-pp] = 0;
       if (first)
         {
-        int offset;
-        const uschar *error;
-        if (!(stripchart_regex[indx] = pcre_compile(CS buffer, PCRE_COPT,
-          CCSS &error, &offset, NULL)))
+        size_t offset;
+        int err;
+
+        if (!(stripchart_regex[indx] =
+		pcre2_compile((PCRE2_SPTR)buffer,
+		      PCRE2_ZERO_TERMINATED, PCRE_COPT,
+		      &err, &offset, NULL)))
           {
-          printf("regular expression error: %s at offset %d "
-            "while compiling %s\n", error, offset, buffer);
+	  uschar errbuf[128];
+	  pcre2_get_error_message(err, errbuf, sizeof(errbuf));
+          printf("regular expression error: %s at offset %l "
+            "while compiling %s\n", errbuf, (long)offset, buffer);
           exit(99);
           }
         }
@@ -95,7 +99,7 @@ for (i = 0; i <= 1; i++)
   if (i == 0)
     {
     stripchart_number += count;
-    stripchart_regex = (pcre **)store_malloc(stripchart_number * sizeof(pcre *));
+    stripchart_regex = (pcre2_code **)store_malloc(stripchart_number * sizeof(pcre2_code *));
     stripchart_title = (uschar **)store_malloc(stripchart_number * sizeof(uschar *));
     }
   }
@@ -109,7 +113,7 @@ for (i = 0; i <= 1; i++)
 void init(int argc, uschar **argv)
 {
 int x;
-int erroroffset;
+size_t erroroffset;
 uschar *s;
 const uschar *error;
 
@@ -230,8 +234,8 @@ queue_stripchart_name = (s != NULL)? string_copy(s) : US"queue";
 
 /* Compile the regex for matching yyyy-mm-dd at the start of a string. */
 
-yyyymmdd_regex = pcre_compile("^\\d{4}-\\d\\d-\\d\\d\\s", PCRE_COPT,
-  CCSS &error, &erroroffset, NULL);
+yyyymmdd_regex = pcre2_compile((PCRE2_SPTR)"^\\d{4}-\\d\\d-\\d\\d\\s",
+  PCRE2_ZERO_TERMINATED, PCRE_COPT, &x, &erroroffset, NULL);
 }
 
 /* End of em_init.c */

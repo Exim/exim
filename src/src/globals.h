@@ -127,7 +127,7 @@ extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */
 extern BOOL    gnutls_allow_auto_pkcs11; /* Let GnuTLS autoload PKCS11 modules */
 extern uschar *hosts_require_alpn;     /* Mandatory ALPN successful nogitiation */
 extern uschar *openssl_options;        /* OpenSSL compatibility options */
-extern const pcre *regex_STARTTLS;     /* For recognizing STARTTLS settings */
+extern const pcre2_code *regex_STARTTLS;     /* For recognizing STARTTLS settings */
 extern uschar *tls_alpn;	       /* ALPN names acceptable */
 extern uschar *tls_certificate;        /* Certificate file */
 extern uschar *tls_crl;                /* CRL File */
@@ -153,7 +153,7 @@ extern uschar *tls_advertise_hosts;    /* host for which TLS is advertised */
 
 extern uschar  *dsn_envid;             /* DSN envid string */
 extern int      dsn_ret;               /* DSN ret type*/
-extern const pcre  *regex_DSN;         /* For recognizing DSN settings */
+extern const pcre2_code  *regex_DSN;         /* For recognizing DSN settings */
 extern uschar  *dsn_advertise_hosts;   /* host for which TLS is advertised */
 
 /* Input-reading functions for messages, so we can use special ones for
@@ -320,7 +320,7 @@ extern uschar *acl_smtp_connect;       /* ACL run on SMTP connection */
 extern uschar *acl_smtp_data;          /* ACL run after DATA received */
 #ifndef DISABLE_PRDR
 extern uschar *acl_smtp_data_prdr;     /* ACL run after DATA received if in PRDR mode*/
-const extern pcre *regex_PRDR;         /* For recognizing PRDR settings */
+const extern pcre2_code *regex_PRDR;         /* For recognizing PRDR settings */
 #endif
 #ifndef DISABLE_DKIM
 extern uschar *acl_smtp_dkim;          /* ACL run for DKIM signatures / domains */
@@ -731,7 +731,7 @@ extern uschar *message_size_limit;     /* As it says */
 #ifdef SUPPORT_I18N
 extern BOOL    message_smtputf8;       /* Internationalized mail handling */
 extern int     message_utf8_downconvert; /* convert from utf8 */
-const extern pcre *regex_UTF8;         /* For recognizing SMTPUTF8 settings */
+const extern pcre2_code *regex_UTF8;         /* For recognizing SMTPUTF8 settings */
 #endif
 extern uschar  message_subdir[];       /* Subdirectory for messages */
 extern uschar *message_reference;      /* Reference for error messages */
@@ -778,6 +778,10 @@ extern uschar *originator_name;        /* Full name of same */
 extern uid_t   originator_uid;         /* Uid of ditto */
 extern uschar *override_local_interfaces; /* Value of -oX argument */
 extern uschar *override_pid_file_path; /* Value of -oP argument */
+
+extern pcre2_general_context * pcre_gen_ctx;	/* pcre memory management */
+extern pcre2_compile_context * pcre_cmp_ctx;
+extern pcre2_match_context *   pcre_mtc_ctx;
 
 extern uschar *percent_hack_domains;   /* Local domains for which '% operates */
 extern uschar *pid_file_path;          /* For writing daemon pids */
@@ -865,24 +869,24 @@ extern uschar *recipient_verify_failure; /* What went wrong */
 extern int     recipients_list_max;    /* Maximum number fitting in list */
 extern int     recipients_max;         /* Max permitted */
 extern BOOL    recipients_max_reject;  /* If TRUE, reject whole message */
-extern const pcre *regex_AUTH;         /* For recognizing AUTH settings */
-extern const pcre  *regex_check_dns_names; /* For DNS name checking */
-extern const pcre  *regex_From;        /* For recognizing "From_" lines */
-extern const pcre  *regex_CHUNKING;    /* For recognizing CHUNKING (RFC 3030) */
-extern const pcre  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
+extern const pcre2_code *regex_AUTH;         /* For recognizing AUTH settings */
+extern const pcre2_code  *regex_check_dns_names; /* For DNS name checking */
+extern const pcre2_code  *regex_From;        /* For recognizing "From_" lines */
+extern const pcre2_code  *regex_CHUNKING;    /* For recognizing CHUNKING (RFC 3030) */
+extern const pcre2_code  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
-extern const pcre  *regex_LIMITS; /* For recognizing LIMITS */
+extern const pcre2_code  *regex_LIMITS; /* For recognizing LIMITS */
 #endif
-extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
-extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
+extern const pcre2_code  *regex_PIPELINING;  /* For recognizing PIPELINING */
+extern const pcre2_code  *regex_SIZE;        /* For recognizing SIZE settings */
 #ifndef DISABLE_PIPE_CONNECT
-extern const pcre  *regex_EARLY_PIPE;  /* For recognizing PIPE_CONNCT */
+extern const pcre2_code  *regex_EARLY_PIPE;  /* For recognizing PIPE_CONNCT */
 #endif
-extern const pcre  *regex_ismsgid;     /* Compiled r.e. for message it */
-extern const pcre  *regex_smtp_code;   /* For recognizing SMTP codes */
+extern const pcre2_code  *regex_ismsgid;     /* Compiled r.e. for message it */
+extern const pcre2_code  *regex_smtp_code;   /* For recognizing SMTP codes */
 extern uschar *regex_vars[];           /* $regexN variables */
 #ifdef WHITELIST_D_MACROS
-extern const pcre  *regex_whitelisted_macro; /* For -D macro values */
+extern const pcre2_code  *regex_whitelisted_macro; /* For -D macro values */
 #endif
 #ifdef WITH_CONTENT_SCAN
 extern uschar *regex_match_string;     /* regex that matched a line (regex ACL condition) */

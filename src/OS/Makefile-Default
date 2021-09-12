@@ -89,7 +89,7 @@ CC=gcc
 
 # PCRE_LIBS contains the library to be linked for PCRE
 
-PCRE_LIBS=-lpcre
+PCRE_LIBS=-lpcre2-8
 
 
 # LIBS and EXTRALIBS contain library settings that are used on linking

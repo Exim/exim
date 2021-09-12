@@ -118,7 +118,7 @@ tls_support tls_out = {
 
 uschar *dsn_envid              = NULL;
 int     dsn_ret                = 0;
-const pcre  *regex_DSN         = NULL;
+const pcre2_code  *regex_DSN         = NULL;
 uschar *dsn_advertise_hosts    = NULL;
 
 #ifndef DISABLE_TLS
@@ -126,7 +126,7 @@ BOOL    gnutls_compat_mode     = FALSE;
 BOOL    gnutls_allow_auto_pkcs11 = FALSE;
 uschar *hosts_require_alpn     = NULL;
 uschar *openssl_options        = NULL;
-const pcre *regex_STARTTLS     = NULL;
+const pcre2_code *regex_STARTTLS     = NULL;
 uschar *tls_advertise_hosts    = US"*";
 uschar *tls_alpn	       = US"smtp:esmtp";
 uschar *tls_certificate        = NULL;
@@ -159,11 +159,11 @@ uschar *tls_advertise_hosts    = NULL;
 /* Per Recipient Data Response variables */
 BOOL    prdr_enable            = FALSE;
 BOOL    prdr_requested         = FALSE;
-const pcre *regex_PRDR         = NULL;
+const pcre2_code *regex_PRDR         = NULL;
 #endif
 
 #ifdef SUPPORT_I18N
-const pcre *regex_UTF8         = NULL;
+const pcre2_code *regex_UTF8         = NULL;
 #endif
 
 /* Input-reading functions for messages, so we can use special ones for
@@ -711,10 +711,10 @@ uschar *chunking_advertise_hosts = US"*";
 unsigned chunking_datasize     = 0;
 unsigned chunking_data_left    = 0;
 chunking_state_t chunking_state= CHUNKING_NOT_OFFERED;
-const pcre *regex_CHUNKING     = NULL;
+const pcre2_code *regex_CHUNKING     = NULL;
 
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
-const pcre *regex_LIMITS        = NULL;
+const pcre2_code *regex_LIMITS        = NULL;
 #endif
 
 uschar *client_authenticator   = NULL;
@@ -1212,6 +1212,10 @@ uid_t   originator_uid;
 uschar *override_local_interfaces = NULL;
 uschar *override_pid_file_path = NULL;
 
+pcre2_general_context * pcre_gen_ctx = NULL;
+pcre2_compile_context * pcre_cmp_ctx = NULL;
+pcre2_match_context * pcre_mtc_ctx = NULL;
+
 uschar *percent_hack_domains   = NULL;
 uschar *pid_file_path          = US PID_FILE_PATH
                            "\0<--------------Space to patch pid_file_path->";
@@ -1305,20 +1309,20 @@ int     recipients_count       = 0;
 recipient_item  *recipients_list = NULL;
 int     recipients_list_max    = 0;
 int     recipients_max         = 50000;
-const pcre *regex_AUTH         = NULL;
-const pcre *regex_check_dns_names = NULL;
-const pcre *regex_From         = NULL;
-const pcre *regex_IGNOREQUOTA  = NULL;
-const pcre *regex_PIPELINING   = NULL;
-const pcre *regex_SIZE         = NULL;
+const pcre2_code *regex_AUTH         = NULL;
+const pcre2_code *regex_check_dns_names = NULL;
+const pcre2_code *regex_From         = NULL;
+const pcre2_code *regex_IGNOREQUOTA  = NULL;
+const pcre2_code *regex_PIPELINING   = NULL;
+const pcre2_code *regex_SIZE         = NULL;
 #ifndef DISABLE_PIPE_CONNECT
-const pcre *regex_EARLY_PIPE   = NULL;
+const pcre2_code *regex_EARLY_PIPE   = NULL;
 #endif
-const pcre *regex_ismsgid      = NULL;
-const pcre *regex_smtp_code    = NULL;
+const pcre2_code *regex_ismsgid      = NULL;
+const pcre2_code *regex_smtp_code    = NULL;
 uschar *regex_vars[REGEX_VARS];
 #ifdef WHITELIST_D_MACROS
-const pcre *regex_whitelisted_macro = NULL;
+const pcre2_code *regex_whitelisted_macro = NULL;
 #endif
 #ifdef WITH_CONTENT_SCAN
 uschar *regex_match_string     = NULL;

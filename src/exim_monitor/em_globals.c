@@ -81,7 +81,7 @@ uschar *queue_stripchart_name = NULL;
 int     queue_update = 60;
 int     queue_width = 600;
 
-pcre   *yyyymmdd_regex;
+pcre2_code   *yyyymmdd_regex;
 
 uschar *size_stripchart = NULL;
 uschar *size_stripchart_name = NULL;
@@ -89,7 +89,7 @@ int     spool_is_split = FALSE;
 int     start_small = FALSE;
 int     stripchart_height = 90;
 int     stripchart_number = 1;
-pcre  **stripchart_regex;
+pcre2_code  **stripchart_regex;
 uschar **stripchart_title;
 int    *stripchart_total;
 int     stripchart_update = 60;

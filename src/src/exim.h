@@ -522,7 +522,8 @@ extern int ferror(FILE *);
 
 /* The header from the PCRE regex package */
 
-#include <pcre.h>
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
 
 /* Exim includes are in several files. Note that local_scan.h #includes
 config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.

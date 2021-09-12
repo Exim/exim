@@ -229,7 +229,7 @@ if (LOG != NULL)
     uschar *p = buffer;
     rmark reset_point;
     int length = Ustrlen(buffer);
-    int i;
+    pcre2_match_data * md = pcre2_match_data_create(1, NULL);
 
     /* Skip totally blank lines (paranoia: there shouldn't be any) */
 
@@ -246,27 +246,25 @@ if (LOG != NULL)
     stripchart is the queue length, which is handled elsewhere, and the
     1st may the a size monitor. */
 
-    for (i = stripchart_varstart; i < stripchart_number; i++)
-      {
-      if (pcre_exec(stripchart_regex[i], NULL, CS buffer, length, 0, PCRE_EOPT,
-            NULL, 0) >= 0)
+    for (int i = stripchart_varstart; i < stripchart_number; i++)
+      if (pcre2_match(stripchart_regex[i], (PCRE2_SPTR)buffer, length,
+			0, PCRE_EOPT, md, NULL) >= 0)
         stripchart_total[i]++;
-      }
 
     /* Munge the log entry and display shortened form on one line.
     We omit the date and show only the time. Remove any time zone offset.
     Take note of the presence of [pid]. */
 
-    if (pcre_exec(yyyymmdd_regex,NULL,CS buffer,length,0,PCRE_EOPT,NULL,0) >= 0)
+    if (pcre2_match(yyyymmdd_regex, (PCRE2_SPTR) buffer, length, 0, PCRE_EOPT,
+		      md, NULL) >= 0)
       {
       int pidlength = 0;
-      if ((buffer[20] == '+' || buffer[20] == '-') &&
-          isdigit(buffer[21]) && buffer[25] == ' ')
+      if (  (buffer[20] == '+' || buffer[20] == '-')
+         && isdigit(buffer[21]) && buffer[25] == ' ')
         memmove(buffer + 20, buffer + 26, Ustrlen(buffer + 26) + 1);
       if (buffer[20] == '[')
-        {
-        while (Ustrchr("[]0123456789", buffer[20+pidlength++]) != NULL);
-        }
+        while (Ustrchr("[]0123456789", buffer[20+pidlength++]) != NULL)
+	  ;
       id = string_copyn(buffer + 20 + pidlength, MESSAGE_ID_LENGTH);
       show_log("%s", buffer+11);
       }
@@ -275,6 +273,7 @@ if (LOG != NULL)
       id = US"";
       show_log("%s", buffer);
       }
+    pcre2_match_data_free(md);
 
     /* Deal with frozen and unfrozen messages */
 

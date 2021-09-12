@@ -3266,27 +3266,26 @@ void
 smtp_message_code(uschar **code, int *codelen, uschar **msg, uschar **log_msg,
   BOOL check_valid)
 {
-int n;
-int ovector[3];
+uschar * match;
+int len;
 
-if (!msg || !*msg) return;
+if (!msg || !*msg || !regex_match(regex_smtp_code, *msg, -1, &match))
+  return;
 
-if ((n = pcre_exec(regex_smtp_code, NULL, CS *msg, Ustrlen(*msg), 0,
-  PCRE_EOPT, ovector, sizeof(ovector)/sizeof(int))) < 0) return;
-
+len = Ustrlen(match);
 if (check_valid && (*msg)[0] != (*code)[0])
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "configured error code starts with "
     "incorrect digit (expected %c) in \"%s\"", (*code)[0], *msg);
-  if (log_msg != NULL && *log_msg == *msg)
-    *log_msg = string_sprintf("%s %s", *code, *log_msg + ovector[1]);
+  if (log_msg && *log_msg == *msg)
+    *log_msg = string_sprintf("%s %s", *code, *log_msg + len);
   }
 else
   {
   *code = *msg;
-  *codelen = ovector[1];    /* Includes final space */
+  *codelen = len;    /* Includes final space */
   }
-*msg += ovector[1];         /* Chop the code off the message */
+*msg += len;         /* Chop the code off the message */
 return;
 }
 

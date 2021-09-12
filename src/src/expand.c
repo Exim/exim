@@ -2543,15 +2543,12 @@ BOOL tempcond, combined_cond;
 BOOL *subcondptr;
 BOOL sub2_honour_dollar = TRUE;
 BOOL is_forany, is_json, is_jsons;
-int rc, cond_type, roffset;
+int rc, cond_type;
 int_eximarith_t num[2];
 struct stat statbuf;
 uschar * opname;
 uschar name[256];
 const uschar *sub[10];
-
-const pcre *re;
-const uschar *rerror;
 
 for (;;)
   if (Uskip_whitespace(&s) == '!') { testfor = !testfor; s++; } else break;
@@ -2974,15 +2971,24 @@ switch(cond_type = identify_operator(&s, &opname))
     break;
 
     case ECOND_MATCH:   /* Regular expression match */
-    if (!(re = pcre_compile(CS sub[1], PCRE_COPT, CCSS &rerror,
-			    &roffset, NULL)))
       {
-      expand_string_message = string_sprintf("regular expression error in "
-        "\"%s\": %s at offset %d", sub[1], rerror, roffset);
-      return NULL;
+      const pcre2_code * re;
+      PCRE2_SIZE offset;
+      int err;
+
+      if (!(re = pcre2_compile((PCRE2_SPTR)sub[1], PCRE2_ZERO_TERMINATED,
+				PCRE_COPT, &err, &offset, pcre_cmp_ctx)))
+	{
+	uschar errbuf[128];
+	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
+	expand_string_message = string_sprintf("regular expression error in "
+	  "\"%s\": %s at offset %d", sub[1], errbuf, offset);
+	return NULL;
+	}
+
+      tempcond = regex_match_and_setup(re, sub[0], 0, -1);
+      break;
       }
-    tempcond = regex_match_and_setup(re, sub[0], 0, -1);
-    break;
 
     case ECOND_MATCH_ADDRESS:  /* Match in an address list */
     rc = match_address_list(sub[0], TRUE, FALSE, &(sub[1]), NULL, -1, 0, NULL);
@@ -3448,9 +3454,10 @@ switch(cond_type = identify_operator(&s, &opname))
     /* ${if inbound_srs {local_part}{secret}  {yes}{no}} */
     {
     uschar * sub[2];
-    const pcre * re;
-    int ovec[3*(4+1)];
-    int n, quoting = 0;
+    const pcre2_code * re;
+    pcre2_match_data * md;
+    PCRE2_SIZE * ovec;
+    int quoting = 0;
     uschar cksum[4];
     BOOL boolvalue = FALSE;
 
@@ -3466,12 +3473,14 @@ switch(cond_type = identify_operator(&s, &opname))
 
     re = regex_must_compile(US"^(?i)SRS0=([^=]+)=([A-Z2-7]+)=([^=]*)=(.*)$",
 			    TRUE, FALSE);
-    if (pcre_exec(re, NULL, CS sub[0], Ustrlen(sub[0]), 0, PCRE_EOPT,
-		  ovec, nelem(ovec)) < 0)
+    md = pcre2_match_data_create(4+1, pcre_gen_ctx);
+    if (pcre2_match(re, sub[0], PCRE2_ZERO_TERMINATED, 0, PCRE_EOPT,
+		    md, pcre_mtc_ctx) < 0)
       {
       DEBUG(D_expand) debug_printf("no match for SRS'd local-part pattern\n");
       goto srs_result;
       }
+    ovec = pcre2_get_ovector_pointer(md);
 
     if (sub[0][0] == '"')
       quoting = 1;
@@ -3503,6 +3512,7 @@ switch(cond_type = identify_operator(&s, &opname))
       struct timeval now;
       uschar * ss = sub[0] + ovec[4];	/* substring 2, the timestamp */
       long d;
+      int n;
 
       gettimeofday(&now, NULL);
       now.tv_sec /= 86400;		/* days since epoch */
@@ -5189,7 +5199,7 @@ while (*s)
       {
       uschar *sub_arg[3];
       gstring * g;
-      const pcre *re;
+      const pcre2_code *re;
       uschar *p;
 
       /* TF: Ugliness: We want to expand parameter 1 first, then set
@@ -5829,11 +5839,11 @@ while (*s)
 
     case EITEM_SG:
       {
-      const pcre *re;
+      const pcre2_code * re;
       int moffset, moffsetextra, slen;
-      int roffset;
-      int emptyopt;
-      const uschar *rerror;
+      PCRE2_SIZE roffset;
+      pcre2_match_data * md;
+      int err, emptyopt;
       uschar *subject;
       uschar *sub[3];
       int save_expand_nmax =
@@ -5848,13 +5858,16 @@ while (*s)
 
       /* Compile the regular expression */
 
-      if (!(re = pcre_compile(CS sub[1], PCRE_COPT, CCSS &rerror,
-			      &roffset, NULL)))
+      if (!(re = pcre2_compile((PCRE2_SPTR)sub[1], PCRE2_ZERO_TERMINATED,
+		  PCRE_COPT, &err, &roffset, pcre_cmp_ctx)))
         {
+        uschar errbuf[128];
+	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
         expand_string_message = string_sprintf("regular expression error in "
-          "\"%s\": %s at offset %d", sub[1], rerror, roffset);
+          "\"%s\": %s at offset %l", sub[1], errbuf, (long)roffset);
         goto EXPAND_FAILED;
         }
+      md = pcre2_match_data_create(EXPAND_MAXN + 1, pcre_gen_ctx);
 
       /* Now run a loop to do the substitutions as often as necessary. It ends
       when there are no more matches. Take care over matches of the null string;
@@ -5867,9 +5880,9 @@ while (*s)
 
       for (;;)
         {
-        int ovector[3*(EXPAND_MAXN+1)];
-        int n = pcre_exec(re, NULL, CS subject, slen, moffset + moffsetextra,
-          PCRE_EOPT | emptyopt, ovector, nelem(ovector));
+	PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
+	int n = pcre2_match(re, (PCRE2_SPTR)subject, slen, moffset + moffsetextra,
+	  PCRE_EOPT | emptyopt, md, pcre_mtc_ctx);
         uschar *insert;
 
         /* No match - if we previously set PCRE_NOTEMPTY after a null match, this
@@ -5897,19 +5910,19 @@ while (*s)
         expand_nmax = 0;
         for (int nn = 0; nn < n*2; nn += 2)
           {
-          expand_nstring[expand_nmax] = subject + ovector[nn];
-          expand_nlength[expand_nmax++] = ovector[nn+1] - ovector[nn];
+          expand_nstring[expand_nmax] = subject + ovec[nn];
+          expand_nlength[expand_nmax++] = ovec[nn+1] - ovec[nn];
           }
         expand_nmax--;
 
         /* Copy the characters before the match, plus the expanded insertion. */
 
-        yield = string_catn(yield, subject + moffset, ovector[0] - moffset);
+        yield = string_catn(yield, subject + moffset, ovec[0] - moffset);
         if (!(insert = expand_string(sub[2])))
 	  goto EXPAND_FAILED;
         yield = string_cat(yield, insert);
 
-        moffset = ovector[1];
+        moffset = ovec[1];
         moffsetextra = 0;
         emptyopt = 0;
 
@@ -5920,10 +5933,10 @@ while (*s)
         string at the same point. If this fails (picked up above) we advance to
         the next character. */
 
-        if (ovector[0] == ovector[1])
+        if (ovec[0] == ovec[1])
           {
-          if (ovector[0] == slen) break;
-          emptyopt = PCRE_NOTEMPTY | PCRE_ANCHORED;
+          if (ovec[0] == slen) break;
+          emptyopt = PCRE2_NOTEMPTY | PCRE2_ANCHORED;
           }
         }
 
@@ -8608,11 +8621,11 @@ if (e.var_name)
 
 
 BOOL
-regex_match_and_setup(const pcre *re, uschar *subject, int options, int setup)
+regex_match_and_setup(const pcre2_code *re, uschar *subject, int options, int setup)
 {
-int ovector[3*(EXPAND_MAXN+1)];
+int ovec[3*(EXPAND_MAXN+1)];
 int n = pcre_exec(re, NULL, subject, Ustrlen(subject), 0, PCRE_EOPT|options,
-  ovector, nelem(ovector));
+  ovec, nelem(ovec));
 BOOL yield = n >= 0;
 if (n == 0) n = EXPAND_MAXN + 1;
 if (yield)
@@ -8620,8 +8633,8 @@ if (yield)
   expand_nmax = setup < 0 ? 0 : setup + 1;
   for (int nn = setup < 0 ? 0 : 2; nn < n*2; nn += 2)
     {
-    expand_nstring[expand_nmax] = subject + ovector[nn];
-    expand_nlength[expand_nmax++] = ovector[nn+1] - ovector[nn];
+    expand_nstring[expand_nmax] = subject + ovec[nn];
+    expand_nlength[expand_nmax++] = ovec[nn+1] - ovec[nn];
     }
   expand_nmax--;
   }

@@ -237,48 +237,39 @@ static unsigned ehlo_response(uschar * buf, unsigned checks);
 void
 smtp_deliver_init(void)
 {
-if (!regex_PIPELINING) regex_PIPELINING =
-  regex_must_compile(US"\\n250[\\s\\-]PIPELINING(\\s|\\n|$)", FALSE, TRUE);
-
-if (!regex_SIZE) regex_SIZE =
-  regex_must_compile(US"\\n250[\\s\\-]SIZE(\\s|\\n|$)", FALSE, TRUE);
-
-if (!regex_AUTH) regex_AUTH =
-  regex_must_compile(AUTHS_REGEX, FALSE, TRUE);
+struct list
+  {
+  const pcre2_code **	re;
+  const uschar *	string;
+  } list[] =
+  {
+    { &regex_AUTH,		AUTHS_REGEX },
+    { &regex_CHUNKING,		US"\\n250[\\s\\-]CHUNKING(\\s|\\n|$)" },
+    { &regex_DSN,		US"\\n250[\\s\\-]DSN(\\s|\\n|$)" },
+    { &regex_IGNOREQUOTA,	US"\\n250[\\s\\-]IGNOREQUOTA(\\s|\\n|$)" },
+    { &regex_PIPELINING,	US"\\n250[\\s\\-]PIPELINING(\\s|\\n|$)" },
+    { &regex_SIZE,		US"\\n250[\\s\\-]SIZE(\\s|\\n|$)" },
 
 #ifndef DISABLE_TLS
-if (!regex_STARTTLS) regex_STARTTLS =
-  regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
+    { &regex_STARTTLS,		US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)" },
 #endif
-
-if (!regex_CHUNKING) regex_CHUNKING =
-  regex_must_compile(US"\\n250[\\s\\-]CHUNKING(\\s|\\n|$)", FALSE, TRUE);
-
 #ifndef DISABLE_PRDR
-if (!regex_PRDR) regex_PRDR =
-  regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
+    { &regex_PRDR,		US"\\n250[\\s\\-]PRDR(\\s|\\n|$)" },
 #endif
-
 #ifdef SUPPORT_I18N
-if (!regex_UTF8) regex_UTF8 =
-  regex_must_compile(US"\\n250[\\s\\-]SMTPUTF8(\\s|\\n|$)", FALSE, TRUE);
+    { &regex_UTF8,		US"\\n250[\\s\\-]SMTPUTF8(\\s|\\n|$)" },
 #endif
-
-if (!regex_DSN) regex_DSN  =
-  regex_must_compile(US"\\n250[\\s\\-]DSN(\\s|\\n|$)", FALSE, TRUE);
-
-if (!regex_IGNOREQUOTA) regex_IGNOREQUOTA =
-  regex_must_compile(US"\\n250[\\s\\-]IGNOREQUOTA(\\s|\\n|$)", FALSE, TRUE);
-
 #ifndef DISABLE_PIPE_CONNECT
-if (!regex_EARLY_PIPE) regex_EARLY_PIPE =
-  regex_must_compile(US"\\n250[\\s\\-]" EARLY_PIPE_FEATURE_NAME "(\\s|\\n|$)", FALSE, TRUE);
+    { &regex_EARLY_PIPE,  	US"\\n250[\\s\\-]" EARLY_PIPE_FEATURE_NAME "(\\s|\\n|$)" },
 #endif
-
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
-if (!regex_LIMITS) regex_LIMITS =
-  regex_must_compile(US"\\n250[\\s\\-]LIMITS\\s", FALSE, TRUE);
+    { &regex_LIMITS,		US"\\n250[\\s\\-]LIMITS\\s" },
 #endif
+  };
+
+for (struct list * l = list; l < list + nelem(list); l++)
+  if (!*l->re)
+    *l->re = regex_must_compile(l->string, FALSE, TRUE);
 }
 
 
@@ -777,13 +768,12 @@ This saves us dealing with a duplicate set of values. */
 static void
 ehlo_response_limits_read(smtp_context * sx)
 {
-int ovec[3];	/* results vector for a main-match only */
+uschar * match;
 
 /* matches up to just after the first space after the keyword */
 
-if (pcre_exec(regex_LIMITS, NULL, CS sx->buffer, Ustrlen(sx->buffer),
-	      0, PCRE_EOPT, ovec, nelem(ovec)) >= 0)
-  for (const uschar * s = sx->buffer + ovec[1]; *s; )
+if (regex_match(regex_LIMITS, sx->buffer, -1, &match))
+  for (const uschar * s = sx->buffer + Ustrlen(match); *s; )
     {
     while (isspace(*s)) s++;
     if (*s == '\n') break;
@@ -1809,57 +1799,65 @@ return Ustrcmp(current_local_identity, message_local_identity) == 0;
 static unsigned
 ehlo_response(uschar * buf, unsigned checks)
 {
-size_t bsize = Ustrlen(buf);
+PCRE2_SIZE bsize = Ustrlen(buf);
+pcre2_match_data * md = pcre2_match_data_create(1, pcre_gen_ctx);
 
 /* debug_printf("%s: check for 0x%04x\n", __FUNCTION__, checks); */
 
 #ifndef DISABLE_TLS
 if (  checks & OPTION_TLS
-   && pcre_exec(regex_STARTTLS, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+   && pcre2_match(regex_STARTTLS,
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
 #endif
   checks &= ~OPTION_TLS;
 
 if (  checks & OPTION_IGNQ
-   && pcre_exec(regex_IGNOREQUOTA, NULL, CS buf, bsize, 0,
-		PCRE_EOPT, NULL, 0) < 0)
+   && pcre2_match(regex_IGNOREQUOTA,
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
   checks &= ~OPTION_IGNQ;
 
 if (  checks & OPTION_CHUNKING
-   && pcre_exec(regex_CHUNKING, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+   && pcre2_match(regex_CHUNKING,
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
   checks &= ~OPTION_CHUNKING;
 
 #ifndef DISABLE_PRDR
 if (  checks & OPTION_PRDR
-   && pcre_exec(regex_PRDR, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+   && pcre2_match(regex_PRDR,
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
 #endif
   checks &= ~OPTION_PRDR;
 
 #ifdef SUPPORT_I18N
 if (  checks & OPTION_UTF8
-   && pcre_exec(regex_UTF8, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+   && pcre2_match(regex_UTF8,
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
 #endif
   checks &= ~OPTION_UTF8;
 
 if (  checks & OPTION_DSN
-   && pcre_exec(regex_DSN, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+   && pcre2_match(regex_DSN,
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
   checks &= ~OPTION_DSN;
 
 if (  checks & OPTION_PIPE
-   && pcre_exec(regex_PIPELINING, NULL, CS buf, bsize, 0,
-		PCRE_EOPT, NULL, 0) < 0)
+   && pcre2_match(regex_PIPELINING,
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
   checks &= ~OPTION_PIPE;
 
 if (  checks & OPTION_SIZE
-   && pcre_exec(regex_SIZE, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+   && pcre2_match(regex_SIZE,
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
   checks &= ~OPTION_SIZE;
 
 #ifndef DISABLE_PIPE_CONNECT
 if (  checks & OPTION_EARLY_PIPE
-   && pcre_exec(regex_EARLY_PIPE, NULL, CS buf, bsize, 0,
-		PCRE_EOPT, NULL, 0) < 0)
+   && pcre2_match(regex_EARLY_PIPE,
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
 #endif
   checks &= ~OPTION_EARLY_PIPE;
 
+pcre2_match_data_free(md);
 /* debug_printf("%s: found     0x%04x\n", __FUNCTION__, checks); */
 return checks;
 }

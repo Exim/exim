@@ -350,8 +350,8 @@ queue_run(uschar *start_id, uschar *stop_id, BOOL recurse)
 {
 BOOL force_delivery = f.queue_run_force || deliver_selectstring != NULL ||
   deliver_selectstring_sender != NULL;
-const pcre *selectstring_regex = NULL;
-const pcre *selectstring_regex_sender = NULL;
+const pcre2_code *selectstring_regex = NULL;
+const pcre2_code *selectstring_regex_sender = NULL;
 uschar *log_detail = NULL;
 int subcount = 0;
 uschar subdirs[64];
@@ -569,9 +569,7 @@ for (int i = queue_run_in_order ? -1 : 0;
 
       else if (  deliver_selectstring_sender
 	      && !(f.deliver_selectstring_sender_regex
-		  ? (pcre_exec(selectstring_regex_sender, NULL,
-		      CS sender_address, Ustrlen(sender_address), 0, PCRE_EOPT,
-		      NULL, 0) >= 0)
+		  ? regex_match(selectstring_regex_sender, sender_address, -1, NULL)
 		  : (strstric(sender_address, deliver_selectstring_sender, FALSE)
 		      != NULL)
 	      )   )
@@ -590,8 +588,7 @@ for (int i = queue_run_in_order ? -1 : 0;
           {
           uschar *address = recipients_list[i].address;
           if (  (f.deliver_selectstring_regex
-		? (pcre_exec(selectstring_regex, NULL, CS address,
-		     Ustrlen(address), 0, PCRE_EOPT, NULL, 0) >= 0)
+		? regex_match(selectstring_regex, address, -1, NULL)
                 : (strstric(address, deliver_selectstring, FALSE) != NULL)
 		)
              && tree_search(tree_nonrecipients, address) == NULL

@@ -17,7 +17,7 @@
 
 /* Structure to hold a list of Regular expressions */
 typedef struct pcre_list {
-  pcre *re;
+  pcre2_code *re;
   uschar *pcre_text;
   struct pcre_list *next;
 } pcre_list;
@@ -32,8 +32,6 @@ compile(const uschar * list)
 {
 int sep = 0;
 uschar *regex_string;
-const char *pcre_error;
-int pcre_erroffset;
 pcre_list *re_list_head = NULL;
 pcre_list *ri;
 
@@ -41,15 +39,19 @@ pcre_list *ri;
 while ((regex_string = string_nextinlist(&list, &sep, NULL, 0)))
   if (strcmpic(regex_string, US"false") != 0 && Ustrcmp(regex_string, "0") != 0)
     {
-    pcre *re;
+    pcre2_code * re;
+    int err;
+    PCRE2_SIZE pcre_erroffset;
 
     /* compile our regular expression */
-    if (!(re = pcre_compile( CS regex_string,
-		       0, &pcre_error, &pcre_erroffset, NULL )))
+    if (!(re = pcre2_compile( (PCRE2_SPTR) regex_string, PCRE2_ZERO_TERMINATED,
+		  0, &err, &pcre_erroffset, pcre_cmp_ctx)))
       {
+      uschar errbuf[128];
+      pcre2_get_error_message(err, errbuf, sizeof(errbuf));
       log_write(0, LOG_MAIN,
-	   "regex acl condition warning - error in regex '%s': %s at offset %d, skipped.",
-	   regex_string, pcre_error, pcre_erroffset);
+	   "regex acl condition warning - error in regex '%s': %s at offset %l, skipped.",
+	   regex_string, errbuf, (long)pcre_erroffset);
       continue;
       }
 
@@ -65,25 +67,31 @@ return re_list_head;
 static int
 matcher(pcre_list * re_list_head, uschar * linebuffer, int len)
 {
-for(pcre_list * ri = re_list_head; ri; ri = ri->next)
+pcre2_match_data * md = pcre2_match_data_create(REGEX_VARS + 1, pcre_gen_ctx);
+
+for (pcre_list * ri = re_list_head; ri; ri = ri->next)
   {
-  int ovec[3*(REGEX_VARS+1)];
   int n;
 
   /* try matcher on the line */
-  if ((n = pcre_exec(ri->re, NULL, CS linebuffer, len, 0, 0, ovec, nelem(ovec))) > 0)
+  if ((n = pcre2_match(ri->re, (PCRE2_SPTR)linebuffer, len, 0, 0, md, pcre_mtc_ctx)) > 0)
     {
     Ustrncpy(regex_match_string_buffer, ri->pcre_text,
 	      sizeof(regex_match_string_buffer)-1);
     regex_match_string = regex_match_string_buffer;
 
     for (int nn = 1; nn < n; nn++)
-      regex_vars[nn-1] =
-	string_copyn(linebuffer + ovec[nn*2], ovec[nn*2+1] - ovec[nn*2]);
+      {
+      PCRE2_UCHAR * cstr;
+      PCRE2_SIZE cslen;
+      pcre2_substring_get_bynumber(md, nn, &cstr, &cslen);
+      regex_vars[nn-1] = US cstr;
+      }
 
     return OK;
     }
   }
+pcre2_match_data_free(md);
 return FAIL;
 }
 

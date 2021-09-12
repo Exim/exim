@@ -1425,10 +1425,7 @@ static BOOL
 test_condition(condition_block *c, BOOL toplevel)
 {
 BOOL yield = FALSE;
-const pcre *re;
 uschar *exp[2], *p, *pp;
-const uschar *regcomp_error = NULL;
-int regcomp_error_offset;
 int val[2];
 int i;
 
@@ -1588,26 +1585,34 @@ switch (c->type)
 
     case cond_matches:
     case cond_MATCHES:
-    if ((filter_test != FTEST_NONE && debug_selector != 0) ||
-        (debug_selector & D_filter) != 0)
       {
-      debug_printf_indent("Match expanded arguments:\n");
-      debug_printf_indent("  Subject = %s\n", exp[0]);
-      debug_printf_indent("  Pattern = %s\n", exp[1]);
-      }
+      const pcre2_code *re;
+      int err;
+      PCRE2_SIZE offset;
 
-    if (!(re = pcre_compile(CS exp[1],
-      PCRE_COPT | ((c->type == cond_matches)? PCRE_CASELESS : 0),
-      CCSS &regcomp_error, &regcomp_error_offset, NULL)))
-      {
-      *error_pointer = string_sprintf("error while compiling "
-        "regular expression \"%s\": %s at offset %d",
-        exp[1], regcomp_error, regcomp_error_offset);
-      return FALSE;
-      }
+      if ((filter_test != FTEST_NONE && debug_selector != 0) ||
+	  (debug_selector & D_filter) != 0)
+	{
+	debug_printf_indent("Match expanded arguments:\n");
+	debug_printf_indent("  Subject = %s\n", exp[0]);
+	debug_printf_indent("  Pattern = %s\n", exp[1]);
+	}
 
-    yield = regex_match_and_setup(re, exp[0], PCRE_EOPT, -1);
-    break;
+      if (!(re = pcre2_compile((PCRE2_SPTR)exp[1], PCRE2_ZERO_TERMINATED,
+		  PCRE_COPT | (c->type == cond_matches ? PCRE2_CASELESS : 0),
+		  &err, &offset, pcre_cmp_ctx)))
+	{
+	uschar errbuf[128];
+	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
+	*error_pointer = string_sprintf("error while compiling "
+	  "regular expression \"%s\": %s at offset %l",
+	  exp[1], errbuf, (long)offset);
+	return FALSE;
+	}
+
+      yield = regex_match_and_setup(re, exp[0], PCRE_EOPT, -1);
+      break;
+      }
 
     /* For above and below, convert the strings to numbers */
 

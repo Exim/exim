@@ -128,9 +128,9 @@ required. */
 
 if (pattern[0] == '^')
   {
-  const pcre * re = regex_must_compile(pattern, cb->caseless, FALSE);
+  const pcre2_code * re = regex_must_compile(pattern, cb->caseless, FALSE);
   if (expand_setup < 0
-      ? pcre_exec(re, NULL, CCS s, Ustrlen(s), 0, PCRE_EOPT, NULL, 0) < 0
+      ? !regex_match(re, s, -1, NULL)
       : !regex_match_and_setup(re, s, 0, expand_setup)
      )
     return FAIL;

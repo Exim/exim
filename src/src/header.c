@@ -371,7 +371,7 @@ static BOOL
 one_pattern_match(uschar *name, int slen, BOOL has_addresses, uschar *pattern)
 {
 BOOL yield = FALSE;
-const pcre *re = NULL;
+const pcre2_code *re = NULL;
 
 /* If the pattern is a regex, compile it. Bomb out if compiling fails; these
 patterns are all constructed internally and should be valid. */
@@ -419,10 +419,9 @@ for (header_line * h = header_list; !yield && h; h = h->next)
 
       /* Otherwise, test for the pattern; a non-regex must be an exact match */
 
-      yield = !re
-        ? (strcmpic(next, pattern) == 0)
-        : (pcre_exec(re, NULL, CS next, Ustrlen(next), 0, PCRE_EOPT, NULL, 0)
-          >= 0);
+      yield = re
+	? regex_match(re, next, -1, NULL)
+        : (strcmpic(next, pattern) == 0);
       }
     }
 
@@ -431,10 +430,9 @@ for (header_line * h = header_list; !yield && h; h = h->next)
 
   else
     {
-    yield = (re == NULL)?
-      (strstric(h->text, pattern, FALSE) != NULL)
-      :
-      (pcre_exec(re, NULL, CS h->text, h->slen, 0, PCRE_EOPT, NULL, 0) >= 0);
+    yield = re
+      ? regex_match(re, h->text, h->slen, NULL)
+      : (strstric(h->text, pattern, FALSE) != NULL);
     }
   }
 

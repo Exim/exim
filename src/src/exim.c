@@ -45,7 +45,7 @@ are two sets of functions; one for use when we want to retain the compiled
 regular expression for a long time; the other for short-term use. */
 
 static void *
-function_store_get(size_t size)
+function_store_get(PCRE2_SIZE size, void * tag)
 {
 /* For now, regard all RE results as potentially tainted.  We might need
 more intelligence on this point. */
@@ -53,16 +53,16 @@ return store_get((int)size, TRUE);
 }
 
 static void
-function_dummy_free(void * block) {}
+function_dummy_free(void * block, void * tag) {}
 
 static void *
-function_store_malloc(size_t size)
+function_store_malloc(PCRE2_SIZE size, void * tag)
 {
 return store_malloc((int)size);
 }
 
 static void
-function_store_free(void * block)
+function_store_free(void * block, void * tag)
 {
 store_free(block);
 }
@@ -98,26 +98,48 @@ Argument:
 Returns:      pointer to the compiled pattern
 */
 
-const pcre *
-regex_must_compile(const uschar *pattern, BOOL caseless, BOOL use_malloc)
+const pcre2_code *
+regex_must_compile(const uschar * pattern, BOOL caseless, BOOL use_malloc)
 {
-int offset;
-int options = PCRE_COPT;
-const pcre *yield;
-const uschar *error;
+size_t offset;
+int options = caseless ? PCRE_COPT|PCRE2_CASELESS : PCRE_COPT;
+const pcre2_code * yield;
+int err;
+pcre2_general_context * gctx;
+pcre2_compile_context * cctx;
+
 if (use_malloc)
   {
-  pcre_malloc = function_store_malloc;
-  pcre_free = function_store_free;
+  gctx = pcre2_general_context_create(function_store_malloc, function_store_free, NULL);
+  cctx = pcre2_compile_context_create(gctx);
   }
-if (caseless) options |= PCRE_CASELESS;
-yield = pcre_compile(CCS pattern, options, CCSS &error, &offset, NULL);
-pcre_malloc = function_store_get;
-pcre_free = function_dummy_free;
-if (yield == NULL)
+else
+  cctx = pcre_cmp_ctx;
+
+if (!(yield = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED, options,
+  &err, &offset, cctx)))
+  {
+  uschar errbuf[128];
+  pcre2_get_error_message(err, errbuf, sizeof(errbuf));
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "regular expression error: "
-    "%s at offset %d while compiling %s", error, offset, pattern);
+    "%s at offset %d while compiling %s", errbuf, (long)offset, pattern);
+  }
+
+if (use_malloc)
+  {
+  pcre2_compile_context_free(cctx);
+  pcre2_general_context_free(gctx);
+  }
 return yield;
+}
+
+
+static void
+pcre_init(void)
+{
+pcre_gen_ctx = pcre2_general_context_create(function_store_malloc, function_store_free, NULL);
+pcre_cmp_ctx = pcre2_compile_context_create(pcre_gen_ctx);
+pcre_mtc_ctx = pcre2_match_context_create(pcre_gen_ctx);
 }
 
 
@@ -128,7 +150,12 @@ return yield;
 *************************************************/
 
 /* This function runs a regular expression match, and sets up the pointers to
-the matched substrings.
+the matched substrings.  The matched strings are copied.
+
+We might consider tracing the uses of expand_nstring to see if consitification
+is viable, and save the copy cost by just using the pointers into the subject string.
+Pre-pcre2 we did that without noticing, so it might just work - or might have been
+a bug. It was certainly a risk in the implemenation.
 
 Arguments:
   re          the compiled expression
@@ -138,31 +165,66 @@ Arguments:
               if >= 0 setup from setup+1 onwards,
                 excluding the full matched string
 
-Returns:      TRUE or FALSE
+Returns:      TRUE if matched, or FALSE
 */
 
 BOOL
-regex_match_and_setup(const pcre *re, const uschar *subject, int options, int setup)
+regex_match_and_setup(const pcre2_code * re, const uschar * subject, int options, int setup)
 {
-int ovector[3*(EXPAND_MAXN+1)];
-uschar * s = string_copy(subject);	/* de-constifying */
-int n = pcre_exec(re, NULL, CS s, Ustrlen(s), 0,
-  PCRE_EOPT | options, ovector, nelem(ovector));
-BOOL yield = n >= 0;
-if (n == 0) n = EXPAND_MAXN + 1;
-if (yield)
+pcre2_match_data * md = pcre2_match_data_create_from_pattern(re, pcre_gen_ctx);
+int res = pcre2_match(re, (PCRE2_SPTR)subject, PCRE2_ZERO_TERMINATED, 0,
+			PCRE_EOPT | options, md, pcre_mtc_ctx);
+BOOL yield;
+
+if ((yield = (res >= 0)))
   {
+  res = pcre2_get_ovector_count(md);
   expand_nmax = setup < 0 ? 0 : setup + 1;
-  for (int nn = setup < 0 ? 0 : 2; nn < n*2; nn += 2)
+  for (int matchnum = setup < 0 ? 0 : 1; matchnum < res; matchnum++)
     {
-    expand_nstring[expand_nmax] = s + ovector[nn];
-    expand_nlength[expand_nmax++] = ovector[nn+1] - ovector[nn];
+    PCRE2_SIZE len;
+    pcre2_substring_get_bynumber(md, matchnum,
+      (PCRE2_UCHAR **)&expand_nstring[expand_nmax], &len);
+    expand_nlength[expand_nmax++] = (int)len;
     }
   expand_nmax--;
   }
+else if (res != PCRE2_ERROR_NOMATCH) DEBUG(D_any)
+  {
+  uschar errbuf[128];
+  pcre2_get_error_message(res, errbuf, sizeof(errbuf));
+  debug_printf_indent("pcre2: %s\n", errbuf);
+  }
+pcre2_match_data_free(md);
 return yield;
 }
 
+
+/* Check just for match with regex.  Uses the common memory-handling.
+
+Arguments:
+	re	compiled regex
+	subject	string to be checked
+	slen	length of subject; -1 for nul-terminated
+	rptr	pointer for matched string, copied, or NULL
+
+Return: TRUE for a match.
+*/
+
+BOOL
+regex_match(const pcre2_code * re, const uschar * subject, int slen, uschar ** rptr)
+{
+pcre2_match_data * md = pcre2_match_data_create(1, pcre_gen_ctx);
+int rc = pcre2_match(re, (PCRE2_SPTR)subject,
+		      slen >= 0 ? slen : PCRE2_ZERO_TERMINATED,
+		      0, PCRE_EOPT, md, pcre_mtc_ctx);
+PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
+if (rc < 0)
+  return FALSE;
+if (rptr)
+  *rptr = string_copyn(subject + ovec[0], ovec[1] - ovec[0]);
+return TRUE;
+}
 
 
 
@@ -1181,11 +1243,15 @@ show_db_version(fp);
 #endif
 #define QUOTE(X) #X
 #define EXPAND_AND_QUOTE(X) QUOTE(X)
-  fprintf(fp, "Library version: PCRE: Compile: %d.%d%s\n"
+  {
+  uschar buf[24];
+  pcre2_config(PCRE2_CONFIG_VERSION, buf);
+  fprintf(fp, "Library version: PCRE2: Compile: %d.%d%s\n"
              "                       Runtime: %s\n",
-          PCRE_MAJOR, PCRE_MINOR,
-          EXPAND_AND_QUOTE(PCRE_PRERELEASE) "",
-          pcre_version());
+          PCRE2_MAJOR, PCRE2_MINOR,
+          EXPAND_AND_QUOTE(PCRE2_PRERELEASE) "",
+          buf);
+  }
 #undef QUOTE
 #undef EXPAND_AND_QUOTE
 
@@ -1538,14 +1604,8 @@ for (macro_item * m = macros_user; m; m = m->next) if (m->command_line)
     continue;
   if ((len = m->replen) == 0)
     continue;
-  n = pcre_exec(regex_whitelisted_macro, NULL, CS m->replacement, len,
-   0, PCRE_EOPT, NULL, 0);
-  if (n < 0)
-    {
-    if (n != PCRE_ERROR_NOMATCH)
-      debug_printf("macros_trusted checking %s returned %d\n", m->name, n);
+  if (!regex_match(regex_whitelisted_macro, m->replacement, len, NULL))
     return FALSE;
-    }
   }
 DEBUG(D_any) debug_printf("macros_trusted overridden to true by whitelisting\n");
 return TRUE;
@@ -1700,6 +1760,7 @@ extern char **environ;
 #endif
 
 store_init();	/* Initialise the memory allocation susbsystem */
+pcre_init();	/* Set up memory handling for pcre */
 
 /* If the Exim user and/or group and/or the configuration file owner/group were
 defined by ref:name at build time, we must now find the actual uid/gid values.
@@ -1799,15 +1860,6 @@ indirection, because some systems don't allow writing to the variable "stderr".
 */
 
 if (fstat(fileno(stderr), &statbuf) >= 0) log_stderr = stderr;
-
-/* Arrange for the PCRE regex library to use our store functions. Note that
-the normal calls are actually macros that add additional arguments for
-debugging purposes so we have to assign specially constructed functions here.
-The default is to use store in the stacking pool, but this is overridden in the
-regex_must_compile() function. */
-
-pcre_malloc = function_store_get;
-pcre_free = function_dummy_free;
 
 /* Ensure there is a big buffer for temporary use in several places. It is put
 in malloc store so that it can be freed for enlargement if necessary. */
@@ -4845,7 +4897,7 @@ for (i = 0;;)
 
         if (gecos_pattern && gecos_name)
           {
-          const pcre *re;
+          const pcre2_code *re;
           re = regex_must_compile(gecos_pattern, FALSE, TRUE); /* Use malloc */
 
           if (regex_match_and_setup(re, name, 0, -1))

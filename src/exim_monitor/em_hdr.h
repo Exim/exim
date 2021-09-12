@@ -85,7 +85,8 @@ anything. */
 
 /* Regular expression include */
 
-#include <pcre.h>
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
 
 /* Includes from the main source of Exim.  One of these days I should tidy up
 this interface so that this kind of kludge isn't needed. */
@@ -273,7 +274,7 @@ extern uschar *queue_stripchart_name; /* sic */
 extern int     queue_update;        /* update interval */
 extern int     queue_width;         /* width of queue window */
 
-extern pcre   *yyyymmdd_regex;    /* for matching yyyy-mm-dd */
+extern pcre2_code   *yyyymmdd_regex;    /* for matching yyyy-mm-dd */
 
 extern uschar *size_stripchart;     /* path for size monitoring */
 extern uschar *size_stripchart_name; /* name for size stripchart */
@@ -282,7 +283,7 @@ extern int     spool_is_split;      /* True if detected split spool */
 extern int     start_small;         /* True to start with small window */
 extern int     stripchart_height;   /* height of stripcharts */
 extern int     stripchart_number;   /* number of stripcharts */
-extern pcre  **stripchart_regex;  /* vector of regexps */
+extern pcre2_code  **stripchart_regex;  /* vector of regexps */
 extern uschar **stripchart_title;    /* vector of titles */
 extern int    *stripchart_total;    /* vector of accumulating values */
 extern int     stripchart_update;   /* update interval */

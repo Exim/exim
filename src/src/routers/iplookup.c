@@ -165,7 +165,7 @@ host_item *host = store_get(sizeof(host_item), FALSE);
 address_item *new_addr;
 iplookup_router_options_block *ob =
   (iplookup_router_options_block *)(rblock->options_block);
-const pcre *re = ob->re_response_pattern;
+const pcre2_code *re = ob->re_response_pattern;
 int count, query_len, rc;
 int sep = 0;
 

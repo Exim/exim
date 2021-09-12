@@ -728,15 +728,15 @@ if (!(dd = exim_opendir(LOOKUP_MODULE_DIR)))
   }
 else
   {
-  const pcre *regex_islookupmod = regex_must_compile(
+  const pcre2_code *regex_islookupmod = regex_must_compile(
     US"\\." DYNLIB_FN_EXT "$", FALSE, TRUE);
 
   DEBUG(D_lookup) debug_printf("Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
   while ((ent = readdir(dd)))
     {
-    char *name = ent->d_name;
+    char * name = ent->d_name;
     int len = (int)strlen(name);
-    if (pcre_exec(regex_islookupmod, NULL, name, len, 0, PCRE_EOPT, NULL, 0) >= 0)
+    if (regex_match(regex_islookupmod, US name, len, NUL))
       {
       int pathnamelen = len + (int)strlen(LOOKUP_MODULE_DIR) + 2;
       void *dl;
