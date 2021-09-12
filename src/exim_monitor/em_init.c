@@ -78,7 +78,7 @@ for (i = 0; i <= 1; i++)
           {
 	  uschar errbuf[128];
 	  pcre2_get_error_message(err, errbuf, sizeof(errbuf));
-          printf("regular expression error: %s at offset %l "
+          printf("regular expression error: %s at offset %ld "
             "while compiling %s\n", errbuf, (long)offset, buffer);
           exit(99);
           }

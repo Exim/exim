@@ -1247,7 +1247,7 @@ show_db_version(fp);
   uschar buf[24];
   pcre2_config(PCRE2_CONFIG_VERSION, buf);
   fprintf(fp, "Library version: PCRE2: Compile: %d.%d%s\n"
-             "                       Runtime: %s\n",
+              "                        Runtime: %s\n",
           PCRE2_MAJOR, PCRE2_MINOR,
           EXPAND_AND_QUOTE(PCRE2_PRERELEASE) "",
           buf);

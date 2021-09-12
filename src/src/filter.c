@@ -1605,7 +1605,7 @@ switch (c->type)
 	uschar errbuf[128];
 	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
 	*error_pointer = string_sprintf("error while compiling "
-	  "regular expression \"%s\": %s at offset %l",
+	  "regular expression \"%s\": %s at offset %ld",
 	  exp[1], errbuf, (long)offset);
 	return FALSE;
 	}

@@ -2235,7 +2235,7 @@ else
 	uschar errbuf[128];
 	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
         addr->message = string_sprintf("appendfile: regular expression "
-          "error: %s at offset %l while compiling %s", errbuf, (long)offset,
+          "error: %s at offset %ld while compiling %s", errbuf, (long)offset,
           ob->quota_size_regex);
         return FALSE;
         }
@@ -2324,7 +2324,7 @@ else
 	uschar errbuf[128];
 	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
         addr->message = string_sprintf("appendfile: regular expression "
-          "error: %s at offset %l while compiling %s", errbuf, (long)offset,
+          "error: %s at offset %ld while compiling %s", errbuf, (long)offset,
           ob->maildir_dir_regex);
         return FALSE;
         }

@@ -50,7 +50,7 @@ while ((regex_string = string_nextinlist(&list, &sep, NULL, 0)))
       uschar errbuf[128];
       pcre2_get_error_message(err, errbuf, sizeof(errbuf));
       log_write(0, LOG_MAIN,
-	   "regex acl condition warning - error in regex '%s': %s at offset %l, skipped.",
+	   "regex acl condition warning - error in regex '%s': %s at offset %ld, skipped.",
 	   regex_string, errbuf, (long)pcre_erroffset);
       continue;
       }

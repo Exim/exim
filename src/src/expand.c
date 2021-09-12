@@ -5864,7 +5864,7 @@ while (*s)
         uschar errbuf[128];
 	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
         expand_string_message = string_sprintf("regular expression error in "
-          "\"%s\": %s at offset %l", sub[1], errbuf, (long)roffset);
+          "\"%s\": %s at offset %ld", sub[1], errbuf, (long)roffset);
         goto EXPAND_FAILED;
         }
       md = pcre2_match_data_create(EXPAND_MAXN + 1, pcre_gen_ctx);
