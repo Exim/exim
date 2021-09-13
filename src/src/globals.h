@@ -372,7 +372,7 @@ extern auth_instance *auths;           /* Chain of instantiated auths */
 extern auth_instance auth_defaults;    /* Default values */
 extern uschar *auth_defer_msg;         /* Error message for log */
 extern uschar *auth_defer_user_msg;    /* Error message for user */
-extern uschar *auth_vars[];            /* $authn variables */
+extern const uschar *auth_vars[];      /* $authn variables */
 extern int     auto_thaw;              /* Auto-thaw interval */
 #ifdef WITH_CONTENT_SCAN
 extern int     av_failed;              /* TRUE if the AV process failed */
@@ -600,7 +600,7 @@ extern int     expand_level;	       /* Nesting depth; indent for debug */
 extern int     expand_forbid;          /* RDO flags for forbidding things */
 extern int     expand_nlength[];       /* Lengths of numbered strings */
 extern int     expand_nmax;            /* Max numerical value */
-extern uschar *expand_nstring[];       /* Numbered strings */
+extern const uschar *expand_nstring[];       /* Numbered strings */
 extern BOOL    extract_addresses_remove_arguments; /* Controls -t behaviour */
 extern uschar *extra_local_interfaces; /* Local, non-listen interfaces */
 
@@ -882,9 +882,9 @@ extern const pcre2_code  *regex_SIZE;        /* For recognizing SIZE settings */
 #ifndef DISABLE_PIPE_CONNECT
 extern const pcre2_code  *regex_EARLY_PIPE;  /* For recognizing PIPE_CONNCT */
 #endif
-extern const pcre2_code  *regex_ismsgid;     /* Compiled r.e. for message it */
+extern const pcre2_code  *regex_ismsgid;     /* Compiled r.e. for message ID */
 extern const pcre2_code  *regex_smtp_code;   /* For recognizing SMTP codes */
-extern uschar *regex_vars[];           /* $regexN variables */
+extern const uschar *regex_vars[];           /* $regexN variables */
 #ifdef WHITELIST_D_MACROS
 extern const pcre2_code  *regex_whitelisted_macro; /* For -D macro values */
 #endif

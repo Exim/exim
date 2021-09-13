@@ -85,7 +85,7 @@ for (pcre_list * ri = re_list_head; ri; ri = ri->next)
       PCRE2_UCHAR * cstr;
       PCRE2_SIZE cslen;
       pcre2_substring_get_bynumber(md, nn, &cstr, &cslen);
-      regex_vars[nn-1] = US cstr;
+      regex_vars[nn-1] = CUS cstr;
       }
 
     return OK;

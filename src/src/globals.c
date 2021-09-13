@@ -658,7 +658,7 @@ auth_instance auth_defaults    = {
 
 uschar *auth_defer_msg         = US"reason not recorded";
 uschar *auth_defer_user_msg    = US"";
-uschar *auth_vars[AUTH_VARS];
+const uschar *auth_vars[AUTH_VARS];
 int     auto_thaw              = 0;
 #ifdef WITH_CONTENT_SCAN
 int     av_failed              = FALSE;	/* boolean but accessed as vtype_int*/
@@ -924,7 +924,7 @@ int     expand_level	       = 0;		/* Nesting depth, indent for debug */
 int     expand_forbid          = 0;
 int     expand_nlength[EXPAND_MAXN+1];
 int     expand_nmax            = -1;
-uschar *expand_nstring[EXPAND_MAXN+1];
+const uschar *expand_nstring[EXPAND_MAXN+1];
 uschar *expand_string_message;
 uschar *extra_local_interfaces = NULL;
 
@@ -1320,7 +1320,7 @@ const pcre2_code *regex_EARLY_PIPE   = NULL;
 #endif
 const pcre2_code *regex_ismsgid      = NULL;
 const pcre2_code *regex_smtp_code    = NULL;
-uschar *regex_vars[REGEX_VARS];
+const uschar *regex_vars[REGEX_VARS];
 #ifdef WHITELIST_D_MACROS
 const pcre2_code *regex_whitelisted_macro = NULL;
 #endif

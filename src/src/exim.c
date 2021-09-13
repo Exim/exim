@@ -150,12 +150,8 @@ pcre_mtc_ctx = pcre2_match_context_create(pcre_gen_ctx);
 *************************************************/
 
 /* This function runs a regular expression match, and sets up the pointers to
-the matched substrings.  The matched strings are copied.
-
-We might consider tracing the uses of expand_nstring to see if consitification
-is viable, and save the copy cost by just using the pointers into the subject string.
-Pre-pcre2 we did that without noticing, so it might just work - or might have been
-a bug. It was certainly a risk in the implemenation.
+the matched substrings.  The matched strings are copied so the lifetime of
+the subject is not a problem.
 
 Arguments:
   re          the compiled expression

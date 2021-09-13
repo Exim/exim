@@ -1854,7 +1854,7 @@ Returns:        NULL if the variable does not exist, or
                 something non-NULL if exists_only is TRUE
 */
 
-static uschar *
+static const uschar *
 find_variable(uschar *name, BOOL exists_only, BOOL skipping, int *newsize)
 {
 var_entry * vp;
@@ -1892,15 +1892,15 @@ if (Ustrncmp(name, "auth", 4) == 0)
   {
   uschar *endptr;
   int n = Ustrtoul(name + 4, &endptr, 10);
-  if (*endptr == 0 && n != 0 && n <= AUTH_VARS)
-    return !auth_vars[n-1] ? US"" : auth_vars[n-1];
+  if (!*endptr && n != 0 && n <= AUTH_VARS)
+    return auth_vars[n-1] ? auth_vars[n-1] : US"";
   }
 else if (Ustrncmp(name, "regex", 5) == 0)
   {
   uschar *endptr;
   int n = Ustrtoul(name + 5, &endptr, 10);
-  if (*endptr == 0 && n != 0 && n <= REGEX_VARS)
-    return !regex_vars[n-1] ? US"" : regex_vars[n-1];
+  if (!*endptr && n != 0 && n <= REGEX_VARS)
+    return regex_vars[n-1] ? regex_vars[n-1] : US"";
   }
 
 /* For all other variables, search the table */
@@ -2560,7 +2560,7 @@ switch(cond_type = identify_operator(&s, &opname))
 
   case ECOND_DEF:
     {
-    uschar * t;
+    const uschar * t;
 
     if (*s != ':')
       {
@@ -3606,7 +3606,7 @@ Returns:                the value of expand max to save
 */
 
 static int
-save_expand_strings(uschar **save_expand_nstring, int *save_expand_nlength)
+save_expand_strings(const uschar **save_expand_nstring, int *save_expand_nlength)
 {
 for (int i = 0; i <= expand_nmax; i++)
   {
@@ -3633,7 +3633,7 @@ Returns:                nothing
 */
 
 static void
-restore_expand_strings(int save_expand_nmax, uschar **save_expand_nstring,
+restore_expand_strings(int save_expand_nmax, const uschar **save_expand_nstring,
   int *save_expand_nlength)
 {
 expand_nmax = save_expand_nmax;
@@ -4474,7 +4474,7 @@ rmark reset_point = store_mark();
 gstring * yield = string_get(Ustrlen(string) + 64);
 int item_type;
 const uschar *s = string;
-uschar *save_expand_nstring[EXPAND_MAXN+1];
+const uschar *save_expand_nstring[EXPAND_MAXN+1];
 int save_expand_nlength[EXPAND_MAXN+1];
 BOOL resetok = TRUE;
 
@@ -4503,7 +4503,6 @@ if ((m = is_tainted2(string, LOG_MAIN|LOG_PANIC, "Tainted string '%s' in expansi
 
 while (*s)
   {
-  uschar *value;
   uschar name[256];
 
   /* \ escapes the next character, which must exist, or else
@@ -4561,6 +4560,7 @@ while (*s)
 
   if (isalpha((*(++s))))
     {
+    const uschar * value;
     int len;
     int newsize = 0;
     gstring * g = NULL;
@@ -4603,7 +4603,7 @@ while (*s)
       But there is no error here - nothing gets inserted. */
 
       if (!value)
-        {
+        {		/*{*/
         if (Ustrchr(name, '}')) malformed_header = TRUE;
         continue;
         }
@@ -4633,7 +4633,7 @@ while (*s)
       yield = g;
       yield->size = newsize;
       yield->ptr = len;
-      yield->s = value;
+      yield->s = US value; /* known to be in new store i.e. a copy, so deconst safe */
       }
     else
       yield = string_catn(yield, value, len);
@@ -8114,6 +8114,7 @@ while (*s)
 						/*{*/
   if (*s++ == '}')
     {
+    const uschar * value;
     int len;
     int newsize = 0;
     gstring * g = NULL;
@@ -8140,7 +8141,7 @@ while (*s)
       yield = g;
       yield->size = newsize;
       yield->ptr = len;
-      yield->s = value;
+      yield->s = US value; /* known to be in new store i.e. a copy, so deconst safe */
       }
     else
       yield = string_catn(yield, value, len);
@@ -8563,6 +8564,7 @@ typedef struct {
   const uschar *var_data;
 } err_ctx;
 
+/* Called via tree_walk, which allows nonconst name/data.  Our usage is const. */
 static void
 assert_variable_notin(uschar * var_name, uschar * var_data, void * ctx)
 {
@@ -8584,13 +8586,14 @@ err_ctx e = { .region_start = ptr, .region_end = US ptr + len,
 tree_walk(acl_var_c, assert_variable_notin, &e);
 tree_walk(acl_var_m, assert_variable_notin, &e);
 
-/* check auth<n> variables */
+/* check auth<n> variables.
+assert_variable_notin() treats as const, so deconst is safe. */
 for (int i = 0; i < AUTH_VARS; i++) if (auth_vars[i])
-  assert_variable_notin(US"auth<n>", auth_vars[i], &e);
+  assert_variable_notin(US"auth<n>", US auth_vars[i], &e);
 
-/* check regex<n> variables */
+/* check regex<n> variables. assert_variable_notin() treats as const. */
 for (int i = 0; i < REGEX_VARS; i++) if (regex_vars[i])
-  assert_variable_notin(US"regex<n>", regex_vars[i], &e);
+  assert_variable_notin(US"regex<n>", US regex_vars[i], &e);
 
 /* check known-name variables */
 for (var_entry * v = var_table; v < var_table + var_table_size; v++)
