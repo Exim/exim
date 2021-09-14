@@ -90,6 +90,10 @@ change this guard and punt the issue for a while longer. */
 # endif
 #endif
 
+#if LIBRESSL_VERSION_NUMBER >= 0x3040000fL
+# define EXIM_HAVE_OPENSSL_CIPHER_GET_ID
+#endif
+
 #if !defined(LIBRESSL_VERSION_NUMBER) \
     || LIBRESSL_VERSION_NUMBER >= 0x20010000L
 # if !defined(OPENSSL_NO_ECDH)
