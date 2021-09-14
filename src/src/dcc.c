@@ -333,7 +333,7 @@ while((dcc_resplen = read(sockfd, big_buffer, big_buffer_size-1)) > 0)
 		 "DCC: -----------------------------------\n", dcc_resplen, dcc_resplen, big_buffer);
 
   /* Now let's read each character and see what we've got */
-  for(bufoffset = 0; bufoffset < dcc_resplen, line <= 2; bufoffset++)
+  for(bufoffset = 0; bufoffset < dcc_resplen && line <= 2; bufoffset++)
     {
     /* First check if we reached the end of the line and
     then increment the line counter */
