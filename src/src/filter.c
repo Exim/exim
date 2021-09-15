@@ -1993,16 +1993,19 @@ while (commands)
 	s = expargs[0];
 
 	if (filter_test != FTEST_NONE)
-	  printf("Headers %s \"%s\"\n", (subtype == TRUE)? "add" :
-	    (subtype == FALSE)? "remove" : "charset", string_printing(s));
+	  printf("Headers %s \"%s\"\n",
+	    subtype == TRUE ? "add"
+	    : subtype == FALSE ? "remove"
+	    : "charset",
+	    string_printing(s));
 
 	if (subtype == TRUE)
 	  {
 	  while (isspace(*s)) s++;
-	  if (s[0] != 0)
+	  if (*s)
 	    {
-	    header_add(htype_other, "%s%s", s, (s[Ustrlen(s)-1] == '\n')?
-	      "" : "\n");
+	    header_add(htype_other, "%s%s", s,
+	      s[Ustrlen(s)-1] == '\n' ? "" : "\n");
 	    header_last->type = header_checkname(header_last, FALSE);
 	    if (header_last->type >= 'a') header_last->type = htype_other;
 	    }
@@ -2020,7 +2023,7 @@ while (commands)
 	/* This setting lasts only while the filter is running; on exit, the
 	variable is reset to the previous value. */
 
-	else headers_charset = s;	/*XXX loses track of const */
+	else headers_charset = s;
 	}
       break;
 
@@ -2043,18 +2046,18 @@ while (commands)
       ff_name = US"freeze";
       ff_ret = FF_FREEZE;
 
-      DEFERFREEZEFAIL:
-      fmsg = expargs[0];		/*XXX loses track of const */
-      if (Ustrlen(fmsg) > 1024) Ustrcpy(fmsg + 1000, US" ... (truncated)");
-      fmsg = US string_printing(fmsg);
-      *error_pointer = fmsg;
+    DEFERFREEZEFAIL:
+      *error_pointer = fmsg = US string_printing(Ustrlen(expargs[0]) > 1024
+	? string_sprintf("%.1000s ... (truncated)", expargs[0])
+	: string_copy(expargs[0]));
 
       if (filter_test != FTEST_NONE)
 	{
 	indent();
 	printf("%c%s text \"%s\"\n", toupper(ff_name[0]), ff_name+1, fmsg);
 	}
-      else DEBUG(D_filter) debug_printf_indent("Filter: %s \"%s\"\n", ff_name, fmsg);
+      else
+        DEBUG(D_filter) debug_printf_indent("Filter: %s \"%s\"\n", ff_name, fmsg);
       return ff_ret;
 
     case finish_command:
@@ -2064,19 +2067,19 @@ while (commands)
 	printf("%sinish\n", (commands->seen)? "Seen f" : "F");
 	}
       else
-	{
 	DEBUG(D_filter) debug_printf_indent("Filter: %sfinish\n",
-	  (commands->seen)? " Seen " : "");
-	}
+	  commands->seen ? " Seen " : "");
       finish_obeyed = TRUE;
-      return filter_delivered? FF_DELIVERED : FF_NOTDELIVERED;
+      return filter_delivered ? FF_DELIVERED : FF_NOTDELIVERED;
 
     case if_command:
 	{
 	uschar *save_address = filter_thisaddress;
 	int ok = FF_DELIVERED;
 	condition_value = test_condition(commands->args[0].c, TRUE);
-	if (*error_pointer != NULL) ok = FF_ERROR; else
+	if (*error_pointer)
+	  ok = FF_ERROR;
+	else
 	  {
 	  output_indent += 2;
 	  ok = interpret_commands(commands->args[condition_value? 1:2].f,
@@ -2084,7 +2087,7 @@ while (commands)
 	  output_indent -= 2;
 	  }
 	filter_thisaddress = save_address;
-	if (finish_obeyed || (ok != FF_DELIVERED && ok != FF_NOTDELIVERED))
+	if (finish_obeyed  ||  ok != FF_DELIVERED && ok != FF_NOTDELIVERED)
 	  return ok;
 	}
       break;
@@ -2096,7 +2099,7 @@ while (commands)
 
     case mail_command:
     case vacation_command:
-	if (return_path == NULL || return_path[0] == 0)
+	if (!return_path || !*return_path)
 	  {
 	  if (filter_test != FTEST_NONE)
 	    printf("%s command ignored because return_path is empty\n",
@@ -2126,10 +2129,10 @@ while (commands)
 
 	for (i = 0; i < MAILARGS_STRING_COUNT; i++)
 	  {
-	  uschar *p;
+	  const uschar *p;
 	  const uschar *s = expargs[i];
 
-	  if (s == NULL) continue;
+	  if (!s) continue;
 
 	  if (i != mailarg_index_text) for (p = s; *p != 0; p++)
 	    {
@@ -2161,12 +2164,12 @@ while (commands)
 
 	      else
 		{
-		uschar *pp;
+		const uschar *pp;
 		for (pp = p + 1;; pp++)
 		  {
 		  c = *pp;
 		  if (c == ':' && pp != p + 1) break;
-		  if (c == 0 || c == ':' || isspace(*pp))
+		  if (!c || c == ':' || isspace(c))
 		    {
 		    *error_pointer = string_sprintf("\\n not followed by space or "
 		      "valid header name in \"%.1024s\" in %s command",
@@ -2196,7 +2199,7 @@ while (commands)
 	    commands->noerror ? " (noerror)" : "");
 	  for (i = 1; i < MAILARGS_STRING_COUNT; i++)
 	    {
-	    uschar *arg = commands->args[i].u;
+	    const uschar *arg = commands->args[i].u;
 	    if (arg)
 	      {
 	      int len = Ustrlen(mailargs[i]);
@@ -2505,7 +2508,7 @@ filter_interpret(uschar *filter, int options, address_item **generated,
 int i;
 int yield = FF_ERROR;
 uschar *ptr = filter;
-uschar *save_headers_charset = headers_charset;
+const uschar *save_headers_charset = headers_charset;
 filter_cmd *commands = NULL;
 filter_cmd **lastcmdptr = &commands;
 

@@ -1593,7 +1593,7 @@ Returns:        NULL if the header does not exist, else a pointer to a new
 */
 
 static uschar *
-find_header(uschar *name, int *newsize, unsigned flags, uschar *charset)
+find_header(uschar *name, int *newsize, unsigned flags, const uschar *charset)
 {
 BOOL found = !name;
 int len = name ? Ustrlen(name) : 0;
@@ -4592,7 +4592,7 @@ while (*s)
       unsigned flags = *name == 'r' ? FH_WANT_RAW
 		      : *name == 'l' ? FH_WANT_RAW|FH_WANT_LIST
 		      : 0;
-      uschar * charset = *name == 'b' ? NULL : headers_charset;
+      const uschar * charset = *name == 'b' ? NULL : headers_charset;
 
       s = read_header_name(name, sizeof(name), s);
       value = find_header(name, &newsize, flags, charset);

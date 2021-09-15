@@ -863,7 +863,8 @@ Returns:       pointer to the original string, if no quoting needed, or
 */
 
 const uschar *
-parse_quote_2047(const uschar *string, int len, uschar *charset, BOOL fold)
+parse_quote_2047(const uschar *string, int len, const uschar *charset,
+  BOOL fold)
 {
 const uschar * s = string;
 int hlen, l;
