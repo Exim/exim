@@ -30,17 +30,20 @@ local_scan.h includes it and exim.h includes them both (to get this earlier). */
 
 
 /* If gcc is being used to compile Exim, we can use its facility for checking
-the arguments of printf-like functions. This is done by a macro. */
+the arguments of printf-like functions. This is done by a macro.
+OpenBSD has unfortunately taken to objecting to use of %n in printf
+so we have to give up on all of the available parameter checking. */
 
 #if defined(__GNUC__) || defined(__clang__)
-# define PRINTF_FUNCTION(A,B)	__attribute__((format(printf,A,B)))
+# ifndef __OpenBSD__
+#  define PRINTF_FUNCTION(A,B)	__attribute__((format(printf,A,B)))
+# endif
 # define ARG_UNUSED		__attribute__((__unused__))
 # define WARN_UNUSED_RESULT	__attribute__((__warn_unused_result__))
 # define ALLOC			__attribute__((malloc))
 # define ALLOC_SIZE(A)		__attribute__((alloc_size(A)))
 # define NORETURN		__attribute__((noreturn))
 #else
-# define PRINTF_FUNCTION(A,B)
 # define ARG_UNUSED		/**/
 # define WARN_UNUSED_RESULT	/**/
 # define ALLOC			/**/
@@ -48,10 +51,14 @@ the arguments of printf-like functions. This is done by a macro. */
 # define NORETURN		/**/
 #endif
 
+#ifndef PRINTF_FUNCTION
+# define PRINTF_FUNCTION(A,B)	/**/
+#endif
+
 #ifdef WANT_DEEPER_PRINTF_CHECKS
 # define ALMOST_PRINTF(A, B) PRINTF_FUNCTION(A, B)
 #else
-# define ALMOST_PRINTF(A, B)
+# define ALMOST_PRINTF(A, B)	/**/
 #endif
 
 
