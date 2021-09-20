@@ -37708,8 +37708,8 @@ lists_request:
 lists_post:
   driver = redirect
   domains = lists.example
-  senders = ${if exists {/usr/lists/$local_part}\
-             {lsearch;/usr/lists/$local_part}{*}}
+  local_parts = ${lookup {$local_part} dsearch,filter=file,ret=full {/usr/lists}}
+  senders = ${if exists {$local_part_data} {lsearch;$local_part_data}{*}}
   file = ${lookup {$local_part} dsearch,ret=full {/usr/lists}}
   forbid_pipe
   forbid_file
