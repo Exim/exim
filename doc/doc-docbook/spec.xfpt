@@ -35384,8 +35384,10 @@ discussed below.
 .vitem &*header_line&~*header_last*&
 A pointer to the last of the header lines.
 
-.vitem &*uschar&~*headers_charset*&
+.new
+.vitem &*const&~uschar&~*headers_charset*&
 The value of the &%headers_charset%& configuration option.
+.wen
 
 .vitem &*BOOL&~host_checking*&
 This variable is TRUE during a host checking session that is initiated by the
