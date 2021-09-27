@@ -12812,7 +12812,7 @@ a unique name for the file.
        &$interface_port$&
 .vindex "&$interface_address$&"
 .vindex "&$interface_port$&"
-These are ebsolete names for &$received_ip_address$& and &$received_port$&.
+These are obsolete names for &$received_ip_address$& and &$received_port$&.
 
 .vitem &$item$&
 .vindex "&$item$&"
