@@ -78,7 +78,7 @@
 </revision></revhistory>
 <copyright><year>
 .copyyear
-           </year><holder>University of Cambridge</holder></copyright>
+           </year><holder>The Exim Maintainers</holder></copyright>
 </bookinfo>
 .literal off
 
@@ -88,7 +88,7 @@
 
 .chapter "Forwarding and filtering in Exim" "CHAPforandfilt"
 This document describes the user interfaces to Exim's in-built mail filtering
-facilities, and is copyright &copy; University of Cambridge &copyyear(). It
+facilities, and is copyright &copy; The Exim Maintainers &copyyear(). It
 corresponds to Exim version &version().
 
 
