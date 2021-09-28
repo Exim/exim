@@ -45,7 +45,7 @@
 . Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.94"
+.set previousversion "4.95"
 .include ./local_params
 
 .set ACL "access control lists (ACLs)"
@@ -1421,7 +1421,6 @@ check an address given in the SMTP EXPN command (see the &%expn%& option).
 .next
 If the &%domains%& option is set, the domain of the address must be in the set
 of domains that it defines.
-.new
 .cindex "tainted data" "de-tainting"
 A match verifies the variable &$domain$& (which carries tainted data)
 and assigns an untainted value to the &$domain_data$& variable.
@@ -1431,7 +1430,6 @@ refer to section &<<SECTdomainlist>>&.
 
 When an untainted value is wanted, use this option
 rather than the generic &%condition%& option.
-.wen
 
 .next
 .vindex "&$local_part_prefix$&"
@@ -1442,7 +1440,6 @@ rather than the generic &%condition%& option.
 .cindex affix "router precondition"
 If the &%local_parts%& option is set, the local part of the address must be in
 the set of local parts that it defines.
-.new
 A match verifies the variable &$local_part$& (which carries tainted data)
 and assigns an untainted value to the &$local_part_data$& variable.
 Such an untainted value is often needed in the transport.
@@ -1451,7 +1448,6 @@ refer to section &<<SECTlocparlis>>&.
 
 When an untainted value is wanted, use this option
 rather than the generic &%condition%& option.
-.wen
 
 If &%local_part_prefix%& or
 &%local_part_suffix%& is in use, the prefix or suffix is removed from the local
@@ -1492,7 +1488,6 @@ If the &%condition%& option is set, it is evaluated and tested. This option
 uses an expanded string to allow you to set up your own custom preconditions.
 Expanded strings are described in chapter &<<CHAPexpand>>&.
 
-.new
 Note that while using
 this option for address matching technically works,
 it does not set any de-tainted values.
@@ -1500,7 +1495,6 @@ Such values are often needed, either for router-specific options or
 for transport options.
 Using the &%domains%& and &%local_parts%& options is usually the most
 convenient way to obtain them.
-.wen
 .endlist
 
 
@@ -3952,7 +3946,6 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that a
 remote host supports the ESMTP &_CHUNKING_& extension.
 
-.new
 .vitem &%-MCL%&
 .oindex "&%-MCL%&"
 This option is not intended for use by external callers. It is used internally
@@ -3960,7 +3953,6 @@ by Exim in conjunction with the &%-MC%& option. It signifies that the server to
 which Exim is connected advertised limits on numbers of mails, recipients or
 recipient domains.
 The limits are given by the following three arguments.
-.wen
 
 .vitem &%-MCP%&
 .oindex "&%-MCP%&"
@@ -3968,14 +3960,12 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the server to
 which Exim is connected supports pipelining.
 
-.new
 .vitem &%-MCp%&
 .oindex "&%-MCp%&"
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the connection
 t a remote server is via a SOCKS proxy, using addresses and ports given by
 the following four arguments.
-.wen
 
 .vitem &%-MCQ%&&~<&'process&~id'&>&~<&'pipe&~fd'&>
 .oindex "&%-MCQ%&"
@@ -3986,12 +3976,10 @@ together with the file descriptor number of an open pipe. Closure of the pipe
 signals the final completion of the sequence of processes that are passing
 messages through the same SMTP connection.
 
-.new
 .vitem &%-MCq%&&~<&'recipient&~address'&>&~<&'size'&>
 .oindex "&%-MCq%&"
 This option is not intended for use by external callers. It is used internally
 by Exim to implement quota checking for local users.
-.wen
 
 .vitem &%-MCS%&
 .oindex "&%-MCS%&"
@@ -4006,7 +3994,6 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 host to which Exim is connected supports TLS encryption.
 
-.new
 .vitem &%-MCr%&&~<&'SNI'&> &&&
        &%-MCs%&&~<&'SNI'&>
 .oindex "&%-MCs%&"
@@ -4016,7 +4003,6 @@ by Exim in conjunction with the &%-MCt%& option, and passes on the fact that
 a TLS Server Name Indication was sent as part of the channel establishment.
 The argument gives the SNI string.
 The "r" variant indicates a DANE-verified connection.
-.wen
 
 .vitem &%-MCt%&&~<&'IP&~address'&>&~<&'port'&>&~<&'cipher'&>
 .oindex "&%-MCt%&"
@@ -4538,7 +4524,6 @@ of the syntax, and how it interacts with configuration file options, are given
 in chapter &<<CHAPinterfaces>>&. When &%-oX%& is used to start a daemon, no pid
 file is written unless &%-oP%& is also present to specify a pid filename.
 
-.new
 .vitem &%-oY%&
 .oindex &%-oY%&
 .cindex "daemon notifier socket"
@@ -4557,7 +4542,6 @@ fast ramp-up of queue runner processes
 .next
 obtaining a current queue size
 .endlist
-.wen
 
 .vitem &%-pd%&
 .oindex "&%-pd%&"
@@ -6785,7 +6769,6 @@ If the value of &$sender_host_address$& is 192.168.5.6, expansion of the
 first &%domains%& setting above generates the second setting, which therefore
 causes a second lookup to occur.
 
-.new
 The lookup type may optionally be followed by a comma
 and a comma-separated list of options.
 Each option is a &"name=value"& pair.
@@ -6795,7 +6778,6 @@ All lookups support the option &"cache=no_rd"&.
 If this is given then the cache that Exim manages for lookup results
 is not checked before doing the lookup.
 The result of the lookup is still written to the cache.
-.wen
 
 The rest of this chapter describes the different lookup types that are
 available. Any of them can be used in any part of the configuration where a
@@ -6978,11 +6960,9 @@ the implicit key is the host's IP address rather than its name (see section
 IPv4, in dotted-quad form. (Exim converts IPv4-mapped IPv6 addresses to this
 notation before executing the lookup.)
 
-.new
 One option is supported, "ret=full", to request the return of the entire line
 rather than omitting the key porttion.
 Note however that the key portion will have been de-quoted.
-.wen
 
 .next
 .cindex lookup json
@@ -7003,7 +6983,6 @@ is returned.
 For elements of type string, the returned value is de-quoted.
 
 
-.new
 .next
 .cindex LMDB
 .cindex lookup lmdb
@@ -7021,7 +7000,6 @@ To enable LMDB support in Exim set LOOKUP_LMDB=yes in &_Local/Makefile_&.
 
 You will need to separately create the LMDB database file,
 possibly using the &"mdb_load"& utility.
-.wen
 
 
 .next
@@ -7423,11 +7401,9 @@ lookups. However, because (apart from the daemon) Exim operates as a collection
 of independent, short-lived processes, this caching applies only within a
 single Exim process. There is no inter-process lookup caching facility.
 
-.new
 If an option &"cache=no_rd"& is used on the lookup then
 the cache is only written to, cached data is not used for the operation
 and a real lookup is done.
-.wen
 
 For single-key lookups, Exim keeps the relevant files open in case there is
 another lookup that needs them. In some types of configuration this can lead to
@@ -8285,7 +8261,6 @@ SQLite is different to the other SQL lookups because a filename is required in
 addition to the SQL query. An SQLite database is a single file, and there is no
 daemon as in the other SQL databases.
 
-.new
 .oindex &%sqlite_dbfile%&
 There are two ways of
 specifying the file.
@@ -8295,7 +8270,6 @@ is to use an option appended, comma-separated, to the &"sqlite"&
 lookup type word.  The option is the word &"file"&, then an equals,
 then the filename.
 The filename in this case cannot contain whitespace or open-brace charachters.
-.wen
 
 A deprecated method is available, prefixing the query with the filename
 separated by white space.
@@ -8519,10 +8493,8 @@ will store a result in the &$host_data$& variable.
 A &%local_parts%& router option or &%local_parts%& ACL condition
 will store a result in the &$local_part_data$& variable.
 .vitem domains
-.new
 A &%domains%& router option or &%domains%& ACL condition
 will store a result in the &$domain_data$& variable.
-.wen
 .vitem senders
 A &%senders%& router option or &%senders%& ACL condition
 will store a result in the &$sender_data$& variable.
@@ -8826,12 +8798,10 @@ other statements in the same ACL.
 .cindex "tainted data" "de-tainting"
 The value will be untainted.
 
-.new
 &*Note*&: If the data result of the lookup (as opposed to the key)
 is empty, then this empty value is stored in &$domain_data$&.
 The option to return the key for the lookup, as the value,
 may be what is wanted.
-.wen
 
 
 .next
@@ -9618,13 +9588,10 @@ reasons,
 .cindex "tainted data" definition
 .cindex expansion "tainted data"
 and expansion of data deriving from the sender (&"tainted data"&)
-.new
 is not permitted (including acessing a file using a tainted name).
 The main config option &%allow_insecure_tainted_data%& can be used as
 mitigation during uprades to more secure configurations.
-.wen
 
-.new
 Common ways of obtaining untainted equivalents of variables with
 tainted values
 .cindex "tainted data" "de-tainting"
@@ -9633,7 +9600,6 @@ This database could be the filesystem structure,
 or the password file,
 or accessed via a DBMS.
 Specific methods are indexed under &"de-tainting"&.
-.wen
 
 
 
@@ -10346,7 +10312,6 @@ extracted is used.
 You can use &`fail`& instead of {<&'string3'&>} as in a string extract.
 
 
-.new
 .vitem &*${listquote{*&<&'separator'&>&*}{*&<&'string'&>&*}}*&
 .cindex quoting "for list"
 .cindex list quoting
@@ -10355,7 +10320,6 @@ in the given string.
 An empty string is replaced with a single space.
 This converts the string into a safe form for use as a list element,
 in a list using the given separator.
-.wen
 
 
 .vitem "&*${lookup&~{*&<&'key'&>&*}&~*&<&'search&~type'&>&*&~&&&
@@ -10796,10 +10760,8 @@ will sort an MX lookup into priority order.
 
 
 
-.new
 .vitem &*${srs_encode&~{*&<&'secret'&>&*}{*&<&'return&~path'&>&*}{*&<&'original&~domain'&>&*}}*&
 SRS encoding.  See SECT &<<SECTSRS>>& for details.
-.wen
 
 
 
@@ -11219,10 +11181,8 @@ If the optional type is given it must be one of "a", "d", "h" or "l"
 and selects address-, domain-, host- or localpart- lists to search among respectively.
 Otherwise all types are searched in an undefined order and the first
 matching list is returned.
-.new
 &*Note*&: Neither string-expansion of lists referenced by named-list syntax elements,
 nor expansion of lookup elements, is done by the &%listnamed%& operator.
-.wen
 
 
 .vitem &*${local_part:*&<&'string'&>&*}*&
@@ -11785,11 +11745,9 @@ condition is true if the named file (or directory) exists. The existence test
 is done by calling the &[stat()]& function. The use of the &%exists%& test in
 users' filter files may be locked out by the system administrator.
 
-.new
 &*Note:*& Testing a path using this condition is not a sufficient way of
 de-tainting it.
 Consider using a dsearch lookup.
-.wen
 
 .vitem &*first_delivery*&
 .cindex "delivery" "first"
@@ -11876,10 +11834,8 @@ case-independent.
 Case and collation order are defined per the system C locale.
 
 
-.new
 .vitem &*inbound_srs&~{*&<&'local&~part'&>&*}{*&<&'secret'&>&*}*&
 SRS decode.  See SECT &<<SECTSRS>>& for details.
-.wen
 
 
 .vitem &*inlist&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*& &&&
@@ -12347,9 +12303,7 @@ warn !verify = sender
 You can use &$acl_verify_message$& during the expansion of the &%message%& or
 &%log_message%& modifiers, to include information about the verification
 failure.
-.new
 &*Note*&: The variable is cleared at the end of processing the ACL verb.
-.wen
 
 .vitem &$address_data$&
 .vindex "&$address_data$&"
@@ -12653,14 +12607,12 @@ Often &$domain_data$& is usable in this role.
 .vitem &$domain_data$&
 .vindex "&$domain_data$&"
 When the &%domains%& condition on a router
-.new
 or an ACL
 matches a domain
 against a list, the match value is copied to &$domain_data$&.
 This is an enhancement over previous versions of Exim, when it only
 applied to the data read by a lookup.
 For details on match values see section &<<SECTlistresults>>& et. al.
-.wen
 
 If the router routes the
 address to a transport, the value is available in that transport. If the
@@ -12901,12 +12853,10 @@ to process local parts in a case-dependent manner in a router, you can set the
 .vindex "&$local_part_data$&"
 When the &%local_parts%& condition on a router or ACL
 matches a local part list
-.new
 the match value is copied to &$local_part_data$&.
 This is an enhancement over previous versions of Exim, when it only
 applied to the data read by a lookup.
 For details on match values see section &<<SECTlistresults>>& et. al.
-.wen
 
 The &%check_local_user%& router option also sets this variable.
 
@@ -13980,14 +13930,12 @@ If certificate verification fails it may refer to a failing chain element
 which is not the leaf.
 
 
-.new
 .vitem &$tls_in_resumption$& &&&
        &$tls_out_resumption$&
 .vindex &$tls_in_resumption$&
 .vindex &$tls_out_resumption$&
 .cindex TLS resumption
 Observability for TLS session resumption.  See &<<SECTresumption>>& for details.
-.wen
 
 
 .vitem &$tls_in_sni$&
@@ -14173,9 +14121,7 @@ taint mode of the Perl interpreter. You are encouraged to set this
 option to a true value. To avoid breaking existing installations, it
 defaults to false.
 
-.new
 &*Note*&: This is entirely separate from Exim's tainted-data tracking.
-.wen
 
 
 .section "Calling Perl subroutines" "SECID86"
@@ -15226,7 +15172,6 @@ domains (defined in the named domain list &%local_domains%& in the default
 configuration). This &"magic string"& matches the domain literal form of all
 the local host's IP addresses.
 
-.new
 .option allow_insecure_tainted_data main boolean false
 .cindex "de-tainting"
 .oindex "allow_insecure_tainted_data"
@@ -15235,7 +15180,6 @@ Setting this option to "true" turns taint errors (which result in a temporary
 message rejection) into warnings. This option is meant as mitigation only
 and deprecated already today. Future releases of Exim may ignore it.
 The &%taint%& log selector can be used to suppress even the warnings.
-.wen
 
 
 
@@ -16342,7 +16286,6 @@ hosts_connection_nolog = :
 If the &%smtp_connection%& log selector is not set, this option has no effect.
 
 
-.new
 .option hosts_require_alpn main "host list&!!" unset
 .cindex ALPN "require negotiation in server"
 .cindex TLS ALPN
@@ -16354,7 +16297,6 @@ See also the &%tls_alpn%& option.
 
 &*Note*&: prevention of fallback to in-clear connection is not
 managed by this option, and should be done separately.
-.wen
 
 
 .option hosts_proxy main "host list&!!" unset
@@ -16893,14 +16835,11 @@ The option is expanded before use.
 If the platform supports Linux-style abstract socket names, the result
 is used with a nul byte prefixed.
 Otherwise,
-.new "if nonempty,"
 it should be a full path name and use a directory accessible
 to Exim.
 
-.new
 If this option is set as empty,
 or the command line &%-oY%& option is used, or
-.wen
 the command line uses a &%-oX%& option and does not use &%-oP%&,
 then a notifier socket is not created.
 
@@ -17098,9 +17037,7 @@ When used, the pipelining saves on roundtrip times.
 
 See also the &%hosts_pipe_connect%& smtp transport option.
 
-.new
 The SMTP service extension keyword advertised is &"PIPE_CONNECT"&.
-.wen
 
 
 .option prdr_enable main boolean false
@@ -17181,12 +17118,10 @@ admin user unless &%prod_requires_admin%& is set false. See also
 &%queue_list_requires_admin%& and &%commandline_checks_require_admin%&.
 
 
-.new
 .option proxy_protocol_timeout main time 3s
 .cindex proxy "proxy protocol"
 This option sets the timeout for proxy protocol negotiation.
 For details see section &<<SECTproxyInbound>>&.
-.wen
 
 
 .option qualify_domain main string "see below"
@@ -17224,7 +17159,6 @@ domains that do not match are processed. All other deliveries wait until the
 next queue run. See also &%hold_domains%& and &%queue_smtp_domains%&.
 
 
-.new
 .option queue_fast_ramp main boolean false
 .cindex "queue runner" "two phase"
 .cindex "queue" "double scanning"
@@ -17232,7 +17166,6 @@ If set to true, two-phase queue runs, initiated using &%-qq%& on the
 command line, may start parallel delivery processes during their first
 phase.  This will be done when a threshold number of messages have been
 routed for a single host.
-.wen
 
 
 .option queue_list_requires_admin main boolean true
@@ -17672,11 +17605,9 @@ results in the transfer of a message. After the limit is reached, a 421
 response is given to subsequent MAIL commands. This limit is a safety
 precaution against a client that goes mad (incidents of this type have been
 seen).
-.new
 The option is expanded after the HELO or EHLO is received
 and may depend on values available at that time.
 An empty or zero value after expansion removes the limit.
-.wen
 
 
 .option smtp_accept_max_per_host main string&!! unset
@@ -18382,7 +18313,6 @@ using the &%tls_certificate%& option.  If TLS support for incoming connections
 is not required the &%tls_advertise_hosts%& option should be set empty.
 
 
-.new
 .option tls_alpn main "string list&!!" "smtp : esmtp"
 .cindex TLS "Application Layer Protocol Names"
 .cindex TLS ALPN
@@ -18392,7 +18322,6 @@ the TLS library supports ALPN,
 and the client offers either more than
 ALPN name or a name which does not match the list,
 the TLS connection is declined.
-.wen
 
 
 .option tls_certificate main "string list&!!" unset
@@ -18425,11 +18354,9 @@ Server Name Indication extension, then this option and others documented in
 &<<SECTtlssni>>& will be re-expanded.
 
 If this option is unset or empty a self-signed certificate will be
-.new
 used.
 Under Linux this is generated at daemon startup; on other platforms it will be
 generated fresh for every connection.
-.wen
 
 .option tls_crl main string&!! unset
 .cindex "TLS" "server certificate revocation list"
@@ -18640,12 +18567,10 @@ preference order of the available ciphers. Details are given in sections
 &<<SECTreqciphssl>>& and &<<SECTreqciphgnu>>&.
 
 
-.new
 .option tls_resumption_hosts main "host list&!!" unset
 .cindex TLS resumption
 This option controls which connections to offer the TLS resumption feature.
 See &<<SECTresumption>>& for details.
-.wen
 
 
 .option tls_try_verify_hosts main "host list&!!" unset
@@ -18877,11 +18802,9 @@ which the preconditions are tested. The order of expansion of the options that
 provide data for a transport is: &%errors_to%&, &%headers_add%&,
 &%headers_remove%&, &%transport%&.
 
-.new
 The name of a router is limited to be &drivernamemax; ASCII characters long;
 prior to Exim 4.95 names would be silently truncated at this length, but now
 it is enforced.
-.wen
 
 
 .option address_data routers string&!! unset
@@ -19873,10 +19796,8 @@ Values containing a list-separator should have them doubled.
 When a router runs, the strings are evaluated in order,
 to create variables which are added to the set associated with
 the address.
-.new
 This is done immediately after all the preconditions, before the
 evaluation of the &%address_data%& option.
-.wen
 The variable is set with the expansion of the value.
 The variables can be used by the router options
 (not including any preconditions)
@@ -22425,11 +22346,9 @@ and &$original_domain$& is never set.
 .scindex IIDgenoptra1 "generic options" "transport"
 .scindex IIDgenoptra2 "options" "generic; for transports"
 .scindex IIDgenoptra3 "transport" "generic options for"
-.new
 The name of a transport is limited to be &drivernamemax; ASCII characters long;
 prior to Exim 4.95 names would be silently truncated at this length, but now
 it is enforced.
-.wen
 
 The following generic options apply to all transports:
 
@@ -22500,13 +22419,11 @@ header, Exim has a configuration option (&%envelope_to_remove%&) which requests
 its removal from incoming messages, so that delivered messages can safely be
 resent to other recipients.
 
-.new
 &*Note:*& If used on a transport handling multiple recipients
 (the smtp transport unless &%rcpt_max%& is 1, the appendfile, pipe or lmtp
 transport if &%batch_max%& is greater than 1)
 then information about Bcc recipients will be leaked.
 Doing so is generally not advised.
-.wen
 
 
 .option event_action transports string&!! unset
@@ -23266,10 +23183,8 @@ directories defined by the &%directory%& option. In the case of maildir
 delivery, it applies to the top level directory, not the maildir directories
 beneath.
 
-.new
 The option must be set to one of the words &"anywhere"&, &"inhome"&, or
 &"belowhome"&, or to an absolute path.
-.wen
 
 In the second and third cases, a home directory must have been
 set for the transport, and the file or directory being created must
@@ -23282,7 +23197,6 @@ are generated from users' &_.forward_& files. These are usually handled
 by an &(appendfile)& transport called &%address_file%&. See also
 &%file_must_exist%&.
 
-.new
 In the fourth case,
 the value given for this option must be an absolute path for an
 existing directory.
@@ -23292,7 +23206,6 @@ checking is done in "belowhome" mode.
 .cindex "tainted data" "de-tainting"
 If "belowhome" checking is used, the file or directory path
 becomes de-tainted.
-.wen
 
 
 .option directory appendfile string&!! unset
@@ -23306,10 +23219,8 @@ appended to a single mailbox file. A number of different formats are provided
 (see &%maildir_format%& and &%mailstore_format%&), and see section
 &<<SECTopdir>>& for further details of this form of delivery.
 
-.new
 The result of expansion must not be tainted, unless the &%create_file%& option
 specifies a path.
-.wen
 
 
 .option directory_file appendfile string&!! "see below"
@@ -23343,10 +23254,8 @@ specifies a single file, to which the message is appended. One or more of
 &%use_fcntl_lock%&, &%use_flock_lock%&, or &%use_lockfile%& must be set with
 &%file%&.
 
-.new
 The result of expansion must not be tainted, unless the &%create_file%& option
 specifies a path.
-.wen
 
 .cindex "NFS" "lock file"
 .cindex "locking files"
@@ -25703,7 +25612,6 @@ Exim will request a Certificate Status on a
 TLS session for any host that matches this list.
 &%tls_verify_certificates%& should also be set for the transport.
 
-.new
 .option hosts_require_alpn smtp "host list&!!" unset
 .cindex ALPN "require negotiation in client"
 .cindex TLS ALPN
@@ -25715,7 +25623,6 @@ See also the &%tls_alpn%& option.
 
 &*Note*&: prevention of fallback to in-clear connection is not
 managed by this option; see &%hosts_require_tls%&.
-.wen
 
 .option hosts_require_dane smtp "host list&!!" unset
 .cindex DANE "transport options"
@@ -25750,9 +25657,7 @@ incoming messages, use an appropriate ACL.
 This option provides a list of servers to which, provided they announce
 authentication support, Exim will attempt to authenticate as a client when it
 connects. If authentication fails
-.new
 and &%hosts_require_auth%& permits,
-.wen
 Exim will try to transfer the message unauthenticated.
 See also chapter &<<CHAPSMTPAUTH>>& for details of authentication.
 
@@ -25768,13 +25673,11 @@ BDAT will not be used in conjunction with a transport filter.
 .option hosts_try_dane smtp "host list&!!" *
 .cindex DANE "transport options"
 .cindex DANE "attempting for certain servers"
-.new
 If built with DANE support, Exim  will look up a
 TLSA record for any host matching the list,
 If one is found and that lookup was DNSSEC-validated,
 then Exim requires that a DANE-verified TLS connection is made for that host;
 there will be no fallback to in-clear communication.
-.wen
 See the &%dnssec_request_domains%& router and transport options.
 See section &<<SECDANE>>&.
 
@@ -25863,7 +25766,6 @@ so can cause parallel connections to the same host if &%remote_max_parallel%&
 permits this. A value setting of zero disables the limit.
 
 
-.new
 .option message_linelength_limit smtp integer 998
 .cindex "line length" limit
 This option sets the maximum line length, in bytes, that the transport
@@ -25874,7 +25776,6 @@ The default value is that defined by the SMTP standards.
 
 It is generally wise to also check in the data ACL so that messages
 received via SMTP can be refused without producing a bounce.
-.wen
 
 
 .option multi_domain smtp boolean&!! true
@@ -25890,11 +25791,9 @@ It is expanded per-address and can depend on any of
 &$address_data$&, &$domain_data$&, &$local_part_data$&,
 &$host$&, &$host_address$& and &$host_port$&.
 
-.new
 If the connection is DANE-enabled then this option is ignored;
 only messages having the domain used for the DANE TLSA lookup are
 sent on the connection.
-.wen
 
 .option port smtp string&!! "see below"
 .cindex "port" "sending TCP/IP"
@@ -26000,7 +25899,6 @@ This option enables use of SOCKS proxies for connections made by the
 transport.  For details see section &<<SECTproxySOCKS>>&.
 
 
-.new
 .option tls_alpn smtp string&!! unset
 .cindex TLS "Application Layer Protocol Names"
 .cindex TLS ALPN
@@ -26011,7 +25909,6 @@ the value given is used.
 
 As of writing no value has been standardised for email use.
 The authors suggest using &"smtp"&.
-.wen
 
 
 
@@ -26079,12 +25976,10 @@ is used in different ways by OpenSSL and GnuTLS (see sections
 ciphers is a preference order.
 
 
-.new
 .option tls_resumption_hosts smtp "host list&!!" unset
 .cindex TLS resumption
 This option controls which connections to use the TLS resumption feature.
 See &<<SECTresumption>>& for details.
-.wen
 
 
 
@@ -26094,9 +25989,7 @@ See &<<SECTresumption>>& for details.
 .cindex SNI "setting in client"
 .vindex "&$tls_sni$&"
 If this option is set
-.new
 and the connection is not DANE-validated
-.wen
 then it sets the $tls_out_sni variable and causes any
 TLS session to pass this value as the Server Name Indication extension to
 the remote side, which can be used by the remote side to select an appropriate
@@ -27309,11 +27202,9 @@ permitted to use it as a relay. SMTP authentication is not of relevance to the
 transfer of mail between servers that have no managerial connection with each
 other.
 
-.new
 The name of an authenticator is limited to be &drivernamemax; ASCII characters long;
 prior to Exim 4.95 names would be silently truncated at this length, but now
 it is enforced.
-.wen
 
 .cindex "AUTH" "description of"
 .cindex "ESMTP extensions" AUTH
@@ -28058,10 +27949,8 @@ fixed_plain:
 .endd
 The lack of colons means that the entire text is sent with the AUTH
 command, with the circumflex characters converted to NULs.
-.new
 Note that due to the ambiguity of parsing three consectutive circumflex characters
 there is no way to provide a password having a leading circumflex.
-.wen
 
 
 A similar example
@@ -28388,11 +28277,9 @@ realease for the SCRAM-SHA-256 method.
 The macro _HAVE_AUTH_GSASL_SCRAM_SHA_256 will be defined
 when this happens.
 
-.new
 To see the list of mechanisms supported by the library run Exim with "auth" debug
 enabled and look for a line containing "GNU SASL supports".
 Note however that some may not have been tested from Exim.
-.wen
 
 
 .option client_authz gsasl string&!! unset
@@ -28415,10 +28302,8 @@ the account name to be used.
 
 
 .option client_spassword gsasl string&!! unset
-.new
 This option is only supported for library versions 1.9.1 and greater.
 The macro _HAVE_AUTH_GSASL_SCRAM_S_KEY will be defined when this is so.
-.wen
 
 If a SCRAM mechanism is being used and this option is set
 and correctly sized
@@ -28430,7 +28315,6 @@ with the PBKDF2-prepared password, hex-encoded.
 Note that this value will depend on the salt and iteration-count
 supplied by the server.
 The option is expanded before use.
-.new
 During the expansion &$auth1$& is set with the client username,
 &$auth2$& with the iteration count, and
 &$auth3$& with the salt.
@@ -28447,7 +28331,6 @@ If the authentication succeeds then the above variables are set,
 plus the calculated salted password value value in &$auth4$&,
 during the expansion of the &%client_set_id%& option.
 A side-effect of this expansion can be used to prime the cache.
-.wen
 
 
 .option server_channelbinding gsasl boolean false
@@ -28474,12 +28357,10 @@ of Exim might have switched the default to be true.
 . Do not plan to rely upon this feature for security, ever, without consulting
 . with a subject matter expert (a cryptographic engineer).
 
-.new
 This option was deprecated in previous releases due to doubts over
 the "Triple Handshake" vulnerability.
 Exim takes suitable precausions (requiring Extended Master Secret if TLS
 Session Resumption was used) for safety.
-.wen
 
 
 .option server_hostname gsasl string&!! "see below"
@@ -29152,12 +29033,10 @@ Some other recently added features may only be available in one or the other.
 This should be documented with the feature.  If the documentation does not
 explicitly state that the feature is infeasible in the other TLS
 implementation, then patches are welcome.
-.new
 .next
 The output from "exim -bV" will show which (if any) support was included
 in the build.
 Also, the macro "_HAVE_OPENSSL" or "_HAVE_GNUTLS" will be defined.
-.wen
 .endlist
 
 
@@ -29631,7 +29510,6 @@ There is no current way to staple a proof for a client certificate.
 .endd
 
 
-.new
 .section "Caching of static server configuration items" "SECTserverTLScache"
 .cindex certificate caching
 .cindex privatekey caching
@@ -29683,7 +29561,6 @@ is acceptable in configurations for the Exim executavble.
 Caching of the system Certificate Authorities bundle can
 save siginificant time and processing on every TLS connection
 accepted by Exim.
-.wen
 
 
 
@@ -29755,13 +29632,11 @@ or need not succeed respectively.
 
 The &%tls_verify_cert_hostnames%& option lists hosts for which additional
 name checks are made on the server certificate.
-.new
 The match against this list is, as per other Exim usage, the
 IP for the host.  That is most closely associated with the
 name on the DNS A (or AAAA) record for the host.
 However, the name that needs to be in the certificate
 is the one at the head of any CNAME chain leading to the A record.
-.wen
 The option defaults to always checking.
 
 The &(smtp)& transport has two OCSP-related options:
@@ -29809,7 +29684,6 @@ outgoing connection.
 
 
 
-.new
 .section "Caching of static client configuration items" "SECTclientTLScache"
 .cindex certificate caching
 .cindex privatekey caching
@@ -29860,7 +29734,6 @@ is acceptable in configurations for the Exim executavble.
 Caching of the system Certificate Authorities bundle can
 save siginificant time and processing on every TLS connection
 initiated by Exim.
-.wen
 
 
 
@@ -29900,10 +29773,8 @@ nothing more to it.  Choosing a sensible value not derived insecurely is the
 only point of caution.  The &$tls_out_sni$& variable will be set to this string
 for the lifetime of the client connection (including during authentication).
 
-.new
 If DANE validated the connection attempt then the value of the &%tls_sni%& option
 is forced to the domain part of the recipient address.
-.wen
 
 Except during SMTP client sessions, if &$tls_in_sni$& is set then it is a string
 received from a client.
@@ -29945,7 +29816,6 @@ When Exim is built against GnuTLS, SNI support is available as of GnuTLS
 0.5.10.  (Its presence predates the current API which Exim uses, so if Exim
 built, then you have SNI support).
 
-.new
 .cindex TLS ALPN
 .cindex ALPN "general information"
 .cindex TLS "Application Layer Protocol Names"
@@ -29972,7 +29842,6 @@ depends on the behavious of the peer
 This feature is available when Exim is built with
 OpenSSL 1.1.0 or later or GnuTLS 3.2.0 or later;
 the macro _HAVE_TLS_ALPN will be defined when this is so.
-.wen
 
 
 
@@ -30120,7 +29989,6 @@ Open-source PKI book, available online at
 .ecindex IIDencsmtp2
 
 
-.new
 .section "TLS Resumption" "SECTresumption"
 .cindex TLS resumption
 TLS Session Resumption for TLS 1.2 and TLS 1.3 connections can be used (defined
@@ -30212,7 +30080,6 @@ Issues:
 .endlist
 
 .endlist
-.wen
 
 
 .section DANE "SECDANE"
@@ -31490,11 +31357,9 @@ anyway. If the message contains newlines, this gives rise to a multi-line SMTP
 response.
 
 .vindex "&$acl_verify_message$&"
-.new
 While the text is being expanded, the &$acl_verify_message$& variable
 contains any message previously set.
 Afterwards, &$acl_verify_message$& is cleared.
-.wen
 
 If &%message%& is used on a statement that verifies an address, the message
 specified overrides any message that is generated by the verification process.
@@ -32749,12 +32614,10 @@ Section &<<SECTaddmatcon>>& below describes how you can distinguish between
 different values. Some DNS lists may return more than one address record;
 see section &<<SECThanmuldnsrec>>& for details of how they are checked.
 
-.new
 Values returned by a properly running DBSBL should be in the 127.0.0.0/8
 range. If a DNSBL operator loses control of the domain, lookups on it
 may start returning other addresses.  Because of this, Exim now ignores
 returned values outside the 127/8 region.
-.wen
 
 
 .section "Variables set from DNS lists" "SECID204"
@@ -33354,7 +33217,6 @@ The &%success_on_redirect%& option causes verification always to succeed
 immediately after a successful redirection. By default, if a redirection
 generates just one address, that address is also verified. See further
 discussion in section &<<SECTredirwhilveri>>&.
-.new
 .next
 If the &%quota%& option is specified for recipient verify,
 successful routing to an appendfile transport is followed by a call into
@@ -33362,7 +33224,6 @@ the transport to evaluate the quota status for the recipient.
 No actual delivery is done, but verification will succeed if the quota
 is sufficient for the message (if the sender gave a message size) or
 not already exceeded (otherwise).
-.wen
 .endlist
 
 .cindex "verifying address" "differentiating failures"
@@ -33397,7 +33258,6 @@ connection, HELO, or MAIL).
 &%recipient%&: The RCPT command in a callout was rejected.
 .next
 &%postmaster%&: The postmaster check in a callout was rejected.
-.new
 .next
 &%quota%&: The quota check for a local recipient did non pass.
 .endlist
@@ -33729,7 +33589,6 @@ behaviour will be the same.
 
 
 
-.new
 .section "Quota caching" "SECTquotacache"
 .cindex "hints database" "quota cache"
 .cindex "quota" "cache, description of"
@@ -33759,7 +33618,6 @@ As above, for a negative entry.
 
 .vitem &*no_cache*&
 Set both positive and negative lifetimes to zero.
-.wen
 
 .section "Sender address verification reporting" "SECTsenaddver"
 .cindex "verifying" "suppressing error details"
@@ -38629,9 +38487,7 @@ When more than one address is included in a single delivery (for example, two
 SMTP RCPT commands in one transaction) the second and subsequent addresses are
 flagged with &`->`& instead of &`=>`&. When two or more messages are delivered
 down a single SMTP connection, an asterisk follows the
-.new
 remote IP address (and port if enabled)
-.wen
 in the log lines for the second and subsequent messages.
 When two or more messages are delivered down a single TLS connection, the
 DNS and some TLS-related information logged for the first message delivered
@@ -39011,9 +38867,7 @@ to the &"<="& line as an IP address in square brackets, tagged by I= and
 followed by a colon and the port number. The local interface and port are also
 added to other SMTP log lines, for example, &"SMTP connection from"&, to
 rejection lines, and (despite the name) to outgoing
-.new
 &"=>"&, &"->"&, &"=="& and &"**"& lines.
-.wen
 The latter can be disabled by turning off the &%outgoing_interface%& option.
 .next
 .cindex log "incoming proxy address"
@@ -39298,11 +39152,9 @@ added to the log line, preceded by DN=.
 .next
 .cindex "log" "TLS resumption"
 .cindex "TLS" "logging session resumption"
-.new
 &%tls_resumption%&: When a message is sent or received over an encrypted
 connection and the TLS session resumed one used on a previous TCP connection,
 an asterisk is appended to the X= cipher field in the log line.
-.wen
 .next
 .cindex "log" "TLS SNI"
 .cindex "TLS" "logging SNI"
@@ -39850,9 +39702,7 @@ for remote hosts
 .next
 &'ratelimit'&: the data for implementing the ratelimit ACL condition
 .next
-.new
 &'tls'&: TLS session resumption data
-.wen
 .next
 &'misc'&: other hints data
 .endlist
@@ -41362,14 +41212,12 @@ option along with &%$dkim_domain%&.
 If the option is empty after expansion, DKIM signing is not done for this domain,
 and no error will result even if &%dkim_strict%& is set.
 
-.new
 To do, for example, dual-signing with RSA and EC keys
 this could be be used:
 .code
 dkim_selector = ec_sel : rsa_sel
 dkim_private_key = KEYS_DIR/$dkim_selector
 .endd
-.wen
 
 .option dkim_private_key smtp string&!! unset
 This sets the private key to use.
@@ -41979,7 +41827,6 @@ The lookup will return the same result strings as can appear in
 .section "SRS (Sender Rewriting Scheme)" SECTSRS
 .cindex SRS "sender rewriting scheme"
 
-.new
 SRS can be used to modify sender addresses when forwarding so that
 SPF verification does not object to them.
 It operates by encoding the original envelope sender in a new
@@ -42074,7 +41921,6 @@ Example usage:
 .endd
 
 
-.wen
 
 
 
