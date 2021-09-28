@@ -162,7 +162,9 @@ package Context {
         my $workspace = $context->{workspace};
 
         if (not defined $workspace) {
-            $workspace = $context->{workspace} = File::Temp->newdir(File::Spec->tmpdir . '/exim-packaging-XXXX');
+            $workspace = $context->{workspace} = File::Temp->newdir(
+                TEMPLATE => File::Spec->tmpdir . '/exim-packaging-XXXX',
+                CLEANUP  => $context->{cleanup});
         }
         else {
             # ensure the working directory is not in place
