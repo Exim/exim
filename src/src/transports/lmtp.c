@@ -558,23 +558,23 @@ allows for message+recipient checks after the message has been received. */
 /* First thing is to wait for an initial greeting. */
 
 Ustrcpy(big_buffer, US"initial connection");
-if (!lmtp_read_response(out, buffer, sizeof(buffer), '2',
-  timeout)) goto RESPONSE_FAILED;
+if (!lmtp_read_response(out, buffer, sizeof(buffer), '2', timeout))
+  goto RESPONSE_FAILED;
 
 /* Next, we send a LHLO command, and expect a positive response */
 
-if (!lmtp_write_command(fd_in, "%s %s\r\n", "LHLO",
-  primary_hostname)) goto WRITE_FAILED;
+if (!lmtp_write_command(fd_in, "%s %s\r\n", "LHLO", primary_hostname))
+  goto WRITE_FAILED;
 
-if (!lmtp_read_response(out, buffer, sizeof(buffer), '2',
-     timeout)) goto RESPONSE_FAILED;
+if (!lmtp_read_response(out, buffer, sizeof(buffer), '2', timeout))
+  goto RESPONSE_FAILED;
 
 /* If the ignore_quota option is set, note whether the server supports the
 IGNOREQUOTA option, and if so, set an appropriate addition for RCPT. */
 
 if (ob->ignore_quota)
-  igquotstr = (pcre_exec(regex_IGNOREQUOTA, NULL, CS buffer,
-    Ustrlen(CS buffer), 0, PCRE_EOPT, NULL, 0) >= 0)? US" IGNOREQUOTA" : US"";
+  igquotstr = regex_match(regex_IGNOREQUOTA, buffer, -1, NULL)
+    ? US" IGNOREQUOTA" : US"";
 
 /* Now the envelope sender */
 

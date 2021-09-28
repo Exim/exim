@@ -40,7 +40,7 @@ ABI is changed in a non backward compatible way. The minor number is increased
 each time a new feature is added (in a way that doesn't break backward
 compatibility). */
 
-#define LOCAL_SCAN_ABI_VERSION_MAJOR 4
+#define LOCAL_SCAN_ABI_VERSION_MAJOR 5
 #define LOCAL_SCAN_ABI_VERSION_MINOR 1
 #define LOCAL_SCAN_ABI_VERSION \
   LOCAL_SCAN_ABI_VERSION_MAJOR.LOCAL_SCAN_ABI_VERSION_MINOR
@@ -160,7 +160,7 @@ extern unsigned int debug_selector;    /* Debugging bits */
 extern int     body_linecount;         /* Line count in body */
 extern int     body_zerocount;         /* Binary zero count in body */
 extern uschar *expand_string_message;  /* Error info for failing expansion */
-extern uschar *headers_charset;        /* Charset for RFC 2047 decoding */
+extern const uschar *headers_charset;  /* Charset for RFC 2047 decoding */
 extern header_line *header_last;       /* Final header */
 extern header_line *header_list;       /* First header */
 extern BOOL    host_checking;          /* Set when checking a host */
@@ -198,7 +198,8 @@ extern int     lss_match_address(uschar *, uschar *, BOOL);
 extern int     lss_match_host(uschar *, uschar *, uschar *);
 extern void    receive_add_recipient(uschar *, int);
 extern BOOL    receive_remove_recipient(uschar *);
-extern uschar *rfc2047_decode(uschar *, BOOL, uschar *, int, int *, uschar **);
+extern uschar *rfc2047_decode(uschar *, BOOL, const uschar *, int, int *,
+			      uschar **);
 extern int     smtp_fflush(void);
 extern void    smtp_printf(const char *, BOOL, ...) PRINTF_FUNCTION(1,3);
 extern void    smtp_vprintf(const char *, BOOL, va_list);

@@ -1663,9 +1663,9 @@ int  process_info_len = Ustrlen(process_info);
 int  error_rc = error_handling == ERRORS_SENDER
 	? errors_sender_rc : EXIT_FAILURE;
 int  header_size = 256;
-int  id_resolution = 0;
 int  had_zero = 0;
 int  prevlines_length = 0;
+const int id_resolution = BASE_62 == 62 ? 5000 : 10000;
 
 int ptr = 0;
 
@@ -1718,6 +1718,10 @@ BOOL msgid_header_newly_created = FALSE;
 
 uschar *timestamp;
 int tslen;
+
+/* Time of creation of message_id */
+
+static struct timeval message_id_tv = { 0, 0 };
 
 
 /* Release any open files that might have been cached while preparing to
@@ -1785,13 +1789,32 @@ if (smtp_input && !smtp_batched_input && !f.dkim_disable_verify)
 if (sender_host_address) dmarc_init();	/* initialize libopendmarc */
 #endif
 
+/* In SMTP sessions we may receive several messages in one connection. Before
+each subsequent one, we wait for the clock to tick at the level of message-id
+granularity.
+This is so that the combination of time+pid is unique, even on systems where the
+pid can be re-used within our time interval. We can't shorten the interval
+without re-designing the message-id. See comments above where the message id is
+created. This is Something For The Future.
+Do this wait any time we have previously created a message-id, even if we
+rejected the message.  This gives unique IDs for logging done by ACLs.
+The initial timestamp must have been obtained via exim_gettime() to avoid
+issues on Linux with suspend/resume. */
+
+if (message_id_tv.tv_sec)
+  {
+  message_id_tv.tv_usec = (message_id_tv.tv_usec/id_resolution) * id_resolution;
+  exim_wait_tick(&message_id_tv, id_resolution);
+  }
+
 /* Remember the time of reception. Exim uses time+pid for uniqueness of message
 ids, and fractions of a second are required. See the comments that precede the
 message id creation below.
 We use a routine that if possible uses a monotonic clock, and can be used again
 after reception for the tick-wait even under the Linux non-Posix behaviour. */
 
-exim_gettime(&message_id_tv);
+else
+  exim_gettime(&message_id_tv);
 
 /* For other uses of the received time we can operate with granularity of one
 second, and for that we use the global variable received_time. This is for
@@ -2680,28 +2703,20 @@ message_id[6] = '-';
 Ustrncpy(message_id + 7, string_base62((long int)getpid()), 6);
 
 /* Deal with the case where the host number is set. The value of the number was
-checked when it was read, to ensure it isn't too big. The timing granularity is
-left in id_resolution so that an appropriate wait can be done after receiving
-the message, if necessary (we hope it won't be). */
+checked when it was read, to ensure it isn't too big. */
 
 if (host_number_string)
-  {
-  id_resolution = BASE_62 == 62 ? 5000 : 10000;
   sprintf(CS(message_id + MESSAGE_ID_LENGTH - 3), "-%2s",
     string_base62((long int)(
       host_number * (1000000/id_resolution) +
         message_id_tv.tv_usec/id_resolution)) + 4);
-  }
 
 /* Host number not set: final field is just the fractional time at an
 appropriate resolution. */
 
 else
-  {
-  id_resolution = BASE_62 == 62 ? 500 : 1000;
   sprintf(CS(message_id + MESSAGE_ID_LENGTH - 3), "-%2s",
     string_base62((long int)(message_id_tv.tv_usec/id_resolution)) + 4);
-  }
 
 /* Add the current message id onto the current process info string if
 it will fit. */
@@ -4324,26 +4339,6 @@ then we can think about properly declaring the message not-received. */
 
 
 TIDYUP:
-/* In SMTP sessions we may receive several messages in one connection. After
-each one, we wait for the clock to tick at the level of message-id granularity.
-This is so that the combination of time+pid is unique, even on systems where the
-pid can be re-used within our time interval. We can't shorten the interval
-without re-designing the message-id. See comments above where the message id is
-created. This is Something For The Future.
-Do this wait any time we have created a message-id, even if we rejected the
-message.  This gives unique IDs for logging done by ACLs.
-The initial timestamp must have been obtained via exim_gettime() to avoid
-issues on Linux with suspend/resume.
-It would be Nicer to only pause before a follow-on message. */
-
-if (id_resolution != 0)
-  {
-  message_id_tv.tv_usec = (message_id_tv.tv_usec/id_resolution) * id_resolution;
-  exim_wait_tick(&message_id_tv, id_resolution);
-  id_resolution = 0;
-  }
-
-
 process_info[process_info_len] = 0;			/* Remove message id */
 if (spool_data_file && cutthrough_done == NOT_TRIED)
   {

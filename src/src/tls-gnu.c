@@ -2113,7 +2113,7 @@ if (!state->lib_state.pri_string)
   if ((rc = creds_load_pristring(state, p, &errpos)))
     return tls_error_gnu(state, string_sprintf(
 			"gnutls_priority_init(%s) failed at offset %ld, \"%.6s..\"",
-			p, errpos - CS p, errpos),
+			p, (long)(errpos - CS p), errpos),
 		    rc, errstr);
   }
 else
@@ -4201,7 +4201,7 @@ DEBUG(D_tls)
 rc = gnutls_priority_init(&priority_cache, CS expciphers, &errpos);
 validate_check_rc(string_sprintf(
       "gnutls_priority_init(%s) failed at offset %ld, \"%.8s..\"",
-      expciphers, errpos - CS expciphers, errpos));
+      expciphers, (long)(errpos - CS expciphers), errpos));
 
 #undef return_deinit
 #undef validate_check_rc

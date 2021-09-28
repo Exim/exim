@@ -2,6 +2,22 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Since 4.95
+----------
+
+JH/01 Move the wait-for-next-tick (needed for unique messmage IDs) from
+      after reception to before a subsequence reception.  This should
+      mean slightly faster delivery, and also confirmation of reception
+      to senders.
+
+JH/02 Move from using the pcre library to pcre2.  The former is no longer
+      being developed or supported (by the original developer).
+
+JH/03 Constification work in the filters module required a major version
+      bump for the local-scan API.  Specifically, the "headers_charset"
+      global which is visible via the API is now const and may therefore
+      not be modified by local-scan code.
+
 
 Exim version 4.95
 -----------------

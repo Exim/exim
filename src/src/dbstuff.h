@@ -788,6 +788,12 @@ typedef struct {
   uschar   bloom[40];     /* Bloom filter which may be larger than this */
 } dbdata_ratelimit_unique;
 
+
+/* For "seen" ACL condition */
+typedef struct {
+  time_t time_stamp;
+} dbdata_seen;
+
 #ifndef DISABLE_PIPE_CONNECT
 /* This structure records the EHLO responses, cleartext and crypted,
 for an IP, as bitmasks (cf. OPTION_TLS).  For LIMITS, also values

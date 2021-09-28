@@ -850,11 +850,8 @@ more.) */
 
 if (check_dns_names_pattern[0] != 0 && type != T_PTR && type != T_TXT)
   {
-  int ovector[3*(EXPAND_MAXN+1)];
-
   dns_pattern_init();
-  if (pcre_exec(regex_check_dns_names, NULL, CCS name, Ustrlen(name),
-      0, PCRE_EOPT, ovector, nelem(ovector)) < 0)
+  if (!regex_match(regex_check_dns_names, name, -1, NULL))
     {
     DEBUG(D_dns)
       debug_printf("DNS name syntax check failed: %s (%s)\n", name,

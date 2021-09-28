@@ -17,7 +17,7 @@ typedef struct {
   uschar *query;
   uschar *response_pattern;
   uschar *reroute;
-  const pcre *re_response_pattern;
+  const pcre2_code *re_response_pattern;
   BOOL  optional;
 } iplookup_router_options_block;
 

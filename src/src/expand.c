@@ -1593,7 +1593,7 @@ Returns:        NULL if the header does not exist, else a pointer to a new
 */
 
 static uschar *
-find_header(uschar *name, int *newsize, unsigned flags, uschar *charset)
+find_header(uschar *name, int *newsize, unsigned flags, const uschar *charset)
 {
 BOOL found = !name;
 int len = name ? Ustrlen(name) : 0;
@@ -1854,7 +1854,7 @@ Returns:        NULL if the variable does not exist, or
                 something non-NULL if exists_only is TRUE
 */
 
-static uschar *
+static const uschar *
 find_variable(uschar *name, BOOL exists_only, BOOL skipping, int *newsize)
 {
 var_entry * vp;
@@ -1892,15 +1892,15 @@ if (Ustrncmp(name, "auth", 4) == 0)
   {
   uschar *endptr;
   int n = Ustrtoul(name + 4, &endptr, 10);
-  if (*endptr == 0 && n != 0 && n <= AUTH_VARS)
-    return !auth_vars[n-1] ? US"" : auth_vars[n-1];
+  if (!*endptr && n != 0 && n <= AUTH_VARS)
+    return auth_vars[n-1] ? auth_vars[n-1] : US"";
   }
 else if (Ustrncmp(name, "regex", 5) == 0)
   {
   uschar *endptr;
   int n = Ustrtoul(name + 5, &endptr, 10);
-  if (*endptr == 0 && n != 0 && n <= REGEX_VARS)
-    return !regex_vars[n-1] ? US"" : regex_vars[n-1];
+  if (!*endptr && n != 0 && n <= REGEX_VARS)
+    return regex_vars[n-1] ? regex_vars[n-1] : US"";
   }
 
 /* For all other variables, search the table */
@@ -2543,15 +2543,12 @@ BOOL tempcond, combined_cond;
 BOOL *subcondptr;
 BOOL sub2_honour_dollar = TRUE;
 BOOL is_forany, is_json, is_jsons;
-int rc, cond_type, roffset;
+int rc, cond_type;
 int_eximarith_t num[2];
 struct stat statbuf;
 uschar * opname;
 uschar name[256];
 const uschar *sub[10];
-
-const pcre *re;
-const uschar *rerror;
 
 for (;;)
   if (Uskip_whitespace(&s) == '!') { testfor = !testfor; s++; } else break;
@@ -2563,7 +2560,7 @@ switch(cond_type = identify_operator(&s, &opname))
 
   case ECOND_DEF:
     {
-    uschar * t;
+    const uschar * t;
 
     if (*s != ':')
       {
@@ -2974,15 +2971,24 @@ switch(cond_type = identify_operator(&s, &opname))
     break;
 
     case ECOND_MATCH:   /* Regular expression match */
-    if (!(re = pcre_compile(CS sub[1], PCRE_COPT, CCSS &rerror,
-			    &roffset, NULL)))
       {
-      expand_string_message = string_sprintf("regular expression error in "
-        "\"%s\": %s at offset %d", sub[1], rerror, roffset);
-      return NULL;
+      const pcre2_code * re;
+      PCRE2_SIZE offset;
+      int err;
+
+      if (!(re = pcre2_compile((PCRE2_SPTR)sub[1], PCRE2_ZERO_TERMINATED,
+				PCRE_COPT, &err, &offset, pcre_cmp_ctx)))
+	{
+	uschar errbuf[128];
+	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
+	expand_string_message = string_sprintf("regular expression error in "
+	  "\"%s\": %s at offset %d", sub[1], errbuf, offset);
+	return NULL;
+	}
+
+      tempcond = regex_match_and_setup(re, sub[0], 0, -1);
+      break;
       }
-    tempcond = regex_match_and_setup(re, sub[0], 0, -1);
-    break;
 
     case ECOND_MATCH_ADDRESS:  /* Match in an address list */
     rc = match_address_list(sub[0], TRUE, FALSE, &(sub[1]), NULL, -1, 0, NULL);
@@ -3448,9 +3454,10 @@ switch(cond_type = identify_operator(&s, &opname))
     /* ${if inbound_srs {local_part}{secret}  {yes}{no}} */
     {
     uschar * sub[2];
-    const pcre * re;
-    int ovec[3*(4+1)];
-    int n, quoting = 0;
+    const pcre2_code * re;
+    pcre2_match_data * md;
+    PCRE2_SIZE * ovec;
+    int quoting = 0;
     uschar cksum[4];
     BOOL boolvalue = FALSE;
 
@@ -3466,12 +3473,14 @@ switch(cond_type = identify_operator(&s, &opname))
 
     re = regex_must_compile(US"^(?i)SRS0=([^=]+)=([A-Z2-7]+)=([^=]*)=(.*)$",
 			    TRUE, FALSE);
-    if (pcre_exec(re, NULL, CS sub[0], Ustrlen(sub[0]), 0, PCRE_EOPT,
-		  ovec, nelem(ovec)) < 0)
+    md = pcre2_match_data_create(4+1, pcre_gen_ctx);
+    if (pcre2_match(re, sub[0], PCRE2_ZERO_TERMINATED, 0, PCRE_EOPT,
+		    md, pcre_mtc_ctx) < 0)
       {
       DEBUG(D_expand) debug_printf("no match for SRS'd local-part pattern\n");
       goto srs_result;
       }
+    ovec = pcre2_get_ovector_pointer(md);
 
     if (sub[0][0] == '"')
       quoting = 1;
@@ -3503,6 +3512,7 @@ switch(cond_type = identify_operator(&s, &opname))
       struct timeval now;
       uschar * ss = sub[0] + ovec[4];	/* substring 2, the timestamp */
       long d;
+      int n;
 
       gettimeofday(&now, NULL);
       now.tv_sec /= 86400;		/* days since epoch */
@@ -3596,7 +3606,7 @@ Returns:                the value of expand max to save
 */
 
 static int
-save_expand_strings(uschar **save_expand_nstring, int *save_expand_nlength)
+save_expand_strings(const uschar **save_expand_nstring, int *save_expand_nlength)
 {
 for (int i = 0; i <= expand_nmax; i++)
   {
@@ -3623,7 +3633,7 @@ Returns:                nothing
 */
 
 static void
-restore_expand_strings(int save_expand_nmax, uschar **save_expand_nstring,
+restore_expand_strings(int save_expand_nmax, const uschar **save_expand_nstring,
   int *save_expand_nlength)
 {
 expand_nmax = save_expand_nmax;
@@ -4464,7 +4474,7 @@ rmark reset_point = store_mark();
 gstring * yield = string_get(Ustrlen(string) + 64);
 int item_type;
 const uschar *s = string;
-uschar *save_expand_nstring[EXPAND_MAXN+1];
+const uschar *save_expand_nstring[EXPAND_MAXN+1];
 int save_expand_nlength[EXPAND_MAXN+1];
 BOOL resetok = TRUE;
 
@@ -4493,7 +4503,6 @@ if ((m = is_tainted2(string, LOG_MAIN|LOG_PANIC, "Tainted string '%s' in expansi
 
 while (*s)
   {
-  uschar *value;
   uschar name[256];
 
   /* \ escapes the next character, which must exist, or else
@@ -4551,6 +4560,7 @@ while (*s)
 
   if (isalpha((*(++s))))
     {
+    const uschar * value;
     int len;
     int newsize = 0;
     gstring * g = NULL;
@@ -4582,7 +4592,7 @@ while (*s)
       unsigned flags = *name == 'r' ? FH_WANT_RAW
 		      : *name == 'l' ? FH_WANT_RAW|FH_WANT_LIST
 		      : 0;
-      uschar * charset = *name == 'b' ? NULL : headers_charset;
+      const uschar * charset = *name == 'b' ? NULL : headers_charset;
 
       s = read_header_name(name, sizeof(name), s);
       value = find_header(name, &newsize, flags, charset);
@@ -4593,7 +4603,7 @@ while (*s)
       But there is no error here - nothing gets inserted. */
 
       if (!value)
-        {
+        {		/*{*/
         if (Ustrchr(name, '}')) malformed_header = TRUE;
         continue;
         }
@@ -4623,7 +4633,7 @@ while (*s)
       yield = g;
       yield->size = newsize;
       yield->ptr = len;
-      yield->s = value;
+      yield->s = US value; /* known to be in new store i.e. a copy, so deconst safe */
       }
     else
       yield = string_catn(yield, value, len);
@@ -5189,7 +5199,7 @@ while (*s)
       {
       uschar *sub_arg[3];
       gstring * g;
-      const pcre *re;
+      const pcre2_code *re;
       uschar *p;
 
       /* TF: Ugliness: We want to expand parameter 1 first, then set
@@ -5829,11 +5839,11 @@ while (*s)
 
     case EITEM_SG:
       {
-      const pcre *re;
+      const pcre2_code * re;
       int moffset, moffsetextra, slen;
-      int roffset;
-      int emptyopt;
-      const uschar *rerror;
+      PCRE2_SIZE roffset;
+      pcre2_match_data * md;
+      int err, emptyopt;
       uschar *subject;
       uschar *sub[3];
       int save_expand_nmax =
@@ -5848,13 +5858,16 @@ while (*s)
 
       /* Compile the regular expression */
 
-      if (!(re = pcre_compile(CS sub[1], PCRE_COPT, CCSS &rerror,
-			      &roffset, NULL)))
+      if (!(re = pcre2_compile((PCRE2_SPTR)sub[1], PCRE2_ZERO_TERMINATED,
+		  PCRE_COPT, &err, &roffset, pcre_cmp_ctx)))
         {
+        uschar errbuf[128];
+	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
         expand_string_message = string_sprintf("regular expression error in "
-          "\"%s\": %s at offset %d", sub[1], rerror, roffset);
+          "\"%s\": %s at offset %ld", sub[1], errbuf, (long)roffset);
         goto EXPAND_FAILED;
         }
+      md = pcre2_match_data_create(EXPAND_MAXN + 1, pcre_gen_ctx);
 
       /* Now run a loop to do the substitutions as often as necessary. It ends
       when there are no more matches. Take care over matches of the null string;
@@ -5867,9 +5880,9 @@ while (*s)
 
       for (;;)
         {
-        int ovector[3*(EXPAND_MAXN+1)];
-        int n = pcre_exec(re, NULL, CS subject, slen, moffset + moffsetextra,
-          PCRE_EOPT | emptyopt, ovector, nelem(ovector));
+	PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
+	int n = pcre2_match(re, (PCRE2_SPTR)subject, slen, moffset + moffsetextra,
+	  PCRE_EOPT | emptyopt, md, pcre_mtc_ctx);
         uschar *insert;
 
         /* No match - if we previously set PCRE_NOTEMPTY after a null match, this
@@ -5897,19 +5910,19 @@ while (*s)
         expand_nmax = 0;
         for (int nn = 0; nn < n*2; nn += 2)
           {
-          expand_nstring[expand_nmax] = subject + ovector[nn];
-          expand_nlength[expand_nmax++] = ovector[nn+1] - ovector[nn];
+          expand_nstring[expand_nmax] = subject + ovec[nn];
+          expand_nlength[expand_nmax++] = ovec[nn+1] - ovec[nn];
           }
         expand_nmax--;
 
         /* Copy the characters before the match, plus the expanded insertion. */
 
-        yield = string_catn(yield, subject + moffset, ovector[0] - moffset);
+        yield = string_catn(yield, subject + moffset, ovec[0] - moffset);
         if (!(insert = expand_string(sub[2])))
 	  goto EXPAND_FAILED;
         yield = string_cat(yield, insert);
 
-        moffset = ovector[1];
+        moffset = ovec[1];
         moffsetextra = 0;
         emptyopt = 0;
 
@@ -5920,10 +5933,10 @@ while (*s)
         string at the same point. If this fails (picked up above) we advance to
         the next character. */
 
-        if (ovector[0] == ovector[1])
+        if (ovec[0] == ovec[1])
           {
-          if (ovector[0] == slen) break;
-          emptyopt = PCRE_NOTEMPTY | PCRE_ANCHORED;
+          if (ovec[0] == slen) break;
+          emptyopt = PCRE2_NOTEMPTY | PCRE2_ANCHORED;
           }
         }
 
@@ -7333,11 +7346,11 @@ while (*s)
         int count;
         uschar *endptr;
         int binary[4];
-        int mask, maskoffset;
-        int type = string_is_ip_address(sub, &maskoffset);
+        int type, mask, maskoffset;
+	BOOL normalised;
         uschar buffer[64];
 
-        if (type == 0)
+        if ((type = string_is_ip_address(sub, &maskoffset)) == 0)
           {
           expand_string_message = string_sprintf("\"%s\" is not an IP address",
            sub);
@@ -7353,12 +7366,17 @@ while (*s)
 
         mask = Ustrtol(sub + maskoffset + 1, &endptr, 10);
 
-        if (*endptr != 0 || mask < 0 || mask > ((type == 4)? 32 : 128))
+        if (*endptr || mask < 0 || mask > (type == 4 ? 32 : 128))
           {
           expand_string_message = string_sprintf("mask value too big in \"%s\"",
             sub);
           goto EXPAND_FAILED;
           }
+
+	/* If an optional 'n' was given, ipv6 gets normalised output:
+	colons rather than dots, and zero-compressed. */
+
+	normalised = arg && *arg == 'n';
 
         /* Convert the address to binary integer(s) and apply the mask */
 
@@ -7368,8 +7386,14 @@ while (*s)
 
         /* Convert to masked textual format and add to output. */
 
-        yield = string_catn(yield, buffer,
-          host_nmtoa(count, binary, mask, buffer, '.'));
+	if (type == 4 || !normalised)
+	  yield = string_catn(yield, buffer,
+	    host_nmtoa(count, binary, mask, buffer, '.'));
+	else
+	  {
+	  ipv6_nmtoa(binary, buffer);
+	  yield = string_fmt_append(yield, "%s/%d", buffer, mask);
+	  }
         continue;
         }
 
@@ -8090,6 +8114,7 @@ while (*s)
 						/*{*/
   if (*s++ == '}')
     {
+    const uschar * value;
     int len;
     int newsize = 0;
     gstring * g = NULL;
@@ -8116,7 +8141,7 @@ while (*s)
       yield = g;
       yield->size = newsize;
       yield->ptr = len;
-      yield->s = value;
+      yield->s = US value; /* known to be in new store i.e. a copy, so deconst safe */
       }
     else
       yield = string_catn(yield, value, len);
@@ -8539,6 +8564,7 @@ typedef struct {
   const uschar *var_data;
 } err_ctx;
 
+/* Called via tree_walk, which allows nonconst name/data.  Our usage is const. */
 static void
 assert_variable_notin(uschar * var_name, uschar * var_data, void * ctx)
 {
@@ -8560,13 +8586,14 @@ err_ctx e = { .region_start = ptr, .region_end = US ptr + len,
 tree_walk(acl_var_c, assert_variable_notin, &e);
 tree_walk(acl_var_m, assert_variable_notin, &e);
 
-/* check auth<n> variables */
+/* check auth<n> variables.
+assert_variable_notin() treats as const, so deconst is safe. */
 for (int i = 0; i < AUTH_VARS; i++) if (auth_vars[i])
-  assert_variable_notin(US"auth<n>", auth_vars[i], &e);
+  assert_variable_notin(US"auth<n>", US auth_vars[i], &e);
 
-/* check regex<n> variables */
+/* check regex<n> variables. assert_variable_notin() treats as const. */
 for (int i = 0; i < REGEX_VARS; i++) if (regex_vars[i])
-  assert_variable_notin(US"regex<n>", regex_vars[i], &e);
+  assert_variable_notin(US"regex<n>", US regex_vars[i], &e);
 
 /* check known-name variables */
 for (var_entry * v = var_table; v < var_table + var_table_size; v++)
@@ -8597,11 +8624,11 @@ if (e.var_name)
 
 
 BOOL
-regex_match_and_setup(const pcre *re, uschar *subject, int options, int setup)
+regex_match_and_setup(const pcre2_code *re, uschar *subject, int options, int setup)
 {
-int ovector[3*(EXPAND_MAXN+1)];
+int ovec[3*(EXPAND_MAXN+1)];
 int n = pcre_exec(re, NULL, subject, Ustrlen(subject), 0, PCRE_EOPT|options,
-  ovector, nelem(ovector));
+  ovec, nelem(ovec));
 BOOL yield = n >= 0;
 if (n == 0) n = EXPAND_MAXN + 1;
 if (yield)
@@ -8609,8 +8636,8 @@ if (yield)
   expand_nmax = setup < 0 ? 0 : setup + 1;
   for (int nn = setup < 0 ? 0 : 2; nn < n*2; nn += 2)
     {
-    expand_nstring[expand_nmax] = subject + ovector[nn];
-    expand_nlength[expand_nmax++] = ovector[nn+1] - ovector[nn];
+    expand_nstring[expand_nmax] = subject + ovec[nn];
+    expand_nlength[expand_nmax++] = ovec[nn+1] - ovec[nn];
     }
   expand_nmax--;
   }

@@ -457,19 +457,19 @@ LOOKUP_DNSDB=yes
 
 
 #------------------------------------------------------------------------------
-# The PCRE library is required for Exim.  There is no longer an embedded
+# The PCRE2 library is required for Exim.  There is no longer an embedded
 # version of the PCRE library included with the source code, instead you
-# must use a system library or build your own copy of PCRE.
+# must use a system library or build your own copy of PCRE2.
 # In either case you must specify the library link info here.  If the
-# PCRE header files are not in the standard search path you must also
+# PCRE2 header files are not in the standard search path you must also
 # modify the INCLUDE path (above)
 #
 # Use PCRE_CONFIG to query the pcre-config command (first found in $PATH)
 # to find the include files and libraries, else use PCRE_LIBS and set INCLUDE
 # too if needed.
 
-PCRE_CONFIG=yes
-# PCRE_LIBS=-lpcre
+PCRE2_CONFIG=yes
+# PCRE_LIBS=-lpcre2
 
 
 #------------------------------------------------------------------------------

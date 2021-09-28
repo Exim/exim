@@ -1,0 +1,31 @@
+# Exim test configuration 0626
+# ACL seen condition
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+primary_hostname = test.ex
+queue_only
+
+acl_smtp_rcpt = chk_rcpt
+
+# ----- ACL -----
+
+begin acl
+
+chk_rcpt:
+  accept	seen = OPT
+
+# seen = never / $sender_host_addreee / per_call
+# seen = before=10s
+# seen = before=10s / write
+# seen = since / readonly
+#
+# seen = -10s
+# seen = -10s / readonly
+# seen = 2s
+# seen = 0s / update=20d
+#
+# End

@@ -140,24 +140,26 @@ for (i = 0; i < 4; i++)
 /* If the basic path matches maildirfolder_create_regex, we are dealing with
 a subfolder, and should ensure that a maildirfolder file exists. */
 
-if (maildirfolder_create_regex != NULL)
+if (maildirfolder_create_regex)
   {
-  const uschar *error;
-  int offset;
-  const pcre *regex;
+  int err;
+  PCRE2_SIZE offset;
+  const pcre2_code * re;
 
   DEBUG(D_transport) debug_printf("checking for maildirfolder requirement\n");
 
-  if (!(regex = pcre_compile(CS maildirfolder_create_regex, PCRE_COPT,
-    CCSS &error, &offset, NULL)))
+  if (!(re = pcre2_compile((PCRE2_SPTR)maildirfolder_create_regex,
+	      PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_cmp_ctx)))
     {
+    uschar errbuf[128];
+    pcre2_get_error_message(err, errbuf, sizeof(errbuf));
     addr->message = string_sprintf("appendfile: regular expression "
-      "error: %s at offset %d while compiling %s", error, offset,
+      "error: %s at offset %ld while compiling %s", errbuf, (long)offset,
       maildirfolder_create_regex);
     return FALSE;
     }
 
-  if (pcre_exec(regex, NULL, CS path, Ustrlen(path), 0, 0, NULL, 0) >= 0)
+  if (regex_match(re, path, -1, NULL))
     {
     uschar *fname = string_sprintf("%s/maildirfolder", path);
     if (Ustat(fname, &statbuf) == 0)
@@ -250,7 +252,7 @@ Returns:      the sum of the sizes of the messages
 
 off_t
 maildir_compute_size(uschar *path, int *filecount, time_t *latest,
-  const pcre *regex, const pcre *dir_regex, BOOL timestamp_only)
+  const pcre2_code *regex, const pcre2_code *dir_regex, BOOL timestamp_only)
 {
 DIR *dir;
 off_t sum = 0;
@@ -269,8 +271,7 @@ for (struct dirent *ent; ent = readdir(dir); )
   scan. We do the regex match first, because that avoids a stat() for names
   we aren't interested in. */
 
-  if (dir_regex != NULL &&
-      pcre_exec(dir_regex, NULL, CS name, Ustrlen(name), 0, 0, NULL, 0) < 0)
+  if (dir_regex && !regex_match(dir_regex, name, -1, NULL))
     {
     DEBUG(D_transport)
       debug_printf("skipping %s/%s: dir_regex does not match\n", path, name);
@@ -358,7 +359,7 @@ Returns:           >=0  a file descriptor for an open maildirsize file
 
 int
 maildir_ensure_sizefile(uschar *path, appendfile_transport_options_block *ob,
-  const pcre *regex, const pcre *dir_regex, off_t *returned_size,
+  const pcre2_code *regex, const pcre2_code *dir_regex, off_t *returned_size,
   int *returned_filecount)
 {
 int count, fd;

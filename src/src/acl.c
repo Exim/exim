@@ -106,6 +106,7 @@ enum { ACLC_ACL,
        ACLC_REGEX,
 #endif
        ACLC_REMOVE_HEADER,
+       ACLC_SEEN,
        ACLC_SENDER_DOMAINS,
        ACLC_SENDERS,
        ACLC_SET,
@@ -291,6 +292,7 @@ static condition_def conditions[] = {
 				    ACL_BIT_MIME | ACL_BIT_NOTSMTP |
 				    ACL_BIT_NOTSMTP_START),
   },
+  [ACLC_SEEN] =			{ US"seen",		TRUE, FALSE,	0 },
   [ACLC_SENDER_DOMAINS] =	{ US"sender_domains",	FALSE, FALSE,
 				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
 				    ACL_BIT_HELO |
@@ -2837,6 +2839,143 @@ return rc;
 
 
 /*************************************************
+*      Handle a check for previously-seen        *
+*************************************************/
+
+/*
+ACL clauses like:   seen = -5m / key=$foo / readonly
+
+Return is true for condition-true - but the semantics
+depend heavily on the actual use-case.
+
+Negative times test for seen-before, positive for seen-more-recently-than
+(the given interval before current time).
+
+All are subject to history not having been cleaned from the DB.
+
+Default for seen-before is to create if not present, and to
+update if older than 10d (with the seen-test time).
+Default for seen-since is to always create or update.
+
+Options:
+  key=value.  Default key is $sender_host_address
+  readonly
+  write
+  refresh=<interval>:  update an existing DB entry older than given
+			amount.  Default refresh lacking this option is 10d.
+			The update sets the record timestamp to the seen-test time.
+
+XXX do we need separate nocreate, noupdate controls?
+
+Arguments:
+  arg         the option string for seen=
+  where       ACL_WHERE_xxxx indicating which ACL this is
+  log_msgptr  for error messages
+
+Returns:       OK        - Condition is true
+               FAIL      - Condition is false
+               DEFER     - Problem opening history database
+               ERROR     - Syntax error in options
+*/
+
+static int
+acl_seen(const uschar * arg, int where, uschar ** log_msgptr)
+{
+enum { SEEN_DEFAULT, SEEN_READONLY, SEEN_WRITE };
+
+const uschar * list = arg;
+int slash = '/', equal = '=', interval, mode = SEEN_DEFAULT, yield = FAIL;
+BOOL before;
+int refresh = 10 * 24 * 60 * 60;	/* 10 days */
+const uschar * ele, * key = sender_host_address;
+open_db dbblock, * dbm;
+dbdata_seen * dbd;
+time_t now;
+
+/* Parse the first element, the time-relation. */
+
+if (!(ele = string_nextinlist(&list, &slash, NULL, 0)))
+  goto badparse;
+if ((before = *ele == '-'))
+  ele++;
+if ((interval = readconf_readtime(ele, 0, FALSE)) < 0)
+  goto badparse;
+
+/* Remaining elements are options */
+
+while ((ele = string_nextinlist(&list, &slash, NULL, 0)))
+  if (Ustrncmp(ele, "key=", 4) == 0)
+    key = ele + 4;
+  else if (Ustrcmp(ele, "readonly") == 0)
+    mode = SEEN_READONLY;
+  else if (Ustrcmp(ele, "write") == 0)
+    mode = SEEN_WRITE;
+  else if (Ustrncmp(ele, "refresh=", 8) == 0)
+    {
+    if ((refresh = readconf_readtime(ele + 8, 0, FALSE)) < 0)
+      goto badparse;
+    }
+  else
+    goto badopt;
+
+if (!(dbm = dbfn_open(US"seen", O_RDWR, &dbblock, TRUE, TRUE)))
+  {
+  HDEBUG(D_acl) debug_printf_indent("database for 'seen' not available\n");
+  *log_msgptr = US"database for 'seen' not available";
+  return DEFER;
+  }
+
+dbd = dbfn_read_with_length(dbm, key, NULL);
+now = time(NULL);
+if (dbd)		/* an existing record */
+  {
+  time_t diff = now - dbd->time_stamp;	/* time since the record was written */
+
+  if (before ? diff >= interval : diff < interval)
+    yield = OK;
+
+  if (mode == SEEN_READONLY)
+    { HDEBUG(D_acl) debug_printf_indent("seen db not written (readonly)\n"); }
+  else if (mode == SEEN_WRITE || !before)
+    {
+    dbd->time_stamp = now;
+    dbfn_write(dbm, key, dbd, sizeof(*dbd));
+    HDEBUG(D_acl) debug_printf_indent("seen db written (update)\n");
+    }
+  else if (diff >= refresh)
+    {
+    dbd->time_stamp = now - interval;
+    dbfn_write(dbm, key, dbd, sizeof(*dbd));
+    HDEBUG(D_acl) debug_printf_indent("seen db written (refresh)\n");
+    }
+  }
+else
+  {			/* No record found, yield always FAIL */
+  if (mode != SEEN_READONLY)
+    {
+    dbdata_seen d = {.time_stamp = now};
+    dbfn_write(dbm, key, &d, sizeof(*dbd));
+    HDEBUG(D_acl) debug_printf_indent("seen db written (create)\n");
+    }
+  else
+    HDEBUG(D_acl) debug_printf_indent("seen db not written (readonly)\n");
+  }
+
+dbfn_close(dbm);
+return yield;
+
+
+badparse:
+  *log_msgptr = string_sprintf("failed to parse '%s'", arg);
+  return ERROR;
+badopt:
+  *log_msgptr = string_sprintf("unrecognised option '%s' in '%s'", ele, arg);
+  return ERROR;
+}
+
+
+
+/*************************************************
 *            The udpsend ACL modifier            *
 *************************************************/
 
@@ -3759,6 +3898,10 @@ for (; cb; cb = cb->next)
 
     case ACLC_REMOVE_HEADER:
     setup_remove_header(arg);
+    break;
+
+    case ACLC_SEEN:
+    rc = acl_seen(arg, where, log_msgptr);
     break;
 
     case ACLC_SENDER_DOMAINS:

@@ -734,15 +734,13 @@ switch (frc)
       addr->message = yield == FAIL ? US"forced rejection" : US"forced defer";
     else
       {
-      int ovector[3];
-      if (ob->forbid_smtp_code &&
-	  pcre_exec(regex_smtp_code, NULL, CS addr->message,
-	    Ustrlen(addr->message), 0, PCRE_EOPT,
-	    ovector, sizeof(ovector)/sizeof(int)) >= 0)
+      uschar * matched;
+      if (  ob->forbid_smtp_code
+	 && regex_match(regex_smtp_code, addr->message, -1, &matched))
 	{
 	DEBUG(D_route) debug_printf("SMTP code at start of error message "
 	  "is ignored because forbid_smtp_code is set\n");
-	addr->message += ovector[1];
+	addr->message += Ustrlen(matched);
 	}
       addr->user_message = addr->message;
       setflag(addr, af_pass_message);

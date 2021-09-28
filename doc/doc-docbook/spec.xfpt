@@ -11194,7 +11194,8 @@ empty.
 The parsing correctly handles SMTPUTF8 Unicode in the string.
 
 
-.vitem &*${mask:*&<&'IP&~address'&>&*/*&<&'bit&~count'&>&*}*&
+.vitem &*${mask:*&<&'IP&~address'&>&*/*&<&'bit&~count'&>&*}*& &&&
+       &*${mask_n:*&<&'IP&~address'&>&*/*&<&'bit&~count'&>&*}*&
 .cindex "masked IP address"
 .cindex "IP address" "masking"
 .cindex "CIDR notation"
@@ -11208,8 +11209,14 @@ the result back to text, with mask appended. For example,
 .code
 ${mask:10.111.131.206/28}
 .endd
-returns the string &"10.111.131.192/28"&. Since this operation is expected to
-be mostly used for looking up masked addresses in files, the result for an IPv6
+returns the string &"10.111.131.192/28"&.
+
+Since this operation is expected to
+be mostly used for looking up masked addresses in files, the
+.new
+normal
+.wen
+result for an IPv6
 address uses dots to separate components instead of colons, because colon
 terminates a key string in lsearch files. So, for example,
 .code
@@ -11219,6 +11226,10 @@ returns the string
 .code
 3ffe.ffff.836f.0a00.000a.0800.2000.0000/99
 .endd
+.new
+If the optional form &*mask_n*& is used, IPv6 address result are instead
+returned in normailsed form, using colons and with zero-compression.
+.wen
 Letters in IPv6 addresses are always output in lower case.
 
 
@@ -32190,6 +32201,14 @@ content-scanning extension, and is available only in the DATA, MIME, and
 non-SMTP ACLs. It causes the incoming message to be scanned for a match with
 any of the regular expressions. For details, see chapter &<<CHAPexiscan>>&.
 
+.new
+.vitem &*seen&~=&~*&<&'parameters'&>
+.cindex "&%sseen%& ACL condition"
+This condition can be used to test if a situation has been previously met,
+for example for greylisting.
+Details are given in section &<<SECTseen>>&.
+.wen
+
 .vitem &*sender_domains&~=&~*&<&'domain&~list'&>
 .cindex "&%sender_domains%& ACL condition"
 .cindex "sender" "ACL checking"
@@ -32911,6 +32930,59 @@ address you should specify alternate list separators for both the outer
 .code
        dnslists = <; dnsbl.example.com/<|$acl_m_addrslist
 .endd
+
+
+.new
+.section "Previously seen user and hosts" "SECTseen"
+.cindex "&%sseen%& ACL condition"
+.cindex greylisting
+The &%seen%& ACL condition can be used to test whether a
+situation has been previously met.
+It uses a hints database to record a timestamp against a key.
+host. The syntax of the condition is:
+.display
+&`seen =`& <&'time interval'&> &`/`& <&'options'&>
+.endd
+
+For example,
+.code
+defer	seen = -5m / key=${sender_host_address}_$local_part@$domain
+.endd
+in a RCPT ACL will implement simple greylisting.
+
+The parameters for the condition
+are an interval followed, slash-separated, by a list of options.
+The interval is taken as an offset before the current time,
+and used for the test.
+If the interval is preceded by a minus sign then the condition returns
+whether a record is found which is before the test time.
+Otherwise, the condition returns whether one is found which is since the
+test time.
+
+Options are read in order with later ones overriding earlier ones.
+
+The default key is &$sender_host_address$&.
+An explicit key can be set using a &%key=value%& option.
+
+If a &%readonly%& option is given then
+no record create or update is done.
+If a &%write%& option is given then
+a record create or update is always done.
+An update is done if the test is for &"since"&.
+
+Creates and updates are marked with the current time.
+
+Finally, a &"before"& test which succeeds, and for which the record
+is old enough, will be refreshed with a timestamp of the test time.
+This can prevent tidying of the database from removing the entry.
+The interval for this is, by default, 10 days.
+An explicit interval can be set using a
+&%refresh=value%& option.
+
+Note that &"seen"& should be added to the list of hints databases
+for maintenance if this ACL condition is used.
+.wen
+
 
 .section "Rate limiting incoming messages" "SECTratelimiting"
 .cindex "rate limiting" "client sending"
@@ -35180,8 +35252,10 @@ discussed below.
 .vitem &*header_line&~*header_last*&
 A pointer to the last of the header lines.
 
-.vitem &*uschar&~*headers_charset*&
+.new
+.vitem &*const&~uschar&~*headers_charset*&
 The value of the &%headers_charset%& configuration option.
+.wen
 
 .vitem &*BOOL&~host_checking*&
 This variable is TRUE during a host checking session that is initiated by the
@@ -39724,8 +39798,13 @@ in a transport)
 .section "exim_dumpdb" "SECTdumpdb"
 .cindex "&'exim_dumpdb'&"
 The entire contents of a database are written to the standard output by the
-&'exim_dumpdb'& program, which has no options or arguments other than the
-spool and database names. For example, to dump the retry database:
+&'exim_dumpdb'& program,
+.new
+taking as arguments the spool and database names.
+An option &'-z'& may be given to regest times in UTC;
+otherwise times are in the local timezone.
+.wen
+For example, to dump the retry database:
 .code
 exim_dumpdb /var/spool/exim retry
 .endd
@@ -39811,7 +39890,7 @@ databases is likely to keep on increasing.
 .cindex "&'exim_fixdb'&"
 The &'exim_fixdb'& program is a utility for interactively modifying databases.
 Its main use is for testing Exim, but it might also be occasionally useful for
-getting round problems in a live system. It has no options, and its interface
+getting round problems in a live system. Its interface
 is somewhat crude. On entry, it prompts for input with a right angle-bracket. A
 key of a database record can then be entered, and the data for that record is
 displayed.
@@ -39827,6 +39906,12 @@ by new data, for example:
 resets the time of the next delivery attempt. Time values are given as a
 sequence of digit pairs for year, month, day, hour, and minute. Colons can be
 used as optional separators.
+
+.new
+Both displayed and input times are in the local timezone by default.
+If an option &'-z'& is used on the command line, displayed times
+are in UTC.
+.wen
 
 
 

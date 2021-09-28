@@ -378,7 +378,8 @@ extern uschar *parse_find_address_end(const uschar *, BOOL);
 extern const uschar *parse_find_at(const uschar *);
 extern const uschar *parse_fix_phrase(const uschar *, int);
 extern const uschar *parse_message_id(const uschar *, uschar **, uschar **);
-extern const uschar *parse_quote_2047(const uschar *, int, uschar *, BOOL);
+extern const uschar *parse_quote_2047(const uschar *, int, const uschar *,
+				      BOOL);
 extern const uschar *parse_date_time(const uschar *str, time_t *t);
 extern void priv_drop_temp(const uid_t, const gid_t);
 extern void priv_restore(void);
@@ -426,8 +427,9 @@ extern void    receive_swallow_smtp(void);
 #ifdef WITH_CONTENT_SCAN
 extern int     regex(const uschar **);
 #endif
-extern BOOL    regex_match_and_setup(const pcre *, const uschar *, int, int);
-extern const pcre *regex_must_compile(const uschar *, BOOL, BOOL);
+extern BOOL    regex_match(const pcre2_code *, const uschar *, int, uschar **);
+extern BOOL    regex_match_and_setup(const pcre2_code *, const uschar *, int, int);
+extern const pcre2_code *regex_must_compile(const uschar *, BOOL, BOOL);
 extern void    retry_add_item(address_item *, uschar *, int);
 extern BOOL    retry_check_address(const uschar *, host_item *, uschar *, BOOL,
                  uschar **, uschar **);
@@ -443,8 +445,8 @@ extern header_line *rewrite_header(header_line *,
 extern const uschar *rewrite_one(const uschar *, int, BOOL *, BOOL, uschar *,
                  rewrite_rule *);
 extern void    rewrite_test(const uschar *);
-extern uschar *rfc2047_decode2(uschar *, BOOL, uschar *, int, int *, int *,
-                 uschar **);
+extern uschar *rfc2047_decode2(uschar *, BOOL, const uschar *, int, int *,
+				     int *, uschar **);
 extern int     route_address(address_item *, address_item **, address_item **,
                  address_item **, address_item **, int);
 extern int     route_check_prefix(const uschar *, const uschar *, unsigned *);

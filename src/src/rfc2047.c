@@ -186,8 +186,8 @@ Returns:         the decoded, converted string, or NULL on error; if there are
 */
 
 uschar *
-rfc2047_decode2(uschar *string, BOOL lencheck, uschar *target, int zeroval,
-  int *lenptr, int *sizeptr, uschar **error)
+rfc2047_decode2(uschar *string, BOOL lencheck, const uschar *target,
+  int zeroval, int *lenptr, int *sizeptr, uschar **error)
 {
 int size = Ustrlen(string);
 size_t dlen;
@@ -336,7 +336,7 @@ return string_from_gstring(yield);
 argument. */
 
 uschar *
-rfc2047_decode(uschar *string, BOOL lencheck, uschar *target, int zeroval,
+rfc2047_decode(uschar *string, BOOL lencheck, const uschar *target, int zeroval,
   int *lenptr, uschar **error)
 {
 return rfc2047_decode2(string, lencheck, target, zeroval, lenptr, NULL, error);

@@ -202,8 +202,7 @@ record, and the max number of continuation records allowed. */
 
 /* Macros for trivial functions */
 
-#define mac_ismsgid(s) \
-  (pcre_exec(regex_ismsgid,NULL,CS s,Ustrlen(s),0,PCRE_EOPT,NULL,0) >= 0)
+#define mac_ismsgid(s)	(regex_match(regex_ismsgid, (s), -1, NULL))
 
 
 /* Options for dns_next_rr */
