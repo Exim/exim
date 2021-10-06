@@ -2182,9 +2182,9 @@ if (  inlen > 1		/* at least one name */
   for (uschar * name; name = string_nextinlist(&list, &sep, NULL, 0); )
     if (Ustrncmp(in+1, name, in[0]) == 0)
       {
-      *out = in;			/* we checked for exactly one, so can just point to it */
-      *outlen = inlen;
-      return SSL_TLSEXT_ERR_OK;		/* use ALPN */
+        *out = (unsigned char *)in + 1;
+        *outlen = in[0];
+        return SSL_TLSEXT_ERR_OK; /* use ALPN */
       }
   }
 
