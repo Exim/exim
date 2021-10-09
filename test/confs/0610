@@ -21,7 +21,9 @@ queue_run_in_order
 begin acl
 
 conn_chk:
+.ifdef DELAY
   defer	condition = ${if eq {SERVER}{server}}
+.endif
   accept
 
 # ----- Routers -----
@@ -62,7 +64,7 @@ t2:
 
 begin retry
 
-* * F,5d,10s
+* * F,5d,1s
 
 # End
 

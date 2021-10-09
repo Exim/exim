@@ -1,7 +1,7 @@
 # retry: transport with fixed interface
 # Exim test configuration 0610
 #
-exim -DSERVER=server -bd -oX PORT_D
+exim -DSERVER=server -DDELAY=y -bd -oX PORT_D
 ****
 #
 exim -bs
@@ -29,6 +29,16 @@ exim -qq
 # Should get two separate retry records.
 dump retry
 #
+# Arrange final delivery of both; retry records should be removed.
+killdaemon
+sleep 1
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -qq
+****
+dump retry
+# just so the output is hard to misread
+dump retry
 #
 killdaemon
 no_msglog_check
