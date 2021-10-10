@@ -766,17 +766,17 @@ the Exim documentation, &"spool"& is always used in the first sense.
 .chapter "Incorporated code" "CHID2"
 .cindex "incorporated code"
 .cindex "regular expressions" "library"
-.cindex "PCRE"
+.cindex "PCRE2"
 .cindex "OpenDMARC"
 A number of pieces of external code are included in the Exim distribution.
 
 .ilist
 Regular expressions are supported in the main Exim program and in the
-Exim monitor using the freely-distributable PCRE library, copyright
-&copy; University of Cambridge. The source to PCRE is no longer shipped with
-Exim, so you will need to use the version of PCRE shipped with your system,
+Exim monitor using the freely-distributable PCRE2 library, copyright
+&copy; University of Cambridge. The source to PCRE2 is not longer shipped with
+Exim, so you will need to use the version of PCRE2 shipped with your system,
 or obtain and install the full version of the library from
-&url(ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre).
+&url(https://github.com/PhilipHazel/pcre2/releases).
 .next
 .cindex "cdb" "acknowledgment"
 Support for the cdb (Constant DataBase) lookup method is provided by code
@@ -1745,20 +1745,20 @@ overridden if necessary.
 A C99-capable compiler will be required for the build.
 
 
-.section "PCRE library" "SECTpcre"
-.cindex "PCRE library"
-Exim no longer has an embedded PCRE library as the vast majority of
-modern systems include PCRE as a system library, although you may need to
-install the PCRE package or the PCRE development package for your operating
-system. If your system has a normal PCRE installation the Exim build
+.section "PCRE2 library" "SECTpcre"
+.cindex "PCRE2 library"
+Exim no longer has an embedded regular-expression library as the vast majority of
+modern systems include PCRE2 as a system library, although you may need to
+install the PCRE2 package or the PCRE2 development package for your operating
+system. If your system has a normal PCRE2 installation the Exim build
 process will need no further configuration. If the library or the
-headers are in an unusual location you will need to either set the PCRE_LIBS
+headers are in an unusual location you will need to either set the PCRE2_LIBS
 and INCLUDE directives appropriately,
-or set PCRE_CONFIG=yes to use the installed &(pcre-config)& command.
+or set PCRE2_CONFIG=yes to use the installed &(pcre-config)& command.
 If your operating system has no
-PCRE support then you will need to obtain and build the current PCRE
-from &url(ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/).
-More information on PCRE is available at &url(https://www.pcre.org/).
+PCRE2 support then you will need to obtain and build the current PCRE
+from &url(https://github.com/PhilipHazel/pcre2/releases).
+More information on PCRE2 is available at &url(https://www.pcre.org/).
 
 .section "DBM libraries" "SECTdb"
 .cindex "DBM libraries" "discussion of"
@@ -6635,9 +6635,9 @@ Chapter &<<CHAPplaintext>>& covers both.
 .chapter "Regular expressions" "CHAPregexp"
 
 .cindex "regular expressions" "library"
-.cindex "PCRE"
+.cindex "PCRE2"
 Exim supports the use of regular expressions in many of its options. It
-uses the PCRE regular expression library; this provides regular expression
+uses the PCRE2 regular expression library; this provides regular expression
 matching that is compatible with Perl 5. The syntax and semantics of
 regular expressions is discussed in
 online Perl manpages, in
@@ -6649,10 +6649,10 @@ O'Reilly (see &url(http://www.oreilly.com/catalog/regex2/)).
 . --- to the old URL for now.  2018-09-07.
 
 The documentation for the syntax and semantics of the regular expressions that
-are supported by PCRE is included in the PCRE distribution, and no further
-description is included here. The PCRE functions are called from Exim using
-the default option settings (that is, with no PCRE options set), except that
-the PCRE_CASELESS option is set when the matching is required to be
+are supported by PCRE2 is included in the PCRE2 distribution, and no further
+description is included here. The PCRE2 functions are called from Exim using
+the default option settings (that is, with no PCRE2 options set), except that
+the PCRE2_CASELESS option is set when the matching is required to be
 case-insensitive.
 
 In most cases, when a regular expression is required in an Exim configuration,
@@ -40683,7 +40683,7 @@ Consider the use of the &%inlisti%& expansion condition instead.
 .cindex "security" "data sources"
 .cindex "security" "regular expressions"
 .cindex "regular expressions" "security"
-.cindex "PCRE" "security"
+.cindex "PCRE2" "security"
 If configuration data for Exim can come from untrustworthy sources, there
 are some issues to be aware of:
 
@@ -40693,7 +40693,7 @@ Use of &%${expand...}%& may provide a path for shell injection attacks.
 Letting untrusted data provide a regular expression is unwise.
 .next
 Using &%${match...}%& to apply a fixed regular expression against untrusted
-data may result in pathological behaviour within PCRE.  Be aware of what
+data may result in pathological behaviour within PCRE2.  Be aware of what
 "backtracking" means and consider options for being more strict with a regular
 expression. Avenues to explore include limiting what can match (avoiding &`.`&
 when &`[a-z0-9]`& or other character class will do), use of atomic grouping and
