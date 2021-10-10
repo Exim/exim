@@ -58,6 +58,11 @@ performance on outgoing mail a bit. */
 #define OS_SENDFILE
 extern ssize_t os_sendfile(int, int, off_t *, size_t);
 
+#ifdef PID_T_FMT
+# undef PID_T_FMT
+#endif
+#define PID_T_FMT "%d"
+
 
 /*******************/
 

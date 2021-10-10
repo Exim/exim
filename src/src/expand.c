@@ -2982,7 +2982,7 @@ switch(cond_type = identify_operator(&s, &opname))
 	uschar errbuf[128];
 	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
 	expand_string_message = string_sprintf("regular expression error in "
-	  "\"%s\": %s at offset %d", sub[1], errbuf, offset);
+	  "\"%s\": %s at offset %ld", sub[1], errbuf, (long)offset);
 	return NULL;
 	}
 
