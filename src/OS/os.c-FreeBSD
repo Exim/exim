@@ -19,7 +19,7 @@ os_sendfile(int out, int in, off_t * offp, size_t cnt)
 off_t loff = *offp, written;
 
 if (sendfile(in, out, loff, cnt, NULL, &written, 0) < 0) return (ssize_t)-1;
-*offp = loff + written;
+if (offp) *offp = loff + written;
 return (ssize_t)written;
 }
 

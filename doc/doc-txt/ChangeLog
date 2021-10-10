@@ -18,6 +18,9 @@ JH/03 Constification work in the filters module required a major version
       global which is visible via the API is now const and may therefore
       not be modified by local-scan code.
 
+JH/04 Fix ClamAV TCP use under FreeBSD. Previously the OS-specific shim for
+      sendfile() didi not account for the way the ClamAV driver code called it.
+
 
 Exim version 4.95
 -----------------
