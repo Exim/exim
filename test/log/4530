@@ -22,8 +22,8 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= <> U=CALLER P=local S=sss for e0@test.ex
 1999-03-02 09:44:33 10HmaX-0005vi-00 failed to expand dkim_timestamps: unknown variable in "${bogus}"
 1999-03-02 09:44:33 10HmaX-0005vi-00 DKIM: message could not be signed, and dkim_strict is set. Deferring message delivery.
-1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: send() to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] failed: failed to expand dkim_timestamps: unknown variable in "${bogus}": Permission denied
-1999-03-02 09:44:33 10HmaX-0005vi-00 == e0@test.ex R=client T=send_to_server defer (EEE): Permission denied H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: send() to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] failed: failed to expand dkim_timestamps: unknown variable in "${bogus}"
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: smtp send to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] failed: failed to expand dkim_timestamps: unknown variable in "${bogus}": Permission denied
+1999-03-02 09:44:33 10HmaX-0005vi-00 == e0@test.ex R=client T=send_to_server defer (EEE): Permission denied H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: smtp send to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] failed: failed to expand dkim_timestamps: unknown variable in "${bogus}"
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** e0@test.ex: retry timeout exceeded
 1999-03-02 09:44:33 10HmaX-0005vi-00 e0@test.ex: error ignored
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
