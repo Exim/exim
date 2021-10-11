@@ -27,7 +27,7 @@ Arguments:
                which case the function does nothing
   host_af    AF_INET or AF_INET6 for the outgoing IP address
   addr       the mail address being handled (for setting errors)
-  interface  point this to the interface
+  interface  point this to the interface if there is one defined
   msg        to add to any error message
 
 Returns:     TRUE on success, FALSE on failure, with error message
@@ -64,11 +64,10 @@ if (is_tainted2(expint, LOG_MAIN|LOG_PANIC, "Tainted value '%s' from '%s' for in
 Uskip_whitespace(&expint);
 if (!*expint) return TRUE;
 
-/* we just tested to ensure no taint, so big_buffer is ok */
-while ((iface = string_nextinlist(&expint, &sep, big_buffer,
-          big_buffer_size)))
+while ((iface = string_nextinlist(&expint, &sep, NULL, 0)))
   {
-  if (string_is_ip_address(iface, NULL) == 0)
+  int if_af = string_is_ip_address(iface, NULL);
+  if (if_af == 0)
     {
     addr->transport_return = PANIC;
     addr->message = string_sprintf("\"%s\" is not a valid IP "
@@ -77,11 +76,11 @@ while ((iface = string_nextinlist(&expint, &sep, big_buffer,
     return FALSE;
     }
 
-  if (((Ustrchr(iface, ':') == NULL)? AF_INET:AF_INET6) == host_af)
+  if ((if_af == 4 ? AF_INET : AF_INET6) == host_af)
     break;
   }
 
-if (iface) *interface = string_copy(iface);
+*interface = iface;
 return TRUE;
 }
 
