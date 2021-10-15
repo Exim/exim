@@ -171,16 +171,19 @@ incoming TCP/IP. The defaults use stdin. We never need these for any
 stand-alone tests. */
 
 #if !defined(STAND_ALONE) && !defined(MACRO_PREDEF)
-int (*lwr_receive_getc)(unsigned) = stdin_getc;
+int	(*lwr_receive_getc)(unsigned)	= stdin_getc;
 uschar * (*lwr_receive_getbuf)(unsigned *) = NULL;
-int (*lwr_receive_ungetc)(int) = stdin_ungetc;
-int (*receive_getc)(unsigned)  = stdin_getc;
-uschar * (*receive_getbuf)(unsigned *)  = NULL;
-void (*receive_get_cache)(unsigned)    = NULL;
-int (*receive_ungetc)(int)     = stdin_ungetc;
-int (*receive_feof)(void)      = stdin_feof;
-int (*receive_ferror)(void)    = stdin_ferror;
-BOOL (*receive_smtp_buffered)(void) = NULL;   /* Only used for SMTP */
+int	(*lwr_receive_ungetc)(int)	= stdin_ungetc;
+BOOL	(*lwr_receive_hasc)(void)	= stdin_hasc;
+
+int	(*receive_getc)(unsigned) 	= stdin_getc;
+uschar * (*receive_getbuf)(unsigned *) 	= NULL;
+void	(*receive_get_cache)(unsigned)	= NULL;
+BOOL	(*receive_hasc)(void)		= stdin_hasc;
+int	(*receive_ungetc)(int)    	= stdin_ungetc;
+int	(*receive_feof)(void)     	= stdin_feof;
+int	(*receive_ferror)(void)   	= stdin_ferror;
+BOOL	(*receive_smtp_buffered)(void)	= NULL;   /* Only used for SMTP */
 #endif
 
 

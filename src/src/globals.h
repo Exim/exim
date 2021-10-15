@@ -161,9 +161,12 @@ incoming TCP/IP. */
 
 extern int (*lwr_receive_getc)(unsigned);
 extern uschar * (*lwr_receive_getbuf)(unsigned *);
+extern BOOL (*lwr_receive_hasc)(void);
 extern int (*lwr_receive_ungetc)(int);
+
 extern int (*receive_getc)(unsigned);
 extern uschar * (*receive_getbuf)(unsigned *);
+extern BOOL (*receive_hasc)(void);
 extern void (*receive_get_cache)(unsigned);
 extern int (*receive_ungetc)(int);
 extern int (*receive_feof)(void);

@@ -3138,6 +3138,7 @@ state->xfer_buffer = store_malloc(ssl_xfer_buffer_size);
 receive_getc = tls_getc;
 receive_getbuf = tls_getbuf;
 receive_get_cache = tls_get_cache;
+receive_hasc = tls_hasc;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
 receive_ferror = tls_ferror;
@@ -3740,6 +3741,7 @@ if (!ct_ctx)	/* server */
   receive_getc =	smtp_getc;
   receive_getbuf =	smtp_getbuf;
   receive_get_cache =	smtp_get_cache;
+  receive_hasc =	smtp_hasc;
   receive_ungetc =	smtp_ungetc;
   receive_feof =	smtp_feof;
   receive_ferror =	smtp_ferror;
@@ -3852,6 +3854,13 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
 /* Something in the buffer; return next uschar */
 
 return state->xfer_buffer[state->xfer_buffer_lwm++];
+}
+
+BOOL
+tls_hasc(void)
+{
+exim_gnutls_state_st * state = &state_server;
+return state->xfer_buffer_lwm < state->xfer_buffer_hwm;
 }
 
 uschar *

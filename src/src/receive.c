@@ -44,42 +44,71 @@ receive_getc initially. They just call the standard functions, passing stdin as
 the file. (When SMTP input is occurring, different functions are used by
 changing the pointer variables.) */
 
+uschar stdin_buf[4096];
+uschar * stdin_inptr = stdin_buf;
+uschar * stdin_inend = stdin_buf;
+
+static BOOL
+stdin_refill(void)
+{
+size_t rc = fread(stdin_buf, 1, sizeof(stdin_buf), stdin);
+if (rc <= 0)
+  {
+  if (had_data_timeout)
+    {
+    fprintf(stderr, "exim: timed out while reading - message abandoned\n");
+    log_write(L_lost_incoming_connection,
+	      LOG_MAIN, "timed out while reading local message");
+    receive_bomb_out(US"data-timeout", NULL);   /* Does not return */
+    }
+  if (had_data_sigint)
+    {
+    if (filter_test == FTEST_NONE)
+      {
+      fprintf(stderr, "\nexim: %s received - message abandoned\n",
+	had_data_sigint == SIGTERM ? "SIGTERM" : "SIGINT");
+      log_write(0, LOG_MAIN, "%s received while reading local message",
+	had_data_sigint == SIGTERM ? "SIGTERM" : "SIGINT");
+      }
+    receive_bomb_out(US"signal-exit", NULL);    /* Does not return */
+    }
+  return FALSE;
+  }
+stdin_inend = stdin_buf + rc;
+stdin_inptr = stdin_buf;
+return TRUE;
+}
+
 int
 stdin_getc(unsigned lim)
 {
-int c = getc(stdin);
+if (stdin_inptr >= stdin_inend)
+  if (!stdin_refill())
+      return EOF;
+return *stdin_inptr++;
+}
 
-if (had_data_timeout)
-  {
-  fprintf(stderr, "exim: timed out while reading - message abandoned\n");
-  log_write(L_lost_incoming_connection,
-            LOG_MAIN, "timed out while reading local message");
-  receive_bomb_out(US"data-timeout", NULL);   /* Does not return */
-  }
-if (had_data_sigint)
-  {
-  if (filter_test == FTEST_NONE)
-    {
-    fprintf(stderr, "\nexim: %s received - message abandoned\n",
-      had_data_sigint == SIGTERM ? "SIGTERM" : "SIGINT");
-    log_write(0, LOG_MAIN, "%s received while reading local message",
-      had_data_sigint == SIGTERM ? "SIGTERM" : "SIGINT");
-    }
-  receive_bomb_out(US"signal-exit", NULL);    /* Does not return */
-  }
-return c;
+
+BOOL
+stdin_hasc(void)
+{
+return stdin_inptr < stdin_inend;
 }
 
 int
 stdin_ungetc(int c)
 {
-return ungetc(c, stdin);
+if (stdin_inptr <= stdin_buf)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "buffer underflow in stdin_ungetc");
+
+*--stdin_inptr = c;
+return c;
 }
 
 int
 stdin_feof(void)
 {
-return feof(stdin);
+return stdin_hasc() ? FALSE : feof(stdin);
 }
 
 int
@@ -588,7 +617,7 @@ the file copy. */
 static void
 log_close_chk(void)
 {
-if (!receive_timeout)
+if (!receive_timeout && !receive_hasc())
   {
   struct timeval t;
   timesince(&t, &received_time);
@@ -653,11 +682,6 @@ register int linelength = 0;
 if (!f.dot_ends)
   {
   int last_ch = '\n';
-
-/*XXX we do a gettimeofday before checking for every received char,
-which is hardly clever.  The function-indirection doesn't help, but
-an additional function to check for nonempty read buffer would help.
-See stdin_getc() / smtp_getc() / tls_getc() / bdat_getc(). */
 
   for ( ;
        log_close_chk(), (ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF;

@@ -45,11 +45,11 @@ body_len = 0;
 body_linecount = 0;
 header_size = message_size;
 
-if (!dot_ended && !feof(stdin))
+if (!dot_ended && !stdin_feof())
   {
   if (!f.dot_ends)
     {
-    while ((ch = getc(stdin)) != EOF)
+    while ((ch = stdin_getc(GETC_BUFFER_UNLIMITED)) != EOF)
       {
       if (ch == 0) body_zerocount++;
       if (ch == '\n') body_linecount++;
@@ -62,7 +62,7 @@ if (!dot_ended && !feof(stdin))
   else
     {
     int ch_state = 1;
-    while ((ch = getc(stdin)) != EOF)
+    while ((ch = stdin_getc(GETC_BUFFER_UNLIMITED)) != EOF)
       {
       if (ch == 0) body_zerocount++;
       switch (ch_state)
@@ -99,6 +99,7 @@ if (!dot_ended && !feof(stdin))
     }
   if (s == message_body_end || s[-1] != '\n') body_linecount++;
   }
+debug_printf("%s %d\n", __FUNCTION__, __LINE__);
 
 message_body[body_len] = 0;
 message_body_size = message_size - header_size;
@@ -250,7 +251,7 @@ if (filter_type == FILTER_FORWARD)
 /* For a filter, set up the message_body variables and the message size if this
 is the first time this function has been called. */
 
-if (message_body == NULL) read_message_body(dot_ended);
+if (!message_body) read_message_body(dot_ended);
 
 /* Now pass the filter file to the function that interprets it. Because
 filter_test is not FILTER_NONE, the interpreter will output comments about what
@@ -269,10 +270,9 @@ if (is_system)
   }
 else
   {
-  yield = (filter_type == FILTER_SIEVE)?
-    sieve_interpret(filebuf, RDO_REWRITE, NULL, NULL, NULL, NULL, &generated, &error)
-    :
-    filter_interpret(filebuf, RDO_REWRITE, &generated, &error);
+  yield = filter_type == FILTER_SIEVE
+    ? sieve_interpret(filebuf, RDO_REWRITE, NULL, NULL, NULL, NULL, &generated, &error)
+    : filter_interpret(filebuf, RDO_REWRITE, &generated, &error);
   }
 
 return yield != FF_ERROR;

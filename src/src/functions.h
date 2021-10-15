@@ -68,6 +68,7 @@ extern void    tls_free_cert(void **);
 extern int     tls_getc(unsigned);
 extern uschar *tls_getbuf(unsigned *);
 extern void    tls_get_cache(unsigned);
+extern BOOL    tls_hasc(void);
 extern BOOL    tls_import_cert(const uschar *, void **);
 extern BOOL    tls_is_name_for_cert(const uschar *, void *);
 # ifdef USE_OPENSSL
@@ -150,6 +151,7 @@ extern uschar *b64encode_taint(const uschar *, int, BOOL);
 extern int     b64decode(const uschar *, uschar **);
 extern int     bdat_getc(unsigned);
 extern uschar *bdat_getbuf(unsigned *);
+extern BOOL    bdat_hasc(void);
 extern int     bdat_ungetc(int);
 extern void    bdat_flush_data(void);
 
@@ -496,6 +498,7 @@ extern BOOL    smtp_get_port(uschar *, address_item *, int *, uschar *);
 extern int     smtp_getc(unsigned);
 extern uschar *smtp_getbuf(unsigned *);
 extern void    smtp_get_cache(unsigned);
+extern BOOL    smtp_hasc(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
@@ -525,6 +528,7 @@ extern int     spool_write_header(uschar *, int, uschar **);
 extern int     stdin_getc(unsigned);
 extern int     stdin_feof(void);
 extern int     stdin_ferror(void);
+extern BOOL    stdin_hasc(void);
 extern int     stdin_ungetc(int);
 
 extern void    store_exit(void);

@@ -3350,6 +3350,7 @@ ssl_xfer_eof = ssl_xfer_error = FALSE;
 receive_getc = tls_getc;
 receive_getbuf = tls_getbuf;
 receive_get_cache = tls_get_cache;
+receive_hasc = tls_hasc;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
 receive_ferror = tls_ferror;
@@ -4126,6 +4127,12 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
 return ssl_xfer_buffer[ssl_xfer_buffer_lwm++];
 }
 
+BOOL
+tls_hasc(void)
+{
+return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm;
+}
+
 uschar *
 tls_getbuf(unsigned * len)
 {
@@ -4415,6 +4422,7 @@ if (!o_ctx)		/* server side */
   receive_getc =	smtp_getc;
   receive_getbuf =	smtp_getbuf;
   receive_get_cache =	smtp_get_cache;
+  receive_hasc =	smtp_hasc;
   receive_ungetc =	smtp_ungetc;
   receive_feof =	smtp_feof;
   receive_ferror =	smtp_ferror;

@@ -563,6 +563,12 @@ if (smtp_inptr >= smtp_inend)
 return *smtp_inptr++;
 }
 
+BOOL
+smtp_hasc(void)
+{
+return smtp_inptr < smtp_inend;
+}
+
 uschar *
 smtp_getbuf(unsigned * len)
 {
@@ -745,6 +751,14 @@ next_cmd:
   }
 }
 
+BOOL
+bdat_hasc(void)
+{
+if (chunking_data_left > 0)
+  return lwr_receive_hasc();
+return TRUE;
+}
+
 uschar *
 bdat_getbuf(unsigned * len)
 {
@@ -784,10 +798,11 @@ bdat_push_receive_functions(void)
 /* push the current receive_* function on the "stack", and
 replace them by bdat_getc(), which in turn will use the lwr_receive_*
 functions to do the dirty work. */
-if (lwr_receive_getc == NULL)
+if (!lwr_receive_getc)
   {
   lwr_receive_getc = receive_getc;
   lwr_receive_getbuf = receive_getbuf;
+  lwr_receive_hasc = receive_hasc;
   lwr_receive_ungetc = receive_ungetc;
   }
 else
@@ -797,23 +812,26 @@ else
 
 receive_getc = bdat_getc;
 receive_getbuf = bdat_getbuf;
+receive_hasc = bdat_hasc;
 receive_ungetc = bdat_ungetc;
 }
 
 static inline void
 bdat_pop_receive_functions(void)
 {
-if (lwr_receive_getc == NULL)
+if (!lwr_receive_getc)
   {
   DEBUG(D_receive) debug_printf("chunking double-pop receive functions\n");
   return;
   }
 receive_getc = lwr_receive_getc;
 receive_getbuf = lwr_receive_getbuf;
+receive_hasc = lwr_receive_hasc;
 receive_ungetc = lwr_receive_ungetc;
 
 lwr_receive_getc = NULL;
 lwr_receive_getbuf = NULL;
+lwr_receive_hasc = NULL;
 lwr_receive_ungetc = NULL;
 }
 
@@ -2576,12 +2594,14 @@ smtp_inbuffer[IN_BUFFER_SIZE-1] = '\0';
 receive_getc = smtp_getc;
 receive_getbuf = smtp_getbuf;
 receive_get_cache = smtp_get_cache;
+receive_hasc = smtp_hasc;
 receive_ungetc = smtp_ungetc;
 receive_feof = smtp_feof;
 receive_ferror = smtp_ferror;
 receive_smtp_buffered = smtp_buffered;
 lwr_receive_getc = NULL;
 lwr_receive_getbuf = NULL;
+lwr_receive_hasc = NULL;
 lwr_receive_ungetc = NULL;
 smtp_inptr = smtp_inend = smtp_inbuffer;
 smtp_had_eof = smtp_had_error = 0;

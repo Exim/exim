@@ -5433,7 +5433,7 @@ if (smtp_input)
   {
   if (!f.is_inetd) set_process_info("accepting a local %sSMTP message from <%s>",
     smtp_batched_input? "batched " : "",
-    (sender_address!= NULL)? sender_address : originator_login);
+    sender_address ? sender_address : originator_login);
   }
 else
   {
@@ -5483,7 +5483,8 @@ if (smtp_input)
     }
   }
 
-/* Otherwise, set up the input size limit here. */
+/* Otherwise, set up the input size limit here and set no stdin stdio buffer
+(we handle buferring so as to have visibility of fill level). */
 
 else
   {
@@ -5495,6 +5496,8 @@ else
     else
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "invalid value for "
         "message_size_limit: %s", expand_string_message);
+
+  setvbuf(stdin, NULL, _IONBF, 0);
   }
 
 /* Loop for several messages when reading SMTP input. If we fork any child

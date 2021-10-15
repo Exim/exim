@@ -21,6 +21,10 @@ JH/03 Constification work in the filters module required a major version
 JH/04 Fix ClamAV TCP use under FreeBSD. Previously the OS-specific shim for
       sendfile() didi not account for the way the ClamAV driver code called it.
 
+JH/05 Bug 2819: speed up command-line messages being read in.  Previously a
+      time check was being done for every character; replace that with one
+      per buffer.
+
 
 Exim version 4.95
 -----------------
