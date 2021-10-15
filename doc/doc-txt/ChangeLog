@@ -25,6 +25,9 @@ JH/05 Bug 2819: speed up command-line messages being read in.  Previously a
       time check was being done for every character; replace that with one
       per buffer.
 
+JH/06 Bug 2815: Fix ALPN sent by server under OpenSSL.  Previously the string
+      sent was prefixed with a length byte.
+
 
 Exim version 4.95
 -----------------
