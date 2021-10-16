@@ -28,6 +28,10 @@ JH/05 Bug 2819: speed up command-line messages being read in.  Previously a
 JH/06 Bug 2815: Fix ALPN sent by server under OpenSSL.  Previously the string
       sent was prefixed with a length byte.
 
+JH/07 Change the SMTP feature name for pipelining connect to be compliant with
+      RFC 5321.  Previously Dovecot (at least) would log errors during
+      submission.
+
 
 Exim version 4.95
 -----------------

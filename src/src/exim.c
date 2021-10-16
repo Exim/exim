@@ -1056,7 +1056,7 @@ g = string_cat(NULL, US"Support for:");
   g = string_cat(g, US" OCSP");
 #endif
 #ifndef DISABLE_PIPE_CONNECT
-  g = string_cat(g, US" PIPE_CONNECT");
+  g = string_cat(g, US" PIPECONNECT");
 #endif
 #ifndef DISABLE_PRDR
   g = string_cat(g, US" PRDR");

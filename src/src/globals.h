@@ -275,7 +275,7 @@ extern struct global_flags {
  BOOL   sender_set_untrusted		:1; /* Sender set by untrusted caller */
  BOOL   smtp_authenticated		:1; /* Sending client has authenticated */
 #ifndef DISABLE_PIPE_CONNECT
- BOOL   smtp_in_early_pipe_advertised	:1; /* server advertised PIPE_CONNECT */
+ BOOL   smtp_in_early_pipe_advertised	:1; /* server advertised PIPECONNECT */
  BOOL	smtp_in_early_pipe_no_auth	:1; /* too many authenticator names */
  BOOL   smtp_in_early_pipe_used		:1; /* client did send early data */
 #endif

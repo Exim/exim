@@ -846,9 +846,9 @@ return Ustrchr(host->address, ':')
 /* Cache EHLO-response info for use by early-pipe.
 Called
 - During a normal flow on EHLO response (either cleartext or under TLS),
-  when we are willing to do PIPE_CONNECT and it is offered
+  when we are willing to do PIPECONNECT and it is offered
 - During an early-pipe flow on receiving the actual EHLO response and noting
-  disparity versus the cached info used, when PIPE_CONNECT is still being offered
+  disparity versus the cached info used, when PIPECONNECT is still being offered
 
 We assume that suitable values have been set in the sx.ehlo_resp structure for
 features and auths; we handle the copy of limits. */
@@ -2261,7 +2261,7 @@ if (!continue_hostname)
 	 && sx->ehlo_resp.cleartext_features & OPTION_EARLY_PIPE)
 	{
 	DEBUG(D_transport)
-	  debug_printf("Using cached cleartext PIPE_CONNECT\n");
+	  debug_printf("Using cached cleartext PIPECONNECT\n");
 	sx->early_pipe_active = TRUE;
 	sx->peer_offered = sx->ehlo_resp.cleartext_features;
 	}
@@ -2763,7 +2763,7 @@ if (tls_out.active.sock >= 0)
     sx->peer_offered = sx->ehlo_resp.crypted_features;
     if ((sx->early_pipe_active =
 	 !!(sx->ehlo_resp.crypted_features & OPTION_EARLY_PIPE)))
-      DEBUG(D_transport) debug_printf("Using cached crypted PIPE_CONNECT\n");
+      DEBUG(D_transport) debug_printf("Using cached crypted PIPECONNECT\n");
     }
 #endif
 #ifdef EXPERIMMENTAL_ESMTP_LIMITS
@@ -2962,7 +2962,7 @@ if (   !continue_hostname
        && ( sx->ehlo_resp.cleartext_features | sx->ehlo_resp.crypted_features)
 	  & OPTION_EARLY_PIPE)
       {
-      DEBUG(D_transport) debug_printf("PIPE_CONNECT usable in future for this IP\n");
+      DEBUG(D_transport) debug_printf("PIPECONNECT usable in future for this IP\n");
       sx->ehlo_resp.crypted_auths = study_ehlo_auths(sx);
       write_ehlo_cache_entry(sx);
       }
