@@ -88,7 +88,7 @@ for (int i = 0; i < num_msg; i++)
 	arg = US"";
 	pam_arg_ended = TRUE;
 	}
-      reply[i].resp = CS string_copy_malloc(arg); /* PAM frees resp */
+      reply[i].resp = strdup(CCS arg); /* Use libc malloc, PAM frees resp directly*/
       reply[i].resp_retcode = PAM_SUCCESS;
       break;
 
