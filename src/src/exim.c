@@ -1065,7 +1065,7 @@ g = string_cat(NULL, US"Support for:");
   g = string_cat(g, US" PROXY");
 #endif
 #ifndef DISABLE_QUEUE_RAMP
-  g = string_cat(g, US" Experimental_Queue_Ramp");
+  g = string_cat(g, US" Queue_Ramp");
 #endif
 #ifdef SUPPORT_SOCKS
   g = string_cat(g, US" SOCKS");
