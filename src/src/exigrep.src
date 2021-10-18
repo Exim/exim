@@ -45,20 +45,21 @@ use POSIX qw(mktime);
 # the number of seconds since the epoch. It handles optional timezone
 # information.
 
-sub seconds {
-my($year,$month,$day,$hour,$min,$sec,$tzs,$tzh,$tzm) =
-  $_[0] =~ /^(\d{4})-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)(?:.\d+)?(?>\s([+-])(\d\d)(\d\d))?/o;
-
-my $seconds = mktime $sec, $min, $hour, $day, $month - 1, $year - 1900;
-
-if (defined $tzs)
+sub seconds
   {
-  $seconds -= $tzh * 3600 + $tzm * 60 if $tzs eq "+";
-  $seconds += $tzh * 3600 + $tzm * 60 if $tzs eq "-";
-  }
+  my($year,$month,$day,$hour,$min,$sec,$tzs,$tzh,$tzm) =
+    $_[0] =~ /^(\d{4})-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)(?:.\d+)?(?>\s([+-])(\d\d)(\d\d))?/o;
 
-return $seconds;
-}
+  my $seconds = mktime $sec, $min, $hour, $day, $month - 1, $year - 1900;
+
+  if (defined $tzs)
+    {
+    $seconds -= $tzh * 3600 + $tzm * 60 if $tzs eq "+";
+    $seconds += $tzh * 3600 + $tzm * 60 if $tzs eq "-";
+    }
+
+  return $seconds;
+  }
 
 
 # This subroutine processes a single line (in $_) from a log file. Program
@@ -78,77 +79,78 @@ my $literal     = 0;
 my $related_re='';
 my @Mids = ();
 
-sub do_line {
-
-# Convert syslog lines to mainlog format, as in eximstats.
-
-if (!/^\d{4}-/o) { $_ =~ s/^.*? exim\b.*?: //o; }
-
-return unless
-  my($date,$id) = /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? (?:[+-]\d{4} )?)(?:\[\d+\] )?(\w{6}\-\w{6}\-\w{2})?/o;
-
-# Handle the case when the log line belongs to a specific message. We save
-# lines for specific messages until the message is complete. Then either print
-# or discard.
-
-if (defined $id)
+sub do_line
   {
-  $saved{$id} = '' unless defined($saved{$id});
 
-  # Save up the data for this message in case it becomes interesting later.
+  # Convert syslog lines to mainlog format, as in eximstats.
 
-  $saved{$id} .= $_;
+  if (!/^\d{4}-/o) { $_ =~ s/^.*? exim\b.*?: //o; }
 
-  # Are we interested in this id ? Short circuit if we already were interested.
+  return unless
+    my($date,$id) = /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? (?:[+-]\d{4} )?)(?:\[\d+\] )?(\w{6}\-\w{6}\-\w{2})?/o;
 
-  if ($invert)
+  # Handle the case when the log line belongs to a specific message. We save
+  # lines for specific messages until the message is complete. Then either print
+  # or discard.
+
+  if (defined $id)
     {
-    $id_list{$id} = 1 if (!defined($id_list{$id}));
-    $id_list{$id} = 0 if (($insensitive && /$pattern/io) || /$pattern/o);
-    }
-  else
-    {
-    if (defined $id_list{$id} ||
-      ($insensitive && /$pattern/io) || /$pattern/o)
+    $saved{$id} = '' unless defined($saved{$id});
+
+    # Save up the data for this message in case it becomes interesting later.
+
+    $saved{$id} .= $_;
+
+    # Are we interested in this id ? Short circuit if we already were interested.
+
+    if ($invert)
       {
-      $id_list{$id} = 1;
-      get_related_ids($id) if $related;
+      $id_list{$id} = 1 if (!defined($id_list{$id}));
+      $id_list{$id} = 0 if (($insensitive && /$pattern/io) || /$pattern/o);
       }
-    elsif ($related && $related_re)
+    else
       {
-      grep_for_related($_, $id);
-      }
-    }
-
-  # See if this is a completion for some message. If it is interesting,
-  # print it, but in any event, throw away what was saved.
-
-  if (index($_, 'Completed') != -1 ||
-      index($_, 'SMTP data timeout') != -1 ||
-        (index($_, 'rejected') != -1 &&
-          /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? (?:[+-]\d{4} )?)(?:\[\d+\] )?\w{6}\-\w{6}\-\w{2} rejected/o))
-    {
-    if ($queue_time != -1 &&
-        $saved{$id} =~ /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d ([+-]\d{4} )?)/o)
-      {
-      my $old_sec = &seconds($1);
-      my $sec = &seconds($date);
-      $id_list{$id} = 0 if $id_list{$id} && $sec - $old_sec <= $queue_time;
+      if (defined $id_list{$id} ||
+	($insensitive && /$pattern/io) || /$pattern/o)
+	{
+	$id_list{$id} = 1;
+	get_related_ids($id) if $related;
+	}
+      elsif ($related && $related_re)
+	{
+	grep_for_related($_, $id);
+	}
       }
 
-    print "$saved{$id}\n" if ($id_list{$id});
-    delete $id_list{$id};
-    delete $saved{$id};
+    # See if this is a completion for some message. If it is interesting,
+    # print it, but in any event, throw away what was saved.
+
+    if (index($_, 'Completed') != -1 ||
+	index($_, 'SMTP data timeout') != -1 ||
+	  (index($_, 'rejected') != -1 &&
+	    /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? (?:[+-]\d{4} )?)(?:\[\d+\] )?\w{6}\-\w{6}\-\w{2} rejected/o))
+      {
+      if ($queue_time != -1 &&
+	  $saved{$id} =~ /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d ([+-]\d{4} )?)/o)
+	{
+	my $old_sec = &seconds($1);
+	my $sec = &seconds($date);
+	$id_list{$id} = 0 if $id_list{$id} && $sec - $old_sec <= $queue_time;
+	}
+
+      print "$saved{$id}\n" if ($id_list{$id});
+      delete $id_list{$id};
+      delete $saved{$id};
+      }
     }
+
+  # Handle the case where the log line does not belong to a specific message.
+  # Print it if it is interesting.
+
+  elsif ( ($invert && (($insensitive && !/$pattern/io) || !/$pattern/o)) ||
+	 (!$invert && (($insensitive &&  /$pattern/io) ||  /$pattern/o)) )
+    { print "$_\n"; }
   }
-
-# Handle the case where the log line does not belong to a specific message.
-# Print it if it is interesting.
-
-elsif ( ($invert && (($insensitive && !/$pattern/io) || !/$pattern/o)) ||
-       (!$invert && (($insensitive &&  /$pattern/io) ||  /$pattern/o)) )
-  { print "$_\n"; }
-}
 
 # Rotated log files are frequently compressed and there are a variety of
 # formats it could be compressed with. Rather than use just one that is
@@ -200,17 +202,19 @@ sub detect_compressor_capable
   return $cmdline;
   }
 
-sub grep_for_related {
+sub grep_for_related
+  {
   my ($line,$id) = @_;
   $id_list{$id} = 1 if $line =~ m/$related_re/;
-}
+  }
 
-sub get_related_ids {
+sub get_related_ids
+  {
   my ($id) = @_;
   push @Mids, $id unless grep /\b$id\b/, @Mids;
   my $re = join '|', @Mids;
   $related_re = qr/$re/;
-}
+  }
 
 # The main program. Extract the pattern and make sure any relevant characters
 # are quoted if the -l flag is given. The -t flag gives a time-on-queue value
