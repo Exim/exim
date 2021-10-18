@@ -53,7 +53,7 @@ if ($ARGV[0] eq '--version') {
         exit 0;
 }
 
-getopts('hf:r:y:o:s:C:zxlibRcaG:',\%opt);
+if (!getopts('hf:r:y:o:s:C:zxlibRcaG:',\%opt) { &help; exit;}
 if ($ARGV[0]) { &help; exit;}
 if ($opt{h}) { &help; exit;}
 if ($opt{a}) { $eargs = '-bp'; }
