@@ -1966,6 +1966,9 @@ if (!state->host)
   /* Unnecessary & discouraged with 3.6.0 or later */
   gnutls_certificate_set_dh_params(state->lib_state.x509_cred, dh_server_params);
   }
+#else
+DEBUG(D_tls) if (tls_dhparam)
+  debug_printf("Ignoring tls_dhparam (recent version GnuTLS)\n");
 #endif
 
 /* Link the credentials to the session. */
