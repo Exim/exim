@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) The Exim Maintainers 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This file is not part of the main Exim code. There are little bits of test

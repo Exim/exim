@@ -4,6 +4,7 @@
 
 /* Experimental DMARC support.
    Copyright (c) Todd Lyons <tlyons@exim.org> 2012 - 2014
+   Copyright (c) The Exim Maintainers 2021
    License: GPL */
 
 /* Portions Copyright (c) 2012, 2013, The Trusted Domain Project;

@@ -1,4 +1,5 @@
 /* Copyright (C) 2012,2016 Phil Pennock.
+ * Copyright (c) The Exim Maintainers 2021
  * This is distributed as part of Exim and licensed under the GPL.
  * See the file "NOTICE" for more details.
  */

@@ -5,7 +5,7 @@
 /* SPF support.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004 - 2014
    License: GPL
-   Copyright (c) The Exim Maintainers 2015 - 2020
+   Copyright (c) The Exim Maintainers 2015 - 2021
 */
 
 /* Code for calling spf checks via libspf-alt. Called from acl.c. */

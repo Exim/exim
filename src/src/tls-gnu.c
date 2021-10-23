@@ -3,10 +3,9 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2018 */
-/* Copyright (c) The Exim Maintainers 2020 */
-/* See the file NOTICE for conditions of use and distribution. */
-
 /* Copyright (c) Phil Pennock 2012 */
+/* Copyright (c) The Exim Maintainers 2020 - 2021 */
+/* See the file NOTICE for conditions of use and distribution. */
 
 /* This file provides TLS/SSL support for Exim using the GnuTLS library,
 one of the available supported implementations.  This file is #included into

@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) The Exim Maintainers 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for maintaining binary balanced trees and some associated

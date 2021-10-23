@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2018 */
+/* Copyright (c) The Exim Maintainters 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module contains code for scanning the main log,

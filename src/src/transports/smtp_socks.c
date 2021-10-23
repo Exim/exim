@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) Jeremy Harris 2015 - 2018 */
+/* Copyright (c) The Exim Maintainers 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* SOCKS version 5 proxy, client-mode */

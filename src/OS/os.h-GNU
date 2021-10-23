@@ -1,5 +1,5 @@
 /* Exim: OS-specific C header file for GNU/Hurd */
-/* Copyright (c) The Exim Maintainers 2020 */
+/* Copyright (c) The Exim Maintainers 2020 - 2021 */
 
 #include <features.h>
 

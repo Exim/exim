@@ -7,7 +7,7 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * Copyright (c) 1998 Nigel Metheringham, Planet Online Ltd
- * Copyright (c) The Exim Maintainers 2020
+ * Copyright (c) The Exim Maintainers 2020 - 2021
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

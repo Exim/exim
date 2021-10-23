@@ -4,6 +4,7 @@
 
 /* SRS - Sender rewriting scheme support
   ©2004 Miles Wilton <miles@mirtol.com>
+  Copyright (c) The Exim Maintainers 2021
   License: GPL */
 
 #ifndef __SRS_H__

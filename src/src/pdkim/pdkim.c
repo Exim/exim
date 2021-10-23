@@ -3,6 +3,7 @@
  *
  *  Copyright (C) 2009 - 2016  Tom Kistner <tom@duncanthrax.net>
  *  Copyright (C) 2016 - 2020  Jeremy Harris <jgh@exim.org>
+ *  Copyright (c) The Exim Maintainers 2021
  *
  *  http://duncanthrax.net/pdkim/
  *

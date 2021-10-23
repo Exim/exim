@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) Jeremy Harris 2014 - 2018 */
+/* Copyright (c) The Exim Maintainers 2021 */
 
 /* This file provides TLS/SSL support for Exim using the GnuTLS library,
 one of the available supported implementations.  This file is #included into

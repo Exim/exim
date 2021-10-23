@@ -1,5 +1,5 @@
 # Make file for Exim documentation from xfpt source.
-# Copyright (c) The Exim Maintainers 2020
+# Copyright (c) The Exim Maintainers 2020 - 2021
 export LC_ALL=C
 
 notarget:;    @echo "** You must specify a target, in the form x.y, where x is 'filter', 'spec',"

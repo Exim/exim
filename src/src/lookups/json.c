@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) Jeremy Harris 2019-2020 */
+/* Copyright (c) The Exim Maintainers 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"

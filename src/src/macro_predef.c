@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) Jeremy Harris 1995 - 2018 */
-/* Copyright (c) The Exim Maintainers 2020 */
+/* Copyright (c) The Exim Maintainers 2020 - 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Create a static data structure with the predefined macros, to be

@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) Jeremy Harris 1995 - 2020 */
+/* Copyright (c) The Exim Maintainers 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* FreeBSD-specific code. This is concatenated onto the generic

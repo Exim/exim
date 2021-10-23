@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003 - 2015 */
+/* Copyright (c) The Exim Maintainers 2021 */
 /* License: GPL */
 
 /* spam defines */

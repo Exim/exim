@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) The Exim Maintainers 1995 - 2018
+# Copyright (c) The Exim Maintainers 1995 - 2021
 
 set -e
 LC_ALL=C

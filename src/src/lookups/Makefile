@@ -1,6 +1,8 @@
 # Make file for building Exim's lookup modules.
 # This is called from the main make file, after cd'ing
 # to the lookups subdirectory.
+#
+# Copyright (c) The Exim Maintainers 2021
 
 # nb: at build time, the version of this file used will have had some
 #     extra variable definitions and prepended to it and module build rules

@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2019 */
-/* Copyright (c) The Exim Maintainers 2020 */
+/* Copyright (c) The Exim Maintainers 2020 - 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Portions Copyright (c) The OpenSSL Project 1999 */
