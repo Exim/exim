@@ -40,20 +40,7 @@ extern void init_lookup_list(void);
 for store allocation via Exim's store manager. The normal calls are actually
 macros that pass over location information to make tracing easier. These
 functions just interface to the standard macro calls. A good compiler will
-optimize out the tail recursion and so not make them too expensive. There
-are two sets of functions; one for use when we want to retain the compiled
-regular expression for a long time; the other for short-term use. */
-
-static void *
-function_store_get(PCRE2_SIZE size, void * tag)
-{
-/* For now, regard all RE results as potentially tainted.  We might need
-more intelligence on this point. */
-return store_get((int)size, TRUE);
-}
-
-static void
-function_dummy_free(void * block, void * tag) {}
+optimize out the tail recursion and so not make them too expensive. */
 
 static void *
 function_store_malloc(PCRE2_SIZE size, void * tag)
@@ -64,7 +51,8 @@ return store_malloc((int)size);
 static void
 function_store_free(void * block, void * tag)
 {
-store_free(block);
+/* At least some version of pcre2 pass a null pointer */
+if (block) store_free(block);
 }
 
 
