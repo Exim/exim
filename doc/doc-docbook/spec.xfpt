@@ -2587,6 +2587,25 @@ use of Exim's filtering capabilities, you should make the document entitled
 
 
 
+.section "Running the daemon" SECTdaemonLaunch
+The most common command line for launching the Exim daemon looks like
+.code
+exim -bd -q5m
+.endd
+This starts a daemon which
+.ilist
+listens for incoming smtp connections, launching handler processes for
+each new one
+.next
+starts a queue-runner process every five minutes, to inspect queued messages
+and run delivery attempts on any that have arrived at their retry time
+.endlist
+Should a queue run take longer than the time between queue-runner starts,
+they will run in parallel.
+Numbers of jobs of the various types are subject to policy controls
+defined in the configuration.
+
+
 .section "Upgrading Exim" "SECID36"
 .cindex "upgrading Exim"
 If you are already running Exim on your host, building and installing a new
