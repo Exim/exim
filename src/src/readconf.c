@@ -4190,11 +4190,12 @@ for (auth_instance * au = auths; au; au = au->next)
 
   for (auth_instance * bu = au->next; bu; bu = bu->next)
     if (strcmpic(au->public_name, bu->public_name) == 0)
-      if ((au->client && bu->client) || (au->server && bu->server))
+      if (  au->client && bu->client
+	 || au->server && bu->server)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "two %s authenticators "
           "(%s and %s) have the same public name (%s)",
-          au->client ? US"client" : US"server", au->name, bu->name,
-          au->public_name);
+          au->client && bu->client ? US"client" : US"server",
+	  au->name, bu->name, au->public_name);
 #ifndef DISABLE_PIPE_CONNECT
   nauths++;
 #endif
