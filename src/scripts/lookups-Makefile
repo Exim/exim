@@ -160,7 +160,7 @@ exec > "$target"
 sed -n "1,/$tag_marker/p" < "$input"
 
 for name_mod in \
-    CDB DBM:dbmdb DNSDB DSEARCH IBASE JSON LSEARCH MYSQL NIS NISPLUS ORACLE \
+    CDB DBM:dbmdb DNSDB DSEARCH IBASE JSON LMDB LSEARCH MYSQL NIS NISPLUS ORACLE \
     PASSWD PGSQL REDIS SQLITE TESTDB WHOSON
 do
   emit_module_rule $name_mod
@@ -176,11 +176,6 @@ fi
 # defined.
 
 OBJ="${OBJ} spf.o"
-
-if want_experimental LMDB
-then
-  OBJ="${OBJ} lmdb.o"
-fi
 
 # readsock is always wanted as it implements the ${readsock } expansion
 OBJ="${OBJ} readsock.o"

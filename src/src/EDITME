@@ -495,6 +495,13 @@ SUPPORT_DANE=yes
 # LOOKUP_INCLUDE +=-I /usr/local/include
 # LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lgds -lsqlite3 -llmdb
 
+#------------------------------------------------------------------------------
+# If you included LOOKUP_LMDB above you will need the library. Depending
+# on where installed you may also need an include directory
+#
+# LOOKUP_INCLUDE += -I/usr/local/include
+# LOOKUP_LIBS += -llmdb
+
 
 #------------------------------------------------------------------------------
 # Compiling the Exim monitor: If you want to compile the Exim monitor, a
