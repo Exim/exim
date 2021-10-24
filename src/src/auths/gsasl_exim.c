@@ -57,6 +57,10 @@ static void dummy(int x) { dummy2(x-1); }
 # define CHANNELBIND_HACK
 #endif
 
+/* Convenience for testing strings */
+
+#define STREQIC(Foo, Bar) (strcmpic((Foo), (Bar)) == 0)
+
 
 /* Authenticator-specific options. */
 /* I did have server_*_condition options for various mechanisms, but since
@@ -200,15 +204,21 @@ if (!gsasl_client_support_p(gsasl_ctx, CCS ob->server_mech))
 	    "GNU SASL does not support mechanism \"%s\"",
 	    ablock->name, ob->server_mech);
 
-ablock->server = TRUE;
-
-if (  !ablock->server_condition
-   && (  streqic(ob->server_mech, US"EXTERNAL")
-      || streqic(ob->server_mech, US"ANONYMOUS")
-      || streqic(ob->server_mech, US"PLAIN")
-      || streqic(ob->server_mech, US"LOGIN")
-   )  )
+if (ablock->server_condition)
+  ablock->server = TRUE;
+else if(  ob->server_mech
+       && !STREQIC(ob->server_mech, US"EXTERNAL")
+       && !STREQIC(ob->server_mech, US"ANONYMOUS")
+       && !STREQIC(ob->server_mech, US"PLAIN")
+       && !STREQIC(ob->server_mech, US"LOGIN")
+       )
   {
+  /* At present, for mechanisms we don't panic on absence of server_condition;
+  need to figure out the most generically correct approach to deciding when
+  it's critical and when it isn't.  Eg, for simple validation (PLAIN mechanism,
+  etc) it clearly is critical.
+  */
+
   ablock->server = FALSE;
   HDEBUG(D_auth) debug_printf("%s authenticator:  "
 	    "Need server_condition for %s mechanism\n",
@@ -219,19 +229,13 @@ if (  !ablock->server_condition
 which properties will be needed. */
 
 if (  !ob->server_realm
-   && streqic(ob->server_mech, US"DIGEST-MD5"))
+   && STREQIC(ob->server_mech, US"DIGEST-MD5"))
   {
   ablock->server = FALSE;
   HDEBUG(D_auth) debug_printf("%s authenticator:  "
 	    "Need server_realm for %s mechanism\n",
 	    ablock->name, ob->server_mech);
   }
-
-/* At present, for mechanisms we don't panic on absence of server_condition;
-need to figure out the most generically correct approach to deciding when
-it's critical and when it isn't.  Eg, for simple validation (PLAIN mechanism,
-etc) it clearly is critical.
-*/
 
 ablock->client = ob->client_username && ob->client_password;
 }
