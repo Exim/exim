@@ -18659,7 +18659,8 @@ either &%tls_verify_hosts%& or &%tls_try_verify_hosts%& is set and
 Any client that matches &%tls_verify_hosts%& is constrained by
 &%tls_verify_certificates%&. When the client initiates a TLS session, it must
 present one of the listed certificates. If it does not, the connection is
-aborted. &*Warning*&: Including a host in &%tls_verify_hosts%& does not require
+aborted.
+&*Warning*&: Including a host in &%tls_verify_hosts%& does not require
 the host to use TLS. It can still send SMTP commands through unencrypted
 connections. Forcing a client to use TLS has to be done separately using an
 ACL to reject inappropriate commands when the connection is not encrypted.
@@ -26114,6 +26115,10 @@ certificate verification must succeed.
 The &%tls_verify_certificates%& option must also be set.
 If both this option and &%tls_try_verify_hosts%& are unset
 operation is as if this option selected all hosts.
+&*Warning*&: Including a host in &%tls_verify_hosts%& does not require
+that connections use TLS.
+Fallback to in-clear communication will be done unless restricted by 
+the &%hosts_require_tls%& option.
 
 .option utf8_downconvert smtp integer&!! -1
 .cindex utf8 "address downconversion"
