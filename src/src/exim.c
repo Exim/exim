@@ -4588,7 +4588,12 @@ needed in transports so we lost the optimisation. */
   store_pool = POOL_CONFIG;
   readconf_rest();
   store_pool = old_pool;
-  store_writeprotect(POOL_CONFIG);
+
+  /* -be can add macro definitions, needing to link to the macro structure
+  chain.  Otherwise, make the memory used for config data readonly. */
+
+  if (!expansion_test)
+    store_writeprotect(POOL_CONFIG);
 
 #ifdef MEASURE_TIMING
   report_time_since(&t0, US"readconf_rest (delta)");

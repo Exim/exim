@@ -1,0 +1,10 @@
+# -be and macro definitions
+#
+#
+exim -be
+FOO = bar
+baz foo FOO
+****
+#
+exim -be 'FOO_2 = baz'
+****
