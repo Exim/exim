@@ -2235,9 +2235,6 @@ if (!olist)
   const X509 * cert_sent = SSL_get_certificate(s);
   const ASN1_INTEGER * cert_serial = X509_get0_serialNumber(cert_sent);
   const BIGNUM * cert_bn = ASN1_INTEGER_to_BN(cert_serial, NULL);
-  const X509_NAME * cert_issuer = X509_get_issuer_name(cert_sent);
-  uschar * chash;
-  uint chash_len;
 
   for (; olist; olist = olist->next)
     {

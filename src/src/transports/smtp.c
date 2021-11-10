@@ -716,9 +716,11 @@ BOOL good_response;
   {	/* Hack to get QUICKACK disabled; has to be right after 3whs, and has to on->off */
   int sock = sx->cctx.sock;
   struct pollfd p = {.fd = sock, .events = POLLOUT};
-  int rc = poll(&p, 1, 1000);
-  (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &on, sizeof(on));
-  (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+  if (poll(&p, 1, 1000) >= 0)	/* retval test solely for compiler quitening */
+    {
+    (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &on, sizeof(on));
+    (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+    }
   }
 #endif
 good_response = smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),

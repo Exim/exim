@@ -1148,7 +1148,7 @@ switch (type)
   case T_CSA:
     {
     uschar *srvname, *namesuff, *tld;
-    int priority, weight, port;
+    int priority, dummy_weight, port;
     int limit, rc, i;
     BOOL ipv6;
     dns_record *rr;
@@ -1237,7 +1237,7 @@ switch (type)
 
 	/* Extract the numerical SRV fields (p is incremented) */
 	GETSHORT(priority, p);
-	GETSHORT(weight, p);
+	GETSHORT(dummy_weight, p);
 	GETSHORT(port, p);
 
 	/* Check the CSA version number */

@@ -283,7 +283,7 @@ Returns:      pointer to store (panic on malloc failure)
 */
 
 void *
-store_get_3(int size, BOOL tainted, const char *func, int linenumber)
+store_get_3(int size, BOOL tainted, const char * func, int linenumber)
 {
 int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
 
@@ -347,7 +347,13 @@ if (size > yield_length[pool])
     if (pool == POOL_CONFIG)
       {
       long pgsize = sysconf(_SC_PAGESIZE);
-      posix_memalign((void **)&newblock, pgsize, (mlength + pgsize - 1) & ~(pgsize - 1));
+      int err = posix_memalign((void **)&newblock,
+				pgsize, (mlength + pgsize - 1) & ~(pgsize - 1));
+      if (err)
+	log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+	  "failed to alloc (using posix_memalign) %d bytes of memory: '%s'"
+	  "called from line %d in %s",
+	  size, strerror(err), linenumber, func);
       }
     else
 #endif

@@ -115,38 +115,34 @@ void init(int argc, uschar **argv)
 int x;
 size_t erroroffset;
 uschar *s;
-const uschar *error;
 
 argc = argc;     /* These are currently unused. */
 argv = argv;
 
 /* Deal with simple values in the environment. */
 
-s = US getenv("ACTION_OUTPUT");
-if (s != NULL)
+if ((s = US getenv("ACTION_OUTPUT")))
   {
   if (Ustrcmp(s, "no") == 0) action_output = FALSE;
   if (Ustrcmp(s, "yes") == 0) action_output = TRUE;
   }
 
-s = US getenv("ACTION_QUEUE_UPDATE");
-if (s != NULL)
+if ((s = US getenv("ACTION_QUEUE_UPDATE")))
   {
   if (Ustrcmp(s, "no") == 0) action_queue_update = FALSE;
   if (Ustrcmp(s, "yes") == 0) action_queue_update = TRUE;
   }
 
 s = US getenv("BODY_MAX");
-if (s != NULL && (x = Uatoi(s)) != 0) body_max = x;
+if (s && (x = Uatoi(s)) != 0) body_max = x;
 
-s = US getenv("EXIM_PATH");
-if (s != NULL) exim_path = string_copy(s);
+if ((s = US getenv("EXIM_PATH")))
+  exim_path = string_copy(s);
 
-s = US getenv("EXIMON_EXIM_CONFIG");
-if (s != NULL) alternate_config = string_copy(s);
+if ((s = US getenv("EXIMON_EXIM_CONFIG")))
+  alternate_config = string_copy(s);
 
-s = US getenv("LOG_BUFFER");
-if (s != NULL)
+if ((s = US getenv("LOG_BUFFER")))
   {
   uschar c[1];
   if (sscanf(CS s, "%d%c", &x, c) > 0)
@@ -158,63 +154,64 @@ if (s != NULL)
   }
 
 s = US getenv("LOG_DEPTH");
-if (s != NULL && (x = Uatoi(s)) != 0) log_depth = x;
+if (s && (x = Uatoi(s)) != 0) log_depth = x;
 
-s = US getenv("LOG_FILE_NAME");
-if (s != NULL) log_file = string_copy(s);
+if ((s = US getenv("LOG_FILE_NAME")))
+  log_file = string_copy(s);
 
-s = US getenv("LOG_FONT");
-if (s != NULL) log_font = string_copy(s);
+if ((s = US getenv("LOG_FONT")))
+  log_font = string_copy(s);
 
 s = US getenv("LOG_WIDTH");
-if (s != NULL && (x = Uatoi(s)) != 0) log_width = x;
+if (s && (x = Uatoi(s)) != 0) log_width = x;
 
-s = US getenv("MENU_EVENT");
-if (s != NULL) menu_event = string_copy(s);
+if ((s = US getenv("MENU_EVENT")))
+  menu_event = string_copy(s);
 
 s = US getenv("MIN_HEIGHT");
-if (s != NULL && (x = Uatoi(s)) > 0) min_height = x;
+if (s && (x = Uatoi(s)) > 0) min_height = x;
 
 s = US getenv("MIN_WIDTH");
-if (s != NULL && (x = Uatoi(s)) > 0) min_width = x;
+if (s && (x = Uatoi(s)) > 0) min_width = x;
 
-s = US getenv("QUALIFY_DOMAIN");
-if (s != NULL) qualify_domain = string_copy(s);
-  else qualify_domain = US"";  /* Don't want NULL */
+if ((s = US getenv("QUALIFY_DOMAIN")))
+  qualify_domain = string_copy(s);
+else
+  qualify_domain = US"";  /* Don't want NULL */
 
 s = US getenv("QUEUE_DEPTH");
-if (s != NULL && (x = Uatoi(s)) != 0) queue_depth = x;
+if (s && (x = Uatoi(s)) != 0) queue_depth = x;
 
-s = US getenv("QUEUE_FONT");
-if (s != NULL) queue_font = string_copy(s);
+if ((s = US getenv("QUEUE_FONT")))
+  queue_font = string_copy(s);
 
 s = US getenv("QUEUE_INTERVAL");
-if (s != NULL && (x = Uatoi(s)) != 0) queue_update = x;
+if (s && (x = Uatoi(s)) != 0) queue_update = x;
 
 s = US getenv("QUEUE_MAX_ADDRESSES");
-if (s != NULL && (x = Uatoi(s)) != 0) queue_max_addresses = x;
+if (s && (x = Uatoi(s)) != 0) queue_max_addresses = x;
 
 s = US getenv("QUEUE_WIDTH");
-if (s != NULL && (x = Uatoi(s)) != 0) queue_width = x;
+if (s && (x = Uatoi(s)) != 0) queue_width = x;
 
-s = US getenv("SPOOL_DIRECTORY");
-if (s != NULL) spool_directory = string_copy(s);
+if ((s = US getenv("SPOOL_DIRECTORY")))
+  spool_directory = string_copy(s);
 
 s = US getenv("START_SMALL");
-if (s != NULL && Ustrcmp(s, "yes") == 0) start_small = 1;
+if (s && Ustrcmp(s, "yes") == 0) start_small = 1;
 
 s = US getenv("TEXT_DEPTH");
-if (s != NULL && (x = Uatoi(s)) != 0) text_depth = x;
+if (s && (x = Uatoi(s)) != 0) text_depth = x;
 
-s = US getenv("WINDOW_TITLE");
-if (s != NULL) window_title = string_copy(s);
+if ((s = US getenv("WINDOW_TITLE")))
+  window_title = string_copy(s);
 
 /* Deal with stripchart configuration. First see if we are monitoring
 the size of a partition, then deal with log stripcharts in a separate
 function */
 
 s = US getenv("SIZE_STRIPCHART");
-if (s != NULL && *s != 0)
+if (s && *s)
   {
   stripchart_number++;
   stripchart_varstart++;
@@ -223,14 +220,14 @@ if (s != NULL && *s != 0)
   if (s != NULL && *s != 0) size_stripchart_name = string_copy(s);
   }
 
-s = US getenv("LOG_STRIPCHARTS");
-if (s != NULL) decode_stripchart_config(s);
+if ((s = US getenv("LOG_STRIPCHARTS")))
+  decode_stripchart_config(s);
 
 s = US getenv("STRIPCHART_INTERVAL");
-if (s != NULL && (x = Uatoi(s)) != 0) stripchart_update = x;
+if (s && (x = Uatoi(s)) != 0) stripchart_update = x;
 
 s = US getenv("QUEUE_STRIPCHART_NAME");
-queue_stripchart_name = (s != NULL)? string_copy(s) : US"queue";
+queue_stripchart_name = s ? string_copy(s) : US"queue";
 
 /* Compile the regex for matching yyyy-mm-dd at the start of a string. */
 

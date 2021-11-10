@@ -2884,7 +2884,7 @@ acl_seen(const uschar * arg, int where, uschar ** log_msgptr)
 enum { SEEN_DEFAULT, SEEN_READONLY, SEEN_WRITE };
 
 const uschar * list = arg;
-int slash = '/', equal = '=', interval, mode = SEEN_DEFAULT, yield = FAIL;
+int slash = '/', interval, mode = SEEN_DEFAULT, yield = FAIL;
 BOOL before;
 int refresh = 10 * 24 * 60 * 60;	/* 10 days */
 const uschar * ele, * key = sender_host_address;

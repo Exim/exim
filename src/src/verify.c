@@ -3577,9 +3577,10 @@ else
 
 close(pfd[pipe_read]);
 errno = save_errno;
+return yield;
 
 fail:
-
+DEBUG(D_verify) debug_printf_indent("verify_quota_call fail in %s\n", where);
 return yield;
 }
 

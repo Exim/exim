@@ -4319,7 +4319,6 @@ tree_node *t = NULL;
 const uschar * list;
 int sep = 0;
 uschar * item;
-uschar * suffix = US"";
 BOOL needsep = FALSE;
 #define LISTNAMED_BUF_SIZE 256
 uschar b[LISTNAMED_BUF_SIZE];
@@ -4335,10 +4334,10 @@ if (!listtype)		/* no-argument version */
   }
 else switch(*listtype)	/* specific list-type version */
   {
-  case 'a': t = tree_search(addresslist_anchor,   name); suffix = US"_a"; break;
-  case 'd': t = tree_search(domainlist_anchor,    name); suffix = US"_d"; break;
-  case 'h': t = tree_search(hostlist_anchor,      name); suffix = US"_h"; break;
-  case 'l': t = tree_search(localpartlist_anchor, name); suffix = US"_l"; break;
+  case 'a': t = tree_search(addresslist_anchor,   name); break;
+  case 'd': t = tree_search(domainlist_anchor,    name); break;
+  case 'h': t = tree_search(hostlist_anchor,      name); break;
+  case 'l': t = tree_search(localpartlist_anchor, name); break;
   default:
     expand_string_message = US"bad suffix on \"list\" operator";
     return yield;

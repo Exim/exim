@@ -1398,7 +1398,7 @@ if (write_pid > 0)
         yield = FALSE;
 	}
       else if (!ok)
-        {
+        {		/* Try to drain the pipe; read fails are don't care */
 	int dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
         dummy = read(pfd[pipe_read], (void *)&tctx->addr->more_errno, sizeof(int));
         dummy = read(pfd[pipe_read], (void *)&tctx->addr->delivery_time, sizeof(struct timeval));

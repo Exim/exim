@@ -642,10 +642,10 @@ static int
 server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop,
   auth_instance *ablock)
 {
-char *tmps;
-uschar *s, *propval;
+char * tmps;
+uschar * s;
 int cbrc = GSASL_NO_CALLBACK;
-auth_gsasl_options_block *ob =
+auth_gsasl_options_block * ob =
   (auth_gsasl_options_block *)(ablock->options_block);
 
 HDEBUG(D_auth) debug_printf("GNU SASL callback %s for %s/%s as server\n",
@@ -786,7 +786,6 @@ set_client_prop(Gsasl_session * sctx, Gsasl_property prop, uschar * val,
   unsigned flags, uschar * buffer, int buffsize)
 {
 uschar * s;
-int rc;
 
 if (!val) return !!(flags & PROP_OPTIONAL);
 if (!(s = expand_string(val)) || !(flags & PROP_OPTIONAL) && !*s)
