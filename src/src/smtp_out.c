@@ -150,9 +150,16 @@ return TRUE;
 
 
 #ifdef TCP_FASTOPEN
+/* Try to record if TFO was attmepted and if it was successfully used.  */
+
 static void
 tfo_out_check(int sock)
 {
+static BOOL done_once = FALSE;
+
+if (done_once) return;
+done_once = TRUE;
+
 # ifdef __FreeBSD__
 struct tcp_info tinfo;
 socklen_t len = sizeof(tinfo);
@@ -856,7 +863,7 @@ for (;;)
   }
 
 #ifdef TCP_FASTOPEN
-  tfo_out_check(sx->cctx.sock);
+tfo_out_check(sx->cctx.sock);
 #endif
 
 /* Return a value that depends on the SMTP return code. On some systems a
