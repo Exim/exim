@@ -253,7 +253,6 @@ for (int i = 0; i < 100; i++)
 
   for(;;)
     {
-    fd_set fds;
     /* This code makes use of alarm() in order to implement the timeout. This
     isn't a very tidy way of doing things. Using non-blocking I/O with select()
     provides a neater approach. However, I don't know how to do this when TLS is
@@ -281,8 +280,7 @@ for (int i = 0; i < 100; i++)
     if (rc >= 0 || errno != ENOTCONN || connretry <= 0)
       break;
 
-    FD_ZERO(&fds); FD_SET(fd, &fds);
-    select(fd+1, NULL, &fds, NULL, NULL);	/* could set timout? */
+    poll_one_fd(fd, POLLOUT, -1);		/* could set timeout? retval check? */
     connretry--;
     }
 

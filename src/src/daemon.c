@@ -87,7 +87,7 @@ sigchld_seen = TRUE;
 }
 
 
-/* SIGTERM handler.  Try to get the damon pif file removed
+/* SIGTERM handler.  Try to get the damon pid file removed
 before exiting. */
 
 static void
@@ -141,7 +141,7 @@ Uunlink(s);
 
 static void
 close_daemon_sockets(int daemon_notifier_fd,
-  int * listen_sockets, int listen_socket_count)
+  struct pollfd * fd_polls, int listen_socket_count)
 {
 if (daemon_notifier_fd >= 0)
   {
@@ -152,7 +152,7 @@ if (daemon_notifier_fd >= 0)
 #endif
   }
 
-for (int i = 0; i < listen_socket_count; i++) (void) close(listen_sockets[i]);
+for (int i = 0; i < listen_socket_count; i++) (void) close(fd_polls[i].fd);
 }
 
 
@@ -167,7 +167,7 @@ is required so that they can be closed in the sub-process. Take care not to
 leak store in this process - reset the stacking pool at the end.
 
 Arguments:
-  listen_sockets        sockets which are listening for incoming calls
+  fd_polls        sockets which are listening for incoming calls
   listen_socket_count   count of listening sockets
   accept_socket         socket of the current accepted call
   accepted              socket information about the current call
@@ -176,7 +176,7 @@ Returns:            nothing
 */
 
 static void
-handle_smtp_call(int *listen_sockets, int listen_socket_count,
+handle_smtp_call(struct pollfd *fd_polls, int listen_socket_count,
   int accept_socket, struct sockaddr *accepted)
 {
 pid_t pid;
@@ -459,7 +459,7 @@ if (pid == 0)
   extensive comment before the reception loop in exim.c for a fuller
   explanation of this logic. */
 
-  close_daemon_sockets(daemon_notifier_fd, listen_sockets, listen_socket_count);
+  close_daemon_sockets(daemon_notifier_fd, fd_polls, listen_socket_count);
 
   /* Set FD_CLOEXEC on the SMTP socket. We don't want any rogue child processes
   to be able to communicate with them, under any circumstances. */
@@ -1305,13 +1305,6 @@ return FALSE;
 
 
 
-static void
-add_listener_socket(int fd, fd_set * fds, int * fd_max)
-{
-FD_SET(fd, fds);
-if (fd > *fd_max) *fd_max = fd;
-}
-
 /*************************************************
 *              Exim Daemon Mainline              *
 *************************************************/
@@ -1339,9 +1332,8 @@ void
 daemon_go(void)
 {
 struct passwd * pw;
-int * listen_sockets = NULL;
-int listen_socket_count = 0, listen_fd_max = 0;
-fd_set select_listen;
+struct pollfd * fd_polls, * tls_watch_poll = NULL, * dnotify_poll = NULL;
+int listen_socket_count = 0, poll_fd_count;
 ip_address_item * addresses = NULL;
 time_t last_connection_time = (time_t)0;
 int local_queue_run_max = atoi(CS expand_string(queue_run_max));
@@ -1353,17 +1345,21 @@ debugging lines get the pid added. */
 
 DEBUG(D_any|D_v) debug_selector |= D_pid;
 
-FD_ZERO(&select_listen);
+/* Allocate enough pollstructs for inetd mode plus the ancillary sockets;
+also used when there are no listen sockets. */
+
+fd_polls = store_get(sizeof(struct pollfd) * 3, FALSE);
+
 if (f.inetd_wait_mode)
   {
   listen_socket_count = 1;
-  listen_sockets = store_get(sizeof(int), FALSE);
   (void) close(3);
   if (dup2(0, 3) == -1)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE,
         "failed to dup inetd socket safely away: %s", strerror(errno));
 
-  listen_sockets[0] = 3;
+  fd_polls[0].fd = 3;
+  fd_polls[0].events = POLLIN;
   (void) close(0);
   (void) close(1);
   (void) close(2);
@@ -1390,9 +1386,6 @@ if (f.inetd_wait_mode)
     if (setsockopt(3, IPPROTO_TCP, TCP_NODELAY, US &on, sizeof(on)))
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to set socket NODELAY: %s",
 	strerror(errno));
-
-  FD_SET(3, &select_listen);
-  listen_fd_max = 3;
   }
 
 
@@ -1686,11 +1679,16 @@ if (f.daemon_listen && !f.inetd_wait_mode)
         }
     }
 
-  /* Get a vector to remember all the sockets in */
+  /* Get a vector to remember all the sockets in.
+  Two extra elements for the ancillary sockets */
 
   for (ipa = addresses; ipa; ipa = ipa->next)
     listen_socket_count++;
-  listen_sockets = store_get(sizeof(int) * listen_socket_count, FALSE);
+  fd_polls = store_get(sizeof(struct pollfd) * (listen_socket_count + 2),
+			    FALSE);
+  for (struct pollfd * p = fd_polls; p < fd_polls + listen_socket_count + 2;
+       p++)
+    { p->fd = -1; p->events = POLLIN; }
 
   } /* daemon_listen but not inetd_wait_mode */
 
@@ -1795,7 +1793,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
       wildcard = ipa->address[0] == 0;
       }
 
-    if ((listen_sockets[sk] = fd = ip_socket(SOCK_STREAM, af)) < 0)
+    if ((fd_polls[sk].fd = fd = ip_socket(SOCK_STREAM, af)) < 0)
       {
       if (check_special_case(0, addresses, ipa, FALSE))
         {
@@ -1804,7 +1802,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
         goto SKIP_SOCKET;
         }
       log_write(0, LOG_PANIC_DIE, "IPv%c socket creation failed: %s",
-        (af == AF_INET6)? '6' : '4', strerror(errno));
+        af == AF_INET6 ? '6' : '4', strerror(errno));
       }
 
     /* If this is an IPv6 wildcard socket, set IPV6_V6ONLY if that option is
@@ -1903,8 +1901,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 	f.tcp_fastopen_ok = FALSE;
 	}
 #endif
-
-      add_listener_socket(fd, &select_listen, &listen_fd_max);
+      fd_polls[sk].fd = fd;
       continue;
       }
 
@@ -2187,14 +2184,21 @@ tls_daemon_init();
 
 /* Add ancillary sockets to the set for select */
 
+poll_fd_count = listen_socket_count;
 #ifndef DISABLE_TLS
 if (tls_watch_fd >= 0)
-  add_listener_socket(tls_watch_fd, &select_listen, &listen_fd_max);
+  {
+  tls_watch_poll = &fd_polls[poll_fd_count++];
+  tls_watch_poll->fd = tls_watch_fd;
+  tls_watch_poll->events = POLLIN;
+  }
 #endif
 if (daemon_notifier_fd >= 0)
-  add_listener_socket(daemon_notifier_fd, &select_listen, &listen_fd_max);
-
-listen_fd_max++;
+  {
+  dnotify_poll = &fd_polls[poll_fd_count++];
+  dnotify_poll->fd = daemon_notifier_fd;
+  dnotify_poll->events = POLLIN;
+  }
 
 /* Close the log so it can be renamed and moved. In the few cases below where
 this long-running process writes to the log (always exceptional conditions), it
@@ -2293,7 +2297,7 @@ for (;;)
           /* Close any open listening sockets in the child */
 
 	  close_daemon_sockets(daemon_notifier_fd,
-	    listen_sockets, listen_socket_count);
+	    fd_polls, listen_socket_count);
 
           /* Reset SIGHUP and SIGCHLD in the child in both cases. */
 
@@ -2421,9 +2425,8 @@ for (;;)
 
   if (f.daemon_listen)
     {
-    int check_lsk = 0, lcount;
+    int lcount;
     BOOL select_failed = FALSE;
-    fd_set fds = select_listen;
 
     DEBUG(D_any) debug_printf("Listening...\n");
 
@@ -2440,8 +2443,7 @@ for (;;)
       errno = EINTR;
       }
     else
-      lcount = select(listen_fd_max, (SELECT_ARG2_TYPE *)&fds,
-        NULL, NULL, NULL);
+      lcount = poll(fd_polls, poll_fd_count, -1);
 
     if (lcount < 0)
       {
@@ -2461,15 +2463,15 @@ for (;;)
       handle_ending_processes();
 
 #ifndef DISABLE_TLS
+      {
+      int old_tfd;
       /* Create or rotate any required keys; handle (delayed) filewatch event */
-      for (int old_tfd = tls_daemon_tick(); old_tfd >= 0; )
-	{
-	FD_CLR(old_tfd, &select_listen);
-	if (old_tfd == listen_fd_max - 1) listen_fd_max = old_tfd;
-	if (tls_watch_fd >= 0)
-	  add_listener_socket(tls_watch_fd, &select_listen, &listen_fd_max);
-	break;
-	}
+
+      if ((old_tfd = tls_daemon_tick()) >= 0)
+	for (struct pollfd * p = &fd_polls[listen_socket_count];
+	     p < fd_polls + poll_fd_count; p++)
+	  if (p->fd == old_tfd) { p->fd = tls_watch_fd ; break; }
+      }
 #endif
       errno = select_errno;
       }
@@ -2490,22 +2492,23 @@ for (;;)
       if (!select_failed)
 	{
 #if !defined(DISABLE_TLS) && (defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT))
-	if (tls_watch_fd >= 0 && FD_ISSET(tls_watch_fd, &fds))
+	if (tls_watch_poll && tls_watch_poll->revents & POLLIN)
 	  {
+	  tls_watch_poll->revents = 0;
           tls_watch_trigger_time = time(NULL);	/* Set up delayed event */
 	  tls_watch_discard_event(tls_watch_fd);
 	  break;	/* to top of daemon loop */
 	  }
 #endif
-	if (daemon_notifier_fd >= 0 && FD_ISSET(daemon_notifier_fd, &fds))
+	if (dnotify_poll && dnotify_poll->revents & POLLIN)
 	  {
+	  dnotify_poll->revents = 0;
 	  sigalrm_seen = daemon_notification();
 	  break;	/* to top of daemon loop */
 	  }
-	while (check_lsk < listen_socket_count)
-	  {
-	  int lfd = listen_sockets[check_lsk++];
-          if (FD_ISSET(lfd, &fds))
+	for (struct pollfd * p = fd_polls; p < fd_polls + listen_socket_count;
+	     p++)
+	  if (p->revents & POLLIN)
             {
 	    EXIM_SOCKLEN_T alen = sizeof(accepted);
 #ifdef TCP_INFO
@@ -2516,23 +2519,23 @@ for (;;)
 
 	    smtp_listen_backlog = 0;
 	    if (  smtp_backlog_monitor > 0
-	       && getsockopt(lfd, IPPROTO_TCP, TCP_INFO, &ti, &tlen) == 0)
+	       && getsockopt(p->fd, IPPROTO_TCP, TCP_INFO, &ti, &tlen) == 0)
 	      {
 # ifdef EXIM_HAVE_TCPI_UNACKED
 	      DEBUG(D_interface) debug_printf("listen fd %d queue max %u curr %u\n",
-		      lfd, ti.tcpi_sacked, ti.tcpi_unacked);
+		      p->fd, ti.tcpi_sacked, ti.tcpi_unacked);
 	      smtp_listen_backlog = ti.tcpi_unacked;
 # elif defined(__FreeBSD__)	/* This does not work. Investigate kernel sourcecode. */
 	      DEBUG(D_interface) debug_printf("listen fd %d queue max %u curr %u\n",
-		      lfd, ti.__tcpi_sacked, ti.__tcpi_unacked);
+		      p->fd, ti.__tcpi_sacked, ti.__tcpi_unacked);
 	      smtp_listen_backlog = ti.__tcpi_unacked;
 # endif
 	      }
 #endif
-            accept_socket = accept(lfd, (struct sockaddr *)&accepted, &alen);
+	    p->revents = 0;
+            accept_socket = accept(p->fd, (struct sockaddr *)&accepted, &alen);
             break;
             }
-	  }
 	}
 
       /* If select or accept has failed and this was not caused by an
@@ -2591,7 +2594,7 @@ for (;;)
 #endif
         if (inetd_wait_timeout)
           last_connection_time = time(NULL);
-        handle_smtp_call(listen_sockets, listen_socket_count, accept_socket,
+        handle_smtp_call(fd_polls, listen_socket_count, accept_socket,
           (struct sockaddr *)&accepted);
         }
       }
@@ -2606,10 +2609,8 @@ for (;;)
 
   else
     {
-    struct timeval tv;
-    tv.tv_sec = queue_interval;
-    tv.tv_usec = 0;
-    select(0, NULL, NULL, NULL, &tv);
+    struct pollfd p;
+    poll(&p, 0, queue_interval * 1000);
     handle_ending_processes();
     }
 
@@ -2634,8 +2635,7 @@ for (;;)
     {
     log_write(0, LOG_MAIN, "pid %d: SIGHUP received: re-exec daemon",
       getpid());
-    close_daemon_sockets(daemon_notifier_fd,
-      listen_sockets, listen_socket_count);
+    close_daemon_sockets(daemon_notifier_fd, fd_polls, listen_socket_count);
     ALARM_CLR(0);
     signal(SIGHUP, SIG_IGN);
     sighup_argv[0] = exim_path;

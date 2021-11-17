@@ -5735,13 +5735,8 @@ for (BOOL more = TRUE; more; )
     the file copy. */
 
     if (!receive_timeout)
-      {
-      struct timeval t = { .tv_sec = 30*60, .tv_usec = 0 };	/* 30 minutes */
-      fd_set r;
-
-      FD_ZERO(&r); FD_SET(0, &r);
-      if (select(1, &r, NULL, NULL, &t) == 0) mainlog_close();
-      }
+      if (poll_one_fd(0, POLLIN, 30*60*1000) == 0)	/* 30 minutes */
+	mainlog_close();
 
     /* Read the data for the message. If filter_test is not FTEST_NONE, this
     will just read the headers for the message, and not write anything onto the

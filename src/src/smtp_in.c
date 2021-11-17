@@ -346,8 +346,6 @@ static BOOL
 wouldblock_reading(void)
 {
 int fd, rc;
-fd_set fds;
-struct timeval tzero = {.tv_sec = 0, .tv_usec = 0};
 
 #ifndef DISABLE_TLS
 if (tls_in.active.sock >= 0)
@@ -358,9 +356,7 @@ if (smtp_inptr < smtp_inend)
   return FALSE;
 
 fd = fileno(smtp_in);
-FD_ZERO(&fds);
-FD_SET(fd, &fds);
-rc = select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tzero);
+rc = poll_one_fd(fd, POLLIN, 0);
 
 if (rc <= 0) return TRUE;     /* Not ready to read */
 rc = smtp_getc(GETC_BUFFER_UNLIMITED);
@@ -3942,16 +3938,8 @@ log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
 /* Pause, hoping client will FIN first so that they get the TIME_WAIT.
 The socket should become readble (though with no data) */
 
-  {
-  int fd = fileno(smtp_in);
-  fd_set fds;
-  struct timeval t_limit = {.tv_sec = 0, .tv_usec = 200*1000};
-
-  FD_ZERO(&fds);
-  FD_SET(fd, &fds);
-  (void) select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &t_limit);
-  }
-#endif	/*!DAEMON_CLOSE_NOWAIT*/
+(void) poll_one_fd(fileno(smtp_in), POLLIN, 200);
+#endif	/*!SERVERSIDE_CLOSE_NOWAIT*/
 }
 
 

@@ -74,6 +74,7 @@ static BOOL update_spool;
 static BOOL remove_journal;
 static int  parcount = 0;
 static pardata *parlist = NULL;
+static struct pollfd *parpoll;
 static int  return_count;
 static uschar *frozen_info = US"";
 static uschar *used_return_path = NULL;
@@ -3306,7 +3307,7 @@ BOOL done = p->done;
 
 /* Loop through all items, reading from the pipe when necessary. The pipe
 used to be non-blocking. But I do not see a reason for using non-blocking I/O
-here, as the preceding select() tells us, if data is available for reading.
+here, as the preceding poll() tells us, if data is available for reading.
 
 A read() on a "selected" handle should never block, but(!) it may return
 less data then we expected. (The buffer size we pass to read() shouldn't be
@@ -3840,7 +3841,7 @@ static address_item *
 par_wait(void)
 {
 int poffset, status;
-address_item *addr, *addrlist;
+address_item * addr, * addrlist;
 pid_t pid;
 
 set_process_info("delivering %s: waiting for a remote delivery subprocess "
@@ -3850,18 +3851,18 @@ set_process_info("delivering %s: waiting for a remote delivery subprocess "
 existence - in which case give an error return. We cannot proceed just by
 waiting for a completion, because a subprocess may have filled up its pipe, and
 be waiting for it to be emptied. Therefore, if no processes have finished, we
-wait for one of the pipes to acquire some data by calling select(), with a
+wait for one of the pipes to acquire some data by calling poll(), with a
 timeout just in case.
 
 The simple approach is just to iterate after reading data from a ready pipe.
 This leads to non-ideal behaviour when the subprocess has written its final Z
 item, closed the pipe, and is in the process of exiting (the common case). A
-call to waitpid() yields nothing completed, but select() shows the pipe ready -
+call to waitpid() yields nothing completed, but poll() shows the pipe ready -
 reading it yields EOF, so you end up with busy-waiting until the subprocess has
 actually finished.
 
 To avoid this, if all the data that is needed has been read from a subprocess
-after select(), an explicit wait() for it is done. We know that all it is doing
+after poll(), an explicit wait() for it is done. We know that all it is doing
 is writing to the pipe and then exiting, so the wait should not be long.
 
 The non-blocking waitpid() is to some extent just insurance; if we could
@@ -3881,9 +3882,7 @@ for (;;)   /* Normally we do not repeat this loop */
   {
   while ((pid = waitpid(-1, &status, WNOHANG)) <= 0)
     {
-    struct timeval tv;
-    fd_set select_pipes;
-    int maxpipe, readycount;
+    int readycount;
 
     /* A return value of -1 can mean several things. If errno != ECHILD, it
     either means invalid options (which we discount), or that this process was
@@ -3907,7 +3906,7 @@ for (;;)   /* Normally we do not repeat this loop */
     subprocesses are still in existence. If kill() gives an OK return, we know
     it must be for one of our processes - it can't be for a re-use of the pid,
     because if our process had finished, waitpid() would have found it. If any
-    of our subprocesses are in existence, we proceed to use select() as if
+    of our subprocesses are in existence, we proceed to use poll() as if
     waitpid() had returned zero. I think this is safe. */
 
     if (pid < 0)
@@ -3931,7 +3930,7 @@ for (;;)   /* Normally we do not repeat this loop */
       if (poffset >= remote_max_parallel)
         {
         DEBUG(D_deliver) debug_printf("*** no delivery children found\n");
-        return NULL;   /* This is the error return */
+	return NULL;	/* This is the error return */
         }
       }
 
@@ -3940,28 +3939,23 @@ for (;;)   /* Normally we do not repeat this loop */
     subprocess, but there are no completed subprocesses. See if any pipes are
     ready with any data for reading. */
 
-    DEBUG(D_deliver) debug_printf("selecting on subprocess pipes\n");
+    DEBUG(D_deliver) debug_printf("polling subprocess pipes\n");
 
-    maxpipe = 0;
-    FD_ZERO(&select_pipes);
     for (poffset = 0; poffset < remote_max_parallel; poffset++)
       if (parlist[poffset].pid != 0)
-        {
-        int fd = parlist[poffset].fd;
-        FD_SET(fd, &select_pipes);
-        if (fd > maxpipe) maxpipe = fd;
-        }
+	{
+	parpoll[poffset].fd = parlist[poffset].fd;
+	parpoll[poffset].events = POLLIN;
+	}
+      else
+	parpoll[poffset].fd = -1;
 
     /* Stick in a 60-second timeout, just in case. */
 
-    tv.tv_sec = 60;
-    tv.tv_usec = 0;
-
-    readycount = select(maxpipe + 1, (SELECT_ARG2_TYPE *)&select_pipes,
-         NULL, NULL, &tv);
+    readycount = poll(parpoll, remote_max_parallel, 60 * 1000);
 
     /* Scan through the pipes and read any that are ready; use the count
-    returned by select() to stop when there are no more. Select() can return
+    returned by poll() to stop when there are no more. Select() can return
     with no processes (e.g. if interrupted). This shouldn't matter.
 
     If par_read_pipe() returns TRUE, it means that either the terminating Z was
@@ -3978,7 +3972,7 @@ for (;;)   /* Normally we do not repeat this loop */
          poffset++)
       {
       if (  (pid = parlist[poffset].pid) != 0
-         && FD_ISSET(parlist[poffset].fd, &select_pipes)
+	 && parpoll[poffset].revents
 	 )
         {
         readycount--;
@@ -4016,7 +4010,7 @@ for (;;)   /* Normally we do not repeat this loop */
     "transport process list", pid);
   }  /* End of the "for" loop */
 
-/* Come here when all the data was completely read after a select(), and
+/* Come here when all the data was completely read after a poll(), and
 the process in pid has been wait()ed for. */
 
 PROCESS_DONE:
@@ -4051,7 +4045,7 @@ if ((status & 0xffff) != 0)
     "%s %d",
     addrlist->transport->driver_name,
     status,
-    (msb == 0)? "terminated by signal" : "exit code",
+    msb == 0 ? "terminated by signal" : "exit code",
     code);
 
   if (msb != 0 || (code != SIGTERM && code != SIGKILL && code != SIGQUIT))
@@ -4069,7 +4063,8 @@ if ((status & 0xffff) != 0)
 /* Else complete reading the pipe to get the result of the delivery, if all
 the data has not yet been obtained. */
 
-else if (!parlist[poffset].done) (void)par_read_pipe(poffset, TRUE);
+else if (!parlist[poffset].done)
+  (void) par_read_pipe(poffset, TRUE);
 
 /* Put the data count and return path into globals, mark the data slot unused,
 decrement the count of subprocesses, and return the address chain. */
@@ -4218,6 +4213,7 @@ if (!parlist)
   parlist = store_get(remote_max_parallel * sizeof(pardata), FALSE);
   for (poffset = 0; poffset < remote_max_parallel; poffset++)
     parlist[poffset].pid = 0;
+  parpoll = store_get(remote_max_parallel * sizeof(struct pollfd), FALSE);
   }
 
 /* Now loop for each remote delivery */
@@ -4613,7 +4609,7 @@ nonmatch domains
     that it can use either of them, though it prefers O_NONBLOCK, which
     distinguishes between EOF and no-more-data. */
 
-/* The data appears in a timely manner and we already did a select on
+/* The data appears in a timely manner and we already did a poll on
 all pipes, so I do not see a reason to use non-blocking IO here
 
 #ifdef O_NONBLOCK

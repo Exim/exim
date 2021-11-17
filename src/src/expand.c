@@ -1760,8 +1760,6 @@ const uschar * where;
 #ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
 uschar * sname;
 #endif
-fd_set fds;
-struct timeval tv;
 
 if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
   {
@@ -1805,9 +1803,7 @@ if (connect(fd, (const struct sockaddr *)&sa_un, len) < 0)
 buf[0] = NOTIFY_QUEUE_SIZE_REQ;
 if (send(fd, buf, 1, 0) < 0) { where = US"send"; goto bad; }
 
-FD_ZERO(&fds); FD_SET(fd, &fds);
-tv.tv_sec = 2; tv.tv_usec = 0;
-if (select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tv) != 1)
+if (poll_one_fd(fd, POLLIN, 2 * 1000) != 1)
   {
   DEBUG(D_expand) debug_printf("no daemon response; using local evaluation\n");
   len = snprintf(CS buf, sizeof(buf), "%u", queue_count_cached());

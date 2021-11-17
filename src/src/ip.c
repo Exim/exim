@@ -589,9 +589,7 @@ Returns:      TRUE => ready for i/o
 BOOL
 fd_ready(int fd, time_t timelimit)
 {
-fd_set select_inset;
-int time_left = timelimit - time(NULL);
-int rc;
+int rc, time_left = timelimit - time(NULL);
 
 if (time_left <= 0)
   {
@@ -602,12 +600,8 @@ if (time_left <= 0)
 
 do
   {
-  struct timeval tv = { .tv_sec = time_left, .tv_usec = 0 };
-  FD_ZERO (&select_inset);
-  FD_SET (fd, &select_inset);
-
   /*DEBUG(D_transport) debug_printf("waiting for data on fd\n");*/
-  rc = select(fd + 1, (SELECT_ARG2_TYPE *)&select_inset, NULL, NULL, &tv);
+  rc = poll_one_fd(fd, POLLIN, time_left * 1000);
 
   /* If some interrupt arrived, just retry. We presume this to be rare,
   but it can happen (e.g. the SIGUSR1 signal sent by exiwhat causes
@@ -636,7 +630,7 @@ do
   /* Checking the FD_ISSET is not enough, if we're interrupted, the
   select_inset may still contain the 'input'. */
   }
-while (rc < 0 || !FD_ISSET(fd, &select_inset));
+while (rc < 0);
 return TRUE;
 }
 

@@ -3550,8 +3550,8 @@ void
 smtp_proxy_tls(void * ct_ctx, uschar * buf, size_t bsize, int * pfd,
   int timeout)
 {
-fd_set rfds, efds;
-int max_fd = MAX(pfd[0], tls_out.active.sock) + 1;
+struct pollfd p[2] = {{.fd = tls_out.active.sock, .events = POLLIN},
+		      {.fd = pfd[0], .events = POLLIN}};
 int rc, i;
 BOOL send_tls_shutdown = TRUE;
 
@@ -3560,23 +3560,16 @@ if ((rc = exim_fork(US"tls-proxy")))
   _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 
 set_process_info("proxying TLS connection for continued transport");
-FD_ZERO(&rfds);
-FD_SET(tls_out.active.sock, &rfds);
-FD_SET(pfd[0], &rfds);
 
-for (int fd_bits = 3; fd_bits; )
+do
   {
   time_t time_left = timeout;
   time_t time_start = time(NULL);
 
   /* wait for data */
-  efds = rfds;
   do
     {
-    struct timeval tv = { time_left, 0 };
-
-    rc = select(max_fd,
-      (SELECT_ARG2_TYPE *)&rfds, NULL, (SELECT_ARG2_TYPE *)&efds, &tv);
+    rc = poll(p, 2, time_left * 1000);
 
     if (rc < 0 && errno == EINTR)
       if ((time_left -= time(NULL) - time_start) > 0) continue;
@@ -3589,23 +3582,22 @@ for (int fd_bits = 3; fd_bits; )
 
     /* For errors where not readable, bomb out */
 
-    if (FD_ISSET(tls_out.active.sock, &efds) || FD_ISSET(pfd[0], &efds))
+    if (p[0].revents & POLLERR || p[1].revents & POLLERR)
       {
       DEBUG(D_transport) debug_printf("select: exceptional cond on %s fd\n",
-	FD_ISSET(pfd[0], &efds) ? "proxy" : "tls");
-      if (!(FD_ISSET(tls_out.active.sock, &rfds) || FD_ISSET(pfd[0], &rfds)))
+	p[0].revents & POLLERR ? "tls" : "proxy");
+      if (!(p[0].revents & POLLIN || p[1].events & POLLIN))
 	goto done;
       DEBUG(D_transport) debug_printf("- but also readable; no exit yet\n");
       }
     }
-  while (rc < 0 || !(FD_ISSET(tls_out.active.sock, &rfds) || FD_ISSET(pfd[0], &rfds)));
+  while (rc < 0 || !(p[0].revents & POLLIN || p[1].revents & POLLIN));
 
   /* handle inbound data */
-  if (FD_ISSET(tls_out.active.sock, &rfds))
+  if (p[0].revents & POLLIN)
     if ((rc = tls_read(ct_ctx, buf, bsize)) <= 0)	/* Expect -1 for EOF; */
     {				    /* that reaps the TLS Close Notify record */
-      fd_bits &= ~1;
-      FD_CLR(tls_out.active.sock, &rfds);
+      p[0].fd = -1;
       shutdown(pfd[0], SHUT_WR);
       timeout = 5;
       }
@@ -3616,11 +3608,10 @@ for (int fd_bits = 3; fd_bits; )
   /* Handle outbound data.  We cannot combine payload and the TLS-close
   due to the limitations of the (pipe) channel feeding us.  Maybe use a unix-domain
   socket? */
-  if (FD_ISSET(pfd[0], &rfds))
+  if (p[1].revents & POLLIN)
     if ((rc = read(pfd[0], buf, bsize)) <= 0)
       {
-      fd_bits &= ~2;
-      FD_CLR(pfd[0], &rfds);
+      p[1].fd = -1;
 
 # ifdef EXIM_TCP_CORK  /* Use _CORK to get TLS Close Notify in FIN segment */
       (void) setsockopt(tls_out.active.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
@@ -3633,10 +3624,8 @@ for (int fd_bits = 3; fd_bits; )
       for (int nbytes = 0; rc - nbytes > 0; nbytes += i)
 	if ((i = tls_write(ct_ctx, buf + nbytes, rc - nbytes, FALSE)) < 0)
 	  goto done;
-
-  if (fd_bits & 1) FD_SET(tls_out.active.sock, &rfds);
-  if (fd_bits & 2) FD_SET(pfd[0], &rfds);
   }
+while (p[0].fd >= 0 || p[1].fd >= 0);
 
 done:
   if (send_tls_shutdown) tls_close(ct_ctx, TLS_SHUTDOWN_NOWAIT);

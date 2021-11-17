@@ -194,12 +194,6 @@ uschar *p,*q;
 int override = 0;
 time_t start;
 size_t read, wrote;
-#ifndef NO_POLL_H
-struct pollfd pollfd;
-#else                               /* Patch posted by Erik ? for OS X */
-struct timeval select_tv;         /* and applied by PH */
-fd_set select_fd;
-#endif
 uschar *spamd_address_work;
 spamd_address_container * sd;
 
@@ -395,19 +389,19 @@ if (wrote == -1)
   }
 
 /* now send the file */
-/* spamd sometimes accepts connections but doesn't read data off
- * the connection.  We make the file descriptor non-blocking so
- * that the write will only write sufficient data without blocking
- * and we poll the descriptor to make sure that we can write without
- * blocking.  Short writes are gracefully handled and if the whole
- * transaction takes too long it is aborted.
- * Note: poll() is not supported in OSX 10.2 and is reported to be
- *       broken in more recent versions (up to 10.4).
+/* spamd sometimes accepts connections but doesn't read data off the connection.
+We make the file descriptor non-blocking so that the write will only write
+sufficient data without blocking and we poll the descriptor to make sure that we
+can write without blocking.  Short writes are gracefully handled and if the
+whole transaction takes too long it is aborted.
+
+Note: poll() is not supported in OSX 10.2 and is reported to be broken in more
+      recent versions (up to 10.4). Workaround using select() removed 2021/11 (jgh).
  */
-#ifndef NO_POLL_H
-pollfd.fd = spamd_cctx.sock;
-pollfd.events = POLLOUT;
+#ifdef NO_POLL_H
+# error Need poll(2) support
 #endif
+
 (void)fcntl(spamd_cctx.sock, F_SETFL, O_NONBLOCK);
 do
   {
@@ -416,19 +410,7 @@ do
     {
     offset = 0;
 again:
-#ifndef NO_POLL_H
-    result = poll(&pollfd, 1, 1000);
-
-/* Patch posted by Erik ? for OS X and applied by PH */
-#else
-    select_tv.tv_sec = 1;
-    select_tv.tv_usec = 0;
-    FD_ZERO(&select_fd);
-    FD_SET(spamd_cctx.sock, &select_fd);
-    result = select(spamd_cctx.sock+1, NULL, &select_fd, NULL, &select_tv);
-#endif
-/* End Erik's patch */
-
+    result = poll_one_fd(spamd_cctx.sock, POLLOUT, 1000);
     if (result == -1 && errno == EINTR)
       goto again;
     else if (result < 1)

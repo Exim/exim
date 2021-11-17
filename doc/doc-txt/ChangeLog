@@ -40,6 +40,14 @@ JH/09 Fix macro-definition during "-be" expansion testing.  The move to
       write-protected store for macros had not accounted for these runtime
       additions; fix by removing this protection for "-be" mode.
 
+JH/10 Convert all uses of select() to poll().  FreeBSD 12.2 was found to be
+      handing out large-numbered file descriptors, violating the usual Unix
+      assumption (and required by Posix) that the lowest possible number will be
+      allocated by the kernel when a new one is needed.  In the daemon, and any
+      child procesees, values higher than 1024 (being bigger than FD_SETSIZE)
+      are not useable for FD_SET() [and hence select()] and overwrite the stack.
+      Assorted crashes happen.
+
 
 Exim version 4.95
 -----------------

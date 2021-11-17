@@ -1255,6 +1255,13 @@ child_open(uschar **argv, uschar **envp, int newumask, int *infdptr,
   outfdptr, make_leader, purpose);
 }
 
+static inline int
+poll_one_fd(int fd, short pollbits, int tmo_millisec)
+{
+struct pollfd p = {.fd = fd, .events = pollbits};
+return poll(&p, 1, tmo_millisec);
+}
+
 # endif	/* !COMPILE_UTILITY */
 
 /******************************************************************************/

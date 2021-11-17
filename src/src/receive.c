@@ -624,12 +624,8 @@ if (!receive_timeout && !receive_hasc())
   if (t.tv_sec > 30*60)
     mainlog_close();
   else
-    {
-    fd_set r;
-    FD_ZERO(&r); FD_SET(0, &r);
-    t.tv_sec = 30*60 - t.tv_sec; t.tv_usec = 0;
-    if (select(1, &r, NULL, NULL, &t) == 0) mainlog_close();
-    }
+    if (poll_one_fd(0, POLLIN, (30*60 - t.tv_sec) * 1000) == 0)
+      mainlog_close();
   }
 }
 
@@ -4234,12 +4230,7 @@ response, but the chance of this happening should be small. */
 if (smtp_input && sender_host_address && !f.sender_host_notsocket &&
     !receive_smtp_buffered())
   {
-  struct timeval tv = {.tv_sec = 0, .tv_usec = 0};
-  fd_set select_check;
-  FD_ZERO(&select_check);
-  FD_SET(fileno(smtp_in), &select_check);
-
-  if (select(fileno(smtp_in) + 1, &select_check, NULL, NULL, &tv) != 0)
+  if (poll_one_fd(fileno(smtp_in), POLLIN, 0) != 0)
     {
     int c = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (c != EOF) (receive_ungetc)(c); else
