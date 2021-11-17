@@ -4349,6 +4349,7 @@ else
 	      "%s: %s", sx->buffer, strerror(errno));
 	  }
 	else if (addr->transport_return == DEFER)
+	  /*XXX magic value -2 ? maybe host+message ? */
 	  retry_add_item(addr, addr->address_retry_key, -2);
       }
 #endif

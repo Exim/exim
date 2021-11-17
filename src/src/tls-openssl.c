@@ -3351,7 +3351,6 @@ receive_hasc = tls_hasc;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
 receive_ferror = tls_ferror;
-receive_smtp_buffered = tls_smtp_buffered;
 
 tls_in.active.sock = fileno(smtp_out);
 tls_in.active.tls_ctx = NULL;	/* not using explicit ctx for server-side */
@@ -4168,7 +4167,7 @@ if (n > 0)
 
 
 BOOL
-tls_could_read(void)
+tls_could_getc(void)
 {
 return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm
     || SSL_pending(state_server.lib_state.lib_ssl) > 0;
@@ -4423,7 +4422,6 @@ if (!o_ctx)		/* server side */
   receive_ungetc =	smtp_ungetc;
   receive_feof =	smtp_feof;
   receive_ferror =	smtp_ferror;
-  receive_smtp_buffered = smtp_buffered;
   tls_in.active.tls_ctx = NULL;
   tls_in.sni = NULL;
   /* Leave bits, peercert, cipher, peerdn, certificate_verified set, for logging */

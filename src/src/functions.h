@@ -56,7 +56,7 @@ extern BOOL    tls_client_start(client_conn_ctx *, smtp_connect_args *,
 extern void    tls_client_creds_reload(BOOL);
 
 extern void    tls_close(void *, int);
-extern BOOL    tls_could_read(void);
+extern BOOL    tls_could_getc(void);
 extern void    tls_daemon_init(void);
 extern int     tls_daemon_tick(void);
 extern BOOL    tls_dropprivs_validate_require_cipher(BOOL);
@@ -478,7 +478,6 @@ extern void    sha1_start(hctx *);
 extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
                  uschar *, address_item **, uschar **);
 extern void    sigalrm_handler(int);
-extern BOOL    smtp_buffered(void);
 extern void    smtp_closedown(uschar *);
 extern void    smtp_command_timeout_exit(void) NORETURN;
 extern void    smtp_command_sigterm_exit(void) NORETURN;

@@ -171,7 +171,6 @@ extern void (*receive_get_cache)(unsigned);
 extern int (*receive_ungetc)(int);
 extern int (*receive_feof)(void);
 extern int (*receive_ferror)(void);
-extern BOOL (*receive_smtp_buffered)(void);
 
 
 /* For clearing, saving, restoring address expansion variables. We have to have

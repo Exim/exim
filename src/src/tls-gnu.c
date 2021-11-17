@@ -3138,7 +3138,6 @@ receive_hasc = tls_hasc;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
 receive_ferror = tls_ferror;
-receive_smtp_buffered = tls_smtp_buffered;
 
 return OK;
 }
@@ -3741,7 +3740,6 @@ if (!ct_ctx)	/* server */
   receive_ungetc =	smtp_ungetc;
   receive_feof =	smtp_feof;
   receive_ferror =	smtp_ferror;
-  receive_smtp_buffered = smtp_buffered;
   }
 
 gnutls_deinit(state->session);
@@ -3899,7 +3897,7 @@ if (n > 0)
 
 
 BOOL
-tls_could_read(void)
+tls_could_getc(void)
 {
 return state_server.xfer_buffer_lwm < state_server.xfer_buffer_hwm
  || gnutls_record_check_pending(state_server.session) > 0;

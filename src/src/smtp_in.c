@@ -320,92 +320,6 @@ static void smtp_quit_handler(uschar **, uschar **);
 static void smtp_rset_handler(void);
 
 /*************************************************
-*          Recheck synchronization               *
-*************************************************/
-
-/* Synchronization checks can never be perfect because a packet may be on its
-way but not arrived when the check is done.  Normally, the checks happen when
-commands are read: Exim ensures that there is no more input in the input buffer.
-In normal cases, the response to the command will be fast, and there is no
-further check.
-
-However, for some commands an ACL is run, and that can include delays. In those
-cases, it is useful to do another check on the input just before sending the
-response. This also applies at the start of a connection. This function does
-that check by means of the select() function, as long as the facility is not
-disabled or inappropriate. A failure of select() is ignored.
-
-When there is unwanted input, we read it so that it appears in the log of the
-error.
-
-Arguments: none
-Returns:   TRUE if all is well; FALSE if there is input pending
-*/
-
-static BOOL
-wouldblock_reading(void)
-{
-int fd, rc;
-
-#ifndef DISABLE_TLS
-if (tls_in.active.sock >= 0)
- return !tls_could_read();
-#endif
-
-if (smtp_inptr < smtp_inend)
-  return FALSE;
-
-fd = fileno(smtp_in);
-rc = poll_one_fd(fd, POLLIN, 0);
-
-if (rc <= 0) return TRUE;     /* Not ready to read */
-rc = smtp_getc(GETC_BUFFER_UNLIMITED);
-if (rc < 0) return TRUE;      /* End of file or error */
-
-smtp_ungetc(rc);
-return FALSE;
-}
-
-static BOOL
-check_sync(void)
-{
-if (!smtp_enforce_sync || !sender_host_address || f.sender_host_notsocket)
-  return TRUE;
-
-return wouldblock_reading();
-}
-
-
-/* If there's input waiting (and we're doing pipelineing) then we can pipeline
-a reponse with the one following. */
-
-static BOOL
-pipeline_response(void)
-{
-if (  !smtp_enforce_sync || !sender_host_address
-   || f.sender_host_notsocket || !f.smtp_in_pipelining_advertised)
-  return FALSE;
-
-if (wouldblock_reading()) return FALSE;
-f.smtp_in_pipelining_used = TRUE;
-return TRUE;
-}
-
-
-#ifndef DISABLE_PIPE_CONNECT
-static BOOL
-pipeline_connect_sends(void)
-{
-if (!sender_host_address || f.sender_host_notsocket || !fl.pipe_connect_acceptable)
-  return FALSE;
-
-if (wouldblock_reading()) return FALSE;
-f.smtp_in_early_pipe_used = TRUE;
-return TRUE;
-}
-#endif
-
-/*************************************************
 *          Log incomplete transactions           *
 *************************************************/
 
@@ -487,6 +401,25 @@ receive_bomb_out(US"signal-exit",
 }
 
 
+/******************************************************************************/
+/* SMTP input buffer handling.  Most of these are similar to stdio routines.  */
+
+static void
+smtp_buf_init(void)
+{
+/* Set up the buffer for inputting using direct read() calls, and arrange to
+call the local functions instead of the standard C ones.  Place a NUL at the
+end of the buffer to safety-stop C-string reads from it. */
+
+if (!(smtp_inbuffer = US malloc(IN_BUFFER_SIZE)))
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malloc() failed for SMTP input buffer");
+smtp_inbuffer[IN_BUFFER_SIZE-1] = '\0';
+
+smtp_inptr = smtp_inend = smtp_inbuffer;
+smtp_had_eof = smtp_had_error = 0;
+}
+
+
 
 /* Refill the buffer, and notify DKIM verification code.
 Return false for error or EOF.
@@ -496,6 +429,7 @@ static BOOL
 smtp_refill(unsigned lim)
 {
 int rc, save_errno;
+
 if (!smtp_out) return FALSE;
 fflush(smtp_out);
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
@@ -537,11 +471,18 @@ smtp_inptr = smtp_inbuffer;
 return TRUE;
 }
 
-/*************************************************
-*          SMTP version of getc()                *
-*************************************************/
 
-/* This gets the next byte from the SMTP input buffer. If the buffer is empty,
+/* Check if there is buffered data */
+
+BOOL
+smtp_hasc(void)
+{
+return smtp_inptr < smtp_inend;
+}
+
+/* SMTP version of getc()
+
+This gets the next byte from the SMTP input buffer. If the buffer is empty,
 it flushes the output, and refills the buffer, with a timeout. The signal
 handler is set appropriately by the calling function. This function is not used
 after a connection has negotiated itself into an TLS/SSL state.
@@ -553,17 +494,11 @@ Returns:    the next character or EOF
 int
 smtp_getc(unsigned lim)
 {
-if (smtp_inptr >= smtp_inend)
-  if (!smtp_refill(lim))
-    return EOF;
+if (!smtp_hasc() && !smtp_refill(lim)) return EOF;
 return *smtp_inptr++;
 }
 
-BOOL
-smtp_hasc(void)
-{
-return smtp_inptr < smtp_inend;
-}
+/* Get many bytes, refilling buffer if needed */
 
 uschar *
 smtp_getbuf(unsigned * len)
@@ -571,9 +506,8 @@ smtp_getbuf(unsigned * len)
 unsigned size;
 uschar * buf;
 
-if (smtp_inptr >= smtp_inend)
-  if (!smtp_refill(*len))
-    { *len = 0; return NULL; }
+if (!smtp_hasc() && !smtp_refill(*len))
+  { *len = 0; return NULL; }
 
 if ((size = smtp_inend - smtp_inptr) > *len) size = *len;
 buf = smtp_inptr;
@@ -581,6 +515,9 @@ smtp_inptr += size;
 *len = size;
 return buf;
 }
+
+/* Copy buffered data to the dkim feed.
+Called, unless TLS, just before starting to read message headers. */
 
 void
 smtp_get_cache(unsigned lim)
@@ -594,6 +531,130 @@ if (n > 0)
 #endif
 }
 
+
+/* SMTP version of ungetc()
+Puts a character back in the input buffer. Only ever called once.
+
+Arguments:
+  ch           the character
+
+Returns:       the character
+*/
+
+int
+smtp_ungetc(int ch)
+{
+if (smtp_inptr <= smtp_inbuffer)	/* NB: NOT smtp_hasc() ! */
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "buffer underflow in smtp_ungetc");
+
+*--smtp_inptr = ch;
+return ch;
+}
+
+
+/* SMTP version of feof()
+Tests for a previous EOF
+
+Arguments:     none
+Returns:       non-zero if the eof flag is set
+*/
+
+int
+smtp_feof(void)
+{
+return smtp_had_eof;
+}
+
+
+/* SMTP version of ferror()
+Tests for a previous read error, and returns with errno
+restored to what it was when the error was detected.
+
+Arguments:     none
+Returns:       non-zero if the error flag is set
+*/
+
+int
+smtp_ferror(void)
+{
+errno = smtp_had_error;
+return smtp_had_error;
+}
+
+
+/* Check if a getc will block or not */
+
+static BOOL
+smtp_could_getc(void)
+{
+int fd, rc;
+fd_set fds;
+struct timeval tzero = {.tv_sec = 0, .tv_usec = 0};
+
+if (smtp_inptr < smtp_inend)
+  return TRUE;
+
+fd = fileno(smtp_in);
+FD_ZERO(&fds);
+FD_SET(fd, &fds);
+rc = select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tzero);
+
+if (rc <= 0) return FALSE;     /* Not ready to read */
+rc = smtp_getc(GETC_BUFFER_UNLIMITED);
+if (rc < 0) return FALSE;      /* End of file or error */
+
+smtp_ungetc(rc);
+return TRUE;
+}
+
+
+/******************************************************************************/
+/*************************************************
+*          Recheck synchronization               *
+*************************************************/
+
+/* Synchronization checks can never be perfect because a packet may be on its
+way but not arrived when the check is done.  Normally, the checks happen when
+commands are read: Exim ensures that there is no more input in the input buffer.
+In normal cases, the response to the command will be fast, and there is no
+further check.
+
+However, for some commands an ACL is run, and that can include delays. In those
+cases, it is useful to do another check on the input just before sending the
+response. This also applies at the start of a connection. This function does
+that check by means of the select() function, as long as the facility is not
+disabled or inappropriate. A failure of select() is ignored.
+
+When there is unwanted input, we read it so that it appears in the log of the
+error.
+
+Arguments: none
+Returns:   TRUE if all is well; FALSE if there is input pending
+*/
+
+static BOOL
+wouldblock_reading(void)
+{
+#ifndef DISABLE_TLS
+if (tls_in.active.sock >= 0)
+ return !tls_could_getc();
+#endif
+
+return !smtp_could_getc();
+}
+
+static BOOL
+check_sync(void)
+{
+if (!smtp_enforce_sync || !sender_host_address || f.sender_host_notsocket)
+  return TRUE;
+
+return wouldblock_reading();
+}
+
+
+/******************************************************************************/
+/* Variants of the smtp_* input handling functions for use in CHUNKING mode */
 
 /* Forward declarations */
 static inline void bdat_push_receive_functions(void);
@@ -831,30 +892,6 @@ lwr_receive_hasc = NULL;
 lwr_receive_ungetc = NULL;
 }
 
-/*************************************************
-*          SMTP version of ungetc()              *
-*************************************************/
-
-/* Puts a character back in the input buffer. Only ever
-called once.
-
-Arguments:
-  ch           the character
-
-Returns:       the character
-*/
-
-int
-smtp_ungetc(int ch)
-{
-if (smtp_inptr <= smtp_inbuffer)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "buffer underflow in smtp_ungetc");
-
-*--smtp_inptr = ch;
-return ch;
-}
-
-
 int
 bdat_ungetc(int ch)
 {
@@ -865,62 +902,7 @@ return lwr_receive_ungetc(ch);
 
 
 
-/*************************************************
-*          SMTP version of feof()                *
-*************************************************/
-
-/* Tests for a previous EOF
-
-Arguments:     none
-Returns:       non-zero if the eof flag is set
-*/
-
-int
-smtp_feof(void)
-{
-return smtp_had_eof;
-}
-
-
-
-
-/*************************************************
-*          SMTP version of ferror()              *
-*************************************************/
-
-/* Tests for a previous read error, and returns with errno
-restored to what it was when the error was detected.
-
-Arguments:     none
-Returns:       non-zero if the error flag is set
-*/
-
-int
-smtp_ferror(void)
-{
-errno = smtp_had_error;
-return smtp_had_error;
-}
-
-
-
-/*************************************************
-*      Test for characters in the SMTP buffer    *
-*************************************************/
-
-/* Used at the end of a message
-
-Arguments:     none
-Returns:       TRUE/FALSE
-*/
-
-BOOL
-smtp_buffered(void)
-{
-return smtp_inptr < smtp_inend;
-}
-
-
+/******************************************************************************/
 
 /*************************************************
 *     Write formatted string to SMTP channel     *
@@ -1049,6 +1031,35 @@ return smtp_write_error;
 }
 
 
+
+/* If there's input waiting (and we're doing pipelineing) then we can pipeline
+a reponse with the one following. */
+
+static BOOL
+pipeline_response(void)
+{
+if (  !smtp_enforce_sync || !sender_host_address
+   || f.sender_host_notsocket || !f.smtp_in_pipelining_advertised)
+  return FALSE;
+
+if (wouldblock_reading()) return FALSE;
+f.smtp_in_pipelining_used = TRUE;
+return TRUE;
+}
+
+
+#ifndef DISABLE_PIPE_CONNECT
+static BOOL
+pipeline_connect_sends(void)
+{
+if (!sender_host_address || f.sender_host_notsocket || !fl.pipe_connect_acceptable)
+  return FALSE;
+
+if (wouldblock_reading()) return FALSE;
+f.smtp_in_early_pipe_used = TRUE;
+return TRUE;
+}
+#endif
 
 /*************************************************
 *          SMTP command read timeout             *
@@ -1671,12 +1682,13 @@ for (smtp_cmd_list * p = cmd_list; p < cmd_list_end; p++)
 	|| smtp_cmd_buffer[p->len] == ' '
      )  )
     {
-    if (smtp_inptr < smtp_inend &&                     /* Outstanding input */
-        p->cmd < sync_cmd_limit &&                     /* Command should sync */
-        check_sync &&                                  /* Local flag set */
-        smtp_enforce_sync &&                           /* Global flag set */
-        sender_host_address != NULL &&                 /* Not local input */
-        !f.sender_host_notsocket)                        /* Really is a socket */
+    if (   smtp_inptr < smtp_inend		/* Outstanding input */
+       &&  p->cmd < sync_cmd_limit		/* Command should sync */
+       &&  check_sync				/* Local flag set */
+       &&  smtp_enforce_sync			/* Global flag set */
+       &&  sender_host_address != NULL		/* Not local input */
+       &&  !f.sender_host_notsocket		/* Really is a socket */
+       )
       return BADSYN_CMD;
 
     /* The variables $smtp_command and $smtp_command_argument point into the
@@ -1725,7 +1737,8 @@ if (  smtp_inptr < smtp_inend		/* Outstanding input */
    && check_sync			/* Local flag set */
    && smtp_enforce_sync			/* Global flag set */
    && sender_host_address		/* Not local input */
-   && !f.sender_host_notsocket)		/* Really is a socket */
+   && !f.sender_host_notsocket		/* Really is a socket */
+   )
   return BADSYN_CMD;
 
 return OTHER_CMD;
@@ -2580,12 +2593,9 @@ else
     (sender_host_address ? protocols : protocols_local) [pnormal];
 
 /* Set up the buffer for inputting using direct read() calls, and arrange to
-call the local functions instead of the standard C ones.  Place a NUL at the
-end of the buffer to safety-stop C-string reads from it. */
+call the local functions instead of the standard C ones. */
 
-if (!(smtp_inbuffer = US malloc(IN_BUFFER_SIZE)))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malloc() failed for SMTP input buffer");
-smtp_inbuffer[IN_BUFFER_SIZE-1] = '\0';
+smtp_buf_init();
 
 receive_getc = smtp_getc;
 receive_getbuf = smtp_getbuf;
@@ -2594,13 +2604,10 @@ receive_hasc = smtp_hasc;
 receive_ungetc = smtp_ungetc;
 receive_feof = smtp_feof;
 receive_ferror = smtp_ferror;
-receive_smtp_buffered = smtp_buffered;
 lwr_receive_getc = NULL;
 lwr_receive_getbuf = NULL;
 lwr_receive_hasc = NULL;
 lwr_receive_ungetc = NULL;
-smtp_inptr = smtp_inend = smtp_inbuffer;
-smtp_had_eof = smtp_had_error = 0;
 
 /* Set up the message size limit; this may be host-specific */
 
@@ -5586,7 +5593,7 @@ while (done <= 0)
       Pipelining sync checks will normally have protected us too, unless disabled
       by configuration. */
 
-      if (receive_smtp_buffered())
+      if (receive_hasc())
 	{
 	DEBUG(D_any)
 	  debug_printf("Non-empty input buffer after STARTTLS; naive attack?\n");

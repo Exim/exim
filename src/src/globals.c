@@ -183,7 +183,6 @@ BOOL	(*receive_hasc)(void)		= stdin_hasc;
 int	(*receive_ungetc)(int)    	= stdin_ungetc;
 int	(*receive_feof)(void)     	= stdin_feof;
 int	(*receive_ferror)(void)   	= stdin_ferror;
-BOOL	(*receive_smtp_buffered)(void)	= NULL;   /* Only used for SMTP */
 #endif
 
 

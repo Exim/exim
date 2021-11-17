@@ -4212,7 +4212,7 @@ f.receive_call_bombout = TRUE;
 /* Before sending an SMTP response in a TCP/IP session, we check to see if the
 connection has gone away. This can only be done if there is no unconsumed input
 waiting in the local input buffer. We can test for this by calling
-receive_smtp_buffered(). RFC 2920 (pipelining) explicitly allows for additional
+receive_hasc(). RFC 2920 (pipelining) explicitly allows for additional
 input to be sent following the final dot, so the presence of following input is
 not an error.
 
@@ -4227,8 +4227,8 @@ Of course, since TCP/IP is asynchronous, there is always a chance that the
 connection will vanish between the time of this test and the sending of the
 response, but the chance of this happening should be small. */
 
-if (smtp_input && sender_host_address && !f.sender_host_notsocket &&
-    !receive_smtp_buffered())
+if (  smtp_input && sender_host_address && !f.sender_host_notsocket
+   && !receive_hasc())
   {
   if (poll_one_fd(fileno(smtp_in), POLLIN, 0) != 0)
     {
@@ -4409,12 +4409,12 @@ if (smtp_input)
 	the socket. */
 
         smtp_printf("250- %u byte chunk, total %d\r\n250 OK id=%s\r\n",
-	    receive_smtp_buffered(),
+	    receive_hasc(),
 	    chunking_datasize, message_size+message_linecount, message_id);
 	chunking_state = CHUNKING_OFFERED;
 	}
       else
-        smtp_printf("250 OK id=%s\r\n", receive_smtp_buffered(), message_id);
+        smtp_printf("250 OK id=%s\r\n", receive_hasc(), message_id);
 
       if (host_checking)
         fprintf(stdout,
