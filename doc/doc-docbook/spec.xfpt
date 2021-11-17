@@ -1756,7 +1756,7 @@ headers are in an unusual location you will need to either set the PCRE2_LIBS
 and INCLUDE directives appropriately,
 or set PCRE2_CONFIG=yes to use the installed &(pcre-config)& command.
 If your operating system has no
-PCRE2 support then you will need to obtain and build the current PCRE
+PCRE2 support then you will need to obtain and build the current PCRE2
 from &url(https://github.com/PhilipHazel/pcre2/releases).
 More information on PCRE2 is available at &url(https://www.pcre.org/).
 

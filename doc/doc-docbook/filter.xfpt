@@ -1343,7 +1343,7 @@ A &"contains"& test does a partial string match, having expanded both strings.
 .endd
 
 For a &"matches"& test, after expansion of both strings, the second one is
-interpreted as a regular expression. Exim uses the PCRE regular expression
+interpreted as a regular expression. Exim uses the PCRE2 regular expression
 library, which provides regular expressions that are compatible with Perl.
 
 The match succeeds if the regular expression matches any part of the first
