@@ -1,5 +1,5 @@
 
 ******** SERVER ********
 2017-07-30 18:51:05.712 H=localhost (the.local.host.name) [127.0.0.1] F=<CALLER@test.ex> RCPT <a@test.ex>: discarded by RCPT ACL
-2017-07-30 18:51:05.712 H=localhost (the.local.host.name) [127.0.0.1] F=<CALLER@test.ex> RCPT <b@test.ex>: discarded by RCPT ACL
+2017-07-30 18:51:05.712 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> RCPT <b@test.ex>: discarded by RCPT ACL
 2017-07-30 18:51:05.712 H=localhost (the.local.host.name) [127.0.0.1] F=<CALLER@test.ex> RCPT <c@test.ex>: discarded by RCPT ACL

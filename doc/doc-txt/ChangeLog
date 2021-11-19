@@ -48,6 +48,11 @@ JH/10 Convert all uses of select() to poll().  FreeBSD 12.2 was found to be
       are not useable for FD_SET() [and hence select()] and overwrite the stack.
       Assorted crashes happen.
 
+JH/11 Fix use of $sender_host_name in daemon process.  When used in certain
+      main-section options or in a connect ACL, the value from the first ever
+      connection was never replaced for subsequent connections.  Found by
+      Wakko Warner.
+
 
 Exim version 4.95
 -----------------

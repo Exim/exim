@@ -19,6 +19,7 @@ begin acl
 
 delay:
   accept
+	 logwrite =	$sender_host_name
 	 delay = 2s
 
 # ----- Routers -----
@@ -31,7 +32,7 @@ r:
 begin transports
 smtp:
 	driver =	smtp
-	hosts =		127.0.0.1
+	hosts =		${if eq {b}{$local_part} {HOSTIPV4}{127.0.0.1}}
 	port =		${if eq {c}{$local_part} {PORT_D2}{PORT_D}}
 	allow_localhost
 	hosts_try_fastopen =

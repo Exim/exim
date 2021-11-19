@@ -1211,7 +1211,7 @@ int rc;
 
 /* Previous success */
 
-if (sender_host_name != NULL) return OK;
+if (sender_host_name) return OK;
 
 /* Previous failure */
 

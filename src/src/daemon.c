@@ -793,10 +793,8 @@ else (void)close(dup_accept_socket);
 the incoming host address and an expanded active_hostname. */
 
 log_close_all();
-interface_address =
-sender_host_address = NULL;
+interface_address = sender_host_name = sender_host_address = NULL;
 store_reset(reset_point);
-sender_host_address = NULL;
 }
 
 
