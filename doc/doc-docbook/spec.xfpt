@@ -39828,7 +39828,8 @@ For example, to dump the retry database:
 .code
 exim_dumpdb /var/spool/exim retry
 .endd
-Two lines of output are produced for each entry:
+For the retry database
+two lines of output are produced for each entry:
 .code
 T:mail.ref.example:192.168.242.242 146 77 Connection refused
 31-Oct-1995 12:00:12 02-Nov-1995 12:21:39 02-Nov-1995 20:21:39 *
