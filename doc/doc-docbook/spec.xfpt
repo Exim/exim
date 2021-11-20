@@ -12098,8 +12098,9 @@ matched using &%match_ip%&.
 .cindex "&%pam%& expansion condition"
 &'Pluggable Authentication Modules'&
 (&url(https://mirrors.edge.kernel.org/pub/linux/libs/pam/)) are a facility that is
-available in the latest releases of Solaris and in some GNU/Linux
-distributions. The Exim support, which is intended for use in conjunction with
+available in Solaris
+and in some GNU/Linux distributions.
+The Exim support, which is intended for use in conjunction with
 the SMTP AUTH command, is available only if Exim is compiled with
 .code
 SUPPORT_PAM=yes
