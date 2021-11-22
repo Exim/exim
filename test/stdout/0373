@@ -28,7 +28,10 @@
 > 9  sock error    >>sock error<<
 > 10 ANSWER-10\n     >>ANSWER-10
 <<
-> 11 ANSWER-11     >><<
+> 11 ANSWER-11a    >>ANSWER-11a
+<<
+> 11 ANSWER-11b    >>ANSWER-11b
+<<
 > 
 > eol-replacement arg
 > 12 ANSWER-12x2  (no arg)     >>ANSWER-12\r\nANSWER-12\r\n<<
@@ -150,7 +153,12 @@ QUERY-10
 >*eof
 Listening on port 1224 ... 
 Connection request from [ip4.ip4.ip4.ip4]
->LF>ANSWER-11
+>LF>ANSWER-11a
+>*eof
+Listening on port 1224 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+QUERY-11
+>LF>ANSWER-11b
 >*eof
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]

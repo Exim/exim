@@ -811,6 +811,10 @@ JH/47 ARC: fix crash in signing, triggered when a configuration error failed
       to do ARC verification.  The Authentication-Results: header line added
       by the configuration then had no ARC item.
 
+JH/48 Bug 2784: fix shutdown=no in the ${readsocket) expansion item.  Previously
+      an incorrect mode was used for reading the result, resulting in it being
+      ignored.
+
 
 Exim version 4.92
 -----------------

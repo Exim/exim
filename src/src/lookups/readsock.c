@@ -255,7 +255,7 @@ if (TRUE)
 if (!cctx->tls_ctx)
 #endif
   {
-  FILE * fp = fdopen(cctx->sock, lf.do_shutdown ? "rb" : "wb");
+  FILE * fp = fdopen(cctx->sock, "rb");
   ALARM(timeout);
   yield = cat_file(fp, NULL, eol);
   }
