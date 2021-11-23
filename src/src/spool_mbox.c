@@ -219,7 +219,7 @@ if (spool_mbox_ok && !f.no_mbox_unspool)
     {
     debug_printf("Unable to opendir(%s): %s\n", mbox_path, strerror(errno));
     /* Just in case we still can: */
-    rmdir(CS mbox_path);
+    (void) rmdir(CS mbox_path);
     return;
     }
   /* loop thru dir & delete entries */
@@ -230,13 +230,15 @@ if (spool_mbox_ok && !f.no_mbox_unspool)
 
     file_path = string_sprintf("%s/%s", mbox_path, name);
     debug_printf("unspool_mbox(): unlinking '%s'\n", file_path);
-    (void) unlink(CS file_path);
+    if (unlink(CS file_path) != 0)
+      log_write(0, LOG_MAIN|LOG_PANIC, "unlink(%s): %s", file_path, strerror(errno));
     }
 
   closedir(tempdir);
 
   /* remove directory */
-  rmdir(CS mbox_path);
+  if (rmdir(CS mbox_path) != 0)
+    log_write(0, LOG_MAIN|LOG_PANIC, "rmdir(%s): %s", mbox_path, strerror(errno));
   store_reset(reset_point);
   }
 spool_mbox_ok = 0;
