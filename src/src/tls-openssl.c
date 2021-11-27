@@ -232,10 +232,14 @@ static exim_openssl_option exim_openssl_options[] = {
   { US"no_tlsv1", SSL_OP_NO_TLSv1 },
 #endif
 #ifdef SSL_OP_NO_TLSv1_1
-# if SSL_OP_NO_TLSv1_1 == 0x00000400L
+# if OPENSSL_VERSION_NUMBER < 0x30000000L
+#  if SSL_OP_NO_TLSv1_1 == 0x00000400L
   /* Error in chosen value in 1.0.1a; see first item in CHANGES for 1.0.1b */
-#  warning OpenSSL 1.0.1a uses a bad value for SSL_OP_NO_TLSv1_1, ignoring
-# else
+#   warning OpenSSL 1.0.1a uses a bad value for SSL_OP_NO_TLSv1_1, ignoring
+#   define NO_SSL_OP_NO_TLSv1_1
+#  endif
+# endif
+# ifndef NO_SSL_OP_NO_TLSv1_1
   { US"no_tlsv1_1", SSL_OP_NO_TLSv1_1 },
 # endif
 #endif
