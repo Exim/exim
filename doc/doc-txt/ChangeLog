@@ -8,6 +8,8 @@ Backported from master
 HS/01 Bug 2728: Introduce EDITME option "DMARC_API" to work around incompatible
       API changes in libopendmarc.
 
+HS/02 Bug 2810: Fix build for OpenSSL 3.x.x.
+
 Exim version 4.95
 -----------------
 
