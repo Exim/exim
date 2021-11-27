@@ -33,13 +33,14 @@ sha1;
 BOOL
 exim_sha_init(hctx * h, hashmethod m)
 {
+# if OPENSSL_VERSION_NUMBER < 0x30000000L
 switch (h->method = m)
   {
   case HASH_SHA1:     h->hashlen = 20; SHA1_Init  (&h->u.sha1);     break;
   case HASH_SHA2_256: h->hashlen = 32; SHA256_Init(&h->u.sha2_256); break;
   case HASH_SHA2_384: h->hashlen = 48; SHA384_Init(&h->u.sha2_512); break;
   case HASH_SHA2_512: h->hashlen = 64; SHA512_Init(&h->u.sha2_512); break;
-#ifdef EXIM_HAVE_SHA3
+#  ifdef EXIM_HAVE_SHA3
   case HASH_SHA3_224: h->hashlen = 28;
 		      EVP_DigestInit(h->u.mctx = EVP_MD_CTX_new(), EVP_sha3_224());
 		      break;
@@ -52,32 +53,62 @@ switch (h->method = m)
   case HASH_SHA3_512: h->hashlen = 64;
 		      EVP_DigestInit(h->u.mctx = EVP_MD_CTX_new(), EVP_sha3_512());
 		      break;
-#endif
+#  endif
   default:	      h->hashlen = 0; return FALSE;
   }
 return TRUE;
+
+# else
+EVP_MD * md;
+
+h->hashlen = 0;
+if (!(h->u.mctx = EVP_MD_CTX_new())) return FALSE;
+switch (h->method = m)
+  {
+  case HASH_SHA1:     h->hashlen = 20; md = EVP_MD_fetch(NULL, "SHA1", NULL); break;
+  case HASH_SHA2_256: h->hashlen = 32; md = EVP_MD_fetch(NULL, "SHA2-256", NULL); break;
+  case HASH_SHA2_384: h->hashlen = 48; md = EVP_MD_fetch(NULL, "SHA2-384", NULL); break;
+  case HASH_SHA2_512: h->hashlen = 64; md = EVP_MD_fetch(NULL, "SHA2-512", NULL); break;
+  case HASH_SHA3_224: h->hashlen = 28; md = EVP_MD_fetch(NULL, "SHA3-224", NULL); break;
+  case HASH_SHA3_256: h->hashlen = 32; md = EVP_MD_fetch(NULL, "SHA3-256", NULL); break;
+  case HASH_SHA3_384: h->hashlen = 48; md = EVP_MD_fetch(NULL, "SHA3-384", NULL); break;
+  case HASH_SHA3_512: h->hashlen = 64; md = EVP_MD_fetch(NULL, "SHA3-512", NULL); break;
+  default:	      return FALSE;
+  }
+if (md && EVP_DigestInit_ex(h->u.mctx, md, NULL))
+  return TRUE;
+
+h->hashlen = 0;
+return FALSE;
+# endif
 }
 
 
 void
 exim_sha_update(hctx * h, const uschar * data, int len)
 {
+# if OPENSSL_VERSION_NUMBER < 0x30000000L
 switch (h->method)
   {
   case HASH_SHA1:     SHA1_Update  (&h->u.sha1,     data, len); break;
   case HASH_SHA2_256: SHA256_Update(&h->u.sha2_256, data, len); break;
   case HASH_SHA2_384: SHA384_Update(&h->u.sha2_512, data, len); break;
   case HASH_SHA2_512: SHA512_Update(&h->u.sha2_512, data, len); break;
-#ifdef EXIM_HAVE_SHA3
+#  ifdef EXIM_HAVE_SHA3
   case HASH_SHA3_224:
   case HASH_SHA3_256:
   case HASH_SHA3_384:
   case HASH_SHA3_512: EVP_DigestUpdate(h->u.mctx, data, len); break;
-#endif
+#  endif
   /* should be blocked by init not handling these, but be explicit to
   guard against accidents later (and hush up clang -Wswitch) */
   default: assert(0);
   }
+
+# else
+
+EVP_DigestUpdate(h->u.mctx, data, len);
+# endif
 }
 
 
@@ -86,20 +117,30 @@ exim_sha_finish(hctx * h, blob * b)
 {
 /* Hashing is sufficient to purify any tainted input */
 b->data = store_get(b->len = h->hashlen, FALSE);
+
+# if OPENSSL_VERSION_NUMBER < 0x30000000L
 switch (h->method)
   {
   case HASH_SHA1:     SHA1_Final  (b->data, &h->u.sha1);     break;
   case HASH_SHA2_256: SHA256_Final(b->data, &h->u.sha2_256); break;
   case HASH_SHA2_384: SHA384_Final(b->data, &h->u.sha2_512); break;
   case HASH_SHA2_512: SHA512_Final(b->data, &h->u.sha2_512); break;
-#ifdef EXIM_HAVE_SHA3
+#  ifdef EXIM_HAVE_SHA3
   case HASH_SHA3_224:
   case HASH_SHA3_256:
   case HASH_SHA3_384:
   case HASH_SHA3_512: EVP_DigestFinal(h->u.mctx, b->data, NULL); break;
-#endif
+#  endif
   default: assert(0);
   }
+
+# else
+
+EVP_DigestFinal_ex(h->u.mctx, b->data, NULL);
+EVP_MD_free((EVP_MD *) EVP_MD_CTX_get0_md(h->u.mctx));
+EVP_MD_CTX_free(h->u.mctx);
+
+# endif
 }
 
 
