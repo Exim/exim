@@ -2413,13 +2413,13 @@ if ((pid = exim_fork(US"delivery-local")) == 0)
     uschar *s;
     int ret;
 
-    if(  (ret = write(pfd[pipe_write], &addr2->transport_return, sizeof(int))) != sizeof(int)
+    if(  (i = addr2->transport_return, (ret = write(pfd[pipe_write], &i, sizeof(int))) != sizeof(int))
       || (ret = write(pfd[pipe_write], &transport_count, sizeof(transport_count))) != sizeof(transport_count)
       || (ret = write(pfd[pipe_write], &addr2->flags, sizeof(addr2->flags))) != sizeof(addr2->flags)
       || (ret = write(pfd[pipe_write], &addr2->basic_errno,    sizeof(int))) != sizeof(int)
       || (ret = write(pfd[pipe_write], &addr2->more_errno,     sizeof(int))) != sizeof(int)
       || (ret = write(pfd[pipe_write], &addr2->delivery_time,  sizeof(struct timeval))) != sizeof(struct timeval)
-      || (ret = write(pfd[pipe_write], &addr2->special_action, sizeof(int))) != sizeof(int)
+      || (i = addr2->special_action, (ret = write(pfd[pipe_write], &i, sizeof(int))) != sizeof(int))
       || (ret = write(pfd[pipe_write], &addr2->transport,
         sizeof(transport_instance *))) != sizeof(transport_instance *)
 
@@ -2487,7 +2487,7 @@ for (addr2 = addr; addr2; addr2 = addr2->next)
     len = read(pfd[pipe_read], &addr2->basic_errno,    sizeof(int));
     len = read(pfd[pipe_read], &addr2->more_errno,     sizeof(int));
     len = read(pfd[pipe_read], &addr2->delivery_time,  sizeof(struct timeval));
-    len = read(pfd[pipe_read], &addr2->special_action, sizeof(int));
+    len = read(pfd[pipe_read], &i, sizeof(int)); addr2->special_action = i;
     len = read(pfd[pipe_read], &addr2->transport,
       sizeof(transport_instance *));
 
