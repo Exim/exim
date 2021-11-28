@@ -876,14 +876,14 @@ a negative int, to the (unsigned, wider) size_t */
 
 if (size >= INT_MAX/2)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-            "bad memory allocation requested (%lld bytes) at %s %d",
-            (unsigned long long)size, func, line);
+            "bad memory allocation requested (" SIZE_T_FMT " bytes) at %s %d",
+            size, func, line);
 
 size += sizeof(size_t);	/* space to store the size, used under debug */
 if (size < 16) size = 16;
 
 if (!(yield = malloc(size)))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc %d bytes of memory: "
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc " SIZE_T_FMT " bytes of memory: "
     "called from line %d in %s", size, line, func);
 
 #ifndef COMPILE_UTILITY
@@ -903,7 +903,7 @@ is not filled with zeros so as to catch problems. */
 
 if (f.running_in_test_harness)
   memset(yield, 0xF0, size - sizeof(size_t));
-DEBUG(D_memory) debug_printf("--Malloc %6p %5lld bytes\t%-20s %4d\tpool %5d  nonpool %5d\n",
+DEBUG(D_memory) debug_printf("--Malloc %6p %5lu bytes\t%-20s %4d\tpool %5d  nonpool %5d\n",
   yield, size, func, line, pool_malloc, nonpool_malloc);
 #endif  /* COMPILE_UTILITY */
 
@@ -939,8 +939,8 @@ internal_store_free(void * block, const char * func, int linenumber)
 uschar * p = US block - sizeof(size_t);
 #ifndef COMPILE_UTILITY
 DEBUG(D_any) nonpool_malloc -= *(size_t *)p;
-DEBUG(D_memory) debug_printf("----Free %6p %5lld bytes\t%-20s %4d\n",
-		    block, (unsigned long long) *(size_t *)p, func, linenumber);
+DEBUG(D_memory) debug_printf("----Free %6p %5ld bytes\t%-20s %4d\n",
+		    block, *(size_t *)p, func, linenumber);
 #endif
 free(p);
 }

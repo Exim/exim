@@ -38,17 +38,17 @@ if (rblock->extra_headers)
   {
   const uschar * list = rblock->extra_headers;
   int sep = '\n';
-  uschar * s;
+  uschar * s, * t;
   int slen;
 
   while ((s = string_nextinlist(&list, &sep, NULL, 0)))
-    if (!(s = expand_string(s)))
+    if (!(s = expand_string(t = s)))
       {
       if (!f.expand_string_forcedfail)
 	{
 	addr->message = string_sprintf(
 	  "%s router failed to expand add_headers item \"%s\": %s",
-	  rblock->name, s, expand_string_message);
+	  rblock->name, t, expand_string_message);
 	return DEFER;
 	}
       }
@@ -90,20 +90,20 @@ if (rblock->remove_headers)
   {
   const uschar * list = rblock->remove_headers;
   int sep = ':';
-  uschar * s;
+  uschar * s, * t;
   gstring * g = NULL;
 
   if (*remove_headers)
     g = string_cat(NULL, *remove_headers);
 
   while ((s = string_nextinlist(&list, &sep, NULL, 0)))
-    if (!(s = expand_string(s)))
+    if (!(s = expand_string(t = s)))
       {
       if (!f.expand_string_forcedfail)
 	{
 	addr->message = string_sprintf(
 	  "%s router failed to expand remove_headers item \"%s\": %s",
-	  rblock->name, s, expand_string_message);
+	  rblock->name, t, expand_string_message);
 	return DEFER;
 	}
       }

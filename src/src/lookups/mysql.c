@@ -286,7 +286,7 @@ if (!(mysql_result = mysql_use_result(mysql_handle)))
     {
     DEBUG(D_lookup) debug_printf_indent("MYSQL: query was not one that returns data\n");
     result = string_cat(result,
-	       string_sprintf("%d", mysql_affected_rows(mysql_handle)));
+	       string_sprintf("%lld", mysql_affected_rows(mysql_handle)));
     *do_cache = 0;
     goto MYSQL_EXIT;
     }

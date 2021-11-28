@@ -3490,9 +3490,9 @@ switch(cond_type = identify_operator(&s, &opname))
 
     srs_recipient = string_sprintf("%.*s%.*S%.*s@%.*S",   	/* lowercased */
 		      quoting, "\"",
-		      ovec[9]-ovec[8], sub[0] + ovec[8],	/* substring 4 */
+		      (int) (ovec[9]-ovec[8]), sub[0] + ovec[8],  /* substr 4 */
 		      quoting, "\"",
-		      ovec[7]-ovec[6], sub[0] + ovec[6]);	/* substring 3 */
+		      (int) (ovec[7]-ovec[6]), sub[0] + ovec[6]); /* substr 3 */
 
     /* If a zero-length secret was given, we're done.  Otherwise carry on
     and validate the given SRS local_part againt our secret. */

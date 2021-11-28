@@ -322,7 +322,7 @@ if (  buf[0] != 5
    )
   goto proxy_err;
 
-  {
+ {
   union sockaddr_46 sin;
   (void) ip_addr(&sin, host_af, host->address, port);
 
@@ -345,7 +345,7 @@ if (  buf[0] != 5
       &sin.v4.sin_port, sizeof(sin.v4.sin_port));
     size = 4+sizeof(sin.v4.sin_addr.s_addr)+sizeof(sin.v4.sin_port);
     }
-  }
+ }
 
 state = US"connect";
 HDEBUG(D_transport|D_acl|D_v)

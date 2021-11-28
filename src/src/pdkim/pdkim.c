@@ -1265,7 +1265,7 @@ if (sig->identity)
 
 if (sig->created > 0)
   {
-  uschar minibuf[20];
+  uschar minibuf[21];
 
   snprintf(CS minibuf, sizeof(minibuf), "%lu", sig->created);
   hdr = pdkim_headcat(&col, hdr, US";", US"t=", minibuf);
@@ -1273,7 +1273,7 @@ if (sig->created > 0)
 
 if (sig->expires > 0)
   {
-  uschar minibuf[20];
+  uschar minibuf[21];
 
   snprintf(CS minibuf, sizeof(minibuf), "%lu", sig->expires);
   hdr = pdkim_headcat(&col, hdr, US";", US"x=", minibuf);
@@ -1281,7 +1281,7 @@ if (sig->expires > 0)
 
 if (sig->bodylength >= 0)
   {
-  uschar minibuf[20];
+  uschar minibuf[21];
 
   snprintf(CS minibuf, sizeof(minibuf), "%lu", sig->bodylength);
   hdr = pdkim_headcat(&col, hdr, US";", US"l=", minibuf);
