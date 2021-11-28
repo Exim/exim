@@ -53,6 +53,11 @@ JH/11 Fix use of $sender_host_name in daemon process.  When used in certain
       connection was never replaced for subsequent connections.  Found by
       Wakko Warner.
 
+JH/12 Bug 2838: Fix for i32lp64 hard-align platforms. Found for SPARC Linux,
+      though only once PCRE2 was introduced: the memory accounting used under
+      debug offset allocations by an int, giving a hard trap in early startup.
+      Change to using a size_t.  Debug and fix by John Paul Adrian Glaubitz.
+
 
 Exim version 4.95
 -----------------

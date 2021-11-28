@@ -65,7 +65,7 @@ typedef void ** rmark;
 extern BOOL    store_extend_3(void *, BOOL, int, int, const char *, int);
 extern void    store_free_3(void *, const char *, int);
 /* store_get_3 & store_get_perm_3 are in local_scan.h */
-extern void   *store_malloc_3(int, const char *, int)		ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
+extern void   *store_malloc_3(size_t, const char *, int)		ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
 extern rmark   store_mark_3(const char *, int);
 extern void   *store_newblock_3(void *, BOOL, int, int, const char *, int);
 extern void    store_release_above_3(void *, const char *, int);
