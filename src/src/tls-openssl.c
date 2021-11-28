@@ -681,7 +681,6 @@ init_ecdh(SSL_CTX * sctx, host_item * host, uschar ** errstr)
 return TRUE;
 #else
 
-EC_KEY * ecdh;
 uschar * exp_curve;
 int nid;
 BOOL rv;
@@ -739,21 +738,34 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
   return FALSE;
   }
 
-if (!(ecdh = EC_KEY_new_by_curve_name(nid)))
-  {
-  tls_error(US"Unable to create ec curve", host, NULL, errstr);
-  return FALSE;
-  }
+# if OPENSSL_VERSION_NUMBER < 0x30000000L
+ {
+  EC_KEY * ecdh;
+  if (!(ecdh = EC_KEY_new_by_curve_name(nid)))
+    {
+    tls_error(US"Unable to create ec curve", host, NULL, errstr);
+    return FALSE;
+    }
 
-/* The "tmp" in the name here refers to setting a temporary key
-not to the stability of the interface. */
+  /* The "tmp" in the name here refers to setting a temporary key
+  not to the stability of the interface. */
 
-if ((rv = SSL_CTX_set_tmp_ecdh(sctx, ecdh) == 0))
-  tls_error(string_sprintf("Error enabling '%s' curve", exp_curve), host, NULL, errstr);
+  if ((rv = SSL_CTX_set_tmp_ecdh(sctx, ecdh) == 0))
+    tls_error(string_sprintf("Error enabling '%s' curve", exp_curve), host, NULL, errstr);
+  else
+    DEBUG(D_tls) debug_printf("ECDH: enabled '%s' curve\n", exp_curve);
+  EC_KEY_free(ecdh);
+ }
+
+#else	/* v 3.0.0 + */
+
+if ((rv = SSL_CTX_set1_groups(sctx, &nid, 1)) == 0)
+  tls_error(string_sprintf("Error enabling '%s' group", exp_curve), host, NULL, errstr);
 else
-  DEBUG(D_tls) debug_printf("ECDH: enabled '%s' curve\n", exp_curve);
+  DEBUG(D_tls) debug_printf("ECDH: enabled '%s' group\n", exp_curve);
 
-EC_KEY_free(ecdh);
+#endif
+
 return !rv;
 
 # endif	/*EXIM_HAVE_ECDH*/
@@ -3114,7 +3126,7 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
 else
   goto skip_certs;
 
-  {
+ {
   uschar * expcerts;
   if (!expand_check(tls_verify_certificates, US"tls_verify_certificates",
 		    &expcerts, errstr))
@@ -3129,7 +3141,7 @@ else
 
   if (expcerts && *expcerts)
     setup_cert_verify(ctx, server_verify_optional, verify_callback_server);
-  }
+ }
 skip_certs: ;
 
 #ifndef DISABLE_TLS_RESUME
@@ -3390,7 +3402,7 @@ else if (verify_check_given_host(CUSS &ob->tls_try_verify_hosts, host) == OK)
 else
   return OK;
 
-  {
+ {
   uschar * expcerts;
   if (!expand_check(ob->tls_verify_certificates, US"tls_verify_certificates",
 		    &expcerts, errstr))
@@ -3405,7 +3417,7 @@ else
 
   if (expcerts && *expcerts)
     setup_cert_verify(ctx, client_verify_optional, verify_callback_client);
-  }
+ }
 
 if (verify_check_given_host(CUSS &ob->tls_verify_cert_hostnames, host) == OK)
   {
