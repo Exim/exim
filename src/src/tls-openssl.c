@@ -549,18 +549,18 @@ EVP_add_digest(EVP_sha256());
 *************************************************/
 
 /* If dhparam is set, expand it, and load up the parameters for DH encryption.
+Server only.
 
 Arguments:
   sctx      The current SSL CTX (inbound or outbound)
   dhparam   DH parameter file or fixed parameter identity string
-  host      connected host, if client; NULL if server
   errstr    error string pointer
 
 Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
-init_dh(SSL_CTX * sctx, uschar * dhparam, const host_item * host, uschar ** errstr)
+init_dh(SSL_CTX * sctx, uschar * dhparam, uschar ** errstr)
 {
 BIO * bio;
 #if OPENSSL_VERSION_NUMBER < 0x30000000L
@@ -582,7 +582,7 @@ else if (dhexpanded[0] == '/')
   if (!(bio = BIO_new_file(CS dhexpanded, "r")))
     {
     tls_error(string_sprintf("could not read dhparams file %s", dhexpanded),
-          host, US strerror(errno), errstr);
+          NULL, US strerror(errno), errstr);
     return FALSE;
     }
   }
@@ -597,7 +597,7 @@ else
   if (!(pem = std_dh_prime_named(dhexpanded)))
     {
     tls_error(string_sprintf("Unknown standard DH prime \"%s\"", dhexpanded),
-        host, US strerror(errno), errstr);
+        NULL, US strerror(errno), errstr);
     return FALSE;
     }
   bio = BIO_new_mem_buf(CS pem, -1);
@@ -613,7 +613,7 @@ if (!(
   {
   BIO_free(bio);
   tls_error(string_sprintf("Could not read tls_dhparams \"%s\"", dhexpanded),
-      host, NULL, errstr);
+      NULL, NULL, errstr);
   return FALSE;
   }
 
@@ -636,7 +636,7 @@ dh_bitsize = EVP_PKEY_get_bits(pkey);
 
 /* Even if it is larger, we silently return success rather than cause things to
 fail out, so that a too-large DH will not knock out all TLS; it's a debatable
-choice. */
+choice.  Likewise for a failing attempt to set one. */
 
 if (dh_bitsize <= tls_dh_max_bits)
   {
@@ -646,28 +646,29 @@ if (dh_bitsize <= tls_dh_max_bits)
 #else
       SSL_CTX_set0_tmp_dh_pkey(sctx, pkey)
 #endif
-     == 0)
+      == 0)
     {
-    DEBUG(D_tls) debug_printf("failed to set D-H parameters\n");
-#if OPENSSL_VERSION_NUMBER < 0x30000000L
-    DH_free(dh);
-#else
-    EVP_PKEY_free(pkey);
+    ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
+    log_write(0, LOG_MAIN|LOG_PANIC, "TLS error (D-H param setting '%s'): %s",
+	dhexpanded ? dhexpanded : US"default", ssl_errstring);
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+    /* EVP_PKEY_free(pkey);  crashes */
 #endif
-    return FALSE;
     }
-  DEBUG(D_tls)
-    debug_printf("Diffie-Hellman initialized from %s with %d-bit prime\n",
-      dhexpanded ? dhexpanded : US"default", dh_bitsize);
+  else
+    DEBUG(D_tls)
+      debug_printf("Diffie-Hellman initialized from %s with %d-bit prime\n",
+	dhexpanded ? dhexpanded : US"default", dh_bitsize);
   }
 else
   DEBUG(D_tls)
-    debug_printf("dhparams file %d bits, is > tls_dh_max_bits limit of %d\n",
-        dh_bitsize, tls_dh_max_bits);
+    debug_printf("dhparams '%s' %d bits, is > tls_dh_max_bits limit of %d\n",
+	dhexpanded ? dhexpanded : US"default", dh_bitsize, tls_dh_max_bits);
 
 #if OPENSSL_VERSION_NUMBER < 0x30000000L
 DH_free(dh);
 #endif
+/* The EVP_PKEY ownership stays with the ctx; do not free it */
 
 BIO_free(bio);
 return TRUE;
@@ -680,7 +681,7 @@ return TRUE;
 *               Initialize for ECDH              *
 *************************************************/
 
-/* Load parameters for ECDH encryption.
+/* Load parameters for ECDH encryption.  Server only.
 
 For now, we stick to NIST P-256 because: it's simple and easy to configure;
 it avoids any patent issues that might bite redistributors; despite events in
@@ -698,14 +699,13 @@ Patches welcome.
 
 Arguments:
   sctx      The current SSL CTX (inbound or outbound)
-  host      connected host, if client; NULL if server
   errstr    error string pointer
 
 Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
-init_ecdh(SSL_CTX * sctx, host_item * host, uschar ** errstr)
+init_ecdh(SSL_CTX * sctx, uschar ** errstr)
 {
 #ifdef OPENSSL_NO_ECDH
 return TRUE;
@@ -714,9 +714,6 @@ return TRUE;
 uschar * exp_curve;
 int nid;
 BOOL rv;
-
-if (host)	/* No ECDH setup for clients, only for servers */
-  return TRUE;
 
 # ifndef EXIM_HAVE_ECDH
 DEBUG(D_tls)
@@ -764,7 +761,7 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
    )
   {
   tls_error(string_sprintf("Unknown curve name tls_eccurve '%s'", exp_curve),
-    host, NULL, errstr);
+    NULL, NULL, errstr);
   return FALSE;
   }
 
@@ -773,7 +770,7 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
   EC_KEY * ecdh;
   if (!(ecdh = EC_KEY_new_by_curve_name(nid)))
     {
-    tls_error(US"Unable to create ec curve", host, NULL, errstr);
+    tls_error(US"Unable to create ec curve", NULL, NULL, errstr);
     return FALSE;
     }
 
@@ -781,7 +778,7 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
   not to the stability of the interface. */
 
   if ((rv = SSL_CTX_set_tmp_ecdh(sctx, ecdh) == 0))
-    tls_error(string_sprintf("Error enabling '%s' curve", exp_curve), host, NULL, errstr);
+    tls_error(string_sprintf("Error enabling '%s' curve", exp_curve), NULL, NULL, errstr);
   else
     DEBUG(D_tls) debug_printf("ECDH: enabled '%s' curve\n", exp_curve);
   EC_KEY_free(ecdh);
@@ -790,7 +787,7 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
 #else	/* v 3.0.0 + */
 
 if ((rv = SSL_CTX_set1_groups(sctx, &nid, 1)) == 0)
-  tls_error(string_sprintf("Error enabling '%s' group", exp_curve), host, NULL, errstr);
+  tls_error(string_sprintf("Error enabling '%s' group", exp_curve), NULL, NULL, errstr);
 else
   DEBUG(D_tls) debug_printf("ECDH: enabled '%s' group\n", exp_curve);
 
@@ -1704,15 +1701,19 @@ state_server.lib_state.lib_ctx = ctx;
 if (opt_unset_or_noexpand(tls_dhparam))
   {
   DEBUG(D_tls) debug_printf("TLS: preloading DH params for server\n");
-  if (init_dh(ctx, tls_dhparam, NULL, &dummy_errstr))
+  if (init_dh(ctx, tls_dhparam, &dummy_errstr))
     state_server.lib_state.dh = TRUE;
   }
+else
+  DEBUG(D_tls) debug_printf("TLS: not preloading DH params for server\n");
 if (opt_unset_or_noexpand(tls_eccurve))
   {
   DEBUG(D_tls) debug_printf("TLS: preloading ECDH curve for server\n");
-  if (init_ecdh(ctx, NULL, &dummy_errstr))
+  if (init_ecdh(ctx, &dummy_errstr))
     state_server.lib_state.ecdh = TRUE;
   }
+else
+  DEBUG(D_tls) debug_printf("TLS: not preloading ECDH curve for server\n");
 
 #if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 /* If we can, preload the server-side cert, key and ocsp */
@@ -1823,19 +1824,6 @@ if (lib_ctx_new(&ctx, dummy_host, &dummy_errstr) != OK)
 ob->tls_preload.lib_ctx = ctx;
 
 tpt_dummy_state.lib_state = ob->tls_preload;
-
-if (opt_unset_or_noexpand(tls_dhparam))
-  {
-  DEBUG(D_tls) debug_printf("TLS: preloading DH params for transport '%s'\n", t->name);
-  if (init_dh(ctx, tls_dhparam, NULL, &dummy_errstr))
-    ob->tls_preload.dh = TRUE;
-  }
-if (opt_unset_or_noexpand(tls_eccurve))
-  {
-  DEBUG(D_tls) debug_printf("TLS: preloading ECDH curve for transport '%s'\n", t->name);
-  if (init_ecdh(ctx, NULL, &dummy_errstr))
-    ob->tls_preload.ecdh = TRUE;
-  }
 
 #if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 if (  opt_set_and_noexpand(ob->tls_certificate)
@@ -2146,8 +2134,8 @@ already exists.  Might even need this selfsame callback, for reneg? */
   SSL_CTX_set_tlsext_servername_arg(server_sni, state);
   }
 
-if (  !init_dh(server_sni, state->dhparam, NULL, &dummy_errstr)
-   || !init_ecdh(server_sni, NULL, &dummy_errstr)
+if (  !init_dh(server_sni, state->dhparam, &dummy_errstr)
+   || !init_ecdh(server_sni, &dummy_errstr)
    )
   goto bad;
 
@@ -2652,15 +2640,18 @@ will never be used because we use a new context every time. */
 /* Initialize with DH parameters if supplied */
 /* Initialize ECDH temp key parameter selection */
 
-if (state->lib_state.dh)
-  { DEBUG(D_tls) debug_printf("TLS: DH params were preloaded\n"); }
-else
-  if (!init_dh(ctx, state->dhparam, host, errstr)) return DEFER;
+if (!host)
+  {
+  if (state->lib_state.dh)
+    { DEBUG(D_tls) debug_printf("TLS: DH params were preloaded\n"); }
+  else
+    if (!init_dh(ctx, state->dhparam, errstr)) return DEFER;
 
-if (state->lib_state.ecdh)
-  { DEBUG(D_tls) debug_printf("TLS: ECDH curve was preloaded\n"); }
-else
-  if (!init_ecdh(ctx, host, errstr)) return DEFER;
+  if (state->lib_state.ecdh)
+    { DEBUG(D_tls) debug_printf("TLS: ECDH curve was preloaded\n"); }
+  else
+    if (!init_ecdh(ctx, errstr)) return DEFER;
+  }
 
 /* Set up certificate and key (and perhaps OCSP info) */
 

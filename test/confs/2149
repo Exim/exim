@@ -10,12 +10,9 @@ primary_hostname = myhost.test.ex
 
 acl_smtp_rcpt = accept
 
-queue_only
-queue_run_in_order
-
 tls_advertise_hosts = *
 tls_certificate = DIR/aux-fixed/cert1
-tls_dhparam = ${if eq {SERVER}{server}{DIR/aux-fixed/dh1}fail}
+tls_dhparam = ${if eq {SERVER}{server}{DATA}fail}
 
 
 # ----- Routers -----

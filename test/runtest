@@ -908,6 +908,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/(TLS error on connection from .* \(SSL_\w+\): error:)(.*)/$1 <<detail omitted>>/;
   next if /SSL verify error: depth=0 error=certificate not trusted/;
 
+  # OpenSSL 3.0.0
+  s/TLS error \(D-H param setting .* error:\K.*dh key too small/xxxxxxxx:SSL routines::dh key too small/;
+
   # ======== Maildir things ========
   # timestamp output in maildir processing
   s/(timestamp=|\(timestamp_only\): )\d+/$1ddddddd/g;
