@@ -560,12 +560,16 @@ Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
-init_dh(SSL_CTX *sctx, uschar *dhparam, const host_item *host, uschar ** errstr)
+init_dh(SSL_CTX * sctx, uschar * dhparam, const host_item * host, uschar ** errstr)
 {
-BIO *bio;
-DH *dh;
-uschar *dhexpanded;
-const char *pem;
+BIO * bio;
+#if OPENSSL_VERSION_NUMBER < 0x30000000L
+DH * dh;
+#else
+EVP_PKEY * pkey;
+#endif
+uschar * dhexpanded;
+const char * pem;
 int dh_bitsize;
 
 if (!expand_check(dhparam, US"tls_dhparam", &dhexpanded, errstr))
@@ -599,7 +603,13 @@ else
   bio = BIO_new_mem_buf(CS pem, -1);
   }
 
-if (!(dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)))
+if (!(
+#if OPENSSL_VERSION_NUMBER < 0x30000000L
+      dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)
+#else
+      pkey = PEM_read_bio_Parameters_ex(bio, NULL, NULL, NULL)
+#endif
+   ) )
   {
   BIO_free(bio);
   tls_error(string_sprintf("Could not read tls_dhparams \"%s\"", dhexpanded),
@@ -612,12 +622,16 @@ an NSS limit, and the GnuTLS APIs handle bit-sizes fine, so we went with 2236.
 But older OpenSSL can only report in bytes (octets), not bits.  If someone wants
 to dance at the edge, then they can raise the limit or use current libraries. */
 
-#ifdef EXIM_HAVE_OPENSSL_DH_BITS
+#if OPENSSL_VERSION_NUMBER < 0x30000000L
+# ifdef EXIM_HAVE_OPENSSL_DH_BITS
 /* Added in commit 26c79d5641d; `git describe --contains` says OpenSSL_1_1_0-pre1~1022
 This predates OpenSSL_1_1_0 (before a, b, ...) so is in all 1.1.0 */
 dh_bitsize = DH_bits(dh);
-#else
+# else
 dh_bitsize = 8 * DH_size(dh);
+# endif
+#else	/* 3.0.0 + */
+dh_bitsize = EVP_PKEY_get_bits(pkey);
 #endif
 
 /* Even if it is larger, we silently return success rather than cause things to
@@ -626,7 +640,22 @@ choice. */
 
 if (dh_bitsize <= tls_dh_max_bits)
   {
-  SSL_CTX_set_tmp_dh(sctx, dh);
+  if (
+#if OPENSSL_VERSION_NUMBER < 0x30000000L
+      SSL_CTX_set_tmp_dh(sctx, dh)
+#else
+      SSL_CTX_set0_tmp_dh_pkey(sctx, pkey)
+#endif
+     == 0)
+    {
+    DEBUG(D_tls) debug_printf("failed to set D-H parameters\n");
+#if OPENSSL_VERSION_NUMBER < 0x30000000L
+    DH_free(dh);
+#else
+    EVP_PKEY_free(pkey);
+#endif
+    return FALSE;
+    }
   DEBUG(D_tls)
     debug_printf("Diffie-Hellman initialized from %s with %d-bit prime\n",
       dhexpanded ? dhexpanded : US"default", dh_bitsize);
@@ -636,9 +665,11 @@ else
     debug_printf("dhparams file %d bits, is > tls_dh_max_bits limit of %d\n",
         dh_bitsize, tls_dh_max_bits);
 
+#if OPENSSL_VERSION_NUMBER < 0x30000000L
 DH_free(dh);
-BIO_free(bio);
+#endif
 
+BIO_free(bio);
 return TRUE;
 }
 
