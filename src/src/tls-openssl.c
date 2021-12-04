@@ -805,6 +805,7 @@ return !rv;
 *        Expand key and cert file specs          *
 *************************************************/
 
+#if OPENSSL_VERSION_NUMBER < 0x30000000L
 /*
 Arguments:
   s          SSL connection (not used)
@@ -824,14 +825,14 @@ BIGNUM *bn = BN_new();
 
 DEBUG(D_tls) debug_printf("Generating %d bit RSA key...\n", keylength);
 
-#ifdef EXIM_HAVE_RSA_GENKEY_EX
+# ifdef EXIM_HAVE_RSA_GENKEY_EX
 if (  !BN_set_word(bn, (unsigned long)RSA_F4)
    || !(rsa_key = RSA_new())
    || !RSA_generate_key_ex(rsa_key, keylength, bn, NULL)
    )
-#else
+# else
 if (!(rsa_key = RSA_generate_key(keylength, RSA_F4, NULL, NULL)))
-#endif
+# endif
 
   {
   ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
@@ -841,6 +842,7 @@ if (!(rsa_key = RSA_generate_key(keylength, RSA_F4, NULL, NULL)))
   }
 return rsa_key;
 }
+#endif	/* pre-3.0.0 */
 
 
 
@@ -854,7 +856,6 @@ tls_install_selfsign(SSL_CTX * sctx, uschar ** errstr)
 {
 X509 * x509 = NULL;
 EVP_PKEY * pkey;
-RSA * rsa;
 X509_NAME * name;
 uschar * where;
 
@@ -868,12 +869,19 @@ if (!(x509 = X509_new()))
   goto err;
 
 where = US"generating pkey";
-if (!(rsa = rsa_callback(NULL, 0, 2048)))
-  goto err;
+#if OPENSSL_VERSION_NUMBER < 0x30000000L
+ {
+  RSA * rsa;
+  if (!(rsa = rsa_callback(NULL, 0, 2048)))
+    goto err;
 
-where = US"assigning pkey";
-if (!EVP_PKEY_assign_RSA(pkey, rsa))
-  goto err;
+  where = US"assigning pkey";
+  if (!EVP_PKEY_assign_RSA(pkey, rsa))
+    goto err;
+ }
+#else
+pkey = EVP_RSA_gen(2048);
+#endif
 
 X509_set_version(x509, 2);				/* N+1 - version 3 */
 ASN1_INTEGER_set(X509_get_serialNumber(x509), 1);
