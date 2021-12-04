@@ -1953,7 +1953,11 @@ typedef struct {			/* Session ticket encryption key */
 
   const EVP_CIPHER *	aes_cipher;
   uschar		aes_key[32];	/* size needed depends on cipher. aes_128 implies 128/8 = 16? */
+# if OPENSSL_VERSION_NUMBER < 0x30000000L
   const EVP_MD *	hmac_hash;
+# else
+  const uschar *	hmac_hashname;
+# endif
   uschar		hmac_key[16];
   time_t		renew;
   time_t		expire;
@@ -1982,7 +1986,11 @@ if (RAND_bytes(exim_tk.name+1, sizeof(exim_tk.name)-1) <= 0) return;
 
 exim_tk.name[0] = 'E';
 exim_tk.aes_cipher = EVP_aes_256_cbc();
+# if OPENSSL_VERSION_NUMBER < 0x30000000L
 exim_tk.hmac_hash = EVP_sha256();
+# else
+exim_tk.hmac_hashname = US "sha256";
+# endif
 exim_tk.expire = t + ssl_session_timeout;
 exim_tk.renew = t + ssl_session_timeout/2;
 }
@@ -2002,10 +2010,49 @@ return memcmp(name, exim_tk.name, sizeof(exim_tk.name)) == 0 ? &exim_tk
   : NULL;
 }
 
+
+static int
+tk_hmac_init(
+# if OPENSSL_VERSION_NUMBER < 0x30000000L
+  HMAC_CTX * hctx,
+#else
+  EVP_MAC_CTX * hctx,
+#endif
+  exim_stek * key
+  )
+{
+/*XXX will want these dependent on the ssl session strength */
+# if OPENSSL_VERSION_NUMBER < 0x30000000L
+  HMAC_Init_ex(hctx, key->hmac_key, sizeof(key->hmac_key),
+		key->hmac_hash, NULL);
+#else
+ {
+  OSSL_PARAM params[3];
+  uschar * hk = string_copy(key->hmac_hashname);	/* need nonconst */
+  params[0] = OSSL_PARAM_construct_octet_string("key", key->hmac_key, sizeof(key->hmac_key));
+  params[1] = OSSL_PARAM_construct_utf8_string("digest", CS hk, 0);
+  params[2] = OSSL_PARAM_construct_end();
+  if (EVP_MAC_CTX_set_params(hctx, params) == 0)
+    {
+    DEBUG(D_tls) debug_printf("EVP_MAC_CTX_set_params: %s\n",
+      ERR_reason_error_string(ERR_get_error()));
+    return 0; /* error in mac initialisation */
+    }
+}
+#endif
+return 1;
+}
+
 /* Callback for session tickets, on server */
 static int
 ticket_key_callback(SSL * ssl, uschar key_name[16],
-  uschar * iv, EVP_CIPHER_CTX * c_ctx, HMAC_CTX * hctx, int enc)
+  uschar * iv, EVP_CIPHER_CTX * c_ctx,
+# if OPENSSL_VERSION_NUMBER < 0x30000000L
+  HMAC_CTX * hctx,
+#else
+  EVP_MAC_CTX * hctx,
+#endif
+  int enc)
 {
 tls_support * tlsp = state_server.tlsp;
 exim_stek * key;
@@ -2023,9 +2070,7 @@ if (enc)
   memcpy(key_name, key->name, 16);
   DEBUG(D_tls) debug_printf("STEK expire " TIME_T_FMT "\n", key->expire - time(NULL));
 
-  /*XXX will want these dependent on the ssl session strength */
-  HMAC_Init_ex(hctx, key->hmac_key, sizeof(key->hmac_key),
-		key->hmac_hash, NULL);
+  if (tk_hmac_init(hctx, key) == 0) return 0;
   EVP_EncryptInit_ex(c_ctx, key->aes_cipher, NULL, key->aes_key, iv);
 
   DEBUG(D_tls) debug_printf("ticket created\n");
@@ -2048,8 +2093,7 @@ else
     return 0;
     }
 
-  HMAC_Init_ex(hctx, key->hmac_key, sizeof(key->hmac_key),
-		key->hmac_hash, NULL);
+  if (tk_hmac_init(hctx, key) == 0) return 0;
   EVP_DecryptInit_ex(c_ctx, key->aes_cipher, NULL, key->aes_key, iv);
 
   DEBUG(D_tls) debug_printf("ticket usable, STEK expire " TIME_T_FMT "\n", key->expire - now);
@@ -2062,7 +2106,7 @@ else
   return key->renew < now ? 2 : 1;
   }
 }
-#endif
+#endif	/* !DISABLE_TLS_RESUME */
 
 
 
@@ -3174,9 +3218,15 @@ else
 skip_certs: ;
 
 #ifndef DISABLE_TLS_RESUME
+# if OPENSSL_VERSION_NUMBER < 0x30000000L
 SSL_CTX_set_tlsext_ticket_key_cb(ctx, ticket_key_callback);
 /* despite working, appears to always return failure, so ignoring */
+# else
+SSL_CTX_set_tlsext_ticket_key_evp_cb(ctx, ticket_key_callback);
+/* despite working, appears to always return failure, so ignoring */
+# endif
 #endif
+
 #ifdef OPENSSL_HAVE_NUM_TICKETS
 # ifndef DISABLE_TLS_RESUME
 SSL_CTX_set_num_tickets(ctx, tls_in.host_resumable ? 1 : 0);
