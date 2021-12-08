@@ -256,6 +256,11 @@ if (!cctx->tls_ctx)
 #endif
   {
   FILE * fp = fdopen(cctx->sock, "rb");
+  if (!fp)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC, "readsock fdopen: %s\n", strerror(errno));
+    goto out;
+    }
   ALARM(timeout);
   yield = cat_file(fp, NULL, eol);
   }
