@@ -1642,11 +1642,24 @@ return OK;
 * One-time init credentials for server and client *
 **************************************************/
 
+static void
+normalise_ciphers(uschar ** ciphers, const uschar * pre_expansion_ciphers)
+{
+uschar * s = *ciphers;
+
+if (!s || !Ustrchr(s, '_')) return;	/* no change needed */
+
+if (s == pre_expansion_ciphers)
+  s = string_copy(s);			/* get writable copy */
+
+for (uschar * t = s; *t; t++) if (*t == '_') *t = '-';
+*ciphers = s;
+}
+
 static int
 server_load_ciphers(SSL_CTX * ctx, exim_openssl_state_st * state,
   uschar * ciphers, uschar ** errstr)
 {
-for (uschar * s = ciphers; *s; s++ ) if (*s == '_') *s = '-';
 DEBUG(D_tls) debug_printf("required ciphers: %s\n", ciphers);
 if (!SSL_CTX_set_cipher_list(ctx, CS ciphers))
   return tls_error(US"SSL_CTX_set_cipher_list", NULL, NULL, errstr);
@@ -1798,6 +1811,7 @@ else
 if (opt_set_and_noexpand(tls_require_ciphers))
   {
   DEBUG(D_tls) debug_printf("TLS: preloading cipher list for server\n");
+  normalise_ciphers(&tls_require_ciphers, tls_require_ciphers);
   if (server_load_ciphers(ctx, &state_server, tls_require_ciphers,
 			  &dummy_errstr) == OK)
     state_server.lib_state.pri_string = TRUE;
@@ -3178,9 +3192,12 @@ else
   if (!expand_check(tls_require_ciphers, US"tls_require_ciphers", &expciphers, errstr))
     return FAIL;
 
-  if (  expciphers
-     && (rc = server_load_ciphers(ctx, &state_server, expciphers, errstr)) != OK)
-    return rc;
+  if (expciphers)
+    {
+    normalise_ciphers(&expciphers, tls_require_ciphers);
+    if ((rc = server_load_ciphers(ctx, &state_server, expciphers, errstr)) != OK)
+      return rc;
+    }
   }
 
 /* If this is a host for which certificate verification is mandatory or
@@ -3881,21 +3898,25 @@ if (conn_args->dane)
     return FALSE;
   if (expciphers && *expciphers == '\0')
     expciphers = NULL;
+
+  normalise_ciphers(&expciphers, ob->dane_require_tls_ciphers);
   }
 #endif
-if (!expciphers &&
-    !expand_check(ob->tls_require_ciphers, US"tls_require_ciphers",
+if (!expciphers)
+  {
+  if (!expand_check(ob->tls_require_ciphers, US"tls_require_ciphers",
       &expciphers, errstr))
-  return FALSE;
+    return FALSE;
 
-/* In OpenSSL, cipher components are separated by hyphens. In GnuTLS, they
-are separated by underscores. So that I can use either form in my tests, and
-also for general convenience, we turn underscores into hyphens here. */
+  /* In OpenSSL, cipher components are separated by hyphens. In GnuTLS, they
+  are separated by underscores. So that I can use either form in my tests, and
+  also for general convenience, we turn underscores into hyphens here. */
+
+  normalise_ciphers(&expciphers, ob->tls_require_ciphers);
+  }
 
 if (expciphers)
   {
-  uschar *s = expciphers;
-  while (*s) { if (*s == '_') *s = '-'; s++; }
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
   if (!SSL_CTX_set_cipher_list(exim_client_ctx->ctx, CS expciphers))
     {
@@ -4558,12 +4579,9 @@ if (!expand_check(tls_require_ciphers, US"tls_require_ciphers", &expciphers,
 if (!(expciphers && *expciphers))
   return NULL;
 
-/* normalisation ripped from above */
-s = expciphers;
-while (*s != 0) { if (*s == '_') *s = '-'; s++; }
+normalise_ciphers(&expciphers, tls_require_ciphers);
 
 err = NULL;
-
 if (lib_ctx_new(&ctx, NULL, &err) == OK)
   {
   DEBUG(D_tls)

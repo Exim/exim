@@ -58,6 +58,11 @@ JH/12 Bug 2838: Fix for i32lp64 hard-align platforms. Found for SPARC Linux,
       debug offset allocations by an int, giving a hard trap in early startup.
       Change to using a size_t.  Debug and fix by John Paul Adrian Glaubitz.
 
+JH/13 Bug 2845: Fix handling of tls_require_ciphers for OpenSSL when a value
+      with underbars is given.  The write-protection of configuration introduced
+      in 4.95 trapped when normalisation was applied to an option not needing
+      expansion action.
+
 
 Exim version 4.95
 -----------------

@@ -16,6 +16,9 @@ queue_only
 
 tls_advertise_hosts = *
 
+# Ciphers string needing normalisation (the underbar)
+tls_require_ciphers = ECDHE_RSA-AES256-SHA
+
 
 # ----- Routers -----
 
