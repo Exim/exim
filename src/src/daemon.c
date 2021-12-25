@@ -87,7 +87,7 @@ sigchld_seen = TRUE;
 }
 
 
-/* SIGTERM handler.  Try to get the damon pid file removed
+/* SIGTERM handler.  Try to get the daemon pid file removed
 before exiting. */
 
 static void

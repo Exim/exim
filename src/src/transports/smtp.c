@@ -4810,8 +4810,11 @@ if (sx->send_quit || tcw_done && !tcw)
     sx->cctx.tls_ctx = NULL;
     }
 #endif
-  millisleep(20);
-  if (fcntl(sx->cctx.sock, F_SETFL, O_NONBLOCK) == 0)
+
+  /* Drain any trailing data from the socket before close, to avoid sending a RST */
+
+  if (  poll_one_fd(sx->cctx.sock, POLLIN, 20) != 0		/* 20ms */
+     && fcntl(sx->cctx.sock, F_SETFL, O_NONBLOCK) == 0)
     for (int i = 16, n;						/* drain socket */
 	 (n = read(sx->cctx.sock, sx->inbuffer, sizeof(sx->inbuffer))) > 0 && i > 0;
 	 i--) HDEBUG(D_transport|D_acl|D_v)

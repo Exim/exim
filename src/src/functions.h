@@ -1254,6 +1254,7 @@ child_open(uschar **argv, uschar **envp, int newumask, int *infdptr,
   outfdptr, make_leader, purpose);
 }
 
+/* Return 1 if fd is usable per pollbits, else 0 */
 static inline int
 poll_one_fd(int fd, short pollbits, int tmo_millisec)
 {
