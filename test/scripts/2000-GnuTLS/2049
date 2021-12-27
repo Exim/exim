@@ -1,4 +1,4 @@
-# TLS: DH ciphers for OpenSSL
+# TLS: DH ciphers for GnuTLS
 #
 # DH param from file
 exim -DSERVER=server -DDATA=DIR/aux-fixed/dh2048 -bd -oX PORT_D
@@ -16,13 +16,6 @@ Test message
 ****
 killdaemon
 #
-# Too-small DH param (library limitation), from file
-exim -DSERVER=server -DDATA=DIR/aux-fixed/dh512 -bd -oX PORT_D
-****
-exim -odf usery@test.ex
-Test message
-****
-killdaemon
 #
 # Named DH-param
 exim -DSERVER=server -DDATA=ffdhe2048 -bd -oX PORT_D

@@ -18481,8 +18481,17 @@ of the later IKE values, which led into RFC7919 providing new fixed constants
 (the "ffdhe" identifiers).
 
 At this point, all of the "ike" values should be considered obsolete;
-they're still in Exim to avoid breaking unusual configurations, but are
+they are still in Exim to avoid breaking unusual configurations, but are
 candidates for removal the next time we have backwards-incompatible changes.
+.new
+Two of them in particular (&`ike1`& and &`ike22`&) are called out by RFC 8247
+as MUST NOT use for IPSEC, and two more (&`ike23`& and &`ike24`&) as
+SHOULD NOT.
+Because of this, Exim regards them as deprecated; if either of the first pair
+are used, warnings will be logged in the paniclog, and if any are used then
+warnings will be logged in the mainlog.
+All four will be removed in a future Exim release.
+.wen
 
 The TLS protocol does not negotiate an acceptable size for this; clients tend
 to hard-drop connections if what is offered by the server is unacceptable,

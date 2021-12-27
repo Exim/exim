@@ -63,6 +63,8 @@ JH/13 Bug 2845: Fix handling of tls_require_ciphers for OpenSSL when a value
       in 4.95 trapped when normalisation was applied to an option not needing
       expansion action.
 
+JH/14 Bug 1895: TLS: Deprecate RFC 5114 Diffie-Hellman parameters.
+
 
 Exim version 4.95
 -----------------
