@@ -1,1 +1,46 @@
-2120
+# Exim test configuration 2020
+
+SERVER=
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = thishost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+log_selector = +tls_peerdn
+
+queue_only
+
+tls_advertise_hosts = *
+
+# ----- Routers -----
+
+begin routers
+
+abc:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = thishost.test.ex
+  allow_localhost
+  port = PORT_D
+  hosts_try_fastopen = :
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,1d,1d
+
+# End
