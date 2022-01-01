@@ -2522,7 +2522,7 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
 	{
 	tls_out.ocsp = OCSP_FAILED;
 	DEBUG(D_tls) ERR_print_errors(bp);
-	log_write(0, LOG_MAIN, "Server OSCP dates invalid");
+	log_write(0, LOG_MAIN, "OCSP dates invalid");
 	goto failed;
 	}
 
