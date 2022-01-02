@@ -298,7 +298,7 @@ int length = 0;
 const uschar *t = s;
 uschar *ss, *tt;
 
-while (*t != 0)
+while (*t)
   {
   int c = *t++;
   if (  !mac_isprint(c)
@@ -433,17 +433,13 @@ string_copy_function(const uschar *s)
 return string_copy_taint(s, is_tainted(s));
 }
 
-/* This function assumes that memcpy() is faster than strcpy().
-As above, but explicitly specifying the result taint status
+/* As above, but explicitly specifying the result taint status
 */
 
 uschar *
 string_copy_taint_function(const uschar * s, BOOL tainted)
 {
-int len = Ustrlen(s) + 1;
-uschar *ss = store_get(len, tainted);
-memcpy(ss, s, len);
-return ss;
+return string_copy_taint(s, tainted);
 }
 
 
@@ -463,12 +459,9 @@ Returns:    copy of string in new store
 */
 
 uschar *
-string_copyn_function(const uschar *s, int n)
+string_copyn_function(const uschar * s, int n)
 {
-uschar *ss = store_get(n + 1, is_tainted(s));
-Ustrncpy(ss, s, n);
-ss[n] = 0;
-return ss;
+return string_copyn(s, n);
 }
 #endif
 
@@ -484,10 +477,10 @@ Returns:  copy of string in new store
 */
 
 uschar *
-string_copy_malloc(const uschar *s)
+string_copy_malloc(const uschar * s)
 {
 int len = Ustrlen(s) + 1;
-uschar *ss = store_malloc(len);
+uschar * ss = store_malloc(len);
 memcpy(ss, s, len);
 return ss;
 }
@@ -506,37 +499,37 @@ Returns:   pointer to the possibly altered string
 */
 
 uschar *
-string_split_message(uschar *msg)
+string_split_message(uschar * msg)
 {
 uschar *s, *ss;
 
-if (msg == NULL || Ustrlen(msg) <= 75) return msg;
+if (!msg || Ustrlen(msg) <= 75) return msg;
 s = ss = msg = string_copy(msg);
 
 for (;;)
   {
   int i = 0;
-  while (i < 75 && *ss != 0 && *ss != '\n') ss++, i++;
-  if (*ss == 0) break;
+  while (i < 75 && *ss && *ss != '\n') ss++, i++;
+  if (!*ss) break;
   if (*ss == '\n')
     s = ++ss;
   else
     {
-    uschar *t = ss + 1;
-    uschar *tt = NULL;
+    uschar * t = ss + 1;
+    uschar * tt = NULL;
     while (--t > s + 35)
       {
       if (*t == ' ')
         {
         if (t[-1] == ':') { tt = t; break; }
-        if (tt == NULL) tt = t;
+        if (!tt) tt = t;
         }
       }
 
-    if (tt == NULL)          /* Can't split behind - try ahead */
+    if (!tt)          /* Can't split behind - try ahead */
       {
       t = ss + 1;
-      while (*t != 0)
+      while (*t)
         {
         if (*t == ' ' || *t == '\n')
           { tt = t; break; }
@@ -544,7 +537,7 @@ for (;;)
         }
       }
 
-    if (tt == NULL) break;   /* Can't find anywhere to split */
+    if (!tt) break;   /* Can't find anywhere to split */
     *tt = '\n';
     s = ss = tt+1;
     }
@@ -572,12 +565,12 @@ Returns:    copy of string in new store, de-escaped
 */
 
 uschar *
-string_copy_dnsdomain(uschar *s)
+string_copy_dnsdomain(uschar * s)
 {
-uschar *yield;
-uschar *ss = yield = store_get(Ustrlen(s) + 1, TRUE);	/* always treat as tainted */
+uschar * yield;
+uschar * ss = yield = store_get(Ustrlen(s) + 1, TRUE);	/* always treat as tainted */
 
-while (*s != 0)
+while (*s)
   {
   if (*s != '\\')
     *ss++ = *s++;
@@ -586,7 +579,7 @@ while (*s != 0)
     *ss++ = (s[1] - '0')*100 + (s[2] - '0')*10 + s[3] - '0';
     s += 4;
     }
-  else if (*(++s) != 0)
+  else if (*++s)
     *ss++ = *s++;
   }
 
@@ -611,15 +604,15 @@ Returns:   the new string
 */
 
 uschar *
-string_dequote(const uschar **sptr)
+string_dequote(const uschar ** sptr)
 {
-const uschar *s = *sptr;
-uschar *t, *yield;
+const uschar * s = * sptr;
+uschar * t, * yield;
 
 /* First find the end of the string */
 
 if (*s != '\"')
-  while (*s != 0 && !isspace(*s)) s++;
+  while (*s && !isspace(*s)) s++;
 else
   {
   s++;
@@ -639,11 +632,11 @@ s = *sptr;
 /* Do the copy */
 
 if (*s != '\"')
-  while (*s != 0 && !isspace(*s)) *t++ = *s++;
+  while (*s && !isspace(*s)) *t++ = *s++;
 else
   {
   s++;
-  while (*s != 0 && *s != '\"')
+  while (*s && *s != '\"')
     {
     *t++ = *s == '\\' ? string_interpret_escape(&s) : *s;
     s++;
@@ -671,13 +664,15 @@ everything.  Taint is taken from the worst of the arguments.
 Arguments:
   format    a printf() format - deliberately char * rather than uschar *
               because it will most usually be a literal string
+  func	    caller, for debug
+  line	    caller, for debug
   ...       arguments for format
 
 Returns:    pointer to fresh piece of store containing sprintf'ed string
 */
 
 uschar *
-string_sprintf_trc(const char *format, const uschar * func, unsigned line, ...)
+string_sprintf_trc(const char * format, const uschar * func, unsigned line, ...)
 {
 #ifdef COMPILE_UTILITY
 uschar buffer[STRING_SPRINTF_BUFFER_SIZE];
@@ -725,7 +720,7 @@ Returns:    < 0, = 0, or > 0, according to the comparison
 */
 
 int
-strncmpic(const uschar *s, const uschar *t, int n)
+strncmpic(const uschar * s, const uschar * t, int n)
 {
 while (n--)
   {
@@ -749,9 +744,9 @@ Returns:    < 0, = 0, or > 0, according to the comparison
 */
 
 int
-strcmpic(const uschar *s, const uschar *t)
+strcmpic(const uschar * s, const uschar * t)
 {
-while (*s != 0)
+while (*s)
   {
   int c = tolower(*s++) - tolower(*t++);
   if (c != 0) return c;
@@ -776,10 +771,10 @@ Returns:         pointer to substring in string, or NULL if not found
 */
 
 uschar *
-strstric(uschar *s, uschar *t, BOOL space_follows)
+strstric(uschar * s, uschar * t, BOOL space_follows)
 {
-uschar *p = t;
-uschar *yield = NULL;
+uschar * p = t;
+uschar * yield = NULL;
 int cl = tolower(*p);
 int cu = toupper(*p);
 
@@ -787,8 +782,8 @@ while (*s)
   {
   if (*s == cl || *s == cu)
     {
-    if (yield == NULL) yield = s;
-    if (*(++p) == 0)
+    if (!yield) yield = s;
+    if (!*++p)
       {
       if (!space_follows || s[1] == ' ' || s[1] == '\n' ) return yield;
       yield = NULL;
@@ -798,7 +793,7 @@ while (*s)
     cu = toupper(*p);
     s++;
     }
-  else if (yield != NULL)
+  else if (yield)
     {
     yield = NULL;
     p = t;
@@ -863,16 +858,19 @@ Arguments:
 	     If we do the allocation, taint is handled there.
   buflen     when buffer is not NULL, the size of buffer; otherwise ignored
 
+  func	     caller, for debug
+  line	     caller, for debug
+
 Returns:     pointer to buffer, containing the next substring,
              or NULL if no more substrings
 */
 
 uschar *
-string_nextinlist_trc(const uschar **listptr, int *separator, uschar *buffer, int buflen,
- const uschar * func, int line)
+string_nextinlist_trc(const uschar ** listptr, int * separator, uschar * buffer,
+  int buflen, const uschar * func, int line)
 {
 int sep = *separator;
-const uschar *s = *listptr;
+const uschar * s = *listptr;
 BOOL sep_is_special;
 
 if (!s) return NULL;
@@ -1132,13 +1130,12 @@ terminated, because the number of characters to add is given explicitly. It is
 sometimes called to extract parts of other strings.
 
 Arguments:
-  string   points to the start of the string that is being built, or NULL
-             if this is a new string that has no contents yet
+  g	   growable-string that is being built, or NULL if not assigned yet
   s        points to characters to add
   count    count of characters to add; must not exceed the length of s, if s
              is a C string.
 
-Returns:   pointer to the start of the string, changed if copied for expansion.
+Returns:   growable string, changed if copied for expansion.
            Note that a NUL is not added, though space is left for one. This is
            because string_cat() is often called multiple times to build up a
            string - there's no point adding the NUL till the end.
@@ -1184,9 +1181,9 @@ return g;
 
 
 gstring *
-string_cat(gstring *string, const uschar *s)
+string_cat(gstring * g, const uschar * s)
 {
-return string_catn(string, s, Ustrlen(s));
+return string_catn(g, s, Ustrlen(s));
 }
 
 
@@ -1199,30 +1196,29 @@ return string_catn(string, s, Ustrlen(s));
 It calls string_cat() to do the dirty work.
 
 Arguments:
-  string   expanding-string that is being built, or NULL
-             if this is a new string that has no contents yet
+  g	   growable-string that is being built, or NULL if not yet assigned
   count    the number of strings to append
   ...      "count" uschar* arguments, which must be valid zero-terminated
              C strings
 
-Returns:   pointer to the start of the string, changed if copied for expansion.
+Returns:   growable string, changed if copied for expansion.
            The string is not zero-terminated - see string_cat() above.
 */
 
 __inline__ gstring *
-string_append(gstring *string, int count, ...)
+string_append(gstring * g, int count, ...)
 {
 va_list ap;
 
 va_start(ap, count);
 while (count-- > 0)
   {
-  uschar *t = va_arg(ap, uschar *);
-  string = string_cat(string, t);
+  uschar * t = va_arg(ap, uschar *);
+  g = string_cat(g, t);
   }
 va_end(ap);
 
-return string;
+return g;
 }
 #endif
 
@@ -1258,7 +1254,7 @@ BOOL
 string_format_trc(uschar * buffer, int buflen,
   const uschar * func, unsigned line, const char * format, ...)
 {
-gstring g = { .size = buflen, .ptr = 0, .s = buffer }, *gp;
+gstring g = { .size = buflen, .ptr = 0, .s = buffer }, * gp;
 va_list ap;
 va_start(ap, format);
 gp = string_vformat_trc(&g, func, line, STRING_SPRINTF_BUFFER_SIZE,
@@ -1301,7 +1297,7 @@ string, not nul-terminated.
 
 gstring *
 string_vformat_trc(gstring * g, const uschar * func, unsigned line,
-  unsigned size_limit, unsigned flags, const char *format, va_list ap)
+  unsigned size_limit, unsigned flags, const char * format, va_list ap)
 {
 enum ltypes { L_NORMAL=1, L_SHORT=2, L_LONG=3, L_LONGLONG=4, L_LONGDOUBLE=5, L_SIZE=6 };
 
@@ -1341,7 +1337,7 @@ off = g->ptr;		/* remember initial offset in gstring */
 while (*fp)
   {
   int length = L_NORMAL;
-  int *nptr;
+  int * nptr;
   int slen;
   const char *null = "NULL";		/* ) These variables */
   const char *item_start, *s;		/* ) are deliberately */
@@ -1644,6 +1640,8 @@ string supplied as data, adds the strerror() text, and if the failure was
 
 Arguments:
   format        a text format string - deliberately not uschar *
+  func		caller, for debug
+  line		caller, for debug
   ...           arguments for the format string
 
 Returns:        a message, in dynamic store
@@ -1651,7 +1649,7 @@ Returns:        a message, in dynamic store
 
 uschar *
 string_open_failed_trc(const uschar * func, unsigned line,
-  const char *format, ...)
+  const char * format, ...)
 {
 va_list ap;
 gstring * g = string_get(1024);

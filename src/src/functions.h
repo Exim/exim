@@ -810,11 +810,11 @@ Returns:  copy of string in new store, with letters lowercased
 */
 
 static inline uschar *
-string_copylc(const uschar *s)
+string_copylc(const uschar * s)
 {
-uschar *ss = store_get(Ustrlen(s) + 1, is_tainted(s));
-uschar *p = ss;
-while (*s != 0) *p++ = tolower(*s++);
+uschar * ss = store_get(Ustrlen(s) + 1, is_tainted(s));
+uschar * p = ss;
+while (*s) *p++ = tolower(*s++);
 *p = 0;
 return ss;
 }
@@ -836,7 +836,7 @@ Returns:    copy of string in new store, with letters lowercased
 */
 
 static inline uschar *
-string_copynlc(uschar *s, int n)
+string_copynlc(uschar * s, int n)
 {
 uschar *ss = store_get(n + 1, is_tainted(s));
 uschar *p = ss;
