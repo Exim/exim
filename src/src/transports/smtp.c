@@ -678,7 +678,8 @@ deliver_localpart = addr->local_part;
 	: string_copy(addr->message)
       : addr->basic_errno > 0
 	? string_copy(US strerror(addr->basic_errno))
-	: NULL);
+	: NULL,
+      NULL);
 
 deliver_localpart = save_local;
 deliver_domain =    save_domain;
@@ -751,7 +752,7 @@ sx->helo_response = string_copy(sx->buffer);
 #endif
 #ifndef DISABLE_EVENT
 (void) event_raise(sx->conn_args.tblock->event_action,
-  US"smtp:ehlo", sx->buffer);
+  US"smtp:ehlo", sx->buffer, NULL);
 #endif
 return TRUE;
 }
@@ -2131,7 +2132,8 @@ if (continue_hostname && continue_proxy_cipher)
 #  ifndef DISABLE_EVENT
 			    (void) event_raise(sx->conn_args.tblock->event_action,
 			      US"dane:fail", sx->dane_required
-				?  US"dane-required" : US"dnssec-invalid");
+				?  US"dane-required" : US"dnssec-invalid",
+			      NULL);
 #  endif
 			    return rc;
       }
@@ -2218,7 +2220,8 @@ if (!continue_hostname)
 # ifndef DISABLE_EVENT
 				(void) event_raise(sx->conn_args.tblock->event_action,
 				  US"dane:fail", sx->dane_required
-				    ?  US"dane-required" : US"dnssec-invalid");
+				    ?  US"dane-required" : US"dnssec-invalid",
+				  NULL);
 # endif
 				return rc;
 	  }
@@ -2230,7 +2233,7 @@ if (!continue_hostname)
 	FAIL, FALSE, &sx->delivery_start);
 # ifndef DISABLE_EVENT
       (void) event_raise(sx->conn_args.tblock->event_action,
-	US"dane:fail", US"dane-required");
+	US"dane:fail", US"dane-required", NULL);
 # endif
       return FAIL;
       }
@@ -2349,7 +2352,7 @@ will be?  Somehow I doubt it. */
       uschar * s;
       lookup_dnssec_authenticated = sx->conn_args.host->dnssec==DS_YES ? US"yes"
 	: sx->conn_args.host->dnssec==DS_NO ? US"no" : NULL;
-      s = event_raise(sx->conn_args.tblock->event_action, US"smtp:connect", sx->buffer);
+      s = event_raise(sx->conn_args.tblock->event_action, US"smtp:connect", sx->buffer, NULL);
       if (s)
 	{
 	set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL,
@@ -2686,7 +2689,7 @@ if (  smtp_peer_options & OPTION_TLS
 	  sx->conn_args.host->name, sx->conn_args.host->address, tls_errstr);
 #  ifndef DISABLE_EVENT
 	(void) event_raise(sx->conn_args.tblock->event_action,
-	  US"dane:fail", US"validation-failure");	/* could do with better detail */
+	  US"dane:fail", US"validation-failure", NULL);	/* could do with better detail */
 #  endif
 	}
 # endif
@@ -2854,7 +2857,8 @@ else if (  sx->smtps
     (void) event_raise(sx->conn_args.tblock->event_action, US"dane:fail",
       smtp_peer_options & OPTION_TLS
       ? US"validation-failure"		/* could do with better detail */
-      : US"starttls-not-supported");
+      : US"starttls-not-supported",
+      NULL);
 # endif
   goto TLS_FAILED;
   }
@@ -3172,7 +3176,7 @@ if (sx->send_quit)
 sx->cctx.sock = -1;
 
 #ifndef DISABLE_EVENT
-(void) event_raise(sx->conn_args.tblock->event_action, US"tcp:close", NULL);
+(void) event_raise(sx->conn_args.tblock->event_action, US"tcp:close", NULL, NULL);
 #endif
 
 continue_transport = NULL;
@@ -4832,7 +4836,7 @@ continue_transport = NULL;
 continue_hostname = NULL;
 
 #ifndef DISABLE_EVENT
-(void) event_raise(tblock->event_action, US"tcp:close", NULL);
+(void) event_raise(tblock->event_action, US"tcp:close", NULL, NULL);
 #endif
 
 #ifdef SUPPORT_DANE

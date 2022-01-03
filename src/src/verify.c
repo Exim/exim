@@ -815,7 +815,7 @@ tls_retry_connection:
 	    sx->cctx.sock = -1;
 #ifndef DISABLE_EVENT
 	    (void) event_raise(addr->transport->event_action,
-			      US"tcp:close", NULL);
+			      US"tcp:close", NULL, NULL);
 #endif
 	    addr->address = main_address;
 	    addr->transport_return = PENDING_DEFER;
@@ -1127,7 +1127,7 @@ no_conn:
 	(void)close(sx->cctx.sock);
 	sx->cctx.sock = -1;
 #ifndef DISABLE_EVENT
-	(void) event_raise(addr->transport->event_action, US"tcp:close", NULL);
+	(void) event_raise(addr->transport->event_action, US"tcp:close", NULL, NULL);
 #endif
 	}
       }

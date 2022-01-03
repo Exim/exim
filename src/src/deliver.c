@@ -854,8 +854,18 @@ return g;
 
 
 #ifndef DISABLE_EVENT
+/* Distribute a named event to any listeners.
+
+Args:	action	config option specifying listener
+	event	name of the event
+	ev_data	associated data for the event
+	errnop	pointer to errno for modification, or null
+
+Return: string expansion from listener, or NULL
+*/
+
 uschar *
-event_raise(uschar * action, const uschar * event, uschar * ev_data)
+event_raise(uschar * action, const uschar * event, uschar * ev_data, int * errnop)
 {
 uschar * s;
 if (action)
@@ -882,7 +892,8 @@ if (action)
     {
     DEBUG(D_deliver)
       debug_printf("Event(%s): event_action returned \"%s\"\n", event, s);
-    errno = ERRNO_EVENT;
+    if (errnop)
+      *errnop = ERRNO_EVENT;
     return s;
     }
   }
@@ -911,7 +922,7 @@ if (!addr->transport)
      a filter was used which triggered a fail command (in such a case
      a transport isn't needed).  Convert it to an internal fail event. */
 
-    (void) event_raise(event_action, US"msg:fail:internal", addr->message);
+    (void) event_raise(event_action, US"msg:fail:internal", addr->message, NULL);
     }
   }
 else
@@ -923,7 +934,8 @@ else
 	    || Ustrcmp(addr->transport->driver_name, "smtp") == 0
 	    || Ustrcmp(addr->transport->driver_name, "lmtp") == 0
 	    || Ustrcmp(addr->transport->driver_name, "autoreply") == 0
-	   ? addr->message : NULL);
+	   ? addr->message : NULL,
+	   NULL);
   }
 
 deliver_host_port =    save_port;
@@ -6341,7 +6353,7 @@ if (process_recipients != RECIP_IGNORE)
 	    string_copyn(addr+start, dom ? (dom-1) - start : end - start);
 	  deliver_domain = dom ? CUS string_copyn(addr+dom, end - dom) : CUS"";
 
-	  event_raise(event_action, US"msg:fail:internal", new->message);
+	  (void) event_raise(event_action, US"msg:fail:internal", new->message, NULL);
 
 	  deliver_localpart = save_local;
 	  deliver_domain = save_domain;
@@ -8092,7 +8104,7 @@ if (!addr_defer)
   f.deliver_freeze = FALSE;
 
 #ifndef DISABLE_EVENT
-  (void) event_raise(event_action, US"msg:complete", NULL);
+  (void) event_raise(event_action, US"msg:complete", NULL, NULL);
 #endif
   }
 

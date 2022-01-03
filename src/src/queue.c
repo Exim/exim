@@ -1348,15 +1348,15 @@ switch(action)
 	    deliver_domain = dom
 	      ? CUS string_copyn(addr+dom, end - dom) : CUS"";
 
-	    event_raise(event_action, US"msg:fail:internal",
-	      string_sprintf("message removed by %s", username));
+	    (void) event_raise(event_action, US"msg:fail:internal",
+	      string_sprintf("message removed by %s", username), NULL);
 
 	    deliver_localpart = save_local;
 	    deliver_domain = save_domain;
 	    }
 	  }
 	}
-      (void) event_raise(event_action, US"msg:complete", NULL);
+      (void) event_raise(event_action, US"msg:complete", NULL, NULL);
 #endif
       log_write(0, LOG_MAIN, "removed by %s", username);
       log_write(0, LOG_MAIN, "Completed");

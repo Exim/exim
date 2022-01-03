@@ -283,7 +283,7 @@ const blob * fastopen_blob = NULL;
 #ifndef DISABLE_EVENT
 deliver_host_address = host->address;
 deliver_host_port = port;
-if (event_raise(tb->event_action, US"tcp:connect", NULL)) return -1;
+if (event_raise(tb->event_action, US"tcp:connect", NULL, &errno)) return -1;
 #endif
 
 if ((sock = ip_socket(SOCK_STREAM, host_af)) < 0) return -1;

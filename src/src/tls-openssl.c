@@ -1009,7 +1009,7 @@ if (ev)
   old_cert = tlsp->peercert;
   tlsp->peercert = X509_dup(cert);
   /* NB we do not bother setting peerdn */
-  if ((yield = event_raise(ev, US"tls:cert", string_sprintf("%d", depth))))
+  if ((yield = event_raise(ev, US"tls:cert", string_sprintf("%d", depth), &errno)))
     {
     log_write(0, LOG_MAIN, "[%s] %s verify denied by event-action: "
 		"depth=%d cert=%s: %s",
@@ -3311,7 +3311,7 @@ if (rc <= 0)
     case SSL_ERROR_ZERO_RETURN:
       DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
       (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
-      (void) event_raise(event_action, US"tls:fail:connect", *errstr);
+      (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
 
       if (SSL_get_shutdown(ssl) == SSL_RECEIVED_SHUTDOWN)
 	    SSL_shutdown(ssl);
@@ -3331,7 +3331,7 @@ if (rc <= 0)
          || r == SSL_R_UNKNOWN_PROTOCOL || r == SSL_R_UNSUPPORTED_PROTOCOL)
 	s = string_sprintf("(%s)", SSL_get_version(ssl));
       (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : s, errstr);
-      (void) event_raise(event_action, US"tls:fail:connect", *errstr);
+      (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
       return FAIL;
       }
 
@@ -3342,7 +3342,7 @@ if (rc <= 0)
 	if (!errno)
 	  {
 	  *errstr = US"SSL_accept: TCP connection closed by peer";
-	  (void) event_raise(event_action, US"tls:fail:connect", *errstr);
+	  (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
 	  return FAIL;
 	  }
 	DEBUG(D_tls) debug_printf(" - syscall %s\n", strerror(errno));
@@ -3351,7 +3351,7 @@ if (rc <= 0)
 		      sigalrm_seen ? US"timed out"
 		      : ERR_peek_error() ? NULL : string_sprintf("ret %d", error),
 		      errstr);
-      (void) event_raise(event_action, US"tls:fail:connect", *errstr);
+      (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
       return FAIL;
     }
   }

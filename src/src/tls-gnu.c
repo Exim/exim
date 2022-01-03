@@ -2721,7 +2721,7 @@ if ((cert_list = gnutls_certificate_get_peers(session, &cert_list_size)))
 
   state->tlsp->peercert = crt;
   if ((yield = event_raise(state->event_action,
-	      US"tls:cert", string_sprintf("%d", cert_list_size))))
+	      US"tls:cert", string_sprintf("%d", cert_list_size), &errno)))
     {
     log_write(0, LOG_MAIN,
 	      "SSL verify denied by event-action: depth=%d: %s",
@@ -3053,13 +3053,13 @@ if (rc != GNUTLS_E_SUCCESS)
   if (sigalrm_seen)
     {
     tls_error(US"gnutls_handshake", US"timed out", NULL, errstr);
-    (void) event_raise(event_action, US"tls:fail:connect", *errstr);
+    (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
     gnutls_db_remove_session(state->session);
     }
   else
     {
     tls_error_gnu(state, US"gnutls_handshake", rc, errstr);
-    (void) event_raise(event_action, US"tls:fail:connect", *errstr);
+    (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
     (void) gnutls_alert_send_appropriate(state->session, rc);
     gnutls_deinit(state->session);
     gnutls_certificate_free_credentials(state->lib_state.x509_cred);
