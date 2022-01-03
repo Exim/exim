@@ -1,0 +1,14 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTPS on port PORT_D
+1999-03-02 09:44:33 eval host_reject_connection
+1999-03-02 09:44:33 ACL conn
+1999-03-02 09:44:33 ACL quit
+1999-03-02 09:44:33 eval host_reject_connection
+1999-03-02 09:44:33 ACL conn
+1999-03-02 09:44:33 TLS error on connection from [127.0.0.1] (recv): The TLS connection was non-properly terminated.
+1999-03-02 09:44:33 ACL notquit
+1999-03-02 09:44:33 eval host_reject_connection
+1999-03-02 09:44:33 EV tls:fail:connect
+1999-03-02 09:44:33 EVDATA: (gnutls_handshake): The TLS connection was non-properly terminated.
+1999-03-02 09:44:33 TLS error on connection from [127.0.0.1] (tls lib accept fn): TCP connection closed by peer

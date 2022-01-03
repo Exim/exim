@@ -30469,6 +30469,11 @@ accepted by an &%accept%& verb that has a &%message%& modifier, the contents of
 the message override the banner message that is otherwise specified by the
 &%smtp_banner%& option.
 
+.new
+For tls-on-connect connections, the ACL is run after the TLS connection
+is accepted (however, &%host_reject_connection%& is tested before).
+.wen
+
 
 .section "The EHLO/HELO ACL" "SECID192"
 .cindex "EHLO" "ACL for"
@@ -42604,6 +42609,7 @@ Events have names which correspond to the point in process at which they fire.
 The name is placed in the variable &$event_name$& and the event action
 expansion must check this, as it will be called for every possible event type.
 
+.new
 The current list of events is:
 .display
 &`dane:fail              after    transport  `& per connection
@@ -42618,9 +42624,11 @@ The current list of events is:
 &`tcp:connect            before   transport  `& per connection
 &`tcp:close              after    transport  `& per connection
 &`tls:cert               before   both       `& per certificate in verification chain
+&`tls:fail:connect       after    main       `& per connection
 &`smtp:connect           after    transport  `& per connection
 &`smtp:ehlo              after    transport  `& per connection
 .endd
+.wen
 New event types may be added in future.
 
 The event name is a colon-separated list, defining the type of
@@ -42646,6 +42654,7 @@ with the event type:
 &`msg:rcpt:host:defer  `& error string
 &`msg:rcpt:defer       `& error string
 &`tls:cert             `& verification chain depth
+&`tls:fail:connect     `& error string
 &`smtp:connect         `& smtp banner
 &`smtp:ehlo            `& smtp ehlo response
 .endd

@@ -3043,6 +3043,9 @@ ALARM_CLR(0);
 
 if (rc != GNUTLS_E_SUCCESS)
   {
+  DEBUG(D_tls) debug_printf(" error %d from gnutls_handshake: %s\n",
+    rc, gnutls_strerror(rc));
+
   /* It seems that, except in the case of a timeout, we have to close the
   connection right here; otherwise if the other end is running OpenSSL it hangs
   until the server times out. */
@@ -3050,11 +3053,13 @@ if (rc != GNUTLS_E_SUCCESS)
   if (sigalrm_seen)
     {
     tls_error(US"gnutls_handshake", US"timed out", NULL, errstr);
+    (void) event_raise(event_action, US"tls:fail:connect", *errstr);
     gnutls_db_remove_session(state->session);
     }
   else
     {
     tls_error_gnu(state, US"gnutls_handshake", rc, errstr);
+    (void) event_raise(event_action, US"tls:fail:connect", *errstr);
     (void) gnutls_alert_send_appropriate(state->session, rc);
     gnutls_deinit(state->session);
     gnutls_certificate_free_credentials(state->lib_state.x509_cred);

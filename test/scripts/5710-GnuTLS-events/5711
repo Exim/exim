@@ -1,0 +1,24 @@
+# smtp-on-connect drop-before-tls-accept
+#
+exim -DSERVER=server -tls-on-connect -bd -oX PORT_D
+****
+#
+# Normal, full connect and quit
+client-anytls -tls-on-connect 127.0.0.1 PORT_D
+??? 220
+quit
+??? 221
+****
+#
+# full connect but no quit
+client-anytls -tls-on-connect 127.0.0.1 PORT_D
+??? 220
+****
+#
+# client disconnects before server TLS accept completes
+client 127.0.0.1 PORT_D
++++ 1
+****
+#
+sleep 1
+killdaemon

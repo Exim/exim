@@ -1,0 +1,34 @@
+# Exim test configuration 5721
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_connect = accept logwrite = ACL conn
+acl_smtp_quit =    accept logwrite = ACL quit
+acl_smtp_notquit = accept logwrite = ACL notquit
+
+tls_advertise_hosts = *
+tls_certificate = DIR/aux-fixed/cert1
+
+host_reject_connection = ${acl {hrc}}
+event_action = ${acl {tls_fail}}
+
+# ------ ACL ------
+
+begin acl
+
+hrc:
+  accept	logwrite = eval host_reject_connection
+		# no mesage= hence host_reject_connection should be empty
+
+tls_fail:
+  warn		logwrite =  EV $event_name
+  accept	condition = ${if eq {tls:fail:connect}{$event_name}}
+		logwrite =  EVDATA: $event_data
+  accept
+
+
+# End

@@ -2442,9 +2442,9 @@ return done - 2;  /* Convert yield values */
 
 #ifndef DISABLE_TLS
 static BOOL
-smtp_log_tls_fail(uschar * errstr)
+smtp_log_tls_fail(const uschar * errstr)
 {
-uschar * conn_info = smtp_get_connection_info();
+const uschar * conn_info = smtp_get_connection_info();
 
 if (Ustrncmp(conn_info, US"SMTP ", 5) == 0) conn_info += 5;
 /* I'd like to get separated H= here, but too hard for now */
