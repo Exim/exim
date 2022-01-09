@@ -6755,6 +6755,9 @@ domains = ${lookup{$sender_host_address}lsearch{/some/file}}
 domains = lsearch;/some/file
 .endd
 The first uses a string expansion, the result of which must be a domain list.
+.new
+The key for an expansion-style lookup must be given explicitly.
+.wen
 No strings have been specified for a successful or a failing lookup; the
 defaults in this case are the looked-up data and an empty string, respectively.
 The expansion takes place before the string is processed as a list, and the
@@ -6778,6 +6781,12 @@ domain2:
 .endd
 Any data that follows the keys is not relevant when checking that the domain
 matches the list item.
+
+.new
+The key for a list-style lookup is implicit, from the lookup context, if
+the lookup is a single-key type (see below).
+For query-style lookup types the key must be given explicitly.
+.wen
 
 It is possible, though no doubt confusing, to use both kinds of lookup at once.
 Consider a file containing lines like this:
