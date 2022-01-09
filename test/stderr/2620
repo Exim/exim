@@ -270,16 +270,46 @@ check set acl_m0 = ok:   ${lookup pgsql                    {select name from the
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=SSPEC"
+   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::1223/test/CALLER/"
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select name from them where id = 'c'" opts="servers=SSPEC"
+   type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::1223/test/CALLER/"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
- PostgreSQL query: "select name from them where id = 'c'" opts 'servers=SSPEC'
- lookup deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
+ PostgreSQL query: "select name from them where id = 'c'" opts 'servers=localhost::1223/test/CALLER/'
+ PGSQL using cached connection for localhost:1223/test/CALLER
+ PGSQL: no data found
+ replacing old cache entry
+ lookup failed
+check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223/test/CALLER/    {select name from them where id = '$local_part'}}
+                 = ok:   
+ search_open: pgsql "NULL"
+   cached open
+ search_find: file="NULL"
+   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::1223"
+ LRU list:
+ internal_search_find: file="NULL"
+   type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::1223"
+ cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
+ PostgreSQL query: "select name from them where id = 'c'" opts 'servers=localhost::1223'
+ PGSQL using cached connection for localhost:1223/test/CALLER
+ PGSQL: no data found
+ replacing old cache entry
+ lookup failed
+check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223    {select name from them where id = '$local_part'}}
+                 = ok:   
+ search_open: pgsql "NULL"
+   cached open
+ search_find: file="NULL"
+   key="servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=pgsql key="servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts=NULL
+ database lookup required for servers=localhost::1223/test/CALLER/; select name from them where id = 'c'
+ PostgreSQL query: "servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts 'NULL'
+ lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
 processing "warn" (TESTSUITE/test-config 38)
 check set acl_m0 = ok:   hostlist
 check hosts = net-pgsql;select * from them where id='$local_part'
@@ -300,38 +330,38 @@ host in "net-pgsql;select * from them where id='c'"? no (end of list)
 warn: condition test failed in ACL "check_recipient"
 processing "warn" (TESTSUITE/test-config 41)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-pgsql;servers=SSPEC; select * from them where id='$local_part'
+check hosts = <& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='$local_part'
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
-  key="servers=SSPEC; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
+  key="servers=localhost::1223/test/CALLER/; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="servers=SSPEC; select * from them where id='c'" opts=NULL
-database lookup required for servers=SSPEC; select * from them where id='c'
-PostgreSQL query: "servers=SSPEC; select * from them where id='c'" opts 'NULL'
-lookup deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
-host in "<& net-pgsql;servers=SSPEC; select * from them where id='c'"? list match deferred for net-pgsql;servers=SSPEC; select * from them where id='c'
+  type=pgsql key="servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts=NULL
+database lookup required for servers=localhost::1223/test/CALLER/; select * from them where id='c'
+PostgreSQL query: "servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts 'NULL'
+lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+host in "<& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
 processing "warn" (TESTSUITE/test-config 46)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-pgsql,servers=SSPEC; select * from them where id='$local_part'
+check hosts = <& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='$local_part'
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
-  key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=SSPEC"
+  key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::1223/test/CALLER/"
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key=" select * from them where id='c'" opts="servers=SSPEC"
+  type=pgsql key=" select * from them where id='c'" opts="servers=localhost::1223/test/CALLER/"
 database lookup required for  select * from them where id='c'
-PostgreSQL query: " select * from them where id='c'" opts 'servers=SSPEC'
-lookup deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
-host in "<& net-pgsql,servers=SSPEC; select * from them where id='c'"? list match deferred for net-pgsql,servers=SSPEC; select * from them where id='c'
+PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::1223/test/CALLER/'
+lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+host in "<& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
 processing "accept" (TESTSUITE/test-config 49)
 check domains = +local_domains
 d in "@"? no (end of list)
@@ -372,23 +402,57 @@ processing "warn" (TESTSUITE/test-config 27)
  LRU list:
  internal_search_find: file="NULL"
    type=pgsql key="select name from them where id = 'c'" opts=NULL
- cached data used for lookup of select name from them where id = 'c'
+ cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
+ PostgreSQL query: "select name from them where id = 'c'" opts 'NULL'
+ PGSQL using cached connection for localhost:1223/test/CALLER
+ PGSQL: no data found
+ replacing old cache entry
  lookup failed
 check set acl_m0 = ok:   ${lookup pgsql                    {select name from them where id = '$local_part'}}
                  = ok:   
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=SSPEC"
+   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::1223/test/CALLER/"
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select name from them where id = 'c'" opts="servers=SSPEC"
+   type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::1223/test/CALLER/"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
- PostgreSQL query: "select name from them where id = 'c'" opts 'servers=SSPEC'
- lookup deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
+ PostgreSQL query: "select name from them where id = 'c'" opts 'servers=localhost::1223/test/CALLER/'
+ PGSQL using cached connection for localhost:1223/test/CALLER
+ PGSQL: no data found
+ replacing old cache entry
+ lookup failed
+check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223/test/CALLER/    {select name from them where id = '$local_part'}}
+                 = ok:   
+ search_open: pgsql "NULL"
+   cached open
+ search_find: file="NULL"
+   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::1223"
+ LRU list:
+ internal_search_find: file="NULL"
+   type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::1223"
+ cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
+ PostgreSQL query: "select name from them where id = 'c'" opts 'servers=localhost::1223'
+ PGSQL using cached connection for localhost:1223/test/CALLER
+ PGSQL: no data found
+ replacing old cache entry
+ lookup failed
+check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223    {select name from them where id = '$local_part'}}
+                 = ok:   
+ search_open: pgsql "NULL"
+   cached open
+ search_find: file="NULL"
+   key="servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=pgsql key="servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts=NULL
+ database lookup required for servers=localhost::1223/test/CALLER/; select name from them where id = 'c'
+ PostgreSQL query: "servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts 'NULL'
+ lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
 processing "warn" (TESTSUITE/test-config 38)
 check set acl_m0 = ok:   hostlist
 check hosts = net-pgsql;select * from them where id='$local_part'
@@ -405,38 +469,38 @@ host in "net-pgsql;select * from them where id='c'"? no (end of list)
 warn: condition test failed in ACL "check_recipient"
 processing "warn" (TESTSUITE/test-config 41)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-pgsql;servers=SSPEC; select * from them where id='$local_part'
+check hosts = <& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='$local_part'
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
-  key="servers=SSPEC; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
+  key="servers=localhost::1223/test/CALLER/; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="servers=SSPEC; select * from them where id='c'" opts=NULL
-database lookup required for servers=SSPEC; select * from them where id='c'
-PostgreSQL query: "servers=SSPEC; select * from them where id='c'" opts 'NULL'
-lookup deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
-host in "<& net-pgsql;servers=SSPEC; select * from them where id='c'"? list match deferred for net-pgsql;servers=SSPEC; select * from them where id='c'
+  type=pgsql key="servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts=NULL
+database lookup required for servers=localhost::1223/test/CALLER/; select * from them where id='c'
+PostgreSQL query: "servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts 'NULL'
+lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+host in "<& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
 processing "warn" (TESTSUITE/test-config 46)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-pgsql,servers=SSPEC; select * from them where id='$local_part'
+check hosts = <& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='$local_part'
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
-  key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=SSPEC"
+  key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=localhost::1223/test/CALLER/"
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key=" select * from them where id='c'" opts="servers=SSPEC"
+  type=pgsql key=" select * from them where id='c'" opts="servers=localhost::1223/test/CALLER/"
 database lookup required for  select * from them where id='c'
-PostgreSQL query: " select * from them where id='c'" opts 'servers=SSPEC'
-lookup deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
-host in "<& net-pgsql,servers=SSPEC; select * from them where id='c'"? list match deferred for net-pgsql,servers=SSPEC; select * from them where id='c'
+PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::1223/test/CALLER/'
+lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+host in "<& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "SSPEC" not found in pgsql_servers
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
 processing "accept" (TESTSUITE/test-config 49)
 check domains = +local_domains
 d in "@"? no (end of list)
