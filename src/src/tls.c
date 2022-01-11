@@ -185,8 +185,8 @@ for (;;)
     {
     if ((fd1 = open(CCS filename, O_RDONLY | O_NOFOLLOW)) < 0)
       { s = US"open file"; goto bad; }
-    DEBUG(D_tls) debug_printf("watch file '%s'\n", filename);
-    EV_SET(&kev[++kev_used],
+    DEBUG(D_tls) debug_printf("watch file '%s':\t%d\n", filename, fd1);
+    EV_SET(&kev[kev_used++],
 	(uintptr_t)fd1,
 	EVFILT_VNODE,
 	EV_ADD | EV_ENABLE | EV_ONESHOT,
@@ -196,8 +196,8 @@ for (;;)
 	NULL);
     cnt++;
     }
-  DEBUG(D_tls) debug_printf("watch dir  '%s'\n", s);
-  EV_SET(&kev[++kev_used],
+  DEBUG(D_tls) debug_printf("watch dir  '%s':\t%d\n", s, fd2);
+  EV_SET(&kev[kev_used++],
 	(uintptr_t)fd2,
 	EVFILT_VNODE,
 	EV_ADD | EV_ENABLE | EV_ONESHOT,
@@ -320,6 +320,7 @@ if (tls_watch_fd < 0) return;
 /* Close the files we had open for kevent */
 for (int i = 0; i < kev_used; i++)
   {
+  DEBUG(D_tls) debug_printf("closing watch fd: %d\n", (int) kev[i].ident);
   (void) close((int) kev[i].ident);
   kev[i].ident = (uintptr_t)-1;
   }

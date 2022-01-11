@@ -65,6 +65,10 @@ JH/13 Bug 2845: Fix handling of tls_require_ciphers for OpenSSL when a value
 
 JH/14 Bug 1895: TLS: Deprecate RFC 5114 Diffie-Hellman parameters.
 
+JH/15 Fix a resource leak in *BSD.  An off-by-one error resulted in the daemon
+      failing to close the certificates directory, every hour or any time it
+      was touched.
+
 
 Exim version 4.95
 -----------------
