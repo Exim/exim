@@ -989,7 +989,6 @@ could be used and would handle that implicitly. */
 static inline dns_answer *
 store_get_dns_answer_trc(const uschar * func, unsigned line)
 {
-/* return store_get_3(sizeof(dns_answer), TRUE, CCS func, line);   use tainted mem */
 return store_malloc_3(sizeof(dns_answer), CCS func, line);
 }
 

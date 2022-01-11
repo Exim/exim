@@ -416,38 +416,33 @@ Returns:     the processed string or NULL for a bad option
 */
 
 static uschar *
-mysql_quote(uschar *s, uschar *opt)
+mysql_quote(uschar * s, uschar * opt)
 {
 register int c;
 int count = 0;
 uschar *t = s;
 uschar *quoted;
 
-if (opt != NULL) return NULL;     /* No options recognized */
+if (opt) return NULL;     /* No options recognized */
 
-while ((c = *t++) != 0)
+while ((c = *t++))
   if (Ustrchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
 if (count == 0) return s;
 t = quoted = store_get(Ustrlen(s) + count + 1, is_tainted(s));
 
-while ((c = *s++) != 0)
+while ((c = *s++))
   {
   if (Ustrchr("\n\t\r\b\'\"\\", c) != NULL)
     {
     *t++ = '\\';
     switch(c)
       {
-      case '\n': *t++ = 'n';
-      break;
-      case '\t': *t++ = 't';
-      break;
-      case '\r': *t++ = 'r';
-      break;
-      case '\b': *t++ = 'b';
-      break;
-      default:   *t++ = c;
-      break;
+      case '\n': *t++ = 'n'; break;
+      case '\t': *t++ = 't'; break;
+      case '\r': *t++ = 'r'; break;
+      case '\b': *t++ = 'b'; break;
+      default:   *t++ = c;   break;
       }
     }
   else *t++ = c;

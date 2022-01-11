@@ -177,7 +177,7 @@ in alphabetical order. There are two tables, because underscore is used in some
 cases to introduce arguments, whereas for other it is part of the name. This is
 an historical mis-design. */
 
-static uschar *op_table_underscore[] = {
+static uschar * op_table_underscore[] = {
   US"from_utf8",
   US"local_part",
   US"quote_local_part",
@@ -7564,7 +7564,7 @@ while (*s)
       else
         {
         int n;
-        uschar *opt = Ustrchr(arg, '_');
+        uschar * opt = Ustrchr(arg, '_');
 
         if (opt) *opt++ = 0;
 

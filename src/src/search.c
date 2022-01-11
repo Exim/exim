@@ -63,11 +63,9 @@ Returns:     +ve => valid lookup name; value is offset in lookup_list
 */
 
 int
-search_findtype(const uschar *name, int len)
+search_findtype(const uschar * name, int len)
 {
-int bot = 0;
-int top = lookup_list_count;
-while (top > bot)
+for (int bot = 0, top = lookup_list_count; top > bot; )
   {
   int mid = (top + bot)/2;
   int c = Ustrncmp(name, lookup_list[mid]->name, len);
@@ -92,7 +90,7 @@ while (top > bot)
   if (c > 0) bot = mid + 1; else top = mid;
   }
 
-search_error_message = string_sprintf("unknown lookup type \"%.*s\"",len,name);
+search_error_message = string_sprintf("unknown lookup type \"%.*s\"", len, name);
 return -1;
 }
 
@@ -615,8 +613,8 @@ else
     e->data.ptr = data;
     }
 
-  /* If caching was disabled, empty the cache tree. We just set the cache
-  pointer to NULL here, because we cannot release the store at this stage. */
+/* If caching was disabled, empty the cache tree. We just set the cache
+pointer to NULL here, because we cannot release the store at this stage. */
 
   else
     {

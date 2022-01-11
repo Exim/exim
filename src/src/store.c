@@ -418,9 +418,9 @@ Returns:      pointer to store (panic on malloc failure)
 */
 
 void *
-store_get_perm_3(int size, BOOL tainted, const char *func, int linenumber)
+store_get_perm_3(int size, BOOL tainted, const char * func, int linenumber)
 {
-void *yield;
+void * yield;
 int old_pool = store_pool;
 store_pool = POOL_PERM;
 yield = store_get_3(size, tainted, func, linenumber);
