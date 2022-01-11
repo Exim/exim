@@ -3731,6 +3731,11 @@ if (do_shutdown)
 
   tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
 
+#ifdef EXIM_TCP_CORK
+  if (do_shutdown > 1)
+    (void) setsockopt(tlsp->active.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &off, sizeof(off));
+#endif
+
   ALARM(2);
   gnutls_bye(state->session, do_shutdown > 1 ? GNUTLS_SHUT_RDWR : GNUTLS_SHUT_WR);
   ALARM_CLR(0);

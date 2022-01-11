@@ -4516,6 +4516,9 @@ if (do_shutdown)
   if (  (rc = SSL_shutdown(*sslp)) == 0	/* send "close notify" alert */
      && do_shutdown > 1)
     {
+#ifdef EXIM_TCP_CORK
+    (void) setsockopt(*fdp, IPPROTO_TCP, EXIM_TCP_CORK, US &off, sizeof(off));
+#endif
     ALARM(2);
     rc = SSL_shutdown(*sslp);		/* wait for response */
     ALARM_CLR(0);
