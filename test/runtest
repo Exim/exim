@@ -408,7 +408,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   #s/Exim \K\d+[._]\d+[\w_-]*/x.yz/i;
 
   # Replace Exim message ids by a unique series
-  s/((?:[^\W_]{6}-){2}[^\W_]{2})
+  s/(\d[^\W_]{5}-[^\W_]{6}-[^\W_]{2})
     /new_value($1, "10Hm%s-0005vi-00", \$next_msgid)/egx;
 
   # The names of lock files appear in some error and debug messages
@@ -1920,7 +1920,8 @@ $munges =
 
     'debuglog_stdout' =>
     { 'stdout' => 's/^\d\d:\d\d:\d\d\s+\d+ //;
-                  s/Process \d+ is ready for new message/Process pppp is ready for new message/'
+                  s/Process \d+ is ready for new message/Process pppp is ready for new message/;
+		  s/^(?:daemon-accept forked for daemon-accept-delivery:|forked delivery process) \K\d+$/pppp/;'
     },
 
     'timeout_errno' =>		# actual errno differs Solaris vs. Linux

@@ -69,6 +69,10 @@ JH/15 Fix a resource leak in *BSD.  An off-by-one error resulted in the daemon
       failing to close the certificates directory, every hour or any time it
       was touched.
 
+JH/16 Debugging initiated by an ACL control now continues through into routing
+      and transport processes, when delivery is immediate.  Previously debugging
+      stopped any time Exim re-execs.
+
 
 Exim version 4.95
 -----------------

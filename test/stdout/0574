@@ -47,12 +47,144 @@ search_tidyup called
 Sender: tester@test.ex
 Recipients:
   dest@test.ex
+daemon-accept forking for daemon-accept-delivery
+postfork: daemon-accept-delivery
+daemon-accept forked for daemon-accept-delivery: pppp
+forked delivery process pppp
 Process pppp is ready for new message
 smtp_setup_msg entered
 SMTP<< QUIT
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test.ex) [127.0.0.1] closed by QUIT
+Exim version x.yz uid=EXIM_UID gid=EXIM_GID pid=pppp D=fff9ffff
+Support for: crypteq iconv() IPv6 PAM Perl Expand_dlfunc OpenSSL TLS_resume move_frozen_messages Content_Scanning DANE DKIM DNSSEC Event I18N OCSP PIPECONNECT PRDR PROXY Queue_Ramp SOCKS SPF SRS TCP_Fast_Open Experimental_ARC Experimental_DCC Experimental_DSN_info Experimental_ESMTP_Limits Experimental_QUEUEFILE
+Lookups (built-in): lsearch wildlsearch nwildlsearch iplsearch cdb dbm dbmjz dbmnz dnsdb dsearch json ldap ldapdn ldapm lmdb mysql nis nis0 passwd pgsql redis sqlite testdb
+Authenticators: cram_md5 cyrus_sasl dovecot external gsasl plaintext spa tls
+Routers: accept dnslookup ipliteral manualroute queryprogram redirect
+Transports: appendfile/maildir/mailstore/mbx autoreply lmtp pipe queuefile smtp
+Malware: sophie clamd sock cmdline
+Fixed never_users: 0
+Configure owner: 1002:1002
+Size of off_t: 8
+Compiler: GCC [11.2.1 20210728 (Red Hat 11.2.1-1)]
+Library version: Glibc: Compile: 2.33
+                        Runtime: 2.33
+Library version: BDB: Compile: Berkeley DB 5.3.28: (September  9, 2013)
+                      Runtime: Berkeley DB 5.3.28: (September  9, 2013)
+Library version: OpenSSL: Compile: OpenSSL 1.1.1l  FIPS 24 Aug 2021
+                          Runtime: OpenSSL 1.1.1l  FIPS 24 Aug 2021
+                                 : built on: Tue Mar 02 09:44:33 1999 UTC
+Library version: IDN2: Compile: 2.3.2
+                       Runtime: 2.3.2
+Library version: Stringprep: Compile: 1.36
+                             Runtime: 1.36
+Library version: spf2: Compile: 1.2.11
+                       Runtime: 1.2.11
+Library version: Cyrus SASL: Compile: 2.1.27
+                             Runtime: 2.1.27 [Cyrus SASL]
+Library version: GNU SASL: Compile: 1.8.1
+                           Runtime: 1.8.1
+Library version: PCRE2: Compile: 10.36
+                        Runtime: 10.36 2020-12-04
+Total 25 lookups
+Library version: json: Jansonn version 2.13.1
+Library version: LMDB: Compile: 0.9.29
+Library version: MySQL: Compile: 100505 10.5.5 [mariadb-10.5]
+                        Runtime: 100505 10.5.5
+Library version: REDIS: Compile: 0 [13]
+Library version: SQLite: Compile: 3.34.1
+                         Runtime: 3.34.1
+WHITELIST_D_MACROS: "DIR:EXIM_PATH:AA:ACL:ACLRCPT:ACL_MAIL:ACL_PREDATA:ACL_RCPT:AFFIX:ALLOW:ARG1:ARG2:AUTHF:AUTHS:AUTH_ID_DOMAIN:BAD:BANNER:BB:BR:BRB:CERT:COM:COMMAND_USER:CONNECTCOND:CONTROL:CREQCIP:CREQMAC:CRL:CSS:D6:DATA:DCF:DDF:DEFAULTDWC:DELAY:DETAILS:DRATELIMIT:DYNAMIC_OPTION:ELI:ERROR_DETAILS:ERT:FAKE:FALLBACK:FILTER:FILTER_PREPEND_HOME:FORBID:FORBID_SMTP_CODE:FUSER:HAI:HAP:HARDLIMIT:HEADER_LINE_MAXSIZE:HEADER_MAXSIZE:HELO_MSG:HL:HOSTS:HOSTS_AVOID_TLS:HOSTS_MAX_TRY:HVH:IFACE:IGNORE_QUOTA:INC:INSERT:IP1:IP2:LAST:LDAPSERVERS:LENCHECK:LIMIT:LIST:LOG_SELECTOR:LS:MAXNM:MESSAGE_LOGS:MSIZE:NOTDAEMON:ONCE:ONLY:OPT:OPTION:ORDER:PAH:PEX:PORT:PTBC:QDG:QOLL:QUOTA:QUOTA_FILECOUNT:QWM:RCPT_MSG:REMEMBER:REQUIRE:RETRY:RETRY1:RETRY2:RETURN:RETURN_ERROR_DETAILS:REWRITE:ROUTE_DATA:RRATELIMIT:RT:S:SELECTOR:SELF:SERVER:SERVERS:SREQCIP:SREQMAC:SRV:STD:STRICT:SUB:SUBMISSION_OPTIONS:TIMEOUTDEFER:TIMES:TRUSTED:TRYCLEAR:UL:USE_SENDER:UTF8:VALUE:WMF:X:Y"
+TRUSTED_CONFIG_LIST: "TESTSUITE/trusted_configs"
+macros_trusted overridden to true by whitelisting
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=EXIM_GID pid=pppp
+  auxiliary group list: <none>
+PATH in keep_environment? yes (matched "PATH")
+SSLKEYLOGFILE in keep_environment? no (end of list)
+PATH in keep_environment? yes (matched "PATH")
+adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
+configuration file is TESTSUITE/test-config
+log selectors = 00000ffc 64205022 0000000c
+cwd=TESTSUITE/spool 10 args: TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xfff9ffff -MCd daemon-accept-delivery -Mc 10HmaX-0005vi-00
+trusted user
+admin user
+dropping to exim gid; retaining priv uid
+set_process_info: pppp delivering specified messages
+set_process_info: pppp delivering 10HmaX-0005vi-00
+Trying spool file TESTSUITE/spool//input//10HmaX-0005vi-00-D
+reading spool file 10HmaX-0005vi-00-H
+user=EXIMUSER uid=EXIM_UID gid=EXIM_GID sender=tester@test.ex
+sender_fullhost = (test.ex) [127.0.0.1]
+sender_rcvhost = [127.0.0.1] (helo=test.ex)
+sender_local=0 ident=unset
+Non-recipients:
+ Empty Tree
+---- End of tree ----
+recipients_count=1
+**** SPOOL_IN - No additional fields
+body_linecount=1 message_linecount=7
+DSN: set orcpt:   flags: 0x0
+Delivery address list:
+  dest@test.ex 
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: dest@test.ex
+unique = dest@test.ex
+no   domain  retry record
+no   address retry record
+dest@test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing dest@test.ex
+--------> r1 router <--------
+local_part=dest domain=test.ex
+calling r1 router
+rda_interpret (string): ':blackhole:'
+expanded: ':blackhole:'
+file is not a filter file
+parse_forward_list: :blackhole:
+extract item: :blackhole:
+address :blackhole:d
+LOG: MAIN
+  => :blackhole: <dest@test.ex> R=r1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+search_tidyup called
+>>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
+changed uid/gid: post-delivery tidying
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  auxiliary group list: <none>
+set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
+Processing retry items
+Succeeded addresses:
+ dest@test.ex: no retry items
+Failed addresses:
+Deferred addresses:
+end of retry processing
+DSN: processing router : r1
+DSN: processing successful delivery address: dest@test.ex
+DSN: Sender_address: tester@test.ex
+DSN: orcpt: NULL  flags: 0x0
+DSN: envid: NULL  ret: 0
+DSN: Final recipient: dest@test.ex
+DSN: Remote SMTP server supports DSN: 0
+DSN: not sending DSN success message
+LOG: MAIN
+  Completed
+end delivery of 10HmaX-0005vi-00
+search_tidyup called
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (daemon-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
 SMTP>>(close on process exit)
 >>>>>>>>>>>>>>>> Exim pid=pppp (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>

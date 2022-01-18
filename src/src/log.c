@@ -1475,8 +1475,6 @@ for certain sources. The second use is inetd wait mode debug preservation. */
 void
 debug_logging_activate(uschar *tag_name, uschar *opts)
 {
-int fd = -1;
-
 if (debug_file)
   {
   debug_printf("DEBUGGING ACTIVATED FROM WITHIN CONFIG.\n"
@@ -1502,10 +1500,10 @@ do not segfault; note that nondefault log locations will not work */
 
 if (!*file_path) set_file_path(NULL);
 
-open_log(&fd, lt_debug, tag_name);
+open_log(&debug_fd, lt_debug, tag_name);
 
-if (fd != -1)
-  debug_file = fdopen(fd, "w");
+if (debug_fd != -1)
+  debug_file = fdopen(debug_fd, "w");
 else
   log_write(0, LOG_MAIN|LOG_PANIC, "unable to open debug log");
 }

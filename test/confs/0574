@@ -10,8 +10,6 @@ acl_smtp_mail = chk_mail
 acl_smtp_rcpt = chk_rcpt
 acl_smtp_data = chk_data
 
-queue_only
-
 # ----- ACL -----
 
 begin acl
@@ -25,4 +23,11 @@ chk_rcpt:
 chk_data:
   accept control = debug/tag=_2/opts=+all
 
+# ----- Routers -----
+
+begin routers
+
+r1:
+	driver = redirect
+	data = :blackhole:
 # End

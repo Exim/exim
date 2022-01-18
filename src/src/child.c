@@ -108,7 +108,17 @@ if (!minimal)
   else
     {
     if (debug_selector != 0)
+      {
       argv[n++] = string_sprintf("-d=0x%x", debug_selector);
+      if (debug_fd > 2)
+	{
+	int flags = fcntl(debug_fd, F_GETFD);
+	if (flags != -1) (void)fcntl(debug_fd, F_SETFD, flags & ~FD_CLOEXEC);
+	close(2);
+	dup2(debug_fd, 2);
+	close(debug_fd);
+	}
+      }
     }
   DEBUG(D_any)
     {
