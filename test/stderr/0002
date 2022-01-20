@@ -33,6 +33,7 @@ dropping to exim gid; retaining priv uid
   ├considering: }fail}
   ├──expanding: $2$1
   ╰─────result: cdab
+ ├───item-res: cdab
  ├──expanding: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
  ╰─────result: match:  cdab
  ╭considering: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
@@ -124,6 +125,7 @@ LOG: MAIN PANIC
   ├considering: }}
   ├──expanding: no
   ╰─────result: no
+ ├───item-res: no
  ├──expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
  ╰─────result: match_address:   no
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -156,6 +158,7 @@ dropping to exim gid; retaining priv uid
   |considering: }fail}
   |--expanding: $2$1
   \_____result: cdab
+ |---item-res: cdab
  |--expanding: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
  \_____result: match:  cdab
  /considering: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
@@ -247,6 +250,7 @@ LOG: MAIN PANIC
   |considering: }}
   |--expanding: no
   \_____result: no
+ |---item-res: no
  |--expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
  \_____result: match_address:   no
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -383,6 +387,7 @@ dropping to exim gid; retaining priv uid
   ├considering: }}
   ├──expanding: No
   ╰─────result: No
+ ├───item-res: No
  ├──expanding: ----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
  ╰─────result: ----> No lookup yet: No
  ╭considering: -oMs  sender_host_name = $sender_host_name

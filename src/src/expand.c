@@ -4398,6 +4398,36 @@ return yield;
 
 
 
+/************************************************/
+static void
+debug_expansion_interim(const uschar * what, const uschar * value, int nchar,
+  BOOL skipping)
+{
+DEBUG(D_noutf8)
+  debug_printf_indent("|");
+else
+  debug_printf_indent(UTF8_VERT_RIGHT);
+
+for (int fill = 11 - Ustrlen(what); fill > 0; fill--)
+  DEBUG(D_noutf8)
+    debug_printf("-");
+  else
+    debug_printf(UTF8_HORIZ);
+
+debug_printf("%s: %.*s\n", what, nchar, value);
+if (is_tainted(value))
+  {
+  DEBUG(D_noutf8)
+    debug_printf_indent("%s     \\__", skipping ? "|     " : "      ");
+  else
+    debug_printf_indent("%s",
+      skipping
+      ? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
+  debug_printf("(tainted)\n");
+  }
+}
+
+
 /*************************************************
 *                 Expand string                  *
 *************************************************/
@@ -4522,14 +4552,11 @@ while (*s)
       {
       const uschar * t = s + 2;
       for (s = t; *s ; s++) if (*s == '\\' && s[1] == 'N') break;
+
       DEBUG(D_expand)
-	DEBUG(D_noutf8)
-	  debug_printf_indent("|--protected: %.*s\n", (int)(s - t), t);
-	else
-	  debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
-	    "protected: %.*s\n", (int)(s - t), t);
+	debug_expansion_interim(US"protected", t, (int)(s - t), skipping);
       yield = string_catn(yield, t, s - t);
-      if (*s != 0) s += 2;
+      if (*s) s += 2;
       }
     else
       {
@@ -4558,13 +4585,7 @@ while (*s)
     for (const uschar * t = s+1;
 	*t && *t != '$' && *t != '}' && *t != '\\'; t++) i++;
 
-    DEBUG(D_expand)
-      DEBUG(D_noutf8)
-	debug_printf_indent("|-------text: %.*s\n", i, s);
-      else
-	debug_printf_indent(UTF8_VERT_RIGHT
-	  UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-	  "text: %.*s\n", i, s);
+    DEBUG(D_expand) debug_expansion_interim(US"text", s, i, skipping);
 
     yield = string_catn(yield, s, i);
     s += i;
@@ -4708,6 +4729,11 @@ while (*s)
   s = read_name(name, sizeof(name), s, US"_-");
   item_type = chop_match(name, item_table, nelem(item_table));
 
+  /* Switch on item type.  All nondefault choices should "continue* when
+  skipping, but "break" otherwise so we get debug output for the item
+  expansion. */
+  {
+  int start = yield->ptr;
   switch(item_type)
     {
     /* Call an ACL from an expansion.  We feed data in via $acl_arg1 - $acl_arg9.
@@ -4722,8 +4748,8 @@ while (*s)
     case EITEM_ACL:
       /* ${acl {name} {arg1}{arg2}...} */
       {
-      uschar *sub[10];	/* name + arg1-arg9 (which must match number of acl_arg[]) */
-      uschar *user_msg;
+      uschar * sub[10];	/* name + arg1-arg9 (which must match number of acl_arg[]) */
+      uschar * user_msg;
       int rc;
 
       switch(read_subs(sub, nelem(sub), 1, &s, skipping, TRUE, name,
@@ -4744,7 +4770,7 @@ while (*s)
 	    debug_printf_indent("acl expansion yield: %s\n", user_msg);
 	  if (user_msg)
             yield = string_cat(yield, user_msg);
-	  continue;
+	  break;
 
 	case DEFER:
           f.expand_string_forcedfail = TRUE;
@@ -4754,12 +4780,13 @@ while (*s)
 	    rc_names[rc], sub[0]);
 	  goto EXPAND_FAILED;
 	}
+      break;
       }
 
     case EITEM_AUTHRESULTS:
       /* ${authresults {mysystemname}} */
       {
-      uschar *sub_arg[1];
+      uschar * sub_arg[1];
 
       switch(read_subs(sub_arg, nelem(sub_arg), 1, &s, skipping, TRUE, name,
 		      &resetok))
@@ -4788,7 +4815,7 @@ while (*s)
 #ifdef EXPERIMENTAL_ARC
       yield = authres_arc(yield);
 #endif
-      continue;
+      break;
       }
 
     /* Handle conditionals - preserve the values of the numerical expansion
@@ -4808,21 +4835,11 @@ while (*s)
 	goto EXPAND_FAILED;  /* message already set */
 
       DEBUG(D_expand)
-	DEBUG(D_noutf8)
-	  {
-	  debug_printf_indent("|--condition: %.*s\n", (int)(next_s - s), s);
-	  debug_printf_indent("|-----result: %s\n", cond ? "true" : "false");
-	  }
-	else
-	  {
-	  debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
-	    "condition: %.*s\n",
-	    (int)(next_s - s), s);
-	  debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
-	    UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-	    "result: %s\n",
-	    cond ? "true" : "false");
-	  }
+	{
+	debug_expansion_interim(US"condition", s, (int)(next_s - s), skipping);
+	debug_expansion_interim(US"result",
+	  cond ? US"true" : US"false", cond ? 4 : 5, skipping);
+	}
 
       s = next_s;
 
@@ -4847,7 +4864,7 @@ while (*s)
 
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
-      continue;
+      break;
       }
 
 #ifdef SUPPORT_I18N
@@ -4878,14 +4895,13 @@ while (*s)
 	goto EXPAND_FAILED;
 	}
 
-      if (!skipping)
-	{
-	if (!(encoded = imap_utf7_encode(sub_arg[0], headers_charset,
-			    sub_arg[1][0], sub_arg[2], &expand_string_message)))
-	  goto EXPAND_FAILED;
-	yield = string_cat(yield, encoded);
-	}
-      continue;
+      if (skipping) continue;
+
+      if (!(encoded = imap_utf7_encode(sub_arg[0], headers_charset,
+			  sub_arg[1][0], sub_arg[2], &expand_string_message)))
+	goto EXPAND_FAILED;
+      yield = string_cat(yield, encoded);
+      break;
       }
 #endif
 
@@ -4901,9 +4917,9 @@ while (*s)
       int stype, partial, affixlen, starflags;
       int expand_setup = 0;
       int nameptr = 0;
-      uschar *key, *filename;
+      uschar * key, * filename;
       const uschar * affix, * opts;
-      uschar *save_lookup_value = lookup_value;
+      uschar * save_lookup_value = lookup_value;
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
@@ -4971,15 +4987,12 @@ while (*s)
           goto EXPAND_FAILED;
           }
         }
-      else
-        {
-        if (key)
-          {
-          expand_string_message = string_sprintf("a single key was given for "
-            "lookup type \"%s\", which is not a single-key lookup type", name);
-          goto EXPAND_FAILED;
-          }
-        }
+      else if (key)
+	{
+	expand_string_message = string_sprintf("a single key was given for "
+	  "lookup type \"%s\", which is not a single-key lookup type", name);
+	goto EXPAND_FAILED;
+	}
 
       /* Get the next string in brackets and expand it. It is the file name for
       single-key+file lookups, and the whole query otherwise. In the case of
@@ -5065,7 +5078,9 @@ while (*s)
 
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
-      continue;
+
+      if (skipping) continue;
+      break;
       }
 
     /* If Perl support is configured, handle calling embedded perl subroutines,
@@ -5083,10 +5098,10 @@ while (*s)
 
 #else   /* EXIM_PERL */
       {
-      uschar *sub_arg[EXIM_PERL_MAX_ARGS + 2];
-      gstring *new_yield;
+      uschar * sub_arg[EXIM_PERL_MAX_ARGS + 2];
+      gstring * new_yield;
 
-      if ((expand_forbid & RDO_PERL) != 0)
+      if (expand_forbid & RDO_PERL)
         {
         expand_string_message = US"Perl calls are not permitted";
         goto EXPAND_FAILED;
@@ -5108,7 +5123,7 @@ while (*s)
 
       if (!opt_perl_started)
         {
-        uschar *initerror;
+        uschar * initerror;
         if (!opt_perl_startup)
           {
           expand_string_message = US"A setting of perl_startup is needed when "
@@ -5152,7 +5167,7 @@ while (*s)
 
       f.expand_string_forcedfail = FALSE;
       yield = new_yield;
-      continue;
+      break;
       }
 #endif /* EXIM_PERL */
 
@@ -5161,8 +5176,7 @@ while (*s)
 
     case EITEM_PRVS:
       {
-      uschar *sub_arg[3];
-      uschar *p,*domain;
+      uschar * sub_arg[3], * p, * domain;
 
       switch(read_subs(sub_arg, 3, 2, &s, skipping, TRUE, name, &resetok))
         {
@@ -5211,17 +5225,16 @@ while (*s)
       yield = string_catn(yield, US"@", 1);
       yield = string_cat (yield, domain);
 
-      continue;
+      break;
       }
 
     /* Check a prvs-encoded address for validity */
 
     case EITEM_PRVSCHECK:
       {
-      uschar *sub_arg[3];
+      uschar * sub_arg[3], * p;
       gstring * g;
-      const pcre2_code *re;
-      uschar *p;
+      const pcre2_code * re;
 
       /* TF: Ugliness: We want to expand parameter 1 first, then set
          up expansion variables that are used in the expansion of
@@ -5250,11 +5263,11 @@ while (*s)
 
       if (regex_match_and_setup(re,sub_arg[0],0,-1))
         {
-        uschar *local_part = string_copyn(expand_nstring[4],expand_nlength[4]);
-        uschar *key_num = string_copyn(expand_nstring[1],expand_nlength[1]);
-        uschar *daystamp = string_copyn(expand_nstring[2],expand_nlength[2]);
-        uschar *hash = string_copyn(expand_nstring[3],expand_nlength[3]);
-        uschar *domain = string_copyn(expand_nstring[5],expand_nlength[5]);
+        uschar * local_part = string_copyn(expand_nstring[4],expand_nlength[4]);
+        uschar * key_num = string_copyn(expand_nstring[1],expand_nlength[1]);
+        uschar * daystamp = string_copyn(expand_nstring[2],expand_nlength[2]);
+        uschar * hash = string_copyn(expand_nstring[3],expand_nlength[3]);
+        uschar * domain = string_copyn(expand_nstring[5],expand_nlength[5]);
 
         DEBUG(D_expand) debug_printf_indent("prvscheck localpart: %s\n", local_part);
         DEBUG(D_expand) debug_printf_indent("prvscheck key number: %s\n", key_num);
@@ -5352,15 +5365,16 @@ while (*s)
           case 3: goto EXPAND_FAILED;
           }
 
-      continue;
+      if (skipping) continue;
+      break;
       }
 
     /* Handle "readfile" to insert an entire file */
 
     case EITEM_READFILE:
       {
-      FILE *f;
-      uschar *sub_arg[2];
+      FILE * f;
+      uschar * sub_arg[2];
 
       if ((expand_forbid & RDO_READFILE) != 0)
         {
@@ -5389,7 +5403,7 @@ while (*s)
 
       yield = cat_file(f, yield, sub_arg[1]);
       (void)fclose(f);
-      continue;
+      break;
       }
 
     /* Handle "readsocket" to insert data from a socket, either
@@ -5513,7 +5527,8 @@ while (*s)
 	expand_string_message = US"missing '}' closing readsocket";
 	goto EXPAND_FAILED_CURLY;
 	}
-      continue;
+      if (skipping) continue;
+      break;
 
       /* Come here on failure to create socket, connect socket, write to the
       socket, or timeout on reading. If another substring follows, expand and
@@ -5538,9 +5553,9 @@ while (*s)
 
     case EITEM_RUN:
       {
-      FILE *f;
-      uschar *arg;
-      const uschar **argv;
+      FILE * f;
+      uschar * arg;
+      const uschar ** argv;
       pid_t pid;
       int fd_in, fd_out;
 
@@ -5647,7 +5662,8 @@ while (*s)
         case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
         }
 
-      continue;
+      if (skipping) continue;
+      break;
       }
 
     /* Handle character translation for "tr" */
@@ -5656,7 +5672,7 @@ while (*s)
       {
       int oldptr = gstring_length(yield);
       int o2m;
-      uschar *sub[3];
+      uschar * sub[3];
 
       switch(read_subs(sub, 3, 3, &s, skipping, TRUE, name, &resetok))
         {
@@ -5678,7 +5694,8 @@ while (*s)
           }
         }
 
-      continue;
+      if (skipping) continue;
+      break;
       }
 
     /* Handle "hash", "length", "nhash", and "substr" when they are given with
@@ -5692,7 +5709,7 @@ while (*s)
       int len;
       uschar *ret;
       int val[2] = { 0, -1 };
-      uschar *sub[3];
+      uschar * sub[3];
 
       /* "length" takes only 2 arguments whereas the others take 2 or 3.
       Ensure that sub[2] is set in the ${length } case. */
@@ -5741,7 +5758,8 @@ while (*s)
       if (!ret)
 	goto EXPAND_FAILED;
       yield = string_catn(yield, ret, len);
-      continue;
+      if (skipping) continue;
+      break;
       }
 
     /* Handle HMAC computation: ${hmac{<algorithm>}{<secret>}{<text>}}
@@ -5756,14 +5774,14 @@ while (*s)
 
     case EITEM_HMAC:
       {
-      uschar *sub[3];
+      uschar * sub[3];
       md5 md5_base;
       hctx sha1_ctx;
-      void *use_base;
+      void * use_base;
       int type;
       int hashlen;      /* Number of octets for the hash algorithm's output */
       int hashblocklen; /* Number of octets the hash algorithm processes */
-      uschar *keyptr, *p;
+      uschar * keyptr, * p;
       unsigned int keylen;
 
       uschar keyhash[MAX_HASHLEN];
@@ -5780,79 +5798,78 @@ while (*s)
         case 3: goto EXPAND_FAILED;
         }
 
-      if (!skipping)
+      if (skipping) continue;
+
+      if (Ustrcmp(sub[0], "md5") == 0)
 	{
-	if (Ustrcmp(sub[0], "md5") == 0)
-	  {
-	  type = HMAC_MD5;
-	  use_base = &md5_base;
-	  hashlen = 16;
-	  hashblocklen = 64;
-	  }
-	else if (Ustrcmp(sub[0], "sha1") == 0)
-	  {
-	  type = HMAC_SHA1;
-	  use_base = &sha1_ctx;
-	  hashlen = 20;
-	  hashblocklen = 64;
-	  }
-	else
-	  {
-	  expand_string_message =
-	    string_sprintf("hmac algorithm \"%s\" is not recognised", sub[0]);
-	  goto EXPAND_FAILED;
-	  }
-
-	keyptr = sub[1];
-	keylen = Ustrlen(keyptr);
-
-	/* If the key is longer than the hash block length, then hash the key
-	first */
-
-	if (keylen > hashblocklen)
-	  {
-	  chash_start(type, use_base);
-	  chash_end(type, use_base, keyptr, keylen, keyhash);
-	  keyptr = keyhash;
-	  keylen = hashlen;
-	  }
-
-	/* Now make the inner and outer key values */
-
-	memset(innerkey, 0x36, hashblocklen);
-	memset(outerkey, 0x5c, hashblocklen);
-
-	for (int i = 0; i < keylen; i++)
-	  {
-	  innerkey[i] ^= keyptr[i];
-	  outerkey[i] ^= keyptr[i];
-	  }
-
-	/* Now do the hashes */
-
-	chash_start(type, use_base);
-	chash_mid(type, use_base, innerkey);
-	chash_end(type, use_base, sub[2], Ustrlen(sub[2]), innerhash);
-
-	chash_start(type, use_base);
-	chash_mid(type, use_base, outerkey);
-	chash_end(type, use_base, innerhash, hashlen, finalhash);
-
-	/* Encode the final hash as a hex string */
-
-	p = finalhash_hex;
-	for (int i = 0; i < hashlen; i++)
-	  {
-	  *p++ = hex_digits[(finalhash[i] & 0xf0) >> 4];
-	  *p++ = hex_digits[finalhash[i] & 0x0f];
-	  }
-
-	DEBUG(D_any) debug_printf("HMAC[%s](%.*s,%s)=%.*s\n",
-	  sub[0], (int)keylen, keyptr, sub[2], hashlen*2, finalhash_hex);
-
-	yield = string_catn(yield, finalhash_hex, hashlen*2);
+	type = HMAC_MD5;
+	use_base = &md5_base;
+	hashlen = 16;
+	hashblocklen = 64;
 	}
-      continue;
+      else if (Ustrcmp(sub[0], "sha1") == 0)
+	{
+	type = HMAC_SHA1;
+	use_base = &sha1_ctx;
+	hashlen = 20;
+	hashblocklen = 64;
+	}
+      else
+	{
+	expand_string_message =
+	  string_sprintf("hmac algorithm \"%s\" is not recognised", sub[0]);
+	goto EXPAND_FAILED;
+	}
+
+      keyptr = sub[1];
+      keylen = Ustrlen(keyptr);
+
+      /* If the key is longer than the hash block length, then hash the key
+      first */
+
+      if (keylen > hashblocklen)
+	{
+	chash_start(type, use_base);
+	chash_end(type, use_base, keyptr, keylen, keyhash);
+	keyptr = keyhash;
+	keylen = hashlen;
+	}
+
+      /* Now make the inner and outer key values */
+
+      memset(innerkey, 0x36, hashblocklen);
+      memset(outerkey, 0x5c, hashblocklen);
+
+      for (int i = 0; i < keylen; i++)
+	{
+	innerkey[i] ^= keyptr[i];
+	outerkey[i] ^= keyptr[i];
+	}
+
+      /* Now do the hashes */
+
+      chash_start(type, use_base);
+      chash_mid(type, use_base, innerkey);
+      chash_end(type, use_base, sub[2], Ustrlen(sub[2]), innerhash);
+
+      chash_start(type, use_base);
+      chash_mid(type, use_base, outerkey);
+      chash_end(type, use_base, innerhash, hashlen, finalhash);
+
+      /* Encode the final hash as a hex string */
+
+      p = finalhash_hex;
+      for (int i = 0; i < hashlen; i++)
+	{
+	*p++ = hex_digits[(finalhash[i] & 0xf0) >> 4];
+	*p++ = hex_digits[finalhash[i] & 0x0f];
+	}
+
+      DEBUG(D_any) debug_printf("HMAC[%s](%.*s,%s)=%.*s\n",
+	sub[0], (int)keylen, keyptr, sub[2], hashlen*2, finalhash_hex);
+
+      yield = string_catn(yield, finalhash_hex, hashlen*2);
+      break;
       }
 
     /* Handle global substitution for "sg" - like Perl's s/xxx/yyy/g operator.
@@ -5876,6 +5893,7 @@ while (*s)
         case 3: goto EXPAND_FAILED;
         }
 
+      /*XXX no handling of skipping? */
       /* Compile the regular expression */
 
       if (!(re = pcre2_compile((PCRE2_SPTR)sub[1], PCRE2_ZERO_TERMINATED,
@@ -5967,7 +5985,8 @@ while (*s)
 
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
-      continue;
+      if (skipping) continue;
+      break;
       }
 
     /* Handle keyed and numbered substring extraction. If the first argument
@@ -6202,7 +6221,8 @@ while (*s)
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
 
-      continue;
+      if (skipping) continue;
+      break;
       }
 
     /* return the Nth item from a list */
@@ -6299,7 +6319,8 @@ while (*s)
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
 
-      continue;
+      if (skipping) continue;
+      break;
       }
 
     case EITEM_LISTQUOTE:
@@ -6317,7 +6338,8 @@ while (*s)
 	yield = string_catn(yield, sub[1], 1);
 	}
       else yield = string_catn(yield, US" ", 1);
-      continue;
+      if (skipping) continue;
+      break;
       }
 
 #ifndef DISABLE_TLS
@@ -6395,7 +6417,8 @@ while (*s)
 
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
-      continue;
+      if (skipping) continue;
+      break;
       }
 #endif	/*DISABLE_TLS*/
 
@@ -6595,7 +6618,8 @@ while (*s)
       /* Restore preserved $item */
 
       iterate_item = save_iterate_item;
-      continue;
+      if (skipping) continue;
+      break;
       }
 
     case EITEM_SORT:
@@ -6708,7 +6732,7 @@ while (*s)
 
 	  /* field for comparison */
 	  if (!(dstfield = string_nextinlist(&dstkeylist, &sep, NULL, 0)))
-	    goto sort_mismatch;
+	    goto SORT_MISMATCH;
 
 	  /* String-comparator names start with a letter; numeric names do not */
 
@@ -6729,7 +6753,7 @@ while (*s)
 	    while ((dstitem = string_nextinlist(&dstlist, &sep, NULL, 0)))
 	      {
 	      if (!(dstfield = string_nextinlist(&dstkeylist, &sep, NULL, 0)))
-		goto sort_mismatch;
+		goto SORT_MISMATCH;
 	      newlist = string_append_listele(newlist, sep, dstitem);
 	      newkeylist = string_append_listele(newkeylist, sep, dstfield);
 	      }
@@ -6760,9 +6784,9 @@ while (*s)
 
       /* Restore preserved $item */
       iterate_item = save_iterate_item;
-      continue;
+      break;
 
-      sort_mismatch:
+      SORT_MISMATCH:
 	expand_string_message = US"Internal error in sort (list mismatch)";
 	goto EXPAND_FAILED;
       }
@@ -6861,7 +6885,7 @@ while (*s)
         }
 
       if (result) yield = string_cat(yield, result);
-      continue;
+      break;
       }
 #endif /* EXPAND_DLFUNC */
 
@@ -6895,7 +6919,8 @@ while (*s)
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
         case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
         }
-      continue;
+      if (skipping) continue;
+      break;
       }
 
 #ifdef SUPPORT_SRS
@@ -6976,10 +7001,25 @@ while (*s)
       /* @$original_domain */
       yield = string_catn(yield, US"@", 1);
       yield = string_cat(yield, sub[2]);
-      continue;
+
+      if (skipping) continue;
+      break;
       }
 #endif /*SUPPORT_SRS*/
+
+    default:
+      goto NOT_ITEM;
     }	/* EITEM_* switch */
+    /*NOTREACHED*/
+
+  DEBUG(D_expand)
+    if (start > 0 || *s)	/* only if not the sole expansion of the line */
+      debug_expansion_interim(US"item-res",
+			      yield->s + start, yield->ptr - start, skipping);
+  continue;
+
+NOT_ITEM:
+  }
 
   /* Control reaches here if the name is not recognized as one of the more
   complicated expansion items. Check for the "operator" syntax (name terminated
@@ -6989,10 +7029,9 @@ while (*s)
   if (*s == ':')
     {
     int c;
-    uschar *arg = NULL;
-    uschar *sub;
+    uschar * arg = NULL, * sub;
 #ifndef DISABLE_TLS
-    var_entry *vp = NULL;
+    var_entry * vp = NULL;
 #endif
 
     /* Owing to an historical mis-design, an underscore may be part of the
@@ -8122,34 +8161,9 @@ while (*s)
 	}	/* EOP_* switch */
 
        DEBUG(D_expand)
-	{
-	const uschar * s = yield->s + start;
-	int i = yield->ptr - start;
-	BOOL tainted = is_tainted(s);
-
-	DEBUG(D_noutf8)
-	  {
-	  debug_printf_indent("|-----op-res: %.*s\n", i, s);
-	  if (tainted)
-	    {
-	    debug_printf_indent("%s     \\__", skipping ? "|     " : "      ");
-	    debug_printf("(tainted)\n");
-	    }
-	  }
-	else
-	  {
-	  debug_printf_indent(UTF8_VERT_RIGHT
-	    UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-	    "op-res: %.*s\n", i, s);
-	  if (tainted)
-	    {
-	    debug_printf_indent("%s",
-	      skipping
-	      ? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
-	    debug_printf("(tainted)\n");
-	    }
-	  }
-	}
+	if (start > 0 || *s)		/* only if not the sole expansion of the line */
+	  debug_expansion_interim(US"op-res",
+				  yield->s + start, yield->ptr - start, skipping);
        continue;
        }
     }

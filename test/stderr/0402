@@ -143,6 +143,7 @@ Data file written for message 10HmaX-0005vi-00
    	for $received_for}}
    ├──expanding: from ${quote_local_part:$sender_ident} 
    ╰─────result: from CALLER 
+  ├───item-res: from CALLER 
   ├considering: ${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
@@ -182,6 +183,7 @@ Data file written for message 10HmaX-0005vi-00
    ├─────result: (helo=)
    	
    ╰───skipping: result is not used
+  ├───item-res: 
   ├considering: }}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -190,6 +192,7 @@ Data file written for message 10HmaX-0005vi-00
   ├──expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}
   ╰─────result: from CALLER 
+ ├───item-res: from CALLER 
  ├considering: by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
@@ -238,6 +241,7 @@ Data file written for message 10HmaX-0005vi-00
   	for $received_for}}
   ├──expanding: with $received_protocol 
   ╰─────result: with local 
+ ├───item-res: with local 
  ├considering: ${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
@@ -248,6 +252,7 @@ Data file written for message 10HmaX-0005vi-00
   ├──expanding:  ($tls_in_ver)
   ├─────result:  ()
   ╰───skipping: result is not used
+ ├───item-res: 
  ├considering: ${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
@@ -282,6 +287,7 @@ Data file written for message 10HmaX-0005vi-00
   ├─────result:  tls 
   	
   ╰───skipping: result is not used
+ ├───item-res: 
  ├considering: (Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
@@ -320,6 +326,8 @@ Data file written for message 10HmaX-0005vi-00
   	
   ╰─────result: (envelope-from <CALLER@test.ex>)
   	
+ ├───item-res: (envelope-from <CALLER@test.ex>)
+ 	
  ├considering: id $message_exim_id${if def:received_for {
  	for $received_for}}
  ├───────text: id 
@@ -340,6 +348,7 @@ Data file written for message 10HmaX-0005vi-00
   ├─────result: 
   	for 
   ╰───skipping: result is not used
+ ├───item-res: 
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -704,6 +713,8 @@ writing to file TESTSUITE/test-mail/junk
   ├──expanding: MAILER-DAEMON
   ├─────result: MAILER-DAEMON
   ╰───skipping: result is not used
+ ├───item-res: CALLER@test.ex
+            ╰──(tainted)
  ├considering:  ${tod_bsdinbox}
  
  ├───────text:  
@@ -780,6 +791,8 @@ writing to file TESTSUITE/test-mail/junk
   ├──expanding: MAILER-DAEMON
   ├─────result: MAILER-DAEMON
   ╰───skipping: result is not used
+ ├───item-res: CALLER@test.ex
+            ╰──(tainted)
  ├considering:  ${tod_bsdinbox}
  
  ├───────text:  

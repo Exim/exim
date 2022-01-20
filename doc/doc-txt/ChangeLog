@@ -74,7 +74,7 @@ JH/16 Debugging initiated by an ACL control now continues through into routing
       stopped any time Exim re-execs.
 
 JH/17 The "expand" debug selector now gives more detail, specifically on the
-      result of expansion operators (as opposed to expansion items).
+      result of expansion operators and items.
 
 
 Exim version 4.95
