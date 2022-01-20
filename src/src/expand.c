@@ -4531,7 +4531,6 @@ while (*s)
       yield = string_catn(yield, t, s - t);
       if (*s != 0) s += 2;
       }
-
     else
       {
       uschar ch[1];
@@ -4544,22 +4543,20 @@ while (*s)
       s++;
       yield = string_catn(yield, ch, 1);
       }
-
     continue;
     }
 
-  /*{*/
+									/*{{*/
   /* Anything other than $ is just copied verbatim, unless we are
   looking for a terminating } character. */
 
-  /*{*/
   if (ket_ends && *s == '}') break;
 
   if (*s != '$' || !honour_dollar)
     {
     int i = 1;								/*{*/
-    for(const uschar * t = s+1; *t && *t != '$' && *t != '}' && *t != '\\'; t++)
-      i++;
+    for (const uschar * t = s+1;
+	*t && *t != '$' && *t != '}' && *t != '\\'; t++) i++;
 
     DEBUG(D_expand)
       DEBUG(D_noutf8)
@@ -4582,11 +4579,10 @@ while (*s)
   "$header_". A non-existent header yields a NULL value; nothing is
   inserted. */	/*}*/
 
-  if (isalpha((*(++s))))
+  if (isalpha(*++s))
     {
     const uschar * value;
-    int len;
-    int newsize = 0;
+    int newsize = 0, len;
     gstring * g = NULL;
     uschar * t;
 
@@ -4627,7 +4623,7 @@ while (*s)
       But there is no error here - nothing gets inserted. */
 
       if (!value)
-        {		/*{*/
+        {								/*{*/
         if (Ustrchr(name, '}')) malformed_header = TRUE;
         continue;
         }
@@ -4685,12 +4681,12 @@ while (*s)
   /* After { there can be various things, but they all start with
   an initial word, except for a number for a string match variable. */	/*}*/
 
-  if (isdigit((*(++s))))
+  if (isdigit(*++s))
     {
     int n;
-    s = read_cnumber(&n, s);		/*{*/
+    s = read_cnumber(&n, s);						/*{{*/
     if (*s++ != '}')
-      {					/*{*/
+      {
       expand_string_message = US"} expected after number";
       goto EXPAND_FAILED;
       }
@@ -5077,15 +5073,15 @@ while (*s)
     or ${perl{sub}{arg1}{arg2}} or up to a maximum of EXIM_PERL_MAX_ARGS
     arguments (defined below). */
 
-  #define EXIM_PERL_MAX_ARGS 8
+#define EXIM_PERL_MAX_ARGS 8
 
     case EITEM_PERL:
-  #ifndef EXIM_PERL
-    expand_string_message = US"\"${perl\" encountered, but this facility "	/*}*/
-      "is not included in this binary";
-    goto EXPAND_FAILED;
+#ifndef EXIM_PERL
+      expand_string_message = US"\"${perl\" encountered, but this facility "	/*}*/
+	"is not included in this binary";
+      goto EXPAND_FAILED;
 
-  #else   /* EXIM_PERL */
+#else   /* EXIM_PERL */
       {
       uschar *sub_arg[EXIM_PERL_MAX_ARGS + 2];
       gstring *new_yield;
@@ -5158,7 +5154,7 @@ while (*s)
       yield = new_yield;
       continue;
       }
-  #endif /* EXIM_PERL */
+#endif /* EXIM_PERL */
 
     /* Transform email address to "prvs" scheme to use
        as BATV-signed return path */
@@ -5869,8 +5865,7 @@ while (*s)
       PCRE2_SIZE roffset;
       pcre2_match_data * md;
       int err, emptyopt;
-      uschar *subject;
-      uschar *sub[3];
+      uschar * subject, * sub[3];
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
@@ -5908,7 +5903,7 @@ while (*s)
 	PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
 	int n = pcre2_match(re, (PCRE2_SPTR)subject, slen, moffset + moffsetextra,
 	  PCRE_EOPT | emptyopt, md, pcre_mtc_ctx);
-        uschar *insert;
+        uschar * insert;
 
         /* No match - if we previously set PCRE_NOTEMPTY after a null match, this
         is not necessarily the end. We want to repeat the match from one
@@ -5943,7 +5938,9 @@ while (*s)
 
         /* Copy the characters before the match, plus the expanded insertion. */
 
-        yield = string_catn(yield, subject + moffset, ovec[0] - moffset);
+	if (ovec[0] > moffset)
+	  yield = string_catn(yield, subject + moffset, ovec[0] - moffset);
+
         if (!(insert = expand_string(sub[2])))
 	  goto EXPAND_FAILED;
         yield = string_cat(yield, insert);
@@ -5980,8 +5977,7 @@ while (*s)
       {
       int field_number = 1;
       BOOL field_number_set = FALSE;
-      uschar *save_lookup_value = lookup_value;
-      uschar *sub[3];
+      uschar * save_lookup_value = lookup_value, * sub[3];
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
@@ -6007,7 +6003,7 @@ while (*s)
 
       if (skipping)
 	{
-        for (int j = 5; j > 0 && *s == '{'; j--)		/*'}'*/
+        for (int j = 5; j > 0 && *s == '{'; j--)			/*'}'*/
 	  {
           if (!expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok))
 	    goto EXPAND_FAILED;					/*'{'*/
@@ -6018,13 +6014,13 @@ while (*s)
 	    }
 	  Uskip_whitespace(&s);
 	  }
-	if (  Ustrncmp(s, "fail", 4) == 0			/*'{'*/
+	if (  Ustrncmp(s, "fail", 4) == 0				/*'{'*/
 	   && (s[4] == '}' || s[4] == ' ' || s[4] == '\t' || !s[4])
 	   )
 	  {
 	  s += 4;
 	  Uskip_whitespace(&s);
-	  }							/*'{'*/
+	  }								/*'{'*/
 	if (*s != '}')
 	  {
 	  expand_string_message = US"missing '}' closing extract";
@@ -6034,10 +6030,10 @@ while (*s)
 
       else for (int i = 0, j = 2; i < j; i++) /* Read the proper number of arguments */
         {
-	if (Uskip_whitespace(&s) == '{') 						/*'}'*/
+	if (Uskip_whitespace(&s) == '{') 				/*'}'*/
           {
           if (!(sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok)))
-	    goto EXPAND_FAILED;					/*'{'*/
+	    goto EXPAND_FAILED;						/*'{'*/
           if (*s++ != '}')
 	    {
 	    expand_string_message = string_sprintf(
@@ -6054,7 +6050,7 @@ while (*s)
             {
             int len;
             int x = 0;
-            uschar *p = sub[0];
+            uschar * p = sub[0];
 
             Uskip_whitespace(&p);
             sub[0] = p;
@@ -6063,7 +6059,7 @@ while (*s)
             while (len > 0 && isspace(p[len-1])) len--;
             p[len] = 0;
 
-	    if (*p == 0)
+	    if (!*p)
 	      {
 	      expand_string_message = US"first argument of \"extract\" must "
 		"not be empty";
@@ -6075,8 +6071,8 @@ while (*s)
 	      field_number = -1;
 	      p++;
 	      }
-	    while (*p != 0 && isdigit(*p)) x = x * 10 + *p++ - '0';
-	    if (*p == 0)
+	    while (*p && isdigit(*p)) x = x * 10 + *p++ - '0';
+	    if (!*p)
 	      {
 	      field_number *= x;
 	      if (fmt == extract_basic) j = 3;               /* Need 3 args */
@@ -6214,8 +6210,7 @@ while (*s)
     case EITEM_LISTEXTRACT:
       {
       int field_number = 1;
-      uschar *save_lookup_value = lookup_value;
-      uschar *sub[2];
+      uschar * save_lookup_value = lookup_value, * sub[2];
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
@@ -6223,15 +6218,15 @@ while (*s)
 
       for (int i = 0; i < 2; i++)
         {
-        if (Uskip_whitespace(&s) != '{')					/*'}'*/
+        if (Uskip_whitespace(&s) != '{')				/*}*/
 	  {
 	  expand_string_message = string_sprintf(
-	    "missing '{' for arg %d of listextract", i+1);
+	    "missing '{' for arg %d of listextract", i+1);		/*}*/
 	  goto EXPAND_FAILED_CURLY;
 	  }
 
 	sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
-	if (!sub[i])     goto EXPAND_FAILED;		/*{*/
+	if (!sub[i])     goto EXPAND_FAILED;				/*{{*/
 	if (*s++ != '}')
 	  {
 	  expand_string_message = string_sprintf(
@@ -6328,8 +6323,7 @@ while (*s)
 #ifndef DISABLE_TLS
     case EITEM_CERTEXTRACT:
       {
-      uschar *save_lookup_value = lookup_value;
-      uschar *sub[2];
+      uschar * save_lookup_value = lookup_value, * sub[2];
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
@@ -6337,10 +6331,10 @@ while (*s)
       if (Uskip_whitespace(&s) != '{')					/*}*/
 	{
 	expand_string_message = US"missing '{' for field arg of certextract";
-	goto EXPAND_FAILED_CURLY;
+	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
       sub[0] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
-      if (!sub[0])     goto EXPAND_FAILED;		/*{*/
+      if (!sub[0])     goto EXPAND_FAILED;				/*{{*/
       if (*s++ != '}')
         {
 	expand_string_message = US"missing '}' closing field arg of certextract";
@@ -6363,7 +6357,7 @@ while (*s)
       if (Uskip_whitespace(&s) != '{')					/*}*/
 	{
 	expand_string_message = US"missing '{' for cert variable arg of certextract";
-	goto EXPAND_FAILED_CURLY;
+	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
       if (*++s != '$')
         {
@@ -6372,7 +6366,7 @@ while (*s)
 	goto EXPAND_FAILED;
 	}
       sub[1] = expand_string_internal(s+1, TRUE, &s, skipping, FALSE, &resetok);
-      if (!sub[1])     goto EXPAND_FAILED;		/*{*/
+      if (!sub[1])     goto EXPAND_FAILED;				/*{{*/
       if (*s++ != '}')
         {
 	expand_string_message = US"missing '}' closing cert variable arg of certextract";
@@ -6411,27 +6405,24 @@ while (*s)
     case EITEM_MAP:
     case EITEM_REDUCE:
       {
-      int sep = 0;
-      int save_ptr = gstring_length(yield);
+      int sep = 0, save_ptr = gstring_length(yield);
       uschar outsep[2] = { '\0', '\0' };
       const uschar *list, *expr, *temp;
-      uschar *save_iterate_item = iterate_item;
-      uschar *save_lookup_value = lookup_value;
+      uschar * save_iterate_item = iterate_item;
+      uschar * save_lookup_value = lookup_value;
 
       Uskip_whitespace(&s);
-      if (*s++ != '{')	/*}*/
+      if (*s++ != '{')							/*}*/
         {
 	expand_string_message =
 	  string_sprintf("missing '{' for first arg of %s", name);
-	goto EXPAND_FAILED_CURLY;
+	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
 
       if (!(list = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok)))
-	goto EXPAND_FAILED;
-      /*{*/
+	goto EXPAND_FAILED;						/*{{*/
       if (*s++ != '}')
         {
-	/*{*/
 	expand_string_message =
 	  string_sprintf("missing '}' closing first arg of %s", name);
 	goto EXPAND_FAILED_CURLY;
@@ -6441,14 +6432,14 @@ while (*s)
         {
 	uschar * t;
         Uskip_whitespace(&s);
-        if (*s++ != '{')
+        if (*s++ != '{')						/*}*/
 	  {
 	  expand_string_message = US"missing '{' for second arg of reduce";
-	  goto EXPAND_FAILED_CURLY;
+	  goto EXPAND_FAILED_CURLY;					/*}*/
 	  }
         t = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
         if (!t) goto EXPAND_FAILED;
-        lookup_value = t;
+        lookup_value = t;						/*{{*/
         if (*s++ != '}')
 	  {
 	  expand_string_message = US"missing '}' closing second arg of reduce";
@@ -6457,7 +6448,7 @@ while (*s)
         }
 
       Uskip_whitespace(&s);
-      if (*s++ != '{')	/*}*/
+      if (*s++ != '{')							/*}*/
         {
 	expand_string_message =
 	  string_sprintf("missing '{' for last arg of %s", name);	/*}*/
@@ -6484,18 +6475,18 @@ while (*s)
         goto EXPAND_FAILED;
         }
 
-      Uskip_whitespace(&s);				/*{*/
+      Uskip_whitespace(&s);						/*{{{*/
       if (*s++ != '}')
-        {						/*{*/
+        {
         expand_string_message = string_sprintf("missing } at end of condition "
           "or expression inside \"%s\"; could be an unquoted } in the content",
 	  name);
         goto EXPAND_FAILED;
         }
 
-      Uskip_whitespace(&s);				/*{*/
+      Uskip_whitespace(&s);						/*{{*/
       if (*s++ != '}')
-        {						/*{*/
+        {
         expand_string_message = string_sprintf("missing } at end of \"%s\"",
           name);
         goto EXPAND_FAILED;
@@ -6575,7 +6566,7 @@ while (*s)
           too many; backup and end the loop. Otherwise arrange to double the
           separator. */
 
-          if (temp[seglen] == '\0') { yield->ptr--; break; }
+          if (!temp[seglen]) { yield->ptr--; break; }
           yield = string_catn(yield, outsep, 1);
           temp += seglen + 1;
           }
@@ -6609,23 +6600,21 @@ while (*s)
 
     case EITEM_SORT:
       {
-      int cond_type;
-      int sep = 0;
-      const uschar *srclist, *cmp, *xtract;
+      int sep = 0, cond_type;
+      const uschar * srclist, * cmp, * xtract;
       uschar * opname, * srcitem;
-      const uschar *dstlist = NULL, *dstkeylist = NULL;
-      uschar * tmp;
-      uschar *save_iterate_item = iterate_item;
+      const uschar * dstlist = NULL, * dstkeylist = NULL;
+      uschar * tmp, * save_iterate_item = iterate_item;
 
       Uskip_whitespace(&s);
-      if (*s++ != '{')
+      if (*s++ != '{')							/*}*/
         {
         expand_string_message = US"missing '{' for list arg of sort";
-	goto EXPAND_FAILED_CURLY;
+	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
 
       srclist = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
-      if (!srclist) goto EXPAND_FAILED;
+      if (!srclist) goto EXPAND_FAILED;					/*{{*/
       if (*s++ != '}')
         {
         expand_string_message = US"missing '}' closing list arg of sort";
@@ -6633,14 +6622,14 @@ while (*s)
 	}
 
       Uskip_whitespace(&s);
-      if (*s++ != '{')
+      if (*s++ != '{')							/*}*/
         {
         expand_string_message = US"missing '{' for comparator arg of sort";
-	goto EXPAND_FAILED_CURLY;
+	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
 
       cmp = expand_string_internal(s, TRUE, &s, skipping, FALSE, &resetok);
-      if (!cmp) goto EXPAND_FAILED;
+      if (!cmp) goto EXPAND_FAILED;					/*{{*/
       if (*s++ != '}')
         {
         expand_string_message = US"missing '}' closing comparator arg of sort";
@@ -6667,25 +6656,25 @@ while (*s)
 	}
 
       Uskip_whitespace(&s);
-      if (*s++ != '{')
+      if (*s++ != '{')							/*}*/
         {
         expand_string_message = US"missing '{' for extractor arg of sort";
-	goto EXPAND_FAILED_CURLY;
+	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
 
       xtract = s;
       if (!(tmp = expand_string_internal(s, TRUE, &s, TRUE, TRUE, &resetok)))
 	goto EXPAND_FAILED;
       xtract = string_copyn(xtract, s - xtract);
-
+									/*{{*/
       if (*s++ != '}')
         {
         expand_string_message = US"missing '}' closing extractor arg of sort";
 	goto EXPAND_FAILED_CURLY;
 	}
-							/*{*/
+									/*{{*/
       if (*s++ != '}')
-        {						/*{*/
+        {
         expand_string_message = US"missing } at end of \"sort\"";
         goto EXPAND_FAILED;
         }
@@ -6695,8 +6684,7 @@ while (*s)
       while ((srcitem = string_nextinlist(&srclist, &sep, NULL, 0)))
 	{
 	uschar * srcfield, * dstitem;
-	gstring * newlist = NULL;
-	gstring * newkeylist = NULL;
+	gstring * newlist = NULL, * newkeylist = NULL;
 
         DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, srcitem);
 
@@ -6795,13 +6783,13 @@ while (*s)
 
 #else   /* EXPAND_DLFUNC */
       {
-      tree_node *t;
-      exim_dlfunc_t *func;
-      uschar *result;
+      tree_node * t;
+      exim_dlfunc_t * func;
+      uschar * result;
       int status, argc;
-      uschar *argv[EXPAND_DLFUNC_MAX_ARGS + 3];
+      uschar * argv[EXPAND_DLFUNC_MAX_ARGS + 3];
 
-      if ((expand_forbid & RDO_DLFUNC) != 0)
+      if (expand_forbid & RDO_DLFUNC)
         {
         expand_string_message =
           US"dynamically-loaded functions are not permitted";
@@ -6825,7 +6813,7 @@ while (*s)
 
       if (!(t = tree_search(dlobj_anchor, argv[0])))
         {
-        void *handle = dlopen(CS argv[0], RTLD_LAZY);
+        void * handle = dlopen(CS argv[0], RTLD_LAZY);
         if (!handle)
           {
           expand_string_message = string_sprintf("dlopen \"%s\" failed: %s",
@@ -6859,15 +6847,9 @@ while (*s)
 
       resetok = FALSE;
       result = NULL;
-      for (argc = 0; argv[argc]; argc++);
-      status = func(&result, argc - 2, &argv[2]);
-      if(status == OK)
-        {
-        if (!result) result = US"";
-        yield = string_cat(yield, result);
-        continue;
-        }
-      else
+      for (argc = 0; argv[argc]; argc++) ;
+
+      if ((status = func(&result, argc - 2, &argv[2])) != OK)
         {
         expand_string_message = result ? result : US"(no message)";
         if (status == FAIL_FORCED)
@@ -6877,6 +6859,9 @@ while (*s)
               argv[0], argv[1], status, expand_string_message);
         goto EXPAND_FAILED;
         }
+
+      if (result) yield = string_cat(yield, result);
+      continue;
       }
 #endif /* EXPAND_DLFUNC */
 
@@ -6889,10 +6874,10 @@ while (*s)
 	goto EXPAND_FAILED;
 
       key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
-      if (!key) goto EXPAND_FAILED;			/*{*/
+      if (!key) goto EXPAND_FAILED;					/*{{*/
       if (*s++ != '}')
         {
-        expand_string_message = US"missing '{' for name arg of env";	/*}*/
+        expand_string_message = US"missing '}' for name arg of env";
 	goto EXPAND_FAILED_CURLY;
 	}
 
