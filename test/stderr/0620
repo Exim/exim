@@ -5,9 +5,17 @@ admin user
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ├considering:  ESMTP Exim $version_number $tod_full
+ ├───────text:  ESMTP Exim 
+ ├considering: $version_number $tod_full
+ ├considering:  $tod_full
+ ├───────text:  
+ ├considering: $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: primaryhostname.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  ╭considering: domain $domain
+ ├───────text: domain 
+ ├considering: $domain
  ├──expanding: domain $domain
  ╰─────result: domain trythiskey.ex
             ╰──(tainted)
@@ -15,11 +23,26 @@ LOG: MAIN
   domain trythiskey.ex
 created log directory TESTSUITE/spool/log
  ╭considering: value  $domain_data
+ ├───────text: value  
+ ├considering: $domain_data
  ├──expanding: value  $domain_data
  ╰─────result: value  has this data
 LOG: MAIN
   value  has this data
  ╭considering: \$0 '$0'  \$1 '$1'
+ ├backslashed: '\$'
+ ├considering: 0 '$0'  \$1 '$1'
+ ├───────text: 0 '
+ ├considering: $0'  \$1 '$1'
+ ├considering: '  \$1 '$1'
+ ├───────text: '  
+ ├considering: \$1 '$1'
+ ├backslashed: '\$'
+ ├considering: 1 '$1'
+ ├───────text: 1 '
+ ├considering: $1'
+ ├considering: '
+ ├───────text: '
  ├──expanding: \$0 '$0'  \$1 '$1'
  ╰─────result: $0 'trythiskey.ex'  $1 ''
             ╰──(tainted)
@@ -35,20 +58,43 @@ admin user
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ├considering:  ESMTP Exim $version_number $tod_full
+ ├───────text:  ESMTP Exim 
+ ├considering: $version_number $tod_full
+ ├considering:  $tod_full
+ ├───────text:  
+ ├considering: $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: primaryhostname.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  ╭considering: domain $domain
+ ├───────text: domain 
+ ├considering: $domain
  ├──expanding: domain $domain
  ╰─────result: domain trythiskey.ex
             ╰──(tainted)
 LOG: MAIN
   domain trythiskey.ex
  ╭considering: value  $domain_data
+ ├───────text: value  
+ ├considering: $domain_data
  ├──expanding: value  $domain_data
  ╰─────result: value  trythiskey.ex
 LOG: MAIN
   value  trythiskey.ex
  ╭considering: \$0 '$0'  \$1 '$1'
+ ├backslashed: '\$'
+ ├considering: 0 '$0'  \$1 '$1'
+ ├───────text: 0 '
+ ├considering: $0'  \$1 '$1'
+ ├considering: '  \$1 '$1'
+ ├───────text: '  
+ ├considering: \$1 '$1'
+ ├backslashed: '\$'
+ ├considering: 1 '$1'
+ ├───────text: 1 '
+ ├considering: $1'
+ ├considering: '
+ ├───────text: '
  ├──expanding: \$0 '$0'  \$1 '$1'
  ╰─────result: $0 'trythiskey.ex'  $1 ''
             ╰──(tainted)

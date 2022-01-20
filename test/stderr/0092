@@ -52,20 +52,29 @@ host in host_lookup? no (option unset)
 set_process_info: pppp handling incoming connection from [V4NET.0.0.1]
  ╭considering: ${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s
   ╭considering: V4NET.0.0.1} {$sender_host_address} {2} {30}}s
+  ├───────text: V4NET.0.0.1
+  ├considering: } {$sender_host_address} {2} {30}}s
   ├──expanding: V4NET.0.0.1
   ╰─────result: V4NET.0.0.1
   ╭considering: $sender_host_address} {2} {30}}s
+  ├considering: } {2} {30}}s
   ├──expanding: $sender_host_address
   ╰─────result: V4NET.0.0.1
  ├──condition: eq {V4NET.0.0.1} {$sender_host_address}
  ├─────result: true
   ╭considering: 2} {30}}s
+  ├───────text: 2
+  ├considering: } {30}}s
   ├──expanding: 2
   ╰─────result: 2
   ╭───scanning: 30}}s
+  ├───────text: 30
+  ├───scanning: }}s
   ├──expanding: 30
   ├─────result: 30
   ╰───skipping: result is not used
+ ├considering: s
+ ├───────text: s
  ├──expanding: ${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s
  ╰─────result: 2s
 host in host_reject_connection? no (option unset)
@@ -75,6 +84,12 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ├considering:  ESMTP Exim $version_number $tod_full
+ ├───────text:  ESMTP Exim 
+ ├considering: $version_number $tod_full
+ ├considering:  $tod_full
+ ├───────text:  
+ ├considering: $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

@@ -6,9 +6,13 @@ admin user
 dropping to exim gid; retaining priv uid
  ╭considering: ${perl{foo}{arg1}}
   ╭considering: foo}{arg1}}
+  ├───────text: foo
+  ├considering: }{arg1}}
   ├──expanding: foo
   ╰─────result: foo
   ╭considering: arg1}}
+  ├───────text: arg1
+  ├considering: }}
   ├──expanding: arg1
   ╰─────result: arg1
 Starting Perl interpreter
@@ -16,6 +20,8 @@ Starting Perl interpreter
  ╰─────result: Subroutine foo called with args: arg1
  ╭considering: ${perl{foo_undef}}
   ╭considering: foo_undef}}
+  ├───────text: foo_undef
+  ├considering: }}
   ├──expanding: foo_undef
   ╰─────result: foo_undef
  ├failed to expand: ${perl{foo_undef}}
@@ -23,9 +29,15 @@ Starting Perl interpreter
  ╰failure was forced
  ╭considering: ${perl{debug_write}{debug from Perl\n}}
   ╭considering: debug_write}{debug from Perl\n}}
+  ├───────text: debug_write
+  ├considering: }{debug from Perl\n}}
   ├──expanding: debug_write
   ╰─────result: debug_write
   ╭considering: debug from Perl\n}}
+  ├───────text: debug from Perl
+  ├considering: \n}}
+  ├backslashed: '\n'
+  ├considering: }}
   ├──expanding: debug from Perl\n
   ╰─────result: debug from Perl
   
@@ -34,9 +46,13 @@ debug from Perl
  ╰─────result: Wrote debug
  ╭considering: ${perl{log_write}{log from Perl}}
   ╭considering: log_write}{log from Perl}}
+  ├───────text: log_write
+  ├considering: }{log from Perl}}
   ├──expanding: log_write
   ╰─────result: log_write
   ╭considering: log from Perl}}
+  ├───────text: log from Perl
+  ├considering: }}
   ├──expanding: log from Perl
   ╰─────result: log from Perl
 LOG: MAIN

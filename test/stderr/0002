@@ -3,36 +3,56 @@ configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
  ╭considering: primary_hostname: $primary_hostname
+ ├───────text: primary_hostname: 
+ ├considering: $primary_hostname
  ├──expanding: primary_hostname: $primary_hostname
  ╰─────result: primary_hostname: myhost.test.ex
  ╭considering: sender_address: $sender_address
+ ├───────text: sender_address: 
+ ├considering: $sender_address
  ├──expanding: sender_address: $sender_address
  ╰─────result: sender_address: sndr@dom
             ╰──(tainted)
  ╭considering: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+ ├───────text: match:  
+ ├considering: ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
   ╭considering: abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  ├───────text: abcd
+  ├considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
   ├──expanding: abcd
   ╰─────result: abcd
   ╭considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+  ├──protected: ^([ab]+)(\w+)$
+  ├considering: }{$2$1}fail}
   ├──expanding: \N^([ab]+)(\w+)$\N
   ╰─────result: ^([ab]+)(\w+)$
  ├──condition: match{abcd}{\N^([ab]+)(\w+)$\N}
  ├─────result: true
   ╭considering: $2$1}fail}
+  ├considering: $1}fail}
+  ├considering: }fail}
   ├──expanding: $2$1
   ╰─────result: cdab
  ├──expanding: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
  ╰─────result: match:  cdab
  ╭considering: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+ ├───────text: match:  
+ ├considering: ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
   ╭considering: wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  ├───────text: wxyz
+  ├considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
   ├──expanding: wxyz
   ╰─────result: wxyz
   ╭considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+  ├──protected: ^([ab]+)(\w+)$
+  ├considering: }{$2$1}fail}
   ├──expanding: \N^([ab]+)(\w+)$\N
   ╰─────result: ^([ab]+)(\w+)$
  ├──condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
  ├─────result: false
   ╭───scanning: $2$1}fail}
+  ├───scanning: $1}fail}
+  ├───scanning: }fail}
   ├──expanding: $2$1
   ├─────result: 
   ╰───skipping: result is not used
@@ -41,35 +61,52 @@ dropping to exim gid; retaining priv uid
  ╰failure was forced
  ╭considering: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
   ╭considering: 1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+  ├───────text: 1
+  ├considering: }{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
   ├──expanding: 1
   ╰─────result: 1
   ╭considering: 1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+  ├───────text: 1
+  ├considering: }{yes}{${lookup{xx}lsearch{/non/exist}}}}
   ├──expanding: 1
   ╰─────result: 1
  ├──condition: eq {1}{1}
  ├─────result: true
   ╭considering: yes}{${lookup{xx}lsearch{/non/exist}}}}
+  ├───────text: yes
+  ├considering: }{${lookup{xx}lsearch{/non/exist}}}}
   ├──expanding: yes
   ╰─────result: yes
   ╭───scanning: ${lookup{xx}lsearch{/non/exist}}}}
    ╭───scanning: xx}lsearch{/non/exist}}}}
+   ├───────text: xx
+   ├───scanning: }lsearch{/non/exist}}}}
    ├──expanding: xx
    ├─────result: xx
    ╰───skipping: result is not used
    ╭───scanning: /non/exist}}}}
+   ├───────text: /non/exist
+   ├───scanning: }}}}
    ├──expanding: /non/exist
    ├─────result: /non/exist
    ╰───skipping: result is not used
+  ├───scanning: }}
   ├──expanding: ${lookup{xx}lsearch{/non/exist}}
   ├─────result: 
   ╰───skipping: result is not used
  ├──expanding: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
  ╰─────result: yes
  ╭considering: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
+ ├───────text: match_address:   
+ ├considering: ${if match_address{a.b.c}{a.b.c}{yes}{no}}
   ╭considering: a.b.c}{a.b.c}{yes}{no}}
+  ├───────text: a.b.c
+  ├considering: }{a.b.c}{yes}{no}}
   ├──expanding: a.b.c
   ╰─────result: a.b.c
   ╭considering: a.b.c}{yes}{no}}
+  ├───────text: a.b.c
+  ├considering: }{yes}{no}}
   ├──expanding: a.b.c
   ╰─────result: a.b.c
 LOG: MAIN PANIC
@@ -77,10 +114,14 @@ LOG: MAIN PANIC
  ├──condition: match_address{a.b.c}{a.b.c}
  ├─────result: false
   ╭───scanning: yes}{no}}
+  ├───────text: yes
+  ├───scanning: }{no}}
   ├──expanding: yes
   ├─────result: yes
   ╰───skipping: result is not used
   ╭considering: no}}
+  ├───────text: no
+  ├considering: }}
   ├──expanding: no
   ╰─────result: no
  ├──expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
@@ -91,32 +132,50 @@ configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
  /considering: primary_hostname: $primary_hostname
+ |-------text: primary_hostname: 
+ |considering: $primary_hostname
  |--expanding: primary_hostname: $primary_hostname
  \_____result: primary_hostname: myhost.test.ex
  /considering: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+ |-------text: match:  
+ |considering: ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
   /considering: abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |-------text: abcd
+  |considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
   |--expanding: abcd
   \_____result: abcd
   /considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |--protected: ^([ab]+)(\w+)$
+  |considering: }{$2$1}fail}
   |--expanding: \N^([ab]+)(\w+)$\N
   \_____result: ^([ab]+)(\w+)$
  |--condition: match{abcd}{\N^([ab]+)(\w+)$\N}
  |-----result: true
   /considering: $2$1}fail}
+  |considering: $1}fail}
+  |considering: }fail}
   |--expanding: $2$1
   \_____result: cdab
  |--expanding: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
  \_____result: match:  cdab
  /considering: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+ |-------text: match:  
+ |considering: ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
   /considering: wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |-------text: wxyz
+  |considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
   |--expanding: wxyz
   \_____result: wxyz
   /considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |--protected: ^([ab]+)(\w+)$
+  |considering: }{$2$1}fail}
   |--expanding: \N^([ab]+)(\w+)$\N
   \_____result: ^([ab]+)(\w+)$
  |--condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
  |-----result: false
   /---scanning: $2$1}fail}
+  |---scanning: $1}fail}
+  |---scanning: }fail}
   |--expanding: $2$1
   |-----result: 
   \___skipping: result is not used
@@ -125,35 +184,52 @@ dropping to exim gid; retaining priv uid
  \failure was forced
  /considering: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
   /considering: 1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+  |-------text: 1
+  |considering: }{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
   |--expanding: 1
   \_____result: 1
   /considering: 1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+  |-------text: 1
+  |considering: }{yes}{${lookup{xx}lsearch{/non/exist}}}}
   |--expanding: 1
   \_____result: 1
  |--condition: eq {1}{1}
  |-----result: true
   /considering: yes}{${lookup{xx}lsearch{/non/exist}}}}
+  |-------text: yes
+  |considering: }{${lookup{xx}lsearch{/non/exist}}}}
   |--expanding: yes
   \_____result: yes
   /---scanning: ${lookup{xx}lsearch{/non/exist}}}}
    /---scanning: xx}lsearch{/non/exist}}}}
+   |-------text: xx
+   |---scanning: }lsearch{/non/exist}}}}
    |--expanding: xx
    |-----result: xx
    \___skipping: result is not used
    /---scanning: /non/exist}}}}
+   |-------text: /non/exist
+   |---scanning: }}}}
    |--expanding: /non/exist
    |-----result: /non/exist
    \___skipping: result is not used
+  |---scanning: }}
   |--expanding: ${lookup{xx}lsearch{/non/exist}}
   |-----result: 
   \___skipping: result is not used
  |--expanding: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
  \_____result: yes
  /considering: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
+ |-------text: match_address:   
+ |considering: ${if match_address{a.b.c}{a.b.c}{yes}{no}}
   /considering: a.b.c}{a.b.c}{yes}{no}}
+  |-------text: a.b.c
+  |considering: }{a.b.c}{yes}{no}}
   |--expanding: a.b.c
   \_____result: a.b.c
   /considering: a.b.c}{yes}{no}}
+  |-------text: a.b.c
+  |considering: }{yes}{no}}
   |--expanding: a.b.c
   \_____result: a.b.c
 LOG: MAIN PANIC
@@ -161,10 +237,14 @@ LOG: MAIN PANIC
  |--condition: match_address{a.b.c}{a.b.c}
  |-----result: false
   /---scanning: yes}{no}}
+  |-------text: yes
+  |---scanning: }{no}}
   |--expanding: yes
   |-----result: yes
   \___skipping: result is not used
   /considering: no}}
+  |-------text: no
+  |considering: }}
   |--expanding: no
   \_____result: no
  |--expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
@@ -175,36 +255,54 @@ configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
  ╭considering: -oMa  sender_host_address = $sender_host_address
+ ├───────text: -oMa  sender_host_address = 
+ ├considering: $sender_host_address
  ├──expanding: -oMa  sender_host_address = $sender_host_address
  ╰─────result: -oMa  sender_host_address = V4NET.0.0.1
             ╰──(tainted)
  ╭considering:       sender_host_port = $sender_host_port
+ ├───────text:       sender_host_port = 
+ ├considering: $sender_host_port
  ├──expanding:       sender_host_port = $sender_host_port
  ╰─────result:       sender_host_port = 1234
  ╭considering: -oMaa sender_host_authenticated = $sender_host_authenticated
+ ├───────text: -oMaa sender_host_authenticated = 
+ ├considering: $sender_host_authenticated
  ├──expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
  ╰─────result: -oMaa sender_host_authenticated = AAA
             ╰──(tainted)
  ╭considering: -oMai authenticated_id = $authenticated_id
+ ├───────text: -oMai authenticated_id = 
+ ├considering: $authenticated_id
  ├──expanding: -oMai authenticated_id = $authenticated_id
  ╰─────result: -oMai authenticated_id = philip
             ╰──(tainted)
  ╭considering: -oMas authenticated_sender = $authenticated_sender
+ ├───────text: -oMas authenticated_sender = 
+ ├considering: $authenticated_sender
  ├──expanding: -oMas authenticated_sender = $authenticated_sender
  ╰─────result: -oMas authenticated_sender = xx@yy.zz
             ╰──(tainted)
  ╭considering: -oMi  interface_address = $interface_address
+ ├───────text: -oMi  interface_address = 
+ ├considering: $interface_address
  ├──expanding: -oMi  interface_address = $interface_address
  ╰─────result: -oMi  interface_address = 1.1.1.1
             ╰──(tainted)
  ╭considering:       interface_port = $interface_port
+ ├───────text:       interface_port = 
+ ├considering: $interface_port
  ├──expanding:       interface_port = $interface_port
  ╰─────result:       interface_port = 99
  ╭considering: -oMr  received_protocol = $received_protocol
+ ├───────text: -oMr  received_protocol = 
+ ├considering: $received_protocol
  ├──expanding: -oMr  received_protocol = $received_protocol
  ╰─────result: -oMr  received_protocol = special
             ╰──(tainted)
  ╭considering: -oMt  sender_ident = $sender_ident
+ ├───────text: -oMt  sender_ident = 
+ ├considering: $sender_ident
  ├──expanding: -oMt  sender_ident = $sender_ident
  ╰─────result: -oMt  sender_ident = me
             ╰──(tainted)
@@ -215,54 +313,81 @@ configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
  ╭considering: -oMa  sender_host_address = $sender_host_address
+ ├───────text: -oMa  sender_host_address = 
+ ├considering: $sender_host_address
  ├──expanding: -oMa  sender_host_address = $sender_host_address
  ╰─────result: -oMa  sender_host_address = V4NET.0.0.1
             ╰──(tainted)
  ╭considering:       sender_host_port = $sender_host_port
+ ├───────text:       sender_host_port = 
+ ├considering: $sender_host_port
  ├──expanding:       sender_host_port = $sender_host_port
  ╰─────result:       sender_host_port = 1234
  ╭considering: -oMaa sender_host_authenticated = $sender_host_authenticated
+ ├───────text: -oMaa sender_host_authenticated = 
+ ├considering: $sender_host_authenticated
  ├──expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
  ╰─────result: -oMaa sender_host_authenticated = AAA
             ╰──(tainted)
  ╭considering: -oMai authenticated_id = $authenticated_id
+ ├───────text: -oMai authenticated_id = 
+ ├considering: $authenticated_id
  ├──expanding: -oMai authenticated_id = $authenticated_id
  ╰─────result: -oMai authenticated_id = philip
             ╰──(tainted)
  ╭considering: -oMas authenticated_sender = $authenticated_sender
+ ├───────text: -oMas authenticated_sender = 
+ ├considering: $authenticated_sender
  ├──expanding: -oMas authenticated_sender = $authenticated_sender
  ╰─────result: -oMas authenticated_sender = xx@yy.zz
             ╰──(tainted)
  ╭considering: -oMi  interface_address = $interface_address
+ ├───────text: -oMi  interface_address = 
+ ├considering: $interface_address
  ├──expanding: -oMi  interface_address = $interface_address
  ╰─────result: -oMi  interface_address = 1.1.1.1
             ╰──(tainted)
  ╭considering:       interface_port = $interface_port
+ ├───────text:       interface_port = 
+ ├considering: $interface_port
  ├──expanding:       interface_port = $interface_port
  ╰─────result:       interface_port = 99
  ╭considering: -oMr  received_protocol = $received_protocol
+ ├───────text: -oMr  received_protocol = 
+ ├considering: $received_protocol
  ├──expanding: -oMr  received_protocol = $received_protocol
  ╰─────result: -oMr  received_protocol = special
             ╰──(tainted)
  ╭considering: ----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
+ ├───────text: ----> No lookup yet: 
+ ├considering: ${if eq{black}{white}{$sender_host_name}{No}}
   ╭considering: black}{white}{$sender_host_name}{No}}
+  ├───────text: black
+  ├considering: }{white}{$sender_host_name}{No}}
   ├──expanding: black
   ╰─────result: black
   ╭considering: white}{$sender_host_name}{No}}
+  ├───────text: white
+  ├considering: }{$sender_host_name}{No}}
   ├──expanding: white
   ╰─────result: white
  ├──condition: eq{black}{white}
  ├─────result: false
   ╭───scanning: $sender_host_name}{No}}
+  ├───scanning: }{No}}
   ├──expanding: $sender_host_name
   ├─────result: 
   ╰───skipping: result is not used
   ╭considering: No}}
+  ├───────text: No
+  ├considering: }}
   ├──expanding: No
   ╰─────result: No
  ├──expanding: ----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
  ╰─────result: ----> No lookup yet: No
  ╭considering: -oMs  sender_host_name = $sender_host_name
+ ├───────text: -oMs  sender_host_name = 
+ ├considering: $sender_host_name
 looking up host name for V4NET.0.0.1
 IP address lookup yielded "ten-1.test.ex"
 ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
@@ -274,6 +399,8 @@ sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
  ╰─────result: -oMs  sender_host_name = ten-1.test.ex
             ╰──(tainted)
  ╭considering: -oMt  sender_ident = $sender_ident
+ ├───────text: -oMt  sender_ident = 
+ ├considering: $sender_ident
  ├──expanding: -oMt  sender_ident = $sender_ident
  ╰─────result: -oMt  sender_ident = me
             ╰──(tainted)
