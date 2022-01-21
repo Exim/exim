@@ -7018,7 +7018,7 @@ while (*s)
 			      yield->s + start, yield->ptr - start, skipping);
   continue;
 
-NOT_ITEM:
+NOT_ITEM: ;
   }
 
   /* Control reaches here if the name is not recognized as one of the more
