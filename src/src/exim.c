@@ -1428,56 +1428,58 @@ static uschar *
 get_stdinput(char *(*fn_readline)(const char *), void(*fn_addhist)(const char *))
 {
 gstring * g = NULL;
+BOOL had_input = FALSE;
 
 if (!fn_readline) { printf("> "); fflush(stdout); }
 
 for (int i = 0;; i++)
   {
   uschar buffer[1024];
-  uschar *p, *ss;
+  uschar * p, * ss;
 
-  #ifdef USE_READLINE
+#ifdef USE_READLINE
   char *readline_line = NULL;
   if (fn_readline)
     {
     if (!(readline_line = fn_readline((i > 0)? "":"> "))) break;
-    if (*readline_line != 0 && fn_addhist) fn_addhist(readline_line);
+    if (*readline_line && fn_addhist) fn_addhist(readline_line);
     p = US readline_line;
     }
   else
-  #endif
+#endif
 
   /* readline() not in use */
 
     {
-    if (Ufgets(buffer, sizeof(buffer), stdin) == NULL) break;
+    if (Ufgets(buffer, sizeof(buffer), stdin) == NULL) break;	/*EOF*/
     p = buffer;
     }
 
   /* Handle the line */
 
-  ss = p + (int)Ustrlen(p);
-  while (ss > p && isspace(ss[-1])) ss--;
+  had_input = TRUE;
+  ss = p + Ustrlen(p);
+  while (ss > p && isspace(ss[-1])) ss--; /* strip trailing newline (and spaces) */
 
   if (i > 0)
-    while (p < ss && isspace(*p)) p++;   /* leading space after cont */
+    while (p < ss && isspace(*p)) p++;   /* strip leading space after cont */
 
   g = string_catn(g, p, ss - p);
 
-  #ifdef USE_READLINE
+#ifdef USE_READLINE
   if (fn_readline) free(readline_line);
-  #endif
+#endif
 
   /* g can only be NULL if ss==p */
-  if (ss == p || g->s[g->ptr-1] != '\\')
+  if (ss == p || g->s[g->ptr-1] != '\\') /* not continuation; done */
     break;
 
-  --g->ptr;
-  (void) string_from_gstring(g);
+  --g->ptr;				/* drop the \ */
   }
 
-if (!g) printf("\n");
-return string_from_gstring(g);
+if (had_input) return g ? string_from_gstring(g) : US"";
+printf("\n");
+return NULL;
 }
 
 
