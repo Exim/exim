@@ -262,12 +262,33 @@ exit(1);
 ***********************************************/
 
 static void
+#ifdef SA_SIGINFO
+segv_handler(int sig, siginfo_t * info, void * uctx)
+{
+log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (fault address: %p)", info->si_addr);
+switch (info->si_code)
+  {
+  case SEGV_MAPERR: log_write(0, LOG_MAIN|LOG_PANIC, "SEGV_MAPERR"); break;
+  case SEGV_ACCERR: log_write(0, LOG_MAIN|LOG_PANIC, "SEGV_ACCERR"); break;
+  case SEGV_BNDERR: log_write(0, LOG_MAIN|LOG_PANIC, "SEGV_BNDERR"); break;
+  case SEGV_PKUERR: log_write(0, LOG_MAIN|LOG_PANIC, "SEGV_PKUERR"); break;
+  }
+if (US info->si_addr < US 4096)
+  log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (null pointer indirection)");
+else
+  log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (maybe attempt to write to immutable memory)");
+signal(SIGSEGV, SIG_DFL);
+kill(getpid(), sig);
+}
+
+#else
 segv_handler(int sig)
 {
 log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (maybe attempt to write to immutable memory)");
 signal(SIGSEGV, SIG_DFL);
 kill(getpid(), sig);
 }
+#endif
 
 
 /*************************************************
@@ -1856,7 +1877,14 @@ descriptive text. */
 process_info = store_get(PROCESS_INFO_SIZE, TRUE);	/* tainted */
 set_process_info("initializing");
 os_restarting_signal(SIGUSR1, usr1_handler);		/* exiwhat */
+#ifdef SA_SIGINFO
+  {
+  struct sigaction act = { .sa_sigaction = segv_handler, .sa_flags = SA_RESETHAND | SA_SIGINFO };
+  sigaction(SIGSEGV, &act, NULL);
+  }
+#else
 signal(SIGSEGV, segv_handler);				/* log faults */
+#endif
 
 /* If running in a dockerized environment, the TERM signal is only
 delegated to the PID 1 if we request it by setting an signal handler */
