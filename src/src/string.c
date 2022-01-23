@@ -1139,6 +1139,7 @@ Returns:   growable string, changed if copied for expansion.
            Note that a NUL is not added, though space is left for one. This is
            because string_cat() is often called multiple times to build up a
            string - there's no point adding the NUL till the end.
+	   NULL is a possible return.
 
 */
 /* coverity[+alloc] */
@@ -1152,6 +1153,7 @@ BOOL srctaint = is_tainted(s);
 if (count < 0)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "internal error in string_catn (count %d)", count);
+if (count == 0) return g;
 
 if (!g)
   {

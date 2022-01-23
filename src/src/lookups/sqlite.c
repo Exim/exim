@@ -66,7 +66,7 @@ if (argc > 1)
   /* For multiple fields, include the field name too */
   for (int i = 0; i < argc; i++)
     {
-    uschar *value = US((argv[i] != NULL)? argv[i]:"<NULL>");
+    uschar * value = US(argv[i] ? argv[i] : "<NULL>");
     res = lf_quote(US azColName[i], value, Ustrlen(value), res);
     }
   }
@@ -74,7 +74,8 @@ if (argc > 1)
 else
   res = string_cat(res, argv[0] ? US argv[0] : US "<NULL>");
 
-*(gstring **)arg = res;
+/* always return a non-null gstring, even for a zero-length string result */
+*(gstring **)arg = res ? res : string_get(1);
 return 0;
 }
 
@@ -94,7 +95,7 @@ if (ret != SQLITE_OK)
   return FAIL;
   }
 
-if (!res) *do_cache = 0;
+if (!res) *do_cache = 0;	/* on fail, wipe cache */
 
 *result = string_from_gstring(res);
 return OK;

@@ -900,7 +900,7 @@ static inline gstring *
 string_get_tainted_trc(unsigned size, BOOL tainted, const char * func, unsigned line)
 {
 gstring * g = store_get_3(sizeof(gstring) + size, tainted, func, line);
-g->size = size;
+g->size = size;		/*XXX would be good if we could see the actual alloc size */
 g->ptr = 0;
 g->s = US(g + 1);
 return g;

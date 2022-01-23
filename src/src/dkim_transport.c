@@ -169,7 +169,7 @@ if (!(dkim_signature = dkim_exim_sign(deliver_datafile, SPOOL_DATA_START_OFFSET,
 #ifdef EXPERIMENTAL_ARC
 if (dkim->arc_signspec)			/* Prepend ARC headers */
   {
-  uschar * e;
+  uschar * e = NULL;
   if (!(dkim_signature = arc_sign(dkim->arc_signspec, dkim_signature, &e)))
     {
     *err = e;

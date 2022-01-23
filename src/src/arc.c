@@ -1619,7 +1619,7 @@ if (!arc_valid_id(identity))
 if (!arc_valid_id(selector))
   { s = US"selector"; goto bad_arg_ret; }
 if (*privkey == '/' && !(privkey = expand_file_big_buffer(privkey)))
-  return sigheaders ? sigheaders : string_get(0);
+  goto ret_sigheaders;
 
 if ((opts = string_nextinlist(&signspec, &sep, NULL, 0)))
   {
@@ -1678,7 +1678,7 @@ if ((rheaders = arc_sign_scan_headers(&arc_sign_ctx, sigheaders)))
 if (!(arc_sign_find_ar(headers, identity, &ar)))
   {
   log_write(0, LOG_MAIN, "ARC: no Authentication-Results header for signing");
-  return sigheaders ? sigheaders : string_get(0);
+  goto ret_sigheaders;
   }
 
 /* We previously built the data-struct for the existing ARC chain, if any, using a headers
@@ -1734,14 +1734,19 @@ if (g)
 /* Finally, append the dkim headers and return the lot. */
 
 if (sigheaders) g = string_catn(g, sigheaders->s, sigheaders->ptr);
-(void) string_from_gstring(g);
-gstring_release_unused(g);
-return g;
+
+out:
+  if (!g) return string_get(1);
+  (void) string_from_gstring(g);
+  gstring_release_unused(g);
+  return g;
 
 
 bad_arg_ret:
   log_write(0, LOG_MAIN, "ARC: bad signing-specification (%s)", s);
-  return sigheaders ? sigheaders : string_get(0);
+ret_sigheaders:
+  g = sigheaders;
+  goto out;
 }
 
 

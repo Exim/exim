@@ -4733,7 +4733,7 @@ while (*s)
   skipping, but "break" otherwise so we get debug output for the item
   expansion. */
   {
-  int start = yield->ptr;
+  int start = gstring_length(yield);
   switch(item_type)
     {
     /* Call an ACL from an expansion.  We feed data in via $acl_arg1 - $acl_arg9.
@@ -5956,8 +5956,7 @@ while (*s)
 
         /* Copy the characters before the match, plus the expanded insertion. */
 
-	if (ovec[0] > moffset)
-	  yield = string_catn(yield, subject + moffset, ovec[0] - moffset);
+	yield = string_catn(yield, subject + moffset, ovec[0] - moffset);
 
         if (!(insert = expand_string(sub[2])))
 	  goto EXPAND_FAILED;
@@ -7013,7 +7012,7 @@ while (*s)
     /*NOTREACHED*/
 
   DEBUG(D_expand)
-    if (start > 0 || *s)	/* only if not the sole expansion of the line */
+    if (yield && (start > 0 || *s))	/* only if not the sole expansion of the line */
       debug_expansion_interim(US"item-res",
 			      yield->s + start, yield->ptr - start, skipping);
   continue;

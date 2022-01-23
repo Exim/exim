@@ -308,7 +308,7 @@ fields = mysql_fetch_fields(mysql_result);
 
 while ((mysql_row_data = mysql_fetch_row(mysql_result)))
   {
-  unsigned long *lengths = mysql_fetch_lengths(mysql_result);
+  unsigned long * lengths = mysql_fetch_lengths(mysql_result);
 
   if (result)
     result = string_catn(result, US"\n", 1);
@@ -319,7 +319,9 @@ while ((mysql_row_data = mysql_fetch_row(mysql_result)))
 			result);
 
   else if (mysql_row_data[0] != NULL)    /* NULL value yields nothing */
-      result = string_catn(result, US mysql_row_data[0], lengths[0]);
+      result = lengths[0] == 0 && !result
+	? string_get(1)		/* for 0-len string result ensure non-null gstring */
+        : string_catn(result, US mysql_row_data[0], lengths[0]);
   }
 
 /* more results? -1 = no, >0 = error, 0 = yes (keep looping)

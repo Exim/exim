@@ -336,6 +336,7 @@ for (int i = 0; i < num_tuples; i++)
       uschar *tmp = US PQgetvalue(pg_result, i, j);
       result = lf_quote(US PQfname(pg_result, j), tmp, Ustrlen(tmp), result);
       }
+  if (!result) result = string_get(1);
   }
 
 /* If result is NULL then no data has been found and so we return FAIL. */
