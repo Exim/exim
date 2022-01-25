@@ -1510,14 +1510,14 @@ else
 
 
 void
-debug_logging_stop(void)
+debug_logging_stop(BOOL kill)
 {
 if (!debug_file || !debuglog_name[0]) return;
 
 debug_selector = 0;
 fclose(debug_file);
 debug_file = NULL;
-unlink_log(lt_debug);
+if (kill) unlink_log(lt_debug);
 }
 
 /* Called from the appendfile transport setup. */

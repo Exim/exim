@@ -3481,7 +3481,7 @@ for (; cb; cb = cb->next)
 	  {
 	  uschar * debug_tag = NULL;
 	  uschar * debug_opts = NULL;
-	  BOOL kill = FALSE;
+	  BOOL kill = FALSE, stop = FALSE;
 
 	  while (*p == '/')
 	    {
@@ -3501,13 +3501,20 @@ for (; cb; cb = cb->next)
 	      for (pp += 4; *pp && *pp != '/';) pp++;
 	      kill = TRUE;
 	      }
+	    else if (Ustrncmp(pp, "stop", 4) == 0)
+	      {
+	      for (pp += 4; *pp && *pp != '/';) pp++;
+	      stop = TRUE;
+	      }
 	    else
 	      while (*pp && *pp != '/') pp++;
 	    p = pp;
 	    }
 
 	    if (kill)
-	      debug_logging_stop();
+	      debug_logging_stop(TRUE);
+	    else if (stop)
+	      debug_logging_stop(FALSE);
 	    else
 	      debug_logging_activate(debug_tag, debug_opts);
 	  break;

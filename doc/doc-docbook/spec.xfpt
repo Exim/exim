@@ -31604,8 +31604,10 @@ The filename can be adjusted with the &'tag'& option, which
 may access any variables already defined.  The logging may be adjusted with
 the &'opts'& option, which takes the same values as the &`-d`& command-line
 option.
-Logging started this way may be stopped, and the file removed,
-with the &'kill'& option.
+.new
+Logging started this way may be stopped by using the &'stop'& option.
+The &'kill'& option additionally removes the debug file.
+.wen
 Some examples (which depend on variables that don't exist in all
 contexts):
 .code
