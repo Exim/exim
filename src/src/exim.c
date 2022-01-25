@@ -266,6 +266,7 @@ static void
 segv_handler(int sig, siginfo_t * info, void * uctx)
 {
 log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (fault address: %p)", info->si_addr);
+# if defined(SEGV_MAPERR) && defined(SEGV_ACCERR) && defined(SEGV_BNDERR) && defined(SEGV_PKUERR)
 switch (info->si_code)
   {
   case SEGV_MAPERR: log_write(0, LOG_MAIN|LOG_PANIC, "SEGV_MAPERR"); break;
@@ -273,6 +274,7 @@ switch (info->si_code)
   case SEGV_BNDERR: log_write(0, LOG_MAIN|LOG_PANIC, "SEGV_BNDERR"); break;
   case SEGV_PKUERR: log_write(0, LOG_MAIN|LOG_PANIC, "SEGV_PKUERR"); break;
   }
+# endif
 if (US info->si_addr < US 4096)
   log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (null pointer indirection)");
 else
