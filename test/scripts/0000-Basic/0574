@@ -32,6 +32,6 @@ killdaemon
 1
 cat DIR/spool/log/serverdebuglog_1
 #
-cat DIR/spool/log/serverdebuglog_2
+cp DIR/spool/log/serverdebuglog_2 /dev/stderr
 #
 no_msglog_check
