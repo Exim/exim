@@ -1690,7 +1690,7 @@ int  i, rv;
 int  list_queue_option = 0;
 int  msg_action = 0;
 int  msg_action_arg = -1;
-int  namelen = (argv[0] == NULL)? 0 : Ustrlen(argv[0]);
+int  namelen = argv[0] ? Ustrlen(argv[0]) : 0;
 int  queue_only_reason = 0;
 #ifdef EXIM_PERL
 int  perl_start_option = 0;
@@ -1834,6 +1834,7 @@ if (f.running_in_test_harness)
   debug_store = TRUE;
 
 /* Protect against abusive argv[0] */
+if (!argv[0] || !argc) exim_fail("exim: executable name required\n");
 exim_str_fail_toolong(argv[0], PATH_MAX, "argv[0]");
 
 /* The C standard says that the equivalent of setlocale(LC_ALL, "C") is obeyed
