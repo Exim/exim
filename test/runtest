@@ -1120,7 +1120,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^Lookups \(built-in\):/;
     next if /^Loading lookup modules from/;
     next if /^Loaded \d+ lookup modules/;
-    next if /^Total \d+ lookups/;
+    next if /^(?:\d\d:\d\d:\d\d \d+ )?Total \d+ lookups/;
 
     # drop compiler information
     next if /^Compiler:/;
@@ -1449,7 +1449,7 @@ RESET_AFTER_EXTRA_LINE_READ:
                 /^Routers:/ ||
                 /^Transports:/ ||
                 /^Malware:/ ||
-                /^log selectors =/ ||
+                /^(?:\d\d:\d\d:\d\d \d+ )?log selectors =/ ||
                 /^cwd=/ ||
                 /^Fixed never_users:/ ||
 		/^Configure owner:/ ||
