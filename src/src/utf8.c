@@ -133,7 +133,7 @@ return s;
 uschar *
 string_localpart_utf8_to_alabel(const uschar * utf8, uschar ** err)
 {
-size_t ucs4_len;
+size_t ucs4_len = 0;
 punycode_uint * p;
 size_t p_len;
 uschar * res;
@@ -142,6 +142,11 @@ int rc;
 if (!string_is_utf8(utf8)) return string_copy(utf8);
 
 p = (punycode_uint *) stringprep_utf8_to_ucs4(CCS utf8, -1, &ucs4_len);
+if (!p || !ucs4_len)
+  {
+  if (err) *err = US"l_u2a: bad UTF-8 input";
+  return NULL;
+  }
 p_len = ucs4_len*4;	/* this multiplier is pure guesswork */
 res = store_get(p_len+5, is_tainted(utf8));
 
