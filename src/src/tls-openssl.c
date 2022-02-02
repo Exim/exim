@@ -2460,7 +2460,7 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
     STACK_OF(OCSP_SINGLERESP) * sresp = bs->tbsResponseData->responses;
 #endif
 
-    DEBUG(D_tls) bp = BIO_new_fp(debug_file, BIO_NOCLOSE);
+    DEBUG(D_tls) bp = BIO_new(BIO_s_mem());
 
     /*OCSP_RESPONSE_print(bp, rsp, 0);   extreme debug: stapling content */
 
@@ -2475,9 +2475,12 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
 	if (LOGGING(tls_cipher)) log_write(0, LOG_MAIN,
 		"Received TLS cert status response, itself unverifiable: %s",
 		ERR_reason_error_string(ERR_peek_error()));
-	BIO_printf(bp, "OCSP response verify failure\n");
-	ERR_print_errors(bp);
-	OCSP_RESPONSE_print(bp, rsp, 0);
+	DEBUG(D_tls)
+	  {
+	  BIO_printf(bp, "OCSP response verify failure\n");
+	  ERR_print_errors(bp);
+	  OCSP_RESPONSE_print(bp, rsp, 0);
+	  }
 	goto failed;
 	}
       else
@@ -2515,8 +2518,11 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
       status = OCSP_single_get0_status(single, &reason, &rev,
 		  &thisupd, &nextupd);
 
-      DEBUG(D_tls) time_print(bp, "This OCSP Update", thisupd);
-      DEBUG(D_tls) if(nextupd) time_print(bp, "Next OCSP Update", nextupd);
+      DEBUG(D_tls)
+	{
+	time_print(bp, "This OCSP Update", thisupd);
+	if (nextupd) time_print(bp, "Next OCSP Update", nextupd);
+	}
       if (!OCSP_check_validity(thisupd, nextupd,
 	    EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX_AGE))
 	{
@@ -2555,6 +2561,11 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
     tls_out.ocsp = OCSP_FAILED;
     i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
   good:
+    {
+    uschar * s = NULL;
+    int len = (int) BIO_get_mem_data(bp, CSS &s);
+    if (len > 0) debug_printf("%.*s", len, s);
+    }
     BIO_free(bp);
   }
 
@@ -3130,6 +3141,21 @@ return OK;
 
 
 
+static void
+tls_dump_keylog(SSL * ssl)
+{
+#ifdef EXIM_HAVE_OPENSSL_KEYLOG
+  BIO * bp = BIO_new(BIO_s_mem());
+  uschar * s = NULL;
+  int len;
+  SSL_SESSION_print_keylog(bp, SSL_get_session(ssl));
+  len = (int) BIO_get_mem_data(bp, CSS &s);
+  if (len > 0) debug_printf("%.*s", len, s);
+  BIO_free(bp);
+#endif
+}
+
+
 /*************************************************
 *       Start a TLS session in a server          *
 *************************************************/
@@ -3314,7 +3340,7 @@ if (rc <= 0)
       (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
 
       if (SSL_get_shutdown(ssl) == SSL_RECEIVED_SHUTDOWN)
-	    SSL_shutdown(ssl);
+	SSL_shutdown(ssl);
 
       tls_close(NULL, TLS_NO_SHUTDOWN);
       return FAIL;
@@ -3413,13 +3439,7 @@ DEBUG(D_tls)
   if (SSL_get_shared_ciphers(ssl, CS buf, sizeof(buf)))
     debug_printf("Shared ciphers: %s\n", buf);
 
-#ifdef EXIM_HAVE_OPENSSL_KEYLOG
-  {
-  BIO * bp = BIO_new_fp(debug_file, BIO_NOCLOSE);
-  SSL_SESSION_print_keylog(bp, SSL_get_session(ssl));
-  BIO_free(bp);
-  }
-#endif
+  tls_dump_keylog(ssl);
 
 #ifdef EXIM_HAVE_SESSION_TICKET
   {
@@ -4080,13 +4100,7 @@ if (rc <= 0)
 DEBUG(D_tls)
   {
   debug_printf("SSL_connect succeeded\n");
-#ifdef EXIM_HAVE_OPENSSL_KEYLOG
-  {
-  BIO * bp = BIO_new_fp(debug_file, BIO_NOCLOSE);
-  SSL_SESSION_print_keylog(bp, SSL_get_session(exim_client_ctx->ssl));
-  BIO_free(bp);
-  }
-#endif
+  tls_dump_keylog(exim_client_ctx->ssl);
   }
 
 #ifndef DISABLE_TLS_RESUME
