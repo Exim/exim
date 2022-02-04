@@ -3576,6 +3576,7 @@ else
   }
 
 close(pfd[pipe_read]);
+signal(SIGCHLD, oldsignal);
 errno = save_errno;
 return yield;
 
