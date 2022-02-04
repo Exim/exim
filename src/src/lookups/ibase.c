@@ -548,12 +548,13 @@ static uschar *ibase_quote(uschar * s, uschar * opt)
 
 #include "../version.h"
 
-void
-ibase_version_report(FILE *f)
+gstring *
+ibase_version_report(gstring * g)
 {
 #ifdef DYNLOOKUP
-fprintf(f, "Library version: ibase: Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g, "Library version: ibase: Exim version %s\n", EXIM_VERSION_STR));
 #endif
+return g;
 }
 
 

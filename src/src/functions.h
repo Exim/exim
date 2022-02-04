@@ -85,7 +85,7 @@ extern void    tls_watch_invalidate(void);
 #endif
 extern int     tls_write(void *, const uschar *, size_t, BOOL);
 extern uschar *tls_validate_require_cipher(void);
-extern void    tls_version_report(FILE *);
+extern gstring *tls_version_report(gstring *);
 
 # ifdef SUPPORT_DANE
 extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL);
@@ -475,6 +475,7 @@ extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    sha1_end(hctx *, const uschar *, int, uschar *);
 extern void    sha1_mid(hctx *, const uschar *);
 extern void    sha1_start(hctx *);
+extern void    show_string(BOOL, gstring *);
 extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
                  uschar *, address_item **, uschar **);
 extern void    sigalrm_handler(int);
@@ -629,7 +630,7 @@ extern void    tree_walk(tree_node *, void (*)(uschar*, uschar*, void*), void *)
 extern void    unspool_mbox(void);
 #endif
 #ifdef SUPPORT_I18N
-extern void    utf8_version_report(FILE *);
+extern gstring *utf8_version_report(gstring *);
 #endif
 
 extern int     verify_address(address_item *, FILE *, int, int, int, int,

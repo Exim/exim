@@ -458,12 +458,13 @@ if (cdbp->cdb_map)
 
 #include "../version.h"
 
-void
-cdb_version_report(FILE *f)
+gstring *
+cdb_version_report(gstring * g)
 {
 #ifdef DYNLOOKUP
-fprintf(f, "Library version: CDB: Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g, "Library version: CDB: Exim version %s\n", EXIM_VERSION_STR);
 #endif
+return g;
 }
 
 

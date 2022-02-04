@@ -4638,21 +4638,22 @@ number/string, and the version date remains unchanged.  The _build_ date
 will change, so we can more usefully assist with version diagnosis by also
 reporting the build date.
 
-Arguments:   a FILE* to print the results to
-Returns:     nothing
+Arguments:   string to append to
+Returns:     string
 */
 
-void
-tls_version_report(FILE *f)
+gstring *
+tls_version_report(gstring * g)
 {
-fprintf(f, "Library version: OpenSSL: Compile: %s\n"
-           "                          Runtime: %s\n"
-           "                                 : %s\n",
-           OPENSSL_VERSION_TEXT,
-           SSLeay_version(SSLEAY_VERSION),
-           SSLeay_version(SSLEAY_BUILT_ON));
-/* third line is 38 characters for the %s and the line is 73 chars long;
-the OpenSSL output includes a "built on: " prefix already. */
+return string_fmt_append(g,
+    "Library version: OpenSSL: Compile: %s\n"
+    "                          Runtime: %s\n"
+    "                                 : %s\n",
+	     OPENSSL_VERSION_TEXT,
+	     SSLeay_version(SSLEAY_VERSION),
+	     SSLeay_version(SSLEAY_BUILT_ON));
+  /* third line is 38 characters for the %s and the line is 73 chars long;
+  the OpenSSL output includes a "built on: " prefix already. */
 }
 
 

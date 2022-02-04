@@ -129,14 +129,16 @@ mdb_env_close(db_env);
 
 #include "../version.h"
 
-void
-lmdb_version_report(FILE * f)
+gstring *
+lmdb_version_report(BOOL is_stdout)
 {
-fprintf(f, "Library version: LMDB: Compile: %d.%d.%d\n",
-    MDB_VERSION_MAJOR, MDB_VERSION_MINOR, MDB_VERSION_PATCH);
+gstring * g = string_fmt_append(g,
+			 "Library version: LMDB: Compile: %d.%d.%d\n",
+			  MDB_VERSION_MAJOR, MDB_VERSION_MINOR, MDB_VERSION_PATCH);
 #ifdef DYNLOOKUP
-fprintf(f, "                        Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g, "                        Exim version %s\n", EXIM_VERSION_STR);
 #endif
+return g;
 }
 
 static lookup_info lmdb_lookup_info = {

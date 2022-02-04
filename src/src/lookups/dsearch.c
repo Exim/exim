@@ -158,12 +158,13 @@ handle = handle;   /* Avoid compiler warning */
 
 #include "../version.h"
 
-void
-dsearch_version_report(FILE *f)
+gstring *
+dsearch_version_report(gstring * g)
 {
 #ifdef DYNLOOKUP
-fprintf(f, "Library version: dsearch: Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g, "Library version: dsearch: Exim version %s\n", EXIM_VERSION_STR);
 #endif
+return g;
 }
 
 

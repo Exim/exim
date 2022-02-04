@@ -435,8 +435,8 @@ typedef struct auth_info {
     int,                          /* command timeout */
     uschar *,                     /* buffer for reading response */
     int);                         /* sizeof buffer */
-  void (*version_report)(         /* diagnostic version reporting */
-    FILE *);                      /* I/O stream to print to */
+  gstring * (*version_report)(    /* diagnostic version reporting */
+    gstring *);                   /* string to append to */
   void (*macros_create)(void);	  /* feature-macro creation */
 } auth_info;
 

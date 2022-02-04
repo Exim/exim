@@ -245,28 +245,29 @@ return l;
 
 /* See a description in tls-openssl.c for an explanation of why this exists.
 
-Arguments:   a FILE* to print the results to
-Returns:     nothing
+Arguments:   string to append to
+Returns:     string
 */
 
-void
-utf8_version_report(FILE *f)
+gstring *
+utf8_version_report(gstring * g)
 {
 #ifdef SUPPORT_I18N_2008
-fprintf(f, "Library version: IDN2: Compile: %s\n"
+g = string_fmt_append(g, "Library version: IDN2: Compile: %s\n"
            "                       Runtime: %s\n",
 	IDN2_VERSION,
 	idn2_check_version(NULL));
-fprintf(f, "Library version: Stringprep: Compile: %s\n"
+g = string_fmt_append(g, "Library version: Stringprep: Compile: %s\n"
            "                             Runtime: %s\n",
 	STRINGPREP_VERSION,
 	stringprep_check_version(NULL));
 #else
-fprintf(f, "Library version: IDN: Compile: %s\n"
+g = string_fmt_append(g, "Library version: IDN: Compile: %s\n"
            "                      Runtime: %s\n",
 	STRINGPREP_VERSION,
 	stringprep_check_version(NULL));
 #endif
+return g;
 }
 
 #endif	/* whole file */

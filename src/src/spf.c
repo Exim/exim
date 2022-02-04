@@ -34,15 +34,17 @@ SPF_response_t  *spf_response_2mx = NULL;
 SPF_dns_rr_t  * spf_nxdomain = NULL;
 
 
-void
-spf_lib_version_report(FILE * fp)
+gstring *
+spf_lib_version_report(gstring * g)
 {
 int maj, min, patch;
+
 SPF_get_lib_version(&maj, &min, &patch);
-fprintf(fp, "Library version: spf2: Compile: %d.%d.%d\n",
+g = string_fmt_append(g, "Library version: spf2: Compile: %d.%d.%d\n",
 	SPF_LIB_VERSION_MAJOR, SPF_LIB_VERSION_MINOR, SPF_LIB_VERSION_PATCH);
-fprintf(fp, "                       Runtime: %d.%d.%d\n",
+g = string_fmt_append(g,    "                       Runtime: %d.%d.%d\n",
 	 maj, min, patch);
+return g;
 }
 
 

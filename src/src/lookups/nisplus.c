@@ -263,12 +263,13 @@ return quoted;
 
 #include "../version.h"
 
-void
-nisplus_version_report(FILE *f)
+gstring *
+nisplus_version_report(gstring * g)
 {
 #ifdef DYNLOOKUP
-fprintf(f, "Library version: NIS+: Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g, "Library version: NIS+: Exim version %s\n", EXIM_VERSION_STR);
 #endif
+return g;
 }
 
 

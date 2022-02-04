@@ -128,12 +128,13 @@ return OK;
 
 #include "../version.h"
 
-void
-spf_version_report(FILE *f)
+gstring *
+spf_version_report(gstring * g)
 {
 #ifdef DYNLOOKUP
-fprintf(f, "Library version: SPF: Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g, "Library version: SPF: Exim version %s\n", EXIM_VERSION_STR));
 #endif
+return g;
 }
 
 

@@ -71,7 +71,7 @@ void auth_cyrus_sasl_init(auth_instance *ablock) {}
 int auth_cyrus_sasl_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_cyrus_sasl_client(auth_instance *ablock, void * sx,
   int timeout, uschar *buffer, int buffsize) {return 0;}
-void auth_cyrus_sasl_version_report(FILE *f) {}
+gstring * auth_cyrus_sasl_version_report(gstring * g) {return NULL;}
 
 #else   /*!MACRO_PREDEF*/
 
@@ -476,15 +476,17 @@ return 0;  /* Stop compiler complaints */
 *                Diagnostic API                  *
 *************************************************/
 
-void
-auth_cyrus_sasl_version_report(FILE *f)
+gstring *
+auth_cyrus_sasl_version_report(gstring * g)
 {
-const char *implementation, *version;
+const char * implementation, * version;
 sasl_version_info(&implementation, &version, NULL, NULL, NULL, NULL);
-fprintf(f, "Library version: Cyrus SASL: Compile: %d.%d.%d\n"
-	   "                             Runtime: %s [%s]\n",
+g = string_fmt_append(g,
+	"Library version: Cyrus SASL: Compile: %d.%d.%d\n"
+	"                             Runtime: %s [%s]\n",
 	SASL_VERSION_MAJOR, SASL_VERSION_MINOR, SASL_VERSION_STEP,
 	version, implementation);
+return g;
 }
 
 /*************************************************

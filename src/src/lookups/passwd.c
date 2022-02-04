@@ -54,12 +54,13 @@ return OK;
 
 #include "../version.h"
 
-void
-passwd_version_report(FILE *f)
+gstring *
+passwd_version_report(gstring * g)
 {
 #ifdef DYNLOOKUP
-fprintf(f, "Library version: passwd: Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g, "Library version: passwd: Exim version %s\n", EXIM_VERSION_STR);
 #endif
+return g;
 }
 
 static lookup_info _lookup_info = {

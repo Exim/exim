@@ -85,7 +85,7 @@ void auth_heimdal_gssapi_init(auth_instance *ablock) {}
 int auth_heimdal_gssapi_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_heimdal_gssapi_client(auth_instance *ablock, void * sx,
   int timeout, uschar *buffer, int buffsize) {return 0;}
-void auth_heimdal_gssapi_version_report(FILE *f) {}
+gstring * auth_heimdal_gssapi_version_report(gstring * g) {}
 
 #else   /*!MACRO_PREDEF*/
 
@@ -601,14 +601,15 @@ return FAIL;
 *                Diagnostic API                  *
 *************************************************/
 
-void
-auth_heimdal_gssapi_version_report(FILE *f)
+gstring *
+auth_heimdal_gssapi_version_report(gstring * g)
 {
 /* No build-time constants available unless we link against libraries at
 build-time and export the result as a string into a header ourselves. */
-fprintf(f, "Library version: Heimdal: Runtime: %s\n"
-	   " Build Info: %s\n",
-	heimdal_version, heimdal_long_version);
+
+return string_fmt_append(g, "Library version: Heimdal: Runtime: %s\n"
+			    " Build Info: %s\n",
+	heimdal_version, heimdal_long_version));
 }
 
 #endif   /*!MACRO_PREDEF*/

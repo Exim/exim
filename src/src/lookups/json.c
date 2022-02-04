@@ -158,10 +158,10 @@ json_close(void *handle)
 
 #include "../version.h"
 
-void
-json_version_report(FILE *f)
+gstring *
+json_version_report(gstring * g)
 {
-fprintf(f, "Library version: json: Jansonn version %s\n", JANSSON_VERSION);
+return string_fmt_append(g, "Library version: json: Jansonn version %s\n", JANSSON_VERSION);
 }
 
 

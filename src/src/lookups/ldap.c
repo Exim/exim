@@ -1558,12 +1558,13 @@ return quoted;
 
 #include "../version.h"
 
-void
-ldap_version_report(FILE *f)
+gstring *
+ldap_version_report(gstring * g)
 {
 #ifdef DYNLOOKUP
-fprintf(f, "Library version: LDAP: Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g, "Library version: LDAP: Exim version %s\n", EXIM_VERSION_STR);
 #endif
+return g;
 }
 
 

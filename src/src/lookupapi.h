@@ -43,8 +43,8 @@ typedef struct lookup_info {
   uschar *(*quote)(               /* quoting function */
     uschar *,                     /* string to quote */
     uschar *);                    /* additional data from quote name */
-  void (*version_report)(         /* diagnostic function */
-    FILE *);                      /* fh to write to */
+  gstring * (*version_report)(    /* diagnostic function */
+    gstring *);                   /* true: stdout.  false: debug */
 } lookup_info;
 
 /* This magic number is used by the following lookup_module_info structure

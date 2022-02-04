@@ -27,7 +27,6 @@
 01:01:01 1237   uid=uuuu gid=EXIM_GID pid=pppp
 01:01:01 1237 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 01:01:01 1237 configuration file is TESTSUITE/test-config
-01:01:01 1237 cwd=TESTSUITE/spool 10 args: TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xfff9ffff -MCd daemon-accept-delivery -Mc 10HmaX-0005vi-00
 01:01:01 1237 trusted user
 01:01:01 1237 admin user
 01:01:01 1237 dropping to exim gid; retaining priv uid

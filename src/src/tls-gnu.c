@@ -4234,17 +4234,18 @@ return NULL;
 
 /* See a description in tls-openssl.c for an explanation of why this exists.
 
-Arguments:   a FILE* to print the results to
-Returns:     nothing
+Arguments:   string to append to
+Returns:     string
 */
 
-void
-tls_version_report(FILE *f)
+gstring *
+tls_version_report(gstring * g)
 {
-fprintf(f, "Library version: GnuTLS: Compile: %s\n"
-           "                         Runtime: %s\n",
-           LIBGNUTLS_VERSION,
-           gnutls_check_version(NULL));
+return string_fmt_append(g,
+    "Library version: GnuTLS: Compile: %s\n"
+    "                         Runtime: %s\n",
+	     LIBGNUTLS_VERSION,
+	     gnutls_check_version(NULL));
 }
 
 #endif	/*!MACRO_PREDEF*/

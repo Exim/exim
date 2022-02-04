@@ -53,14 +53,12 @@ static dmarc_exim_p dmarc_policy_description[] = {
 };
 
 
-void
-dmarc_version_report(FILE *f)
+gstring * g
+dmarc_version_report(gstring * g)
 {
-const char *implementation, *version;
-
-fprintf(f, "Library version: dmarc: Compile: %d.%d.%d.%d\n",
-  (OPENDMARC_LIB_VERSION & 0xff000000) >> 24, (OPENDMARC_LIB_VERSION & 0x00ff0000) >> 16,
-  (OPENDMARC_LIB_VERSION & 0x0000ff00) >> 8, OPENDMARC_LIB_VERSION & 0x000000ff);
+return string_fmt_append(g, "Library version: dmarc: Compile: %d.%d.%d.%d\n",
+    (OPENDMARC_LIB_VERSION & 0xff000000) >> 24, (OPENDMARC_LIB_VERSION & 0x00ff0000) >> 16,
+    (OPENDMARC_LIB_VERSION & 0x0000ff00) >> 8, OPENDMARC_LIB_VERSION & 0x000000ff));
 }
 
 

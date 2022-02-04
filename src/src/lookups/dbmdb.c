@@ -227,12 +227,13 @@ EXIM_DBCLOSE((EXIM_DB *)handle);
 
 #include "../version.h"
 
-void
-dbm_version_report(FILE *f)
+gstring *
+dbm_version_report(gstring * g)
 {
 #ifdef DYNLOOKUP
-fprintf(f, "Library version: DBM: Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g, "Library version: DBM: Exim version %s\n", EXIM_VERSION_STR);
 #endif
+return g;
 }
 
 

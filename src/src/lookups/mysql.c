@@ -463,16 +463,19 @@ return quoted;
 
 #include "../version.h"
 
-void
-mysql_version_report(FILE *f)
+gstring *
+mysql_version_report(gstring * g)
 {
-fprintf(f, "Library version: MySQL: Compile: %lu %s [%s]\n"
-           "                        Runtime: %lu %s\n",
+g = string_fmt_append(g,
+  "Library version: MySQL: Compile: %lu %s [%s]\n"
+  "                        Runtime: %lu %s\n",
         (long)EXIM_MxSQL_VERSION_ID, EXIM_MxSQL_VERSION_STR, EXIM_MxSQL_BASE_STR,
         mysql_get_client_version(), mysql_get_client_info());
 #ifdef DYNLOOKUP
-fprintf(f, "                        Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g,
+  "                        Exim version %s\n", EXIM_VERSION_STR);
 #endif
+return g;
 }
 
 /* These are the lookup_info blocks for this driver */

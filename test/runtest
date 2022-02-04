@@ -1117,28 +1117,28 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^TLS: not preloading server certs$/;
 
     # drop lookups
-    next if /^Lookups \(built-in\):/;
-    next if /^Loading lookup modules from/;
-    next if /^Loaded \d+ lookup modules/;
-    next if /^(?:\d\d:\d\d:\d\d \d+ )?Total \d+ lookups/;
+    next if /^(?:\d\d:\d\d:\d\d\ \d+\ )?(?: Lookups\ \(built-in\):
+					| Loading\ lookup\ modules\ from
+					| Loaded\ \d+\ lookup\ modules
+					| Total\ \d+\ lookups)/x;
 
     # drop compiler information
-    next if /^Compiler:/;
+    next if /^(?:\d\d:\d\d:\d\d \d+ )?Compiler:/;
 
     # and the ugly bit
     # different libraries will have different numbers (possibly 0) of follow-up
     # lines, indenting with more data
-    if (/^Library version:/) {
+    if (/^(?:\d\d:\d\d:\d\d \d+ )?Library version:/) {
       while (1) {
 	$_ = <IN>;
-	next if /^\s/;
+	next if /^(?:\d\d:\d\d:\d\d \d+ )?\s/;
 	goto RESET_AFTER_EXTRA_LINE_READ;
       }
     }
 
     # drop other build-time controls emitted for debugging
-    next if /^WHITELIST_D_MACROS:/;
-    next if /^TRUSTED_CONFIG_LIST:/;
+    next if /^(?:\d\d:\d\d:\d\d \d+ )?WHITELIST_D_MACROS:/;
+    next if /^(?:\d\d:\d\d:\d\d \d+ )?TRUSTED_CONFIG_LIST:/;
 
     # As of Exim 4.74, we log when a setgid fails; because we invoke Exim
     # with -be, privileges will have been dropped, so this will always
@@ -1441,20 +1441,23 @@ RESET_AFTER_EXTRA_LINE_READ:
       # because they will be different in different binaries.
 
       print MUNGED
-        unless (/^Berkeley DB: / ||
-                /^Probably (?:Berkeley DB|ndbm|GDBM)/ ||
-                /^Authenticators:/ ||
-                /^Lookups:/ ||
-                /^Support for:/ ||
-                /^Routers:/ ||
-                /^Transports:/ ||
-                /^Malware:/ ||
-                /^(?:\d\d:\d\d:\d\d \d+ )?log selectors =/ ||
-                /^cwd=/ ||
-                /^Fixed never_users:/ ||
-		/^Configure owner:/ ||
-                /^Size of off_t:/
-                );
+        unless (/^(?:\d\d:\d\d:\d\d\ \d+\ )?
+		  (?: Berkeley\ DB:\s
+		    | Probably\ (?:Berkeley\ DB|ndbm|GDBM)
+		    | Authenticators:
+		    | Lookups(?:\(built-in\))?:
+		    | Support\ for:
+		    | Routers:
+		    | Transports:
+		    | Malware:
+		    | log\ selectors\ =
+		    | cwd=
+		    | Fixed\ never_users
+		    | Configure\ owner
+		    | Size\ of\ off_t:
+		  )
+		/x
+               );
 
 
       }

@@ -112,7 +112,7 @@ void auth_gsasl_init(auth_instance *ablock) {}
 int auth_gsasl_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_gsasl_client(auth_instance *ablock, void * sx,
   int timeout, uschar *buffer, int buffsize) {return 0;}
-void auth_gsasl_version_report(FILE *f) {}
+gstring * auth_gsasl_version_report(gstring * g) {return NULL;}
 
 void
 auth_gsasl_macros(void)
@@ -1002,14 +1002,12 @@ return GSASL_NO_CALLBACK;
 *                Diagnostic API                  *
 *************************************************/
 
-void
-auth_gsasl_version_report(FILE *f)
+gstring *
+auth_gsasl_version_report(gstring * g)
 {
-const char *runtime;
-runtime = gsasl_check_version(NULL);
-fprintf(f, "Library version: GNU SASL: Compile: %s\n"
-	   "                           Runtime: %s\n",
-	GSASL_VERSION, runtime);
+return string_fmt_append(g, "Library version: GNU SASL: Compile: %s\n"
+			    "                           Runtime: %s\n",
+	GSASL_VERSION, gsasl_check_version(NULL));
 }
 
 

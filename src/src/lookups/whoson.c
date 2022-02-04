@@ -64,13 +64,16 @@ switch (wso_query(CS query, CS buffer, sizeof(buffer)))
 
 #include "../version.h"
 
-void
-whoson_version_report(FILE *f)
+gstring *
+whoson_version_report(gstring * g)
 {
-fprintf(f, "Library version: Whoson: Runtime: %s\n", wso_version());
+g = string_fmt_append(g,
+  "Library version: Whoson: Runtime: %s\n", wso_version());
 #ifdef DYNLOOKUP
-fprintf(f, "                         Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g,
+  "                         Exim version %s\n", EXIM_VERSION_STR);
 #endif
+return g;
 }
 
 static lookup_info _lookup_info = {

@@ -33,6 +33,6 @@ extern auth_heimdal_gssapi_options_block auth_heimdal_gssapi_option_defaults;
 extern void auth_heimdal_gssapi_init(auth_instance *);
 extern int auth_heimdal_gssapi_server(auth_instance *, uschar *);
 extern int auth_heimdal_gssapi_client(auth_instance *, void *, int, uschar *, int);
-extern void auth_heimdal_gssapi_version_report(FILE *f);
+extern void auth_heimdal_gssapi_version_report(BOOL);
 
 /* End of heimdal_gssapi.h */

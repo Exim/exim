@@ -435,14 +435,16 @@ return quoted;
 *************************************************/
 #include "../version.h"
 
-void
-redis_version_report(FILE *f)
+gstring *
+redis_version_report(gstring * g)
 {
-fprintf(f, "Library version: REDIS: Compile: %d [%d]\n",
-               HIREDIS_MAJOR, HIREDIS_MINOR);
+g = string_fmt_append(g,
+  "Library version: REDIS: Compile: %d [%d]\n", HIREDIS_MAJOR, HIREDIS_MINOR);
 #ifdef DYNLOOKUP
-fprintf(f, "                        Exim version %s\n", EXIM_VERSION_STR);
+g = string_fmt_append(g,
+  "                        Exim version %s\n", EXIM_VERSION_STR);
 #endif
+return g;
 }
 
 

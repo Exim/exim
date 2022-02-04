@@ -954,55 +954,66 @@ else
 *          Show supported features               *
 *************************************************/
 
-static void
-show_db_version(FILE * f)
+void
+show_string(BOOL is_stdout, gstring * g)
+{
+const uschar * s = string_from_gstring(g);
+if (is_stdout) fputs(CCS s, stdout);
+else debug_printf("%s", s);
+}
+
+
+static gstring *
+show_db_version(gstring * g)
 {
 #ifdef DB_VERSION_STRING
 DEBUG(D_any)
   {
-  fprintf(f, "Library version: BDB: Compile: %s\n", DB_VERSION_STRING);
-  fprintf(f, "                      Runtime: %s\n",
+  g = string_fmt_append(g, "Library version: BDB: Compile: %s\n", DB_VERSION_STRING);
+  g = string_fmt_append(g, "                      Runtime: %s\n",
     db_version(NULL, NULL, NULL));
   }
 else
-  fprintf(f, "Berkeley DB: %s\n", DB_VERSION_STRING);
+  g = string_fmt_append(g, "Berkeley DB: %s\n", DB_VERSION_STRING);
 
 #elif defined(BTREEVERSION) && defined(HASHVERSION)
-  #ifdef USE_DB
-  fprintf(f, "Probably Berkeley DB version 1.8x (native mode)\n");
-  #else
-  fprintf(f, "Probably Berkeley DB version 1.8x (compatibility mode)\n");
-  #endif
+# ifdef USE_DB
+  g = string_cat(g, US"Probably Berkeley DB version 1.8x (native mode)\n");
+# else
+  g = string_cat(g, US"Probably Berkeley DB version 1.8x (compatibility mode)\n");
+# endif
 
 #elif defined(_DBM_RDONLY) || defined(dbm_dirfno)
-fprintf(f, "Probably ndbm\n");
+g = string_cat(g, US"Probably ndbm\n");
 #elif defined(USE_TDB)
-fprintf(f, "Using tdb\n");
+g = string_cat(g, US"Using tdb\n");
 #else
-  #ifdef USE_GDBM
-  fprintf(f, "Probably GDBM (native mode)\n");
-  #else
-  fprintf(f, "Probably GDBM (compatibility mode)\n");
-  #endif
+# ifdef USE_GDBM
+  g = string_cat(g, US"Probably GDBM (native mode)\n");
+# else
+  g = string_cat(g, US"Probably GDBM (compatibility mode)\n");
+# endif
 #endif
+return g;
 }
 
 
 /* This function is called for -bV/--version and for -d to output the optional
 features of the current Exim binary.
 
-Arguments:  a FILE for printing
+Arguments:  BOOL, true for stdout else debug channel
 Returns:    nothing
 */
 
 static void
-show_whats_supported(FILE * fp)
+show_whats_supported(BOOL is_stdout)
 {
 rmark reset_point = store_mark();
-gstring * g;
-DEBUG(D_any) {} else show_db_version(fp);
+gstring * g = NULL;
 
-g = string_cat(NULL, US"Support for:");
+DEBUG(D_any) {} else g = show_db_version(g);
+
+g = string_cat(g, US"Support for:");
 #ifdef SUPPORT_CRYPTEQ
   g = string_cat(g, US" crypteq");
 #endif
@@ -1181,6 +1192,7 @@ g = transport_show_supported(g);
 #ifdef WITH_CONTENT_SCAN
 g = malware_show_supported(g);
 #endif
+show_string(is_stdout, g); g = NULL;
 
 if (fixed_never_users[0] > 0)
   {
@@ -1192,19 +1204,19 @@ if (fixed_never_users[0] > 0)
   }
 
 g = string_fmt_append(g, "Configure owner: %d:%d\n", config_uid, config_gid);
-fputs(CS string_from_gstring(g), fp);
 
-fprintf(fp, "Size of off_t: " SIZE_T_FMT "\n", sizeof(off_t));
+g = string_fmt_append(g, "Size of off_t: " SIZE_T_FMT "\n", sizeof(off_t));
 
 /* Everything else is details which are only worth reporting when debugging.
 Perhaps the tls_version_report should move into this too. */
-DEBUG(D_any) do {
+DEBUG(D_any)
+  {
 
 /* clang defines __GNUC__ (at least, for me) so test for it first */
 #if defined(__clang__)
-  fprintf(fp, "Compiler: CLang [%s]\n", __clang_version__);
+  g = string_fmt_append(g, "Compiler: CLang [%s]\n", __clang_version__);
 #elif defined(__GNUC__)
-  fprintf(fp, "Compiler: GCC [%s]\n",
+  g = string_fmt_append(g, "Compiler: GCC [%s]\n",
 # ifdef __VERSION__
       __VERSION__
 # else
@@ -1212,35 +1224,38 @@ DEBUG(D_any) do {
 # endif
       );
 #else
-  fprintf(fp, "Compiler: <unknown>\n");
+  g = string_cat(g, US"Compiler: <unknown>\n");
 #endif
 
 #if defined(__GLIBC__) && !defined(__UCLIBC__)
-  fprintf(fp, "Library version: Glibc: Compile: %d.%d\n",
+  g = string_fmt_append(g, "Library version: Glibc: Compile: %d.%d\n",
 	       	__GLIBC__, __GLIBC_MINOR__);
   if (__GLIBC_PREREQ(2, 1))
-    fprintf(fp, "                        Runtime: %s\n",
+    g = string_fmt_append(g, "                        Runtime: %s\n",
 	       	gnu_get_libc_version());
 #endif
 
-show_db_version(fp);
+g = show_db_version(g);
 
 #ifndef DISABLE_TLS
-  tls_version_report(fp);
+  g = tls_version_report(g);
 #endif
 #ifdef SUPPORT_I18N
-  utf8_version_report(fp);
+  g = utf8_version_report(g);
 #endif
 #ifdef SUPPORT_DMARC
-  dmarc_version_report(fp);
+  g = dmarc_version_report(g);
 #endif
 #ifdef SUPPORT_SPF
-  spf_lib_version_report(fp);
+  g = spf_lib_version_report(g);
 #endif
 
-  for (auth_info * authi = auths_available; *authi->driver_name != '\0'; ++authi)
-    if (authi->version_report)
-      (*authi->version_report)(fp);
+show_string(is_stdout, g);
+g = NULL;
+
+for (auth_info * authi = auths_available; *authi->driver_name != '\0'; ++authi)
+  if (authi->version_report)
+    g = (*authi->version_report)(g);
 
   /* PCRE_PRERELEASE is either defined and empty or a bare sequence of
   characters; unless it's an ancient version of PCRE in which case it
@@ -1253,7 +1268,7 @@ show_db_version(fp);
   {
   uschar buf[24];
   pcre2_config(PCRE2_CONFIG_VERSION, buf);
-  fprintf(fp, "Library version: PCRE2: Compile: %d.%d%s\n"
+  g = string_fmt_append(g, "Library version: PCRE2: Compile: %d.%d%s\n"
               "                        Runtime: %s\n",
           PCRE2_MAJOR, PCRE2_MINOR,
           EXPAND_AND_QUOTE(PCRE2_PRERELEASE) "",
@@ -1262,23 +1277,29 @@ show_db_version(fp);
 #undef QUOTE
 #undef EXPAND_AND_QUOTE
 
-  init_lookup_list();
-  for (int i = 0; i < lookup_list_count; i++)
-    if (lookup_list[i]->version_report)
-      lookup_list[i]->version_report(fp);
+show_string(is_stdout, g);
+g = NULL;
+
+init_lookup_list();
+for (int i = 0; i < lookup_list_count; i++)
+  if (lookup_list[i]->version_report)
+    g = lookup_list[i]->version_report(g);
+show_string(is_stdout, g);
+g = NULL;
 
 #ifdef WHITELIST_D_MACROS
-  fprintf(fp, "WHITELIST_D_MACROS: \"%s\"\n", WHITELIST_D_MACROS);
+  g = string_fmt_append(g, "WHITELIST_D_MACROS: \"%s\"\n", WHITELIST_D_MACROS);
 #else
-  fprintf(fp, "WHITELIST_D_MACROS unset\n");
+  g = string_cat(g, US"WHITELIST_D_MACROS unset\n");
 #endif
 #ifdef TRUSTED_CONFIG_LIST
-  fprintf(fp, "TRUSTED_CONFIG_LIST: \"%s\"\n", TRUSTED_CONFIG_LIST);
+  g = string_fmt_append(g, "TRUSTED_CONFIG_LIST: \"%s\"\n", TRUSTED_CONFIG_LIST);
 #else
-  fprintf(fp, "TRUSTED_CONFIG_LIST unset\n");
+  g = string_cat(g, US"TRUSTED_CONFIG_LIST unset\n");
 #endif
+  }
 
-} while (0);
+show_string(is_stdout, g);
 store_reset(reset_point);
 }
 
@@ -2441,7 +2462,7 @@ on the second character (the one after '-'), to save some effort. */
 	      version_cnumber, version_date);
 	    printf("%s\n", CS version_copyright);
 	    version_printed = TRUE;
-	    show_whats_supported(stdout);
+	    show_whats_supported(TRUE);
 	    f.log_testing_mode = TRUE;
 	    }
 	  else badarg = TRUE;
@@ -3754,7 +3775,7 @@ if (debug_selector != 0)
       version_string, (long int)real_uid, (long int)real_gid, (int)getpid(),
       debug_selector);
     if (!version_printed)
-      show_whats_supported(stderr);
+      show_whats_supported(FALSE);
     }
   }
 
