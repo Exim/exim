@@ -1,0 +1,40 @@
+# Exim test configuration 0631
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_mail = chk_mail
+acl_smtp_rcpt = chk_rcpt
+acl_smtp_data = chk_data
+
+# ----- ACL -----
+
+begin acl
+
+chk_mail:
+  accept control = debug/tag=_acl/opts=-all+acl/pretrigger=270
+  	 message = yes1
+  	 message = yes2
+  	 message = yes3
+  	 message = yes4
+  	 message = yes5
+  	 message = yes6
+
+chk_rcpt:
+  accept control = debug/trigger=now
+
+chk_data:
+  accept control = debug/stop
+
+# ----- Routers -----
+
+begin routers
+
+r0:
+    driver =	redirect
+    data =	:blackhole:
+#
+# End

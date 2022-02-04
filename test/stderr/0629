@@ -1,0 +1,22 @@
+accept: condition test succeeded in ACL "chk_mail"
+end of ACL "chk_mail": ACCEPT
+SMTP>> 250 OK
+SMTP<< RCPT TO:<dest2@test.ex>
+using ACL "chk_rcpt"
+processing "deny" (TESTSUITE/test-config 20)
+check log_reject_target = panic
+deny: condition test succeeded in ACL "chk_rcpt"
+end of ACL "chk_rcpt": DENY
+SMTP>> 550 Administrative prohibition
+LOG: PANIC
+  H=(test.ex) [127.0.0.1] F=<test_2@paniclogrcpt> rejected RCPT <dest2@test.ex>
+SMTP<< QUIT
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from (test.ex) [127.0.0.1] closed by QUIT
+search_tidyup called
+SMTP>>(close on process exit)
+>>>>>>>>>>>>>>>> Exim pid=pppp (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
+
+******** SERVER ********
+1999-03-02 09:44:33 H=(test.ex) [127.0.0.1] F=<test_2@paniclogrcpt> rejected RCPT <dest2@test.ex>

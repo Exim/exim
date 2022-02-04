@@ -1,0 +1,46 @@
+01:01:01 1234 reading spool file 10HmaX-0005vi-00-H
+01:01:01 1234 user=EXIMUSER uid=EXIM_UID gid=EXIM_GID sender=test_3@paniclogrouter
+01:01:01 1234 sender_fullhost = (test.ex) [127.0.0.1]
+01:01:01 1234 sender_rcvhost = [127.0.0.1] (helo=test.ex)
+01:01:01 1234 sender_local=0 ident=unset
+01:01:01 1234 Non-recipients:
+01:01:01 1234  Empty Tree
+01:01:01 1234 ---- End of tree ----
+01:01:01 1234 recipients_count=1
+01:01:01 1234 **** SPOOL_IN - No additional fields
+01:01:01 1234 body_linecount=0 message_linecount=6
+01:01:01 1234 DSN: set orcpt:   flags: 0x0
+01:01:01 1234 Delivery address list:
+01:01:01 1234   dest3@test.ex 
+01:01:01 1234  locking TESTSUITE/spool/db/retry.lockfile
+01:01:01 1234  locked  TESTSUITE/spool/db/retry.lockfile
+01:01:01 1234  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+01:01:01 1234  returned from EXIM_DBOPEN: (nil)
+01:01:01 1234  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+01:01:01 1234 no retry data available
+01:01:01 1234 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+01:01:01 1234 Considering: dest3@test.ex
+01:01:01 1234 unique = dest3@test.ex
+01:01:01 1234 no   domain  retry record
+01:01:01 1234 no   address retry record
+01:01:01 1234 dest3@test.ex: queued for routing
+01:01:01 1234 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+01:01:01 1234 routing dest3@test.ex
+01:01:01 1234 --------> r0 router <--------
+01:01:01 1234 local_part=dest3 domain=test.ex
+01:01:01 1234 checking local_parts
+01:01:01 1234  ╭considering: $spool_directory/$local_part
+01:01:01 1234  ├considering: /$local_part
+01:01:01 1234  ├───────text: /
+01:01:01 1234  ├considering: $local_part
+01:01:01 1234  ├──expanding: $spool_directory/$local_part
+01:01:01 1234  ╰─────result: TESTSUITE/spool/dest3
+01:01:01 1234             ╰──(tainted)
+01:01:01 1234 LOG: MAIN PANIC
+01:01:01 1234   Tainted filename 'TESTSUITE/spool/dest3'
+01:01:01 1234 LOG: MAIN PANIC DIE
+01:01:01 1234   failed to open TESTSUITE/spool/dest3 when checking "$spool_directory/$local_part": Permission denied (euid=uuuu egid=EXIM_GID)
+01:01:01 1234 search_tidyup called
+01:01:01 1234 >>>>>>>>>>>>>>>> Exim pid=pppp (daemon-accept-delivery) terminating with rc=1 >>>>>>>>>>>>>>>>
+
+******** SERVER ********

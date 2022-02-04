@@ -1,0 +1,30 @@
+# debug logging ACL modifier, trigger in router
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+MAIL FROM:<test_3@paniclogrouter>
+??? 250
+RCPT TO:<dest3@test.ex>
+??? 250
+DATA
+??? 354
+.
+??? 250
+QUIT
+??? 221
+****
+#
+killdaemon
+#
+cp DIR/spool/log/serverdebuglog_router /dev/stderr
+#
+no_msglog_check

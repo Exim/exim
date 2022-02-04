@@ -1,0 +1,22 @@
+# Exim test configuration 0629
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_mail = chk_mail
+acl_smtp_rcpt = chk_rcpt
+
+# ----- ACL -----
+
+begin acl
+
+chk_mail:
+  accept control =		debug/tag=_rcpt/pretrigger=1024/trigger=paniclog
+
+chk_rcpt:
+  deny   log_reject_target =	panic
+
+# End

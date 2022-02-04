@@ -487,6 +487,8 @@ extern FILE   *debug_file;             /* Where to write debugging info */
 extern int     debug_notall[];         /* Debug options excluded from +all */
 extern bit_table debug_options[];      /* Table of debug options */
 extern int     debug_options_count;    /* Size of table */
+extern unsigned debug_pretrigger_bsize;
+extern uschar *debug_pretrigger_buf;   /* circular buffer for precapture */
 extern BOOL    debug_store;	       /* Do extra checks on store_reset */
 extern int     delay_warning[];        /* Times between warnings */
 extern uschar *delay_warning_condition; /* Condition string for warnings */
@@ -575,6 +577,8 @@ extern int     domainlist_count;       /* Number defined */
 
 /* This option is now a no-opt, retained for compatibility */
 extern BOOL    drop_cr;                /* For broken local MUAs */
+
+extern unsigned int dtrigger_selector; /* when to start debug */
 
 extern uschar *dsn_from;               /* From: string for DSNs */
 

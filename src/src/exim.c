@@ -2655,21 +2655,36 @@ on the second character (the one after '-'), to save some effort. */
     #endif
     break;
 
-    /* -d: Set debug level (see also -v below) or set the drop_cr option.
-    The latter is now a no-op, retained for compatibility only. If -dd is used,
-    debugging subprocesses of the daemon is disabled. */
-
     case 'd':
+
+    /* -dropcr: Set this option.  Now a no-op, retained for compatibility only. */
+
     if (Ustrcmp(argrest, "ropcr") == 0)
       {
       /* drop_cr = TRUE; */
       }
 
-    /* Use an intermediate variable so that we don't set debugging while
-    decoding the debugging bits. */
+    /* -dp: Set up a debug pretrigger buffer with given size. */
+
+    else if (Ustrcmp(argrest, "p") == 0)
+      if (++i >= argc)
+	badarg = TRUE;
+      else
+	debug_pretrigger_setup(argv[i]);
+
+    /* -dt: Set a debug trigger selector */
+
+    else if (Ustrncmp(argrest, "t=", 2) == 0)
+      dtrigger_selector = (unsigned int) Ustrtol(argrest + 2, NULL, 0);
+
+    /* -d: Set debug level (see also -v below).
+    If -dd is used, debugging subprocesses of the daemon is disabled. */
 
     else
       {
+      /* Use an intermediate variable so that we don't set debugging while
+      decoding the debugging bits. */
+
       unsigned int selector = D_default;
       debug_selector = 0;
       debug_file = NULL;

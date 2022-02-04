@@ -193,7 +193,10 @@ extern void    debug_printf_indent(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    debug_print_string(uschar *);
 extern void    debug_print_tree(const char *, tree_node *);
 extern void    debug_vprintf(int, const char *, va_list);
+extern void    debug_pretrigger_setup(const uschar *);
+extern void    debug_pretrigger_discard(void);
 extern void    debug_print_socket(int);
+extern void    debug_trigger_fire(void);
 
 extern void    decode_bits(unsigned int *, size_t, int *,
 	           uschar *, bit_table *, int, uschar *, int);

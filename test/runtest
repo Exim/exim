@@ -1929,12 +1929,6 @@ $munges =
     { 'mainlog'   => 's/^(.* SMTP protocol synchronization error .* next input=.{8}).*$/$1<suppressed>/',
       'rejectlog' => 's/^(.* SMTP protocol synchronization error .* next input=.{8}).*$/$1<suppressed>/'},
 
-    'debuglog_stdout' =>
-    { 'stdout' => 's/^\d\d:\d\d:\d\d\s+\d+ //;
-                  s/Process \d+ is ready for new message/Process pppp is ready for new message/;
-		  s/^(?:daemon-accept forked for daemon-accept-delivery:|forked delivery process) \K\d+$/pppp/;'
-    },
-
     'timeout_errno' =>		# actual errno differs Solaris vs. Linux
     { 'mainlog' => 's/((?:host|message) deferral .* errno) <\d+> /$1 <EEE> /' },
 

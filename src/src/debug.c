@@ -13,6 +13,8 @@ static uschar  debug_buffer[2048];
 static uschar *debug_ptr = debug_buffer;
 static int     debug_prefix_length = 0;
 
+static unsigned pretrigger_writeoff;
+static unsigned pretrigger_readoff;
 
 
 const uschar * rc_names[] = {		/* Mostly for debug output */
@@ -318,8 +320,40 @@ if (debug_ptr[-1] == '\n')
       }
     }
 
-  fprintf(debug_file, "%s", CS debug_buffer);
-  fflush(debug_file);
+  if (debug_pretrigger_buf)
+    {
+    int needed = Ustrlen(debug_buffer), avail;
+    char c;
+
+    if (needed > debug_pretrigger_bsize)
+      needed = debug_pretrigger_bsize;
+    if ((avail = pretrigger_readoff - pretrigger_writeoff) <= 0)
+      avail += debug_pretrigger_bsize;
+
+    /* We have a pretrigger set up, trigger not yet hit. Copy the line(s) to the
+    pretrig buffer, dropping earlier lines if needed but truncating this line if
+    the pbuf is maxed out.  In the PTB the lines are NOT nul-terminated. */
+
+    while (avail < needed)
+      do
+	{
+	avail++;
+        c = debug_pretrigger_buf[pretrigger_readoff];
+	if (++pretrigger_readoff >= debug_pretrigger_bsize) pretrigger_readoff = 0;
+	}
+      while (c && c != '\n' && pretrigger_readoff != pretrigger_writeoff);
+
+    for (int i = 0; needed; i++, needed--)
+      {
+      debug_pretrigger_buf[pretrigger_writeoff] = debug_buffer[i];
+      if (++pretrigger_writeoff >= debug_pretrigger_bsize) pretrigger_writeoff = 0;
+      }
+    }
+  else
+    {
+    fprintf(debug_file, "%s", CS debug_buffer);
+    fflush(debug_file);
+    }
   debug_ptr = debug_buffer;
   debug_prefix_length = 0;
   }
@@ -407,6 +441,56 @@ if (fstat(fd, &s) == 0 && (s.st_mode & S_IFMT) == S_IFSOCK)
   }
 else
   debug_printf_indent(" fd st_mode 0%o\n", s.st_mode);
+}
+
+
+/**************************************************************/
+/* Pretrigger handling for debug.  The debug_printf implementation
+diverts output to a circular buffer if the buffer is set up.
+The routines here set up the buffer, and unload it to file (and release it).
+What ends up in the buffer is subject to the usual debug_selector. */
+
+void
+debug_pretrigger_setup(const uschar * size_string)
+{
+long size = Ustrtol(size_string, NULL, 0);
+if (size > 0)
+  {
+  unsigned bufsize = MIN(size, 16384);
+
+  dtrigger_selector |= BIT(DTi_pretrigger);
+  if (debug_pretrigger_buf) store_free(debug_pretrigger_buf);
+  debug_pretrigger_buf = store_malloc((size_t)(debug_pretrigger_bsize = bufsize));
+  pretrigger_readoff = pretrigger_writeoff = 0;
+  }
+}
+
+void
+debug_trigger_fire(void)
+{
+int nbytes;
+
+if (!debug_pretrigger_buf) return;
+
+if (debug_file && (nbytes = pretrigger_writeoff - pretrigger_readoff) != 0)
+  if (nbytes > 0)
+    fwrite(debug_pretrigger_buf + pretrigger_readoff, 1, nbytes, debug_file);
+  else
+    {
+    fwrite(debug_pretrigger_buf + pretrigger_readoff, 1,
+      debug_pretrigger_bsize - pretrigger_readoff, debug_file);
+    fwrite(debug_pretrigger_buf, 1, pretrigger_writeoff, debug_file);
+    }
+
+debug_pretrigger_discard();
+}
+
+void
+debug_pretrigger_discard(void)
+{
+if (debug_pretrigger_buf) store_free(debug_pretrigger_buf);
+debug_pretrigger_buf = NULL;
+dtrigger_selector = 0;
 }
 
 

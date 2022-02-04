@@ -22,7 +22,7 @@ Version 4.96
     the main and panic logs.  A future release will enforce this by failing
     the lookup.
 
- 6. The ACL "debug" control gains a "stop" option.
+ 6. The ACL "debug" control gains options "stop", "pretrigger" and "trigger".
 
 
 Version 4.95

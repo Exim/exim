@@ -1,0 +1,16 @@
+  message: yes3
+  message: yes4
+  message: yes5
+  message: yes6
+accept: condition test succeeded in ACL "chk_mail"
+end of ACL "chk_mail": ACCEPT
+using ACL "chk_rcpt"
+processing "accept" (TESTSUITE/test-config 27)
+check control = debug/trigger=now
+accept: condition test succeeded in ACL "chk_rcpt"
+end of ACL "chk_rcpt": ACCEPT
+using ACL "chk_data"
+processing "accept" (TESTSUITE/test-config 30)
+check control = debug/stop
+
+******** SERVER ********

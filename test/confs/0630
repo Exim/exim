@@ -1,0 +1,32 @@
+# Exim test configuration 0630
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_mail = chk_mail
+acl_smtp_rcpt = chk_rcpt
+
+# ----- ACL -----
+
+begin acl
+
+chk_mail:
+  accept control =		debug/tag=_router/opts=+all/pretrigger=2040/trigger=paniclog
+
+chk_rcpt:
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+r0:
+	# cause paniclog write (by using a tainted filename)
+	driver =	redirect
+	local_parts =	$spool_directory/$local_part
+	data =		:blackhole:
+#
+# End

@@ -815,8 +815,10 @@ bit_table debug_options[]      = { /* must be in alphabetical order and use
   BIT_TABLE(D, verify),
 };
 int     debug_options_count    = nelem(debug_options);
-
+unsigned debug_pretrigger_bsize= 0;
+uschar * debug_pretrigger_buf  = NULL;
 unsigned int debug_selector    = 0;
+
 int     delay_warning[DELAY_WARNING_SIZE] = { DELAY_WARNING_SIZE, 1, 24*60*60 };
 uschar *delay_warning_condition=
   US"${if or {"
@@ -897,6 +899,7 @@ uschar *dnslist_value          = NULL;
 tree_node *domainlist_anchor   = NULL;
 int     domainlist_count       = 0;
 uschar *dsn_from               = US DEFAULT_DSN_FROM;
+unsigned int dtrigger_selector = 0;
 
 int     errno_quota            = ERRNO_QUOTA;
 uschar *errors_copy            = NULL;

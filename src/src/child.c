@@ -76,7 +76,7 @@ int n = 0;
 int extra = pcount ? *pcount : 0;
 uschar **argv;
 
-argv = store_get((extra + acount + MAX_CLMACROS + 21) * sizeof(char *), FALSE);
+argv = store_get((extra + acount + MAX_CLMACROS + 24) * sizeof(char *), FALSE);
 
 /* In all case, the list starts out with the path, any macros, and a changed
 config file. */
@@ -88,10 +88,7 @@ if (clmacro_count > 0)
   n += clmacro_count;
   }
 if (f.config_changed)
-  {
-  argv[n++] = US"-C";
-  argv[n++] = config_main_filename;
-  }
+  { argv[n++] = US"-C"; argv[n++] = config_main_filename; }
 
 /* These values are added only for non-minimal cases. If debug_selector is
 precisely D_v, we have to assume this was started by a non-admin user, and
@@ -120,22 +117,23 @@ if (!minimal)
 	}
       }
     }
+  if (debug_pretrigger_buf)
+    { argv[n++] = US"-dp"; argv[n++] = string_sprintf("0x%x", debug_pretrigger_bsize); }
+  if (dtrigger_selector != 0)
+    argv[n++] = string_sprintf("-dt=0x%x", dtrigger_selector);
   DEBUG(D_any)
     {
     argv[n++] = US"-MCd";
     argv[n++] = US process_purpose;
     }
-  if (!f.testsuite_delays) argv[n++] = US"-odd";
-  if (f.dont_deliver) argv[n++] = US"-N";
-  if (f.queue_smtp) argv[n++] = US"-odqs";
-  if (f.synchronous_delivery) argv[n++] = US"-odi";
+  if (!f.testsuite_delays)	argv[n++] = US"-odd";
+  if (f.dont_deliver)		argv[n++] = US"-N";
+  if (f.queue_smtp)		argv[n++] = US"-odqs";
+  if (f.synchronous_delivery)	argv[n++] = US"-odi";
   if (connection_max_messages >= 0)
     argv[n++] = string_sprintf("-oB%d", connection_max_messages);
   if (*queue_name)
-    {
-    argv[n++] = US"-MCG";
-    argv[n++] = queue_name;
-    }
+    { argv[n++] = US"-MCG"; argv[n++] = queue_name; }
   }
 
 /* Now add in any others that are in the call. Remember which they were,

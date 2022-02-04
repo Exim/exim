@@ -1,4 +1,4 @@
-# Exim test configuration 0574
+# Exim test configuration 0628
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -15,13 +15,14 @@ acl_smtp_data = chk_data
 begin acl
 
 chk_mail:
-  accept control = debug/tag=_1
+  accept control =		debug/tag=_1
 
 chk_rcpt:
-  accept control = debug/kill
+  accept control =		debug/kill
 
 chk_data:
-  accept control = debug/tag=_2/opts=+all
+  accept control =		debug/tag=_2/opts=+all
+
 
 # ----- Routers -----
 

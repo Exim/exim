@@ -905,6 +905,11 @@ if (!path_inspected)
       "More than one path given in log_file_path: using %s", file_path);
   }
 
+/* Optionally trigger debug */
+
+if (flags & LOG_PANIC && dtrigger_selector & BIT(DTi_panictrigger))
+  debug_trigger_fire();
+
 /* If debugging, show all log entries, but don't show headers. Do it all
 in one go so that it doesn't get split when multi-processing. */
 
@@ -1470,7 +1475,11 @@ misconfiguration.
 
 The first use of this is in ACL logic, "control = debug/tag=foo/opts=+expand"
 which can be combined with conditions, etc, to activate extra logging only
-for certain sources. The second use is inetd wait mode debug preservation. */
+for certain sources. The second use is inetd wait mode debug preservation.
+
+It might be nice, in ACL-initiated pretrigger mode, to not create the file
+immediately but only upon a trigger - but we'd need another cmdline option
+to pass the name through child_exxec_exim(). */
 
 void
 debug_logging_activate(uschar *tag_name, uschar *opts)
@@ -1482,7 +1491,7 @@ if (debug_file)
   return;
   }
 
-if (tag_name != NULL && (Ustrchr(tag_name, '/') != NULL))
+if (tag_name && (Ustrchr(tag_name, '/') != NULL))
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "debug tag may not contain a '/' in: %s",
       tag_name);
@@ -1512,11 +1521,13 @@ else
 void
 debug_logging_stop(BOOL kill)
 {
+debug_pretrigger_discard();
 if (!debug_file || !debuglog_name[0]) return;
 
 debug_selector = 0;
 fclose(debug_file);
 debug_file = NULL;
+debug_fd = -1;
 if (kill) unlink_log(lt_debug);
 }
 

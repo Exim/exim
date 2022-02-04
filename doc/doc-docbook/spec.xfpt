@@ -31600,14 +31600,43 @@ sender when the destination system is doing content-scan based rejection.
 This control turns on debug logging, almost as though Exim had been invoked
 with &`-d`&, with the output going to a new logfile in the usual logs directory,
 by default called &'debuglog'&.
-The filename can be adjusted with the &'tag'& option, which
-may access any variables already defined.  The logging may be adjusted with
-the &'opts'& option, which takes the same values as the &`-d`& command-line
-option.
+
 .new
-Logging started this way may be stopped by using the &'stop'& option.
-The &'kill'& option additionally removes the debug file.
+Options are a slash-separated list.
+If an option takes an argument, the option name and argument are separated by
+an equals character.
+Several options are supported:
 .wen
+.display
+tag=<&'suffix'&>         The filename can be adjusted with thise option.
+		     The argument, which may access any variables already defined,
+                     is appended to the default name.
+
+opts=<&'debug&~options'&> The argument specififes what is to be logged,
+                     using the same values as the &`-d`& command-line option.
+
+stop                 Logging started with this control may be
+                     stopped by using this option.
+
+kill                 Logging started with this control may be
+                     stopped by using this option.
+                     Additionally the debug file will be removed,
+                     providing one means for speculative debug tracing.
+
+pretrigger=<&'size'&>    This option specifies a memory buffuer to be used
+                     for pre-trigger debug capture.
+                     Debug lines are recorded in the buffer until
+                     and if) a trigger occurs; at which time they are
+                     dumped to the debug file.  Newer lines displace the
+                     oldest if the buffer is full.  After a trigger,
+                     immediate writes to file are done as normal.
+
+trigger=<&'reason'&>     This option selects cause for the pretrigger buffer
+                     see above) to be copied to file.  A reason of $*now*
+                     take effect immediately; one of &*paniclog*& triggers
+                     on a write to the panic log.
+.endd
+
 Some examples (which depend on variables that don't exist in all
 contexts):
 .code
@@ -31616,6 +31645,8 @@ contexts):
       control = debug/opts=+expand+acl
       control = debug/tag=.$message_exim_id/opts=+expand
       control = debug/kill
+      control = debug/opts=+all/pretrigger=1024/trigger=paniclog
+      control = debug/trigger=now
 .endd
 
 

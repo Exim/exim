@@ -3498,25 +3498,39 @@ for (; cb; cb = cb->next)
 	      }
 	    else if (Ustrncmp(pp, "kill", 4) == 0)
 	      {
-	      for (pp += 4; *pp && *pp != '/';) pp++;
+	      pp += 4;
 	      kill = TRUE;
 	      }
 	    else if (Ustrncmp(pp, "stop", 4) == 0)
 	      {
-	      for (pp += 4; *pp && *pp != '/';) pp++;
+	      pp += 4;
 	      stop = TRUE;
 	      }
-	    else
-	      while (*pp && *pp != '/') pp++;
+	    else if (Ustrncmp(pp, "pretrigger=", 11) == 0)
+		debug_pretrigger_setup(pp+11);
+	    else if (Ustrncmp(pp, "trigger=", 8) == 0)
+	      {
+	      if (Ustrncmp(pp += 8, "now", 3) == 0)
+		{
+		pp += 3;
+		debug_trigger_fire();
+		}
+	      else if (Ustrncmp(pp, "paniclog", 8) == 0)
+		{
+		pp += 8;
+		dtrigger_selector |= BIT(DTi_panictrigger);
+		}
+	      }
+	    while (*pp && *pp != '/') pp++;
 	    p = pp;
 	    }
 
-	    if (kill)
-	      debug_logging_stop(TRUE);
-	    else if (stop)
-	      debug_logging_stop(FALSE);
-	    else
-	      debug_logging_activate(debug_tag, debug_opts);
+	  if (kill)
+	    debug_logging_stop(TRUE);
+	  else if (stop)
+	    debug_logging_stop(FALSE);
+	  else if (debug_tag || debug_opts)
+	    debug_logging_activate(debug_tag, debug_opts);
 	  break;
 	  }
 

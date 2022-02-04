@@ -106,7 +106,7 @@ don't make the file descriptors two-way. */
 /* Debugging control */
 
 #define DEBUG(x)      if (debug_selector & (x))
-#define HDEBUG(x)     if (host_checking || (debug_selector & (x)))
+#define HDEBUG(x)     if (host_checking || debug_selector & (x))
 
 /* The default From: text for DSNs */
 
@@ -421,6 +421,13 @@ enum {
                                          D_pid         | \
                                          D_timestamp   | \
                                          D_resolver))
+
+/* Bits for debug triggers */
+
+enum {
+  DTi_panictrigger,
+  DTi_pretrigger,
+};
 
 /* Options bits for logging. Those that have values < BITWORDSIZE can be used
 in calls to log_write(). The others are put into later words in log_selector
