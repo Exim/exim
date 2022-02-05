@@ -958,8 +958,9 @@ void
 show_string(BOOL is_stdout, gstring * g)
 {
 const uschar * s = string_from_gstring(g);
-if (is_stdout) fputs(CCS s, stdout);
-else debug_printf("%s", s);
+if (s)
+  if (is_stdout) fputs(CCS s, stdout);
+  else debug_printf("%s", s);
 }
 
 
