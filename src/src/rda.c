@@ -959,8 +959,8 @@ if (had_disaster)
   *error = string_sprintf("internal problem in %s: failure to transfer "
     "data from subprocess: status=%04x%s%s%s", rname,
     status, readerror,
-    (*error == NULL)? US"" : US": error=",
-    (*error == NULL)? US"" : *error);
+    *error ? US": error=" : US"",
+    *error ? *error : US"");
   log_write(0, LOG_MAIN|LOG_PANIC, "%s", *error);
   }
 else if (status != 0)

@@ -292,7 +292,7 @@ if (LOG != NULL)
     if ((p = Ustrstr(buffer, "==")) != NULL)
       {
       queue_item *qq = find_queue(id, queue_noop, 0);
-      if (qq != NULL)
+      if (qq)
         {
         dest_item *d;
         uschar *q, *r;

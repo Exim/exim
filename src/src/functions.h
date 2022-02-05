@@ -478,7 +478,6 @@ extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    sha1_end(hctx *, const uschar *, int, uschar *);
 extern void    sha1_mid(hctx *, const uschar *);
 extern void    sha1_start(hctx *);
-extern void    show_string(BOOL, gstring *);
 extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
                  uschar *, address_item **, uschar **);
 extern void    sigalrm_handler(int);

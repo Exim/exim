@@ -944,7 +944,7 @@ else
   int rc = verify_address(deliver_make_addr(address,TRUE), stdout, flags, -1,
     -1, -1, NULL, NULL, NULL);
   if (rc == FAIL) *exit_value = 2;
-    else if (rc == DEFER && *exit_value == 0) *exit_value = 1;
+  else if (rc == DEFER && *exit_value == 0) *exit_value = 1;
   }
 }
 
@@ -954,7 +954,7 @@ else
 *          Show supported features               *
 *************************************************/
 
-void
+static void
 show_string(BOOL is_stdout, gstring * g)
 {
 const uschar * s = string_from_gstring(g);

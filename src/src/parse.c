@@ -1252,18 +1252,15 @@ DEBUG(D_route) debug_printf("parse_forward_list: %s\n", s);
 
 for (;;)
   {
-  int len;
-  int special = 0;
-  int specopt = 0;
-  int specbit = 0;
-  const uschar *ss, *nexts;
-  address_item *addr;
+  int len, special = 0, specopt = 0, specbit = 0;
+  const uschar * ss, * nexts;
+  address_item * addr;
   BOOL inquote = FALSE;
 
   for (;;)
     {
     while (isspace(*s) || *s == ',') s++;
-    if (*s == '#') { while (*s != 0 && *s != '\n') s++; } else break;
+    if (*s == '#') { while (*s && *s != '\n') s++; } else break;
     }
 
   /* When we reach the end of the list, we return FF_DELIVERED if any child
@@ -1287,8 +1284,8 @@ for (;;)
 #ifdef NEVER
     if (count > 0) return FF_DELIVERED;   /* Something was generated */
 
-    if (syntax_errors == NULL ||          /* Not skipping syntax errors, or */
-       *syntax_errors == NULL)            /*   we didn't actually skip any */
+    if (!syntax_errors ||          /* Not skipping syntax errors, or */
+       !*syntax_errors)            /*   we didn't actually skip any */
       return FF_NOTDELIVERED;
 
     *error = string_sprintf("no addresses generated: syntax error in %s: %s",
@@ -1311,7 +1308,7 @@ for (;;)
 
   /* Remove any trailing spaces; we know there's at least one non-space. */
 
-  while (isspace((ss[-1]))) ss--;
+  while (isspace(ss[-1])) ss--;
 
   /* We now have s->start and ss->end of the next address. Remove quotes
   if they completely enclose, remembering the address started with a quote
@@ -1324,7 +1321,7 @@ for (;;)
     ss--;
     inquote = TRUE;
     while (s < ss && isspace(*s)) s++;
-    while (ss > s && isspace((ss[-1]))) ss--;
+    while (ss > s && isspace(ss[-1])) ss--;
     }
 
   /* Set up the length of the address. */
@@ -1374,14 +1371,14 @@ for (;;)
 
   if (Ustrncmp(s, ":include:", 9) == 0)
     {
-    uschar *filebuf;
+    uschar * filebuf;
     uschar filename[256];
     const uschar * t = s+9;
     int flen = len - 9;
     int frc;
     struct stat statbuf;
-    address_item *last;
-    FILE *f;
+    address_item * last;
+    FILE * f;
 
     while (flen > 0 && isspace(*t)) { t++; flen--; }
 
@@ -1425,7 +1422,7 @@ for (;;)
     if (directory)
       {
       int len = Ustrlen(directory);
-      uschar *p = filename + len;
+      uschar * p = filename + len;
 
       if (Ustrncmp(filename, directory, len) != 0 || *p != '/')
         {
@@ -1614,16 +1611,16 @@ for (;;)
     is no domain, treat it as a file or pipe. If it was a quoted item,
     remove the quoting occurrences of \ within it. */
 
-    if ((*s_ltd == '|' || *s_ltd == '/') && (recipient == NULL || domain == 0))
+    if ((*s_ltd == '|' || *s_ltd == '/') && (!recipient || domain == 0))
       {
-      uschar *t = store_get(Ustrlen(s_ltd) + 1, is_tainted(s_ltd));
-      uschar *p = t;
-      uschar *q = s_ltd;
-      while (*q != 0)
+      uschar * t = store_get(Ustrlen(s_ltd) + 1, is_tainted(s_ltd));
+      uschar * p = t, * q = s_ltd;
+
+      while (*q)
         {
         if (inquote)
           {
-          *p++ = (*q == '\\')? *(++q) : *q;
+          *p++ = *q == '\\' ? *++q : *q;
           q++;
           }
         else *p++ = *q++;
@@ -1654,13 +1651,15 @@ for (;;)
 
         if (syntax_errors)
           {
-          error_block *e = store_get(sizeof(error_block), FALSE);
-          error_block *last = *syntax_errors;
-          if (!last) *syntax_errors = e; else
+          error_block * e = store_get(sizeof(error_block), FALSE);
+          error_block * last = *syntax_errors;
+          if (last)
             {
             while (last->next) last = last->next;
             last->next = e;
             }
+          else
+	    *syntax_errors = e;
           e->next = NULL;
           e->text1 = *error;
           e->text2 = s_ltd;
@@ -1677,10 +1676,10 @@ for (;;)
       /* Address was successfully parsed. Rewrite, and then make an address
       block. */
 
-      recipient = ((options & RDO_REWRITE) != 0)?
-        rewrite_address(recipient, TRUE, FALSE, global_rewrite_rules,
-          rewrite_existflags) :
-        rewrite_address_qualify(recipient, TRUE);	/*XXX loses track of const */
+      recipient = options & RDO_REWRITE
+	? rewrite_address(recipient, TRUE, FALSE, global_rewrite_rules,
+			  rewrite_existflags)
+	: rewrite_address_qualify(recipient, TRUE);	/*XXX loses track of const */
       addr = deliver_make_addr(US recipient, TRUE);  /* TRUE => copy recipient, so deconst ok */
       }
 
