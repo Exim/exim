@@ -2316,7 +2316,7 @@ if (/^dump\s+(\S+)/)
                sort { $a->[0] cmp $b->[0] }
                #map  { [ (split)[0] =~ s/\Q$parm_ipv4/ip4.ip4.ip4.ip4/gr, $_ ] }  # this is too modern for 5.10.1
                map  {
-                (my $k = (split)[0]) =~ s/\Q$parm_ipv4/ip4.ip4.ip4.ip4/g;
+                (my $k = (split)[0]) =~ s/\Q$parm_ipv4\E/ip4.ip4.ip4.ip4/g;
                 [ $k, $_ ]
                }
                do { local $/ = "\n  "; <$in> };
@@ -2334,6 +2334,16 @@ if (/^dump\s+(\S+)/)
       @temp = sort {
                    my($aa) = substr $a, 21;
                    my($bb) = substr $b, 21;
+                   return $aa cmp $bb;
+                   } @temp;
+      }
+    elsif ($which eq "seen")
+      {
+      @temp = sort {
+		   (my $aa = $a) =~ s/^([\d.]+)/$1/;
+		   (my $bb = $b) =~ s/^([\d.]+)/$1/;
+		   $aa =~ s/\Q$parm_ipv4\E/ip4.ip4.ip4.ip4/;
+		   $bb =~ s/\Q$parm_ipv4\E/ip4.ip4.ip4.ip4/;
                    return $aa cmp $bb;
                    } @temp;
       }

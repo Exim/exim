@@ -41,8 +41,8 @@
 550 Administrative prohibition
 221 test.ex closing connection
 +++++++++++++++++++++++++++
-ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
 127.0.0.1	07-Mar-2000 12:21:52
+ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
 
 **** SMTP testing session as if from host 127.0.0.1
 **** but without any ident (RFC 1413) callback.
@@ -54,9 +54,9 @@ ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
 550 Administrative prohibition
 221 test.ex closing connection
 +++++++++++++++++++++++++++
+127.0.0.1	07-Mar-2000 12:21:52
 127.0.0.1_foo	07-Mar-2000 12:21:52
 ip4.ip4.ip4.ip4	07-Mar-2000 12:21:52
-127.0.0.1	07-Mar-2000 12:21:52
 
 **** SMTP testing session as if from host 127.0.0.1
 **** but without any ident (RFC 1413) callback.
