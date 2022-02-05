@@ -14,7 +14,7 @@ acl_smtp_rcpt = chk_rcpt
 begin acl
 
 chk_mail:
-  accept control =		debug/tag=_router/opts=+all/pretrigger=2040/trigger=paniclog
+  accept control =		debug/tag=_router/opts=+all/pretrigger=800/trigger=paniclog
 
 chk_rcpt:
   accept
@@ -25,8 +25,9 @@ begin routers
 
 r0:
 	# cause paniclog write (by using a tainted filename)
+	# keep the path non-variable
 	driver =	redirect
-	local_parts =	$spool_directory/$local_part
+	local_parts =	/$local_part
 	data =		:blackhole:
 #
 # End

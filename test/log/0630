@@ -2,5 +2,5 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= test_3@paniclogrouter H=(test.ex) [127.0.0.1] P=esmtp S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 Tainted filename 'TESTSUITE/spool/dest3'
-1999-03-02 09:44:33 10HmaX-0005vi-00 failed to open TESTSUITE/spool/dest3 when checking "$spool_directory/$local_part": Permission denied (euid=uuuu egid=EXIM_GID)
+1999-03-02 09:44:33 10HmaX-0005vi-00 Tainted filename '/dest3'
+1999-03-02 09:44:33 10HmaX-0005vi-00 failed to open /dest3 when checking "/$local_part": Permission denied (euid=uuuu egid=EXIM_GID)

@@ -322,7 +322,7 @@ if (debug_ptr[-1] == '\n')
 
   if (debug_pretrigger_buf)
     {
-    int needed = Ustrlen(debug_buffer), avail;
+    int needed = Ustrlen(debug_buffer)+1, avail;
     char c;
 
     if (needed > debug_pretrigger_bsize)
@@ -343,6 +343,7 @@ if (debug_ptr[-1] == '\n')
 	}
       while (c && c != '\n' && pretrigger_readoff != pretrigger_writeoff);
 
+    needed--;
     for (int i = 0; needed; i++, needed--)
       {
       debug_pretrigger_buf[pretrigger_writeoff] = debug_buffer[i];
