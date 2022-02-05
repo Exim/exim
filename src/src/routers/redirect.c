@@ -93,13 +93,6 @@ optionlist redirect_router_options[] = {
   { "sieve_useraddress", opt_stringptr,		LOFF(sieve_useraddress) },
   { "sieve_vacation_directory", opt_stringptr,	LOFF(sieve_vacation_directory) },
   { "skip_syntax_errors", opt_bool,		LOFF(skip_syntax_errors) },
-#ifdef EXPERIMENTAL_SRS_ALT
-  { "srs",                opt_stringptr,	LOFF(srs) },
-  { "srs_alias",          opt_stringptr,	LOFF(srs_alias) },
-  { "srs_condition",      opt_stringptr,	LOFF(srs_condition) },
-  { "srs_dbinsert",       opt_stringptr,	LOFF(srs_dbinsert) },
-  { "srs_dbselect",       opt_stringptr,	LOFF(srs_dbselect) },
-#endif
   { "syntax_errors_text", opt_stringptr,	LOFF(syntax_errors_text) },
   { "syntax_errors_to",   opt_stringptr,	LOFF(syntax_errors_to) }
 };
@@ -149,13 +142,6 @@ redirect_router_options_block redirect_router_option_defaults = {
   NULL,        /* qualify_domain */
   NULL,        /* owners */
   NULL,        /* owngroups */
-#ifdef EXPERIMENTAL_SRS_ALT
-  NULL,        /* srs */
-  NULL,        /* srs_alias */
-  NULL,        /* srs_condition */
-  NULL,        /* srs_dbinsert */
-  NULL,        /* srs_dbselect */
-#endif
   022,         /* modemask */
   RDO_REWRITE | RDO_PREPEND_HOME, /* bit_options */
   FALSE,       /* check_ancestor */
@@ -540,9 +526,6 @@ addr_prop.remove_headers = NULL;
 addr_prop.variables = NULL;
 tree_dup((tree_node **)&addr_prop.variables, addr->prop.variables);
 
-#ifdef EXPERIMENTAL_SRS_ALT
-addr_prop.srs_sender = NULL;
-#endif
 #ifdef SUPPORT_I18N
 addr_prop.utf8_msg = addr->prop.utf8_msg;
 addr_prop.utf8_downcvt = addr->prop.utf8_downcvt;
@@ -574,95 +557,6 @@ if (!ugid.gid_set && pw != NULL)
   ugid.gid = pw->pw_gid;
   ugid.gid_set = TRUE;
   }
-
-#ifdef EXPERIMENTAL_SRS_ALT
-  /* Perform SRS on recipient/return-path as required  */
-
-  if(ob->srs != NULL)
-  {
-    BOOL usesrs = TRUE;
-
-    if(ob->srs_condition != NULL)
-      usesrs = expand_check_condition(ob->srs_condition, "srs_condition expansion failed", NULL);
-
-    if(usesrs)
-    {
-      int srs_action = 0, n_srs;
-      uschar *res;
-      uschar *usedomain;
-
-      /* What are we doing? */
-      if(Ustrcmp(ob->srs, "forward") == 0)
-        srs_action = 1;
-      else if(Ustrcmp(ob->srs, "reverseandforward") == 0)
-      {
-        srs_action = 3;
-
-        if((ob->srs_dbinsert == NULL) ^ (ob->srs_dbselect == NULL))
-          return DEFER;
-      }
-      else if(Ustrcmp(ob->srs, "reverse") == 0)
-        srs_action = 2;
-
-      /* Reverse SRS */
-      if(srs_action & 2)
-      {
-        srs_orig_recipient = addr->address;
-
-        eximsrs_init();
-        if(ob->srs_dbselect)
-          eximsrs_db_set(TRUE, ob->srs_dbselect);
-/* Comment this out for now...
-//        else
-//          eximsrs_db_set(TRUE, NULL);
-*/
-
-        if((n_srs = eximsrs_reverse(&res, addr->address)) == OK)
-        {
-          srs_recipient = res;
-          DEBUG(D_any)
-            debug_printf("SRS (reverse): Recipient '%s' rewritten to '%s'\n", srs_orig_recipient, srs_recipient);
-        }
-
-        eximsrs_done();
-
-        if(n_srs != OK)
-          return n_srs;
-      }
-
-      /* Forward SRS */
-      /* No point in actually performing SRS if we are just verifying a recipient */
-      if((srs_action & 1) && verify == v_none &&
-         (sender_address ? sender_address[0] != 0 : FALSE))
-      {
-
-        srs_orig_sender = sender_address;
-        eximsrs_init();
-        if(ob->srs_dbinsert)
-          eximsrs_db_set(FALSE, ob->srs_dbinsert);
-/* Comment this out for now...
-//        else
-//          eximsrs_db_set(FALSE, NULL);
-*/
-
-        if (!(usedomain = ob->srs_alias ? expand_string(ob->srs_alias) : NULL))
-          usedomain = string_copy(deliver_domain);
-
-        if((n_srs = eximsrs_forward(&res, sender_address, usedomain)) == OK)
-        {
-          addr_prop.srs_sender = res;
-          DEBUG(D_any)
-            debug_printf("SRS (forward): Sender '%s' rewritten to '%s'\n", srs_orig_sender, res);
-        }
-
-        eximsrs_done();
-
-        if(n_srs != OK)
-          return n_srs;
-      }
-    }
-  }
-#endif
 
 /* Call the function that interprets redirection data, either inline or from a
 file. This is a separate function so that the system filter can use it. It will

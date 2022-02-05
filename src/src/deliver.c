@@ -1172,11 +1172,6 @@ if (LOGGING(sender_on_delivery) || msg)
 if (*queue_name)
   g = string_append(g, 2, US" Q=", queue_name);
 
-#ifdef EXPERIMENTAL_SRS_ALT
-if(addr->prop.srs_sender)
-  g = string_append(g, 3, US" SRS=<", addr->prop.srs_sender, US">");
-#endif
-
 /* You might think that the return path must always be set for a successful
 delivery; indeed, I did for some time, until this statement crashed. The case
 when it is not set is for a delivery to /dev/null which is optimised by not
@@ -2160,10 +2155,6 @@ has its own return path setting, expand it and replace the existing value. */
 
 if(addr->prop.errors_address)
   return_path = addr->prop.errors_address;
-#ifdef EXPERIMENTAL_SRS_ALT
-else if (addr->prop.srs_sender)
-  return_path = addr->prop.srs_sender;
-#endif
 else
   return_path = sender_address;
 
@@ -4453,10 +4444,6 @@ nonmatch domains
 
   if(addr->prop.errors_address)
     return_path = addr->prop.errors_address;
-#ifdef EXPERIMENTAL_SRS_ALT
-  else if(addr->prop.srs_sender)
-    return_path = addr->prop.srs_sender;
-#endif
   else
     return_path = sender_address;
 

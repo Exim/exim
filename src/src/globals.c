@@ -419,10 +419,6 @@ BOOL    spf_result_guessed     = FALSE;
 #endif
 BOOL    split_spool_directory  = FALSE;
 BOOL    spool_wireformat       = FALSE;
-#ifdef EXPERIMENTAL_SRS_ALT
-BOOL    srs_usehash            = TRUE;
-BOOL    srs_usetimestamp       = TRUE;
-#endif
 BOOL    strict_acl_vars        = FALSE;
 BOOL    strip_excess_angle_brackets = FALSE;
 BOOL    strip_trailing_dot     = FALSE;
@@ -608,9 +604,6 @@ address_item address_defaults = {
     .extra_headers =	NULL,
     .remove_headers =	NULL,
     .variables =	NULL,
-#ifdef EXPERIMENTAL_SRS_ALT
-    .srs_sender =	NULL,
-#endif
     .ignore_error =	FALSE,
 #ifdef SUPPORT_I18N
     .utf8_msg =		FALSE,
@@ -1551,19 +1544,6 @@ uschar *spf_smtp_comment_template
 FILE   *spool_data_file	       = NULL;
 uschar *spool_directory        = US SPOOL_DIRECTORY
                            "\0<--------------Space to patch spool_directory->";
-#ifdef EXPERIMENTAL_SRS_ALT
-uschar *srs_config             = NULL;
-uschar *srs_db_address         = NULL;
-uschar *srs_db_key             = NULL;
-int     srs_hashlength         = 6;
-int     srs_hashmin            = -1;
-int     srs_maxage             = 31;
-uschar *srs_orig_recipient     = NULL;
-uschar *srs_orig_sender        = NULL;
-uschar *srs_recipient          = NULL;
-uschar *srs_secrets            = NULL;
-uschar *srs_status             = NULL;
-#endif
 #ifdef SUPPORT_SRS
 uschar *srs_recipient          = NULL;
 #endif

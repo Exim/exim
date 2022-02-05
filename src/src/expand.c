@@ -750,17 +750,8 @@ static var_entry var_table[] = {
   { "spool_directory",     vtype_stringptr,   &spool_directory },
   { "spool_inodes",        vtype_pinodes,     (void *)TRUE },
   { "spool_space",         vtype_pspace,      (void *)TRUE },
-#ifdef EXPERIMENTAL_SRS_ALT
-  { "srs_db_address",      vtype_stringptr,   &srs_db_address },
-  { "srs_db_key",          vtype_stringptr,   &srs_db_key },
-  { "srs_orig_recipient",  vtype_stringptr,   &srs_orig_recipient },
-  { "srs_orig_sender",     vtype_stringptr,   &srs_orig_sender },
-#endif
-#if defined(EXPERIMENTAL_SRS_ALT) || defined(SUPPORT_SRS)
+#ifdef SUPPORT_SRS
   { "srs_recipient",       vtype_stringptr,   &srs_recipient },
-#endif
-#ifdef EXPERIMENTAL_SRS_ALT
-  { "srs_status",          vtype_stringptr,   &srs_status },
 #endif
   { "thisaddress",         vtype_stringptr,   &filter_thisaddress },
 

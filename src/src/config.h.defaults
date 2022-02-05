@@ -209,7 +209,6 @@ Do not put spaces between # and the 'define'.
 #define EXPERIMENTAL_DSN_INFO
 #define EXPERIMENTAL_ESMTP_LIMITS
 #define EXPERIMENTAL_QUEUEFILE
-#define EXPERIMENTAL_SRS_ALT
 
 
 /* For developers */

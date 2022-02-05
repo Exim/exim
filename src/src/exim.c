@@ -1121,9 +1121,6 @@ g = string_cat(g, US"Support for:");
 #ifdef EXPERIMENTAL_QUEUEFILE
   g = string_cat(g, US" Experimental_QUEUEFILE");
 #endif
-#if defined(EXPERIMENTAL_SRS_ALT)
-  g = string_cat(g, US" Experimental_SRS");
-#endif
 g = string_cat(g, US"\n");
 
 g = string_cat(g, US"Lookups (built-in):");

@@ -183,7 +183,7 @@ due to conflicts with other common macros. */
 #ifdef SUPPORT_SPF
   builtin_macro_create(US"_HAVE_SPF");
 #endif
-#if defined(EXPERIMENTAL_SRS_ALT) || defined(SUPPORT_SRS)
+#ifdef SUPPORT_SRS
   builtin_macro_create(US"_HAVE_SRS");
 #endif
 #ifdef EXPERIMENTAL_ARC
@@ -304,9 +304,6 @@ exp_features(void)
 #endif
 #ifdef EXPERIMENTAL_QUEUEFILE
   builtin_macro_create(US"_EXP_QUEUEFILE");
-#endif
-#if defined(EXPERIMENTAL_SRS_ALT)
-  builtin_macro_create(US"_EXP_SRS");
 #endif
 }
 

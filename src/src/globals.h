@@ -1025,21 +1025,6 @@ extern BOOL    split_spool_directory;  /* TRUE to use multiple subdirs */
 extern FILE   *spool_data_file;	       /* handle for -D file */
 extern uschar *spool_directory;        /* Name of spool directory */
 extern BOOL    spool_wireformat;       /* can write wireformat -D files */
-#ifdef EXPERIMENTAL_SRS_ALT
-extern uschar *srs_config;             /* SRS config secret:max age:hash length:use timestamp:use hash */
-extern uschar *srs_db_address;         /* SRS db address */
-extern uschar *srs_db_key;             /* SRS db key */
-extern int     srs_hashlength;         /* SRS hash length */
-extern int     srs_hashmin;            /* SRS minimum hash length */
-extern int     srs_maxage;             /* SRS max age */
-extern uschar *srs_orig_sender;        /* SRS original sender */
-extern uschar *srs_orig_recipient;     /* SRS original recipient */
-extern uschar *srs_recipient;          /* SRS recipient */
-extern uschar *srs_secrets;            /* SRS secrets list */
-extern uschar *srs_status;             /* SRS staus */
-extern BOOL    srs_usehash;            /* SRS use hash flag */
-extern BOOL    srs_usetimestamp;       /* SRS use timestamp flag */
-#endif
 #ifdef SUPPORT_SRS
 extern uschar *srs_recipient;          /* SRS recipient */
 #endif

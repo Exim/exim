@@ -35,14 +35,6 @@ typedef struct {
   uid_t  *owners;
   gid_t  *owngroups;
 
-#ifdef EXPERIMENTAL_SRS_ALT
-  uschar *srs;
-  uschar *srs_alias;
-  uschar *srs_condition;
-  uschar *srs_dbinsert;
-  uschar *srs_dbselect;
-#endif
-
   int   modemask;
   int   bit_options;
   BOOL  check_ancestor;

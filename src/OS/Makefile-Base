@@ -475,7 +475,6 @@ OBJ_EXPERIMENTAL =	arc.o \
 			dmarc.o \
 			imap_utf7.o \
 			spf.o \
-			srs.o \
 			utf8.o
 
 # Targets for final binaries; the main one has a build number which is
@@ -841,7 +840,6 @@ dcc.o:		$(HDRS) dcc.h dcc.c
 dmarc.o:	$(HDRS) pdkim/pdkim.h dmarc.h dmarc.c
 imap_utf7.o:	$(HDRS) imap_utf7.c
 spf.o:		$(HDRS) spf.h spf.c
-srs.o:		$(HDRS) srs.h srs.c
 utf8.o:		$(HDRS) utf8.c
 
 # The module containing tables of available lookups, routers, auths, and
