@@ -27,7 +27,7 @@ union argtypes {
   struct condition_block *c;
   struct filter_cmd      *f;
   int                     i;
-  uschar                 *u;
+  const uschar            *u;
 };
 
 /* Local structures used in this module */
@@ -67,7 +67,7 @@ static BOOL noerror_force;
 
 enum { had_neither, had_else, had_elif, had_endif };
 
-static BOOL read_command_list(uschar **, filter_cmd ***, BOOL);
+static BOOL read_command_list(const uschar **, filter_cmd ***, BOOL);
 
 
 /* The string arguments for the mail command. The header line ones (that are
@@ -252,8 +252,8 @@ Arguments:
 Returns:           pointer to next non-whitespace character
 */
 
-static uschar *
-nextsigchar(uschar *ptr, BOOL comment_allowed)
+static const uschar *
+nextsigchar(const uschar *ptr, BOOL comment_allowed)
 {
 for (;;)
   {
@@ -290,8 +290,8 @@ Arguments
 Returns:    pointer to the next significant character after the word
 */
 
-static uschar *
-nextword(uschar *ptr, uschar *buffer, int size, BOOL bracket)
+static const uschar *
+nextword(const uschar *ptr, uschar *buffer, int size, BOOL bracket)
 {
 uschar *bp = buffer;
 while (*ptr != 0 && !isspace(*ptr) &&
@@ -326,13 +326,13 @@ Arguments:
 Returns:     the next significant character after the item
 */
 
-static uschar *
-nextitem(uschar *ptr, uschar *buffer, int size, BOOL bracket)
+static const uschar *
+nextitem(const uschar *ptr, uschar *buffer, int size, BOOL bracket)
 {
 uschar *bp = buffer;
 if (*ptr != '\"') return nextword(ptr, buffer, size, bracket);
 
-while (*(++ptr) != 0 && *ptr != '\"' && *ptr != '\n')
+while (*++ptr && *ptr != '\"' && *ptr != '\n')
   {
   if (bp - buffer >= size - 1)
     {
@@ -345,7 +345,7 @@ while (*(++ptr) != 0 && *ptr != '\"' && *ptr != '\n')
     {
     if (isspace(ptr[1]))    /* \<whitespace>NL<whitespace> ignored */
       {
-      uschar *p = ptr + 1;
+      const uschar *p = ptr + 1;
       while (*p != '\n' && isspace(*p)) p++;
       if (*p == '\n')
         {
@@ -385,7 +385,7 @@ Returns:   the number, or 0 on error (with *OK FALSE)
 */
 
 static int
-get_number(uschar *s, BOOL *ok)
+get_number(const uschar *s, BOOL *ok)
 {
 int value, count;
 *ok = FALSE;
@@ -416,8 +416,8 @@ Arguments:
 Returns:          points to next character after "then"
 */
 
-static uschar *
-read_condition(uschar *ptr, condition_block **cond, BOOL toplevel)
+static const uschar *
+read_condition(const uschar *ptr, condition_block **cond, BOOL toplevel)
 {
 uschar buffer[1024];
 BOOL testfor = TRUE;
@@ -434,7 +434,7 @@ for (;;)
 
   /* reaching the end of the input is an error. */
 
-  if (*ptr == 0)
+  if (!*ptr)
     {
     *error_pointer = US"\"then\" missing at end of filter file";
     break;
@@ -477,7 +477,7 @@ for (;;)
   else
     {
     ptr = nextitem(ptr, buffer, sizeof(buffer), TRUE);
-    if (*error_pointer != NULL) break;
+    if (*error_pointer) break;
 
     /* "Then" at the start of a condition is an error */
 
@@ -518,7 +518,7 @@ for (;;)
       for (;;)
         {
         string_item *aa;
-        uschar *saveptr = ptr;
+        const uschar * saveptr = ptr;
         ptr = nextword(ptr, buffer, sizeof(buffer), TRUE);
         if (*error_pointer) break;
         if (Ustrcmp(buffer, "alias") != 0)
@@ -569,7 +569,7 @@ for (;;)
     else
       {
       int i;
-      uschar *isptr = NULL;
+      const uschar *isptr = NULL;
 
       c->left.u = string_copy(buffer);
       ptr = nextword(ptr, buffer, sizeof(buffer), TRUE);
@@ -655,18 +655,23 @@ for (;;)
 
   else
     {
-    uschar *saveptr = ptr;
+    const uschar *saveptr = ptr;
     ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
     if (*error_pointer) break;
 
     /* "Then" terminates a toplevel condition; otherwise a closing bracket
     has been omitted. Put a string terminator at the start of "then" so
     that reflecting the condition can be done when testing. */
+    /*XXX This stops us doing a constification job in this file, unfortunately.
+    Comment it out and see if anything breaks.
+    With one addition down at DEFERFREEZEFAIL it passes the testsuite. */
 
     if (Ustrcmp(buffer, "then") == 0)
       {
-      if (toplevel) *saveptr = 0;
-      else *error_pointer = string_sprintf("missing \")\" at end of "
+//      if (toplevel) *saveptr = 0;
+//      else
+   if (!toplevel)
+      *error_pointer = string_sprintf("missing \")\" at end of "
           "condition near line %d of filter file", line_number);
       break;
       }
@@ -837,7 +842,7 @@ Returns:       TRUE if command successfully read, else FALSE
 */
 
 static BOOL
-read_command(uschar **pptr, filter_cmd ***lastcmdptr)
+read_command(const uschar **pptr, filter_cmd ***lastcmdptr)
 {
 int command, i, cmd_bit;
 filter_cmd *new, **newlastcmdptr;
@@ -845,8 +850,8 @@ BOOL yield = TRUE;
 BOOL was_seen_or_unseen = FALSE;
 BOOL was_noerror = FALSE;
 uschar buffer[1024];
-uschar *ptr = *pptr;
-uschar *saveptr;
+const uschar *ptr = *pptr;
+const uschar *saveptr;
 uschar *fmsg = NULL;
 
 /* Read the next word and find which command it is. Command words are normally
@@ -868,7 +873,7 @@ else if (Ustrncmp(ptr, "elif(", 5) == 0)
 else
   {
   ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
-  if (*error_pointer != NULL) return FALSE;
+  if (*error_pointer) return FALSE;
   }
 
 for (command = 0; command < command_list_count; command++)
@@ -907,11 +912,11 @@ switch (command)
   case testprint_command:
 
   ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-  if (*buffer == 0)
+  if (!*buffer)
     *error_pointer = string_sprintf("\"%s\" requires an argument "
       "near line %d of filter file", command_list[command], line_number);
 
-  if (*error_pointer != NULL) yield = FALSE; else
+  if (*error_pointer) yield = FALSE; else
     {
     union argtypes argument, second_argument;
 
@@ -921,13 +926,13 @@ switch (command)
       {
       argument.u = string_copy(buffer);
       ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-      if (*buffer == 0 || Ustrcmp(buffer, "to") != 0)
+      if (!*buffer || Ustrcmp(buffer, "to") != 0)
         *error_pointer = string_sprintf("\"to\" expected in \"add\" command "
           "near line %d of filter file", line_number);
       else
         {
         ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-        if (*buffer == 0)
+        if (!*buffer)
           *error_pointer = string_sprintf("value missing after \"to\" "
             "near line %d of filter file", line_number);
         else second_argument.u = string_copy(buffer);
@@ -963,7 +968,7 @@ switch (command)
       if (yield)
         {
         ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-        if (*buffer == 0)
+        if (!*buffer)
           *error_pointer = string_sprintf("value missing after \"add\", "
             "\"remove\", or \"charset\" near line %d of filter file",
               line_number);
@@ -999,7 +1004,7 @@ switch (command)
 
       else if (command == deliver_command)
         {
-        uschar *save_ptr = ptr;
+        const uschar *save_ptr = ptr;
         ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
         if (Ustrcmp(buffer, "errors_to") == 0)
           {
@@ -1014,7 +1019,7 @@ switch (command)
     FALSE for logging commands, and it doesn't matter for testprint, as
     that doesn't change the "delivered" status. */
 
-    if (*error_pointer != NULL) yield = FALSE; else
+    if (*error_pointer) yield = FALSE; else
       {
       new = store_get(sizeof(filter_cmd) + sizeof(union argtypes), FALSE);
       new->next = NULL;
@@ -1081,7 +1086,7 @@ switch (command)
 
   saveptr = ptr;
   ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-  if (*saveptr != '\"' && (*buffer == 0 || Ustrcmp(buffer, "text") != 0))
+  if (*saveptr != '\"' && (!*buffer || Ustrcmp(buffer, "text") != 0))
     {
     ptr = saveptr;
     fmsg = US"";
@@ -1127,7 +1132,7 @@ switch (command)
   new = store_get(sizeof(filter_cmd) + 4 * sizeof(union argtypes), FALSE);
   new->next = NULL;
   **lastcmdptr = new;
-  *lastcmdptr = &(new->next);
+  *lastcmdptr = &new->next;
   new->command = command;
   new->seen = FALSE;
   new->args[0].u = NULL;
@@ -1136,8 +1141,8 @@ switch (command)
 
   /* Read the condition */
 
-  ptr = read_condition(ptr, &(new->args[0].c), TRUE);
-  if (*error_pointer != NULL) { yield = FALSE; break; }
+  ptr = read_condition(ptr, &new->args[0].c, TRUE);
+  if (*error_pointer) { yield = FALSE; break; }
 
   /* Read the commands to be obeyed if the condition is true */
 
@@ -1162,8 +1167,8 @@ switch (command)
       new->args[1].u = new->args[2].u = NULL;
       new->args[3].u = ptr;
 
-      ptr = read_condition(ptr, &(new->args[0].c), TRUE);
-      if (*error_pointer != NULL) { yield = FALSE; break; }
+      ptr = read_condition(ptr, &new->args[0].c, TRUE);
+      if (*error_pointer) { yield = FALSE; break; }
       newlastcmdptr = &(new->args[1].f);
       if (!read_command_list(&ptr, &newlastcmdptr, TRUE))
         yield = FALSE;
@@ -1219,13 +1224,10 @@ switch (command)
 
   for (;;)
     {
-    uschar *saveptr = ptr;
+    const uschar *saveptr = ptr;
     ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
-    if (*error_pointer != NULL)
-      {
-      yield = FALSE;
-      break;
-      }
+    if (*error_pointer)
+      { yield = FALSE; break; }
 
     /* Ensure "return" is followed by "message"; that's a complete option */
 
@@ -1275,11 +1277,8 @@ switch (command)
     /* Found keyword, read the data item */
 
     ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-    if (*error_pointer != NULL)
-      {
-      yield = FALSE;
-      break;
-      }
+    if (*error_pointer)
+      { yield = FALSE; break; }
     else new->args[i].u = string_copy(buffer);
     }
 
@@ -1314,7 +1313,7 @@ switch (command)
 
   case seen_command:
   case unseen_command:
-  if (*ptr == 0)
+  if (!*ptr)
     {
     *error_pointer = string_sprintf("\"seen\" or \"unseen\" "
       "near line %d is not followed by a command", line_number);
@@ -1335,7 +1334,7 @@ switch (command)
   /* So does noerror */
 
   case noerror_command:
-  if (*ptr == 0)
+  if (!*ptr)
     {
     *error_pointer = string_sprintf("\"noerror\" "
       "near line %d is not followed by a command", line_number);
@@ -1384,11 +1383,11 @@ Returns:      TRUE on success
 */
 
 static BOOL
-read_command_list(uschar **pptr, filter_cmd ***lastcmdptr, BOOL conditional)
+read_command_list(const uschar **pptr, filter_cmd ***lastcmdptr, BOOL conditional)
 {
 if (conditional) expect_endif++;
 had_else_endif = had_neither;
-while (**pptr != 0 && had_else_endif == had_neither)
+while (**pptr && had_else_endif == had_neither)
   {
   if (!read_command(pptr, lastcmdptr)) return FALSE;
   *pptr = nextsigchar(*pptr, TRUE);
@@ -1425,7 +1424,7 @@ static BOOL
 test_condition(condition_block *c, BOOL toplevel)
 {
 BOOL yield = FALSE;
-uschar *exp[2], *p, *pp;
+const uschar *exp[2], * p, * pp;
 int val[2];
 int i;
 
@@ -1483,8 +1482,7 @@ switch (c->type)
 
   case cond_foranyaddress:
   p = c->left.u;
-  pp = expand_string(p);
-  if (pp == NULL)
+  if (!(pp = expand_cstring(p)))
     {
     *error_pointer = string_sprintf("failed to expand \"%s\" in "
       "filter file: %s", p, expand_string_message);
@@ -1494,19 +1492,17 @@ switch (c->type)
   yield = FALSE;
   f.parse_allow_group = TRUE;     /* Allow group syntax */
 
-  while (*pp != 0)
+  while (*pp)
     {
     uschar *error;
     int start, end, domain;
-    int saveend;
+    uschar * s;
 
     p = parse_find_address_end(pp, FALSE);
-    saveend = *p;
+    s = string_copyn(pp, p - pp);
 
-    *p = 0;
     filter_thisaddress =
-      parse_extract_address(pp, &error, &start, &end, &domain, FALSE);
-    *p = saveend;
+      parse_extract_address(s, &error, &start, &end, &domain, FALSE);
 
     if (filter_thisaddress)
       {
@@ -1520,7 +1516,7 @@ switch (c->type)
       }
 
     if (yield) break;
-    if (saveend == 0) break;
+    if (!*p) break;
     pp = p + 1;
     }
 
@@ -1535,8 +1531,7 @@ switch (c->type)
   p = c->left.u;
   for (i = 0; i < 2; i++)
     {
-    exp[i] = expand_string(p);
-    if (exp[i] == NULL)
+    if (!(exp[i] = expand_cstring(p)))
       {
       *error_pointer = string_sprintf("failed to expand \"%s\" in "
         "filter file: %s", p, expand_string_message);
@@ -1577,9 +1572,10 @@ switch (c->type)
     case cond_ENDS:
       {
       int len = Ustrlen(exp[1]);
-      uschar *s = exp[0] + Ustrlen(exp[0]) - len;
-      yield = (s < exp[0])? FALSE :
-        ((c->type == cond_ends)? strcmpic(s, exp[1]) : Ustrcmp(s, exp[1])) == 0;
+      const uschar *s = exp[0] + Ustrlen(exp[0]) - len;
+      yield = s < exp[0]
+	? FALSE
+	: (c->type == cond_ends ? strcmpic(s, exp[1]) : Ustrcmp(s, exp[1])) == 0;
       }
     break;
 
@@ -1691,17 +1687,16 @@ while (commands)
 
   for (i = 0; i < (command_exparg_count[commands->command] & 15); i++)
     {
-    uschar *ss = commands->args[i].u;
+    const uschar *ss = commands->args[i].u;
     if (!ss)
       expargs[i] = NULL;
-    else
-      if (!(expargs[i] = expand_string(ss)))
-        {
-        *error_pointer = string_sprintf("failed to expand \"%s\" in "
-          "%s command: %s", ss, command_list[commands->command],
-          expand_string_message);
-        return FF_ERROR;
-        }
+    else if (!(expargs[i] = expand_cstring(ss)))
+      {
+      *error_pointer = string_sprintf("failed to expand \"%s\" in "
+	"%s command: %s", ss, command_list[commands->command],
+	expand_string_message);
+      return FF_ERROR;
+      }
     }
 
   /* Now switch for each command, setting the "delivered" flag if any of them
@@ -2050,6 +2045,8 @@ while (commands)
       *error_pointer = fmsg = US string_printing(Ustrlen(expargs[0]) > 1024
 	? string_sprintf("%.1000s ... (truncated)", expargs[0])
 	: string_copy(expargs[0]));
+      for(uschar * s = fmsg; *s; s++)
+	if (!s[1] && *s == '\n') { *s = '\0'; break; }	/* drop trailing newline */
 
       if (filter_test != FTEST_NONE)
 	{
@@ -2129,12 +2126,11 @@ while (commands)
 
 	for (i = 0; i < MAILARGS_STRING_COUNT; i++)
 	  {
-	  const uschar *p;
 	  const uschar *s = expargs[i];
 
 	  if (!s) continue;
 
-	  if (i != mailarg_index_text) for (p = s; *p != 0; p++)
+	  if (i != mailarg_index_text) for (const uschar * p = s; *p; p++)
 	    {
 	    int c = *p;
 	    if (i > mailarg_index_text)
@@ -2184,14 +2180,14 @@ while (commands)
 
 	  /* The string is OK */
 
-	  commands->args[i].u = s;	/*XXX loses track of const */
+	  commands->args[i].u = s;
 	  }
 
 	/* Proceed with mail or vacation command */
 
 	if (filter_test != FTEST_NONE)
 	  {
-	  uschar *to = commands->args[mailarg_index_to].u;
+	  const uschar *to = commands->args[mailarg_index_to].u;
 	  indent();
 	  printf("%sail to: %s%s%s\n", (commands->seen)? "Seen m" : "M",
 	    to ? to : US"<default>",
@@ -2215,15 +2211,22 @@ while (commands)
 	  }
 	else
 	  {
-	  uschar *tt;
-	  uschar *to = commands->args[mailarg_index_to].u;
+	  const uschar *tt;
+	  const uschar *to = commands->args[mailarg_index_to].u;
 	  gstring * log_addr = NULL;
 
 	  if (!to) to = expand_string(US"$reply_address");
 	  while (isspace(*to)) to++;
 
-	  for (tt = to; *tt != 0; tt++)     /* Get rid of newlines */
-	    if (*tt == '\n') *tt = ' ';
+	  for (tt = to; *tt; tt++)     /* Get rid of newlines */
+	    if (*tt == '\n')
+	      {
+	      uschar * s = string_copy(to);
+	      for (uschar * ss = s; *ss; ss++)
+		if (*ss == '\n') *ss = ' ';
+	      to = s;
+	      break;
+	      }
 
 	  DEBUG(D_filter)
 	    {
@@ -2234,8 +2237,8 @@ while (commands)
 	      commands->noerror ? " (noerror)" : "");
 	    for (i = 1; i < MAILARGS_STRING_COUNT; i++)
 	      {
-	      uschar *arg = commands->args[i].u;
-	      if (arg != NULL)
+	      const uschar *arg = commands->args[i].u;
+	      if (arg)
 		{
 		int len = Ustrlen(mailargs[i]);
 		while (len++ < 15) debug_printf_indent(" ");
@@ -2253,7 +2256,7 @@ while (commands)
 	  string gets too long. */
 
 	  tt = to;
-	  while (*tt != 0)
+	  while (*tt)
 	    {
 	    uschar *ss = parse_find_address_end(tt, FALSE);
 	    uschar *recipient, *errmess;
@@ -2329,7 +2332,7 @@ while (commands)
 
 	  for (i = 1; i < mailargs_string_passed; i++)
 	    {
-	    uschar *ss = commands->args[i].u;
+	    const uschar *ss = commands->args[i].u;
 	    *(USS((US addr->reply) + reply_offsets[i])) =
 	      ss ? string_copy(ss) : NULL;
 	    }
@@ -2502,12 +2505,12 @@ Returns:      FF_DELIVERED     success, a significant action was taken
 */
 
 int
-filter_interpret(uschar *filter, int options, address_item **generated,
+filter_interpret(const uschar *filter, int options, address_item **generated,
   uschar **error)
 {
 int i;
 int yield = FF_ERROR;
-uschar *ptr = filter;
+const uschar *ptr = filter;
 const uschar *save_headers_charset = headers_charset;
 filter_cmd *commands = NULL;
 filter_cmd **lastcmdptr = &commands;

@@ -587,7 +587,7 @@ redirect.string = (redirect.isfile = (ob->file != NULL))
 frc = rda_interpret(&redirect, options, ob->include_directory,
   ob->sieve_vacation_directory, ob->sieve_enotify_mailto_owner,
   ob->sieve_useraddress, ob->sieve_subaddress, &ugid, &generated,
-  &(addr->message), ob->skip_syntax_errors? &eblock : NULL, &filtertype,
+  &addr->message, ob->skip_syntax_errors? &eblock : NULL, &filtertype,
   string_sprintf("%s router (recipient is %s)", rblock->name, addr->address));
 
 qualify_domain_recipient = save_qualify_domain_recipient;

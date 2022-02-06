@@ -166,7 +166,7 @@ Returns:      pointer to string in store; NULL on error
 */
 
 static uschar *
-rda_get_file_contents(redirect_block *rdata, int options, uschar **error,
+rda_get_file_contents(const redirect_block *rdata, int options, uschar **error,
   int *yield)
 {
 FILE *fwd;
@@ -337,13 +337,13 @@ Returns:                    a suitable return for rda_interpret()
 */
 
 static int
-rda_extract(redirect_block *rdata, int options, uschar *include_directory,
+rda_extract(const redirect_block *rdata, int options, uschar *include_directory,
   uschar *sieve_vacation_directory, uschar *sieve_enotify_mailto_owner,
   uschar *sieve_useraddress, uschar *sieve_subaddress,
   address_item **generated, uschar **error, error_block **eblockp,
   int *filtertype)
 {
-uschar *data;
+const uschar * data;
 
 if (rdata->isfile)
   {

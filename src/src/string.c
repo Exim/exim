@@ -771,9 +771,9 @@ Returns:         pointer to substring in string, or NULL if not found
 */
 
 uschar *
-strstric(uschar * s, uschar * t, BOOL space_follows)
+strstric(const uschar * s, const uschar * t, BOOL space_follows)
 {
-uschar * p = t;
+const uschar * p = t;
 uschar * yield = NULL;
 int cl = tolower(*p);
 int cu = toupper(*p);

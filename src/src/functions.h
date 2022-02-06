@@ -267,7 +267,7 @@ extern void    modify_variable(uschar *, void *);
 
 extern BOOL    fd_ready(int, time_t);
 
-extern int     filter_interpret(uschar *, int, address_item **, uschar **);
+extern int     filter_interpret(const uschar *, int, address_item **, uschar **);
 extern BOOL    filter_personal(string_item *, BOOL);
 extern BOOL    filter_runtest(int, uschar *, BOOL, BOOL);
 extern BOOL    filter_system_interpret(address_item **, uschar **);
@@ -589,7 +589,7 @@ extern uschar *string_nextinlist_trc(const uschar **listptr, int *separator, usc
 
 extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
-extern uschar *strstric(uschar *, uschar *, BOOL);
+extern uschar *strstric(const uschar *, const uschar *, BOOL);
 
 extern int     test_harness_fudged_queue_time(int);
 extern void    tcp_init(void);
