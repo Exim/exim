@@ -53,7 +53,7 @@ static dmarc_exim_p dmarc_policy_description[] = {
 };
 
 
-gstring * g
+gstring *
 dmarc_version_report(gstring * g)
 {
 return string_fmt_append(g, "Library version: dmarc: Compile: %d.%d.%d.%d\n",
