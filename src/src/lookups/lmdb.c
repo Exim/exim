@@ -130,10 +130,9 @@ mdb_env_close(db_env);
 #include "../version.h"
 
 gstring *
-lmdb_version_report(BOOL is_stdout)
+lmdb_version_report(gstring * g)
 {
-gstring * g = string_fmt_append(g,
-			 "Library version: LMDB: Compile: %d.%d.%d\n",
+g = string_fmt_append(g, "Library version: LMDB: Compile: %d.%d.%d\n",
 			  MDB_VERSION_MAJOR, MDB_VERSION_MINOR, MDB_VERSION_PATCH);
 #ifdef DYNLOOKUP
 g = string_fmt_append(g, "                        Exim version %s\n", EXIM_VERSION_STR);
