@@ -1354,15 +1354,16 @@ for (;;)
 
   if (special)
     {
-    uschar *ss = Ustrchr(s+1, ':') + 1;
+    uschar * ss = Ustrchr(s+1, ':') + 1; /* line after the special... */
     if ((options & specopt) == specbit)
       {
       *error = string_sprintf("\"%.*s\" is not permitted", len, s);
       return FF_ERROR;
       }
-    while (*ss && isspace(*ss)) ss++;
-    while (s[len] && s[len] != '\n') len++;
-    *error = string_copyn(ss, s + len - ss);
+    while (*ss && isspace(*ss)) ss++;	/* skip leading whitespace */
+    if ((len = Ustrlen(ss)) > 0)	/* ignore trailing newlines */
+      for (const uschar * t = ss + len - 1; t >= ss && *t == '\n'; t--) len--;
+    *error = string_copyn(ss, len);	/* becomes the error */
     return special;
     }
 
