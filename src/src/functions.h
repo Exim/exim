@@ -478,7 +478,7 @@ extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    sha1_end(hctx *, const uschar *, int, uschar *);
 extern void    sha1_mid(hctx *, const uschar *);
 extern void    sha1_start(hctx *);
-extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
+extern int     sieve_interpret(const uschar *, int, uschar *, uschar *, uschar *,
                  uschar *, address_item **, uschar **);
 extern void    sigalrm_handler(int);
 extern void    smtp_closedown(uschar *);
@@ -588,7 +588,8 @@ extern uschar *string_nextinlist_trc(const uschar **listptr, int *separator, usc
 
 extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
-extern uschar *strstric(const uschar *, const uschar *, BOOL);
+extern uschar *strstric(uschar *, uschar *, BOOL);
+extern const uschar *strstric_c(const uschar *, const uschar *, BOOL);
 
 extern int     test_harness_fudged_queue_time(int);
 extern void    tcp_init(void);

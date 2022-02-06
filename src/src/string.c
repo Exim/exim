@@ -770,11 +770,11 @@ Arguments:
 Returns:         pointer to substring in string, or NULL if not found
 */
 
-uschar *
-strstric(const uschar * s, const uschar * t, BOOL space_follows)
+const uschar *
+strstric_c(const uschar * s, const uschar * t, BOOL space_follows)
 {
 const uschar * p = t;
-uschar * yield = NULL;
+const uschar * yield = NULL;
 int cl = tolower(*p);
 int cu = toupper(*p);
 
@@ -805,6 +805,11 @@ while (*s)
 return NULL;
 }
 
+uschar *
+strstric(uschar * s, uschar * t, BOOL space_follows)
+{
+return US strstric_c(s, t, space_follows);
+}
 
 
 #ifdef COMPILE_UTILITY

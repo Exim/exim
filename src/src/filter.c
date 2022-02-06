@@ -1553,7 +1553,7 @@ switch (c->type)
     break;
 
     case cond_contains:
-    yield = strstric(exp[0], exp[1], FALSE) != NULL;
+    yield = strstric_c(exp[0], exp[1], FALSE) != NULL;
     break;
 
     case cond_CONTAINS:

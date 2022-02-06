@@ -54,7 +54,7 @@
 
 struct Sieve
   {
-  uschar *filter;
+  const uschar *filter;
   const uschar *pc;
   int line;
   const uschar *errmsg;
@@ -3554,7 +3554,7 @@ Returns:      FF_DELIVERED     success, a significant action was taken
 */
 
 int
-sieve_interpret(uschar *filter, int options, uschar *vacation_directory,
+sieve_interpret(const uschar *filter, int options, uschar *vacation_directory,
   uschar *enotify_mailto_owner, uschar *useraddress, uschar *subaddress,
   address_item **generated, uschar **error)
 {
