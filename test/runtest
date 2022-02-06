@@ -369,6 +369,10 @@ my($is_mail) = $file =~ /mail/;
 
 $date = "\\d{2}-\\w{3}-\\d{4}\\s\\d{2}:\\d{2}:\\d{2}";
 
+# Debug time & pid
+
+$time_pid = "(?:\\d{2}:\\d{2}:\\d{2}\\s+\\d+\\s)";
+
 # Pattern for matching pids at start of stderr lines; initially something
 # that won't match.
 
@@ -1117,28 +1121,28 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^TLS: not preloading server certs$/;
 
     # drop lookups
-    next if /^(?:\d\d:\d\d:\d\d\ \d+\ )?(?: Lookups\ \(built-in\):
+    next if /^$time_pid?(?: Lookups\ \(built-in\):
 					| Loading\ lookup\ modules\ from
 					| Loaded\ \d+\ lookup\ modules
 					| Total\ \d+\ lookups)/x;
 
     # drop compiler information
-    next if /^(?:\d\d:\d\d:\d\d \d+ )?Compiler:/;
+    next if /^$time_pid?Compiler:/;
 
     # and the ugly bit
     # different libraries will have different numbers (possibly 0) of follow-up
     # lines, indenting with more data
-    if (/^(?:\d\d:\d\d:\d\d \d+ )?Library version:/) {
+    if (/^$time_pid?Library version:/) {
       while (1) {
 	$_ = <IN>;
-	next if /^(?:\d\d:\d\d:\d\d \d+ )?\s/;
+	next if /^$time_pid?\s/;
 	goto RESET_AFTER_EXTRA_LINE_READ;
       }
     }
 
     # drop other build-time controls emitted for debugging
-    next if /^(?:\d\d:\d\d:\d\d \d+ )?WHITELIST_D_MACROS:/;
-    next if /^(?:\d\d:\d\d:\d\d \d+ )?TRUSTED_CONFIG_LIST:/;
+    next if /^$time_pid?WHITELIST_D_MACROS:/;
+    next if /^$time_pid?TRUSTED_CONFIG_LIST:/;
 
     # As of Exim 4.74, we log when a setgid fails; because we invoke Exim
     # with -be, privileges will have been dropped, so this will always
@@ -1410,10 +1414,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Time-only, in debug output
     # we have to handle double lines from the DBOPEN, hence placed down here and /mg
-    s/^\d\d:\d\d:\d\d\s/01:01:01 /mg;
+    s/^\d\d:\d\d:\d\d\s+/01:01:01 /mg;
 
     # pid in debug lines
-    s/^(\d\d:\d\d:\d\d)(\s\d+\s)/"$1 " . new_value($2, "%s", \$next_pid) . " "/mgxe;
+    s/^(\d\d:\d\d:\d\d)(\s+\d+\s)/"$1 " . new_value($2, "%s", \$next_pid) . " "/mgxe;
     s/(?<!post-)[Pp]rocess\K(\s\d+ )/new_value($1, "%s", \$next_pid) . " "/gxe;
 
     # When Exim is checking the size of directories for maildir, it uses
@@ -1440,8 +1444,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       # Skip some lines that Exim puts out at the start of debugging output
       # because they will be different in different binaries.
 
-      print MUNGED
-        unless (/^(?:\d\d:\d\d:\d\d\ \d+\ )?
+      next if /^$time_pid?
 		  (?: Berkeley\ DB:\s
 		    | Probably\ (?:Berkeley\ DB|ndbm|GDBM)
 		    | Authenticators:
@@ -1456,10 +1459,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 		    | Configure\ owner
 		    | Size\ of\ off_t:
 		  )
-		/x
-               );
+		/x;
 
-
+      print MUNGED;
       }
 
     next;
