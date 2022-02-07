@@ -15,13 +15,13 @@ acl_smtp_data = chk_data
 begin acl
 
 chk_mail:
-  accept control = debug/tag=_acl/opts=-all+acl/pretrigger=270
+  # Too hard to check for the buffer-full case due to test host
+  # varying path sizes on the 'processing "verb"' lines
+  # So give a massive buffer we will not fill.
+  accept control = debug/tag=_acl/opts=-all+acl/pretrigger=2048
   	 message = yes1
   	 message = yes2
   	 message = yes3
-  	 message = yes4
-  	 message = yes5
-  	 message = yes6
 
 chk_rcpt:
   accept control = debug/trigger=now

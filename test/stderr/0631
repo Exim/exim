@@ -1,7 +1,6 @@
+  message: yes1
+  message: yes2
   message: yes3
-  message: yes4
-  message: yes5
-  message: yes6
 accept: condition test succeeded in ACL "chk_mail"
 end of ACL "chk_mail": ACCEPT
 using ACL "chk_rcpt"
