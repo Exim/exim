@@ -58,7 +58,7 @@ dmarc_version_report(gstring * g)
 {
 return string_fmt_append(g, "Library version: dmarc: Compile: %d.%d.%d.%d\n",
     (OPENDMARC_LIB_VERSION & 0xff000000) >> 24, (OPENDMARC_LIB_VERSION & 0x00ff0000) >> 16,
-    (OPENDMARC_LIB_VERSION & 0x0000ff00) >> 8, OPENDMARC_LIB_VERSION & 0x000000ff));
+    (OPENDMARC_LIB_VERSION & 0x0000ff00) >> 8, OPENDMARC_LIB_VERSION & 0x000000ff);
 }
 
 
