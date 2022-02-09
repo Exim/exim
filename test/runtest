@@ -1107,9 +1107,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^GnuTLS<2>: Intel (AES|GCM) accelerator was detected/;
     next if /^Added \d{3} certificate authorities/;
     next if /^TLS: not preloading CRL for server/;
-    next if /^GnuTLS<3>:ASSERT: extensions.c\[_gnutls_get_extension/;
-    next if /^GnuTLS<3>:ASSERT: \.\.\/\.\.\/\.\.\/lib\/x509\//;
-    next if /^GnuTLS<2>:Initializing PKCS #11 modules/;
+    next if /^GnuTLS<3>: ASSERT: extensions.c\[_gnutls_get_extension/;
+    next if /^GnuTLS<3>: ASSERT: \.\.\/\.\.\/\.\.\/lib\/x509\//;
+    next if /^GnuTLS<2>: Initializing PKCS #11 modules/;
 
 
     # only kevent platforms (FreeBSD, OpenBSD) say this
