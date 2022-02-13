@@ -10,4 +10,6 @@ close(OUT);
 #
 exim -odi filter include
 ****
+exim -DINC -odi include
+****
 no_msglog_check

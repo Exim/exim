@@ -2,7 +2,6 @@
 
 .include DIR/aux-var/std_conf_prefix
 
-
 # ----- Main settings -----
 
 
@@ -20,6 +19,9 @@ r1:
 r2:
   driver = redirect
   local_parts = include
+.ifdef INC
+  include_directory = DIR/
+.endif
   data = :include:DIR/test-holey
 
 

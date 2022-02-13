@@ -1422,8 +1422,10 @@ for (;;)
     if (directory)
       {
       int len = Ustrlen(directory);
-      uschar * p = filename + len;
+      uschar * p;
 
+      while (len > 0 && directory[len-1] == '/') len--;		/* ignore trailing '/' */
+      p = filename + len;
       if (Ustrncmp(filename, directory, len) != 0 || *p != '/')
         {
         *error = string_sprintf("included file %s is not in directory %s",
@@ -1448,9 +1450,10 @@ for (;;)
 	{
 	uschar temp;
 	int fd2;
-	uschar * q = p;
+	uschar * q = p + 1;		/* skip dividing '/' */
 
-	while (*++p && *p != '/') ;
+	while (*q == '/') q++;		/* skip extra '/' */
+	while (*++p && *p != '/') ;	/* end of component */
 	temp = *p;
 	*p = '\0';
 

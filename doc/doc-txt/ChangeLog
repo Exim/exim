@@ -76,6 +76,11 @@ JH/16 Debugging initiated by an ACL control now continues through into routing
 JH/17 The "expand" debug selector now gives more detail, specifically on the
       result of expansion operators and items.
 
+JH/18 Bug 2751: Fix include_directory in redirect routers.  Previously a
+      bad comparison between the option value and the name of the file to
+      be included was done, and a mismatch was wrongly identified.
+      4.88 to 4.95 are affected.
+
 
 Exim version 4.95
 -----------------
