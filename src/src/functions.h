@@ -248,7 +248,7 @@ extern const uschar * exim_errstr(int);
 extern void    exim_exit(int) NORETURN;
 extern void    exim_gettime(struct timeval *);
 extern void    exim_nullstd(void);
-extern void    exim_setugid(uid_t, gid_t, BOOL, uschar *);
+extern void    exim_setugid(uid_t, gid_t, BOOL, const uschar *);
 extern void    exim_underbar_exit(int) NORETURN;
 extern void    exim_wait_tick(struct timeval *, int);
 extern int     exp_bool(address_item *addr,
@@ -378,7 +378,7 @@ extern int     open_cutthrough_connection( address_item * addr );
 extern uschar *parse_extract_address(const uschar *, uschar **, int *, int *, int *,
                  BOOL);
 extern int     parse_forward_list(const uschar *, int, address_item **, uschar **,
-                 const uschar *, uschar *, error_block **);
+                 const uschar *, const uschar *, error_block **);
 extern uschar *parse_find_address_end(const uschar *, BOOL);
 extern const uschar *parse_find_at(const uschar *);
 extern const uschar *parse_fix_phrase(const uschar *, int);
@@ -405,9 +405,9 @@ extern void    queue_run(uschar *, uschar *, BOOL);
 
 extern int     random_number(int);
 extern const uschar *rc_to_string(int);
-extern int     rda_interpret(redirect_block *, int, uschar *, uschar *,
-                 uschar *, uschar *, uschar *, ugid_block *, address_item **,
-                 uschar **, error_block **, int *, uschar *);
+extern int     rda_interpret(redirect_block *, int, const uschar *, const uschar *,
+                 const uschar *, const uschar *, const uschar *, const ugid_block *, address_item **,
+                 uschar **, error_block **, int *, const uschar *);
 extern int     rda_is_filter(const uschar *);
 extern BOOL    readconf_depends(driver_instance *, uschar *);
 extern void    readconf_driver_init(uschar *, driver_instance **,
@@ -478,8 +478,9 @@ extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    sha1_end(hctx *, const uschar *, int, uschar *);
 extern void    sha1_mid(hctx *, const uschar *);
 extern void    sha1_start(hctx *);
-extern int     sieve_interpret(const uschar *, int, uschar *, uschar *, uschar *,
-                 uschar *, address_item **, uschar **);
+extern int     sieve_interpret(const uschar *, int, const uschar *,
+		 const uschar *, const uschar *, const uschar *,
+		 address_item **, uschar **);
 extern void    sigalrm_handler(int);
 extern void    smtp_closedown(uschar *);
 extern void    smtp_command_timeout_exit(void) NORETURN;

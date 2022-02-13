@@ -337,11 +337,11 @@ Returns:                    a suitable return for rda_interpret()
 */
 
 static int
-rda_extract(const redirect_block *rdata, int options, uschar *include_directory,
-  uschar *sieve_vacation_directory, uschar *sieve_enotify_mailto_owner,
-  uschar *sieve_useraddress, uschar *sieve_subaddress,
-  address_item **generated, uschar **error, error_block **eblockp,
-  int *filtertype)
+rda_extract(const redirect_block * rdata, int options,
+  const uschar * include_directory, const uschar * sieve_vacation_directory,
+  const uschar * sieve_enotify_mailto_owner, const uschar * sieve_useraddress,
+  const uschar * sieve_subaddress, address_item ** generated, uschar ** error,
+  error_block ** eblockp, int * filtertype)
 {
 const uschar * data;
 
@@ -440,9 +440,9 @@ Returns:     -1 on error, else 0
 static int
 rda_write_string(int fd, const uschar *s)
 {
-int len = (s == NULL)? 0 : Ustrlen(s) + 1;
+int len = s ? Ustrlen(s) + 1 : 0;
 return (  write(fd, &len, sizeof(int)) != sizeof(int)
-       || (s != NULL  &&  write(fd, s, len) != len)
+       || (s   &&  write(fd, s, len) != len)
        )
        ? -1 : 0;
 }
@@ -539,11 +539,11 @@ Returns:        values from extraction function, or FF_NONEXIST:
 */
 
 int
-rda_interpret(redirect_block *rdata, int options, uschar *include_directory,
-  uschar *sieve_vacation_directory, uschar *sieve_enotify_mailto_owner,
-  uschar *sieve_useraddress, uschar *sieve_subaddress, ugid_block *ugid,
-  address_item **generated, uschar **error, error_block **eblockp,
-  int *filtertype, uschar *rname)
+rda_interpret(redirect_block * rdata, int options,
+  const uschar * include_directory, const uschar * sieve_vacation_directory,
+  const uschar * sieve_enotify_mailto_owner, const uschar * sieve_useraddress,
+  const uschar * sieve_subaddress, const ugid_block * ugid, address_item ** generated,
+  uschar ** error, error_block ** eblockp, int * filtertype, const uschar * rname)
 {
 int fd, rc, pfd[2];
 int yield, status;
@@ -964,11 +964,9 @@ if (had_disaster)
   log_write(0, LOG_MAIN|LOG_PANIC, "%s", *error);
   }
 else if (status != 0)
-  {
   log_write(0, LOG_MAIN|LOG_PANIC, "internal problem in %s: unexpected status "
     "%04x from redirect subprocess (but data correctly received)", rname,
     status);
-  }
 
 FINAL_EXIT:
 (void)close(fd);

@@ -71,7 +71,7 @@ struct Sieve
   int require_enotify;
   struct Notification *notified;
 #endif
-  uschar *enotify_mailto_owner;
+  const uschar *enotify_mailto_owner;
 #ifdef SUBADDRESS
   int require_subaddress;
 #endif
@@ -79,7 +79,7 @@ struct Sieve
   int require_vacation;
   int vacation_ran;
 #endif
-  uschar *vacation_directory;
+  const uschar *vacation_directory;
   const uschar *subaddress;
   const uschar *useraddress;
   int require_copy;
@@ -3093,9 +3093,9 @@ while (*filter->pc)
 		? expand_string(US"$local_part_prefix$local_part$local_part_suffix@$domain")
 		: from.character);
               for (string_item * p = recipient; p; p=p->next)
-	       	fprintf(f,"To: %s\n",p->text);
-              fprintf(f,"Auto-Submitted: auto-notified; %s\n",filter->enotify_mailto_owner);
-              if (header.length>0) fprintf(f,"%s",header.character);
+	       	fprintf(f, "To: %s\n",p->text);
+              fprintf(f, "Auto-Submitted: auto-notified; %s\n", filter->enotify_mailto_owner);
+              if (header.length > 0) fprintf(f, "%s", header.character);
               if (message.length==-1)
                 {
                 message.character=US"Notification";
@@ -3105,7 +3105,7 @@ while (*filter->pc)
 		fprintf(f, "Subject: %s\n", parse_quote_2047(message.character,
 		  message.length, US"utf-8", TRUE));
               fprintf(f,"\n");
-              if (body.length>0) fprintf(f,"%s\n",body.character);
+              if (body.length > 0) fprintf(f, "%s\n", body.character);
               fflush(f);
               (void)fclose(f);
               (void)child_close(pid, 0);
@@ -3425,7 +3425,7 @@ filter->require_iascii_numeric=0;
 
 if (parse_white(filter)==-1) return -1;
 
-if (exec && filter->vacation_directory != NULL && filter_test == FTEST_NONE)
+if (exec && filter->vacation_directory && filter_test == FTEST_NONE)
   {
   DIR *oncelogdir;
   struct dirent *oncelog;
@@ -3448,8 +3448,8 @@ if (exec && filter->vacation_directory != NULL && filter_test == FTEST_NONE)
     while ((oncelog = readdir(oncelogdir)))
       if (strlen(oncelog->d_name)==32)
         {
-        uschar *s = string_sprintf("%s/%s",filter->vacation_directory,oncelog->d_name);
-        if (Ustat(s,&properties)==0 && (properties.st_mtime+VACATION_MAX_DAYS*86400)<now)
+        uschar *s = string_sprintf("%s/%s", filter->vacation_directory, oncelog->d_name);
+        if (Ustat(s,&properties) == 0 && properties.st_mtime+VACATION_MAX_DAYS*86400 < now)
           Uunlink(s);
         }
     closedir(oncelogdir);
@@ -3484,7 +3484,7 @@ while (parse_identifier(filter,CUS "require"))
 #ifdef ENOTIFY
     else if (eq_octet(check,&str_enotify,0))
       {
-      if (filter->enotify_mailto_owner == NULL)
+      if (!filter->enotify_mailto_owner)
         {
         filter->errmsg=CUS "enotify disabled";
         return -1;
@@ -3498,7 +3498,7 @@ while (parse_identifier(filter,CUS "require"))
 #ifdef VACATION
     else if (eq_octet(check,&str_vacation,0))
       {
-      if (filter_test == FTEST_NONE && filter->vacation_directory == NULL)
+      if (filter_test == FTEST_NONE && !filter->vacation_directory)
         {
         filter->errmsg=CUS "vacation disabled";
         return -1;
@@ -3554,41 +3554,36 @@ Returns:      FF_DELIVERED     success, a significant action was taken
 */
 
 int
-sieve_interpret(const uschar *filter, int options, uschar *vacation_directory,
-  uschar *enotify_mailto_owner, uschar *useraddress, uschar *subaddress,
-  address_item **generated, uschar **error)
+sieve_interpret(const uschar * filter, int options,
+  const uschar * vacation_directory, const uschar * enotify_mailto_owner,
+  const uschar * useraddress, const uschar * subaddress,
+  address_item ** generated, uschar ** error)
 {
 struct Sieve sieve;
 int r;
-uschar *msg;
+uschar * msg;
 
 DEBUG(D_route) debug_printf("Sieve: start of processing\n");
 sieve.filter = filter;
 
 if (!vacation_directory)
   sieve.vacation_directory = NULL;
-else
+else if (!(sieve.vacation_directory = expand_cstring(vacation_directory)))
   {
-  if (!(sieve.vacation_directory = expand_string(vacation_directory)))
-    {
-    *error = string_sprintf("failed to expand \"%s\" "
-      "(sieve_vacation_directory): %s", vacation_directory,
-      expand_string_message);
-    return FF_ERROR;
-    }
+  *error = string_sprintf("failed to expand \"%s\" "
+    "(sieve_vacation_directory): %s", vacation_directory,
+    expand_string_message);
+  return FF_ERROR;
   }
 
 if (!enotify_mailto_owner)
   sieve.enotify_mailto_owner = NULL;
-else
+else if (!(sieve.enotify_mailto_owner = expand_cstring(enotify_mailto_owner)))
   {
-  if (!(sieve.enotify_mailto_owner = expand_string(enotify_mailto_owner)))
-    {
-    *error = string_sprintf("failed to expand \"%s\" "
-      "(sieve_enotify_mailto_owner): %s", enotify_mailto_owner,
-      expand_string_message);
-    return FF_ERROR;
-    }
+  *error = string_sprintf("failed to expand \"%s\" "
+    "(sieve_enotify_mailto_owner): %s", enotify_mailto_owner,
+    expand_string_message);
+  return FF_ERROR;
   }
 
 sieve.useraddress = useraddress
@@ -3596,14 +3591,13 @@ sieve.useraddress = useraddress
 sieve.subaddress = subaddress;
 
 #ifdef COMPILE_SYNTAX_CHECKER
-if (parse_start(&sieve,0,generated)==1)
+if (parse_start(&sieve, 0, generated) == 1)
 #else
-if (parse_start(&sieve,1,generated)==1)
+if (parse_start(&sieve, 1, generated) == 1)
 #endif
-  {
   if (sieve.keep)
     {
-    add_addr(generated,US"inbox",1,0,0,0);
+    add_addr(generated, US"inbox", 1, 0, 0, 0);
     msg = US"Implicit keep";
     r = FF_DELIVERED;
     }
@@ -3612,7 +3606,6 @@ if (parse_start(&sieve,1,generated)==1)
     msg = US"No implicit keep";
     r = FF_DELIVERED;
     }
-  }
 else
   {
   msg = string_sprintf("Sieve error: %s in line %d",sieve.errmsg,sieve.line);

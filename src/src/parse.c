@@ -1243,7 +1243,7 @@ Returns:      FF_DELIVERED      addresses extracted
 
 int
 parse_forward_list(const uschar *s, int options, address_item **anchor,
-  uschar **error, const uschar *incoming_domain, uschar *directory,
+  uschar **error, const uschar *incoming_domain, const uschar *directory,
   error_block **syntax_errors)
 {
 int count = 0;
@@ -1388,7 +1388,7 @@ for (;;)
       return FF_ERROR;
       }
 
-    if (flen > 255)
+    if (flen > sizeof(filename)-1)
       {
       *error = string_sprintf("included file name \"%s\" is too long", t);
       return FF_ERROR;
@@ -1438,7 +1438,7 @@ for (;;)
       with a flag that fails symlinks. */
 
       {
-      int fd = exim_open2(CS directory, O_RDONLY);
+      int fd = exim_open2(CCS directory, O_RDONLY);
       if (fd < 0)
 	{
 	*error = string_sprintf("failed to open directory %s", directory);

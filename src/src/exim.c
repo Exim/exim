@@ -739,7 +739,7 @@ Returns:     nothing; bombs out on failure
 */
 
 void
-exim_setugid(uid_t uid, gid_t gid, BOOL igflag, uschar *msg)
+exim_setugid(uid_t uid, gid_t gid, BOOL igflag, const uschar * msg)
 {
 uid_t euid = geteuid();
 gid_t egid = getegid();
