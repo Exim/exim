@@ -17,12 +17,7 @@ Version 4.96
 
  4. An event for failing TLS connects to the daemon.
 
- 5. Tainted data used for a query-style lookup should be quoted using the
-    expansion item for the lookup type.  If not, a warning will be written to
-    the main and panic logs.  A future release will enforce this by failing
-    the lookup.
-
- 6. The ACL "debug" control gains options "stop", "pretrigger" and "trigger".
+ 5. The ACL "debug" control gains options "stop", "pretrigger" and "trigger".
 
 
 Version 4.95
