@@ -1,8 +1,12 @@
 no_accept_8bitmime
 bounce_message_file = 
 callout_domain_negative_expire = 1h
+no_commandline_checks_require_admin
 daemon_smtp_ports = 
+debug_store
+dns_cname_loops = 1
 envelope_to_remove
+exim_version = x.yz
 finduser_retries = 0
 gecos_name = CALLER_NAME
 headers_charset = UTF-8
@@ -11,11 +15,14 @@ keep_malformed = 4d
 no_local_from_check
 max_username_length = 8
 never_users = root:root
+notifier_socket = $spool_directory/exim_daemon_notify
 percent_hack_domains = 
 qualify_domain = some.dom.ain
 retry_interval_max = 1d
 receive_timeout = 0s
 sender_unqualified_hosts = localhost:some.host.name
+smtp_backlog_monitor = 0
+no_spool_wireformat
 no_tcp_nodelay
 trusted_users = CALLER:5678
 unknown_login = unknownlogin

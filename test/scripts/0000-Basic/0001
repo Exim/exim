@@ -8,8 +8,12 @@
 exim -bP accept_8bitmime \
          bounce_message_file \
          callout_domain_negative_expire \
+	 commandline_checks_require_admin \
          daemon_smtp_ports \
+	 debug_store \
+	 dns_cname_loops \
          envelope_to_remove \
+	 exim_version \
          finduser_retries \
          gecos_name \
          headers_charset \
@@ -18,11 +22,14 @@ exim -bP accept_8bitmime \
          local_from_check \
          max_username_length \
          never_users \
+	 notifier_socket \
          percent_hack_domains \
          qualify_domain \
          retry_interval_max \ 
          receive_timeout \
          sender_unqualified_hosts \
+	 smtp_backlog_monitor \
+	 spool_wireformat \
          tcp_nodelay \
          trusted_users \ 
          unknown_login \
