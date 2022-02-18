@@ -655,7 +655,7 @@ for (int i = 0; i < 3; i++)
 	  ? US string_printing(rti->message)
 	  : US"unknown error";
         message_length = Ustrlen(message);
-        if (message_length > 150) message_length = 150;
+        if (message_length > EXIM_DB_RLIMIT) message_length = EXIM_DB_RLIMIT;
 
         /* Read a retry record from the database or construct a new one.
         Ignore an old one if it is too old since it was last updated. */
