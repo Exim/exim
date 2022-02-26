@@ -81,6 +81,8 @@ JH/18 Bug 2751: Fix include_directory in redirect routers.  Previously a
       be included was done, and a mismatch was wrongly identified.
       4.88 to 4.95 are affected.
 
+JH/19 Support for Berkeley DB versions 1 and 2 is withdrawn.
+
 
 Exim version 4.95
 -----------------

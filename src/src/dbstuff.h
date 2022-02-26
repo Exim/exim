@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2018 */
-/* Copyright (c) The Exim Maintainers 2020 - 2021 */
+/* Copyright (c) The Exim Maintainers 2020 - 2022 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This header file contains macro definitions so that a variety of DBM
@@ -120,26 +120,26 @@ definition of DB_VERSION_STRING, which is present in versions 2.x onwards. */
 
 /* The API changed (again!) between the 2.x and 3.x versions */
 
-# if DB_VERSION_MAJOR >= 3
+#  if DB_VERSION_MAJOR >= 3
 
 /***************** Berkeley db 3.x/4.x native definitions ******************/
 
 /* Basic DB type */
-#  if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
-#   define EXIM_DB       DB_ENV
+#   if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
+#    define EXIM_DB       DB_ENV
 /* Cursor type, for scanning */
-#   define EXIM_CURSOR   DBC
+#    define EXIM_CURSOR   DBC
 
 /* The datum type used for queries */
-#   define EXIM_DATUM    DBT
+#    define EXIM_DATUM    DBT
 
 /* Some text for messages */
-#   define EXIM_DBTYPE   "db (v4.1+)"
+#    define EXIM_DBTYPE   "db (v4.1+)"
 
 /* Only more-recent versions.  5+ ? */
-#   ifndef DB_FORCESYNC
-#    define DB_FORCESYNC 0
-#   endif
+#    ifndef DB_FORCESYNC
+#     define DB_FORCESYNC 0
+#    endif
 
 
 /* Access functions */
@@ -148,9 +148,9 @@ definition of DB_VERSION_STRING, which is present in versions 2.x onwards. */
 API changed for DB 4.1. - and we also starting using the "env" with a
 specified working dir, to avoid the DBCONFIG file trap. */
 
-#   define ENV_TO_DB(env) ((DB *)((env)->app_private))
+#    define ENV_TO_DB(env) ((DB *)((env)->app_private))
 
-#   define EXIM_DBOPEN__(name, dirname, flags, mode, dbpp) \
+#    define EXIM_DBOPEN__(name, dirname, flags, mode, dbpp) \
   if (  db_env_create(dbpp, 0) != 0						\
      || ((*dbpp)->set_errcall(*dbpp, dbfn_bdb_error_callback), 0)		\
      || (*dbpp)->open(*dbpp, CS dirname, DB_CREATE|DB_INIT_MPOOL|DB_PRIVATE, 0) != 0\
@@ -173,72 +173,72 @@ specified working dir, to avoid the DBCONFIG file trap. */
     }
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
-#   define EXIM_DBGET(db, key, data)      \
+#    define EXIM_DBGET(db, key, data)      \
        (ENV_TO_DB(db)->get(ENV_TO_DB(db), NULL, &key, &data, 0) == 0)
 
 /* EXIM_DBPUT - returns nothing useful, assumes replace mode */
-#   define EXIM_DBPUT(db, key, data)      \
+#    define EXIM_DBPUT(db, key, data)      \
        ENV_TO_DB(db)->put(ENV_TO_DB(db), NULL, &key, &data, 0)
 
 /* EXIM_DBPUTB - non-overwriting for use by dbmbuild */
-#   define EXIM_DBPUTB(db, key, data)      \
+#    define EXIM_DBPUTB(db, key, data)      \
        ENV_TO_DB(db)->put(ENV_TO_DB(db), NULL, &key, &data, DB_NOOVERWRITE)
 
 /* Return values from EXIM_DBPUTB */
 
-#   define EXIM_DBPUTB_OK  0
-#   define EXIM_DBPUTB_DUP DB_KEYEXIST
+#    define EXIM_DBPUTB_OK  0
+#    define EXIM_DBPUTB_DUP DB_KEYEXIST
 
 /* EXIM_DBDEL */
-#   define EXIM_DBDEL(db, key)     ENV_TO_DB(db)->del(ENV_TO_DB(db), NULL, &key, 0)
+#    define EXIM_DBDEL(db, key)     ENV_TO_DB(db)->del(ENV_TO_DB(db), NULL, &key, 0)
 
 /* EXIM_DBCREATE_CURSOR - initialize for scanning operation */
 
-#   define EXIM_DBCREATE_CURSOR(db, cursor) \
+#    define EXIM_DBCREATE_CURSOR(db, cursor) \
        ENV_TO_DB(db)->cursor(ENV_TO_DB(db), NULL, cursor, 0)
 
 /* EXIM_DBSCAN - returns TRUE if data is returned, FALSE at end */
-#   define EXIM_DBSCAN(db, key, data, first, cursor)      \
+#    define EXIM_DBSCAN(db, key, data, first, cursor)      \
        ((cursor)->c_get(cursor, &key, &data,         \
          (first? DB_FIRST : DB_NEXT)) == 0)
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation */
-#   define EXIM_DBDELETE_CURSOR(cursor) \
+#    define EXIM_DBDELETE_CURSOR(cursor) \
        (cursor)->c_close(cursor)
 
 /* EXIM_DBCLOSE */
-#   define EXIM_DBCLOSE__(db) \
+#    define EXIM_DBCLOSE__(db) \
 	(ENV_TO_DB(db)->close(ENV_TO_DB(db), 0) , ((DB_ENV *)(db))->close((DB_ENV *)(db), DB_FORCESYNC))
 
 /* Datum access types - these are intended to be assignable. */
 
-#   define EXIM_DATUM_SIZE(datum)  (datum).size
-#   define EXIM_DATUM_DATA(datum)  (datum).data
+#    define EXIM_DATUM_SIZE(datum)  (datum).size
+#    define EXIM_DATUM_DATA(datum)  (datum).data
 
 /* The whole datum structure contains other fields that must be cleared
 before use, but we don't have to free anything after reading data. */
 
-#   define EXIM_DATUM_INIT(datum)   memset(&datum, 0, sizeof(datum))
-#   define EXIM_DATUM_FREE(datum)
+#    define EXIM_DATUM_INIT(datum)   memset(&datum, 0, sizeof(datum))
+#    define EXIM_DATUM_FREE(datum)
 
-#  else	/* pre- 4.1 */
+#   else	/* pre- 4.1 */
 
-#   define EXIM_DB       DB
+#    define EXIM_DB       DB
 
 /* Cursor type, for scanning */
-#   define EXIM_CURSOR   DBC
+#    define EXIM_CURSOR   DBC
 
 /* The datum type used for queries */
-#   define EXIM_DATUM    DBT
+#    define EXIM_DATUM    DBT
 
 /* Some text for messages */
-#   define EXIM_DBTYPE   "db (v3/4)"
+#    define EXIM_DBTYPE   "db (v3/4)"
 
 /* Access functions */
 
 /* EXIM_DBOPEN - sets *dbpp to point to an EXIM_DB, NULL if failed. */
 
-#   define EXIM_DBOPEN__(name, dirname, flags, mode, dbpp) \
+#    define EXIM_DBOPEN__(name, dirname, flags, mode, dbpp) \
        if (db_create(dbpp, NULL, 0) != 0 || \
          ((*dbpp)->set_errcall(*dbpp, dbfn_bdb_error_callback), \
          ((*dbpp)->open)(*dbpp, CS name, NULL, \
@@ -247,219 +247,59 @@ before use, but we don't have to free anything after reading data. */
          mode)) != 0) *(dbpp) = NULL
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
-#   define EXIM_DBGET(db, key, data)      \
+#    define EXIM_DBGET(db, key, data)      \
        ((db)->get(db, NULL, &key, &data, 0) == 0)
 
 /* EXIM_DBPUT - returns nothing useful, assumes replace mode */
-#   define EXIM_DBPUT(db, key, data)      \
+#    define EXIM_DBPUT(db, key, data)      \
        (db)->put(db, NULL, &key, &data, 0)
 
 /* EXIM_DBPUTB - non-overwriting for use by dbmbuild */
-#   define EXIM_DBPUTB(db, key, data)      \
+#    define EXIM_DBPUTB(db, key, data)      \
        (db)->put(db, NULL, &key, &data, DB_NOOVERWRITE)
 
 /* Return values from EXIM_DBPUTB */
 
-#   define EXIM_DBPUTB_OK  0
-#   define EXIM_DBPUTB_DUP DB_KEYEXIST
+#    define EXIM_DBPUTB_OK  0
+#    define EXIM_DBPUTB_DUP DB_KEYEXIST
 
 /* EXIM_DBDEL */
-#   define EXIM_DBDEL(db, key)     (db)->del(db, NULL, &key, 0)
+#    define EXIM_DBDEL(db, key)     (db)->del(db, NULL, &key, 0)
 
 /* EXIM_DBCREATE_CURSOR - initialize for scanning operation */
 
-#   define EXIM_DBCREATE_CURSOR(db, cursor) \
+#    define EXIM_DBCREATE_CURSOR(db, cursor) \
        (db)->cursor(db, NULL, cursor, 0)
 
 /* EXIM_DBSCAN - returns TRUE if data is returned, FALSE at end */
-#   define EXIM_DBSCAN(db, key, data, first, cursor)      \
+#    define EXIM_DBSCAN(db, key, data, first, cursor)      \
        ((cursor)->c_get(cursor, &key, &data,         \
          (first? DB_FIRST : DB_NEXT)) == 0)
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation */
-#   define EXIM_DBDELETE_CURSOR(cursor) \
+#    define EXIM_DBDELETE_CURSOR(cursor) \
        (cursor)->c_close(cursor)
 
 /* EXIM_DBCLOSE */
-#   define EXIM_DBCLOSE__(db)        (db)->close(db, 0)
+#    define EXIM_DBCLOSE__(db)        (db)->close(db, 0)
 
 /* Datum access types - these are intended to be assignable. */
 
-#   define EXIM_DATUM_SIZE(datum)  (datum).size
-#   define EXIM_DATUM_DATA(datum)  (datum).data
+#    define EXIM_DATUM_SIZE(datum)  (datum).size
+#    define EXIM_DATUM_DATA(datum)  (datum).data
 
 /* The whole datum structure contains other fields that must be cleared
 before use, but we don't have to free anything after reading data. */
 
-#   define EXIM_DATUM_INIT(datum)   memset(&datum, 0, sizeof(datum))
-#   define EXIM_DATUM_FREE(datum)
+#    define EXIM_DATUM_INIT(datum)   memset(&datum, 0, sizeof(datum))
+#    define EXIM_DATUM_FREE(datum)
 
-#  endif
-
-
-# else /* DB_VERSION_MAJOR >= 3 */
-
-/******************* Berkeley db 2.x native definitions ********************/
-
-/* Basic DB type */
-# define EXIM_DB       DB
-
-/* Cursor type, for scanning */
-# define EXIM_CURSOR   DBC
-
-/* The datum type used for queries */
-# define EXIM_DATUM    DBT
-
-/* Some text for messages */
-# define EXIM_DBTYPE   "db (v2)"
-
-/* Access functions */
-
-/* EXIM_DBOPEN - sets *dbpp to point to an EXIM_DB, NULL if failed */
-# define EXIM_DBOPEN__(name, dirname, flags, mode, dbpp)         \
-       if ((errno = db_open(CS name, DB_HASH,           \
-         ((flags) == O_RDONLY)? DB_RDONLY : DB_CREATE, \
-         mode, NULL, NULL, dbpp)) != 0) *(dbpp) = NULL
-
-/* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
-# define EXIM_DBGET(db, key, data)      \
-       ((db)->get(db, NULL, &key, &data, 0) == 0)
-
-/* EXIM_DBPUT - returns nothing useful, assumes replace mode */
-# define EXIM_DBPUT(db, key, data)      \
-       (db)->put(db, NULL, &key, &data, 0)
-
-/* EXIM_DBPUTB - non-overwriting for use by dbmbuild */
-# define EXIM_DBPUTB(db, key, data)      \
-       (db)->put(db, NULL, &key, &data, DB_NOOVERWRITE)
-
-/* Return values from EXIM_DBPUTB */
-
-# define EXIM_DBPUTB_OK  0
-# define EXIM_DBPUTB_DUP DB_KEYEXIST
-
-/* EXIM_DBDEL */
-# define EXIM_DBDEL(db, key)     (db)->del(db, NULL, &key, 0)
-
-/* EXIM_DBCREATE_CURSOR - initialize for scanning operation */
-
-/* The API of this function was changed between releases 2.4.14 and 2.7.3. I do
-not know exactly where the change happened, but the Change Log for 2.5.9 lists
-the new option that is available, so I guess that it happened at 2.5.x. */
-
-# if DB_VERSION_MINOR >= 5
-# define EXIM_DBCREATE_CURSOR(db, cursor) \
-       (db)->cursor(db, NULL, cursor, 0)
-# else
-# define EXIM_DBCREATE_CURSOR(db, cursor) \
-       (db)->cursor(db, NULL, cursor)
-# endif
-
-/* EXIM_DBSCAN - returns TRUE if data is returned, FALSE at end */
-# define EXIM_DBSCAN(db, key, data, first, cursor)      \
-       ((cursor)->c_get(cursor, &key, &data,         \
-         (first? DB_FIRST : DB_NEXT)) == 0)
-
-/* EXIM_DBDELETE_CURSOR - terminate scanning operation */
-# define EXIM_DBDELETE_CURSOR(cursor) \
-       (cursor)->c_close(cursor)
-
-/* EXIM_DBCLOSE */
-# define EXIM_DBCLOSE__(db)        (db)->close(db, 0)
-
-/* Datum access types - these are intended to be assignable. */
-
-# define EXIM_DATUM_SIZE(datum)  (datum).size
-# define EXIM_DATUM_DATA(datum)  (datum).data
-
-/* The whole datum structure contains other fields that must be cleared
-before use, but we don't have to free anything after reading data. */
-
-# define EXIM_DATUM_INIT(datum)   memset(&datum, 0, sizeof(datum))
-# define EXIM_DATUM_FREE(datum)
-
-# endif /* DB_VERSION_MAJOR >= 3 */
+#   endif
 
 
-/* If DB_VERSION_TYPE is not defined, we have version 1.x */
-
-# else  /* DB_VERSION_TYPE */
-
-/******************* Berkeley db 1.x native definitions ********************/
-
-/* Basic DB type */
-# define EXIM_DB       DB
-
-/* Cursor type, not used with DB 1.x: just set up a dummy */
-# define EXIM_CURSOR   int
-
-/* The datum type used for queries */
-# define EXIM_DATUM    DBT
-
-/* Some text for messages */
-# define EXIM_DBTYPE   "db (v1)"
-
-/* When scanning, for the non-first case we historically just passed 0
-as the flags field and it worked.  On FreeBSD 8 it no longer works and
-instead leads to memory exhaustion.  The man-page on FreeBSD says to use
-R_NEXT, but this 1.x is a historical fallback and I've no idea how portable
-the use of that flag is; so the solution is to define R_NEXT here if it's not
-already defined, with a default value of 0 because that's what we've always
-before been able to pass successfully. */
-# ifndef R_NEXT
-#  define R_NEXT 0
-# endif
-
-/* Access functions */
-
-/* EXIM_DBOPEN - sets *dbpp to point to an EXIM_DB, NULL if failed */
-# define EXIM_DBOPEN__(name, dirname, flags, mode, dbpp) \
-       *(dbpp) = dbopen(CS name, flags, mode, DB_HASH, NULL)
-
-/* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
-# define EXIM_DBGET(db, key, data)      \
-       ((db)->get(db, &key, &data, 0) == 0)
-
-/* EXIM_DBPUT - returns nothing useful, assumes replace mode */
-# define EXIM_DBPUT(db, key, data)      \
-       (db)->put(db, &key, &data, 0)
-
-/* EXIM_DBPUTB - non-overwriting for use by dbmbuild */
-# define EXIM_DBPUTB(db, key, data)      \
-       (db)->put(db, &key, &data, R_NOOVERWRITE)
-
-/* Returns from EXIM_DBPUTB */
-
-# define EXIM_DBPUTB_OK  0
-# define EXIM_DBPUTB_DUP 1
-
-/* EXIM_DBDEL */
-# define EXIM_DBDEL(db, key)     (db)->del(db, &key, 0)
-
-/* EXIM_DBCREATE_CURSOR - initialize for scanning operation (null) */
-# define EXIM_DBCREATE_CURSOR(db, cursor) {}
-
-/* EXIM_DBSCAN - returns TRUE if data is returned, FALSE at end */
-# define EXIM_DBSCAN(db, key, data, first, cursor)      \
-       ((db)->seq(db, &key, &data, (first? R_FIRST : R_NEXT)) == 0)
-
-/* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). */
-# define EXIM_DBDELETE_CURSOR(cursor) { }
-
-/* EXIM_DBCLOSE */
-# define EXIM_DBCLOSE__(db)        (db)->close(db)
-
-/* Datum access types - these are intended to be assignable */
-
-# define EXIM_DATUM_SIZE(datum)  (datum).size
-# define EXIM_DATUM_DATA(datum)  (datum).data
-
-/* There's no clearing required before use, and we don't have to free anything
-after reading data. */
-
-# define EXIM_DATUM_INIT(datum)
-# define EXIM_DATUM_FREE(datum)
-
+#  else /* DB_VERSION_MAJOR >= 3 */
+#   error Berkeley DB versions earlier than 3 are not supported */
+#  endif /* DB_VERSION_MAJOR */
 # endif /* DB_VERSION_STRING */
 
 
@@ -683,6 +523,12 @@ after reading data. */
 
 # endif
 
+#ifndef EXIM_DB
+# define EXIM_DB void		/* dummy */
+#endif
+#ifndef EXIM_CURSOR
+# define EXIM_CURSOR void	/* dummy */
+#endif
 /********************* End of dbm library definitions **********************/
 
 
