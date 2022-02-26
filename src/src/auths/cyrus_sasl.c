@@ -378,7 +378,7 @@ for (rc = SASL_CONTINUE; rc == SASL_CONTINUE; )
     HDEBUG(D_auth)
       debug_printf("Cyrus SASL library will not tell us the username: %s\n",
 	  sasl_errstring(rc, NULL, NULL));
-    log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
+    log_write(0, LOG_REJECT, "%s authenticator (%s): "
        "Cyrus SASL username fetch problem: %s", ablock->name, ob->server_mech,
        sasl_errstring(rc, NULL, NULL));
     sasl_dispose(&conn);
@@ -397,7 +397,7 @@ for (rc = SASL_CONTINUE; rc == SASL_CONTINUE; )
       /* these are considered permanent failure codes */
       HDEBUG(D_auth)
 	debug_printf("Cyrus SASL permanent failure %d (%s)\n", rc, sasl_errstring(rc, NULL, NULL));
-      log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
+      log_write(0, LOG_REJECT, "%s authenticator (%s): "
 	 "Cyrus SASL permanent failure: %s", ablock->name, ob->server_mech,
 	 sasl_errstring(rc, NULL, NULL));
       sasl_dispose(&conn);
@@ -427,7 +427,7 @@ for (rc = SASL_CONTINUE; rc == SASL_CONTINUE; )
 	HDEBUG(D_auth)
 	  debug_printf("Cyrus SASL library will not tell us the SSF: %s\n",
 	      sasl_errstring(rc, NULL, NULL));
-	log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
+	log_write(0, LOG_REJECT, "%s authenticator (%s): "
 	    "Cyrus SASL SSF value not available: %s", ablock->name, ob->server_mech,
 	    sasl_errstring(rc, NULL, NULL));
 	sasl_dispose(&conn);
@@ -441,7 +441,7 @@ for (rc = SASL_CONTINUE; rc == SASL_CONTINUE; )
 	{
 	HDEBUG(D_auth)
 	  debug_printf("Exim does not implement SASL wrapping (needed for SSF %d).\n", negotiated_ssf);
-	log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
+	log_write(0, LOG_REJECT, "%s authenticator (%s): "
 	    "Cyrus SASL SSF %d not supported by Exim", ablock->name, ob->server_mech, negotiated_ssf);
 	sasl_dispose(&conn);
 	sasl_done();
