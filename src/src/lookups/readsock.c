@@ -96,7 +96,7 @@ else
 
   sigalrm_seen = FALSE;
   ALARM(timeout);
-  rc = connect(cctx->sock, (struct sockaddr *)(&sockun), sizeof(sockun));
+  rc = connect(cctx->sock, (struct sockaddr *) &sockun, sizeof(sockun));
   ALARM_CLR(0);
   if (sigalrm_seen)
     {

@@ -49,14 +49,14 @@ at DB release 4.3. */
 
 #if defined(USE_DB) && defined(DB_VERSION_STRING)
 void
-#if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
+# if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
 dbfn_bdb_error_callback(const DB_ENV *dbenv, const char *pfx, const char *msg)
 {
 dbenv = dbenv;
-#else
+# else
 dbfn_bdb_error_callback(const char *pfx, char *msg)
 {
-#endif
+# endif
 pfx = pfx;
 log_write(0, LOG_MAIN, "Berkeley DB error: %s", msg);
 }
@@ -286,7 +286,7 @@ store the taint status with the data. */
 
 yield = store_get(EXIM_DATUM_SIZE(result_datum), TRUE);
 memcpy(yield, EXIM_DATUM_DATA(result_datum), EXIM_DATUM_SIZE(result_datum));
-if (length != NULL) *length = EXIM_DATUM_SIZE(result_datum);
+if (length) *length = EXIM_DATUM_SIZE(result_datum);
 
 EXIM_DATUM_FREE(result_datum);    /* Some DBM libs require freeing */
 return yield;

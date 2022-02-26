@@ -5348,10 +5348,10 @@ Returns:       nothing
 */
 
 static void
-print_address_error(address_item *addr, FILE *f, uschar *t)
+print_address_error(address_item * addr, FILE * f, const uschar * t)
 {
 int count = Ustrlen(t);
-uschar *s = testflag(addr, af_pass_message) ? addr->message : NULL;
+uschar * s = testflag(addr, af_pass_message) ? addr->message : NULL;
 
 if (!s && !(s = addr->user_message))
   return;
@@ -5892,7 +5892,7 @@ if (message_logs)
     return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
     }
 
-  /* Make a C stream out of it. */
+  /* Make a stdio stream out of it. */
 
   if (!(message_log = fdopen(fd, "a")))
     {
@@ -6420,10 +6420,8 @@ while (addr_new)           /* Loop until all addresses dealt with */
   while (addr_new)
     {
     int rc;
-    uschar *p;
-    tree_node *tnode;
-    dbdata_retry *domain_retry_record;
-    dbdata_retry *address_retry_record;
+    tree_node * tnode;
+    dbdata_retry * domain_retry_record, * address_retry_record;
 
     addr = addr_new;
     addr_new = addr->next;
@@ -6640,8 +6638,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
     /* Ensure that the domain in the unique field is lower cased, because
     domains are always handled caselessly. */
 
-    p = Ustrrchr(addr->unique, '@');
-    while (*p != 0) { *p = tolower(*p); p++; }
+    for (uschar * p = Ustrrchr(addr->unique, '@'); *p; p++) *p = tolower(*p);
 
     DEBUG(D_deliver|D_route) debug_printf("unique = %s\n", addr->unique);
 

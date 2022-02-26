@@ -2015,44 +2015,31 @@ int yield = OK;
 uschar * tls_errstr;
 #endif
 
+/* Many lines of clearing individual elements of *sx that used to
+be here have been replaced by a full memset to zero (de41aff051).
+There are two callers, this file and verify.c .  Now we only set
+up nonzero elements. */
+
 sx->conn_args.ob = ob;
 
 sx->lmtp = strcmpic(ob->protocol, US"lmtp") == 0;
 sx->smtps = strcmpic(ob->protocol, US"smtps") == 0;
-/* sx->ok = FALSE; */
 sx->send_rset = TRUE;
 sx->send_quit = TRUE;
 sx->setting_up = TRUE;
 sx->esmtp = TRUE;
-/* sx->esmtp_sent = FALSE; */
-#ifdef SUPPORT_I18N
-/* sx->utf8_needed = FALSE; */
-#endif
 sx->dsn_all_lasthop = TRUE;
 #ifdef SUPPORT_DANE
-/* sx->conn_args.dane = FALSE; */
 sx->dane_required =
   verify_check_given_host(CUSS &ob->hosts_require_dane, sx->conn_args.host) == OK;
-#endif
-#ifndef DISABLE_PIPE_CONNECT
-/* sx->early_pipe_active = sx->early_pipe_ok = FALSE; */
-/* sx->ehlo_resp.cleartext_features = sx->ehlo_resp.crypted_features = 0; */
-/* sx->pending_BANNER = sx->pending_EHLO = sx->pending_MAIL = FALSE; */
 #endif
 
 if ((sx->max_mail = sx->conn_args.tblock->connection_max_messages) == 0) sx->max_mail = 999999;
 if ((sx->max_rcpt = sx->conn_args.tblock->max_addresses) == 0)           sx->max_rcpt = 999999;
-/* sx->peer_offered = 0; */
-/* sx->avoid_option = 0; */
 sx->igquotstr = US"";
 if (!sx->helo_data) sx->helo_data = ob->helo_data;
-#ifdef EXPERIMENTAL_DSN_INFO
-/* sx->smtp_greeting = NULL; */
-/* sx->helo_response = NULL; */
-#endif
 
 smtp_command = US"initial connection";
-/* sx->buffer[0] = '\0'; */
 
 /* Set up the buffer for reading SMTP response packets. */
 
@@ -2066,9 +2053,6 @@ sx->inblock.ptrend = sx->inbuffer;
 sx->outblock.buffer = sx->outbuffer;
 sx->outblock.buffersize = sizeof(sx->outbuffer);
 sx->outblock.ptr = sx->outbuffer;
-/* sx->outblock.cmd_count = 0; */
-/* sx->outblock.authenticating = FALSE; */
-/* sx->outblock.conn_args = NULL; */
 
 /* Reset the parameters of a TLS session. */
 
@@ -3716,12 +3700,11 @@ BOOL tcw_done = FALSE, tcw = FALSE;
 memset(sx, 0, sizeof(*sx));
 sx->addrlist = addrlist;
 sx->conn_args.host = host;
-sx->conn_args.host_af = host_af,
+sx->conn_args.host_af = host_af;
 sx->port = defport;
 sx->conn_args.interface = interface;
 sx->helo_data = NULL;
 sx->conn_args.tblock = tblock;
-/* sx->verify = FALSE; */
 gettimeofday(&sx->delivery_start, NULL);
 sx->sync_addr = sx->first_addr = addrlist;
 

@@ -246,7 +246,7 @@ Cardinal * num_params;
   Arg args[1];
 
 #ifdef notdef
-  if (ctx->text.source->Search == NULL) {
+  if (!ctx->text.source->Search) {
       XBell(XtDisplay(w), 0);
       return;
   }
@@ -279,16 +279,15 @@ Cardinal * num_params;
     return;
   }
 
-  if (ctx->text.search== NULL) {
+  if (!ctx->text.search) {
     ctx->text.search = XtNew(struct SearchAndReplace);
     ctx->text.search->search_popup = CreateDialog(w, ptr, "search",
 						  AddSearchChildren);
     XtRealizeWidget(ctx->text.search->search_popup);
     SetWMProtocolTranslations(ctx->text.search->search_popup);
   }
-  else if (*num_params > 1) {
+  else if (*num_params > 1)
     XtVaSetValues(ctx->text.search->search_text, XtNstring, ptr, NULL);
-  }
 
   XtSetArg(args[0], XtNeditType,&edit_mode);
   XtGetValues(ctx->text.source, args, ONE);
