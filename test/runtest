@@ -964,6 +964,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   # MIME boundaries in RFC3461 DSN messages
   s/\d{8,10}-eximdsn-\d+/NNNNNNNNNN-eximdsn-MMMMMMMMMM/;
 
+  # Cyrus SASL library version differences (rejectlog)
+  s/Cyrus SASL permanent failure: \Kuser not found$/generic failure/;
+
   # ==========================================================
   # Some munging is specific to the specific file types
 
