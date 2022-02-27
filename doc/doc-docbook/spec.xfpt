@@ -1811,9 +1811,13 @@ the traditional &'ndbm'& interface.
 .next
 To complicate things further, there are several very different versions of the
 Berkeley DB package. Version 1.85 was stable for a very long time, releases
-2.&'x'& and 3.&'x'& were current for a while, but the latest versions when Exim last revamped support were numbered 4.&'x'&.
-Maintenance of some of the earlier releases has ceased. All versions of
-Berkeley DB could be obtained from
+2.&'x'& and 3.&'x'& were current for a while,
+.new
+but the latest versions when Exim last revamped support were numbered 5.&'x'&.
+Maintenance of some of the earlier releases has ceased,
+and Exim no longer supports versions before 3.&'x'&.
+.wen
+All versions of Berkeley DB could be obtained from
 &url(http://www.sleepycat.com/), which is now a redirect to their new owner's
 page with far newer versions listed.
 It is probably wise to plan to move your storage configurations away from

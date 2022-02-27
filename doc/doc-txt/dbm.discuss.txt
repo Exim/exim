@@ -41,7 +41,8 @@ some time, and various releases 2.x began to appear towards the end of 1997. In
 November 1999, version 3.0 was released, and the ending of support for 2.7.7,
 the last 2.x release, was announced for November 2000. (Support for 1.85 has
 already ceased.) There were further 3.x releases, but by the end of 2001, the
-current release was 4.0.14.
+current release was 4.0.14.  In 2022 it was 5.3.28 on Linux (the then-owner
+has developed it further but Exim does not support anything after 5.x).
 
 There are major differences in implementation and interface between the DB 1.x
 and 2.x/3.x/4.x releases, and they are best considered as two independent dbm
