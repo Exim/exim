@@ -57,27 +57,11 @@ BOOL autoreply_transport_entry(transport_instance *tblock, address_item *addr) {
 #else   /*!MACRO_PREDEF*/
 
 
-/* Default private options block for the autoreply transport. */
+/* Default private options block for the autoreply transport.
+All non-mentioned lements zero/null/false. */
 
 autoreply_transport_options_block autoreply_transport_option_defaults = {
-  NULL,           /* from */
-  NULL,           /* reply_to */
-  NULL,           /* to */
-  NULL,           /* cc */
-  NULL,           /* bcc */
-  NULL,           /* subject */
-  NULL,           /* headers */
-  NULL,           /* text */
-  NULL,           /* file */
-  NULL,           /* logfile */
-  NULL,           /* oncelog */
-  NULL,           /* once_repeat */
-  NULL,           /* never_mail */
-  0600,           /* mode */
-  0,              /* once_file_size */
-  FALSE,          /* file_expand */
-  FALSE,          /* file_optional */
-  FALSE           /* return message */
+  .mode = 0600,
 };
 
 
@@ -362,16 +346,13 @@ else
     return FALSE;
 
   if (oncerepeat)
-    {
-    once_repeat_sec = readconf_readtime(oncerepeat, 0, FALSE);
-    if (once_repeat_sec < 0)
+    if ((once_repeat_sec = readconf_readtime(oncerepeat, 0, FALSE)) < 0)
       {
       addr->transport_return = FAIL;
       addr->message = string_sprintf("Invalid time value \"%s\" for "
         "\"once_repeat\" in %s transport", oncerepeat, tblock->name);
       return FALSE;
       }
-    }
   }
 
 /* If the never_mail option is set, we have to scan all the recipients and

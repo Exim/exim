@@ -83,6 +83,12 @@ JH/18 Bug 2751: Fix include_directory in redirect routers.  Previously a
 
 JH/19 Support for Berkeley DB versions 1 and 2 is withdrawn.
 
+JH/20 When built with NDBM for hints DB's check for nonexistence of a name
+      supplied as the db file-pair basename.  Previously, if a directory
+      path was given, for example via the autoreply "once" option, the DB
+      file.pag and file.dir files would be created in that directory's
+      parent.
+
 
 Exim version 4.95
 -----------------

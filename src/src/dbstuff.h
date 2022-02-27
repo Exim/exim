@@ -434,8 +434,19 @@ interface */
 /* Access functions */
 
 /* EXIM_DBOPEN - returns a EXIM_DB *, NULL if failed */
-# define EXIM_DBOPEN__(name, dirname, flags, mode, dbpp) \
-       *(dbpp) = dbm_open(CS name, flags, mode)
+/* Check that the name given is not present. This catches
+a directory name; otherwise we would create the name.pag and
+name.dir files in the directory's parent. */
+
+# define EXIM_DBOPEN__(name, dirname, flags, mode, dbpp)		\
+       {								\
+       struct stat st;							\
+       *(dbpp) =    !(flags & O_CREAT)					\
+		 || lstat(CCS (name), &st) != 0 && errno == ENOENT	\
+         ? dbm_open(CS (name), (flags), (mode))				\
+	 : (errno = (st.st_mode & S_IFMT) == S_IFDIR ? EISDIR : EEXIST,	\
+	   NULL);							\
+       }
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
 # define EXIM_DBGET(db, key, data)      \
