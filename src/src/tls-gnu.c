@@ -333,6 +333,9 @@ before, for now. */
 # endif /* AVOID_GNUTLS_PKCS11 */
 #endif
 
+#if GNUTLS_VERSION_NUMBER >= 0x030404
+# define HAVE_GNUTLS_PRF_RFC5705
+#endif
 
 
 
@@ -624,11 +627,6 @@ Argument:
 static void
 extract_exim_vars_from_tls_state(exim_gnutls_state_st * state)
 {
-#ifdef HAVE_GNUTLS_SESSION_CHANNEL_BINDING
-int old_pool;
-int rc;
-gnutls_datum_t channel;
-#endif
 tls_support * tlsp = state->tlsp;
 
 tlsp->active.sock = state->fd_out;
@@ -646,21 +644,39 @@ only available for use for authenticators while this TLS session is running. */
 
 tlsp->channelbinding = NULL;
 #ifdef HAVE_GNUTLS_SESSION_CHANNEL_BINDING
-channel.data = NULL;
-channel.size = 0;
-if ((rc = gnutls_session_channel_binding(state->session, GNUTLS_CB_TLS_UNIQUE, &channel)))
-  { DEBUG(D_tls) debug_printf("Channel binding error: %s\n", gnutls_strerror(rc)); }
-else
   {
-  /* Declare the taintedness of the binding info.  On server, untainted; on
-  client, tainted - being the Finish msg from the server. */
+  gnutls_datum_t channel = {.data = NULL, .size = 0};
+  uschar * buf;
+  int rc;
 
-  old_pool = store_pool;
-  store_pool = POOL_PERM;
-  tlsp->channelbinding = b64encode_taint(CUS channel.data, (int)channel.size,
-					  !!state->host);
-  store_pool = old_pool;
-  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
+# ifdef HAVE_GNUTLS_PRF_RFC5705
+  if (gnutls_protocol_get_version(state->session) >= GNUTLS_TLS1_3)
+    {
+    buf = store_get(32, !!state->host);
+    rc = gnutls_prf_rfc5705(state->session,
+				(size_t)24,  "EXPORTER-Channel-Binding", (size_t)0, "",
+				32, CS buf);
+    channel.data = buf;
+    channel.size = 32;
+    }
+  else
+# endif
+    rc = gnutls_session_channel_binding(state->session, GNUTLS_CB_TLS_UNIQUE, &channel);
+
+  if (rc)
+    { DEBUG(D_tls) debug_printf("extracting channel binding: %s\n", gnutls_strerror(rc)); }
+  else
+    {
+    int old_pool = store_pool;
+    /* Declare the taintedness of the binding info.  On server, untainted; on
+    client, tainted - being the Finish msg from the server. */
+
+    store_pool = POOL_PERM;
+    tlsp->channelbinding = b64encode_taint(CUS channel.data, (int)channel.size,
+					    !!state->host);
+    store_pool = old_pool;
+    DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
+    }
   }
 #endif
 
