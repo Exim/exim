@@ -897,24 +897,27 @@ if (tls_out.channelbinding)
 for(s = NULL; ;)
   {
   uschar * outstr;
-  BOOL fail;
+  BOOL fail = TRUE;
 
   rc = gsasl_step64(sctx, CS s, CSS &outstr);
 
-  fail = initial
-    ? smtp_write_command(sx, SCMD_FLUSH,
-			outstr ? "AUTH %s %s\r\n" : "AUTH %s\r\n",
-			ablock->public_name, outstr) <= 0
-    : outstr
-    ? smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", outstr) <= 0
-    : FALSE;
-  if (outstr && *outstr) free(outstr);
-  if (fail)
+  if (rc == GSASL_NEEDS_MORE || rc == GSASL_OK)
     {
-    yield = FAIL_SEND;
-    goto done;
+    fail = initial
+      ? smtp_write_command(sx, SCMD_FLUSH,
+			  outstr ? "AUTH %s %s\r\n" : "AUTH %s\r\n",
+			  ablock->public_name, outstr) <= 0
+      : outstr
+      ? smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", outstr) <= 0
+      : FALSE;
+    free(outstr);
+    if (fail)
+      {
+      yield = FAIL_SEND;
+      goto done;
+      }
+    initial = FALSE;
     }
-  initial = FALSE;
 
   if (rc != GSASL_NEEDS_MORE)
     {
@@ -969,7 +972,7 @@ switch (prop)
     HDEBUG(D_auth)
       debug_printf(" filling in\n");
     gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_out.channelbinding);
-    break;
+    return GSASL_OK;
   case GSASL_SCRAM_SALTED_PASSWORD:
     {
     uschar * client_spassword =
