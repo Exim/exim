@@ -132,7 +132,7 @@ Testing
 killdaemon
 #
 #
-sudo rm DIR/spool/db/retry
+sudo rm DIR/spool/db/retry*
 exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
 ****
 ### A server securely serving a wrong TLSA record, dane not requested (delivery should work non-dane)

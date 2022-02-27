@@ -132,7 +132,8 @@ vacation message
 exim -odi filter-vdefaults
 Subject: should give rise to 2nd vacation message
 ****
-sudo rm DIR/test-mail/.vacation DIR/test-mail/.vacation.msg
+sudo rm -f DIR/test-mail/.vacation DIR/test-mail/.vacation.dir DIR/test-mail/.vacation.pag DIR/test-mail/.vacation.db
+sudo rm DIR/test-mail/.vacation.msg
 #
 exim -bF DIR/aux-fixed/TESTNUM.f-5 </dev/null
 ****

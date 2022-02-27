@@ -52,7 +52,7 @@ test message.
 ****
 sleep 1
 killdaemon
-sudo rm DIR/spool/db/retry
+sudo rm DIR/spool/db/retry*
 #
 #
 #
@@ -65,7 +65,7 @@ test message.
 ****
 sleep 1
 killdaemon
-sudo rm DIR/spool/db/retry
+sudo rm DIR/spool/db/retry*
 #
 #
 #

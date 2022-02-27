@@ -15,7 +15,7 @@ exim -odi -q
 ****
 # Remove so that next message does not arrive before 
 # the time of first failure.
-sudo rm DIR/spool/db/retry
+sudo rm DIR/spool/db/retry*
 exim -odq -f '<>' b@known.ex
 test 2
 .

@@ -6,7 +6,7 @@ exim -odi userx
 sleep 2
 exim -d-all+transport -qf
 ****
-sudo rm spool/db/retry
+sudo rm spool/db/retry*
 exim -odi userx
 ****
 sleep 2

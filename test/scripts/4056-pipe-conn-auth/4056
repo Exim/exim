@@ -47,7 +47,7 @@ exim -Mrm $msg1
 ****
 #
 # Tidy the retry db, for test purposes
-sudo rm DIR/spool/db/retry
+sudo rm DIR/spool/db/retry*
 #
 #
 # Then, advertising again, initial attempt should not get early-pipe

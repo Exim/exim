@@ -11,12 +11,12 @@ Test message.
 # Bad ALPN rejected
 exim -DCONTROL=http -odf b@test.ex
 ****
-sudo rm -f DIR/spool/db/retry DIR/spool/input/*-D DIR/spool/input/*-H
+sudo rm -f DIR/spool/db/retry* DIR/spool/input/*-D DIR/spool/input/*-H
 #
 # Multiple ALPN rejected
 exim -DCONTROL=smtp:smtp -odf c@test.ex
 ****
-sudo rm -f DIR/spool/db/retry DIR/spool/input/*-D DIR/spool/input/*-H
+sudo rm -f DIR/spool/db/retry* DIR/spool/input/*-D DIR/spool/input/*-H
 #
 # Empty client option is ok
 exim -DCONTROL="" -odf d@test.ex

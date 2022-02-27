@@ -2038,7 +2038,7 @@ if (! $message_skip)
 
   foreach $mail (@mails)
     {
-    next if $mail eq "test-mail/oncelog";
+    next if $mail =~ /^test-mail\/oncelog(.(dir|pag|db))?$/;
 
     $saved_mail = substr($mail, 10);               # Remove "test-mail/"
     $saved_mail =~ s/^$parm_caller(\/|$)/CALLER/;  # Convert caller name
