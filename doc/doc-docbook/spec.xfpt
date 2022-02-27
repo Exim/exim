@@ -1841,6 +1841,9 @@ USE_DB=yes
 .endd
 Similarly, for gdbm you set USE_GDBM, and for tdb you set USE_TDB. An
 error is diagnosed if you set more than one of these.
+.new
+You can set USE_NDBM if needed to override an operating system default.
+.wen
 
 At the lowest level, the build-time configuration sets none of these options,
 thereby assuming an interface of type (1). However, some operating system
@@ -1855,7 +1858,11 @@ in one of these lines:
 .code
 DBMLIB = -ldb
 DBMLIB = -ltdb
+DBMLIB = -lgdbm -lgdbm_compat
 .endd
+.new
+The last of those was for a Linux having GDBM provide emulated NDBM facilities.
+.wen
 Settings like that will work if the DBM library is installed in the standard
 place. Sometimes it is not, and the library's header file may also not be in
 the default path. You may need to set INCLUDE to specify where the header

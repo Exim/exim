@@ -51,7 +51,7 @@ typedef struct {
   char *data;
 } save_item;
 
-static const char *db_opts[] = { "", "USE_DB", "USE_GDBM", "USE_TDB" };
+static const char *db_opts[] = { "", "USE_DB", "USE_GDBM", "USE_TDB", "USE_NDBM" };
 
 static int have_ipv6 = 0;
 static int have_iconv = 0;
