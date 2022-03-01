@@ -3306,7 +3306,7 @@ on the second character (the one after '-'), to save some effort. */
 	/* -oMai: setting authenticated id */
 
 	else if (Ustrcmp(argrest, "ai") == 0)
-	  authenticated_id = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMas"), TRUE);
+	  authenticated_id = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMai"), TRUE);
 
 	/* -oMi: Set incoming interface address */
 
