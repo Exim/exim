@@ -5090,8 +5090,11 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
     else
       if (ob->hosts_randomize) s = expanded_hosts = string_copy(s);
 
-    if (is_tainted2(s, LOG_MAIN|LOG_PANIC, "Tainted host list '%s' from '%s' in transport %s", s, ob->hosts, tblock->name))
+    if (is_tainted(s))
       {
+      log_write(0, LOG_MAIN|LOG_PANIC,
+	"attempt to use tainted host list '%s' from '%s' in transport %s",
+	s, ob->hosts, tblock->name);
       /* Avoid leaking info to an attacker */
       addrlist->message = US"internal configuration error";
       addrlist->transport_return = PANIC;

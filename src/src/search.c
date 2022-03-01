@@ -390,8 +390,12 @@ lookup_info *lk = lookup_list[search_type];
 uschar keybuffer[256];
 int old_pool = store_pool;
 
-if (filename && is_tainted2(filename, LOG_MAIN|LOG_PANIC, "Tainted filename for search: '%s'", filename))
+if (filename && is_tainted(filename))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "Tainted filename for search: '%s'", filename);
   return NULL;
+  }
 
 /* Change to the search store pool and remember our reset point */
 
@@ -708,7 +712,7 @@ if (opts)
 /* Arrange to put this database at the top of the LRU chain if it is a type
 that opens real files. */
 
-if (  open_top != (tree_node *)handle
+if (  open_top != (tree_node *)handle 
    && lookup_list[t->name[0]-'0']->type == lookup_absfile)
   {
   search_cache *c = (search_cache *)(t->data.ptr);

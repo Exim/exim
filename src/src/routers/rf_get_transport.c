@@ -67,8 +67,10 @@ if (expandable)
       "\"%s\" in %s router: %s", tpname, router_name, expand_string_message);
     return FALSE;
     }
-  if (is_tainted2(ss, LOG_MAIN|LOG_PANIC, "Tainted tainted value '%s' from '%s' for transport", ss, tpname))
+  if (is_tainted(ss))
     {
+    log_write(0, LOG_MAIN|LOG_PANIC,
+      "attempt to use tainted value '%s' from '%s' for transport", ss, tpname);
     addr->basic_errno = ERRNO_BADTRANSPORT;
     /* Avoid leaking info to an attacker */
     addr->message = US"internal configuration error";

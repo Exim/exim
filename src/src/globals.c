@@ -98,10 +98,6 @@ int     sqlite_lock_timeout    = 5;
 BOOL    move_frozen_messages   = FALSE;
 #endif
 
-#ifdef ALLOW_INSECURE_TAINTED_DATA
-BOOL    allow_insecure_tainted_data = FALSE;
-#endif
-
 /* These variables are outside the #ifdef because it keeps the code less
 cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible.  Note that these are
@@ -1055,9 +1051,6 @@ int     log_default[]          = { /* for initializing log_selector */
   Li_size_reject,
   Li_skip_delivery,
   Li_smtp_confirmation,
-#ifdef ALLOW_INSECURE_TAINTED_DATA
-  Li_tainted,
-#endif
   Li_tls_certificate_verified,
   Li_tls_cipher,
   -1
@@ -1127,9 +1120,6 @@ bit_table log_options[]        = { /* must be in alphabetical order,
   BIT_TABLE(L, smtp_protocol_error),
   BIT_TABLE(L, smtp_syntax_error),
   BIT_TABLE(L, subject),
-#ifdef ALLOW_INSECURE_TAINTED_DATA
-  BIT_TABLE(L, tainted),
-#endif
   BIT_TABLE(L, tls_certificate_verified),
   BIT_TABLE(L, tls_cipher),
   BIT_TABLE(L, tls_peerdn),

@@ -89,6 +89,9 @@ JH/20 When built with NDBM for hints DB's check for nonexistence of a name
       file.pag and file.dir files would be created in that directory's
       parent.
 
+JH/21 Remove the "allow_insecure_tainted_data" main config option and the
+      "taint" log_selector.  These were previously deprecated.
+
 
 Exim version 4.95
 -----------------

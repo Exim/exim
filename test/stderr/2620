@@ -306,10 +306,10 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223    {select name 
    type=pgsql key="servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts=NULL
  database lookup required for servers=localhost::1223/test/CALLER/; select name from them where id = 'c'
  PostgreSQL query: "servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts 'NULL'
- lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+ lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 processing "warn" (TESTSUITE/test-config 38)
 check set acl_m0 = ok:   hostlist
 check hosts = net-pgsql;select * from them where id='$local_part'
@@ -340,11 +340,11 @@ internal_search_find: file="NULL"
   type=pgsql key="servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts=NULL
 database lookup required for servers=localhost::1223/test/CALLER/; select * from them where id='c'
 PostgreSQL query: "servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts 'NULL'
-lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 host in "<& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 processing "warn" (TESTSUITE/test-config 46)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='$local_part'
@@ -357,11 +357,11 @@ internal_search_find: file="NULL"
   type=pgsql key=" select * from them where id='c'" opts="servers=localhost::1223/test/CALLER/"
 database lookup required for  select * from them where id='c'
 PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::1223/test/CALLER/'
-lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 host in "<& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 processing "accept" (TESTSUITE/test-config 49)
 check domains = +local_domains
 d in "@"? no (end of list)
@@ -449,10 +449,10 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223    {select name 
    type=pgsql key="servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts=NULL
  database lookup required for servers=localhost::1223/test/CALLER/; select name from them where id = 'c'
  PostgreSQL query: "servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts 'NULL'
- lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+ lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 processing "warn" (TESTSUITE/test-config 38)
 check set acl_m0 = ok:   hostlist
 check hosts = net-pgsql;select * from them where id='$local_part'
@@ -479,11 +479,11 @@ internal_search_find: file="NULL"
   type=pgsql key="servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts=NULL
 database lookup required for servers=localhost::1223/test/CALLER/; select * from them where id='c'
 PostgreSQL query: "servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts 'NULL'
-lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 host in "<& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 processing "warn" (TESTSUITE/test-config 46)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='$local_part'
@@ -496,11 +496,11 @@ internal_search_find: file="NULL"
   type=pgsql key=" select * from them where id='c'" opts="servers=localhost::1223/test/CALLER/"
 database lookup required for  select * from them where id='c'
 PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::1223/test/CALLER/'
-lookup deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 host in "<& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: Tainted PostgreSQL server 'localhost:1223/test/CALLER/'
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 processing "accept" (TESTSUITE/test-config 49)
 check domains = +local_domains
 d in "@"? no (end of list)

@@ -102,13 +102,11 @@ if (Ustrncmp(query, "servers", 7) == 0)
         }
       }
 
-    { uschar *m;
-    if ((m = is_tainted2(server, 0, "Tainted %s server '%s'", name, server)))
-     {
-      *errmsg = m;
+    if (is_tainted(server))
+      {
+      *errmsg = string_sprintf("%s server \"%s\" is tainted", name, server);
       return DEFER;
       }
-    }
 
     rc = (*fn)(ss+1, server, result, errmsg, &defer_break, do_cache, opts);
     if (rc != DEFER || defer_break) return rc;
@@ -160,13 +158,11 @@ else
 	server = ele;
 	}
 
-      { uschar *m;
-      if ((m = is_tainted2(server, 0, "Tainted %s server '%s'", name, server)))
+      if (is_tainted(server))
         {
-        *errmsg = m;
+        *errmsg = string_sprintf("%s server \"%s\" is tainted", name, server);
         return DEFER;
         }
-      }
 
       rc = (*fn)(query, server, result, errmsg, &defer_break, do_cache, opts);
       if (rc != DEFER || defer_break) return rc;

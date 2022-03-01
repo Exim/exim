@@ -174,9 +174,6 @@ Arguments:
 Returns:     OK, FAIL, or DEFER
 */
 
-void
-open_logs(void);
-
 static int
 appendfile_transport_setup(transport_instance *tblock, address_item *addrlist,
   transport_feedback *dummy, uid_t uid, gid_t gid, uschar **errmsg)
@@ -185,14 +182,6 @@ appendfile_transport_options_block *ob =
   (appendfile_transport_options_block *)(tblock->options_block);
 uschar *q = ob->quota;
 double default_value = 0.0;
-
-addrlist = addrlist;    /* Keep picky compilers happy */
-dummy = dummy;
-uid = uid;
-gid = gid;
-
-/* we can't wait until we're not privileged anymore */
-open_logs();
 
 if (ob->expand_maildir_use_size_file)
 	ob->maildir_use_size_file = expand_check_condition(ob->expand_maildir_use_size_file,

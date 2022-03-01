@@ -35,7 +35,7 @@
 2017-07-30 18:51:05.712 10HmaZ-0005vi-00 Completed
 2017-07-30 18:51:05.712 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for f@test.ex
 2017-07-30 18:51:05.712 10HmbA-0005vi-00 ** f@test.ex: Unrouteable address
-2017-07-30 18:51:05.712 10HmbA-0005vi-00 Tainted bounce_message_file after expansion: 'TESTSUITE/aux-fixed/0608.CALLER@myhost.test.ex'
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 bounce_message_file is not untainted after expansion: 'TESTSUITE/aux-fixed/0608.CALLER@myhost.test.ex'
 
 2017-07-30 18:51:05.712 10HmbJ-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
 2017-07-30 18:51:05.712 10HmbJ-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce

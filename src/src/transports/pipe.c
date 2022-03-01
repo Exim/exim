@@ -592,16 +592,13 @@ if (!cmd || !*cmd)
     tblock->name);
   return FALSE;
   }
-
-{ uschar *m;
-if ((m = is_tainted2(cmd, 0, "Tainted '%s' (command "
-    "for %s transport) not permitted", cmd, tblock->name)))
+if (is_tainted(cmd))
   {
+  addr->message = string_sprintf("Tainted '%s' (command "
+    "for %s transport) not permitted", cmd, tblock->name);
   addr->transport_return = PANIC;
-  addr->message = m;
   return FALSE;
   }
-}
 
 /* When a pipe is set up by a filter file, there may be values for $thisaddress
 and numerical the variables in existence. These are passed in

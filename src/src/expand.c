@@ -444,9 +444,9 @@ enum vtypes {
   vtype_pspace,         /* partition space; value is T/F for spool/log */
   vtype_pinodes,        /* partition inodes; value is T/F for spool/log */
   vtype_cert		/* SSL certificate */
-  #ifndef DISABLE_DKIM
+#ifndef DISABLE_DKIM
   ,vtype_dkim           /* Lookup of value in DKIM signature */
-  #endif
+#endif
 };
 
 /* Type for main variable table */
@@ -583,9 +583,9 @@ static var_entry var_table[] = {
   { "interface_address",   vtype_stringptr,   &interface_address },
   { "interface_port",      vtype_int,         &interface_port },
   { "item",                vtype_stringptr,   &iterate_item },
-  #ifdef LOOKUP_LDAP
+#ifdef LOOKUP_LDAP
   { "ldap_dn",             vtype_stringptr,   &eldap_dn },
-  #endif
+#endif
   { "load_average",        vtype_load_avg,    NULL },
   { "local_part",          vtype_stringptr,   &deliver_localpart },
   { "local_part_data",     vtype_stringptr,   &deliver_localpart_data },
@@ -4498,13 +4498,13 @@ expand_level++;
 f.expand_string_forcedfail = FALSE;
 expand_string_message = US"";
 
-{ uschar *m;
-if ((m = is_tainted2(string, LOG_MAIN|LOG_PANIC, "Tainted string '%s' in expansion", s)))
+if (is_tainted(string))
   {
-  expand_string_message = m;
+  expand_string_message =
+    string_sprintf("attempt to expand tainted string '%s'", s);
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s", expand_string_message);
   goto EXPAND_FAILED;
   }
-}
 
 while (*s)
   {
@@ -7198,14 +7198,14 @@ NOT_ITEM: ;
 	}
 
       case EOP_MD5:
-  #ifndef DISABLE_TLS
+#ifndef DISABLE_TLS
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_md5(*(void **)vp->value);
 	  yield = string_cat(yield, cp);
 	  }
 	else
-  #endif
+#endif
 	  {
 	  md5 base;
 	  uschar digest[16];
@@ -7217,14 +7217,14 @@ NOT_ITEM: ;
 	break;
 
       case EOP_SHA1:
-  #ifndef DISABLE_TLS
+#ifndef DISABLE_TLS
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_sha1(*(void **)vp->value);
 	  yield = string_cat(yield, cp);
 	  }
 	else
-  #endif
+#endif
 	  {
 	  hctx h;
 	  uschar digest[20];
@@ -7237,7 +7237,7 @@ NOT_ITEM: ;
 
       case EOP_SHA2:
       case EOP_SHA256:
-  #ifdef EXIM_HAVE_SHA2
+#ifdef EXIM_HAVE_SHA2
 	if (vp && *(void **)vp->value)
 	  if (c == EOP_SHA256)
 	    yield = string_cat(yield, tls_cert_fprt_sha256(*(void **)vp->value));
@@ -7264,13 +7264,13 @@ NOT_ITEM: ;
 	  while (b.len-- > 0)
 	    yield = string_fmt_append(yield, "%02X", *b.data++);
 	  }
-  #else
+#else
 	  expand_string_message = US"sha256 only supported with TLS";
-  #endif
+#endif
 	break;
 
       case EOP_SHA3:
-  #ifdef EXIM_HAVE_SHA3
+#ifdef EXIM_HAVE_SHA3
 	{
 	hctx h;
 	blob b;
@@ -7293,10 +7293,10 @@ NOT_ITEM: ;
 	  yield = string_fmt_append(yield, "%02X", *b.data++);
 	}
 	break;
-  #else
+#else
 	expand_string_message = US"sha3 only supported with GnuTLS 3.5.0 + or OpenSSL 1.1.1 +";
 	goto EXPAND_FAILED;
-  #endif
+#endif
 
       /* Convert hex encoding to base64 encoding */
 
@@ -7629,106 +7629,104 @@ NOT_ITEM: ;
         else if (opt)
 	  sub = NULL;
 
-	  if (!sub)
-	    {
-	    expand_string_message = string_sprintf(
-	      "\"%s\" unrecognized after \"${quote_%s\"",	/*}*/
-	      opt, arg);
-	    goto EXPAND_FAILED;
-	    }
+        if (!sub)
+          {
+          expand_string_message = string_sprintf(
+            "\"%s\" unrecognized after \"${quote_%s\"",		/*}*/
+            opt, arg);
+          goto EXPAND_FAILED;
+          }
 
-	  yield = string_cat(yield, sub);
-	  break;
-	  }
+        yield = string_cat(yield, sub);
+        break;
+        }
 
-	/* rx quote sticks in \ before any non-alphameric character so that
-	the insertion works in a regular expression. */
+      /* rx quote sticks in \ before any non-alphameric character so that
+      the insertion works in a regular expression. */
 
-	case EOP_RXQUOTE:
+      case EOP_RXQUOTE:
+        {
+        uschar *t = sub - 1;
+        while (*(++t) != 0)
+          {
+          if (!isalnum(*t))
+            yield = string_catn(yield, US"\\", 1);
+          yield = string_catn(yield, t, 1);
+          }
+        break;
+        }
+
+      /* RFC 2047 encodes, assuming headers_charset (default ISO 8859-1) as
+      prescribed by the RFC, if there are characters that need to be encoded */
+
+      case EOP_RFC2047:
+        yield = string_cat(yield,
+			    parse_quote_2047(sub, Ustrlen(sub), headers_charset,
+			      FALSE));
+        break;
+
+      /* RFC 2047 decode */
+
+      case EOP_RFC2047D:
+        {
+        int len;
+        uschar *error;
+        uschar *decoded = rfc2047_decode(sub, check_rfc2047_length,
+          headers_charset, '?', &len, &error);
+        if (error)
+          {
+          expand_string_message = error;
+          goto EXPAND_FAILED;
+          }
+        yield = string_catn(yield, decoded, len);
+        break;
+        }
+
+      /* from_utf8 converts UTF-8 to 8859-1, turning non-existent chars into
+      underscores */
+
+      case EOP_FROM_UTF8:
+        {
+	uschar * buff = store_get(4, is_tainted(sub));
+        while (*sub)
+          {
+          int c;
+          GETUTF8INC(c, sub);
+          if (c > 255) c = '_';
+          buff[0] = c;
+          yield = string_catn(yield, buff, 1);
+          }
+        break;
+        }
+
+      /* replace illegal UTF-8 sequences by replacement character  */
+
+      #define UTF8_REPLACEMENT_CHAR US"?"
+
+      case EOP_UTF8CLEAN:
+        {
+        int seq_len = 0, index = 0;
+        int bytes_left = 0;
+        long codepoint = -1;
+        int complete;
+        uschar seq_buff[4];			/* accumulate utf-8 here */
+
+	/* Manually track tainting, as we deal in individual chars below */
+
+	if (is_tainted(sub))
+	  if (yield->s && yield->ptr)
+	    gstring_rebuffer(yield);
+	  else
+	    yield->s = store_get(yield->size = Ustrlen(sub), TRUE);
+
+	/* Check the UTF-8, byte-by-byte */
+
+        while (*sub)
 	  {
-	  uschar *t = sub - 1;
-	  while (*(++t) != 0)
-	    {
-	    if (!isalnum(*t))
-	      yield = string_catn(yield, US"\\", 1);
-	    yield = string_catn(yield, t, 1);
-	    }
-	  break;
-	  }
+	  complete = 0;
+	  uschar c = *sub++;
 
-	/* RFC 2047 encodes, assuming headers_charset (default ISO 8859-1) as
-	prescribed by the RFC, if there are characters that need to be encoded */
-
-	case EOP_RFC2047:
-	  yield = string_cat(yield,
-			      parse_quote_2047(sub, Ustrlen(sub), headers_charset,
-				FALSE));
-	  break;
-
-	/* RFC 2047 decode */
-
-	case EOP_RFC2047D:
-	  {
-	  int len;
-	  uschar *error;
-	  uschar *decoded = rfc2047_decode(sub, check_rfc2047_length,
-	    headers_charset, '?', &len, &error);
-	  if (error)
-	    {
-	    expand_string_message = error;
-	    goto EXPAND_FAILED;
-	    }
-	  yield = string_catn(yield, decoded, len);
-	  break;
-	  }
-
-	/* from_utf8 converts UTF-8 to 8859-1, turning non-existent chars into
-	underscores */
-
-	case EOP_FROM_UTF8:
-	  {
-	  uschar * buff = store_get(4, is_tainted(sub));
-	  while (*sub)
-	    {
-	    int c;
-	    GETUTF8INC(c, sub);
-	    if (c > 255) c = '_';
-	    buff[0] = c;
-	    yield = string_catn(yield, buff, 1);
-	    }
-	  break;
-	  }
-
-	/* replace illegal UTF-8 sequences by replacement character  */
-
-	#define UTF8_REPLACEMENT_CHAR US"?"
-
-	case EOP_UTF8CLEAN:
-	  {
-	  int seq_len = 0, index = 0;
-	  int bytes_left = 0;
-	  long codepoint = -1;
-	  int complete;
-	  uschar seq_buff[4];			/* accumulate utf-8 here */
-
-	  /* Manually track tainting, as we deal in individual chars below */
-
-	  if (is_tainted(sub))
-	    {
-	    if (yield->s && yield->ptr)
-	      gstring_rebuffer(yield);
-	    else
-	      yield->s = store_get(yield->size = Ustrlen(sub), is_tainted(sub));
-	    }
-
-	  /* Check the UTF-8, byte-by-byte */
-
-	  while (*sub)
-	    {
-	    complete = 0;
-	    uschar c = *sub++;
-
-	    if (bytes_left)
+	  if (bytes_left)
 	      {
 	      if ((c & 0xc0) != 0x80)
 		      /* wrong continuation byte; invalidate all bytes */
@@ -7800,7 +7798,7 @@ NOT_ITEM: ;
 	  break;
 	  }
 
-  #ifdef SUPPORT_I18N
+#ifdef SUPPORT_I18N
 	case EOP_UTF8_DOMAIN_TO_ALABEL:
 	  {
 	  uschar * error = NULL;
@@ -7861,7 +7859,7 @@ NOT_ITEM: ;
 	  yield = string_cat(yield, s);
 	  break;
 	  }
-  #endif	/* EXPERIMENTAL_INTERNATIONAL */
+#endif	/* EXPERIMENTAL_INTERNATIONAL */
 
 	/* escape turns all non-printing characters into escape sequences. */
 
@@ -7937,13 +7935,13 @@ NOT_ITEM: ;
 	case EOP_STR2B64:
 	case EOP_BASE64:
 	  {
-  #ifndef DISABLE_TLS
+#ifndef DISABLE_TLS
 	  uschar * s = vp && *(void **)vp->value
 	    ? tls_cert_der_b64(*(void **)vp->value)
 	    : b64encode(CUS sub, Ustrlen(sub));
-  #else
+#else
 	  uschar * s = b64encode(CUS sub, Ustrlen(sub));
-  #endif
+#endif
 	  yield = string_cat(yield, s);
 	  break;
 	  }
@@ -8290,7 +8288,6 @@ that is a bad idea, because expand_string_message is in dynamic store. */
 EXPAND_FAILED:
 if (left) *left = s;
 DEBUG(D_expand)
-  {
   DEBUG(D_noutf8)
     {
     debug_printf_indent("|failed to expand: %s\n", string);
@@ -8310,7 +8307,6 @@ DEBUG(D_expand)
     if (f.expand_string_forcedfail)
       debug_printf_indent(UTF8_UP_RIGHT "failure was forced\n");
     }
-  }
 if (resetok_p && !resetok) *resetok_p = FALSE;
 expand_level--;
 return NULL;

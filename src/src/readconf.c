@@ -68,9 +68,6 @@ static optionlist optionlist_config[] = {
   { "add_environment",          opt_stringptr,   {&add_environment} },
   { "admin_groups",             opt_gidlist,     {&admin_groups} },
   { "allow_domain_literals",    opt_bool,        {&allow_domain_literals} },
-#ifdef ALLOW_INSECURE_TAINTED_DATA
-  { "allow_insecure_tainted_data", opt_bool,     {&allow_insecure_tainted_data} },
-#endif
   { "allow_mx_to_ip",           opt_bool,        {&allow_mx_to_ip} },
   { "allow_utf8_domains",       opt_bool,        {&allow_utf8_domains} },
   { "auth_advertise_hosts",     opt_stringptr,   {&auth_advertise_hosts} },
