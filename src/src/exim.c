@@ -3329,7 +3329,7 @@ on the second character (the one after '-'), to save some effort. */
 
 	else if (Ustrcmp(argrest, "ai") == 0)
 	  authenticated_id = string_copy_taint(
-	    exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMas"),
+	    exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMai"),
 	    GET_TAINTED);
 
 	/* -oMi: Set incoming interface address */
