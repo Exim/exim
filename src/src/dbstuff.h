@@ -323,7 +323,9 @@ before use, but we don't have to free anything after reading data. */
 typedef struct {
        GDBM_FILE gdbm;  /* Database */
        datum lkey;      /* Last key, for scans */
-} EXIM_DB;
+} gdbm_db;
+
+#define EXIM_DB gdbm_db
 
 /* Cursor type, not used with gdbm: just set up a dummy */
 # define EXIM_CURSOR int
@@ -339,15 +341,16 @@ typedef struct {
 
 /* EXIM_DBOPEN - returns a EXIM_DB *, NULL if failed */
 # define EXIM_DBOPEN__(name, dirname, flags, mode, dbpp) \
-     { (*(dbpp)) = (EXIM_DB *) malloc(sizeof(EXIM_DB));\
-       if (*(dbpp) != NULL) { \
-         (*(dbpp))->lkey.dptr = NULL;\
-         (*(dbpp))->gdbm = gdbm_open(CS name, 0, (((flags) & O_CREAT))?GDBM_WRCREAT:(((flags) & (O_RDWR|O_WRONLY))?GDBM_WRITER:GDBM_READER), mode, 0);\
-          if ((*(dbpp))->gdbm == NULL) {\
-              free(*(dbpp));\
-              *(dbpp) = NULL;\
+     { EXIM_DB * dbp = malloc(sizeof(EXIM_DB));\
+       if (dbp) { \
+         dbp->lkey.dptr = NULL;\
+         dbp->gdbm = gdbm_open(CS name, 0, (((flags) & O_CREAT))?GDBM_WRCREAT:(((flags) & (O_RDWR|O_WRONLY))?GDBM_WRITER:GDBM_READER), (mode), 0);\
+          if (!dbp->gdbm) {\
+              free(dbp);\
+              dbp = NULL;\
           }\
        }\
+       *(dbpp) = dbp;\
      }
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
