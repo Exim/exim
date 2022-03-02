@@ -462,7 +462,7 @@ LOG: H=(test) [5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>>  using ACL "acl_5_6_12A"
 >>>  processing "accept" (TESTSUITE/test-config 82)
 >>>  check domains = ok
->>> ok in "ok"? yes (matched "ok")
+>>>  ok in "ok"? yes (matched "ok")
 >>>  accept: condition test succeeded in ACL "acl_5_6_12A"
 >>>  end of ACL "acl_5_6_12A": ACCEPT
 >>> accept: condition test succeeded in ACL "acl_5_6_12"
@@ -476,7 +476,7 @@ LOG: H=(test) [5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>>  using ACL "acl_5_6_12A"
 >>>  processing "accept" (TESTSUITE/test-config 82)
 >>>  check domains = ok
->>> y in "ok"? no (end of list)
+>>>  y in "ok"? no (end of list)
 >>>  accept: condition test failed in ACL "acl_5_6_12A"
 >>>  end of ACL "acl_5_6_12A": implicit DENY
 >>> accept: condition test failed in ACL "acl_5_6_12"
@@ -616,9 +616,9 @@ LOG: H=(test) [8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too 
 >>>  read ACL from file TESTSUITE/aux-fixed/0023.acl1
 >>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = y
->>> y in "y"? yes (matched "y")
+>>>  y in "y"? yes (matched "y")
 >>>  check local_parts = x
->>> x in "x"? yes (matched "x")
+>>>  x in "x"? yes (matched "x")
 >>>  accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl1": ACCEPT
 >>> accept: condition test succeeded in ACL "acl_5_6_13"
@@ -629,9 +629,9 @@ LOG: H=(test) [8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too 
 >>>  using ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = y
->>> y in "y"? yes (matched "y")
+>>>  y in "y"? yes (matched "y")
 >>>  check local_parts = x
->>> x1 in "x"? no (end of list)
+>>>  x1 in "x"? no (end of list)
 >>>  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
 >>> accept: condition test failed in ACL "acl_5_6_13"
@@ -643,9 +643,9 @@ LOG: H=(test) [5.6.13.1] F=<x@y> rejected RCPT <x1@y>
 >>>  using ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = y
->>> y in "y"? yes (matched "y")
+>>>  y in "y"? yes (matched "y")
 >>>  check local_parts = x
->>> x2 in "x"? no (end of list)
+>>>  x2 in "x"? no (end of list)
 >>>  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
 >>> accept: condition test failed in ACL "acl_5_6_13"
@@ -1380,7 +1380,7 @@ LOG: H=(test) [44.44.44.1] Warning: ACL "warn" statement skipped: condition test
 >>>  read ACL from file TESTSUITE/aux-fixed/0023.acl2
 >>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = b
->>> y in "b"? no (end of list)
+>>>  y in "b"? no (end of list)
 >>>  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl2"
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl2": implicit DENY
 >>> accept: condition test succeeded in ACL "acl_60_60_60"
@@ -1391,9 +1391,9 @@ LOG: H=(test) [44.44.44.1] Warning: ACL "warn" statement skipped: condition test
 >>>  using ACL "TESTSUITE/aux-fixed/0023.acl2"
 >>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = b
->>> b in "b"? yes (matched "b")
+>>>  b in "b"? yes (matched "b")
 >>>  check local_parts = a
->>> a in "a"? yes (matched "a")
+>>>  a in "a"? yes (matched "a")
 >>>  accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0023.acl2"
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl2": ACCEPT
 >>> accept: condition test failed in ACL "acl_60_60_60"

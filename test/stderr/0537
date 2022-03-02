@@ -126,7 +126,7 @@ LOG: sender_ident=ident
 >>>  using ACL "auth"
 >>>  processing "accept" (TESTSUITE/test-config 42)
 >>>  check authenticated = *
->>> authname in "*"? yes (matched "*")
+>>>  authname in "*"? yes (matched "*")
 >>>  check logwrite = +++ host is authenticated +++
 LOG: +++ host is authenticated +++
 >>>  accept: condition test succeeded in ACL "auth"
@@ -170,7 +170,7 @@ LOG: sender_ident=ident
 >>>  using ACL "auth"
 >>>  processing "accept" (TESTSUITE/test-config 42)
 >>>  check authenticated = *
->>> authname in "*"? yes (matched "*")
+>>>  authname in "*"? yes (matched "*")
 >>>  check logwrite = +++ host is authenticated +++
 LOG: +++ host is authenticated +++
 >>>  accept: condition test succeeded in ACL "auth"

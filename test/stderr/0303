@@ -90,6 +90,9 @@ SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
 >>Headers received:
 
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
 search_tidyup called
 >>Headers after rewriting and local additions:
 
@@ -164,6 +167,9 @@ SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
 >>Headers received:
 
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
 search_tidyup called
 >>Headers after rewriting and local additions:
 

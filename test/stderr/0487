@@ -42,8 +42,11 @@ search_tidyup called
 >>Headers received:
 From: unqualified
 
-rewrite_one_header: type=F:
-  From: unqualified
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
+ rewrite_one_header: type=F:
+   From: unqualified
 search_tidyup called
 >>Headers after rewriting and local additions:
 F From: unqualified

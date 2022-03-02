@@ -666,7 +666,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
-1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask)
-1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask)
+ 1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask)
+ 1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask)
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

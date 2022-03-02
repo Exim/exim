@@ -52,8 +52,11 @@ Reply-to: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@te
 **** debug string too long - truncated ****
 
-rewrite_one_header: type=R:
-  Reply-to: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
+ rewrite_one_header: type=R:
+   Reply-to: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
@@ -83,10 +86,10 @@ rewrite_one_header: type=R:
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
- sender@test
+ sender@tes
 **** debug string too long - truncated ****
-rewrite_one_header: type=F:
-  From: CALLER_NAME <CALLER@test.ex>
+ rewrite_one_header: type=F:
+   From: CALLER_NAME <CALLER@test.ex>
 search_tidyup called
 >>Headers after rewriting and local additions:
 R Reply-to: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
@@ -271,11 +274,14 @@ In-Reply-To: <E10HmaX-0005vi-00@mail.test.ex>
 References: <E10HmaX-0005vi-00@mail.test.ex>
 Auto-Submitted: auto-replied
 
-rewrite_one_header: type=T:
-  To: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, s
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
+ rewrite_one_header: type=T:
+   To: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, 
 **** debug string too long - truncated ****
-rewrite_one_header: type=F:
-  From: CALLER_NAME <CALLER@test.ex>
+ rewrite_one_header: type=F:
+   From: CALLER_NAME <CALLER@test.ex>
 search_tidyup called
 >>Headers after rewriting and local additions:
 T To: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.e

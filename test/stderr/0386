@@ -46,11 +46,11 @@ check acl = TESTSUITE/aux-fixed/0386.acl1
  read ACL from file TESTSUITE/aux-fixed/0386.acl1
  processing "accept" (TESTSUITE/test-config 44)
  check hosts = :
-host in ":"? no (end of list)
+  host in ":"? no (end of list)
  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "deny" (TESTSUITE/test-config 44)
  check local_parts = ^.*[@%!/|]
-1 in "^.*[@%!/|]"? no (end of list)
+ 1 in "^.*[@%!/|]"? no (end of list)
  deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "require" (TESTSUITE/test-config 44)
  l_message: Invalid sender
@@ -102,11 +102,11 @@ check acl = TESTSUITE/aux-fixed/0386.acl1
  using ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "accept" (TESTSUITE/test-config 44)
  check hosts = :
-host in ":"? no (end of list)
+  host in ":"? no (end of list)
  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "deny" (TESTSUITE/test-config 44)
  check local_parts = ^.*[@%!/|]
-1 in "^.*[@%!/|]"? no (end of list)
+ 1 in "^.*[@%!/|]"? no (end of list)
  deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "require" (TESTSUITE/test-config 44)
  l_message: Invalid sender
@@ -228,6 +228,9 @@ SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
 >>Headers received:
 
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
 search_tidyup called
 >>Headers after rewriting and local additions:
 
@@ -418,6 +421,9 @@ SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
 >>Headers received:
 
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
 search_tidyup called
 >>Headers after rewriting and local additions:
 

@@ -2835,10 +2835,13 @@ if (LOGGING(received_recipients))
 recipients will get here only if the conditions were right (allow_unqualified_
 recipient is TRUE). */
 
+DEBUG(D_rewrite)
+  { debug_printf_indent("qualify & rewrite recipients list\n"); acl_level++; }
 for (int i = 0; i < recipients_count; i++)
   recipients_list[i].address =	/* deconst ok as src was not cont */
     US rewrite_address(recipients_list[i].address, TRUE, TRUE,
       global_rewrite_rules, rewrite_existflags);
+DEBUG(D_rewrite) acl_level--;
 
 /* If there is no From: header, generate one for local (without
 suppress_local_fixups) or submission_mode messages. If there is no sender
@@ -3010,6 +3013,8 @@ if (  from_header
 /* If there are any rewriting rules, apply them to the sender address, unless
 it has already been rewritten as part of verification for SMTP input. */
 
+DEBUG(D_rewrite)
+  { debug_printf("global rewrite rules\n"); acl_level++; }
 if (global_rewrite_rules && !sender_address_unrewritten && *sender_address)
   {
   /* deconst ok as src was not const */
@@ -3018,6 +3023,7 @@ if (global_rewrite_rules && !sender_address_unrewritten && *sender_address)
   DEBUG(D_receive|D_rewrite)
     debug_printf("rewritten sender = %s\n", sender_address);
   }
+DEBUG(D_rewrite) acl_level--;
 
 
 /* The headers must be run through rewrite_header(), because it ensures that
@@ -3034,12 +3040,13 @@ We start at the second header, skipping our own Received:. This rewriting is
 documented as happening *after* recipient addresses are taken from the headers
 by the -t command line option. An added Sender: gets rewritten here. */
 
-for (header_line * h = header_list->next; h; h = h->next)
-  {
-  header_line *newh = rewrite_header(h, NULL, NULL, global_rewrite_rules,
-    rewrite_existflags, TRUE);
-  if (newh) h = newh;
-  }
+DEBUG(D_rewrite)
+  { debug_printf("rewrite headers\n"); acl_level++; }
+for (header_line * h = header_list->next, * newh; h; h = h->next)
+  if ((newh = rewrite_header(h, NULL, NULL, global_rewrite_rules,
+			      rewrite_existflags, TRUE)))
+    h = newh;
+DEBUG(D_rewrite) acl_level--;
 
 
 /* An RFC 822 (sic) message is not legal unless it has at least one of "to",

@@ -34,8 +34,8 @@ DNS lookup of eximtesthost.test.ex (A) succeeded
 local host has lowest MX
 host_find_bydns yield = HOST_FOUND_LOCAL (4); returned hosts:
   eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 
-mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
-mxt1.test.ex in "+anymx"? yes (matched "+anymx")
+ mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
+ mxt1.test.ex in "+anymx"? yes (matched "+anymx")
 calling r1 router
 r1 router called for ph@mxt1.test.ex
   domain = mxt1.test.ex

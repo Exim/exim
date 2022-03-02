@@ -13,7 +13,7 @@ log_selector = +received_recipients
 
 begin rewrite
 
-^.{40,}@*          deny_me@test.example		FTbcfrt
-*@* $1@${lookup{${lc:$2}}partial-lsearch{DIR/aux-fixed/TESTNUM.rw}{$value}fail} FTbcfrt
+^.{40,}@*	deny_me@test.example								FTbcfrt
+*@*		$1@${lookup{${lc:$2}}partial-lsearch{DIR/aux-fixed/TESTNUM.rw}{$value}fail}	FTbcfrt
 
 # End

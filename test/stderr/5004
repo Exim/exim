@@ -20,8 +20,11 @@ Recipients:
 search_tidyup called
 >>Headers received:
 
-rewrite_one_header: type=F:
-  From: CALLER_NAME <CALLER@test.ex>
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
+ rewrite_one_header: type=F:
+   From: CALLER_NAME <CALLER@test.ex>
 search_tidyup called
 >>Headers after rewriting and local additions:
 I Message-Id: <E10HmaX-0005vi-00@mail.test.ex>

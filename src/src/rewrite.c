@@ -454,7 +454,7 @@ uschar *s = Ustrchr(h->text, ':') + 1;
 while (isspace(*s)) s++;
 
 DEBUG(D_rewrite)
-  debug_printf("rewrite_one_header: type=%c:\n  %s", h->type, h->text);
+  debug_printf_indent("rewrite_one_header: type=%c:\n  %s", h->type, h->text);
 
 f.parse_allow_group = TRUE;     /* Allow group syntax */
 
@@ -484,7 +484,7 @@ while (*s)
   recipient = parse_extract_address(s, &errmess, &start, &end, &domain, FALSE);
   *ss = terminator;
   sprev = s;
-  s = ss + (terminator ? 1 :0);
+  s = ss + (terminator ? 1 : 0);
   while (isspace(*s)) s++;
 
   /* There isn't much we can do for syntactic disasters at this stage.
@@ -493,30 +493,17 @@ while (*s)
   empty address, overlong addres. Sometimes the result matters, sometimes not.
   It seems this function is called for *any* header we see. */
 
-
   if (!recipient)
     {
-#if 0
-    /* FIXME:
-    This was(!) an attempt tho handle empty rewrits, but seemingly it
-    needs more effort to decide if the returned empty address matters.
-    Now this will now break test 471 again.
+    /* Handle unparesable addresses in the header. Slightly ugly because a
+    null output from the extract can also result from a header without an
+    address, "To: undisclosed recpients:;" being the classic case. */
 
-    471 fails now because it uses an overlong address, for wich parse_extract_address()
-    returns an empty address (which was not expected).
-
-    Checking the output and exit if rewrite_rules or routed_old are present
-    isn't a good idea either: It's enough to have *any* rewrite rule
-    in the configuration plus "To: undisclosed recpients:;" to exit(), which
-    is not what we want.
-    */
-
-    if (rewrite_rules || routed_old)
+    if ((rewrite_rules || routed_old) && Ustrcmp(errmess, "empty address") != 0)
       {
       log_write(0, LOG_MAIN, "rewrite: %s", errmess);
       exim_exit(EXIT_FAILURE);
       }
-#endif
     loop_reset_point = store_reset(loop_reset_point);
     continue;
     }

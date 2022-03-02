@@ -18,8 +18,11 @@ Recipients:
 search_tidyup called
 >>Headers received:
 
-rewrite_one_header: type=F:
-  From: CALLER_NAME <CALLER@test.ex>
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
+ rewrite_one_header: type=F:
+   From: CALLER_NAME <CALLER@test.ex>
 search_tidyup called
 >>Headers after rewriting and local additions:
 I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
@@ -205,8 +208,11 @@ Recipients:
 search_tidyup called
 >>Headers received:
 
-rewrite_one_header: type=F:
-  From: CALLER_NAME <CALLER@test.ex>
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
+ rewrite_one_header: type=F:
+   From: CALLER_NAME <CALLER@test.ex>
 search_tidyup called
 >>Headers after rewriting and local additions:
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
@@ -393,8 +399,11 @@ Recipients:
 search_tidyup called
 >>Headers received:
 
-rewrite_one_header: type=F:
-  From: CALLER_NAME <CALLER@test.ex>
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
+ rewrite_one_header: type=F:
+   From: CALLER_NAME <CALLER@test.ex>
 search_tidyup called
 >>Headers after rewriting and local additions:
 I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
@@ -543,9 +552,9 @@ Deferred addresses:
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
-address match test: subject=userx@test.ex pattern=*
-test.ex in "*"? yes (matched "*")
-userx@test.ex in "*"? yes (matched "*")
+ address match test: subject=userx@test.ex pattern=*
+ test.ex in "*"? yes (matched "*")
+ userx@test.ex in "*"? yes (matched "*")
 retry for T:userx@test.ex = * 0 0
  dbfn_read: key=T:userx@test.ex
 failing_interval=ttt message_age=ttt
@@ -587,8 +596,11 @@ Recipients:
 search_tidyup called
 >>Headers received:
 
-rewrite_one_header: type=F:
-  From: CALLER_NAME <CALLER@test.ex>
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
+ rewrite_one_header: type=F:
+   From: CALLER_NAME <CALLER@test.ex>
 search_tidyup called
 >>Headers after rewriting and local additions:
 I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
@@ -732,9 +744,9 @@ Deferred addresses:
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
-address match test: subject=userx@test.ex pattern=*
-test.ex in "*"? yes (matched "*")
-userx@test.ex in "*"? yes (matched "*")
+ address match test: subject=userx@test.ex pattern=*
+ test.ex in "*"? yes (matched "*")
+ userx@test.ex in "*"? yes (matched "*")
 retry for T:userx@test.ex = * 0 0
  dbfn_read: key=T:userx@test.ex
 failing_interval=ttt message_age=ttt
