@@ -177,7 +177,7 @@ if (cn)
   }
 else
   {
-  cn = store_get(sizeof(ibase_connection), FALSE);
+  cn = store_get(sizeof(ibase_connection), GET_UNTAINTED);
   cn->server = server_copy;
   cn->dbh = NULL;
   cn->transh = NULL;
@@ -252,7 +252,7 @@ if (isc_dsql_allocate_statement(status, &cn->dbh, &stmth))
 
 /* Lacking any information, assume that the data is untainted */
 reset_point = store_mark();
-out_sqlda = store_get(XSQLDA_LENGTH(1), FALSE);
+out_sqlda = store_get(XSQLDA_LENGTH(1), GET_UNTAINTED);
 out_sqlda->version = SQLDA_VERSION1;
 out_sqlda->sqln = 1;
 
@@ -272,7 +272,7 @@ if (isc_dsql_prepare
 /* re-allocate the output structure if there's more than one field */
 if (out_sqlda->sqln < out_sqlda->sqld)
   {
-  XSQLDA *new_sqlda = store_get(XSQLDA_LENGTH(out_sqlda->sqld), FALSE);
+  XSQLDA *new_sqlda = store_get(XSQLDA_LENGTH(out_sqlda->sqld), GET_UNTAINTED);
   if (isc_dsql_describe
       (status, &stmth, out_sqlda->version, new_sqlda))
     {
@@ -294,46 +294,46 @@ for (i = 0, var = out_sqlda->sqlvar; i < out_sqlda->sqld; i++, var++)
   switch (var->sqltype & ~1)
     {
     case SQL_VARYING:
-	var->sqldata = CS store_get(sizeof(char) * var->sqllen + 2, FALSE);
+	var->sqldata = CS store_get(sizeof(char) * var->sqllen + 2, GET_UNTAINTED);
 	break;
     case SQL_TEXT:
-	var->sqldata = CS store_get(sizeof(char) * var->sqllen, FALSE);
+	var->sqldata = CS store_get(sizeof(char) * var->sqllen, GET_UNTAINTED);
 	break;
     case SQL_SHORT:
-	var->sqldata = CS  store_get(sizeof(short), FALSE);
+	var->sqldata = CS  store_get(sizeof(short), GET_UNTAINTED);
 	break;
     case SQL_LONG:
-	var->sqldata = CS  store_get(sizeof(ISC_LONG), FALSE);
+	var->sqldata = CS  store_get(sizeof(ISC_LONG), GET_UNTAINTED);
 	break;
 #ifdef SQL_INT64
     case SQL_INT64:
-	var->sqldata = CS  store_get(sizeof(ISC_INT64), FALSE);
+	var->sqldata = CS  store_get(sizeof(ISC_INT64), GET_UNTAINTED);
 	break;
 #endif
     case SQL_FLOAT:
-	var->sqldata = CS  store_get(sizeof(float), FALSE);
+	var->sqldata = CS  store_get(sizeof(float), GET_UNTAINTED);
 	break;
     case SQL_DOUBLE:
-	var->sqldata = CS  store_get(sizeof(double), FALSE);
+	var->sqldata = CS  store_get(sizeof(double), GET_UNTAINTED);
 	break;
 #ifdef SQL_TIMESTAMP
     case SQL_DATE:
-	var->sqldata = CS  store_get(sizeof(ISC_QUAD), FALSE);
+	var->sqldata = CS  store_get(sizeof(ISC_QUAD), GET_UNTAINTED);
 	break;
 #else
     case SQL_TIMESTAMP:
-	var->sqldata = CS  store_get(sizeof(ISC_TIMESTAMP), FALSE);
+	var->sqldata = CS  store_get(sizeof(ISC_TIMESTAMP), GET_UNTAINTED);
 	break;
     case SQL_TYPE_DATE:
-	var->sqldata = CS  store_get(sizeof(ISC_DATE), FALSE);
+	var->sqldata = CS  store_get(sizeof(ISC_DATE), GET_UNTAINTED);
 	break;
     case SQL_TYPE_TIME:
-	var->sqldata = CS  store_get(sizeof(ISC_TIME), FALSE);
+	var->sqldata = CS  store_get(sizeof(ISC_TIME), GET_UNTAINTED);
 	break;
   #endif
     }
   if (var->sqltype & 1)
-    var->sqlind = (short *) store_get(sizeof(short), FALSE);
+    var->sqlind = (short *) store_get(sizeof(short), GET_UNTAINTED);
   }
 
 /* finally, we're ready to execute the statement */
@@ -492,51 +492,32 @@ can't quote "on spec".
 Arguments:
   s          the string to be quoted
   opt        additional option text or NULL if none
+  idx	     lookup type index
 
 Returns:     the processed string or NULL for a bad option
 */
 
-static uschar *ibase_quote(uschar * s, uschar * opt)
+static uschar *
+ibase_quote(uschar * s, uschar * opt, unsigned idx)
 {
-    register int c;
-    int count = 0;
-    uschar *t = s;
-    uschar *quoted;
+int c;
+int count = 0;
+uschar * t = s, * quoted;
 
-    if (opt != NULL)
-        return NULL;            /* No options recognized */
+if (opt)
+  return NULL;            /* No options recognized */
 
-    while ((c = *t++) != 0)
-        if (Ustrchr("\n\t\r\b\'\"\\", c) != NULL)
-            count++;
+while ((c = *t++))
+  if (c == '\'') count++;
 
-    if (count == 0)
-        return s;
-    t = quoted = store_get(Ustrlen(s) + count + 1, FALSE);
+t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx);
 
-    while ((c = *s++) != 0) {
-        if (Ustrchr("'", c) != NULL) {
-            *t++ = '\'';
-            *t++ = '\'';
-/*    switch(c)
-      {
-      case '\n': *t++ = 'n';
-      break;
-      case '\t': *t++ = 't';
-      break;
-      case '\r': *t++ = 'r';
-      break;
-      case '\b': *t++ = 'b';
-      break;
-      default:   *t++ = c;
-      break;
-      }*/
-        } else
-            *t++ = c;
-    }
+while ((c = *s++))
+  if (c == '\'') { *t++ = '\''; *t++ = '\''; }
+  else *t++ = c;
 
-    *t = 0;
-    return quoted;
+*t = 0;
+return quoted;
 }
 
 

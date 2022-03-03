@@ -146,7 +146,7 @@ Returns:      a pointer to an initialized address_item
 address_item *
 deliver_make_addr(uschar *address, BOOL copy)
 {
-address_item *addr = store_get(sizeof(address_item), FALSE);
+address_item * addr = store_get(sizeof(address_item), GET_UNTAINTED);
 *addr = address_defaults;
 if (copy) address = string_copy(address);
 addr->address = address;
@@ -1148,7 +1148,7 @@ pointer to a single host item in their host list, for use by the transport. */
 #endif
 
 reset_point = store_mark();
-g = string_get_tainted(256, TRUE);	/* addrs will be tainted, so avoid copy */
+g = string_get_tainted(256, GET_TAINTED);	/* addrs will be tainted, so avoid copy */
 
 if (msg)
   g = string_append(g, 2, host_and_ident(TRUE), US" ");
@@ -2376,27 +2376,29 @@ if ((pid = exim_fork(US"delivery-local")) == 0)
     {
     BOOL ok = TRUE;
     set_process_info("delivering %s to %s using %s", message_id,
-     addr->local_part, addr->transport->name);
+     addr->local_part, tp->name);
 
-    /* Setting this global in the subprocess means we need never clear it */
+    /* Setting these globals in the subprocess means we need never clear them */
     transport_name = addr->transport->name;
+    driver_srcfile = tp->srcfile;
+    driver_srcline = tp->srcline;
 
     /* If a transport filter has been specified, set up its argument list.
     Any errors will get put into the address, and FALSE yielded. */
 
-    if (addr->transport->filter_command)
+    if (tp->filter_command)
       {
       ok = transport_set_up_command(&transport_filter_argv,
-        addr->transport->filter_command,
+        tp->filter_command,
         TRUE, PANIC, addr, US"transport filter", NULL);
-      transport_filter_timeout = addr->transport->filter_timeout;
+      transport_filter_timeout = tp->filter_timeout;
       }
     else transport_filter_argv = NULL;
 
     if (ok)
       {
-      debug_print_string(addr->transport->debug_string);
-      replicate = !(addr->transport->info->code)(addr->transport, addr);
+      debug_print_string(tp->debug_string);
+      replicate = !(tp->info->code)(addr->transport, addr);
       }
     }
 
@@ -3049,7 +3051,7 @@ while (addr_local)
     else for (addr2 = addr; addr2; addr2 = addr2->next)
       if (addr2->transport_return == OK)
 	{
-	addr3 = store_get(sizeof(address_item), FALSE);
+	addr3 = store_get(sizeof(address_item), GET_UNTAINTED);
 	*addr3 = *addr2;
 	addr3->next = NULL;
 	addr3->shadow_message = US &addr2->shadow_message;
@@ -3444,7 +3446,7 @@ while (!done)
 
       if (!r || !(*ptr & rf_delete))
 	{
-	r = store_get(sizeof(retry_item), FALSE);
+	r = store_get(sizeof(retry_item), GET_UNTAINTED);
 	r->next = addr->retries;
 	addr->retries = r;
 	r->flags = *ptr++;
@@ -3635,7 +3637,7 @@ while (!done)
 
 	  if (*ptr)
 	    {
-	    h = store_get(sizeof(host_item), FALSE);
+	    h = store_get(sizeof(host_item), GET_UNTAINTED);
 	    h->name = string_copy(ptr);
 	    while (*ptr++);
 	    h->address = string_copy(ptr);
@@ -4213,10 +4215,10 @@ set up, do so. */
 
 if (!parlist)
   {
-  parlist = store_get(remote_max_parallel * sizeof(pardata), FALSE);
+  parlist = store_get(remote_max_parallel * sizeof(pardata), GET_UNTAINTED);
   for (poffset = 0; poffset < remote_max_parallel; poffset++)
     parlist[poffset].pid = 0;
-  parpoll = store_get(remote_max_parallel * sizeof(struct pollfd), FALSE);
+  parpoll = store_get(remote_max_parallel * sizeof(struct pollfd), GET_UNTAINTED);
   }
 
 /* Now loop for each remote delivery */
@@ -4664,8 +4666,10 @@ all pipes, so I do not see a reason to use non-blocking IO here
     int fd = pfd[pipe_write];
     host_item *h;
 
-    /* Setting this global in the subprocess means we need never clear it */
-    transport_name = tp->name;
+    /* Setting these globals in the subprocess means we need never clear them */
+    transport_name = addr->transport->name;
+    driver_srcfile = tp->srcfile;
+    driver_srcline = tp->srcline;
 
     /* There are weird circumstances in which logging is disabled */
     f.disable_logging = tp->disable_logging;
@@ -5111,7 +5115,7 @@ where they are locally interpreted. [The new draft "821" is more explicit on
 this, Jan 1999.] We know the syntax is valid, so this can be done by simply
 removing quoting backslashes and any unquoted doublequotes. */
 
-t = addr->cc_local_part = store_get(len+1, is_tainted(address));
+t = addr->cc_local_part = store_get(len+1, address);
 while(len-- > 0)
   {
   int c = *address++;
@@ -5154,7 +5158,7 @@ if (percent_hack_domains)
 
   if (new_address)
     {
-    address_item *new_parent = store_get(sizeof(address_item), FALSE);
+    address_item * new_parent = store_get(sizeof(address_item), GET_UNTAINTED);
     *new_parent = *addr;
     addr->parent = new_parent;
     new_parent->child_count = 1;
@@ -6552,7 +6556,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
       if (Ustrcmp(addr->address, "/dev/null") == 0)
         {
 	transport_instance * save_t = addr->transport;
-	transport_instance * t = store_get(sizeof(*t), is_tainted(save_t));
+	transport_instance * t = store_get(sizeof(*t), save_t);
 	*t = *save_t;
 	t->name = US"**bypassed**";
 	addr->transport = t;
@@ -7386,7 +7390,7 @@ for (address_item * a = addr_succeed; a; a = a->next)
     {
     /* copy and relink address_item and send report with all of them at once later */
     address_item * addr_next = addr_senddsn;
-    addr_senddsn = store_get(sizeof(address_item), FALSE);
+    addr_senddsn = store_get(sizeof(address_item), GET_UNTAINTED);
     *addr_senddsn = *a;
     addr_senddsn->next = addr_next;
     }

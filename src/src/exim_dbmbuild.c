@@ -42,7 +42,7 @@ uschar *
 readconf_printtime(int t)
 { return NULL; }
 void *
-store_get_3(int size, BOOL tainted, const char *filename, int linenumber)
+store_get_3(int size, const void * proto_mem, const char *filename, int linenumber)
 { return NULL; }
 void **
 store_reset_3(void **ptr, const char *filename, int linenumber)

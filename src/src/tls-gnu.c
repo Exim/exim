@@ -2031,7 +2031,7 @@ if (host)
 
   int old_pool = store_pool;
   store_pool = POOL_PERM;
-  state = store_get(sizeof(exim_gnutls_state_st), FALSE);
+  state = store_get(sizeof(exim_gnutls_state_st), GET_UNTAINTED);
   store_pool = old_pool;
 
   memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
@@ -2431,8 +2431,8 @@ else
       for (nrec = 0; state->dane_data_len[nrec]; ) nrec++;
       nrec++;
 
-      dd = store_get(nrec * sizeof(uschar *), FALSE);
-      ddl = store_get(nrec * sizeof(int), FALSE);
+      dd = store_get(nrec * sizeof(uschar *), GET_UNTAINTED);
+      ddl = store_get(nrec * sizeof(int), GET_UNTAINTED);
       nrec--;
 
       if ((rc = dane_state_init(&s, 0)))
@@ -2889,7 +2889,7 @@ else
 
   while (string_nextinlist(&list, &sep, NULL, 0)) cnt++;
 
-  p = store_get(sizeof(gnutls_datum_t) * cnt, is_tainted(exp_alpn));
+  p = store_get(sizeof(gnutls_datum_t) * cnt, exp_alpn);
   list = exp_alpn;
   for (int i = 0; s = string_nextinlist(&list, &sep, NULL, 0); i++)
     { p[i].data = s; p[i].size = Ustrlen(s); }
@@ -3208,8 +3208,8 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
     ) if (rr->type == T_TLSA) i++;
 
-dane_data = store_get(i * sizeof(uschar *), FALSE);
-dane_data_len = store_get(i * sizeof(int), FALSE);
+dane_data = store_get(i * sizeof(uschar *), GET_UNTAINTED);
+dane_data_len = store_get(i * sizeof(int), GET_UNTAINTED);
 
 i = 0;
 for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
@@ -3322,7 +3322,7 @@ if (gnutls_session_get_flags(session) & GNUTLS_SFLAGS_SESSION_TICKET)
       {
       open_db dbblock, * dbm_file;
       int dlen = sizeof(dbdata_tls_session) + tkt.size;
-      dbdata_tls_session * dt = store_get(dlen, TRUE);
+      dbdata_tls_session * dt = store_get(dlen, GET_TAINTED);
 
       DEBUG(D_tls) debug_printf("session data size %u\n", (unsigned)tkt.size);
       memcpy(dt->session, tkt.data, tkt.size);

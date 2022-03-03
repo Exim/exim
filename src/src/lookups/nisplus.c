@@ -226,25 +226,24 @@ characters. No options are recognized.
 Arguments:
   s          the string to be quoted
   opt        additional option text or NULL if none
+  idx	     lookup type index
 
 Returns:     the processed string or NULL for a bad option
 */
 
 static uschar *
-nisplus_quote(uschar *s, uschar *opt)
+nisplus_quote(uschar * s, uschar * opt, unsigned idx)
 {
 int count = 0;
-uschar *quoted;
-uschar *t = s;
+uschar * quoted, * t = s;
 
-if (opt != NULL) return NULL;    /* No options recognized */
+if (opt) return NULL;    /* No options recognized */
 
-while (*t != 0) if (*t++ == '\"') count++;
-if (count == 0) return s;
+while (*t) if (*t++ == '\"') count++;
 
-t = quoted = store_get(Ustrlen(s) + count + 1, is_tainted(s));
+t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx);
 
-while (*s != 0)
+while (*s)
   {
   *t++ = *s;
   if (*s++ == '\"') *t++ = '\"';

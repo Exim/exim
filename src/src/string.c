@@ -313,7 +313,7 @@ if (nonprintcount == 0) return s;
 /* Get a new block of store guaranteed big enough to hold the
 expanded string. */
 
-tt = ss = store_get(length + nonprintcount * 3 + 1, is_tainted(s));
+tt = ss = store_get(length + nonprintcount * 3 + 1, s);
 
 /* Copy everything, escaping non printers. */
 
@@ -371,7 +371,7 @@ p = Ustrchr(s, '\\');
 if (!p) return s;
 
 len = Ustrlen(s) + 1;
-ss = store_get(len, is_tainted(s));
+ss = store_get(len, s);
 
 q = ss;
 off = p - s;
@@ -428,18 +428,18 @@ Returns:  copy of string in new store with the same taint status
 */
 
 uschar *
-string_copy_function(const uschar *s)
+string_copy_function(const uschar * s)
 {
-return string_copy_taint(s, is_tainted(s));
+return string_copy_taint(s, s);
 }
 
 /* As above, but explicitly specifying the result taint status
 */
 
 uschar *
-string_copy_taint_function(const uschar * s, BOOL tainted)
+string_copy_taint_function(const uschar * s, const void * proto_mem)
 {
-return string_copy_taint(s, tainted);
+return string_copy_taint(s, proto_mem);
 }
 
 
@@ -568,7 +568,7 @@ uschar *
 string_copy_dnsdomain(uschar * s)
 {
 uschar * yield;
-uschar * ss = yield = store_get(Ustrlen(s) + 1, TRUE);	/* always treat as tainted */
+uschar * ss = yield = store_get(Ustrlen(s) + 1, GET_TAINTED);	/* always treat as tainted */
 
 while (*s)
   {
@@ -626,7 +626,7 @@ else
 
 /* Get enough store to copy into */
 
-t = yield = store_get(s - *sptr + 1, is_tainted(*sptr));
+t = yield = store_get(s - *sptr + 1, *sptr);
 s = *sptr;
 
 /* Do the copy */
@@ -911,6 +911,7 @@ if (!*s) return NULL;
 sep_is_special = iscntrl(sep);
 
 /* Handle the case when a buffer is provided. */
+/*XXX need to also deal with qouted-requirements mismatch */
 
 if (buffer)
   {
@@ -1087,7 +1088,6 @@ gstring_grow(gstring * g, int count)
 {
 int p = g->ptr;
 int oldsize = g->size;
-BOOL tainted = is_tainted(g->s);
 
 /* Mostly, string_cat() is used to build small strings of a few hundred
 characters at most. There are times, however, when the strings are very much
@@ -1119,8 +1119,8 @@ is at its start.) However, we can do this only if we know that the old string
 was the last item on the dynamic memory stack. This is the case if it matches
 store_last_get. */
 
-if (!store_extend(g->s, tainted, oldsize, g->size))
-  g->s = store_newblock(g->s, tainted, g->size, p);
+if (!store_extend(g->s, oldsize, g->size))
+  g->s = store_newblock(g->s, g->size, p);
 }
 
 
@@ -1150,24 +1150,27 @@ Returns:   growable string, changed if copied for expansion.
 /* coverity[+alloc] */
 
 gstring *
-string_catn(gstring * g, const uschar *s, int count)
+string_catn(gstring * g, const uschar * s, int count)
 {
 int p;
-BOOL srctaint = is_tainted(s);
 
 if (count < 0)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "internal error in string_catn (count %d)", count);
 if (count == 0) return g;
 
+/*debug_printf("string_catn '%.*s'\n", count, s);*/
 if (!g)
   {
   unsigned inc = count < 4096 ? 127 : 1023;
   unsigned size = ((count + inc) &  ~inc) + 1;	/* round up requested count */
-  g = string_get_tainted(size, srctaint);
+  g = string_get_tainted(size, s);
   }
-else if (srctaint && !is_tainted(g->s))
-  gstring_rebuffer(g);
+else if (is_incompatible(g->s, s))
+  {
+/* debug_printf("rebuf A\n"); */
+  gstring_rebuffer(g, s);
+  }
 
 if (g->ptr < 0 || g->ptr > g->size)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
@@ -1310,7 +1313,6 @@ enum ltypes { L_NORMAL=1, L_SHORT=2, L_LONG=3, L_LONGLONG=4, L_LONGDOUBLE=5, L_S
 
 int width, precision, off, lim, need;
 const char * fp = format;	/* Deliberately not unsigned */
-BOOL dest_tainted = FALSE;
 
 string_datestamp_offset = -1;	/* Datestamp not inserted */
 string_datestamp_length = 0;	/* Datestamp not inserted */
@@ -1323,16 +1325,15 @@ assert(g);
 
 /* Ensure we have a string, to save on checking later */
 if (!g) g = string_get(16);
-else if (!(flags & SVFMT_TAINT_NOCHK)) dest_tainted = is_tainted(g->s);
 
-if (!(flags & SVFMT_TAINT_NOCHK) && !dest_tainted && is_tainted(format))
+if (!(flags & SVFMT_TAINT_NOCHK) && is_incompatible(g->s, format))
   {
 #ifndef MACRO_PREDEF
   if (!(flags & SVFMT_REBUFFER))
     die_tainted(US"string_vformat", func, line);
 #endif
-  gstring_rebuffer(g);
-  dest_tainted = TRUE;
+/* debug_printf("rebuf B\n"); */
+  gstring_rebuffer(g, format);
   }
 #endif	/*!COMPILE_UTILITY*/
 
@@ -1552,12 +1553,12 @@ while (*fp)
       if (!s) s = null;
       slen = Ustrlen(s);
 
-      if (!(flags & SVFMT_TAINT_NOCHK) && !dest_tainted && is_tainted(s))
+      if (!(flags & SVFMT_TAINT_NOCHK) && is_incompatible(g->s, s))
 	if (flags & SVFMT_REBUFFER)
 	  {
-	  gstring_rebuffer(g);
+/* debug_printf("%s %d: untainted workarea, tainted %%s :- rebuffer\n", __FUNCTION__, __LINE__); */
+	  gstring_rebuffer(g, s);
 	  gp = CS g->s + g->ptr;
-	  dest_tainted = TRUE;
 	  }
 #ifndef MACRO_PREDEF
 	else

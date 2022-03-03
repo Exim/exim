@@ -231,7 +231,7 @@ if (!cn)
 
   /* Get store for a new handle, initialize it, and connect to the server */
 
-  mysql_handle = store_get(sizeof(MYSQL), FALSE);
+  mysql_handle = store_get(sizeof(MYSQL), GET_UNTAINTED);
   mysql_init(mysql_handle);
   mysql_options(mysql_handle, MYSQL_READ_DEFAULT_GROUP, CS group);
   if (mysql_real_connect(mysql_handle,
@@ -247,7 +247,7 @@ if (!cn)
 
   /* Add the connection to the cache */
 
-  cn = store_get(sizeof(mysql_connection), FALSE);
+  cn = store_get(sizeof(mysql_connection), GET_UNTAINTED);
   cn->server = server_copy;
   cn->handle = mysql_handle;
   cn->next = mysql_connections;
@@ -413,25 +413,26 @@ can't quote "on spec".
 Arguments:
   s          the string to be quoted
   opt        additional option text or NULL if none
+  idx	     lookup type index
 
 Returns:     the processed string or NULL for a bad option
 */
 
 static uschar *
-mysql_quote(uschar * s, uschar * opt)
+mysql_quote(uschar * s, uschar * opt, unsigned idx)
 {
-register int c;
-int count = 0;
-uschar *t = s;
-uschar *quoted;
+int c, count = 0;
+uschar * t = s, * quoted;
 
 if (opt) return NULL;     /* No options recognized */
 
 while ((c = *t++))
   if (Ustrchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
-if (count == 0) return s;
-t = quoted = store_get(Ustrlen(s) + count + 1, is_tainted(s));
+/* Old code:  if (count == 0) return s;
+Now always allocate and copy, to track the quoted status. */
+
+t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx);
 
 while ((c = *s++))
   {

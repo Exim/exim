@@ -10,6 +10,7 @@ domainlist local_domains = @
 hostlist   relay_hosts = net-mysql;select * from them where id='$sender_host_address'
 
 acl_smtp_rcpt = check_recipient
+acl_not_smtp = check_notsmtp
 
 PARTIAL = 127.0.0.1::PORT_N
 SSPEC = PARTIAL/test/root/pass
@@ -23,31 +24,40 @@ begin acl
 check_recipient:
 	  # Tainted-data checks
   warn
-	  # taint only in lookup string
-	  set acl_m0 =	ok:   ${lookup mysql                    {select name from them where id = '$local_part'}}
+	  # taint only in lookup string, properly quoted
+	  set acl_m0 =	ok:   ${lookup mysql                    {select name from them where id = '${quote_mysql:$local_part}'}}
+	  # taint only in lookup string, but not quoted
+	  set acl_m0 =	FAIL: ${lookup mysql,no_rd              {select name from them where id = '$local_part'}}
+  warn
 	  # option on lookup type unaffected
-	  set acl_m0 =	ok:   ${lookup mysql,servers=SSPEC      {select name from them where id = '$local_part'}}
+	  set acl_m0 =	ok:   ${lookup mysql,servers=SSPEC      {select name from them where id = '${quote_mysql:$local_part}'}}
 	  # partial server-spec, indexing main-option, works
-	  set acl_m0 =	ok:   ${lookup mysql,servers=PARTIAL    {select name from them where id = '$local_part'}}
+	  set acl_m0 =	ok:   ${lookup mysql,servers=PARTIAL    {select name from them where id = '${quote_mysql:$local_part}'}}
 	  # oldstyle server spec, prepended to lookup string, fails with taint
-	  set acl_m0 =	FAIL: ${lookup mysql     {servers=SSPEC; select name from them where id = '$local_part'}}
+	  set acl_m0 =	FAIL: ${lookup mysql     {servers=SSPEC; select name from them where id = '${quote_mysql:$local_part}'}}
 
-	  # In list-stle lookup, tainted lookup string is ok if server spec comes from main-option
+	  # In list-style lookup, tainted lookup string is ok if server spec comes from main-option
   warn	  set acl_m0 =	ok:   hostlist
-	  hosts =	net-mysql;select * from them where id='$local_part'
+	  hosts =	net-mysql;select * from them where id='${quote_mysql:$local_part}'
 	  # ... but setting a per-query servers spec fails due to the taint
   warn	  set acl_m0 =	FAIL: hostlist
-	  hosts =	<& net-mysql;servers=SSPEC; select * from them where id='$local_part'
+	  hosts =	<& net-mysql;servers=SSPEC; select * from them where id='${quote_mysql:$local_part}'
 
 	  # The newer server-list-as-option-to-lookup-type is not a solution to tainted data in the lookup, because
 	  # string-expansion is done before list-expansion so the taint contaminates the entire list.
   warn	  set acl_m0 =	FAIL: hostlist
-	  hosts =	<& net-mysql,servers=SSPEC; select * from them where id='$local_part'
+	  hosts =	<& net-mysql,servers=SSPEC; select * from them where id='${quote_mysql:$local_part}'
 
   accept  domains = +local_domains
+	  # the quoted status of this var should survive being passed via spoolfile
+	  set acl_m_qtest = ${quote_mysql:$local_part}
   accept  hosts = +relay_hosts
   deny    message = relay not permitted
 
+check_notsmtp:
+  accept
+	  # the quoted status of this var should survive being passed via spoolfile
+	  set acl_m_qtest = ${quote_mysql:$recipients}
 
 # ----- Routers -----
 
@@ -55,7 +65,10 @@ begin routers
 
 r1:
   driver = accept
-  address_data = ${lookup mysql{select name from them where id='ph10'}}
+  debug_print =	acl_m_qtest: <$acl_m_qtest> lkup: <${lookup mysql{select name from them where id='$acl_m_qtest'}}>
+
+  # this tests the unquoted case, but will need enhancement when we enforce (vs. just logging), else no transport call
+  address_data = ${lookup mysql{select name from them where id='$local_part'}}
   transport = t1
 
 
@@ -66,7 +79,7 @@ begin transports
 t1:
   driver = appendfile
   file = DIR/test-mail/\
-    ${lookup mysql{select id from them where id='ph10'}{$value}fail}
+    ${lookup mysql{select id from them where id='$local_part'}{$value}fail}
   user = CALLER
 
 

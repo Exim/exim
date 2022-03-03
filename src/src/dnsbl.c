@@ -115,9 +115,9 @@ else
 
   else
     {	/* Set up a tree entry to cache the lookup */
-    t = store_get(sizeof(tree_node) + qlen + 1 + 1, is_tainted(query));
+    t = store_get(sizeof(tree_node) + qlen + 1 + 1, query);
     Ustrcpy(t->name, query);
-    t->data.ptr = cb = store_get(sizeof(dnsbl_cache_block), FALSE);
+    t->data.ptr = cb = store_get(sizeof(dnsbl_cache_block), GET_UNTAINTED);
     (void)tree_insertnode(&dnsbl_cache, t);
     }
 
@@ -365,7 +365,7 @@ if (cb->rc == DNS_SUCCEED)
 	  int len = (rr->data)[0];
 	  if (len > 511) len = 127;
 	  store_pool = POOL_PERM;
-	  cb->text = string_copyn_taint(CUS (rr->data+1), len, TRUE);
+	  cb->text = string_copyn_taint(CUS (rr->data+1), len, GET_TAINTED);
 	  store_pool = old_pool;
 	  break;
 	  }

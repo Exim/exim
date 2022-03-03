@@ -197,9 +197,9 @@ if ((ipa = string_is_ip_address(lname, NULL)) != 0)
      ||  ipa == 6 && af == AF_INET6)
     {
     int x[4];
-    yield = store_get(sizeof(struct hostent), FALSE);
-    alist = store_get(2 * sizeof(char *), FALSE);
-    adds  = store_get(alen, FALSE);
+    yield = store_get(sizeof(struct hostent), GET_UNTAINTED);
+    alist = store_get(2 * sizeof(char *), GET_UNTAINTED);
+    adds  = store_get(alen, GET_UNTAINTED);
     yield->h_name = CS name;
     yield->h_aliases = NULL;
     yield->h_addrtype = af;
@@ -251,9 +251,9 @@ else
        rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == type)
     count++;
 
-  yield = store_get(sizeof(struct hostent), FALSE);
-  alist = store_get((count + 1) * sizeof(char *), FALSE);
-  adds  = store_get(count *alen, FALSE);
+  yield = store_get(sizeof(struct hostent), GET_UNTAINTED);
+  alist = store_get((count + 1) * sizeof(char *), GET_UNTAINTED);
+  adds  = store_get(count *alen, GET_UNTAINTED);
 
   yield->h_name = CS name;
   yield->h_aliases = NULL;
@@ -328,12 +328,12 @@ while ((name = string_nextinlist(&list, &sep, NULL, 0)))
     continue;
     }
 
-  h = store_get(sizeof(host_item), FALSE);
+  h = store_get(sizeof(host_item), GET_UNTAINTED);
   h->name = name;
   h->address = NULL;
   h->port = PORT_NONE;
   h->mx = fake_mx;
-  h->sort_key = randomize? (-fake_mx)*1000 + random_number(1000) : 0;
+  h->sort_key = randomize ? (-fake_mx)*1000 + random_number(1000) : 0;
   h->status = hstatus_unknown;
   h->why = hwhy_unknown;
   h->last_try = 0;
@@ -732,7 +732,6 @@ host_build_ifacelist(const uschar *list, uschar *name)
 int sep = 0;
 uschar *s;
 ip_address_item * yield = NULL, * last = NULL, * next;
-BOOL taint = is_tainted(list);
 
 while ((s = string_nextinlist(&list, &sep, NULL, 0)))
   {
@@ -751,7 +750,7 @@ while ((s = string_nextinlist(&list, &sep, NULL, 0)))
   address above. The field in the ip_address_item is large enough to hold an
   IPv6 address. */
 
-  next = store_get(sizeof(ip_address_item), taint);
+  next = store_get(sizeof(ip_address_item), list);
   next->next = NULL;
   Ustrcpy(next->address, s);
   next->port = port;
@@ -949,7 +948,7 @@ else
 
 /* If there is no buffer, put the string into some new store. */
 
-if (!buffer) buffer = store_get(46, FALSE);
+if (!buffer) buffer = store_get(46, GET_UNTAINTED);
 
 /* Callers of this function with a non-NULL buffer must ensure that it is
 large enough to hold an IPv6 address, namely, at least 46 bytes. That's what
@@ -1587,7 +1586,7 @@ Put it in permanent memory. */
 
     for (uschar ** aliases = USS hosts->h_aliases; *aliases; aliases++) count++;
     store_pool = POOL_PERM;
-    ptr = sender_host_aliases = store_get(count * sizeof(uschar *), FALSE);
+    ptr = sender_host_aliases = store_get(count * sizeof(uschar *), GET_UNTAINTED);
     store_pool = POOL_TAINT_PERM;
 
     for (uschar ** aliases = USS hosts->h_aliases; *aliases; aliases++)
@@ -1709,7 +1708,7 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
       /* Get store for the list of aliases. For compatibility with
       gethostbyaddr, we make an empty list if there are none. */
 
-      aptr = sender_host_aliases = store_get(count * sizeof(uschar *), FALSE);
+      aptr = sender_host_aliases = store_get(count * sizeof(uschar *), GET_UNTAINTED);
 
       /* Re-scan and extract the names */
 
@@ -1717,7 +1716,7 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
            rr;
            rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == T_PTR)
         {
-        uschar * s = store_get(ssize, TRUE);	/* names are tainted */
+        uschar * s = store_get(ssize, GET_TAINTED);	/* names are tainted */
 
         /* If an overlong response was received, the data will have been
         truncated and dn_expand may fail. */
@@ -2119,7 +2118,7 @@ for (int i = 1; i <= times;
 
     else
       {
-      host_item *next = store_get(sizeof(host_item), FALSE);
+      host_item *next = store_get(sizeof(host_item), GET_UNTAINTED);
       next->name = host->name;
 #ifndef DISABLE_TLS
       next->certname = host->certname;
@@ -2456,7 +2455,7 @@ for (; i >= 0; i--)
 	/* Not a duplicate */
 
 	new_sort_key = host->mx * 1000 + random_number(500) + randoffset;
-	next = store_get(sizeof(host_item), FALSE);
+	next = store_get(sizeof(host_item), GET_UNTAINTED);
 
 	/* New address goes first: insert the new block after the first one
 	(so as not to disturb the original pointer) but put the new address
@@ -2863,7 +2862,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   /* Make a new host item and seek the correct insertion place */
     {
     int sort_key = precedence * 1000 + weight;
-    host_item *next = store_get(sizeof(host_item), FALSE);
+    host_item * next = store_get(sizeof(host_item), GET_UNTAINTED);
     next->name = string_copy_dnsdomain(data);
     next->address = NULL;
     next->port = port;

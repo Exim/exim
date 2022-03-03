@@ -364,6 +364,7 @@ extern uschar *authenticated_fail_id;  /* ID that failed authentication */
 extern uschar *authenticated_id;       /* ID that was authenticated */
 extern uschar *authenticated_sender;   /* From AUTH on MAIL */
 extern BOOL    authentication_failed;  /* TRUE if AUTH was tried and failed */
+extern uschar *authenticator_name;     /* for debug and error messages */
 extern uschar *auth_advertise_hosts;   /* Only advertise to these */
 extern auth_info auths_available[];    /* Vector of available auth mechanisms */
 extern auth_instance *auths;           /* Chain of instantiated auths */
@@ -573,6 +574,8 @@ extern int     domainlist_count;       /* Number defined */
 
 /* This option is now a no-opt, retained for compatibility */
 extern BOOL    drop_cr;                /* For broken local MUAs */
+extern const uschar *driver_srcfile;   /* For debug & errors */
+extern int     driver_srcline;	       /* For debug & errors */
 
 extern unsigned int dtrigger_selector; /* when to start debug */
 

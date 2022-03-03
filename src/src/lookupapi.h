@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2015 */
-/* Copyright (c) The Exim Maintainers 2020 */
+/* Copyright (c) The Exim Maintainers 2022 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -42,16 +42,19 @@ typedef struct lookup_info {
   void (*tidy)(void);             /* tidy function */
   uschar *(*quote)(               /* quoting function */
     uschar *,                     /* string to quote */
-    uschar *);                    /* additional data from quote name */
+    uschar *,                     /* additional data from quote name */
+    unsigned);			  /* lookup type index */
   gstring * (*version_report)(    /* diagnostic function */
-    gstring *);                   /* true: stdout.  false: debug */
+    gstring *);                   /* string to appand to */
 } lookup_info;
 
 /* This magic number is used by the following lookup_module_info structure
    for checking API compatibility. It used to be equivalent to the string"LMM3" */
-#define LOOKUP_MODULE_INFO_MAGIC 0x4c4d4933
+#define LOOKUP_MODULE_INFO_MAGIC 0x4c4d4935
 /* Version 2 adds: version_report */
 /* Version 3 change: non/cache becomes TTL in seconds */
+/* Version 4 add: index on quoting function */
+/* Version 5 change: version report now adds to a gstring */
 
 typedef struct lookup_module_info {
   uint magic;

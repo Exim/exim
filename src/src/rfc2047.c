@@ -47,7 +47,7 @@ rfc2047_qpdecode(uschar *string, uschar **ptrptr)
 int len = 0;
 uschar *ptr;
 
-ptr = *ptrptr = store_get(Ustrlen(string) + 1, is_tainted(string));  /* No longer than this */
+ptr = *ptrptr = store_get(Ustrlen(string) + 1, string);  /* No longer than this */
 
 while (*string != 0)
   {
@@ -209,7 +209,7 @@ building the result as we go. The result may be longer than the input if it is
 translated into a multibyte code such as UTF-8. That's why we use the dynamic
 string building code. */
 
-yield = store_get(sizeof(gstring) + ++size, is_tainted(string));
+yield = store_get(sizeof(gstring) + ++size, string);
 yield->size = size;
 yield->ptr = 0;
 yield->s = US(yield + 1);

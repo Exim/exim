@@ -342,7 +342,7 @@ if (!sender_address				/* No transaction in progress */
 
 if (recipients_count > 0)
   {
-  raw_recipients = store_get(recipients_count * sizeof(uschar *), FALSE);
+  raw_recipients = store_get(recipients_count * sizeof(uschar *), GET_UNTAINTED);
   for (int i = 0; i < recipients_count; i++)
     raw_recipients[i] = recipients_list[i].address;
   raw_recipients_count = recipients_count;
@@ -2572,7 +2572,7 @@ acl_var_c = NULL;
 
 /* Allow for trailing 0 in the command and data buffers.  Tainted. */
 
-smtp_cmd_buffer = store_get_perm(2*SMTP_CMD_BUFFER_SIZE + 2, TRUE);
+smtp_cmd_buffer = store_get_perm(2*SMTP_CMD_BUFFER_SIZE + 2, GET_TAINTED);
 
 smtp_cmd_buffer[0] = 0;
 smtp_data_buffer = smtp_cmd_buffer + SMTP_CMD_BUFFER_SIZE + 1;
@@ -2682,7 +2682,7 @@ if (!f.sender_host_unknown)
     {
     #if OPTSTYLE == 1
     EXIM_SOCKLEN_T optlen = sizeof(struct ip_options) + MAX_IPOPTLEN;
-    struct ip_options *ipopt = store_get(optlen, FALSE);
+    struct ip_options *ipopt = store_get(optlen, GET_UNTAINTED);
     #elif OPTSTYLE == 2
     struct ip_opts ipoptblock;
     struct ip_opts *ipopt = &ipoptblock;
@@ -3777,6 +3777,12 @@ smtp_in_auth(auth_instance *au, uschar ** s, uschar ** ss)
 const uschar *set_id = NULL;
 int rc;
 
+/* Set up globals for error messages */
+
+authenticator_name = au->name;
+driver_srcfile = au->srcfile;
+driver_srcline = au->srcline;
+
 /* Run the checking code, passing the remainder of the command line as
 data. Initials the $auth<n> variables as empty. Initialize $0 empty and set
 it as the only set numerical variable. The authenticator may set $auth<n>
@@ -3797,6 +3803,7 @@ rc = (au->info->servercode)(au, smtp_cmd_data);
 if (au->set_id) set_id = expand_string(au->set_id);
 expand_nmax = -1;        /* Reset numeric variables */
 for (int i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;   /* Reset $auth<n> */
+driver_srcfile = authenticator_name = NULL; driver_srcline = 0;
 
 /* The value of authenticated_id is stored in the spool file and printed in
 log lines. It must not contain binary zeros or newline characters. In
@@ -4369,7 +4376,7 @@ while (done <= 0)
       if (!user_msg)
 	{
 	/* sender_host_name below will be tainted, so save on copy when we hit it */
-	g = string_get_tainted(24, TRUE);
+	g = string_get_tainted(24, GET_TAINTED);
 	g = string_fmt_append(g, "%.3s %s Hello %s%s%s",
 	  smtp_code,
 	  smtp_active_hostname,

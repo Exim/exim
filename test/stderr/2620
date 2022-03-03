@@ -260,13 +260,35 @@ processing "warn" (TESTSUITE/test-config 27)
  internal_search_find: file="NULL"
    type=pgsql key="select name from them where id = 'c'" opts=NULL
  database lookup required for select name from them where id = 'c'
+                              (tainted, quoted:pgsql)
  PostgreSQL query: "select name from them where id = 'c'" opts 'NULL'
  PGSQL new connection: host=localhost port=1223 database=test user=CALLER
  PGSQL: no data found
  creating new cache entry
  lookup failed
-check set acl_m0 = ok:   ${lookup pgsql                    {select name from them where id = '$local_part'}}
+check set acl_m0 = ok:   ${lookup pgsql                    {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
+ search_open: pgsql "NULL"
+   cached open
+ search_find: file="NULL"
+   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="cache=no_rd"
+ LRU list:
+ internal_search_find: file="NULL"
+   type=pgsql key="select name from them where id = 'c'" opts=NULL
+ cached data found but no_rd option set;  database lookup required for select name from them where id = 'c'
+                              (tainted)
+LOG: MAIN PANIC
+  tainted search query is not properly quoted (ACL warn, TESTSUITE/test-config 27): select name from them where id = 'c'
+ search_type NN (pgsql) quoting -1 (none)
+ PostgreSQL query: "select name from them where id = 'c'" opts 'NULL'
+ PGSQL using cached connection for localhost:1223/test/CALLER
+ PGSQL: no data found
+ replacing old cache entry
+ lookup failed
+check set acl_m0 = FAIL: ${lookup pgsql,cache=no_rd        {select name from them where id = '$local_part'}}
+                 = FAIL: 
+warn: condition test succeeded in ACL "check_recipient"
+processing "warn" (TESTSUITE/test-config 32)
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -275,12 +297,13 @@ check set acl_m0 = ok:   ${lookup pgsql                    {select name from the
  internal_search_find: file="NULL"
    type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::1223/test/CALLER/"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
+                              (tainted, quoted:pgsql)
  PostgreSQL query: "select name from them where id = 'c'" opts 'servers=localhost::1223/test/CALLER/'
  PGSQL using cached connection for localhost:1223/test/CALLER
  PGSQL: no data found
  replacing old cache entry
  lookup failed
-check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223/test/CALLER/    {select name from them where id = '$local_part'}}
+check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223/test/CALLER/      {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
  search_open: pgsql "NULL"
    cached open
@@ -290,12 +313,13 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223/test/CALLER/    
  internal_search_find: file="NULL"
    type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::1223"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
+                              (tainted, quoted:pgsql)
  PostgreSQL query: "select name from them where id = 'c'" opts 'servers=localhost::1223'
  PGSQL using cached connection for localhost:1223/test/CALLER
  PGSQL: no data found
  replacing old cache entry
  lookup failed
-check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223    {select name from them where id = '$local_part'}}
+check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223    {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
  search_open: pgsql "NULL"
    cached open
@@ -305,14 +329,15 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223    {select name 
  internal_search_find: file="NULL"
    type=pgsql key="servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts=NULL
  database lookup required for servers=localhost::1223/test/CALLER/; select name from them where id = 'c'
+                              (tainted, quoted:pgsql)
  PostgreSQL query: "servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts 'NULL'
  lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
-processing "warn" (TESTSUITE/test-config 38)
+processing "warn" (TESTSUITE/test-config 41)
 check set acl_m0 = ok:   hostlist
-check hosts = net-pgsql;select * from them where id='$local_part'
+check hosts = net-pgsql;select * from them where id='${quote_pgsql:$local_part}'
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
@@ -321,6 +346,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=pgsql key="select * from them where id='c'" opts=NULL
 database lookup required for select * from them where id='c'
+                             (tainted, quoted:pgsql)
 PostgreSQL query: "select * from them where id='c'" opts 'NULL'
 PGSQL using cached connection for localhost:1223/test/CALLER
 PGSQL: no data found
@@ -328,9 +354,9 @@ creating new cache entry
 lookup failed
 host in "net-pgsql;select * from them where id='c'"? no (end of list)
 warn: condition test failed in ACL "check_recipient"
-processing "warn" (TESTSUITE/test-config 41)
+processing "warn" (TESTSUITE/test-config 44)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='$local_part'
+check hosts = <& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
@@ -339,15 +365,16 @@ LRU list:
 internal_search_find: file="NULL"
   type=pgsql key="servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts=NULL
 database lookup required for servers=localhost::1223/test/CALLER/; select * from them where id='c'
+                             (tainted, quoted:pgsql)
 PostgreSQL query: "servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts 'NULL'
 lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 host in "<& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
-processing "warn" (TESTSUITE/test-config 46)
+processing "warn" (TESTSUITE/test-config 49)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='$local_part'
+check hosts = <& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
@@ -356,18 +383,19 @@ LRU list:
 internal_search_find: file="NULL"
   type=pgsql key=" select * from them where id='c'" opts="servers=localhost::1223/test/CALLER/"
 database lookup required for  select * from them where id='c'
+                             (tainted, quoted:pgsql)
 PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::1223/test/CALLER/'
 lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 host in "<& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
-processing "accept" (TESTSUITE/test-config 49)
+processing "accept" (TESTSUITE/test-config 52)
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 50)
+processing "accept" (TESTSUITE/test-config 53)
 check hosts = +relay_hosts
 search_open: pgsql "NULL"
   cached open
@@ -385,7 +413,7 @@ lookup failed
 host in "net-pgsql;select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "deny" (TESTSUITE/test-config 51)
+processing "deny" (TESTSUITE/test-config 54)
   message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": DENY
@@ -403,13 +431,35 @@ processing "warn" (TESTSUITE/test-config 27)
  internal_search_find: file="NULL"
    type=pgsql key="select name from them where id = 'c'" opts=NULL
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
+                              (tainted, quoted:pgsql)
  PostgreSQL query: "select name from them where id = 'c'" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
  PGSQL: no data found
  replacing old cache entry
  lookup failed
-check set acl_m0 = ok:   ${lookup pgsql                    {select name from them where id = '$local_part'}}
+check set acl_m0 = ok:   ${lookup pgsql                    {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
+ search_open: pgsql "NULL"
+   cached open
+ search_find: file="NULL"
+   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="cache=no_rd"
+ LRU list:
+ internal_search_find: file="NULL"
+   type=pgsql key="select name from them where id = 'c'" opts=NULL
+ cached data found but no_rd option set;  database lookup required for select name from them where id = 'c'
+                              (tainted)
+LOG: MAIN PANIC
+  tainted search query is not properly quoted (ACL warn, TESTSUITE/test-config 27): select name from them where id = 'c'
+ search_type NN (pgsql) quoting -1 (none)
+ PostgreSQL query: "select name from them where id = 'c'" opts 'NULL'
+ PGSQL using cached connection for localhost:1223/test/CALLER
+ PGSQL: no data found
+ replacing old cache entry
+ lookup failed
+check set acl_m0 = FAIL: ${lookup pgsql,cache=no_rd        {select name from them where id = '$local_part'}}
+                 = FAIL: 
+warn: condition test succeeded in ACL "check_recipient"
+processing "warn" (TESTSUITE/test-config 32)
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -418,12 +468,13 @@ check set acl_m0 = ok:   ${lookup pgsql                    {select name from the
  internal_search_find: file="NULL"
    type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::1223/test/CALLER/"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
+                              (tainted, quoted:pgsql)
  PostgreSQL query: "select name from them where id = 'c'" opts 'servers=localhost::1223/test/CALLER/'
  PGSQL using cached connection for localhost:1223/test/CALLER
  PGSQL: no data found
  replacing old cache entry
  lookup failed
-check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223/test/CALLER/    {select name from them where id = '$local_part'}}
+check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223/test/CALLER/      {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
  search_open: pgsql "NULL"
    cached open
@@ -433,12 +484,13 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223/test/CALLER/    
  internal_search_find: file="NULL"
    type=pgsql key="select name from them where id = 'c'" opts="servers=localhost::1223"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
+                              (tainted, quoted:pgsql)
  PostgreSQL query: "select name from them where id = 'c'" opts 'servers=localhost::1223'
  PGSQL using cached connection for localhost:1223/test/CALLER
  PGSQL: no data found
  replacing old cache entry
  lookup failed
-check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223    {select name from them where id = '$local_part'}}
+check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223    {select name from them where id = '${quote_pgsql:$local_part}'}}
                  = ok:   
  search_open: pgsql "NULL"
    cached open
@@ -448,14 +500,15 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::1223    {select name 
  internal_search_find: file="NULL"
    type=pgsql key="servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts=NULL
  database lookup required for servers=localhost::1223/test/CALLER/; select name from them where id = 'c'
+                              (tainted, quoted:pgsql)
  PostgreSQL query: "servers=localhost::1223/test/CALLER/; select name from them where id = 'c'" opts 'NULL'
  lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
-processing "warn" (TESTSUITE/test-config 38)
+processing "warn" (TESTSUITE/test-config 41)
 check set acl_m0 = ok:   hostlist
-check hosts = net-pgsql;select * from them where id='$local_part'
+check hosts = net-pgsql;select * from them where id='${quote_pgsql:$local_part}'
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
@@ -467,9 +520,9 @@ cached data used for lookup of select * from them where id='c'
 lookup failed
 host in "net-pgsql;select * from them where id='c'"? no (end of list)
 warn: condition test failed in ACL "check_recipient"
-processing "warn" (TESTSUITE/test-config 41)
+processing "warn" (TESTSUITE/test-config 44)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='$local_part'
+check hosts = <& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
@@ -478,15 +531,16 @@ LRU list:
 internal_search_find: file="NULL"
   type=pgsql key="servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts=NULL
 database lookup required for servers=localhost::1223/test/CALLER/; select * from them where id='c'
+                             (tainted, quoted:pgsql)
 PostgreSQL query: "servers=localhost::1223/test/CALLER/; select * from them where id='c'" opts 'NULL'
 lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 host in "<& net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
-processing "warn" (TESTSUITE/test-config 46)
+processing "warn" (TESTSUITE/test-config 49)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='$local_part'
+check hosts = <& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
@@ -495,18 +549,19 @@ LRU list:
 internal_search_find: file="NULL"
   type=pgsql key=" select * from them where id='c'" opts="servers=localhost::1223/test/CALLER/"
 database lookup required for  select * from them where id='c'
+                             (tainted, quoted:pgsql)
 PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::1223/test/CALLER/'
 lookup deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
 host in "<& net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:1223/test/CALLER/" is tainted
-processing "accept" (TESTSUITE/test-config 49)
+processing "accept" (TESTSUITE/test-config 52)
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 50)
+processing "accept" (TESTSUITE/test-config 53)
 check hosts = +relay_hosts
 search_open: pgsql "NULL"
   cached open
@@ -520,7 +575,7 @@ lookup failed
 host in "net-pgsql;select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "deny" (TESTSUITE/test-config 51)
+processing "deny" (TESTSUITE/test-config 54)
   message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": DENY

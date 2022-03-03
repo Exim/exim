@@ -149,7 +149,7 @@ int buflen, bufleft, key_item_len, sep = 0;
 or less than, the length of the delimited list passed in + 1. */
 
 buflen = length + 3;
-key_buffer = store_get(buflen, is_tainted(keystring));
+key_buffer = store_get(buflen, keystring);
 
 key_buffer[0] = '\0';
 

@@ -498,7 +498,7 @@ for (;;)
 
     /* Build a condition block from the specific word. */
 
-    c = store_get(sizeof(condition_block), FALSE);
+    c = store_get(sizeof(condition_block), GET_UNTAINTED);
     c->left.u = c->right.u = NULL;
     c->testfor = testfor;
     testfor = TRUE;
@@ -528,7 +528,7 @@ for (;;)
           }
         ptr = nextitem(ptr, buffer, sizeof(buffer), TRUE);
         if (*error_pointer) break;
-        aa = store_get(sizeof(string_item), FALSE);
+        aa = store_get(sizeof(string_item), GET_UNTAINTED);
         aa->text = string_copy(buffer);
         aa->next = c->left.a;
         c->left.a = aa;
@@ -684,7 +684,7 @@ for (;;)
 
     else if (Ustrcmp(buffer, "and") == 0)
       {
-      condition_block *andc = store_get(sizeof(condition_block), FALSE);
+      condition_block * andc = store_get(sizeof(condition_block), GET_UNTAINTED);
       andc->parent = current_parent;
       andc->type = cond_and;
       andc->testfor = TRUE;
@@ -702,8 +702,8 @@ for (;;)
 
     else if (Ustrcmp(buffer, "or") == 0)
       {
-      condition_block *orc = store_get(sizeof(condition_block), FALSE);
-      condition_block *or_parent = NULL;
+      condition_block * orc = store_get(sizeof(condition_block), GET_UNTAINTED);
+      condition_block * or_parent = NULL;
 
       if (current_parent)
         {
@@ -859,6 +859,8 @@ terminated by white space, but there are two exceptions, which are the "if" and
 "elif" commands. We must allow for them to be terminated by an opening bracket,
 as brackets are allowed in conditions and users will expect not to require
 white space here. */
+
+*buffer = '\0';	/* compiler quietening */
 
 if (Ustrncmp(ptr, "if(", 3) == 0)
   {
@@ -1019,9 +1021,10 @@ switch (command)
     FALSE for logging commands, and it doesn't matter for testprint, as
     that doesn't change the "delivered" status. */
 
-    if (*error_pointer) yield = FALSE; else
+    if (*error_pointer) yield = FALSE;
+    else
       {
-      new = store_get(sizeof(filter_cmd) + sizeof(union argtypes), FALSE);
+      new = store_get(sizeof(filter_cmd) + sizeof(union argtypes), GET_UNTAINTED);
       new->next = NULL;
       **lastcmdptr = new;
       *lastcmdptr = &(new->next);
@@ -1105,12 +1108,12 @@ switch (command)
   /* Finish has no arguments; fmsg defaults to NULL */
 
   case finish_command:
-  new = store_get(sizeof(filter_cmd), FALSE);
+  new = store_get(sizeof(filter_cmd), GET_UNTAINTED);
   new->next = NULL;
   **lastcmdptr = new;
   *lastcmdptr = &(new->next);
   new->command = command;
-  new->seen = seen_force? seen_value : FALSE;
+  new->seen = seen_force ? seen_value : FALSE;
   new->args[0].u = fmsg;
   break;
 
@@ -1129,7 +1132,7 @@ switch (command)
 
   /* Set up the command block for if */
 
-  new = store_get(sizeof(filter_cmd) + 4 * sizeof(union argtypes), FALSE);
+  new = store_get(sizeof(filter_cmd) + 4 * sizeof(union argtypes), GET_UNTAINTED);
   new->next = NULL;
   **lastcmdptr = new;
   *lastcmdptr = &new->next;
@@ -1157,7 +1160,7 @@ switch (command)
     while (had_else_endif == had_elif)
       {
       filter_cmd *newnew =
-        store_get(sizeof(filter_cmd) + 4 * sizeof(union argtypes), FALSE);
+        store_get(sizeof(filter_cmd) + 4 * sizeof(union argtypes), GET_UNTAINTED);
       new->args[2].f = newnew;
       new = newnew;
       new->next = NULL;
@@ -1210,10 +1213,10 @@ switch (command)
 
   case mail_command:
   case vacation_command:
-  new = store_get(sizeof(filter_cmd) + mailargs_total * sizeof(union argtypes), FALSE);
+  new = store_get(sizeof(filter_cmd) + mailargs_total * sizeof(union argtypes), GET_UNTAINTED);
   new->next = NULL;
   new->command = command;
-  new->seen = seen_force? seen_value : FALSE;
+  new->seen = seen_force ? seen_value : FALSE;
   new->noerror = noerror_force;
   for (i = 0; i < mailargs_total; i++) new->args[i].u = NULL;
 
@@ -1892,7 +1895,7 @@ while (commands)
 	if (expand_nmax >= 0 || filter_thisaddress != NULL)
 	  {
 	  int ecount = expand_nmax >= 0 ? expand_nmax : -1;
-	  uschar **ss = store_get(sizeof(uschar *) * (ecount + 3), FALSE);
+	  uschar ** ss = store_get(sizeof(uschar *) * (ecount + 3), GET_UNTAINTED);
 
 	  addr->pipe_expandn = ss;
 	  if (!filter_thisaddress) filter_thisaddress = US"";
@@ -2304,7 +2307,7 @@ while (commands)
 	  addr->next = *generated;
 	  *generated = addr;
 
-	  addr->reply = store_get(sizeof(reply_item), FALSE);
+	  addr->reply = store_get(sizeof(reply_item), GET_UNTAINTED);
 	  addr->reply->from = NULL;
 	  addr->reply->to = string_copy(to);
 	  addr->reply->file_expand =

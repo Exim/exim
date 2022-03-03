@@ -178,7 +178,7 @@ if (statbuf.st_size < CDB_HASH_TABLE)
   }
 
 /* Having got a file open we need the structure to put things in */
-cdbp = store_get(sizeof(struct cdb_state), FALSE);
+cdbp = store_get(sizeof(struct cdb_state), GET_UNTAINTED);
 /* store_get() does not return if memory was not available... */
 /* preload the structure.... */
 cdbp->fileno = fileno;
@@ -213,7 +213,7 @@ DEBUG(D_lookup) debug_printf_indent("cdb mmap failed - %d\n", errno);
 /* get a buffer to stash the basic offsets in - this should speed
 things up a lot - especially on multiple lookups */
 
-cdbp->cdb_offsets = store_get(CDB_HASH_TABLE, FALSE);
+cdbp->cdb_offsets = store_get(CDB_HASH_TABLE, GET_UNTAINTED);
 
 /* now fill the buffer up... */
 
@@ -343,7 +343,7 @@ if (cdbp->cdb_map != NULL)
 	   /* ... and the returned result.  Assume it is not
 	   tainted, lacking any way of telling.  */
 
-	   *result = store_get(item_dat_len + 1, FALSE);
+	   *result = store_get(item_dat_len + 1, GET_UNTAINTED);
 	   memcpy(*result, item_ptr, item_dat_len);
 	   (*result)[item_dat_len] = 0;
 	   return OK;
@@ -387,7 +387,7 @@ for (int loop = 0; (loop < hash_offlen); ++loop)
     if (item_key_len == key_len)
       {					/* finally check if key matches */
       rmark reset_point = store_mark();
-      uschar * item_key = store_get(key_len, TRUE); /* keys liable to be tainted */
+      uschar * item_key = store_get(key_len, GET_TAINTED); /* keys liable to be tainted */
 
       if (cdb_bread(cdbp->fileno, item_key, key_len) == -1) return DEFER;
       if (Ustrncmp(keystring, item_key, key_len) == 0)
@@ -401,7 +401,7 @@ for (int loop = 0; (loop < hash_offlen); ++loop)
         /* then we build a new result string.  We know we have enough
         memory so disable Coverity errors about the tainted item_dat_ken */
 
-        *result = store_get(item_dat_len + 1, FALSE);
+        *result = store_get(item_dat_len + 1, GET_UNTAINTED);
         /* coverity[tainted_data] */
         if (cdb_bread(cdbp->fileno, *result, item_dat_len) == -1)
 	  return DEFER;

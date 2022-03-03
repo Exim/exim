@@ -157,10 +157,10 @@ b64decode(const uschar *code, uschar **ptr)
 int x, y;
 uschar *result;
 
-{
+ {
   int l = Ustrlen(code);
-  *ptr = result = store_get(1 + l/4 * 3 + l%4, is_tainted(code));
-}
+  *ptr = result = store_get(1 + l/4 * 3 + l%4, code);
+ }
 
 /* Each cycle of the loop handles a quantum of 4 input bytes. For the last
 quantum this may decode to 1, 2, or 3 output bytes. */
@@ -234,6 +234,7 @@ would probably run more slowly.
 Arguments:
   clear       points to the clear text bytes
   len         the number of bytes to encode
+  proto_mem   taint indicator
 
 Returns:      a pointer to the zero-terminated base 64 string, which
               is in working store
@@ -243,10 +244,10 @@ static uschar *enc64table =
   US"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 uschar *
-b64encode_taint(const uschar * clear, int len, BOOL tainted)
+b64encode_taint(const uschar * clear, int len, const void * proto_mem)
 {
-uschar *code = store_get(4*((len+2)/3) + 1, tainted);
-uschar *p = code;
+uschar * code = store_get(4*((len+2)/3) + 1, proto_mem);
+uschar * p = code;
 
 while (len-- >0)
   {
@@ -287,7 +288,7 @@ return code;
 uschar *
 b64encode(const uschar * clear, int len)
 {
-return b64encode_taint(clear, len, is_tainted(clear));
+return b64encode_taint(clear, len, clear);
 }
 
 

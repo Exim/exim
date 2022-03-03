@@ -1433,10 +1433,17 @@ smtp_transport_options_block * ob = sx->conn_args.ob;	/* transport options */
 host_item * host = sx->conn_args.host;			/* host to deliver to */
 int rc;
 
+/* Set up globals for error messages */
+
+authenticator_name = au->name;
+driver_srcfile = au->srcfile;
+driver_srcline = au->srcline;
+
 sx->outblock.authenticating = TRUE;
 rc = (au->info->clientcode)(au, sx, ob->command_timeout,
 			    sx->buffer, sizeof(sx->buffer));
 sx->outblock.authenticating = FALSE;
+driver_srcfile = authenticator_name = NULL; driver_srcline = 0;
 DEBUG(D_transport) debug_printf("%s authenticator yielded %d\n", au->name, rc);
 
 /* A temporary authentication failure must hold up delivery to
@@ -3685,7 +3692,7 @@ int rc;
 
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
-smtp_context * sx = store_get(sizeof(*sx), TRUE);	/* tainted, for the data buffers */
+smtp_context * sx = store_get(sizeof(*sx), GET_TAINTED);	/* tainted, for the data buffers */
 BOOL pass_message = FALSE;
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
 BOOL mail_limit = FALSE;
@@ -5591,7 +5598,7 @@ retry_non_continued:
 
       if (expanded_hosts)
 	{
-	thost = store_get(sizeof(host_item), FALSE);
+	thost = store_get(sizeof(host_item), GET_UNTAINTED);
 	*thost = *host;
 	thost->name = string_copy(host->name);
 	thost->address = string_copy(host->address);

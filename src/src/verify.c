@@ -78,7 +78,7 @@ if (type[0] == 'd' && cache_record->result != ccache_reject)
   {
   if (length == sizeof(dbdata_callout_cache_obs))
     {
-    dbdata_callout_cache *new = store_get(sizeof(dbdata_callout_cache), FALSE);
+    dbdata_callout_cache * new = store_get(sizeof(dbdata_callout_cache), GET_UNTAINTED);
     memcpy(new, cache_record, length);
     new->postmaster_stamp = new->random_stamp = new->time_stamp;
     cache_record = new;
@@ -400,7 +400,7 @@ if (addr->transport == cutthrough.addr.transport)
 
 	if (done)
 	  {
-	  address_item * na = store_get(sizeof(address_item), FALSE);
+	  address_item * na = store_get(sizeof(address_item), GET_UNTAINTED);
 	  *na = cutthrough.addr;
 	  cutthrough.addr = *addr;
 	  cutthrough.addr.host_used = &cutthrough.host;
@@ -651,7 +651,7 @@ coding means skipping this whole loop and doing the append separately.  */
       log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
         addr->message);
 
-    if (!sx) sx = store_get(sizeof(*sx), TRUE);	/* tainted buffers */
+    if (!sx) sx = store_get(sizeof(*sx), GET_TAINTED);	/* tainted buffers */
     memset(sx, 0, sizeof(*sx));
 
     sx->addrlist = sx->first_addr = addr;
@@ -1096,7 +1096,7 @@ no_conn:
       for (address_item * caddr = &cutthrough.addr, * parent = addr->parent;
 	   parent;
 	   caddr = caddr->parent, parent = parent->parent)
-        *(caddr->parent = store_get(sizeof(address_item), FALSE)) = *parent;
+        *(caddr->parent = store_get(sizeof(address_item), GET_UNTAINTED)) = *parent;
 
       ctctx.outblock.buffer = ctbuffer;
       ctctx.outblock.buffersize = sizeof(ctbuffer);
@@ -2872,28 +2872,27 @@ Returns:         OK      matched
 */
 
 int
-check_host(void *arg, const uschar *ss, const uschar **valueptr, uschar **error)
+check_host(void * arg, const uschar * ss, const uschar ** valueptr, uschar ** error)
 {
-check_host_block *cb = (check_host_block *)arg;
+check_host_block * cb = (check_host_block *)arg;
 int mlen = -1;
 int maskoffset;
-BOOL iplookup = FALSE;
-BOOL isquery = FALSE;
-BOOL isiponly = cb->host_name != NULL && cb->host_name[0] == 0;
-const uschar *t;
+BOOL iplookup = FALSE, isquery = FALSE;
+BOOL isiponly = cb->host_name && !cb->host_name[0];
+const uschar * t;
 uschar * semicolon, * endname, * opts;
-uschar **aliases;
+uschar ** aliases;
 
 /* Optimize for the special case when the pattern is "*". */
 
-if (*ss == '*' && ss[1] == 0) return OK;
+if (*ss == '*' && !ss[1]) return OK;
 
 /* If the pattern is empty, it matches only in the case when there is no host -
 this can occur in ACL checking for SMTP input using the -bs option. In this
 situation, the host address is the empty string. */
 
-if (cb->host_address[0] == 0) return (*ss == 0)? OK : FAIL;
-if (*ss == 0) return FAIL;
+if (!cb->host_address[0]) return *ss ? FAIL : OK;
+if (!*ss) return FAIL;
 
 /* If the pattern is precisely "@" then match against the primary host name,
 provided that host name matching is permitted; if it's "@[]" match against the
@@ -2930,7 +2929,7 @@ course slashes may be present in lookups, but not preceded only by digits and
 dots). */
 
 for (t = ss; isdigit(*t) || *t == '.'; ) t++;
-if (*t == 0 || (*t == '/' && t != ss))
+if (!*t  || (*t == '/' && t != ss))
   {
   *error = US"malformed IPv4 address or address mask";
   return ERROR;

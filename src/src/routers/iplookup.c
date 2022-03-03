@@ -161,7 +161,7 @@ uschar *reply;
 uschar *hostname, *reroute, *domain;
 const uschar *listptr;
 uschar host_buffer[256];
-host_item *host = store_get(sizeof(host_item), FALSE);
+host_item *host = store_get(sizeof(host_item), GET_UNTAINTED);
 address_item *new_addr;
 iplookup_router_options_block *ob =
   (iplookup_router_options_block *)(rblock->options_block);
@@ -172,7 +172,7 @@ int sep = 0;
 DEBUG(D_route) debug_printf("%s router called for %s: domain = %s\n",
   rblock->name, addr->address, addr->domain);
 
-reply = store_get(256, TRUE);	/* tainted data */
+reply = store_get(256, GET_TAINTED);
 
 /* Build the query string to send. If not explicitly given, a default of
 "user@domain user@domain" is used. */

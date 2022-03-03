@@ -43,6 +43,7 @@ check hosts = +ignore_unknown : *.$sender_address_domain : $sender_address_domai
  internal_search_find: file="NULL"
    type=dnsdb key=">:defer_never,mxh=cioce.test.again.dns" opts=NULL
  database lookup required for >:defer_never,mxh=cioce.test.again.dns
+                              (tainted)
  dnsdb key: cioce.test.again.dns
 DNS lookup of cioce.test.again.dns (MX) using fakens
 DNS lookup of cioce.test.again.dns (MX) gave TRY_AGAIN

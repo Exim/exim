@@ -146,7 +146,7 @@ if (verify_check_this_host(CUSS&rblock->ignore_target_hosts,
 
 /* Set up a host item */
 
-h = store_get(sizeof(host_item), FALSE);
+h = store_get(sizeof(host_item), GET_UNTAINTED);
 
 h->next = NULL;
 h->address = string_copy(ip);

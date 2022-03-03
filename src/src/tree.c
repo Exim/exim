@@ -31,7 +31,7 @@ void
 tree_add_nonrecipient(const uschar *s)
 {
 rmark rpoint = store_mark();
-tree_node *node = store_get(sizeof(tree_node) + Ustrlen(s), is_tainted(s));
+tree_node * node = store_get(sizeof(tree_node) + Ustrlen(s), s);
 Ustrcpy(node->name, s);
 node->data.ptr = NULL;
 if (!tree_insertnode(&tree_nonrecipients, node)) store_reset(rpoint);
@@ -56,7 +56,7 @@ void
 tree_add_duplicate(const uschar *s, address_item *addr)
 {
 rmark rpoint = store_mark();
-tree_node *node = store_get(sizeof(tree_node) + Ustrlen(s), is_tainted(s));
+tree_node * node = store_get(sizeof(tree_node) + Ustrlen(s), s);
 Ustrcpy(node->name, s);
 node->data.ptr = addr;
 if (!tree_insertnode(&tree_duplicates, node)) store_reset(rpoint);
@@ -82,7 +82,7 @@ tree_node *node;
 uschar s[256];
 sprintf(CS s, "T:%.200s:%s", h->name, h->address);
 node = store_get(sizeof(tree_node) + Ustrlen(s),
-			is_tainted(h->name) || is_tainted(h->address));
+	    is_tainted(h->name) || is_tainted(h->address) ? GET_TAINTED : GET_UNTAINTED);
 Ustrcpy(node->name, s);
 node->data.val = h->why;
 if (h->status == hstatus_unusable_expired) node->data.val += 256;
@@ -374,7 +374,7 @@ static void
 tree_add_var(uschar * name, uschar * val, void * ctx)
 {
 tree_node ** root = ctx;
-tree_node * node = store_get(sizeof(tree_node) + Ustrlen(name), is_tainted(name));
+tree_node * node = store_get(sizeof(tree_node) + Ustrlen(name), name);
 Ustrcpy(node->name, name);
 node->data.ptr = val;
 (void) tree_insertnode(root, node);

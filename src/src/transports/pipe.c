@@ -435,7 +435,7 @@ set_up_shell_command(const uschar ***argvptr, uschar *cmd,
 {
 const uschar **argv;
 
-*argvptr = argv = store_get((4)*sizeof(uschar *), FALSE);
+*argvptr = argv = store_get((4)*sizeof(uschar *), GET_UNTAINTED);
 
 argv[0] = US"/bin/sh";
 argv[1] = US"-c";

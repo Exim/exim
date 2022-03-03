@@ -288,8 +288,11 @@ if (fd < 0 && errno == ENOENT)
   uschar *lastslash = Ustrrchr(name, '/');
   *lastslash = 0;
   created = directory_make(NULL, name, LOG_DIRECTORY_MODE, FALSE);
-  DEBUG(D_any) debug_printf("%s log directory %s\n",
-    created ? "created" : "failed to create", name);
+  DEBUG(D_any)
+    if (created)
+      debug_printf("created log directory %s\n", name);
+    else
+      debug_printf("failed to create log directory %s: %s\n", name, strerror(errno));
   *lastslash = '/';
   if (created) fd = Uopen(name, flags, LOG_MODE);
   }
@@ -452,7 +455,7 @@ return fd;
 it does not exist. This may be called recursively on failure, in order to open
 the panic log.
 
-The directory is in the static variable file_path. This is static so that it
+The directory is in the static variable file_path. This is static so that
 the work of sorting out the path is done just once per Exim process.
 
 Exim is normally configured to avoid running as root wherever possible, the log
@@ -512,6 +515,10 @@ switch (type)
     Ustrcpy(debuglog_name, buffer);
     if (tag)
       {
+      if (is_tainted(tag))
+      	die(US"exim: tainted tag for debug log filename",
+      	      US"Logging failure; please try later");
+
       /* this won't change the offset of the datestamp */
       ok2 = string_format(buffer, sizeof(buffer), "%s%s",
         debuglog_name, tag);
@@ -720,10 +727,17 @@ while ((t = string_nextinlist(&tt, &sep, log_buffer, LOG_BUFFER_SIZE)))
 }
 
 
+/* Close mainlog, unless we do not see a chance to open the file mainlog later
+again.  This will happen if we log from a transport process (which has dropped
+privs); something we traditionally avoid, but the introduction of taint-tracking
+and resulting detection of errors is makinng harder. */
+
 void
 mainlog_close(void)
 {
-if (mainlogfd < 0) return;
+if (mainlogfd < 0
+   || !(geteuid() == 0 || geteuid() == exim_uid))
+  return;
 (void)close(mainlogfd);
 mainlogfd = -1;
 mainlog_inode = 0;

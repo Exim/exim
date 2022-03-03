@@ -603,7 +603,7 @@ while (*s)
     int oldlen = end - start;
 
     header_line * prev = newh ? newh : h;
-    uschar * newt = store_get_perm(prev->slen - oldlen + newlen + 4, TRUE);
+    uschar * newt = store_get_perm(prev->slen - oldlen + newlen + 4, GET_TAINTED);
     uschar * newtstart = newt;
 
     int type = prev->type;
@@ -667,7 +667,7 @@ while (*s)
 
     store_reset(function_reset_point);
     function_reset_point = store_mark();
-    newh = store_get(sizeof(header_line), FALSE);
+    newh = store_get(sizeof(header_line), GET_UNTAINTED);
     newh->type = type;
     newh->slen = slen;
     newh->text = string_copyn(newtstart, slen);

@@ -476,8 +476,8 @@ count alone. */
 
 if (!t)
   {
-  t = store_get(sizeof(tree_node) + Ustrlen(keybuffer), FALSE);
-  t->data.ptr = c = store_get(sizeof(search_cache), FALSE);
+  t = store_get(sizeof(tree_node) + Ustrlen(keybuffer), GET_UNTAINTED);
+  t->data.ptr = c = store_get(sizeof(search_cache), GET_UNTAINTED);
   c->item_cache = NULL;
   Ustrcpy(t->name, keybuffer);
   tree_insertnode(&search_tree, t);
@@ -578,6 +578,47 @@ else
       filename ? US"file" : US"database",
       keystring,
       filename ? US"\n  in " : US"", filename ? filename : US"");
+    if (!filename && is_tainted(keystring))
+      {
+      debug_printf_indent("                             ");
+      debug_print_taint(keystring);
+      }
+    }
+
+  /* Check that the query, for query-style lookups,
+  is either untainted or properly quoted for the lookup type.
+
+  XXX Should we this move into lf_sqlperform() ?  The server-taint check is there.
+  */
+
+  if (  !filename && lookup_list[search_type]->quote
+     && is_tainted(keystring) && !is_quoted_like(keystring, search_type))
+    {
+    uschar * s = acl_current_verb();
+    if (!s) s = authenticator_current_name();	/* must be before transport */
+    if (!s) s = transport_current_name();	/* must be before router */
+    if (!s) s = router_current_name();	/* GCC ?: would be good, but not in clang */
+    if (!s) s = US"";
+#ifdef enforce_quote_protection_notyet
+    search_error_message = string_sprintf(
+      "tainted search query is not properly quoted%s: %s%s",
+      s, keystring);
+    f.search_find_defer = TRUE;
+#else
+     {
+      int q = quoter_for_address(keystring);
+      /* If we're called from a transport, no privs to open the paniclog;
+      the logging punts to using stderr - and that seems to stop the debug
+      stream. */
+      log_write(0,
+	transport_name ? LOG_MAIN : LOG_MAIN|LOG_PANIC,
+	"tainted search query is not properly quoted%s: %s", s, keystring);
+
+      DEBUG(D_lookup) debug_printf_indent("search_type %d (%s) quoting %d (%s)\n",
+	search_type, lookup_list[search_type]->name,
+	q, is_real_quoter(q) ? lookup_list[q]->name : US"none");
+     }
+#endif
     }
 
   /* Call the code for the different kinds of search. DEFER is handled
@@ -585,7 +626,7 @@ else
   distinguish if necessary. */
 
   if (lookup_list[search_type]->find(c->handle, filename, keystring, keylength,
-      &data, &search_error_message, &do_cache, opts) == DEFER)
+	  &data, &search_error_message, &do_cache, opts) == DEFER)
     f.search_find_defer = TRUE;
 
   /* A record that has been found is now in data, which is either NULL
@@ -603,8 +644,8 @@ else
     if (!t)	/* No existing entry.  Create new one. */
       {
       int len = keylength + 1;
-      e = store_get(sizeof(expiring_data) + sizeof(tree_node) + len,
-		    is_tainted(keystring));
+      /* The cache node value should never be expanded so use tainted mem */
+      e = store_get(sizeof(expiring_data) + sizeof(tree_node) + len, GET_TAINTED);
       t = (tree_node *)(e+1);
       memcpy(t->name, keystring, len);
       t->data.ptr = e;
@@ -777,7 +818,7 @@ else if (partial >= 0)
   if (affixlen == 0) keystring2 = keystring; else
     {
     keystring2 = store_get(len + affixlen + 1,
-			is_tainted(keystring) || is_tainted(affix));
+	  is_tainted(keystring) || is_tainted(affix) ? GET_TAINTED : GET_UNTAINTED);
     Ustrncpy(keystring2, affix, affixlen);
     Ustrcpy(keystring2 + affixlen, keystring);
     DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring2);

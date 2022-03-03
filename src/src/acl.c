@@ -642,6 +642,8 @@ static uschar *ratelimit_option_string[] = {
 static int acl_check_wargs(int, address_item *, const uschar *, uschar **,
     uschar **);
 
+static acl_block * acl_current = NULL;
+
 
 /*************************************************
 *            Find control in list                *
@@ -806,7 +808,7 @@ while ((s = (*func)()))
       *error = string_sprintf("malformed ACL line \"%s\"", saveline);
       return NULL;
       }
-    this = store_get(sizeof(acl_block), FALSE);
+    this = store_get(sizeof(acl_block), GET_UNTAINTED);
     *lastp = this;
     lastp = &(this->next);
     this->next = NULL;
@@ -853,7 +855,7 @@ while ((s = (*func)()))
     return NULL;
     }
 
-  cond = store_get(sizeof(acl_condition_block), FALSE);
+  cond = store_get(sizeof(acl_condition_block), GET_UNTAINTED);
   cond->next = NULL;
   cond->type = c;
   cond->u.negated = negated;
@@ -1052,7 +1054,7 @@ for (p = q; *p; p = q)
     {
     /* The header_line struct itself is not tainted, though it points to
     possibly tainted data. */
-    header_line * h = store_get(sizeof(header_line), FALSE);
+    header_line * h = store_get(sizeof(header_line), GET_UNTAINTED);
     h->text = hdr;
     h->next = NULL;
     h->type = newtype;
@@ -1341,7 +1343,7 @@ dns_scan dnss;
 dns_record *rr;
 int rc, type, yield;
 #define TARGET_SIZE 256
-uschar * target = store_get(TARGET_SIZE, TRUE);
+uschar * target = store_get(TARGET_SIZE, GET_TAINTED);
 
 /* Work out the domain we are using for the CSA lookup. The default is the
 client's HELO domain. If the client has not said HELO, use its IP address
@@ -1383,7 +1385,7 @@ we return from this function. */
 if ((t = tree_search(csa_cache, domain)))
   return t->data.val;
 
-t = store_get_perm(sizeof(tree_node) + Ustrlen(domain), is_tainted(domain));
+t = store_get_perm(sizeof(tree_node) + Ustrlen(domain), domain);
 Ustrcpy(t->name, domain);
 (void)tree_insertnode(&csa_cache, t);
 
@@ -2585,7 +2587,7 @@ if (!dbdb)
     /* No Bloom filter. This basic ratelimit block is initialized below. */
     HDEBUG(D_acl) debug_printf_indent("ratelimit creating new rate data block\n");
     dbdb_size = sizeof(*dbd);
-    dbdb = store_get(dbdb_size, FALSE);		/* not tainted */
+    dbdb = store_get(dbdb_size, GET_UNTAINTED);
     }
   else
     {
@@ -2599,7 +2601,7 @@ if (!dbdb)
     extra = (int)limit * 2 - sizeof(dbdb->bloom);
     if (extra < 0) extra = 0;
     dbdb_size = sizeof(*dbdb) + extra;
-    dbdb = store_get(dbdb_size, FALSE);		/* not tainted */
+    dbdb = store_get(dbdb_size, GET_UNTAINTED);
     dbdb->bloom_epoch = tv.tv_sec;
     dbdb->bloom_size = sizeof(dbdb->bloom) + extra;
     memset(dbdb->bloom, 0, dbdb->bloom_size);
@@ -2819,7 +2821,7 @@ dbfn_close(dbm);
 /* Store the result in the tree for future reference.  Take the taint status
 from the key for consistency even though it's unlikely we'll ever expand this. */
 
-t = store_get(sizeof(tree_node) + Ustrlen(key), is_tainted(key));
+t = store_get(sizeof(tree_node) + Ustrlen(key), key);
 t->data.ptr = dbd;
 Ustrcpy(t->name, key);
 (void)tree_insertnode(anchor, t);
@@ -3029,7 +3031,7 @@ if (*portend != '\0')
   }
 
 /* Make a single-item host list. */
-h = store_get(sizeof(host_item), FALSE);
+h = store_get(sizeof(host_item), GET_UNTAINTED);
 memset(h, 0, sizeof(host_item));
 h->name = hostname;
 h->port = portnum;
@@ -4201,6 +4203,18 @@ for(;;)
 
 
 
+/************************************************/
+/* For error messages, a string describing the config location
+associated with current processing. NULL if not in an ACL. */
+
+uschar *
+acl_current_verb(void)
+{
+if (acl_current) return string_sprintf(" (ACL %s, %s %d)",
+    verbs[acl_current->verb], acl_current->srcfile, acl_current->srcline);
+return NULL;
+}
+
 /*************************************************
 *        Check access using an ACL               *
 *************************************************/
@@ -4321,7 +4335,7 @@ if (Ustrchr(ss, ' ') == NULL)
       }
 
     /* If the string being used as a filename is tainted, so is the file content */
-    acl_text = store_get(statbuf.st_size + 1, is_tainted(ss));
+    acl_text = store_get(statbuf.st_size + 1, ss);
     acl_text_end = acl_text + statbuf.st_size + 1;
 
     if (read(fd, acl_text, statbuf.st_size) != statbuf.st_size)
@@ -4351,7 +4365,7 @@ if (!acl)
   if (!acl && *log_msgptr) return ERROR;
   if (fd >= 0)
     {
-    tree_node *t = store_get_perm(sizeof(tree_node) + Ustrlen(ss), is_tainted(ss));
+    tree_node * t = store_get_perm(sizeof(tree_node) + Ustrlen(ss), ss);
     Ustrcpy(t->name, ss);
     t->data.ptr = acl;
     (void)tree_insertnode(&acl_anchor, t);
@@ -4360,7 +4374,7 @@ if (!acl)
 
 /* Now we have an ACL to use. It's possible it may be NULL. */
 
-while (acl)
+while ((acl_current = acl))
   {
   int cond;
   int basic_errno = 0;
@@ -4507,8 +4521,8 @@ while (acl)
       else if (cond == DEFER && LOGGING(acl_warn_skipped))
 	log_write(0, LOG_MAIN, "%s Warning: ACL \"warn\" statement skipped: "
 	  "condition test deferred%s%s", host_and_ident(TRUE),
-	  (*log_msgptr == NULL)? US"" : US": ",
-	  (*log_msgptr == NULL)? US"" : *log_msgptr);
+	  *log_msgptr ? US": " : US"",
+	  *log_msgptr ? *log_msgptr : US"");
       *log_msgptr = *user_msgptr = NULL;  /* In case implicit DENY follows */
       break;
 
@@ -4833,7 +4847,7 @@ acl_var_create(uschar * name)
 tree_node * node, ** root = name[0] == 'c' ? &acl_var_c : &acl_var_m;
 if (!(node = tree_search(*root, name)))
   {
-  node = store_get(sizeof(tree_node) + Ustrlen(name), is_tainted(name));
+  node = store_get(sizeof(tree_node) + Ustrlen(name), name);
   Ustrcpy(node->name, name);
   (void)tree_insertnode(root, node);
   }
@@ -4864,11 +4878,17 @@ Returns:  nothing
 */
 
 void
-acl_var_write(uschar *name, uschar *value, void *ctx)
+acl_var_write(uschar * name, uschar * value, void * ctx)
 {
-FILE *f = (FILE *)ctx;
-if (is_tainted(value)) putc('-', f);
-fprintf(f, "-acl%c %s %d\n%s\n", name[0], name+1, Ustrlen(value), value);
+FILE * f = (FILE *)ctx;
+putc('-', f);
+if (is_tainted(value))
+  {
+  int q = quoter_for_address(value);
+  putc('-', f);
+  if (is_real_quoter(q)) fprintf(f, "(%s)", lookup_list[q]->name);
+  }
+fprintf(f, "acl%c %s %d\n%s\n", name[0], name+1, Ustrlen(value), value);
 }
 
 #endif	/* !MACRO_PREDEF */

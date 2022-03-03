@@ -1499,7 +1499,7 @@ for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
 
   if (!(node = tree_search(*root, name)))
     {				/* name should never be tainted */
-    node = store_get(sizeof(tree_node) + Ustrlen(name), FALSE);
+    node = store_get(sizeof(tree_node) + Ustrlen(name), GET_UNTAINTED);
     Ustrcpy(node->name, name);
     (void)tree_insertnode(root, node);
     }
@@ -1693,7 +1693,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
       int lplen = Ustrlen(addr->local_part) - slen;
       addr->suffix = vlen
 	? addr->local_part + lplen
-	: string_copy_taint(addr->local_part + lplen, slen);
+	: string_copy_taint(addr->local_part + lplen, GET_UNTAINTED);
       addr->suffix_v = addr->suffix + Ustrlen(addr->suffix) - vlen;
       addr->local_part = string_copyn(addr->local_part, lplen);
       DEBUG(D_route) debug_printf("stripped suffix %s\n", addr->suffix);
@@ -1710,6 +1710,8 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   the local part sorted. */
 
   router_name = r->name;
+  driver_srcfile = r->srcfile;
+  driver_srcline = r->srcline;
   deliver_set_expansions(addr);
 
   /* For convenience, the pre-router checks are in a separate function, which
@@ -1717,7 +1719,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
   if ((rc = check_router_conditions(r, addr, verify, &pw, &error)) != OK)
     {
-    router_name = NULL;
+    driver_srcfile = router_name = NULL; driver_srcline = 0;
     if (rc == SKIP) continue;
     addr->message = error;
     yield = rc;
@@ -1768,7 +1770,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
           {
           DEBUG(D_route)
             debug_printf("\"more\"=false: skipping remaining routers\n");
-	  router_name = NULL;
+	  driver_srcfile = router_name = NULL; driver_srcline = 0;
           r = NULL;
           break;
           }
@@ -1820,7 +1822,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   yield = (r->info->code)(r, addr, pw, verify, paddr_local, paddr_remote,
     addr_new, addr_succeed);
 
-  router_name = NULL;
+  driver_srcfile = router_name = NULL; driver_srcline = 0;
 
   if (yield == FAIL)
     {
@@ -2048,9 +2050,22 @@ if (yield == DEFER && addr->message)
   addr->message = expand_hide_passwords(addr->message);
 
 deliver_set_expansions(NULL);
-router_name = NULL;
+driver_srcfile = router_name = NULL; driver_srcline = 0;
 f.disable_logging = FALSE;
 return yield;
+}
+
+
+
+/* For error messages, a string describing the config location associated
+with current processing.  NULL if we are not in a router. */
+/* Name only, for now */
+
+uschar *
+router_current_name(void)
+{
+if (!router_name) return NULL;
+return string_sprintf(" (router %s, %s %d)", router_name, driver_srcfile, driver_srcline);
 }
 
 #endif	/*!MACRO_PREDEF*/

@@ -171,7 +171,7 @@ if (!cn)
     }
 
   /* Add the connection to the cache */
-  cn = store_get(sizeof(redis_connection), FALSE);
+  cn = store_get(sizeof(redis_connection), GET_UNTAINTED);
   cn->server = server_copy;
   cn->handle = redis_handle;
   cn->next = redis_connections;
@@ -399,27 +399,25 @@ whitespace into an argument.
 Arguments:
   s          the string to be quoted
   opt        additional option text or NULL if none
+  idx	     lookup type index
 
 Returns:     the processed string or NULL for a bad option
 */
 
 static uschar *
-redis_quote(uschar *s, uschar *opt)
+redis_quote(uschar * s, uschar * opt, unsigned idx)
 {
-register int c;
-int count = 0;
-uschar *t = s;
-uschar *quoted;
+int c, count = 0;
+uschar * t = s, * quoted;
 
 if (opt) return NULL;     /* No options recognized */
 
-while ((c = *t++) != 0)
+while ((c = *t++))
   if (isspace(c) || c == '\\') count++;
 
-if (count == 0) return s;
-t = quoted = store_get(Ustrlen(s) + count + 1, is_tainted(s));
+t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx);
 
-while ((c = *s++) != 0)
+while ((c = *s++))
   {
   if (isspace(c) || c == '\\') *t++ = '\\';
   *t++ = c;

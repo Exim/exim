@@ -1446,7 +1446,7 @@ supply_response:
   ocsp_resplist ** op = &state->u_ocsp.server.olist, * oentry;
   while (oentry = *op)
     op = &oentry->next;
-  *op = oentry = store_get(sizeof(ocsp_resplist), FALSE);
+  *op = oentry = store_get(sizeof(ocsp_resplist), GET_UNTAINTED);
   oentry->next = NULL;
   oentry->resp = resp;
   }
@@ -2174,7 +2174,7 @@ DEBUG(D_tls) debug_printf("Received TLS SNI \"%s\"%s\n", servername,
 
 /* Make the extension value available for expansion */
 store_pool = POOL_PERM;
-tls_in.sni = string_copy_taint(US servername, TRUE);
+tls_in.sni = string_copy_taint(US servername, GET_TAINTED);
 store_pool = old_pool;
 
 if (!reexpand_tls_files_for_sni)
@@ -3464,9 +3464,9 @@ See description in https://paquier.xyz/postgresql-2/channel-binding-openssl/ */
   size_t len = SSL_get_peer_finished(ssl, &c, 0);
   int old_pool = store_pool;
 
-  SSL_get_peer_finished(ssl, s = store_get((int)len, FALSE), len);
+  SSL_get_peer_finished(ssl, s = store_get((int)len, GET_UNTAINTED), len);
   store_pool = POOL_PERM;
-    tls_in.channelbinding = b64encode_taint(CUS s, (int)len, FALSE);
+    tls_in.channelbinding = b64encode_taint(CUS s, (int)len, GET_UNTAINTED);
   store_pool = old_pool;
   DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage %p\n", tls_in.channelbinding);
   }
@@ -3702,7 +3702,7 @@ if (SSL_SESSION_is_resumable(ss)) 	/* 1.1.1 */
   {
   int len = i2d_SSL_SESSION(ss, NULL);
   int dlen = sizeof(dbdata_tls_session) + len;
-  dbdata_tls_session * dt = store_get(dlen, TRUE);
+  dbdata_tls_session * dt = store_get(dlen, GET_TAINTED);
   uschar * s = dt->session;
   open_db dbblock, * dbm_file;
 
@@ -3807,7 +3807,7 @@ else
   but it's little extra code complexity in the client. */
 
   const uschar * list = exp_alpn;
-  uschar * p = store_get(Ustrlen(exp_alpn), is_tainted(exp_alpn)), * s, * t;
+  uschar * p = store_get(Ustrlen(exp_alpn), exp_alpn), * s, * t;
   int sep = 0;
   uschar len;
 
@@ -3861,7 +3861,7 @@ BOOL require_ocsp = FALSE;
 
 rc = store_pool;
 store_pool = POOL_PERM;
-exim_client_ctx = store_get(sizeof(exim_openssl_client_tls_ctx), FALSE);
+exim_client_ctx = store_get(sizeof(exim_openssl_client_tls_ctx), GET_UNTAINTED);
 exim_client_ctx->corked = NULL;
 store_pool = rc;
 
@@ -4147,9 +4147,9 @@ tlsp->cipher_stdname = cipher_stdname_ssl(exim_client_ctx->ssl);
   size_t len = SSL_get_finished(exim_client_ctx->ssl, &c, 0);
   int old_pool = store_pool;
 
-  SSL_get_finished(exim_client_ctx->ssl, s = store_get((int)len, TRUE), len);
+  SSL_get_finished(exim_client_ctx->ssl, s = store_get((int)len, GET_TAINTED), len);
   store_pool = POOL_PERM;
-    tlsp->channelbinding = b64encode_taint(CUS s, (int)len, TRUE);
+    tlsp->channelbinding = b64encode_taint(CUS s, (int)len, GET_TAINTED);
   store_pool = old_pool;
   DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage %p %p\n", tlsp->channelbinding, tlsp);
   }

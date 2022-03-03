@@ -432,11 +432,9 @@ match_check_list(const uschar **listptr, int sep, tree_node **anchorptr,
   void *arg, int type, const uschar *name, const uschar **valueptr)
 {
 int yield = OK;
-unsigned int *original_cache_bits = *cache_ptr;
-BOOL include_unknown = FALSE;
-BOOL ignore_unknown = FALSE;
-BOOL include_defer = FALSE;
-BOOL ignore_defer = FALSE;
+unsigned int * original_cache_bits = *cache_ptr;
+BOOL include_unknown = FALSE, ignore_unknown = FALSE,
+      include_defer = FALSE, ignore_defer = FALSE;
 const uschar *list;
 uschar *sss;
 uschar *ot = NULL;
@@ -445,8 +443,8 @@ uschar *ot = NULL;
 
 HDEBUG(D_any)
   {
-  uschar *listname = readconf_find_option(listptr);
-  if (listname[0] != 0) ot = string_sprintf("%s in %s?", name, listname);
+  uschar * listname = readconf_find_option(listptr);
+  if (*listname) ot = string_sprintf("%s in %s?", name, listname);
   }
 
 /* If the list is empty, the answer is no. Skip the debugging output for
@@ -669,7 +667,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
             so we use the permanent store pool */
 
             store_pool = POOL_PERM;
-            p = store_get(sizeof(namedlist_cacheblock), FALSE);
+            p = store_get(sizeof(namedlist_cacheblock), GET_UNTAINTED);
             p->key = string_copy(get_check_key(arg, type));
 
 

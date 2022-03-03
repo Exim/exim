@@ -651,7 +651,7 @@ so that we don't handle it again. */
 
 for (ppp = *pdlist; ppp; ppp = ppp->next) if (p == ppp->ptr) return TRUE;
 
-ppp = store_get(sizeof(struct aci), FALSE);
+ppp = store_get(sizeof(struct aci), GET_UNTAINTED);
 ppp->next = *pdlist;
 *pdlist = ppp;
 ppp->ptr = p;
@@ -675,7 +675,7 @@ if (ppp) return TRUE;
 
 /* Remember what we have output, and output it. */
 
-ppp = store_get(sizeof(struct aci), FALSE);
+ppp = store_get(sizeof(struct aci), GET_UNTAINTED);
 ppp->next = *pplist;
 *pplist = ppp;
 ppp->ptr = pp;
@@ -1521,7 +1521,7 @@ for (host_item * host = hostlist; host; host = host->next)
 
   if (!(host_record = dbfn_read(dbm_file, host->name)))
     {
-    host_record = store_get(sizeof(dbdata_wait) + MESSAGE_ID_LENGTH, FALSE);
+    host_record = store_get(sizeof(dbdata_wait) + MESSAGE_ID_LENGTH, GET_UNTAINTED);
     host_record->count = host_record->sequence = 0;
     }
 
@@ -1585,7 +1585,7 @@ for (host_item * host = hostlist; host; host = host->next)
   else
     {
     dbdata_wait *newr =
-      store_get(sizeof(dbdata_wait) + host_length + MESSAGE_ID_LENGTH, FALSE);
+      store_get(sizeof(dbdata_wait) + host_length + MESSAGE_ID_LENGTH, GET_UNTAINTED);
     memcpy(newr, host_record, sizeof(dbdata_wait) + host_length);
     host_record = newr;
     }
@@ -1719,7 +1719,7 @@ while (1)
 
   /* create an array to read entire message queue into memory for processing  */
 
-  msgq = store_get(sizeof(msgq_t) * host_record->count, FALSE);
+  msgq = store_get(sizeof(msgq_t) * host_record->count, GET_UNTAINTED);
   msgq_count = host_record->count;
   msgq_actual = msgq_count;
 
@@ -2091,7 +2091,7 @@ delivery batch option is set. */
 
 for (address_item * ad = addr; ad; ad = ad->next) address_count++;
 max_args = address_count + 60;
-*argvptr = argv = store_get((max_args+1)*sizeof(uschar *), FALSE);
+*argvptr = argv = store_get((max_args+1)*sizeof(uschar *), GET_UNTAINTED);
 
 /* Split the command up into arguments terminated by white space. Lose
 trailing space at the start and end. Double-quoted arguments can contain \\ and
@@ -2107,7 +2107,7 @@ for (; *s != 0 && argcount < max_args; argcount++)
     {
     ss = s + 1;
     while (*ss != 0 && *ss != '\'') ss++;
-    argv[argcount] = ss = store_get(ss - s++, is_tainted(cmd));
+    argv[argcount] = ss = store_get(ss - s++, cmd);
     while (*s != 0 && *s != '\'') *ss++ = *s++;
     if (*s != 0) s++;
     *ss++ = 0;
@@ -2207,7 +2207,6 @@ if (expand_arguments)
       int address_pipe_argcount = 0;
       int address_pipe_max_args;
       uschar **address_pipe_argv;
-      BOOL tainted;
 
       /* We can never have more then the argv we will be loading into */
       address_pipe_max_args = max_args - argcount + 1;
@@ -2216,13 +2215,12 @@ if (expand_arguments)
         debug_printf("address_pipe_max_args=%d\n", address_pipe_max_args);
 
       /* We allocate an additional for (uschar *)0 */
-      address_pipe_argv = store_get((address_pipe_max_args+1)*sizeof(uschar *), FALSE);
+      address_pipe_argv = store_get((address_pipe_max_args+1)*sizeof(uschar *), GET_UNTAINTED);
 
       /* +1 because addr->local_part[0] == '|' since af_force_command is set */
       s = expand_string(addr->local_part + 1);
-      tainted = is_tainted(s);
 
-      if (s == NULL || *s == '\0')
+      if (!s || *s == '\0')
         {
         addr->transport_return = FAIL;
         addr->message = string_sprintf("Expansion of \"%s\" "
@@ -2233,15 +2231,16 @@ if (expand_arguments)
 
       while (isspace(*s)) s++; /* strip leading space */
 
-      while (*s != 0 && address_pipe_argcount < address_pipe_max_args)
+      while (*s && address_pipe_argcount < address_pipe_max_args)
         {
         if (*s == '\'')
           {
-          ss = s + 1;
-          while (*ss != 0 && *ss != '\'') ss++;
-          address_pipe_argv[address_pipe_argcount++] = ss = store_get(ss - s++, tainted);
-          while (*s != 0 && *s != '\'') *ss++ = *s++;
-          if (*s != 0) s++;
+	  int n;
+          for (ss = s + 1; *ss && *ss != '\''; ) ss++;
+	  n = ss - s++;
+          address_pipe_argv[address_pipe_argcount++] = ss = store_get(n, s);
+          while (*s && *s != '\'') *ss++ = *s++;
+          if (*s) s++;
           *ss++ = 0;
           }
         else address_pipe_argv[address_pipe_argcount++] =
@@ -2341,6 +2340,19 @@ if (expand_arguments)
   }
 
 return TRUE;
+}
+
+
+
+/* For error messages, a string describing the config location associated
+with current processing.  NULL if we are not in a transport. */
+/* Name only, for now */
+
+uschar *
+transport_current_name(void)
+{
+if (!transport_name) return NULL;
+return string_sprintf(" (transport %s, %s %d)", transport_name, driver_srcfile, driver_srcline);
 }
 
 #endif	/*!MACRO_PREDEF*/

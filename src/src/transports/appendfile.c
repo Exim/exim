@@ -3191,7 +3191,7 @@ else
           uschar *iptr = expand_string(nametag);
           if (iptr)
             {
-            uschar *etag = store_get(Ustrlen(iptr) + 2, is_tainted(iptr));
+            uschar *etag = store_get(Ustrlen(iptr) + 2, iptr);
             uschar *optr = etag;
             for ( ; *iptr; iptr++)
               if (mac_isgraph(*iptr) && *iptr != '/')

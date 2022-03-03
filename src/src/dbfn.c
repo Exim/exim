@@ -268,7 +268,7 @@ dbfn_read_with_length(open_db *dbblock, const uschar *key, int *length)
 void *yield;
 EXIM_DATUM key_datum, result_datum;
 int klen = Ustrlen(key) + 1;
-uschar * key_copy = store_get(klen, is_tainted(key));
+uschar * key_copy = store_get(klen, key);
 
 memcpy(key_copy, key, klen);
 
@@ -284,7 +284,7 @@ if (!EXIM_DBGET(dbblock->dbptr, key_datum, result_datum)) return NULL;
 /* Assume the data store could have been tainted.  Properly, we should
 store the taint status with the data. */
 
-yield = store_get(EXIM_DATUM_SIZE(result_datum), TRUE);
+yield = store_get(EXIM_DATUM_SIZE(result_datum), GET_TAINTED);
 memcpy(yield, EXIM_DATUM_DATA(result_datum), EXIM_DATUM_SIZE(result_datum));
 if (length) *length = EXIM_DATUM_SIZE(result_datum);
 
@@ -343,7 +343,7 @@ dbfn_write(open_db *dbblock, const uschar *key, void *ptr, int length)
 EXIM_DATUM key_datum, value_datum;
 dbdata_generic *gptr = (dbdata_generic *)ptr;
 int klen = Ustrlen(key) + 1;
-uschar * key_copy = store_get(klen, is_tainted(key));
+uschar * key_copy = store_get(klen, key);
 
 memcpy(key_copy, key, klen);
 gptr->time_stamp = time(NULL);
@@ -377,7 +377,7 @@ int
 dbfn_delete(open_db *dbblock, const uschar *key)
 {
 int klen = Ustrlen(key) + 1;
-uschar * key_copy = store_get(klen, is_tainted(key));
+uschar * key_copy = store_get(klen, key);
 
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_delete: key=%s\n", key);
 

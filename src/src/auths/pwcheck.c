@@ -291,7 +291,7 @@ static int read_string(int fd, uschar **retval) {
             return -1;
         } else {
 	    /* Assume the file is trusted, so no tainting */
-            *retval = store_get(count + 1, FALSE);
+            *retval = store_get(count + 1, GET_UNTAINTED);
             rc = (retry_read(fd, *retval, count) < (int) count);
             (*retval)[count] = '\0';
             return count;

@@ -150,7 +150,7 @@ that connection cacheing at the framework layer works. */
 static void *
 readsock_open(const uschar * filename, uschar ** errmsg)
 {
-client_conn_ctx * cctx = store_get(sizeof(*cctx), FALSE);
+client_conn_ctx * cctx = store_get(sizeof(*cctx), GET_UNTAINTED);
 cctx->sock = -1;
 cctx->tls_ctx = NULL;
 DEBUG(D_lookup) debug_printf_indent("readsock: allocated context\n");

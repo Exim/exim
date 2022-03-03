@@ -258,7 +258,7 @@ else
   {
   int v6[4];
 
-  g = string_get_tainted(32, is_tainted(string));
+  g = string_get_tainted(32, string);
   (void)host_aton(string, v6);
 
   /* The original specification for IPv6 reverse lookup was to invert each
@@ -637,7 +637,7 @@ if ((previous = tree_search(tree_dns_fails, node_name)))
   e = previous->data.ptr;
 else
   {
-  e = store_get_perm(DNS_FAILNODE_SIZE, is_tainted(name));
+  e = store_get_perm(DNS_FAILNODE_SIZE, name);
   new = (void *)(e+1);
   dns_fail_tag(new->name, name, type);
   new->data.ptr = e;
@@ -1065,7 +1065,7 @@ for (int i = 0; i <= dns_cname_loops; i++)
     return DNS_FAIL;
 
   /* DNS data comes from the outside, hence tainted */
-  data = store_get(256, TRUE);
+  data = store_get(256, GET_TAINTED);
   if (dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
       cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256) < 0)
     return DNS_FAIL;
@@ -1293,7 +1293,7 @@ if (rr->type == T_A)
   if (p + 4 <= dnsa_lim)
     {
     /* the IP is not regarded as tainted */
-    yield = store_get(sizeof(dns_address) + 20, FALSE);
+    yield = store_get(sizeof(dns_address) + 20, GET_UNTAINTED);
     (void)sprintf(CS yield->address, "%d.%d.%d.%d", p[0], p[1], p[2], p[3]);
     yield->next = NULL;
     }
@@ -1307,7 +1307,7 @@ else
     {
     struct in6_addr in6;
     for (int i = 0; i < 16; i++) in6.s6_addr[i] = rr->data[i];
-    yield = store_get(sizeof(dns_address) + 50, FALSE);
+    yield = store_get(sizeof(dns_address) + 50, GET_UNTAINTED);
     inet_ntop(AF_INET6, &in6, CS yield->address, 50);
     yield->next = NULL;
     }

@@ -646,7 +646,7 @@ Args:
 macro_item *
 macro_create(const uschar * name, const uschar * val, BOOL command_line)
 {
-macro_item * m = store_get(sizeof(macro_item), FALSE);
+macro_item * m = store_get(sizeof(macro_item), GET_UNTAINTED);
 
 READCONF_DEBUG fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val);
 m->next = NULL;
@@ -1076,7 +1076,7 @@ for (;;)
 
     if (config_lines)
       save_config_position(config_filename, config_lineno);
-    save = store_get(sizeof(config_file_item), FALSE);
+    save = store_get(sizeof(config_file_item), GET_UNTAINTED);
     save->next = config_file_stack;
     config_file_stack = save;
     save->file = config_file;
@@ -1425,7 +1425,7 @@ Returns:      the control block for the parsed rule.
 static rewrite_rule *
 readconf_one_rewrite(const uschar *p, int *existflags, BOOL isglobal)
 {
-rewrite_rule *next = store_get(sizeof(rewrite_rule), FALSE);
+rewrite_rule * next = store_get(sizeof(rewrite_rule), GET_UNTAINTED);
 
 next->next = NULL;
 next->key = string_dequote(&p);
@@ -3021,7 +3021,7 @@ if (*numberp >= max)
 Uskip_whitespace(&s);
 ss = s;
 while (isalnum(*s) || *s == '_') s++;
-t = store_get(sizeof(tree_node) + s-ss, is_tainted(ss));
+t = store_get(sizeof(tree_node) + s-ss, ss);
 Ustrncpy(t->name, ss, s-ss);
 t->name[s-ss] = 0;
 Uskip_whitespace(&s);
@@ -3279,7 +3279,7 @@ if (f.trusted_config && Ustrcmp(filename, US"/dev/null"))
   if (statbuf.st_size > 8192)
     {
     rmark r = store_mark();
-    void * dummy = store_get((int)statbuf.st_size, FALSE);
+    void * dummy = store_get((int)statbuf.st_size, GET_UNTAINTED);
     store_reset(r);
     }
   }
@@ -3769,6 +3769,8 @@ while ((buffer = get_config_line()))
     *p = d;
     p = &d->next;
     d->name = string_copy(name);
+    d->srcfile = config_filename;
+    d->srcline = config_lineno; 
 
     /* Clear out the "set" bits in the generic options */
 
@@ -4056,7 +4058,7 @@ while ((p = get_config_line()))
   const uschar *pp;
   uschar *error;
 
-  next = store_get(sizeof(retry_config), FALSE);
+  next = store_get(sizeof(retry_config), GET_UNTAINTED);
   next->next = NULL;
   *chain = next;
   chain = &(next->next);
@@ -4100,7 +4102,7 @@ while ((p = get_config_line()))
 
   while (*p)
     {
-    retry_rule *rule = store_get(sizeof(retry_rule), FALSE);
+    retry_rule * rule = store_get(sizeof(retry_rule), GET_UNTAINTED);
     *rchain = rule;
     rchain = &(rule->next);
     rule->next = NULL;
@@ -4194,6 +4196,18 @@ f.smtp_in_early_pipe_no_auth = nauths > 16;
 }
 
 
+/* For error messages, a string describing the config location associated
+with current processing.  NULL if we are not in an authenticator. */
+
+uschar *
+authenticator_current_name(void)
+{
+if (!authenticator_name) return NULL;
+return string_sprintf(" (authenticator %s, %s %d)", authenticator_name, driver_srcfile, driver_srcline);
+}
+
+
+
 
 
 /*************************************************
@@ -4250,7 +4264,7 @@ while(acl_line)
   if (*p != ':' || name[0] == 0)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "missing or malformed ACL name");
 
-  node = store_get_perm(sizeof(tree_node) + Ustrlen(name), is_tainted(name));
+  node = store_get_perm(sizeof(tree_node) + Ustrlen(name), name);
   Ustrcpy(node->name, name);
   if (!tree_insertnode(&acl_anchor, node))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
@@ -4395,7 +4409,7 @@ save_config_line(const uschar* line)
 static config_line_item *current;
 config_line_item *next;
 
-next = (config_line_item*) store_get(sizeof(config_line_item), FALSE);
+next = (config_line_item*) store_get(sizeof(config_line_item), GET_UNTAINTED);
 next->line = string_copy(line);
 next->next = NULL;
 

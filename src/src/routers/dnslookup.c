@@ -456,7 +456,7 @@ if (rc != OK) return rc;
 /* Get store in which to preserve the original host item, chained on
 to the address. */
 
-addr->host_list = store_get(sizeof(host_item), FALSE);
+addr->host_list = store_get(sizeof(host_item), GET_UNTAINTED);
 addr->host_list[0] = h;
 
 /* Fill in the transport and queue the address for delivery. */

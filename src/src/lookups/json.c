@@ -24,7 +24,7 @@ Assume that the file is trusted, so no tainting */
 static void *
 json_malloc(size_t nbytes)
 {
-void * p = store_get((int)nbytes, FALSE);
+void * p = store_get((int)nbytes, GET_UNTAINTED);
 /* debug_printf("%s %d: %p\n", __FUNCTION__, (int)nbytes, p); */
 return p;
 }

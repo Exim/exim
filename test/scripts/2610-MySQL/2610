@@ -87,6 +87,8 @@ mail from:<a@b>
 rcpt to:<c@d>
 quit
 ****
+# Check the quote-tracking of tainted data.
+# Currently this will log but continue.
 exim -odi -d ph10
 Test message
 .

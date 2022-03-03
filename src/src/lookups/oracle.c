@@ -306,8 +306,8 @@ if (!cn)
 
   /* Get store for a new connection, initialize it, and connect to the server */
 
-   oracle_handle = store_get(sizeof(struct cda_def), FALSE);
-   hda = store_get(HDA_SIZE, FALSE);
+   oracle_handle = store_get(sizeof(struct cda_def), GET_UNTAINTED);
+   hda = store_get(HDA_SIZE, GET_UNTAINTED);
    memset(hda,'\0',HDA_SIZE);
 
   /*
@@ -330,7 +330,7 @@ if (!cn)
 
   /* Add the connection to the cache */
 
-  cn = store_get(sizeof(oracle_connection), FALSE);
+  cn = store_get(sizeof(oracle_connection), GET_UNTAINTED);
   cn->server = server_copy;
   cn->handle = oracle_handle;
   cn->next = oracle_connections;
@@ -349,7 +349,7 @@ else
 
 /* We have a connection. Open a cursor and run the query */
 
-cda = store_get(sizeof(Cda_Def), FALSE);
+cda = store_get(sizeof(Cda_Def), GET_UNTAINTED);
 
 if (oopen(cda, oracle_handle, (text *)0, -1, -1, (text *)0, -1) != 0)
   {
@@ -370,8 +370,8 @@ if (oparse(cda, (text *)query, (sb4) -1,
 /* Find the number of fields returned and sort out their types. If the number
 is one, we don't add field names to the data. Otherwise we do. */
 
-def = store_get(sizeof(Ora_Define)*MAX_SELECT_LIST_SIZE, FALSE);
-desc = store_get(sizeof(Ora_Describe)*MAX_SELECT_LIST_SIZE, FALSE);
+def = store_get(sizeof(Ora_Define)*MAX_SELECT_LIST_SIZE, GET_UNTAINTED);
+desc = store_get(sizeof(Ora_Describe)*MAX_SELECT_LIST_SIZE, GET_UNTAINTED);
 
 if ((num_fields = describe_define(cda,def,desc)) == -1)
   {
@@ -543,27 +543,25 @@ messages, since that isn't likely to be treated as a pattern of any kind.
 Arguments:
   s          the string to be quoted
   opt        additional option text or NULL if none
+  idx	     lookup type index
 
 Returns:     the processed string or NULL for a bad option
 */
 
 static uschar *
-oracle_quote(uschar *s, uschar *opt)
+oracle_quote(uschar * s, uschar * opt, unsigned idx)
 {
-register int c;
-int count = 0;
-uschar *t = s;
-uschar *quoted;
+int c, count = 0;
+uschar * t = s, * quoted;
 
-if (opt != NULL) return NULL;    /* No options are recognized */
+if (opt) return NULL;    /* No options are recognized */
 
-while ((c = *t++) != 0)
+while ((c = *t++))
   if (strchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
-if (count == 0) return s;
-t = quoted = store_get((int)strlen(s) + count + 1, is_tainted(s));
+t = quoted = store_get_quoted((int)Ustrlen(s) + count + 1, s, idx);
 
-while ((c = *s++) != 0)
+while ((c = *s++))
   {
   if (strchr("\n\t\r\b\'\"\\", c) != NULL)
     {

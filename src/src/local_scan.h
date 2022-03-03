@@ -40,8 +40,8 @@ ABI is changed in a non backward compatible way. The minor number is increased
 each time a new feature is added (in a way that doesn't break backward
 compatibility). */
 
-#define LOCAL_SCAN_ABI_VERSION_MAJOR 5
-#define LOCAL_SCAN_ABI_VERSION_MINOR 1
+#define LOCAL_SCAN_ABI_VERSION_MAJOR 6
+#define LOCAL_SCAN_ABI_VERSION_MINOR 0
 #define LOCAL_SCAN_ABI_VERSION \
   LOCAL_SCAN_ABI_VERSION_MAJOR.LOCAL_SCAN_ABI_VERSION_MINOR
 
@@ -208,12 +208,12 @@ extern void    smtp_vprintf(const char *, BOOL, va_list);
 	string_sprintf_trc(fmt, US __FUNCTION__, __LINE__, __VA_ARGS__)
 extern uschar *string_sprintf_trc(const char *, const uschar *, unsigned, ...) ALMOST_PRINTF(1,4);
 
-#define store_get(size, tainted) \
-	store_get_3(size, tainted, __FUNCTION__, __LINE__)
-extern void   *store_get_3(int, BOOL, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
-#define store_get_perm(size, tainted) \
-	store_get_perm_3(size, tainted, __FUNCTION__, __LINE__)
-extern void   *store_get_perm_3(int, BOOL, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
+#define store_get(size, proto_mem) \
+	store_get_3((size), (proto_mem), __FUNCTION__, __LINE__)
+extern void   *store_get_3(int, const void *, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
+#define store_get_perm(size, proto_mem) \
+	store_get_perm_3((size), (proto_mem), __FUNCTION__, __LINE__)
+extern void   *store_get_perm_3(int, const void *, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
 
 
 #if defined(LOCAL_SCAN) || defined(DLFUNC_IMPL)
@@ -230,7 +230,7 @@ with the original name. */
 
 extern uschar * string_copy_function(const uschar *);
 extern uschar * string_copyn_function(const uschar *, int n);
-extern uschar * string_copy_taint_function(const uschar *, BOOL tainted);
+extern uschar * string_copy_taint_function(const uschar *, const void * proto_mem);
 extern pid_t    child_open_exim_function(int *, const uschar *);
 extern pid_t    child_open_exim2_function(int *, uschar *, uschar *, const uschar *);
 extern pid_t    child_open_function(uschar **, uschar **, int, int *, int *, BOOL, const uschar *);

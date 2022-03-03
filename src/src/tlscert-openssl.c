@@ -171,7 +171,7 @@ else
 
       /* convert to string in our format */
       len = 32;
-      s = store_get(len, FALSE);
+      s = store_get(len, GET_UNTAINTED);
       strftime(CS s, (size_t)len, "%b %e %T %Y %z", tm_p);
       }
     }
@@ -335,7 +335,7 @@ M_ASN1_OCTET_STRING_print(bp, adata);
 /* binary data, DER encoded */
 /* just dump for now */
 len = BIO_get_mem_data(bp, &cp1);
-cp3 = cp2 = store_get(len*3+1, TRUE);
+cp3 = cp2 = store_get(len*3+1, GET_TAINTED);
 
 while(len)
   {
@@ -502,7 +502,7 @@ if (!X509_digest(cert,fdig,md,&n))
   expand_string_message = US"tls_cert_fprt: out of mem\n";
   return NULL;
   }
-cp = store_get(n*2+1, TRUE);
+cp = store_get(n*2+1, GET_TAINTED);
 for (int j = 0; j < (int)n; j++) sprintf(CS cp+2*j, "%02X", md[j]);
 return(cp);
 }

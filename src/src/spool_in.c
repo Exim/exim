@@ -186,7 +186,7 @@ BOOL right = buffer[1] == 'Y';
 
 if (n < 5) return FALSE;    /* malformed line */
 buffer[n-1] = 0;            /* Remove \n */
-node = store_get(sizeof(tree_node) + n - 3, TRUE);	/* rcpt names tainted */
+node = store_get(sizeof(tree_node) + n - 3, GET_TAINTED);	/* rcpt names tainted */
 *connect = node;
 Ustrcpy(node->name, buffer + 3);
 node->data.ptr = NULL;
@@ -442,7 +442,7 @@ n = Ustrlen(big_buffer);
 if (n < 3 || big_buffer[0] != '<' || big_buffer[n-2] != '>')
   goto SPOOL_FORMAT_ERROR;
 
-sender_address = store_get(n-2, TRUE);	/* tainted */
+sender_address = store_get(n-2, GET_TAINTED);
 Ustrncpy(sender_address, big_buffer+1, n-3);
 sender_address[n-3] = 0;
 
@@ -479,11 +479,13 @@ versions that do not understand them, just ignore any lines starting with "-"
 that we don't recognize. Otherwise it wouldn't be possible to back off a new
 version that left new-style flags written on the spool.
 
-If the line starts with "--" the content of the variable is tainted.  */
+If the line starts with "--" the content of the variable is tainted.
+If the line start "--(<lookuptype>)" it is also quoted for the given <lookuptype>.
+*/
 
 for (;;)
   {
-  BOOL tainted;
+  const void * proto_mem;
   uschar * var;
   const uschar * p;
 
@@ -491,8 +493,23 @@ for (;;)
   if (big_buffer[0] != '-') break;
   big_buffer[Ustrlen(big_buffer)-1] = 0;
 
-  tainted = big_buffer[1] == '-';
-  var =  big_buffer + (tainted ? 2 : 1);
+  proto_mem = big_buffer[1] == '-' ? GET_TAINTED : GET_UNTAINTED;
+  var =  big_buffer + (proto_mem == GET_UNTAINTED ? 1 : 2);
+  if (*var == '(')				/* marker for quoted value */
+    {
+    uschar * s;
+    int idx;
+    for (s = ++var; *s != ')'; ) s++;
+#ifndef COMPILE_UTILITY
+    if ((idx = search_findtype(var, s - var)) < 0)
+      {
+      DEBUG(D_any) debug_printf("Unrecognised quoter %.*s\n", (int)(s - var), var+1);
+      goto SPOOL_FORMAT_ERROR;
+      }
+    proto_mem = store_get_quoted(1, GET_TAINTED, idx);
+#endif  /* COMPILE_UTILITY */
+    var = s + 1;
+    }
   p = var + 1;
 
   switch(*var)
@@ -516,7 +533,7 @@ for (;;)
         (int)(endptr - var - 5), var + 5);
       if (sscanf(CS endptr, " %d", &count) != 1) goto SPOOL_FORMAT_ERROR;
       node = acl_var_create(name);
-      node->data.ptr = store_get(count + 1, tainted);
+      node->data.ptr = store_get(count + 1, proto_mem);
       if (fread(node->data.ptr, 1, count+1, fp) < count) goto SPOOL_READ_ERROR;
       ((uschar*)node->data.ptr)[count] = 0;
       }
@@ -527,11 +544,11 @@ for (;;)
       f.allow_unqualified_sender = TRUE;
 
     else if (Ustrncmp(p, "uth_id", 6) == 0)
-      authenticated_id = string_copy_taint(var + 8, tainted);
+      authenticated_id = string_copy_taint(var + 8, proto_mem);
     else if (Ustrncmp(p, "uth_sender", 10) == 0)
-      authenticated_sender = string_copy_taint(var + 12, tainted);
+      authenticated_sender = string_copy_taint(var + 12, proto_mem);
     else if (Ustrncmp(p, "ctive_hostname", 14) == 0)
-      smtp_active_hostname = string_copy_taint(var + 16, tainted);
+      smtp_active_hostname = string_copy_taint(var + 16, proto_mem);
 
     /* For long-term backward compatibility, we recognize "-acl", which was
     used before the number of ACL variables changed from 10 to 20. This was
@@ -555,7 +572,7 @@ for (;;)
       else
         (void) string_format(name, sizeof(name), "%c%u", 'm', index - 10);
       node = acl_var_create(name);
-      node->data.ptr = store_get(count + 1, tainted);
+      node->data.ptr = store_get(count + 1, proto_mem);
       /* We sanity-checked the count, so disable the Coverity error */
       /* coverity[tainted_data] */
       if (fread(node->data.ptr, 1, count+1, fp) < count) goto SPOOL_READ_ERROR;
@@ -570,7 +587,7 @@ for (;;)
       body_zerocount = Uatoi(var + 14);
 #ifdef EXPERIMENTAL_BRIGHTMAIL
     else if (Ustrncmp(p, "mi_verdicts ", 12) == 0)
-      bmi_verdicts = string_copy_taint(var + 13, tainted);
+      bmi_verdicts = string_copy_taint(var + 13, proto_mem);
 #endif
     break;
 
@@ -581,7 +598,7 @@ for (;;)
     else if (Ustrncmp(p, "sn_ret", 6) == 0)
       dsn_ret= atoi(CS var + 7);
     else if (Ustrncmp(p, "sn_envid", 8) == 0)
-      dsn_envid = string_copy_taint(var + 10, tainted);
+      dsn_envid = string_copy_taint(var + 10, proto_mem);
     break;
 
     case 'f':
@@ -599,13 +616,13 @@ for (;;)
     else if (Ustrcmp(p, "ost_lookup_failed") == 0)
       host_lookup_failed = TRUE;
     else if (Ustrncmp(p, "ost_auth_pubname", 16) == 0)
-      sender_host_auth_pubname = string_copy_taint(var + 18, tainted);
+      sender_host_auth_pubname = string_copy_taint(var + 18, proto_mem);
     else if (Ustrncmp(p, "ost_auth", 8) == 0)
-      sender_host_authenticated = string_copy_taint(var + 10, tainted);
+      sender_host_authenticated = string_copy_taint(var + 10, proto_mem);
     else if (Ustrncmp(p, "ost_name", 8) == 0)
-      sender_host_name = string_copy_taint(var + 10, tainted);
+      sender_host_name = string_copy_taint(var + 10, proto_mem);
     else if (Ustrncmp(p, "elo_name", 8) == 0)
-      sender_helo_name = string_copy_taint(var + 10, tainted);
+      sender_helo_name = string_copy_taint(var + 10, proto_mem);
 
     /* We now record the port number after the address, separated by a
     dot. For compatibility during upgrading, do nothing if there
@@ -614,7 +631,7 @@ for (;;)
     else if (Ustrncmp(p, "ost_address", 11) == 0)
       {
       sender_host_port = host_address_extract_port(var + 13);
-      sender_host_address = string_copy_taint(var + 13, tainted);
+      sender_host_address = string_copy_taint(var + 13, proto_mem);
       }
     break;
 
@@ -622,10 +639,10 @@ for (;;)
     if (Ustrncmp(p, "nterface_address", 16) == 0)
       {
       interface_port = host_address_extract_port(var + 18);
-      interface_address = string_copy_taint(var + 18, tainted);
+      interface_address = string_copy_taint(var + 18, proto_mem);
       }
     else if (Ustrncmp(p, "dent", 4) == 0)
-      sender_ident = string_copy_taint(var + 6, tainted);
+      sender_ident = string_copy_taint(var + 6, proto_mem);
     break;
 
     case 'l':
@@ -635,7 +652,7 @@ for (;;)
       f.local_error_message = TRUE;
 #ifdef HAVE_LOCAL_SCAN
     else if (Ustrncmp(p, "ocal_scan ", 10) == 0)
-      local_scan_data = string_copy_taint(var + 11, tainted);
+      local_scan_data = string_copy_taint(var + 11, proto_mem);
 #endif
     break;
 
@@ -652,7 +669,7 @@ for (;;)
 
     case 'r':
     if (Ustrncmp(p, "eceived_protocol", 16) == 0)
-      received_protocol = string_copy_taint(var + 18, tainted);
+      received_protocol = string_copy_taint(var + 18, proto_mem);
     else if (Ustrncmp(p, "eceived_time_usec", 17) == 0)
       {
       unsigned usec;
@@ -678,11 +695,11 @@ for (;;)
       f.sender_set_untrusted = TRUE;
 #ifdef WITH_CONTENT_SCAN
     else if (Ustrncmp(p, "pam_bar ", 8) == 0)
-      spam_bar = string_copy_taint(var + 9, tainted);
+      spam_bar = string_copy_taint(var + 9, proto_mem);
     else if (Ustrncmp(p, "pam_score ", 10) == 0)
-      spam_score = string_copy_taint(var + 11, tainted);
+      spam_score = string_copy_taint(var + 11, proto_mem);
     else if (Ustrncmp(p, "pam_score_int ", 14) == 0)
-      spam_score_int = string_copy_taint(var + 15, tainted);
+      spam_score_int = string_copy_taint(var + 15, proto_mem);
 #endif
 #ifndef COMPILE_UTILITY
     else if (Ustrncmp(p, "pool_file_wireformat", 20) == 0)
@@ -702,7 +719,7 @@ for (;;)
       if (Ustrncmp(q, "certificate_verified", 20) == 0)
 	tls_in.certificate_verified = TRUE;
       else if (Ustrncmp(q, "cipher", 6) == 0)
-	tls_in.cipher = string_copy_taint(q+7, tainted);
+	tls_in.cipher = string_copy_taint(q+7, proto_mem);
 # ifndef COMPILE_UTILITY	/* tls support fns not built in */
       else if (Ustrncmp(q, "ourcert", 7) == 0)
 	(void) tls_import_cert(q+8, &tls_in.ourcert);
@@ -710,9 +727,9 @@ for (;;)
 	(void) tls_import_cert(q+9, &tls_in.peercert);
 # endif
       else if (Ustrncmp(q, "peerdn", 6) == 0)
-	tls_in.peerdn = string_unprinting(string_copy_taint(q+7, tainted));
+	tls_in.peerdn = string_unprinting(string_copy_taint(q+7, proto_mem));
       else if (Ustrncmp(q, "sni", 3) == 0)
-	tls_in.sni = string_unprinting(string_copy_taint(q+4, tainted));
+	tls_in.sni = string_unprinting(string_copy_taint(q+4, proto_mem));
       else if (Ustrncmp(q, "ocsp", 4) == 0)
 	tls_in.ocsp = q[5] - '0';
 # ifndef DISABLE_TLS_RESUME
@@ -720,7 +737,7 @@ for (;;)
 	tls_in.resumption = q[11] - 'A';
 # endif
       else if (Ustrncmp(q, "ver", 3) == 0)
-	tls_in.ver = string_copy_taint(q+4, tainted);
+	tls_in.ver = string_copy_taint(q+4, proto_mem);
       }
     break;
 #endif
@@ -775,7 +792,7 @@ DEBUG(D_deliver) debug_printf_indent("recipients_count=%d\n", rcount);
 #endif  /* COMPILE_UTILITY */
 
 recipients_list_max = rcount;
-recipients_list = store_get(rcount * sizeof(recipient_item), FALSE);
+recipients_list = store_get(rcount * sizeof(recipient_item), GET_UNTAINTED);
 
 /* We sanitised the count and know we have enough memory, so disable
 the Coverity error on recipients_count */
@@ -875,7 +892,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
 
     (void)sscanf(CS p+1, "%d", &flags);
 
-    if ((flags & 0x01) != 0)      /* one_time data exists */
+    if (flags & 0x01)      /* one_time data exists */
       {
       int len;
       while (isdigit(*(--p)) || *p == ',' || *p == '-');
@@ -884,12 +901,12 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
       if (len > 0)
         {
         p -= len;
-        errors_to = string_copy_taint(p, TRUE);
+        errors_to = string_copy_taint(p, GET_TAINTED);
         }
       }
 
-    *(--p) = 0;   /* Terminate address */
-    if ((flags & 0x02) != 0)      /* one_time data exists */
+    *--p = 0;   /* Terminate address */
+    if (flags & 0x02)      /* one_time data exists */
       {
       int len;
       while (isdigit(*(--p)) || *p == ',' || *p == '-');
@@ -898,11 +915,11 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
       if (len > 0)
         {
         p -= len;
-        orcpt = string_copy_taint(p, TRUE);
+        orcpt = string_copy_taint(p, GET_TAINTED);
         }
       }
 
-    *(--p) = 0;   /* Terminate address */
+    *--p = 0;   /* Terminate address */
     }
 #if !defined(COMPILE_UTILITY)
   else
@@ -916,7 +933,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
       big_buffer, errors_to);
 #endif
 
-  recipients_list[recipients_count].address = string_copy_taint(big_buffer, TRUE);
+  recipients_list[recipients_count].address = string_copy_taint(big_buffer, GET_TAINTED);
   recipients_list[recipients_count].pno = pno;
   recipients_list[recipients_count].errors_to = errors_to;
   recipients_list[recipients_count].orcpt = orcpt;
@@ -948,11 +965,11 @@ while ((n = fgetc(fp)) != EOF)
 
   if (read_headers)
     {
-    h = store_get(sizeof(header_line), FALSE);
+    h = store_get(sizeof(header_line), GET_UNTAINTED);
     h->next = NULL;
     h->type = flag[0];
     h->slen = n;
-    h->text = store_get(n+1, TRUE);	/* tainted */
+    h->text = store_get(n+1, GET_TAINTED);
 
     if (h->type == htype_received) received_count++;
 
@@ -1055,7 +1072,7 @@ if (  Ufgets(big_buffer, big_buffer_size, fp) != NULL
    && big_buffer[0] == '<' && big_buffer[n-2] == '>'
    )
   {
-  yield = store_get(n-2, TRUE);	/* tainted */
+  yield = store_get(n-2, GET_TAINTED);
   Ustrncpy(yield, big_buffer+1, n-3);
   yield[n-3] = 0;
   }

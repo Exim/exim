@@ -114,7 +114,7 @@ if (body_len >= message_body_visible)
   int above = message_body_visible - below;
   if (above > 0)
     {
-    uschar *temp = store_get(below, TRUE);
+    uschar * temp = store_get(below, GET_UNTAINTED);
     memcpy(temp, message_body_end, below);
     memmove(message_body_end, s+1, above);
     memcpy(message_body_end + above, temp, below);
@@ -180,7 +180,7 @@ if (fstat(fd, &statbuf) != 0)
   return FALSE;
   }
 
-filebuf = store_get(statbuf.st_size + 1, is_tainted(filename));
+filebuf = store_get(statbuf.st_size + 1, filename);
 rc = read(fd, filebuf, statbuf.st_size);
 (void)close(fd);
 

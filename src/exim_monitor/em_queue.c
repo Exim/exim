@@ -138,8 +138,8 @@ tree_node *
 acl_var_create(uschar *name)
 {
 tree_node *node, **root;
-root = (name[0] == 'c')? &acl_var_c : &acl_var_m;
-node = store_get(sizeof(tree_node) + Ustrlen(name), FALSE);
+root = name[0] == 'c' ? &acl_var_c : &acl_var_m;
+node = store_get(sizeof(tree_node) + Ustrlen(name), GET_UNTAINTED);
 Ustrcpy(node->name, name);
 node->data.ptr = NULL;
 (void)tree_insertnode(root, node);

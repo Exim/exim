@@ -594,7 +594,7 @@ constructing file names and things. This call will initialize
 the store_get() function. */
 
 store_init();
-big_buffer = store_get(big_buffer_size, FALSE);
+big_buffer = store_get(big_buffer_size, GET_UNTAINTED);
 
 /* Set up the version string and date and output them */
 

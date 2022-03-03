@@ -120,8 +120,14 @@ return z;
 static void
 spool_var_write(FILE * fp, const uschar * name, const uschar * val)
 {
-if (is_tainted(val)) putc('-', fp);
-fprintf(fp, "-%s %s\n", name, val);
+putc('-', fp);
+if (is_tainted(val))
+  {
+  int q = quoter_for_address(val);
+  putc('-', fp);
+  if (is_real_quoter(q)) fprintf(fp, "(%s)", lookup_list[q]->name);
+  }
+fprintf(fp, "%s %s\n", name, val);
 }
 
 /*************************************************

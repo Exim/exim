@@ -133,11 +133,15 @@ typedef struct driver_instance {
   uschar *name;                   /* Instance name */
   struct driver_info *info;       /* Points to info for this driver */
   void   *options_block;          /* Pointer to private options */
+
   uschar *driver_name;            /* All start with this generic option */
+  const uschar *srcfile;	  /* and config source info for errors */
+  int	  srcline;
 } driver_instance;
 
 typedef struct driver_info {
   uschar *driver_name;            /* Name of driver */
+
   optionlist *options;            /* Table of private options names */
   int    *options_count;          /* -> Number of entries in table */
   void   *options_block;          /* Points to default private block */
@@ -159,6 +163,9 @@ typedef struct transport_instance {
   struct transport_info *info;    /* Info for this driver */
   void *options_block;            /* Pointer to private options */
   uschar *driver_name;            /* Must be first */
+  const uschar *srcfile;
+  int	  srcline;
+
   int   (*setup)(                 /* Setup entry point */
     struct transport_instance *,
     struct address_item *,
@@ -283,6 +290,8 @@ typedef struct router_instance {
   struct router_info *info;
   void   *options_block;          /* Pointer to private options */
   uschar *driver_name;            /* Must be first */
+  const uschar *srcfile;
+  int	  srcline;
 
   uschar *address_data;           /* Arbitrary data */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -400,6 +409,9 @@ typedef struct auth_instance {
   struct auth_info *info;         /* Pointer to driver info block */
   void   *options_block;          /* Pointer to private options */
   uschar *driver_name;            /* Must be first */
+  const uschar *srcfile;
+  int	  srcline;
+
   uschar *advertise_condition;    /* Are we going to advertise this?*/
   uschar *client_condition;       /* Should the client try this? */
   uschar *public_name;            /* Advertised name */

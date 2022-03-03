@@ -245,7 +245,7 @@ for (int pass = 0; pass <= 1; pass++)
     dst->length=0;
   else
     {
-    dst->character = store_get(dst->length+1, is_tainted(src->character)); /* plus one for \0 */
+    dst->character = store_get(dst->length+1, src->character); /* plus one for \0 */
     new=dst->character;
     }
   for (const uschar * start = src->character, * end = start + src->length;
@@ -444,16 +444,16 @@ if (*uri && *uri!='?')
         filter->errmsg=US"Invalid URI encoding";
         return -1;
         }
-      new=store_get(sizeof(string_item), FALSE);
-      new->text = store_get(to.length+1, is_tainted(to.character));
+      new = store_get(sizeof(string_item), GET_UNTAINTED);
+      new->text = store_get(to.length+1, to.character);
       if (to.length) memcpy(new->text, to.character, to.length);
-      new->text[to.length]='\0';
-      new->next=*recipient;
-      *recipient=new;
+      new->text[to.length] = '\0';
+      new->next = *recipient;
+      *recipient = new;
       }
     else
       {
-      filter->errmsg=US"Missing addr-spec in URI";
+      filter->errmsg = US"Missing addr-spec in URI";
       return -1;
       }
     if (*uri=='%') uri+=3;
@@ -502,8 +502,8 @@ if (*uri=='?')
       }
     if (hname.length==2 && strcmpic(hname.character, US"to")==0)
       {
-      new=store_get(sizeof(string_item), FALSE);
-      new->text = store_get(hvalue.length+1, is_tainted(hvalue.character));
+      new=store_get(sizeof(string_item), GET_UNTAINTED);
+      new->text = store_get(hvalue.length+1, hvalue.character);
       if (hvalue.length) memcpy(new->text, hvalue.character, hvalue.length);
       new->text[hvalue.length]='\0';
       new->next=*recipient;
@@ -1729,7 +1729,7 @@ if (*filter->pc=='[') /* string list */
       struct String *new;
 
       dataCapacity = dataCapacity ? dataCapacity * 2 : 4;
-      new = store_get(sizeof(struct String) * dataCapacity, FALSE);
+      new = store_get(sizeof(struct String) * dataCapacity, GET_UNTAINTED);
 
       if (d) memcpy(new,d,sizeof(struct String)*dataLength);
       d = new;
@@ -1767,7 +1767,7 @@ if (*filter->pc=='[') /* string list */
   }
 else /* single string */
   {
-  if (!(d=store_get(sizeof(struct String)*2, FALSE)))
+  if (!(d=store_get(sizeof(struct String)*2, GET_UNTAINTED)))
     return -1;
 
   m=parse_string(filter,&d[0]);
@@ -3073,7 +3073,7 @@ while (*filter->pc)
         if (!already)
           /* New notification, process it */
           {
-          struct Notification * sent = store_get(sizeof(struct Notification), FALSE);
+          struct Notification * sent = store_get(sizeof(struct Notification), GET_UNTAINTED);
           sent->method=method;
           sent->importance=importance;
           sent->message=message;
@@ -3212,9 +3212,9 @@ while (*filter->pc)
           }
         for (struct String * a = addresses; a->length != -1; ++a)
           {
-          string_item * new = store_get(sizeof(string_item), FALSE);
+          string_item * new = store_get(sizeof(string_item), GET_UNTAINTED);
 
-          new->text = store_get(a->length+1, is_tainted(a->character));
+          new->text = store_get(a->length+1, a->character);
           if (a->length) memcpy(new->text,a->character,a->length);
           new->text[a->length]='\0';
           new->next=aliases;
@@ -3327,7 +3327,7 @@ while (*filter->pc)
           addr->prop.ignore_error = TRUE;
           addr->next = *generated;
           *generated = addr;
-          addr->reply = store_get(sizeof(reply_item), FALSE);
+          addr->reply = store_get(sizeof(reply_item), GET_UNTAINTED);
           memset(addr->reply,0,sizeof(reply_item)); /* XXX */
           addr->reply->to = string_copy(sender_address);
           if (from.length==-1)

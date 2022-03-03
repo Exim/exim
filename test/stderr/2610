@@ -266,7 +266,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
-processing "warn" (TESTSUITE/test-config 25)
+processing "warn" (TESTSUITE/test-config 26)
  search_open: mysql "NULL"
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
@@ -274,13 +274,35 @@ processing "warn" (TESTSUITE/test-config 25)
  internal_search_find: file="NULL"
    type=mysql key="select name from them where id = 'c'" opts=NULL
  database lookup required for select name from them where id = 'c'
+                              (tainted, quoted:mysql)
  MySQL query: "select name from them where id = 'c'" opts 'NULL'
  MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
  MYSQL: no data found
  creating new cache entry
  lookup failed
-check set acl_m0 = ok:   ${lookup mysql                    {select name from them where id = '$local_part'}}
+check set acl_m0 = ok:   ${lookup mysql                    {select name from them where id = '${quote_mysql:$local_part}'}}
                  = ok:   
+ search_open: mysql "NULL"
+   cached open
+ search_find: file="NULL"
+   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="no_rd"
+ LRU list:
+ internal_search_find: file="NULL"
+   type=mysql key="select name from them where id = 'c'" opts="no_rd"
+ cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
+                              (tainted)
+LOG: MAIN PANIC
+  tainted search query is not properly quoted (ACL warn, TESTSUITE/test-config 26): select name from them where id = 'c'
+ search_type NN (mysql) quoting -1 (none)
+ MySQL query: "select name from them where id = 'c'" opts 'no_rd'
+ MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL: no data found
+ replacing old cache entry
+ lookup failed
+check set acl_m0 = FAIL: ${lookup mysql,no_rd              {select name from them where id = '$local_part'}}
+                 = FAIL: 
+warn: condition test succeeded in ACL "check_recipient"
+processing "warn" (TESTSUITE/test-config 31)
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
@@ -289,12 +311,13 @@ check set acl_m0 = ok:   ${lookup mysql                    {select name from the
  internal_search_find: file="NULL"
    type=mysql key="select name from them where id = 'c'" opts="servers=127.0.0.1::1223/test/root/pass"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
+                              (tainted, quoted:mysql)
  MySQL query: "select name from them where id = 'c'" opts 'servers=127.0.0.1::1223/test/root/pass'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
  MYSQL: no data found
  replacing old cache entry
  lookup failed
-check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223/test/root/pass      {select name from them where id = '$local_part'}}
+check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223/test/root/pass      {select name from them where id = '${quote_mysql:$local_part}'}}
                  = ok:   
  search_open: mysql "NULL"
    cached open
@@ -304,12 +327,13 @@ check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223/test/root/pass  
  internal_search_find: file="NULL"
    type=mysql key="select name from them where id = 'c'" opts="servers=127.0.0.1::1223"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
+                              (tainted, quoted:mysql)
  MySQL query: "select name from them where id = 'c'" opts 'servers=127.0.0.1::1223'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
  MYSQL: no data found
  replacing old cache entry
  lookup failed
-check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223    {select name from them where id = '$local_part'}}
+check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223    {select name from them where id = '${quote_mysql:$local_part}'}}
                  = ok:   
  search_open: mysql "NULL"
    cached open
@@ -319,14 +343,15 @@ check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223    {select name 
  internal_search_find: file="NULL"
    type=mysql key="servers=127.0.0.1::1223/test/root/pass; select name from them where id = 'c'" opts=NULL
  database lookup required for servers=127.0.0.1::1223/test/root/pass; select name from them where id = 'c'
+                              (tainted, quoted:mysql)
  MySQL query: "servers=127.0.0.1::1223/test/root/pass; select name from them where id = 'c'" opts 'NULL'
  lookup deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
-processing "warn" (TESTSUITE/test-config 36)
+processing "warn" (TESTSUITE/test-config 40)
 check set acl_m0 = ok:   hostlist
-check hosts = net-mysql;select * from them where id='$local_part'
+check hosts = net-mysql;select * from them where id='${quote_mysql:$local_part}'
 search_open: mysql "NULL"
   cached open
 search_find: file="NULL"
@@ -335,6 +360,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select * from them where id='c'" opts=NULL
 database lookup required for select * from them where id='c'
+                             (tainted, quoted:mysql)
 MySQL query: "select * from them where id='c'" opts 'NULL'
 MYSQL using cached connection for 127.0.0.1:1223/test/root
 MYSQL: no data found
@@ -342,9 +368,9 @@ creating new cache entry
 lookup failed
 host in "net-mysql;select * from them where id='c'"? no (end of list)
 warn: condition test failed in ACL "check_recipient"
-processing "warn" (TESTSUITE/test-config 39)
+processing "warn" (TESTSUITE/test-config 43)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='$local_part'
+check hosts = <& net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
 search_open: mysql "NULL"
   cached open
 search_find: file="NULL"
@@ -353,15 +379,16 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'" opts=NULL
 database lookup required for servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
+                             (tainted, quoted:mysql)
 MySQL query: "servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'" opts 'NULL'
 lookup deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
 host in "<& net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
-processing "warn" (TESTSUITE/test-config 44)
+processing "warn" (TESTSUITE/test-config 48)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='$local_part'
+check hosts = <& net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
 search_open: mysql "NULL"
   cached open
 search_find: file="NULL"
@@ -370,18 +397,19 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key=" select * from them where id='c'" opts="servers=127.0.0.1::1223/test/root/pass"
 database lookup required for  select * from them where id='c'
+                             (tainted, quoted:mysql)
 MySQL query: " select * from them where id='c'" opts 'servers=127.0.0.1::1223/test/root/pass'
 lookup deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
 host in "<& net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
-processing "accept" (TESTSUITE/test-config 47)
+processing "accept" (TESTSUITE/test-config 51)
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 48)
+processing "accept" (TESTSUITE/test-config 54)
 check hosts = +relay_hosts
 search_open: mysql "NULL"
   cached open
@@ -399,7 +427,7 @@ lookup failed
 host in "net-mysql;select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "deny" (TESTSUITE/test-config 49)
+processing "deny" (TESTSUITE/test-config 55)
   message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": DENY
@@ -452,6 +480,12 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaX-0005vi-00
 	for ph10@myhost.test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
+using ACL "check_notsmtp"
+processing "accept" (TESTSUITE/test-config 58)
+check set acl_m_qtest = ${quote_mysql:$recipients}
+                      = ph10@myhost.test.ex
+accept: condition test succeeded in ACL "check_notsmtp"
+end of ACL "check_notsmtp": ACCEPT
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
 DSN: **** SPOOL_OUT - address: <ph10@myhost.test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
@@ -501,16 +535,35 @@ ph10@myhost.test.ex: queued for routing
 routing ph10@myhost.test.ex
 --------> r1 router <--------
 local_part=ph10 domain=myhost.test.ex
+ search_open: mysql "NULL"
+ search_find: file="NULL"
+   key="select name from them where id='ph10@myhost.test.ex'" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=mysql key="select name from them where id='ph10@myhost.test.ex'" opts=NULL
+ database lookup required for select name from them where id='ph10@myhost.test.ex'
+                              (tainted, quoted:mysql)
+ MySQL query: "select name from them where id='ph10@myhost.test.ex'" opts 'NULL'
+ MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
+ MYSQL: no data found
+ creating new cache entry
+ lookup failed
+acl_m_qtest: <ph10@myhost.test.ex> lkup: <>
 processing address_data
  search_open: mysql "NULL"
+   cached open
  search_find: file="NULL"
    key="select name from them where id='ph10'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
    type=mysql key="select name from them where id='ph10'" opts=NULL
  database lookup required for select name from them where id='ph10'
+                              (tainted)
+LOG: MAIN PANIC
+  tainted search query is not properly quoted (router r1, TESTSUITE/test-config 66): select name from them where id='ph10'
+ search_type NN (mysql) quoting -1 (none)
  MySQL query: "select name from them where id='ph10'" opts 'NULL'
- MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
+ MYSQL using cached connection for 127.0.0.1:1223/test/root
  creating new cache entry
  lookup yielded: Philip Hazel
 calling r1 router
@@ -554,6 +607,10 @@ appendfile transport entered
  internal_search_find: file="NULL"
    type=mysql key="select id from them where id='ph10'" opts=NULL
  database lookup required for select id from them where id='ph10'
+                              (tainted)
+LOG: MAIN
+  tainted search query is not properly quoted (transport t1, TESTSUITE/test-config 79): select id from them where id='ph10'
+ search_type NN (mysql) quoting -1 (none)
  MySQL query: "select id from them where id='ph10'" opts 'NULL'
  MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
  creating new cache entry

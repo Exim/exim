@@ -676,7 +676,7 @@ switch (frc)
 
     if (filtertype != FILTER_FORWARD && ob->skip_syntax_errors)
       {
-      eblock = store_get(sizeof(error_block), FALSE);
+      eblock = store_get(sizeof(error_block), GET_UNTAINTED);
       eblock->next = NULL;
       eblock->text1 = addr->message;
       eblock->text2 = NULL;

@@ -269,7 +269,7 @@ start = time(NULL);
     uschar * s;
 
     DEBUG(D_acl) debug_printf_indent("spamd: addr entry '%s'\n", address);
-    sd = store_get(sizeof(spamd_address_container), FALSE);
+    sd = store_get(sizeof(spamd_address_container), GET_UNTAINTED);
 
     for (sublist = address, args = 0, spamd_param_init(sd);
 	 (s = string_nextinlist(&sublist, &sublist_sep, NULL, 0));

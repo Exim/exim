@@ -19,6 +19,9 @@ Version 4.96
 
  5. The ACL "debug" control gains options "stop", "pretrigger" and "trigger".
 
+ 6. Query-style lookups are now checked for quoting, if the query string is
+    built using untrusted data ("tainted").  For now lack of quoting is merely
+    logged; a future release will upgrade this to an error.
 
 Version 4.95
 ------------

@@ -98,6 +98,7 @@ extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL);
 
 extern acl_block *acl_read(uschar *(*)(void), uschar **);
 extern int     acl_check(int, uschar *, uschar *, uschar **, uschar **);
+extern uschar *acl_current_verb(void);
 extern int     acl_eval(int, uschar *, uschar **, uschar **);
 
 extern tree_node *acl_var_create(uschar *);
@@ -131,6 +132,7 @@ extern int     auth_read_input(const uschar *);
 extern gstring * auth_show_supported(gstring *);
 extern uschar *auth_xtextencode(uschar *, int);
 extern int     auth_xtextdecode(uschar *, uschar **);
+extern uschar *authenticator_current_name(void);
 
 #ifdef EXPERIMENTAL_ARC
 extern gstring *authres_arc(gstring *);
@@ -147,7 +149,7 @@ extern gstring *authres_spf(gstring *);
 #endif
 
 extern uschar *b64encode(const uschar *, int);
-extern uschar *b64encode_taint(const uschar *, int, BOOL);
+extern uschar *b64encode_taint(const uschar *, int, const void *);
 extern int     b64decode(const uschar *, uschar **);
 extern int     bdat_getc(unsigned);
 extern uschar *bdat_getbuf(unsigned *);
@@ -465,6 +467,7 @@ extern BOOL    route_find_expanded_user(uschar *, uschar *, uschar *,
 extern void    route_init(void);
 extern gstring * route_show_supported(gstring *);
 extern void    route_tidyup(void);
+extern uschar *router_current_name(void);
 
 extern uschar *search_args(int, uschar *, uschar *, uschar **, const uschar *);
 extern uschar *search_find(void *, const uschar *, uschar *, int,
@@ -602,9 +605,10 @@ extern uschar *tod_stamp(int);
 
 extern BOOL    transport_check_waiting(const uschar *, const uschar *, int, uschar *,
                  oicf, void*);
-extern void    transport_init(void);
+extern uschar *transport_current_name(void);
 extern void    transport_do_pass_socket(const uschar *, const uschar *,
 		 const uschar *, uschar *, int);
+extern void    transport_init(void);
 extern BOOL    transport_pass_socket(const uschar *, const uschar *, const uschar *, uschar *, int
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
 			, unsigned, unsigned, unsigned
@@ -675,6 +679,18 @@ return FALSE;
 #else
 extern BOOL is_tainted_fn(const void *);
 return is_tainted_fn(p);
+#endif
+}
+
+static inline BOOL
+is_incompatible(const void * old, const void * new)
+{
+#if defined(COMPILE_UTILITY) || defined(MACRO_PREDEF) || defined(EM_VERSION_C)
+return FALSE;
+
+#else
+extern BOOL is_incompatible_fn(const void *, const void *);
+return is_incompatible_fn(old, new);
 #endif
 }
 
@@ -770,32 +786,32 @@ The result is explicitly nul-terminated.
 
 static inline uschar *
 string_copyn_taint_trc(const uschar * s, unsigned len,
-	BOOL tainted, const char * func, int line)
+	const void * proto_mem, const char * func, int line)
 {
-uschar * ss = store_get_3(len + 1, tainted, func, line);
+uschar * ss = store_get_3(len + 1, proto_mem, func, line);
 memcpy(ss, s, len);
 ss[len] = '\0';
 return ss;
 }
 
 static inline uschar *
-string_copy_taint_trc(const uschar * s, BOOL tainted, const char * func, int line)
-{ return string_copyn_taint_trc(s, Ustrlen(s), tainted, func, line); }
+string_copy_taint_trc(const uschar * s, const void * proto_mem, const char * func, int line)
+{ return string_copyn_taint_trc(s, Ustrlen(s), proto_mem, func, line); }
 
 static inline uschar *
 string_copyn_trc(const uschar * s, unsigned len, const char * func, int line)
-{ return string_copyn_taint_trc(s, len, is_tainted(s), func, line); }
+{ return string_copyn_taint_trc(s, len, s, func, line); }
 static inline uschar *
 string_copy_trc(const uschar * s, const char * func, int line)
-{ return string_copy_taint_trc(s, is_tainted(s), func, line); }
+{ return string_copy_taint_trc(s, s, func, line); }
 
 
 /* String-copy functions explicitly setting the taint status */
 
-#define string_copyn_taint(s, len, tainted) \
-	string_copyn_taint_trc((s), (len), (tainted), __FUNCTION__, __LINE__)
-#define string_copy_taint(s, tainted) \
-	string_copy_taint_trc((s), (tainted), __FUNCTION__, __LINE__)
+#define string_copyn_taint(s, len, proto_mem) \
+	string_copyn_taint_trc((s), (len), (proto_mem), __FUNCTION__, __LINE__)
+#define string_copy_taint(s, proto_mem) \
+	string_copy_taint_trc((s), (proto_mem), __FUNCTION__, __LINE__)
 
 /* Simple string-copy functions maintaining the taint */
 
@@ -817,7 +833,7 @@ Returns:  copy of string in new store, with letters lowercased
 static inline uschar *
 string_copylc(const uschar * s)
 {
-uschar * ss = store_get(Ustrlen(s) + 1, is_tainted(s));
+uschar * ss = store_get(Ustrlen(s) + 1, s);
 uschar * p = ss;
 while (*s) *p++ = tolower(*s++);
 *p = 0;
@@ -843,8 +859,8 @@ Returns:    copy of string in new store, with letters lowercased
 static inline uschar *
 string_copynlc(uschar * s, int n)
 {
-uschar *ss = store_get(n + 1, is_tainted(s));
-uschar *p = ss;
+uschar * ss = store_get(n + 1, s);
+uschar * p = ss;
 while (n-- > 0) *p++ = tolower(*s++);
 *p = 0;
 return ss;
@@ -870,7 +886,7 @@ int len = Ustrlen(s) + 1;
 uschar *ss;
 
 store_pool = POOL_PERM;
-ss = store_get(len, force_taint || is_tainted(s));
+ss = store_get(len, force_taint ? GET_TAINTED : s);
 memcpy(ss, s, len);
 store_pool = old_pool;
 return ss;
@@ -898,13 +914,13 @@ va_end(ap);
 
 /* Create a growable-string with some preassigned space */
 
-#define string_get_tainted(size, tainted) \
-	string_get_tainted_trc((size), (tainted), __FUNCTION__, __LINE__)
+#define string_get_tainted(size, proto_mem) \
+	string_get_tainted_trc((size), (proto_mem), __FUNCTION__, __LINE__)
 
 static inline gstring *
-string_get_tainted_trc(unsigned size, BOOL tainted, const char * func, unsigned line)
+string_get_tainted_trc(unsigned size, const void * proto_mem, const char * func, unsigned line)
 {
-gstring * g = store_get_3(sizeof(gstring) + size, tainted, func, line);
+gstring * g = store_get_3(sizeof(gstring) + size, proto_mem, func, line);
 g->size = size;		/*XXX would be good if we could see the actual alloc size */
 g->ptr = 0;
 g->s = US(g + 1);
@@ -917,7 +933,7 @@ return g;
 static inline gstring *
 string_get_trc(unsigned size, const char * func, unsigned line)
 {
-return string_get_tainted_trc(size, FALSE, func, line);
+return string_get_tainted_trc(size, GET_UNTAINTED, func, line);
 }
 
 /* NUL-terminate the C string in the growable-string, and return it. */
@@ -970,12 +986,13 @@ return g;
 }
 
 
-/* Copy the content of a string to tainted memory */
+/* Copy the content of a string to tainted memory.  The proto_mem arg
+will always be tainted, and suitable as a prototype. */
 
 static inline void
-gstring_rebuffer(gstring * g)
+gstring_rebuffer(gstring * g, const void * proto_mem)
 {
-uschar * s = store_get(g->size, TRUE);
+uschar * s = store_get_3(g->size, proto_mem, __FUNCTION__, __LINE__);
 memcpy(s, g->s, g->ptr);
 g->s = s;
 }
@@ -1052,7 +1069,7 @@ spool_fname(const uschar * purpose, const uschar * subdir, const uschar * fname,
 #ifdef COMPILE_UTILITY		/* version avoiding string-extension */
 int len = Ustrlen(spool_directory) + 1 + Ustrlen(queue_name) + 1 + Ustrlen(purpose) + 1
 	+ Ustrlen(subdir) + 1 + Ustrlen(fname) + Ustrlen(suffix) + 1;
-uschar * buf = store_get(len, FALSE);
+uschar * buf = store_get(len, GET_UNTAINTED);
 string_format(buf, len, "%s/%s/%s/%s/%s%s",
 	spool_directory, queue_name, purpose, subdir, fname, suffix);
 return buf;

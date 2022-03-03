@@ -496,7 +496,7 @@ if (!lcp)
 
   /* Now add this connection to the chain of cached connections */
 
-  lcp = store_get(sizeof(LDAP_CONNECTION), FALSE);
+  lcp = store_get(sizeof(LDAP_CONNECTION), GET_UNTAINTED);
   lcp->host = host ? string_copy(host) : NULL;
   lcp->bound = FALSE;
   lcp->user = NULL;
@@ -1405,6 +1405,7 @@ Arguments:
   s          the string to be quoted
   opt        additional option text or NULL if none
              only "dn" is recognized
+  idx	     lookup type index
 
 Returns:     the processed string or NULL for a bad option
 */
@@ -1430,18 +1431,15 @@ quote_ldap_dn, respectively. */
 
 
 static uschar *
-eldap_quote(uschar *s, uschar *opt)
+eldap_quote(uschar * s, uschar * opt, unsigned idx)
 {
-register int c;
-int count = 0;
-int len = 0;
+int c, count = 0, len = 0;
 BOOL dn = FALSE;
-uschar *t = s;
-uschar *quoted;
+uschar * t = s, * quoted;
 
 /* Test for a DN quotation. */
 
-if (opt != NULL)
+if (opt)
   {
   if (Ustrcmp(opt, "dn") != 0) return NULL;    /* No others recognized */
   dn = TRUE;
@@ -1454,24 +1452,25 @@ where, for example, < turns into %5C%3C. For simplicity, we just add 5 for each
 possibly escaped character. The really fast way would be just to test for
 non-alphanumerics, but it is probably better to spot a few others that are
 never escaped, because if there are no specials at all, we can avoid copying
-the string. */
+the string.
+XXX No longer true; we always copy, to support quoted-enforcement */
 
-while ((c = *t++) != 0)
+while ((c = *t++))
   {
   len++;
   if (!isalnum(c) && Ustrchr(ALWAYS_LITERAL, c) == NULL) count += 5;
   }
-if (count == 0) return s;
+/*if (count == 0) return s;*/
 
 /* Get sufficient store to hold the quoted string */
 
-t = quoted = store_get(len + count + 1, is_tainted(s));
+t = quoted = store_get_quoted(len + count + 1, s, idx);
 
 /* Handle plain quote_ldap */
 
 if (!dn)
   {
-  while ((c = *s++) != 0)
+  while ((c = *s++))
     {
     if (!isalnum(c))
       {
@@ -1496,7 +1495,7 @@ if (!dn)
 
 else
   {
-  uschar *ss = s + len;
+  uschar * ss = s + len;
 
   /* Find the last char before any trailing spaces */
 

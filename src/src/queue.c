@@ -214,8 +214,8 @@ for (; i <= *subcount; i++)
 	(*pcount)++;
       else
 	{
-	queue_filename *next =
-	  store_get(sizeof(queue_filename) + Ustrlen(name), is_tainted(name));
+	queue_filename * next =
+	  store_get(sizeof(queue_filename) + Ustrlen(name), name);
 	Ustrcpy(next->text, name);
 	next->dir_uschar = subdirchar;
 
@@ -901,8 +901,8 @@ if (count > 0)
   queue_filename *last = NULL;
   for (int i = 0; i < count; i++)
     {
-    queue_filename *next =
-      store_get(sizeof(queue_filename) + Ustrlen(list[i]) + 2, is_tainted(list[i]));
+    queue_filename * next =
+      store_get(sizeof(queue_filename) + Ustrlen(list[i]) + 2, list[i]);
     sprintf(CS next->text, "%s-H", list[i]);
     next->dir_uschar = '*';
     next->next = NULL;

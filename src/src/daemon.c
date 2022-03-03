@@ -1346,7 +1346,7 @@ DEBUG(D_any|D_v) debug_selector |= D_pid;
 /* Allocate enough pollstructs for inetd mode plus the ancillary sockets;
 also used when there are no listen sockets. */
 
-fd_polls = store_get(sizeof(struct pollfd) * 3, FALSE);
+fd_polls = store_get(sizeof(struct pollfd) * 3, GET_UNTAINTED);
 
 if (f.inetd_wait_mode)
   {
@@ -1534,7 +1534,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
   sep = 0;
   while ((s = string_nextinlist(&list, &sep, NULL, 0)))
     pct++;
-  default_smtp_port = store_get((pct+1) * sizeof(int), FALSE);
+  default_smtp_port = store_get((pct+1) * sizeof(int), GET_UNTAINTED);
   list = daemon_smtp_port;
   sep = 0;
   for (pct = 0;
@@ -1623,7 +1623,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
     ipa->port = default_smtp_port[0];
     for (int i = 1; default_smtp_port[i] > 0; i++)
       {
-      ip_address_item *new = store_get(sizeof(ip_address_item), FALSE);
+      ip_address_item * new = store_get(sizeof(ip_address_item), GET_UNTAINTED);
 
       memcpy(new->address, ipa->address, Ustrlen(ipa->address) + 1);
       new->port = default_smtp_port[i];
@@ -1683,7 +1683,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
   for (ipa = addresses; ipa; ipa = ipa->next)
     listen_socket_count++;
   fd_polls = store_get(sizeof(struct pollfd) * (listen_socket_count + 2),
-			    FALSE);
+			    GET_UNTAINTED);
   for (struct pollfd * p = fd_polls; p < fd_polls + listen_socket_count + 2;
        p++)
     { p->fd = -1; p->events = POLLIN; }
@@ -1709,7 +1709,7 @@ if (f.daemon_listen)
 
   if (smtp_accept_max > 0)
     {
-    smtp_slots = store_get(smtp_accept_max * sizeof(smtp_slot), FALSE);
+    smtp_slots = store_get(smtp_accept_max * sizeof(smtp_slot), GET_UNTAINTED);
     for (int i = 0; i < smtp_accept_max; i++) smtp_slots[i] = empty_smtp_slot;
     }
   }
@@ -1991,7 +1991,7 @@ of them (and also if we are doing queue runs). */
 
 if (queue_interval > 0 && local_queue_run_max > 0)
   {
-  queue_pid_slots = store_get(local_queue_run_max * sizeof(pid_t), FALSE);
+  queue_pid_slots = store_get(local_queue_run_max * sizeof(pid_t), GET_UNTAINTED);
   for (int i = 0; i < local_queue_run_max; i++) queue_pid_slots[i] = 0;
   }
 

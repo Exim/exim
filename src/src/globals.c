@@ -650,6 +650,7 @@ auth_instance auth_defaults    = {
 uschar *auth_defer_msg         = US"reason not recorded";
 uschar *auth_defer_user_msg    = US"";
 const uschar *auth_vars[AUTH_VARS];
+uschar *authenticator_name     = NULL;
 int     auto_thaw              = 0;
 #ifdef WITH_CONTENT_SCAN
 int     av_failed              = FALSE;	/* boolean but accessed as vtype_int*/
@@ -894,6 +895,8 @@ uschar *dnslist_text           = NULL;
 uschar *dnslist_value          = NULL;
 tree_node *domainlist_anchor   = NULL;
 int     domainlist_count       = 0;
+const uschar *driver_srcfile   = NULL;
+int     driver_srcline	       = 0;
 uschar *dsn_from               = US DEFAULT_DSN_FROM;
 unsigned int dtrigger_selector = 0;
 

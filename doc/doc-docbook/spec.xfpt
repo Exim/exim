@@ -6839,6 +6839,12 @@ version of the lookup key.
 The &'query-style'& type accepts a generalized database query. No particular
 key value is assumed by Exim for query-style lookups. You can use whichever
 Exim variables you need to construct the database query.
+.cindex "tainted data" "quoting for lookups"
+.new
+If tainted data is used in the query then it should be quuted by
+using the &*${quote_*&<&'lookup-type'&>&*:*&<&'string'&>&*}*& expansion operator
+appropriate for the lookup.
+.wen
 .endlist
 
 The code for each lookup type is in a separate source file that is included in
@@ -40994,8 +41000,18 @@ was received, in the conventional Unix form &-- the number of seconds since the
 start of the epoch. The second number is a count of the number of messages
 warning of delayed delivery that have been sent to the sender.
 
-There follow a number of lines starting with a hyphen. These can appear in any
-order, and are omitted when not relevant:
+.new
+There follow a number of lines starting with a hyphen.
+These contain variables, can appear in any
+order, and are omitted when not relevant.
+
+If there is a second hyphen after the first,
+the corresponding data is tainted.
+If there is a value in parentheses, the data is quoted for a lookup.
+
+The following word specifies a variable,
+and the remainder of the item depends on the variable.
+.wen
 
 .vlist
 .vitem "&%-acl%&&~<&'number'&>&~<&'length'&>"
@@ -41150,9 +41166,6 @@ When the message was received over an encrypted connection, and a certificate
 was received from the client, this records the Distinguished Name from that
 certificate.
 .endlist
-
-Any of the above may have an extra hyphen prepended, to indicate the the
-corresponding data is untrusted.
 
 Following the options there is a list of those addresses to which the message
 is not to be delivered. This set of addresses is initialized from the command

@@ -437,7 +437,7 @@ if (oncelog && *oncelog && to)
 
     cache_size = statbuf.st_size;
     add_size = sizeof(time_t) + Ustrlen(to) + 1;
-    cache_buff = store_get(cache_size + add_size, is_tainted(oncelog));
+    cache_buff = store_get(cache_size + add_size, oncelog);
 
     if (read(cache_fd, cache_buff, cache_size) != cache_size)
       {

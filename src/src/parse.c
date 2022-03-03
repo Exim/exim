@@ -22,22 +22,25 @@ redundant apparatus. */
 
 #ifdef STAND_ALONE
 
-address_item *deliver_make_addr(uschar *address, BOOL copy)
+address_item *
+deliver_make_addr(uschar *address, BOOL copy)
 {
-address_item *addr = store_get(sizeof(address_item), FALSE);
+address_item *addr = store_get(sizeof(address_item), GET_UNTAINTED);
 addr->next = NULL;
 addr->parent = NULL;
 addr->address = address;
 return addr;
 }
 
-uschar *rewrite_address(uschar *recipient, BOOL dummy1, BOOL dummy2, rewrite_rule
+uschar *
+rewrite_address(uschar *recipient, BOOL dummy1, BOOL dummy2, rewrite_rule
   *dummy3, int dummy4)
 {
 return recipient;
 }
 
-uschar *rewrite_address_qualify(uschar *recipient, BOOL dummy1)
+uschar *
+rewrite_address_qualify(uschar *recipient, BOOL dummy1)
 {
 return recipient;
 }
@@ -627,7 +630,7 @@ uschar *
 parse_extract_address(const uschar *mailbox, uschar **errorptr, int *start, int *end,
   int *domain, BOOL allow_null)
 {
-uschar *yield = store_get(Ustrlen(mailbox) + 1, is_tainted(mailbox));
+uschar * yield = store_get(Ustrlen(mailbox) + 1, mailbox);
 const uschar *startptr, *endptr;
 const uschar *s = US mailbox;
 uschar *t = US yield;
@@ -994,11 +997,9 @@ if (i < len)
 /* No non-printers; use the RFC 822 quoting rules */
 
 if (len <= 0 || len >= INT_MAX/4)
-  {
-  return string_copy_taint(CUS"", is_tainted(phrase));
-  }
+  return string_copy_taint(CUS"", phrase);
 
-buffer = store_get((len+1)*4, is_tainted(phrase));
+buffer = store_get((len+1)*4, phrase);
 
 s = phrase;
 end = s + len;
@@ -1545,7 +1546,7 @@ for (;;)
       return FF_ERROR;
       }
 
-    filebuf = store_get(statbuf.st_size + 1, is_tainted(filename));
+    filebuf = store_get(statbuf.st_size + 1, filename);
     if (fread(filebuf, 1, statbuf.st_size, f) != statbuf.st_size)
       {
       *error = string_sprintf("error while reading included file %s: %s",
@@ -1620,7 +1621,7 @@ for (;;)
 
     if ((*s_ltd == '|' || *s_ltd == '/') && (!recipient || domain == 0))
       {
-      uschar * t = store_get(Ustrlen(s_ltd) + 1, is_tainted(s_ltd));
+      uschar * t = store_get(Ustrlen(s_ltd) + 1, s_ltd);
       uschar * p = t, * q = s_ltd;
 
       while (*q)
@@ -1658,7 +1659,7 @@ for (;;)
 
         if (syntax_errors)
           {
-          error_block * e = store_get(sizeof(error_block), FALSE);
+          error_block * e = store_get(sizeof(error_block), GET_UNTAINTED);
           error_block * last = *syntax_errors;
           if (last)
             {
@@ -1738,7 +1739,7 @@ for the answer, but it may also be very long if we are processing a header
 line. Therefore, take care to release unwanted store afterwards. */
 
 reset_point = store_mark();
-id = *yield = store_get(Ustrlen(str) + 1, is_tainted(str));
+id = *yield = store_get(Ustrlen(str) + 1, str);
 *id++ = *str++;
 
 str = read_addr_spec(str, id, '>', error, &domain);

@@ -262,7 +262,7 @@ if (!cn)
 
   /* Add the connection to the cache */
 
-  cn = store_get(sizeof(pgsql_connection), FALSE);
+  cn = store_get(sizeof(pgsql_connection), GET_UNTAINTED);
   cn->server = server_copy;
   cn->handle = pg_conn;
   cn->next = pgsql_connections;
@@ -414,12 +414,13 @@ Why, I don't know. Seems odd for just string escaping...]
 Arguments:
   s          the string to be quoted
   opt        additional option text or NULL if none
+  idx	     lookup type index
 
 Returns:     the processed string or NULL for a bad option
 */
 
 static uschar *
-pgsql_quote(uschar * s, uschar * opt)
+pgsql_quote(uschar * s, uschar * opt, unsigned idx)
 {
 int count = 0, c;
 uschar * t = s, * quoted;
@@ -429,8 +430,7 @@ if (opt) return NULL;     /* No options recognized */
 while ((c = *t++))
   if (Ustrchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
-if (count == 0) return s;
-t = quoted = store_get(Ustrlen(s) + count + 1, is_tainted(s));
+t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx);
 
 while ((c = *s++))
   {

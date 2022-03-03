@@ -35,6 +35,7 @@ search_tidyup called
   internal_search_find: file="NULL"
     type=dnsdb key="a=shorthost.test.ex" opts=NULL
   database lookup required for a=shorthost.test.ex
+                               (tainted)
   dnsdb key: shorthost.test.ex
   creating new cache entry
   lookup yielded: 127.0.0.1
@@ -46,6 +47,7 @@ search_tidyup called
   internal_search_find: file="NULL"
     type=dnsdb key="a=shorthost.test.ex" opts=NULL
   cached data found but out-of-date;   database lookup required for a=shorthost.test.ex
+                               (tainted)
   dnsdb key: shorthost.test.ex
   replacing old cache entry
   lookup yielded: 127.0.0.1

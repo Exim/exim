@@ -527,7 +527,7 @@ if (recipients_count >= recipients_list_max)
     }
 
   recipients_list_max = recipients_list_max ? 2*recipients_list_max : 50;
-  recipients_list = store_get(recipients_list_max * sizeof(recipient_item), FALSE);
+  recipients_list = store_get(recipients_list_max * sizeof(recipient_item), GET_UNTAINTED);
   if (oldlist)
     memcpy(recipients_list, oldlist, oldmax * sizeof(recipient_item));
   }
@@ -1760,17 +1760,18 @@ if (extract_recip || !smtp_input)
 header. Temporarily mark it as "old", i.e. not to be used. We keep header_last
 pointing to the end of the chain to make adding headers simple. */
 
-received_header = header_list = header_last = store_get(sizeof(header_line), FALSE);
+received_header = header_list = header_last = store_get(sizeof(header_line), GET_UNTAINTED);
 header_list->next = NULL;
 header_list->type = htype_old;
 header_list->text = NULL;
 header_list->slen = 0;
 
-/* Control block for the next header to be read. */
+/* Control block for the next header to be read.
+The data comes from the message, so is tainted. */
 
 reset_point = store_mark();
-next = store_get(sizeof(header_line), FALSE);	/* not tainted */
-next->text = store_get(header_size, TRUE);	/* tainted */
+next = store_get(sizeof(header_line), GET_UNTAINTED);
+next->text = store_get(header_size, GET_TAINTED);
 
 /* Initialize message id to be null (indicating no message read), and the
 header names list to be the normal list. Indicate there is no data file open
@@ -1917,10 +1918,8 @@ for (;;)
       goto OVERSIZE;
     header_size *= 2;
 
-    /* The data came from the message, so is tainted. */
-
-    if (!store_extend(next->text, TRUE, oldsize, header_size))
-      next->text = store_newblock(next->text, TRUE, header_size, ptr);
+    if (!store_extend(next->text, oldsize, header_size))
+      next->text = store_newblock(next->text, header_size, ptr);
     }
 
   /* Cope with receiving a binary zero. There is dispute about whether
@@ -2309,8 +2308,8 @@ OVERSIZE:
 
   reset_point = store_mark();
   header_size = 256;
-  next = store_get(sizeof(header_line), FALSE);
-  next->text = store_get(header_size, TRUE);
+  next = store_get(sizeof(header_line), GET_UNTAINTED);
+  next->text = store_get(header_size, GET_TAINTED);
   ptr = 0;
   had_zero = 0;
   prevlines_length = 0;
@@ -2594,7 +2593,7 @@ if (extract_recip)
         white space that follows the newline must not be removed - it is part
         of the header. */
 
-        pp = recipient = store_get(ss - s + 1, is_tainted(s));
+        pp = recipient = store_get(ss - s + 1, s);
         for (uschar * p = s; p < ss; p++) if (*p != '\n') *pp++ = *p;
         *pp = 0;
 
@@ -2626,7 +2625,7 @@ if (extract_recip)
         if (!recipient && Ustrcmp(errmess, "empty address") != 0)
           {
           int len = Ustrlen(s);
-          error_block *b = store_get(sizeof(error_block), FALSE);
+          error_block * b = store_get(sizeof(error_block), GET_UNTAINTED);
           while (len > 0 && isspace(s[len-1])) len--;
           b->next = NULL;
           b->text1 = string_printing(string_copyn(s, len));
@@ -2825,7 +2824,7 @@ function may mess with the real recipients. */
 
 if (LOGGING(received_recipients))
   {
-  raw_recipients = store_get(recipients_count * sizeof(uschar *), FALSE);
+  raw_recipients = store_get(recipients_count * sizeof(uschar *), GET_UNTAINTED);
   for (int i = 0; i < recipients_count; i++)
     raw_recipients[i] = string_copy(recipients_list[i].address);
   raw_recipients_count = recipients_count;

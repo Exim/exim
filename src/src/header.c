@@ -102,7 +102,7 @@ gstring gs;
 
 if (!header_last) return NULL;
 
-gs.s = buf = store_get(HEADER_ADD_BUFFER_SIZE, FALSE);
+gs.s = buf = store_get(HEADER_ADD_BUFFER_SIZE, GET_UNTAINTED);
 gs.size = HEADER_ADD_BUFFER_SIZE;
 gs.ptr = 0;
 
@@ -182,7 +182,7 @@ for (p = q = gs.s; *p; p = q)
     if (*(++q) != ' ' && *q != '\t') break;
     }
 
-  new = store_get(sizeof(header_line), FALSE);
+  new = store_get(sizeof(header_line), GET_UNTAINTED);
   new->text = string_copyn(p, q - p);
   new->slen = q - p;
   new->type = type;

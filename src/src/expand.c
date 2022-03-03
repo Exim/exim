@@ -1288,7 +1288,7 @@ expand_getlistele(int field, const uschar * list)
 const uschar * tlist = list;
 int sep = 0;
 /* Tainted mem for the throwaway element copies */
-uschar * dummy = store_get(2, TRUE);
+uschar * dummy = store_get(2, GET_TAINTED);
 
 if (field < 0)
   {
@@ -1975,7 +1975,7 @@ switch (vp->type)
       int len = message_body_visible;
 
       if (len > message_size) len = message_size;
-      *ss = body = store_get(len+1, TRUE);
+      *ss = body = store_get(len+1, GET_TAINTED);
       body[0] = 0;
       if (vp->type == vtype_msgbody_end)
 	{
@@ -3834,8 +3834,8 @@ Returns:  pointer to string containing the last three
 static uschar *
 prvs_daystamp(int day_offset)
 {
-uschar *days = store_get(32, FALSE);         /* Need at least 24 for cases */
-(void)string_format(days, 32, TIME_T_FMT,    /* where TIME_T_FMT is %lld */
+uschar * days = store_get(32, GET_UNTAINTED);      /* Need at least 24 for cases */
+(void)string_format(days, 32, TIME_T_FMT, 	   /* where TIME_T_FMT is %lld */
   (time(NULL) + day_offset*86400)/86400);
 return (Ustrlen(days) >= 3) ? &days[Ustrlen(days)-3] : US"100";
 }
@@ -3906,7 +3906,7 @@ chash_end(HMAC_SHA1, &h, innerhash, 20, finalhash);
 
 /* Hashing is deemed sufficient to de-taint any input data */
 
-p = finalhash_hex = store_get(40, FALSE);
+p = finalhash_hex = store_get(40, GET_UNTAINTED);
 for (int i = 0; i < 3; i++)
   {
   *p++ = hex_digits[(finalhash[i] & 0xf0) >> 4];
@@ -4347,7 +4347,7 @@ list = ((namedlist_block *)(t->data.ptr))->string;
 /* The list could be quite long so we (re)use a buffer for each element
 rather than getting each in new memory */
 
-if (is_tainted(list)) buffer = store_get(LISTNAMED_BUF_SIZE, TRUE);
+if (is_tainted(list)) buffer = store_get(LISTNAMED_BUF_SIZE, GET_TAINTED);
 while ((item = string_nextinlist(&list, &sep, buffer, LISTNAMED_BUF_SIZE)))
   {
   uschar * buf = US" : ";
@@ -4604,13 +4604,13 @@ while (*s)
     buffer. */
 
     if (!yield)
-      g = store_get(sizeof(gstring), FALSE);
+      g = store_get(sizeof(gstring), GET_UNTAINTED);
     else if (yield->ptr == 0)
       {
       if (resetok) reset_point = store_reset(reset_point);
       yield = NULL;
       reset_point = store_mark();
-      g = store_get(sizeof(gstring), FALSE);	/* alloc _before_ calling find_variable() */
+      g = store_get(sizeof(gstring), GET_UNTAINTED);	/* alloc _before_ calling find_variable() */
       }
 
     /* Header */
@@ -6436,6 +6436,7 @@ while (*s)
 	goto EXPAND_FAILED;						/*{{*/
       if (*s++ != '}')
         {
+	/*{*/
 	expand_string_message =
 	  string_sprintf("missing '}' closing first arg of %s", name);
 	goto EXPAND_FAILED_CURLY;
@@ -6835,7 +6836,7 @@ while (*s)
           log_write(0, LOG_MAIN|LOG_PANIC, "%s", expand_string_message);
           goto EXPAND_FAILED;
           }
-        t = store_get_perm(sizeof(tree_node) + Ustrlen(argv[0]), is_tainted(argv[0]));
+        t = store_get_perm(sizeof(tree_node) + Ustrlen(argv[0]), argv[0]);
         Ustrcpy(t->name, argv[0]);
         t->data.ptr = handle;
         (void)tree_insertnode(&dlobj_anchor, t);
@@ -7364,7 +7365,7 @@ NOT_ITEM: ;
       case EOP_LISTCOUNT:
 	{
 	int cnt = 0, sep = 0;
-	uschar * buf = store_get(2, is_tainted(sub));
+	uschar * buf = store_get(2, sub);
 
 	while (string_nextinlist(CUSS &sub, &sep, buf, 1)) cnt++;
 	yield = string_fmt_append(yield, "%d", cnt);
@@ -7624,109 +7625,108 @@ NOT_ITEM: ;
 	    goto EXPAND_FAILED;
 	    }
 
-        if (lookup_list[n]->quote)
-          sub = (lookup_list[n]->quote)(sub, opt);
-        else if (opt)
-	  sub = NULL;
+	  if (lookup_list[n]->quote)
+	    sub = (lookup_list[n]->quote)(sub, opt, (unsigned)n);
+	  else if (opt)
+	    sub = NULL;
 
-        if (!sub)
-          {
-          expand_string_message = string_sprintf(
-            "\"%s\" unrecognized after \"${quote_%s\"",		/*}*/
-            opt, arg);
-          goto EXPAND_FAILED;
-          }
+	  if (!sub)
+	    {
+	    expand_string_message = string_sprintf(
+	      "\"%s\" unrecognized after \"${quote_%s\"",	/*}*/
+	      opt, arg);
+	    goto EXPAND_FAILED;
+	    }
 
-        yield = string_cat(yield, sub);
-        break;
-        }
+	  yield = string_cat(yield, sub);
+	  break;
+	  }
 
-      /* rx quote sticks in \ before any non-alphameric character so that
-      the insertion works in a regular expression. */
+	/* rx quote sticks in \ before any non-alphameric character so that
+	the insertion works in a regular expression. */
 
-      case EOP_RXQUOTE:
-        {
-        uschar *t = sub - 1;
-        while (*(++t) != 0)
-          {
-          if (!isalnum(*t))
-            yield = string_catn(yield, US"\\", 1);
-          yield = string_catn(yield, t, 1);
-          }
-        break;
-        }
-
-      /* RFC 2047 encodes, assuming headers_charset (default ISO 8859-1) as
-      prescribed by the RFC, if there are characters that need to be encoded */
-
-      case EOP_RFC2047:
-        yield = string_cat(yield,
-			    parse_quote_2047(sub, Ustrlen(sub), headers_charset,
-			      FALSE));
-        break;
-
-      /* RFC 2047 decode */
-
-      case EOP_RFC2047D:
-        {
-        int len;
-        uschar *error;
-        uschar *decoded = rfc2047_decode(sub, check_rfc2047_length,
-          headers_charset, '?', &len, &error);
-        if (error)
-          {
-          expand_string_message = error;
-          goto EXPAND_FAILED;
-          }
-        yield = string_catn(yield, decoded, len);
-        break;
-        }
-
-      /* from_utf8 converts UTF-8 to 8859-1, turning non-existent chars into
-      underscores */
-
-      case EOP_FROM_UTF8:
-        {
-	uschar * buff = store_get(4, is_tainted(sub));
-        while (*sub)
-          {
-          int c;
-          GETUTF8INC(c, sub);
-          if (c > 255) c = '_';
-          buff[0] = c;
-          yield = string_catn(yield, buff, 1);
-          }
-        break;
-        }
-
-      /* replace illegal UTF-8 sequences by replacement character  */
-
-      #define UTF8_REPLACEMENT_CHAR US"?"
-
-      case EOP_UTF8CLEAN:
-        {
-        int seq_len = 0, index = 0;
-        int bytes_left = 0;
-        long codepoint = -1;
-        int complete;
-        uschar seq_buff[4];			/* accumulate utf-8 here */
-
-	/* Manually track tainting, as we deal in individual chars below */
-
-	if (is_tainted(sub))
-	  if (yield->s && yield->ptr)
-	    gstring_rebuffer(yield);
-	  else
-	    yield->s = store_get(yield->size = Ustrlen(sub), TRUE);
-
-	/* Check the UTF-8, byte-by-byte */
-
-        while (*sub)
+	case EOP_RXQUOTE:
 	  {
-	  complete = 0;
-	  uschar c = *sub++;
+	  uschar *t = sub - 1;
+	  while (*(++t) != 0)
+	    {
+	    if (!isalnum(*t))
+	      yield = string_catn(yield, US"\\", 1);
+	    yield = string_catn(yield, t, 1);
+	    }
+	  break;
+	  }
 
-	  if (bytes_left)
+	/* RFC 2047 encodes, assuming headers_charset (default ISO 8859-1) as
+	prescribed by the RFC, if there are characters that need to be encoded */
+
+	case EOP_RFC2047:
+	  yield = string_cat(yield,
+			      parse_quote_2047(sub, Ustrlen(sub), headers_charset,
+				FALSE));
+	  break;
+
+	/* RFC 2047 decode */
+
+	case EOP_RFC2047D:
+	  {
+	  int len;
+	  uschar *error;
+	  uschar *decoded = rfc2047_decode(sub, check_rfc2047_length,
+	    headers_charset, '?', &len, &error);
+	  if (error)
+	    {
+	    expand_string_message = error;
+	    goto EXPAND_FAILED;
+	    }
+	  yield = string_catn(yield, decoded, len);
+	  break;
+	  }
+
+	/* from_utf8 converts UTF-8 to 8859-1, turning non-existent chars into
+	underscores */
+
+	case EOP_FROM_UTF8:
+	  {
+	  uschar * buff = store_get(4, sub);
+	  while (*sub)
+	    {
+	    int c;
+	    GETUTF8INC(c, sub);
+	    if (c > 255) c = '_';
+	    buff[0] = c;
+	    yield = string_catn(yield, buff, 1);
+	    }
+	  break;
+	  }
+
+	/* replace illegal UTF-8 sequences by replacement character  */
+
+	#define UTF8_REPLACEMENT_CHAR US"?"
+
+	case EOP_UTF8CLEAN:
+	  {
+	  int seq_len = 0, index = 0;
+	  int bytes_left = 0;
+	  long codepoint = -1;
+	  int complete;
+	  uschar seq_buff[4];			/* accumulate utf-8 here */
+
+	  /* Manually track tainting, as we deal in individual chars below */
+
+	  if (!yield->s || !yield->ptr)
+	    yield->s = store_get(yield->size = Ustrlen(sub), sub);
+	  else if (is_incompatible(yield->s, sub))
+	    gstring_rebuffer(yield, sub);
+
+	  /* Check the UTF-8, byte-by-byte */
+
+	  while (*sub)
+	    {
+	    complete = 0;
+	    uschar c = *sub++;
+
+	    if (bytes_left)
 	      {
 	      if ((c & 0xc0) != 0x80)
 		      /* wrong continuation byte; invalidate all bytes */
@@ -8149,9 +8149,34 @@ NOT_ITEM: ;
 	}	/* EOP_* switch */
 
        DEBUG(D_expand)
-	if (start > 0 || *s)		/* only if not the sole expansion of the line */
-	  debug_expansion_interim(US"op-res",
-				  yield->s + start, yield->ptr - start, skipping);
+	{
+	const uschar * s = yield->s + start;
+	int i = yield->ptr - start;
+	BOOL tainted = is_tainted(s);
+
+	DEBUG(D_noutf8)
+	  {
+	  debug_printf_indent("|-----op-res: %.*s\n", i, s);
+	  if (tainted)
+	    {
+	    debug_printf_indent("%s     \\__", skipping ? "|     " : "      ");
+	    debug_print_taint(yield->s);
+	    }
+	  }
+	else
+	  {
+	  debug_printf_indent(UTF8_VERT_RIGHT
+	    UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+	    "op-res: %.*s\n", i, s);
+	  if (tainted)
+	    {
+	    debug_printf_indent("%s",
+	      skipping
+	      ? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
+	    debug_print_taint(yield->s);
+	    }
+	  }
+	}
        continue;
        }
     }
@@ -8172,13 +8197,13 @@ NOT_ITEM: ;
     gstring * g = NULL;
 
     if (!yield)
-      g = store_get(sizeof(gstring), FALSE);
+      g = store_get(sizeof(gstring), GET_UNTAINTED);
     else if (yield->ptr == 0)
       {
       if (resetok) reset_point = store_reset(reset_point);
       yield = NULL;
       reset_point = store_mark();
-      g = store_get(sizeof(gstring), FALSE);	/* alloc _before_ calling find_variable() */
+      g = store_get(sizeof(gstring), GET_UNTAINTED);	/* alloc _before_ calling find_variable() */
       }
     if (!(value = find_variable(name, FALSE, skipping, &newsize)))
       {
@@ -8244,8 +8269,10 @@ DEBUG(D_expand)
     debug_printf_indent("%sresult: %s\n",
       skipping ? "|-----" : "\\_____", yield->s);
     if (tainted)
-      debug_printf_indent("%s     \\__(tainted)\n",
-	skipping ? "|     " : "      ");
+      {
+      debug_printf_indent("%s     \\__", skipping ? "|     " : "      ");
+      debug_print_taint(yield->s);
+      }
     if (skipping)
       debug_printf_indent("\\___skipping: result is not used\n");
     }
@@ -8259,9 +8286,12 @@ DEBUG(D_expand)
       skipping ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
       yield->s);
     if (tainted)
-      debug_printf_indent("%s(tainted)\n",
+      {
+      debug_printf_indent("%s",
 	skipping
 	? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
+      debug_print_taint(yield->s);
+      }
     if (skipping)
       debug_printf_indent(UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
 	"skipping: result is not used\n");
@@ -8288,6 +8318,7 @@ that is a bad idea, because expand_string_message is in dynamic store. */
 EXPAND_FAILED:
 if (left) *left = s;
 DEBUG(D_expand)
+  {
   DEBUG(D_noutf8)
     {
     debug_printf_indent("|failed to expand: %s\n", string);
@@ -8307,6 +8338,7 @@ DEBUG(D_expand)
     if (f.expand_string_forcedfail)
       debug_printf_indent(UTF8_UP_RIGHT "failure was forced\n");
     }
+  }
 if (resetok_p && !resetok) *resetok_p = FALSE;
 expand_level--;
 return NULL;

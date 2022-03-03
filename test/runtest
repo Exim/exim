@@ -1297,7 +1297,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
 
     # Different builds will have different lookup types included
-    s/^search_type \K\d+ \((\w+)\) quoting -1 \(none\)$/NN ($1) quoting -1 (none)/;
+    s/^\s*search_type \K\d+ \((\w+)\) quoting -1 \(none\)$/NN ($1) quoting -1 (none)/;
 
     # DISABLE_OCSP
     next if /in hosts_requ(est|ire)_ocsp\? (no|yes)/;

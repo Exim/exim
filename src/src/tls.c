@@ -209,7 +209,7 @@ for (;;)
 
   if (!(S_ISLNK(sb.st_mode))) break;
 
-  t = store_get(1024, FALSE);
+  t = store_get(1024, GET_UNTAINTED);
   Ustrncpy(t, s, 1022);
   j = Ustrlen(s);
   t[j++] = '/';

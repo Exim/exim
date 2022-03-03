@@ -115,7 +115,7 @@ size_t len = 32;
 if (mod && Ustrcmp(mod, "int") == 0)
   return string_sprintf("%u", (unsigned)t);
 
-cp = store_get(len, FALSE);
+cp = store_get(len, GET_UNTAINTED);
 if (f.timestamps_utc)
   {
   uschar * tz = to_tz(US"GMT0");
@@ -149,7 +149,7 @@ if ((ret = gnutls_x509_crt_get_issuer_dn(cert, CS cp, &siz))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("gi0", __FUNCTION__, ret);
 
-cp = store_get(siz, TRUE);
+cp = store_get(siz, GET_TAINTED);
 if ((ret = gnutls_x509_crt_get_issuer_dn(cert, CS cp, &siz)) < 0)
   return g_err("gi1", __FUNCTION__, ret);
 
@@ -203,7 +203,7 @@ if ((ret = gnutls_x509_crt_get_signature((gnutls_x509_crt_t)cert, CS cp1, &len))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("gs0", __FUNCTION__, ret);
 
-cp1 = store_get(len*4+1, TRUE);
+cp1 = store_get(len*4+1, GET_TAINTED);
 if (gnutls_x509_crt_get_signature((gnutls_x509_crt_t)cert, CS cp1, &len) != 0)
   return g_err("gs1", __FUNCTION__, ret);
 
@@ -233,7 +233,7 @@ if ((ret = gnutls_x509_crt_get_dn(cert, CS cp, &siz))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("gs0", __FUNCTION__, ret);
 
-cp = store_get(siz, TRUE);
+cp = store_get(siz, GET_TAINTED);
 if ((ret = gnutls_x509_crt_get_dn(cert, CS cp, &siz)) < 0)
   return g_err("gs1", __FUNCTION__, ret);
 
@@ -261,7 +261,7 @@ ret = gnutls_x509_crt_get_extension_by_oid ((gnutls_x509_crt_t)cert,
 if (ret != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("ge0", __FUNCTION__, ret);
 
-cp1 = store_get(siz*4 + 1, TRUE);
+cp1 = store_get(siz*4 + 1, GET_TAINTED);
 
 ret = gnutls_x509_crt_get_extension_by_oid ((gnutls_x509_crt_t)cert,
   CS oid, idx, CS cp1, &siz, &crit);
@@ -317,7 +317,7 @@ for (int index = 0;; index++)
       return g_err("gs0", __FUNCTION__, ret);
     }
 
-  ele = store_get(siz+1, TRUE);
+  ele = store_get(siz+1, GET_TAINTED);
   if ((ret = gnutls_x509_crt_get_subject_alt_name(
     (gnutls_x509_crt_t)cert, index, ele, &siz, NULL)) < 0)
     return g_err("gs1", __FUNCTION__, ret);
@@ -400,7 +400,7 @@ for (int index = 0;; index++)
       return g_err("gc0", __FUNCTION__, ret);
     }
 
-  ele = store_get(siz, TRUE);
+  ele = store_get(siz, GET_TAINTED);
   if ((ret = gnutls_x509_crt_get_crl_dist_points(
       (gnutls_x509_crt_t)cert, index, ele, &siz, NULL, NULL)) < 0)
     return g_err("gc1", __FUNCTION__, ret);
@@ -423,7 +423,7 @@ int fail;
 
 if (  (fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
 	GNUTLS_X509_FMT_DER, cp, &len)) != GNUTLS_E_SHORT_MEMORY_BUFFER
-   || !(cp = store_get((int)len, TRUE), TRUE)	/* tainted */
+   || !(cp = store_get((int)len, GET_TAINTED), TRUE)	/* tainted */
    || (fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
         GNUTLS_X509_FMT_DER, cp, &len))
    )
@@ -448,7 +448,7 @@ if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, NULL, &siz))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("gf0", __FUNCTION__, ret);
 
-cp = store_get(siz*3+1, TRUE);
+cp = store_get(siz*3+1, GET_TAINTED);
 if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, cp, &siz)) < 0)
   return g_err("gf1", __FUNCTION__, ret);
 

@@ -126,26 +126,25 @@ for sqlite is the single quote, and it is quoted by doubling.
 Arguments:
   s          the string to be quoted
   opt        additional option text or NULL if none
+  idx	     lookup type index
 
 Returns:     the processed string or NULL for a bad option
 */
 
 static uschar *
-sqlite_quote(uschar *s, uschar *opt)
+sqlite_quote(uschar * s, uschar * opt, unsigned idx)
 {
-register int c;
-int count = 0;
-uschar *t = s;
-uschar *quoted;
+int c, count = 0;
+uschar * t = s, * quoted;
 
-if (opt != NULL) return NULL;     /* No options recognized */
+if (opt) return NULL;     /* No options recognized */
 
-while ((c = *t++) != 0) if (c == '\'') count++;
+while ((c = *t++)) if (c == '\'') count++;
+count += t - s;
 
-if (count == 0) return s;
-t = quoted = store_get(Ustrlen(s) + count + 1, is_tainted(s));
+t = quoted = store_get_quoted(count + 1, s, idx);
 
-while ((c = *s++) != 0)
+while ((c = *s++))
   {
   if (c == '\'') *t++ = '\'';
   *t++ = c;

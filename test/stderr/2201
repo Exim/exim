@@ -34,6 +34,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=dnsdb key="test.ex" opts=NULL
 database lookup required for test.ex
+                             (tainted)
 dnsdb key: test.ex
 DNS lookup of test.ex (TXT) using fakens
 DNS lookup of test.ex (TXT) succeeded
@@ -96,6 +97,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=dnsdb key="unknown" opts=NULL
 database lookup required for unknown
+                             (tainted)
 dnsdb key: unknown
 DNS lookup of unknown (TXT) using fakens
 DNS lookup of unknown (TXT) gave HOST_NOT_FOUND
@@ -161,6 +163,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=dnsdb key="a=shorthost.test.ex" opts=NULL
 database lookup required for a=shorthost.test.ex
+                             (tainted)
 dnsdb key: shorthost.test.ex
 creating new cache entry
 lookup yielded: 127.0.0.1
@@ -181,6 +184,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=dnsdb key="a=shorthost.test.ex" opts=NULL
 cached data found but out-of-date; database lookup required for a=shorthost.test.ex
+                             (tainted)
 dnsdb key: shorthost.test.ex
 replacing old cache entry
 lookup yielded: 127.0.0.1

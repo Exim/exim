@@ -1902,7 +1902,7 @@ big_buffer = store_malloc(big_buffer_size);
 /* Set up the handler for the data request signal, and set the initial
 descriptive text. */
 
-process_info = store_get(PROCESS_INFO_SIZE, TRUE);	/* tainted */
+process_info = store_get(PROCESS_INFO_SIZE, GET_TAINTED);
 set_process_info("initializing");
 os_restarting_signal(SIGUSR1, usr1_handler);		/* exiwhat */
 #ifdef SA_SIGINFO
@@ -2273,7 +2273,9 @@ on the second character (the one after '-'), to save some effort. */
 	  if (!*argrest || Ustrcmp(argrest, "c") == 0)
 	    {
 	    if (++i >= argc) { badarg = TRUE; break; }
-	    sender_host_address = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_IPADDR_MAX, "-bh"), TRUE);
+	    sender_host_address = string_copy_taint(
+		  exim_str_fail_toolong(argv[i], EXIM_IPADDR_MAX, "-bh"),
+		  GET_TAINTED);
 	    host_checking = checking = f.log_testing_mode = TRUE;
 	    f.host_checking_callout = *argrest == 'c';
 	    message_logs = FALSE;
@@ -2746,7 +2748,9 @@ on the second character (the one after '-'), to save some effort. */
     case 'F':
     if (!*argrest)
       if (++i < argc) argrest = argv[i]; else { badarg = TRUE; break; }
-    originator_name = string_copy_taint(exim_str_fail_toolong(argrest, EXIM_HUMANNAME_MAX, "-F"), TRUE);
+    originator_name = string_copy_taint(
+		  exim_str_fail_toolong(argrest, EXIM_HUMANNAME_MAX, "-F"),
+		  GET_TAINTED);
     f.sender_name_forced = TRUE;
     break;
 
@@ -2774,7 +2778,7 @@ on the second character (the one after '-'), to save some effort. */
         if (i+1 < argc) argrest = argv[++i]; else { badarg = TRUE; break; }
       (void) exim_str_fail_toolong(argrest, EXIM_DISPLAYMAIL_MAX, "-f");
       if (!*argrest)
-        *(sender_address = store_get(1, FALSE)) = '\0';  /* Ensure writeable memory */
+        *(sender_address = store_get(1, GET_UNTAINTED)) = '\0';  /* Ensure writeable memory */
       else
         {
         uschar * temp = argrest + Ustrlen(argrest) - 1;
@@ -2789,7 +2793,7 @@ on the second character (the one after '-'), to save some effort. */
 		  &dummy_start, &dummy_end, &sender_address_domain, TRUE)))
           exim_fail("exim: bad -f address \"%s\": %s\n", argrest, errmess);
 
-	sender_address = string_copy_taint(sender_address, TRUE);
+	sender_address = string_copy_taint(sender_address, GET_TAINTED);
 #ifdef SUPPORT_I18N
 	message_smtputf8 =  string_is_utf8(sender_address);
 	allow_utf8_domains = FALSE;
@@ -2839,7 +2843,7 @@ on the second character (the one after '-'), to save some effort. */
       exim_fail("exim: the -L syslog name is too long: \"%s\"\n", argrest);
     if (sz < 1)
       exim_fail("exim: the -L syslog name is too short\n");
-    cmdline_syslog_name = string_copy_taint(argrest, TRUE);
+    cmdline_syslog_name = string_copy_taint(argrest, GET_TAINTED);
     break;
 
     case 'M':
@@ -2869,9 +2873,15 @@ on the second character (the one after '-'), to save some effort. */
       if (msg_action_arg >= 0)
         exim_fail("exim: incompatible arguments\n");
 
-      continue_transport = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-C internal transport"), TRUE);
-      continue_hostname = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_HOSTNAME_MAX, "-C internal hostname"), TRUE);
-      continue_host_address = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_IPADDR_MAX, "-C internal hostaddr"), TRUE);
+      continue_transport = string_copy_taint(
+	exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-C internal transport"),
+	GET_TAINTED);
+      continue_hostname = string_copy_taint(
+	exim_str_fail_toolong(argv[++i], EXIM_HOSTNAME_MAX, "-C internal hostname"),
+	GET_TAINTED);
+      continue_host_address = string_copy_taint(
+	exim_str_fail_toolong(argv[++i], EXIM_IPADDR_MAX, "-C internal hostaddr"),
+	GET_TAINTED);
       continue_sequence = Uatoi(argv[++i]);
       msg_action = MSG_DELIVER;
       msg_action_arg = ++i;
@@ -2916,7 +2926,9 @@ on the second character (the one after '-'), to save some effort. */
     /* -MCd: for debug, set a process-purpose string */
 
 	case 'd': if (++i < argc)
-		    process_purpose = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_DRIVERNAME_MAX, "-MCd"), TRUE);
+		    process_purpose = string_copy_taint(
+		      exim_str_fail_toolong(argv[i], EXIM_DRIVERNAME_MAX, "-MCd"),
+		      GET_TAINTED);
 		  else badarg = TRUE;
 		  break;
 
@@ -2924,7 +2936,9 @@ on the second character (the one after '-'), to save some effort. */
        from the commandline should be tainted - but we will need an untainted
        value for the spoolfile when doing a -odi delivery process. */
 
-	case 'G': if (++i < argc) queue_name = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_DRIVERNAME_MAX, "-MCG"), FALSE);
+	case 'G': if (++i < argc) queue_name = string_copy_taint(
+		      exim_str_fail_toolong(argv[i], EXIM_DRIVERNAME_MAX, "-MCG"),
+		      GET_UNTAINTED);
 		  else badarg = TRUE;
 		  break;
 
@@ -2953,13 +2967,13 @@ on the second character (the one after '-'), to save some effort. */
 	case 'p': proxy_session = TRUE;
 		  if (++i < argc)
 		    {
-		    proxy_local_address = string_copy_taint(argv[i], TRUE);
+		    proxy_local_address = string_copy_taint(argv[i], GET_TAINTED);
 		    if (++i < argc)
 		      {
 		      proxy_local_port = Uatoi(argv[i]);
 		      if (++i < argc)
 			{
-			proxy_external_address = string_copy_taint(argv[i], TRUE);
+			proxy_external_address = string_copy_taint(argv[i], GET_TAINTED);
 			if (++i < argc)
 			  {
 			  proxy_external_port = Uatoi(argv[i]);
@@ -2997,7 +3011,9 @@ on the second character (the one after '-'), to save some effort. */
 	case 'r':
 	case 's': if (++i < argc)
 		    {
-		    continue_proxy_sni = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_HOSTNAME_MAX, "-MCr/-MCs"), TRUE);
+		    continue_proxy_sni = string_copy_taint(
+		      exim_str_fail_toolong(argv[i], EXIM_HOSTNAME_MAX, "-MCr/-MCs"),
+		      GET_TAINTED);
 		    if (argrest[1] == 'r') continue_proxy_dane = TRUE;
 		    }
 		  else badarg = TRUE;
@@ -3009,13 +3025,17 @@ on the second character (the one after '-'), to save some effort. */
     and the TLS cipher. */
 
 	case 't': if (++i < argc)
-		    sending_ip_address = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_IPADDR_MAX, "-MCt IP"), TRUE);
+		    sending_ip_address = string_copy_taint(
+		      exim_str_fail_toolong(argv[i], EXIM_IPADDR_MAX, "-MCt IP"),
+		      GET_TAINTED);
 		  else badarg = TRUE;
 		  if (++i < argc)
 		    sending_port = (int)(Uatol(argv[i]));
 		  else badarg = TRUE;
 		  if (++i < argc)
-		    continue_proxy_cipher = string_copy_taint(exim_str_fail_toolong(argv[i], EXIM_CIPHERNAME_MAX, "-MCt cipher"), TRUE);
+		    continue_proxy_cipher = string_copy_taint(
+		      exim_str_fail_toolong(argv[i], EXIM_CIPHERNAME_MAX, "-MCt cipher"),
+		      GET_TAINTED);
 		  else badarg = TRUE;
 		  /*FALLTHROUGH*/
 
@@ -3078,12 +3098,11 @@ on the second character (the one after '-'), to save some effort. */
    else if (Ustrcmp(argrest, "G") == 0)
       {
       msg_action = MSG_SETQUEUE;
-      queue_name_dest = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-MG"), TRUE);
+      queue_name_dest = string_copy_taint(
+	exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-MG"),
+	GET_TAINTED);
       }
-    else if (Ustrcmp(argrest, "mad") == 0)
-      {
-      msg_action = MSG_MARK_ALL_DELIVERED;
-      }
+    else if (Ustrcmp(argrest, "mad") == 0) msg_action = MSG_MARK_ALL_DELIVERED;
     else if (Ustrcmp(argrest, "md") == 0)
       {
       msg_action = MSG_MARK_DELIVERED;
@@ -3291,27 +3310,37 @@ on the second character (the one after '-'), to save some effort. */
 	/* -oMa: Set sender host address */
 
 	if (Ustrcmp(argrest, "a") == 0)
-	  sender_host_address = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_IPADDR_MAX, "-oMa"), TRUE);
+	  sender_host_address = string_copy_taint(
+	    exim_str_fail_toolong(argv[++i], EXIM_IPADDR_MAX, "-oMa"),
+	    GET_TAINTED);
 
 	/* -oMaa: Set authenticator name */
 
 	else if (Ustrcmp(argrest, "aa") == 0)
-	  sender_host_authenticated = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-oMaa"), TRUE);
+	  sender_host_authenticated = string_copy_taint(
+	    exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-oMaa"),
+	    GET_TAINTED);
 
 	/* -oMas: setting authenticated sender */
 
 	else if (Ustrcmp(argrest, "as") == 0)
-	  authenticated_sender = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMas"), TRUE);
+	  authenticated_sender = string_copy_taint(
+	    exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMas"),
+	    GET_TAINTED);
 
 	/* -oMai: setting authenticated id */
 
 	else if (Ustrcmp(argrest, "ai") == 0)
-	  authenticated_id = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMas"), TRUE);
+	  authenticated_id = string_copy_taint(
+	    exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMas"),
+	    GET_TAINTED);
 
 	/* -oMi: Set incoming interface address */
 
 	else if (Ustrcmp(argrest, "i") == 0)
-	  interface_address = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_IPADDR_MAX, "-oMi"), TRUE);
+	  interface_address = string_copy_taint(
+	    exim_str_fail_toolong(argv[++i], EXIM_IPADDR_MAX, "-oMi"),
+	    GET_TAINTED);
 
 	/* -oMm: Message reference */
 
@@ -3331,19 +3360,25 @@ on the second character (the one after '-'), to save some effort. */
 	  if (received_protocol)
 	    exim_fail("received_protocol is set already\n");
 	  else
-	    received_protocol = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-oMr"), TRUE);
+	    received_protocol = string_copy_taint(
+	      exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-oMr"),
+	      GET_TAINTED);
 
 	/* -oMs: Set sender host name */
 
 	else if (Ustrcmp(argrest, "s") == 0)
-	  sender_host_name = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_HOSTNAME_MAX, "-oMs"), TRUE);
+	  sender_host_name = string_copy_taint(
+	    exim_str_fail_toolong(argv[++i], EXIM_HOSTNAME_MAX, "-oMs"),
+	    GET_TAINTED);
 
 	/* -oMt: Set sender ident */
 
 	else if (Ustrcmp(argrest, "t") == 0)
 	  {
 	  sender_ident_set = TRUE;
-	  sender_ident = string_copy_taint(exim_str_fail_toolong(argv[++i], EXIM_IDENTUSER_MAX, "-oMt"), TRUE);
+	  sender_ident = string_copy_taint(
+	    exim_str_fail_toolong(argv[++i], EXIM_IDENTUSER_MAX, "-oMt"),
+	    GET_TAINTED);
 	  }
 
 	/* Else a bad argument */
@@ -3401,7 +3436,9 @@ on the second character (the one after '-'), to save some effort. */
 
       case 'X':
 	if (*argrest) badarg = TRUE;
-	else override_local_interfaces = string_copy_taint(exim_str_fail_toolong(argv[++i], 1024, "-oX"), TRUE);
+	else override_local_interfaces = string_copy_taint(
+	  exim_str_fail_toolong(argv[++i], 1024, "-oX"),
+	  GET_TAINTED);
 	break;
 
       /* -oY: Override creation of daemon notifier socket */
@@ -3449,12 +3486,14 @@ on the second character (the one after '-'), to save some effort. */
         exim_fail("received_protocol is set already\n");
 
       if (!hn)
-        received_protocol = string_copy_taint(exim_str_fail_toolong(argrest, EXIM_DRIVERNAME_MAX, "-p<protocol>"), TRUE);
+        received_protocol = string_copy_taint(
+	  exim_str_fail_toolong(argrest, EXIM_DRIVERNAME_MAX, "-p<protocol>"),
+	  GET_TAINTED);
       else
         {
         (void) exim_str_fail_toolong(argrest, (EXIM_DRIVERNAME_MAX+1+EXIM_HOSTNAME_MAX), "-p<protocol>:<host>");
-        received_protocol = string_copyn_taint(argrest, hn - argrest, TRUE);
-        sender_host_name = string_copy_taint(hn + 1, TRUE);
+        received_protocol = string_copyn_taint(argrest, hn - argrest, GET_TAINTED);
+        sender_host_name = string_copy_taint(hn + 1, GET_TAINTED);
         }
       }
     break;
@@ -3523,9 +3562,9 @@ on the second character (the one after '-'), to save some effort. */
 	{
 	queue_interval = 0;
 	if (i+1 < argc && mac_ismsgid(argv[i+1]))
-	  start_queue_run_id = string_copy_taint(argv[++i], TRUE);
+	  start_queue_run_id = string_copy_taint(argv[++i], GET_TAINTED);
 	if (i+1 < argc && mac_ismsgid(argv[i+1]))
-	  stop_queue_run_id = string_copy_taint(argv[++i], TRUE);
+	  stop_queue_run_id = string_copy_taint(argv[++i], GET_TAINTED);
 	}
 
     /* -q[f][f][l][G<name>/]<n>: Run the queue at regular intervals, optionally
@@ -3573,7 +3612,9 @@ on the second character (the one after '-'), to save some effort. */
 	tainted_selectstr = argv[++i];
       else
 	exim_fail("exim: string expected after -R\n");
-      deliver_selectstring = string_copy_taint(exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-R"), TRUE);
+      deliver_selectstring = string_copy_taint(
+	exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-R"),
+	GET_TAINTED);
       }
     break;
 
@@ -3616,7 +3657,9 @@ on the second character (the one after '-'), to save some effort. */
 	tainted_selectstr = argv[++i];
       else
 	exim_fail("exim: string expected after -S\n");
-      deliver_selectstring_sender = string_copy_taint(exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-S"), TRUE);
+      deliver_selectstring_sender = string_copy_taint(
+	exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-S"),
+	GET_TAINTED);
       }
     break;
 
@@ -3627,7 +3670,7 @@ on the second character (the one after '-'), to save some effort. */
 
     case 'T':
     if (f.running_in_test_harness && Ustrcmp(argrest, "qt") == 0)
-      fudged_queue_times = string_copy_taint(argv[++i], TRUE);
+      fudged_queue_times = string_copy_taint(argv[++i], GET_TAINTED);
     else badarg = TRUE;
     break;
 
@@ -3704,7 +3747,9 @@ on the second character (the one after '-'), to save some effort. */
     case 'z':
     if (!*argrest)
       if (++i < argc)
-	log_oneline = string_copy_taint(exim_str_fail_toolong(argv[i], 2048, "-z logtext"), TRUE);
+	log_oneline = string_copy_taint(
+	  exim_str_fail_toolong(argv[i], 2048, "-z logtext"),
+	  GET_TAINTED);
       else
         exim_fail("exim: file name expected after %s\n", argv[i-1]);
     break;
@@ -5172,7 +5217,9 @@ if (verify_address_mode || f.address_test_mode)
     while (recipients_arg < argc)
       {
       /* Supplied addresses are tainted since they come from a user */
-      uschar * s = string_copy_taint(exim_str_fail_toolong(argv[recipients_arg++], EXIM_DISPLAYMAIL_MAX, "address verification"), TRUE);
+      uschar * s = string_copy_taint(
+	exim_str_fail_toolong(argv[recipients_arg++], EXIM_DISPLAYMAIL_MAX, "address verification"),
+	GET_TAINTED);
       while (*s)
         {
         BOOL finished = FALSE;
@@ -5189,7 +5236,10 @@ if (verify_address_mode || f.address_test_mode)
     {
     uschar * s = get_stdinput(NULL, NULL);
     if (!s) break;
-    test_address(string_copy_taint(exim_str_fail_toolong(s, EXIM_DISPLAYMAIL_MAX, "address verification (stdin)"), TRUE), flags, &exit_value);
+    test_address(string_copy_taint(
+	exim_str_fail_toolong(s, EXIM_DISPLAYMAIL_MAX, "address verification (stdin)"),
+	GET_TAINTED),
+      flags, &exit_value);
     }
 
   route_tidyup();
@@ -5329,7 +5379,7 @@ if (host_checking)
   it. The code works for both IPv4 and IPv6, as it happens. */
 
   size = host_aton(sender_host_address, x);
-  sender_host_address = store_get(48, FALSE);  /* large enough for full IPv6 */
+  sender_host_address = store_get(48, GET_UNTAINTED);  /* large enough for full IPv6 */
   (void)host_nmtoa(size, x, -1, sender_host_address, ':');
 
   /* Now set up for testing */
@@ -5701,11 +5751,13 @@ for (BOOL more = TRUE; more; )
       uschar * errmess;
       /* There can be multiple addresses, so EXIM_DISPLAYMAIL_MAX (tuned for 1) is too short.
        * We'll still want to cap it to something, just in case. */
-      uschar * s = string_copy_taint(exim_str_fail_toolong(list[i], BIG_BUFFER_SIZE, "address argument"), TRUE);
+      uschar * s = string_copy_taint(
+	exim_str_fail_toolong(list[i], BIG_BUFFER_SIZE, "address argument"),
+	GET_TAINTED);
 
       /* Loop for each comma-separated address */
 
-      while (*s != 0)
+      while (*s)
         {
         BOOL finished = FALSE;
         uschar *recipient;
@@ -5767,7 +5819,7 @@ for (BOOL more = TRUE; more; )
                 errors_sender_rc : EXIT_FAILURE;
             }
 
-        receive_add_recipient(string_copy_taint(recipient, TRUE), -1);
+        receive_add_recipient(string_copy_taint(recipient, GET_TAINTED), -1);
         s = ss;
         if (!finished)
           while (*(++s) != 0 && (*s == ',' || isspace(*s)));

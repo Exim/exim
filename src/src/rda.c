@@ -284,7 +284,7 @@ if (statbuf.st_size > MAX_FILTER_SIZE)
 
 /* Read the file in one go in order to minimize the time we have it open. */
 
-filebuf = store_get(statbuf.st_size + 1, is_tainted(filename));
+filebuf = store_get(statbuf.st_size + 1, filename);
 
 if (fread(filebuf, 1, statbuf.st_size, fwd) != statbuf.st_size)
   {
@@ -476,7 +476,7 @@ else
   /* We know we have enough memory so disable the error on "len" */
   /* coverity[tainted_data] */
   /* We trust the data source, so untainted */
-  if (read(fd, *sp = store_get(len, FALSE), len) != len) return FALSE;
+  if (read(fd, *sp = store_get(len, GET_UNTAINTED), len) != len) return FALSE;
 return TRUE;
 }
 
@@ -808,7 +808,7 @@ if (eblockp)
     uschar *s;
     if (!rda_read_string(fd, &s)) goto DISASTER;
     if (!s) break;
-    e = store_get(sizeof(error_block), FALSE);
+    e = store_get(sizeof(error_block), GET_UNTAINTED);
     e->next = NULL;
     e->text1 = s;
     if (!rda_read_string(fd, &s)) goto DISASTER;
@@ -907,7 +907,7 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
 
     if (i > 0)
       {
-      addr->pipe_expandn = store_get((i+1) * sizeof(uschar *), FALSE);
+      addr->pipe_expandn = store_get((i+1) * sizeof(uschar *), GET_UNTAINTED);
       addr->pipe_expandn[i] = NULL;
       while (--i >= 0) addr->pipe_expandn[i] = expandn[i];
       }
@@ -917,7 +917,7 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
     if (read(fd, &reply_options, sizeof(int)) != sizeof(int)) goto DISASTER;
     if ((reply_options & REPLY_EXISTS) != 0)
       {
-      addr->reply = store_get(sizeof(reply_item), FALSE);
+      addr->reply = store_get(sizeof(reply_item), GET_UNTAINTED);
 
       addr->reply->file_expand = (reply_options & REPLY_EXPAND) != 0;
       addr->reply->return_message = (reply_options & REPLY_RETURN) != 0;

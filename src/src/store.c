@@ -44,7 +44,9 @@ The following different types of store are recognized:
 - There is a dedicated pool for configuration data read from the config file(s).
   Once complete, it is made readonly.
 
-. Orthogonal to the three pool types, there are two classes of memory: untainted
+- There are pools for each active combination of lookup-quoting, dynamically created.
+
+. Orthogonal to the four main pool types, there are two classes of memory: untainted
   and tainted.  The latter is used for values derived from untrusted input, and
   the string-expansion mechanism refuses to operate on such values (obviously,
   it can expand an untainted value to return a tainted result).  The classes
@@ -100,6 +102,38 @@ typedef struct storeblock {
   size_t length;
 } storeblock;
 
+/* Pool descriptor struct */
+
+typedef struct pooldesc {
+  storeblock *	chainbase;		/* list of blocks in pool */
+  storeblock *	current_block;		/* top block, still with free space */
+  void *	next_yield;		/* next allocation point */
+  int		yield_length;		/* remaining space in current block */
+  unsigned	store_block_order;	/* log2(size) block allocation size */
+
+  /* This variable is set by store_get() to its yield, and by store_reset() to
+  NULL. This enables string_cat() to optimize its store handling for very long
+  strings. That's why the variable is global. */
+
+  void *	store_last_get;
+
+  /* These are purely for stats-gathering */
+
+  int		nbytes;
+  int		maxbytes;
+  int		nblocks;
+  int		maxblocks;
+  unsigned	maxorder;
+} pooldesc;
+
+/* Enhanced pool descriptor for quoted pools */
+
+typedef struct quoted_pooldesc {
+  pooldesc			pool;
+  unsigned			quoter;
+  struct quoted_pooldesc *	next;
+} quoted_pooldesc;
+
 /* Just in case we find ourselves on a system where the structure above has a
 length that is not a multiple of the alignment, set up a macro for the padded
 length. */
@@ -131,11 +165,13 @@ even if the length is zero (which is used for getting a point to reset to). */
 
 int store_pool = POOL_MAIN;
 
-static storeblock *chainbase[NPOOLS];
-static storeblock *current_block[NPOOLS];
-static void *next_yield[NPOOLS];
-static int yield_length[NPOOLS];
-static unsigned store_block_order[NPOOLS];
+pooldesc paired_pools[N_PAIRED_POOLS];
+quoted_pooldesc * quoted_pools = NULL;
+
+static int n_nonpool_blocks;	/* current number of direct store_malloc() blocks */
+static int max_nonpool_blocks;
+static int max_pool_malloc;	/* max value for pool_malloc */
+static int max_nonpool_malloc;	/* max value for nonpool_malloc */
 
 /* pool_malloc holds the amount of memory used by the store pools; this goes up
 and down as store is reset or released. nonpool_malloc is the total got by
@@ -145,27 +181,9 @@ pointer. */
 static int pool_malloc;
 static int nonpool_malloc;
 
-/* This variable is set by store_get() to its yield, and by store_reset() to
-NULL. This enables string_cat() to optimize its store handling for very long
-strings. That's why the variable is global. */
-
-void *store_last_get[NPOOLS];
-
-/* These are purely for stats-gathering */
-
-static int nbytes[NPOOLS];	/* current bytes allocated */
-static int maxbytes[NPOOLS];	/* max number reached */
-static int nblocks[NPOOLS];	/* current number of blocks allocated */
-static int maxblocks[NPOOLS];
-static unsigned maxorder[NPOOLS];
-static int n_nonpool_blocks;	/* current number of direct store_malloc() blocks */
-static int max_nonpool_blocks;
-static int max_pool_malloc;	/* max value for pool_malloc */
-static int max_nonpool_malloc;	/* max value for nonpool_malloc */
-
 
 #ifndef COMPILE_UTILITY
-static const uschar * pooluse[NPOOLS] = {
+static const uschar * pooluse[N_PAIRED_POOLS] = {
 [POOL_MAIN] =		US"main",
 [POOL_PERM] =		US"perm",
 [POOL_CONFIG] =		US"config",
@@ -177,7 +195,7 @@ static const uschar * pooluse[NPOOLS] = {
 [POOL_TAINT_SEARCH] =	US"search",
 [POOL_TAINT_MESSAGE] =	US"message",
 };
-static const uschar * poolclass[NPOOLS] = {
+static const uschar * poolclass[N_PAIRED_POOLS] = {
 [POOL_MAIN] =		US"untainted",
 [POOL_PERM] =		US"untainted",
 [POOL_CONFIG] =		US"untainted",
@@ -196,21 +214,71 @@ static void * internal_store_malloc(size_t, const char *, int);
 static void   internal_store_free(void *, const char *, int linenumber);
 
 /******************************************************************************/
+
+static void
+pool_init(pooldesc * pp)
+{
+memset(pp, 0, sizeof(*pp));
+pp->yield_length = -1;
+pp->store_block_order = 12; /* log2(allocation_size) ie. 4kB */
+}
+
 /* Initialisation, for things fragile with parameter channges when using
 static initialisers. */
 
 void
 store_init(void)
 {
-for (int i = 0; i < NPOOLS; i++)
-  {
-  yield_length[i] = -1;
-  store_block_order[i] = 12; /* log2(allocation_size) ie. 4kB */
-  }
+for (pooldesc * pp = paired_pools; pp < paired_pools + N_PAIRED_POOLS; pp++)
+  pool_init(pp);
 }
 
 /******************************************************************************/
+/* Locating elements given memory pointer */
 
+static BOOL
+is_pointer_in_block(const storeblock * b, const void * p)
+{
+uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
+return US p >= bc && US p < bc + b->length;
+}
+
+static pooldesc *
+pool_current_for_pointer(const void * p)
+{
+storeblock * b;
+
+for (quoted_pooldesc * qp = quoted_pools; qp; qp = qp->next)
+  if ((b = qp->pool.current_block) && is_pointer_in_block(b, p))
+    return &qp->pool;
+
+for (pooldesc * pp = paired_pools; pp < paired_pools + N_PAIRED_POOLS; pp++)
+  if ((b = pp->current_block) && is_pointer_in_block(b, p))
+    return pp;
+return NULL;
+}
+
+static pooldesc *
+pool_for_pointer(const void * p)
+{
+pooldesc * pp;
+storeblock * b;
+
+if ((pp = pool_current_for_pointer(p))) return pp;
+
+for (quoted_pooldesc * qp = quoted_pools; qp; qp = qp->next)
+  for (b = qp->pool.chainbase; b; b = b->next)
+    if (is_pointer_in_block(b, p)) return &qp->pool;
+
+for (pp = paired_pools; pp < paired_pools + N_PAIRED_POOLS; pp++)
+  for (b = pp->chainbase; b; b = b->next)
+    if (is_pointer_in_block(b, p)) return pp;
+
+log_write(0, LOG_MAIN|LOG_PANIC_DIE, "bad memory reference; pool not found");
+return NULL;
+}
+
+/******************************************************************************/
 /* Test if a pointer refers to tainted memory.
 
 Slower version check, for use when platform intermixes malloc and mmap area
@@ -225,19 +293,27 @@ is_tainted_fn(const void * p)
 {
 storeblock * b;
 
-for (int pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
-  if ((b = current_block[pool]))
-    {
-    uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
-    if (US p >= bc && US p < bc + b->length) return TRUE;
-    }
+if (p == GET_UNTAINTED) return FALSE;
+if (p == GET_TAINTED) return TRUE;
 
-for (int pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
-  for (b = chainbase[pool]; b; b = b->next)
-    {
-    uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
-    if (US p >= bc && US p < bc + b->length) return TRUE;
-    }
+for (pooldesc * pp = paired_pools + POOL_TAINT_BASE;
+     pp < paired_pools + N_PAIRED_POOLS; pp++)
+  if ((b = pp->current_block))
+    if (is_pointer_in_block(b, p)) return TRUE;
+
+for (quoted_pooldesc * qp = quoted_pools; qp; qp = qp->next)
+  if (b = qp->pool.current_block)
+    if (is_pointer_in_block(b, p)) return TRUE;
+
+for (pooldesc * pp = paired_pools + POOL_TAINT_BASE;
+     pp < paired_pools + N_PAIRED_POOLS; pp++)
+  for (b = pp->chainbase; b; b = b->next)
+    if (is_pointer_in_block(b, p)) return TRUE;
+
+for (quoted_pooldesc * qp = quoted_pools; qp; qp = qp->next)
+  for (b = qp->pool.chainbase; b; b = b->next)
+    if (is_pointer_in_block(b, p)) return TRUE;
+
 return FALSE;
 }
 
@@ -250,13 +326,41 @@ log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Taint mismatch, %s: %s %d\n",
 }
 
 
+#ifndef COMPILE_UTILITY
+/* Return the pool for the given quoter, or null */
+
+static pooldesc *
+pool_for_quoter(unsigned quoter)
+{
+for (quoted_pooldesc * qp = quoted_pools; qp; qp = qp->next)
+  if (qp->quoter == quoter)
+    return &qp->pool;
+return NULL;
+}
+
+/* Allocate/init a new quoted-pool and return the pool */
+
+static pooldesc *
+quoted_pool_new(unsigned quoter)
+{
+// debug_printf("allocating quoted-pool\n");
+quoted_pooldesc * qp = store_get_perm(sizeof(quoted_pooldesc), GET_UNTAINTED);
+
+pool_init(&qp->pool);
+qp->quoter = quoter;
+qp->next = quoted_pools;
+quoted_pools = qp;
+return &qp->pool;
+}
+#endif
+
 
 /******************************************************************************/
 void
 store_writeprotect(int pool)
 {
 #if !defined(COMPILE_UTILITY) && !defined(MISSING_POSIX_MEMALIGN)
-for (storeblock * b = chainbase[pool]; b; b = b->next)
+for (storeblock * b =  paired_pools[pool].chainbase; b; b = b->next)
   if (mprotect(b, ALIGNED_SIZEOF_STOREBLOCK + b->length, PROT_READ) != 0)
     DEBUG(D_any) debug_printf("config block mprotect: (%d) %s\n", errno, strerror(errno));
 #endif
@@ -264,29 +368,9 @@ for (storeblock * b = chainbase[pool]; b; b = b->next)
 
 /******************************************************************************/
 
-/*************************************************
-*       Get a block from the current pool        *
-*************************************************/
-
-/* Running out of store is a total disaster. This function is called via the
-macro store_get(). It passes back a block of store within the current big
-block, getting a new one if necessary. The address is saved in
-store_last_was_get.
-
-Arguments:
-  size        amount wanted, bytes
-  tainted     class: set to true for untrusted data (eg. from smtp input)
-  func        function from which called
-  linenumber  line number in source file
-
-Returns:      pointer to store (panic on malloc failure)
-*/
-
-void *
-store_get_3(int size, BOOL tainted, const char * func, int linenumber)
+static void *
+pool_get(pooldesc * pp, int size, BOOL align_mem, const char * func, int linenumber)
 {
-int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
-
 /* Ensure we've been asked to allocate memory.
 A negative size is a sign of a security problem.
 A zero size might be also suspect, but our internal usage deliberately
@@ -310,23 +394,23 @@ if (size % alignment != 0) size += alignment - (size % alignment);
 size is STORE_BLOCK_SIZE, and we would expect this to be the norm, since
 these functions are mostly called for small amounts of store. */
 
-if (size > yield_length[pool])
+if (size > pp->yield_length)
   {
   int length = MAX(
-	  STORE_BLOCK_SIZE(store_block_order[pool]) - ALIGNED_SIZEOF_STOREBLOCK,
+	  STORE_BLOCK_SIZE(pp->store_block_order) - ALIGNED_SIZEOF_STOREBLOCK,
 	  size);
   int mlength = length + ALIGNED_SIZEOF_STOREBLOCK;
   storeblock * newblock;
 
   /* Sometimes store_reset() may leave a block for us; check if we can use it */
 
-  if (  (newblock = current_block[pool])
+  if (  (newblock = pp->current_block)
      && (newblock = newblock->next)
      && newblock->length < length
      )
     {
     /* Give up on this block, because it's too small */
-    nblocks[pool]--;
+    pp->nblocks--;
     internal_store_free(newblock, func, linenumber);
     newblock = NULL;
     }
@@ -335,16 +419,16 @@ if (size > yield_length[pool])
 
   if (!newblock)
     {
-    if ((nbytes[pool] += mlength) > maxbytes[pool])
-      maxbytes[pool] = nbytes[pool];
+    if ((pp->nbytes += mlength) > pp->maxbytes)
+      pp->maxbytes = pp->nbytes;
     if ((pool_malloc += mlength) > max_pool_malloc)	/* Used in pools */
       max_pool_malloc = pool_malloc;
     nonpool_malloc -= mlength;			/* Exclude from overall total */
-    if (++nblocks[pool] > maxblocks[pool])
-      maxblocks[pool] = nblocks[pool];
+    if (++pp->nblocks > pp->maxblocks)
+      pp->maxblocks = pp->nblocks;
 
 #ifndef MISSING_POSIX_MEMALIGN
-    if (pool == POOL_CONFIG)
+    if (align_mem)
       {
       long pgsize = sysconf(_SC_PAGESIZE);
       int err = posix_memalign((void **)&newblock,
@@ -361,43 +445,97 @@ if (size > yield_length[pool])
     newblock->next = NULL;
     newblock->length = length;
 #ifndef RESTRICTED_MEMORY
-    if (store_block_order[pool]++ > maxorder[pool])
-      maxorder[pool] = store_block_order[pool];
+    if (pp->store_block_order++ > pp->maxorder)
+      pp->maxorder = pp->store_block_order;
 #endif
 
-    if (!chainbase[pool])
-      chainbase[pool] = newblock;
+    if (! pp->chainbase)
+       pp->chainbase = newblock;
     else
-      current_block[pool]->next = newblock;
+      pp->current_block->next = newblock;
     }
 
-  current_block[pool] = newblock;
-  yield_length[pool] = newblock->length;
-  next_yield[pool] =
-    (void *)(CS current_block[pool] + ALIGNED_SIZEOF_STOREBLOCK);
-  (void) VALGRIND_MAKE_MEM_NOACCESS(next_yield[pool], yield_length[pool]);
+  pp->current_block = newblock;
+  pp->yield_length = newblock->length;
+  pp->next_yield =
+    (void *)(CS pp->current_block + ALIGNED_SIZEOF_STOREBLOCK);
+  (void) VALGRIND_MAKE_MEM_NOACCESS(pp->next_yield, pp->yield_length);
   }
 
 /* There's (now) enough room in the current block; the yield is the next
 pointer. */
 
-store_last_get[pool] = next_yield[pool];
+pp->store_last_get = pp->next_yield;
 
-/* Cut out the debugging stuff for utilities, but stop picky compilers from
-giving warnings. */
-
-#ifndef COMPILE_UTILITY
-DEBUG(D_memory)
-  debug_printf("---%d Get %6p %5d %-14s %4d\n", pool,
-    store_last_get[pool], size, func, linenumber);
-#endif  /* COMPILE_UTILITY */
-
-(void) VALGRIND_MAKE_MEM_UNDEFINED(store_last_get[pool], size);
+(void) VALGRIND_MAKE_MEM_UNDEFINED(pp->store_last_get, size);
 /* Update next pointer and number of bytes left in the current block. */
 
-next_yield[pool] = (void *)(CS next_yield[pool] + size);
-yield_length[pool] -= size;
-return store_last_get[pool];
+pp->next_yield = (void *)(CS pp->next_yield + size);
+pp->yield_length -= size;
+return pp->store_last_get;
+}
+
+/*************************************************
+*       Get a block from the current pool        *
+*************************************************/
+
+/* Running out of store is a total disaster. This function is called via the
+macro store_get(). The current store_pool is used, adjusting for taint.
+If the protoype is quoted, use a quoted-pool.
+Return a block of store within the current big block of the pool, getting a new
+one if necessary. The address is saved in store_last_get for the pool.
+
+Arguments:
+  size        amount wanted, bytes
+  proto_mem   class: get store conformant to this
+		Special values: 0 forces untainted, 1 forces tainted
+  func        function from which called
+  linenumber  line number in source file
+
+Returns:      pointer to store (panic on malloc failure)
+*/
+
+void *
+store_get_3(int size, const void * proto_mem, const char * func, int linenumber)
+{
+#ifndef COMPILE_UTILITY
+int quoter = quoter_for_address(proto_mem);
+#endif
+pooldesc * pp;
+void * yield;
+
+#ifndef COMPILE_UTILITY
+if (!is_real_quoter(quoter))
+#endif
+  {
+  BOOL tainted = is_tainted(proto_mem);
+  int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
+  pp = paired_pools + pool;
+  yield = pool_get(pp, size, (pool == POOL_CONFIG), func, linenumber);
+
+  /* Cut out the debugging stuff for utilities, but stop picky compilers from
+  giving warnings. */
+
+#ifndef COMPILE_UTILITY
+  DEBUG(D_memory)
+    debug_printf("---%d Get %6p %5d %-14s %4d\n", pool,
+      pp->store_last_get, size, func, linenumber);
+#endif
+  }
+#ifndef COMPILE_UTILITY
+else
+  {
+  DEBUG(D_memory)
+    debug_printf("allocating quoted-block for quoter %u (from %s %d)\n",
+      quoter, func, linenumber);
+  if (!(pp = pool_for_quoter(quoter))) pp = quoted_pool_new(quoter);
+  yield = pool_get(pp, size, FALSE, func, linenumber);
+  DEBUG(D_memory)
+    debug_printf("---QQ Get %6p %5d %-14s %4d\n",
+      pp->store_last_get, size, func, linenumber);
+  }
+#endif
+return yield;
 }
 
 
@@ -411,6 +549,7 @@ be obtained.
 
 Arguments:
   size        amount wanted
+  proto_mem   class: get store conformant to this
   func        function from which called
   linenumber  line number in source file
 
@@ -418,17 +557,131 @@ Returns:      pointer to store (panic on malloc failure)
 */
 
 void *
-store_get_perm_3(int size, BOOL tainted, const char * func, int linenumber)
+store_get_perm_3(int size, const void * proto_mem, const char * func, int linenumber)
 {
 void * yield;
 int old_pool = store_pool;
 store_pool = POOL_PERM;
-yield = store_get_3(size, tainted, func, linenumber);
+yield = store_get_3(size, proto_mem, func, linenumber);
 store_pool = old_pool;
 return yield;
 }
 
 
+#ifndef COMPILE_UTILITY
+/*************************************************
+*  Get a block annotated as being lookup-quoted  *
+*************************************************/
+
+/* Allocate from pool a pool consistent with the proto_mem augmented by the
+requested quoter type.
+
+XXX currently not handling mark/release
+
+Args:	size		number of bytes to allocate
+	quoter		id for the quoting type
+	func		caller, for debug
+	linenumber	caller, for debug
+
+Return:	allocated memory block
+*/
+
+static void *
+store_force_get_quoted(int size, unsigned quoter,
+  const char * func, int linenumber)
+{
+pooldesc * pp = pool_for_quoter(quoter);
+void * yield;
+
+DEBUG(D_memory)
+  debug_printf("allocating quoted-block for quoter %u (from %s %d)\n", quoter, func, linenumber);
+
+if (!pp) pp = quoted_pool_new(quoter);
+yield = pool_get(pp, size, FALSE, func, linenumber);
+
+DEBUG(D_memory)
+  debug_printf("---QQ Get %6p %5d %-14s %4d\n",
+    pp->store_last_get, size, func, linenumber);
+
+return yield;
+}
+
+/* Maybe get memory for the specified quoter, but only if the
+prototype memory is tainted. Otherwise, get plain memory.
+*/
+void *
+store_get_quoted_3(int size, const void * proto_mem, unsigned quoter,
+  const char * func, int linenumber)
+{
+// debug_printf("store_get_quoted_3: quoter %u\n", quoter);
+return is_tainted(proto_mem)
+  ? store_force_get_quoted(size, quoter, func, linenumber)
+  : store_get_3(size, proto_mem, func, linenumber);
+}
+
+/* Return quoter for given address, or -1 if not in a quoted-pool. */
+int
+quoter_for_address(const void * p)
+{
+for (quoted_pooldesc * qp = quoted_pools; qp; qp = qp->next)
+  {
+  pooldesc * pp = &qp->pool;
+  storeblock * b;
+
+  if (b = pp->current_block)
+    if (is_pointer_in_block(b, p))
+      return qp->quoter;
+
+  for (b = pp->chainbase; b; b = b->next)
+    if (is_pointer_in_block(b, p))
+      return qp->quoter;
+  }
+return -1;
+}
+
+/* Return TRUE iff the given address is quoted for the given type.
+There is extra complexity to handle lookup providers with multiple
+find variants but shared quote functions. */
+BOOL
+is_quoted_like(const void * p, unsigned quoter)
+{
+int pq = quoter_for_address(p);
+BOOL y =
+  is_real_quoter(pq) && lookup_list[pq]->quote == lookup_list[quoter]->quote;
+/* debug_printf("is_quoted(%p, %u): %c\n", p, quoter, y?'T':'F'); */
+return y;
+}
+
+/* Return TRUE if the quoter value indicates an actual quoter */
+BOOL
+is_real_quoter(int quoter)
+{
+return quoter >= 0;
+}
+
+/* Return TRUE if the "new" data requires that the "old" data
+be recopied to new-class memory.  We order the classes as
+
+  2: tainted, not quoted
+  1: quoted (which is also tainted)
+  0: untainted
+
+If the "new" is higher-order than the "old", they are not compatible
+and a copy is needed.  If both are quoted, but the quoters differ,
+not compatible.  Otherwise they are compatible.
+*/
+BOOL
+is_incompatible_fn(const void * old, const void * new)
+{
+int oq, nq;
+unsigned oi, ni;
+
+ni = is_real_quoter(nq = quoter_for_address(new)) ? 1 : is_tainted(new) ? 2 : 0;
+oi = is_real_quoter(oq = quoter_for_address(old)) ? 1 : is_tainted(old) ? 2 : 0;
+return ni > oi || ni == oi && nq != oq;
+}
+
+#endif	/*!COMPILE_UTILITY*/
 
 /*************************************************
 *      Extend a block if it is at the top        *
@@ -451,13 +704,16 @@ Arguments:
 Returns:     TRUE if the block is at the top of the stack and has been
              extended; FALSE if it isn't at the top of the stack, or cannot
              be extended
+
+XXX needs extension for quoted-tracking.  This assumes that the global store_pool
+is the one to alloc from, which breaks with separated pools.
 */
 
 BOOL
-store_extend_3(void *ptr, BOOL tainted, int oldsize, int newsize,
-   const char *func, int linenumber)
+store_extend_3(void * ptr, int oldsize, int newsize,
+   const char * func, int linenumber)
 {
-int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
+pooldesc * pp = pool_for_pointer(ptr);
 int inc = newsize - oldsize;
 int rounded_oldsize = oldsize;
 
@@ -466,17 +722,11 @@ if (oldsize < 0 || newsize < oldsize || newsize >= INT_MAX/2)
             "bad memory extension requested (%d -> %d bytes) at %s %d",
             oldsize, newsize, func, linenumber);
 
-/* Check that the block being extended was already of the required taint status;
-refuse to extend if not. */
-
-if (is_tainted(ptr) != tainted)
-  return FALSE;
-
 if (rounded_oldsize % alignment != 0)
   rounded_oldsize += alignment - (rounded_oldsize % alignment);
 
-if (CS ptr + rounded_oldsize != CS (next_yield[pool]) ||
-    inc > yield_length[pool] + rounded_oldsize - oldsize)
+if (CS ptr + rounded_oldsize != CS (pp->next_yield) ||
+    inc > pp->yield_length + rounded_oldsize - oldsize)
   return FALSE;
 
 /* Cut out the debugging stuff for utilities, but stop picky compilers from
@@ -484,13 +734,26 @@ giving warnings. */
 
 #ifndef COMPILE_UTILITY
 DEBUG(D_memory)
-  debug_printf("---%d Ext %6p %5d %-14s %4d\n", pool, ptr, newsize,
-    func, linenumber);
+  {
+  quoted_pooldesc * qp;
+  for (qp = quoted_pools; qp; qp = qp->next)
+    if (pp == &qp->pool)
+      {
+      debug_printf("---Q%d Ext %6p %5d %-14s %4d\n",
+	(int)(qp - quoted_pools),
+	ptr, newsize, func, linenumber);
+      break;
+      }
+  if (!qp)
+    debug_printf("---%d Ext %6p %5d %-14s %4d\n",
+      (int)(pp - paired_pools),
+      ptr, newsize, func, linenumber);
+  }
 #endif  /* COMPILE_UTILITY */
 
 if (newsize % alignment != 0) newsize += alignment - (newsize % alignment);
-next_yield[pool] = CS ptr + newsize;
-yield_length[pool] -= newsize - rounded_oldsize;
+pp->next_yield = CS ptr + newsize;
+pp->yield_length -= newsize - rounded_oldsize;
 (void) VALGRIND_MAKE_MEM_UNDEFINED(ptr + oldsize, inc);
 return TRUE;
 }
@@ -515,6 +778,8 @@ that are now unused. Call with a cookie obtained from store_mark() only; do
 not call with a pointer returned by store_get().  Both the untainted and tainted
 pools corresposding to store_pool are reset.
 
+Quoted pools are not handled.
+
 Arguments:
   ptr         place to back up to
   pool	      pool holding the pointer
@@ -528,23 +793,26 @@ static void
 internal_store_reset(void * ptr, int pool, const char *func, int linenumber)
 {
 storeblock * bb;
-storeblock * b = current_block[pool];
+pooldesc * pp = paired_pools + pool;
+storeblock * b = pp->current_block;
 char * bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
 int newlength, count;
 #ifndef COMPILE_UTILITY
 int oldmalloc = pool_malloc;
 #endif
 
+if (!b) return;	/* exim_dumpdb gets this, becuse it has never used tainted mem */
+
 /* Last store operation was not a get */
 
-store_last_get[pool] = NULL;
+pp->store_last_get = NULL;
 
 /* See if the place is in the current block - as it often will be. Otherwise,
 search for the block in which it lies. */
 
 if (CS ptr < bc || CS ptr > bc + b->length)
   {
-  for (b = chainbase[pool]; b; b = b->next)
+  for (b =  pp->chainbase; b; b = b->next)
     {
     bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
     if (CS ptr >= bc && CS ptr <= bc + b->length) break;
@@ -570,17 +838,17 @@ if (debug_store)
   }
 #endif
 (void) VALGRIND_MAKE_MEM_NOACCESS(ptr, newlength);
-next_yield[pool] = CS ptr + (newlength % alignment);
-count = yield_length[pool];
-count = (yield_length[pool] = newlength - (newlength % alignment)) - count;
-current_block[pool] = b;
+pp->next_yield = CS ptr + (newlength % alignment);
+count = pp->yield_length;
+count = (pp->yield_length = newlength - (newlength % alignment)) - count;
+pp->current_block = b;
 
 /* Free any subsequent block. Do NOT free the first
 successor, if our current block has less than 256 bytes left. This should
 prevent us from flapping memory. However, keep this block only when it has
 a power-of-two size so probably is not a custom inflated one. */
 
-if (  yield_length[pool] < STOREPOOL_MIN_SIZE
+if (  pp->yield_length < STOREPOOL_MIN_SIZE
    && b->next
    && is_pwr2_size(b->next->length + ALIGNED_SIZEOF_STOREBLOCK))
   {
@@ -608,14 +876,14 @@ while ((b = bb))
 			func, linenumber);
 #endif
   bb = bb->next;
-  nbytes[pool] -= siz;
+  pp->nbytes -= siz;
   pool_malloc -= siz;
-  nblocks[pool]--;
+  pp->nblocks--;
   if (pool != POOL_CONFIG)
     internal_store_free(b, func, linenumber);
 
 #ifndef RESTRICTED_MEMORY
-  if (store_block_order[pool] > 13) store_block_order[pool]--;
+  if (pp->store_block_order > 13) pp->store_block_order--;
 #endif
   }
 
@@ -631,8 +899,12 @@ DEBUG(D_memory)
 }
 
 
+/* Back up the pool pair, untainted and tainted, of the store_pool setting.
+Quoted pools are not handled.
+*/
+
 rmark
-store_reset_3(rmark r, const char *func, int linenumber)
+store_reset_3(rmark r, const char * func, int linenumber)
 {
 void ** ptr = r;
 
@@ -649,6 +921,7 @@ return NULL;
 }
 
 
+/**************/
 
 /* Free tail-end unused allocation.  This lets us allocate a big chunk
 early, for cases when we only discover later how much was really needed.
@@ -661,32 +934,26 @@ XXX needs rationalising
 */
 
 void
-store_release_above_3(void *ptr, const char *func, int linenumber)
+store_release_above_3(void * ptr, const char * func, int linenumber)
 {
+pooldesc * pp;
+
 /* Search all pools' "current" blocks.  If it isn't one of those,
 ignore it (it usually will be). */
 
-for (int pool = 0; pool < nelem(current_block); pool++)
+if ((pp = pool_current_for_pointer(ptr)))
   {
-  storeblock * b = current_block[pool];
-  char * bc;
+  storeblock * b = pp->current_block;
   int count, newlength;
-
-  if (!b)
-    continue;
-
-  bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
-  if (CS ptr < bc || CS ptr > bc + b->length)
-    continue;
 
   /* Last store operation was not a get */
 
-  store_last_get[pool] = NULL;
+  pp->store_last_get = NULL;
 
   /* Back up, rounding to the alignment if necessary. When testing, flatten
   the released memory. */
 
-  newlength = bc + b->length - CS ptr;
+  newlength = (CS b + ALIGNED_SIZEOF_STOREBLOCK) + b->length - CS ptr;
 #ifndef COMPILE_UTILITY
   if (debug_store)
     {
@@ -699,17 +966,27 @@ for (int pool = 0; pool < nelem(current_block); pool++)
     }
 #endif
   (void) VALGRIND_MAKE_MEM_NOACCESS(ptr, newlength);
-  next_yield[pool] = CS ptr + (newlength % alignment);
-  count = yield_length[pool];
-  count = (yield_length[pool] = newlength - (newlength % alignment)) - count;
+  pp->next_yield = CS ptr + (newlength % alignment);
+  count = pp->yield_length;
+  count = (pp->yield_length = newlength - (newlength % alignment)) - count;
 
   /* Cut out the debugging stuff for utilities, but stop picky compilers from
   giving warnings. */
 
 #ifndef COMPILE_UTILITY
   DEBUG(D_memory)
-    debug_printf("---%d Rel %6p %5d %-14s %4d\tpool %d\n", pool, ptr, count,
-      func, linenumber, pool_malloc);
+    {
+    quoted_pooldesc * qp;
+    for (qp = quoted_pools; qp; qp = qp->next)
+      if (pp == &qp->pool)
+	debug_printf("---Q%d Rel %6p %5d %-14s %4d\tpool %d\n",
+	  (int)(qp - quoted_pools),
+	  ptr, count, func, linenumber, pool_malloc);
+    if (!qp)
+      debug_printf("---%d Rel %6p %5d %-14s %4d\tpool %d\n",
+	(int)(pp - paired_pools), ptr, count,
+	func, linenumber, pool_malloc);
+    }
 #endif
   return;
   }
@@ -722,7 +999,7 @@ DEBUG(D_memory)
 
 
 rmark
-store_mark_3(const char *func, int linenumber)
+store_mark_3(const char * func, int linenumber)
 {
 void ** p;
 
@@ -741,8 +1018,8 @@ a cookie (actually the address in the untainted pool) to the caller.
 Reset uses the cookie to recover the t-mark, winds back the tainted pool with it
 and winds back the untainted pool with the cookie. */
 
-p = store_get_3(sizeof(void *), FALSE, func, linenumber);
-*p = store_get_3(0, TRUE, func, linenumber);
+p = store_get_3(sizeof(void *), GET_UNTAINTED, func, linenumber);
+*p = store_get_3(0, GET_TAINTED, func, linenumber);
 return p;
 }
 
@@ -758,6 +1035,7 @@ block, and if so, releases that block.
 
 Arguments:
   block       block of store to consider
+  pp	      pool containing the block
   func        function from which called
   linenumber  line number in source file
 
@@ -765,20 +1043,20 @@ Returns:      nothing
 */
 
 static void
-store_release_3(void * block, int pool, const char * func, int linenumber)
+store_release_3(void * block, pooldesc * pp, const char * func, int linenumber)
 {
 /* It will never be the first block, so no need to check that. */
 
-for (storeblock * b = chainbase[pool]; b; b = b->next)
+for (storeblock * b =  pp->chainbase; b; b = b->next)
   {
   storeblock * bb = b->next;
   if (bb && CS block == CS bb + ALIGNED_SIZEOF_STOREBLOCK)
     {
     int siz = bb->length + ALIGNED_SIZEOF_STOREBLOCK;
     b->next = bb->next;
-    nbytes[pool] -= siz;
+    pp->nbytes -= siz;
     pool_malloc -= siz;
-    nblocks[pool]--;
+    pp->nblocks--;
 
     /* Cut out the debugging stuff for utilities, but stop picky compilers
     from giving warnings. */
@@ -816,35 +1094,30 @@ the pointer it is given is the first thing in a block, and that nothing
 has been allocated since. If so, releases that block.
 
 Arguments:
-  block
-  newsize
-  len
+  oldblock
+  newsize	requested size
+  len		current size
 
 Returns:	new location of data
 */
 
 void *
-store_newblock_3(void * block, BOOL tainted, int newsize, int len,
+store_newblock_3(void * oldblock, int newsize, int len,
   const char * func, int linenumber)
 {
-int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
-BOOL release_ok = !tainted && store_last_get[pool] == block;
-uschar * newtext;
-
-#if !defined(MACRO_PREDEF) && !defined(COMPILE_UTILITY)
-if (is_tainted(block) != tainted)
-  die_tainted(US"store_newblock", CUS func, linenumber);
-#endif
+pooldesc * pp = pool_for_pointer(oldblock);
+BOOL release_ok = !is_tainted(oldblock) && pp->store_last_get == oldblock;		/*XXX why tainted not handled? */
+uschar * newblock;
 
 if (len < 0 || len > newsize)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
             "bad memory extension requested (%d -> %d bytes) at %s %d",
             len, newsize, func, linenumber);
 
-newtext = store_get(newsize, tainted);
-memcpy(newtext, block, len);
-if (release_ok) store_release_3(block, pool, func, linenumber);
-return (void *)newtext;
+newblock = store_get(newsize, oldblock);
+memcpy(newblock, oldblock, len);
+if (release_ok) store_release_3(oldblock, pp, func, linenumber);
+return (void *)newblock;
 }
 
 
@@ -960,13 +1233,25 @@ store_exit(void)
 #ifndef COMPILE_UTILITY
 DEBUG(D_memory)
  {
+ int i;
  debug_printf("----Exit nonpool max: %3d kB in %d blocks\n",
   (max_nonpool_malloc+1023)/1024, max_nonpool_blocks);
  debug_printf("----Exit npools  max: %3d kB\n", max_pool_malloc/1024);
- for (int i = 0; i < NPOOLS; i++)
-  debug_printf("----Exit  pool %d max: %3d kB in %d blocks at order %u\t%s %s\n",
-    i, (maxbytes[i]+1023)/1024, maxblocks[i], maxorder[i],
+
+ for (i = 0; i < N_PAIRED_POOLS; i++)
+   {
+   pooldesc * pp = paired_pools + i;
+   debug_printf("----Exit  pool %2d max: %3d kB in %d blocks at order %u\t%s %s\n",
+    i, (pp->maxbytes+1023)/1024, pp->maxblocks, pp->maxorder,
     poolclass[i], pooluse[i]);
+   }
+ i = 0;
+ for (quoted_pooldesc * qp = quoted_pools; qp; i++, qp = qp->next)
+   {
+   pooldesc * pp = &qp->pool;
+   debug_printf("----Exit  pool Q%d max: %3d kB in %d blocks at order %u\ttainted quoted:%s\n",
+    i, (pp->maxbytes+1023)/1024, pp->maxblocks, pp->maxorder, lookup_list[qp->quoter]->name);
+   }
  }
 #endif
 }
@@ -986,7 +1271,8 @@ if (!message_reset_point) message_reset_point = store_mark();
 store_pool = oldpool;
 }
 
-void message_tidyup(void)
+void
+message_tidyup(void)
 {
 int oldpool;
 if (!message_reset_point) return;
@@ -995,5 +1281,20 @@ store_pool = POOL_MESSAGE;
 message_reset_point = store_reset(message_reset_point);
 store_pool = oldpool;
 }
+
+/******************************************************************************/
+/* Debug analysis of address */
+
+#ifndef COMPILE_UTILITY
+void
+debug_print_taint(const void * p)
+{
+int q = quoter_for_address(p);
+if (!is_tainted(p)) return;
+debug_printf("(tainted");
+if (is_real_quoter(q)) debug_printf(", quoted:%s", lookup_list[q]->name);
+debug_printf(")\n");
+}
+#endif
 
 /* End of store.c */
