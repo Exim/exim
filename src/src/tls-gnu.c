@@ -650,9 +650,10 @@ tlsp->channelbinding = NULL;
   int rc;
 
 # ifdef HAVE_GNUTLS_PRF_RFC5705
-  if (gnutls_protocol_get_version(state->session) >= GNUTLS_TLS1_3)
+  /* Older libraries may not have GNUTLS_TLS1_3 defined! */
+  if (gnutls_protocol_get_version(state->session) > GNUTLS_TLS1_2)
     {
-    buf = store_get(32, !!state->host);
+    buf = store_get(32, state->host ? GET_TAINTED : GET_UNTAINTED);
     rc = gnutls_prf_rfc5705(state->session,
 				(size_t)24,  "EXPORTER-Channel-Binding", (size_t)0, "",
 				32, CS buf);
@@ -673,7 +674,7 @@ tlsp->channelbinding = NULL;
 
     store_pool = POOL_PERM;
     tlsp->channelbinding = b64encode_taint(CUS channel.data, (int)channel.size,
-					    !!state->host);
+					    state->host ? GET_TAINTED : GET_UNTAINTED);
     store_pool = old_pool;
     DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
     }
@@ -2351,7 +2352,7 @@ if (rc != GNUTLS_E_SHORT_MEMORY_BUFFER)
   exim_gnutls_peer_err(US"getting size for cert DN failed");
   return FAIL; /* should not happen */
   }
-dn_buf = store_get_perm(sz, TRUE);	/* tainted */
+dn_buf = store_get_perm(sz, GET_TAINTED);
 rc = gnutls_x509_crt_get_dn(crt, CS dn_buf, &sz);
 exim_gnutls_peer_err(US"failed to extract certificate DN [gnutls_x509_crt_get_dn(cert 0)]");
 
@@ -2678,7 +2679,7 @@ if (sni_type != GNUTLS_NAME_DNS)
 /* We now have a UTF-8 string in sni_name */
 old_pool = store_pool;
 store_pool = POOL_PERM;
-state->received_sni = string_copy_taint(US sni_name, TRUE);
+state->received_sni = string_copy_taint(US sni_name, GET_TAINTED);
 store_pool = old_pool;
 
 /* We set this one now so that variable expansions below will work */
