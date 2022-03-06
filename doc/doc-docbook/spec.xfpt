@@ -39422,9 +39422,6 @@ or (in case &*-a*& switch is specified)
 .code
 exim -bp
 .endd
-The &*-C*& option is used to specify an alternate &_exim.conf_& which might
-contain alternate exim configuration the queue management might be using.
-
 to obtain a queue listing, and then greps the output to select messages
 that match given criteria. The following selection options are available:
 
@@ -39481,7 +39478,22 @@ Display messages in reverse order.
 Include delivered recipients in queue listing.
 .endlist
 
+The following options give alternates for configuration:
+
+.vlist
+.vitem &*-C*&&~<&'config file'&>
+is used to specify an alternate &_exim.conf_& which might
+contain alternate exim configuration the queue management might be using.
+
+.vitem &*-E*&&~<&'path'&>
+can be used to specify a path for the exim binary,
+overriding the built-in one.
+.endlist
+
 There is one more option, &%-h%&, which outputs a list of options.
+.new
+At least one selection option, or either the &*-c*& or &*-h*& option, must be given.
+.wen
 
 
 

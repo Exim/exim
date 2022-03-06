@@ -747,6 +747,12 @@ This command runs the exigrep utility with the given data (the search pattern)
 on the current mainlog file.
 
 
+  exiqgrep <data>
+
+This command runs the exiqgrep utility with the given options
+on the current spool directory.
+
+
   gnutls
 
 This command is present at the start of all but one of the tests that use

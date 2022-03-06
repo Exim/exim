@@ -1,0 +1,62 @@
+Exim message queue display utility.
+
+	-h		This help message.
+	-C		Specify which exim.conf to use.
+	-E		Specify exim binary to use.
+
+Selection criteria:
+	-f <regexp>	Match sender address sender (field is "< >" wrapped)
+	-r <regexp>	Match recipient address
+	-s <regexp>	Match against the size field from long output
+	-y <seconds>	Message younger than
+	-o <seconds>	Message older than
+	-z		Frozen messages only (exclude non-frozen)
+	-x		Non-frozen messages only (exclude frozen)
+	-G <queuename>	Match in given queue only
+
+[ NB: for regexps, provided string sits in /<string>/ ]
+
+Display options:
+	-c		Display match count
+	-l		Long Format [Default]
+	-i		Message IDs only
+	-b		Brief Format
+	-R		Reverse order
+	-a		All recipients (including delivered)
+exiqgrep exit code = 0
+ 0m   sss 10HmaX-0005vi-00 <CALLER@test.ex>
+	  a@test.ex
+	  b@test.ex
+	  c@test.ex
+
+exiqgrep exit code = 0
+Exim message queue display utility.
+
+	-h		This help message.
+	-C		Specify which exim.conf to use.
+	-E		Specify exim binary to use.
+
+Selection criteria:
+	-f <regexp>	Match sender address sender (field is "< >" wrapped)
+	-r <regexp>	Match recipient address
+	-s <regexp>	Match against the size field from long output
+	-y <seconds>	Message younger than
+	-o <seconds>	Message older than
+	-z		Frozen messages only (exclude non-frozen)
+	-x		Non-frozen messages only (exclude frozen)
+	-G <queuename>	Match in given queue only
+
+[ NB: for regexps, provided string sits in /<string>/ ]
+
+Display options:
+	-c		Display match count
+	-l		Long Format [Default]
+	-i		Message IDs only
+	-b		Brief Format
+	-R		Reverse order
+	-a		All recipients (including delivered)
+exiqgrep exit code = 1
+1 matches out of 1 messages
+exiqgrep exit code = 0
+1 matches out of 1 messages
+exiqgrep exit code = 0

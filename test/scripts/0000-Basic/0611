@@ -6,6 +6,12 @@ need_ipv4
 exim -odq a b c
 .
 ****
+# Check that exiqgrep does not fall over, refuses no selectors, and can count.
+exiqgrep -h
+exiqgrep -r '[bc]'
+exiqgrep
+exiqgrep -c -r a
+exiqgrep -c
 #
 # a slow server as a test target
 exim -DSERVER=server -bd -oX PORT_D
