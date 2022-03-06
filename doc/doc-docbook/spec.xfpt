@@ -39481,7 +39481,7 @@ Include delivered recipients in queue listing.
 The following options give alternates for configuration:
 
 .vlist
-.vitem &*-C*&&~<&'config file'&>
+.vitem &*-C*&&~<&'config&~file'&>
 is used to specify an alternate &_exim.conf_& which might
 contain alternate exim configuration the queue management might be using.
 
