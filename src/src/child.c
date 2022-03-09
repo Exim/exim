@@ -167,7 +167,7 @@ exim_nullstd();                            /* Make sure std{in,out,err} exist */
 execv(CS argv[0], (char *const *)argv);
 
 log_write(0,
-  LOG_MAIN | ((exec_type == CEE_EXEC_EXIT)? LOG_PANIC : LOG_PANIC_DIE),
+  LOG_MAIN | (exec_type == CEE_EXEC_EXIT ? LOG_PANIC : LOG_PANIC_DIE),
   "re-exec of exim (%s) with %s failed: %s", exim_path, argv[first_special],
   strerror(errno));
 

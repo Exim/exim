@@ -4585,8 +4585,8 @@ Returns:     NULL on success, or error message
 uschar *
 tls_validate_require_cipher(void)
 {
-SSL_CTX *ctx;
-uschar *s, *expciphers, *err;
+SSL_CTX * ctx;
+uschar * expciphers, * err;
 
 tls_openssl_init();
 

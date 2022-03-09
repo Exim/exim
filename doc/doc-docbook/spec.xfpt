@@ -6998,7 +6998,7 @@ IPv4, in dotted-quad form. (Exim converts IPv4-mapped IPv6 addresses to this
 notation before executing the lookup.)
 
 One option is supported, "ret=full", to request the return of the entire line
-rather than omitting the key porttion.
+rather than omitting the key portion.
 Note however that the key portion will have been de-quoted.
 
 .next

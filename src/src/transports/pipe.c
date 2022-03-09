@@ -88,31 +88,13 @@ BOOL pipe_transport_entry(transport_instance *tblock, address_item *addr) {retur
 /* Default private options block for the pipe transport. */
 
 pipe_transport_options_block pipe_transport_option_defaults = {
-  NULL,           /* cmd */
-  NULL,           /* allow_commands */
-  NULL,           /* environment */
-  US"/bin:/usr/bin",  /* path */
-  NULL,           /* message_prefix (reset in init if not bsmtp) */
-  NULL,           /* message_suffix (ditto) */
-  US mac_expanded_string(EX_TEMPFAIL) ":"    /* temp_errors */
-     mac_expanded_string(EX_CANTCREAT),
-  NULL,           /* check_string */
-  NULL,           /* escape_string */
-  022,            /* umask */
-  20480,          /* max_output */
-  60*60,          /* timeout */
-  0,              /* options */
-  FALSE,          /* force_command */
-  FALSE,          /* freeze_exec_fail */
-  FALSE,          /* freeze_signal */
-  FALSE,          /* ignore_status */
-  FALSE,          /* permit_coredump */
-  FALSE,          /* restrict_to_path */
-  FALSE,          /* timeout_defer */
-  FALSE,          /* use_shell */
-  FALSE,          /* use_bsmtp */
-  FALSE,          /* use_classresources */
-  FALSE           /* use_crlf */
+  .path =	US"/bin:/usr/bin",
+  .temp_errors = US mac_expanded_string(EX_TEMPFAIL) ":"
+		   mac_expanded_string(EX_CANTCREAT),
+  .umask =	022,
+  .max_output = 20480,
+  .timeout =	60*60,
+  /* all others null/zero/false */
 };
 
 
@@ -278,12 +260,12 @@ if (ob->allow_commands && ob->use_shell)
 driver options. Only one of body_only and headers_only can be set. */
 
 ob->options |=
-  (tblock->body_only? topt_no_headers : 0) |
-  (tblock->headers_only? topt_no_body : 0) |
-  (tblock->return_path_add? topt_add_return_path : 0) |
-  (tblock->delivery_date_add? topt_add_delivery_date : 0) |
-  (tblock->envelope_to_add? topt_add_envelope_to : 0) |
-  (ob->use_crlf? topt_use_crlf : 0);
+    (tblock->body_only ? topt_no_headers : 0)
+  | (tblock->headers_only ? topt_no_body : 0)
+  | (tblock->return_path_add ? topt_add_return_path : 0)
+  | (tblock->delivery_date_add ? topt_add_delivery_date : 0)
+  | (tblock->envelope_to_add ? topt_add_envelope_to : 0)
+  | (ob->use_crlf ? topt_use_crlf : 0);
 }
 
 
@@ -581,9 +563,8 @@ else
   }
 
 /* If no command has been supplied, we are in trouble.
- * We also check for an empty string since it may be
- * coming from addr->local_part[0] == '|'
- */
+We also check for an empty string since it may be
+coming from addr->local_part[0] == '|' */
 
 if (!cmd || !*cmd)
   {
@@ -652,11 +633,12 @@ envp[envcount++] = string_sprintf("QUALIFY_DOMAIN=%s", qualify_domain_sender);
 envp[envcount++] = string_sprintf("SENDER=%s", sender_address);
 envp[envcount++] = US"SHELL=/bin/sh";
 
-if (addr->host_list != NULL)
+if (addr->host_list)
   envp[envcount++] = string_sprintf("HOST=%s", addr->host_list->name);
 
-if (f.timestamps_utc) envp[envcount++] = US"TZ=UTC";
-else if (timezone_string != NULL && timezone_string[0] != 0)
+if (f.timestamps_utc)
+  envp[envcount++] = US"TZ=UTC";
+else if (timezone_string && timezone_string[0])
   envp[envcount++] = string_sprintf("TZ=%s", timezone_string);
 
 /* Add any requested items */

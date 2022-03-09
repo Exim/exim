@@ -2101,15 +2101,15 @@ arguments are verbatim. Copy each argument into a new string. */
 s = cmd;
 while (isspace(*s)) s++;
 
-for (; *s != 0 && argcount < max_args; argcount++)
+for (; *s && argcount < max_args; argcount++)
   {
   if (*s == '\'')
     {
     ss = s + 1;
-    while (*ss != 0 && *ss != '\'') ss++;
+    while (*ss && *ss != '\'') ss++;
     argv[argcount] = ss = store_get(ss - s++, cmd);
-    while (*s != 0 && *s != '\'') *ss++ = *s++;
-    if (*s != 0) s++;
+    while (*s && *s != '\'') *ss++ = *s++;
+    if (*s) s++;
     *ss++ = 0;
     }
   else
@@ -2117,11 +2117,11 @@ for (; *s != 0 && argcount < max_args; argcount++)
   while (isspace(*s)) s++;
   }
 
-argv[argcount] = US 0;
+argv[argcount] = NULL;
 
 /* If *s != 0 we have run out of argument slots. */
 
-if (*s != 0)
+if (*s)
   {
   uschar *msg = string_sprintf("Too many arguments in command \"%s\" in "
     "%s", cmd, etext);
@@ -2159,16 +2159,15 @@ DEBUG(D_transport)
 
 if (expand_arguments)
   {
-  BOOL allow_dollar_recipients = addr != NULL &&
-    addr->parent != NULL &&
-    Ustrcmp(addr->parent->address, "system-filter") == 0;
+  BOOL allow_dollar_recipients = addr && addr->parent
+    && Ustrcmp(addr->parent->address, "system-filter") == 0;
 
-  for (int i = 0; argv[i] != US 0; i++)
+  for (int i = 0; argv[i]; i++)
     {
 
     /* Handle special fudge for passing an address list */
 
-    if (addr != NULL &&
+    if (addr &&
         (Ustrcmp(argv[i], "$pipe_addresses") == 0 ||
          Ustrcmp(argv[i], "${pipe_addresses}") == 0))
       {
@@ -2200,7 +2199,7 @@ if (expand_arguments)
 
       /* Handle special case of $address_pipe when af_force_command is set */
 
-    else if (addr != NULL && testflag(addr,af_force_command) &&
+    else if (addr && testflag(addr,af_force_command) &&
         (Ustrcmp(argv[i], "$address_pipe") == 0 ||
          Ustrcmp(argv[i], "${address_pipe}") == 0))
       {
@@ -2220,7 +2219,7 @@ if (expand_arguments)
       /* +1 because addr->local_part[0] == '|' since af_force_command is set */
       s = expand_string(addr->local_part + 1);
 
-      if (!s || *s == '\0')
+      if (!s || !*s)
         {
         addr->transport_return = FAIL;
         addr->message = string_sprintf("Expansion of \"%s\" "
@@ -2248,14 +2247,14 @@ if (expand_arguments)
         while (isspace(*s)) s++; /* strip space after arg */
         }
 
-      address_pipe_argv[address_pipe_argcount] = US 0;
+      address_pipe_argv[address_pipe_argcount] = NULL;
 
       /* If *s != 0 we have run out of argument slots. */
-      if (*s != 0)
+      if (*s)
         {
         uschar *msg = string_sprintf("Too many arguments in $address_pipe "
           "\"%s\" in %s", addr->local_part + 1, etext);
-        if (addr != NULL)
+        if (addr)
           {
           addr->transport_return = FAIL;
           addr->message = msg;
@@ -2334,7 +2333,7 @@ if (expand_arguments)
   DEBUG(D_transport)
     {
     debug_printf("direct command after expansion:\n");
-    for (int i = 0; argv[i] != US 0; i++)
+    for (int i = 0; argv[i]; i++)
       debug_printf("  argv[%d] = %s\n", i, string_printing(argv[i]));
     }
   }
