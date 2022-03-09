@@ -1972,6 +1972,7 @@ if (socket_fd != 0)
 
 DEBUG(D_exec) debug_print_argv(argv);
 exim_nullstd();                          /* Ensure std{out,err} exist */
+/* argv[0] should be untainted, from child_exec_exim() */
 execv(CS argv[0], (char *const *)argv);
 
 DEBUG(D_any) debug_printf("execv failed: %s\n", strerror(errno));

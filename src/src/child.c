@@ -81,7 +81,7 @@ argv = store_get((extra + acount + MAX_CLMACROS + 24) * sizeof(char *), GET_UNTA
 /* In all case, the list starts out with the path, any macros, and a changed
 config file. */
 
-argv[n++] = exim_path;
+argv[n++] = exim_path;		/* assume untainted */
 if (clmacro_count > 0)
   {
   memcpy(argv + n, clmacros, clmacro_count * sizeof(uschar *));
@@ -342,6 +342,12 @@ child_open_uid(const uschar **argv, const uschar **envp, int newumask,
 int save_errno;
 int inpfd[2], outpfd[2];
 pid_t pid;
+
+if (is_tainted(argv[0]))
+  {
+  log_write(0, LOG_MAIN | LOG_PANIC, "Attempt to exec tainted path: '%s'", argv[0]);
+  return (pid_t)(-1);
+  }
 
 /* Create the pipes. */
 

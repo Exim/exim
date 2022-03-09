@@ -4397,7 +4397,7 @@ if (bi_option)
     {
     int i = 0;
     uschar *argv[3];
-    argv[i++] = bi_command;
+    argv[i++] = bi_command;	/* nonexpanded option so assume untainted */
     if (alias_arg) argv[i++] = alias_arg;
     argv[i++] = NULL;
 

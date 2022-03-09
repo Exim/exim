@@ -5911,6 +5911,7 @@ while (done <= 0)
 	  {
 	  DEBUG(D_exec) debug_print_argv(argv);
 	  exim_nullstd();                   /* Ensure std{in,out,err} exist */
+	  /* argv[0] should be untainted, from child_exec_exim() */
 	  execv(CS argv[0], (char *const *)argv);
 	  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "exec of \"%s\" (ETRN) failed: %s",
 	    etrn_command, strerror(errno));
