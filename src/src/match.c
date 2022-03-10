@@ -1005,15 +1005,16 @@ Returns:         OK     for a match
 static int
 check_address(void *arg, const uschar *pattern, const uschar **valueptr, uschar **error)
 {
-check_address_block *cb = (check_address_block *)arg;
+check_address_block * cb = (check_address_block *)arg;
 check_string_block csb;
 int rc;
 int expand_inc = 0;
-unsigned int *null = NULL;
-const uschar *listptr;
-uschar *subject = cb->address;
-const uschar *s;
-uschar *pdomain, *sdomain;
+unsigned int * null = NULL;
+const uschar * listptr;
+uschar * subject = cb->address;
+const uschar * s;
+uschar * pdomain, * sdomain;
+uschar * value = NULL;
 
 DEBUG(D_lists) debug_printf_indent("address match test: subject=%s pattern=%s\n",
   subject, pattern);
@@ -1064,7 +1065,7 @@ if (*s == ';')
 because other patterns expect to have a local part and a domain to match
 against. */
 
-if (*subject == 0) return (*pattern == 0)? OK : FAIL;
+if (!*subject) return *pattern ? FAIL : OK;
 
 /* If the pattern starts with "@@" we have a split lookup, where the domain is
 looked up to obtain a list of local parts. If the subject's local part is just
@@ -1186,6 +1187,7 @@ if (pdomain != NULL)
       expand_nlength[cb->expand_setup] = sllen - cllen;
       expand_inc = 1;
       }
+    value = string_copyn(pattern + 1, cllen);
     }
   else
     {
@@ -1194,6 +1196,7 @@ if (pdomain != NULL)
         ? strncmpic(subject, pattern, sllen) != 0
 	: Ustrncmp(subject, pattern, sllen) != 0) return FAIL;
     }
+    value = string_copyn(pattern, sllen);
   }
 
 /* If the local part matched, or was not being checked, check the domain using
@@ -1218,16 +1221,23 @@ csb.at_is_special = TRUE;
 listptr = pdomain ? pdomain + 1 : pattern;
 if (valueptr) *valueptr = NULL;
 
-return match_check_list(
-  &listptr,                  /* list of one item */
-  UCHAR_MAX+1,               /* impossible separator; single item */
-  &domainlist_anchor,        /* it's a domain list */
-  &null,                     /* ptr to NULL means no caching */
-  check_string,              /* the function to do one test */
-  &csb,                      /* its data */
-  MCL_DOMAIN + MCL_NOEXPAND, /* domain list; don't expand */
-  csb.subject,               /* string for messages */
-  valueptr);                 /* where to pass back lookup data */
+  {
+  const uschar * dvalue = NULL;
+  rc = match_check_list(
+    &listptr,                  /* list of one item */
+    UCHAR_MAX+1,               /* impossible separator; single item */
+    &domainlist_anchor,        /* it's a domain list */
+    &null,                     /* ptr to NULL means no caching */
+    check_string,              /* the function to do one test */
+    &csb,                      /* its data */
+    MCL_DOMAIN + MCL_NOEXPAND, /* domain list; don't expand */
+    csb.subject,               /* string for messages */
+    &dvalue);                       /* where to pass back lookup data */
+  if (valueptr && (value || dvalue))
+    *valueptr = string_sprintf("%s@%s",
+		  value ? value : US"", dvalue ? dvalue : US"");
+  }
+return rc;
 }
 
 

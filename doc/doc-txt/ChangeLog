@@ -92,6 +92,9 @@ JH/20 When built with NDBM for hints DB's check for nonexistence of a name
 JH/21 Remove the "allow_insecure_tainted_data" main config option and the
       "taint" log_selector.  These were previously deprecated.
 
+JH/22 Fix static address-list lookups to properly return the matched item.
+      Previously only the domain part was returned.
+
 
 Exim version 4.95
 -----------------
