@@ -3744,17 +3744,21 @@ if (!tlsp || tlsp->active.sock < 0) return;  /* TLS was not active */
 if (do_shutdown)
   {
   DEBUG(D_tls) debug_printf("tls_close(): shutting down TLS%s\n",
-    do_shutdown > 1 ? " (with response-wait)" : "");
+    do_shutdown > TLS_SHUTDOWN_NOWAIT ? " (with response-wait)" : "");
 
   tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
 
 #ifdef EXIM_TCP_CORK
-  if (do_shutdown > 1)
+  if (do_shutdown == TLS_SHUTDOWN_WAIT)
     (void) setsockopt(tlsp->active.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &off, sizeof(off));
 #endif
 
+  /* The library seems to have no way to only wait for a peer's
+  shutdown, so handle the same as TLS_SHUTDOWN_WAIT */
+
   ALARM(2);
-  gnutls_bye(state->session, do_shutdown > 1 ? GNUTLS_SHUT_RDWR : GNUTLS_SHUT_WR);
+  gnutls_bye(state->session,
+      do_shutdown > TLS_SHUTDOWN_NOWAIT ? GNUTLS_SHUT_RDWR : GNUTLS_SHUT_WR);
   ALARM_CLR(0);
   }
 

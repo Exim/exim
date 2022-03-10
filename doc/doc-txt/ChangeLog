@@ -95,6 +95,11 @@ JH/21 Remove the "allow_insecure_tainted_data" main config option and the
 JH/22 Fix static address-list lookups to properly return the matched item.
       Previously only the domain part was returned.
 
+JH/23 Bug 2864: FreeBSD: fix transport hang after 4xx/5xx response. Previously
+      the call into OpenSSL to send a TLS Close was being repeated; this
+      resulted in the library waiting for the peer's Close.  If that was never
+      sent we waited forever.  Fix by tracking send calls.
+
 
 Exim version 4.95
 -----------------

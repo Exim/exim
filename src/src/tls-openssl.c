@@ -4519,22 +4519,25 @@ int * fdp = o_ctx ? &tls_out.active.sock : &tls_in.active.sock;
 
 if (*fdp < 0) return;  /* TLS was not active */
 
-if (do_shutdown)
+if (do_shutdown > TLS_NO_SHUTDOWN)
   {
   int rc;
   DEBUG(D_tls) debug_printf("tls_close(): shutting down TLS%s\n",
-    do_shutdown > 1 ? " (with response-wait)" : "");
+    do_shutdown > TLS_SHUTDOWN_NOWAIT ? " (with response-wait)" : "");
 
   tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
 
-  if (  (rc = SSL_shutdown(*sslp)) == 0	/* send "close notify" alert */
-     && do_shutdown > 1)
+  if (  (  do_shutdown >= TLS_SHUTDOWN_WONLY
+	|| (rc = SSL_shutdown(*sslp)) == 0	/* send "close notify" alert */
+	)
+     && do_shutdown > TLS_SHUTDOWN_NOWAIT
+     )
     {
 #ifdef EXIM_TCP_CORK
     (void) setsockopt(*fdp, IPPROTO_TCP, EXIM_TCP_CORK, US &off, sizeof(off));
 #endif
     ALARM(2);
-    rc = SSL_shutdown(*sslp);		/* wait for response */
+    rc = SSL_shutdown(*sslp);			/* wait for response */
     ALARM_CLR(0);
     }
 

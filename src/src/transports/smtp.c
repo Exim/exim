@@ -4085,7 +4085,7 @@ else
       sx->send_quit = FALSE;	/* avoid sending it later */
 
 #ifndef DISABLE_TLS
-      if (sx->cctx.tls_ctx)	/* need to send TLS Close Notify */
+      if (sx->cctx.tls_ctx && sx->send_tlsclose)	/* need to send TLS Close Notify */
 	{
 # ifdef EXIM_TCP_CORK		/* Use _CORK to get Close Notify in FIN segment */
 	(void) setsockopt(sx->cctx.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
@@ -4429,7 +4429,8 @@ if (!sx->ok)
 # ifndef DISABLE_TLS
 	if (sx->cctx.tls_ctx)
 	  {
-	  tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_WAIT);
+	  tls_close(sx->cctx.tls_ctx,
+		    sx->send_tlsclose ? TLS_SHUTDOWN_WAIT : TLS_SHUTDOWN_WONLY);
 	  sx->cctx.tls_ctx = NULL;
 	  }
 # endif
@@ -4640,7 +4641,8 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	    a new EHLO. If we don't get a good response, we don't attempt to pass
 	    the socket on. */
 
-	  tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_WAIT);
+	  tls_close(sx->cctx.tls_ctx,
+	    sx->send_tlsclose ? TLS_SHUTDOWN_WAIT : TLS_SHUTDOWN_WONLY);
 	  sx->send_tlsclose = FALSE;
 	  sx->cctx.tls_ctx = NULL;
 	  tls_out.active.sock = -1;
@@ -4742,7 +4744,7 @@ if (sx->send_quit)
   {			/* Use _MORE to get QUIT in FIN segment */
   (void)smtp_write_command(sx, SCMD_MORE, "QUIT\r\n");
 #ifndef DISABLE_TLS
-  if (sx->cctx.tls_ctx)
+  if (sx->cctx.tls_ctx && sx->send_tlsclose)
     {
 # ifdef EXIM_TCP_CORK	/* Use _CORK to get TLS Close Notify in FIN segment */
     (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
@@ -4797,10 +4799,15 @@ if (sx->send_quit || tcw_done && !tcw)
     while (!sigalrm_seen && n > 0);
     ALARM_CLR(0);
 
+    if (sx->send_tlsclose)
+      {
 # ifdef EXIM_TCP_CORK
-    (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
+      (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
 # endif
-    tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_WAIT);
+      tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_WAIT);
+      }
+    else
+      tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_WONLY);
     sx->cctx.tls_ctx = NULL;
     }
 #endif
