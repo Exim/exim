@@ -23,6 +23,10 @@ Version 4.96
     built using untrusted data ("tainted").  For now lack of quoting is merely
     logged; a future release will upgrade this to an error.
 
+ 7. The expansion conditions match_<list-type> and inlist now set $value for
+    the expansion of the "true" result of the ${if}.  With a static list, this
+    can be used for de-tainting.
+
 Version 4.95
 ------------
 

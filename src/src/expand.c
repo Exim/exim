@@ -2964,12 +2964,12 @@ switch(cond_type = identify_operator(&s, &opname))
 
     case ECOND_MATCH_ADDRESS:  /* Match in an address list */
       rc = match_address_list(sub[0], TRUE, FALSE, &(sub[1]), NULL, -1, 0,
-			      NULL);
+			      CUSS &lookup_value);
       goto MATCHED_SOMETHING;
 
     case ECOND_MATCH_DOMAIN:   /* Match in a domain list */
       rc = match_isinlist(sub[0], &(sub[1]), 0, &domainlist_anchor, NULL,
-	MCL_DOMAIN + MCL_NOEXPAND, TRUE, NULL);
+	MCL_DOMAIN + MCL_NOEXPAND, TRUE, CUSS &lookup_value);
       goto MATCHED_SOMETHING;
 
     case ECOND_MATCH_IP:       /* Match IP address in a host list */
@@ -3003,13 +3003,13 @@ switch(cond_type = identify_operator(&s, &opname))
 	       &cb,                       /* argument for function */
 	       MCL_HOST,                  /* type of check */
 	       sub[0],                    /* text for debugging */
-	       NULL);                     /* where to pass back data */
+	       CUSS &lookup_value);       /* where to pass back data */
 	}
       goto MATCHED_SOMETHING;
 
     case ECOND_MATCH_LOCAL_PART:
       rc = match_isinlist(sub[0], &(sub[1]), 0, &localpartlist_anchor, NULL,
-	MCL_LOCALPART + MCL_NOEXPAND, TRUE, NULL);
+	MCL_LOCALPART + MCL_NOEXPAND, TRUE, CUSS &lookup_value);
       /* Fall through */
       /* VVVVVVVVVVVV */
       MATCHED_SOMETHING:
@@ -3187,6 +3187,7 @@ switch(cond_type = identify_operator(&s, &opname))
         if (compare(sub[0], iterate_item) == 0)
           {
           tempcond = TRUE;
+	  lookup_value = iterate_item;
           break;
           }
 	}
@@ -4801,6 +4802,7 @@ while (*s)
       const uschar *next_s;
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
+      uschar * save_lookup_value = lookup_value;
 
       Uskip_whitespace(&s);
       if (!(next_s = eval_condition(s, &resetok, skipping ? NULL : &cond)))
@@ -4834,6 +4836,7 @@ while (*s)
       /* Restore external setting of expansion variables for continuation
       at this level. */
 
+      lookup_value = save_lookup_value;
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
       break;
@@ -6543,6 +6546,9 @@ while (*s)
         separator character are doubled. Unless we are dealing with the first
         item of the output list, add in a space if the new item begins with the
         separator character, or is an empty string. */
+
+/*XXX is there not a standard support function for this, appending to a list? */
+/* yes, string_append_listele(), but it depends on lack of text before the list */
 
         if (  yield && yield->ptr != save_ptr
 	   && (temp[0] == *outsep || temp[0] == 0))
