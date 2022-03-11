@@ -2898,64 +2898,49 @@ switch(cond_type = identify_operator(&s, &opname))
     {
     case ECOND_NUM_E:
     case ECOND_NUM_EE:
-    tempcond = (num[0] == num[1]);
-    break;
+      tempcond = (num[0] == num[1]); break;
 
     case ECOND_NUM_G:
-    tempcond = (num[0] > num[1]);
-    break;
+      tempcond = (num[0] > num[1]); break;
 
     case ECOND_NUM_GE:
-    tempcond = (num[0] >= num[1]);
-    break;
+      tempcond = (num[0] >= num[1]); break;
 
     case ECOND_NUM_L:
-    tempcond = (num[0] < num[1]);
-    break;
+      tempcond = (num[0] < num[1]); break;
 
     case ECOND_NUM_LE:
-    tempcond = (num[0] <= num[1]);
-    break;
+      tempcond = (num[0] <= num[1]); break;
 
     case ECOND_STR_LT:
-    tempcond = (Ustrcmp(sub[0], sub[1]) < 0);
-    break;
+      tempcond = (Ustrcmp(sub[0], sub[1]) < 0); break;
 
     case ECOND_STR_LTI:
-    tempcond = (strcmpic(sub[0], sub[1]) < 0);
-    break;
+      tempcond = (strcmpic(sub[0], sub[1]) < 0); break;
 
     case ECOND_STR_LE:
-    tempcond = (Ustrcmp(sub[0], sub[1]) <= 0);
-    break;
+      tempcond = (Ustrcmp(sub[0], sub[1]) <= 0); break;
 
     case ECOND_STR_LEI:
-    tempcond = (strcmpic(sub[0], sub[1]) <= 0);
-    break;
+      tempcond = (strcmpic(sub[0], sub[1]) <= 0); break;
 
     case ECOND_STR_EQ:
-    tempcond = (Ustrcmp(sub[0], sub[1]) == 0);
-    break;
+      tempcond = (Ustrcmp(sub[0], sub[1]) == 0); break;
 
     case ECOND_STR_EQI:
-    tempcond = (strcmpic(sub[0], sub[1]) == 0);
-    break;
+      tempcond = (strcmpic(sub[0], sub[1]) == 0); break;
 
     case ECOND_STR_GT:
-    tempcond = (Ustrcmp(sub[0], sub[1]) > 0);
-    break;
+      tempcond = (Ustrcmp(sub[0], sub[1]) > 0); break;
 
     case ECOND_STR_GTI:
-    tempcond = (strcmpic(sub[0], sub[1]) > 0);
-    break;
+      tempcond = (strcmpic(sub[0], sub[1]) > 0); break;
 
     case ECOND_STR_GE:
-    tempcond = (Ustrcmp(sub[0], sub[1]) >= 0);
-    break;
+      tempcond = (Ustrcmp(sub[0], sub[1]) >= 0); break;
 
     case ECOND_STR_GEI:
-    tempcond = (strcmpic(sub[0], sub[1]) >= 0);
-    break;
+      tempcond = (strcmpic(sub[0], sub[1]) >= 0); break;
 
     case ECOND_MATCH:   /* Regular expression match */
       {
@@ -2978,72 +2963,68 @@ switch(cond_type = identify_operator(&s, &opname))
       }
 
     case ECOND_MATCH_ADDRESS:  /* Match in an address list */
-    rc = match_address_list(sub[0], TRUE, FALSE, &(sub[1]), NULL, -1, 0, NULL);
-    goto MATCHED_SOMETHING;
+      rc = match_address_list(sub[0], TRUE, FALSE, &(sub[1]), NULL, -1, 0,
+			      NULL);
+      goto MATCHED_SOMETHING;
 
     case ECOND_MATCH_DOMAIN:   /* Match in a domain list */
-    rc = match_isinlist(sub[0], &(sub[1]), 0, &domainlist_anchor, NULL,
-      MCL_DOMAIN + MCL_NOEXPAND, TRUE, NULL);
-    goto MATCHED_SOMETHING;
+      rc = match_isinlist(sub[0], &(sub[1]), 0, &domainlist_anchor, NULL,
+	MCL_DOMAIN + MCL_NOEXPAND, TRUE, NULL);
+      goto MATCHED_SOMETHING;
 
     case ECOND_MATCH_IP:       /* Match IP address in a host list */
-    if (sub[0][0] != 0 && string_is_ip_address(sub[0], NULL) == 0)
-      {
-      expand_string_message = string_sprintf("\"%s\" is not an IP address",
-        sub[0]);
-      return NULL;
-      }
-    else
-      {
-      unsigned int *nullcache = NULL;
-      check_host_block cb;
+      if (sub[0][0] != 0 && string_is_ip_address(sub[0], NULL) == 0)
+	{
+	expand_string_message = string_sprintf("\"%s\" is not an IP address",
+	  sub[0]);
+	return NULL;
+	}
+      else
+	{
+	unsigned int *nullcache = NULL;
+	check_host_block cb;
 
-      cb.host_name = US"";
-      cb.host_address = sub[0];
+	cb.host_name = US"";
+	cb.host_address = sub[0];
 
-      /* If the host address starts off ::ffff: it is an IPv6 address in
-      IPv4-compatible mode. Find the IPv4 part for checking against IPv4
-      addresses. */
+	/* If the host address starts off ::ffff: it is an IPv6 address in
+	IPv4-compatible mode. Find the IPv4 part for checking against IPv4
+	addresses. */
 
-      cb.host_ipv4 = (Ustrncmp(cb.host_address, "::ffff:", 7) == 0)?
-        cb.host_address + 7 : cb.host_address;
+	cb.host_ipv4 = (Ustrncmp(cb.host_address, "::ffff:", 7) == 0)?
+	  cb.host_address + 7 : cb.host_address;
 
-      rc = match_check_list(
-             &sub[1],                   /* the list */
-             0,                         /* separator character */
-             &hostlist_anchor,          /* anchor pointer */
-             &nullcache,                /* cache pointer */
-             check_host,                /* function for testing */
-             &cb,                       /* argument for function */
-             MCL_HOST,                  /* type of check */
-             sub[0],                    /* text for debugging */
-             NULL);                     /* where to pass back data */
-      }
-    goto MATCHED_SOMETHING;
+	rc = match_check_list(
+	       &sub[1],                   /* the list */
+	       0,                         /* separator character */
+	       &hostlist_anchor,          /* anchor pointer */
+	       &nullcache,                /* cache pointer */
+	       check_host,                /* function for testing */
+	       &cb,                       /* argument for function */
+	       MCL_HOST,                  /* type of check */
+	       sub[0],                    /* text for debugging */
+	       NULL);                     /* where to pass back data */
+	}
+      goto MATCHED_SOMETHING;
 
     case ECOND_MATCH_LOCAL_PART:
-    rc = match_isinlist(sub[0], &(sub[1]), 0, &localpartlist_anchor, NULL,
-      MCL_LOCALPART + MCL_NOEXPAND, TRUE, NULL);
-    /* Fall through */
-    /* VVVVVVVVVVVV */
-    MATCHED_SOMETHING:
-    switch(rc)
-      {
-      case OK:
-      tempcond = TRUE;
+      rc = match_isinlist(sub[0], &(sub[1]), 0, &localpartlist_anchor, NULL,
+	MCL_LOCALPART + MCL_NOEXPAND, TRUE, NULL);
+      /* Fall through */
+      /* VVVVVVVVVVVV */
+      MATCHED_SOMETHING:
+      switch(rc)
+	{
+	case OK:   tempcond = TRUE;  break;
+	case FAIL: tempcond = FALSE; break;
+
+	case DEFER:
+	  expand_string_message = string_sprintf("unable to complete match "
+	    "against \"%s\": %s", sub[1], search_error_message);
+	  return NULL;
+	}
+
       break;
-
-      case FAIL:
-      tempcond = FALSE;
-      break;
-
-      case DEFER:
-      expand_string_message = string_sprintf("unable to complete match "
-        "against \"%s\": %s", sub[1], search_error_message);
-      return NULL;
-      }
-
-    break;
 
     /* Various "encrypted" comparisons. If the second string starts with
     "{" then an encryption type is given. Default to crypt() or crypt16()
@@ -3052,138 +3033,138 @@ switch(cond_type = identify_operator(&s, &opname))
 
     case ECOND_CRYPTEQ:
     #ifndef SUPPORT_CRYPTEQ
-    goto COND_FAILED_NOT_COMPILED;
+      goto COND_FAILED_NOT_COMPILED;
     #else
-    if (strncmpic(sub[1], US"{md5}", 5) == 0)
-      {
-      int sublen = Ustrlen(sub[1]+5);
-      md5 base;
-      uschar digest[16];
-
-      md5_start(&base);
-      md5_end(&base, sub[0], Ustrlen(sub[0]), digest);
-
-      /* If the length that we are comparing against is 24, the MD5 digest
-      is expressed as a base64 string. This is the way LDAP does it. However,
-      some other software uses a straightforward hex representation. We assume
-      this if the length is 32. Other lengths fail. */
-
-      if (sublen == 24)
-        {
-        uschar *coded = b64encode(CUS digest, 16);
-        DEBUG(D_auth) debug_printf("crypteq: using MD5+B64 hashing\n"
-          "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
-        tempcond = (Ustrcmp(coded, sub[1]+5) == 0);
-        }
-      else if (sublen == 32)
-        {
-        uschar coded[36];
-        for (int i = 0; i < 16; i++) sprintf(CS (coded+2*i), "%02X", digest[i]);
-        coded[32] = 0;
-        DEBUG(D_auth) debug_printf("crypteq: using MD5+hex hashing\n"
-          "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
-        tempcond = (strcmpic(coded, sub[1]+5) == 0);
-        }
-      else
-        {
-        DEBUG(D_auth) debug_printf("crypteq: length for MD5 not 24 or 32: "
-          "fail\n  crypted=%s\n", sub[1]+5);
-        tempcond = FALSE;
-        }
-      }
-
-    else if (strncmpic(sub[1], US"{sha1}", 6) == 0)
-      {
-      int sublen = Ustrlen(sub[1]+6);
-      hctx h;
-      uschar digest[20];
-
-      sha1_start(&h);
-      sha1_end(&h, sub[0], Ustrlen(sub[0]), digest);
-
-      /* If the length that we are comparing against is 28, assume the SHA1
-      digest is expressed as a base64 string. If the length is 40, assume a
-      straightforward hex representation. Other lengths fail. */
-
-      if (sublen == 28)
-        {
-        uschar *coded = b64encode(CUS digest, 20);
-        DEBUG(D_auth) debug_printf("crypteq: using SHA1+B64 hashing\n"
-          "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
-        tempcond = (Ustrcmp(coded, sub[1]+6) == 0);
-        }
-      else if (sublen == 40)
-        {
-        uschar coded[44];
-        for (int i = 0; i < 20; i++) sprintf(CS (coded+2*i), "%02X", digest[i]);
-        coded[40] = 0;
-        DEBUG(D_auth) debug_printf("crypteq: using SHA1+hex hashing\n"
-          "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
-        tempcond = (strcmpic(coded, sub[1]+6) == 0);
-        }
-      else
-        {
-        DEBUG(D_auth) debug_printf("crypteq: length for SHA-1 not 28 or 40: "
-          "fail\n  crypted=%s\n", sub[1]+6);
-	tempcond = FALSE;
-        }
-      }
-
-    else   /* {crypt} or {crypt16} and non-{ at start */
-           /* }-for-text-editors */
-      {
-      int which = 0;
-      uschar *coded;
-
-      if (strncmpic(sub[1], US"{crypt}", 7) == 0)
-        {
-        sub[1] += 7;
-        which = 1;
-        }
-      else if (strncmpic(sub[1], US"{crypt16}", 9) == 0)
-        {
-        sub[1] += 9;
-        which = 2;
-        }
-      else if (sub[1][0] == '{')		/* }-for-text-editors */
-        {
-        expand_string_message = string_sprintf("unknown encryption mechanism "
-          "in \"%s\"", sub[1]);
-        return NULL;
-        }
-
-      switch(which)
-        {
-        case 0:  coded = US DEFAULT_CRYPT(CS sub[0], CS sub[1]); break;
-        case 1:  coded = US crypt(CS sub[0], CS sub[1]); break;
-        default: coded = US crypt16(CS sub[0], CS sub[1]); break;
-        }
-
-      #define STR(s) # s
-      #define XSTR(s) STR(s)
-      DEBUG(D_auth) debug_printf("crypteq: using %s()\n"
-        "  subject=%s\n  crypted=%s\n",
-        which == 0 ? XSTR(DEFAULT_CRYPT) : which == 1 ? "crypt" : "crypt16",
-        coded, sub[1]);
-      #undef STR
-      #undef XSTR
-
-      /* If the encrypted string contains fewer than two characters (for the
-      salt), force failure. Otherwise we get false positives: with an empty
-      string the yield of crypt() is an empty string! */
-
-      if (coded)
-	tempcond = Ustrlen(sub[1]) < 2 ? FALSE : Ustrcmp(coded, sub[1]) == 0;
-      else if (errno == EINVAL)
-	tempcond = FALSE;
-      else
+      if (strncmpic(sub[1], US"{md5}", 5) == 0)
 	{
-	expand_string_message = string_sprintf("crypt error: %s\n",
-	  US strerror(errno));
-	return NULL;
+	int sublen = Ustrlen(sub[1]+5);
+	md5 base;
+	uschar digest[16];
+
+	md5_start(&base);
+	md5_end(&base, sub[0], Ustrlen(sub[0]), digest);
+
+	/* If the length that we are comparing against is 24, the MD5 digest
+	is expressed as a base64 string. This is the way LDAP does it. However,
+	some other software uses a straightforward hex representation. We assume
+	this if the length is 32. Other lengths fail. */
+
+	if (sublen == 24)
+	  {
+	  uschar *coded = b64encode(CUS digest, 16);
+	  DEBUG(D_auth) debug_printf("crypteq: using MD5+B64 hashing\n"
+	    "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
+	  tempcond = (Ustrcmp(coded, sub[1]+5) == 0);
+	  }
+	else if (sublen == 32)
+	  {
+	  uschar coded[36];
+	  for (int i = 0; i < 16; i++) sprintf(CS (coded+2*i), "%02X", digest[i]);
+	  coded[32] = 0;
+	  DEBUG(D_auth) debug_printf("crypteq: using MD5+hex hashing\n"
+	    "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
+	  tempcond = (strcmpic(coded, sub[1]+5) == 0);
+	  }
+	else
+	  {
+	  DEBUG(D_auth) debug_printf("crypteq: length for MD5 not 24 or 32: "
+	    "fail\n  crypted=%s\n", sub[1]+5);
+	  tempcond = FALSE;
+	  }
 	}
-      }
-    break;
+
+      else if (strncmpic(sub[1], US"{sha1}", 6) == 0)
+	{
+	int sublen = Ustrlen(sub[1]+6);
+	hctx h;
+	uschar digest[20];
+
+	sha1_start(&h);
+	sha1_end(&h, sub[0], Ustrlen(sub[0]), digest);
+
+	/* If the length that we are comparing against is 28, assume the SHA1
+	digest is expressed as a base64 string. If the length is 40, assume a
+	straightforward hex representation. Other lengths fail. */
+
+	if (sublen == 28)
+	  {
+	  uschar *coded = b64encode(CUS digest, 20);
+	  DEBUG(D_auth) debug_printf("crypteq: using SHA1+B64 hashing\n"
+	    "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
+	  tempcond = (Ustrcmp(coded, sub[1]+6) == 0);
+	  }
+	else if (sublen == 40)
+	  {
+	  uschar coded[44];
+	  for (int i = 0; i < 20; i++) sprintf(CS (coded+2*i), "%02X", digest[i]);
+	  coded[40] = 0;
+	  DEBUG(D_auth) debug_printf("crypteq: using SHA1+hex hashing\n"
+	    "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
+	  tempcond = (strcmpic(coded, sub[1]+6) == 0);
+	  }
+	else
+	  {
+	  DEBUG(D_auth) debug_printf("crypteq: length for SHA-1 not 28 or 40: "
+	    "fail\n  crypted=%s\n", sub[1]+6);
+	  tempcond = FALSE;
+	  }
+	}
+
+      else   /* {crypt} or {crypt16} and non-{ at start */
+	     /* }-for-text-editors */
+	{
+	int which = 0;
+	uschar *coded;
+
+	if (strncmpic(sub[1], US"{crypt}", 7) == 0)
+	  {
+	  sub[1] += 7;
+	  which = 1;
+	  }
+	else if (strncmpic(sub[1], US"{crypt16}", 9) == 0)
+	  {
+	  sub[1] += 9;
+	  which = 2;
+	  }
+	else if (sub[1][0] == '{')		/* }-for-text-editors */
+	  {
+	  expand_string_message = string_sprintf("unknown encryption mechanism "
+	    "in \"%s\"", sub[1]);
+	  return NULL;
+	  }
+
+	switch(which)
+	  {
+	  case 0:  coded = US DEFAULT_CRYPT(CS sub[0], CS sub[1]); break;
+	  case 1:  coded = US crypt(CS sub[0], CS sub[1]); break;
+	  default: coded = US crypt16(CS sub[0], CS sub[1]); break;
+	  }
+
+	#define STR(s) # s
+	#define XSTR(s) STR(s)
+	DEBUG(D_auth) debug_printf("crypteq: using %s()\n"
+	  "  subject=%s\n  crypted=%s\n",
+	  which == 0 ? XSTR(DEFAULT_CRYPT) : which == 1 ? "crypt" : "crypt16",
+	  coded, sub[1]);
+	#undef STR
+	#undef XSTR
+
+	/* If the encrypted string contains fewer than two characters (for the
+	salt), force failure. Otherwise we get false positives: with an empty
+	string the yield of crypt() is an empty string! */
+
+	if (coded)
+	  tempcond = Ustrlen(sub[1]) < 2 ? FALSE : Ustrcmp(coded, sub[1]) == 0;
+	else if (errno == EINVAL)
+	  tempcond = FALSE;
+	else
+	  {
+	  expand_string_message = string_sprintf("crypt error: %s\n",
+	    US strerror(errno));
+	  return NULL;
+	  }
+	}
+      break;
     #endif  /* SUPPORT_CRYPTEQ */
 
     case ECOND_INLIST:

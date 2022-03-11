@@ -616,7 +616,7 @@ extern BOOL    transport_pass_socket(const uschar *, const uschar *, const uscha
 			);
 extern uschar *transport_rcpt_address(address_item *, BOOL);
 extern BOOL    transport_set_up_command(const uschar ***, uschar *,
-		 BOOL, int, address_item *, uschar *, uschar **);
+		 BOOL, int, address_item *, const uschar *, uschar **);
 extern void    transport_update_waiting(host_item *, uschar *);
 extern BOOL    transport_write_block(transport_ctx *, uschar *, int, BOOL);
 extern void    transport_write_reset(int);

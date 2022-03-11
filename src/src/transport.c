@@ -2077,7 +2077,7 @@ Returns:             TRUE if all went well; otherwise an error will be
 BOOL
 transport_set_up_command(const uschar ***argvptr, uschar *cmd,
   BOOL expand_arguments, int expand_failed, address_item *addr,
-  uschar *etext, uschar **errptr)
+  const uschar * etext, uschar ** errptr)
 {
 const uschar **argv;
 uschar *s, *ss;
@@ -2165,7 +2165,6 @@ if (expand_arguments)
 
   for (int i = 0; argv[i]; i++)
     {
-
     /* Handle special fudge for passing an address list */
 
     if (addr &&
@@ -2265,8 +2264,9 @@ if (expand_arguments)
         }
 
       /* address_pipe_argcount - 1
-       * because we are replacing $address_pipe in the argument list
-       * with the first thing it expands to */
+      because we are replacing $address_pipe in the argument list
+      with the first thing it expands to */
+
       if (argcount + address_pipe_argcount - 1 > max_args)
         {
         addr->transport_return = FAIL;
@@ -2296,7 +2296,7 @@ if (expand_arguments)
       [argv 0][argv 1][argv 2=pipeargv[0]][argv 3=pipeargv[1]][old argv 3][0] */
 
       for (int address_pipe_i = 0;
-           address_pipe_argv[address_pipe_i] != US 0;
+           address_pipe_argv[address_pipe_i];
            address_pipe_i++, argcount++)
         argv[i++] = address_pipe_argv[address_pipe_i];
 

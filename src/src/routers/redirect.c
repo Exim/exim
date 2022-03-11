@@ -395,14 +395,14 @@ while (generated)
     if (next->address[0] == '|')
       {
       address_pipe = next->address;
-      if (rf_get_transport(ob->pipe_transport_name, &(ob->pipe_transport),
+      if (rf_get_transport(ob->pipe_transport_name, &ob->pipe_transport,
           next, rblock->name, US"pipe_transport"))
         next->transport = ob->pipe_transport;
       address_pipe = NULL;
       }
     else if (next->address[0] == '>')
       {
-      if (rf_get_transport(ob->reply_transport_name, &(ob->reply_transport),
+      if (rf_get_transport(ob->reply_transport_name, &ob->reply_transport,
           next, rblock->name, US"reply_transport"))
         next->transport = ob->reply_transport;
       }
@@ -418,11 +418,10 @@ while (generated)
           next->transport = ob->directory_transport;
         }
       else
-        {
-        if (rf_get_transport(ob->file_transport_name, &(ob->file_transport),
+        if (rf_get_transport(ob->file_transport_name, &ob->file_transport,
             next, rblock->name, US"file_transport"))
           next->transport = ob->file_transport;
-        }
+
       address_file = NULL;
       }
     }

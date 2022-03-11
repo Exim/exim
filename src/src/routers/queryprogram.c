@@ -86,13 +86,13 @@ queryprogram_router_options_block *ob =
 
 /* A command must be given */
 
-if (ob->command == NULL)
+if (!ob->command)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
     "a command specification is required", rblock->name);
 
 /* A uid/gid must be supplied */
 
-if (!ob->cmd_uid_set && ob->expand_cmd_uid == NULL)
+if (!ob->cmd_uid_set && !ob->expand_cmd_uid)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
     "command_user must be specified", rblock->name);
 }

@@ -3762,7 +3762,7 @@ if (tblock->filter_command)
 
   if (!transport_set_up_command(&transport_filter_argv,
 	tblock->filter_command, TRUE, DEFER, addrlist,
-	string_sprintf("%.50s transport", tblock->name), NULL))
+	string_sprintf("%.50s transport filter", tblock->name), NULL))
     {
     set_errno_nohost(addrlist->next, addrlist->basic_errno, addrlist->message, DEFER,
       FALSE, &sx->delivery_start);
