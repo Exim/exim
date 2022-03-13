@@ -5526,10 +5526,7 @@ while (*s)
     case EITEM_RUN:
       {
       FILE * f;
-      uschar * arg;
-      const uschar ** argv;
-      pid_t pid;
-      int fd_in, fd_out;
+      const uschar * arg, ** argv;
 
       if ((expand_forbid & RDO_RUN) != 0)
         {
@@ -5538,16 +5535,17 @@ while (*s)
         }
 
       Uskip_whitespace(&s);
-      if (*s != '{')
+      if (*s != '{')					/*}*/
         {
 	expand_string_message = US"missing '{' for command arg of run";
-	goto EXPAND_FAILED_CURLY;
+	goto EXPAND_FAILED_CURLY;			/*"}*/
 	}
       if (!(arg = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok)))
 	goto EXPAND_FAILED;
       Uskip_whitespace(&s);
+							/*{*/
       if (*s++ != '}')
-        {
+        {						/*{*/
 	expand_string_message = US"missing '}' closing command arg of run";
 	goto EXPAND_FAILED_CURLY;
 	}
@@ -5559,6 +5557,9 @@ while (*s)
 	}
       else
         {
+	int fd_in, fd_out;
+	pid_t pid;
+
         if (!transport_set_up_command(&argv,    /* anchor for arg list */
             arg,                                /* raw command */
             FALSE,                              /* don't expand the arguments */
@@ -5576,7 +5577,7 @@ while (*s)
           expand_string_message =
             string_sprintf("couldn't create child process: %s", strerror(errno));
           goto EXPAND_FAILED;
-          }
+	  }
 
         /* Nothing is written to the standard input. */
 
@@ -6417,7 +6418,6 @@ while (*s)
 	goto EXPAND_FAILED;						/*{{*/
       if (*s++ != '}')
         {
-	/*{*/
 	expand_string_message =
 	  string_sprintf("missing '}' closing first arg of %s", name);
 	goto EXPAND_FAILED_CURLY;

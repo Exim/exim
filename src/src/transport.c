@@ -2075,7 +2075,7 @@ Returns:             TRUE if all went well; otherwise an error will be
 */
 
 BOOL
-transport_set_up_command(const uschar ***argvptr, uschar *cmd,
+transport_set_up_command(const uschar *** argvptr, const uschar * cmd,
   BOOL expand_arguments, int expand_failed, address_item *addr,
   const uschar * etext, uschar ** errptr)
 {
