@@ -3919,7 +3919,7 @@ Returns:       new pointer for expandable string, terminated if non-null
 */
 
 gstring *
-cat_file(FILE *f, gstring *yield, uschar *eol)
+cat_file(FILE * f, gstring * yield, uschar * eol)
 {
 uschar buffer[1024];
 
@@ -3931,8 +3931,6 @@ while (Ufgets(buffer, sizeof(buffer), f))
   if (eol && buffer[len])
     yield = string_cat(yield, eol);
   }
-
-(void) string_from_gstring(yield);
 return yield;
 }
 
@@ -3954,7 +3952,6 @@ while ((rc = tls_read(tls_ctx, buffer, sizeof(buffer))) > 0)
 /* We assume that all errors, and any returns of zero bytes,
 are actually EOF. */
 
-(void) string_from_gstring(yield);
 return yield;
 }
 #endif
