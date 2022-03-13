@@ -2079,11 +2079,8 @@ transport_set_up_command(const uschar ***argvptr, uschar *cmd,
   BOOL expand_arguments, int expand_failed, address_item *addr,
   const uschar * etext, uschar ** errptr)
 {
-const uschar **argv;
-uschar *s, *ss;
-int address_count = 0;
-int argcount = 0;
-int max_args;
+const uschar ** argv, * s;
+int address_count = 0, argcount = 0, max_args;
 
 /* Get store in which to build an argument list. Count the number of addresses
 supplied, and allow for that many arguments, plus an additional 60, which
@@ -2100,22 +2097,19 @@ trailing space at the start and end. Double-quoted arguments can contain \\ and
 arguments are verbatim. Copy each argument into a new string. */
 
 s = cmd;
-while (isspace(*s)) s++;
+Uskip_whitespace(&s);
 
 for (; *s && argcount < max_args; argcount++)
   {
   if (*s == '\'')
     {
-    ss = s + 1;
-    while (*ss && *ss != '\'') ss++;
-    argv[argcount] = ss = store_get(ss - s++, cmd);
-    while (*s && *s != '\'') *ss++ = *s++;
-    if (*s) s++;
-    *ss++ = 0;
+    int n = Ustrcspn(++s, "'");
+    argv[argcount] = string_copyn(s, n);
+    if (*(s += n) == '\'') s++;
     }
   else
     argv[argcount] = string_dequote(CUSS &s);
-  while (isspace(*s)) s++;
+  Uskip_whitespace(&s);
   }
 
 argv[argcount] = NULL;
@@ -2126,7 +2120,7 @@ if (*s)
   {
   uschar *msg = string_sprintf("Too many arguments in command \"%s\" in "
     "%s", cmd, etext);
-  if (addr != NULL)
+  if (addr)
     {
     addr->transport_return = FAIL;
     addr->message = msg;
@@ -2228,23 +2222,19 @@ if (expand_arguments)
         return FALSE;
         }
 
-      while (isspace(*s)) s++; /* strip leading space */
+      Uskip_whitespace(&s);			/* strip leading space */
 
       while (*s && address_pipe_argcount < address_pipe_max_args)
         {
         if (*s == '\'')
-          {
-	  int n;
-          for (ss = s + 1; *ss && *ss != '\''; ) ss++;
-	  n = ss - s++;
-          address_pipe_argv[address_pipe_argcount++] = ss = store_get(n, s);
-          while (*s && *s != '\'') *ss++ = *s++;
-          if (*s) s++;
-          *ss++ = 0;
-          }
-        else address_pipe_argv[address_pipe_argcount++] =
-	      string_copy(string_dequote(CUSS &s));
-        while (isspace(*s)) s++; /* strip space after arg */
+	  {
+	  int n = Ustrcspn(++s, "'");
+	  argv[argcount] = string_copyn(s, n);
+	  if (*(s += n) == '\'') s++;
+	  }
+        else
+	  address_pipe_argv[address_pipe_argcount++] = string_dequote(CUSS &s);
+	Uskip_whitespace(&s);			/* strip space after arg */
         }
 
       address_pipe_argv[address_pipe_argcount] = NULL;
