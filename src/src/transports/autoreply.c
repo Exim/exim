@@ -489,7 +489,7 @@ if (oncelog && *oncelog && to)
 
     EXIM_DATUM_INIT(key_datum);        /* Some DBM libraries need datums */
     EXIM_DATUM_INIT(result_datum);     /* to be cleared */
-    EXIM_DATUM_DATA(key_datum) = CS to;
+    EXIM_DATUM_DATA(key_datum) = (void *) to;
     EXIM_DATUM_SIZE(key_datum) = Ustrlen(to) + 1;
 
     if (EXIM_DBGET(dbm_file, key_datum, result_datum))
@@ -740,14 +740,14 @@ else if (dbm_file)
   EXIM_DATUM key_datum, value_datum;
   EXIM_DATUM_INIT(key_datum);          /* Some DBM libraries need to have */
   EXIM_DATUM_INIT(value_datum);        /* cleared datums. */
-  EXIM_DATUM_DATA(key_datum) = CS to;
+  EXIM_DATUM_DATA(key_datum) = (void *) to;
   EXIM_DATUM_SIZE(key_datum) = Ustrlen(to) + 1;
 
   /* Many OS define the datum value, sensibly, as a void *. However, there
   are some which still have char *. By casting this address to a char * we
   can avoid warning messages from the char * systems. */
 
-  EXIM_DATUM_DATA(value_datum) = CS (&now);
+  EXIM_DATUM_DATA(value_datum) = (void *) &now;
   EXIM_DATUM_SIZE(value_datum) = (int)sizeof(time_t);
   EXIM_DBPUT(dbm_file, key_datum, value_datum);
   }

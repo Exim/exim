@@ -95,7 +95,7 @@ EXIM_DATUM key, data;
 
 EXIM_DATUM_INIT(key);               /* Some DBM libraries require datums to */
 EXIM_DATUM_INIT(data);              /* be cleared before use. */
-EXIM_DATUM_DATA(key) = CS keystring;
+EXIM_DATUM_DATA(key) = (void *) keystring;
 EXIM_DATUM_SIZE(key) = length + 1;
 
 if (EXIM_DBGET(d, key, data))

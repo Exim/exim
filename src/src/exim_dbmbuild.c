@@ -348,7 +348,7 @@ while (Ufgets(line, max_insize, f) != NULL)
     if (started)
       {
       EXIM_DATUM_INIT(content);
-      EXIM_DATUM_DATA(content) = CS buffer;
+      EXIM_DATUM_DATA(content) = (void *) buffer;
       EXIM_DATUM_SIZE(content) = bptr - buffer + add_zero;
 
       switch(rc = EXIM_DBPUTB(d, key, content))
@@ -375,7 +375,7 @@ while (Ufgets(line, max_insize, f) != NULL)
       }
 
     EXIM_DATUM_INIT(key);
-    EXIM_DATUM_DATA(key) = CS keybuffer;
+    EXIM_DATUM_DATA(key) = (void *) keybuffer;
 
     /* Deal with quoted keys. Escape sequences always make one character
     out of several, so we can re-build in place. */
@@ -438,7 +438,7 @@ if (started)
   {
   int rc;
   EXIM_DATUM_INIT(content);
-  EXIM_DATUM_DATA(content) = CS buffer;
+  EXIM_DATUM_DATA(content) = (void *) buffer;
   EXIM_DATUM_SIZE(content) = bptr - buffer + add_zero;
 
   switch(rc = EXIM_DBPUTB(d, key, content))

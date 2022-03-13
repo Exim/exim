@@ -436,7 +436,7 @@ memcpy(key_copy, key, klen);
 
 EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require the datum */
 EXIM_DATUM_INIT(result_datum);      /* to be cleared before use. */
-EXIM_DATUM_DATA(key_datum) = CS key_copy;
+EXIM_DATUM_DATA(key_datum) = (void *) key_copy;
 EXIM_DATUM_SIZE(key_datum) = klen;
 
 if (!EXIM_DBGET(dbblock->dbptr, key_datum, result_datum)) return NULL;
@@ -484,9 +484,9 @@ gptr->time_stamp = time(NULL);
 
 EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require the datum */
 EXIM_DATUM_INIT(value_datum);       /* to be cleared before use. */
-EXIM_DATUM_DATA(key_datum) = CS key_copy;
+EXIM_DATUM_DATA(key_datum) = (void *) key_copy;
 EXIM_DATUM_SIZE(key_datum) = klen;
-EXIM_DATUM_DATA(value_datum) = CS ptr;
+EXIM_DATUM_DATA(value_datum) = (void *) ptr;
 EXIM_DATUM_SIZE(value_datum) = length;
 return EXIM_DBPUT(dbblock->dbptr, key_datum, value_datum);
 }
@@ -514,7 +514,7 @@ uschar * key_copy = store_get(klen, key);
 memcpy(key_copy, key, klen);
 EXIM_DATUM key_datum;
 EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require clearing */
-EXIM_DATUM_DATA(key_datum) = CS key_copy;
+EXIM_DATUM_DATA(key_datum) = (void *) key_copy;
 EXIM_DATUM_SIZE(key_datum) = klen;
 return EXIM_DBDEL(dbblock->dbptr, key_datum);
 }
