@@ -231,7 +231,7 @@ if (rc == DNS_SUCCEED)
     if (rr->type == T_TXT && rr->size > 3)
       {
       store_free_dns_answer(dnsa);
-      return string_copyn_taint(US rr->data, rr->size, TRUE);
+      return string_copyn_taint(US rr->data, rr->size, GET_TAINTED);
       }
 store_free_dns_answer(dnsa);
 return NULL;

@@ -5262,7 +5262,7 @@ if (expansion_test)
     message_id = US exim_str_fail_toolong(argv[msg_action_arg], MESSAGE_ID_LENGTH, "message-id");
     /* Checking the length of the ID is sufficient to validate it.
     Get an untainted version so file opens can be done. */
-    message_id = string_copy_taint(message_id, FALSE);
+    message_id = string_copy_taint(message_id, GET_UNTAINTED);
 
     spoolname = string_sprintf("%s-H", message_id);
     if ((deliver_datafile = spool_open_datafile(message_id)) < 0)

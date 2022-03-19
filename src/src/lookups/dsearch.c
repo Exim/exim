@@ -124,7 +124,7 @@ if (  Ulstat(filename, &statbuf) >= 0
   {
   /* Since the filename exists in the filesystem, we can return a
   non-tainted result. */
-  *result = string_copy_taint(flags & RET_FULL ? filename : keystring, FALSE);
+  *result = string_copy_taint(flags & RET_FULL ? filename : keystring, GET_UNTAINTED);
   return OK;
   }
 

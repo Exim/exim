@@ -3546,13 +3546,13 @@ else
     if (n > 4)
       save_errno = (buf[1] << 24) | (buf[2] << 16) | (buf[3] << 8) | buf[4];
     if ((recipient_verify_failure = n > 5
-	? string_copyn_taint(buf+5, n-5, FALSE) : NULL))
+	? string_copyn_taint(buf+5, n-5, GET_UNTAINTED) : NULL))
       {
       int m;
       s = buf + 5 + Ustrlen(recipient_verify_failure) + 1;
       m = n - (s - buf);
       acl_verify_message = *msg =
-	m > 0 ? string_copyn_taint(s, m, FALSE) : NULL;
+	m > 0 ? string_copyn_taint(s, m, GET_UNTAINTED) : NULL;
       }
 
     DEBUG(D_verify) debug_printf_indent("verify call response:"

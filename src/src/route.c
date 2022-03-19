@@ -1670,7 +1670,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 	addr->prefix_v = string_copyn(addr->local_part, vlen);
 	}
       else
-	addr->prefix = string_copyn_taint(addr->local_part, plen, FALSE);
+	addr->prefix = string_copyn_taint(addr->local_part, plen, GET_UNTAINTED);
       addr->local_part += plen;
       DEBUG(D_route) debug_printf("stripped prefix %s\n", addr->prefix);
       }

@@ -1347,7 +1347,7 @@ if (!isdirectory)
     if (is_tainted(path))
       {
       DEBUG(D_transport) debug_printf("de-tainting path '%s'\n", path);
-      path = string_copy_taint(path, FALSE);
+      path = string_copy_taint(path, GET_UNTAINTED);
       }
 
   if (is_tainted(path)) goto tainted_ret_panic;
@@ -2186,7 +2186,7 @@ else
     if (ob->create_file == create_belowhome)
       {
       DEBUG(D_transport) debug_printf("de-tainting path '%s'\n", path);
-      path = string_copy_taint(path, FALSE);
+      path = string_copy_taint(path, GET_UNTAINTED);
       }
     else
       goto tainted_ret_panic;

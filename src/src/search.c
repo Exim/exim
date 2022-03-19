@@ -959,7 +959,7 @@ than the result.  Return a de-tainted version of the key on the grounds that
 it have been validated by the lookup. */
 
 if (yield && ret_key)
-  yield = string_copy_taint(keystring, FALSE);
+  yield = string_copy_taint(keystring, GET_UNTAINTED);
 
 return yield;
 }
