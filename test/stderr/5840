@@ -57,6 +57,7 @@
 >>> cmd buf flush 6 bytes
 >>>   SMTP<< 221 myhost.test.ex closing connection
 >>>   SMTP(close)>>
+>>> cmdlog: '220:EHLO:250-:STARTTLS:220:EHLO:250-:MAIL|:RCPT:250:250:QUIT:221'
 >>> wrote callout cache domain record for dane256ee.test.ex:
 >>>   result=1 postmaster=0 random=0
 >>> wrote positive callout cache address record for rcptuser@dane256ee.test.ex

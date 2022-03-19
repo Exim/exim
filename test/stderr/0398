@@ -150,6 +150,7 @@ sync_responses expect rcpt for qq@remote
 cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
  locking TESTSUITE/spool/db/callout.lockfile
  locked  TESTSUITE/spool/db/callout.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR|O_CREAT

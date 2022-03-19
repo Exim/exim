@@ -55,6 +55,7 @@ sync_responses expect rcpt for good@test.ex
 ok=1 send_quit=0 send_rset=0 continue_more=0 yield=0 first_address is NULL
   SMTP<< 221 Closing connection
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:MAIL|:RCPT|:BDAT:QUIT:250:250:250:221'
 Leaving send_to_server transport
 LOG: MAIN
   => good@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] L K C="250 OK chunked message data"
@@ -119,6 +120,7 @@ cmd buf flush ddd bytes (more expected)
   SMTP(shutdown)>>
   SMTP<< 221 Closing connection
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:BDAT:250:QUIT:221'
 Leaving send_to_server transport
 LOG: MAIN
   => nopipe@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] K C="250 OK chunked message data"
@@ -186,6 +188,7 @@ LOG: MAIN
 ok=0 send_quit=0 send_rset=1 continue_more=0 yield=0 first_address is NULL
   SMTP<< 221 Closing connection
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:MAIL|:RCPT|:BDAT:QUIT:250:250:451:221'
 added retry item for T:127.0.0.1:127.0.0.1:1225:10HmaZ-0005vi-00: errno=-46 more_errno=dd,A flags=6
 all IP addresses skipped or deferred at least one address
 Leaving send_to_server transport
@@ -253,6 +256,7 @@ sync_responses expect rcpt for permreject@test.ex
 ok=0 send_quit=0 send_rset=1 continue_more=0 yield=0 first_address is NULL
   SMTP<< 221 Closing connection
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:MAIL|:RCPT|:BDAT:QUIT:250:250:550:221'
 Leaving send_to_server transport
 LOG: MAIN
   ** permreject@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined end of data: 550 content rejected
@@ -324,6 +328,7 @@ LOG: MAIN
 ok=0 send_quit=0 send_rset=1 continue_more=0 yield=0 first_address is NULL
   SMTP(closed)<<
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:MAIL|:RCPT|:BDAT:QUIT:250:250'
 added retry item for T:127.0.0.1:127.0.0.1:1225:10HmbB-0005vi-00: errno=-18 more_errno=dd,A flags=6
 all IP addresses skipped or deferred at least one address
 Leaving send_to_server transport

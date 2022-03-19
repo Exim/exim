@@ -42,6 +42,7 @@ sync_responses expect data
   SMTP<< 354 Send data
   SMTP>> writing message and terminating "."
 cannot use sendfile for body: spoolfile not wireformat
+  SMTP>> .
 writing data block fd=dddd size=sss timeout=300
   SMTP<< 250 OK
 ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
@@ -54,6 +55,7 @@ cmd buf flush ddd bytes (more expected)
   SMTP(shutdown)>>
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:DATA:354:.:250:QUIT:250'
 Leaving my_smtp transport
 LOG: MAIN
   => userx@domain.com R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1] C="250 OK"

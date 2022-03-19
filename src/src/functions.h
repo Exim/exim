@@ -1253,6 +1253,42 @@ struct pollfd p = {.fd = fd, .events = pollbits};
 return poll(&p, 1, tmo_millisec);
 }
 
+/******************************************************************************/
+/* Client-side smtp log string, for debug */
+
+static inline void
+smtp_debug_cmd(const uschar * buf, int mode)
+{
+HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP%c> %s\n",
+  mode == SCMD_BUFFER ? '|' : mode == SCMD_MORE ? '+' : '>', buf);
+
+#  ifndef DISABLE_CLIENT_CMD_LOG
+  {
+  int old_pool = store_pool;
+  store_pool = POOL_PERM;	/* Main pool ACL allocations eg. callouts get released */
+  client_cmd_log = string_append_listele_n(client_cmd_log, ':', buf,
+  					  Ustrcspn(buf, " \n"));
+  if (mode == SCMD_BUFFER) 
+    {
+    client_cmd_log = string_catn(client_cmd_log, US"|", 1); 
+    (void) string_from_gstring(client_cmd_log);
+    }
+  store_pool = old_pool;
+  }
+#  endif
+}
+
+
+static inline void
+smtp_debug_cmd_report(void)
+{
+#  ifndef DISABLE_CLIENT_CMD_LOG
+debug_printf("cmdlog: '%s'\n", client_cmd_log ? client_cmd_log->s : US"(unset)");
+#  endif
+}
+
+
+
 # endif	/* !COMPILE_UTILITY */
 
 /******************************************************************************/

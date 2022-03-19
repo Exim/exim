@@ -16,11 +16,13 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> DATA
   SMTP<< 354 Send data
   SMTP>> writing message and terminating "."
+  SMTP>> .
   SMTP<< 250 OK
   SMTP+> QUIT
   SMTP(shutdown)>>
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:AUTH:235:MAIL:250:RCPT:250:DATA:354:.:250:QUIT:250'
 LOG: MAIN
   => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] A=plain C="250 OK"
 LOG: MAIN
@@ -43,11 +45,13 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> DATA
   SMTP<< 354 Send data
   SMTP>> writing message and terminating "."
+  SMTP>> .
   SMTP<< 250 OK
   SMTP+> QUIT
   SMTP(shutdown)>>
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:AUTH:235:MAIL:250:RCPT:250:DATA:354:.:250:QUIT:250'
 LOG: MAIN
   => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] A=plain C="250 OK"
 LOG: MAIN
@@ -74,11 +78,13 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> DATA
   SMTP<< 354 Send data
   SMTP>> writing message and terminating "."
+  SMTP>> .
   SMTP<< 250 OK
   SMTP+> QUIT
   SMTP(shutdown)>>
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:AUTH:300:********:300:********:235:MAIL:250:RCPT:250:DATA:354:.:250:QUIT:250'
 LOG: MAIN
   => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] A=login C="250 OK"
 LOG: MAIN

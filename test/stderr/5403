@@ -91,5 +91,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP>> QUIT
 >>>   SMTP<< 220 OK
 >>>   SMTP(close)>>
+>>> cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:220'
 >>> ----------- cutthrough shutdown (host-checking mode) ------------
 LOG: 10HmaY-0005vi-00 <= sender@myhost.test.ex H=(myhost.test.ex) [1.2.3.4] P=esmtp S=sss for verify@domain.com

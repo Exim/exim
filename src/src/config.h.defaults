@@ -46,6 +46,9 @@ Do not put spaces between # and the 'define'.
 #define DEFAULT_CRYPT              crypt
 #define DELIVER_IN_BUFFER_SIZE     8192
 #define DELIVER_OUT_BUFFER_SIZE    8192
+
+#define DISABLE_CLIENT_CMD_LOG
+#define DISABLE_D_OPTION
 #define DISABLE_DNSSEC
 #define DISABLE_DKIM
 #define DISABLE_EVENT
@@ -55,7 +58,6 @@ Do not put spaces between # and the 'define'.
 #define DISABLE_QUEUE_RAMP
 #define DISABLE_TLS
 #define DISABLE_TLS_RESUME
-#define DISABLE_D_OPTION
 
 #define ENABLE_DISABLE_FSYNC
 

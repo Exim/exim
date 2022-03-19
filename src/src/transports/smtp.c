@@ -2155,7 +2155,7 @@ if (continue_hostname && continue_proxy_cipher)
     DEBUG(D_transport)
       debug_printf("Closing proxied-TLS connection due to SNI mismatch\n");
 
-    HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> QUIT\n");
+    smtp_debug_cmd(US"QUIT", 0);
     write(0, "QUIT\r\n", 6);
     close(0);
     continue_hostname = continue_proxy_cipher = NULL;
@@ -2239,6 +2239,9 @@ if (!continue_hostname)
   sx->peer_limit_mail = sx->peer_limit_rcpt = sx->peer_limit_rcptdom =
 #endif
   sx->avoid_option = sx->peer_offered = smtp_peer_options = 0;
+#ifndef DISABLE_CLIENT_CMD_LOG
+  client_cmd_log = NULL;
+#endif
 
 #ifndef DISABLE_PIPE_CONNECT
   if (  verify_check_given_host(CUSS &ob->hosts_pipe_connect,
@@ -3170,6 +3173,7 @@ sx->cctx.sock = -1;
 (void) event_raise(sx->conn_args.tblock->event_action, US"tcp:close", NULL, NULL);
 #endif
 
+smtp_debug_cmd_report();
 continue_transport = NULL;
 continue_hostname = NULL;
 return yield;
@@ -4831,6 +4835,7 @@ HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 sx->cctx.sock = -1;
 continue_transport = NULL;
 continue_hostname = NULL;
+smtp_debug_cmd_report();
 
 #ifndef DISABLE_EVENT
 (void) event_raise(tblock->event_action, US"tcp:close", NULL, NULL);

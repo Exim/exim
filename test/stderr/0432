@@ -117,6 +117,7 @@ sync_responses expect rcpt for x@y
 cmd buf flush ddd bytes
   SMTP<< 220 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:220'
  locking TESTSUITE/spool/db/callout.lockfile
  locked  TESTSUITE/spool/db/callout.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR|O_CREAT
@@ -292,6 +293,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> cmd buf flush 6 bytes
 >>>   SMTP<< 220 OK
 >>>   SMTP(close)>>
+>>> cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:220'
 >>> wrote callout cache domain record for b:
 >>>   result=1 postmaster=0 random=0
 >>> wrote positive callout cache address record for a@b
@@ -328,6 +330,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP>> EHLO myhost.test.ex
 >>> cmd buf flush 21 bytes
 >>>   SMTP(close)>>
+>>> cmdlog: '220:EHLO'
 >>> SMTP timeout
 >>> ----------- end verify ------------
 >>> accept: condition test deferred in ACL "mail"

@@ -1166,6 +1166,13 @@ if (!g)
   unsigned size = ((count + inc) &  ~inc) + 1;	/* round up requested count */
   g = string_get_tainted(size, s);
   }
+else if (!g->s)			/* should not happen */
+  {
+  g->s = string_copyn(s, count);
+  g->ptr = count;
+  g->size = count;	/*XXX suboptimal*/
+  return g;
+  }
 else if (is_incompatible(g->s, s))
   {
 /* debug_printf("rebuf A\n"); */

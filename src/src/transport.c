@@ -1155,8 +1155,12 @@ f.spool_file_wireformat = FALSE;
 
 /* If requested, add a terminating "." line (SMTP output). */
 
-if (tctx->options & topt_end_dot && !write_chunk(tctx, US".\n", 2))
-  return FALSE;
+if (tctx->options & topt_end_dot)
+  {
+  smtp_debug_cmd(US".", 0);
+  if (!write_chunk(tctx, US".\n", 2))
+    return FALSE;
+  }
 
 /* Write out any remaining data in the buffer before returning. */
 
@@ -1426,7 +1430,7 @@ if (yield)
         ? !write_chunk(tctx, US".\n", 2)
 	: !write_chunk(tctx, US"\n.\n", 3)
      )  )
-    yield = FALSE;
+    { smtp_debug_cmd(US".", 0); yield = FALSE; }
 
   /* Write out any remaining data in the buffer. */
 

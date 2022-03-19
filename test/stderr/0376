@@ -23,6 +23,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for localhost:
   result=1 postmaster=0 random=0
 wrote positive callout cache address record for ok@localhost
@@ -94,6 +95,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
 wrote callout cache domain record for localhost:
   result=1 postmaster=0 random=0
 wrote negative callout cache address record for bad@localhost
@@ -148,6 +150,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:550:QUIT:250'
 wrote callout cache domain record for localhost:
   result=3 postmaster=0 random=0
 LOG: MAIN REJECT
@@ -209,6 +212,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:RSET:250:MAIL:250:RCPT:550:QUIT:250'
 wrote callout cache domain record for otherhost:
   result=1 postmaster=2 random=0
 wrote positive callout cache address record for ok@otherhost
@@ -271,6 +275,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:RSET:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for otherhost2:
   result=1 postmaster=1 random=0
 wrote positive callout cache address record for ok@otherhost2
@@ -320,6 +325,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for otherhost3:
   result=1 postmaster=0 random=1
 LOG: MAIN
@@ -370,6 +376,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for otherhost4:
   result=1 postmaster=0 random=1
 LOG: MAIN
@@ -433,6 +440,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:RSET:250:MAIL:250:RCPT:250:RSET:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for otherhost41:
   result=1 postmaster=1 random=2
 wrote positive callout cache address record for ok@otherhost41
@@ -490,6 +498,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:RSET:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for otherhost21:
   result=1 postmaster=1 random=0
 wrote positive callout cache address record for ok@otherhost21
@@ -522,6 +531,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for otherhost21:
   result=1 postmaster=1 random=0
 wrote positive callout cache address record for ok2@otherhost21
@@ -559,6 +569,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:RSET:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for otherhost31:
   result=1 postmaster=0 random=2
 wrote positive callout cache address record for ok@otherhost31
@@ -591,6 +602,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for otherhost31:
   result=1 postmaster=0 random=2
 wrote positive callout cache address record for okok@otherhost31
@@ -628,6 +640,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:RSET:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for otherhost31:
   result=1 postmaster=0 random=2
 wrote positive callout cache address record for okokok@otherhost31
@@ -658,6 +671,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP(Connection timed out)<<
 SMTP timeout
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT'
 wrote callout cache domain record for otherhost51:
   result=1 postmaster=0 random=0
 LOG: MAIN REJECT
@@ -699,6 +713,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:RSET:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for otherhost52:
   result=1 postmaster=1 random=0
 wrote positive callout cache address record for okokok@otherhost52
@@ -731,6 +746,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for x.y.z:
   result=1 postmaster=0 random=0
 wrote positive callout cache address record for abcd@x.y.z/<somesender@a.domain>
@@ -764,6 +780,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP(Connection timed out)<<
 SMTP timeout
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT'
 wrote callout cache domain record for x.y.z:
   result=1 postmaster=0 random=0
 LOG: MAIN
@@ -805,6 +822,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:RSET:250:MAIL:250:RCPT:550:RCPT:250:QUIT:250'
 wrote callout cache domain record for otherhost9:
   result=1 postmaster=1 random=0
 wrote positive callout cache address record for ok@otherhost9
@@ -849,6 +867,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:RSET:250:MAIL:250:RCPT:250:RSET:250:MAIL:250:RCPT:250:QUIT:250'
 wrote callout cache domain record for test.ex:
   result=1 postmaster=1 random=2
 wrote positive callout cache address record for z@test.ex/<postmaster@myhost.test.ex>

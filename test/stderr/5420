@@ -514,6 +514,7 @@ LOG: MAIN
   SMTP>> QUIT
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:STARTTLS:220:EHLO:250-:MAIL|:RCPT:250:250:DATA:354:250:QUIT:221'
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
@@ -998,6 +999,7 @@ LOG: MAIN
   SMTP>> QUIT
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:MAIL|:RCPT:250:250:DATA:354:250:QUIT:221'
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
@@ -1482,6 +1484,7 @@ LOG: MAIN
   SMTP>> QUIT
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:MAIL|:RCPT:250:250:DATA:354:250:QUIT:221'
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss

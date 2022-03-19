@@ -596,6 +596,22 @@ return TRUE;
 
 
 
+/* This might be called both due to callout and then from delivery.
+Use memory that will not be released between those phases.
+*/
+static void
+smtp_debug_resp(const uschar * buf)
+{
+#ifndef DISABLE_CLIENT_CMD_LOG
+int old_pool = store_pool;
+store_pool = POOL_PERM;
+client_cmd_log = string_append_listele_n(client_cmd_log, ':', buf,
+  buf[3] == ' ' ? 3 : 4);
+store_pool = old_pool;
+#endif
+}
+
+
 /*************************************************
 *             Write SMTP command                 *
 *************************************************/
@@ -617,7 +633,7 @@ Returns:     0 if command added to pipelining buffer, with nothing transmitted
 */
 
 int
-smtp_write_command(void * sx, int mode, const char *format, ...)
+smtp_write_command(void * sx, int mode, const char * format, ...)
 {
 smtp_outblock * outblock = &((smtp_context *)sx)->outblock;
 int rc = 0;
@@ -673,9 +689,7 @@ if (format)
     while (*p) *p++ = '*';
     }
 
-  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP%c> %s\n",
-    mode == SCMD_BUFFER ? '|' : mode == SCMD_MORE ? '+' : '>',
-    big_buffer);
+  smtp_debug_cmd(big_buffer, mode);
   }
 
 if (mode != SCMD_BUFFER)
@@ -813,8 +827,10 @@ smtp_context * sx = sx0;
 uschar * ptr = buffer;
 int count = 0;
 time_t timelimit = time(NULL) + timeout;
+BOOL yield = FALSE;
 
 errno = 0;  /* Ensure errno starts out zero */
+buffer[0] = '\0';
 
 #ifndef DISABLE_PIPE_CONNECT
 if (sx->pending_BANNER || sx->pending_EHLO)
@@ -823,9 +839,8 @@ if (sx->pending_BANNER || sx->pending_EHLO)
   if ((rc = smtp_reap_early_pipe(sx, &count)) != OK)
     {
     DEBUG(D_transport) debug_printf("failed reaping pipelined cmd responsess\n");
-    buffer[0] = '\0';
     if (rc == DEFER) errno = ERRNO_TLSFAILURE;
-    return FALSE;
+    goto out;
     }
   }
 #endif
@@ -856,7 +871,7 @@ for (;;)
      (ptr[3] != '-' && ptr[3] != ' ' && ptr[3] != 0))
     {
     errno = ERRNO_SMTPFORMAT;    /* format error */
-    return FALSE;
+    goto out;
     }
 
   /* If the line we have just read is a terminal line, line, we are done.
@@ -884,7 +899,11 @@ distinguish between an unexpected return code and other errors such as
 timeouts, lost connections, etc. */
 
 errno = 0;
-return buffer[0] == okdigit;
+yield = buffer[0] == okdigit;
+
+out:
+  smtp_debug_resp(buffer);
+  return yield;
 }
 
 /* End of smtp_out.c */

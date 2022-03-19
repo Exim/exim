@@ -30,6 +30,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:RSET:250:MAIL:250:RCPT:550:QUIT:250'
 wrote callout cache domain record for localhost:
   result=1 postmaster=2 random=0
 wrote positive callout cache address record for Ok@localhost
@@ -74,6 +75,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
 wrote callout cache domain record for elsewhere:
   result=1 postmaster=0 random=0
 wrote negative callout cache address record for NOTok@elsewhere
@@ -109,6 +111,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
 wrote callout cache domain record for elsewhere:
   result=1 postmaster=0 random=0
 wrote negative callout cache address record for NOTok2@elsewhere

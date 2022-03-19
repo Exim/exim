@@ -102,6 +102,7 @@ cmd buf flush ddd bytes (more expected)
   SMTP(shutdown)>>
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:QUIT:250'
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1]:PORT_S for x@y: result OK
 address match test: subject=*@127.0.0.1 pattern=*
 127.0.0.1 in "*"? yes (matched "*")

@@ -32,6 +32,7 @@ locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 added retry item for R:usery@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:RCPT:451:QUIT:250'
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   added retry item
 reading retry information for R:usery@test.ex:<CALLER@test.ex> from subprocess
@@ -95,6 +96,7 @@ no host retry record
 no message retry record
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 added retry item for R:usery@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
+cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:RCPT:451:QUIT:250'
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   existing delete item dropped
   added retry item

@@ -712,6 +712,9 @@ const pcre2_code *regex_LIMITS        = NULL;
 uschar *client_authenticator   = NULL;
 uschar *client_authenticated_id = NULL;
 uschar *client_authenticated_sender = NULL;
+#ifndef DISABLE_CLIENT_CMD_LOG
+gstring *client_cmd_log        = NULL;
+#endif
 int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
 FILE   *config_file            = NULL;

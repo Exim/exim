@@ -421,6 +421,9 @@ extern chunking_state_t chunking_state;
 extern uschar *client_authenticator;        /* Authenticator name used for smtp delivery */
 extern uschar *client_authenticated_id;     /* "login" name used for SMTP AUTH */
 extern uschar *client_authenticated_sender; /* AUTH option to SMTP MAIL FROM (not yet used) */
+#ifndef DISABLE_CLIENT_CMD_LOG
+extern gstring *client_cmd_log;	       /* debug log of client cmds & responses */
+#endif
 extern int     clmacro_count;          /* Number of command line macros */
 extern uschar *clmacros[];             /* Copy of them, for re-exec */
 extern BOOL    commandline_checks_require_admin; /* belt and braces for insecure setups */

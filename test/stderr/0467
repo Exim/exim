@@ -28,11 +28,13 @@ Connecting to localhost.test.ex [127.0.0.1]:1224 ...  connected
   SMTP>> DATA
   SMTP<< 354 OK
   SMTP>> writing message and terminating "."
+  SMTP>> .
   SMTP<< 250 OK
   SMTP+> QUIT
   SMTP(shutdown)>>
   SMTP<< 250 OK
   SMTP(close)>>
+cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:DATA:354:.:250:QUIT:250'
 LOG: MAIN
   => x@srv27.test.ex R=r1 T=t1 H=localhost.test.ex [127.0.0.1]:1224 C="250 OK"
 LOG: MAIN

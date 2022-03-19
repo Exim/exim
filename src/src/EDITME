@@ -1489,4 +1489,9 @@ EXIM_TMPDIR="/tmp"
 # For development, add this to include code to time various stages and report.
 # CFLAGS += -DMEASURE_TIMING
 
+# For a very slightly smaller build, for constrained systems, uncomment this.
+# The feature involved is purely for debugging.
+
+# DISABLE_CLIENT_CMD_LOG=yes
+
 # End of EDITME for Exim 4.

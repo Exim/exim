@@ -1126,6 +1126,7 @@ no_conn:
 	HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 	(void)close(sx->cctx.sock);
 	sx->cctx.sock = -1;
+	smtp_debug_cmd_report();
 #ifndef DISABLE_EVENT
 	(void) event_raise(addr->transport->event_action, US"tcp:close", NULL, NULL);
 #endif
@@ -1346,7 +1347,7 @@ cutthrough_predata(void)
 if(cutthrough.cctx.sock < 0 || cutthrough.callout_hold_only)
   return FALSE;
 
-HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> DATA\n");
+smtp_debug_cmd(US"DATA", 0);
 cutthrough_puts(US"DATA\r\n", 6);
 cutthrough_flush_send();
 
@@ -1414,7 +1415,7 @@ if(fd >= 0)
   */
   client_conn_ctx tmp_ctx = cutthrough.cctx;
   ctctx.outblock.ptr = ctbuffer;
-  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> QUIT\n");
+  smtp_debug_cmd(US"QUIT", 0);
   _cutthrough_puts(US"QUIT\r\n", 6);	/* avoid recursion */
   _cutthrough_flush_send();
   cutthrough.cctx.sock = -1;		/* avoid recursion via read timeout */
@@ -1433,6 +1434,7 @@ if(fd >= 0)
 #endif
   HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
   (void)close(fd);
+  smtp_debug_cmd_report();
   HDEBUG(D_acl) debug_printf_indent("----------- cutthrough shutdown (%s) ------------\n", why);
   }
 ctctx.outblock.ptr = ctbuffer;

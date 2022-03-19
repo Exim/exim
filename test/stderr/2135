@@ -59,6 +59,7 @@ sync_responses expect data
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP>> writing message and terminating "."
 cannot use sendfile for body: spoolfile not wireformat
+  SMTP>> .
 writing data block fd=dddd size=sss timeout=300
   SMTP<< 250 OK id=10HmaY-0005vi-00
 ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
@@ -68,6 +69,7 @@ cmd buf flush ddd bytes (more expected)
   SMTP(TLS shutdown)>>
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
+cmdlog: 'DATA:354:.:250:QUIT:221'
 Leaving t1 transport
 LOG: MAIN
   => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:1225 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-0005vi-00"

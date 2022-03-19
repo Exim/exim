@@ -259,7 +259,7 @@ return NULL;
 }
 
 static pooldesc *
-pool_for_pointer(const void * p)
+pool_for_pointer(const void * p, const char * func, int linenumber)
 {
 pooldesc * pp;
 storeblock * b;
@@ -274,7 +274,8 @@ for (pp = paired_pools; pp < paired_pools + N_PAIRED_POOLS; pp++)
   for (b = pp->chainbase; b; b = b->next)
     if (is_pointer_in_block(b, p)) return pp;
 
-log_write(0, LOG_MAIN|LOG_PANIC_DIE, "bad memory reference; pool not found");
+log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  "bad memory reference; pool not found, at %s %d", func, linenumber);
 return NULL;
 }
 
@@ -713,7 +714,7 @@ BOOL
 store_extend_3(void * ptr, int oldsize, int newsize,
    const char * func, int linenumber)
 {
-pooldesc * pp = pool_for_pointer(ptr);
+pooldesc * pp = pool_for_pointer(ptr, func, linenumber);
 int inc = newsize - oldsize;
 int rounded_oldsize = oldsize;
 
@@ -1105,7 +1106,7 @@ void *
 store_newblock_3(void * oldblock, int newsize, int len,
   const char * func, int linenumber)
 {
-pooldesc * pp = pool_for_pointer(oldblock);
+pooldesc * pp = pool_for_pointer(oldblock, func, linenumber);
 BOOL release_ok = !is_tainted(oldblock) && pp->store_last_get == oldblock;		/*XXX why tainted not handled? */
 uschar * newblock;
 
