@@ -300,6 +300,8 @@ before use, but we don't have to free anything after reading data. */
 #  else /* DB_VERSION_MAJOR >= 3 */
 #   error Berkeley DB versions earlier than 3 are not supported */
 #  endif /* DB_VERSION_MAJOR */
+# else
+#  error Berkeley DB version 1 is no longer supported
 # endif /* DB_VERSION_STRING */
 
 
