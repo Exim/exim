@@ -31,7 +31,7 @@ characters. */
 
 #include "exim.h"
 
-uschar * spool_directory = NULL;	/* dummy for dbstuff.h */
+uschar * spool_directory = NULL;	/* dummy for hintsdb.h */
 
 /******************************************************************************/
 					/* dummies needed by Solaris build */
@@ -104,26 +104,6 @@ if (n < 0 || n >= sys_nerr) return "unknown error number";
 return sys_errlist[n];
 }
 #endif /* STRERROR_FROM_ERRLIST */
-
-
-/* For Berkeley DB >= 2, we can define a function to be called in case of DB
-errors. This should help with debugging strange DB problems, e.g. getting "File
-exists" when you try to open a db file. The API changed at release 4.3. */
-
-#if defined(USE_DB) && defined(DB_VERSION_STRING)
-void
-# if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
-dbfn_bdb_error_callback(const DB_ENV *dbenv, const char *pfx, const char *msg)
-{
-dbenv = dbenv;
-# else
-dbfn_bdb_error_callback(const char *pfx, char *msg)
-{
-# endif
-pfx = pfx;
-printf("Berkeley DB error: %s\n", msg);
-}
-#endif
 
 
 
@@ -266,9 +246,7 @@ else
 /* It is apparently necessary to open with O_RDWR for this to work
 with gdbm-1.7.3, though no reading is actually going to be done. */
 
-EXIM_DBOPEN(temp_dbmname, dirname, O_RDWR|O_CREAT|O_EXCL, 0644, &d);
-
-if (d == NULL)
+if (!(d = exim_dbopen(temp_dbmname, dirname, O_RDWR|O_CREAT|O_EXCL, 0644)))
   {
   printf("exim_dbmbuild: unable to create %s: %s\n", temp_dbmname,
     strerror(errno));
@@ -347,11 +325,11 @@ while (Ufgets(line, max_insize, f) != NULL)
 
     if (started)
       {
-      EXIM_DATUM_INIT(content);
-      EXIM_DATUM_DATA(content) = (void *) buffer;
-      EXIM_DATUM_SIZE(content) = bptr - buffer + add_zero;
+      exim_datum_init(&content);
+      exim_datum_data_set(&content, buffer);
+      exim_datum_size_set(&content, bptr - buffer + add_zero);
 
-      switch(rc = EXIM_DBPUTB(d, key, content))
+      switch(rc = exim_dbputb(d, &key, &content))
         {
         case EXIM_DBPUTB_OK:
 	  count++;
@@ -361,7 +339,7 @@ while (Ufgets(line, max_insize, f) != NULL)
 	  if (warn) fprintf(stderr, "** Duplicate key \"%s\"\n", keybuffer);
 	  dupcount++;
 	  if(duperr) yield = 1;
-	  if (lastdup) EXIM_DBPUT(d, key, content);
+	  if (lastdup) exim_dbput(d, &key, &content);
 	  break;
 
         default:
@@ -374,8 +352,8 @@ while (Ufgets(line, max_insize, f) != NULL)
       bptr = buffer;
       }
 
-    EXIM_DATUM_INIT(key);
-    EXIM_DATUM_DATA(key) = (void *) keybuffer;
+    exim_datum_init(&key);
+    exim_datum_data_set(&key, keybuffer);
 
     /* Deal with quoted keys. Escape sequences always make one character
     out of several, so we can re-build in place. */
@@ -392,16 +370,16 @@ while (Ufgets(line, max_insize, f) != NULL)
         s++;
         }
       if (*s != 0) s++;               /* Past terminating " */
-      EXIM_DATUM_SIZE(key) = t - keystart + add_zero;
+      exim_datum_size_set(&key, t - keystart + add_zero);
       }
     else
       {
       keystart = s;
       while (*s != 0 && *s != ':' && !isspace(*s)) s++;
-      EXIM_DATUM_SIZE(key) = s - keystart + add_zero;
+      exim_datum_size_set(&key, s - keystart + add_zero);
       }
 
-    if (EXIM_DATUM_SIZE(key) > 256)
+    if (exim_datum_size_get(&key) > 256)
       {
       printf("Keys longer than 255 characters cannot be handled\n");
       started = 0;
@@ -410,10 +388,10 @@ while (Ufgets(line, max_insize, f) != NULL)
       }
 
     if (lowercase)
-      for (i = 0; i < EXIM_DATUM_SIZE(key) - add_zero; i++)
+      for (i = 0; i < exim_datum_size_get(&key) - add_zero; i++)
         keybuffer[i] = tolower(keystart[i]);
     else
-      for (i = 0; i < EXIM_DATUM_SIZE(key) - add_zero; i++)
+      for (i = 0; i < exim_datum_size_get(&key) - add_zero; i++)
         keybuffer[i] = keystart[i];
 
     keybuffer[i] = 0;
@@ -437,11 +415,11 @@ while (Ufgets(line, max_insize, f) != NULL)
 if (started)
   {
   int rc;
-  EXIM_DATUM_INIT(content);
-  EXIM_DATUM_DATA(content) = (void *) buffer;
-  EXIM_DATUM_SIZE(content) = bptr - buffer + add_zero;
+  exim_datum_init(&content);
+  exim_datum_data_set(&content, buffer);
+  exim_datum_size_set(&content, bptr - buffer + add_zero);
 
-  switch(rc = EXIM_DBPUTB(d, key, content))
+  switch(rc = exim_dbputb(d, &key, &content))
     {
     case EXIM_DBPUTB_OK:
     count++;
@@ -451,7 +429,7 @@ if (started)
     if (warn) fprintf(stderr, "** Duplicate key \"%s\"\n", keybuffer);
     dupcount++;
     if (duperr) yield = 1;
-    if (lastdup) EXIM_DBPUT(d, key, content);
+    if (lastdup) exim_dbput(d, &key, &content);
     break;
 
     default:
@@ -466,7 +444,7 @@ if (started)
 
 TIDYUP:
 
-EXIM_DBCLOSE(d);
+exim_dbclose(d);
 (void)fclose(f);
 
 /* If successful, output the number of entries and rename the temporary

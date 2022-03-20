@@ -1290,18 +1290,18 @@ switch (command)
 
   if (command == vacation_command)
     {
-    if (new->args[mailarg_index_file].u == NULL)
+    if (!new->args[mailarg_index_file].u)
       {
       new->args[mailarg_index_file].u = string_copy(US".vacation.msg");
       new->args[mailarg_index_expand].u = US"";   /* not NULL => TRUE */
       }
-    if (new->args[mailarg_index_log].u == NULL)
+    if (!new->args[mailarg_index_log].u)
       new->args[mailarg_index_log].u = string_copy(US".vacation.log");
-    if (new->args[mailarg_index_once].u == NULL)
+    if (!new->args[mailarg_index_once].u)
       new->args[mailarg_index_once].u = string_copy(US".vacation");
-    if (new->args[mailarg_index_once_repeat].u == NULL)
+    if (!new->args[mailarg_index_once_repeat].u)
       new->args[mailarg_index_once_repeat].u = string_copy(US"7d");
-    if (new->args[mailarg_index_subject].u == NULL)
+    if (!new->args[mailarg_index_subject].u)
       new->args[mailarg_index_subject].u = string_copy(US"On vacation");
     }
 

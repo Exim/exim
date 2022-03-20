@@ -264,7 +264,7 @@ int fd, pid, rc;
 int cache_fd = -1;
 int cache_size = 0;
 int add_size = 0;
-EXIM_DB *dbm_file = NULL;
+EXIM_DB * dbm_file = NULL;
 BOOL file_expand, return_message;
 uschar *from, *reply_to, *to, *cc, *bcc, *subject, *headers, *text, *file;
 uschar *logfile, *oncelog;
@@ -476,8 +476,7 @@ if (oncelog && *oncelog && to)
 
     dirname = (s = Ustrrchr(oncelog, '/'))
       ? string_copyn(oncelog, s - oncelog) : NULL;
-    EXIM_DBOPEN(oncelog, dirname, O_RDWR|O_CREAT, ob->mode, &dbm_file);
-    if (!dbm_file)
+    if (!(dbm_file = exim_dbopen(oncelog, dirname, O_RDWR|O_CREAT, ob->mode)))
       {
       addr->transport_return = DEFER;
       addr->basic_errno = errno;
@@ -487,12 +486,12 @@ if (oncelog && *oncelog && to)
       goto END_OFF;
       }
 
-    EXIM_DATUM_INIT(key_datum);        /* Some DBM libraries need datums */
-    EXIM_DATUM_INIT(result_datum);     /* to be cleared */
-    EXIM_DATUM_DATA(key_datum) = (void *) to;
-    EXIM_DATUM_SIZE(key_datum) = Ustrlen(to) + 1;
+    exim_datum_init(&key_datum);        /* Some DBM libraries need datums */
+    exim_datum_init(&result_datum);     /* to be cleared */
+    exim_datum_data_set(&key_datum, (void *) to);
+    exim_datum_size_set(&key_datum, Ustrlen(to) + 1);
 
-    if (EXIM_DBGET(dbm_file, key_datum, result_datum))
+    if (exim_dbget(dbm_file, &key_datum, &result_datum))
       {
       /* If the datum size is that of a binary time, we are in the new world
       where messages are sent periodically. Otherwise the file is an old one,
@@ -501,8 +500,8 @@ if (oncelog && *oncelog && to)
       introduced at Exim 3.00. In a couple of years' time the test on the size
       can be abolished. */
 
-      if (EXIM_DATUM_SIZE(result_datum) == sizeof(time_t))
-        memcpy(&then, EXIM_DATUM_DATA(result_datum), sizeof(time_t));
+      if (exim_datum_size_get(&result_datum) == sizeof(time_t))
+        memcpy(&then, exim_datum_data_get(&result_datum), sizeof(time_t));
       else
         then = now;
       }
@@ -575,7 +574,7 @@ if ((pid = child_open_exim(&fd, US"autoreply")) < 0)
   addr->message = string_sprintf("Failed to create child process to send "
     "message from %s transport: %s", tblock->name, strerror(errno));
   DEBUG(D_transport) debug_printf("%s\n", addr->message);
-  if (dbm_file) EXIM_DBCLOSE(dbm_file);
+  if (dbm_file) exim_dbclose(dbm_file);
   return FALSE;
   }
 
@@ -738,18 +737,18 @@ if (cache_fd >= 0)
 else if (dbm_file)
   {
   EXIM_DATUM key_datum, value_datum;
-  EXIM_DATUM_INIT(key_datum);          /* Some DBM libraries need to have */
-  EXIM_DATUM_INIT(value_datum);        /* cleared datums. */
-  EXIM_DATUM_DATA(key_datum) = (void *) to;
-  EXIM_DATUM_SIZE(key_datum) = Ustrlen(to) + 1;
+  exim_datum_init(&key_datum);          /* Some DBM libraries need to have */
+  exim_datum_init(&value_datum);        /* cleared datums. */
+  exim_datum_data_set(&key_datum, to);
+  exim_datum_size_set(&key_datum, Ustrlen(to) + 1);
 
   /* Many OS define the datum value, sensibly, as a void *. However, there
   are some which still have char *. By casting this address to a char * we
   can avoid warning messages from the char * systems. */
 
-  EXIM_DATUM_DATA(value_datum) = (void *) &now;
-  EXIM_DATUM_SIZE(value_datum) = (int)sizeof(time_t);
-  EXIM_DBPUT(dbm_file, key_datum, value_datum);
+  exim_datum_data_set(&value_datum, &now);
+  exim_datum_size_set(&value_datum, sizeof(time_t));
+  exim_dbput(dbm_file, &key_datum, &value_datum);
   }
 
 /* If sending failed, defer to try again - but if once is set the next
@@ -812,7 +811,7 @@ if (logfile)
   }
 
 END_OFF:
-if (dbm_file) EXIM_DBCLOSE(dbm_file);
+if (dbm_file) exim_dbclose(dbm_file);
 if (cache_fd > 0) (void)close(cache_fd);
 
 DEBUG(D_transport) debug_printf("%s transport succeeded\n", tblock->name);

@@ -95,8 +95,8 @@ cd ..
 # but local_scan.c does not, because its location is taken from the build-time
 # configuration. Likewise for the os.c file, which gets build dynamically.
 
-for f in blob.h dbfunctions.h dbstuff.h exim.h functions.h globals.h \
-  hash.h local_scan.h \
+for f in blob.h dbfunctions.h exim.h functions.h globals.h \
+  hash.h hintsdb.h hintsdb_structs.h local_scan.h \
   macros.h mytypes.h osfunctions.h store.h structs.h lookupapi.h sha_ver.h \
   \
   acl.c buildconfig.c base64.c child.c crypt16.c daemon.c dbfn.c debug.c \

@@ -102,7 +102,8 @@ typedef void hctx;
 #include "structs.h"
 #include "blob.h"
 #include "globals.h"
-#include "dbstuff.h"
+#include "hintsdb.h"
+#include "hintsdb_structs.h"
 #include "functions.h"
 #include "osfunctions.h"
 

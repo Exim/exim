@@ -5,6 +5,8 @@
 /* Copyright (c) University of Cambridge 1995 - 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
 
+#ifndef DBFUNCTIONS_H
+#define DBFUNCTIONS_H
 
 /* Functions for reading/writing exim database files */
 
@@ -24,11 +26,12 @@ int      dbfn_write(open_db *, const uschar *, void *, int);
 changed at release 4.3. */
 
 #if defined(USE_DB) && defined(DB_VERSION_STRING)
-#if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
+# if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
 void     dbfn_bdb_error_callback(const DB_ENV *, const char *, const char *);
-#else
+# else
 void     dbfn_bdb_error_callback(const char *, char *);
-#endif
+# endif
 #endif
 
+#endif
 /* End of dbfunctions.h */

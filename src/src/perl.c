@@ -15,6 +15,10 @@
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include <assert.h>
+
+#define HINTSDB_H
+#define DBFUNCTIONS_H
+
 #include "exim.h"
 
 #define EXIM_TRUE TRUE

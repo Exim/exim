@@ -531,7 +531,8 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 
 #include "local_scan.h"
 #include "macros.h"
-#include "dbstuff.h"
+#include "hintsdb.h"
+#include "hintsdb_structs.h"
 #include "structs.h"
 #include "blob.h"
 #include "globals.h"

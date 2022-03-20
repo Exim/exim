@@ -221,8 +221,7 @@ else
 
 /* Now search the makefile for certain settings */
 
-base = fopen("Makefile", "rb");
-if (base == NULL)
+if (!(base = fopen("Makefile", "rb")))
   {
   printf("*** Buildconfig: failed to open Makefile\n");
   (void)fclose(new);
@@ -387,7 +386,6 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
   encountered. */
 
   for (i = 1; i < sizeof(db_opts)/sizeof(char *); i++)
-    {
     if (strcmp(name, db_opts[i]) == 0)
       {
       if (use_which_db == i)
@@ -397,7 +395,6 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
         fprintf(new, "/* %s not set */\n", name);
       break;
       }
-    }
   if (i < sizeof(db_opts)/sizeof(char *)) continue;
 
   /* EXIM_USER is a special case. We look in the environment for EXIM_USER or

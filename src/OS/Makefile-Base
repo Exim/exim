@@ -635,11 +635,12 @@ eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) ../exim_monitor/em_version.c \
 HDRS  =	blob.h \
 	config.h \
 	dbfunctions.h \
-	dbstuff.h \
 	exim.h \
 	functions.h \
 	globals.h \
 	hash.h \
+	hintsdb.h \
+	hintsdb_structs.h \
 	local_scan.h \
 	macros.h \
 	mytypes.h \
@@ -648,10 +649,11 @@ HDRS  =	blob.h \
 	os.h
 PHDRS = ../config.h \
 	../dbfunctions.h \
-	../dbstuff.h \
 	../exim.h \
 	../functions.h \
 	../globals.h \
+	../hintsdb.h \
+	../hintsdb_structs.h \
 	../local_scan.h \
 	../macros.h \
 	../mytypes.h \

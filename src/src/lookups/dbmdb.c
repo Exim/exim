@@ -21,11 +21,10 @@ dbmdb_open(const uschar * filename, uschar ** errmsg)
 {
 uschar * dirname = string_copy(filename);
 uschar * s;
-EXIM_DB *yield = NULL;
+EXIM_DB * yield = NULL;
 
 if ((s = Ustrrchr(dirname, '/'))) *s = '\0';
-EXIM_DBOPEN(filename, dirname, O_RDONLY, 0, &yield);
-if (!yield)
+if (!(yield = exim_dbopen(filename, dirname, O_RDONLY, 0)))
   *errmsg = string_open_failed("%s as a %s file", filename, EXIM_DBTYPE);
 return yield;
 }
@@ -93,15 +92,15 @@ dbmdb_find(void * handle, const uschar * filename, const uschar * keystring,
 EXIM_DB *d = (EXIM_DB *)handle;
 EXIM_DATUM key, data;
 
-EXIM_DATUM_INIT(key);               /* Some DBM libraries require datums to */
-EXIM_DATUM_INIT(data);              /* be cleared before use. */
-EXIM_DATUM_DATA(key) = (void *) keystring;
-EXIM_DATUM_SIZE(key) = length + 1;
+exim_datum_init(&key);               /* Some DBM libraries require datums to */
+exim_datum_init(&data);              /* be cleared before use. */
+exim_datum_data_set(&key, string_copyn(keystring, length));
+exim_datum_size_set(&key, length + 1);
 
-if (EXIM_DBGET(d, key, data))
+if (exim_dbget(d, &key, &data))
   {
-  *result = string_copyn(US EXIM_DATUM_DATA(data), EXIM_DATUM_SIZE(data));
-  EXIM_DATUM_FREE(data);            /* Some DBM libraries need a free() call */
+  *result = string_copyn(exim_datum_data_get(&data), exim_datum_size_get(&data));
+  exim_datum_free(&data);            /* Some DBM libraries need a free() call */
   return OK;
   }
 return FAIL;
@@ -214,7 +213,7 @@ return dbmdb_find(handle, filename, key_buffer, key_item_len - 1,
 void
 static dbmdb_close(void *handle)
 {
-EXIM_DBCLOSE((EXIM_DB *)handle);
+exim_dbclose((EXIM_DB *)handle);
 }
 
 

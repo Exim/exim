@@ -39,31 +39,6 @@ arrange to hold the locks for the bare minimum of time. */
 
 
 /*************************************************
-*         Berkeley DB error callback             *
-*************************************************/
-
-/* For Berkeley DB >= 2, we can define a function to be called in case of DB
-errors. This should help with debugging strange DB problems, e.g. getting "File
-exists" when you try to open a db file. The API for this function was changed
-at DB release 4.3. */
-
-#if defined(USE_DB) && defined(DB_VERSION_STRING)
-void
-# if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
-dbfn_bdb_error_callback(const DB_ENV *dbenv, const char *pfx, const char *msg)
-{
-dbenv = dbenv;
-# else
-dbfn_bdb_error_callback(const char *pfx, char *msg)
-{
-# endif
-pfx = pfx;
-log_write(0, LOG_MAIN, "Berkeley DB error: %s", msg);
-}
-#endif
-
-
-/*************************************************
 *          Open and lock a database file         *
 *************************************************/
 
@@ -172,12 +147,12 @@ open call. */
 snprintf(CS filename, sizeof(filename), "%s/%s", dirname, name);
 
 priv_drop_temp(exim_uid, exim_gid);
-EXIM_DBOPEN(filename, dirname, flags, EXIMDB_MODE, &(dbblock->dbptr));
+dbblock->dbptr = exim_dbopen(filename, dirname, flags, EXIMDB_MODE);
 if (!dbblock->dbptr && errno == ENOENT && flags == O_RDWR)
   {
   DEBUG(D_hints_lookup)
     debug_printf_indent("%s appears not to exist: trying to create\n", filename);
-  EXIM_DBOPEN(filename, dirname, flags|O_CREAT, EXIMDB_MODE, &(dbblock->dbptr));
+  dbblock->dbptr = exim_dbopen(filename, dirname, flags|O_CREAT, EXIMDB_MODE);
   }
 save_errno = errno;
 priv_restore();
@@ -232,7 +207,7 @@ Returns:  nothing
 void
 dbfn_close(open_db *dbblock)
 {
-EXIM_DBCLOSE(dbblock->dbptr);
+exim_dbclose(dbblock->dbptr);
 (void)close(dbblock->lockfd);
 DEBUG(D_hints_lookup)
   { debug_printf_indent("closed hints database and lockfile\n"); acl_level--; }
@@ -274,21 +249,21 @@ memcpy(key_copy, key, klen);
 
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: key=%s\n", key);
 
-EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require the datum */
-EXIM_DATUM_INIT(result_datum);      /* to be cleared before use. */
-EXIM_DATUM_DATA(key_datum) = (void *) key_copy;
-EXIM_DATUM_SIZE(key_datum) = klen;
+exim_datum_init(&key_datum);         /* Some DBM libraries require the datum */
+exim_datum_init(&result_datum);      /* to be cleared before use. */
+exim_datum_data_set(&key_datum, key_copy);
+exim_datum_size_set(&key_datum, klen);
 
-if (!EXIM_DBGET(dbblock->dbptr, key_datum, result_datum)) return NULL;
+if (!exim_dbget(dbblock->dbptr, &key_datum, &result_datum)) return NULL;
 
 /* Assume the data store could have been tainted.  Properly, we should
 store the taint status with the data. */
 
-yield = store_get(EXIM_DATUM_SIZE(result_datum), GET_TAINTED);
-memcpy(yield, EXIM_DATUM_DATA(result_datum), EXIM_DATUM_SIZE(result_datum));
-if (length) *length = EXIM_DATUM_SIZE(result_datum);
+yield = store_get(exim_datum_size_get(&result_datum), GET_TAINTED);
+memcpy(yield, exim_datum_data_get(&result_datum), exim_datum_size_get(&result_datum));
+if (length) *length = exim_datum_size_get(&result_datum);
 
-EXIM_DATUM_FREE(result_datum);    /* Some DBM libs require freeing */
+exim_datum_free(&result_datum);    /* Some DBM libs require freeing */
 return yield;
 }
 
@@ -350,13 +325,13 @@ gptr->time_stamp = time(NULL);
 
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_write: key=%s\n", key);
 
-EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require the datum */
-EXIM_DATUM_INIT(value_datum);       /* to be cleared before use. */
-EXIM_DATUM_DATA(key_datum) = (void *) key_copy;
-EXIM_DATUM_SIZE(key_datum) = klen;
-EXIM_DATUM_DATA(value_datum) = (void *) ptr;
-EXIM_DATUM_SIZE(value_datum) = length;
-return EXIM_DBPUT(dbblock->dbptr, key_datum, value_datum);
+exim_datum_init(&key_datum);         /* Some DBM libraries require the datum */
+exim_datum_init(&value_datum);       /* to be cleared before use. */
+exim_datum_data_set(&key_datum, key_copy);
+exim_datum_size_set(&key_datum, klen);
+exim_datum_data_set(&value_datum, ptr);
+exim_datum_size_set(&value_datum, length);
+return exim_dbput(dbblock->dbptr, &key_datum, &value_datum);
 }
 
 
@@ -378,15 +353,15 @@ dbfn_delete(open_db *dbblock, const uschar *key)
 {
 int klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen, key);
+EXIM_DATUM key_datum;
 
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_delete: key=%s\n", key);
 
 memcpy(key_copy, key, klen);
-EXIM_DATUM key_datum;
-EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require clearing */
-EXIM_DATUM_DATA(key_datum) = (void *) key_copy;
-EXIM_DATUM_SIZE(key_datum) = klen;
-return EXIM_DBDEL(dbblock->dbptr, key_datum);
+exim_datum_init(&key_datum);         /* Some DBM libraries require clearing */
+exim_datum_data_set(&key_datum, key_copy);
+exim_datum_size_set(&key_datum, klen);
+return exim_dbdel(dbblock->dbptr, &key_datum);
 }
 
 
@@ -417,17 +392,17 @@ DEBUG(D_hints_lookup) debug_printf_indent("dbfn_scan\n");
 
 /* Some dbm require an initialization */
 
-if (start) EXIM_DBCREATE_CURSOR(dbblock->dbptr, cursor);
+if (start) *cursor = exim_dbcreate_cursor(dbblock->dbptr);
 
-EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require the datum */
-EXIM_DATUM_INIT(value_datum);       /* to be cleared before use. */
+exim_datum_init(&key_datum);         /* Some DBM libraries require the datum */
+exim_datum_init(&value_datum);       /* to be cleared before use. */
 
-yield = (EXIM_DBSCAN(dbblock->dbptr, key_datum, value_datum, start, *cursor))?
-  US EXIM_DATUM_DATA(key_datum) : NULL;
+yield = exim_dbscan(dbblock->dbptr, &key_datum, &value_datum, start, *cursor)
+  ? US exim_datum_data_get(&key_datum) : NULL;
 
 /* Some dbm require a termination */
 
-if (!yield) EXIM_DBDELETE_CURSOR(*cursor);
+if (!yield) exim_dbdelete_cursor(*cursor);
 return yield;
 }
 
