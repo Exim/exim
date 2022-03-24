@@ -953,8 +953,21 @@ router_name = transport_name = NULL;
 
 
 /*************************************************
-*        Generate local prt for logging          *
+*        Generate local part for logging         *
 *************************************************/
+
+static uschar *
+string_get_lpart_sub(const address_item * addr, uschar * s)
+{
+#ifdef SUPPORT_I18N
+if (testflag(addr, af_utf8_downcvt))
+  {
+  uschar * t = string_localpart_utf8_to_alabel(s, NULL);
+  return t ? t : s;	/* t is NULL on a failed conversion */
+  }
+#endif
+return s;
+}
 
 /* This function is a subroutine for use in string_log_address() below.
 
@@ -970,32 +983,13 @@ string_get_localpart(address_item * addr, gstring * yield)
 {
 uschar * s;
 
-s = addr->prefix;
-if (testflag(addr, af_include_affixes) && s)
-  {
-#ifdef SUPPORT_I18N
-  if (testflag(addr, af_utf8_downcvt))
-    s = string_localpart_utf8_to_alabel(s, NULL);
-#endif
-  yield = string_cat(yield, s);
-  }
+if (testflag(addr, af_include_affixes) && (s = addr->prefix))
+  yield = string_cat(yield, string_get_lpart_sub(addr, s));
 
-s = addr->local_part;
-#ifdef SUPPORT_I18N
-if (testflag(addr, af_utf8_downcvt))
-  s = string_localpart_utf8_to_alabel(s, NULL);
-#endif
-yield = string_cat(yield, s);
+yield = string_cat(yield, string_get_lpart_sub(addr, addr->local_part));
 
-s = addr->suffix;
-if (testflag(addr, af_include_affixes) && s)
-  {
-#ifdef SUPPORT_I18N
-  if (testflag(addr, af_utf8_downcvt))
-    s = string_localpart_utf8_to_alabel(s, NULL);
-#endif
-  yield = string_cat(yield, s);
-  }
+if (testflag(addr, af_include_affixes) && (s = addr->suffix))
+  yield = string_cat(yield, string_get_lpart_sub(addr, s));
 
 return yield;
 }
