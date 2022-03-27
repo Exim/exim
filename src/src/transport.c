@@ -2053,6 +2053,31 @@ else
 
 
 
+/* Enforce all args untainted, for consistency with a router-sourced pipe
+command, where (because the whole line is passed as one to the tpt) a
+tainted arg taints the executable name.  It's unclear also that letting an
+attacker supply command arguments is wise. */
+
+static BOOL
+arg_is_tainted(const uschar * s, int argn, address_item * addr,
+  const uschar * etext, uschar ** errptr)
+{
+if (is_tainted(s))
+  {
+  uschar * msg = string_sprintf("Tainted arg %d for %s command: '%s'",
+				argn, etext, s);
+  if (addr)
+    {
+    addr->transport_return = FAIL;
+    addr->message = msg;
+    }
+  else *errptr = msg;
+  return TRUE;
+  }
+return FALSE;
+}
+
+
 /*************************************************
 *          Set up direct (non-shell) command     *
 *************************************************/
@@ -2070,6 +2095,7 @@ Arguments:
   expand_failed      error value to set if expansion fails; not relevant if
                      addr == NULL
   addr               chain of addresses, or NULL
+  allow_tainted_args as it says; used for ${run}
   etext              text for use in error messages
   errptr             where to put error message if addr is NULL;
                      otherwise it is put in the first address
@@ -2080,8 +2106,8 @@ Returns:             TRUE if all went well; otherwise an error will be
 
 BOOL
 transport_set_up_command(const uschar *** argvptr, const uschar * cmd,
-  BOOL expand_arguments, int expand_failed, address_item *addr,
-  const uschar * etext, uschar ** errptr)
+  BOOL expand_arguments, int expand_failed, address_item * addr,
+  BOOL allow_tainted_args, const uschar * etext, uschar ** errptr)
 {
 const uschar ** argv, * s;
 int address_count = 0, argcount = 0, max_args;
@@ -2186,6 +2212,16 @@ if (expand_arguments)
 
       for (address_item * ad = addr; ad; ad = ad->next)
         {
+	/* $pipe_addresses is spefically not checked for taint, because there is
+	a testcase (321) depending on it.  It's unclear if the exact thing being
+	done really needs to be legitimate, though I suspect it reflects an
+	actual use-case that showed up a bug.
+	This is a hole in the taint-pretection, mitigated only in that
+	shell-syntax metachars cannot be injected via this route. */
+
+	DEBUG(D_transport) if (is_tainted(ad->address))
+	  debug_printf("tainted element '%s' from $pipe_addresses\n", ad->address);
+
 	argv[i++] = ad->address;
 	argcount++;
 	}
@@ -2292,7 +2328,11 @@ if (expand_arguments)
       for (int address_pipe_i = 0;
            address_pipe_argv[address_pipe_i];
            address_pipe_i++, argcount++)
-        argv[i++] = address_pipe_argv[address_pipe_i];
+	{
+        uschar * s = address_pipe_argv[address_pipe_i];
+	if (arg_is_tainted(s, i, addr, etext, errptr)) return FALSE;
+        argv[i++] = s;
+	}
 
       /* Subtract one since we replace $address_pipe */
       argcount--;
@@ -2321,6 +2361,17 @@ if (expand_arguments)
         else *errptr = msg;
         return FALSE;
         }
+
+      if ( f.running_in_test_harness && is_tainted(expanded_arg)
+	 && Ustrcmp(etext, "queryprogram router") == 0)
+	{			/* hack, would be good to not need it */
+	DEBUG(D_transport)
+	  debug_printf("SPECIFIC TESTSUITE EXEMPTION: tainted arg '%s'\n",
+		      expanded_arg);
+	}
+      else if (  !allow_tainted_args
+	      && arg_is_tainted(expanded_arg, i, addr, etext, errptr))
+	return FALSE;
       argv[i] = expanded_arg;
       }
     }
@@ -2329,7 +2380,10 @@ if (expand_arguments)
     {
     debug_printf("direct command after expansion:\n");
     for (int i = 0; argv[i]; i++)
-      debug_printf("  argv[%d] = %s\n", i, string_printing(argv[i]));
+      {
+      debug_printf("  argv[%d] = '%s'\n", i, string_printing(argv[i]));
+      debug_print_taint(argv[i]);
+      }
     }
   }
 

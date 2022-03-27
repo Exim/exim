@@ -291,6 +291,7 @@ if (!transport_set_up_command(&argvptr, /* anchor for arg list */
     TRUE,                               /* expand the arguments */
     0,                                  /* not relevant when... */
     NULL,                               /* no transporting address */
+    FALSE,				/* args must be untainted */
     US"queryprogram router",            /* for error messages */
     &addr->message))                    /* where to put error message */
   return DEFER;

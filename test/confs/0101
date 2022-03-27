@@ -25,11 +25,13 @@ all:
 mmdf_localuser:
   driver = accept
   local_part_prefix = mmdf-
+  local_parts = userx
   transport = mmdf_local_delivery
 
 filtered_localuser:
   driver = accept
   local_part_prefix = filter-
+  local_parts = userx
   transport = filtered_local_delivery
 
 bsmtp_localuser:
@@ -55,7 +57,7 @@ smtp:
 local_delivery:
   driver = pipe
   check_string = "From "
-  command = /bin/sh -c 'cat >>DIR/test-mail/$local_part'
+  command = /bin/sh -c 'cat >>DIR/test-mail/$local_part_data'
   escape_string = ">From "
   user = CALLER
   current_directory = /
@@ -63,7 +65,7 @@ local_delivery:
 bsmtp_local_delivery:
   driver = pipe
   use_bsmtp
-  command = /bin/sh -c 'cat >>DIR/test-mail/$local_part'
+  command = /bin/sh -c 'cat >>DIR/test-mail/$local_part_data'
   delivery_date_add
   envelope_to_add
   return_path_add
@@ -72,7 +74,7 @@ bsmtp_local_delivery:
 
 filtered_local_delivery:
   driver = pipe
-  command = /bin/sh -c 'cat >>DIR/test-mail/$local_part'
+  command = /bin/sh -c 'cat >>DIR/test-mail/$local_part_data'
   delivery_date_add
   envelope_to_add
   return_path_add
@@ -83,7 +85,7 @@ filtered_local_delivery:
 mmdf_local_delivery:
   driver = pipe
   check_string = "\1\1\1\1\n"
-  command = /bin/sh -c 'cat >>DIR/test-mail/$local_part'
+  command = /bin/sh -c 'cat >>DIR/test-mail/$local_part_data'
   escape_string = "\1\1\1\1 \n"
   message_prefix = "\1\1\1\1\n"
   message_suffix = "\1\1\1\1\n"

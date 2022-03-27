@@ -2,6 +2,9 @@
 exim -odi alice
 To: alice@test.ex
 ****
+exim -odi marny
+To: marny@test.ex
+****
 exim -odi jabberwocky
 To: jabberwocky@test.ex
 ****

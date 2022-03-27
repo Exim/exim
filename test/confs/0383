@@ -9,7 +9,7 @@ primary_hostname = myhost.test.ex
 qualify_domain = test.ex
 system_filter = DIR/aux-var/TESTNUM.F
 system_filter_pipe_transport = t1
-
+log_selector = +received_recipients
 
 # ----- Routers -----
 

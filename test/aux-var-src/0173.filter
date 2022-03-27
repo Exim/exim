@@ -3,5 +3,9 @@
 if error_message then finish endif
 
 if $received_protocol is not scanned-ok then
-  pipe "DIR/aux-fixed/resubmit $sender_address $recipients DIR/ CALLER"
+  pipe "DIR/aux-fixed/resubmit \
+	\"${if match_address {$sender_address}{CALLER@test.ex} {$value}}\" \
+	\"${map {<, $recipients} \
+		{${if match_address {$item} {userx@test.ex : usery@test.ex : userz@test.ex} { $value}}}}\" \
+	DIR/ CALLER"
 endif   

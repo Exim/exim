@@ -3765,7 +3765,7 @@ if (tblock->filter_command)
   yield ERROR. */
 
   if (!transport_set_up_command(&transport_filter_argv,
-	tblock->filter_command, TRUE, DEFER, addrlist,
+	tblock->filter_command, TRUE, DEFER, addrlist, FALSE,
 	string_sprintf("%.50s transport filter", tblock->name), NULL))
     {
     set_errno_nohost(addrlist->next, addrlist->basic_errno, addrlist->message, DEFER,

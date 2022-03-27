@@ -29,7 +29,9 @@ begin transports
 
 pipe:
   driver = pipe
-  command = /non/exist/command -f <$sender_address> -d $pipe_addresses
+  command = /non/exist/command -f \
+	"<${if match_local_part {$sender_address}{CALLER@test.ex}{$value}}>" \
+	-d $pipe_addresses
   message_prefix =
   message_suffix =
   check_string =

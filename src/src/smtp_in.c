@@ -5834,7 +5834,7 @@ while (done <= 0)
 	etrn_command = smtp_etrn_command;
 	deliver_domain = smtp_cmd_data;
 	rc = transport_set_up_command(&argv, smtp_etrn_command, TRUE, 0, NULL,
-	  US"ETRN processing", &error);
+	  FALSE, US"ETRN processing", &error);
 	deliver_domain = NULL;
 	if (!rc)
 	  {

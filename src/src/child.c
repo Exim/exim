@@ -346,6 +346,7 @@ pid_t pid;
 if (is_tainted(argv[0]))
   {
   log_write(0, LOG_MAIN | LOG_PANIC, "Attempt to exec tainted path: '%s'", argv[0]);
+  errno = EPERM;
   return (pid_t)(-1);
   }
 

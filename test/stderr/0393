@@ -14,7 +14,7 @@ dropping to exim gid; retaining priv uid
 direct command:
   argv[0] = '/bin/cat'
 direct command after expansion:
-  argv[0] = /bin/cat
+  argv[0] = '/bin/cat'
 appendfile transport entered
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   file=TESTSUITE/test-mail/userx format=unix
@@ -102,7 +102,7 @@ dropping to exim gid; retaining priv uid
 direct command:
   argv[0] = '${if={1}{1}{}{}}'
 direct command after expansion:
-  argv[0] = 
+  argv[0] = ''
 appendfile transport entered
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   file=TESTSUITE/test-mail/userx format=unix

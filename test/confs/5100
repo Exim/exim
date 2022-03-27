@@ -25,6 +25,7 @@ bounces:
 smartuser:
   driver = accept
   retry_use_local_part
+  address_data =	${if inlist {$h_script:}{01:02:03:04:05:06:07:08:09:10} {$value}}
   transport = lmtp
 
 
@@ -35,7 +36,7 @@ begin transports
 lmtp:
   driver = lmtp
   batch_max = 100
-  command = DIR/bin/mtpscript DIR/aux-fixed/TESTNUM.script.$h_script: +DIR/spool/log/mainlog
+  command = DIR/bin/mtpscript DIR/aux-fixed/TESTNUM.script.$address_data +DIR/spool/log/mainlog
   timeout = 1s
   user = EXIMUSER
   ignore_quota = IGNORE_QUOTA

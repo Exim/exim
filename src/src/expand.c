@@ -5527,6 +5527,7 @@ while (*s)
       {
       FILE * f;
       const uschar * arg, ** argv;
+      BOOL late_expand = TRUE;
 
       if ((expand_forbid & RDO_RUN) != 0)
         {
@@ -5534,15 +5535,42 @@ while (*s)
         goto EXPAND_FAILED;
         }
 
+      /* Handle options to the "run" */
+
+      while (*s == ',')
+	{
+	if (Ustrncmp(++s, "preexpand", 9) == 0)
+	  { late_expand = FALSE; s += 9; }
+	else
+	  {
+	  const uschar * t = s;
+	  while (isalpha(*++t)) ;
+	  expand_string_message = string_sprintf("bad option '%.*s' for run",
+						  (int)(t-s), s);
+	  goto EXPAND_FAILED;
+	  }
+	}
       Uskip_whitespace(&s);
+
       if (*s != '{')					/*}*/
         {
 	expand_string_message = US"missing '{' for command arg of run";
 	goto EXPAND_FAILED_CURLY;			/*"}*/
 	}
-      if (!(arg = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok)))
-	goto EXPAND_FAILED;
-      Uskip_whitespace(&s);
+      s++;
+
+      if (late_expand)		/* this is the default case */
+	{
+	int n = Ustrcspn(s, "}");
+	arg = skipping ? NULL : string_copyn(s, n);
+	s += n;
+	}
+      else
+	{
+	if (!(arg = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok)))
+	  goto EXPAND_FAILED;
+	Uskip_whitespace(&s);
+	}
 							/*{*/
       if (*s++ != '}')
         {						/*{*/
@@ -5562,11 +5590,12 @@ while (*s)
 
         if (!transport_set_up_command(&argv,    /* anchor for arg list */
             arg,                                /* raw command */
-            FALSE,                              /* don't expand the arguments */
-            0,                                  /* not relevant when... */
-            NULL,                               /* no transporting address */
-            US"${run} expansion",               /* for error messages */
-            &expand_string_message))            /* where to put error message */
+	    late_expand,		/* expand args if not already done */
+            0,                          /* not relevant when... */
+            NULL,                       /* no transporting address */
+	    late_expand,		/* allow tainted args, when expand-after-split */
+            US"${run} expansion",       /* for error messages */
+            &expand_string_message))    /* where to put error message */
           goto EXPAND_FAILED;
 
         /* Create the child process, making it a group leader. */

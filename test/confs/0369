@@ -29,13 +29,13 @@ begin transports
 
 t1:
   driver = pipe
-  command = /bin/sh -c 'exit $local_part'
+  command = /bin/sh -c 'exit "${if inlist {$local_part}{0:10:45}{$value}}"'
   user = CALLER
   temp_errors = 45 : 56
 
 t2:
   driver = pipe
-  command = /bin/sh -c 'exit $local_part'
+  command = /bin/sh -c 'exit "${if inlist {$local_part}{0:10:45}{$value}}"'
   user = CALLER
   temp_errors = *
 

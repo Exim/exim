@@ -304,7 +304,7 @@ the items if necessary. If it fails, this function fails (error information
 is in the addresses). */
 
 if (!transport_set_up_command(argvptr, cmd, expand_arguments, expand_fail,
-      addr, string_sprintf("%.50s transport", tname), NULL))
+      addr, FALSE, string_sprintf("%.50s transport", tname), NULL))
   return FALSE;
 
 /* Point to the set-up arguments. */
@@ -451,6 +451,9 @@ if (expand_arguments)
 
     for (address_item * ad = addr; ad; ad = ad->next)
       {
+      DEBUG(D_transport) if (is_tainted(ad->address))
+	debug_printf("tainted element '%s' from $pipe_addresses\n", ad->address);
+
       /*XXX string_append_listele() ? */
       if (ad != addr) g = string_catn(g, US" ", 1);
       g = string_cat(g, ad->address);
@@ -575,6 +578,7 @@ if (!cmd || !*cmd)
   }
 if (is_tainted(cmd))
   {
+  DEBUG(D_transport) debug_printf("cmd '%s' is tainted\n", cmd);
   addr->message = string_sprintf("Tainted '%s' (command "
     "for %s transport) not permitted", cmd, tblock->name);
   addr->transport_return = PANIC;

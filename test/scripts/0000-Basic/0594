@@ -2,3 +2,12 @@
 exim -odi pipe-userx=DIR/bin/iefbr14@test.ex
 A test message.
 ****
+#
+exim -odi rtr_user@test.ex
+This one has an ok executable but tainted arg, pipecmd set by router
+****
+exim -odi tpt_user@test.ex
+This one has an ok executable but tainted arg, pipecmd set by transport
+****
+#
+no_msglog_check

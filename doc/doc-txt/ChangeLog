@@ -100,6 +100,18 @@ JH/23 Bug 2864: FreeBSD: fix transport hang after 4xx/5xx response. Previously
       resulted in the library waiting for the peer's Close.  If that was never
       sent we waited forever.  Fix by tracking send calls.
 
+JH/24 The ${run} expansion item now expands its command string elements after
+      splitting.  Previously it was before; the new ordering makes handling
+      zero-length arguments simpler.  The old ordering can be obtained by
+      appending a new option "preexpand", after a comma, to the "run".
+
+JH/25 Taint-check exec arguments for transport-initiated external processes.
+      Previously, tainted values could be used.  This affects "pipe", "lmtp" and
+      "queryprogram" transport, transport-filter, and ETRN commands.
+      The ${run} expansion is also affected: in "preexpand" mode no part of
+      the command line may be tainted, in default mode the executable name
+      may not be tainted.
+
 
 Exim version 4.95
 -----------------

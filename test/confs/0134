@@ -88,7 +88,7 @@ directfile:
 
 pipe:
   driver = pipe
-  command = /bin/sh -c "echo $local_part $domain >DIR/test-mail/$local_part"
+  command = /bin/sh -c "echo $local_part_data $domain_data >DIR/test-mail/$local_part_data"
   user = CALLER
 
 
