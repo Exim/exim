@@ -39,12 +39,14 @@ so we have to give up on all of the available parameter checking. */
 #  define PRINTF_FUNCTION(A,B)	__attribute__((format(printf,A,B)))
 # endif
 # define ARG_UNUSED		__attribute__((__unused__))
+# define FUNC_MAYBE_UNUSED	__attribute__((__unused__))
 # define WARN_UNUSED_RESULT	__attribute__((__warn_unused_result__))
 # define ALLOC			__attribute__((malloc))
 # define ALLOC_SIZE(A)		__attribute__((alloc_size(A)))
 # define NORETURN		__attribute__((noreturn))
 #else
 # define ARG_UNUSED		/**/
+# define FUNC_MAYBE_UNUSED	/**/
 # define WARN_UNUSED_RESULT	/**/
 # define ALLOC			/**/
 # define ALLOC_SIZE(A)		/**/
