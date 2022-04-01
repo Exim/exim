@@ -45,8 +45,7 @@ tdb_traverse to be called) */
 /* Access functions */
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
-FUNC_MAYBE_UNUSED
-static EXIM_DB *
+static inline EXIM_DB *
 exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
@@ -54,8 +53,7 @@ return tdb_open(CS name, 0, TDB_DEFAULT, flags, mode);
 }
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
-FUNC_MAYBE_UNUSED
-static BOOL
+static inline BOOL
 exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
 {
 *res = tdb_fetch(dbp, *key);	/* A struct arg and return!! */
@@ -63,14 +61,12 @@ return res->dptr != NULL;
 }
 
 /* EXIM_DBPUT - returns nothing useful, assumes replace mode */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 { return tdb_store(dbp, *key, *data, TDB_REPLACE); }
 
 /* EXIM_DBPUTB - non-overwriting for use by dbmbuild */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 { return tdb_store(dbp, *key, *data, TDB_INSERT); }
 
@@ -80,14 +76,12 @@ exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 # define EXIM_DBPUTB_DUP (-1)
 
 /* EXIM_DBDEL */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key)
 { return tdb_delete(dbp, *key); }
 
 /* EXIM_DBCREATE_CURSOR - initialize for scanning operation */
-FUNC_MAYBE_UNUSED
-static EXIM_CURSOR *
+static inline EXIM_CURSOR *
 exim_dbcreate_cursor(EXIM_DB * dbp)
 {
 EXIM_CURSOR * c = store_malloc(sizeof(TDB_DATA));
@@ -98,8 +92,7 @@ return c;
 /* EXIM_DBSCAN - This is complicated because we have to free the last datum
 free() must not die when passed NULL */
 
-FUNC_MAYBE_UNUSED
-static BOOL
+static inline BOOL
 exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res, BOOL first,
   EXIM_CURSOR * cursor)
 {
@@ -110,48 +103,40 @@ return key->dptr != NULL;
 }
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation. */
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbdelete_cursor(EXIM_CURSOR * cursor)
 { store_free(cursor); }
 
 /* EXIM_DBCLOSE */
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbclose__(EXIM_DB * db)
 { tdb_close(db); }
 
 /* Datum access */
 
-FUNC_MAYBE_UNUSED
-static uschar *
+static inline uschar *
 exim_datum_data_get(EXIM_DATUM * dp)
 { return US dp->dptr; }
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_data_set(EXIM_DATUM * dp, void * s)
 { dp->dptr = s; }
 
-FUNC_MAYBE_UNUSED
-static unsigned
+static inline unsigned
 exim_datum_size_get(EXIM_DATUM * dp)
 { return dp->dsize; }
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_size_set(EXIM_DATUM * dp, unsigned n)
 { dp->dsize = n; }
 
 /* No initialization is needed. */
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_init(EXIM_DATUM * d)
 { }
 
 /* Free the stuff inside the datum. */
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_free(EXIM_DATUM * d)
 {
 free(d->dptr);
@@ -216,7 +201,7 @@ errors. This should help with debugging strange DB problems, e.g. getting "File
 exists" when you try to open a db file. The API for this function was changed
 at DB release 4.3. */
 
-static void
+static inline void
 dbfn_bdb_error_callback(const DB_ENV * dbenv, const char * pfx, const char * msg)
 { log_write(0, LOG_MAIN, "Berkeley DB error: %s", msg); }
 
@@ -230,8 +215,7 @@ specified working dir, to avoid the DBCONFIG file trap. */
 
 #   define ENV_TO_DB(env) ((DB *)(((EXIM_DB *)env)->app_private))
 
-FUNC_MAYBE_UNUSED
-static EXIM_DB *
+static inline EXIM_DB *
 exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
@@ -259,8 +243,7 @@ return NULL;
 }
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
-FUNC_MAYBE_UNUSED
-static BOOL
+static inline BOOL
 exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
 {
 DB * b = ENV_TO_DB(dbp);
@@ -268,8 +251,7 @@ return b->get(b, NULL, key, res, 0) == 0;
 }
 
 /* EXIM_DBPUT - returns nothing useful, assumes replace mode */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 {
 DB * b = ENV_TO_DB(dbp);
@@ -277,8 +259,7 @@ return b->put(b, NULL, key, data, 0);
 }
 
 /* EXIM_DBPUTB - non-overwriting for use by dbmbuild */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 {
 DB * b = ENV_TO_DB(dbp);
@@ -291,8 +272,7 @@ return b->put(b, NULL, key, data, DB_NOOVERWRITE);
 #   define EXIM_DBPUTB_DUP DB_KEYEXIST
 
 /* EXIM_DBDEL */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key)
 {
 DB * b = ENV_TO_DB(dbp);
@@ -301,8 +281,7 @@ return b->del(b, NULL, key, 0);
 
 /* EXIM_DBCREATE_CURSOR - initialize for scanning operation */
 
-FUNC_MAYBE_UNUSED
-static EXIM_CURSOR *
+static inline EXIM_CURSOR *
 exim_dbcreate_cursor(EXIM_DB * dbp)
 {
 DB * b = ENV_TO_DB(dbp);
@@ -312,8 +291,7 @@ return c;
 }
 
 /* EXIM_DBSCAN - returns TRUE if data is returned, FALSE at end */
-FUNC_MAYBE_UNUSED
-static BOOL
+static inline BOOL
 exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data, BOOL first,
   EXIM_CURSOR * cursor)
 {
@@ -321,14 +299,12 @@ return cursor->c_get(cursor, key, data, first ? DB_FIRST : DB_NEXT) == 0;
 }
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation */
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbdelete_cursor(EXIM_CURSOR * cursor)
 { cursor->c_close(cursor); }
 
 /* EXIM_DBCLOSE */
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbclose__(EXIM_DB * dbp_o)
 {
 DB_ENV * dbp = dbp_o;
@@ -339,34 +315,28 @@ dbp->close(dbp, DB_FORCESYNC);
 
 /* Datum access */
 
-FUNC_MAYBE_UNUSED
-static uschar *
+static inline uschar *
 exim_datum_data_get(EXIM_DATUM * dp)
 { return dp->data; }
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_data_set(EXIM_DATUM * dp, void * s)
 { dp->data = s; }
 
-FUNC_MAYBE_UNUSED
-static unsigned
+static inline unsigned
 exim_datum_size_get(EXIM_DATUM * dp)
 { return dp->size; }
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_size_set(EXIM_DATUM * dp, unsigned n)
 { dp->size = n; }
 
 /* The whole datum structure contains other fields that must be cleared
 before use, but we don't have to free anything after reading data. */
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_init(EXIM_DATUM * d)
 { memset(d, 0, sizeof(*d)); }
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_free(EXIM_DATUM * d)
 { }
 
@@ -386,8 +356,7 @@ exim_datum_free(EXIM_DATUM * d)
 /* Access functions */
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
-FUNC_MAYBE_UNUSED
-static EXIM_DB *
+static inline EXIM_DB *
 exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
@@ -403,20 +372,17 @@ return db_create(&dbp, NULL, 0) == 0
 }
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
-FUNC_MAYBE_UNUSED
-static BOOL
+static inline BOOL
 exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
 { return dbp->get(dbp, NULL, key, res, 0) == 0; }
 
 /* EXIM_DBPUT - returns nothing useful, assumes replace mode */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 { return dbp->put(dbp, NULL, key, data, 0); }
 
 /* EXIM_DBPUTB - non-overwriting for use by dbmbuild */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 { return dbp->put(dbp, NULL, key, data, DB_NOOVERWRITE); }
 
@@ -426,15 +392,13 @@ exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 #   define EXIM_DBPUTB_DUP DB_KEYEXIST
 
 /* EXIM_DBDEL */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key)
 { return dbp->del(dbp, NULL, key, 0); }
 
 /* EXIM_DBCREATE_CURSOR - initialize for scanning operation */
 
-FUNC_MAYBE_UNUSED
-static EXIM_CURSOR *
+static inline EXIM_CURSOR *
 exim_dbcreate_cursor(EXIM_DB * dbp)
 {
 EXIM_CURSOR * c;
@@ -443,8 +407,7 @@ return c;
 }
 
 /* EXIM_DBSCAN - returns TRUE if data is returned, FALSE at end */
-FUNC_MAYBE_UNUSED
-static BOOL
+static inline BOOL
 exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data, BOOL first,
   EXIM_CURSOR * cursor)
 {
@@ -452,47 +415,39 @@ return cursor->c_get(cursor, key, data, first ? DB_FIRST : DB_NEXT) == 0;
 }
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation */
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbdelete_cursor(EXIM_CURSOR * cursor)
 { cursor->c_close(cursor); }
 
 /* EXIM_DBCLOSE */
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbclose__(EXIM_DB * dbp)
 { dbp->close(dbp, 0); }
 
 /* Datum access */
 
-FUNC_MAYBE_UNUSED
-static uschar *
+static inline uschar *
 exim_datum_data_get(EXIM_DATUM * dp)
 { return US dp->dptr; }
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_data_set(EXIM_DATUM * dp, void * s)
 { dp->dptr = s; }
 
-FUNC_MAYBE_UNUSED
-static uschar *
+static inline uschar *
 exim_datum_size_get(EXIM_DATUM * dp)
 { return US dp->size; }
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_size_set(EXIM_DATUM * dp, uschar * s)
 { dp->size = CS s; }
 
 /* The whole datum structure contains other fields that must be cleared
 before use, but we don't have to free anything after reading data. */
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_init(EXIM_DATUM * d)
 { memset(d, 0, sizeof(*d)); }
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_free(EXIM_DATUM * d)
 { }
 
@@ -543,8 +498,7 @@ typedef struct {
 /* Access functions */
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
-FUNC_MAYBE_UNUSED
-static EXIM_DB *
+static inline EXIM_DB *
 exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
@@ -564,8 +518,7 @@ return NULL;
 }
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
-FUNC_MAYBE_UNUSED
-static BOOL
+static inline BOOL
 exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
 {
 *res = gdbm_fetch(dbp->gdbm, *key);	/* A struct arg & return! */
@@ -573,14 +526,12 @@ return res->dptr != NULL;
 }
 
 /* EXIM_DBPUT - returns nothing useful, assumes replace mode */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 { return gdbm_store(dbp->gdbm, *key, *data, GDBM_REPLACE); }
 
 /* EXIM_DBPUTB - non-overwriting for use by dbmbuild */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 { return gdbm_store(dbp->gdbm, *key, *data, GDBM_INSERT); }
 
@@ -590,20 +541,17 @@ exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 # define EXIM_DBPUTB_DUP 1
 
 /* EXIM_DBDEL */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key)
 { return gdbm_delete(dbp->gdbm, *key); }
 
 /* EXIM_DBCREATE_CURSOR - initialize for scanning operation (null) */
-FUNC_MAYBE_UNUSED
-static EXIM_CURSOR *
+static inline EXIM_CURSOR *
 exim_dbcreate_cursor(EXIM_DB * dbp)
 { return NULL; }
 
 /* EXIM_DBSCAN */
-FUNC_MAYBE_UNUSED
-static BOOL
+static inline BOOL
 exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data, BOOL first,
   EXIM_CURSOR * cursor)
 {
@@ -615,14 +563,12 @@ return key->dptr != NULL;
 }
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). */
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbdelete_cursor(EXIM_CURSOR * cursor)
 { }
 
 /* EXIM_DBCLOSE */
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbclose__(EXIM_DB * dbp)
 {
 char * s;
@@ -633,34 +579,28 @@ free(dbp);
 
 /* Datum access types */
 
-FUNC_MAYBE_UNUSED
-static uschar *
+static inline uschar *
 exim_datum_data_get(EXIM_DATUM * dp)
 { return US dp->dptr; }
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_data_set(EXIM_DATUM * dp, void * s)
 { dp->dptr = s; }
 
-FUNC_MAYBE_UNUSED
-static unsigned
+static inline unsigned
 exim_datum_size_get(EXIM_DATUM * dp)
 { return dp->dsize; }
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_size_set(EXIM_DATUM * dp, unsigned n)
 { dp->dsize = n; }
 
 /* There's no clearing required before use, but we have to free the dptr
 after reading data. */
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_init(EXIM_DATUM * d)
 { }
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_free(EXIM_DATUM * d)
 { free(d->dptr); }
 
@@ -703,8 +643,7 @@ interface */
 a directory name; otherwise we would create the name.pag and
 name.dir files in the directory's parent. */
 
-FUNC_MAYBE_UNUSED
-static EXIM_DB *
+static inline EXIM_DB *
 exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
@@ -719,8 +658,7 @@ return NULL;
 }
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
-FUNC_MAYBE_UNUSED
-static BOOL
+static inline BOOL
 exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
 {
 *res = dbm_fetch(dbp, *key);	/* A struct arg & return! */
@@ -728,14 +666,12 @@ return res->dptr != NULL;
 }
 
 /* EXIM_DBPUT - returns nothing useful, assumes replace mode */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 { return dbm_store(dbp, *key, *data, DBM_REPLACE); }
 
 /* EXIM_DBPUTB - non-overwriting for use by dbmbuild */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 { return dbm_store(dbp, *key, *data, DBM_INSERT); }
 
@@ -745,20 +681,17 @@ exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
 # define EXIM_DBPUTB_DUP 1
 
 /* EXIM_DBDEL */
-FUNC_MAYBE_UNUSED
-static int
+static inline int
 exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key)
 { return dbm_delete(dbp, *key); }
 
 /* EXIM_DBCREATE_CURSOR - initialize for scanning operation (null) */
-FUNC_MAYBE_UNUSED
-static EXIM_CURSOR *
+static inline EXIM_CURSOR *
 exim_dbcreate_cursor(EXIM_DB * dbp)
 { return NULL; }
 
 /* EXIM_DBSCAN */
-FUNC_MAYBE_UNUSED
-static BOOL
+static inline BOOL
 exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data, BOOL first,
   EXIM_CURSOR * cursor)
 {
@@ -767,47 +700,39 @@ return key->dptr != NULL;
 }
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). */
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbdelete_cursor(EXIM_CURSOR * cursor)
 { }
 
 /* EXIM_DBCLOSE */
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbclose__(EXIM_DB * dbp)
 { dbm_close(dbp); }
 
 /* Datum access types */
 
-FUNC_MAYBE_UNUSED
-static uschar *
+static inline uschar *
 exim_datum_data_get(EXIM_DATUM * dp)
 { return US dp->dptr; }
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_data_set(EXIM_DATUM * dp, void * s)
 { dp->dptr = s; }
 
-FUNC_MAYBE_UNUSED
-static unsigned
+static inline unsigned
 exim_datum_size_get(EXIM_DATUM * dp)
 { return dp->dsize; }
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_size_set(EXIM_DATUM * dp, unsigned n)
 { dp->dsize = n; }
 
 /* There's no clearing required before use, and we don't have to free anything
 after reading data. */
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_init(EXIM_DATUM * d)
 { }
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_datum_free(EXIM_DATUM * d)
 { }
 
@@ -823,27 +748,25 @@ exim_datum_free(EXIM_DATUM * d)
 
 #if defined(COMPILE_UTILITY) || defined(MACRO_PREDEF)
 
-FUNC_MAYBE_UNUSED
-static EXIM_DB *
+static inline EXIM_DB *
 exim_dbopen(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
 return exim_dbopen__(name, dirname, flags, mode);
 }
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbclose(EXIM_DB * dbp)
 { exim_dbclose__(dbp); }
 
-#else
+#else	/*  exim mainline code */
+
 /* Wrappers for open/close with debug tracing */
 
 extern void debug_printf_indent(const char *, ...);
-static BOOL is_tainted(const void *);
+static inline BOOL is_tainted(const void *);
 
-FUNC_MAYBE_UNUSED
-static EXIM_DB *
+static inline EXIM_DB *
 exim_dbopen(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
@@ -867,15 +790,14 @@ DEBUG(D_hints_lookup) debug_printf_indent("returned from EXIM_DBOPEN: %p\n", dbp
 return dbp;
 }
 
-FUNC_MAYBE_UNUSED
-static void
+static inline void
 exim_dbclose(EXIM_DB * dbp)
 {
 DEBUG(D_hints_lookup) debug_printf_indent("EXIM_DBCLOSE(%p)\n", dbp);
 exim_dbclose__(dbp);
 }
 
-# endif
+# endif		/* defined(COMPILE_UTILITY) || defined(MACRO_PREDEF) */
 
 /********************* End of dbm library definitions **********************/
 
