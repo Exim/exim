@@ -17,7 +17,7 @@ For convenience, the definitions of the structures used in the various hints
 databases are also kept in this file, which is used by the maintenance
 utilities as well as the main Exim binary. */
 
-#ifndef HINTSDB_H
+#if !defined(HINTSDB_H) && !defined(MACRO_PREDEF)
 #define HINTSDB_H
 
 
@@ -746,7 +746,7 @@ exim_datum_free(EXIM_DATUM * d)
 
 
 
-#if defined(COMPILE_UTILITY) || defined(MACRO_PREDEF)
+#ifdef COMPILE_UTILITY
 
 static inline EXIM_DB *
 exim_dbopen(const uschar * name, const uschar * dirname, int flags,
@@ -797,7 +797,7 @@ DEBUG(D_hints_lookup) debug_printf_indent("EXIM_DBCLOSE(%p)\n", dbp);
 exim_dbclose__(dbp);
 }
 
-# endif		/* defined(COMPILE_UTILITY) || defined(MACRO_PREDEF) */
+# endif		/* COMPILE_UTILITY */
 
 /********************* End of dbm library definitions **********************/
 
