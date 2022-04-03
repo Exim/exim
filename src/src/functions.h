@@ -507,7 +507,7 @@ extern BOOL    smtp_hasc(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
-extern void    smtp_proxy_tls(void *, uschar *, size_t, int *, int) NORETURN;
+extern void    smtp_proxy_tls(void *, uschar *, size_t, int *, int, const uschar *) NORETURN;
 extern BOOL    smtp_read_response(void *, uschar *, int, int, int);
 extern void   *smtp_reset(void *);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);

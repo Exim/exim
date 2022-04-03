@@ -127,11 +127,10 @@ retry_check_address(const uschar *domain, host_item *host, uschar *portstring,
 {
 BOOL yield = FALSE;
 time_t now = time(NULL);
-uschar *host_key, *message_key;
-open_db dbblock;
-open_db *dbm_file;
-tree_node *node;
-dbdata_retry *host_retry_record, *message_retry_record;
+uschar * host_key, * message_key;
+open_db dbblock, * dbm_file;
+tree_node * node;
+dbdata_retry * host_retry_record, * message_retry_record;
 
 *retry_host_key = *retry_message_key = NULL;
 
@@ -145,9 +144,9 @@ host->status = hstatus_usable;
 /* Generate the host key for the unusable tree and the retry database. Ensure
 host names are lower cased (that's what %S does). */
 
-host_key = include_ip_address?
-  string_sprintf("T:%S:%s%s", host->name, host->address, portstring) :
-  string_sprintf("T:%S%s", host->name, portstring);
+host_key = include_ip_address
+  ? string_sprintf("T:%S:%s%s", host->name, host->address, portstring)
+  : string_sprintf("T:%S%s", host->name, portstring);
 
 /* Generate the message-specific key */
 

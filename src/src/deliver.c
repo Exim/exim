@@ -8603,7 +8603,7 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
     if (pid == 0)	/* child: will fork again to totally disconnect */
       {
       smtp_proxy_tls(cutthrough.cctx.tls_ctx, big_buffer, big_buffer_size,
-		      pfd, 5*60);
+		      pfd, 5*60, cutthrough.host.name);
       /* does not return */
       }
 

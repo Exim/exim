@@ -782,7 +782,7 @@ for (header_line * h = header_list; h; h = h->next) if (h->type != htype_old)
   /* Header removed */
 
   else
-    DEBUG(D_transport) debug_printf("removed header line:\n%s---\n", h->text);
+    DEBUG(D_transport) debug_printf("removed header line:\n %s---\n", h->text);
   }
 
 /* Add on any address-specific headers. If there are multiple addresses,
@@ -798,8 +798,8 @@ Headers added to an address by a router are guaranteed to end with a newline.
 
 if (addr)
   {
-  header_line *hprev = addr->prop.extra_headers;
-  header_line *hnext, * h;
+  header_line * hprev = addr->prop.extra_headers, * hnext, * h;
+
   for (int i = 0; i < 2; i++)
     for (h = hprev, hprev = NULL; h; h = hnext)
       {
@@ -810,7 +810,7 @@ if (addr)
 	{
 	if (!sendfn(tctx, h->text, h->slen)) return FALSE;
 	DEBUG(D_transport)
-	  debug_printf("added header line(s):\n%s---\n", h->text);
+	  debug_printf("added header line(s):\n %s---\n", h->text);
 	}
       }
   }
@@ -838,7 +838,7 @@ if (tblock && (list = CUS tblock->add_headers))
 	  return FALSE;
 	DEBUG(D_transport)
 	  {
-	  debug_printf("added header line:\n%s", s);
+	  debug_printf("added header line:\n %s", s);
 	  if (s[len-1] != '\n') debug_printf("\n");
 	  debug_printf("---\n");
 	  }

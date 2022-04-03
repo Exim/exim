@@ -2267,7 +2267,7 @@ if (!continue_hostname)
 	}
       }
     else DEBUG(D_transport)
-      debug_printf("helo needs $sending_ip_address\n");
+      debug_printf("helo needs $sending_ip_address; avoid early-pipelining\n");
 
 PIPE_CONNECT_RETRY:
   if (sx->early_pipe_active)
@@ -3546,24 +3546,27 @@ Arguments:
   bufsiz	size of buffer
   pfd		pipe filedescriptor array; [0] is comms to proxied process
   timeout	per-read timeout, seconds
+  host		hostname of remote
 
 Does not return.
 */
 
 void
 smtp_proxy_tls(void * ct_ctx, uschar * buf, size_t bsize, int * pfd,
-  int timeout)
+  int timeout, const uschar * host)
 {
 struct pollfd p[2] = {{.fd = tls_out.active.sock, .events = POLLIN},
 		      {.fd = pfd[0], .events = POLLIN}};
 int rc, i;
 BOOL send_tls_shutdown = TRUE;
+uschar * s =
+  string_sprintf("proxying TLS connection for continued transport to %s\n", host);
 
 close(pfd[1]);
 if ((rc = exim_fork(US"tls-proxy")))
   _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 
-set_process_info("proxying TLS connection for continued transport");
+set_process_info(CCS s);
 
 do
   {
@@ -4714,7 +4717,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	      {
 	      /* does not return */
 	      smtp_proxy_tls(sx->cctx.tls_ctx, sx->buffer, sizeof(sx->buffer), pfd,
-			      ob->command_timeout);
+			      ob->command_timeout, host->name);
 	      }
 
 	    if (pid > 0)		/* parent */
