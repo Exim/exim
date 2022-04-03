@@ -25508,7 +25508,8 @@ servers or different local IP addresses. For example, if you want the string
 that is used for &%helo_data%& to be obtained by a DNS lookup of the outgoing
 interface address, you could use this:
 .code
-helo_data = ${lookup dnsdb{ptr=$sending_ip_address}{$value}\
+helo_data = ${lookup dnsdb{ptr=$sending_ip_address} \
+  {${listextract{1}{<\n $value}}} \
   {$primary_hostname}}
 .endd
 The use of &%helo_data%& applies both to sending messages and when doing
