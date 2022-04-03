@@ -2,8 +2,22 @@
 gnutls
 exim -DSERVER=server -DSRV=tls -bd -oX PORT_S
 ****
+#
+# Single message
 exim -oMt this-user -f this-user -odf other-user@test.ex
 Test message. Contains FF: ÿ
 ****
+exim -Mrm $msg1
+****
+#
+# Multiple messages
+exim -oMt this-user -f this-user -odq first-user@test.ex
+****
+exim -oMt this-user -f this-user -odq second-user@test.ex
+****
+exim -DALLOW=queue_run_in_order -qq
+****
+#
 killdaemon
 no_msglog_check
+no_stdout_check

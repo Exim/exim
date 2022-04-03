@@ -2934,18 +2934,18 @@ if (   !continue_hostname
       smtp_peer_options & OPTION_PIPE ? "" : "not ");
 
     if (  sx->peer_offered & OPTION_CHUNKING
-       && verify_check_given_host(CUSS &ob->hosts_try_chunking, sx->conn_args.host) != OK)
-      sx->peer_offered &= ~OPTION_CHUNKING;
+       && verify_check_given_host(CUSS &ob->hosts_try_chunking, sx->conn_args.host) == OK)
+      smtp_peer_options |= OPTION_CHUNKING;
 
-    if (sx->peer_offered & OPTION_CHUNKING)
+    if (smtp_peer_options & OPTION_CHUNKING)
       DEBUG(D_transport) debug_printf("CHUNKING usable\n");
 
 #ifndef DISABLE_PRDR
     if (  sx->peer_offered & OPTION_PRDR
-       && verify_check_given_host(CUSS &ob->hosts_try_prdr, sx->conn_args.host) != OK)
-      sx->peer_offered &= ~OPTION_PRDR;
+       && verify_check_given_host(CUSS &ob->hosts_try_prdr, sx->conn_args.host) == OK)
+      smtp_peer_options |= OPTION_PRDR;
 
-    if (sx->peer_offered & OPTION_PRDR)
+    if (smtp_peer_options & OPTION_PRDR)
       DEBUG(D_transport) debug_printf("PRDR usable\n");
 #endif
 
@@ -3216,7 +3216,7 @@ Or just forget about lines?  Or inflate by a fixed proportion? */
 request that */
 
 sx->prdr_active = FALSE;
-if (sx->peer_offered & OPTION_PRDR)
+if (smtp_peer_options & OPTION_PRDR)
   for (address_item * addr = addrlist; addr; addr = addr->next)
     if (addr->transport_return == PENDING_DEFER)
       {
@@ -3777,7 +3777,7 @@ if (tblock->filter_command)
   if (  transport_filter_argv
      && *transport_filter_argv
      && **transport_filter_argv
-     && sx->peer_offered & OPTION_CHUNKING
+     && smtp_peer_options & OPTION_CHUNKING
 #ifndef DISABLE_DKIM
     /* When dkim signing, chunking is handled even with a transport-filter */
      && !(ob->dkim.dkim_private_key && ob->dkim.dkim_domain && ob->dkim.dkim_selector)
@@ -3785,7 +3785,7 @@ if (tblock->filter_command)
 #endif
      )
     {
-    sx->peer_offered &= ~OPTION_CHUNKING;
+    smtp_peer_options &= ~OPTION_CHUNKING;
     DEBUG(D_transport) debug_printf("CHUNKING not usable due to transport filter\n");
     }
   }
@@ -3862,7 +3862,7 @@ are pipelining. The responses are all handled by sync_responses().
 If using CHUNKING, do not send a BDAT until we know how big a chunk we want
 to send is. */
 
-if (  !(sx->peer_offered & OPTION_CHUNKING)
+if (  !(smtp_peer_options & OPTION_CHUNKING)
    && (sx->ok || (pipelining_active && !mua_wrapper)))
   {
   int count = smtp_write_command(sx, SCMD_FLUSH, "DATA\r\n");
@@ -3899,7 +3899,7 @@ well as body. Set the appropriate timeout value to be used for each chunk.
 (Haven't been able to make it work using select() for writing yet.) */
 
 if (  !sx->ok
-   && (!(sx->peer_offered & OPTION_CHUNKING) || !pipelining_active))
+   && (!(smtp_peer_options & OPTION_CHUNKING) || !pipelining_active))
   {
   /* Save the first address of the next batch. */
   sx->first_addr = sx->next_addr;
@@ -3928,7 +3928,7 @@ else
   of responses.  The callback needs a whole bunch of state so set up
   a transport-context structure to be passed around. */
 
-  if (sx->peer_offered & OPTION_CHUNKING)
+  if (smtp_peer_options & OPTION_CHUNKING)
     {
     tctx.check_string = tctx.escape_string = NULL;
     tctx.options |= topt_use_bdat;
@@ -3953,7 +3953,7 @@ else
   transport_write_timeout = ob->data_timeout;
   smtp_command = US"sending data block";   /* For error messages */
   DEBUG(D_transport|D_v)
-    if (sx->peer_offered & OPTION_CHUNKING)
+    if (smtp_peer_options & OPTION_CHUNKING)
       debug_printf("         will write message using CHUNKING\n");
     else
       debug_printf("  SMTP>> writing message and terminating \".\"\n");
@@ -4005,7 +4005,7 @@ else
   If we can, we want the message-write to not flush (the tail end of) its data out.  */
 
   if (  sx->pipelining_used
-     && (sx->ok && sx->completed_addr || sx->peer_offered & OPTION_CHUNKING)
+     && (sx->ok && sx->completed_addr || smtp_peer_options & OPTION_CHUNKING)
      && sx->send_quit
      && !(sx->first_addr || f.continue_more)
      && f.deliver_firsttime
@@ -4103,7 +4103,7 @@ else
       }
     }
 
-  if (sx->peer_offered & OPTION_CHUNKING && sx->cmd_count > 1)
+  if (smtp_peer_options & OPTION_CHUNKING && sx->cmd_count > 1)
     {
     /* Reap any outstanding MAIL & RCPT commands, but not a DATA-go-ahead */
     switch(sync_responses(sx, sx->cmd_count-1, 0))
@@ -4276,7 +4276,7 @@ else
 #ifndef DISABLE_PRDR
       if (sx->prdr_active) setflag(addr, af_prdr_used);
 #endif
-      if (sx->peer_offered & OPTION_CHUNKING) setflag(addr, af_chunking_used);
+      if (smtp_peer_options & OPTION_CHUNKING) setflag(addr, af_chunking_used);
       flag = '-';
 
 #ifndef DISABLE_PRDR

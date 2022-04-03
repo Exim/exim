@@ -1,7 +1,19 @@
 2017-07-30 18:51:05.712 10HmaX-0005vi-00 <= this-user@testhost.test.ex U=this-user P=local S=sss for other-user@test.ex
 2017-07-30 18:51:05.712 10HmaX-0005vi-00 => other-user@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmaY-0005vi-00"
 2017-07-30 18:51:05.712 10HmaX-0005vi-00 Completed
+2017-07-30 18:51:05.712 10HmaY-0005vi-00 removed by CALLER
+2017-07-30 18:51:05.712 10HmaY-0005vi-00 Completed
+2017-07-30 18:51:05.712 10HmaZ-0005vi-00 <= this-user@testhost.test.ex U=this-user P=local S=sss for first-user@test.ex
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 <= this-user@testhost.test.ex U=this-user P=local S=sss for second-user@test.ex
+2017-07-30 18:51:05.712 Start queue run: pid=pppp -qq
+2017-07-30 18:51:05.712 10HmaZ-0005vi-00 => first-user@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmbB-0005vi-00"
+2017-07-30 18:51:05.712 10HmaZ-0005vi-00 Completed
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 => second-user@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmbC-0005vi-00"
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 Completed
+2017-07-30 18:51:05.712 End queue run: pid=pppp -qq
 
 ******** SERVER ********
 2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_S
 2017-07-30 18:51:05.712 10HmaY-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaX-0005vi-00@testhost.test.ex for other-user@test.ex
+2017-07-30 18:51:05.712 10HmbB-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaZ-0005vi-00@testhost.test.ex for first-user@test.ex
+2017-07-30 18:51:05.712 10HmbC-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmbA-0005vi-00@testhost.test.ex for second-user@test.ex

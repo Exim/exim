@@ -112,6 +112,10 @@ JH/25 Taint-check exec arguments for transport-initiated external processes.
       the command line may be tainted, in default mode the executable name
       may not be tainted.
 
+JH/26 Fix CHUNKING on a continued-transport.  Previously the usabliility of
+      the the facility was not passed across execs, and only the first message
+      passed over a connection could use BDAT; any further ones using DATA.
+
 
 Exim version 4.95
 -----------------
