@@ -830,6 +830,7 @@ typedef struct {
   host_item *           host;
   int                   host_af;
   uschar *              interface;
+  int			sock;	/* used for a bound but not connected socket */
 
 #ifdef SUPPORT_DANE
   BOOL dane:1;			/* connection must do dane */

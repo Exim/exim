@@ -274,7 +274,7 @@ for(;;)
   {
   int idx;
   host_item proxy;
-  int proxy_af;
+  smtp_connect_args sc = {.sock = -1};
 
   if ((idx = socks_get_proxy(proxies, nproxies)) < 0)
     {
@@ -286,11 +286,16 @@ for(;;)
 
   /* bodge up a host struct for the proxy */
   proxy.address = proxy.name = sob->proxy_host;
-  proxy_af = Ustrchr(sob->proxy_host, ':') ? AF_INET6 : AF_INET;
+  proxy.port = sob->port;
+
+  sc.tblock = tb;
+  sc.ob = ob;
+  sc.host = &proxy;
+  sc.host_af = Ustrchr(sob->proxy_host, ':') ? AF_INET6 : AF_INET;
+  sc.interface = interface;
 
   /*XXX we trust that the method-select command is idempotent */
-  if ((fd = smtp_sock_connect(&proxy, proxy_af, sob->port,
-	      interface, tb, sob->timeout, &early_data)) >= 0)
+  if ((fd = smtp_sock_connect(&sc, sob->timeout, &early_data)) >= 0)
     {
     proxy_local_address = string_copy(proxy.address);
     proxy_local_port = sob->port;

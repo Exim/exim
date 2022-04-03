@@ -2251,6 +2251,7 @@ if (!continue_hostname)
     the helo string might use it avoid doing early-pipelining. */
 
     if (  !sx->helo_data
+       || sx->conn_args.interface
        || !Ustrstr(sx->helo_data, "$sending_ip_address")
        || Ustrstr(sx->helo_data, "def:sending_ip_address")
        )
@@ -2270,7 +2271,10 @@ if (!continue_hostname)
 
 PIPE_CONNECT_RETRY:
   if (sx->early_pipe_active)
+    {
     sx->outblock.conn_args = &sx->conn_args;
+    (void) smtp_boundsock(&sx->conn_args);
+    }
   else
 #endif
     {
@@ -2295,9 +2299,10 @@ PIPE_CONNECT_RETRY:
     }
   /* Expand the greeting message while waiting for the initial response. (Makes
   sense if helo_data contains ${lookup dnsdb ...} stuff). The expansion is
-  delayed till here so that $sending_interface and $sending_port are set. */
-/*XXX early-pipe: they still will not be. Is there any way to find out what they
-will be?  Somehow I doubt it. */
+  delayed till here so that $sending_ip_address and $sending_port are set.
+  Those will be known even for a TFO lazy-connect, having been set by the bind().
+  For early-pipe, we are ok if binding to a local interface; otherwise (if
+  $sending_ip_address is seen in helo_data) we disabled early-pipe above. */
 
   if (sx->helo_data)
     if (!(sx->helo_data = expand_string(sx->helo_data)))
@@ -3716,6 +3721,7 @@ sx->port = defport;
 sx->conn_args.interface = interface;
 sx->helo_data = NULL;
 sx->conn_args.tblock = tblock;
+sx->conn_args.sock = -1;
 gettimeofday(&sx->delivery_start, NULL);
 sx->sync_addr = sx->first_addr = addrlist;
 

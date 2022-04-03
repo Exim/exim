@@ -661,6 +661,7 @@ coding means skipping this whole loop and doing the append separately.  */
     sx->conn_args.interface = interface;
     sx->helo_data = tf->helo_data;
     sx->conn_args.tblock = addr->transport;
+    sx->conn_args.sock = -1;
     sx->verify = TRUE;
 
 tls_retry_connection:

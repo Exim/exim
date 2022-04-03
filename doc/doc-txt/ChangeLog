@@ -116,6 +116,11 @@ JH/26 Fix CHUNKING on a continued-transport.  Previously the usabliility of
       the the facility was not passed across execs, and only the first message
       passed over a connection could use BDAT; any further ones using DATA.
 
+JH/27 Support the PIPECONNECT facility in the smtp transport when the helo_data
+      uses $sending_ip_address and an interface is specified.
+      Previously any use of the local address in the EHLO name disabled
+      PIPECONNECT, the common case being to use the rDNS of it.
+
 
 Exim version 4.95
 -----------------

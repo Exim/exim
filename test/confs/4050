@@ -60,6 +60,9 @@ begin transports
 
 smtp:
   driver =		smtp
+.ifdef BB
+  interface =		BB
+.endif
   hosts_try_fastopen =	:
   hosts_pipe_connect =	CONTROL
 .ifdef HELO_MSG

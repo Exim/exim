@@ -485,6 +485,7 @@ extern int     sieve_interpret(const uschar *, int, const uschar *,
 		 const uschar *, const uschar *, const uschar *,
 		 address_item **, uschar **);
 extern void    sigalrm_handler(int);
+extern int     smtp_boundsock(smtp_connect_args *);
 extern void    smtp_closedown(uschar *);
 extern void    smtp_command_timeout_exit(void) NORETURN;
 extern void    smtp_command_sigterm_exit(void) NORETURN;
@@ -493,8 +494,6 @@ extern void    smtp_data_sigint_exit(void) NORETURN;
 extern void    smtp_deliver_init(void);
 extern uschar *smtp_cmd_hist(void);
 extern int     smtp_connect(smtp_connect_args *, const blob *);
-extern int     smtp_sock_connect(host_item *, int, int, uschar *,
-		 transport_instance * tb, int, const blob *);
 extern int     smtp_feof(void);
 extern int     smtp_ferror(void);
 extern uschar *smtp_get_connection_info(void);
@@ -516,6 +515,7 @@ extern void    smtp_notquit_exit(uschar *, uschar *, uschar *, ...);
 extern void    smtp_port_for_connect(host_item *, int);
 extern void    smtp_send_prohibition_message(int, uschar *);
 extern int     smtp_setup_msg(void);
+extern int     smtp_sock_connect(smtp_connect_args *, int, const blob *);
 extern BOOL    smtp_start_session(void);
 extern int     smtp_ungetc(int);
 extern BOOL    smtp_verify_helo(void);

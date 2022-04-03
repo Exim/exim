@@ -25582,7 +25582,10 @@ so combines well with TCP Fast Open.
 See also the &%pipelining_connect_advertise_hosts%& main option.
 
 Note:
-When the facility is used, the transport &%helo_data%& option
+.new
+When the facility is used, if the transport &%interface%& option is unset
+the &%helo_data%& option
+.wen
 will be expanded before the &$sending_ip_address$& variable
 is filled in.
 A check is made for the use of that variable, without the
