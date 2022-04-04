@@ -1,2 +1,2 @@
-support PIPE_CONNECT
+support PIPECONNECT
 support TCP_Fast_Open

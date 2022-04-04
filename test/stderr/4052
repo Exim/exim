@@ -21,7 +21,7 @@ no message retry record
 delivering 10HmbP-0005vi-00 to 127.0.0.1 [127.0.0.1] (extchange@test.ex)
 Transport port=25 replaced by host-specific port=1225
 EHLO response bits from cache: cleartext 0x0120/0x0000 crypted 0x0000/0x0000
-Using cached cleartext PIPE_CONNECT
+Using cached cleartext PIPECONNECT
   SMTP|> EHLO the.local.host.name
 using PIPELINING
 not using DSN
@@ -36,7 +36,7 @@ smtp_reap_early_pipe expect banner
 smtp_reap_early_pipe expect ehlo
   SMTP<< 250-esmtp-resp
          250-PIPELINING
-         250-PIPE_CONNECT
+         250-PIPECONNECT
          250-SIZE
          250 ok
 EHLO cleartext extensions changed, 0x0120/0x0000 -> 0x0160/0x0000
@@ -54,6 +54,7 @@ transport_check_waiting entered
 transport_check_waiting: FALSE
 will pipeline QUIT
 cannot use sendfile for body: spoolfile not wireformat
+  SMTP>> .
 writing data block fd=dddd size=sss timeout=300 (more expected)
   SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
@@ -62,6 +63,7 @@ cmd buf flush ddd bytes (more expected)
 ok=1 send_quit=0 send_rset=0 continue_more=0 yield=0 first_address is NULL
   SMTP<< 220 bye
   SMTP(close)>>
+cmdlog: 'EHLO|:MAIL|:RCPT|:DATA:220:250-:250:250:354:.:QUIT:250:220'
 Leaving smtp transport
 LOG: MAIN
   => extchange@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 message accepted"

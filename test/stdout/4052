@@ -8,7 +8,7 @@ Connection request from [127.0.0.1]
 <EHLO the.local.host.name
 >250-esmtp-resp
 >250-PIPELINING
->250-PIPE_CONNECT
+>250-PIPECONNECT
 >250 ok
 <MAIL FROM:<CALLER@the.local.host.name>
 >250 mail-from accepted
@@ -38,7 +38,7 @@ Connection request from [127.0.0.1]
 <EHLO the.local.host.name
 >250-esmtp-resp
 >250-PIPELINING
->250-PIPE_CONNECT
+>250-PIPECONNECT
 >250 ok
 <MAIL FROM:<CALLER@the.local.host.name>
 >250 mail-from accepted
@@ -84,7 +84,7 @@ Connection request from [127.0.0.1]
 <EHLO the.local.host.name
 >250-esmtp-resp
 >250-PIPELINING
->250-PIPE_CONNECT
+>250-PIPECONNECT
 >250 ok
 <MAIL FROM:<CALLER@the.local.host.name>
 >250 mail-from accepted
@@ -114,7 +114,7 @@ Connection request from [127.0.0.1]
 <EHLO the.local.host.name
 >250-esmtp-resp
 >250-PIPELINING
->250-PIPE_CONNECT
+>250-PIPECONNECT
 >250 ok
 <MAIL FROM:<CALLER@the.local.host.name>
 >250 mail-from accepted
@@ -148,7 +148,7 @@ Connection request from [127.0.0.1]
 >220 banner
 >250-esmtp-resp
 >250-PIPELINING
->250-PIPE_CONNECT
+>250-PIPECONNECT
 >250 ok
 >250 mail good
 >250 rcpt good
@@ -167,7 +167,7 @@ Connection request from [127.0.0.1]
 >220 banner
 >250-esmtp-resp
 >250-PIPELINING
->250-PIPE_CONNECT
+>250-PIPECONNECT
 >250 ok
 >250 mail good
 >550 rcpt refused
@@ -186,7 +186,7 @@ Connection request from [127.0.0.1]
 >220 banner
 >250-esmtp-resp
 >250-PIPELINING
->250-PIPE_CONNECT
+>250-PIPECONNECT
 >250 ok
 >550 mail cmd refused
 >550 rcpt cmd rejected - no valid mail
@@ -202,7 +202,7 @@ Connection request from [127.0.0.1]
 <EHLO the.local.host.name
 >250-esmtp-resp
 >250-PIPELINING
->250-PIPE_CONNECT
+>250-PIPECONNECT
 >250 ok
 <MAIL FROM:<CALLER@the.local.host.name>
 >250 mail-from accepted
@@ -232,7 +232,7 @@ Connection request from [127.0.0.1]
 <EHLO the.local.host.name
 >250-esmtp-resp
 >250-PIPELINING
->250-PIPE_CONNECT
+>250-PIPECONNECT
 >250-SIZE
 >250 ok
 <MAIL FROM:<CALLER@the.local.host.name>
