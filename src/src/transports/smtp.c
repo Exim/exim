@@ -3559,14 +3559,12 @@ struct pollfd p[2] = {{.fd = tls_out.active.sock, .events = POLLIN},
 		      {.fd = pfd[0], .events = POLLIN}};
 int rc, i;
 BOOL send_tls_shutdown = TRUE;
-uschar * s =
-  string_sprintf("proxying TLS connection for continued transport to %s\n", host);
 
 close(pfd[1]);
 if ((rc = exim_fork(US"tls-proxy")))
   _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 
-set_process_info(CCS s);
+set_process_info("proxying TLS connection for continued transport to %s\n", host);
 
 do
   {
