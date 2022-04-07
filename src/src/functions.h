@@ -1264,10 +1264,10 @@ HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP%c> %s\n",
 
 #  ifndef DISABLE_CLIENT_CMD_LOG
   {
+  int len = Ustrcspn(buf, " \n");
   int old_pool = store_pool;
   store_pool = POOL_PERM;	/* Main pool ACL allocations eg. callouts get released */
-  client_cmd_log = string_append_listele_n(client_cmd_log, ':', buf,
-  					  Ustrcspn(buf, " \n"));
+  client_cmd_log = string_append_listele_n(client_cmd_log, ':', buf, MIN(len, 8));
   if (mode == SCMD_BUFFER) 
     {
     client_cmd_log = string_catn(client_cmd_log, US"|", 1); 

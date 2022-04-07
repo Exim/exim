@@ -655,7 +655,7 @@ for (;;)
 
   else
     {
-    const uschar *saveptr = ptr;
+//    const uschar *saveptr = ptr;
     ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
     if (*error_pointer) break;
 

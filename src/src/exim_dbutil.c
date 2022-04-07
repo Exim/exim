@@ -138,6 +138,7 @@ return -1;              /* Never obeyed */
 }
 
 
+FUNC_MAYBE_UNUSED
 static void
 options(int argc, uschar * argv[], uschar * name)
 {
