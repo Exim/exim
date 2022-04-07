@@ -121,6 +121,11 @@ JH/27 Support the PIPECONNECT facility in the smtp transport when the helo_data
       Previously any use of the local address in the EHLO name disabled
       PIPECONNECT, the common case being to use the rDNS of it.
 
+JH/28 OpenSSL: fix transport-required OCSP stapling verification under session
+      resumption. Previously verify failed because no certificate status is
+      passed on the wire for the restarted session. Fix by using the recorded
+      ocsp status of the stored session for the new connection.
+
 
 Exim version 4.95
 -----------------

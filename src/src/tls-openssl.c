@@ -2417,8 +2417,12 @@ int i;
 DEBUG(D_tls) debug_printf("Received TLS status callback (OCSP stapling):\n");
 len = SSL_get_tlsext_status_ocsp_resp(s, &p);
 if(!p)
- {
-  /* Expect this when we requested ocsp but got none */
+ {				/* Expect this when we requested ocsp but got none */
+  if (SSL_session_reused(s) && tls_out.ocsp == OCSP_VFIED)
+    {
+    DEBUG(D_tls) debug_printf(" null, but resumed; ocsp vfy stored with session is good\n");
+    return 1;
+    }
   if (cbinfo->u_ocsp.client.verify_required && LOGGING(tls_cipher))
     log_write(0, LOG_MAIN, "Required TLS certificate status not received");
   else
@@ -3658,21 +3662,18 @@ if (tlsp->host_resumable)
 	  DEBUG(D_tls) debug_printf("session expired\n");
 	  dbfn_delete(dbm_file, key);
 	  }
-	else if (!SSL_set_session(ssl, ss))
-	  {
-	  DEBUG(D_tls)
-	    {
-	    ERR_error_string_n(ERR_get_error(),
-	      ssl_errstring, sizeof(ssl_errstring));
-	    debug_printf("applying session to ssl: %s\n", ssl_errstring);
-	    }
-	  }
-	else
+	else if (SSL_set_session(ssl, ss))
 	  {
 	  DEBUG(D_tls) debug_printf("good session\n");
 	  tlsp->resumption |= RESUME_CLIENT_SUGGESTED;
 	  tlsp->verify_override = dt->verify_override;
 	  tlsp->ocsp = dt->ocsp;
+	  }
+	else DEBUG(D_tls)
+	  {
+	  ERR_error_string_n(ERR_get_error(),
+	    ssl_errstring, sizeof(ssl_errstring));
+	  debug_printf("applying session to ssl: %s\n", ssl_errstring);
 	  }
 	}
       }
