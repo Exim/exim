@@ -35,9 +35,9 @@ DKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 WARNING: bad dkim key in dns
 DKIM (finished checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 content{CR}{LF}
-DKIM: finish bodyhash 1/1/-1 len 9
-DKIM [test.ex] Body bytes (relaxed) hashed: 9
-DKIM [test.ex] Body sha256 computed: fc06f48221d98ad6106c3845b33a2a41152482ab9e697f736ad26db4853fa657
+DKIM: finish bodyhash sha256/relaxed/-1 len 9
+DKIM [test.ex]sel_bad Body bytes (relaxed) hashed: 9
+DKIM [test.ex]sel_bad Body sha256 computed: fc06f48221d98ad6106c3845b33a2a41152482ab9e697f736ad26db4853fa657
 DKIM >> Headers to be signed:                            >>>>>>>>>>>>
  From
 DKIM >> Header data for hash, canonicalized (relaxed), in sequence >>

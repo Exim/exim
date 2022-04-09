@@ -794,8 +794,9 @@ pdkim_finish_bodyhash(pdkim_ctx * ctx)
 {
 for (pdkim_bodyhash * b = ctx->bodyhash; b; b = b->next)     /* Finish hashes */
   {
-  DEBUG(D_acl) debug_printf("DKIM: finish bodyhash %d/%d/%ld len %ld\n",
-	    b->hashtype, b->canon_method, b->bodylength, b->signed_body_bytes);
+  DEBUG(D_acl) debug_printf("DKIM: finish bodyhash %s/%s/%ld len %ld\n",
+      pdkim_hashes[b->hashtype].dkim_hashname, pdkim_canons[b->canon_method],
+      b->bodylength, b->signed_body_bytes);
   exim_sha_finish(&b->body_hash_ctx, &b->bh);
   }
 
@@ -806,10 +807,10 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
 
   DEBUG(D_acl)
     {
-    debug_printf("DKIM [%s] Body bytes (%s) hashed: %lu\n"
-		 "DKIM [%s] Body %s computed: ",
-	sig->domain, pdkim_canons[b->canon_method], b->signed_body_bytes,
-	sig->domain, pdkim_hashes[b->hashtype].dkim_hashname);
+    debug_printf("DKIM [%s]%s Body bytes (%s) hashed: %lu\n"
+		 "DKIM [%s]%s Body %s computed: ",
+	sig->domain, sig->selector, pdkim_canons[b->canon_method], b->signed_body_bytes,
+	sig->domain, sig->selector, pdkim_hashes[b->hashtype].dkim_hashname);
     pdkim_hexprint(CUS b->bh.data, b->bh.len);
     }
 
@@ -2028,13 +2029,13 @@ for (b = ctx->bodyhash; b; b = b->next)
      && canon_method == b->canon_method
      && bodylength == b->bodylength)
     {
-    DEBUG(D_receive) debug_printf("DKIM: using existing bodyhash %d/%d/%ld\n",
-				  hashtype, canon_method, bodylength);
+    DEBUG(D_receive) debug_printf("DKIM: using existing bodyhash %s/%s/%ld\n",
+      pdkim_hashes[hashtype].dkim_hashname, pdkim_canons[canon_method], bodylength);
     return b;
     }
 
-DEBUG(D_receive) debug_printf("DKIM: new bodyhash %d/%d/%ld\n",
-			      hashtype, canon_method, bodylength);
+DEBUG(D_receive) debug_printf("DKIM: new bodyhash %s/%s/%ld\n",
+    pdkim_hashes[hashtype].dkim_hashname, pdkim_canons[canon_method], bodylength);
 b = store_get(sizeof(pdkim_bodyhash), GET_UNTAINTED);
 b->next = ctx->bodyhash;
 b->hashtype = hashtype;
