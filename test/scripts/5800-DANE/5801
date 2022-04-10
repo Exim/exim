@@ -20,6 +20,7 @@ exim -q
 ****
 #
 # Two DANE messages from queue, two-pass queue-run
+# These go to the same host (A-record name), so can share a connection
 exim -odq t20@mxdane512ee.test.ex
 ****
 exim -odq t21@mxdane512ee1.test.ex

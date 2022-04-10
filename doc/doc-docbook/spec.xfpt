@@ -29861,8 +29861,10 @@ nothing more to it.  Choosing a sensible value not derived insecurely is the
 only point of caution.  The &$tls_out_sni$& variable will be set to this string
 for the lifetime of the client connection (including during authentication).
 
+.new
 If DANE validated the connection attempt then the value of the &%tls_sni%& option
-is forced to the domain part of the recipient address.
+is forced to the name of the destination host, after any MX- or CNAME-folowing.
+.wen
 
 Except during SMTP client sessions, if &$tls_in_sni$& is set then it is a string
 received from a client.
