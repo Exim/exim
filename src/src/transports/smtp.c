@@ -1992,6 +1992,38 @@ return OK;
 
 
 
+#ifdef SUPPORT_DANE
+static int
+check_force_dane_conn(smtp_context * sx, smtp_transport_options_block * ob)
+{
+int rc;
+if(  sx->dane_required
+  || verify_check_given_host(CUSS &ob->hosts_try_dane, sx->conn_args.host) == OK
+  )
+  switch (rc = tlsa_lookup(sx->conn_args.host, &sx->conn_args.tlsa_dnsa, sx->dane_required))
+    {
+    case OK:		sx->conn_args.dane = TRUE;
+			ob->tls_tempfail_tryclear = FALSE;	/* force TLS */
+			ob->tls_sni = sx->conn_args.host->name; /* force SNI */
+			break;
+    case FAIL_FORCED:	break;
+    default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
+			    string_sprintf("DANE error: tlsa lookup %s",
+			      rc_to_string(rc)),
+			    rc, FALSE, &sx->delivery_start);
+# ifndef DISABLE_EVENT
+			(void) event_raise(sx->conn_args.tblock->event_action,
+			  US"dane:fail", sx->dane_required
+			    ?  US"dane-required" : US"dnssec-invalid",
+			  NULL);
+# endif
+			return rc;
+    }
+return OK;
+}
+#endif
+
+
 /*************************************************
 *       Make connection for given message        *
 *************************************************/
@@ -2101,33 +2133,14 @@ if (continue_hostname && continue_proxy_cipher)
   const uschar * sni = US"";
 
 # ifdef SUPPORT_DANE
-  /* Check if the message will be DANE-verified; if so force its SNI */
+  /* Check if the message will be DANE-verified; if so force TLS and its SNI */
 
   tls_out.dane_verified = FALSE;
   smtp_port_for_connect(sx->conn_args.host, sx->port);
   if (  sx->conn_args.host->dnssec == DS_YES
-     && (  sx->dane_required
-	|| verify_check_given_host(CUSS &ob->hosts_try_dane, sx->conn_args.host) == OK
-     )  )
-    switch (rc = tlsa_lookup(sx->conn_args.host, &sx->conn_args.tlsa_dnsa, sx->dane_required))
-      {
-      case OK:		sx->conn_args.dane = TRUE;
-			ob->tls_tempfail_tryclear = FALSE;	/* force TLS */
-                        ob->tls_sni = sx->conn_args.host->name; /* force SNI */
-			break;
-      case FAIL_FORCED:	break;
-      default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
-			      string_sprintf("DANE error: tlsa lookup %s",
-				rc_to_string(rc)),
-			      rc, FALSE, &sx->delivery_start);
-#  ifndef DISABLE_EVENT
-			    (void) event_raise(sx->conn_args.tblock->event_action,
-			      US"dane:fail", sx->dane_required
-				?  US"dane-required" : US"dnssec-invalid",
-			      NULL);
-#  endif
-			    return rc;
-      }
+     && (rc = check_force_dane_conn(sx, ob)) != OK
+     )
+    return rc;
 # endif
 
   /* If the SNI or the DANE status required for the new message differs from the
@@ -2194,28 +2207,8 @@ if (!continue_hostname)
     if (sx->conn_args.host->dnssec == DS_YES)
       {
       int rc;
-      if(  sx->dane_required
-	|| verify_check_given_host(CUSS &ob->hosts_try_dane, sx->conn_args.host) == OK
-	)
-	switch (rc = tlsa_lookup(sx->conn_args.host, &sx->conn_args.tlsa_dnsa, sx->dane_required))
-	  {
-	  case OK:		sx->conn_args.dane = TRUE;
-				ob->tls_tempfail_tryclear = FALSE;	/* force TLS */
-				ob->tls_sni = sx->conn_args.host->name; /* force SNI */
-				break;
-	  case FAIL_FORCED:	break;
-	  default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
-				  string_sprintf("DANE error: tlsa lookup %s",
-				    rc_to_string(rc)),
-				  rc, FALSE, &sx->delivery_start);
-# ifndef DISABLE_EVENT
-				(void) event_raise(sx->conn_args.tblock->event_action,
-				  US"dane:fail", sx->dane_required
-				    ?  US"dane-required" : US"dnssec-invalid",
-				  NULL);
-# endif
-				return rc;
-	  }
+      if ((rc = check_force_dane_conn(sx, ob)) != OK)
+	return rc;
       }
     else if (sx->dane_required)
       {
