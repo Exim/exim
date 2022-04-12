@@ -108,6 +108,9 @@ typedef struct {
     OCSP_VFIED			/* verified */
     }     ocsp;		      /* Stapled OCSP status */
 #ifndef DISABLE_TLS_RESUME
+  hctx	  resume_hctx;		/* session lookup key accumulation */
+  const uschar * resume_index;	/* session lookup key */
+
   unsigned resumption;		/* Session resumption */
   BOOL	  host_resumable:1;
   BOOL	  ticket_received:1;

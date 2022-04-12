@@ -2867,12 +2867,12 @@ NULL plist return for silent no-ALPN.
 */
 
 static BOOL
-tls_alpn_plist(const uschar * tls_alpn, const gnutls_datum_t ** plist, unsigned * plen,
+tls_alpn_plist(uschar ** tls_alpn, const gnutls_datum_t ** plist, unsigned * plen,
   uschar ** errstr)
 {
 uschar * exp_alpn;
 
-if (!expand_check(tls_alpn, US"tls_alpn", &exp_alpn, errstr))
+if (!expand_check(*tls_alpn, US"tls_alpn", &exp_alpn, errstr))
   return FALSE;
 
 if (!exp_alpn)
@@ -2902,11 +2902,12 @@ return TRUE;
 static void
 tls_server_set_acceptable_alpns(exim_gnutls_state_st * state, uschar ** errstr)
 {
+uschar * local_alpn = string_copy(tls_alpn);
 int rc;
 const gnutls_datum_t * plist;
 unsigned plen;
 
-if (tls_alpn_plist(tls_alpn, &plist, &plen, errstr) && plist)
+if (tls_alpn_plist(&local_alpn, &plist, &plen, errstr) && plist)
   {
   /* This seems to be only mandatory if the client sends an ALPN extension;
   not trying ALPN is ok. Need to decide how to support server-side must-alpn. */
@@ -3268,25 +3269,25 @@ however avoid storing and retrieving session information. */
 
 static void
 tls_retrieve_session(tls_support * tlsp, gnutls_session_t session,
-  host_item * host, smtp_transport_options_block * ob)
+  smtp_connect_args * conn_args, smtp_transport_options_block * ob)
 {
 tlsp->resumption = RESUME_SUPPORTED;
-if (verify_check_given_host(CUSS &ob->tls_resumption_hosts, host) == OK)
+if (verify_check_given_host(CUSS &ob->tls_resumption_hosts, conn_args->host) == OK)
   {
   dbdata_tls_session * dt;
   int len, rc;
   open_db dbblock, * dbm_file;
 
-  DEBUG(D_tls)
-    debug_printf("check for resumable session for %s\n", host->address);
   tlsp->host_resumable = TRUE;
+  tls_client_resmption_key(tlsp, conn_args, ob);
+
   tlsp->resumption |= RESUME_CLIENT_REQUESTED;
   if ((dbm_file = dbfn_open(US"tls", O_RDONLY, &dbblock, FALSE, FALSE)))
     {
-    /* Key for the db is the IP.  We'd like to filter the retrieved session
-    for ticket advisory expiry, but 3.6.1 seems to give no access to that */
+    /* We'd like to filter the retrieved session for ticket advisory expiry,
+    but 3.6.1 seems to give no access to that */
 
-    if ((dt = dbfn_read_with_length(dbm_file, host->address, &len)))
+    if ((dt = dbfn_read_with_length(dbm_file, tlsp->resume_index, &len)))
       if (!(rc = gnutls_session_set_data(session,
 		    CUS dt->session, (size_t)len - sizeof(dbdata_tls_session))))
 	{
@@ -3332,8 +3333,7 @@ if (gnutls_session_get_flags(session) & GNUTLS_SFLAGS_SESSION_TICKET)
       if ((dbm_file = dbfn_open(US"tls", O_RDWR, &dbblock, FALSE, FALSE)))
 	{
 	/* key for the db is the IP */
-	dbfn_delete(dbm_file, host->address);
-	dbfn_write(dbm_file, host->address, dt, dlen);
+	dbfn_write(dbm_file, tlsp->resume_index, dt, dlen);
 	dbfn_close(dbm_file);
 
 	DEBUG(D_tls)
@@ -3368,14 +3368,14 @@ return 0;
 
 static void
 tls_client_resume_prehandshake(exim_gnutls_state_st * state,
-  tls_support * tlsp, host_item * host,
+  tls_support * tlsp, smtp_connect_args * conn_args,
   smtp_transport_options_block * ob)
 {
 gnutls_session_set_ptr(state->session, state);
 gnutls_handshake_set_hook_function(state->session,
   GNUTLS_HANDSHAKE_NEW_SESSION_TICKET, GNUTLS_HOOK_POST, tls_client_ticket_cb);
 
-tls_retrieve_session(tlsp, state->session, host, ob);
+tls_retrieve_session(tlsp, state->session, conn_args, ob);
 }
 
 static void
@@ -3473,7 +3473,7 @@ if (ob->tls_alpn)
   const gnutls_datum_t * plist;
   unsigned plen;
 
-  if (!tls_alpn_plist(ob->tls_alpn, &plist, &plen, errstr))
+  if (!tls_alpn_plist(&ob->tls_alpn, &plist, &plen, errstr))
     return FALSE;
   if (plist)
     if (gnutls_alpn_set_protocols(state->session, plist, plen, 0) != 0)
@@ -3565,7 +3565,7 @@ if (request_ocsp)
 #endif
 
 #ifdef EXIM_HAVE_TLS_RESUME
-tls_client_resume_prehandshake(state, tlsp, host, ob);
+tls_client_resume_prehandshake(state, tlsp, conn_args, ob);
 #endif
 
 #ifndef DISABLE_EVENT

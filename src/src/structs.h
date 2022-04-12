@@ -830,6 +830,7 @@ typedef struct {
   host_item *           host;
   int                   host_af;
   uschar *              interface;
+  uschar *		sending_ip_address;	/* used for TLS resumption */
   int			sock;	/* used for a bound but not connected socket */
 
 #ifdef SUPPORT_DANE

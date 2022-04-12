@@ -126,6 +126,11 @@ JH/28 OpenSSL: fix transport-required OCSP stapling verification under session
       passed on the wire for the restarted session. Fix by using the recorded
       ocsp status of the stored session for the new connection.
 
+JH/29 TLS resumption: the key for session lookup in the client now includes
+      more info that a server could potentially use in configuring a TLS
+      session, avoiding oferring mismatching sessions to such a server.
+      Previously only the server IP was used.
+
 
 Exim version 4.95
 -----------------

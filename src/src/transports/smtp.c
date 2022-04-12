@@ -2665,6 +2665,7 @@ if (  smtp_peer_options & OPTION_TLS
   else
   TLS_NEGOTIATE:
     {
+    sx->conn_args.sending_ip_address = sending_ip_address;
     if (!tls_client_start(&sx->cctx, &sx->conn_args, sx->addrlist, &tls_out, &tls_errstr))
       {
       /* TLS negotiation failed; give an error. From outside, this function may

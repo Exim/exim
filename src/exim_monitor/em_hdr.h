@@ -95,7 +95,7 @@ this interface so that this kind of kludge isn't needed. */
 #ifndef NS_MAXMSG
 # define NS_MAXMSG 65535
 #endif
-typedef void hctx;
+typedef void * hctx;
 
 #include "local_scan.h"
 #include "macros.h"

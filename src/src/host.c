@@ -914,14 +914,14 @@ if (type < 0)
     struct sockaddr_in6 *sk = (struct sockaddr_in6 *)arg;
     yield = US inet_ntop(family, &(sk->sin6_addr), CS addr_buffer,
       sizeof(addr_buffer));
-    if (portptr != NULL) *portptr = ntohs(sk->sin6_port);
+    if (portptr) *portptr = ntohs(sk->sin6_port);
     }
   else
     {
     struct sockaddr_in *sk = (struct sockaddr_in *)arg;
     yield = US inet_ntop(family, &(sk->sin_addr), CS addr_buffer,
       sizeof(addr_buffer));
-    if (portptr != NULL) *portptr = ntohs(sk->sin_port);
+    if (portptr) *portptr = ntohs(sk->sin_port);
     }
   }
 else
@@ -940,7 +940,7 @@ if (Ustrncmp(yield, "::ffff:", 7) == 0) yield += 7;
 if (type < 0)
   {
   yield = US inet_ntoa(((struct sockaddr_in *)arg)->sin_addr);
-  if (portptr != NULL) *portptr = ntohs(((struct sockaddr_in *)arg)->sin_port);
+  if (portptr) *portptr = ntohs(((struct sockaddr_in *)arg)->sin_port);
   }
 else
   yield = US inet_ntoa(*((struct in_addr *)arg));

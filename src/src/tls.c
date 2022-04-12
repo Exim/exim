@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2018 */
-/* Copyright (c) The Exim Maintainers 2020 - 2021 */
+/* Copyright (c) The Exim Maintainers 2020 - 2022 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module provides TLS (aka SSL) support for Exim. The code for OpenSSL is
@@ -23,6 +23,11 @@ functions from the OpenSSL or GNU TLS libraries. */
 #if !defined(DISABLE_TLS) && !defined(USE_OPENSSL) && !defined(USE_GNUTLS)
 # error One of USE_OPENSSL or USE_GNUTLS must be defined for a TLS build
 #endif
+
+
+/* Forward decl. */
+static void tls_client_resmption_key(tls_support *, smtp_connect_args *,
+  smtp_transport_options_block *);
 
 
 #if defined(MACRO_PREDEF) && !defined(DISABLE_TLS)
@@ -790,6 +795,44 @@ return status == 0;
 
 
 
+
+static void
+tls_client_resmption_key(tls_support * tlsp, smtp_connect_args * conn_args,
+  smtp_transport_options_block * ob)
+{
+hctx * h = &tlsp->resume_hctx;
+blob b;
+gstring * g;
+
+#ifdef EXIM_HAVE_SHA2
+exim_sha_init(h, HASH_SHA2_256);
+#else
+exim_sha_init(h, HASH_SHA1);
+#endif
+
+//  TODO: word from server EHLO resp		/* how, fer gossakes?  Add item to conn_args or tls_support? */
+
+if (conn_args->dane)
+  exim_sha_update(h, CUS &conn_args->tlsa_dnsa, sizeof(dns_answer));
+exim_sha_update(h,   conn_args->host->address,	Ustrlen(conn_args->host->address));
+exim_sha_update(h,   CUS &conn_args->host->port, sizeof(conn_args->host->port));
+exim_sha_update(h,   conn_args->sending_ip_address, Ustrlen(conn_args->sending_ip_address));
+if (openssl_options)
+  exim_sha_update(h, openssl_options,		Ustrlen(openssl_options));
+if (ob->tls_require_ciphers)
+  exim_sha_update(h, ob->tls_require_ciphers,	Ustrlen(ob->tls_require_ciphers));
+if (tlsp->sni)
+  exim_sha_update(h, tlsp->sni,			Ustrlen(tlsp->sni));
+#ifdef EXIM_HAVE_ALPN
+if (ob->tls_alpn)
+  exim_sha_update(h, ob->tls_alpn,		Ustrlen(ob->tls_alpn));
+#endif
+exim_sha_finish(h, &b);
+for (g = string_get(b.len*2+1); b.len-- > 0; )
+  g = string_fmt_append(g, "%02x", *b.data++);
+tlsp->resume_index = string_from_gstring(g);
+DEBUG(D_tls) debug_printf("TLS: resume session index %s\n", tlsp->resume_index);
+}
 
 #endif	/*!DISABLE_TLS*/
 #endif	/*!MACRO_PREDEF*/

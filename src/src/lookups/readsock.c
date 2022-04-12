@@ -116,9 +116,19 @@ else
 #ifndef DISABLE_TLS
 if (do_tls)
   {
+  union sockaddr_46 interface_sock;
+  EXIM_SOCKLEN_T size = sizeof(interface_sock);
   smtp_connect_args conn_args = {.host = &host };
-  tls_support tls_dummy = {.sni=NULL};
+  tls_support tls_dummy = { .sni = NULL };
   uschar * errstr;
+
+  if (getsockname(cctx->sock, (struct sockaddr *) &interface_sock, &size) == 0)
+    conn_args.sending_ip_address = host_ntoa(-1, &interface_sock, NULL, NULL);
+  else
+    {
+    *errmsg = string_sprintf("getsockname failed: %s", strerror(errno));
+    goto bad;
+    }
 
   if (!tls_client_start(cctx, &conn_args, NULL, &tls_dummy, &errstr))
     {

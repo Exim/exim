@@ -3620,21 +3620,21 @@ return DEFER;
 and apply it to the ssl-connection for attempted resumption. */
 
 static void
-tls_retrieve_session(tls_support * tlsp, SSL * ssl, const uschar * key)
+tls_retrieve_session(tls_support * tlsp, SSL * ssl)
 {
-tlsp->resumption |= RESUME_SUPPORTED;
 if (tlsp->host_resumable)
   {
+  const uschar * key = tlsp->resume_index;
   dbdata_tls_session * dt;
   int len;
   open_db dbblock, * dbm_file;
 
   tlsp->resumption |= RESUME_CLIENT_REQUESTED;
-  DEBUG(D_tls) debug_printf("checking for resumable session for %s\n", key);
+  DEBUG(D_tls)
+    debug_printf("checking for resumable session for %s\n", tlsp->resume_index);
   if ((dbm_file = dbfn_open(US"tls", O_RDWR, &dbblock, FALSE, FALSE)))
     {
-    /* key for the db is the IP */
-    if ((dt = dbfn_read_with_length(dbm_file, key, &len)))
+    if ((dt = dbfn_read_with_length(dbm_file, tlsp->resume_index, &len)))
       {
       SSL_SESSION * ss = NULL;
       const uschar * sess_asn1 = dt->session;
@@ -3660,7 +3660,7 @@ if (tlsp->host_resumable)
 	if (lifetime + dt->time_stamp < time(NULL))
 	  {
 	  DEBUG(D_tls) debug_printf("session expired\n");
-	  dbfn_delete(dbm_file, key);
+	  dbfn_delete(dbm_file, tlsp->resume_index);
 	  }
 	else if (SSL_set_session(ssl, ss))
 	  {
@@ -3716,9 +3716,7 @@ if (SSL_SESSION_is_resumable(ss)) 	/* 1.1.1 */
 
   if ((dbm_file = dbfn_open(US"tls", O_RDWR, &dbblock, FALSE, FALSE)))
     {
-    const uschar * key = cbinfo->host->address;
-    dbfn_delete(dbm_file, key);
-    dbfn_write(dbm_file, key, dt, dlen);
+    dbfn_write(dbm_file, tlsp->resume_index, dt, dlen);
     dbfn_close(dbm_file);
     DEBUG(D_tls) debug_printf("wrote session (len %u) to db\n",
 		  (unsigned)dlen);
@@ -3728,21 +3726,20 @@ return 1;
 }
 
 
+/* Construct a key for session DB lookup, and setup the SSL_CTX for resumption */
+
 static void
 tls_client_ctx_resume_prehandshake(
-  exim_openssl_client_tls_ctx * exim_client_ctx, tls_support * tlsp,
-  smtp_transport_options_block * ob, host_item * host)
+  exim_openssl_client_tls_ctx * exim_client_ctx, smtp_connect_args * conn_args,
+  tls_support * tlsp, smtp_transport_options_block * ob)
 {
-/* Should the client request a session resumption ticket? */
-if (verify_check_given_host(CUSS &ob->tls_resumption_hosts, host) == OK)
-  {
-  tlsp->host_resumable = TRUE;
+tlsp->host_resumable = TRUE;
+tls_client_resmption_key(tlsp, conn_args, ob);
 
-  SSL_CTX_set_session_cache_mode(exim_client_ctx->ctx,
-	SSL_SESS_CACHE_CLIENT
-	| SSL_SESS_CACHE_NO_INTERNAL | SSL_SESS_CACHE_NO_AUTO_CLEAR);
-  SSL_CTX_sess_set_new_cb(exim_client_ctx->ctx, tls_save_session_cb);
-  }
+SSL_CTX_set_session_cache_mode(exim_client_ctx->ctx,
+      SSL_SESS_CACHE_CLIENT
+      | SSL_SESS_CACHE_NO_INTERNAL | SSL_SESS_CACHE_NO_AUTO_CLEAR);
+SSL_CTX_sess_set_new_cb(exim_client_ctx->ctx, tls_save_session_cb);
 }
 
 static BOOL
@@ -3766,7 +3763,7 @@ if (tlsp->host_resumable)
 
 tlsp->resumption = RESUME_SUPPORTED;
 /* Pick up a previous session, saved on an old ticket */
-tls_retrieve_session(tlsp, ssl, host->address);
+tls_retrieve_session(tlsp, ssl);
 return TRUE;
 }
 
@@ -3786,16 +3783,19 @@ if (SSL_session_reused(exim_client_ctx->ssl))
 #ifdef EXIM_HAVE_ALPN
 /* Expand and convert an Exim list to an ALPN list.  False return for fail.
 NULL plist return for silent no-ALPN.
+
+Overwite the passed-in list with the expanded version.
 */
 
 static BOOL
-tls_alpn_plist(const uschar * tls_alpn, const uschar ** plist, unsigned * plen,
+tls_alpn_plist(uschar ** tls_alpn, const uschar ** plist, unsigned * plen,
   uschar ** errstr)
 {
 uschar * exp_alpn;
 
-if (!expand_check(tls_alpn, US"tls_alpn", &exp_alpn, errstr))
+if (!expand_check(*tls_alpn, US"tls_alpn", &exp_alpn, errstr))
   return FALSE;
+*tls_alpn = exp_alpn;
 
 if (!exp_alpn)
   {
@@ -3976,39 +3976,20 @@ if (tls_client_basic_ctx_init(exim_client_ctx->ctx, host, ob,
       client_static_state, errstr) != OK)
   return FALSE;
 
-#ifndef DISABLE_TLS_RESUME
-tls_client_ctx_resume_prehandshake(exim_client_ctx, tlsp, ob, host);
-#endif
-
-
-if (!(exim_client_ctx->ssl = SSL_new(exim_client_ctx->ctx)))
-  {
-  tls_error(US"SSL_new", host, NULL, errstr);
-  return FALSE;
-  }
-SSL_set_session_id_context(exim_client_ctx->ssl, sid_ctx, Ustrlen(sid_ctx));
-
-SSL_set_fd(exim_client_ctx->ssl, cctx->sock);
-SSL_set_connect_state(exim_client_ctx->ssl);
-
 if (ob->tls_sni)
   {
   if (!expand_check(ob->tls_sni, US"tls_sni", &tlsp->sni, errstr))
     return FALSE;
   if (!tlsp->sni)
-    {
-    DEBUG(D_tls) debug_printf("Setting TLS SNI forced to fail, not sending\n");
-    }
+    { DEBUG(D_tls) debug_printf("Setting TLS SNI forced to fail, not sending\n"); }
   else if (!Ustrlen(tlsp->sni))
     tlsp->sni = NULL;
   else
     {
-#ifdef EXIM_HAVE_OPENSSL_TLSEXT
-    DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tlsp->sni);
-    SSL_set_tlsext_host_name(exim_client_ctx->ssl, tlsp->sni);
-#else
+#ifndef EXIM_HAVE_OPENSSL_TLSEXT
     log_write(0, LOG_MAIN, "SNI unusable with this OpenSSL library version; ignoring \"%s\"\n",
           tlsp->sni);
+    tlsp->sni = NULL;
 #endif
     }
   }
@@ -4019,10 +4000,10 @@ if (ob->tls_alpn)
   const uschar * plist;
   unsigned plen;
 
-  if (!tls_alpn_plist(ob->tls_alpn, &plist, &plen, errstr))
+  if (!tls_alpn_plist(&ob->tls_alpn, &plist, &plen, errstr))
     return FALSE;
   if (plist)
-    if (SSL_set_alpn_protos(exim_client_ctx->ssl, plist, plen) != 0)
+    if (SSL_CTX_set_alpn_protos(exim_client_ctx->ctx, plist, plen) != 0)
       {
       tls_error(US"alpn init", host, NULL, errstr);
       return FALSE;
@@ -4033,6 +4014,29 @@ if (ob->tls_alpn)
 #else
   log_write(0, LOG_MAIN, "ALPN unusable with this OpenSSL library version; ignoring \"%s\"\n",
           ob->tls_alpn);
+#endif
+
+#ifndef DISABLE_TLS_RESUME
+if (verify_check_given_host(CUSS &ob->tls_resumption_hosts, host) == OK)
+  tls_client_ctx_resume_prehandshake(exim_client_ctx, conn_args, tlsp, ob);
+#endif
+
+
+if (!(exim_client_ctx->ssl = SSL_new(exim_client_ctx->ctx)))
+  {
+  tls_error(US"SSL_new", host, NULL, errstr);
+  return FALSE;
+  }
+SSL_set_session_id_context(exim_client_ctx->ssl, sid_ctx, Ustrlen(sid_ctx));
+SSL_set_fd(exim_client_ctx->ssl, cctx->sock);
+SSL_set_connect_state(exim_client_ctx->ssl);
+
+#ifdef EXIM_HAVE_OPENSSL_TLSEXT
+if (tlsp->sni)
+  {
+  DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tlsp->sni);
+  SSL_set_tlsext_host_name(exim_client_ctx->ssl, tlsp->sni);
+  }
 #endif
 
 #ifdef SUPPORT_DANE
