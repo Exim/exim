@@ -7273,7 +7273,7 @@ NOT_ITEM: ;
 	    goto EXPAND_FAILED;
 	    }
 
-	  exim_sha_update(&h, sub, Ustrlen(sub));
+	  exim_sha_update_string(&h, sub);
 	  exim_sha_finish(&h, &b);
 	  while (b.len-- > 0)
 	    yield = string_fmt_append(yield, "%02X", *b.data++);
@@ -7301,7 +7301,7 @@ NOT_ITEM: ;
 	  goto EXPAND_FAILED;
 	  }
 
-	exim_sha_update(&h, sub, Ustrlen(sub));
+	exim_sha_update_string(&h, sub);
 	exim_sha_finish(&h, &b);
 	while (b.len-- > 0)
 	  yield = string_fmt_append(yield, "%02X", *b.data++);

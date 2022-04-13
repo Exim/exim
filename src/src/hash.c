@@ -29,6 +29,7 @@ sha1;
 
 /******************************************************************************/
 #ifdef SHA_OPENSSL
+# define HAVE_PARTIAL_SHA
 
 BOOL
 exim_sha_init(hctx * h, hashmethod m)
@@ -146,6 +147,7 @@ EVP_MD_CTX_free(h->u.mctx);
 
 
 #elif defined(SHA_GNUTLS)
+# define HAVE_PARTIAL_SHA
 /******************************************************************************/
 
 BOOL
@@ -186,6 +188,7 @@ gnutls_hash_output(h->sha, b->data);
 
 
 #elif defined(SHA_GCRYPT)
+# define HAVE_PARTIAL_SHA
 /******************************************************************************/
 
 BOOL
@@ -224,6 +227,7 @@ memcpy(b->data, gcry_md_read(h->sha, 0), h->hashlen);
 
 
 #elif defined(SHA_POLARSSL)
+# define HAVE_PARTIAL_SHA
 /******************************************************************************/
 
 BOOL
@@ -432,9 +436,7 @@ if (length > 55)
   memset(work, 0, 56);
   }
 else
-  {
   memset(work+length+1, 0, 55-length);
-  }
 
 /* The final 8 bytes of the final chunk are a 64-bit representation of the
 length of the input string *bits*, before padding, high order word first, and
@@ -556,6 +558,14 @@ memcpy(digest, b.data, 20);
 
 
 
+#ifdef HAVE_PARTIAL_SHA
+# undef HAVE_PARTIAL_SHA
+void
+exim_sha_update_string(hctx * h, const uschar * s)
+{
+if (s) exim_sha_update(h, s, Ustrlen(s));
+}
+#endif
 
 
 
@@ -565,7 +575,7 @@ memcpy(digest, b.data, 20);
 **************************************************
 *************************************************/
 
-# ifdef STAND_ALONE
+#ifdef STAND_ALONE
 
 /* Test values. The first 128 may contain binary zeros and have increasing
 length. */
@@ -880,6 +890,6 @@ printf("Computed:  %s\n", s);
 if (strcmp(s, atest) != 0) printf("*** No match ***\n");
 
 }
-# endif	/*STAND_ALONE*/
+#endif	/*STAND_ALONE*/
 
 /* End of File */

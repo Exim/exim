@@ -813,19 +813,15 @@ exim_sha_init(h, HASH_SHA1);
 //  TODO: word from server EHLO resp		/* how, fer gossakes?  Add item to conn_args or tls_support? */
 
 if (conn_args->dane)
-  exim_sha_update(h, CUS &conn_args->tlsa_dnsa, sizeof(dns_answer));
-exim_sha_update(h,   conn_args->host->address,	Ustrlen(conn_args->host->address));
+  exim_sha_update(h,  CUS &conn_args->tlsa_dnsa, sizeof(dns_answer));
+exim_sha_update_string(h, conn_args->host->address);
 exim_sha_update(h,   CUS &conn_args->host->port, sizeof(conn_args->host->port));
-exim_sha_update(h,   conn_args->sending_ip_address, Ustrlen(conn_args->sending_ip_address));
-if (openssl_options)
-  exim_sha_update(h, openssl_options,		Ustrlen(openssl_options));
-if (ob->tls_require_ciphers)
-  exim_sha_update(h, ob->tls_require_ciphers,	Ustrlen(ob->tls_require_ciphers));
-if (tlsp->sni)
-  exim_sha_update(h, tlsp->sni,			Ustrlen(tlsp->sni));
+exim_sha_update_string(h, conn_args->sending_ip_address);
+exim_sha_update_string(h, openssl_options);
+exim_sha_update_string(h, ob->tls_require_ciphers);
+exim_sha_update_string(h, tlsp->sni);
 #ifdef EXIM_HAVE_ALPN
-if (ob->tls_alpn)
-  exim_sha_update(h, ob->tls_alpn,		Ustrlen(ob->tls_alpn));
+exim_sha_update_string(h, ob->tls_alpn);
 #endif
 exim_sha_finish(h, &b);
 for (g = string_get(b.len*2+1); b.len-- > 0; )

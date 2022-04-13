@@ -1613,7 +1613,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
 	  rh = pdkim_relax_header(rh, TRUE);	/* cook header for relaxed canon */
 
 	/* Feed header to the hash algorithm */
-	exim_sha_update(&hhash_ctx, CUS rh, Ustrlen(rh));
+	exim_sha_update_string(&hhash_ctx, CUS rh);
 
 	/* Remember headers block for signing (when the library cannot do incremental)  */
 	/*XXX we could avoid doing this for all but the GnuTLS/RSA case */
@@ -1674,7 +1674,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
 	      : string_copy(CUS hdrs->value);
 
 	    /* Feed header to the hash algorithm */
-	    exim_sha_update(&hhash_ctx, CUS rh, Ustrlen(rh));
+	    exim_sha_update_string(&hhash_ctx, CUS rh);
 
 	    DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
 	    hdrs->tag = 1;
@@ -1715,7 +1715,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
     }
 
   /* Finalize header hash */
-  exim_sha_update(&hhash_ctx, CUS sig_hdr, Ustrlen(sig_hdr));
+  exim_sha_update_string(&hhash_ctx, CUS sig_hdr);
   exim_sha_finish(&hhash_ctx, &hhash);
 
   DEBUG(D_acl)

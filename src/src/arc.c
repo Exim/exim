@@ -569,7 +569,7 @@ while ((hn = string_nextinlist(&headernames, &sep, NULL, 0)))
 
       len = Ustrlen(s);
       DEBUG(D_acl) pdkim_quoteprint(s, len);
-      exim_sha_update(&hhash_ctx, s, Ustrlen(s));
+      exim_sha_update_string(&hhash_ctx, s);
       r->used = TRUE;
       break;
       }
