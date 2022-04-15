@@ -25515,6 +25515,36 @@ helo_data = ${lookup dnsdb{ptr=$sending_ip_address} \
 The use of &%helo_data%& applies both to sending messages and when doing
 callouts.
 
+.new
+.option host_name_extract smtp "string list&!!" "see below"
+.cindex "load balancer" "hosts behind"
+.cindex TLS resumption
+Some mail-accepting sites
+(notably Microsoft)
+operate many servers behind a network load-balancer.  When this is done,
+with separated TLS session caches, TLS session resuption becomes problematic.
+It will only succeed when the same server happens to be selected by the
+load-balancer, matching the session stored in the client's cache.
+
+Exim can pull out a server name, if there is one, from the response to the
+client's SMTP EHLO command.
+The default value of this option:
+.code
+    ${if and { {match {$host} {.outlook.com\$}} \
+               {match {$item} {\N^250-([\w.]+)\s\N}} \
+	     } {$1}}
+.endd
+suffices for one known case.
+During the expansion of this option the &$item$& variable will have the
+server's EHLO response.
+The result of the option expansion is included in the key used to store and
+retrieve the TLS session, for sessino resumption.
+
+Operators of high-load sites may wish to evaluate their logs for indications
+of other destination sites operating load-balancers, and develop a suitable
+expression for this option.
+.wen
+
 .option hosts smtp "string list&!!" unset
 Hosts are associated with an address by a router such as &(dnslookup)&, which
 finds the hosts by looking up the address domain in the DNS, or by

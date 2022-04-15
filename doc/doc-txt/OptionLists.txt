@@ -296,6 +296,9 @@ hold_domains                         domain list     unset         main         
 home_directory                       string*         unset         transports        4.00 replaces individual options
 host_all_ignored                     string          "defer"       manualroute       4.67
 host_find_failed                     string          "freeze"      manualroute       4.00
+host_name_extract                    string
+	"${if and {{match{.outlook.com\\$}{$host}} {match{$item}{\\N^250-([\\w.]+)\\s\\N}}} {$1}}"
+								   smtp		     4.96
 host_lookup                          host list       unset         main              3.00
 host_lookup_order                    string list  "bydns:byaddr"   main              4.30
 host_reject_connection               host list       unset         main              4.00

@@ -804,16 +804,19 @@ hctx * h = &tlsp->resume_hctx;
 blob b;
 gstring * g;
 
+DEBUG(D_tls) if (conn_args->host_lbserver)
+  debug_printf("TLS: lbserver '%s'\n", conn_args->host_lbserver);
+
 #ifdef EXIM_HAVE_SHA2
 exim_sha_init(h, HASH_SHA2_256);
 #else
 exim_sha_init(h, HASH_SHA1);
 #endif
-
-//  TODO: word from server EHLO resp		/* how, fer gossakes?  Add item to conn_args or tls_support? */
-
+exim_sha_update_string(h, conn_args->host_lbserver);
+#ifdef SUPPORT_DANE
 if (conn_args->dane)
   exim_sha_update(h,  CUS &conn_args->tlsa_dnsa, sizeof(dns_answer));
+#endif
 exim_sha_update_string(h, conn_args->host->address);
 exim_sha_update(h,   CUS &conn_args->host->port, sizeof(conn_args->host->port));
 exim_sha_update_string(h, conn_args->sending_ip_address);

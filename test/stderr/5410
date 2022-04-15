@@ -80,6 +80,38 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
+ ╭considering: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ╭considering: $host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├considering: }{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──expanding: $host
+  ╰─────result: 127.0.0.1
+  ╭considering: .outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├───────text: .outlook.com
+  ├considering: \$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├backslashed: '\$'
+  ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──expanding: .outlook.com\$
+  ╰─────result: .outlook.com$
+  ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──expanding: $item
+  ├─────result: 
+  ╰───skipping: result is not used
+  ╭───scanning: \N^250-([\w.]+)\s\N}}} {$1}}
+  ├──protected: ^250-([\w.]+)\s
+  ├───scanning: }}} {$1}}
+  ├──expanding: \N^250-([\w.]+)\s\N
+  ├─────result: ^250-([\w.]+)\s
+  ╰───skipping: result is not used
+ ├──condition: and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}}
+ ├─────result: false
+  ╭───scanning: $1}}
+  ├───scanning: }}
+  ├──expanding: $1
+  ├─────result: 
+  ╰───skipping: result is not used
+ ├──expanding: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+ ╰─────result: 
  ╭considering: ${if eq {$address_data}{usery}{*}{:}}
   ╭considering: $address_data}{usery}{*}{:}}
   ├considering: }{usery}{*}{:}}
@@ -604,6 +636,38 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
+ ╭considering: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ╭considering: $host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├considering: }{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──expanding: $host
+  ╰─────result: 127.0.0.1
+  ╭considering: .outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├───────text: .outlook.com
+  ├considering: \$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├backslashed: '\$'
+  ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──expanding: .outlook.com\$
+  ╰─────result: .outlook.com$
+  ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──expanding: $item
+  ├─────result: 
+  ╰───skipping: result is not used
+  ╭───scanning: \N^250-([\w.]+)\s\N}}} {$1}}
+  ├──protected: ^250-([\w.]+)\s
+  ├───scanning: }}} {$1}}
+  ├──expanding: \N^250-([\w.]+)\s\N
+  ├─────result: ^250-([\w.]+)\s
+  ╰───skipping: result is not used
+ ├──condition: and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}}
+ ├─────result: false
+  ╭───scanning: $1}}
+  ├───scanning: }}
+  ├──expanding: $1
+  ├─────result: 
+  ╰───skipping: result is not used
+ ├──expanding: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+ ╰─────result: 
  ╭considering: ${if eq {$address_data}{usery}{*}{:}}
   ╭considering: $address_data}{usery}{*}{:}}
   ├considering: }{usery}{*}{:}}
@@ -1089,6 +1153,38 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
+ ╭considering: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ╭considering: $host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├considering: }{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──expanding: $host
+  ╰─────result: 127.0.0.1
+  ╭considering: .outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├───────text: .outlook.com
+  ├considering: \$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├backslashed: '\$'
+  ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──expanding: .outlook.com\$
+  ╰─────result: .outlook.com$
+  ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──expanding: $item
+  ├─────result: 
+  ╰───skipping: result is not used
+  ╭───scanning: \N^250-([\w.]+)\s\N}}} {$1}}
+  ├──protected: ^250-([\w.]+)\s
+  ├───scanning: }}} {$1}}
+  ├──expanding: \N^250-([\w.]+)\s\N
+  ├─────result: ^250-([\w.]+)\s
+  ╰───skipping: result is not used
+ ├──condition: and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}}
+ ├─────result: false
+  ╭───scanning: $1}}
+  ├───scanning: }}
+  ├──expanding: $1
+  ├─────result: 
+  ╰───skipping: result is not used
+ ├──expanding: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+ ╰─────result: 
  ╭considering: ${if eq {$address_data}{usery}{*}{:}}
   ╭considering: $address_data}{usery}{*}{:}}
   ├considering: }{usery}{*}{:}}

@@ -830,8 +830,10 @@ typedef struct {
   host_item *           host;
   int                   host_af;
   uschar *              interface;
-  uschar *		sending_ip_address;	/* used for TLS resumption */
+
   int			sock;	/* used for a bound but not connected socket */
+  uschar *		sending_ip_address;	/* used for TLS resumption */
+  const uschar *	host_lbserver;		/* ditto, for server-behind LB */
 
 #ifdef SUPPORT_DANE
   BOOL dane:1;			/* connection must do dane */

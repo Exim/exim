@@ -48,6 +48,7 @@ fallback_hosts =
 final_timeout = 10m
 no_gethostbyname
 helo_data = $primary_hostname
+host_name_extract = ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
 hosts = 
 hosts_avoid_esmtp = 
 hosts_avoid_pipelining = 

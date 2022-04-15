@@ -86,6 +86,9 @@ send_to_server1:
   hosts =			127.0.0.1
   port =			PORT_D
   helo_data =			helo.data.changed
+.ifdef HELO_MSG
+  host_name_extract =		HELO_MSG
+.endif
 .ifdef VALUE
   tls_resumption_hosts =	*
 .else

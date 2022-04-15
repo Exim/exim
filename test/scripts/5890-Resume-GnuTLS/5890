@@ -65,5 +65,19 @@ Test message.
 exim -odf notreq@test.ex
 Test message, not requesting resumption.
 ****
+#
+# Test the host_name_extract transport option.  Due to the change the second
+# message's connection should not offer a session.  The third should (on the 2nd),
+# as should the fourth (on the 1st).
+sudo rm -f DIR/spool/db/tls*
+exim -DVALUE=resume -odf getticket@test.ex
+****
+exim -DVALUE=resume -DHELO_MSG=differenthost -odf noresume@test.ex
+****
+exim -DVALUE=resume -DHELO_MSG=differenthost -odf resume@test.ex
+****
+exim -DVALUE=resume -odf resume@test.ex
+****
+#
 killdaemon
 no_msglog_check

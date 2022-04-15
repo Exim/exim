@@ -64,6 +64,9 @@ optionlist smtp_transport_options[] = {
   { "final_timeout",        opt_time,	   LOFF(final_timeout) },
   { "gethostbyname",        opt_bool,	   LOFF(gethostbyname) },
   { "helo_data",            opt_stringptr, LOFF(helo_data) },
+#if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
+  { "host_name_extract",    opt_stringptr, LOFF(host_name_extract) },
+# endif
   { "hosts",                opt_stringptr, LOFF(hosts) },
   { "hosts_avoid_esmtp",    opt_stringptr, LOFF(hosts_avoid_esmtp) },
   { "hosts_avoid_pipelining", opt_stringptr, LOFF(hosts_avoid_pipelining) },
@@ -199,6 +202,9 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .tls_tempfail_tryclear =	TRUE,
   .tls_try_verify_hosts =	US"*",
   .tls_verify_cert_hostnames =	US"*",
+# ifndef DISABLE_TLS_RESUME
+  .host_name_extract =		US"${if and {{match{$host}{.outlook.com\\$}} {match{$item}{\\N^250-([\\w.]+)\\s\\N}}} {$1}}",
+# endif
 #endif
 #ifdef SUPPORT_I18N
   .utf8_downconvert =		US"-1",
@@ -1066,6 +1072,7 @@ if (pending_EHLO)
   if (tls_out.active.sock >= 0 || !(peer_offered & OPTION_TLS))
     ehlo_response_limits_read(sx);
 #endif
+/*XXX RESUMP - EHLO-resp avail here int sx->buffer */
   if (  peer_offered != sx->peer_offered
      || (authbits = study_ehlo_auths(sx)) != *ap)
     {
@@ -1874,6 +1881,28 @@ return checks;
 
 
 
+/* Grab a string differentiating server behind a loadbalancer, for TLS
+resumption when such servers do not share a session-cache */
+
+static const uschar *
+ehlo_response_lbserver(uschar * buffer, smtp_transport_options_block * ob)
+{
+#if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
+/* want to make this a main-section option */
+const uschar * s;
+uschar * save_item = iterate_item;
+
+iterate_item = buffer;
+s = expand_cstring(ob->host_name_extract);
+iterate_item = save_item;
+return s && !*s ? NULL : s;
+#else
+return NULL;
+#endif
+}
+
+
+
 /* Callback for emitting a BDAT data chunk header.
 
 If given a nonzero size, first flush any buffered SMTP commands
@@ -2516,6 +2545,8 @@ goto SEND_QUIT;
 	  : 0
 	  )
 #endif
+/*XXX RESUMP - sx->buffer has the EHLO-resp, but only if not early-pipe and not continued-connection */
+/* maybe disable resump on cont? */
 	);
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
       if (tls_out.active.sock >= 0 || !(sx->peer_offered & OPTION_TLS))
@@ -2538,6 +2569,7 @@ goto SEND_QUIT;
 	  }
 	}
 #endif
+      sx->conn_args.host_lbserver = ehlo_response_lbserver(sx->buffer, ob);
       }
 
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
@@ -2629,14 +2661,19 @@ if (  smtp_peer_options & OPTION_TLS
   the response for the STARTTLS we just sent alone.  On fail, assume wrong
   cached capability and retry with the pipelining disabled. */
 
-  if (sx->early_pipe_active && sync_responses(sx, 2, 0) != 0)
+  if (sx->early_pipe_active)
     {
-    HDEBUG(D_transport)
-      debug_printf("failed reaping pipelined cmd responses\n");
-    close(sx->cctx.sock);
-    sx->cctx.sock = -1;
-    sx->early_pipe_active = FALSE;
-    goto PIPE_CONNECT_RETRY;
+    if (sync_responses(sx, 2, 0) != 0)
+      {
+      HDEBUG(D_transport)
+	debug_printf("failed reaping pipelined cmd responses\n");
+      close(sx->cctx.sock);
+      sx->cctx.sock = -1;
+      sx->early_pipe_active = FALSE;
+      goto PIPE_CONNECT_RETRY;
+      }
+/*XXX RESUMP - does this leave the EHLO-resp anywhere?   Yes, sx->buffer */
+    sx->conn_args.host_lbserver = ehlo_response_lbserver(sx->buffer, ob);
     }
 #endif
 
@@ -2666,6 +2703,7 @@ if (  smtp_peer_options & OPTION_TLS
   TLS_NEGOTIATE:
     {
     sx->conn_args.sending_ip_address = sending_ip_address;
+    /*XXX RESUMP want LB-server info  here */
     if (!tls_client_start(&sx->cctx, &sx->conn_args, sx->addrlist, &tls_out, &tls_errstr))
       {
       /* TLS negotiation failed; give an error. From outside, this function may

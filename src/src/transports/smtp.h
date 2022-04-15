@@ -83,7 +83,7 @@ typedef struct {
   int		size_addition;
   int		hosts_max_try;
   int		hosts_max_try_hardlimit;
-  int			message_linelength_limit;
+  int		message_linelength_limit;
   BOOL		address_retry_include_sender;
   BOOL		allow_localhost;
   BOOL		authenticated_sender_force;
@@ -108,6 +108,7 @@ typedef struct {
   uschar	*tls_privatekey;
   uschar	*tls_require_ciphers;
 # ifndef DISABLE_TLS_RESUME
+  uschar	*host_name_extract;
   uschar	*tls_resumption_hosts;
 # endif
   const uschar	*tls_sni;
