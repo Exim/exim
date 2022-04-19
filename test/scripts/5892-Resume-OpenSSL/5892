@@ -46,5 +46,10 @@ exim -DVALUE=resume -DHELO_MSG=differenthost -odf resume@test.ex
 exim -DVALUE=resume -odf resume@test.ex
 ****
 #
+# Check the -k (key only) option on dumpdb
+perl
+system 'DIR/eximdir/exim_dumpdb -k DIR/spool tls';
+****
+#
 killdaemon
 no_msglog_check

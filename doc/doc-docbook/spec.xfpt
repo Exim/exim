@@ -39954,8 +39954,9 @@ The entire contents of a database are written to the standard output by the
 &'exim_dumpdb'& program,
 .new
 taking as arguments the spool and database names.
-An option &'-z'& may be given to regest times in UTC;
+An option &'-z'& may be given to request times in UTC;
 otherwise times are in the local timezone.
+An option &'-k'& may be given to dump only the record keys.
 .wen
 For example, to dump the retry database:
 .code

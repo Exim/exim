@@ -47,6 +47,7 @@ whose inclusion is controlled by -D on the compilation command. */
 
 uschar *spool_directory;
 
+BOOL keyonly = FALSE;
 BOOL utc = FALSE;
 
 
@@ -125,13 +126,13 @@ check_args(int argc, uschar **argv, uschar *name, uschar *options)
 uschar * aname = argv[optind + 1];
 if (argc - optind == 2)
   {
-  if (Ustrcmp(aname, "retry") == 0)		return type_retry;
-  if (Ustrcmp(aname, "misc") == 0)		return type_misc;
+  if (Ustrcmp(aname, "retry") == 0)	return type_retry;
+  if (Ustrcmp(aname, "misc") == 0)	return type_misc;
   if (Ustrncmp(aname, "wait-", 5) == 0)	return type_wait;
-  if (Ustrcmp(aname, "callout") == 0)		return type_callout;
+  if (Ustrcmp(aname, "callout") == 0)	return type_callout;
   if (Ustrcmp(aname, "ratelimit") == 0)	return type_ratelimit;
-  if (Ustrcmp(aname, "tls") == 0)		return type_tls;
-  if (Ustrcmp(aname, "seen") == 0)		return type_seen;
+  if (Ustrcmp(aname, "tls") == 0)	return type_tls;
+  if (Ustrcmp(aname, "seen") == 0)	return type_seen;
   }
 usage(name, options);
 return -1;              /* Never obeyed */
@@ -140,16 +141,17 @@ return -1;              /* Never obeyed */
 
 FUNC_MAYBE_UNUSED
 static void
-options(int argc, uschar * argv[], uschar * name)
+options(int argc, uschar * argv[], uschar * name, const uschar * opts)
 {
 int opt;
 
 opterr = 0;
-while ((opt = getopt(argc, (char * const *)argv, "z")) != -1)
+while ((opt = getopt(argc, (char * const *)argv, CCS opts)) != -1)
   switch (opt)
   {
+  case 'k':	keyonly = TRUE; break;
   case 'z':	utc = TRUE; break;
-  default:	usage(name, US" [-z]");
+  default:	usage(name, US" [-z] [-k]");
   }
 }
 
@@ -558,11 +560,11 @@ uschar **argv = USS cargv;
 uschar keybuffer[1024];
 
 store_init();
-options(argc, argv, US"dumpdb");
+options(argc, argv, US"dumpdb", US"kz");
 
 /* Check the arguments, and open the database */
 
-dbdata_type = check_args(argc, argv, US"dumpdb", US" [-z]");
+dbdata_type = check_args(argc, argv, US"dumpdb", US" [-z] [-k]");
 argc -= optind; argv += optind;
 spool_directory = argv[0];
 
@@ -601,12 +603,13 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
     }
   Ustrcpy(keybuffer, key);
 
-  if (!(value = dbfn_read_with_length(dbm, keybuffer, &length)))
+  if (keyonly)
+    printf("  %s\n", keybuffer);
+  else if (!(value = dbfn_read_with_length(dbm, keybuffer, &length)))
     fprintf(stderr, "**** Entry \"%s\" was in the key scan, but the record "
                     "was not found in the file - something is wrong!\n",
       CS keybuffer);
   else
-    {
     /* Note: don't use print_time more than once in one statement, since
     it uses a single buffer. */
 
@@ -729,7 +732,6 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	printf("%s\t%s\n", keybuffer, print_time(seen->time_stamp));
 	break;
       }
-    }
   store_reset(reset_point);
   }
 
@@ -785,7 +787,7 @@ rmark reset_point;
 uschar * aname;
 
 store_init();
-options(argc, argv, US"fixdb");
+options(argc, argv, US"fixdb", US"z");
 name[0] = 0;  /* No name set */
 
 /* Sort out the database type, verify what we are working on and then process
