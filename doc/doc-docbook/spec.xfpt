@@ -25538,11 +25538,13 @@ suffices for one known case.
 During the expansion of this option the &$item$& variable will have the
 server's EHLO response.
 The result of the option expansion is included in the key used to store and
-retrieve the TLS session, for sessino resumption.
+retrieve the TLS session, for session resumption.
 
 Operators of high-load sites may wish to evaluate their logs for indications
 of other destination sites operating load-balancers, and develop a suitable
 expression for this option.
+The smtp:ehlo event and the &$tls_out_resumption$& variable
+will be useful for such work.
 .wen
 
 .option hosts smtp "string list&!!" unset
