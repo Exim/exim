@@ -2,6 +2,7 @@
 # appropriate links, and then creating and running the main makefile in that
 # directory.
 
+# Copyright (c) The Exim Maintainers 2022
 # Copyright (c) University of Cambridge, 1995 - 2018
 # See the file NOTICE for conditions of use and distribution.
 

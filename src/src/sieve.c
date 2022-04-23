@@ -2,8 +2,9 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Michael Haardt 2003 - 2015
- * Copyright (c) The Exim Maintainers 2016 - 2021
+/*
+ * Copyright (c) The Exim Maintainers 2016 - 2022
+ * Copyright (c) Michael Haardt 2003 - 2015
  * See the file NOTICE for conditions of use and distribution.
  */
 

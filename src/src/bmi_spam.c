@@ -5,6 +5,7 @@
 /* Code for calling Brightmail AntiSpam.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004
    License: GPL */
+/* Copyright (c) The Exim Maintainers 2021 - 2022 */
 
 #include "exim.h"
 #ifdef EXPERIMENTAL_BRIGHTMAIL

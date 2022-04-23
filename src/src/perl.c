@@ -2,8 +2,8 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
+/* Copyright (c) The Exim Maintainers 1999 - 2022 */
 /* Copyright (c) 1998 Malcolm Beattie */
-/* Copyright (C) 1999 - 2018  Exim maintainers */
 
 /* Modified by PH to get rid of the "na" usage, March 1999.
    Modified further by PH for general tidying for Exim 4.

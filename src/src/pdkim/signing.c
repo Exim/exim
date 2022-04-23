@@ -1,7 +1,6 @@
 /*
  *  PDKIM - a RFC4871 (DKIM) implementation
- *
- *  Copyright (c) The Exim Maintainers 1995 - 2021
+ *  Copyright (c) The Exim Maintainers 1995 - 2022
  *
  *  signing/verification interface
  */

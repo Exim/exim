@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2009 */
-/* Copyright (c) The Exim Maintainers 2021 */
+/* Copyright (c) The Exim Maintainers 2021 - 2022 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

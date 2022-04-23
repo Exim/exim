@@ -8,6 +8,8 @@
 
  * All the original code used here was torn by Marc Prud'hommeaux out of the
  * Samba project (by Andrew Tridgell, Jeremy Allison, and others).
+ *
+ * Copyright (c) The Exim Maintainers 2021
 
  * Tom Kistner provided additional code, adding spa_build_auth_challenge() to
  * support server authentication mode.

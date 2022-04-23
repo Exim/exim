@@ -2,8 +2,8 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
+/* Copyright (c) The Exim Maintainers 2010 - 2022 */
 /* Copyright (c) University of Cambridge 1995 - 2009 */
-/* Copyright (c) The Exim Maintainers 2010 - 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "exim.h"
