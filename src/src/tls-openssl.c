@@ -3341,8 +3341,9 @@ if (rc <= 0)
     case SSL_ERROR_ZERO_RETURN:
       DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
       (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
+#ifndef DISABLE_EVENT
       (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
-
+#endif
       if (SSL_get_shutdown(ssl) == SSL_RECEIVED_SHUTDOWN)
 	SSL_shutdown(ssl);
 
@@ -3361,7 +3362,9 @@ if (rc <= 0)
          || r == SSL_R_UNKNOWN_PROTOCOL || r == SSL_R_UNSUPPORTED_PROTOCOL)
 	s = string_sprintf("(%s)", SSL_get_version(ssl));
       (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : s, errstr);
+#ifndef DISABLE_EVENT
       (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
+#endif
       return FAIL;
       }
 
@@ -3372,7 +3375,9 @@ if (rc <= 0)
 	if (!errno)
 	  {
 	  *errstr = US"SSL_accept: TCP connection closed by peer";
+#ifndef DISABLE_EVENT
 	  (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
+#endif
 	  return FAIL;
 	  }
 	DEBUG(D_tls) debug_printf(" - syscall %s\n", strerror(errno));
@@ -3381,7 +3386,9 @@ if (rc <= 0)
 		      sigalrm_seen ? US"timed out"
 		      : ERR_peek_error() ? NULL : string_sprintf("ret %d", error),
 		      errstr);
+#ifndef DISABLE_EVENT
       (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
+#endif
       return FAIL;
     }
   }

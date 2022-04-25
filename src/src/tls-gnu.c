@@ -3071,13 +3071,17 @@ if (rc != GNUTLS_E_SUCCESS)
   if (sigalrm_seen)
     {
     tls_error(US"gnutls_handshake", US"timed out", NULL, errstr);
+#ifndef DISABLE_EVENT
     (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
+#endif
     gnutls_db_remove_session(state->session);
     }
   else
     {
     tls_error_gnu(state, US"gnutls_handshake", rc, errstr);
+#ifndef DISABLE_EVENT
     (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
+#endif
     (void) gnutls_alert_send_appropriate(state->session, rc);
     gnutls_deinit(state->session);
     gnutls_certificate_free_credentials(state->lib_state.x509_cred);
