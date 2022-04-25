@@ -10815,16 +10815,16 @@ SRS encoding.  See SECT &<<SECTSRS>>& for details.
 
 
 
-.vitem &*${substr{*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&
+.vitem &*${substr{*&<&'start'&>&*}{*&<&'len'&>&*}{*&<&'subject'&>&*}}*&
 .cindex "&%substr%& expansion item"
 .cindex "substring extraction"
 .cindex "expansion" "substring extraction"
 The three strings are expanded; the first two must yield numbers. Call them
 <&'n'&> and <&'m'&>. If you are using fixed values for these numbers, that is,
-if <&'string1'&> and <&'string2'&> do not change when they are expanded, you
+if <&'start'&> and <&'len'&> do not change when they are expanded, you
 can use the simpler operator notation that avoids some of the braces:
 .code
-${substr_<n>_<m>:<string>}
+${substr_<n>_<m>:<subject>}
 .endd
 The second number is optional (in both notations).
 If it is absent in the simpler format, the preceding underscore must also be
@@ -22846,9 +22846,10 @@ an ideal name for this feature here, but as it was already implemented for the
 The expansion variables &$host$& and &$host_address$& are available when the
 transport is a remote one. They contain the name and IP address of the host to
 which the message is being sent. For example:
+. used to have $sender_address in this cmdline, but it's tainted
 .code
 transport_filter = /some/directory/transport-filter.pl \
-  $host $host_address $sender_address $pipe_addresses
+  $host $host_address $pipe_addresses
 .endd
 
 Two problems arise if you want to use more complicated expansion items to
@@ -24810,6 +24811,11 @@ the &%path%& option below). The command is split up into separate arguments by
 Exim, and each argument is separately expanded, as described in section
 &<<SECThowcommandrun>>& above.
 
+.new
+.cindex "tainted data"
+No part of the resulting command may be tainted.
+.wen
+
 
 .option environment pipe string&!! unset
 .cindex "&(pipe)& transport" "environment for command"
@@ -25125,12 +25131,15 @@ use a shell to run pipe commands.
 .cindex "Cyrus"
 The next example shows a transport and a router for a system where local
 deliveries are handled by the Cyrus IMAP server.
+. Used to have R: local_part_suffix = .* +  T:   -m $local_part_suffix_v
+. but that suffix is tainted so cannot be used in a command arg
+. Really, you'd want to use a lookup for acceptable suffixes to do real detainting
 .code
 # transport
 local_delivery_cyrus:
   driver = pipe
   command = /usr/cyrus/bin/deliver \
-            -m ${substr_1:$local_part_suffix} -- $local_part
+            -- $local_part_data
   user = cyrus
   group = mail
   return_output
@@ -25142,7 +25151,6 @@ local_delivery_cyrus:
 local_user_cyrus:
   driver = accept
   check_local_user
-  local_part_suffix = .*
   transport = local_delivery_cyrus
 .endd
 Note the unsetting of &%message_prefix%& and &%message_suffix%&, and the use of
@@ -33090,7 +33098,7 @@ situation has been previously met.
 It uses a hints database to record a timestamp against a key.
 host. The syntax of the condition is:
 .display
-&`seen =`& <&'time interval'&> &`/`& <&'options'&>
+&`seen =`& <&'optional flag'&><&'time interval'&> &`/`& <&'options'&>
 .endd
 
 For example,
@@ -33099,8 +33107,10 @@ defer	seen = -5m / key=${sender_host_address}_$local_part@$domain
 .endd
 in a RCPT ACL will implement simple greylisting.
 
-The parameters for the condition
-are an interval followed, slash-separated, by a list of options.
+The parameters for the condition are
+a possible minus sign,
+then an interval,
+then, slash-separated, a list of options.
 The interval is taken as an offset before the current time,
 and used for the test.
 If the interval is preceded by a minus sign then the condition returns
@@ -33118,6 +33128,8 @@ no record create or update is done.
 If a &%write%& option is given then
 a record create or update is always done.
 An update is done if the test is for &"since"&.
+If none of those hold and there was no existing record,
+a record is created.
 
 Creates and updates are marked with the current time.
 
