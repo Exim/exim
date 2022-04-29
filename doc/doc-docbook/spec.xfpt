@@ -97,6 +97,21 @@
 .itable none 0 0 2 $1 left $2 left
 .endmacro
 
+
+. --- A macro for a "tainted" marker, done as a one-element table
+.macro tmark
+.itable none 0 0 1 10pt left
+.row &'Tainted'&
+.endtable
+.endmacro
+. --- A macro for a tainted variable, adding a taint-marker
+. --- and including the .vitem and .vindex
+.macro tvar
+.vitem $1
+.vindex $1
+.tmark
+.endmacro
+
 . --- A macro that generates .row, but puts &I; at the start of the first
 . --- argument, thus indenting it. Assume a minimum of two arguments, and
 . --- allow up to four arguments, which is as many as we'll ever need.
@@ -12333,6 +12348,16 @@ parsed but not evaluated.
 This section contains an alphabetical list of all the expansion variables. Some
 of them are available only when Exim is compiled with specific options such as
 support for TLS or the content scanning extension.
+.new
+.cindex "tainted data"
+Variables marked as &'tainted'& are likely to carry data supplied by
+a potential attacker.
+Variables without such marking may also, depending on how their
+values are created.
+Such variables should not be further expanded,
+used as filenames
+or used as command-line arguments for external commands.
+.wen
 
 .vlist
 .vitem "&$0$&, &$1$&, etc"
@@ -12347,6 +12372,9 @@ variables may also be set externally by some other matching process which
 precedes the expansion of the string. For example, the commands available in
 Exim filter files include an &%if%& command with its own regular expression
 matching condition.
+.new
+If the subject string was tainted then any captured substring will also be.
+.wen
 
 .vitem "&$acl_arg1$&, &$acl_arg2$&, etc"
 Within an acl condition, expansion condition or expansion item
@@ -12472,11 +12500,10 @@ authentication, which means this variable could also be visible in all of
 the ACL's as well.
 
 
-.vitem &$authenticated_sender$&
+.tvar &$authenticated_sender$&
 .cindex "sender" "authenticated"
 .cindex "authentication" "sender"
 .cindex "AUTH" "on MAIL command"
-.vindex "&$authenticated_sender$&"
 When acting as a server, Exim takes note of the AUTH= parameter on an incoming
 SMTP MAIL command if it believes the sender is sufficiently trusted, as
 described in section &<<SECTauthparamail>>&. Unless the data is the string
@@ -12628,8 +12655,7 @@ the following data from the lookup: the list's domain name, the key that was
 looked up, the contents of any associated TXT record, and the value from the
 main A record. See section &<<SECID204>>& for more details.
 
-.vitem &$domain$&
-.vindex "&$domain$&"
+.tvar &$domain$&
 When an address is being routed, or delivered on its own, this variable
 contains the domain. Uppercase letters in the domain are converted into lower
 case for &$domain$&.
@@ -12730,6 +12756,7 @@ There may be other characters following the minor version.
 This value may be overridden by the &%exim_version%& main config option.
 
 .vitem &$header_$&<&'name'&>
+.tmark
 This is not strictly an expansion variable. It is expansion syntax for
 inserting the message header line with the given name. Note that the name must
 be terminated by colon or white space, because it may contain a wide variety of
@@ -12790,6 +12817,7 @@ allows you, for example, to do things like this:
 deny  hosts = net-lsearch;/some/file
       message = $host_data
 .endd
+
 .vitem &$host_lookup_deferred$&
 .cindex "host name" "lookup, failure of"
 .vindex "&$host_lookup_deferred$&"
@@ -12872,8 +12900,7 @@ This variable contains the system load average, multiplied by 1000 so that it
 is an integer. For example, if the load average is 0.21, the value of the
 variable is 210. The value is recomputed every time the variable is referenced.
 
-.vitem &$local_part$&
-.vindex "&$local_part$&"
+.tvar &$local_part$&
 When an address is being routed, or delivered on its own, this
 variable contains the local part. When a number of addresses are being
 delivered together (for example, multiple RCPT commands in an SMTP
@@ -13048,11 +13075,10 @@ This variable is set at the start of a delivery attempt to contain the number
 of seconds since the message was received. It does not change during a single
 delivery attempt.
 
-.vitem &$message_body$&
+.tvar &$message_body$&
 .cindex "body of message" "expansion variable"
 .cindex "message body" "in expansion"
 .cindex "binary zero" "in message body"
-.vindex "&$message_body$&"
 .oindex "&%message_body_visible%&"
 This variable contains the initial portion of a message's body while it is
 being delivered, and is intended mainly for use in filter files. The maximum
@@ -13065,10 +13091,9 @@ easier to search for phrases that might be split over a line break. However,
 this can be disabled by setting &%message_body_newlines%& to be true. Binary
 zeros are always converted into spaces.
 
-.vitem &$message_body_end$&
+.tvar &$message_body_end$&
 .cindex "body of message" "expansion variable"
 .cindex "message body" "in expansion"
-.vindex "&$message_body_end$&"
 This variable contains the final portion of a message's
 body while it is being delivered. The format and maximum size are as for
 &$message_body$&.
@@ -13095,15 +13120,13 @@ received. &*Note*&: This is &'not'& the contents of the &'Message-ID:'& header
 line; it is the local id that Exim assigns to the message, for example:
 &`1BXTIK-0001yO-VA`&.
 
-.vitem &$message_headers$&
-.vindex &$message_headers$&
+.tvar &$message_headers$&
 This variable contains a concatenation of all the header lines when a message
 is being processed, except for lines added by routers or transports. The header
 lines are separated by newline characters. Their contents are decoded in the
 same way as a header line that is inserted by &%bheader%&.
 
-.vitem &$message_headers_raw$&
-.vindex &$message_headers_raw$&
+.tvar &$message_headers_raw$&
 This variable is like &$message_headers$& except that no processing of the
 contents of header lines is done.
 
@@ -13180,9 +13203,8 @@ details, see section &<<SECTscanmimepart>>&.
 These variables are counters that can be incremented by means
 of the &%add%& command in filter files.
 
-.vitem &$original_domain$&
+.tvar &$original_domain$&
 .vindex "&$domain$&"
-.vindex "&$original_domain$&"
 When a top-level address is being processed for delivery, this contains the
 same value as &$domain$&. However, if a &"child"& address (for example,
 generated by an alias, forward, or filter file) is being processed, this
@@ -13195,9 +13217,8 @@ If a new address is created by means of a &%deliver%& command in a system
 filter, it is set up with an artificial &"parent"& address. This has the local
 part &'system-filter'& and the default qualify domain.
 
-.vitem &$original_local_part$&
+.tvar &$original_local_part$&
 .vindex "&$local_part$&"
-.vindex "&$original_local_part$&"
 When a top-level address is being processed for delivery, this contains the
 same value as &$local_part$&, unless a prefix or suffix was removed from the
 local part, because &$original_local_part$& always contains the full local
@@ -13235,13 +13256,11 @@ messages received via the command line, this is the uid of the sending user.
 For messages received by SMTP over TCP/IP, this is normally the uid of the Exim
 user.
 
-.vitem &$parent_domain$&
-.vindex "&$parent_domain$&"
+.tvar &$parent_domain$&
 This variable is similar to &$original_domain$& (see
 above), except that it refers to the immediately preceding parent address.
 
-.vitem &$parent_local_part$&
-.vindex "&$parent_local_part$&"
+.tvar &$parent_local_part$&
 This variable is similar to &$original_local_part$&
 (see above), except that it refers to the immediately preceding parent address.
 
@@ -13349,8 +13368,7 @@ including the one added by Exim (so its value is always greater than zero). It
 is available in the DATA ACL, the non-SMTP ACL, and while routing and
 delivering.
 
-.vitem &$received_for$&
-.vindex "&$received_for$&"
+.tvar &$received_for$&
 If there is only a single recipient address in an incoming message, this
 variable contains that address when the &'Received:'& header line is being
 built. The value is copied after recipient rewriting has happened, but before
@@ -13442,8 +13460,7 @@ MAIL).
 The main use of this variable is expected to be to distinguish between
 rejections of MAIL and rejections of RCPT.
 
-.vitem &$recipients$&
-.vindex "&$recipients$&"
+.tvar &$recipients$&
 This variable contains a list of envelope recipients for a message. A comma and
 a space separate the addresses in the replacement text. However, the variable
 is not generally available, to prevent exposure of Bcc recipients in
@@ -13480,10 +13497,12 @@ This variable is set to contain the matching regular expression after a
 When a &%regex%& or &%mime_regex%& ACL condition succeeds,
 these variables contain the
 captured substrings identified by the regular expression.
+.new
+If the subject string was tainted then so will any captured substring.
+.wen
 
 
-.vitem &$reply_address$&
-.vindex "&$reply_address$&"
+.tvar &$reply_address$&
 When a message is being processed, this variable contains the contents of the
 &'Reply-To:'& header line if one exists and it is not empty, or otherwise the
 contents of the &'From:'& header line. Apart from the removal of leading
@@ -13532,8 +13551,7 @@ One of its values causes the address to be passed to another router. When this
 happens, &$self_hostname$& is set to the name of the local host that the
 original router encountered. In other circumstances its contents are null.
 
-.vitem &$sender_address$&
-.vindex "&$sender_address$&"
+.tvar &$sender_address$&
 When a message is being processed, this variable contains the sender's address
 that was received in the message's envelope. The case of letters in the address
 is retained, in both the local part and the domain. For bounce messages, the
@@ -13548,12 +13566,10 @@ distinguish it from data from a recipient address. The value does not persist
 after the end of the current ACL statement. If you want to preserve it for
 longer, you can save it in an ACL variable.
 
-.vitem &$sender_address_domain$&
-.vindex "&$sender_address_domain$&"
+.tvar &$sender_address_domain$&
 The domain portion of &$sender_address$&.
 
-.vitem &$sender_address_local_part$&
-.vindex "&$sender_address_local_part$&"
+.tvar &$sender_address_local_part$&
 The local part portion of &$sender_address$&.
 
 .vitem &$sender_data$&
@@ -13591,8 +13607,7 @@ This boolean variable is true if a successful HELO verification was
 .cindex "DNS" "DNSSEC"
 done using DNS information the resolver library stated was authenticated data.
 
-.vitem &$sender_helo_name$&
-.vindex "&$sender_helo_name$&"
+.tvar &$sender_helo_name$&
 When a message is received from a remote host that has issued a HELO or EHLO
 command, the argument of that command is placed in this variable. It is also
 set if HELO or EHLO is used when a message is received using SMTP locally via
@@ -13649,8 +13664,7 @@ all EDNS0 options, then this will have no effect.  OpenBSD's asr resolver
 is known to currently ignore EDNS0, documented in CAVEATS of asr_run(3).
 
 
-.vitem &$sender_host_name$&
-.vindex "&$sender_host_name$&"
+.tvar &$sender_host_name$&
 When a message is received from a remote host, this variable contains the
 host's name as obtained by looking up its IP address. For messages received by
 other means, this variable is empty.
@@ -13768,8 +13782,7 @@ host name, as specified by the &%smtp_active_hostname%& option. The value of
 &$smtp_active_hostname$& is saved with any message that is received, so its
 value can be consulted during routing and delivery.
 
-.vitem &$smtp_command$&
-.vindex "&$smtp_command$&"
+.tvar &$smtp_command$&
 During the processing of an incoming SMTP command, this variable contains the
 entire command. This makes it possible to distinguish between HELO and EHLO in
 the HELO ACL, and also to distinguish between commands such as these:
@@ -13782,9 +13795,8 @@ command, the address in &$smtp_command$& is the original address before any
 rewriting, whereas the values in &$local_part$& and &$domain$& are taken from
 the address after SMTP-time rewriting.
 
-.vitem &$smtp_command_argument$&
+.tvar &$smtp_command_argument$&
 .cindex "SMTP" "command, argument for"
-.vindex "&$smtp_command_argument$&"
 While an ACL is running to check an SMTP command, this variable contains the
 argument, that is, the text that follows the command name, with leading white
 space removed. Following the introduction of &$smtp_command$&, this variable is
@@ -14025,8 +14037,7 @@ which is not the leaf.
 Observability for TLS session resumption.  See &<<SECTresumption>>& for details.
 
 
-.vitem &$tls_in_sni$&
-.vindex "&$tls_in_sni$&"
+.tvar &$tls_in_sni$&
 .vindex "&$tls_sni$&"
 .cindex "TLS" "Server Name Indication"
 .cindex "TLS" SNI
