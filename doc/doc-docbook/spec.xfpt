@@ -10695,6 +10695,10 @@ executions from Exim, a shell is not used by default. If the command requires
 a shell, you must explicitly code it.
 The command name may not be tainted, but the remaining arguments can be.
 
+&*Note*&: if tainted arguments are used, they are supplied by a
+potential attacker;
+a careful assessment for security vulnerabilities should be done.
+
 If the option &'preexpand'& is used,
 .wen
 the command and its arguments are first expanded as one string. The result is
@@ -13279,6 +13283,11 @@ This is not an expansion variable, but is mentioned here because the string
 (described under &%transport_filter%& in chapter &<<CHAPtransportgeneric>>&).
 It cannot be used in general expansion strings, and provokes an &"unknown
 variable"& error if encountered.
+.new
+&*Note*&: This value permits data supplied by a potential attacker to
+be used in the command for a &(pipe)& transport.
+Such configurations should be carefully assessed for security vulnerbilities.
+.wen
 
 .vitem &$primary_hostname$&
 .vindex "&$primary_hostname$&"
@@ -24731,6 +24740,11 @@ This list is a compromise for maximum compatibility with other MTAs. Note that
 the &%environment%& option can be used to add additional variables to this
 environment. The environment for the &(pipe)& transport is not subject
 to the &%add_environment%& and &%keep_environment%& main config options.
+.new
+&*Note*&: Using enviroment variables loses track of tainted data.
+Writers of &(pipe)& transport commands should be wary of data supplied
+by potential attackers.
+.wen
 .display
 &`DOMAIN            `&   the domain of the address
 &`HOME              `&   the home directory, if set
