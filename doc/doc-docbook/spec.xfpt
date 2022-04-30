@@ -33620,6 +33620,15 @@ output before performing a callout in an ACL, to avoid unexpected timeouts in
 clients when the SMTP PIPELINING extension is in use. The flushing can be
 disabled by using a &%control%& modifier to set &%no_callout_flush%&.
 
+.new
+.cindex "tainted data" "de-tainting"
+.cindex "de-tainting" "using receipient verify"
+A recipient callout which gets a 2&'xx'& code
+will assign untainted values to the
+&$domain_data$& and &$local_part_data$& variables,
+corresponding to the domain and local parts of the recipient address.
+.wen
+
 
 
 

@@ -27,6 +27,9 @@ Version 4.96
     the expansion of the "true" result of the ${if}.  With a static list, this
     can be used for de-tainting.
 
+ 8. Recipient verify callouts now set $domain_data & $local_part_data, with
+    de-tainted values.
+
 Version 4.95
 ------------
 

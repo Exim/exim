@@ -445,6 +445,21 @@ return done;
 }
 
 
+
+
+/* A rcpt callout, or cached record of one, verified the address.
+Set $domain_data and $local_part_data to detainted versions.
+*/
+static void
+callout_verified_rcpt(const address_item * addr)
+{
+address_item a = {.address = addr->address};
+if (deliver_split_address(&a) != OK) return;
+deliver_localpart_data = string_copy_taint(a.local_part, GET_UNTAINTED);
+deliver_domain_data =    string_copy_taint(a.domain,     GET_UNTAINTED);
+}
+
+
 /*************************************************
 *      Do callout verification for an address    *
 *************************************************/
@@ -1952,6 +1967,12 @@ while (addr_new)
 #ifndef DISABLE_TLS
 	  deliver_set_expansions(NULL);
 #endif
+	  if (  options & vopt_is_recipient
+	     && rc == OK
+			 /* set to "random", with OK, for an accepted random */
+	     && !recipient_verify_failure
+	     )
+	    callout_verified_rcpt(addr);
           }
         }
       else if (local_verify)

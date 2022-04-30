@@ -94,6 +94,7 @@ RCPT TO
 QUIT
 250 OK
 ****
+# A rcpt refusal
 exim -bs
 ehlo xxxx
 mail from:<x9@test.ex>
@@ -143,6 +144,7 @@ RCPT TO
 QUIT
 250 OK
 ****
+# an accepted random
 exim -DUSE_SENDER=,defer_ok,random,use_postmaster -bs
 ehlo xxxx
 mail from: x11@two.test.ex
@@ -150,6 +152,13 @@ rcpt to: r11@two.test.ex
 quit
 ****
 dump callout
+# repeat from cache
+exim -DUSE_SENDER=,defer_ok,random,use_postmaster -bs
+ehlo xxxx
+mail from: x11@two.test.ex
+rcpt to: r11@two.test.ex
+quit
+****
 #
 # callout target dumps after random-reject
 server PORT_S 2

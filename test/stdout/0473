@@ -110,6 +110,15 @@
 250 OK
 250 Accepted
 221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-the.local.host.name Hello CALLER at xxxx
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+221 the.local.host.name closing connection
 +++++++++++++++++++++++++++
 07-Mar-2000 12:21:52 other.ex callout=accept postmaster=unknown random=unknown
 07-Mar-2000 12:21:52 r12@three.test.ex callout=accept
