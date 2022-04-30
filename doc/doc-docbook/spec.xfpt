@@ -1429,6 +1429,7 @@ check an address given in the SMTP EXPN command (see the &%expn%& option).
 If the &%domains%& option is set, the domain of the address must be in the set
 of domains that it defines.
 .cindex "tainted data" "de-tainting"
+.cindex "de-tainting" "using router domains option"
 A match verifies the variable &$domain$& (which carries tainted data)
 and assigns an untainted value to the &$domain_data$& variable.
 Such an untainted value is often needed in the transport.
@@ -6787,6 +6788,7 @@ file that is searched could contain lines like this:
 When the lookup succeeds, the result of the expansion is a list of domains (and
 possibly other types of item that are allowed in domain lists).
 .cindex "tainted data" "de-tainting"
+.cindex "de-tainting" "using a lookup expansion""
 The result of the expansion is not tainted.
 
 In the second example, the lookup is a single item in a domain list. It causes
@@ -6843,12 +6845,12 @@ lookup to succeed. The lookup type determines how the file is searched.
 The file string may not be tainted.
 
 .cindex "tainted data" "de-tainting"
+.cindex "de-tainting" "using a single-key lookup"
 All single-key lookups support the option &"ret=key"&.
 If this is given and the lookup
 (either underlying implementation or cached value)
 returns data, the result is replaced with a non-tainted
 version of the lookup key.
-.cindex "tainted data" "de-tainting"
 .next
 .cindex "query-style lookup" "definition of"
 The &'query-style'& type accepts a generalized database query. No particular
@@ -8848,6 +8850,7 @@ or a &%domains%& condition in an ACL statement, the value is preserved in the
 &$domain_data$& variable and can be referred to in other router options or
 other statements in the same ACL.
 .cindex "tainted data" "de-tainting"
+.cindex "de-tainting" "using ACL domains condition"
 The value will be untainted.
 
 &*Note*&: If the data result of the lookup (as opposed to the key)
@@ -8889,6 +8892,7 @@ whether or not the query succeeds. However, when a lookup is used for the
 &%domains%& option on a router, the value is preserved in the &$domain_data$&
 variable and can be referred to in other options.
 .cindex "tainted data" "de-tainting"
+.cindex "de-tainting" "using router domains option"
 The value will be untainted.
 
 .next
@@ -11940,6 +11944,7 @@ ${if inlisti{Needle}{fOo:NeeDLE:bAr}}
 The variable &$value$& will be set for a successful match and can be
 used in the success clause of an &%if%& expansion item using the condition.
 .cindex "tainted data" "de-tainting"
+.cindex "de-tainting" "using an inlist expansion condition"
 It will have the same taint status as the list; expansions such as
 .code
 ${if inlist {$h_mycode:} {0 : 1 : 42} {$value}}
@@ -12149,6 +12154,7 @@ caselessly.
 The variable &$value$& will be set for a successful match and can be
 used in the success clause of an &%if%& expansion item using the condition.
 .cindex "tainted data" "de-tainting"
+.cindex "de-tainting" "using a match_local_part expansion condition"
 It will have the same taint status as the list; expansions such as
 .code
 ${if match_local_part {$local_part} {alice : bill : charlotte : dave} {$value}}
@@ -19033,6 +19039,7 @@ than trying to read &_/etc/passwd_& directly. This means that other methods of
 holding password data (such as NIS) are supported. If the local part is a local
 user,
 .cindex "tainted data" "de-tainting"
+.cindex "de-tainting" "using router check_local_user option"
 &$local_part_data$& is set to an untainted version of the local part and
 &$home$& is set from the password data. The latter can be tested in other
 preconditions that are evaluated after this one (the order of evaluation is
@@ -23305,6 +23312,7 @@ The value is used for checking instead of a home directory;
 checking is done in "belowhome" mode.
 
 .cindex "tainted data" "de-tainting"
+.cindex "de-tainting" "using appendfile create_file option"
 If "belowhome" checking is used, the file or directory path
 becomes de-tainted.
 
