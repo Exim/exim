@@ -3708,41 +3708,41 @@ of debugging data, respectively. For example, &%-d+filter%& adds filter
 debugging, whereas &%-d-all+filter%& selects only filter debugging. Note that
 no spaces are allowed in the debug setting. The available debugging categories
 are:
-.display
-&`acl            `& ACL interpretation
-&`auth           `& authenticators
-&`deliver        `& general delivery logic
-&`dns            `& DNS lookups (see also resolver)
-&`dnsbl          `& DNS black list (aka RBL) code
-&`exec           `& arguments for &[execv()]& calls
-&`expand         `& detailed debugging for string expansions
-&`filter         `& filter handling
-&`hints_lookup   `& hints data lookups
-&`host_lookup    `& all types of name-to-IP address handling
-&`ident          `& ident lookup
-&`interface      `& lists of local interfaces
-&`lists          `& matching things in lists
-&`load           `& system load checks
-&`local_scan     `& can be used by &[local_scan()]& (see chapter &&&
-                    &<<CHAPlocalscan>>&)
-&`lookup         `& general lookup code and all lookups
-&`memory         `& memory handling
-&`noutf8         `& modifier: avoid UTF-8 line-drawing
-&`pid            `& modifier: add pid to debug output lines
-&`process_info   `& setting info for the process log
-&`queue_run      `& queue runs
-&`receive        `& general message reception logic
-&`resolver       `& turn on the DNS resolver's debugging output
-&`retry          `& retry handling
-&`rewrite        `& address rewriting
-&`route          `& address routing
-&`timestamp      `& modifier: add timestamp to debug output lines
-&`tls            `& TLS logic
-&`transport      `& transports
-&`uid            `& changes of uid/gid and looking up uid/gid
-&`verify         `& address verification logic
-&`all            `& almost all of the above (see below), and also &%-v%&
-.endd
+.itable none 0 0 2 1pt left 1pt left
+.irow acl            "ACL interpretation"
+.irow auth           "authenticators"
+.irow deliver        "general delivery logic"
+.irow dns            "DNS lookups (see also resolver)"
+.irow dnsbl          "DNS black list (aka RBL) code"
+.irow exec           "arguments for &[execv()]& calls"
+.irow expand         "detailed debugging for string expansions"
+.irow filter         "filter handling"
+.irow hints_lookup   "hints data lookups"
+.irow host_lookup    "all types of name-to-IP address handling"
+.irow ident          "ident lookup"
+.irow interface      "lists of local interfaces"
+.irow lists          "matching things in lists"
+.irow load           "system load checks"
+.irow local_scan     "can be used by &[local_scan()]& (see chapter &&&
+                    &<<CHAPlocalscan>>&)"
+.irow lookup         "general lookup code and all lookups"
+.irow memory         "memory handling"
+.irow noutf8         "modifier: avoid UTF-8 line-drawing"
+.irow pid            "modifier: add pid to debug output lines"
+.irow process_info   "setting info for the process log"
+.irow queue_run      "queue runs"
+.irow receive        "general message reception logic"
+.irow resolver       "turn on the DNS resolver's debugging output"
+.irow retry          "retry handling"
+.irow rewrite        "address rewriting""
+.irow route          "address routing"
+.irow timestamp      "modifier: add timestamp to debug output lines"
+.irow tls            "TLS logic"
+.irow transport      "transports"
+.irow uid            "changes of uid/gid and looking up uid/gid"
+.irow verify         "address verification logic"
+.irow all            "almost all of the above (see below), and also &%-v%&"
+.endtable
 The &`all`& option excludes &`memory`& when used as &`+all`&, but includes it
 for &`-all`&. The reason for this is that &`+all`& is something that people
 tend to use when generating debug output for Exim maintainers. If &`+memory`&
@@ -7926,16 +7926,16 @@ be preceded by any number of <&'name'&>=<&'value'&> settings, separated by
 spaces. If a value contains spaces it must be enclosed in double quotes, and
 when double quotes are used, backslash is interpreted in the usual way inside
 them. The following names are recognized:
-.display
-&`DEREFERENCE`&  set the dereferencing parameter
-&`NETTIME    `&  set a timeout for a network operation
-&`USER       `&  set the DN, for authenticating the LDAP bind
-&`PASS       `&  set the password, likewise
-&`REFERRALS  `&  set the referrals parameter
-&`SERVERS    `&  set alternate server list for this query only
-&`SIZE       `&  set the limit for the number of entries returned
-&`TIME       `&  set the maximum waiting time for a query
-.endd
+.itable none 0 0 2 1pt left 1pt left
+.irow DEREFERENCE "set the dereferencing parameter"
+.irow NETTIME     "set a timeout for a network operation"
+.irow USER        "set the DN, for authenticating the LDAP bind"
+.irow PASS        "set the password, likewise"
+.irow REFERRALS   "set the referrals parameter"
+.irow SERVERS     "set alternate server list for this query only"
+.irow SIZE        "set the limit for the number of entries returned"
+.irow TIME        "set the maximum waiting time for a query"
+.endtable
 The value of the DEREFERENCE parameter must be one of the words &"never"&,
 &"searching"&, &"finding"&, or &"always"&. The value of the REFERRALS parameter
 must be &"follow"& (the default) or &"nofollow"&. The latter stops the LDAP
@@ -11634,14 +11634,14 @@ condition.
 .cindex "expansion" "numeric comparison"
 There are a number of symbolic operators for doing numeric comparisons. They
 are:
-.display
-&`=   `&   equal
-&`==  `&   equal
-&`>   `&   greater
-&`>=  `&   greater or equal
-&`<   `&   less
-&`<=  `&   less or equal
-.endd
+.itable none 0 0 2 1pt left 1pt left
+.irow "=   " "equal"
+.irow "==  " "equal"
+.irow ">   " "greater"
+.irow ">=  " "greater or equal"
+.irow "<   " "less"
+.irow "<=  " "less or equal"
+.endtable
 For example:
 .code
 ${if >{$message_size}{10M} ...
@@ -32657,11 +32657,11 @@ This is usually the required action when &%dnslists%& is used with &%deny%&
 (which is the most common usage), because it prevents a DNS failure from
 blocking mail. However, you can change this behaviour by putting one of the
 following special items in the list:
-.display
-&`+include_unknown `&   behave as if the item is on the list
-&`+exclude_unknown `&   behave as if the item is not on the list (default)
-&`+defer_unknown   `&   give a temporary error
-.endd
+.itable none 0 0 2 1pt left 1pt left
+.irow "+include_unknown"   "behave as if the item is on the list"
+.irow "+exclude_unknown"   "behave as if the item is not on the list (default)"
+.irow "+defer_unknown  "   "give a temporary error"
+.endtable
 .cindex "&`+include_unknown`&"
 .cindex "&`+exclude_unknown`&"
 .cindex "&`+defer_unknown`&"
@@ -32810,15 +32810,15 @@ DNS lists are constructed using address records in the DNS. The original RBL
 just used the address 127.0.0.1 on the right hand side of each record, but the
 RBL+ list and some other lists use a number of values with different meanings.
 The values used on the RBL+ list are:
-.display
-127.1.0.1  RBL
-127.1.0.2  DUL
-127.1.0.3  DUL and RBL
-127.1.0.4  RSS
-127.1.0.5  RSS and RBL
-127.1.0.6  RSS and DUL
-127.1.0.7  RSS and DUL and RBL
-.endd
+.itable none 0 0 2 1pt left 1pt left
+.irow 127.1.0.1  "RBL"
+.irow 127.1.0.2  "DUL"
+.irow 127.1.0.3  "DUL and RBL"
+.irow 127.1.0.4  "RSS"
+.irow 127.1.0.5  "RSS and RBL"
+.irow 127.1.0.6  "RSS and DUL"
+.irow 127.1.0.7  "RSS and DUL and RBL"
+.endtable
 Section &<<SECTaddmatcon>>& below describes how you can distinguish between
 different values. Some DNS lists may return more than one address record;
 see section &<<SECThanmuldnsrec>>& for details of how they are checked.
@@ -35742,11 +35742,11 @@ added zero byte is not included in the returned count.
 .vitem &*int&~lss_match_domain(uschar&~*domain,&~uschar&~*list)*&
 This function checks for a match in a domain list. Domains are always
 matched caselessly. The return value is one of the following:
-.display
-&`OK     `& match succeeded
-&`FAIL   `& match failed
-&`DEFER  `& match deferred
-.endd
+.itable none 0 0 2 1pt left 1pt left
+.irow &`OK`&    "match succeeded"
+.irow &`FAIL`&  "match failed"
+.irow &`DEFER`& "match deferred"
+.endtable
 DEFER is usually caused by some kind of lookup defer, such as the
 inability to contact a database.
 
@@ -38639,16 +38639,16 @@ One line is written to the main log for each message received, and for each
 successful, unsuccessful, and delayed delivery. These lines can readily be
 picked out by the distinctive two-character flags that immediately follow the
 timestamp. The flags are:
-.display
-&`<=`&     message arrival
-&`(=`&     message fakereject
-&`=>`&     normal message delivery
-&`->`&     additional address in same delivery
-&`>>`&     cutthrough message delivery
-&`*>`&     delivery suppressed by &%-N%&
-&`**`&     delivery failed; address bounced
-&`==`&     delivery deferred; temporary problem
-.endd
+.itable none 0 0 2 1pt left 1pt left
+.irow &%<=%&     "message arrival"
+.irow &%(=%&     "message fakereject"
+.irow &%=>%&     "normal message delivery"
+.irow &%->%&     "additional address in same delivery"
+.irow &%>>%&     "cutthrough message delivery"
+.irow &%*>%&     "delivery suppressed by &%-N%&"
+.irow &%**%&     "delivery failed; address bounced"
+.irow &%==%&     "delivery deferred; temporary problem"
+.endtable
 
 
 .section "Logging message reception" "SECID251"
@@ -38967,65 +38967,64 @@ log_selector = +arguments -retry_defer
 .endd
 The list of optional log items is in the following table, with the default
 selection marked by asterisks:
-.display
-&` 8bitmime                   `&  received 8BITMIME status
-&`*acl_warn_skipped           `&  skipped &%warn%& statement in ACL
-&` address_rewrite            `&  address rewriting
-&` all_parents                `&  all parents in => lines
-&` arguments                  `&  command line arguments
-&`*connection_reject          `&  connection rejections
-&`*delay_delivery             `&  immediate delivery delayed
-&` deliver_time               `&  time taken to attempt delivery
-&` delivery_size              `&  add &`S=`&&'nnn'& to => lines
-&`*dkim                       `&  DKIM verified domain on <= lines
-&` dkim_verbose               `&  separate full DKIM verification result line, per signature
-&`*dnslist_defer              `&  defers of DNS list (aka RBL) lookups
-&` dnssec                     `&  DNSSEC secured lookups
-&`*etrn                       `&  ETRN commands
-&`*host_lookup_failed         `&  as it says
-&` ident_timeout              `&  timeout for ident connection
-&` incoming_interface         `&  local interface on <= and => lines
-&` incoming_port              `&  remote port on <= lines
-&`*lost_incoming_connection   `&  as it says (includes timeouts)
-&` millisec                   `&  millisecond timestamps and RT,QT,DT,D times
-&`*msg_id                     `&  on <= lines, Message-ID: header value
-&` msg_id_created             `&  on <= lines, Message-ID: header value when one had to be added
-&` outgoing_interface         `&  local interface on => lines
-&` outgoing_port              `&  add remote port to => lines
-&`*queue_run                  `&  start and end queue runs
-&` queue_time                 `&  time on queue for one recipient
-&`*queue_time_exclusive       `&  exclude recieve time from QT times
-&` queue_time_overall         `&  time on queue for whole message
-&` pid                        `&  Exim process id
-&` pipelining                 `&  PIPELINING use, on <= and => lines
-&` proxy                      `&  proxy address on <= and => lines
-&` receive_time               `&  time taken to receive message
-&` received_recipients        `&  recipients on <= lines
-&` received_sender            `&  sender on <= lines
-&`*rejected_header            `&  header contents on reject log
-&`*retry_defer                `&  &"retry time not reached"&
-&` return_path_on_delivery    `&  put return path on => and ** lines
-&` sender_on_delivery         `&  add sender to => lines
-&`*sender_verify_fail         `&  sender verification failures
-&`*size_reject                `&  rejection because too big
-&`*skip_delivery              `&  delivery skipped in a queue run
-&`*smtp_confirmation          `&  SMTP confirmation on => lines
-&` smtp_connection            `&  incoming SMTP connections
-&` smtp_incomplete_transaction`&  incomplete SMTP transactions
-&` smtp_mailauth              `&  AUTH argument to MAIL commands
-&` smtp_no_mail               `&  session with no MAIL commands
-&` smtp_protocol_error        `&  SMTP protocol errors
-&` smtp_syntax_error          `&  SMTP syntax errors
-&` subject                    `&  contents of &'Subject:'& on <= lines
-&`*tls_certificate_verified   `&  certificate verification status
-&`*tls_cipher                 `&  TLS cipher suite on <= and => lines
-&` tls_peerdn                 `&  TLS peer DN on <= and => lines
-&` tls_resumption             `&  append * to cipher field
-&` tls_sni                    `&  TLS SNI on <= lines
-&` unknown_in_list            `&  DNS lookup failed in list match
-
-&` all                        `&  all of the above
-.endd
+.itable none 0 0 3 1pt left 10pt center 1pt left
+.irow &`8bitmime`&			&nbsp; "received 8BITMIME status"
+.irow &`acl_warn_skipped`&		*	"skipped &%warn%& statement in ACL"
+.irow &`address_rewrite`&		&nbsp; "address rewriting"
+.irow &`all_parents`&			&nbsp; "all parents in => lines"
+.irow &`arguments`&			&nbsp; "command line arguments"
+.irow &`connection_reject`&		*	"connection rejections"
+.irow &`delay_delivery`&		*	"immediate delivery delayed"
+.irow &`deliver_time`&			&nbsp; "time taken to attempt delivery"
+.irow &`delivery_size`&			&nbsp; "add &`S=`&&'nnn'& to => lines"
+.irow &`dkim`&				*	"DKIM verified domain on <= lines"
+.irow &`dkim_verbose`&			&nbsp; "separate full DKIM verification result line, per signature"
+.irow &`dnslist_defer`&			*	"defers of DNS list (aka RBL) lookups"
+.irow &`dnssec`&			&nbsp; "DNSSEC secured lookups"
+.irow &`etrn`&				*	"ETRN commands"
+.irow &`host_lookup_failed`&		*	"as it says"
+.irow &`ident_timeout`&			&nbsp; "timeout for ident connection"
+.irow &`incoming_interface`&		&nbsp; "local interface on <= and => lines"
+.irow &`incoming_port`&			&nbsp; "remote port on <= lines"
+.irow &`lost_incoming_connection`&	*	"as it says (includes timeouts)"
+.irow &`millisec`&			&nbsp; "millisecond timestamps and RT,QT,DT,D times"
+.irow &`msg_id`&			*	"on <= lines, Message-ID: header value"
+.irow &`msg_id_created`&		&nbsp; "on <= lines, Message-ID: header value when one had to be added"
+.irow &`outgoing_interface`&		&nbsp; "local interface on => lines"
+.irow &`outgoing_port`&			&nbsp; "add remote port to => lines"
+.irow &`queue_run`&			*	"start and end queue runs"
+.irow &`queue_time`&			&nbsp; "time on queue for one recipient"
+.irow &`queue_time_exclusive`&		&nbsp; "exclude recieve time from QT times"
+.irow &`queue_time_overall`&		&nbsp; "time on queue for whole message"
+.irow &`pid`&				&nbsp; "Exim process id"
+.irow &`pipelining`&			&nbsp; "PIPELINING use, on <= and => lines"
+.irow &`proxy`&				&nbsp; "proxy address on <= and => lines"
+.irow &`receive_time`&			&nbsp; "time taken to receive message"
+.irow &`received_recipients`&		&nbsp; "recipients on <= lines"
+.irow &`received_sender`&		&nbsp; "sender on <= lines"
+.irow &`rejected_header`&		*	"header contents on reject log"
+.irow &`retry_defer`&			*	"&<quote>&retry time not reached&</quote>&"
+.irow &`return_path_on_delivery`&	&nbsp; "put return path on => and ** lines"
+.irow &`sender_on_delivery`&		&nbsp; "add sender to => lines"
+.irow &`sender_verify_fail`&		*	"sender verification failures"
+.irow &`size_reject`&			*	"rejection because too big"
+.irow &`skip_delivery`&			*	"delivery skipped in a queue run"
+.irow &`smtp_confirmation`&		*	"SMTP confirmation on => lines"
+.irow &`smtp_connection`&		&nbsp; "incoming SMTP connections"
+.irow &`smtp_incomplete_transaction`&	&nbsp; "incomplete SMTP transactions"
+.irow &`smtp_mailauth`&			&nbsp; "AUTH argument to MAIL commands"
+.irow &`smtp_no_mail`&			&nbsp; "session with no MAIL commands"
+.irow &`smtp_protocol_error`&		&nbsp; "SMTP protocol errors"
+.irow &`smtp_syntax_error`&		&nbsp; "SMTP syntax errors"
+.irow &`subject`&			&nbsp; "contents of &'Subject:'& on <= lines"
+.irow &`tls_certificate_verified`&	*	"certificate verification status"
+.irow &`tls_cipher`&			*	"TLS cipher suite on <= and => lines"
+.irow &`tls_peerdn`&			&nbsp; "TLS peer DN on <= and => lines"
+.irow &`tls_resumption`&		&nbsp; "append * to cipher field"
+.irow &`tls_sni`&			&nbsp; "TLS SNI on <= lines"
+.irow &`unknown_in_list`&		&nbsp; "DNS lookup failed in list match"
+.irow &`all`&				&nbsp; "&*all of the above*&"
+.endtable
 See also the &%slow_lookup_log%& main configuration option,
 section &<<SECID99>>&
 
@@ -39523,12 +39522,12 @@ but the format of the output is different. For this reason, there are some
 system configuration options that configure exactly how &'exiwhat'& works. If
 it doesn't seem to be working for you, check the following compile-time
 options:
-.display
-&`EXIWHAT_PS_CMD    `& the command for running &'ps'&
-&`EXIWHAT_PS_ARG    `& the argument for &'ps'&
-&`EXIWHAT_EGREP_ARG `& the argument for &'egrep'& to select from &'ps'& output
-&`EXIWHAT_KILL_ARG  `& the argument for the &'kill'& command
-.endd
+.itable none 0 0 2 1pt left 1pt left
+.irow &`EXIWHAT_PS_CMD`&	"the command for running &'ps'&"
+.irow &`EXIWHAT_PS_ARG`&	"the argument for &'ps'&"
+.irow &`EXIWHAT_EGREP_ARG`&	"the argument for &'egrep'& to select from &'ps'& output"
+.irow &`EXIWHAT_KILL_ARG`&	"the argument for the &'kill'& command"
+.endtable
 An example of typical output from &'exiwhat'& is
 .code
 164 daemon: -q1h, listening on port 25
@@ -42336,16 +42335,16 @@ The &"dmarc_status"& condition takes a list of strings on its
 right-hand side.  These strings describe recommended action based
 on the DMARC check.  To understand what the policy recommendations
 mean, refer to the DMARC website above.  Valid strings are:
-.display
-&'accept      '& The DMARC check passed and the library recommends accepting the email.
-&'reject      '& The DMARC check failed and the library recommends rejecting the email.
-&'quarantine  '& The DMARC check failed and the library recommends keeping it for further inspection.
-&'none        '& The DMARC check passed and the library recommends no specific action, neutral.
-&'norecord    '& No policy section in the DMARC record for this RFC5322.From field
-&'nofrom      '& Unable to determine the domain of the sender.
-&'temperror   '& Library error or dns error.
-&'off         '& The DMARC check was disabled for this email.
-.endd
+.itable none 0 0 2 1pt left 1pt left
+.irow &'accept'&	"The DMARC check passed and the library recommends accepting the email"
+.irow &'reject'&	"The DMARC check failed and the library recommends rejecting the email"
+.irow &'quarantine'&	"The DMARC check failed and the library recommends keeping it for further inspection"
+.irow &'none'&		"The DMARC check passed and the library recommends no specific action, neutral"
+.irow &'norecord'&	"No policy section in the DMARC record for this RFC5322.From field"
+.irow &'nofrom'&	"Unable to determine the domain of the sender"
+.irow &'temperror'&	"Library error or dns error"
+.irow &'off'&		"The DMARC check was disabled for this email"
+.endtable
 You can prefix each string with an exclamation mark to invert its
 meaning, for example "!accept" will match all results but
 "accept".  The string list is evaluated left-to-right in a
@@ -42511,13 +42510,13 @@ within &%proxy_protocol_timeout%&, which defaults to 3s.
 The following expansion variables are usable
 (&"internal"& and &"external"& here refer to the interfaces
 of the proxy):
-.display
-&'proxy_external_address   '& IP of host being proxied or IP of remote interface of proxy
-&'proxy_external_port      '& Port of host being proxied or Port on remote interface of proxy
-&'proxy_local_address      '& IP of proxy server inbound or IP of local interface of proxy
-&'proxy_local_port         '& Port of proxy server inbound or Port on local interface of proxy
-&'proxy_session            '& boolean: SMTP connection via proxy
-.endd
+.itable none 0 0 2 1pt left 1pt left
+.irow $proxy_external_address	"IP of host being proxied or IP of remote interface of proxy"
+.irow $proxy_external_port	"Port of host being proxied or Port on remote interface of proxy"
+.irow $proxy_local_address	"IP of proxy server inbound or IP of local interface of proxy"
+.irow $proxy_local_port		"Port of proxy server inbound or Port on local interface of proxy"
+.irow $proxy_session		"boolean: SMTP connection via proxy"
+.endtable
 If &$proxy_session$& is set but &$proxy_external_address$& is empty
 there was a protocol error.
 The variables &$sender_host_address$& and &$sender_host_port$&
@@ -42564,15 +42563,15 @@ is an IP address and any subsequent elements are options.
 
 Options are a string <name>=<value>.
 The list of options is in the following table:
-.display
-&'auth   '& authentication method
-&'name   '& authentication username
-&'pass   '& authentication password
-&'port   '& tcp port
-&'tmo    '& connection timeout
-&'pri    '& priority
-&'weight '& selection bias
-.endd
+.itable none 0 0 2 1pt left 1pt left
+.irow &'auth'&	"authentication method"
+.irow &'name'&	"authentication username"
+.irow &'pass'&	"authentication password"
+.irow &'port'&	"tcp port"
+.irow &'tmo'&	"connection timeout"
+.irow &'pri'&	"priority"
+.irow &'weight'& "selection bias"
+.endtable
 
 More details on each of these options follows:
 
@@ -42688,11 +42687,11 @@ This is usually for use in a Message Submission Agent context,
 but could be used for any message.
 
 If a value is appended it may be:
-.display
-&`1  `& mandatory downconversion
-&`0  `& no downconversion
-&`-1 `& if SMTPUTF8 not supported by destination host
-.endd
+.itable none 0 0 2 1pt right 1pt left
+.irow &`1`&	"mandatory downconversion"
+.irow &`0`&	"no downconversion"
+.irow &`-1`&	"if SMTPUTF8 not supported by destination host"
+.endtable
 If no value is given, 1 is used.
 
 If mua_wrapper is set, the utf8_downconvert control
@@ -42794,23 +42793,23 @@ expansion must check this, as it will be called for every possible event type.
 
 .new
 The current list of events is:
-.display
-&`dane:fail              after    transport  `& per connection
-&`msg:complete           after    main       `& per message
-&`msg:defer              after    transport  `& per message per delivery try
-&`msg:delivery           after    transport  `& per recipient
-&`msg:rcpt:host:defer    after    transport  `& per recipient per host
-&`msg:rcpt:defer         after    transport  `& per recipient
-&`msg:host:defer         after    transport  `& per host per delivery try; host errors
-&`msg:fail:delivery      after    transport  `& per recipient
-&`msg:fail:internal      after    main       `& per recipient
-&`tcp:connect            before   transport  `& per connection
-&`tcp:close              after    transport  `& per connection
-&`tls:cert               before   both       `& per certificate in verification chain
-&`tls:fail:connect       after    main       `& per connection
-&`smtp:connect           after    transport  `& per connection
-&`smtp:ehlo              after    transport  `& per connection
-.endd
+.itable all 0 0 4 1pt left 1pt center 1pt center 1pt left
+.irow dane:fail              after    transport  "per connection"
+.irow msg:complete           after    main       "per message"
+.irow msg:defer              after    transport  "per message per delivery try"
+.irow msg:delivery           after    transport  "per recipient"
+.irow msg:rcpt:host:defer    after    transport  "per recipient per host"
+.irow msg:rcpt:defer         after    transport  "per recipient"
+.irow msg:host:defer         after    transport  "per host per delivery try; host errors"
+.irow msg:fail:delivery      after    transport  "per recipient"
+.irow msg:fail:internal      after    main       "per recipient"
+.irow tcp:connect            before   transport  "per connection"
+.irow tcp:close              after    transport  "per connection"
+.irow tls:cert               before   both       "per certificate in verification chain"
+.irow tls:fail:connect       after    main       "per connection"
+.irow smtp:connect           after    transport  "per connection"
+.irow smtp:ehlo              after    transport  "per connection"
+.endtable
 .wen
 New event types may be added in future.
 
@@ -42827,24 +42826,24 @@ should define the event action.
 
 An additional variable, &$event_data$&, is filled with information varying
 with the event type:
-.display
-&`dane:fail            `& failure reason
-&`msg:defer            `& error string
-&`msg:delivery         `& smtp confirmation message
-&`msg:fail:internal    `& failure reason
-&`msg:fail:delivery    `& smtp error message
-&`msg:host:defer       `& error string
-&`msg:rcpt:host:defer  `& error string
-&`msg:rcpt:defer       `& error string
-&`tls:cert             `& verification chain depth
-&`tls:fail:connect     `& error string
-&`smtp:connect         `& smtp banner
-&`smtp:ehlo            `& smtp ehlo response
-.endd
+.itable all 0 0 2 1pt left 1pt left
+.irow dane:fail            "failure reason"
+.irow msg:defer            "error string"
+.irow msg:delivery         "smtp confirmation message"
+.irow msg:fail:internal    "failure reason"
+.irow msg:fail:delivery    "smtp error message"
+.irow msg:host:defer       "error string"
+.irow msg:rcpt:host:defer  "error string"
+.irow msg:rcpt:defer       "error string"
+.irow tls:cert             "verification chain depth"
+.irow tls:fail:connect     "error string"
+.irow smtp:connect         "smtp banner"
+.irow smtp:ehlo            "smtp ehlo response"
+.endtable
 
 The :defer events populate one extra variable: &$event_defer_errno$&.
 
-For complex operations an ACL expansion can be used in &%event_action%&
+For complex operations an ACL expansion can be used in &%event_action%&,
 however due to the multiple contexts that Exim operates in during
 the course of its processing:
 .ilist
@@ -42860,11 +42859,11 @@ a useful way of writing to the main log.
 The expansion of the event_action option should normally
 return an empty string.  Should it return anything else the
 following will be forced:
-.display
-&`tcp:connect      `&  do not connect
-&`tls:cert         `&  refuse verification
-&`smtp:connect     `&  close connection
-.endd
+.itable all 0 0 2 1pt left 1pt left
+.irow tcp:connect      "do not connect"
+.irow tls:cert         "refuse verification"
+.irow smtp:connect     "close connection"
+.endtable
 All other message types ignore the result string, and
 no other use is made of it.
 
