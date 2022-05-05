@@ -94,8 +94,10 @@ EXIM_DATUM key, data;
 
 exim_datum_init(&key);               /* Some DBM libraries require datums to */
 exim_datum_init(&data);              /* be cleared before use. */
-exim_datum_data_set(&key, string_copyn(keystring, length));
-exim_datum_size_set(&key, length + 1);
+length++;
+exim_datum_data_set(&key,
+  memcpy(store_get(length, keystring), keystring, length)); /* key can have embedded NUL */
+exim_datum_size_set(&key, length);
 
 if (exim_dbget(d, &key, &data))
   {

@@ -1,0 +1,4 @@
+# Exim test configuration 2301
+.include DIR/aux-var/std_conf_prefix
+primary_hostname = myhost.test.ex
+# End

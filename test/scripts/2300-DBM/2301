@@ -1,0 +1,5 @@
+# lookup dbmjz
+#
+exim -be
+${lookup{testid:test.example.invalid:userPassword}dbmjz{DIR/aux-fixed/TESTNUM.testsasldb}{$value}fail}
+****
