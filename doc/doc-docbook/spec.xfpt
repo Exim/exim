@@ -38454,7 +38454,7 @@ LOG_FILE_PATH, and uses the first item it finds that is neither empty nor
 &"syslog"&. This means that an empty item in &%log_file_path%& can be used to
 mean &"use the path specified at build time"&. If no such item exists, log
 files are written in the &_log_& subdirectory of the spool directory. This is
-equivalent to the setting:
+equivalent to the configuration file setting:
 .code
 log_file_path = $spool_directory/log/%slog
 .endd
@@ -38465,7 +38465,7 @@ that is where the logs are written.
 A log file path may also contain &`%D`& or &`%M`& if datestamped log filenames
 are in use &-- see section &<<SECTdatlogfil>>& below.
 
-Here are some examples of possible settings:
+Here are some examples of possible Makefile settings:
 .display
 &`LOG_FILE_PATH=syslog                    `& syslog only
 &`LOG_FILE_PATH=:syslog                   `& syslog and default path
