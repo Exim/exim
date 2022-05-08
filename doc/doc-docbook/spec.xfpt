@@ -12536,9 +12536,10 @@ command that does not succeed. Otherwise it is set to &"0"&. This makes it
 possible to distinguish between &"did not try to authenticate"&
 (&$sender_host_authenticated$& is empty and &$authentication_failed$& is set to
 &"0"&) and &"tried to authenticate but failed"& (&$sender_host_authenticated$&
-is empty and &$authentication_failed$& is set to &"1"&). Failure includes any
-negative response to an AUTH command, including (for example) an attempt to use
-an undefined mechanism.
+is empty and &$authentication_failed$& is set to &"1"&).
+Failure includes cancellation of a authentication attempt,
+and any negative response to an AUTH command,
+(including, for example, an attempt to use an undefined mechanism).
 
 .vitem &$av_failed$&
 .cindex "content scanning" "AV scanner failure"
