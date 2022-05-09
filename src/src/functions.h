@@ -788,7 +788,10 @@ static inline uschar *
 string_copyn_taint_trc(const uschar * s, unsigned len,
 	const void * proto_mem, const char * func, int line)
 {
-uschar * ss = store_get_3(len + 1, proto_mem, func, line);
+uschar * ss;
+unsigned slen = Ustrlen(s);
+if (len > slen) len = slen;
+ss = store_get_3(len + 1, proto_mem, func, line);
 memcpy(ss, s, len);
 ss[len] = '\0';
 return ss;

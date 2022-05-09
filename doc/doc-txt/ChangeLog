@@ -131,6 +131,11 @@ JH/29 TLS resumption: the key for session lookup in the client now includes
       session, avoiding oferring mismatching sessions to such a server.
       Previously only the server IP was used.
 
+JH/30 Fix string_copyn() for limit greater than actual string length.
+      Previously the copied amount was the limit, which could result in a
+      overlapping memcpy for newly allocated destination soon after a
+      source string shorter than the limit.  Found/investigated  by KM.
+
 
 Exim version 4.95
 -----------------
