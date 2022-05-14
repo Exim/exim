@@ -623,7 +623,6 @@ if (text)
 
 if (ff)
   {
-debug_printf("%s %d: ff\n", __FUNCTION__, __LINE__);
   while (Ufgets(big_buffer, big_buffer_size, ff) != NULL)
     {
     if (file_expand)
@@ -647,7 +646,6 @@ limit if we are returning the body. */
 
 if (return_message)
   {
-debug_printf("%s %d: ret msg\n", __FUNCTION__, __LINE__);
   uschar *rubric = tblock->headers_only
     ? US"------ This is a copy of the message's header lines.\n"
     : tblock->body_only

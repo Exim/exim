@@ -1113,11 +1113,6 @@ h->type = 0;
 h->slen = len;
 h->text = US s;
 
-/* This works for either NL or CRLF lines; also nul-termination */
-while (*++s)
-  if (*s == '\n' && s[1] != '\t' && s[1] != ' ') break;
-s++;		/* move past end of line */
-
 return r;
 }
 
