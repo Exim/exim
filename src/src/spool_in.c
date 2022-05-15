@@ -300,6 +300,9 @@ message_smtputf8 = FALSE;
 message_utf8_downconvert = 0;
 #endif
 
+#ifndef COMPILE_UTILITY
+debuglog_name[0] = '\0';
+#endif
 dsn_ret = 0;
 dsn_envid = NULL;
 }
@@ -594,11 +597,16 @@ for (;;)
     case 'd':
     if (Ustrcmp(p, "eliver_firsttime") == 0)
       f.deliver_firsttime = TRUE;
-    /* Check if the dsn flags have been set in the header file */
     else if (Ustrncmp(p, "sn_ret", 6) == 0)
       dsn_ret= atoi(CS var + 7);
     else if (Ustrncmp(p, "sn_envid", 8) == 0)
       dsn_envid = string_copy_taint(var + 10, proto_mem);
+#ifndef COMPILE_UTILITY
+    else if (Ustrncmp(p, "ebug_selector ", 14) == 0)
+      debug_selector = strtol(CS var + 15, NULL, 0);
+    else if (Ustrncmp(p, "ebuglog_name ", 13) == 0)
+      debug_logging_from_spool(var + 14);
+#endif
     break;
 
     case 'f':

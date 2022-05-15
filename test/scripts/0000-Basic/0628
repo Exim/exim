@@ -1,6 +1,7 @@
 # debug logging ACL modifier
 munge debuglog_stdout
 #
+# Immediate delivery variant
 exim -DSERVER=server -bd -oX PORT_D
 ****
 #
@@ -28,6 +29,38 @@ QUIT
 ****
 #
 killdaemon
+#
+#
+# This time going via a queue-run
+exim -DSERVER=server -DCONTROL=queue_only -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+MAIL FROM:<tester2@test.ex>
+??? 250
+RCPT TO:<dest2@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test.
+
+body
+.
+??? 250
+QUIT
+??? 221
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+killdaemon
+#
 #
 1
 cat DIR/spool/log/serverdebuglog_1

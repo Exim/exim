@@ -3481,8 +3481,7 @@ for (; cb; cb = cb->next)
 
 	case CONTROL_DEBUG:
 	  {
-	  uschar * debug_tag = NULL;
-	  uschar * debug_opts = NULL;
+	  uschar * debug_tag = NULL, * debug_opts = NULL;
 	  BOOL kill = FALSE, stop = FALSE;
 
 	  while (*p == '/')

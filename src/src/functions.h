@@ -187,7 +187,8 @@ extern void    daemon_go(void);
 extern int     dcc_process(uschar **);
 #endif
 
-extern void    debug_logging_activate(uschar *, uschar *);
+extern void    debug_logging_activate(const uschar *, const uschar *);
+extern void    debug_logging_from_spool(const uschar *);
 extern void    debug_logging_stop(BOOL);
 extern void    debug_print_argv(const uschar **);
 extern void    debug_print_ids(uschar *);
@@ -201,7 +202,7 @@ extern void    debug_print_socket(int);
 extern void    debug_trigger_fire(void);
 
 extern void    decode_bits(unsigned int *, size_t, int *,
-	           uschar *, bit_table *, int, uschar *, int);
+	           const uschar *, bit_table *, int, uschar *, int);
 extern void    delete_pid_file(void);
 extern void    deliver_local(address_item *, BOOL);
 extern address_item *deliver_make_addr(uschar *, BOOL);
@@ -323,7 +324,7 @@ extern int     ip_streamsocket(const uschar *, uschar **, int, host_item *);
 extern int     ipv6_nmtoa(int *, uschar *);
 
 extern uschar *local_part_quote(uschar *);
-extern int     log_open_as_exim(uschar * const);
+extern int     log_open_as_exim(const uschar * const);
 extern void    log_close_all(void);
 
 extern macro_item * macro_create(const uschar *, const uschar *, BOOL);

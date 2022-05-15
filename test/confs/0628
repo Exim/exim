@@ -21,7 +21,11 @@ chk_rcpt:
   accept control =		debug/kill
 
 chk_data:
-  accept control =		debug/tag=_2/opts=+all
+  warn   control =		debug/tag=_2/opts=+all
+.ifdef CONTROL
+	 control =		CONTROL
+.endif
+  accept
 
 
 # ----- Routers -----

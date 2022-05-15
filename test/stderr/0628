@@ -1,3 +1,5 @@
+01:01:01 1234 warn: condition test succeeded in ACL "chk_data"
+01:01:01 1234 processing "accept" (TESTSUITE/test-config 28)
 01:01:01 1234 accept: condition test succeeded in ACL "chk_data"
 01:01:01 1234 end of ACL "chk_data": ACCEPT
 01:01:01 1234  ╭considering: ${tod_full}
@@ -106,5 +108,103 @@
 01:01:01 1234 search_tidyup called
 01:01:01 1234 SMTP>>(close on process exit)
 01:01:01 1234 >>>>>>>>>>>>>>>> Exim pid=pppp (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
+01:01:01 1238 check control = queue_only
+01:01:01 1238 warn: condition test succeeded in ACL "chk_data"
+01:01:01 1238 processing "accept" (TESTSUITE/test-config 28)
+01:01:01 1238 accept: condition test succeeded in ACL "chk_data"
+01:01:01 1238 end of ACL "chk_data": ACCEPT
+01:01:01 1238  ╭considering: ${tod_full}
+01:01:01 1238  ├──expanding: ${tod_full}
+01:01:01 1238  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+01:01:01 1238 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-0005vi-00
+01:01:01 1238 DSN: **** SPOOL_OUT - address: <dest2@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
+01:01:01 1238 Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
+01:01:01 1238 Size of headers = sss
+01:01:01 1238 LOG: MAIN
+01:01:01 1238   <= tester2@test.ex H=(test.ex) [127.0.0.1] P=esmtp S=sss
+01:01:01 1238 LOG: delay_delivery MAIN
+01:01:01 1238   no immediate delivery: queued by ACL
+01:01:01 1238 SMTP>> 250 OK id=10HmaY-0005vi-00
+01:01:01 1238 search_tidyup called
+01:01:01 1238 Sender: tester2@test.ex
+01:01:01 1238 Recipients:
+01:01:01 1238   dest2@test.ex
+01:01:01 1238 Process1239  is ready for new message
+01:01:01 1238 smtp_setup_msg entered
+01:01:01 1238 SMTP<< QUIT
+01:01:01 1238 SMTP>> 221 myhost.test.ex closing connection
+01:01:01 1238 LOG: smtp_connection MAIN
+01:01:01 1238   SMTP connection from (test.ex) [127.0.0.1] closed by QUIT
+01:01:01 1238 search_tidyup called
+01:01:01 1238 SMTP>>(close on process exit)
+01:01:01 1238 >>>>>>>>>>>>>>>> Exim pid=pppp (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
+01:01:01 1240 debug enabled by spoolfile
+01:01:01 1240 sender_fullhost = (test.ex) [127.0.0.1]
+01:01:01 1240 sender_rcvhost = [127.0.0.1] (helo=test.ex)
+01:01:01 1240 sender_local=0 ident=unset
+01:01:01 1240 Non-recipients:
+01:01:01 1240  Empty Tree
+01:01:01 1240 ---- End of tree ----
+01:01:01 1240 recipients_count=1
+01:01:01 1240 **** SPOOL_IN - No additional fields
+01:01:01 1240 body_linecount=1 message_linecount=7
+01:01:01 1240 DSN: set orcpt:   flags: 0x0
+01:01:01 1240 Delivery address list:
+01:01:01 1240   dest2@test.ex 
+01:01:01 1240  locking TESTSUITE/spool/db/retry.lockfile
+01:01:01 1240  locked  TESTSUITE/spool/db/retry.lockfile
+01:01:01 1240  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+01:01:01 1240  returned from EXIM_DBOPEN: (nil)
+01:01:01 1240  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+01:01:01 1240 no retry data available
+01:01:01 1240 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+01:01:01 1240 Considering: dest2@test.ex
+01:01:01 1240 unique = dest2@test.ex
+01:01:01 1240 no   domain  retry record
+01:01:01 1240 no   address retry record
+01:01:01 1240 dest2@test.ex: queued for routing
+01:01:01 1240 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+01:01:01 1240 routing dest2@test.ex
+01:01:01 1240 --------> r1 router <--------
+01:01:01 1240 local_part=dest2 domain=test.ex
+01:01:01 1240 calling r1 router
+01:01:01 1240 rda_interpret (string): ':blackhole:'
+01:01:01 1240 expanded: ':blackhole:'
+01:01:01 1240 file is not a filter file
+01:01:01 1240 parse_forward_list: :blackhole:
+01:01:01 1240 extract item: :blackhole:
+01:01:01 1240 address :blackhole:d
+01:01:01 1240 LOG: MAIN
+01:01:01 1240   => :blackhole: <dest2@test.ex> R=r1
+01:01:01 1240 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+01:01:01 1240 After routing:
+01:01:01 1240   Local deliveries:
+01:01:01 1240   Remote deliveries:
+01:01:01 1240   Failed addresses:
+01:01:01 1240   Deferred addresses:
+01:01:01 1240 search_tidyup called
+01:01:01 1240 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
+01:01:01 1240 changed uid/gid: post-delivery tidying
+01:01:01 1240   uid=EXIM_UID gid=EXIM_GID pid=pppp
+01:01:01 1240 set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
+01:01:01 1240 Processing retry items
+01:01:01 1240 Succeeded addresses:
+01:01:01 1240  dest2@test.ex: no retry items
+01:01:01 1240 Failed addresses:
+01:01:01 1240 Deferred addresses:
+01:01:01 1240 end of retry processing
+01:01:01 1240 DSN: processing router : r1
+01:01:01 1240 DSN: processing successful delivery address: dest2@test.ex
+01:01:01 1240 DSN: Sender_address: tester2@test.ex
+01:01:01 1240 DSN: orcpt: NULL  flags: 0x0
+01:01:01 1240 DSN: envid: NULL  ret: 0
+01:01:01 1240 DSN: Final recipient: dest2@test.ex
+01:01:01 1240 DSN: Remote SMTP server supports DSN: 0
+01:01:01 1240 DSN: not sending DSN success message
+01:01:01 1240 LOG: MAIN
+01:01:01 1240   Completed
+01:01:01 1240 end delivery of 10HmaY-0005vi-00
+01:01:01 1240 search_tidyup called
+01:01:01 1240 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

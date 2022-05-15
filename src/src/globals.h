@@ -493,6 +493,8 @@ extern int     debug_options_count;    /* Size of table */
 extern unsigned debug_pretrigger_bsize;
 extern uschar *debug_pretrigger_buf;   /* circular buffer for precapture */
 extern BOOL    debug_store;	       /* Do extra checks on store_reset */
+extern uschar  debuglog_name[LOG_NAME_SIZE]; /* ACL-init debug */
+
 extern int     delay_warning[];        /* Times between warnings */
 extern uschar *delay_warning_condition; /* Condition string for warnings */
 extern BOOL    delivery_date_remove;   /* Remove delivery-date headers */

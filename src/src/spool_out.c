@@ -230,6 +230,12 @@ tree_walk(acl_var_m, &acl_var_write, fp);
 
 /* Now any other data that needs to be remembered. */
 
+if (*debuglog_name)
+  {
+  fprintf(fp, "-debug_selector 0x%x\n", debug_selector);
+  fprintf(fp, "-debuglog_name %s\n", debuglog_name);
+  }
+
 if (f.spool_file_wireformat)
   fprintf(fp, "-spool_file_wireformat\n");
 else

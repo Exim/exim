@@ -31717,6 +31717,8 @@ with &`-d`&, with the output going to a new logfile in the usual logs directory,
 by default called &'debuglog'&.
 
 .new
+Logging set up by the control will be maintained across spool residency.
+
 Options are a slash-separated list.
 If an option takes an argument, the option name and argument are separated by
 an equals character.

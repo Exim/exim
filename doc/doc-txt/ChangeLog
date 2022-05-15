@@ -70,8 +70,8 @@ JH/15 Fix a resource leak in *BSD.  An off-by-one error resulted in the daemon
       was touched.
 
 JH/16 Debugging initiated by an ACL control now continues through into routing
-      and transport processes, when delivery is immediate.  Previously debugging
-      stopped any time Exim re-execs.
+      and transport processes.  Previously debugging stopped any time Exim
+      re-execs, or for processing a queued message.
 
 JH/17 The "expand" debug selector now gives more detail, specifically on the
       result of expansion operators and items.

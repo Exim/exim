@@ -12,7 +12,6 @@ log files was originally contributed by Tony Sheen. */
 
 #include "exim.h"
 
-#define LOG_NAME_SIZE 256
 #define MAX_SYSLOG_LEN 870
 
 #define LOG_MODE_FILE   1
@@ -30,7 +29,6 @@ static uschar *log_names[] = { US"main", US"reject", US"panic", US"debug" };
 
 static uschar mainlog_name[LOG_NAME_SIZE];
 static uschar rejectlog_name[LOG_NAME_SIZE];
-static uschar debuglog_name[LOG_NAME_SIZE];
 
 static uschar *mainlog_datestamp = NULL;
 static uschar *rejectlog_datestamp = NULL;
@@ -268,7 +266,7 @@ Returns:       a file descriptor, or < 0 on failure (errno set)
 */
 
 static int
-log_open_already_exim(uschar * const name)
+log_open_already_exim(const uschar * const name)
 {
 int fd = -1;
 const int flags = O_WRONLY | O_APPEND | O_CREAT | O_NONBLOCK;
@@ -392,7 +390,7 @@ Returns:       a file descriptor, or < 0 on failure (errno set)
 */
 
 int
-log_open_as_exim(uschar * const name)
+log_open_as_exim(const uschar * const name)
 {
 int fd = -1;
 const uid_t euid = geteuid();
@@ -475,7 +473,7 @@ Returns:   nothing
 */
 
 static void
-open_log(int *fd, int type, uschar *tag)
+open_log(int * fd, int type, const uschar * tag)
 {
 uid_t euid;
 BOOL ok, ok2;
@@ -531,8 +529,8 @@ switch (type)
 
   default:
     /* Remove any datestamp if this is the panic log. This is rare, so there's no
-  need to optimize getting the datestamp length. We remove one non-alphanumeric
-  char afterwards if at the start, otherwise one before. */
+    need to optimize getting the datestamp length. We remove one non-alphanumeric
+    char afterwards if at the start, otherwise one before. */
     if (string_datestamp_offset >= 0)
       {
       uschar * from = buffer + string_datestamp_offset;
@@ -1365,8 +1363,9 @@ Returns:         nothing on success - bomb out on failure
 */
 
 void
-decode_bits(unsigned int *selector, size_t selsize, int *notall,
-  uschar *string, bit_table *options, int count, uschar *which, int flags)
+decode_bits(unsigned int * selector, size_t selsize, int * notall,
+  const uschar * string, bit_table * options, int count, uschar * which,
+  int flags)
 {
 uschar *errmsg;
 if (!string) return;
@@ -1375,7 +1374,7 @@ if (*string == '=')
   {
   char *end;    /* Not uschar */
   memset(selector, 0, sizeof(*selector)*selsize);
-  *selector = strtoul(CS string+1, &end, 0);
+  *selector = strtoul(CCS string+1, &end, 0);
   if (!*end) return;
   errmsg = string_sprintf("malformed numeric %s_selector setting: %s", which,
     string);
@@ -1387,9 +1386,9 @@ if (*string == '=')
 else for(;;)
   {
   BOOL adding;
-  uschar *s;
+  const uschar * s;
   int len;
-  bit_table *start, *end;
+  bit_table * start, * end;
 
   Uskip_whitespace(&string);
   if (!*string) return;
@@ -1485,7 +1484,7 @@ immediately but only upon a trigger - but we'd need another cmdline option
 to pass the name through child_exxec_exim(). */
 
 void
-debug_logging_activate(uschar *tag_name, uschar *opts)
+debug_logging_activate(const uschar * tag_name, const uschar * opts)
 {
 if (debug_file)
   {
@@ -1518,6 +1517,23 @@ if (debug_fd != -1)
   debug_file = fdopen(debug_fd, "w");
 else
   log_write(0, LOG_MAIN|LOG_PANIC, "unable to open debug log");
+}
+
+
+void
+debug_logging_from_spool(const uschar * filename)
+{
+if (debug_fd < 0)
+  {
+  Ustrncpy(debuglog_name, filename, sizeof(debuglog_name));
+  if ((debug_fd = log_open_as_exim(filename)) >= 0)
+    debug_file = fdopen(debug_fd, "w");
+  DEBUG(D_deliver) debug_printf("debug enabled by spoolfile\n");
+  }
+/*
+else DEBUG(D_deliver)
+  debug_printf("debug already active; ignoring spoolfile '%s'\n", filename);
+*/
 }
 
 

@@ -105,6 +105,7 @@ don't make the file descriptors two-way. */
 
 /* Debugging control */
 
+#define LOG_NAME_SIZE 256
 #define DEBUG(x)      if (debug_selector & (x))
 #define HDEBUG(x)     if (host_checking || debug_selector & (x))
 
