@@ -1078,6 +1078,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # drop gnutls version strings
     next if /GnuTLS compile-time version: \d+[\.\d]+$/;
     next if /GnuTLS runtime version: \d+[\.\d]+$/;
+    # and unwanted debug
+    next if /^GnuTLS<2>: FIPS140-2 (context is not set|operation mode switched from initial to not-approved)$/;
+    next if /^GnuTLS<3>: ASSERT: sign.c\[_gnutls_sign_is_secure2\]:\d+$/;
 
     # drop openssl version strings
     next if /OpenSSL compile-time version: OpenSSL \d+[\.\da-z]+/;
