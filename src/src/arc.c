@@ -1527,6 +1527,7 @@ void
 arc_sign_init(void)
 {
 memset(&arc_sign_ctx, 0, sizeof(arc_sign_ctx));
+headers_rlist = NULL;
 }
 
 
