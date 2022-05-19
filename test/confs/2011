@@ -1,0 +1,72 @@
+# Exim test configuration 2011
+
+SERVER=
+
+keep_environment = PATH:EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+add_environment = SSLKEYLOGFILE=DIR/spool/sslkeys
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+spool_directory = DIR/spool
+
+.ifdef SERVER
+log_file_path = DIR/spool/log/SERVER%slog
+.else
+log_file_path = DIR/spool/log/%slog
+.endif
+
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+dns_cname_loops = 9
+chunking_advertise_hosts = *
+
+.ifdef _HAVE_PIPE_CONNECT
+pipelining_connect_advertise_hosts = :
+.endif
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+.ifdef _EXP_LIMITS
+limits_advertise_hosts = !*
+.endif
+
+primary_hostname = test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_rcpt
+
+log_selector = +received_recipients +dkim_verbose
+queue_only
+queue_run_in_order
+
+# ----- ACL -----
+begin acl
+
+check_rcpt:
+  defer	hosts = HOSTIPV4
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+d0:
+  driver =	manualroute
+  route_list =	*	"HOSTIPV4::PORT_D : 127.0.0.1::PORT_D"
+  self =	send
+  transport =	gsmtp
+
+# ----- Transports -----
+
+begin transports
+
+gsmtp:
+  driver =			smtp
+  allow_localhost
+  tls_verify_certificates =	system
+  hosts_require_tls =		*
+
+begin retry
+* * F,5d,10s
+
+# End

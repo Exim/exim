@@ -1600,6 +1600,9 @@ return lifetime;
 /* Preload whatever creds are static, onto a transport.  The client can then
 just copy the pointer as it starts up. */
 
+/*XXX this is not called for a cmdline send. But one needing to use >1 conn would benefit,
+and there seems little downside. */
+
 static void
 tls_client_creds_init(transport_instance * t, BOOL watch)
 {
@@ -3084,8 +3087,6 @@ if (rc != GNUTLS_E_SUCCESS)
 #endif
     (void) gnutls_alert_send_appropriate(state->session, rc);
     gnutls_deinit(state->session);
-    gnutls_certificate_free_credentials(state->lib_state.x509_cred);
-    state->lib_state = null_tls_preload;
     millisleep(500);
     shutdown(state->fd_out, SHUT_WR);
     for (int i = 1024; fgetc(smtp_in) != EOF && i > 0; ) i--;	/* drain skt */
@@ -3778,9 +3779,6 @@ if (!ct_ctx)	/* server */
   }
 
 gnutls_deinit(state->session);
-gnutls_certificate_free_credentials(state->lib_state.x509_cred);
-state->lib_state = null_tls_preload;
-
 tlsp->active.sock = -1;
 tlsp->active.tls_ctx = NULL;
 /* Leave bits, peercert, cipher, peerdn, certificate_verified set, for logging */

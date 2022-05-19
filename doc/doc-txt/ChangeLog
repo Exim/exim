@@ -136,6 +136,10 @@ JH/30 Fix string_copyn() for limit greater than actual string length.
       overlapping memcpy for newly allocated destination soon after a
       source string shorter than the limit.  Found/investigated  by KM.
 
+JH/31 Bug 2886: GnuTLS: Do not free the cached creds on transport connection
+      close; it may be needed for a subsequent connection.  This caused a
+      SEGV on primary-MX defer.  Found/investigated by Gedalya & Andreas.
+
 
 Exim version 4.95
 -----------------

@@ -1,0 +1,20 @@
+# Cached CA bundle re-use
+#
+# Preload a message into spool
+exim -odq fred@test.net
+Subject: test
+
+this is a test
+
+****
+#
+# Server to work against
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# Send message from spool
+exim -q
+****
+#
+killdaemon
+no_msglog_check
