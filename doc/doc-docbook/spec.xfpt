@@ -17129,9 +17129,9 @@ not count as protocol errors (see &%smtp_max_synprot_errors%&).
 
 .option pipelining_connect_advertise_hosts main "host list&!!" *
 .cindex "pipelining" "early connection"
-.cindex "pipelining" PIPE_CONNECT
-.cindex "ESMTP extensions" PIPE_CONNECT
-If Exim is built with the SUPPORT_PIPE_CONNECT build option
+.cindex "pipelining" PIPECONNECT
+.cindex "ESMTP extensions" PIPECONNECT
+If Exim is built without the DISABLE_PIPE_CONNECT build option
 this option controls which hosts the facility is advertised to
 and from which pipeline early-connection (before MAIL) SMTP
 commands are acceptable.
@@ -17139,7 +17139,11 @@ When used, the pipelining saves on roundtrip times.
 
 See also the &%hosts_pipe_connect%& smtp transport option.
 
-The SMTP service extension keyword advertised is &"PIPE_CONNECT"&.
+The SMTP service extension keyword advertised is &"PIPECONNECT"&;
+it permits the client to pipeline
+TCP connection and hello command (inclear phase),
+or TLS-establishment and hello command (encrypted phase),
+on later connections to the same host.
 
 
 .option prdr_enable main boolean false
@@ -25642,7 +25646,7 @@ that matches this list, even if the server host advertises PIPELINING support.
 
 .option hosts_pipe_connect smtp "host list&!!" unset
 .cindex "pipelining" "early connection"
-.cindex "pipelining" PIPE_CONNECT
+.cindex "pipelining" PIPECONNECT
 If Exim is built with the SUPPORT_PIPE_CONNECT build option
 this option controls which to hosts the facility watched for
 and recorded, and used for subsequent connections.
@@ -39223,7 +39227,7 @@ On accept lines, where PIPELINING was offered but not used by the client,
 the field has a minus appended.
 
 .cindex "pipelining" "early connection"
-If Exim is built with the SUPPORT_PIPE_CONNECT build option
+If Exim is built without the DISABLE_PIPE_CONNECT build option
 accept "L" fields have a period appended if the feature was
 offered but not used, or an asterisk appended if used.
 Delivery "L" fields have an asterisk appended if used.
