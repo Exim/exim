@@ -380,7 +380,7 @@ allocated store. */
 
 if (size < 0 || size >= INT_MAX/2)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-            "bad memory allocation requested (%d bytes) at %s %d",
+            "bad memory allocation requested (%d bytes) from %s %d",
             size, func, linenumber);
 
 /* Round up the size to a multiple of the alignment. Although this looks a
@@ -1150,8 +1150,8 @@ a negative int, to the (unsigned, wider) size_t */
 
 if (size >= INT_MAX/2)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-            "bad memory allocation requested (" SIZE_T_FMT " bytes) at %s %d",
-            size, func, line);
+    "bad internal_store_malloc request (" SIZE_T_FMT " bytes) from %s %d",
+    size, func, line);
 
 size += sizeof(size_t);	/* space to store the size, used under debug */
 if (size < 16) size = 16;
