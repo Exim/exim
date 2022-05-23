@@ -1072,7 +1072,6 @@ if (pending_EHLO)
   if (tls_out.active.sock >= 0 || !(peer_offered & OPTION_TLS))
     ehlo_response_limits_read(sx);
 #endif
-/*XXX RESUMP - EHLO-resp avail here int sx->buffer */
   if (  peer_offered != sx->peer_offered
      || (authbits = study_ehlo_auths(sx)) != *ap)
     {
@@ -2546,7 +2545,6 @@ goto SEND_QUIT;
 	  )
 #endif
 /*XXX RESUMP - sx->buffer has the EHLO-resp, but only if not early-pipe and not continued-connection */
-/* maybe disable resump on cont? */
 	);
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
       if (tls_out.active.sock >= 0 || !(sx->peer_offered & OPTION_TLS))
@@ -2672,7 +2670,6 @@ if (  smtp_peer_options & OPTION_TLS
       sx->early_pipe_active = FALSE;
       goto PIPE_CONNECT_RETRY;
       }
-/*XXX RESUMP - does this leave the EHLO-resp anywhere?   Yes, sx->buffer */
     sx->conn_args.host_lbserver = ehlo_response_lbserver(sx->buffer, ob);
     }
 #endif
@@ -2703,7 +2700,6 @@ if (  smtp_peer_options & OPTION_TLS
   TLS_NEGOTIATE:
     {
     sx->conn_args.sending_ip_address = sending_ip_address;
-    /*XXX RESUMP want LB-server info  here */
     if (!tls_client_start(&sx->cctx, &sx->conn_args, sx->addrlist, &tls_out, &tls_errstr))
       {
       /* TLS negotiation failed; give an error. From outside, this function may
