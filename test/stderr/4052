@@ -47,7 +47,7 @@ sync_responses expect rcpt for extchange@test.ex
   SMTP<< 250 rcpt-to accepted
 sync_responses expect data
   SMTP<< 354 data go-ahead
-  SMTP>> writing message and terminating "."
+  SMTP>> (writing message)
 transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
  no messages waiting for 127.0.0.1

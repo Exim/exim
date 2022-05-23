@@ -27,7 +27,7 @@ Connecting to localhost.test.ex [127.0.0.1]:1224 ...  connected
   SMTP<< 250 OK
   SMTP>> DATA
   SMTP<< 354 OK
-  SMTP>> writing message and terminating "."
+  SMTP>> (writing message)
   SMTP>> .
   SMTP<< 250 OK
   SMTP+> QUIT

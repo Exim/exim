@@ -2563,7 +2563,7 @@ goto SEND_QUIT;
 	if (  (sx->peer_offered & (OPTION_PIPE | OPTION_EARLY_PIPE))
 	   == (OPTION_PIPE | OPTION_EARLY_PIPE))
 	  {
-	  DEBUG(D_transport) debug_printf("PIPE_CONNECT usable in future for this IP\n");
+	  DEBUG(D_transport) debug_printf("PIPECONNECT usable in future for this IP\n");
 	  sx->ehlo_resp.cleartext_auths = study_ehlo_auths(sx);
 	  write_ehlo_cache_entry(sx);
 	  }
@@ -3995,7 +3995,7 @@ else
     if (smtp_peer_options & OPTION_CHUNKING)
       debug_printf("         will write message using CHUNKING\n");
     else
-      debug_printf("  SMTP>> writing message and terminating \".\"\n");
+      debug_printf("  SMTP>> (writing message)\n");
   transport_count = 0;
 
 #ifndef DISABLE_DKIM

@@ -36,7 +36,7 @@ sync_responses expect rcpt for tempreject@test.ex
   SMTP<< 250 OK rcpt
 sync_responses expect data
   SMTP<< 300 go ahead
-  SMTP>> writing message and terminating "."
+  SMTP>> (writing message)
 transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
  no messages waiting for 127.0.0.1
@@ -102,7 +102,7 @@ sync_responses expect rcpt for permreject@test.ex
   SMTP<< 250 OK rcpt
 sync_responses expect data
   SMTP<< 300 go ahead
-  SMTP>> writing message and terminating "."
+  SMTP>> (writing message)
 transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
  no messages waiting for 127.0.0.1
@@ -168,7 +168,7 @@ sync_responses expect rcpt for permreject@test.ex
   SMTP<< 250 OK rcpt
 sync_responses expect data
   SMTP<< 300 go ahead
-  SMTP>> writing message and terminating "."
+  SMTP>> (writing message)
 transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
  no messages waiting for 127.0.0.1
