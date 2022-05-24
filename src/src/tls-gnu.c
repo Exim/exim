@@ -3279,7 +3279,7 @@ tls_retrieve_session(tls_support * tlsp, gnutls_session_t session,
 tlsp->resumption = RESUME_SUPPORTED;
 
 if (continue_hostname)	/* no host_lbserver available for tls_client_resmption_key() */
-  { DEBU(D_tls) debug_printf("resumption not supported on continued-connection\n"); }
+  { DEBUG(D_tls) debug_printf("resumption not supported on continued-connection\n"); }
 else if (verify_check_given_host(CUSS &ob->tls_resumption_hosts, conn_args->host) == OK)
   {
   dbdata_tls_session * dt;
