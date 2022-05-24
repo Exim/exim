@@ -834,6 +834,7 @@ typedef struct {
   int			sock;	/* used for a bound but not connected socket */
   uschar *		sending_ip_address;	/* used for TLS resumption */
   const uschar *	host_lbserver;		/* ditto, for server-behind LB */
+  BOOL			have_lbserver:1;	/* host_lbserver is valid */
 
 #ifdef SUPPORT_DANE
   BOOL dane:1;			/* connection must do dane */

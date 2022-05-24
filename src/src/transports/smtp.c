@@ -1004,6 +1004,28 @@ return authbits;
 
 
 
+/* Grab a string differentiating server behind a loadbalancer, for TLS
+resumption when such servers do not share a session-cache */
+
+static void
+ehlo_response_lbserver(smtp_context * sx, smtp_transport_options_block * ob)
+{
+#if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
+const uschar * s;
+uschar * save_item = iterate_item;
+
+if (sx->conn_args.have_lbserver)
+  return;
+iterate_item = sx->buffer;
+s = expand_cstring(ob->host_name_extract);
+iterate_item = save_item;
+sx->conn_args.host_lbserver = s && !*s ? NULL : s;
+sx->conn_args.have_lbserver = TRUE;
+#endif
+}
+
+
+
 /* Wait for and check responses for early-pipelining.
 
 Called from the lower-level smtp_read_response() function
@@ -1040,6 +1062,8 @@ if (pending_BANNER)
     if (tls_out.active.sock >= 0) rc = DEFER;
     goto fail;
     }
+  /*XXX EXPERIMENTAL_ESMTP_LIMITS ? */
+  ehlo_response_lbserver(sx, sx->conn_args.ob);
   }
 
 if (pending_EHLO)
@@ -1880,28 +1904,6 @@ return checks;
 
 
 
-/* Grab a string differentiating server behind a loadbalancer, for TLS
-resumption when such servers do not share a session-cache */
-
-static const uschar *
-ehlo_response_lbserver(uschar * buffer, smtp_transport_options_block * ob)
-{
-#if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
-/* want to make this a main-section option */
-const uschar * s;
-uschar * save_item = iterate_item;
-
-iterate_item = buffer;
-s = expand_cstring(ob->host_name_extract);
-iterate_item = save_item;
-return s && !*s ? NULL : s;
-#else
-return NULL;
-#endif
-}
-
-
-
 /* Callback for emitting a BDAT data chunk header.
 
 If given a nonzero size, first flush any buffered SMTP commands
@@ -2544,7 +2546,6 @@ goto SEND_QUIT;
 	  : 0
 	  )
 #endif
-/*XXX RESUMP - sx->buffer has the EHLO-resp, but only if not early-pipe and not continued-connection */
 	);
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
       if (tls_out.active.sock >= 0 || !(sx->peer_offered & OPTION_TLS))
@@ -2567,7 +2568,7 @@ goto SEND_QUIT;
 	  }
 	}
 #endif
-      sx->conn_args.host_lbserver = ehlo_response_lbserver(sx->buffer, ob);
+      ehlo_response_lbserver(sx, ob);
       }
 
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
@@ -2670,7 +2671,6 @@ if (  smtp_peer_options & OPTION_TLS
       sx->early_pipe_active = FALSE;
       goto PIPE_CONNECT_RETRY;
       }
-    sx->conn_args.host_lbserver = ehlo_response_lbserver(sx->buffer, ob);
     }
 #endif
 

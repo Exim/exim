@@ -4024,8 +4024,10 @@ if (ob->tls_alpn)
 #endif
 
 #ifndef DISABLE_TLS_RESUME
-if (continue_hostname)	/* no host_lbserver available for tls_client_resmption_key() */
-			/*XXX another cmdline arg possibly, but use will be very low */
+/*XXX have_lbserver: another cmdline arg possibly, for continued-conn, but use
+will be very low. */
+
+if (!conn_args->have_lbserver)	/* wanted for tls_client_resmption_key() */
   { DEBUG(D_tls) debug_printf("resumption not supported on continued-connection\n"); }
 else if (verify_check_given_host(CUSS &ob->tls_resumption_hosts, host) == OK)
   tls_client_ctx_resume_prehandshake(exim_client_ctx, conn_args, tlsp, ob);
