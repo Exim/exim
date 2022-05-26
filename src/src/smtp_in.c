@@ -840,12 +840,8 @@ while (chunking_data_left)
   }
 
 bdat_pop_receive_functions();
-
-if (chunking_state != CHUNKING_LAST)
-  {
-  chunking_state = CHUNKING_OFFERED;
-  DEBUG(D_receive) debug_printf("chunking state %d\n", (int)chunking_state);
-  }
+chunking_state = CHUNKING_OFFERED;
+DEBUG(D_receive) debug_printf("chunking state %d\n", (int)chunking_state);
 }
 
 
@@ -978,7 +974,7 @@ which sometimes uses smtp_printf() and sometimes smtp_respond(). */
 
 if (fl.rcpt_in_progress)
   {
-  if (rcpt_smtp_response == NULL)
+  if (!rcpt_smtp_response)
     rcpt_smtp_response = string_copy(big_buffer);
   else if (fl.rcpt_smtp_response_same &&
            Ustrcmp(rcpt_smtp_response, big_buffer) != 0)
@@ -5081,7 +5077,7 @@ while (done <= 0)
       count this as a protocol error. Reset was_rej_mail so that further RCPTs
       get the same treatment. */
 
-      if (sender_address == NULL)
+      if (!sender_address)
 	{
 	if (f.smtp_in_pipelining_advertised && last_was_rej_mail)
 	  {
@@ -5100,7 +5096,7 @@ while (done <= 0)
 
       /* Check for an operand */
 
-      if (smtp_cmd_data[0] == 0)
+      if (!smtp_cmd_data[0])
 	{
 	done = synprot_error(L_smtp_syntax_error, 501, NULL,
 	  US"RCPT must have an address operand");

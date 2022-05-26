@@ -140,6 +140,11 @@ JH/31 Bug 2886: GnuTLS: Do not free the cached creds on transport connection
       close; it may be needed for a subsequent connection.  This caused a
       SEGV on primary-MX defer.  Found/investigated by Gedalya & Andreas.
 
+JH/32 Fix CHUNKING for a second message on a connection when the first was
+      rejected.  Previously we did not reset the chunking-offered state, and
+      erroneously rejected the BDAT command.  Investigation help from
+      Jesse Hathaway.
+
 
 Exim version 4.95
 -----------------
