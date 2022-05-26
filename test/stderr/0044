@@ -33,10 +33,10 @@ host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-the.local.host.name Hello exim.test.ex [V4NET.11.12.13]
-250-SIZE 52428800
-250-8BITMIME
-250-PIPELINING
-250 HELP
+       250-SIZE 52428800
+       250-8BITMIME
+       250-PIPELINING
+       250 HELP
 SMTP<< mail from:postmaster@exim.test.ex
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
@@ -211,10 +211,10 @@ host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-the.local.host.name Hello exim.test.ex [V4NET.99.99.99]
-250-SIZE 52428800
-250-8BITMIME
-250-PIPELINING
-250 HELP
+       250-SIZE 52428800
+       250-8BITMIME
+       250-PIPELINING
+       250 HELP
 SMTP<< mail from:postmaster@exim.test.ex
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100

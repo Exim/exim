@@ -448,14 +448,14 @@ Evaluating advertise_condition for defer DEFER athenticator
 Evaluating advertise_condition for login LOGIN athenticator
 host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-myhost.test.ex Hello CALLER at testing.testing [10.0.0.5]
-250-SIZE 52428800
-250-8BITMIME
-250-ETRN
-250-VRFY
-250-EXPN
-250-PIPELINING
-250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
-250 HELP
+       250-SIZE 52428800
+       250-8BITMIME
+       250-ETRN
+       250-VRFY
+       250-EXPN
+       250-PIPELINING
+       250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+       250 HELP
 SMTP<< auth mylogin dXNlcnggc2VjcmV0
 auth input decode: 'userx secret'
 mylogin authenticator server_condition:

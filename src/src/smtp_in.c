@@ -956,15 +956,12 @@ that we'll never expand it. */
 yield = !! string_vformat(&gs, SVFMT_TAINT_NOCHK, format, ap);
 string_from_gstring(&gs);
 
-DEBUG(D_receive)
-  {
-  uschar *msg_copy, *cr, *end;
-  msg_copy = string_copy(gs.s);
-  end = msg_copy + gs.ptr;
-  while ((cr = Ustrchr(msg_copy, '\r')) != NULL)   /* lose CRs */
-    memmove(cr, cr + 1, (end--) - cr);
-  debug_printf("SMTP>> %s", msg_copy);
-  }
+DEBUG(D_receive) for (const uschar * t, * s = gs.s;
+		      s && (t = Ustrchr(s, '\r'));
+		      s = t + 2)				/* \r\n */
+    debug_printf("%s %.*s\n",
+		  s == gs.s ? "SMTP>>" : "      ",
+		  (int)(t - s), s);
 
 if (!yield)
   {
@@ -4622,15 +4619,12 @@ while (done <= 0)
 #endif
 	(void) fwrite(g->s, 1, g->ptr, smtp_out);
 
-      DEBUG(D_receive)
-	{
-	uschar *cr;
-
-	(void) string_from_gstring(g);
-	while ((cr = Ustrchr(g->s, '\r')) != NULL)   /* lose CRs */
-	  memmove(cr, cr + 1, (g->ptr--) - (cr - g->s));
-	debug_printf("SMTP>> %s", g->s);
-	}
+      DEBUG(D_receive) for (const uschar * t, * s = string_from_gstring(g);
+			    s && (t = Ustrchr(s, '\r'));
+			    s = t + 2)				/* \r\n */
+	  debug_printf("%s %.*s\n",
+			s == g->s ? "SMTP>>" : "      ",
+			(int)(t - s), s);
       fl.helo_seen = TRUE;
 
       /* Reset the protocol and the state, abandoning any previous message. */
