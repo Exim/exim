@@ -1757,7 +1757,7 @@ Returns:    nothing
 */
 
 void
-smtp_closedown(uschar *message)
+smtp_closedown(uschar * message)
 {
 if (!smtp_in || smtp_batched_input) return;
 receive_swallow_smtp();
@@ -3957,6 +3957,8 @@ HAD(SCH_RSET);
 incomplete_transaction_log(US"RSET");
 smtp_printf("250 Reset OK\r\n", FALSE);
 cmd_list[CMD_LIST_RSET].is_mail_cmd = FALSE;
+if (chunking_state > CHUNKING_OFFERED)
+  chunking_state = CHUNKING_OFFERED;
 }
 
 
@@ -5387,7 +5389,7 @@ while (done <= 0)
 #endif
       if (!discarded && recipients_count <= 0)
 	{
-	if (fl.rcpt_smtp_response_same && rcpt_smtp_response != NULL)
+	if (fl.rcpt_smtp_response_same && rcpt_smtp_response)
 	  {
 	  uschar *code = US"503";
 	  int len = Ustrlen(rcpt_smtp_response);
@@ -6030,7 +6032,6 @@ while (done <= 0)
   COMMAND_LOOP:
   last_was_rej_mail = was_rej_mail;     /* Remember some last commands for */
   last_was_rcpt = was_rcpt;             /* protocol error handling */
-  continue;
   }
 
 return done - 2;  /* Convert yield values */

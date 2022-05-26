@@ -260,7 +260,7 @@ quit
 ??? 221
 ****
 #
-# Two rejected messages, pipielined, REST between
+# Two rejected messages, pipielined, RSET between
 client 127.0.0.1 PORT_D
 ??? 220
 EHLO tester
@@ -293,6 +293,31 @@ MAIL FROM:<some4ne@some.domain>\r\nRCPT TO:<dummy@reject.ex>\r\nBDAT 86\r\nTo: S
 ??? 503-
 ??? 503
 quit
+??? 221
+****
+#
+# Two messages, pipielined, 1st abandoned midway, RSET between
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-CHUNKING
+??? 250 HELP
+MAIL FROM:<some5ne@some.domain>\r\nRCPT TO:<CALLER@test.ex>\r\nBDAT 86\r\nTo: Susan@random.com\r\nFrom: Sa5@random.com\r\nSubject: This is a bodyless test message\r\nRSET
+??? 250 OK
+??? 250 Accepted
+??? 250 86 byte chunk received
+??? 250 Reset OK
+MAIL FROM:<some6ne@some.domain>\r\nRCPT TO:<CALLER@test.ex>\r\nBDAT 86\r\nTo: Susan@random.com\r\nFrom: Sa6@random.com\r\nSubject: This is a bodyless test message\r\nBDAT 6 LAST\r\nZZ\r\n
+??? 250 OK
+??? 250 Accepted
+??? 250 86 byte chunk received
+??? 250- 6 byte chunk, total 93
+??? 250 OK
+QUIT
 ??? 221
 ****
 #

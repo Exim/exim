@@ -967,7 +967,7 @@ Returns:    One of the END_xxx values indicating why it stopped reading
 */
 
 static int
-read_message_bdat_smtp(FILE *fout)
+read_message_bdat_smtp(FILE * fout)
 {
 int linelength = 0, ch;
 enum CH_STATE ch_state = LF_SEEN;
@@ -1073,7 +1073,7 @@ for(;;)
 }
 
 static int
-read_message_bdat_smtp_wire(FILE *fout)
+read_message_bdat_smtp_wire(FILE * fout)
 {
 int ch;
 
@@ -1889,12 +1889,15 @@ for (;;)
   /* If we hit EOF on a SMTP connection, it's an error, since incoming
   SMTP must have a correct "." terminator. */
 
-  if (ch == EOF && smtp_input /* && !smtp_batched_input */)
-    {
-    smtp_reply = handle_lost_connection(US" (header)");
-    smtp_yield = FALSE;
-    goto TIDYUP;                       /* Skip to end of function */
-    }
+  if (smtp_input /* && !smtp_batched_input */)
+    if (ch == EOF)
+      {
+      smtp_reply = handle_lost_connection(US" (header)");
+      smtp_yield = FALSE;
+      goto TIDYUP;                       /* Skip to end of function */
+      }
+    else if (ch == ERR)
+      goto TIDYUP;
 
   /* See if we are at the current header's size limit - there must be at least
   four bytes left. This allows for the new character plus a zero, plus two for
@@ -1934,7 +1937,7 @@ for (;;)
   those from data files use just LF. Treat LF in local SMTP input as a
   terminator too. Treat EOF as a line terminator always. */
 
-  if (ch == EOF) goto EOL;
+  if (ch < 0) goto EOL;
 
   /* FUDGE: There are sites out there that don't send CRs before their LFs, and
   other MTAs accept this. We are therefore forced into this "liberalisation"
@@ -1959,7 +1962,7 @@ for (;;)
   prevent further reading), and break out of the loop, having freed the
   empty header, and set next = NULL to indicate no data line. */
 
-  if (ptr == 0 && ch == '.' && f.dot_ends)
+  if (f.dot_ends && ptr == 0 && ch == '.')
     {
     ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (ch == '\r')
@@ -1967,7 +1970,7 @@ for (;;)
       ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
       if (ch != '\n')
         {
-        receive_ungetc(ch);
+	if (ch >= 0) receive_ungetc(ch);
         ch = '\r';              /* Revert to CR */
         }
       }
@@ -2005,7 +2008,7 @@ for (;;)
     /* Otherwise, put back the character after CR, and turn the bare CR
     into LF SP. */
 
-    ch = (receive_ungetc)(ch);
+    if (ch >= 0) (receive_ungetc)(ch);
     next->text[ptr++] = '\n';
     message_size++;
     ch = ' ';
@@ -2089,7 +2092,7 @@ OVERSIZE:
   whitespace character. If it is, we have a continuation of this header line.
   There is always space for at least one character at this point. */
 
-  if (ch != EOF)
+  if (ch >= 0)
     {
     int nextch = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (nextch == ' ' || nextch == '\t')
@@ -2099,8 +2102,9 @@ OVERSIZE:
 	goto OVERSIZE;
       continue;                      /* Iterate the loop */
       }
-    else if (nextch != EOF) (receive_ungetc)(nextch);   /* For next time */
-    else ch = EOF;                   /* Cause main loop to exit at end */
+    else if (nextch >= 0)	/* not EOF, ERR etc */
+      (receive_ungetc)(nextch);   /* For next time */
+    else ch = nextch;                   /* Cause main loop to exit at end */
     }
 
   /* We have got to the real line end. Terminate the string and release store
@@ -2202,7 +2206,7 @@ OVERSIZE:
 
   else
     {
-    uschar *p = next->text;
+    uschar * p = next->text;
 
     /* If not a valid header line, break from the header reading loop, leaving
     next != NULL, indicating that it holds the first line of the body. */
@@ -2300,9 +2304,15 @@ OVERSIZE:
     }
 
   /* The line has been handled. If we have hit EOF, break out of the loop,
-  indicating no pending data line. */
+  indicating no pending data line and no more data for the message */
 
-  if (ch == EOF) { next = NULL; break; }
+  if (ch < 0)
+    {
+    next = NULL;
+    if (ch == EOF)	message_ended = END_DOT;
+    else if (ch == ERR) message_ended = END_PROTOCOL;
+    break;
+    }
 
   /* Set up for the next header */
 
@@ -2332,14 +2342,21 @@ DEBUG(D_receive)
 /* End of file on any SMTP connection is an error. If an incoming SMTP call
 is dropped immediately after valid headers, the next thing we will see is EOF.
 We must test for this specially, as further down the reading of the data is
-skipped if already at EOF. */
+skipped if already at EOF.
+In CHUNKING mode, a protocol error makes us give up on the message. */
 
-if (smtp_input && (receive_feof)())
-  {
-  smtp_reply = handle_lost_connection(US" (after header)");
-  smtp_yield = FALSE;
-  goto TIDYUP;                       /* Skip to end of function */
-  }
+if (smtp_input)
+  if ((receive_feof)())
+    {
+    smtp_reply = handle_lost_connection(US" (after header)");
+    smtp_yield = FALSE;
+    goto TIDYUP;			/* Skip to end of function */
+    }
+  else if (message_ended == END_PROTOCOL)
+    {
+    smtp_reply = US"";			/* no reply needed */
+    goto TIDYUP;
+    }
 
 /* If this is a filter test run and no headers were read, output a warning
 in case there is a mistake in the test message. */
@@ -4239,7 +4256,8 @@ if (  smtp_input && sender_host_address && !f.sender_host_notsocket
   if (poll_one_fd(fileno(smtp_in), POLLIN, 0) != 0)
     {
     int c = (receive_getc)(GETC_BUFFER_UNLIMITED);
-    if (c != EOF) (receive_ungetc)(c); else
+    if (c != EOF) (receive_ungetc)(c);
+    else
       {
       smtp_notquit_exit(US"connection-lost", NULL, NULL);
       smtp_reply = US"";    /* No attempt to send a response */
