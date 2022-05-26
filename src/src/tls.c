@@ -800,6 +800,7 @@ static void
 tls_client_resmption_key(tls_support * tlsp, smtp_connect_args * conn_args,
   smtp_transport_options_block * ob)
 {
+#ifndef DISABLE_TLS_RESUME
 hctx * h = &tlsp->resume_hctx;
 blob b;
 gstring * g;
@@ -807,30 +808,31 @@ gstring * g;
 DEBUG(D_tls) if (conn_args->host_lbserver)
   debug_printf("TLS: lbserver '%s'\n", conn_args->host_lbserver);
 
-#ifdef EXIM_HAVE_SHA2
+# ifdef EXIM_HAVE_SHA2
 exim_sha_init(h, HASH_SHA2_256);
-#else
+# else
 exim_sha_init(h, HASH_SHA1);
-#endif
+# endif
 exim_sha_update_string(h, conn_args->host_lbserver);
-#ifdef SUPPORT_DANE
+# ifdef SUPPORT_DANE
 if (conn_args->dane)
   exim_sha_update(h,  CUS &conn_args->tlsa_dnsa, sizeof(dns_answer));
-#endif
+# endif
 exim_sha_update_string(h, conn_args->host->address);
 exim_sha_update(h,   CUS &conn_args->host->port, sizeof(conn_args->host->port));
 exim_sha_update_string(h, conn_args->sending_ip_address);
 exim_sha_update_string(h, openssl_options);
 exim_sha_update_string(h, ob->tls_require_ciphers);
 exim_sha_update_string(h, tlsp->sni);
-#ifdef EXIM_HAVE_ALPN
+# ifdef EXIM_HAVE_ALPN
 exim_sha_update_string(h, ob->tls_alpn);
-#endif
+# endif
 exim_sha_finish(h, &b);
 for (g = string_get(b.len*2+1); b.len-- > 0; )
   g = string_fmt_append(g, "%02x", *b.data++);
 tlsp->resume_index = string_from_gstring(g);
 DEBUG(D_tls) debug_printf("TLS: resume session index %s\n", tlsp->resume_index);
+#endif
 }
 
 #endif	/*!DISABLE_TLS*/
