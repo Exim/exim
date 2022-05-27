@@ -370,14 +370,17 @@ while ((name = string_nextinlist(&list, &sep, NULL, 0)))
 *        Extract port from address string        *
 *************************************************/
 
-/* In the spool file, and in the -oMa and -oMi options, a host plus port is
-given as an IP address followed by a dot and a port number. This function
-decodes this.
+/* In the -oMa and -oMi options, a host plus port is given as an IP address
+followed by a dot and a port number. This function decodes this.
 
 An alternative format for the -oMa and -oMi options is [ip address]:port which
-is what Exim 4 uses for output, because it seems to becoming commonly used,
+is what Exim uses for output, because it seems to becoming commonly used,
 whereas the dot form confuses some programs/people. So we recognize that form
 too.
+
+The spool file used to use the first form, but this breaks with a v4mapped ipv6
+hybrid, because the parsing here is not clever.  So for spool we now use the
+second form.
 
 Argument:
   address    points to the string; if there is a port, the '.' in the string

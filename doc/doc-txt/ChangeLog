@@ -148,6 +148,9 @@ JH/32 Fix CHUNKING for a second message on a connection when the first was
 JH/33 Fis ${srs_encode ...} to handle an empty sender address, now returning
       an empty address.  Previously the expansion returned an error.
 
+HS/01 Bug 2855: Handle a v4mapped sender address given us by a frontending
+      proxy.  Previously these were misparsed, leading to paniclog entries.
+
 
 Exim version 4.95
 -----------------

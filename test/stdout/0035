@@ -147,8 +147,8 @@ ddddddddd 0
 -received_time_usec .uuuuuu
 -received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
--host_address 127.0.0.1.9999
--interface_address 127.0.0.1.1225
+-host_address [127.0.0.1]:9999
+-interface_address [127.0.0.1]:1112
 -received_protocol esmtp
 -body_linecount 0
 -max_received_linelength 0
@@ -170,8 +170,8 @@ ddddddddd 0
 -received_time_usec .uuuuuu
 -received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
--host_address 127.0.0.1.9999
--interface_address 127.0.0.1.1225
+-host_address [127.0.0.1]:9999
+-interface_address [127.0.0.1]:1112
 -received_protocol esmtp
 -body_linecount 0
 -max_received_linelength 0
@@ -196,8 +196,8 @@ ddddddddd 0
 -received_time_usec .uuuuuu
 -received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
--host_address 127.0.0.1.9999
--interface_address 127.0.0.1.1225
+-host_address [127.0.0.1]:9999
+-interface_address [127.0.0.1]:1112
 -received_protocol esmtp
 -body_linecount 0
 -max_received_linelength 0
@@ -220,8 +220,8 @@ ddddddddd 0
 -received_time_usec .uuuuuu
 -received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
--host_address 127.0.0.1.9999
--interface_address 127.0.0.1.1225
+-host_address [127.0.0.1]:9999
+-interface_address [127.0.0.1]:1112
 -received_protocol esmtp
 -body_linecount 0
 -max_received_linelength 25
@@ -244,8 +244,8 @@ ddddddddd 0
 -received_time_usec .uuuuuu
 -received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
--host_address 127.0.0.1.9999
--interface_address 127.0.0.1.1225
+-host_address [127.0.0.1]:9999
+-interface_address [127.0.0.1]:1112
 -received_protocol esmtp
 -body_linecount 0
 -max_received_linelength 25
@@ -271,8 +271,8 @@ ddddddddd 0
 -received_time_usec .uuuuuu
 -received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
--host_address 127.0.0.1.9999
--interface_address 127.0.0.1.1225
+-host_address [127.0.0.1]:9999
+-interface_address [127.0.0.1]:1112
 -received_protocol esmtp
 -body_linecount 0
 -max_received_linelength 25
@@ -298,8 +298,8 @@ ddddddddd 0
 -received_time_usec .uuuuuu
 -received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
--host_address 127.0.0.1.9999
--interface_address 127.0.0.1.1225
+-host_address [127.0.0.1]:9999
+-interface_address [127.0.0.1]:1112
 -received_protocol esmtp
 -body_linecount 0
 -max_received_linelength 25

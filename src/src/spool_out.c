@@ -191,7 +191,7 @@ if (sender_helo_name) spool_var_write(fp, US"helo_name", sender_helo_name);
 if (sender_host_address)
   {
   if (is_tainted(sender_host_address)) putc('-', fp);
-  fprintf(fp, "-host_address %s.%d\n", sender_host_address, sender_host_port);
+  fprintf(fp, "-host_address [%s]:%d\n", sender_host_address, sender_host_port);
   if (sender_host_name)
     spool_var_write(fp, US"host_name", sender_host_name);
   }
@@ -205,7 +205,7 @@ if (sender_host_auth_pubname)
 if (interface_address)
   {
   if (is_tainted(interface_address)) putc('-', fp);
-  fprintf(fp, "-interface_address %s.%d\n", interface_address, interface_port);
+  fprintf(fp, "-interface_address [%s]:%d\n", interface_address, interface_port);
   }
 
 if (smtp_active_hostname != primary_hostname)
