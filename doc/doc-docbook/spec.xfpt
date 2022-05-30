@@ -14898,6 +14898,7 @@ listed in more than one group.
 .row &%gnutls_compat_mode%&          "use GnuTLS compatibility mode"
 .row &%gnutls_allow_auto_pkcs11%&    "allow GnuTLS to autoload PKCS11 modules"
 .row &%hosts_require_alpn%&          "mandatory ALPN"
+.row &%hosts_require_helo%&          "mandatory HELO/EHLO"
 .row &%openssl_options%&             "adjust OpenSSL compatibility options"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
 .row &%tls_alpn%&		     "acceptable protocol names"
@@ -16399,6 +16400,12 @@ See also the &%tls_alpn%& option.
 
 &*Note*&: prevention of fallback to in-clear connection is not
 managed by this option, and should be done separately.
+
+
+.option hosts_require_helo main "host list&!!" *
+.cindex "HELO/EHLO" requiring
+Exim will require an accepted HELO or EHLO command from a host matching
+this list, before accepting a MAIL command.
 
 
 .option hosts_proxy main "host list&!!" unset
@@ -25795,11 +25802,6 @@ and that a DANE-verified TLS connection is made.
 There will be no fallback to in-clear communication.
 See the &%dnssec_request_domains%& router and transport options.
 See section &<<SECDANE>>&.
-
-.option hosts_require_helo smtp "host list&!!" *
-.cindex "HELO/EHLO" requiring
-Exim will require an accepted HELO or EHLO command from a host matching
-this list, before accepting a MAIL command.
 
 .option hosts_require_ocsp smtp "host list&!!" unset
 .cindex "TLS" "requiring for certain servers"
