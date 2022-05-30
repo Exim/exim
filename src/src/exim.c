@@ -265,8 +265,8 @@ exit(1);
 ***********************************************/
 
 #define STACKDUMP_MAX 24
-void
-stackdump(ucontext_t * ucontext)
+static void
+stackdump(void)
 {
 #ifndef NO_EXECINFO
 void * buf[STACKDUMP_MAX];
@@ -309,7 +309,7 @@ else
   log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (maybe attempt to write to immutable memory)");
 if (process_info_len > 0)
   log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (%.*s)", process_info_len, process_info);
-stackdump(uctx);
+stackdump();
 signal(SIGSEGV, SIG_DFL);
 kill(getpid(), sig);
 }

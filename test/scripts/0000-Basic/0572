@@ -32,7 +32,3 @@ perl -e 'print "\n";'
 #
 exim -n -bP config
 ****
-perl -e 'print "\n";'
-****
-#
-exim -bP
