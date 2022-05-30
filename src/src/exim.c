@@ -20,7 +20,9 @@ Also a few functions that don't naturally fit elsewhere. */
 #ifndef _TIME_H
 # include <time.h>
 #endif
-#include <execinfo.h>	/*XXX maybe glibc-only? */
+#ifndef NO_EXECINFO
+# include <execinfo.h>
+#endif
 
 #ifdef USE_GNUTLS
 # include <gnutls/gnutls.h>
@@ -266,6 +268,7 @@ exit(1);
 void
 stackdump(ucontext_t * ucontext)
 {
+#ifndef NO_EXECINFO
 void * buf[STACKDUMP_MAX];
 char ** ss;
 int nptrs = backtrace(buf, STACKDUMP_MAX);
@@ -281,6 +284,7 @@ if ((ss = backtrace_symbols(buf, nptrs)))
 else
   log_write(0, LOG_MAIN|LOG_PANIC, "backtrace_symbols: %s\n", strerror(errno));
 log_write(0, LOG_MAIN|LOG_PANIC, "---\n");
+#endif
 }
 #undef STACKDUMP_MAX
 

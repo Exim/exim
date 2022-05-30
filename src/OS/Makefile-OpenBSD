@@ -23,6 +23,7 @@ EXIWHAT_EGREP_ARG='/exim( |$$)'
 EXIWHAT_KILL_SIGNAL=-USR1
 
 HAVE_IPV6=YES
+CFLAGS += -DNO_EXECINFO
 
 # OpenBSD ships with a too-old Berkeley DB.  NDBM is the default if we don't specify one.
 #USE_DB=yes
