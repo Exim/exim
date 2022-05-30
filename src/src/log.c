@@ -1278,7 +1278,10 @@ if (flags & LOG_PANIC)
   /* Give up if the DIE flag is set */
 
   if ((flags & LOG_PANIC_DIE) != LOG_PANIC)
-    die(NULL, US"Unexpected failure, please try later");
+    if (panic_coredump)
+      kill(getpid(), SIGSEGV);	/* deliberate trap */
+    else
+      die(NULL, US"Unexpected failure, please try later");
   }
 }
 

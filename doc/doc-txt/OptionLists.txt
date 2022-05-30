@@ -420,6 +420,7 @@ optional                             boolean         false         iplookup     
 oracle_servers                       string          unset         main              4.00
 owners                               string list     unset         redirect          4.00
 owngroups                            string list     unset         redirect          4.00
+panic_coredump			     boolean	     false	   main		     4.96
 pass_on_timeout                      boolean         false         routers           4.00
 pass_router                          string          unset         routers           4.00
 path                                 string          "/usr/bin"    pipe

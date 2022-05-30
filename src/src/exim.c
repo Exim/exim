@@ -17,15 +17,16 @@ Also a few functions that don't naturally fit elsewhere. */
 # include <gnu/libc-version.h>
 #endif
 
+#ifndef _TIME_H
+# include <time.h>
+#endif
+#include <execinfo.h>	/*XXX maybe glibc-only? */
+
 #ifdef USE_GNUTLS
 # include <gnutls/gnutls.h>
 # if GNUTLS_VERSION_NUMBER < 0x030103 && !defined(DISABLE_OCSP)
 #  define DISABLE_OCSP
 # endif
-#endif
-
-#ifndef _TIME_H
-# include <time.h>
 #endif
 
 extern void init_lookup_list(void);
@@ -261,6 +262,29 @@ exit(1);
 *            Handler for SIGSEGV               *
 ***********************************************/
 
+#define STACKDUMP_MAX 24
+void
+stackdump(ucontext_t * ucontext)
+{
+void * buf[STACKDUMP_MAX];
+char ** ss;
+int nptrs = backtrace(buf, STACKDUMP_MAX);
+
+log_write(0, LOG_MAIN|LOG_PANIC, "backtrace\n");
+log_write(0, LOG_MAIN|LOG_PANIC, "---\n");
+if ((ss = backtrace_symbols(buf, nptrs)))
+  {
+  for (int i = 0; i < nptrs; i++)
+    log_write(0, LOG_MAIN|LOG_PANIC, "\t%s\n", ss[i]);
+  free(ss);
+  }
+else
+  log_write(0, LOG_MAIN|LOG_PANIC, "backtrace_symbols: %s\n", strerror(errno));
+log_write(0, LOG_MAIN|LOG_PANIC, "---\n");
+}
+#undef STACKDUMP_MAX
+
+
 static void
 #ifdef SA_SIGINFO
 segv_handler(int sig, siginfo_t * info, void * uctx)
@@ -281,6 +305,7 @@ else
   log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (maybe attempt to write to immutable memory)");
 if (process_info_len > 0)
   log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (%.*s)", process_info_len, process_info);
+stackdump(uctx);
 signal(SIGSEGV, SIG_DFL);
 kill(getpid(), sig);
 }
@@ -291,6 +316,7 @@ segv_handler(int sig)
 log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (maybe attempt to write to immutable memory)");
 if (process_info_len > 0)
   log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (%.*s)", process_info_len, process_info);
+stackdump();
 signal(SIGSEGV, SIG_DFL);
 kill(getpid(), sig);
 }

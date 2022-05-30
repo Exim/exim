@@ -1207,6 +1207,7 @@ uid_t   originator_uid;
 uschar *override_local_interfaces = NULL;
 uschar *override_pid_file_path = NULL;
 
+BOOL    panic_coredump	       = FALSE;
 pcre2_general_context * pcre_gen_ctx = NULL;
 pcre2_compile_context * pcre_cmp_ctx = NULL;
 pcre2_match_context * pcre_mtc_ctx = NULL;

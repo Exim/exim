@@ -131,6 +131,7 @@ no_message_logs
 message_size_limit = 500K
 mua_wrapper
 never_users = root:0
+panic_coredump
 percent_hack_domains =
 pipelining_advertise_hosts = *.b.c
 pid_file_path = /some/thing

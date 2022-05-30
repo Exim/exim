@@ -792,6 +792,7 @@ extern uid_t   originator_uid;         /* Uid of ditto */
 extern uschar *override_local_interfaces; /* Value of -oX argument */
 extern uschar *override_pid_file_path; /* Value of -oP argument */
 
+extern BOOL    panic_coredump;	       /* SEGV rather than exit, on LOG_PANIC_DIE */
 extern pcre2_general_context * pcre_gen_ctx;	/* pcre memory management */
 extern pcre2_compile_context * pcre_cmp_ctx;
 extern pcre2_match_context *   pcre_mtc_ctx;
