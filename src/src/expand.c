@@ -6943,68 +6943,73 @@ while (*s)
         case 3: goto EXPAND_FAILED;
         }
 
-      g = string_catn(g, US"SRS0=", 5);
-
-      /* ${l_4:${hmac{md5}{SRS_SECRET}{${lc:$return_path}}}}= */
-      hmac_md5(sub[0], string_copylc(sub[1]), cksum, sizeof(cksum));
-      g = string_catn(g, cksum, sizeof(cksum));
-      g = string_catn(g, US"=", 1);
-
-      /* ${base32:${eval:$tod_epoch/86400&0x3ff}}= */
+      if (sub[1] && *(sub[1]))
 	{
-	struct timeval now;
-	unsigned long i;
-	gstring * h = NULL;
+	g = string_catn(g, US"SRS0=", 5);
 
-	gettimeofday(&now, NULL);
-	for (unsigned long i = (now.tv_sec / 86400) & 0x3ff; i; i >>= 5)
-	  h = string_catn(h, &base32_chars[i & 0x1f], 1);
-	if (h) while (h->ptr > 0)
-	  g = string_catn(g, &h->s[--h->ptr], 1);
-	}
-      g = string_catn(g, US"=", 1);
-
-      /* ${domain:$return_path}=${local_part:$return_path} */
-	{
-        int start, end, domain;
-        uschar * t = parse_extract_address(sub[1], &expand_string_message,
-					  &start, &end, &domain, FALSE);
-	uschar * s;
-
-        if (!t)
-	  goto EXPAND_FAILED;
-
-	if (domain > 0) g = string_cat(g, t + domain);
+	/* ${l_4:${hmac{md5}{SRS_SECRET}{${lc:$return_path}}}}= */
+	hmac_md5(sub[0], string_copylc(sub[1]), cksum, sizeof(cksum));
+	g = string_catn(g, cksum, sizeof(cksum));
 	g = string_catn(g, US"=", 1);
 
-	s = domain > 0 ? string_copyn(t, domain - 1) : t;
-	if ((quoted = Ustrchr(s, '"') != NULL))
+	/* ${base32:${eval:$tod_epoch/86400&0x3ff}}= */
 	  {
+	  struct timeval now;
+	  unsigned long i;
 	  gstring * h = NULL;
-	  DEBUG(D_expand) debug_printf_indent("auto-quoting local part\n");
-	  while (*s)		/* de-quote */
-	    {
-	    while (*s && *s != '"') h = string_catn(h, s++, 1);
-	    if (*s) s++;
-	    while (*s && *s != '"') h = string_catn(h, s++, 1);
-	    if (*s) s++;
-	    }
-	  gstring_release_unused(h);
-	  s = string_from_gstring(h);
+
+	  gettimeofday(&now, NULL);
+	  for (unsigned long i = (now.tv_sec / 86400) & 0x3ff; i; i >>= 5)
+	    h = string_catn(h, &base32_chars[i & 0x1f], 1);
+	  if (h) while (h->ptr > 0)
+	    g = string_catn(g, &h->s[--h->ptr], 1);
 	  }
-	g = string_cat(g, s);
-        }
+	g = string_catn(g, US"=", 1);
 
-      /* Assume that if the original local_part had quotes
-      it was for good reason */
+	/* ${domain:$return_path}=${local_part:$return_path} */
+	  {
+	  int start, end, domain;
+	  uschar * t = parse_extract_address(sub[1], &expand_string_message,
+					    &start, &end, &domain, FALSE);
+	  uschar * s;
 
-      if (quoted) yield = string_catn(yield, US"\"", 1);
-      yield = string_catn(yield, g->s, g->ptr);
-      if (quoted) yield = string_catn(yield, US"\"", 1);
+	  if (!t)
+	    goto EXPAND_FAILED;
 
-      /* @$original_domain */
-      yield = string_catn(yield, US"@", 1);
-      yield = string_cat(yield, sub[2]);
+	  if (domain > 0) g = string_cat(g, t + domain);
+	  g = string_catn(g, US"=", 1);
+
+	  s = domain > 0 ? string_copyn(t, domain - 1) : t;
+	  if ((quoted = Ustrchr(s, '"') != NULL))
+	    {
+	    gstring * h = NULL;
+	    DEBUG(D_expand) debug_printf_indent("auto-quoting local part\n");
+	    while (*s)		/* de-quote */
+	      {
+	      while (*s && *s != '"') h = string_catn(h, s++, 1);
+	      if (*s) s++;
+	      while (*s && *s != '"') h = string_catn(h, s++, 1);
+	      if (*s) s++;
+	      }
+	    gstring_release_unused(h);
+	    s = string_from_gstring(h);
+	    }
+	  g = string_cat(g, s);
+	  }
+
+	/* Assume that if the original local_part had quotes
+	it was for good reason */
+
+	if (quoted) yield = string_catn(yield, US"\"", 1);
+	yield = string_catn(yield, g->s, g->ptr);
+	if (quoted) yield = string_catn(yield, US"\"", 1);
+
+	/* @$original_domain */
+	yield = string_catn(yield, US"@", 1);
+	yield = string_cat(yield, sub[2]);
+	}
+      else
+	DEBUG(D_expand) debug_printf_indent("null return_path for srs-encode\n");
 
       if (skipping) continue;
       break;

@@ -42171,6 +42171,9 @@ There is no need to periodically change this key; a timestamp is also
 encoded.
 The second argument should be given as the envelope sender address before this
 encoding operation.
+.new
+If this value is empty the the expansion result will be empty.
+.wen
 The third argument should be the recipient domain of the message when
 it arrived at this system.
 .endlist

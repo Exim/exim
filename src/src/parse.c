@@ -658,7 +658,7 @@ followed by a route-addr (more words must follow). */
 
 if (*s != '@' && *s != '<')
   {
-  if (*s == 0 || *s == ';')
+  if (!*s || *s == ';')
     {
     if (!*t) FAILED(US"empty address");
     endptr = last_comment_position;

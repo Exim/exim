@@ -40,4 +40,9 @@ exim -DCONTROL=remote -q
 exim -q
 ****
 #
+# Sender which is empty (already a bounce)
+exim -be
+>${srs_encode {mysecret} {} {test.ex}}<
+****
+#
 killdaemon
