@@ -764,6 +764,28 @@ return TRUE;
 }
 
 
+/* Grab a string differentiating server behind a loadbalancer, for TLS
+resumption when such servers do not share a session-cache */
+
+static void
+ehlo_response_lbserver(smtp_context * sx, smtp_transport_options_block * ob)
+{
+#if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
+const uschar * s;
+uschar * save_item = iterate_item;
+
+if (sx->conn_args.have_lbserver)
+  return;
+iterate_item = sx->buffer;
+s = expand_cstring(ob->host_name_extract);
+iterate_item = save_item;
+sx->conn_args.host_lbserver = s && !*s ? NULL : s;
+sx->conn_args.have_lbserver = TRUE;
+#endif
+}
+
+
+
 /******************************************************************************/
 
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
@@ -833,10 +855,12 @@ ehlo_limits_apply(sx, sx->peer_limit_mail, sx->peer_limit_rcpt,
 static void
 ehlo_cache_limits_apply(smtp_context * sx)
 {
+# ifndef DISABLE_PIPE_CONNECT
 ehlo_limits_apply(sx, sx->ehlo_resp.limit_mail, sx->ehlo_resp.limit_rcpt,
   sx->ehlo_resp.limit_rcptdom);
+# endif
 }
-#endif
+#endif	/*EXPERIMENTAL_ESMTP_LIMITS*/
 
 /******************************************************************************/
 
@@ -867,11 +891,11 @@ write_ehlo_cache_entry(smtp_context * sx)
 {
 open_db dbblock, * dbm_file;
 
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifdef EXPERIMENTAL_ESMTP_LIMITS
 sx->ehlo_resp.limit_mail = sx->peer_limit_mail;
 sx->ehlo_resp.limit_rcpt = sx->peer_limit_rcpt;
 sx->ehlo_resp.limit_rcptdom = sx->peer_limit_rcptdom;
-#endif
+# endif
 
 if ((dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
   {
@@ -879,7 +903,7 @@ if ((dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
   dbdata_ehlo_resp er = { .data = sx->ehlo_resp };
 
   HDEBUG(D_transport)
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifdef EXPERIMENTAL_ESMTP_LIMITS
     if (sx->ehlo_resp.limit_mail || sx->ehlo_resp.limit_rcpt || sx->ehlo_resp.limit_rcptdom)
       debug_printf("writing clr %04x/%04x cry %04x/%04x lim %05d/%05d/%05d\n",
 	sx->ehlo_resp.cleartext_features, sx->ehlo_resp.cleartext_auths,
@@ -887,7 +911,7 @@ if ((dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
 	sx->ehlo_resp.limit_mail, sx->ehlo_resp.limit_rcpt,
 	sx->ehlo_resp.limit_rcptdom);
     else
-#endif
+# endif
       debug_printf("writing clr %04x/%04x cry %04x/%04x\n",
 	sx->ehlo_resp.cleartext_features, sx->ehlo_resp.cleartext_auths,
 	sx->ehlo_resp.crypted_features, sx->ehlo_resp.crypted_auths);
@@ -936,7 +960,7 @@ else
   else
     {
     DEBUG(D_transport)
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifdef EXPERIMENTAL_ESMTP_LIMITS
       if (er->data.limit_mail || er->data.limit_rcpt || er->data.limit_rcptdom)
 	debug_printf("EHLO response bits from cache:"
 	  " cleartext 0x%04x/0x%04x crypted 0x%04x/0x%04x lim %05d/%05d/%05d\n",
@@ -944,16 +968,16 @@ else
 	  er->data.crypted_features, er->data.crypted_auths,
 	  er->data.limit_mail, er->data.limit_rcpt, er->data.limit_rcptdom);
       else
-#endif
+# endif
 	debug_printf("EHLO response bits from cache:"
 	  " cleartext 0x%04x/0x%04x crypted 0x%04x/0x%04x\n",
 	  er->data.cleartext_features, er->data.cleartext_auths,
 	  er->data.crypted_features, er->data.crypted_auths);
 
     sx->ehlo_resp = er->data;
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifdef EXPERIMENTAL_ESMTP_LIMITS
     ehlo_cache_limits_apply(sx);
-#endif
+# endif
     dbfn_close(dbm_file);
     return TRUE;
     }
@@ -1001,28 +1025,6 @@ else
 return authbits;
 }
 
-
-
-
-/* Grab a string differentiating server behind a loadbalancer, for TLS
-resumption when such servers do not share a session-cache */
-
-static void
-ehlo_response_lbserver(smtp_context * sx, smtp_transport_options_block * ob)
-{
-#if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
-const uschar * s;
-uschar * save_item = iterate_item;
-
-if (sx->conn_args.have_lbserver)
-  return;
-iterate_item = sx->buffer;
-s = expand_cstring(ob->host_name_extract);
-iterate_item = save_item;
-sx->conn_args.host_lbserver = s && !*s ? NULL : s;
-sx->conn_args.have_lbserver = TRUE;
-#endif
-}
 
 
 
@@ -1092,10 +1094,10 @@ if (pending_EHLO)
 	| OPTION_CHUNKING | OPTION_PRDR | OPTION_DSN | OPTION_PIPE | OPTION_SIZE
 	| OPTION_UTF8 | OPTION_EARLY_PIPE
 	);
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifdef EXPERIMENTAL_ESMTP_LIMITS
   if (tls_out.active.sock >= 0 || !(peer_offered & OPTION_TLS))
     ehlo_response_limits_read(sx);
-#endif
+# endif
   if (  peer_offered != sx->peer_offered
      || (authbits = study_ehlo_auths(sx)) != *ap)
     {
@@ -1116,7 +1118,7 @@ if (pending_EHLO)
 
     return OK;		/* just carry on */
     }
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifdef EXPERIMENTAL_ESMTP_LIMITS
     /* If we are handling LIMITS, compare the actual EHLO LIMITS values with the
     cached values and invalidate cache if different.  OK to carry on with
     connect since values are advisory. */
@@ -1140,7 +1142,7 @@ if (pending_EHLO)
       invalidate_ehlo_cache_entry(sx);
       }
     }
-#endif
+# endif
   }
 return OK;
 
