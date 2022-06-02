@@ -180,42 +180,6 @@ va_end(ap);
 
 
 /*************************************************
-*        Extract port from address string        *
-*************************************************/
-
-/* In the spool file, a host plus port is given as an IP address followed by a
-dot and a port number. This function decodes this. It is needed by the
-spool-reading function, and copied here to avoid having to include the whole
-host.c module. One day the interaction between exim and eximon with regard to
-included code MUST be tidied up!
-
-Argument:
-  address    points to the string; if there is a port, the '.' in the string
-             is overwritten with zero to terminate the address
-
-Returns:     0 if there is no port, else the port number.
-*/
-
-int
-host_address_extract_port(uschar *address)
-{
-int skip = -3;                     /* Skip 3 dots in IPv4 addresses */
-address--;
-while (*(++address) != 0)
-  {
-  int ch = *address;
-  if (ch == ':') skip = 0;         /* Skip 0 dots in IPv6 addresses */
-    else if (ch == '.' && skip++ >= 0) break;
-  }
-if (*address == 0) return 0;
-*address++ = 0;
-return Uatoi(address);
-}
-
-
-
-
-/*************************************************
 *                SIGCHLD handler                 *
 *************************************************/
 
