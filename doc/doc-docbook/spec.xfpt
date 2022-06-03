@@ -16387,7 +16387,10 @@ local processes, you must create a host list with an empty item. For example:
 .code
 hosts_connection_nolog = :
 .endd
-If the &%smtp_connection%& log selector is not set, this option has no effect.
+.new
+The hosts affected by this option also do not log "no MAIL in SMTP connection"
+lines, as may commonly be produced by a monitoring system.
+.wen
 
 
 .option hosts_require_alpn main "host list&!!" unset

@@ -5429,7 +5429,10 @@ if (host_checking)
 
   memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (verify_check_host(&hosts_connection_nolog) == OK)
+    {
     BIT_CLEAR(log_selector, log_selector_size, Li_smtp_connection);
+    BIT_CLEAR(log_selector, log_selector_size, Li_smtp_no_mail);
+    }
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
 
   /* NOTE: We do *not* call smtp_log_no_mail() if smtp_start_session() fails,
@@ -5618,7 +5621,10 @@ if (smtp_input)
   smtp_out = stdout;
   memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (verify_check_host(&hosts_connection_nolog) == OK)
+    {
     BIT_CLEAR(log_selector, log_selector_size, Li_smtp_connection);
+    BIT_CLEAR(log_selector, log_selector_size, Li_smtp_no_mail);
+    }
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
   if (!smtp_start_session())
     {
