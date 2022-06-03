@@ -6942,6 +6942,7 @@ while (*s)
         case 2:
         case 3: goto EXPAND_FAILED;
         }
+      if (skipping) continue;
 
       if (sub[1] && *(sub[1]))
 	{
@@ -7011,7 +7012,6 @@ while (*s)
       else
 	DEBUG(D_expand) debug_printf_indent("null return_path for srs-encode\n");
 
-      if (skipping) continue;
       break;
       }
 #endif /*SUPPORT_SRS*/
