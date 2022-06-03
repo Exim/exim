@@ -7047,6 +7047,7 @@ while (*s)
         case 2:
         case 3: goto EXPAND_FAILED;
         }
+      if (flags & ESI_SKIPPING) continue;
 
       if (sub[1] && *(sub[1]))
 	{
