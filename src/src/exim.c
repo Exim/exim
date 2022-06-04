@@ -4065,7 +4065,7 @@ defined) */
   {
   int old_pool = store_pool;
 #ifdef MEASURE_TIMING
-  struct timeval t0, diff;
+  struct timeval t0;
   (void)gettimeofday(&t0, NULL);
 #endif
 
@@ -4697,7 +4697,7 @@ needed in transports so we lost the optimisation. */
   {
   int old_pool = store_pool;
 #ifdef MEASURE_TIMING
-  struct timeval t0, diff;
+  struct timeval t0;
   (void)gettimeofday(&t0, NULL);
 #endif
 
@@ -5091,7 +5091,7 @@ if (f.daemon_listen || f.inetd_wait_mode || queue_interval > 0)
   routines in it, so call even if tls_require_ciphers is unset */
     {
 # ifdef MEASURE_TIMING
-    struct timeval t0, diff;
+    struct timeval t0;
     (void)gettimeofday(&t0, NULL);
 # endif
     if (!tls_dropprivs_validate_require_cipher(FALSE))
