@@ -77,6 +77,16 @@
 . --- table with four columns. For cases when the option name is given with
 . --- a space, so that it can be split, a fifth argument is used for the
 . --- index entry.
+. --- Also one for multiple option def headings be grouped in a single
+. --- table (but without the split capability).
+
+.macro otable
+.itable all 0 0 4 8* left 6* center 6* center 6* right
+.endmacro
+
+.macro orow
+.row "&%$1%&" "Use: &'$2'&" "Type: &'$3'&" "Default: &'$4'&"
+.endmacro
 
 .macro option
 .arg 5
@@ -85,8 +95,19 @@
 .arg -5
 .oindex "&%$1%&"
 .endarg
-.itable all 0 0 4 8* left 6* center 6* center 6* right
-.row "&%$1%&" "Use: &'$2'&" "Type: &'$3'&" "Default: &'$4'&"
+.otable
+.orow "$1" "$2" "$3" "$4"
+.endtable
+.endmacro
+
+.macro options
+.eacharg
+.oindex "&%$+1%&"
+.endeach 4
+.otable
+.eacharg
+.orow "$+1" "$+2" "$+3" "$+4"
+.endeach 4
 .endtable
 .endmacro
 
@@ -15455,11 +15476,8 @@ $primary_hostname-$tod_epoch-testing
 See section &<<CALLaddparcall>>& for details of how this value is used.
 
 
-.option check_log_inodes main integer 100
-See &%check_spool_space%& below.
-
-
-.option check_log_space main integer 10M
+.options check_log_inodes main integer 100 &&&
+	 check_log_space main integer 10M
 See &%check_spool_space%& below.
 
 .oindex "&%check_rfc2047_length%&"
@@ -15474,11 +15492,8 @@ of the RFC, generates overlong encoded words. If &%check_rfc2047_length%& is
 set false, Exim recognizes encoded words of any length.
 
 
-.option check_spool_inodes main integer 100
-See &%check_spool_space%& below.
-
-
-.option check_spool_space main integer 10M
+.options check_spool_inodes main integer 100 &&&
+	 check_spool_space main integer 10M
 .cindex "checking disk space"
 .cindex "disk space, checking"
 .cindex "spool directory" "checking space"
@@ -15557,16 +15572,14 @@ This option specifies one or more default SMTP ports on which the Exim daemon
 listens. See chapter &<<CHAPinterfaces>>& for details of how it is used. For
 backward compatibility, &%daemon_smtp_port%& (singular) is a synonym.
 
-.option daemon_startup_retries main integer 9
+.options daemon_startup_retries main integer 9 &&&
+	 daemon_startup_sleep main time 30s
 .cindex "daemon startup, retrying"
-This option, along with &%daemon_startup_sleep%&, controls the retrying done by
+These options control the retrying done by
 the daemon at startup when it cannot immediately bind a listening socket
 (typically because the socket is already in use): &%daemon_startup_retries%&
 defines the number of retries after the first failure, and
 &%daemon_startup_sleep%& defines the length of time to wait between retries.
-
-.option daemon_startup_sleep main time 30s
-See &%daemon_startup_retries%&.
 
 .option delay_warning main "time list" 24h
 .cindex "warning of delay"
@@ -16091,7 +16104,8 @@ log. If you configure freezing in a filter or ACL, you must arrange for any
 logging that you require.
 
 
-.option gecos_name main string&!! unset
+.options gecos_name main string&!! unset &&&
+	 gecos_pattern main string unset
 .cindex "HP-UX"
 .cindex "&""gecos""& field, parsing"
 Some operating systems, notably HP-UX, use the &"gecos"& field in the system
@@ -16115,9 +16129,6 @@ name terminates at the first comma, the following can be used:
 gecos_pattern = ([^,]*)
 gecos_name = $1
 .endd
-
-.option gecos_pattern main string unset
-See &%gecos_name%& above.
 
 
 .option gnutls_compat_mode main boolean unset
@@ -16422,7 +16433,8 @@ dealing with other kinds of frozen message, see &%auto_thaw%& and
 &%timeout_frozen_after%&.
 
 
-.option ignore_fromline_hosts main "host list&!!" unset
+.options ignore_fromline_hosts main "host list&!!" unset &&&
+	 ignore_fromline_local main boolean false
 .cindex "&""From""& line"
 .cindex "UUCP" "&""From""& line"
 Some broken SMTP clients insist on sending a UUCP-like &"From&~"& line before
@@ -16434,8 +16446,6 @@ process rather than a remote host, and is using &%-bs%& to inject the messages,
 &%ignore_fromline_local%& must be set to achieve this effect.
 
 
-.option ignore_fromline_local main boolean false
-See &%ignore_fromline_hosts%& above.
 
 .option keep_environment main "string list" unset
 .cindex "environment" "values from"
@@ -16590,7 +16600,8 @@ has more details about &'Sender:'& processing.
 
 
 
-.option local_from_prefix main string unset
+.options local_from_prefix main string unset &&&
+	 local_from_suffix main string unset
 When Exim checks the &'From:'& header line of locally submitted messages for
 matching the login id (see &%local_from_check%& above), it can be configured to
 ignore certain prefixes and suffixes in the local part of the address. This is
@@ -16608,10 +16619,6 @@ From: anything-user@your.domain.example
 will not cause a &'Sender:'& header to be added if &'user@your.domain.example'&
 matches the actual sender address that is constructed from the login name and
 qualify domain.
-
-
-.option local_from_suffix main string unset
-See &%local_from_prefix%& above.
 
 
 .option local_interfaces main "string list" "see below"
@@ -17053,16 +17060,11 @@ a good idea to reject recipient addresses with percent characters in their
 local parts. Exim's default configuration does this.
 
 
-.option perl_at_start main boolean false
+.options perl_at_start main boolean false &&&
+	 perl_startup main string unset
 .cindex "Perl"
-This option is available only when Exim is built with an embedded Perl
-interpreter. See chapter &<<CHAPperl>>& for details of its use.
-
-
-.option perl_startup main string unset
-.cindex "Perl"
-This option is available only when Exim is built with an embedded Perl
-interpreter. See chapter &<<CHAPperl>>& for details of its use.
+These options are available only when Exim is built with an embedded Perl
+interpreter. See chapter &<<CHAPperl>>& for details of their use.
 
 .option perl_taintmode main boolean false
 .cindex "Perl"
@@ -17274,7 +17276,7 @@ and &%-odi%& command line options override &%queue_only%& unless
 &%queue_only_load%&, and &%smtp_accept_queue%&.
 
 
-.option queue_only_file main string unset
+.option queue_only_file main "string list" unset
 .cindex "queueing incoming messages"
 .cindex "message" "queueing by file existence"
 This option can be set to a colon-separated list of absolute path names, each
@@ -17957,7 +17959,9 @@ non-SMTP command lines are sent first.
 
 
 
-.option smtp_ratelimit_hosts main "host list&!!" unset
+.options smtp_ratelimit_hosts main "host list&!!" unset &&&
+	 smtp_ratelimit_mail main string unset &&&
+	 smtp_ratelimit_rcpt main string unset
 .cindex "SMTP" "rate limiting"
 .cindex "limit" "rate of message arrival"
 .cindex "RCPT" "rate limiting"
@@ -17999,13 +18003,6 @@ two have been received over a single connection. The initial delay is 0.5
 seconds, increasing by a factor of 1.05 each time. The second setting applies
 delays to RCPT commands when more than four occur in a single message.
 
-
-.option smtp_ratelimit_mail main string unset
-See &%smtp_ratelimit_hosts%& above.
-
-
-.option smtp_ratelimit_rcpt main string unset
-See &%smtp_ratelimit_hosts%& above.
 
 
 .option smtp_receive_timeout main time&!! 5m
@@ -18407,7 +18404,7 @@ is not required the &%tls_advertise_hosts%& option should be set empty.
 .cindex ALPN "set acceptable names for server"
 If this option is set,
 the TLS library supports ALPN,
-and the client offers either more than
+and the client offers either more than one
 ALPN name or a name which does not match the list,
 the TLS connection is declined.
 
