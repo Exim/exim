@@ -8,6 +8,10 @@ SINCE Exim version 4.96
 JH/01 The hosts_connection_nolog main option now also controls "no MAIL in
       SMTP connection" log lines.
 
+JH/02 Option default value updates:
+	- queue_fast_ramp (main)	true (was false)
+	- remote_max_parallel (main)	4 (was 2)
+
 Exim version 4.96
 -----------------
 

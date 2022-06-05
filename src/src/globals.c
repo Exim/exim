@@ -391,7 +391,7 @@ BOOL    proxy_session          = FALSE;
 #endif
 
 #ifndef DISABLE_QUEUE_RAMP
-BOOL    queue_fast_ramp		= FALSE;
+BOOL    queue_fast_ramp		= TRUE;
 #endif
 BOOL    queue_list_requires_admin = TRUE;
 BOOL    queue_only             = FALSE;
@@ -1324,7 +1324,7 @@ const pcre2_code *regex_whitelisted_macro = NULL;
 uschar *regex_match_string     = NULL;
 #endif
 int     remote_delivery_count  = 0;
-int     remote_max_parallel    = 2;
+int     remote_max_parallel    = 4;
 uschar *remote_sort_domains    = NULL;
 int     retry_data_expire      = 7*24*60*60;
 int     retry_interval_max     = 24*60*60;
