@@ -1,0 +1,14 @@
+.include stdflags
+.include stdmacs
+
+.macro pic
+.code
+.include infiles/pic$1.aspic.inc
+.endd
+.figure
+.image infiles/pic$1.eps.inc
+.endfigure
+.endmacro
+
+.chapter "Testing"
+.pic 01

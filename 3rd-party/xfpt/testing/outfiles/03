@@ -1,0 +1,11 @@
+<chapter>
+<title>Testing</title>
+<literallayout class="monospaced">
+box "A"; line; circle "B";
+</literallayout>
+<figure>
+<mediaobject><imageobject>
+<imagedata fileref="infiles/pic01.eps.inc" ></imagedata></imageobject></mediaobject>
+</figure>
+</chapter>
+

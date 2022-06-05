@@ -1,0 +1,30 @@
+THE XFPT PLAIN TEXT TO XML PROCESSOR
+------------------------------------
+
+UNIX AND UNIX-LIKE SYSTEMS
+--------------------------
+
+It should just be a matter of typing
+
+  ./configure
+  make
+  make install
+
+to get youself an installed xfpt command. There is a man page that lists the
+command arguments. However, the main documentation is provided only as a PDF
+file in the doc directory. The xfpt source that was used to create the XML that
+in turn was used to generate the PDF is also included. You can get rid of xfpt
+by "make uninstall".
+
+
+OTHER SYSTEMS
+-------------
+
+xfpt consists almost entirely of Standard C code, and so it should be possible
+to compile it on any system with a Standard C compiler and library.
+
+Philip Hazel
+January 2006
+
+Domain:     cam.ac.uk
+Local part: ph10

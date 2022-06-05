@@ -1,0 +1,21 @@
+. These are the standard flag definitions for xfpt.
+.
+.flag &~         "&nbsp;"
+.flag &&         "&amp;"
+.flag &--        "&ndash;"
+.
+.flag &'    '&   "<emphasis>"                "</emphasis>"
+.flag &*    *&   "<emphasis role=""bold"">"  "</emphasis>"
+.
+.flag &(    )&   "<command>"                 "</command>"
+.flag &_    _&   "<filename>"                "</filename>"
+.flag &[    ]&   "<function>"                "</function>"
+.flag &`    `&   "<literal>"                 "</literal>"
+.flag &%    %&   "<option>"                  "</option>"
+.flag &"    "&   "<quote>"                   "</quote>"
+.flag &$    $&   "<varname>"                 "</varname>"
+.
+.flag &<    >&   "<"                         ">"
+.flag &<<   >>&  "<xref linkend="""          """/>"
+.
+. End

@@ -1,0 +1,9 @@
+.include stdflags
+.include stdmacs
+
+.preface "A first preface"
+This is text in the preface.
+.endpreface
+.pi sdop 'toc_sections="no"'
+.chapter "A first chapter"
+This is text in a chapter

@@ -1,0 +1,40 @@
+<para>
+This input file tries to provoke errors &amp;;.
+Non defined &amp;rhubarb is &rhubarb;
+Try &amp;abcd without semicolon: &abcd and at EOL &abcd
+</para>
+<abcd>
+<para>
+more</para>
+<para>
+Test unterminated things that should give warnings.
+</para>
+<itemizedlist>
+<listitem>
+<orderedlist numeration="arabic">
+<listitem>
+<variablelist>
+<para>
+<footnote>
+<literallayout>
+<literallayout class="monospaced">
+<blockquote>
+<table >
+<tgroup cols="2" colsep="0" rowsep="0">
+<tbody>
+<informaltable frame="none">
+<tgroup cols="2" colsep="0" rowsep="0">
+<tbody>
+<figure>
+</figure>
+</informaltable>
+</table>
+</blockquote>
+</literallayout>
+</literallayout>
+</footnote>
+</variablelist>
+</listitem>
+</orderedlist>
+</listitem>
+</itemizedlist>
