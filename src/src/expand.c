@@ -5894,8 +5894,8 @@ while (*s)
         case 2:
         case 3: goto EXPAND_FAILED;
         }
+      if (skipping) continue;
 
-      /*XXX no handling of skipping? */
       /* Compile the regular expression */
 
       if (!(re = pcre2_compile((PCRE2_SPTR)sub[1], PCRE2_ZERO_TERMINATED,
@@ -5986,7 +5986,6 @@ while (*s)
 
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
-      if (skipping) continue;
       break;
       }
 
