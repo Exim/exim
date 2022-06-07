@@ -120,7 +120,7 @@ sub flavour {
     }
 
     if (open(my $f, '-|', 'openssl version')) {
-	<$f> =~ /1.1.1/ && return "openssl_1_1_1";
+	<$f> =~ /(1\.1\.1|3\.\d+\.\d+)/ && return "openssl_1_1_1";
     }
 
     if (open(my $f, '<', "$etc/os-release")) {

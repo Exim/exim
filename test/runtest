@@ -432,6 +432,8 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # There are differences in error messages between OpenSSL versions
   s/SSL_CTX_set_cipher_list/SSL_connect/;
+  s/error=\Kauthority and subject key identifier mismatch/self signed certificate/;
+  s/error=\Kself-signed certificate/self signed certificate/;
 
   # One error test in expansions mentions base 62 or 36
   s/is not a base (36|62) number/is not a base 36\/62 number/;
@@ -906,9 +908,10 @@ RESET_AFTER_EXTRA_LINE_READ:
   # numbers, or handle specific bad conditions in different ways, leading to
   # different wording in the error messages, so we cannot compare them.
 
-#XXX This loses any trailing "deliving unencypted to" which is unfortunate
+#XXX This loses any trailing "delivering unencypted to" which is unfortunate
 #    but I can't work out how to deal with that.
   s/(TLS session: \(SSL_\w+\): error:)(.*)(?!: delivering)/$1 <<detail omitted>>/;
+  s/TLS error on connection from .*\K\(SSL_accept\): error:.*:unexpected eof while reading$/(tls lib accept fn): TCP connection closed by peer/;
   s/(TLS error on connection from .* \(SSL_\w+\): error:)(.*)/$1 <<detail omitted>>/;
   next if /SSL verify error: depth=0 error=certificate not trusted/;
 
@@ -1008,8 +1011,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /SSL verify error: depth=0 error=certificate not trusted/;
     s/SSL3_READ_BYTES/ssl3_read_bytes/i;
     s/CONNECT_CR_FINISHED/ssl3_read_bytes/i;
-    s/^\d+:error:\d+(?:E\d+)?(:SSL routines:ssl3_read_bytes:[^:]+:).*(:SSL alert number \d\d)$/pppp:error:dddddddd$1\[...\]$2/;
-    s/^error:[^:]*:(SSL routines:ssl3_read_bytes:(tls|ssl)v\d+ alert)/error:dddddddd:$1/;
+    s/^[[:xdigit:]]+:error:[[:xdigit:]]+(?:E[[:xdigit:]]+)?(:SSL routines:ssl3_read_bytes:[^:]+:).*(:SSL alert number \d\d)$/pppp:error:dddddddd$1\[...\]$2/;
+    s/^error:\K[^:]*:(SSL routines:ssl3_read_bytes:(tls|ssl)v\d+ alert)/dddddddd:$1/;
+    s/^error:\K[[:xdigit:]]+:SSL routines::(tlsv13 alert certificate required)$/dddddddd:SSL routines:ssl3_read_bytes:$1/;
+    s/^error:\K[[:xdigit:]]+:SSL routines::((tlsv1|sslv3) alert (unknown ca|certificate revoked))$/dddddddd:SSL routines:ssl3_read_bytes:$1/;
 
     # gnutls version variances
     next if /^Error in the pull function./;
