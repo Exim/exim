@@ -1599,7 +1599,7 @@ switch (c->type)
 
       if (!(re = pcre2_compile((PCRE2_SPTR)exp[1], PCRE2_ZERO_TERMINATED,
 		  PCRE_COPT | (c->type == cond_matches ? PCRE2_CASELESS : 0),
-		  &err, &offset, pcre_cmp_ctx)))
+		  &err, &offset, pcre_gen_cmp_ctx)))
 	{
 	uschar errbuf[128];
 	pcre2_get_error_message(err, errbuf, sizeof(errbuf));

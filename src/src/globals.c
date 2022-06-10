@@ -1209,8 +1209,10 @@ uschar *override_pid_file_path = NULL;
 
 BOOL    panic_coredump	       = FALSE;
 pcre2_general_context * pcre_gen_ctx = NULL;
-pcre2_compile_context * pcre_cmp_ctx = NULL;
-pcre2_match_context * pcre_mtc_ctx = NULL;
+pcre2_compile_context * pcre_gen_cmp_ctx = NULL;
+pcre2_match_context * pcre_gen_mtc_ctx = NULL;
+pcre2_general_context * pcre_mlc_ctx = NULL;
+pcre2_compile_context * pcre_mlc_cmp_ctx = NULL;
 
 uschar *percent_hack_domains   = NULL;
 uschar *pid_file_path          = US PID_FILE_PATH

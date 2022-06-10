@@ -46,7 +46,7 @@ while ((regex_string = string_nextinlist(&list, &sep, NULL, 0)))
 
     /* compile our regular expression */
     if (!(re = pcre2_compile( (PCRE2_SPTR) regex_string, PCRE2_ZERO_TERMINATED,
-		  0, &err, &pcre_erroffset, pcre_cmp_ctx)))
+		  0, &err, &pcre_erroffset, pcre_gen_cmp_ctx)))
       {
       uschar errbuf[128];
       pcre2_get_error_message(err, errbuf, sizeof(errbuf));
@@ -75,7 +75,7 @@ for (pcre_list * ri = re_list_head; ri; ri = ri->next)
   int n;
 
   /* try matcher on the line */
-  if ((n = pcre2_match(ri->re, (PCRE2_SPTR)linebuffer, len, 0, 0, md, pcre_mtc_ctx)) > 0)
+  if ((n = pcre2_match(ri->re, (PCRE2_SPTR)linebuffer, len, 0, 0, md, pcre_gen_mtc_ctx)) > 0)
     {
     Ustrncpy(regex_match_string_buffer, ri->pcre_text,
 	      sizeof(regex_match_string_buffer)-1);
@@ -85,14 +85,14 @@ for (pcre_list * ri = re_list_head; ri; ri = ri->next)
       {
       PCRE2_UCHAR * cstr;
       PCRE2_SIZE cslen;
-      pcre2_substring_get_bynumber(md, nn, &cstr, &cslen);
+      pcre2_substring_get_bynumber(md, nn, &cstr, &cslen);	/* uses same ctx as md */
       regex_vars[nn-1] = CUS cstr;
       }
 
     return OK;
     }
   }
-pcre2_match_data_free(md);
+/* pcre2_match_data_free(md);	gen ctx needs no free */
 return FAIL;
 }
 

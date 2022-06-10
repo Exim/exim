@@ -2949,7 +2949,7 @@ switch(cond_type = identify_operator(&s, &opname))
       int err;
 
       if (!(re = pcre2_compile((PCRE2_SPTR)sub[1], PCRE2_ZERO_TERMINATED,
-				PCRE_COPT, &err, &offset, pcre_cmp_ctx)))
+				PCRE_COPT, &err, &offset, pcre_gen_cmp_ctx)))
 	{
 	uschar errbuf[128];
 	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
@@ -3444,7 +3444,7 @@ switch(cond_type = identify_operator(&s, &opname))
 			    TRUE, FALSE);
     md = pcre2_match_data_create(4+1, pcre_gen_ctx);
     if (pcre2_match(re, sub[0], PCRE2_ZERO_TERMINATED, 0, PCRE_EOPT,
-		    md, pcre_mtc_ctx) < 0)
+		    md, pcre_gen_mtc_ctx) < 0)
       {
       DEBUG(D_expand) debug_printf("no match for SRS'd local-part pattern\n");
       goto srs_result;
@@ -3521,6 +3521,7 @@ switch(cond_type = identify_operator(&s, &opname))
     boolvalue = TRUE;
 
 srs_result:
+    /* pcre2_match_data_free(md);	gen ctx needs no free */
     if (yield) *yield = (boolvalue == testfor);
     return s;
     }
@@ -5899,7 +5900,7 @@ while (*s)
       /* Compile the regular expression */
 
       if (!(re = pcre2_compile((PCRE2_SPTR)sub[1], PCRE2_ZERO_TERMINATED,
-		  PCRE_COPT, &err, &roffset, pcre_cmp_ctx)))
+		  PCRE_COPT, &err, &roffset, pcre_gen_cmp_ctx)))
         {
         uschar errbuf[128];
 	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
@@ -5922,7 +5923,7 @@ while (*s)
         {
 	PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
 	int n = pcre2_match(re, (PCRE2_SPTR)subject, slen, moffset + moffsetextra,
-	  PCRE_EOPT | emptyopt, md, pcre_mtc_ctx);
+	  PCRE_EOPT | emptyopt, md, pcre_gen_mtc_ctx);
         uschar * insert;
 
         /* No match - if we previously set PCRE_NOTEMPTY after a null match, this
@@ -5984,6 +5985,7 @@ while (*s)
 
       /* All done - restore numerical variables. */
 
+      /* pcre2_match_data_free(md);	gen ctx needs no free */
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
       break;

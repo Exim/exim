@@ -1849,57 +1849,57 @@ pcre2_match_data * md = pcre2_match_data_create(1, pcre_gen_ctx);
 #ifndef DISABLE_TLS
 if (  checks & OPTION_TLS
    && pcre2_match(regex_STARTTLS,
-		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_gen_mtc_ctx) < 0)
 #endif
   checks &= ~OPTION_TLS;
 
 if (  checks & OPTION_IGNQ
    && pcre2_match(regex_IGNOREQUOTA,
-		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_gen_mtc_ctx) < 0)
   checks &= ~OPTION_IGNQ;
 
 if (  checks & OPTION_CHUNKING
    && pcre2_match(regex_CHUNKING,
-		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_gen_mtc_ctx) < 0)
   checks &= ~OPTION_CHUNKING;
 
 #ifndef DISABLE_PRDR
 if (  checks & OPTION_PRDR
    && pcre2_match(regex_PRDR,
-		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_gen_mtc_ctx) < 0)
 #endif
   checks &= ~OPTION_PRDR;
 
 #ifdef SUPPORT_I18N
 if (  checks & OPTION_UTF8
    && pcre2_match(regex_UTF8,
-		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_gen_mtc_ctx) < 0)
 #endif
   checks &= ~OPTION_UTF8;
 
 if (  checks & OPTION_DSN
    && pcre2_match(regex_DSN,
-		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_gen_mtc_ctx) < 0)
   checks &= ~OPTION_DSN;
 
 if (  checks & OPTION_PIPE
    && pcre2_match(regex_PIPELINING,
-		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_gen_mtc_ctx) < 0)
   checks &= ~OPTION_PIPE;
 
 if (  checks & OPTION_SIZE
    && pcre2_match(regex_SIZE,
-		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_gen_mtc_ctx) < 0)
   checks &= ~OPTION_SIZE;
 
 #ifndef DISABLE_PIPE_CONNECT
 if (  checks & OPTION_EARLY_PIPE
    && pcre2_match(regex_EARLY_PIPE,
-		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_mtc_ctx) < 0)
+		  (PCRE2_SPTR)buf, bsize, 0, PCRE_EOPT, md, pcre_gen_mtc_ctx) < 0)
 #endif
   checks &= ~OPTION_EARLY_PIPE;
 
-pcre2_match_data_free(md);
+/* pcre2_match_data_free(md);	gen ctx needs no free */
 /* debug_printf("%s: found     0x%04x\n", __FUNCTION__, checks); */
 return checks;
 }

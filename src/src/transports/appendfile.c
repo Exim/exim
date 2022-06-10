@@ -681,7 +681,7 @@ for (struct dirent *ent; ent = readdir(dir); )
     {
     pcre2_match_data * md = pcre2_match_data_create(2, pcre_gen_ctx);
     int rc = pcre2_match(re, (PCRE2_SPTR)name, PCRE2_ZERO_TERMINATED,
-			  0, 0, md, pcre_mtc_ctx);
+			  0, 0, md, pcre_gen_mtc_ctx);
     PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
     if (  rc >= 0
        && (rc = pcre2_get_ovector_count(md)) >= 2)
@@ -694,9 +694,11 @@ for (struct dirent *ent; ent = readdir(dir); )
         DEBUG(D_transport)
           debug_printf("check_dir_size: size from %s is " OFF_T_FMT "\n", name,
             size);
+	/* pcre2_match_data_free(md);	gen ctx needs no free */
         continue;
         }
       }
+    /* pcre2_match_data_free(md);	gen ctx needs no free */
     DEBUG(D_transport)
       debug_printf("check_dir_size: regex did not match %s\n", name);
     }
@@ -2219,7 +2221,7 @@ else
     if (ob->quota_size_regex)
       {
       if (!(re = pcre2_compile((PCRE2_SPTR)ob->quota_size_regex,
-		  PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_cmp_ctx)))
+		  PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_gen_cmp_ctx)))
         {
 	uschar errbuf[128];
 	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
@@ -2308,7 +2310,7 @@ else
       int check_path_len = Ustrlen(check_path);
 
       if (!(dir_regex = pcre2_compile((PCRE2_SPTR)ob->maildir_dir_regex,
-	    PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_cmp_ctx)))
+	    PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_gen_cmp_ctx)))
         {
 	uschar errbuf[128];
 	pcre2_get_error_message(err, errbuf, sizeof(errbuf));

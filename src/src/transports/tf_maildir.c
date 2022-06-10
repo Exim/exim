@@ -149,7 +149,7 @@ if (maildirfolder_create_regex)
   DEBUG(D_transport) debug_printf("checking for maildirfolder requirement\n");
 
   if (!(re = pcre2_compile((PCRE2_SPTR)maildirfolder_create_regex,
-	      PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_cmp_ctx)))
+	      PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_gen_cmp_ctx)))
     {
     uschar errbuf[128];
     pcre2_get_error_message(err, errbuf, sizeof(errbuf));

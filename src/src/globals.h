@@ -794,8 +794,10 @@ extern uschar *override_pid_file_path; /* Value of -oP argument */
 
 extern BOOL    panic_coredump;	       /* SEGV rather than exit, on LOG_PANIC_DIE */
 extern pcre2_general_context * pcre_gen_ctx;	/* pcre memory management */
-extern pcre2_compile_context * pcre_cmp_ctx;
-extern pcre2_match_context *   pcre_mtc_ctx;
+extern pcre2_compile_context * pcre_gen_cmp_ctx;
+extern pcre2_match_context *   pcre_gen_mtc_ctx;
+extern pcre2_general_context * pcre_mlc_ctx;
+extern pcre2_compile_context * pcre_mlc_cmp_ctx;
 
 extern uschar *percent_hack_domains;   /* Local domains for which '% operates */
 extern uschar *pid_file_path;          /* For writing daemon pids */

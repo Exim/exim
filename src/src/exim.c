@@ -59,6 +59,18 @@ if (block) store_free(block);
 }
 
 
+static void *
+function_store_get(PCRE2_SIZE size, void * tag)
+{
+return store_get((int)size, GET_UNTAINTED);	/* loses track of taint */
+}
+
+static void
+function_store_nullfree(void * block, void * tag)
+{
+}
+
+
 
 
 /*************************************************
@@ -96,19 +108,9 @@ size_t offset;
 int options = caseless ? PCRE_COPT|PCRE2_CASELESS : PCRE_COPT;
 const pcre2_code * yield;
 int err;
-pcre2_general_context * gctx;
-pcre2_compile_context * cctx;
-
-if (use_malloc)
-  {
-  gctx = pcre2_general_context_create(function_store_malloc, function_store_free, NULL);
-  cctx = pcre2_compile_context_create(gctx);
-  }
-else
-  cctx = pcre_cmp_ctx;
 
 if (!(yield = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED, options,
-  &err, &offset, cctx)))
+  &err, &offset, use_malloc ? pcre_mlc_cmp_ctx : pcre_gen_cmp_ctx)))
   {
   uschar errbuf[128];
   pcre2_get_error_message(err, errbuf, sizeof(errbuf));
@@ -116,11 +118,6 @@ if (!(yield = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED, options,
     "%s at offset %ld while compiling %s", errbuf, (long)offset, pattern);
   }
 
-if (use_malloc)
-  {
-  pcre2_compile_context_free(cctx);
-  pcre2_general_context_free(gctx);
-  }
 return yield;
 }
 
@@ -128,9 +125,13 @@ return yield;
 static void
 pcre_init(void)
 {
-pcre_gen_ctx = pcre2_general_context_create(function_store_malloc, function_store_free, NULL);
-pcre_cmp_ctx = pcre2_compile_context_create(pcre_gen_ctx);
-pcre_mtc_ctx = pcre2_match_context_create(pcre_gen_ctx);
+pcre_mlc_ctx = pcre2_general_context_create(function_store_malloc, function_store_free, NULL);
+pcre_gen_ctx = pcre2_general_context_create(function_store_get, function_store_nullfree, NULL);
+
+pcre_mlc_cmp_ctx = pcre2_compile_context_create(pcre_mlc_ctx);
+pcre_gen_cmp_ctx = pcre2_compile_context_create(pcre_gen_ctx);
+
+pcre_gen_mtc_ctx = pcre2_match_context_create(pcre_gen_ctx);
 }
 
 
@@ -160,7 +161,7 @@ regex_match_and_setup(const pcre2_code * re, const uschar * subject, int options
 {
 pcre2_match_data * md = pcre2_match_data_create_from_pattern(re, pcre_gen_ctx);
 int res = pcre2_match(re, (PCRE2_SPTR)subject, PCRE2_ZERO_TERMINATED, 0,
-			PCRE_EOPT | options, md, pcre_mtc_ctx);
+			PCRE_EOPT | options, md, pcre_gen_mtc_ctx);
 BOOL yield;
 
 if ((yield = (res >= 0)))
@@ -182,7 +183,7 @@ else if (res != PCRE2_ERROR_NOMATCH) DEBUG(D_any)
   pcre2_get_error_message(res, errbuf, sizeof(errbuf));
   debug_printf_indent("pcre2: %s\n", errbuf);
   }
-pcre2_match_data_free(md);
+/* pcre2_match_data_free(md);	gen ctx needs no free */
 return yield;
 }
 
@@ -204,13 +205,18 @@ regex_match(const pcre2_code * re, const uschar * subject, int slen, uschar ** r
 pcre2_match_data * md = pcre2_match_data_create(1, pcre_gen_ctx);
 int rc = pcre2_match(re, (PCRE2_SPTR)subject,
 		      slen >= 0 ? slen : PCRE2_ZERO_TERMINATED,
-		      0, PCRE_EOPT, md, pcre_mtc_ctx);
+		      0, PCRE_EOPT, md, pcre_gen_mtc_ctx);
 PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
-if (rc < 0)
-  return FALSE;
-if (rptr)
-  *rptr = string_copyn(subject + ovec[0], ovec[1] - ovec[0]);
-return TRUE;
+BOOL ret = FALSE;
+
+if (rc >= 0)
+  {
+  if (rptr)
+    *rptr = string_copyn(subject + ovec[0], ovec[1] - ovec[0]);
+  ret = TRUE;
+  }
+/* pcre2_match_data_free(md);	gen ctx needs no free */
+return ret;
 }
 
 
