@@ -182,6 +182,9 @@ extern BOOL    cutthrough_predata(void);
 extern void    release_cutthrough_connection(const uschar *);
 
 extern void    daemon_go(void);
+#ifndef COMPILE_UTILITY
+extern ssize_t daemon_notifier_sockname(struct sockaddr_un *);
+#endif
 
 #ifdef EXPERIMENTAL_DCC
 extern int     dcc_process(uschar **);

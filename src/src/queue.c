@@ -1562,19 +1562,9 @@ memcpy(buf+1, msgid, MESSAGE_ID_LENGTH+1);
 if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) >= 0)
   {
   struct sockaddr_un sa_un = {.sun_family = AF_UNIX};
+  ssize_t len = daemon_notifier_sockname(&sa_un);
 
-#ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
-  int len = offsetof(struct sockaddr_un, sun_path) + 1
-    + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "%s",
-		expand_string(notifier_socket));
-  sa_un.sun_path[0] = 0;
-#else
-  int len = offsetof(struct sockaddr_un, sun_path)
-    + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s",
-		expand_string(notifier_socket));
-#endif
-
-  if (sendto(fd, buf, sizeof(buf), 0, (struct sockaddr *)&sa_un, len) < 0)
+  if (sendto(fd, buf, sizeof(buf), 0, (struct sockaddr *)&sa_un, (socklen_t)len) < 0)
     DEBUG(D_queue_run)
       debug_printf("%s: sendto %s\n", __FUNCTION__, strerror(errno));
   close(fd);

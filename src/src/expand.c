@@ -1777,17 +1777,7 @@ debug_printf("local addr '%s%s'\n",
   sa_un.sun_path + (*sa_un.sun_path ? 0 : 1));
 #endif
 
-#ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
-sa_un.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
-len = offsetof(struct sockaddr_un, sun_path) + 1
-  + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "%s",
-	      expand_string(notifier_socket));
-#else
-len = offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s",
-	      expand_string(notifier_socket));
-#endif
-
+len = daemon_notifier_sockname(&sa_un);
 if (connect(fd, (const struct sockaddr *)&sa_un, len) < 0)
   { where = US"connect"; goto bad2; }
 
