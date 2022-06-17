@@ -3,7 +3,7 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
-Connecting to 127.0.0.1 [127.0.0.1]:1225 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...  connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
@@ -47,7 +47,7 @@ dropping to exim gid; retaining priv uid
 t1 transport entered
   userb@test.ex
 hostlist:
-  '127.0.0.1' IP 127.0.0.1 port 1225
+  '127.0.0.1' IP 127.0.0.1 port PORT_D
 already connected to 127.0.0.1 [127.0.0.1] (on fd 0)
 checking status of 127.0.0.1
 127.0.0.1 [127.0.0.1]:1111 retry-status = usable
@@ -72,7 +72,7 @@ cmd buf flush ddd bytes (more expected)
 cmdlog: 'DATA:354:.:250:QUIT:221'
 Leaving t1 transport
 LOG: MAIN
-  => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:1225 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-0005vi-00"
+  => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1237 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -13,7 +13,7 @@ dropping to exim gid; retaining priv uid
 smtp transport entered
   extchange@test.ex
 hostlist:
-  '127.0.0.1' IP 127.0.0.1 port 1225
+  '127.0.0.1' IP 127.0.0.1 port PORT_D
 checking status of 127.0.0.1
 no host retry record
 no message retry record
@@ -29,7 +29,7 @@ not using DSN
   SMTP|> RCPT TO:<extchange@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
-Connecting to 127.0.0.1 [127.0.0.1]:1225 ... sending dd nonTFO early-data
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ... sending dd nonTFO early-data
  connected
 smtp_reap_early_pipe expect banner
   SMTP<< 220 banner

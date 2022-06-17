@@ -1095,6 +1095,14 @@ RESET_AFTER_EXTRA_LINE_READ:
     # we don't care what TZ enviroment the testhost was running
     next if /^Reset TZ to/;
 
+    # port numbers
+    s/(?:\[[^\]]*\]:|port )\K$parm_port_d/PORT_D/;
+    s/(?:\[[^\]]*\]:|port )\K$parm_port_d2/PORT_D2/;
+    s/(?:\[[^\]]*\]:|port )\K$parm_port_d3/PORT_D3/;
+    s/(?:\[[^\]]*\]:|port )\K$parm_port_d4/PORT_D4/;
+    s/(?:\[[^\]]*\]:|port )\K$parm_port_s/PORT_S/;
+    s/(?:\[[^\]]*\]:|port )\K$parm_port_n/PORT_N/;
+
     # ========= Exim lookups ==================
     # Lookups have a char which depends on the number of lookup types compiled in,
     # in stderr output.  Replace with a "0".  Recognising this while avoiding

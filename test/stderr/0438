@@ -11,13 +11,13 @@ daemon_smtp_port overridden by -oX:
   <: 1225
 creating notifier socket
  TESTSUITE/spool/exim_daemon_notify
-listening on all interfaces (IPv4) port 1225
+listening on all interfaces (IPv4) port PORT_D
 pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
   uid=EXIM_UID gid=EXIM_GID pid=p1234
 LOG: MAIN
-  exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port 1225
-set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225
+  exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
+set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 SIGTERM/SIGINT seen
@@ -35,13 +35,13 @@ daemon_smtp_port overridden by -oX:
   <: 1225
 creating notifier socket
  TESTSUITE/spool/exim_daemon_notify
-listening on all interfaces (IPv4) port 1225
+listening on all interfaces (IPv4) port PORT_D
 pid written to TESTSUITE/spool/exim-daemon.anotherpid
 changed uid/gid: running as a daemon
   uid=EXIM_UID gid=EXIM_GID pid=p1235
 LOG: MAIN
-  exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port 1225
-set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225
+  exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
+set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 SIGTERM/SIGINT seen
@@ -59,13 +59,13 @@ daemon_smtp_port overridden by -oX:
   <: 1225
 creating notifier socket
  TESTSUITE/spool/exim_daemon_notify
-listening on all interfaces (IPv4) port 1225
+listening on all interfaces (IPv4) port PORT_D
 pid written to TESTSUITE/spool/mypidfile
 changed uid/gid: running as a daemon
   uid=EXIM_UID gid=EXIM_GID pid=p1236
 LOG: MAIN
-  exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port 1225
-set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225
+  exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
+set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 SIGTERM/SIGINT seen
