@@ -1096,12 +1096,12 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^Reset TZ to/;
 
     # port numbers
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_d/PORT_D/;
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_d2/PORT_D2/;
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_d3/PORT_D3/;
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_d4/PORT_D4/;
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_s/PORT_S/;
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_n/PORT_N/;
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d/PORT_D/;
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d2/PORT_D2/;
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d3/PORT_D3/;
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d4/PORT_D4/;
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_s/PORT_S/;
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_n/PORT_N/;
 
     # ========= Exim lookups ==================
     # Lookups have a char which depends on the number of lookup types compiled in,

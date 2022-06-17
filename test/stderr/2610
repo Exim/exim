@@ -13,7 +13,7 @@ dropping to exim gid; retaining priv uid
    type=mysql key="select name from them where id='ph10';" opts=NULL
  database lookup required for select name from them where id='ph10';
  MySQL query: "select name from them where id='ph10';" opts 'NULL'
- MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
+ MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root
  creating new cache entry
  lookup yielded: Philip Hazel
  search_open: mysql "NULL"
@@ -34,7 +34,7 @@ dropping to exim gid; retaining priv uid
    type=mysql key="select name from them where id='xxxx';" opts=NULL
  database lookup required for select name from them where id='xxxx';
  MySQL query: "select name from them where id='xxxx';" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  MYSQL: no data found
  creating new cache entry
  lookup failed
@@ -47,7 +47,7 @@ dropping to exim gid; retaining priv uid
    type=mysql key="select name from them where id='nothing';" opts=NULL
  database lookup required for select name from them where id='nothing';
  MySQL query: "select name from them where id='nothing';" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
  lookup yielded: 
  search_open: mysql "NULL"
@@ -59,7 +59,7 @@ dropping to exim gid; retaining priv uid
    type=mysql key="select id,name from them where id='nothing';" opts=NULL
  database lookup required for select id,name from them where id='nothing';
  MySQL query: "select id,name from them where id='nothing';" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
  lookup yielded: id=nothing name="" 
  search_open: mysql "NULL"
@@ -71,7 +71,7 @@ dropping to exim gid; retaining priv uid
    type=mysql key="delete from them where id='nonexist';" opts=NULL
  database lookup required for delete from them where id='nonexist';
  MySQL query: "delete from them where id='nonexist';" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  MYSQL: query was not one that returns data
  lookup forced cache cleanup
  lookup yielded: 0
@@ -84,7 +84,7 @@ dropping to exim gid; retaining priv uid
    type=mysql key="select * from them where id='quote';" opts=NULL
  database lookup required for select * from them where id='quote';
  MySQL query: "select * from them where id='quote';" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  MYSQL: no data found
  creating new cache entry
  lookup failed
@@ -97,7 +97,7 @@ dropping to exim gid; retaining priv uid
    type=mysql key="select * from them where id='filter';" opts=NULL
  database lookup required for select * from them where id='filter';
  MySQL query: "select * from them where id='filter';" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  MYSQL: no data found
  creating new cache entry
  lookup failed
@@ -110,7 +110,7 @@ dropping to exim gid; retaining priv uid
    type=mysql key="select * from them where id='quote2';" opts=NULL
  database lookup required for select * from them where id='quote2';
  MySQL query: "select * from them where id='quote2';" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
  lookup yielded: name="\"stquot" id=quote2 
  search_open: mysql "NULL"
@@ -122,54 +122,54 @@ dropping to exim gid; retaining priv uid
    type=mysql key="select * from them where id='nlonly';" opts=NULL
  database lookup required for select * from them where id='nlonly';
  MySQL query: "select * from them where id='nlonly';" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  MYSQL: no data found
  creating new cache entry
  lookup failed
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=x:127.0.0.1::1223; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
+   key="servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=x:127.0.0.1::1223; select name from them where id='ph10';" opts=NULL
- database lookup required for servers=x:127.0.0.1::1223; select name from them where id='ph10';
- MySQL query: "servers=x:127.0.0.1::1223; select name from them where id='ph10';" opts 'NULL'
+   type=mysql key="servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';" opts=NULL
+ database lookup required for servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';
+ MySQL query: "servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';" opts 'NULL'
  lookup deferred: MySQL server "x" not found in mysql_servers
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=127.0.0.1::1223:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
+   key="servers=127.0.0.1::PORT_N:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=127.0.0.1::1223:x; select name from them where id='ph10';" opts=NULL
- database lookup required for servers=127.0.0.1::1223:x; select name from them where id='ph10';
- MySQL query: "servers=127.0.0.1::1223:x; select name from them where id='ph10';" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+   type=mysql key="servers=127.0.0.1::PORT_N:x; select name from them where id='ph10';" opts=NULL
+ database lookup required for servers=127.0.0.1::PORT_N:x; select name from them where id='ph10';
+ MySQL query: "servers=127.0.0.1::PORT_N:x; select name from them where id='ph10';" opts 'NULL'
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
  lookup yielded: Philip Hazel
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
+   key="servers=127.0.0.1::PORT_N/test/root/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';" opts=NULL
- database lookup required for servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';
- MySQL query: "servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+   type=mysql key="servers=127.0.0.1::PORT_N/test/root/:x; select name from them where id='ph10';" opts=NULL
+ database lookup required for servers=127.0.0.1::PORT_N/test/root/:x; select name from them where id='ph10';
+ MySQL query: "servers=127.0.0.1::PORT_N/test/root/:x; select name from them where id='ph10';" opts 'NULL'
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
  lookup yielded: Philip Hazel
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
+   key="servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';" opts=NULL
- database lookup required for servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';
- MySQL query: "servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';" opts 'NULL'
- MYSQL new connection: host=ip4.ip4.ip4.ip4 port=1223 socket=NULL database=test user=root
+   type=mysql key="servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';" opts=NULL
+ database lookup required for servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';
+ MySQL query: "servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';" opts 'NULL'
+ MYSQL new connection: host=ip4.ip4.ip4.ip4 port=PORT_N socket=NULL database=test user=root
  creating new cache entry
  lookup yielded: Philip Hazel
  search_open: mysql "NULL"
@@ -193,7 +193,7 @@ dropping to exim gid; retaining priv uid
    type=mysql key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" opts=NULL
  database lookup required for SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
  MySQL query: "SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
  lookup yielded: Philip Hazel
  Aristotle
@@ -206,7 +206,7 @@ dropping to exim gid; retaining priv uid
    type=mysql key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" opts=NULL
  database lookup required for SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
  MySQL query: "SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
  lookup yielded: name="Philip Hazel" id=ph10 
  name=Aristotle id=aaaa 
@@ -219,14 +219,14 @@ dropping to exim gid; retaining priv uid
    type=mysql key="delete from them where id='aaaa'" opts=NULL
  database lookup required for delete from them where id='aaaa'
  MySQL query: "delete from them where id='aaaa'" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  MYSQL: query was not one that returns data
  lookup forced cache cleanup
  lookup yielded: 1
 search_tidyup called
 close MYSQL connection: localhost(TESTSUITE/mysql/sock)/test/root
 close MYSQL connection: ip4.ip4.ip4.ip4:1223/test/root
-close MYSQL connection: 127.0.0.1:1223/test/root
+close MYSQL connection: 127.0.0.1:PORT_N/test/root
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
@@ -276,7 +276,7 @@ processing "warn" (TESTSUITE/test-config 26)
  database lookup required for select name from them where id = 'c'
                               (tainted, quoted:mysql)
  MySQL query: "select name from them where id = 'c'" opts 'NULL'
- MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
+ MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root
  MYSQL: no data found
  creating new cache entry
  lookup failed
@@ -295,7 +295,7 @@ LOG: MAIN PANIC
   tainted search query is not properly quoted (ACL warn, TESTSUITE/test-config 26): select name from them where id = 'c'
  search_type NN (mysql) quoting -1 (none)
  MySQL query: "select name from them where id = 'c'" opts 'no_rd'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  MYSQL: no data found
  replacing old cache entry
  lookup failed
@@ -306,49 +306,49 @@ processing "warn" (TESTSUITE/test-config 31)
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::1223/test/root/pass"
+   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::PORT_N/test/root/pass"
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select name from them where id = 'c'" opts="servers=127.0.0.1::1223/test/root/pass"
+   type=mysql key="select name from them where id = 'c'" opts="servers=127.0.0.1::PORT_N/test/root/pass"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
                               (tainted, quoted:mysql)
- MySQL query: "select name from them where id = 'c'" opts 'servers=127.0.0.1::1223/test/root/pass'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MySQL query: "select name from them where id = 'c'" opts 'servers=127.0.0.1::PORT_N/test/root/pass'
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  MYSQL: no data found
  replacing old cache entry
  lookup failed
-check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223/test/root/pass      {select name from them where id = '${quote_mysql:$local_part}'}}
+check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::PORT_N/test/root/pass      {select name from them where id = '${quote_mysql:$local_part}'}}
                  = ok:   
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::1223"
+   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::PORT_N"
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select name from them where id = 'c'" opts="servers=127.0.0.1::1223"
+   type=mysql key="select name from them where id = 'c'" opts="servers=127.0.0.1::PORT_N"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
                               (tainted, quoted:mysql)
- MySQL query: "select name from them where id = 'c'" opts 'servers=127.0.0.1::1223'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MySQL query: "select name from them where id = 'c'" opts 'servers=127.0.0.1::PORT_N'
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  MYSQL: no data found
  replacing old cache entry
  lookup failed
-check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223    {select name from them where id = '${quote_mysql:$local_part}'}}
+check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::PORT_N    {select name from them where id = '${quote_mysql:$local_part}'}}
                  = ok:   
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=127.0.0.1::1223/test/root/pass; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
+   key="servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=127.0.0.1::1223/test/root/pass; select name from them where id = 'c'" opts=NULL
- database lookup required for servers=127.0.0.1::1223/test/root/pass; select name from them where id = 'c'
+   type=mysql key="servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = 'c'" opts=NULL
+ database lookup required for servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = 'c'
                               (tainted, quoted:mysql)
- MySQL query: "servers=127.0.0.1::1223/test/root/pass; select name from them where id = 'c'" opts 'NULL'
- lookup deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
+ MySQL query: "servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = 'c'" opts 'NULL'
+ lookup deferred: MySQL server "127.0.0.1:PORT_N/test/root/pass" is tainted
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:PORT_N/test/root/pass" is tainted
 processing "warn" (TESTSUITE/test-config 40)
 check set acl_m0 = ok:   hostlist
 check hosts = net-mysql;select * from them where id='${quote_mysql:$local_part}'
@@ -362,7 +362,7 @@ internal_search_find: file="NULL"
 database lookup required for select * from them where id='c'
                              (tainted, quoted:mysql)
 MySQL query: "select * from them where id='c'" opts 'NULL'
-MYSQL using cached connection for 127.0.0.1:1223/test/root
+MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
 MYSQL: no data found
 creating new cache entry
 lookup failed
@@ -370,40 +370,40 @@ host in "net-mysql;select * from them where id='c'"? no (end of list)
 warn: condition test failed in ACL "check_recipient"
 processing "warn" (TESTSUITE/test-config 43)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
+check hosts = <& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
 search_open: mysql "NULL"
   cached open
 search_find: file="NULL"
-  key="servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
+  key="servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="NULL"
-  type=mysql key="servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'" opts=NULL
-database lookup required for servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
+  type=mysql key="servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'" opts=NULL
+database lookup required for servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'
                              (tainted, quoted:mysql)
-MySQL query: "servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'" opts 'NULL'
-lookup deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
-host in "<& net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
+MySQL query: "servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'" opts 'NULL'
+lookup deferred: MySQL server "127.0.0.1:PORT_N/test/root/pass" is tainted
+host in "<& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:PORT_N/test/root/pass" is tainted
 processing "warn" (TESTSUITE/test-config 48)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
+check hosts = <& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
 search_open: mysql "NULL"
   cached open
 search_find: file="NULL"
-  key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::1223/test/root/pass"
+  key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::PORT_N/test/root/pass"
 LRU list:
 internal_search_find: file="NULL"
-  type=mysql key=" select * from them where id='c'" opts="servers=127.0.0.1::1223/test/root/pass"
+  type=mysql key=" select * from them where id='c'" opts="servers=127.0.0.1::PORT_N/test/root/pass"
 database lookup required for  select * from them where id='c'
                              (tainted, quoted:mysql)
-MySQL query: " select * from them where id='c'" opts 'servers=127.0.0.1::1223/test/root/pass'
-lookup deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
-host in "<& net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
+MySQL query: " select * from them where id='c'" opts 'servers=127.0.0.1::PORT_N/test/root/pass'
+lookup deferred: MySQL server "127.0.0.1:PORT_N/test/root/pass" is tainted
+host in "<& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:PORT_N/test/root/pass" is tainted
 processing "accept" (TESTSUITE/test-config 51)
 check domains = +local_domains
 d in "@"? no (end of list)
@@ -420,7 +420,7 @@ internal_search_find: file="NULL"
   type=mysql key="select * from them where id='10.0.0.0'" opts=NULL
 database lookup required for select * from them where id='10.0.0.0'
 MySQL query: "select * from them where id='10.0.0.0'" opts 'NULL'
-MYSQL using cached connection for 127.0.0.1:1223/test/root
+MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
 MYSQL: no data found
 creating new cache entry
 lookup failed
@@ -439,7 +439,7 @@ SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [10.0.0.0] closed by QUIT
 search_tidyup called
-close MYSQL connection: 127.0.0.1:1223/test/root
+close MYSQL connection: 127.0.0.1:PORT_N/test/root
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
@@ -544,7 +544,7 @@ local_part=ph10 domain=myhost.test.ex
  database lookup required for select name from them where id='ph10@myhost.test.ex'
                               (tainted, quoted:mysql)
  MySQL query: "select name from them where id='ph10@myhost.test.ex'" opts 'NULL'
- MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
+ MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root
  MYSQL: no data found
  creating new cache entry
  lookup failed
@@ -563,7 +563,7 @@ LOG: MAIN PANIC
   tainted search query is not properly quoted (router r1, TESTSUITE/test-config 66): select name from them where id='ph10'
  search_type NN (mysql) quoting -1 (none)
  MySQL query: "select name from them where id='ph10'" opts 'NULL'
- MYSQL using cached connection for 127.0.0.1:1223/test/root
+ MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
  lookup yielded: Philip Hazel
 calling r1 router
@@ -585,7 +585,7 @@ After routing:
   Failed addresses:
   Deferred addresses:
 search_tidyup called
-close MYSQL connection: 127.0.0.1:1223/test/root
+close MYSQL connection: 127.0.0.1:PORT_N/test/root
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> ph10@myhost.test.ex <--------
  locking TESTSUITE/spool/db/retry.lockfile
@@ -612,7 +612,7 @@ LOG: MAIN
   tainted search query is not properly quoted (transport t1, TESTSUITE/test-config 79): select id from them where id='ph10'
  search_type NN (mysql) quoting -1 (none)
  MySQL query: "select id from them where id='ph10'" opts 'NULL'
- MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
+ MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root
  creating new cache entry
  lookup yielded: ph10
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
@@ -632,7 +632,7 @@ writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
-close MYSQL connection: 127.0.0.1:1223/test/root
+close MYSQL connection: 127.0.0.1:PORT_N/test/root
 journalling ph10@myhost.test.ex
 t1 transport returned OK for ph10@myhost.test.ex
 post-process ph10@myhost.test.ex (0)
