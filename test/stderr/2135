@@ -36,7 +36,7 @@ LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -75,7 +75,7 @@ LOG: MAIN
   => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:1225 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

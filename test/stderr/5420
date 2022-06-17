@@ -92,6 +92,9 @@ cmd buf flush ddd bytes
   ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: .outlook.com\$
   ╰─────result: .outlook.com$
+ compiled RE '.outlook.com$' not found in local cache
+ compiling RE '.outlook.com$'
+ compiled RE '.outlook.com$' saved in local cache
   ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $item
@@ -554,7 +557,7 @@ LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
@@ -649,6 +652,9 @@ cmd buf flush ddd bytes
   ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: .outlook.com\$
   ╰─────result: .outlook.com$
+ compiled RE '.outlook.com$' not found in local cache
+ compiling RE '.outlook.com$'
+ compiled RE '.outlook.com$' saved in local cache
   ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $item
@@ -1071,7 +1077,7 @@ LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
@@ -1166,6 +1172,9 @@ cmd buf flush ddd bytes
   ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: .outlook.com\$
   ╰─────result: .outlook.com$
+ compiled RE '.outlook.com$' not found in local cache
+ compiling RE '.outlook.com$'
+ compiled RE '.outlook.com$' saved in local cache
   ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $item
@@ -1588,6 +1597,6 @@ LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

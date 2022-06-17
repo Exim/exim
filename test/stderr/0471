@@ -1,10 +1,10 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1234
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
@@ -25722,14 +25722,14 @@ LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1235
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1235
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
@@ -25882,14 +25882,14 @@ Size of headers = sss
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1236
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1236
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
@@ -26042,14 +26042,14 @@ Size of headers = sss
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1237
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1237
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
@@ -26126,14 +26126,14 @@ rewrite headers
 LOG: MAIN
   rewrite: address is ridiculously long: localpart_with_256_chars_567890123456789012345678901234567890123...
  search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1238
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1238
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
@@ -26260,4 +26260,4 @@ Size of headers = sss
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

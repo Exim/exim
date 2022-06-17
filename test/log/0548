@@ -2,29 +2,29 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Recipient deferred
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0) H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1234
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Recipient deferred
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0) H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1234
+1999-03-02 09:44:33 Start queue run: pid=p1235
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Recipient deferred
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0) H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
-1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1235
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<usery@test.ex>: 451 Recipient deferred
 1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=smarthost T=smtp defer (-44) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<usery@test.ex>: 451 Recipient deferred
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1236
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Recipient deferred
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0) H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
 1999-03-02 09:44:33 10HmaY-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<usery@test.ex>: 451 Recipient deferred
 1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=smarthost T=smtp defer (-44) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<usery@test.ex>: 451 Recipient deferred
-1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1236
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <userx@test.ex>: Recipient deferred
 1999-03-02 09:44:33 H=[127.0.0.1] temporarily rejected connection in "connect" ACL: host deferred
 1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <userx@test.ex>: Recipient deferred

@@ -2,7 +2,7 @@
 ******** SERVER ********
 1999-03-02 09:44:33 Warning: No server certificate defined; will use a selfsigned one.
  Suggested action: either install a certificate or change tls_advertise_hosts option
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaY-0005vi-00 signer: test.ex bits: 0
 1999-03-02 09:44:33 10HmaY-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=0 [invalid - signature tag missing or invalid]
 1999-03-02 09:44:33 10HmaY-0005vi-00 Authentication-Results: myhost.test.ex;\n	dkim=neutral (signature tag missing or invalid)\n		 header.d=test.ex header.s=sel header.a=rsa-sha1
@@ -29,7 +29,7 @@
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=20180418125440.Horde.vVKB6E7UvpLfJsPzv2ZPs6z@webmail.sego.es
 1999-03-02 09:44:33 Warning: No server certificate defined; will use a selfsigned one.
  Suggested action: either install a certificate or change tls_advertise_hosts option
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbE-0005vi-00 unknown
 1999-03-02 09:44:33 10HmbE-0005vi-00 signer: test.ex bits: 0
 1999-03-02 09:44:33 10HmbE-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=0 [invalid - signature tag missing or invalid]
@@ -37,7 +37,7 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=qwerty1234@disco-zombie.net
 1999-03-02 09:44:33 Warning: No server certificate defined; will use a selfsigned one.
  Suggested action: either install a certificate or change tls_advertise_hosts option
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaX-0005vi-00 signer: test.ex bits: 0
 1999-03-02 09:44:33 10HmaX-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=0 [invalid - signature tag missing or invalid]
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=(xxx) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no rejected DKIM 

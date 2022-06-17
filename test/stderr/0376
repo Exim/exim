@@ -29,7 +29,7 @@ wrote callout cache domain record for localhost:
 wrote positive callout cache address record for ok@localhost
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -46,7 +46,7 @@ callout cache: found address record for ok@localhost
 callout cache: address record is positive
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -69,7 +69,7 @@ LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root F=<ok@localhost> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -105,7 +105,7 @@ LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root F=<bad@localhost> rejected RCPT <z@test.ex>: (recipient): Sender verify failed
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -126,7 +126,7 @@ LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root F=<bad@localhost> rejected RCPT <z@test.ex>: (recipient): Sender verify failed
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -159,7 +159,7 @@ LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root F=<ok@localhost> rejected RCPT <z@test.ex>: (mail): Sender verify failed
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -179,7 +179,7 @@ LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root F=<ok@localhost> rejected RCPT <z@test.ex>: (mail): Sender verify failed
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -222,7 +222,7 @@ LOG: MAIN REJECT
   H=(test) [V4NET.0.0.2] U=root F=<ok@otherhost> rejected RCPT <z@test.ex>: Sender verify failed
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -242,7 +242,7 @@ LOG: MAIN REJECT
   H=(test) [V4NET.0.0.2] U=root F=<ok@otherhost> rejected RCPT <z@test.ex>: Sender verify failed
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1242 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -281,7 +281,7 @@ wrote callout cache domain record for otherhost2:
 wrote positive callout cache address record for ok@otherhost2
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1243 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -299,7 +299,7 @@ callout cache: found address record for ok@otherhost2
 callout cache: address record is positive
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1244 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -332,7 +332,7 @@ LOG: MAIN
   (random)
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1245 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -350,7 +350,7 @@ LOG: MAIN
   (random)
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1246 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -383,7 +383,7 @@ LOG: MAIN
   (random)
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1247 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -401,7 +401,7 @@ LOG: MAIN
   (random)
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1248 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -446,7 +446,7 @@ wrote callout cache domain record for otherhost41:
 wrote positive callout cache address record for ok@otherhost41
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1249 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -465,7 +465,7 @@ callout cache: found address record for ok@otherhost41
 callout cache: address record is positive
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1250 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -504,7 +504,7 @@ wrote callout cache domain record for otherhost21:
 wrote positive callout cache address record for ok@otherhost21
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1251 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -537,7 +537,7 @@ wrote callout cache domain record for otherhost21:
 wrote positive callout cache address record for ok2@otherhost21
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1252 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -575,7 +575,7 @@ wrote callout cache domain record for otherhost31:
 wrote positive callout cache address record for ok@otherhost31
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1253 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -608,7 +608,7 @@ wrote callout cache domain record for otherhost31:
 wrote positive callout cache address record for okok@otherhost31
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1254 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -646,7 +646,7 @@ wrote callout cache domain record for otherhost31:
 wrote positive callout cache address record for okokok@otherhost31
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1255 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -680,7 +680,7 @@ LOG: MAIN REJECT
   H=(test) [V4NET.0.0.5] U=root F=<okok@otherhost51> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1256 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -719,7 +719,7 @@ wrote callout cache domain record for otherhost52:
 wrote positive callout cache address record for okokok@otherhost52
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1257 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -754,7 +754,7 @@ LOG: MAIN
   <= ok7@otherhost53 H=(test) [V4NET.0.0.7] U=root P=smtp S=sss
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1258 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -787,7 +787,7 @@ LOG: MAIN
   <= ok7@otherhost53 H=(test) [V4NET.0.0.8] U=root P=smtp S=sss
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1259 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -828,7 +828,7 @@ wrote callout cache domain record for otherhost9:
 wrote positive callout cache address record for ok@otherhost9
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1260 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -873,4 +873,4 @@ wrote callout cache domain record for test.ex:
 wrote positive callout cache address record for z@test.ex/<postmaster@myhost.test.ex>
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1261 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

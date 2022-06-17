@@ -15,24 +15,24 @@
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userw <userw@test.ex> R=server T=local_delivery
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@test.ex> R=server T=local_delivery
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbB-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbC-0005vi-00 => userz <userz@test.ex> R=server T=local_delivery
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 WARNING: deprecated Diffie-Hellman parameter 'ike24' used
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbD-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbE-0005vi-00 => usera <usera@test.ex> R=server T=local_delivery
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 WARNING: deprecated Diffie-Hellman parameter 'ike22' used
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbF-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbG-0005vi-00 => userb <userb@test.ex> R=server T=local_delivery

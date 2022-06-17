@@ -91,9 +91,9 @@ After routing:
   Deferred addresses:
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

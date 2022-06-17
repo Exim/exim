@@ -919,16 +919,16 @@ LOG: MAIN
   => CALLER <CALLER@myhost.test.ex> P=<> R=real T=real
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   d3@myhost.test.ex <d3@myhost.test.ex>: error ignored
 log writing disabled
 LOG: MAIN
   b1@myhost.test.ex <b1@myhost.test.ex>: error ignored
 log writing disabled
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -1027,5 +1027,5 @@ LOG: MAIN
 log writing disabled
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1240 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

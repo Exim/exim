@@ -1,10 +1,10 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1234
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -201,14 +201,14 @@ myhost.test.ex in "test.ex"? no (end of list)
 smart2 router skipped: domains mismatch
 no more routers
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1235
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1235
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -376,4 +376,4 @@ myhost.test.ex in "test.ex"? no (end of list)
 smart2 router skipped: domains mismatch
 no more routers
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>

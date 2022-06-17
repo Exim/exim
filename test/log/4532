@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_S
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_S
 2017-07-30 18:51:05.712 10HmaX-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha256 b=1024 [verification succeeded]
 2017-07-30 18:51:05.712 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss DKIM=test.ex id=qwerty1234@disco-zombie.net for a@test.ex
 2017-07-30 18:51:05.712 10HmaY-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha256 b=1024 [verification succeeded]

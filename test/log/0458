@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1111 I=[127.0.0.1]:PORT_D F=<userx@test.ex> rejected RCPT <userx@test.ex>
 1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1112 I=[127.0.0.1]:PORT_D F=<userx@test.ex> rejected RCPT <userx@test.ex>
 1999-03-02 09:44:33 SMTP protocol error in "DATA" H=(rhu.barb) [127.0.0.1]:1112 I=[127.0.0.1]:PORT_D valid RCPT command must precede DATA

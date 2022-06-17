@@ -60,8 +60,8 @@ all IP addresses skipped or deferred at least one address
 Leaving send_to_server transport
 LOG: MAIN
   == tempreject@test.ex R=client T=send_to_server defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 451 Service not available
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -126,8 +126,8 @@ LOG: MAIN
   permreject@test.ex: error ignored
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -192,5 +192,5 @@ all IP addresses skipped or deferred at least one address
 Leaving send_to_server transport
 LOG: MAIN
   == permreject@test.ex R=client T=send_to_server defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to end of data
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1240 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

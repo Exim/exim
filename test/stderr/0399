@@ -1,6 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -41,4 +41,4 @@ parse_forward_list:
 r3 router declined for x@y
 failed to expand "more" in r3 router: unknown variable name "unknown_variable"
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>

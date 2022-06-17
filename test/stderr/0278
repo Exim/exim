@@ -1,6 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -57,14 +57,14 @@ routed by r3 router
   envelope to: CALLER@test.ex
   transport: t1
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1235
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1235
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -108,7 +108,7 @@ search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=EXIM_GID pid=pppp
+  uid=uuuu gid=EXIM_GID pid=p1236
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -203,7 +203,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to CALLER <CALLER@test.ex> transport=t1
-  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  uid=CALLER_UID gid=CALLER_GID pid=p1237
   home=CALLER_HOME current=CALLER_HOME
 set_process_info: pppp delivering 10HmaX-0005vi-00 to CALLER using t1
 appendfile transport entered
@@ -222,7 +222,7 @@ LOG: MAIN
   => CALLER <CALLER@test.ex> R=r3 T=t1
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
 changed uid/gid: post-delivery tidying
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1236
 set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
 Processing retry items
 Succeeded addresses:
@@ -243,12 +243,12 @@ LOG: MAIN
 end delivery of 10HmaX-0005vi-00
 search_tidyup called
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1238
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -331,4 +331,4 @@ unknown in "+local_localparts : +expanded : +unexpanded"? no (end of list)
 r5 router skipped: local_parts mismatch
 no more routers
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>

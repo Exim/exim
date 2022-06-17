@@ -98,18 +98,18 @@
 1999-03-02 09:44:33 10HmbT-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbS-0005vi-00 => >CALLER@test.ex <filter-vdefaults@test.ex> R=userfilter T=address_reply
 1999-03-02 09:44:33 10HmbS-0005vi-00 Completed
-1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 Start queue run: pid=p1234 -qf
 1999-03-02 09:44:33 10HmbA-0005vi-00 Message is frozen
-1999-03-02 09:44:33 End queue run: pid=pppp -qf
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1234 -qf
+1999-03-02 09:44:33 Start queue run: pid=p1235
 1999-03-02 09:44:33 10HmbA-0005vi-00 Message is frozen
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 Start queue run: pid=pppp -qff
+1999-03-02 09:44:33 End queue run: pid=p1235
+1999-03-02 09:44:33 Start queue run: pid=p1236 -qff
 1999-03-02 09:44:33 10HmbA-0005vi-00 Unfrozen by forced delivery
 1999-03-02 09:44:33 10HmbA-0005vi-00 "should freeze this" not first delivery
 1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@test.ex> R=user_accept2 T=appendfile
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qff
+1999-03-02 09:44:33 End queue run: pid=p1236 -qff
 1999-03-02 09:44:33 10HmbU-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbU-0005vi-00 "should freeze this" first delivery
 1999-03-02 09:44:33 10HmbU-0005vi-00 => userz <system-filter> R=user_accept1 T=appendfile
@@ -118,12 +118,12 @@
 1999-03-02 09:44:33 10HmbV-0005vi-00 => postmaster <postmaster@test.ex> R=user_accept1 T=appendfile
 1999-03-02 09:44:33 10HmbV-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbU-0005vi-00 Frozen by the system filter: subject was "should freeze this"\nHere are two extra\nlines of text
-1999-03-02 09:44:33 Start queue run: pid=pppp -qqff -R userx
+1999-03-02 09:44:33 Start queue run: pid=p1237 -qqff -R userx
 1999-03-02 09:44:33 10HmbU-0005vi-00 Unfrozen by forced delivery
 1999-03-02 09:44:33 10HmbU-0005vi-00 "should freeze this" not first delivery
 1999-03-02 09:44:33 10HmbU-0005vi-00 => userx <userx@test.ex> R=user_accept2 T=appendfile
 1999-03-02 09:44:33 10HmbU-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qqff -R userx
+1999-03-02 09:44:33 End queue run: pid=p1237 -qqff -R userx
 1999-03-02 09:44:33 10HmbW-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbW-0005vi-00 "" first delivery
 1999-03-02 09:44:33 10HmbW-0005vi-00 == readfile@test.ex R=fail_read_filter defer (-17): error in filter file: failed to expand "${readfile{TESTSUITE/test-private}}" in filter file: failed to open TESTSUITE/test-private: Permission denied (euid=CALLER_UID egid=CALLER_GID)

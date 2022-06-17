@@ -16,7 +16,7 @@ LOG: smtp_connection MAIN
   SMTP connection from (test.ex) [127.0.0.1] closed by QUIT
 search_tidyup called
 SMTP>>(close on process exit)
->>>>>>>>>>>>>>>> Exim pid=pppp (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********
 1999-03-02 09:44:33 H=(test.ex) [127.0.0.1] F=<test_2@paniclogrcpt> rejected RCPT <dest2@test.ex>

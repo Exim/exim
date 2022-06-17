@@ -1,6 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: -C, -D, -be or -bf forces real uid
-  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  uid=CALLER_UID gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -134,4 +134,4 @@ sender address = CALLER@myhost.test.ex
    in TESTSUITE/aux-fixed/0484.aliases
  lookup yielded: userx
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

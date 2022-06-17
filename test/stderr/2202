@@ -1,10 +1,10 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1234
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 sender_fullhost = [ip4.ip4.ip4.ip4]
@@ -92,4 +92,4 @@ SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4] closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

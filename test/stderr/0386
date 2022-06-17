@@ -1,13 +1,13 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1234
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1234
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -147,17 +147,17 @@ SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1235
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1235
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -258,7 +258,7 @@ search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=EXIM_GID pid=pppp
+  uid=uuuu gid=EXIM_GID pid=p1236
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
@@ -329,7 +329,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to 2 <2@b> transport=t1
-  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  uid=CALLER_UID gid=CALLER_GID pid=p1237
   home=NULL current=/
 set_process_info: pppp delivering 10HmaX-0005vi-00 to 2 using t1
 appendfile transport entered
@@ -359,7 +359,7 @@ LOG: MAIN
   => 2 <2@b> R=r1 T=t1
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
 changed uid/gid: post-delivery tidying
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1236
 set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
 Processing retry items
 Succeeded addresses:
@@ -380,7 +380,7 @@ LOG: MAIN
 end delivery of 10HmaX-0005vi-00
 search_tidyup called
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 smtp_setup_msg entered
 SMTP<< rset
 SMTP>> 250 Reset OK
@@ -451,7 +451,7 @@ search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaY-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=EXIM_GID pid=pppp
+  uid=uuuu gid=EXIM_GID pid=p1238
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
@@ -522,7 +522,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to 2 <2@b> transport=t1
-  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  uid=CALLER_UID gid=CALLER_GID pid=p1239
   home=NULL current=/
 set_process_info: pppp delivering 10HmaY-0005vi-00 to 2 using t1
 appendfile transport entered
@@ -552,7 +552,7 @@ LOG: MAIN
   => 2 <2@b> R=r1 T=t1
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
 changed uid/gid: post-delivery tidying
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1238
 set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
 Processing retry items
 Succeeded addresses:
@@ -573,11 +573,11 @@ LOG: MAIN
 end delivery of 10HmaY-0005vi-00
 search_tidyup called
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

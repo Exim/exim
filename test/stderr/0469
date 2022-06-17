@@ -1,6 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -33,4 +33,4 @@ host_find_bydns yield = HOST_FIND_FAILED (0); returned hosts:
 r1 router declined for x@mxt1c.test.ex
 no more routers
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>

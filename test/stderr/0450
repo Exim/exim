@@ -28,14 +28,14 @@ added 10HmaX-0005vi-00 to queue for 127.0.0.1
 Leaving t1 transport
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (dd): Connection refused
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
-  Start queue run: pid=pppp
+  Start queue run: pid=p1234
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
 t1 transport entered
@@ -57,7 +57,7 @@ already listed for 127.0.0.1
 Leaving t1 transport
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (dd): Connection refused
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
-  End queue run: pid=pppp
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+  End queue run: pid=p1234
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

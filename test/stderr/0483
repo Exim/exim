@@ -27,4 +27,4 @@ LOG: MAIN REJECT
   U=CALLER F=<sender@domain1> rejected RCPT <other@domain2>
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -1,15 +1,15 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1234
 1999-03-02 09:44:33 10HmaX-0005vi-00 => a@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] A=plain L C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1234
 1999-03-02 09:44:33 10HmaY-0005vi-00 removed by CALLER
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1235
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => b@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] A=plain L* C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1235
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbB-0005vi-00 plain authenticator failed H=127.0.0.1 [127.0.0.1] 503 AUTH command used when not advertised
 1999-03-02 09:44:33 10HmbB-0005vi-00 == c@test.ex R=client T=smtp defer (-42): authentication required but authentication attempt(s) failed
@@ -20,13 +20,13 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtpa L. A=plain:userx S=sss id=E10HmaX-0005vi-00@the.local.host.name
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtpa L* A=plain:userx S=sss id=E10HmaZ-0005vi-00@the.local.host.name
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1237
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <b@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 End queue run: pid=p1237
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1239, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtpa L. A=plain:userx S=sss id=E10HmbC-0005vi-00@the.local.host.name

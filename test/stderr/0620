@@ -50,7 +50,7 @@ LOG: MAIN
   $0 'trythiskey.ex'  $1 ''
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
@@ -102,4 +102,4 @@ LOG: MAIN
   $0 'trythiskey.ex'  $1 ''
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

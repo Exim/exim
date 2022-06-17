@@ -6,7 +6,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=ten-1.test.ex [V4NET.0.0.1] Network Error
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=black-2.test.ex [V4NET.11.12.14] Network Error
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@mxt99.test.ex R=r1 T=smtp defer (dd): Network Error
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1234
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=ten-3.test.ex [V4NET.0.0.3] Network Error
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=ten-5.test.ex [V4NET.0.0.5] Network Error
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=ten-4.test.ex [V4NET.0.0.4] Network Error
@@ -22,6 +22,6 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 CALLER@test.ex: error ignored
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1234
+1999-03-02 09:44:33 Start queue run: pid=p1235
+1999-03-02 09:44:33 End queue run: pid=p1235

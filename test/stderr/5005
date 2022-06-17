@@ -1,10 +1,10 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1234
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -48,7 +48,7 @@ search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=EXIM_GID pid=pppp
+  uid=uuuu gid=EXIM_GID pid=p1235
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -115,7 +115,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to nofile <nofile@test.ex> transport=t1
-  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  uid=CALLER_UID gid=CALLER_GID pid=p1236
   home=NULL current=/
 set_process_info: pppp delivering 10HmaX-0005vi-00 to nofile using t1
 appendfile transport entered
@@ -164,7 +164,7 @@ LOG: MAIN
   => nofile <nofile@test.ex> R=r1 T=t1
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
 changed uid/gid: post-delivery tidying
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1235
 set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
 Processing retry items
 Succeeded addresses:
@@ -185,16 +185,16 @@ LOG: MAIN
 end delivery of 10HmaX-0005vi-00
 search_tidyup called
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1237
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1237
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -237,7 +237,7 @@ search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaY-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=EXIM_GID pid=pppp
+  uid=uuuu gid=EXIM_GID pid=p1238
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -304,7 +304,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
-  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  uid=CALLER_UID gid=CALLER_GID pid=p1239
   home=NULL current=/
 set_process_info: pppp delivering 10HmaY-0005vi-00 to userx using t1
 appendfile transport entered
@@ -355,7 +355,7 @@ LOG: MAIN
   => userx <userx@test.ex> R=r1 T=t1
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
 changed uid/gid: post-delivery tidying
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1238
 set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
 Processing retry items
 Succeeded addresses:
@@ -376,16 +376,16 @@ LOG: MAIN
 end delivery of 10HmaY-0005vi-00
 search_tidyup called
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1240
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1240
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -428,7 +428,7 @@ search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaZ-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=EXIM_GID pid=pppp
+  uid=uuuu gid=EXIM_GID pid=p1241
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -495,7 +495,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
-  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  uid=CALLER_UID gid=CALLER_GID pid=p1242
   home=NULL current=/
 set_process_info: pppp delivering 10HmaZ-0005vi-00 to userx using t1
 appendfile transport entered
@@ -540,7 +540,7 @@ LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
 changed uid/gid: post-delivery tidying
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1241
 set_process_info: pppp tidying up after delivering 10HmaZ-0005vi-00
 Processing retry items
 Succeeded addresses:
@@ -573,16 +573,16 @@ Size of headers = sss
 end delivery of 10HmaZ-0005vi-00
 search_tidyup called
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1241 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1243
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1243
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -625,7 +625,7 @@ search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmbA-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=EXIM_GID pid=pppp
+  uid=uuuu gid=EXIM_GID pid=p1244
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -700,7 +700,7 @@ retry record exists: age=ttt (max 1w)
  closed hints database and lockfile
 search_tidyup called
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
-  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  uid=CALLER_UID gid=CALLER_GID pid=p1245
   home=NULL current=/
 set_process_info: pppp delivering 10HmbA-0005vi-00 to userx using t1
 appendfile transport entered
@@ -732,7 +732,7 @@ LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
 changed uid/gid: post-delivery tidying
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1244
 set_process_info: pppp tidying up after delivering 10HmbA-0005vi-00
 Processing retry items
 Succeeded addresses:
@@ -765,6 +765,6 @@ Size of headers = sss
 end delivery of 10HmbA-0005vi-00
 search_tidyup called
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1244 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1243 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

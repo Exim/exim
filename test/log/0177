@@ -22,14 +22,14 @@
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbC-0005vi-00 => >usery <userx@test.ex> R=filter T=autoreply
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1234
 1999-03-02 09:44:33 10HmbA-0005vi-00 Message is frozen
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 Start queue run: pid=pppp -qff
+1999-03-02 09:44:33 End queue run: pid=p1234
+1999-03-02 09:44:33 Start queue run: pid=p1235 -qff
 1999-03-02 09:44:33 10HmbA-0005vi-00 Unfrozen by forced delivery
 1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@test.ex> R=all_L T=appendfile
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qff
+1999-03-02 09:44:33 End queue run: pid=p1235 -qff
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbE-0005vi-00 == userx@test.ex R=filter defer (-1): subject was "freeze this (2)"
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> R=10HmbE-0005vi-00 U=CALLER P=local S=sss
@@ -37,11 +37,11 @@
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbE-0005vi-00 => >usery <userx@test.ex> R=filter T=autoreply
 1999-03-02 09:44:33 10HmbE-0005vi-00 Frozen
-1999-03-02 09:44:33 Start queue run: pid=pppp -qqff -R userx
+1999-03-02 09:44:33 Start queue run: pid=p1236 -qqff -R userx
 1999-03-02 09:44:33 10HmbE-0005vi-00 Unfrozen by forced delivery
 1999-03-02 09:44:33 10HmbE-0005vi-00 => userx <userx@test.ex> R=all_L T=appendfile
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qqff -R userx
+1999-03-02 09:44:33 End queue run: pid=p1236 -qqff -R userx
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbG-0005vi-00 == userz@test.ex R=filter defer (-1): subject was "freeze this (3)"
 1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> R=10HmbG-0005vi-00 U=CALLER P=local S=sss
@@ -49,8 +49,8 @@
 1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbG-0005vi-00 => >usery <userz@test.ex> R=filter T=autoreply
 1999-03-02 09:44:33 10HmbG-0005vi-00 Frozen
-1999-03-02 09:44:33 Start queue run: pid=pppp -qqff -R userz
+1999-03-02 09:44:33 Start queue run: pid=p1237 -qqff -R userz
 1999-03-02 09:44:33 10HmbG-0005vi-00 Unfrozen by forced delivery
 1999-03-02 09:44:33 10HmbG-0005vi-00 => userx@non.local.domain <userz@test.ex> R=all_R T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qqff -R userz
+1999-03-02 09:44:33 End queue run: pid=p1237 -qqff -R userz

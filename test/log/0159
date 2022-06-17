@@ -1,4 +1,4 @@
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1234
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
@@ -7,10 +7,10 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1234
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= <> H=([ip4.ip4.ip4.ip4]) [ip4.ip4.ip4.ip4] P=esmtp S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=([IPV4:ip4.ip4.ip4.ip4]) [ip4.ip4.ip4.ip4] P=esmtp S=sss
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=(ip4.ip4.ip4.ip4) [ip4.ip4.ip4.ip4] P=esmtp S=sss

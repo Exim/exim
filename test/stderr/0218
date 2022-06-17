@@ -4,20 +4,20 @@ admin user
 dropping to exim gid; retaining priv uid
 Single queue run
 LOG: queue_run MAIN
-  Start queue run: pid=pppp -qq
+  Start queue run: pid=p1234 -qq
 queue running combined directories
 looking in TESTSUITE/spool//input
-delivering 10HmaX-0005vi-00 (queue run pid pppp)
+delivering 10HmaX-0005vi-00 (queue run pid p1234)
 R: client  (ACL)
 T: send_to_server  (ACL)
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmaY-0005vi-00 (queue run pid pppp)
+>>>>>>>>>>>>>>>> Exim pid=p1237 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+delivering 10HmaY-0005vi-00 (queue run pid p1234)
 R: client  (ACL)
 T: send_to_server  (ACL)
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 queue running combined directories
 looking in TESTSUITE/spool//input
-delivering 10HmaX-0005vi-00 (queue run pid pppp)
+delivering 10HmaX-0005vi-00 (queue run pid p1234)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
@@ -40,13 +40,13 @@ LOG: MAIN
   => a@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] L C="250 OK"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-delivering 10HmaY-0005vi-00 (queue run pid pppp)
+delivering 10HmaY-0005vi-00 (queue run pid p1234)
 R: client  (ACL)
 T: send_to_server  (ACL)
   SMTP|> MAIL FROM:<CALLER@test.ex>
@@ -67,30 +67,30 @@ LOG: MAIN
   => b@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* L C="250 OK"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1240 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
-  End queue run: pid=pppp -qq
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+  End queue run: pid=p1234 -qq
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 Single queue run
 LOG: queue_run MAIN
-  Start queue run: pid=pppp -qq
+  Start queue run: pid=p1235 -qq
 queue running combined directories
 looking in TESTSUITE/spool//input
-delivering 10HmaZ-0005vi-00 (queue run pid pppp)
+delivering 10HmaZ-0005vi-00 (queue run pid p1235)
 R: client  (ACL)
 T: send_to_server  (ACL)
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmbA-0005vi-00 (queue run pid pppp)
+>>>>>>>>>>>>>>>> Exim pid=p1241 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+delivering 10HmbA-0005vi-00 (queue run pid p1235)
 R: client  (ACL)
 T: send_to_server  (ACL)
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1242 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 queue running combined directories
 looking in TESTSUITE/spool//input
-delivering 10HmaZ-0005vi-00 (queue run pid pppp)
+delivering 10HmaZ-0005vi-00 (queue run pid p1235)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
@@ -117,11 +117,11 @@ trusted user
 admin user
 LOG: MAIN
   <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
->>>>>>>>>>>>>>>> Exim pid=pppp (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1243 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmbA-0005vi-00 (queue run pid pppp)
+>>>>>>>>>>>>>>>> Exim pid=p1244 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+delivering 10HmbA-0005vi-00 (queue run pid p1235)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  failed: Connection refused
@@ -129,21 +129,21 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 LOG: MAIN
   == b@test.ex R=client T=send_to_server defer (dd): Connection refused
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1245 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
-  End queue run: pid=pppp -qq
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+  End queue run: pid=p1235 -qq
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
-  Start queue run: pid=pppp -qqf
-delivering 10HmbA-0005vi-00 (queue run pid pppp)
+  Start queue run: pid=p1236 -qqf
+delivering 10HmbA-0005vi-00 (queue run pid p1236)
 R: client  (ACL)
 T: send_to_server  (ACL)
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmbB-0005vi-00 (queue run pid pppp)
+>>>>>>>>>>>>>>>> Exim pid=p1246 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+delivering 10HmbB-0005vi-00 (queue run pid p1236)
 R: bounce  (ACL)
 LOG: MAIN
   ** CALLER@test.ex F=<> R=bounce: just discard
@@ -151,12 +151,12 @@ LOG: MAIN
   CALLER@test.ex: error ignored
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmbC-0005vi-00 (queue run pid pppp)
+>>>>>>>>>>>>>>>> Exim pid=p1247 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+delivering 10HmbC-0005vi-00 (queue run pid p1236)
 R: client  (ACL)
 T: send_to_server  (ACL)
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmbA-0005vi-00 (queue run pid pppp)
+>>>>>>>>>>>>>>>> Exim pid=p1248 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+delivering 10HmbA-0005vi-00 (queue run pid p1236)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
@@ -182,16 +182,16 @@ trusted user
 admin user
 LOG: MAIN
   <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss
->>>>>>>>>>>>>>>> Exim pid=pppp (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1249 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1250 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-delivering 10HmbC-0005vi-00 (queue run pid pppp)
+delivering 10HmbC-0005vi-00 (queue run pid p1236)
 R: client  (ACL)
 T: send_to_server  (ACL)
   SMTP|> MAIL FROM:<CALLER@test.ex>
@@ -212,7 +212,7 @@ LOG: MAIN
   => c@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* L C="250 OK"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1251 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
-  End queue run: pid=pppp -qqf
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+  End queue run: pid=p1236 -qqf
+>>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

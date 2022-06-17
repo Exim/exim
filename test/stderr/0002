@@ -128,7 +128,7 @@ LOG: MAIN PANIC
  ├───item-res: no
  ├──expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
  ╰─────result: match_address:   no
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -253,7 +253,7 @@ LOG: MAIN PANIC
  |---item-res: no
  |--expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
  \_____result: match_address:   no
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -310,7 +310,7 @@ dropping to exim gid; retaining priv uid
  ├──expanding: -oMt  sender_ident = $sender_ident
  ╰─────result: -oMt  sender_ident = me
             ╰──(tainted)
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 no host name found for IP address V4NET.11.12.13
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -409,14 +409,14 @@ sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
  ├──expanding: -oMt  sender_ident = $sender_ident
  ╰─────result: -oMt  sender_ident = me
             ╰──(tainted)
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1238
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1238
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 sender_fullhost = [V4NET.0.0.1]
@@ -469,14 +469,14 @@ SMTP>> 550 Administrative prohibition
 LOG: connection_reject MAIN REJECT
   H=ten-1.test.ex [V4NET.0.0.1] rejected connection in "connect" ACL
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1239
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1239
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 sender_fullhost = [V4NET.0.0.2]
@@ -514,7 +514,7 @@ SMTP>> 550 Administrative prohibition
 LOG: connection_reject MAIN REJECT
   H=[V4NET.0.0.2] rejected connection in "connect" ACL
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -660,7 +660,7 @@ LOG: 10HmbD-0005vi-00 Subject is: " here we go: a string that is going to be enc
 LOG: 10HmbD-0005vi-00 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 Exim version x.yz ....
 changed uid/gid: -C, -D, -be or -bf forces real uid
-  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  uid=CALLER_UID gid=CALLER_GID pid=p1240
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -669,4 +669,4 @@ sender address = CALLER@myhost.test.ex
  1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask)
  1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask)
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

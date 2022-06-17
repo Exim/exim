@@ -1,5 +1,5 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1234
 1999-03-02 09:44:33 10HmaX-0005vi-00 => a@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK message 1"
 1999-03-02 09:44:33 10HmaX-0005vi-00 -> b@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK message 1"
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** c@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]*: SMTP error from remote mail server after RCPT TO:<c@test.ex>: 550 Recipient not OK
@@ -8,13 +8,13 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 => f@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]* C="250 OK message 3"
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1234
+1999-03-02 09:44:33 Start queue run: pid=p1235
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <CALLER@test.ex> R=bounces
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1235
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1236
 1999-03-02 09:44:33 10HmaZ-0005vi-00 ** a@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<a@test.ex>: 550 Recipient not OK
 1999-03-02 09:44:33 10HmaZ-0005vi-00 ** b@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<b@test.ex>: 550 Recipient not OK
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => c@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]* C="250 OK message 4"
@@ -25,8 +25,8 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 -> h@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]* C="250 OK message 5"
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1236
+1999-03-02 09:44:33 Start queue run: pid=p1237
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <CALLER@test.ex> R=bounces
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1237

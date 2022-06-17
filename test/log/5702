@@ -1,5 +1,5 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp -qqf
+1999-03-02 09:44:33 Start queue run: pid=p1234 -qqf
 1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:connect
 1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1]:1111
 1999-03-02 09:44:33 10HmaX-0005vi-00 event smtp:connect
@@ -20,4 +20,4 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:complete
 1999-03-02 09:44:33 10HmaX-0005vi-00 . finished: 10HmaX-0005vi-00
-1999-03-02 09:44:33 End queue run: pid=pppp -qqf
+1999-03-02 09:44:33 End queue run: pid=p1234 -qqf

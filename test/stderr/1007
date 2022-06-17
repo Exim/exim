@@ -2,61 +2,61 @@
 ******** SERVER ********
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
-ppppp creating notifier socket
-ppppp  TESTSUITE/spool/exim_daemon_notify
+p1234 creating notifier socket
+p1234  @TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
 pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1234
 LOG: MAIN
-  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4)
+  exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4)
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4)
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 SIGTERM/SIGINT seen
-pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
+p1242 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1235
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
-ppppp creating notifier socket
-ppppp  TESTSUITE/spool/exim_daemon_notify
+p1235 creating notifier socket
+p1235  @TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
 listening on all interfaces (IPv6) port 1226
 listening on all interfaces (IPv4) port 1226
 pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1235
 LOG: MAIN
-  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4)
+  exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4)
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4)
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 SIGTERM/SIGINT seen
-pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
+p1243 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1236
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
-ppppp creating notifier socket
-ppppp  TESTSUITE/spool/exim_daemon_notify
+p1236 creating notifier socket
+p1236  @TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
 listening on all interfaces (IPv6) port 1226
@@ -64,25 +64,25 @@ listening on all interfaces (IPv4) port 1226
 listening on 127.0.0.1 port 1228
 pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1236
 LOG: MAIN
-  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4) [127.0.0.1]:1228
+  exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4) [127.0.0.1]:1228
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4) [127.0.0.1]:1228
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 SIGTERM/SIGINT seen
-pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.1228 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
+p1244 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.1228 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1237
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
-ppppp creating notifier socket
-ppppp  TESTSUITE/spool/exim_daemon_notify
+p1237 creating notifier socket
+p1237  @TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
 listening on all interfaces (IPv6) port 1226
@@ -90,42 +90,42 @@ listening on all interfaces (IPv4) port 1226
 listening on 127.0.0.1 port 1228
 pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1237
 LOG: MAIN
-  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4) [127.0.0.1]:1228
+  exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4) [127.0.0.1]:1228
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4) [127.0.0.1]:1228
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 SIGTERM/SIGINT seen
-pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <;  0.0.0.0; 127.0.0.1.1228 ; ::0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
+p1245 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <;  0.0.0.0; 127.0.0.1.1228 ; ::0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1238
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
-ppppp creating notifier socket
-ppppp  TESTSUITE/spool/exim_daemon_notify
+p1238 creating notifier socket
+p1238  @TESTSUITE/spool/exim_daemon_notify
 listening on ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225
 listening on ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1226
 pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1238
 LOG: MAIN
-  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]:{1225,1226}
+  exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTP on [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]:{1225,1226}
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]:{1225,1226}
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 SIGTERM/SIGINT seen
-pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <;  ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
+p1246 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <;  ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1239
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -139,19 +139,19 @@ listening on all interfaces (IPv4) port 1227
 listening on 127.0.0.1 port 1228
 pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1239
 LOG: MAIN
-  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1227 (IPv6 and IPv4) [127.0.0.1]:1228
+  exim x.yz daemon started: pid=p1239, no queue runs, listening for SMTP on port 1227 (IPv6 and IPv4) [127.0.0.1]:1228
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1227 (IPv6 and IPv4) [127.0.0.1]:1228
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 SIGTERM/SIGINT seen
-pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.1228 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
+p1247 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.1228 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1240
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -166,19 +166,19 @@ listening on 127.0.0.1 port 1227
 listening on 127.0.0.1 port 1225
 pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1240
 LOG: MAIN
-  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on [127.0.0.1]:{1227,1225}
+  exim x.yz daemon started: pid=p1240, no queue runs, listening for SMTP on [127.0.0.1]:{1227,1225}
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on [127.0.0.1]:{1227,1225}
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 SIGTERM/SIGINT seen
-pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.1228 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
+p1248 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.1228 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1240 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1241
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -192,13 +192,13 @@ listening on all interfaces (IPv4) port 1225
 listening on all interfaces (IPv4) port 1226
 pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1241
 LOG: MAIN
-  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv4)
+  exim x.yz daemon started: pid=p1241, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv4)
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv4)
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 SIGTERM/SIGINT seen
-pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
+p1249 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1241 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

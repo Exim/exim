@@ -4,9 +4,9 @@ admin user
 dropping to exim gid; retaining priv uid
 set_process_info: pppp running the queue (single queue run)
 LOG: queue_run MAIN
-  Start queue run: pid=pppp
+  Start queue run: pid=p1234
 set_process_info: pppp running queue: 10HmaX-0005vi-00-H
-set_process_info: pppp delivering 10HmaX-0005vi-00 (queue run pid pppp)
+set_process_info: pppp delivering 10HmaX-0005vi-00 (queue run pid p1234)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
 set_process_info: pppp delivering 10HmaX-0005vi-00 using t1
@@ -100,15 +100,15 @@ set_process_info: pppp delivering 10HmaZ-0005vi-00
 LOG: MAIN
   == CALLER@the.local.host.name R=r1 T=t1 defer (dd): Connection refused
 set_process_info: pppp tidying up after delivering 10HmaZ-0005vi-00
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 set_process_info: pppp running queue: 10HmaY-0005vi-00-H
-set_process_info: pppp delivering 10HmaY-0005vi-00 (queue run pid pppp)
+set_process_info: pppp delivering 10HmaY-0005vi-00 (queue run pid p1234)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> usery@test.ex <--------
 set_process_info: pppp delivering 10HmaY-0005vi-00 using t1
@@ -130,9 +130,9 @@ set_process_info: pppp delivering 10HmaY-0005vi-00
 LOG: retry_defer MAIN
   == usery@test.ex R=r1 T=t1 defer (-54): retry time not reached for any host for 'test.ex'
 set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 LOG: queue_run MAIN
-  End queue run: pid=pppp
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+  End queue run: pid=p1234
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
