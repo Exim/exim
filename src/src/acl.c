@@ -3217,8 +3217,8 @@ for (; cb; cb = cb->next)
   switch(cb->type)
     {
     case ACLC_ADD_HEADER:
-    setup_header(arg);
-    break;
+      setup_header(arg);
+      break;
 
     /* A nested ACL that returns "discard" makes sense only for an "accept" or
     "discard" verb. */
@@ -3232,12 +3232,12 @@ for (; cb; cb = cb->next)
           verbs[verb]);
         return ERROR;
         }
-    break;
+      break;
 
     case ACLC_AUTHENTICATED:
       rc = sender_host_authenticated ? match_isinlist(sender_host_authenticated,
 	      &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL) : FAIL;
-    break;
+      break;
 
     #ifdef EXPERIMENTAL_BRIGHTMAIL
     case ACLC_BMI_OPTIN:
@@ -3254,21 +3254,21 @@ for (; cb; cb = cb->next)
     /* The true/false parsing here should be kept in sync with that used in
     expand.c when dealing with ECOND_BOOL so that we don't have too many
     different definitions of what can be a boolean. */
-    if (*arg == '-'
-	? Ustrspn(arg+1, "0123456789") == Ustrlen(arg+1)    /* Negative number */
-	: Ustrspn(arg,   "0123456789") == Ustrlen(arg))     /* Digits, or empty */
-      rc = (Uatoi(arg) == 0)? FAIL : OK;
-    else
-      rc = (strcmpic(arg, US"no") == 0 ||
-            strcmpic(arg, US"false") == 0)? FAIL :
-           (strcmpic(arg, US"yes") == 0 ||
-            strcmpic(arg, US"true") == 0)? OK : DEFER;
-    if (rc == DEFER)
-      *log_msgptr = string_sprintf("invalid \"condition\" value \"%s\"", arg);
-    break;
+      if (*arg == '-'
+	  ? Ustrspn(arg+1, "0123456789") == Ustrlen(arg+1)    /* Negative number */
+	  : Ustrspn(arg,   "0123456789") == Ustrlen(arg))     /* Digits, or empty */
+	rc = (Uatoi(arg) == 0)? FAIL : OK;
+      else
+	rc = (strcmpic(arg, US"no") == 0 ||
+	      strcmpic(arg, US"false") == 0)? FAIL :
+	     (strcmpic(arg, US"yes") == 0 ||
+	      strcmpic(arg, US"true") == 0)? OK : DEFER;
+      if (rc == DEFER)
+	*log_msgptr = string_sprintf("invalid \"condition\" value \"%s\"", arg);
+      break;
 
     case ACLC_CONTINUE:    /* Always succeeds */
-    break;
+      break;
 
     case ACLC_CONTROL:
       {
@@ -3647,14 +3647,14 @@ for (; cb; cb = cb->next)
       while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
           rc = FAIL;   /* FAIL so that the message is passed to the next ACL */
+      break;
       }
-    break;
     #endif
 
     #ifdef WITH_CONTENT_SCAN
     case ACLC_DECODE:
-    rc = mime_decode(&arg);
-    break;
+      rc = mime_decode(&arg);
+      break;
     #endif
 
     case ACLC_DELAY:
@@ -3719,44 +3719,44 @@ for (; cb; cb = cb->next)
 #endif
           }
         }
+      break;
       }
-    break;
 
 #ifndef DISABLE_DKIM
     case ACLC_DKIM_SIGNER:
-    if (dkim_cur_signer)
-      rc = match_isinlist(dkim_cur_signer,
+      if (dkim_cur_signer)
+	rc = match_isinlist(dkim_cur_signer,
                           &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
-    else
-      rc = FAIL;
-    break;
+      else
+	rc = FAIL;
+      break;
 
     case ACLC_DKIM_STATUS:
-    rc = match_isinlist(dkim_verify_status,
-                        &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
-    break;
+      rc = match_isinlist(dkim_verify_status,
+			  &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
+      break;
 #endif
 
 #ifdef SUPPORT_DMARC
     case ACLC_DMARC_STATUS:
-    if (!f.dmarc_has_been_checked)
-      dmarc_process();
-    f.dmarc_has_been_checked = TRUE;
-    /* used long way of dmarc_exim_expand_query() in case we need more
-     * view into the process in the future. */
-    rc = match_isinlist(dmarc_exim_expand_query(DMARC_VERIFY_STATUS),
-                        &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
-    break;
+      if (!f.dmarc_has_been_checked)
+	dmarc_process();
+      f.dmarc_has_been_checked = TRUE;
+      /* used long way of dmarc_exim_expand_query() in case we need more
+       * view into the process in the future. */
+      rc = match_isinlist(dmarc_exim_expand_query(DMARC_VERIFY_STATUS),
+			  &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
+      break;
 #endif
 
     case ACLC_DNSLISTS:
-    rc = verify_check_dnsbl(where, &arg, log_msgptr);
-    break;
+      rc = verify_check_dnsbl(where, &arg, log_msgptr);
+      break;
 
     case ACLC_DOMAINS:
-    rc = match_isinlist(addr->domain, &arg, 0, &domainlist_anchor,
-      addr->domain_cache, MCL_DOMAIN, TRUE, CUSS &deliver_domain_data);
-    break;
+      rc = match_isinlist(addr->domain, &arg, 0, &domainlist_anchor,
+	addr->domain_cache, MCL_DOMAIN, TRUE, CUSS &deliver_domain_data);
+      break;
 
     /* The value in tls_cipher is the full cipher name, for example,
     TLSv1:DES-CBC3-SHA:168, whereas the values to test for are just the
@@ -3765,19 +3765,20 @@ for (; cb; cb = cb->next)
     writing is poorly documented. */
 
     case ACLC_ENCRYPTED:
-    if (tls_in.cipher == NULL) rc = FAIL; else
-      {
-      uschar *endcipher = NULL;
-      uschar *cipher = Ustrchr(tls_in.cipher, ':');
-      if (!cipher) cipher = tls_in.cipher; else
-        {
-        endcipher = Ustrchr(++cipher, ':');
-        if (endcipher) *endcipher = 0;
-        }
-      rc = match_isinlist(cipher, &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
-      if (endcipher) *endcipher = ':';
-      }
-    break;
+      if (!tls_in.cipher) rc = FAIL;
+      else
+	{
+	uschar *endcipher = NULL;
+	uschar *cipher = Ustrchr(tls_in.cipher, ':');
+	if (!cipher) cipher = tls_in.cipher; else
+	  {
+	  endcipher = Ustrchr(++cipher, ':');
+	  if (endcipher) *endcipher = 0;
+	  }
+	rc = match_isinlist(cipher, &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
+	if (endcipher) *endcipher = ':';
+	}
+      break;
 
     /* Use verify_check_this_host() instead of verify_check_host() so that
     we can pass over &host_data to catch any looked up data. Once it has been
@@ -3787,17 +3788,17 @@ for (; cb; cb = cb->next)
     message in the same SMTP connection. */
 
     case ACLC_HOSTS:
-    rc = verify_check_this_host(&arg, sender_host_cache, NULL,
-      sender_host_address ? sender_host_address : US"", CUSS &host_data);
-    if (rc == DEFER) *log_msgptr = search_error_message;
-    if (host_data) host_data = string_copy_perm(host_data, TRUE);
-    break;
+      rc = verify_check_this_host(&arg, sender_host_cache, NULL,
+	sender_host_address ? sender_host_address : US"", CUSS &host_data);
+      if (rc == DEFER) *log_msgptr = search_error_message;
+      if (host_data) host_data = string_copy_perm(host_data, TRUE);
+      break;
 
     case ACLC_LOCAL_PARTS:
-    rc = match_isinlist(addr->cc_local_part, &arg, 0,
-      &localpartlist_anchor, addr->localpart_cache, MCL_LOCALPART, TRUE,
-      CUSS &deliver_localpart_data);
-    break;
+      rc = match_isinlist(addr->cc_local_part, &arg, 0,
+	&localpartlist_anchor, addr->localpart_cache, MCL_LOCALPART, TRUE,
+	CUSS &deliver_localpart_data);
+      break;
 
     case ACLC_LOG_REJECT_TARGET:
       {
@@ -3818,8 +3819,8 @@ for (; cb; cb = cb->next)
           }
         }
       log_reject_target = logbits;
+      break;
       }
-    break;
 
     case ACLC_LOGWRITE:
       {
@@ -3850,8 +3851,8 @@ for (; cb; cb = cb->next)
 
       if (logbits == 0) logbits = LOG_MAIN;
       log_write(0, logbits, "%s", string_printing(s));
+      break;
       }
-    break;
 
     #ifdef WITH_CONTENT_SCAN
     case ACLC_MALWARE:			/* Run the malware backend. */
@@ -3877,52 +3878,52 @@ for (; cb; cb = cb->next)
       rc = malware(ss, timeout);
       if (rc == DEFER && defer_ok)
 	rc = FAIL;	/* FAIL so that the message is passed to the next ACL */
+      break;
       }
-    break;
 
     case ACLC_MIME_REGEX:
-    rc = mime_regex(&arg);
-    break;
+      rc = mime_regex(&arg);
+      break;
     #endif
 
     case ACLC_QUEUE:
-    if (is_tainted(arg))
-      {
-      *log_msgptr = string_sprintf("Tainted name '%s' for queue not permitted",
-				    arg);
-      return ERROR;
-      }
-    if (Ustrchr(arg, '/'))
-      {
-      *log_msgptr = string_sprintf(
-	      "Directory separator not permitted in queue name: '%s'", arg);
-      return ERROR;
-      }
-    queue_name = string_copy_perm(arg, FALSE);
-    break;
+      if (is_tainted(arg))
+	{
+	*log_msgptr = string_sprintf("Tainted name '%s' for queue not permitted",
+				      arg);
+	return ERROR;
+	}
+      if (Ustrchr(arg, '/'))
+	{
+	*log_msgptr = string_sprintf(
+		"Directory separator not permitted in queue name: '%s'", arg);
+	return ERROR;
+	}
+      queue_name = string_copy_perm(arg, FALSE);
+      break;
 
     case ACLC_RATELIMIT:
-    rc = acl_ratelimit(arg, where, log_msgptr);
-    break;
+      rc = acl_ratelimit(arg, where, log_msgptr);
+      break;
 
     case ACLC_RECIPIENTS:
-    rc = match_address_list(CUS addr->address, TRUE, TRUE, &arg, NULL, -1, 0,
-      CUSS &recipient_data);
-    break;
+      rc = match_address_list(CUS addr->address, TRUE, TRUE, &arg, NULL, -1, 0,
+	CUSS &recipient_data);
+      break;
 
     #ifdef WITH_CONTENT_SCAN
     case ACLC_REGEX:
-    rc = regex(&arg);
-    break;
+      rc = regex(&arg);
+      break;
     #endif
 
     case ACLC_REMOVE_HEADER:
-    setup_remove_header(arg);
-    break;
+      setup_remove_header(arg);
+      break;
 
     case ACLC_SEEN:
-    rc = acl_seen(arg, where, log_msgptr);
-    break;
+      rc = acl_seen(arg, where, log_msgptr);
+      break;
 
     case ACLC_SENDER_DOMAINS:
       {
@@ -3931,13 +3932,13 @@ for (; cb; cb = cb->next)
       sdomain = sdomain ? sdomain + 1 : US"";
       rc = match_isinlist(sdomain, &arg, 0, &domainlist_anchor,
         sender_domain_cache, MCL_DOMAIN, TRUE, NULL);
+      break;
       }
-    break;
 
     case ACLC_SENDERS:
-    rc = match_address_list(CUS sender_address, TRUE, TRUE, &arg,
-      sender_address_cache, -1, 0, CUSS &sender_data);
-    break;
+      rc = match_address_list(CUS sender_address, TRUE, TRUE, &arg,
+	sender_address_cache, -1, 0, CUSS &sender_data);
+      break;
 
     /* Connection variables must persist forever; message variables not */
 
@@ -3959,8 +3960,8 @@ for (; cb; cb = cb->next)
 #endif
 	acl_var_create(cb->u.varname)->data.ptr = string_copy(arg);
       store_pool = old_pool;
+      break;
       }
-    break;
 
 #ifdef WITH_CONTENT_SCAN
     case ACLC_SPAM:
@@ -3974,22 +3975,23 @@ for (; cb; cb = cb->next)
       while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
           rc = FAIL;	/* FAIL so that the message is passed to the next ACL */
+      break;
       }
-    break;
 #endif
 
 #ifdef SUPPORT_SPF
     case ACLC_SPF:
       rc = spf_process(&arg, sender_address, SPF_PROCESS_NORMAL);
-    break;
+      break;
+
     case ACLC_SPF_GUESS:
       rc = spf_process(&arg, sender_address, SPF_PROCESS_GUESS);
-    break;
+      break;
 #endif
 
     case ACLC_UDPSEND:
-    rc = acl_udpsend(arg, log_msgptr);
-    break;
+      rc = acl_udpsend(arg, log_msgptr);
+      break;
 
     /* If the verb is WARN, discard any user message from verification, because
     such messages are SMTP responses, not header additions. The latter come
@@ -3998,16 +4000,16 @@ for (; cb; cb = cb->next)
     (until something changes it). */
 
     case ACLC_VERIFY:
-    rc = acl_verify(where, addr, arg, user_msgptr, log_msgptr, basic_errno);
-    if (*user_msgptr)
-      acl_verify_message = *user_msgptr;
-    if (verb == ACL_WARN) *user_msgptr = NULL;
-    break;
+      rc = acl_verify(where, addr, arg, user_msgptr, log_msgptr, basic_errno);
+      if (*user_msgptr)
+	acl_verify_message = *user_msgptr;
+      if (verb == ACL_WARN) *user_msgptr = NULL;
+      break;
 
     default:
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "internal ACL error: unknown "
-      "condition %d", cb->type);
-    break;
+      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "internal ACL error: unknown "
+	"condition %d", cb->type);
+      break;
     }
 
   /* If a condition was negated, invert OK/FAIL. */
