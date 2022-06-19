@@ -423,11 +423,11 @@ if (!recurse)
 /* If deliver_selectstring is a regex, compile it. */
 
 if (deliver_selectstring && f.deliver_selectstring_regex)
-  selectstring_regex = regex_must_compile(deliver_selectstring, TRUE, FALSE);
+  selectstring_regex = regex_must_compile(deliver_selectstring, MCS_CASELESS, FALSE);
 
 if (deliver_selectstring_sender && f.deliver_selectstring_sender_regex)
   selectstring_regex_sender =
-    regex_must_compile(deliver_selectstring_sender, TRUE, FALSE);
+    regex_must_compile(deliver_selectstring_sender, MCS_CASELESS, FALSE);
 
 /* If the spool is split into subdirectories, we want to process it one
 directory at a time, so as to spread out the directory scanning and the

@@ -83,45 +83,6 @@ enum commandline_info { CMDINFO_NONE=0,
 
 
 
-/*************************************************
-*  Compile regular expression and panic on fail  *
-*************************************************/
-
-/* This function is called when failure to compile a regular expression leads
-to a panic exit. In other cases, pcre_compile() is called directly. In many
-cases where this function is used, the results of the compilation are to be
-placed in long-lived store, so we temporarily reset the store management
-functions that PCRE uses if the use_malloc flag is set.
-
-Argument:
-  pattern     the pattern to compile
-  caseless    TRUE if caseless matching is required
-  use_malloc  TRUE if compile into malloc store
-
-Returns:      pointer to the compiled pattern
-*/
-
-const pcre2_code *
-regex_must_compile(const uschar * pattern, BOOL caseless, BOOL use_malloc)
-{
-size_t offset;
-int options = caseless ? PCRE_COPT|PCRE2_CASELESS : PCRE_COPT;
-const pcre2_code * yield;
-int err;
-
-if (!(yield = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED, options,
-  &err, &offset, use_malloc ? pcre_mlc_cmp_ctx : pcre_gen_cmp_ctx)))
-  {
-  uschar errbuf[128];
-  pcre2_get_error_message(err, errbuf, sizeof(errbuf));
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "regular expression error: "
-    "%s at offset %ld while compiling %s", errbuf, (long)offset, pattern);
-  }
-
-return yield;
-}
-
-
 static void
 pcre_init(void)
 {
@@ -2019,7 +1980,7 @@ this here, because the -M options check their arguments for syntactic validity
 using mac_ismsgid, which uses this. */
 
 regex_ismsgid =
-  regex_must_compile(US"^(?:[^\\W_]{6}-){2}[^\\W_]{2}$", FALSE, TRUE);
+  regex_must_compile(US"^(?:[^\\W_]{6}-){2}[^\\W_]{2}$", MCS_NOFLAGS, TRUE);
 
 /* Precompile the regular expression that is used for matching an SMTP error
 code, possibly extended, at the start of an error message. Note that the
@@ -2027,14 +1988,14 @@ terminating whitespace character is included. */
 
 regex_smtp_code =
   regex_must_compile(US"^\\d\\d\\d\\s(?:\\d\\.\\d\\d?\\d?\\.\\d\\d?\\d?\\s)?",
-    FALSE, TRUE);
+    MCS_NOFLAGS, TRUE);
 
 #ifdef WHITELIST_D_MACROS
 /* Precompile the regular expression used to filter the content of macros
 given to -D for permissibility. */
 
 regex_whitelisted_macro =
-  regex_must_compile(US"^[A-Za-z0-9_/.-]*$", FALSE, TRUE);
+  regex_must_compile(US"^[A-Za-z0-9_/.-]*$", MCS_NOFLAGS, TRUE);
 #endif
 
 for (i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
@@ -2252,7 +2213,7 @@ on the second character (the one after '-'), to save some effort. */
 	   -bdf: Ditto, but in the foreground.
 	*/
 	case 'd':
-	  f.daemon_listen = TRUE;
+	  f.daemon_listen = f.daemon_scion = TRUE;
 	  if (*argrest == 'f') f.background_daemon = FALSE;
 	  else if (*argrest) badarg = TRUE;
 	  break;
@@ -2512,7 +2473,7 @@ on the second character (the one after '-'), to save some effort. */
 	case 'w':
 	  f.inetd_wait_mode = TRUE;
 	  f.background_daemon = FALSE;
-	  f.daemon_listen = TRUE;
+	  f.daemon_listen = f.daemon_scion = TRUE;
 	  if (*argrest)
 	    if ((inetd_wait_timeout = readconf_readtime(argrest, 0, FALSE)) <= 0)
 	      exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
@@ -5039,7 +5000,7 @@ for (i = 0;;)
         if (gecos_pattern && gecos_name)
           {
           const pcre2_code *re;
-          re = regex_must_compile(gecos_pattern, FALSE, TRUE); /* Use malloc */
+          re = regex_must_compile(gecos_pattern, MCS_NOFLAGS, TRUE); /* Use malloc */
 
           if (regex_match_and_setup(re, name, 0, -1))
             {

@@ -2213,23 +2213,14 @@ else
 
   if (ob->quota_value > 0 || THRESHOLD_CHECK || ob->maildir_use_size_file)
     {
-    PCRE2_SIZE offset;
-    int err;
-
     /* Compile the regex if there is one. */
 
     if (ob->quota_size_regex)
       {
-      if (!(re = pcre2_compile((PCRE2_SPTR)ob->quota_size_regex,
-		  PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_gen_cmp_ctx)))
-        {
-	uschar errbuf[128];
-	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
-        addr->message = string_sprintf("appendfile: regular expression "
-          "error: %s at offset %ld while compiling %s", errbuf, (long)offset,
-          ob->quota_size_regex);
+      if (!(re = regex_compile(ob->quota_size_regex,
+		  MCS_NOFLAGS, &addr->message, pcre_gen_cmp_ctx)))
         return FALSE;
-        }
+
       DEBUG(D_transport) debug_printf("using regex for file sizes: %s\n",
         ob->quota_size_regex);
       }
@@ -2302,23 +2293,14 @@ else
   if (ob->maildir_use_size_file)
     {
     const pcre2_code * dir_regex = NULL;
-    PCRE2_SIZE offset;
-    int err;
 
     if (ob->maildir_dir_regex)
       {
       int check_path_len = Ustrlen(check_path);
 
-      if (!(dir_regex = pcre2_compile((PCRE2_SPTR)ob->maildir_dir_regex,
-	    PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_gen_cmp_ctx)))
-        {
-	uschar errbuf[128];
-	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
-        addr->message = string_sprintf("appendfile: regular expression "
-          "error: %s at offset %ld while compiling %s", errbuf, (long)offset,
-          ob->maildir_dir_regex);
+      if (!(dir_regex = regex_compile(ob->maildir_dir_regex,
+	    MCS_NOFLAGS, &addr->message, pcre_gen_cmp_ctx)))
         return FALSE;
-        }
 
       DEBUG(D_transport)
         debug_printf("using regex for maildir directory selection: %s\n",

@@ -488,7 +488,7 @@ OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         filtertest.o globals.o dkim.o dkim_transport.o dnsbl.o hash.o \
         header.o host.o host_address.o ip.o log.o lss.o match.o md5.o moan.o \
         os.o parse.o priv.o queue.o \
-        rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
+        rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o regex_cache.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         std-crypto.o store.o string.o tls.o tod.o transport.o tree.o verify.o \
         environment.o macro.o \
@@ -809,6 +809,7 @@ readconf.o:      $(HDRS) readconf.c
 receive.o:       $(HDRS) receive.c
 retry.o:         $(HDRS) retry.c
 rewrite.o:       $(HDRS) rewrite.c
+regex_cache.o:   $(HDRS) regex_cache.c
 rfc2047.o:       $(HDRS) rfc2047.c
 route.o:         $(HDRS) route.c
 search.o:        $(HDRS) search.c

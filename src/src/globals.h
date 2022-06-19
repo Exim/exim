@@ -199,6 +199,7 @@ extern struct global_flags {
  BOOL   continue_more			:1; /* Flag more addresses waiting */
 
  BOOL   daemon_listen			:1; /* True if listening required */
+ BOOL   daemon_scion			:1; /* Ancestor proc is daemon, and not re-exec'd */
  BOOL   debug_daemon			:1; /* Debug the daemon process only */
  BOOL   deliver_firsttime		:1; /* True for first delivery attempt */
  BOOL   deliver_force			:1; /* TRUE if delivery was forced */

@@ -363,6 +363,9 @@ LOG: MAIN
   ├considering: } }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
   ├──expanding: (?i)bulk|list|junk
   ╰─────result: (?i)bulk|list|junk
+ compiled RE '(?i)bulk|list|junk' not found in local cache
+ compiling RE '(?i)bulk|list|junk'
+ compiled RE '(?i)bulk|list|junk' saved in local cache
   ╭considering: $h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
   ├considering: }{(?i)auto-generated|auto-replied} }} {no}{yes}}
   ├──expanding: $h_auto-submitted:
@@ -372,6 +375,9 @@ LOG: MAIN
   ├considering: } }} {no}{yes}}
   ├──expanding: (?i)auto-generated|auto-replied
   ╰─────result: (?i)auto-generated|auto-replied
+ compiled RE '(?i)auto-generated|auto-replied' not found in local cache
+ compiling RE '(?i)auto-generated|auto-replied'
+ compiled RE '(?i)auto-generated|auto-replied' saved in local cache
  ├──condition: or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }}
  ├─────result: false
   ╭───scanning: no}{yes}}

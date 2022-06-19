@@ -136,7 +136,8 @@ for (rewrite_rule * rule = rewrite_rules;
 
   if (flag & rewrite_smtp)
     {
-    uschar *key = expand_string(rule->key);
+    BOOL textonly_re;
+    const uschar * key = expand_string_2(rule->key, &textonly_re);
     if (!key)
       {
       if (!f.expand_string_forcedfail)
@@ -144,7 +145,8 @@ for (rewrite_rule * rule = rewrite_rules;
           "checking for SMTP rewriting: %s", rule->key, expand_string_message);
       continue;
       }
-    if (match_check_string(subject, key, 0, TRUE, FALSE, FALSE, NULL) != OK)
+    if (match_check_string(subject, key, 0,
+      textonly_re ? MCS_CACHEABLE | MCS_PARTIAL : MCS_PARTIAL, NULL) != OK)
       continue;
     new = expand_string(rule->replacement);
     }

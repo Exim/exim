@@ -3498,7 +3498,7 @@ if (!process_log_path || !*process_log_path)
 /* Compile the regex for matching a UUCP-style "From_" line in an incoming
 message. */
 
-regex_From = regex_must_compile(uucp_from_pattern, FALSE, TRUE);
+regex_From = regex_must_compile(uucp_from_pattern, MCS_NOFLAGS, TRUE);
 
 /* Unpick the SMTP rate limiting options, if set */
 

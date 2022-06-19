@@ -142,22 +142,13 @@ a subfolder, and should ensure that a maildirfolder file exists. */
 
 if (maildirfolder_create_regex)
   {
-  int err;
-  PCRE2_SIZE offset;
   const pcre2_code * re;
 
   DEBUG(D_transport) debug_printf("checking for maildirfolder requirement\n");
 
-  if (!(re = pcre2_compile((PCRE2_SPTR)maildirfolder_create_regex,
-	      PCRE2_ZERO_TERMINATED, PCRE_COPT, &err, &offset, pcre_gen_cmp_ctx)))
-    {
-    uschar errbuf[128];
-    pcre2_get_error_message(err, errbuf, sizeof(errbuf));
-    addr->message = string_sprintf("appendfile: regular expression "
-      "error: %s at offset %ld while compiling %s", errbuf, (long)offset,
-      maildirfolder_create_regex);
+  if (!(re = regex_compile(maildirfolder_create_regex,
+	      MCS_NOFLAGS, &addr->message, pcre_gen_cmp_ctx)))
     return FALSE;
-    }
 
   if (regex_match(re, path, -1, NULL))
     {

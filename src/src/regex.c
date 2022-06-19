@@ -18,9 +18,9 @@
 
 /* Structure to hold a list of Regular expressions */
 typedef struct pcre_list {
-  pcre2_code *re;
-  uschar *pcre_text;
-  struct pcre_list *next;
+  const pcre2_code *	re;
+  uschar *		pcre_text;
+  struct pcre_list *	next;
 } pcre_list;
 
 uschar regex_match_string_buffer[1024];
@@ -28,31 +28,27 @@ uschar regex_match_string_buffer[1024];
 extern FILE *mime_stream;
 extern uschar *mime_current_boundary;
 
+
 static pcre_list *
-compile(const uschar * list)
+compile(const uschar * list, BOOL cacheable)
 {
 int sep = 0;
-uschar *regex_string;
-pcre_list *re_list_head = NULL;
-pcre_list *ri;
+uschar * regex_string;
+pcre_list * re_list_head = NULL;
+pcre_list * ri;
 
 /* precompile our regexes */
 while ((regex_string = string_nextinlist(&list, &sep, NULL, 0)))
   if (strcmpic(regex_string, US"false") != 0 && Ustrcmp(regex_string, "0") != 0)
     {
-    pcre2_code * re;
-    int err;
-    PCRE2_SIZE pcre_erroffset;
-
     /* compile our regular expression */
-    if (!(re = pcre2_compile( (PCRE2_SPTR) regex_string, PCRE2_ZERO_TERMINATED,
-		  0, &err, &pcre_erroffset, pcre_gen_cmp_ctx)))
+    uschar * errstr;
+    const pcre2_code * re = regex_compile(regex_string,
+      cacheable ? MCS_CACHEABLE : MCS_NOFLAGS, &errstr, pcre_gen_cmp_ctx);
+
+    if (!re)
       {
-      uschar errbuf[128];
-      pcre2_get_error_message(err, errbuf, sizeof(errbuf));
-      log_write(0, LOG_MAIN,
-	   "regex acl condition warning - error in regex '%s': %s at offset %ld, skipped.",
-	   regex_string, errbuf, (long)pcre_erroffset);
+      log_write(0, LOG_MAIN, "regex acl condition warning - %s, skipped", errstr);
       continue;
       }
 
@@ -96,8 +92,10 @@ for (pcre_list * ri = re_list_head; ri; ri = ri->next)
 return FAIL;
 }
 
+
+
 int
-regex(const uschar **listptr)
+regex(const uschar **listptr, BOOL cacheable)
 {
 unsigned long mbox_size;
 FILE *mbox_file;
@@ -130,7 +128,7 @@ else
   }
 
 /* precompile our regexes */
-if (!(re_list_head = compile(*listptr)))
+if (!(re_list_head = compile(*listptr, cacheable)))
   return FAIL;			/* no regexes -> nothing to do */
 
 /* match each line against all regexes */
@@ -167,7 +165,7 @@ return ret;
 
 
 int
-mime_regex(const uschar **listptr)
+mime_regex(const uschar **listptr, BOOL cacheable)
 {
 pcre_list *re_list_head = NULL;
 FILE *f;
@@ -179,7 +177,7 @@ int ret;
 regex_match_string = NULL;
 
 /* precompile our regexes */
-if (!(re_list_head = compile(*listptr)))
+if (!(re_list_head = compile(*listptr, cacheable)))
   return FAIL;			/* no regexes -> nothing to do */
 
 /* check if the file is already decoded */

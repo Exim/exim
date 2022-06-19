@@ -275,7 +275,7 @@ struct list
 
 for (struct list * l = list; l < list + nelem(list); l++)
   if (!*l->re)
-    *l->re = regex_must_compile(l->string, FALSE, TRUE);
+    *l->re = regex_must_compile(l->string, MCS_NOFLAGS, TRUE);
 }
 
 
@@ -1000,7 +1000,7 @@ uschar authnum;
 unsigned short authbits = 0;
 
 if (!sx->esmtp) return 0;
-if (!regex_AUTH) regex_AUTH = regex_must_compile(AUTHS_REGEX, FALSE, TRUE);
+if (!regex_AUTH) regex_AUTH = regex_must_compile(AUTHS_REGEX, MCS_NOFLAGS, TRUE);
 if (!regex_match_and_setup(regex_AUTH, sx->buffer, 0, -1)) return 0;
 expand_nmax = -1;						/* reset */
 names = string_copyn(expand_nstring[1], expand_nlength[1]);
@@ -1563,7 +1563,7 @@ f.smtp_authenticated = FALSE;
 client_authenticator = client_authenticated_id = client_authenticated_sender = NULL;
 
 if (!regex_AUTH)
-  regex_AUTH = regex_must_compile(AUTHS_REGEX, FALSE, TRUE);
+  regex_AUTH = regex_must_compile(AUTHS_REGEX, MCS_NOFLAGS, TRUE);
 
 /* Is the server offering AUTH? */
 

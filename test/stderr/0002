@@ -26,6 +26,9 @@ dropping to exim gid; retaining priv uid
   ├considering: }{$2$1}fail}
   ├──expanding: \N^([ab]+)(\w+)$\N
   ╰─────result: ^([ab]+)(\w+)$
+ compiled RE '^([ab]+)(\w+)$' not found in local cache
+ compiling RE '^([ab]+)(\w+)$'
+ compiled RE '^([ab]+)(\w+)$' saved in local cache
  ├──condition: match{abcd}{\N^([ab]+)(\w+)$\N}
  ├─────result: true
   ╭considering: $2$1}fail}
@@ -49,6 +52,7 @@ dropping to exim gid; retaining priv uid
   ├considering: }{$2$1}fail}
   ├──expanding: \N^([ab]+)(\w+)$\N
   ╰─────result: ^([ab]+)(\w+)$
+ compiled RE '^([ab]+)(\w+)$' found in local cache
  ├──condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
  ├─────result: false
   ╭───scanning: $2$1}fail}
@@ -151,6 +155,9 @@ dropping to exim gid; retaining priv uid
   |considering: }{$2$1}fail}
   |--expanding: \N^([ab]+)(\w+)$\N
   \_____result: ^([ab]+)(\w+)$
+ compiled RE '^([ab]+)(\w+)$' not found in local cache
+ compiling RE '^([ab]+)(\w+)$'
+ compiled RE '^([ab]+)(\w+)$' saved in local cache
  |--condition: match{abcd}{\N^([ab]+)(\w+)$\N}
  |-----result: true
   /considering: $2$1}fail}
@@ -174,6 +181,7 @@ dropping to exim gid; retaining priv uid
   |considering: }{$2$1}fail}
   |--expanding: \N^([ab]+)(\w+)$\N
   \_____result: ^([ab]+)(\w+)$
+ compiled RE '^([ab]+)(\w+)$' found in local cache
  |--condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
  |-----result: false
   /---scanning: $2$1}fail}

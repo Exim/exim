@@ -1111,7 +1111,17 @@ should not be one active. */
 
 
 #define NOTIFIER_SOCKET_NAME	"exim_daemon_notify"
-#define NOTIFY_MSG_QRUN		1	/* Notify message types */
+/* Notify message types */
+#define NOTIFY_MSG_QRUN		1
 #define NOTIFY_QUEUE_SIZE_REQ	2
+#define NOTIFY_REGEX		3
+
+/* Flags for match_check_string() */
+typedef unsigned mcs_flags;
+#define MCS_NOFLAGS		0
+#define MCS_PARTIAL		BIT(0)	/* permit partial- search types */
+#define MCS_CASELESS		BIT(1)	/* caseless matching where possible */
+#define MCS_AT_SPECIAL		BIT(2)	/* recognize @, @[], etc. */
+#define MCS_CACHEABLE		BIT(3)	/* no dynamic expansions used for pattern */
 
 /* End of macros.h */

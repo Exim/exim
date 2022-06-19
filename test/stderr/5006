@@ -130,6 +130,7 @@ created directory TESTSUITE/test-mail/userx
 created directory TESTSUITE/test-mail/userx/tmp
 created directory TESTSUITE/test-mail/userx/new
 created directory TESTSUITE/test-mail/userx/cur
+compiling RE '^(?:cur|new|\..*)$'
 using regex for maildir directory selection: ^(?:cur|new|\..*)$
 looking for maildirsize in TESTSUITE/test-mail/userx
 TESTSUITE/test-mail/userx/maildirsize does not exist: recalculating

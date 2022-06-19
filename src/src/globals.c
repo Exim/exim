@@ -234,6 +234,7 @@ struct global_flags f =
 	.continue_more          = FALSE,
 
 	.daemon_listen          = FALSE,
+	.daemon_scion           = FALSE,
 	.debug_daemon           = FALSE,
 	.deliver_firsttime      = FALSE,
 	.deliver_force          = FALSE,

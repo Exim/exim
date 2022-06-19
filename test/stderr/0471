@@ -100,6 +100,8 @@ To: random@test.example,
 
 qualify & rewrite recipients list
  address match test: subject=r1@test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' not found in local cache
+ compiled RE '^.{40,}@*' saved in local cache
  r1@test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=r1@test.ex pattern=*@*
  test.ex in "*"? yes (matched "*")
@@ -125,6 +127,7 @@ qualify & rewrite recipients list
   lookup failed
 global rewrite rules
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
  myhost.test.ex in "*"? yes (matched "*")
@@ -239,6 +242,7 @@ rewrite headers
     random@test.exam
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -421,6 +425,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -602,6 +607,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -783,6 +789,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -964,6 +971,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -1145,6 +1153,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -1326,6 +1335,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -1507,6 +1517,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -1688,6 +1699,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -1869,6 +1881,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -2049,6 +2062,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -2229,6 +2243,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -2409,6 +2424,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -2589,6 +2605,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -2769,6 +2786,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -2949,6 +2967,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -3129,6 +3148,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -3309,6 +3329,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -3489,6 +3510,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -3669,6 +3691,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -3849,6 +3872,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -4029,6 +4053,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -4209,6 +4234,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -4388,6 +4414,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -4567,6 +4594,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -4746,6 +4774,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -4925,6 +4954,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -5104,6 +5134,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -5283,6 +5314,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -5462,6 +5494,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -5641,6 +5674,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -5820,6 +5854,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -5999,6 +6034,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -6178,6 +6214,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -6357,6 +6394,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -6535,6 +6573,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -6713,6 +6752,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -6891,6 +6931,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -7069,6 +7110,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -7247,6 +7289,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -7425,6 +7468,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -7603,6 +7647,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -7781,6 +7826,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -7959,6 +8005,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -8137,6 +8184,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -8315,6 +8363,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -8493,6 +8542,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -8671,6 +8721,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -8848,6 +8899,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -9025,6 +9077,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -9202,6 +9255,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -9379,6 +9433,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -9556,6 +9611,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -9733,6 +9789,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -9910,6 +9967,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -10087,6 +10145,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -10264,6 +10323,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -10441,6 +10501,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -10618,6 +10679,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -10795,6 +10857,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -10971,6 +11034,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -11147,6 +11211,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -11323,6 +11388,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -11499,6 +11565,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -11675,6 +11742,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -11851,6 +11919,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -12027,6 +12096,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -12203,6 +12273,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -12379,6 +12450,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -12555,6 +12627,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -12731,6 +12804,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -12907,6 +12981,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -13083,6 +13158,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -13258,6 +13334,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -13433,6 +13510,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -13608,6 +13686,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -13783,6 +13862,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -13958,6 +14038,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -14133,6 +14214,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -14308,6 +14390,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -14483,6 +14566,7 @@ remainder: random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -14658,6 +14742,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -14832,6 +14917,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -15005,6 +15091,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -15177,6 +15264,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -15348,6 +15436,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -15518,6 +15607,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -15687,6 +15777,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -15855,6 +15946,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -16022,6 +16114,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -16188,6 +16281,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -16353,6 +16447,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -16517,6 +16612,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -16680,6 +16776,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -16842,6 +16939,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -17003,6 +17101,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -17163,6 +17262,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -17322,6 +17422,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -17480,6 +17581,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -17637,6 +17739,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -17793,6 +17896,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -17948,6 +18052,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -18102,6 +18207,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -18255,6 +18361,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -18407,6 +18514,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -18558,6 +18666,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -18708,6 +18817,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -18857,6 +18967,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -19005,6 +19116,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -19152,6 +19264,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -19298,6 +19411,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -19443,6 +19557,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -19587,6 +19702,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -19730,6 +19846,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -19872,6 +19989,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -20013,6 +20131,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -20153,6 +20272,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -20292,6 +20412,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -20430,6 +20551,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -20567,6 +20689,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -20703,6 +20826,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -20838,6 +20962,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -20972,6 +21097,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -21105,6 +21231,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -21237,6 +21364,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -21368,6 +21496,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -21498,6 +21627,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -21627,6 +21757,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -21755,6 +21886,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -21882,6 +22014,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -22008,6 +22141,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -22133,6 +22267,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -22257,6 +22392,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -22380,6 +22516,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -22502,6 +22639,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -22623,6 +22761,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -22743,6 +22882,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -22862,6 +23002,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -22980,6 +23121,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -23097,6 +23239,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -23213,6 +23356,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -23328,6 +23472,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -23442,6 +23587,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -23555,6 +23701,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -23667,6 +23814,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -23778,6 +23926,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -23888,6 +24037,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -23997,6 +24147,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -24105,6 +24256,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -24212,6 +24364,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -24318,6 +24471,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -24423,6 +24577,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -24527,6 +24682,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -24630,6 +24786,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -24732,6 +24889,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -24833,6 +24991,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -24933,6 +25092,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -25032,6 +25192,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -25130,6 +25291,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -25227,6 +25389,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -25323,6 +25486,7 @@ To: random@rwtest.example,
 remainder: random@test.example,
     random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -25418,6 +25582,7 @@ To: random@rwtest.example,
 **** debug string too long - truncated ****
 remainder: random@test.example
  address match test: subject=random@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
  address match test: subject=random@test.example pattern=*@*
  test.example in "*"? yes (matched "*")
@@ -25515,6 +25680,7 @@ remainder:
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
  myhost.test.ex in "*"? yes (matched "*")
@@ -25744,6 +25910,8 @@ To: localpart_with_056_chars_56789012345678901234567890123456@test.example
 
 qualify & rewrite recipients list
  address match test: subject=r2@test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' not found in local cache
+ compiled RE '^.{40,}@*' saved in local cache
  r2@test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=r2@test.ex pattern=*@*
  test.ex in "*"? yes (matched "*")
@@ -25769,6 +25937,7 @@ qualify & rewrite recipients list
   lookup failed
 global rewrite rules
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
  myhost.test.ex in "*"? yes (matched "*")
@@ -25804,6 +25973,7 @@ rewrite headers
  rewrite_one_header: type=T:
    To: localpart_with_056_chars_56789012345678901234567890123456@test.example
  address match test: subject=localpart_with_056_chars_56789012345678901234567890123456@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  localpart_with_056_chars_56789012345678901234567890123456@test.example in "^.{40,}@*"? yes (matched "^.{40,}@*")
 LOG: address_rewrite MAIN
   "localpart_with_056_chars_56789012345678901234567890123456@test.example" from to: rewritten as "deny_me@test.example" by rule 1
@@ -25831,6 +26001,7 @@ remainder:
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
  myhost.test.ex in "*"? yes (matched "*")
@@ -25904,6 +26075,8 @@ To: localpart_with_236_chars_567890123456789012345678901234567890123456789012345
 
 qualify & rewrite recipients list
  address match test: subject=r3@test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' not found in local cache
+ compiled RE '^.{40,}@*' saved in local cache
  r3@test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=r3@test.ex pattern=*@*
  test.ex in "*"? yes (matched "*")
@@ -25929,6 +26102,7 @@ qualify & rewrite recipients list
   lookup failed
 global rewrite rules
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
  myhost.test.ex in "*"? yes (matched "*")
@@ -25964,6 +26138,7 @@ rewrite headers
  rewrite_one_header: type=T:
    To: localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
  address match test: subject=localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example in "^.{40,}@*"? yes (matched "^.{40,}@*")
 LOG: address_rewrite MAIN
   "localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example" from to: rewritten as "deny_me@test.example" by rule 1
@@ -25991,6 +26166,7 @@ remainder:
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
  myhost.test.ex in "*"? yes (matched "*")
@@ -26064,6 +26240,8 @@ To: localpart_with_256_chars_567890123456789012345678901234567890123456789012345
 
 qualify & rewrite recipients list
  address match test: subject=r4@test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' not found in local cache
+ compiled RE '^.{40,}@*' saved in local cache
  r4@test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=r4@test.ex pattern=*@*
  test.ex in "*"? yes (matched "*")
@@ -26089,6 +26267,7 @@ qualify & rewrite recipients list
   lookup failed
 global rewrite rules
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
  myhost.test.ex in "*"? yes (matched "*")
@@ -26148,6 +26327,8 @@ To: undisclosed recpients:;
 
 qualify & rewrite recipients list
  address match test: subject=r5@test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' not found in local cache
+ compiled RE '^.{40,}@*' saved in local cache
  r5@test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=r5@test.ex pattern=*@*
  test.ex in "*"? yes (matched "*")
@@ -26173,6 +26354,7 @@ qualify & rewrite recipients list
   lookup failed
 global rewrite rules
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
  myhost.test.ex in "*"? yes (matched "*")
@@ -26210,6 +26392,7 @@ rewrite headers
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+ compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
  myhost.test.ex in "*"? yes (matched "*")

@@ -895,7 +895,7 @@ typedef struct check_host_block {
   const uschar *host_name;
   const uschar *host_address;
   const uschar *host_ipv4;
-  BOOL   negative;
+  mcs_flags	flags;
 } check_host_block;
 
 /* Structure for remembering lookup data when caching the result of

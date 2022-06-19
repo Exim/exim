@@ -50,6 +50,8 @@ check acl = TESTSUITE/aux-fixed/0386.acl1
  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "deny" (TESTSUITE/test-config 44)
  check local_parts = ^.*[@%!/|]
+ compiled caseless RE '^.*[@%!/|]' not found in local cache
+ compiled RE '^.*[@%!/|]' saved in local cache
  1 in "^.*[@%!/|]"? no (end of list)
  deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "require" (TESTSUITE/test-config 44)
@@ -106,6 +108,7 @@ check acl = TESTSUITE/aux-fixed/0386.acl1
  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "deny" (TESTSUITE/test-config 44)
  check local_parts = ^.*[@%!/|]
+ compiled caseless RE '^.*[@%!/|]' found in local cache
  1 in "^.*[@%!/|]"? no (end of list)
  deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "require" (TESTSUITE/test-config 44)

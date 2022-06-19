@@ -136,6 +136,9 @@ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP>> EHLO mail.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250 OK
+ compiled RE '.outlook.com$' not found in local cache
+ compiling RE '.outlook.com$'
+ compiled RE '.outlook.com$' saved in local cache
 not using PIPELINING
 not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)

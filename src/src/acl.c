@@ -3125,8 +3125,9 @@ int sep = -'/';
 
 for (; cb; cb = cb->next)
   {
-  const uschar *arg;
+  const uschar * arg;
   int control_type;
+  BOOL textonly = FALSE;
 
   /* The message and log_message items set up messages to be used in
   case of rejection. They are expanded later. */
@@ -3160,7 +3161,8 @@ for (; cb; cb = cb->next)
 
   if (!conditions[cb->type].expand_at_top)
     arg = cb->arg;
-  else if (!(arg = expand_string(cb->arg)))
+
+  else if (!(arg = expand_string_2(cb->arg, &textonly)))
     {
     if (f.expand_string_forcedfail) continue;
     *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
@@ -3875,14 +3877,14 @@ for (; cb; cb = cb->next)
 	  return ERROR;
 	  }
 
-      rc = malware(ss, timeout);
+      rc = malware(ss, textonly, timeout);
       if (rc == DEFER && defer_ok)
 	rc = FAIL;	/* FAIL so that the message is passed to the next ACL */
       break;
       }
 
     case ACLC_MIME_REGEX:
-      rc = mime_regex(&arg);
+      rc = mime_regex(&arg, textonly);
       break;
     #endif
 
@@ -3913,7 +3915,7 @@ for (; cb; cb = cb->next)
 
     #ifdef WITH_CONTENT_SCAN
     case ACLC_REGEX:
-      rc = regex(&arg);
+      rc = regex(&arg, textonly);
       break;
     #endif
 
