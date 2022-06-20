@@ -692,6 +692,7 @@ static var_entry var_table[] = {
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
   { "recipients",          vtype_string_func, (void *) &fn_recipients },
   { "recipients_count",    vtype_int,         &recipients_count },
+  { "regex_cachesize",     vtype_int,         &regex_cachesize },/* undocumented; devel observability */
 #ifdef WITH_CONTENT_SCAN
   { "regex_match_string",  vtype_stringptr,   &regex_match_string },
 #endif

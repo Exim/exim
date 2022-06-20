@@ -899,6 +899,7 @@ extern const pcre2_code  *regex_SIZE;        /* For recognizing SIZE settings */
 #ifndef DISABLE_PIPE_CONNECT
 extern const pcre2_code  *regex_EARLY_PIPE;  /* For recognizing PIPE_CONNCT */
 #endif
+extern int    regex_cachesize;		     /* number of entries */
 extern const pcre2_code  *regex_ismsgid;     /* Compiled r.e. for message ID */
 extern const pcre2_code  *regex_smtp_code;   /* For recognizing SMTP codes */
 extern const uschar *regex_vars[];           /* $regexN variables */

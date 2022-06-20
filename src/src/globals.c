@@ -1317,6 +1317,7 @@ const pcre2_code *regex_SIZE         = NULL;
 #ifndef DISABLE_PIPE_CONNECT
 const pcre2_code *regex_EARLY_PIPE   = NULL;
 #endif
+int    regex_cachesize		     = 0;
 const pcre2_code *regex_ismsgid      = NULL;
 const pcre2_code *regex_smtp_code    = NULL;
 const uschar *regex_vars[REGEX_VARS];

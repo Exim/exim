@@ -39,6 +39,8 @@ typedef struct re_req {
 static tree_node * regex_cache = NULL;
 static tree_node * regex_caseless_cache = NULL;
 
+#define REGEX_CACHESIZE_LIMIT 1000
+
 /******************************************************************************/
 
 static void
@@ -236,9 +238,14 @@ regex_at_daemon(const uschar * reqbuf)
 {
 const re_req * req = (const re_req *)reqbuf;
 uschar * errstr;
-const pcre2_code * cre = regex_compile(req->re,
-  req->caseless ? MCS_CASELESS | MCS_CACHEABLE : MCS_CACHEABLE,
-  &errstr, pcre_gen_cmp_ctx);
+const pcre2_code * cre;
+
+if (regex_cachesize >= REGEX_CACHESIZE_LIMIT)
+  errstr = US"regex cache size limit reached";
+else if ((cre = regex_compile(req->re,
+	    req->caseless ? MCS_CASELESS | MCS_CACHEABLE : MCS_CACHEABLE,
+	    &errstr, pcre_gen_cmp_ctx)))
+  regex_cachesize++;
 
 DEBUG(D_any) if (!cre) debug_printf("%s\n", errstr);
 return;
