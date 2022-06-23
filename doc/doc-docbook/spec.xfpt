@@ -41509,6 +41509,7 @@ The domain(s) you want to sign with.
 After expansion, this can be a list.
 Each element in turn,
 lowercased,
+.vindex "&$dkim_domain$&"
 is put into the &%$dkim_domain%& expansion variable
 while expanding the remaining signing options.
 If it is empty after expansion, DKIM signing is not done,
@@ -41518,6 +41519,7 @@ and no error will result even if &%dkim_strict%& is set.
 This sets the key selector string.
 After expansion, which can use &$dkim_domain$&, this can be a list.
 Each element in turn is put in the expansion
+.vindex "&$dkim_selector$&"
 variable &%$dkim_selector%& which may be used in the &%dkim_private_key%&
 option along with &%$dkim_domain%&.
 If the option is empty after expansion, DKIM signing is not done for this domain,
