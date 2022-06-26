@@ -234,6 +234,7 @@ struct global_flags f =
 	.continue_more          = FALSE,
 
 	.daemon_listen          = FALSE,
+	.daemon_scion           = FALSE,
 	.debug_daemon           = FALSE,
 	.deliver_firsttime      = FALSE,
 	.deliver_force          = FALSE,
@@ -391,7 +392,7 @@ BOOL    proxy_session          = FALSE;
 #endif
 
 #ifndef DISABLE_QUEUE_RAMP
-BOOL    queue_fast_ramp		= FALSE;
+BOOL    queue_fast_ramp		= TRUE;
 #endif
 BOOL    queue_list_requires_admin = TRUE;
 BOOL    queue_only             = FALSE;
@@ -1207,9 +1208,12 @@ uid_t   originator_uid;
 uschar *override_local_interfaces = NULL;
 uschar *override_pid_file_path = NULL;
 
+BOOL    panic_coredump	       = FALSE;
 pcre2_general_context * pcre_gen_ctx = NULL;
-pcre2_compile_context * pcre_cmp_ctx = NULL;
-pcre2_match_context * pcre_mtc_ctx = NULL;
+pcre2_compile_context * pcre_gen_cmp_ctx = NULL;
+pcre2_match_context * pcre_gen_mtc_ctx = NULL;
+pcre2_general_context * pcre_mlc_ctx = NULL;
+pcre2_compile_context * pcre_mlc_cmp_ctx = NULL;
 
 uschar *percent_hack_domains   = NULL;
 uschar *pid_file_path          = US PID_FILE_PATH
@@ -1313,6 +1317,7 @@ const pcre2_code *regex_SIZE         = NULL;
 #ifndef DISABLE_PIPE_CONNECT
 const pcre2_code *regex_EARLY_PIPE   = NULL;
 #endif
+int    regex_cachesize		     = 0;
 const pcre2_code *regex_ismsgid      = NULL;
 const pcre2_code *regex_smtp_code    = NULL;
 const uschar *regex_vars[REGEX_VARS];
@@ -1323,7 +1328,7 @@ const pcre2_code *regex_whitelisted_macro = NULL;
 uschar *regex_match_string     = NULL;
 #endif
 int     remote_delivery_count  = 0;
-int     remote_max_parallel    = 2;
+int     remote_max_parallel    = 4;
 uschar *remote_sort_domains    = NULL;
 int     retry_data_expire      = 7*24*60*60;
 int     retry_interval_max     = 24*60*60;

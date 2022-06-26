@@ -19,7 +19,7 @@
 1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <a@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
@@ -31,11 +31,11 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbD-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <e@test.ex> R=server
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbF-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbG-0005vi-00 => :blackhole: <f@test.ex> R=server
 1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbH-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbI-0005vi-00 => :blackhole: <g@test.ex> R=server
 1999-03-02 09:44:33 10HmbI-0005vi-00 Completed

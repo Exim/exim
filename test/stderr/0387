@@ -467,4 +467,4 @@ dropping to exim gid; retaining priv uid
    in TESTSUITE/aux-fixed/0387.1
  lookup yielded: [*.b.c]
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

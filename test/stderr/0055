@@ -30,30 +30,30 @@ delivering 10HmbC-0005vi-00
 LOG: MAIN
   == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 LOG: queue_run MAIN
-  Start queue run: pid=pppp
-delivering 10HmbC-0005vi-00 (queue run pid pppp)
+  Start queue run: pid=p1236
+delivering 10HmbC-0005vi-00 (queue run pid p1236)
 LOG: MAIN
   *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 LOG: queue_run MAIN
-  End queue run: pid=pppp
+  End queue run: pid=p1236
 LOG: queue_run MAIN
-  Start queue run: pid=pppp -qq
-delivering 10HmbD-0005vi-00 (queue run pid pppp)
-delivering 10HmbE-0005vi-00 (queue run pid pppp)
-delivering 10HmbD-0005vi-00 (queue run pid pppp)
+  Start queue run: pid=p1237 -qq
+delivering 10HmbD-0005vi-00 (queue run pid p1237)
+delivering 10HmbE-0005vi-00 (queue run pid p1237)
+delivering 10HmbD-0005vi-00 (queue run pid p1237)
 LOG: MAIN
   *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
-delivering 10HmbE-0005vi-00 (queue run pid pppp)
+delivering 10HmbE-0005vi-00 (queue run pid p1237)
 LOG: MAIN
   *> yyy@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 LOG: queue_run MAIN
-  End queue run: pid=pppp -qq
+  End queue run: pid=p1237 -qq
 LOG: MAIN
   <= CALLER@myhost.ex U=CALLER P=local S=sss
 delivering 10HmbF-0005vi-00

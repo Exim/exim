@@ -15,7 +15,7 @@ configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
-  Start queue run: pid=pppp
+  Start queue run: pid=p1234
 search_tidyup called
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
@@ -49,7 +49,7 @@ LOG: MAIN
 LOG: MAIN
   Completed
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
@@ -83,8 +83,8 @@ LOG: MAIN
 LOG: MAIN
   Completed
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
-  End queue run: pid=pppp
+  End queue run: pid=p1234
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -17,15 +17,18 @@ Also a few functions that don't naturally fit elsewhere. */
 # include <gnu/libc-version.h>
 #endif
 
+#ifndef _TIME_H
+# include <time.h>
+#endif
+#ifndef NO_EXECINFO
+# include <execinfo.h>
+#endif
+
 #ifdef USE_GNUTLS
 # include <gnutls/gnutls.h>
 # if GNUTLS_VERSION_NUMBER < 0x030103 && !defined(DISABLE_OCSP)
 #  define DISABLE_OCSP
 # endif
-#endif
-
-#ifndef _TIME_H
-# include <time.h>
 #endif
 
 extern void init_lookup_list(void);
@@ -56,6 +59,18 @@ if (block) store_free(block);
 }
 
 
+static void *
+function_store_get(PCRE2_SIZE size, void * tag)
+{
+return store_get((int)size, GET_UNTAINTED);	/* loses track of taint */
+}
+
+static void
+function_store_nullfree(void * block, void * tag)
+{
+}
+
+
 
 
 /*************************************************
@@ -68,66 +83,16 @@ enum commandline_info { CMDINFO_NONE=0,
 
 
 
-/*************************************************
-*  Compile regular expression and panic on fail  *
-*************************************************/
-
-/* This function is called when failure to compile a regular expression leads
-to a panic exit. In other cases, pcre_compile() is called directly. In many
-cases where this function is used, the results of the compilation are to be
-placed in long-lived store, so we temporarily reset the store management
-functions that PCRE uses if the use_malloc flag is set.
-
-Argument:
-  pattern     the pattern to compile
-  caseless    TRUE if caseless matching is required
-  use_malloc  TRUE if compile into malloc store
-
-Returns:      pointer to the compiled pattern
-*/
-
-const pcre2_code *
-regex_must_compile(const uschar * pattern, BOOL caseless, BOOL use_malloc)
-{
-size_t offset;
-int options = caseless ? PCRE_COPT|PCRE2_CASELESS : PCRE_COPT;
-const pcre2_code * yield;
-int err;
-pcre2_general_context * gctx;
-pcre2_compile_context * cctx;
-
-if (use_malloc)
-  {
-  gctx = pcre2_general_context_create(function_store_malloc, function_store_free, NULL);
-  cctx = pcre2_compile_context_create(gctx);
-  }
-else
-  cctx = pcre_cmp_ctx;
-
-if (!(yield = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED, options,
-  &err, &offset, cctx)))
-  {
-  uschar errbuf[128];
-  pcre2_get_error_message(err, errbuf, sizeof(errbuf));
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "regular expression error: "
-    "%s at offset %ld while compiling %s", errbuf, (long)offset, pattern);
-  }
-
-if (use_malloc)
-  {
-  pcre2_compile_context_free(cctx);
-  pcre2_general_context_free(gctx);
-  }
-return yield;
-}
-
-
 static void
 pcre_init(void)
 {
-pcre_gen_ctx = pcre2_general_context_create(function_store_malloc, function_store_free, NULL);
-pcre_cmp_ctx = pcre2_compile_context_create(pcre_gen_ctx);
-pcre_mtc_ctx = pcre2_match_context_create(pcre_gen_ctx);
+pcre_mlc_ctx = pcre2_general_context_create(function_store_malloc, function_store_free, NULL);
+pcre_gen_ctx = pcre2_general_context_create(function_store_get, function_store_nullfree, NULL);
+
+pcre_mlc_cmp_ctx = pcre2_compile_context_create(pcre_mlc_ctx);
+pcre_gen_cmp_ctx = pcre2_compile_context_create(pcre_gen_ctx);
+
+pcre_gen_mtc_ctx = pcre2_match_context_create(pcre_gen_ctx);
 }
 
 
@@ -157,7 +122,7 @@ regex_match_and_setup(const pcre2_code * re, const uschar * subject, int options
 {
 pcre2_match_data * md = pcre2_match_data_create_from_pattern(re, pcre_gen_ctx);
 int res = pcre2_match(re, (PCRE2_SPTR)subject, PCRE2_ZERO_TERMINATED, 0,
-			PCRE_EOPT | options, md, pcre_mtc_ctx);
+			PCRE_EOPT | options, md, pcre_gen_mtc_ctx);
 BOOL yield;
 
 if ((yield = (res >= 0)))
@@ -179,7 +144,7 @@ else if (res != PCRE2_ERROR_NOMATCH) DEBUG(D_any)
   pcre2_get_error_message(res, errbuf, sizeof(errbuf));
   debug_printf_indent("pcre2: %s\n", errbuf);
   }
-pcre2_match_data_free(md);
+/* pcre2_match_data_free(md);	gen ctx needs no free */
 return yield;
 }
 
@@ -201,13 +166,18 @@ regex_match(const pcre2_code * re, const uschar * subject, int slen, uschar ** r
 pcre2_match_data * md = pcre2_match_data_create(1, pcre_gen_ctx);
 int rc = pcre2_match(re, (PCRE2_SPTR)subject,
 		      slen >= 0 ? slen : PCRE2_ZERO_TERMINATED,
-		      0, PCRE_EOPT, md, pcre_mtc_ctx);
+		      0, PCRE_EOPT, md, pcre_gen_mtc_ctx);
 PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
-if (rc < 0)
-  return FALSE;
-if (rptr)
-  *rptr = string_copyn(subject + ovec[0], ovec[1] - ovec[0]);
-return TRUE;
+BOOL ret = FALSE;
+
+if (rc >= 0)
+  {
+  if (rptr)
+    *rptr = string_copyn(subject + ovec[0], ovec[1] - ovec[0]);
+  ret = TRUE;
+  }
+/* pcre2_match_data_free(md);	gen ctx needs no free */
+return ret;
 }
 
 
@@ -261,6 +231,31 @@ exit(1);
 *            Handler for SIGSEGV               *
 ***********************************************/
 
+#define STACKDUMP_MAX 24
+static void
+stackdump(void)
+{
+#ifndef NO_EXECINFO
+void * buf[STACKDUMP_MAX];
+char ** ss;
+int nptrs = backtrace(buf, STACKDUMP_MAX);
+
+log_write(0, LOG_MAIN|LOG_PANIC, "backtrace\n");
+log_write(0, LOG_MAIN|LOG_PANIC, "---\n");
+if ((ss = backtrace_symbols(buf, nptrs)))
+  {
+  for (int i = 0; i < nptrs; i++)
+    log_write(0, LOG_MAIN|LOG_PANIC, "\t%s\n", ss[i]);
+  free(ss);
+  }
+else
+  log_write(0, LOG_MAIN|LOG_PANIC, "backtrace_symbols: %s\n", strerror(errno));
+log_write(0, LOG_MAIN|LOG_PANIC, "---\n");
+#endif
+}
+#undef STACKDUMP_MAX
+
+
 static void
 #ifdef SA_SIGINFO
 segv_handler(int sig, siginfo_t * info, void * uctx)
@@ -281,6 +276,7 @@ else
   log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (maybe attempt to write to immutable memory)");
 if (process_info_len > 0)
   log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (%.*s)", process_info_len, process_info);
+stackdump();
 signal(SIGSEGV, SIG_DFL);
 kill(getpid(), sig);
 }
@@ -291,6 +287,7 @@ segv_handler(int sig)
 log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (maybe attempt to write to immutable memory)");
 if (process_info_len > 0)
   log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (%.*s)", process_info_len, process_info);
+stackdump();
 signal(SIGSEGV, SIG_DFL);
 kill(getpid(), sig);
 }
@@ -1983,7 +1980,7 @@ this here, because the -M options check their arguments for syntactic validity
 using mac_ismsgid, which uses this. */
 
 regex_ismsgid =
-  regex_must_compile(US"^(?:[^\\W_]{6}-){2}[^\\W_]{2}$", FALSE, TRUE);
+  regex_must_compile(US"^(?:[^\\W_]{6}-){2}[^\\W_]{2}$", MCS_NOFLAGS, TRUE);
 
 /* Precompile the regular expression that is used for matching an SMTP error
 code, possibly extended, at the start of an error message. Note that the
@@ -1991,14 +1988,14 @@ terminating whitespace character is included. */
 
 regex_smtp_code =
   regex_must_compile(US"^\\d\\d\\d\\s(?:\\d\\.\\d\\d?\\d?\\.\\d\\d?\\d?\\s)?",
-    FALSE, TRUE);
+    MCS_NOFLAGS, TRUE);
 
 #ifdef WHITELIST_D_MACROS
 /* Precompile the regular expression used to filter the content of macros
 given to -D for permissibility. */
 
 regex_whitelisted_macro =
-  regex_must_compile(US"^[A-Za-z0-9_/.-]*$", FALSE, TRUE);
+  regex_must_compile(US"^[A-Za-z0-9_/.-]*$", MCS_NOFLAGS, TRUE);
 #endif
 
 for (i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
@@ -2216,7 +2213,7 @@ on the second character (the one after '-'), to save some effort. */
 	   -bdf: Ditto, but in the foreground.
 	*/
 	case 'd':
-	  f.daemon_listen = TRUE;
+	  f.daemon_listen = f.daemon_scion = TRUE;
 	  if (*argrest == 'f') f.background_daemon = FALSE;
 	  else if (*argrest) badarg = TRUE;
 	  break;
@@ -2476,7 +2473,7 @@ on the second character (the one after '-'), to save some effort. */
 	case 'w':
 	  f.inetd_wait_mode = TRUE;
 	  f.background_daemon = FALSE;
-	  f.daemon_listen = TRUE;
+	  f.daemon_listen = f.daemon_scion = TRUE;
 	  if (*argrest)
 	    if ((inetd_wait_timeout = readconf_readtime(argrest, 0, FALSE)) <= 0)
 	      exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
@@ -5003,7 +5000,7 @@ for (i = 0;;)
         if (gecos_pattern && gecos_name)
           {
           const pcre2_code *re;
-          re = regex_must_compile(gecos_pattern, FALSE, TRUE); /* Use malloc */
+          re = regex_must_compile(gecos_pattern, MCS_NOFLAGS, TRUE); /* Use malloc */
 
           if (regex_match_and_setup(re, name, 0, -1))
             {
@@ -5399,7 +5396,10 @@ if (host_checking)
 
   memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (verify_check_host(&hosts_connection_nolog) == OK)
+    {
     BIT_CLEAR(log_selector, log_selector_size, Li_smtp_connection);
+    BIT_CLEAR(log_selector, log_selector_size, Li_smtp_no_mail);
+    }
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
 
   /* NOTE: We do *not* call smtp_log_no_mail() if smtp_start_session() fails,
@@ -5588,7 +5588,10 @@ if (smtp_input)
   smtp_out = stdout;
   memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (verify_check_host(&hosts_connection_nolog) == OK)
+    {
     BIT_CLEAR(log_selector, log_selector_size, Li_smtp_connection);
+    BIT_CLEAR(log_selector, log_selector_size, Li_smtp_no_mail);
+    }
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
   if (!smtp_start_session())
     {

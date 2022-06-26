@@ -79,7 +79,7 @@
 2017-07-30 18:51:05.712 10HmdX-0005vi-00 <= ralph@dustyshoes.tld U=CALLER P=local-smtp S=sss
 2017-07-30 18:51:05.712 10HmdY-0005vi-00 <= ralph@dustyshoes.tld U=CALLER P=local-smtp S=sss
 2017-07-30 18:51:05.712 10HmdZ-0005vi-00 <= ralph@dustyshoes.tld U=CALLER P=local-smtp S=sss
-2017-07-30 18:51:05.712 Start queue run: pid=pppp -qq
+2017-07-30 18:51:05.712 Start queue run: pid=p1234 -qq
 2017-07-30 18:51:05.712 10HmaX-0005vi-00 => bob@anotherone.tld F=<ralph@dustyshoes.tld> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmeA-0005vi-00"
 2017-07-30 18:51:05.712 10HmaX-0005vi-00 Completed
 2017-07-30 18:51:05.712 10HmdZ-0005vi-00 => bob@anotherone.tld F=<ralph@dustyshoes.tld> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* C="250 OK id=10HmeB-0005vi-00"
@@ -242,10 +242,10 @@
 2017-07-30 18:51:05.712 10HmaZ-0005vi-00 Completed
 2017-07-30 18:51:05.712 10HmaY-0005vi-00 => bob@anotherone.tld F=<ralph@dustyshoes.tld> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* C="250 OK id=10HmhC-0005vi-00"
 2017-07-30 18:51:05.712 10HmaY-0005vi-00 Completed
-2017-07-30 18:51:05.712 End queue run: pid=pppp -qq
+2017-07-30 18:51:05.712 End queue run: pid=p1234 -qq
 
 ******** SERVER ********
-2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 2017-07-30 18:51:05.712 10HmeA-0005vi-00 <= ralph@dustyshoes.tld H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaX-0005vi-00@the.local.host.name
 2017-07-30 18:51:05.712 10HmeB-0005vi-00 <= ralph@dustyshoes.tld H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmdZ-0005vi-00@the.local.host.name
 2017-07-30 18:51:05.712 10HmeC-0005vi-00 <= ralph@dustyshoes.tld H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmdY-0005vi-00@the.local.host.name

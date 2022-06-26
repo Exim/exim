@@ -1,10 +1,10 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1234
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -129,13 +129,16 @@ Attempting full verification using callout
  callout cache: no address record found for qq@remote
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+interface=NULL port=PORT_S
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO mail.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250 OK
+ compiled RE '.outlook.com$' not found in local cache
+ compiling RE '.outlook.com$'
+ compiled RE '.outlook.com$' saved in local cache
 not using PIPELINING
 not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
@@ -262,4 +265,4 @@ SMTP>> 221 mail.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

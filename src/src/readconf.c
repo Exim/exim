@@ -243,6 +243,7 @@ static optionlist optionlist_config[] = {
 #ifdef LOOKUP_ORACLE
   { "oracle_servers",           opt_stringptr,   {&oracle_servers} },
 #endif
+  { "panic_coredump",           opt_bool,        {&panic_coredump} },
   { "percent_hack_domains",     opt_stringptr,   {&percent_hack_domains} },
 #ifdef EXIM_PERL
   { "perl_at_start",            opt_bool,        {&opt_perl_at_start} },
@@ -2667,8 +2668,8 @@ switch(ol->type & opt_mask)
     break;
 
   case opt_bit:
-    printf("%s%s\n", ((*((int *)value)) & (1 << ((ol->type >> 16) & 31)))?
-      "" : "no_", name);
+    printf("%s%s\n", (*((int *)value)) & (1 << ((ol->type >> 16) & 31))
+      ? "" : "no_", name);
     break;
 
   case opt_expand_bool:
@@ -2693,7 +2694,7 @@ switch(ol->type & opt_mask)
   case opt_bool:
   case opt_bool_verify:
   case opt_bool_set:
-    printf("%s%s\n", (*((BOOL *)value))? "" : "no_", name);
+    printf("%s%s\n", *((BOOL *)value) ? "" : "no_", name);
     break;
 
   case opt_func:
@@ -3497,7 +3498,7 @@ if (!process_log_path || !*process_log_path)
 /* Compile the regex for matching a UUCP-style "From_" line in an incoming
 message. */
 
-regex_From = regex_must_compile(uucp_from_pattern, FALSE, TRUE);
+regex_From = regex_must_compile(uucp_from_pattern, MCS_NOFLAGS, TRUE);
 
 /* Unpick the SMTP rate limiting options, if set */
 

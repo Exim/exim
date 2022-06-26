@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 2017-07-30 18:51:05.712 10HmaX-0005vi-00 <= CALLER@test.ex H=(test) [127.0.0.1] P=smtp S=sss for good@test.ex
 2017-07-30 18:51:05.712 10HmaY-0005vi-00 <= CALLER@test.ex H=(test) [127.0.0.1] P=smtp S=sss for bad@test.ex
 2017-07-30 18:51:05.712 10HmaZ-0005vi-00 <= CALLER@test.ex H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss for good@test.ex

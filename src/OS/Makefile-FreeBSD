@@ -13,7 +13,7 @@ PERL_COMMAND=/usr/local/bin/perl
 HAVE_SA_LEN=YES
 
 # crypt() is in a separate library
-LIBS=-lcrypt -lm -lutil
+LIBS=-lcrypt -lm -lutil -lexecinfo
 
 # Dynamically loaded modules need to be built with -fPIC
 CFLAGS_DYNAMIC=-shared -rdynamic -fPIC

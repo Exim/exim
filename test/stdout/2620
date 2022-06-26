@@ -1,4 +1,4 @@
-pg_ctl: server is running (PID: pppp)
+pg_ctl: server is running (PID: p1234)
 POSTGRES "-D" "TESTSUITE/pgsql/data" "-p" "1223" "-k" "TESTSUITE/pgsql"
 INSERT 0 1
 > Philip Hazel

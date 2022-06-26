@@ -13,13 +13,13 @@ dropping to exim gid; retaining priv uid
 smtp transport entered
   extchange@test.ex
 hostlist:
-  '127.0.0.1' IP 127.0.0.1 port 1225
+  '127.0.0.1' IP 127.0.0.1 port PORT_D
 checking status of 127.0.0.1
 no host retry record
 no message retry record
 127.0.0.1 [127.0.0.1]:1111 retry-status = usable
 delivering 10HmbP-0005vi-00 to 127.0.0.1 [127.0.0.1] (extchange@test.ex)
-Transport port=25 replaced by host-specific port=1225
+Transport port=25 replaced by host-specific port=PORT_D
 EHLO response bits from cache: cleartext 0x0120/0x0000 crypted 0x0000/0x0000
 Using cached cleartext PIPECONNECT
   SMTP|> EHLO the.local.host.name
@@ -29,7 +29,7 @@ not using DSN
   SMTP|> RCPT TO:<extchange@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
-Connecting to 127.0.0.1 [127.0.0.1]:1225 ... sending dd nonTFO early-data
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ... sending dd nonTFO early-data
  connected
 smtp_reap_early_pipe expect banner
   SMTP<< 220 banner
@@ -69,7 +69,7 @@ LOG: MAIN
   => extchange@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 message accepted"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1242 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

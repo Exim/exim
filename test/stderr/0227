@@ -1,6 +1,6 @@
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -20,7 +20,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -40,7 +40,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -60,7 +60,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -78,7 +78,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -97,7 +97,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -115,7 +115,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -133,7 +133,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -152,7 +152,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -170,15 +170,15 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  failed: Connection refused
-Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:1224 ...  failed: Connection refused
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  failed: Connection refused
+Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:PORT_S ...  failed: Connection refused
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> temporarily rejected RCPT <z@remote.domain>: Could not complete recipient verify callout
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -196,7 +196,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -214,7 +214,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -239,7 +239,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -266,7 +266,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250- wotcher sverifier
@@ -284,7 +284,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250- wotcher rverifier
@@ -304,7 +304,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250- wotcher rverifier
@@ -324,7 +324,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250- wotcher rverifier
@@ -350,7 +350,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> LHLO myhost.test.ex
   SMTP<< 250 OK
@@ -368,7 +368,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP(closed)<<
   SMTP(close)>>
 cmdlog: '(unset)'
@@ -380,7 +380,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  failed: Connection refused
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  failed: Connection refused
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root sender verify defer for <bad@localhost1>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : Connection refused
 LOG: MAIN REJECT

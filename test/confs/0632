@@ -1,0 +1,37 @@
+# Exim test configuration 0632
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+queue_only
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = chk_rcpt
+
+# ----- ACL -----
+
+begin acl
+
+chk_rcpt:
+  # We're doing these to see what REs the daemon compiles, in stderr
+  warn	domains =	^nomatch_list
+	logwrite =	should not match RE in list
+
+  warn	condition =	${if match {a_random_string} {static_RE}}
+	logwrite =	should not match RE in match cond
+  warn	condition =	${if match {a_random_string} {tricky_static_RE\$}}
+	logwrite =	should not match RE in match cond
+  warn	condition =	${if match {a_random_string} {pid=${pid} uncacheable_RE}}
+	logwrite =	should not match RE in match cond
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+r0:
+    driver =	redirect
+    data =	:blackhole:
+#
+# End

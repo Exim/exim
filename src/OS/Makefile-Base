@@ -1,4 +1,5 @@
 # This file is the basis of the main makefile for Exim and friends. The
+#
 # makefile at the top level arranges to build the main makefile by calling
 # scripts/Configure-Makefile from within the build directory. This
 # concatenates the configuration settings from Local/Makefile and other,
@@ -485,9 +486,9 @@ OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
 OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
         filtertest.o globals.o dkim.o dkim_transport.o dnsbl.o hash.o \
-        header.o host.o ip.o log.o lss.o match.o md5.o moan.o \
+        header.o host.o host_address.o ip.o log.o lss.o match.o md5.o moan.o \
         os.o parse.o priv.o queue.o \
-        rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
+        rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o regex_cache.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         std-crypto.o store.o string.o tls.o tod.o transport.o tree.o verify.o \
         environment.o macro.o \
@@ -601,10 +602,11 @@ MONBIN = em_StripChart.o $(EXIMON_TEXTPOP) em_globals.o em_init.o \
 # The complete modules list also includes some specially compiled versions of
 # code from the main Exim source tree.
 
-OBJ_MONBIN = util-spool_in.o \
+OBJ_MONBIN = util-host_address.o \
+	     util-queue.o \
+	     util-spool_in.o \
 	     util-store.o \
 	     util-string.o \
-	     util-queue.o \
 	     util-tod.o \
 	     util-tree.o \
 	     $(MONBIN)
@@ -721,6 +723,14 @@ exim_dbmbuild.o: $(HDRS) exim_dbmbuild.c
 # Utilities use special versions of some modules - typically with debugging
 # calls cut out.
 
+util-host_address.o:   $(HDRS) host_address.c
+	@echo "$(CC) -DCOMPILE_UTILITY host_address.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-host_address.o host_address.c
+
+util-md5.o:   $(HDRS) md5.c
+	@echo "$(CC) -DCOMPILE_UTILITY queue.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-md5.o md5.c
+
 util-spool_in.o: $(HDRS) spool_in.c
 	@echo "$(CC) -DCOMPILE_UTILITY spool_in.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-spool_in.o spool_in.c
@@ -732,10 +742,6 @@ util-store.o:    $(HDRS) store.c
 util-string.o:   $(HDRS) string.c
 	@echo "$(CC) -DCOMPILE_UTILITY string.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-string.o string.c
-
-util-md5.o:   $(HDRS) md5.c
-	@echo "$(CC) -DCOMPILE_UTILITY queue.c"
-	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-md5.o md5.c
 
 util-queue.o:   $(HDRS) queue.c
 	@echo "$(CC) -DCOMPILE_UTILITY queue.c"
@@ -787,6 +793,7 @@ globals.o:       $(HDRS) globals.c
 hash.o:          $(HDRS) hash.c
 header.o:        $(HDRS) header.c
 host.o:          $(HDRS) host.c
+host_address.o:  $(HDRS) host_address.c
 ip.o:            $(HDRS) ip.c
 log.o:           $(HDRS) log.c
 lss.o:           $(HDRS) lss.c
@@ -802,6 +809,7 @@ readconf.o:      $(HDRS) readconf.c
 receive.o:       $(HDRS) receive.c
 retry.o:         $(HDRS) retry.c
 rewrite.o:       $(HDRS) rewrite.c
+regex_cache.o:   $(HDRS) regex_cache.c
 rfc2047.o:       $(HDRS) rfc2047.c
 route.o:         $(HDRS) route.c
 search.o:        $(HDRS) search.c
@@ -962,13 +970,13 @@ test_dbfn:   config.h dbfn.c dummies.o sa-globals.o sa-os.o store.o \
 	rm -f dbfn.o store.o
 
 test_host:   config.h child.c host.c dns.c dummies.c sa-globals.o os.o \
-	       store.o string.o tod.o tree.o
+	       host_address.o store.o string.o tod.o tree.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE -DTEST_HOST child.c
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE -DTEST_HOST host.c
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE -DTEST_HOST dns.c
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE -DTEST_HOST dummies.c
 	$(LNCC) -o test_host $(LFLAGS) \
-	  host.o child.o dns.o dummies.o sa-globals.o os.o store.o string.o \
+	  host.o host_address.o child.o dns.o dummies.o sa-globals.o os.o store.o string.o \
 	  tod.o tree.o $(LIBS) $(LIBRESOLV)
 	rm -f child.o dummies.o host.o dns.o
 

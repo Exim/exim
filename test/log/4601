@@ -1,5 +1,5 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D port PORT_S
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D port PORT_S
 1999-03-02 09:44:33 a@example.com [127.0.0.1] lookup: 'pass'
 1999-03-02 09:44:33 b@example.com [127.0.0.1] lookup: 'pass'

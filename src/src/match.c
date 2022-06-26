@@ -19,9 +19,7 @@ typedef struct check_string_block {
   const uschar *origsubject;           /* caseful; keep these two first, in */
   const uschar *subject;               /* step with the block below */
   int    expand_setup;
-  BOOL   use_partial;
-  BOOL   caseless;
-  BOOL   at_is_special;
+  mcs_flags flags;			/* MCS_* defs in macros.h */
 } check_string_block;
 
 
@@ -32,7 +30,7 @@ typedef struct check_address_block {
   const uschar *origaddress;         /* caseful; keep these two first, in */
   uschar *address;                   /* step with the block above */
   int    expand_setup;
-  BOOL   caseless;
+  mcs_flags flags;			/* MCS_CASELESS, MCS_TEXTONLY_RE */
 } check_address_block;
 
 
@@ -93,9 +91,10 @@ Returns:       OK    if matched
 */
 
 static int
-check_string(void *arg, const uschar *pattern, const uschar **valueptr, uschar **error)
+check_string(void * arg, const uschar * pattern, const uschar ** valueptr,
+  uschar ** error)
 {
-const check_string_block *cb = arg;
+const check_string_block * cb = arg;
 int search_type, partial, affixlen, starflags;
 int expand_setup = cb->expand_setup;
 const uschar * affix, * opts;
@@ -128,7 +127,8 @@ required. */
 
 if (pattern[0] == '^')
   {
-  const pcre2_code * re = regex_must_compile(pattern, cb->caseless, FALSE);
+  const pcre2_code * re = regex_must_compile(pattern,
+      cb->flags & (MCS_CACHEABLE | MCS_CASELESS), FALSE);
   if (expand_setup < 0
       ? !regex_match(re, s, -1, NULL)
       : !regex_match_and_setup(re, s, 0, expand_setup)
@@ -147,7 +147,7 @@ if (pattern[0] == '*')
 
   patlen = Ustrlen(++pattern);
   if (patlen > slen) return FAIL;
-  if (cb->caseless
+  if (cb->flags & MCS_CASELESS
       ? strncmpic(s + slen - patlen, pattern, patlen) != 0
       : Ustrncmp(s + slen - patlen, pattern, patlen) != 0)
     return FAIL;
@@ -166,7 +166,7 @@ the primary host name - implement this by changing the pattern. For the other
 cases we have to do some more work. If we don't recognize a special pattern,
 just fall through - the match will fail. */
 
-if (cb->at_is_special && pattern[0] == '@')
+if (cb->flags & MCS_AT_SPECIAL && pattern[0] == '@')
   {
   if (pattern[1] == 0)
     {
@@ -260,10 +260,10 @@ NOT_AT_SPECIAL:
 
 if ((semicolon = Ustrchr(pattern, ';')) == NULL)
   {
-  if (cb->caseless ? strcmpic(s, pattern) != 0 : Ustrcmp(s, pattern) != 0)
+  if (cb->flags & MCS_CASELESS ? strcmpic(s, pattern) != 0 : Ustrcmp(s, pattern) != 0)
     return FAIL;
-  if (expand_setup >= 0) expand_nmax = expand_setup;	/* Original code!   $0 gets the matched subject */
-  if (valueptr) *valueptr = pattern;	/* "value" gets the pattern */
+  if (expand_setup >= 0) expand_nmax = expand_setup;	/* $0 gets the matched subject */
+  if (valueptr) *valueptr = pattern;			/* "value" gets the pattern */
   return OK;
   }
 
@@ -280,7 +280,7 @@ if (search_type < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
 /* Partial matching is not appropriate for certain lookups (e.g. when looking
 up user@domain for sender rejection). There's a flag to disable it. */
 
-if (!cb->use_partial) partial = -1;
+if (!(cb->flags & MCS_PARTIAL)) partial = -1;
 
 /* Set the parameters for the three different kinds of lookup. */
 
@@ -316,9 +316,10 @@ Arguments:
   s            the subject string to be checked
   pattern      the pattern to check it against
   expand_setup expansion setup option (see check_string())
-  use_partial  if FALSE, override any partial- search types
-  caseless     TRUE for caseless matching where possible
-  at_is_special TRUE to recognize @, @[], etc.
+  flags
+   use_partial  if FALSE, override any partial- search types
+   caseless     TRUE for caseless matching where possible
+   at_is_special TRUE to recognize @, @[], etc.
   valueptr     if not NULL, and a file lookup was done, return the result
                  here instead of discarding it; else set it to point to NULL
 
@@ -328,16 +329,14 @@ Returns:       OK    if matched
 */
 
 int
-match_check_string(const uschar *s, const uschar *pattern, int expand_setup,
-  BOOL use_partial, BOOL caseless, BOOL at_is_special, const uschar **valueptr)
+match_check_string(const uschar * s, const uschar * pattern, int expand_setup,
+  mcs_flags flags, const uschar ** valueptr)
 {
 check_string_block cb;
 cb.origsubject = s;
-cb.subject = caseless ? string_copylc(s) : string_copy(s);
+cb.subject = flags & MCS_CASELESS ? string_copylc(s) : string_copy(s);
 cb.expand_setup = expand_setup;
-cb.use_partial = use_partial;
-cb.caseless = caseless;
-cb.at_is_special = at_is_special;
+cb.flags = flags;
 return check_string(&cb, pattern, valueptr, NULL);
 }
 
@@ -364,14 +363,9 @@ switch(type)
   {
   case MCL_STRING:
   case MCL_DOMAIN:
-  case MCL_LOCALPART:
-    return ((check_string_block *)arg)->subject;
-
-  case MCL_HOST:
-    return ((check_host_block *)arg)->host_address;
-
-  case MCL_ADDRESS:
-    return ((check_address_block *)arg)->address;
+  case MCL_LOCALPART:	return ((check_string_block *)arg)->subject;
+  case MCL_HOST:	return ((check_host_block *)arg)->host_address;
+  case MCL_ADDRESS:	return ((check_address_block *)arg)->address;
   }
 return US"";  /* In practice, should never happen */
 }
@@ -438,6 +432,7 @@ BOOL include_unknown = FALSE, ignore_unknown = FALSE,
 const uschar *list;
 uschar *sss;
 uschar *ot = NULL;
+BOOL textonly_re;
 
 /* Save time by not scanning for the option name when we don't need it. */
 
@@ -465,6 +460,7 @@ if (type >= MCL_NOEXPAND)
   {
   list = *listptr;
   type -= MCL_NOEXPAND;       /* Remove the "no expand" flag */
+  textonly_re = TRUE;
   }
 else
   {
@@ -475,11 +471,11 @@ else
     {
     check_string_block *cb = (check_string_block *)arg;
     deliver_domain = string_copy(cb->subject);
-    list = expand_cstring(*listptr);
+    list = expand_string_2(*listptr, &textonly_re);
     deliver_domain = NULL;
     }
   else
-    list = expand_cstring(*listptr);
+    list = expand_string_2(*listptr, &textonly_re);
 
   if (!list)
     {
@@ -493,6 +489,15 @@ else
       "a list: %s", *listptr, expand_string_message);
     return DEFER;
     }
+  }
+
+if (textonly_re) switch (type)
+  {
+  case MCL_STRING:
+  case MCL_DOMAIN:
+  case MCL_LOCALPART: ((check_string_block *)arg)->flags |= MCS_CACHEABLE; break;
+  case MCL_HOST:     ((check_host_block *)arg)->flags |= MCS_CACHEABLE; break;
+  case MCL_ADDRESS: ((check_address_block *)arg)->flags |= MCS_CACHEABLE; break;
   }
 
 /* For an unnamed list, use the expanded version in comments */
@@ -530,7 +535,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 
       if (at)
         Ustrncpy(cb->address, cb->origaddress, at - cb->origaddress);
-      cb->caseless = FALSE;
+      cb->flags &= ~MCS_CASELESS;
       continue;
       }
     }
@@ -543,7 +548,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
       {
       check_string_block *cb = (check_string_block *)arg;
       Ustrcpy(US cb->subject, cb->origsubject);
-      cb->caseless = FALSE;
+      cb->flags &= ~MCS_CASELESS;
       continue;
       }
     }
@@ -958,15 +963,13 @@ unsigned int *local_cache_bits = cache_bits;
 check_string_block cb;
 cb.origsubject = s;
 cb.subject = caseless ? string_copylc(s) : string_copy(s);
-cb.at_is_special = FALSE;
+cb.flags = caseless ? MCS_PARTIAL+MCS_CASELESS : MCS_PARTIAL;
 switch (type & ~MCL_NOEXPAND)
   {
-  case MCL_DOMAIN:	cb.at_is_special = TRUE;	/*FALLTHROUGH*/
+  case MCL_DOMAIN:	cb.flags |= MCS_AT_SPECIAL;	/*FALLTHROUGH*/
   case MCL_LOCALPART:	cb.expand_setup = 0;				break;
   default:		cb.expand_setup = sep > UCHAR_MAX ? 0 : -1;	break;
   }
-cb.use_partial = TRUE;
-cb.caseless = caseless;
 if (valueptr) *valueptr = NULL;
 return  match_check_list(listptr, sep, anchorptr, &local_cache_bits,
   check_string, &cb, type, s, valueptr);
@@ -1003,7 +1006,8 @@ Returns:         OK     for a match
 */
 
 static int
-check_address(void *arg, const uschar *pattern, const uschar **valueptr, uschar **error)
+check_address(void * arg, const uschar * pattern, const uschar ** valueptr,
+  uschar ** error)
 {
 check_address_block * cb = (check_address_block *)arg;
 check_string_block csb;
@@ -1026,7 +1030,7 @@ sdomain = Ustrrchr(subject, '@');
 /* The only case where a subject may not have a domain is if the subject is
 empty. Otherwise, a subject with no domain is a serious configuration error. */
 
-if (sdomain == NULL && *subject != 0)
+if (!sdomain && *subject)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "no @ found in the subject of an "
     "address list match: subject=\"%s\" pattern=\"%s\"", subject, pattern);
@@ -1037,14 +1041,14 @@ if (sdomain == NULL && *subject != 0)
 This may be the empty address. */
 
 if (*pattern == '^')
-  return match_check_string(subject, pattern, cb->expand_setup, TRUE,
-    cb->caseless, FALSE, NULL);
+  return match_check_string(subject, pattern, cb->expand_setup,
+	    cb->flags | MCS_PARTIAL, NULL);
 
 /* Handle a pattern that is just a lookup. Skip over possible lookup names
 (letters, digits, hyphens). Skip over a possible * or *@ at the end. Then we
 must have a semicolon for it to be a lookup. */
 
-for (s = pattern; isalnum(*s) || *s == '-'; s++);
+for (s = pattern; isalnum(*s) || *s == '-'; s++) ;
 if (*s == '*') s++;
 if (*s == '@') s++;
 
@@ -1057,8 +1061,7 @@ if (*s == ';')
   if (Ustrncmp(pattern, "partial-", 8) == 0)
     log_write(0, LOG_MAIN|LOG_PANIC, "partial matching is not applicable to "
       "whole-address lookups: ignored \"partial-\" in \"%s\"", pattern);
-  return match_check_string(subject, pattern, -1, FALSE, cb->caseless, FALSE,
-    valueptr);
+  return match_check_string(subject, pattern, -1, cb->flags, valueptr);
   }
 
 /* For the remaining cases, an empty subject matches only an empty pattern,
@@ -1085,19 +1088,20 @@ if (pattern[0] == '@' && pattern[1] == '@')
     {
     int sep = 0;
 
-    if ((rc = match_check_string(key, pattern + 2, -1, TRUE, FALSE, FALSE,
-      CUSS &list)) != OK) return rc;
+    if ((rc = match_check_string(key, pattern + 2, -1, MCS_PARTIAL, CUSS &list))
+	!= OK)
+      return rc;
 
     /* Check for chaining from the last item; set up the next key if one
     is found. */
 
     ss = Ustrrchr(list, ':');
-    if (ss == NULL) ss = list; else ss++;
-    while (isspace(*ss)) ss++;
+    if (!ss) ss = list; else ss++;
+    Uskip_whitespace(&ss);
     if (*ss == '>')
       {
       *ss++ = 0;
-      while (isspace(*ss)) ss++;
+      Uskip_whitespace(&ss);
       key = string_copy(ss);
       }
     else key = NULL;
@@ -1117,8 +1121,7 @@ if (pattern[0] == '@' && pattern[1] == '@')
       else local_yield = OK;
 
       *sdomain = 0;
-      rc = match_check_string(subject, ss, -1, TRUE, cb->caseless, FALSE,
-        valueptr);
+      rc = match_check_string(subject, ss, -1, cb->flags + MCS_PARTIAL, valueptr);
       *sdomain = '@';
 
       switch(rc)
@@ -1148,8 +1151,7 @@ if (pattern[0] == '@' && pattern[1] == '@')
 /* We get here if the pattern is not a lookup or a regular expression. If it
 contains an @ there is both a local part and a domain. */
 
-pdomain = Ustrrchr(pattern, '@');
-if (pdomain != NULL)
+if ((pdomain = Ustrrchr(pattern, '@')))
   {
   int pllen, sllen;
 
@@ -1177,7 +1179,7 @@ if (pdomain != NULL)
     {
     int cllen = pllen - 1;
     if (sllen < cllen) return FAIL;
-    if (cb->caseless
+    if (cb->flags & MCS_CASELESS
         ? strncmpic(subject+sllen-cllen, pattern + 1, cllen) != 0
         : Ustrncmp(subject+sllen-cllen, pattern + 1, cllen) != 0)
         return FAIL;
@@ -1192,7 +1194,7 @@ if (pdomain != NULL)
   else
     {
     if (sllen != pllen) return FAIL;
-    if (cb->caseless
+    if (cb->flags & MCS_CASELESS
         ? strncmpic(subject, pattern, sllen) != 0
 	: Ustrncmp(subject, pattern, sllen) != 0) return FAIL;
     }
@@ -1205,18 +1207,17 @@ original code read as follows:
 
   return match_check_string(sdomain + 1,
       pdomain ? pdomain + 1 : pattern,
-      cb->expand_setup + expand_inc, TRUE, cb->caseless, TRUE, NULL);
+      cb->expand_setup + expand_inc, cb->flags, NULL);
 
 This supported only literal domains and *.x.y patterns. In order to allow for
-named domain lists (so that you can right, for example, "senders=+xxxx"), it
+named domain lists (so that you can write, for example, "senders=+xxxx"), it
 was changed to use the list scanning function. */
 
 csb.origsubject = sdomain + 1;
-csb.subject = cb->caseless ? string_copylc(sdomain+1) : string_copy(sdomain+1);
+csb.subject = cb->flags & MCS_CASELESS
+  ? string_copylc(sdomain+1) : string_copy(sdomain+1);
 csb.expand_setup = cb->expand_setup + expand_inc;
-csb.use_partial = TRUE;
-csb.caseless = cb->caseless;
-csb.at_is_special = TRUE;
+csb.flags = MCS_PARTIAL | MCS_AT_SPECIAL | cb->flags & MCS_CASELESS;
 
 listptr = pdomain ? pdomain + 1 : pattern;
 if (valueptr) *valueptr = NULL;
@@ -1321,10 +1322,10 @@ if (expand_setup == 0)
 ab.origaddress = address;
 /* ab.address is above */
 ab.expand_setup = expand_setup;
-ab.caseless = caseless;
+ab.flags = caseless ? MCS_CASELESS : 0;
 
 return match_check_list(listptr, sep, &addresslist_anchor, &local_cache_bits,
-  check_address, &ab, MCL_ADDRESS + (expand? 0:MCL_NOEXPAND), address,
+  check_address, &ab, MCL_ADDRESS + (expand ? 0 : MCL_NOEXPAND), address,
     valueptr);
 }
 

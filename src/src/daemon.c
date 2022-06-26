@@ -1132,13 +1132,43 @@ exim_exit(EXIT_SUCCESS);
 *	Listener socket for local work prompts	 *
 *************************************************/
 
+ssize_t
+daemon_client_sockname(struct sockaddr_un * sup, uschar ** sname)
+{
+#ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
+sup->sun_path[0] = 0;  /* Abstract local socket addr - Linux-specific? */
+return offsetof(struct sockaddr_un, sun_path) + 1
+  + snprintf(sup->sun_path+1, sizeof(sup->sun_path)-1, "exim_%d", getpid());
+#else
+*sname = string_sprintf("%s/p_%d", spool_directory, getpid());
+return offsetof(struct sockaddr_un, sun_path)
+  + snprintf(sup->sun_path, sizeof(sup->sun_path), "%s", sname);
+#endif
+}
+
+ssize_t
+daemon_notifier_sockname(struct sockaddr_un * sup)
+{
+#ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
+sup->sun_path[0] = 0;  /* Abstract local socket addr - Linux-specific? */
+return offsetof(struct sockaddr_un, sun_path) + 1
+  + snprintf(sup->sun_path+1, sizeof(sup->sun_path)-1, "%s",
+              expand_string(notifier_socket));
+#else
+return offsetof(struct sockaddr_un, sun_path)
+  + snprintf(sup->sun_path, sizeof(sup->sun_path), "%s",
+              expand_string(notifier_socket));
+#endif
+}
+
+
 static void
 daemon_notifier_socket(void)
 {
 int fd;
 const uschar * where;
 struct sockaddr_un sa_un = {.sun_family = AF_UNIX};
-int len;
+ssize_t len;
 
 if (!notifier_socket || !*notifier_socket)
   {
@@ -1163,20 +1193,15 @@ if ((fd = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0)
 (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
 #endif
 
+len = daemon_notifier_sockname(&sa_un);
+
 #ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
-sa_un.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
-len = offsetof(struct sockaddr_un, sun_path) + 1
-  + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "%s",
-	      expand_string(notifier_socket));
 DEBUG(D_any) debug_printf(" @%s\n", sa_un.sun_path+1);
 #else			/* filesystem-visible and persistent; will neeed removal */
-len = offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s",
-	      expand_string(notifier_socket));
 DEBUG(D_any) debug_printf(" %s\n", sa_un.sun_path);
 #endif
 
-if (bind(fd, (const struct sockaddr *)&sa_un, len) < 0)
+if (bind(fd, (const struct sockaddr *)&sa_un, (socklen_t)len) < 0)
   { where = US"bind"; goto bad; }
 
 #ifdef SO_PASSCRED		/* Linux */
@@ -1205,7 +1230,11 @@ bad:
 
 static uschar queuerun_msgid[MESSAGE_ID_LENGTH+1];
 
-/* Return TRUE if a sigalrm should be emulated */
+/* The notifier socket has something to read. Pull the message from it, decode
+and do the action.
+
+Return TRUE if a sigalrm should be emulated */
+
 static BOOL
 daemon_notification(void)
 {
@@ -1255,7 +1284,6 @@ for (struct cmsghdr * cp = CMSG_FIRSTHDR(&msg);
     {
     DEBUG(D_queue_run) debug_printf("%s: sender creds pid %d uid %d gid %d\n",
       __FUNCTION__, (int)cr->pid, (int)cr->uid, (int)cr->gid);
-    return FALSE;
     }
 # elif defined(LOCAL_CREDS)				/* BSD-ish */
   struct sockcred * cr = (struct sockcred *) CMSG_DATA(cp);
@@ -1263,7 +1291,6 @@ for (struct cmsghdr * cp = CMSG_FIRSTHDR(&msg);
     {
     DEBUG(D_queue_run) debug_printf("%s: sender creds pid ??? uid %d gid %d\n",
       __FUNCTION__, (int)cr->sc_uid, (int)cr->sc_gid);
-    return FALSE;
     }
 # endif
   break;
@@ -1294,12 +1321,15 @@ switch (buf[0])
 		(const struct sockaddr *)&sa_un, msg.msg_namelen) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC,
 	"%s: sendto: %s\n", __FUNCTION__, strerror(errno));
-    return FALSE;
+    break;
     }
+
+  case NOTIFY_REGEX:
+    regex_at_daemon(buf);
+    break;
   }
 return FALSE;
 }
-
 
 
 

@@ -423,11 +423,11 @@ if (!recurse)
 /* If deliver_selectstring is a regex, compile it. */
 
 if (deliver_selectstring && f.deliver_selectstring_regex)
-  selectstring_regex = regex_must_compile(deliver_selectstring, TRUE, FALSE);
+  selectstring_regex = regex_must_compile(deliver_selectstring, MCS_CASELESS, FALSE);
 
 if (deliver_selectstring_sender && f.deliver_selectstring_sender_regex)
   selectstring_regex_sender =
-    regex_must_compile(deliver_selectstring_sender, TRUE, FALSE);
+    regex_must_compile(deliver_selectstring_sender, MCS_CASELESS, FALSE);
 
 /* If the spool is split into subdirectories, we want to process it one
 directory at a time, so as to spread out the directory scanning and the
@@ -1562,19 +1562,9 @@ memcpy(buf+1, msgid, MESSAGE_ID_LENGTH+1);
 if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) >= 0)
   {
   struct sockaddr_un sa_un = {.sun_family = AF_UNIX};
+  ssize_t len = daemon_notifier_sockname(&sa_un);
 
-#ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
-  int len = offsetof(struct sockaddr_un, sun_path) + 1
-    + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "%s",
-		expand_string(notifier_socket));
-  sa_un.sun_path[0] = 0;
-#else
-  int len = offsetof(struct sockaddr_un, sun_path)
-    + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s",
-		expand_string(notifier_socket));
-#endif
-
-  if (sendto(fd, buf, sizeof(buf), 0, (struct sockaddr *)&sa_un, len) < 0)
+  if (sendto(fd, buf, sizeof(buf), 0, (struct sockaddr *)&sa_un, (socklen_t)len) < 0)
     DEBUG(D_queue_run)
       debug_printf("%s: sendto %s\n", __FUNCTION__, strerror(errno));
   close(fd);

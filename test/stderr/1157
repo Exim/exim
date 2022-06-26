@@ -3,11 +3,11 @@ configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
-  Start queue run: pid=pppp -qqf
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-Connecting to 127.0.0.1 [127.0.0.1]:1225 ...  connected
+  Start queue run: pid=p1234 -qqf
+>>>>>>>>>>>>>>>> Exim pid=p1242 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1243 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1244 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...  connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
@@ -40,7 +40,7 @@ LOG: MAIN
   => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1245 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -61,7 +61,7 @@ LOG: MAIN
   => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbB-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1246 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -87,21 +87,21 @@ LOG: MAIN
   => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbC-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1247 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1248 (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
-  End queue run: pid=pppp -qqf
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+  End queue run: pid=p1234 -qqf
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
-  Start queue run: pid=pppp -qqf
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-Connecting to 127.0.0.1 [127.0.0.1]:1225 ...  connected
+  Start queue run: pid=p1235 -qqf
+>>>>>>>>>>>>>>>> Exim pid=p1249 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1250 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1251 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...  connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
@@ -134,7 +134,7 @@ LOG: MAIN
   => usera@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbG-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1252 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -155,7 +155,7 @@ LOG: MAIN
   => userc@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbH-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1253 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -181,21 +181,21 @@ LOG: MAIN
   => userb@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbI-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1254 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1255 (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
-  End queue run: pid=pppp -qqf
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+  End queue run: pid=p1235 -qqf
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
-  Start queue run: pid=pppp -qqf
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-Connecting to 127.0.0.1 [127.0.0.1]:1225 ...  connected
+  Start queue run: pid=p1236 -qqf
+>>>>>>>>>>>>>>>> Exim pid=p1256 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1257 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1258 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...  connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
@@ -238,7 +238,7 @@ LOG: MAIN
   => user_p@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbM-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1259 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -277,7 +277,7 @@ LOG: MAIN
   => user_r@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbN-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1260 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -311,9 +311,9 @@ LOG: MAIN
   => user_q@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbO-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1261 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
-  End queue run: pid=pppp -qqf
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+  End queue run: pid=p1236 -qqf
+>>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

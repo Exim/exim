@@ -1,5 +1,4 @@
 # Long ACL delay, truncated
-munge debug_pid
 need_ipv4
 #
 # We want the debug note of a truncated delay

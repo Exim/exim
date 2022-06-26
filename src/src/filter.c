@@ -1424,213 +1424,203 @@ Returns:         TRUE if the condition is met
 */
 
 static BOOL
-test_condition(condition_block *c, BOOL toplevel)
+test_condition(condition_block * c, BOOL toplevel)
 {
-BOOL yield = FALSE;
-const uschar *exp[2], * p, * pp;
+BOOL yield = FALSE, textonly_re;
+const uschar * exp[2], * p, * pp;
 int val[2];
-int i;
 
-if (c == NULL) return TRUE;  /* does this ever occur? */
+if (!c) return TRUE;  /* does this ever occur? */
 
 switch (c->type)
   {
   case cond_and:
-  yield = test_condition(c->left.c, FALSE) &&
-          *error_pointer == NULL &&
-          test_condition(c->right.c, FALSE);
-  break;
+    yield = test_condition(c->left.c, FALSE) &&
+	    *error_pointer == NULL &&
+	    test_condition(c->right.c, FALSE);
+    break;
 
   case cond_or:
-  yield = test_condition(c->left.c, FALSE) ||
-          (*error_pointer == NULL &&
-          test_condition(c->right.c, FALSE));
-  break;
+    yield = test_condition(c->left.c, FALSE) ||
+	    (*error_pointer == NULL &&
+	    test_condition(c->right.c, FALSE));
+    break;
 
-  /* The personal test is meaningless in a system filter. The tests are now in
-  a separate function (so Sieve can use them). However, an Exim filter does not
-  scan Cc: (hence the FALSE argument). */
+    /* The personal test is meaningless in a system filter. The tests are now in
+    a separate function (so Sieve can use them). However, an Exim filter does not
+    scan Cc: (hence the FALSE argument). */
 
   case cond_personal:
-  yield = f.system_filtering? FALSE : filter_personal(c->left.a, FALSE);
-  break;
+    yield = f.system_filtering? FALSE : filter_personal(c->left.a, FALSE);
+    break;
 
   case cond_delivered:
-  yield = filter_delivered;
-  break;
+    yield = filter_delivered;
+    break;
 
-  /* Only TRUE if a message is actually being processed; FALSE for address
-  testing and verification. */
+    /* Only TRUE if a message is actually being processed; FALSE for address
+    testing and verification. */
 
   case cond_errormsg:
-  yield = message_id[0] != 0 &&
-    (sender_address == NULL || sender_address[0] == 0);
-  break;
+    yield = message_id[0] != 0 &&
+      (sender_address == NULL || sender_address[0] == 0);
+    break;
 
-  /* Only FALSE if a message is actually being processed; TRUE for address
-  and filter testing and verification. */
+    /* Only FALSE if a message is actually being processed; TRUE for address
+    and filter testing and verification. */
 
   case cond_firsttime:
-  yield = filter_test != FTEST_NONE || message_id[0] == 0 || f.deliver_firsttime;
-  break;
+    yield = filter_test != FTEST_NONE || message_id[0] == 0 || f.deliver_firsttime;
+    break;
 
-  /* Only TRUE if a message is actually being processed; FALSE for address
-  testing and verification. */
+    /* Only TRUE if a message is actually being processed; FALSE for address
+    testing and verification. */
 
   case cond_manualthaw:
-  yield = message_id[0] != 0 && f.deliver_manual_thaw;
-  break;
+    yield = message_id[0] != 0 && f.deliver_manual_thaw;
+    break;
 
-  /* The foranyaddress condition loops through a list of addresses */
+    /* The foranyaddress condition loops through a list of addresses */
 
   case cond_foranyaddress:
-  p = c->left.u;
-  if (!(pp = expand_cstring(p)))
-    {
-    *error_pointer = string_sprintf("failed to expand \"%s\" in "
-      "filter file: %s", p, expand_string_message);
-    return FALSE;
-    }
-
-  yield = FALSE;
-  f.parse_allow_group = TRUE;     /* Allow group syntax */
-
-  while (*pp)
-    {
-    uschar *error;
-    int start, end, domain;
-    uschar * s;
-
-    p = parse_find_address_end(pp, FALSE);
-    s = string_copyn(pp, p - pp);
-
-    filter_thisaddress =
-      parse_extract_address(s, &error, &start, &end, &domain, FALSE);
-
-    if (filter_thisaddress)
-      {
-      if ((filter_test != FTEST_NONE && debug_selector != 0) ||
-          (debug_selector & D_filter) != 0)
-        {
-        indent();
-        debug_printf_indent("Extracted address %s\n", filter_thisaddress);
-        }
-      yield = test_condition(c->right.c, FALSE);
-      }
-
-    if (yield) break;
-    if (!*p) break;
-    pp = p + 1;
-    }
-
-  f.parse_allow_group = FALSE;      /* Reset group syntax flags */
-  f.parse_found_group = FALSE;
-  break;
-
-  /* All other conditions have left and right values that need expanding;
-  on error, it doesn't matter what value is returned. */
-
-  default:
-  p = c->left.u;
-  for (i = 0; i < 2; i++)
-    {
-    if (!(exp[i] = expand_cstring(p)))
+    p = c->left.u;
+    if (!(pp = expand_cstring(p)))
       {
       *error_pointer = string_sprintf("failed to expand \"%s\" in "
-        "filter file: %s", p, expand_string_message);
+	"filter file: %s", p, expand_string_message);
       return FALSE;
       }
-    p = c->right.u;
-    }
 
-  /* Inner switch for the different cases */
+    yield = FALSE;
+    f.parse_allow_group = TRUE;     /* Allow group syntax */
 
-  switch(c->type)
-    {
-    case cond_is:
-    yield = strcmpic(exp[0], exp[1]) == 0;
-    break;
-
-    case cond_IS:
-    yield = Ustrcmp(exp[0], exp[1]) == 0;
-    break;
-
-    case cond_contains:
-    yield = strstric_c(exp[0], exp[1], FALSE) != NULL;
-    break;
-
-    case cond_CONTAINS:
-    yield = Ustrstr(exp[0], exp[1]) != NULL;
-    break;
-
-    case cond_begins:
-    yield = strncmpic(exp[0], exp[1], Ustrlen(exp[1])) == 0;
-    break;
-
-    case cond_BEGINS:
-    yield = Ustrncmp(exp[0], exp[1], Ustrlen(exp[1])) == 0;
-    break;
-
-    case cond_ends:
-    case cond_ENDS:
+    while (*pp)
       {
-      int len = Ustrlen(exp[1]);
-      const uschar *s = exp[0] + Ustrlen(exp[0]) - len;
-      yield = s < exp[0]
-	? FALSE
-	: (c->type == cond_ends ? strcmpic(s, exp[1]) : Ustrcmp(s, exp[1])) == 0;
-      }
-    break;
+      uschar *error;
+      int start, end, domain;
+      uschar * s;
 
-    case cond_matches:
-    case cond_MATCHES:
-      {
-      const pcre2_code *re;
-      int err;
-      PCRE2_SIZE offset;
+      p = parse_find_address_end(pp, FALSE);
+      s = string_copyn(pp, p - pp);
 
-      if ((filter_test != FTEST_NONE && debug_selector != 0) ||
-	  (debug_selector & D_filter) != 0)
+      filter_thisaddress =
+	parse_extract_address(s, &error, &start, &end, &domain, FALSE);
+
+      if (filter_thisaddress)
 	{
-	debug_printf_indent("Match expanded arguments:\n");
-	debug_printf_indent("  Subject = %s\n", exp[0]);
-	debug_printf_indent("  Pattern = %s\n", exp[1]);
+	if ((filter_test != FTEST_NONE && debug_selector != 0) ||
+	    (debug_selector & D_filter) != 0)
+	  {
+	  indent();
+	  debug_printf_indent("Extracted address %s\n", filter_thisaddress);
+	  }
+	yield = test_condition(c->right.c, FALSE);
 	}
 
-      if (!(re = pcre2_compile((PCRE2_SPTR)exp[1], PCRE2_ZERO_TERMINATED,
-		  PCRE_COPT | (c->type == cond_matches ? PCRE2_CASELESS : 0),
-		  &err, &offset, pcre_cmp_ctx)))
+      if (yield) break;
+      if (!*p) break;
+      pp = p + 1;
+      }
+
+    f.parse_allow_group = FALSE;      /* Reset group syntax flags */
+    f.parse_found_group = FALSE;
+    break;
+
+    /* All other conditions have left and right values that need expanding;
+    on error, it doesn't matter what value is returned. */
+
+    default:
+    p = c->left.u;
+    for (int i = 0; i < 2; i++)
+      {
+      if (!(exp[i] = expand_string_2(p, &textonly_re)))
 	{
-	uschar errbuf[128];
-	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
-	*error_pointer = string_sprintf("error while compiling "
-	  "regular expression \"%s\": %s at offset %ld",
-	  exp[1], errbuf, (long)offset);
+	*error_pointer = string_sprintf("failed to expand \"%s\" in "
+	  "filter file: %s", p, expand_string_message);
 	return FALSE;
 	}
-
-      yield = regex_match_and_setup(re, exp[0], PCRE_EOPT, -1);
-      break;
+      p = c->right.u;
       }
 
-    /* For above and below, convert the strings to numbers */
+    /* Inner switch for the different cases */
 
-    case cond_above:
-    case cond_below:
-    for (i = 0; i < 2; i++)
+    switch(c->type)
       {
-      val[i] = get_number(exp[i], &yield);
-      if (!yield)
-        {
-        *error_pointer = string_sprintf("malformed numerical string \"%s\"",
-          exp[i]);
-        return FALSE;
-        }
+      case cond_is:
+	yield = strcmpic(exp[0], exp[1]) == 0;
+	break;
+
+      case cond_IS:
+	yield = Ustrcmp(exp[0], exp[1]) == 0;
+	break;
+
+      case cond_contains:
+	yield = strstric_c(exp[0], exp[1], FALSE) != NULL;
+	break;
+
+      case cond_CONTAINS:
+	yield = Ustrstr(exp[0], exp[1]) != NULL;
+	break;
+
+      case cond_begins:
+	yield = strncmpic(exp[0], exp[1], Ustrlen(exp[1])) == 0;
+	break;
+
+      case cond_BEGINS:
+	yield = Ustrncmp(exp[0], exp[1], Ustrlen(exp[1])) == 0;
+	break;
+
+      case cond_ends:
+      case cond_ENDS:
+	{
+	int len = Ustrlen(exp[1]);
+	const uschar *s = exp[0] + Ustrlen(exp[0]) - len;
+	yield = s < exp[0]
+	  ? FALSE
+	  : (c->type == cond_ends ? strcmpic(s, exp[1]) : Ustrcmp(s, exp[1])) == 0;
+	break;
+	}
+
+      case cond_matches:
+      case cond_MATCHES:
+	{
+	const pcre2_code * re;
+	mcs_flags flags = textonly_re ? MCS_CACHEABLE : MCS_NOFLAGS;
+
+	if ((filter_test != FTEST_NONE && debug_selector != 0) ||
+	    (debug_selector & D_filter) != 0)
+	  {
+	  debug_printf_indent("Match expanded arguments:\n");
+	  debug_printf_indent("  Subject = %s\n", exp[0]);
+	  debug_printf_indent("  Pattern = %s\n", exp[1]);
+	  }
+
+	if (c->type == cond_matches) flags |= MCS_CASELESS;
+	if (!(re = regex_compile(exp[1], flags, error_pointer, pcre_gen_cmp_ctx)))
+	  return FALSE;
+
+	yield = regex_match_and_setup(re, exp[0], PCRE_EOPT, -1);
+	break;
+	}
+
+      /* For above and below, convert the strings to numbers */
+
+      case cond_above:
+      case cond_below:
+	for (int i = 0; i < 2; i++)
+	  {
+	  val[i] = get_number(exp[i], &yield);
+	  if (!yield)
+	    {
+	    *error_pointer = string_sprintf("malformed numerical string \"%s\"",
+	      exp[i]);
+	    return FALSE;
+	    }
+	  }
+	yield = c->type == cond_above ? (val[0] > val[1]) : (val[0] < val[1]);
+	break;
       }
-    yield = (c->type == cond_above)? (val[0] > val[1]) : (val[0] < val[1]);
     break;
-    }
-  break;
   }
 
 if ((filter_test != FTEST_NONE && debug_selector != 0) ||
@@ -2356,7 +2346,7 @@ while (commands)
   commands = commands->next;
   }
 
-return filter_delivered? FF_DELIVERED : FF_NOTDELIVERED;
+return filter_delivered ? FF_DELIVERED : FF_NOTDELIVERED;
 }
 
 

@@ -1,10 +1,10 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=pppp
+  uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1234
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 seeking password data for user "CALLER": using cached result
@@ -50,7 +50,7 @@ search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=EXIM_GID pid=pppp
+  uid=uuuu gid=EXIM_GID pid=p1235
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -96,13 +96,13 @@ expanded: '# Exim filter
 save TESTSUITE/test-mail'
 search_tidyup called
 changed uid/gid: r1 router (recipient is userx@test.ex)
-  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  uid=CALLER_UID gid=CALLER_GID pid=p1236
 turned off address rewrite logging (not root or exim in this process)
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
 rda_interpret: subprocess yield=0 error=NULL
 set transport t1
 r1 router generated TESTSUITE/test-mail
@@ -140,7 +140,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to TESTSUITE/test-mail <TESTSUITE/test-mail> transport=t1
-  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  uid=CALLER_UID gid=CALLER_GID pid=p1237
   home=NULL current=/
 set_process_info: pppp delivering 10HmaX-0005vi-00 to TESTSUITE/test-mail using t1
 appendfile transport entered
@@ -170,7 +170,7 @@ LOG: MAIN
   => TESTSUITE/test-mail <userx@test.ex> R=r1 T=t1
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
 changed uid/gid: post-delivery tidying
-  uid=EXIM_UID gid=EXIM_GID pid=pppp
+  uid=EXIM_UID gid=EXIM_GID pid=p1235
 set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
 Processing retry items
 Succeeded addresses:
@@ -201,6 +201,6 @@ LOG: MAIN
 end delivery of 10HmaX-0005vi-00
 search_tidyup called
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

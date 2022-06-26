@@ -2,10 +2,10 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userz@domain1 R=others T=smtp defer (0): SMTP delivery explicitly queued
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 == userz@domain1 R=others T=smtp defer (0): SMTP delivery explicitly queued
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1234
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userz@domain1 R=others T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userz@domain1>: 450 Temporary error
 1999-03-02 09:44:33 10HmaY-0005vi-00 == userz@domain1 routing defer (-52): retry time not reached
-1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1234
 1999-03-02 09:44:33 10HmaX-0005vi-00 removed by CALLER
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 removed by CALLER
@@ -16,22 +16,22 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain1 R=others T=smtp defer (0): SMTP delivery explicitly queued
 1999-03-02 09:44:33 10HmbA-0005vi-00 == usery@domain1 R=others T=smtp defer (0): SMTP delivery explicitly queued
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=p1235
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@domain1 R=others T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@domain1>: 450 Temporary error
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => usery@domain1 R=others T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain1 routing defer (-52): retry time not reached
 1999-03-02 09:44:33 10HmbA-0005vi-00 == usery@domain1 R=others T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]*: SMTP error from remote mail server after RCPT TO:<usery@domain1>: 450 Temporary error
 1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain1 routing defer (-52): retry time not reached
 1999-03-02 09:44:33 10HmbA-0005vi-00 == usery@domain1 routing defer (-52): retry time not reached
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1235
+1999-03-02 09:44:33 Start queue run: pid=p1236
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@domain1 routing defer (-52): retry time not reached
 1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain1 routing defer (-52): retry time not reached
 1999-03-02 09:44:33 10HmbA-0005vi-00 == usery@domain1 routing defer (-52): retry time not reached
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1236
+1999-03-02 09:44:33 Start queue run: pid=p1237
 1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain1 routing defer (-52): retry time not reached
 1999-03-02 09:44:33 10HmbA-0005vi-00 == usery@domain1 routing defer (-52): retry time not reached
-1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=p1237
 1999-03-02 09:44:33 10HmaZ-0005vi-00 H=127.0.0.1 [127.0.0.1] Connection refused
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@domain1 R=others T=smtp defer (dd): Connection refused

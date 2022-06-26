@@ -1324,7 +1324,7 @@ dns_pattern_init(void)
 {
 if (check_dns_names_pattern[0] != 0 && !regex_check_dns_names)
   regex_check_dns_names =
-    regex_must_compile(check_dns_names_pattern, FALSE, TRUE);
+    regex_must_compile(check_dns_names_pattern, MCS_NOFLAGS, TRUE);
 }
 
 /* vi: aw ai sw=2

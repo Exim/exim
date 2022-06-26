@@ -117,6 +117,7 @@ begin transports
     port = 1224
     hosts_try_fastopen = :
     debug_print = transport_name <$transport_name>
+
 # Exim Configuration (X)
 # 1 "TESTSUITE/test-config"
 OPT =

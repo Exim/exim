@@ -84,10 +84,10 @@ iplookup_router_options_block iplookup_router_option_defaults = {
 consistency checks to be done, or anything else that needs to be set up. */
 
 void
-iplookup_router_init(router_instance *rblock)
+iplookup_router_init(router_instance * rblock)
 {
-iplookup_router_options_block *ob =
-  (iplookup_router_options_block *)(rblock->options_block);
+iplookup_router_options_block * ob =
+  (iplookup_router_options_block *) rblock->options_block;
 
 /* A port and a host list must be given */
 
@@ -95,13 +95,13 @@ if (ob->port < 0)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
     "a port must be specified", rblock->name);
 
-if (ob->hosts == NULL)
+if (!ob->hosts)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
     "a host list must be specified", rblock->name);
 
 /* Translate protocol name into value */
 
-if (ob->protocol_name != NULL)
+if (ob->protocol_name)
   {
   if (Ustrcmp(ob->protocol_name, "udp") == 0) ob->protocol = ip_udp;
   else if (Ustrcmp(ob->protocol_name, "tcp") == 0) ob->protocol = ip_tcp;
@@ -111,9 +111,9 @@ if (ob->protocol_name != NULL)
 
 /* If a response pattern is given, compile it now to get the error early. */
 
-if (ob->response_pattern != NULL)
+if (ob->response_pattern)
   ob->re_response_pattern =
-    regex_must_compile(ob->response_pattern, FALSE, TRUE);
+    regex_must_compile(ob->response_pattern, MCS_NOFLAGS, TRUE);
 }
 
 

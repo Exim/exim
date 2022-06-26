@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 2017-07-30 18:51:05.712 10HmaX-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
 2017-07-30 18:51:05.712 10HmaY-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
 2017-07-30 18:51:05.712 10HmaZ-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex

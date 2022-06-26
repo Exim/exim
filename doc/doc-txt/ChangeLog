@@ -2,6 +2,18 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Exim version 4.97
+-----------------
+
+JH/01 The hosts_connection_nolog main option now also controls "no MAIL in
+      SMTP connection" log lines.
+
+JH/02 Option default value updates:
+	- queue_fast_ramp (main)	true (was false)
+	- remote_max_parallel (main)	4 (was 2)
+
+JH/03 Cache static regex pattern compilations, for use by ACLs.
+
 Exim version 4.96
 -----------------
 

@@ -1,25 +1,25 @@
-01:01:01 1234 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-01:01:01 1234 Considering: dest3@test.ex
-01:01:01 1234 unique = dest3@test.ex
-01:01:01 1234 no   domain  retry record
-01:01:01 1234 no   address retry record
-01:01:01 1234 dest3@test.ex: queued for routing
-01:01:01 1234 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-01:01:01 1234 routing dest3@test.ex
-01:01:01 1234 --------> r0 router <--------
-01:01:01 1234 local_part=dest3 domain=test.ex
-01:01:01 1234 checking local_parts
-01:01:01 1234  ╭considering: /$local_part
-01:01:01 1234  ├───────text: /
-01:01:01 1234  ├considering: $local_part
-01:01:01 1234  ├──expanding: /$local_part
-01:01:01 1234  ╰─────result: /dest3
-01:01:01 1234             ╰──(tainted)
-01:01:01 1234 LOG: MAIN PANIC
-01:01:01 1234   Tainted filename '/dest3'
-01:01:01 1234 LOG: MAIN PANIC DIE
-01:01:01 1234   failed to open /dest3 when checking "/$local_part": Permission denied (euid=uuuu egid=EXIM_GID)
-01:01:01 1234 search_tidyup called
-01:01:01 1234 >>>>>>>>>>>>>>>> Exim pid=pppp (daemon-accept-delivery) terminating with rc=1 >>>>>>>>>>>>>>>>
+01:01:01 p1235  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+01:01:01 p1235  Considering: dest3@test.ex
+01:01:01 p1235  unique = dest3@test.ex
+01:01:01 p1235  no   domain  retry record
+01:01:01 p1235  no   address retry record
+01:01:01 p1235  dest3@test.ex: queued for routing
+01:01:01 p1235  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+01:01:01 p1235  routing dest3@test.ex
+01:01:01 p1235  --------> r0 router <--------
+01:01:01 p1235  local_part=dest3 domain=test.ex
+01:01:01 p1235  checking local_parts
+01:01:01 p1235   ╭considering: /$local_part
+01:01:01 p1235   ├───────text: /
+01:01:01 p1235   ├considering: $local_part
+01:01:01 p1235   ├──expanding: /$local_part
+01:01:01 p1235   ╰─────result: /dest3
+01:01:01 p1235              ╰──(tainted)
+01:01:01 p1235  LOG: MAIN PANIC
+01:01:01 p1235    Tainted filename '/dest3'
+01:01:01 p1235  LOG: MAIN PANIC DIE
+01:01:01 p1235    failed to open /dest3 when checking "/$local_part": Permission denied (euid=uuuu egid=EXIM_GID)
+01:01:01 p1235  search_tidyup called
+01:01:01 p1235  >>>>>>>>>>>>>>>> Exim pid=p1235 (daemon-accept-delivery) terminating with rc=1 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

@@ -35,7 +35,7 @@
 1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 rcpt_acl: macro: From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive
 1999-03-02 09:44:33 10HmaZ-0005vi-00 dkim_acl: signer: test.ex bits: 1024 h=From
 1999-03-02 09:44:33 10HmaZ-0005vi-00 DKIM: d=test.ex s=sel c=relaxed/relaxed a=rsa-sha256 b=1024 [verification succeeded]

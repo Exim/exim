@@ -747,7 +747,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   s/\bgid=\d+/gid=gggg/;
   s/\begid=\d+/egid=gggg/;
-  s/\b(pid=|pid |PID: )\d+/$1pppp/;
+  s/\b(?:pid=|pid\s|PID:\s|Process\s|child\s)\K(\d+)/new_value($1, "p%s", \$next_pid)/gxe;
   s/\buid=\d+/uid=uuuu/;
   s/\beuid=\d+/euid=uuuu/;
   s/set_process_info:\s+\d+/set_process_info: pppp/;
@@ -1053,14 +1053,35 @@ RESET_AFTER_EXTRA_LINE_READ:
   elsif ($is_stderr)
     {
     # The very first line of debugging output will vary
-
     s/^Exim version .*/Exim version x.yz ..../;
+
+    # Skip some lines that Exim puts out at the start of debugging output
+    # because they will be different in different binaries.
+
+    next if /^$time_pid?
+		(?: Berkeley\ DB:\s
+		  | Probably\ (?:Berkeley\ DB|ndbm|GDBM)
+		  | Using\ tdb
+		  | Authenticators:
+		  | Lookups(?:\(built-in\))?:
+		  | Support\ for:
+		  | Routers:
+		  | Transports:
+		  | Malware:
+		  | log\ selectors\ =
+		  | cwd=
+		  | Fixed\ never_users
+		  | Configure\ owner
+		  | Size\ of\ off_t:
+		)
+	      /x;
+
+    # Lines with a leading pid
+    s/^(\d+)\s(?!(?:previous message|in\s))/new_value($1, "p%s", \$next_pid) . ' '/e;
 
     # Debugging lines for Exim terminations and process-generation
 
-    s/(?<=^>>>>>>>>>>>>>>>> Exim pid=)\d+(?= terminating)/pppp/;
-    s/^(proxy-proc \w{5}-pid) \d+$/$1 pppp/;
-    s/^(?:\s*\d+ )(exec .* -oPX)$/pppp $1/;
+    s/^\s*\K(\d+)(?=\sexec\s.*\s-oPX$)/new_value($1, "%s", \$next_pid)/xe;
     next if /(?:postfork: | fork(?:ing|ed) for )/;
 
     # IP address lookups use gethostbyname() when IPv6 is not supported,
@@ -1073,6 +1094,14 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # we don't care what TZ enviroment the testhost was running
     next if /^Reset TZ to/;
+
+    # port numbers
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d/PORT_D/;
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d2/PORT_D2/;
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d3/PORT_D3/;
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d4/PORT_D4/;
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_s/PORT_S/;
+    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_n/PORT_N/;
 
     # ========= Exim lookups ==================
     # Lookups have a char which depends on the number of lookup types compiled in,
@@ -1372,7 +1401,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       s/Address family not supported by protocol family/Network Error/;
       s/Network is unreachable/Network Error/;
       }
-    next if /^(ppppp )?setsockopt FASTOPEN: Protocol not available$/;
+    next if /^(ppppp |\d+ )?setsockopt FASTOPEN: Protocol not available$/;
     s/^(Connecting to .* \.\.\. sending) \d+ (nonTFO early-data)$/$1 dd $2/;
 
     if (/^([0-9: ]*						# possible timestamp
@@ -1432,8 +1461,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/^\d\d:\d\d:\d\d\s+/01:01:01 /mg;
 
     # pid in debug lines
-    s/^(\d\d:\d\d:\d\d)(\s+\d+\s)/"$1 " . new_value($2, "%s", \$next_pid) . " "/mgxe;
-    s/(?<!post-)[Pp]rocess\K(\s\d+ )/new_value($1, "%s", \$next_pid) . " "/gxe;
+    s/^(\d\d:\d\d:\d\d\s+)(\d+)/$1 . new_value($2, "p%s", \$next_pid) . " "/mgxe;
+    s/(?<!post-)[Pp]rocess\K(\s\d+ )/new_value($1, "p%s", \$next_pid) . " "/gxe;
 
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
@@ -1455,27 +1484,6 @@ RESET_AFTER_EXTRA_LINE_READ:
         print MUNGED @saved;
         @saved = ();
         }
-
-      # Skip some lines that Exim puts out at the start of debugging output
-      # because they will be different in different binaries.
-
-      next if /^$time_pid?
-		  (?: Berkeley\ DB:\s
-		    | Probably\ (?:Berkeley\ DB|ndbm|GDBM)
-		    | Using\ tdb
-		    | Authenticators:
-		    | Lookups(?:\(built-in\))?:
-		    | Support\ for:
-		    | Routers:
-		    | Transports:
-		    | Malware:
-		    | log\ selectors\ =
-		    | cwd=
-		    | Fixed\ never_users
-		    | Configure\ owner
-		    | Size\ of\ off_t:
-		  )
-		/x;
 
       print MUNGED;
       }
@@ -1917,9 +1925,6 @@ $munges =
 		     ',
       'rejectlog' => 's/ X=TLS\S+ / X=TLS_proto_and_cipher /',
     },
-
-    'debug_pid' =>
-    { 'stderr' => 's/(^\s{0,4}|(?<=Process )|(?<=child ))\d+/ppppp/g' },
 
     'optional_dsn_info' =>
     { 'mail' => '/^(X-(Remote-MTA-(smtp-greeting|helo-response)|Exim-Diagnostic|(body|message)-linecount):|Remote-MTA: X-ip;)/'

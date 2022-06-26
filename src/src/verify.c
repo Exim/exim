@@ -3074,7 +3074,7 @@ digits, full stops, and hyphens (the constituents of domain names). Allow
 underscores, as they are all too commonly found. Sigh. Also, if
 allow_utf8_domains is set, allow top-bit characters. */
 
-for (t = ss; *t != 0; t++)
+for (t = ss; *t; t++)
   if (!isalnum(*t) && *t != '.' && *t != '-' && *t != '_' &&
       (!allow_utf8_domains || *t < 128)) break;
 
@@ -3082,7 +3082,7 @@ for (t = ss; *t != 0; t++)
 its IP address and match against that. Note that a multi-homed host will add
 items to the chain. */
 
-if (*t == 0)
+if (!*t)
   {
   int rc;
   host_item h;
@@ -3113,8 +3113,8 @@ outgoing hosts, the name is always given explicitly. If it is NULL, it means we
 must use sender_host_name and its aliases, looking them up if necessary. */
 
 if (cb->host_name)   /* Explicit host name given */
-  return match_check_string(cb->host_name, ss, -1, TRUE, TRUE, TRUE,
-    valueptr);
+  return match_check_string(cb->host_name, ss, -1,
+    MCS_PARTIAL | MCS_CASELESS | MCS_AT_SPECIAL | cb->flags, valueptr);
 
 /* Host name not given; in principle we need the sender host name and its
 aliases. However, for query-style lookups, we do not need the name if the
@@ -3143,7 +3143,9 @@ if ((semicolon = Ustrchr(ss, ';')))
 
 if (isquery)
   {
-  switch(match_check_string(US"", ss, -1, TRUE, TRUE, TRUE, valueptr))
+  switch(match_check_string(US"", ss, -1,
+      MCS_PARTIAL| MCS_CASELESS| MCS_AT_SPECIAL | (cb->flags & MCS_CACHEABLE),
+      valueptr))
     {
     case OK:    return OK;
     case DEFER: return DEFER;
@@ -3169,7 +3171,9 @@ if (!sender_host_name)
 
 /* Match on the sender host name, using the general matching function */
 
-switch(match_check_string(sender_host_name, ss, -1, TRUE, TRUE, TRUE, valueptr))
+switch(match_check_string(sender_host_name, ss, -1,
+      MCS_PARTIAL| MCS_CASELESS| MCS_AT_SPECIAL | (cb->flags & MCS_CACHEABLE),
+      valueptr))
   {
   case OK:    return OK;
   case DEFER: return DEFER;
@@ -3179,7 +3183,9 @@ switch(match_check_string(sender_host_name, ss, -1, TRUE, TRUE, TRUE, valueptr))
 
 aliases = sender_host_aliases;
 while (*aliases)
-  switch(match_check_string(*aliases++, ss, -1, TRUE, TRUE, TRUE, valueptr))
+  switch(match_check_string(*aliases++, ss, -1,
+      MCS_PARTIAL| MCS_CASELESS| MCS_AT_SPECIAL | (cb->flags & MCS_CACHEABLE),
+      valueptr))
     {
     case OK:    return OK;
     case DEFER: return DEFER;
@@ -3255,8 +3261,8 @@ rc = match_check_list(
        check_host,                             /* function for testing */
        &cb,                                    /* argument for function */
        MCL_HOST,                               /* type of check */
-       (host_address == sender_host_address)?
-         US"host" : host_address,              /* text for debugging */
+       host_address == sender_host_address
+         ? US"host" : host_address,	       /* text for debugging */
        valueptr);                              /* where to pass back data */
 deliver_host_address = save_host_address;
 return rc;

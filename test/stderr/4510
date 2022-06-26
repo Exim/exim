@@ -8,7 +8,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:1225 ...  connected
+Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:PORT_D ...  connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
@@ -59,8 +59,8 @@ LOG: MAIN
   => d@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbL-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 10HmaX-0005vi-00 failed to expand dkim_timestamps: unknown variable in "${bogus}"
 
 ******** SERVER ********

@@ -1,11 +1,11 @@
-1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 Start queue run: pid=p1234 -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=abc T=local_delivery
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=abc T=local_delivery
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 End queue run: pid=p1234 -qf
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTPS on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTPS on port PORT_D
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= userx@test.ex H=(rhu.barb) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= userx@test.ex H=(test) [ip4.ip4.ip4.ip4] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes S=sss

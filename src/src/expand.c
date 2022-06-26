@@ -12,9 +12,15 @@
 
 #include "exim.h"
 
+typedef unsigned esi_flags;
+#define ESI_NOFLAGS		0
+#define ESI_BRACE_ENDS		BIT(0)	/* expansion should stop at } */
+#define ESI_HONOR_DOLLAR	BIT(1)	/* $ is meaningfull */
+#define ESI_SKIPPING		BIT(2)	/* value will not be needed */
+
 /* Recursively called function */
 
-static uschar *expand_string_internal(const uschar *, BOOL, const uschar **, BOOL, BOOL, BOOL *);
+static uschar *expand_string_internal(const uschar *, esi_flags, const uschar **, BOOL *, BOOL *);
 static int_eximarith_t expanded_string_integer(const uschar *, BOOL);
 
 #ifdef STAND_ALONE
@@ -686,6 +692,7 @@ static var_entry var_table[] = {
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
   { "recipients",          vtype_string_func, (void *) &fn_recipients },
   { "recipients_count",    vtype_int,         &recipients_count },
+  { "regex_cachesize",     vtype_int,         &regex_cachesize },/* undocumented; devel observability */
 #ifdef WITH_CONTENT_SCAN
   { "regex_match_string",  vtype_stringptr,   &regex_match_string },
 #endif
@@ -1748,9 +1755,7 @@ uschar buf[16];
 int fd;
 ssize_t len;
 const uschar * where;
-#ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
 uschar * sname;
-#endif
 
 if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
   {
@@ -1758,17 +1763,9 @@ if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
   return NULL;
   }
 
-#ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
-sa_un.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
-len = offsetof(struct sockaddr_un, sun_path) + 1
-  + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "exim_%d", getpid());
-#else
-sname = string_sprintf("%s/p_%d", spool_directory, getpid());
-len = offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s", sname);
-#endif
+len = daemon_client_sockname(&sa_un, &sname);
 
-if (bind(fd, (const struct sockaddr *)&sa_un, len) < 0)
+if (bind(fd, (const struct sockaddr *)&sa_un, (socklen_t)len) < 0)
   { where = US"bind"; goto bad; }
 
 #ifdef notdef
@@ -1777,17 +1774,7 @@ debug_printf("local addr '%s%s'\n",
   sa_un.sun_path + (*sa_un.sun_path ? 0 : 1));
 #endif
 
-#ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
-sa_un.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
-len = offsetof(struct sockaddr_un, sun_path) + 1
-  + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "%s",
-	      expand_string(notifier_socket));
-#else
-len = offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s",
-	      expand_string(notifier_socket));
-#endif
-
+len = daemon_notifier_sockname(&sa_un);
 if (connect(fd, (const struct sockaddr *)&sa_un, len) < 0)
   { where = US"connect"; goto bad2; }
 
@@ -2114,27 +2101,33 @@ Arguments:
   n          maximum number of substrings
   m          minimum required
   sptr       points to current string pointer
-  skipping   the skipping flag
+  flags
+   skipping   the skipping flag
   check_end  if TRUE, check for final '}'
   name       name of item, for error message
   resetok    if not NULL, pointer to flag - write FALSE if unsafe to reset
-	     the store.
+	     the store
+  textonly_p if not NULL, pointer to bitmask of which subs were text-only
+	     (did not change when expended)
 
-Returns:     0 OK; string pointer updated
+Returns:     -1 OK; string pointer updated, but in "skipping" mode
+	     0 OK; string pointer updated
              1 curly bracketing error (too few arguments)
              2 too many arguments (only if check_end is set); message set
              3 other error (expansion failure)
 */
 
 static int
-read_subs(uschar **sub, int n, int m, const uschar **sptr, BOOL skipping,
-  BOOL check_end, uschar *name, BOOL *resetok)
+read_subs(uschar ** sub, int n, int m, const uschar ** sptr, esi_flags flags,
+  BOOL check_end, uschar * name, BOOL * resetok, unsigned * textonly_p)
 {
-const uschar *s = *sptr;
+const uschar * s = *sptr;
+unsigned textonly_l = 0;
 
 Uskip_whitespace(&s);
 for (int i = 0; i < n; i++)
   {
+  BOOL textonly;
   if (*s != '{')
     {
     if (i < m)
@@ -2146,11 +2139,14 @@ for (int i = 0; i < n; i++)
     sub[i] = NULL;
     break;
     }
-  if (!(sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, resetok)))
+  if (!(sub[i] = expand_string_internal(s+1,
+	  ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags & ESI_SKIPPING, &s, resetok,
+	  textonly_p ? &textonly : NULL)))
     return 3;
   if (*s++ != '}') return 1;
+  if (textonly_p && textonly) textonly_l |= BIT(i);
   Uskip_whitespace(&s);
-  }
+  }						/*{*/
 if (check_end && *s++ != '}')
   {
   if (s[-1] == '{')
@@ -2163,8 +2159,9 @@ if (check_end && *s++ != '}')
   return 1;
   }
 
+if (textonly_p) *textonly_p = textonly_l;
 *sptr = s;
-return 0;
+return flags & ESI_SKIPPING ? -1 : 0;
 }
 
 
@@ -2523,11 +2520,11 @@ Returns:   a pointer to the first character after the condition, or
 */
 
 static const uschar *
-eval_condition(const uschar *s, BOOL *resetok, BOOL *yield)
+eval_condition(const uschar * s, BOOL * resetok, BOOL * yield)
 {
 BOOL testfor = TRUE;
 BOOL tempcond, combined_cond;
-BOOL *subcondptr;
+BOOL * subcondptr;
 BOOL sub2_honour_dollar = TRUE;
 BOOL is_forany, is_json, is_jsons;
 int rc, cond_type;
@@ -2535,7 +2532,8 @@ int_eximarith_t num[2];
 struct stat statbuf;
 uschar * opname;
 uschar name[256];
-const uschar *sub[10];
+const uschar * sub[10];
+unsigned sub_textonly = 0;
 
 for (;;)
   if (Uskip_whitespace(&s) == '!') { testfor = !testfor; s++; } else break;
@@ -2629,8 +2627,14 @@ switch(cond_type = identify_operator(&s, &opname))
 
   if (Uskip_whitespace(&s) != '{') goto COND_FAILED_CURLY_START; /* }-for-text-editors */
 
-  sub[0] = expand_string_internal(s+1, TRUE, &s, yield == NULL, TRUE, resetok);
-  if (!sub[0]) return NULL;
+   {
+    BOOL textonly;
+    sub[0] = expand_string_internal(s+1,
+      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | (yield ? ESI_NOFLAGS : ESI_SKIPPING),
+      &s, resetok, &textonly);
+    if (!sub[0]) return NULL;
+    if (textonly) sub_textonly |= BIT(0);
+   }
   /* {-for-text-editors */
   if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
@@ -2727,8 +2731,8 @@ switch(cond_type = identify_operator(&s, &opname))
     Uskip_whitespace(&s);
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/*}*/
 
-    switch(read_subs(sub, nelem(sub), 1,
-      &s, yield == NULL, TRUE, name, resetok))
+    switch(read_subs(sub, nelem(sub), 1, &s,
+	yield ? ESI_NOFLAGS : ESI_SKIPPING, TRUE, name, resetok, NULL))
       {
       case 1: expand_string_message = US"too few arguments or bracketing "
         "error for acl";
@@ -2779,8 +2783,8 @@ switch(cond_type = identify_operator(&s, &opname))
     uschar *sub[4];
     Uskip_whitespace(&s);
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
-    switch(read_subs(sub, nelem(sub), 2, &s, yield == NULL, TRUE, name,
-		    resetok))
+    switch(read_subs(sub, nelem(sub), 2, &s,
+	yield ? ESI_NOFLAGS : ESI_SKIPPING, TRUE, name, resetok, NULL))
       {
       case 1: expand_string_message = US"too few arguments or bracketing "
 	"error for saslauthd";
@@ -2848,12 +2852,16 @@ switch(cond_type = identify_operator(&s, &opname))
 
   for (int i = 0; i < 2; i++)
     {
+    BOOL textonly;
     /* Sometimes, we don't expand substrings; too many insecure configurations
     created using match_address{}{} and friends, where the second param
     includes information from untrustworthy sources. */
-    BOOL honour_dollar = TRUE;
-    if ((i > 0) && !sub2_honour_dollar)
-      honour_dollar = FALSE;
+    /*XXX is this moot given taint-tracking? */
+
+    esi_flags flags = ESI_BRACE_ENDS;
+
+    if (!(i > 0 && !sub2_honour_dollar)) flags |= ESI_HONOR_DOLLAR;
+    if (!yield) flags |= ESI_SKIPPING;
 
     if (Uskip_whitespace(&s) != '{')
       {
@@ -2862,9 +2870,9 @@ switch(cond_type = identify_operator(&s, &opname))
         "after \"%s\"", opname);
       return NULL;
       }
-    if (!(sub[i] = expand_string_internal(s+1, TRUE, &s, yield == NULL,
-        honour_dollar, resetok)))
+    if (!(sub[i] = expand_string_internal(s+1, flags, &s, resetok, &textonly)))
       return NULL;
+    if (textonly) sub_textonly |= BIT(i);
     DEBUG(D_expand) if (i == 1 && !sub2_honour_dollar && Ustrchr(sub[1], '$'))
       debug_printf_indent("WARNING: the second arg is NOT expanded,"
 			" for security reasons\n");
@@ -2944,19 +2952,11 @@ switch(cond_type = identify_operator(&s, &opname))
 
     case ECOND_MATCH:   /* Regular expression match */
       {
-      const pcre2_code * re;
-      PCRE2_SIZE offset;
-      int err;
-
-      if (!(re = pcre2_compile((PCRE2_SPTR)sub[1], PCRE2_ZERO_TERMINATED,
-				PCRE_COPT, &err, &offset, pcre_cmp_ctx)))
-	{
-	uschar errbuf[128];
-	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
-	expand_string_message = string_sprintf("regular expression error in "
-	  "\"%s\": %s at offset %ld", sub[1], errbuf, (long)offset);
+      const pcre2_code * re = regex_compile(sub[1],
+		  sub_textonly & BIT(1) ? MCS_CACHEABLE : MCS_NOFLAGS,
+		  &expand_string_message, pcre_gen_cmp_ctx);
+      if (!re)
 	return NULL;
-	}
 
       tempcond = regex_match_and_setup(re, sub[0], 0, -1);
       break;
@@ -3274,7 +3274,9 @@ switch(cond_type = identify_operator(&s, &opname))
 
     Uskip_whitespace(&s);
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
-    if (!(sub[0] = expand_string_internal(s, TRUE, &s, yield == NULL, TRUE, resetok)))
+    if (!(sub[0] = expand_string_internal(s,
+      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | (yield ? ESI_NOFLAGS : ESI_SKIPPING),
+      &s, resetok, NULL)))
       return NULL;
     /* {-for-text-editors */
     if (*s++ != '}') goto COND_FAILED_CURLY_END;
@@ -3362,7 +3364,8 @@ switch(cond_type = identify_operator(&s, &opname))
 
     if (Uskip_whitespace(&s) != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
     ourname = cond_type == ECOND_BOOL_LAX ? US"bool_lax" : US"bool";
-    switch(read_subs(sub_arg, 1, 1, &s, yield == NULL, FALSE, ourname, resetok))
+    switch(read_subs(sub_arg, 1, 1, &s,
+	    yield ? ESI_NOFLAGS : ESI_SKIPPING, FALSE, ourname, resetok, NULL))
       {
       case 1: expand_string_message = string_sprintf(
                   "too few arguments or bracketing error for %s",
@@ -3430,7 +3433,8 @@ switch(cond_type = identify_operator(&s, &opname))
     uschar cksum[4];
     BOOL boolvalue = FALSE;
 
-    switch(read_subs(sub, 2, 2, CUSS &s, yield == NULL, FALSE, name, resetok))
+    switch(read_subs(sub, 2, 2, CUSS &s,
+	    yield ? ESI_NOFLAGS : ESI_SKIPPING, FALSE, name, resetok, NULL))
       {
       case 1: expand_string_message = US"too few arguments or bracketing "
 	"error for inbound_srs";
@@ -3441,10 +3445,10 @@ switch(cond_type = identify_operator(&s, &opname))
     /* Match the given local_part against the SRS-encoded pattern */
 
     re = regex_must_compile(US"^(?i)SRS0=([^=]+)=([A-Z2-7]+)=([^=]*)=(.*)$",
-			    TRUE, FALSE);
+			    MCS_CASELESS | MCS_CACHEABLE, FALSE);
     md = pcre2_match_data_create(4+1, pcre_gen_ctx);
     if (pcre2_match(re, sub[0], PCRE2_ZERO_TERMINATED, 0, PCRE_EOPT,
-		    md, pcre_mtc_ctx) < 0)
+		    md, pcre_gen_mtc_ctx) < 0)
       {
       DEBUG(D_expand) debug_printf("no match for SRS'd local-part pattern\n");
       goto srs_result;
@@ -3521,6 +3525,7 @@ switch(cond_type = identify_operator(&s, &opname))
     boolvalue = TRUE;
 
 srs_result:
+    /* pcre2_match_data_free(md);	gen ctx needs no free */
     if (yield) *yield = (boolvalue == testfor);
     return s;
     }
@@ -3628,7 +3633,8 @@ expanded, to check their syntax, but "skipping" is set when the result is not
 needed - this avoids unnecessary nested lookups.
 
 Arguments:
-  skipping       TRUE if we were skipping when this item was reached
+  flags
+   skipping       TRUE if we were skipping when this item was reached
   yes            TRUE if the first string is to be used, else use the second
   save_lookup    a value to put back into lookup_value before the 2nd expansion
   sptr           points to the input string pointer
@@ -3644,13 +3650,15 @@ Returns:         0 OK; lookup_value has been reset to save_lookup
 */
 
 static int
-process_yesno(BOOL skipping, BOOL yes, uschar *save_lookup, const uschar **sptr,
+process_yesno(esi_flags flags, BOOL yes, uschar *save_lookup, const uschar **sptr,
   gstring ** yieldptr, uschar *type, BOOL *resetok)
 {
 int rc = 0;
 const uschar *s = *sptr;    /* Local value */
 uschar *sub1, *sub2;
 const uschar * errwhere;
+
+flags &= ESI_SKIPPING;		/* Ignore all buf the skipping flag */
 
 /* If there are no following strings, we substitute the contents of $value for
 lookups and for extractions in the success case. For the ${if item, the string
@@ -3661,12 +3669,12 @@ if (skip_whitespace(&s) == '}')
   {
   if (type[0] == 'i')
     {
-    if (yes && !skipping)
+    if (yes && !(flags & ESI_SKIPPING))
       *yieldptr = string_catn(*yieldptr, US"true", 4);
     }
   else
     {
-    if (yes && lookup_value && !skipping)
+    if (yes && lookup_value && !(flags & ESI_SKIPPING))
       *yieldptr = string_cat(*yieldptr, lookup_value);
     lookup_value = save_lookup;
     }
@@ -3678,7 +3686,7 @@ if (skip_whitespace(&s) == '}')
 
 if (*s++ != '{')
   {
-  errwhere = US"'yes' part did not start with '{'";
+  errwhere = US"'yes' part did not start with '{'";		/*}}*/
   goto FAILED_CURLY;
   }
 
@@ -3686,9 +3694,12 @@ if (*s++ != '{')
 want this string. Set skipping in the call in the fail case (this will always
 be the case if we were already skipping). */
 
-sub1 = expand_string_internal(s, TRUE, &s, !yes, TRUE, resetok);
+sub1 = expand_string_internal(s,
+  ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | (yes ? ESI_NOFLAGS : ESI_SKIPPING),
+  &s, resetok, NULL);
 if (sub1 == NULL && (yes || !f.expand_string_forcedfail)) goto FAILED;
 f.expand_string_forcedfail = FALSE;
+								/*{{*/
 if (*s++ != '}')
   {
   errwhere = US"'yes' part did not end with '}'";
@@ -3713,14 +3724,16 @@ time, forced failures are noticed only if we want the second string. We must
 set skipping in the nested call if we don't want this string, or if we were
 already skipping. */
 
-if (skip_whitespace(&s) == '{')
+if (skip_whitespace(&s) == '{')					/*}*/
   {
-  sub2 = expand_string_internal(s+1, TRUE, &s, yes || skipping, TRUE, resetok);
-  if (sub2 == NULL && (!yes || !f.expand_string_forcedfail)) goto FAILED;
-  f.expand_string_forcedfail = FALSE;
+  esi_flags s_flags = ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags;
+  if (yes) s_flags |= ESI_SKIPPING;
+  sub2 = expand_string_internal(s+1, s_flags, &s, resetok, NULL);
+  if (!sub2 && (!yes || !f.expand_string_forcedfail)) goto FAILED;
+  f.expand_string_forcedfail = FALSE;				/*{*/
   if (*s++ != '}')
     {
-    errwhere = US"'no' part did not start with '{'";
+    errwhere = US"'no' part did not start with '{'";		/*}*/
     goto FAILED_CURLY;
     }
 
@@ -3729,7 +3742,7 @@ if (skip_whitespace(&s) == '{')
   if (!yes)
     *yieldptr = string_cat(*yieldptr, sub2);
   }
-
+								/*{{*/
 /* If there is no second string, but the word "fail" is present when the use of
 the second string is wanted, set a flag indicating it was a forced failure
 rather than a syntactic error. Swallow the terminating } in case this is nested
@@ -3742,9 +3755,9 @@ else if (*s != '}')
   s = US read_name(name, sizeof(name), s, US"_");
   if (Ustrcmp(name, "fail") == 0)
     {
-    if (!yes && !skipping)
+    if (!yes && !(flags & ESI_SKIPPING))
       {
-      Uskip_whitespace(&s);
+      Uskip_whitespace(&s);					/*{{*/
       if (*s++ != '}')
         {
 	errwhere = US"did not close with '}' after forcedfail";
@@ -3766,7 +3779,7 @@ else if (*s != '}')
 
 /* All we have to do now is to check on the final closing brace. */
 
-skip_whitespace(&s);
+skip_whitespace(&s);						/*{{*/
 if (*s++ != '}')
   {
   errwhere = US"did not close with '}'";
@@ -4445,15 +4458,17 @@ string expansion becoming too powerful.
 
 Arguments:
   string         the string to be expanded
-  ket_ends       true if expansion is to stop at }
+  flags
+   brace_ends     expansion is to stop at }
+   honour_dollar  TRUE if $ is to be expanded,
+                  FALSE if it's just another character
+   skipping       TRUE for recursive calls when the value isn't actually going
+                  to be used (to allow for optimisation)
   left           if not NULL, a pointer to the first character after the
-                 expansion is placed here (typically used with ket_ends)
-  skipping       TRUE for recursive calls when the value isn't actually going
-                 to be used (to allow for optimisation)
-  honour_dollar  TRUE if $ is to be expanded,
-                 FALSE if it's just another character
+                 expansion is placed here (typically used with brace_ends)
   resetok_p	 if not NULL, pointer to flag - write FALSE if unsafe to reset
 		 the store.
+  textonly_p	 if not NULL, pointer to flag - write bool for only-met-text
 
 Returns:         NULL if expansion fails:
                    expand_string_forcedfail is set TRUE if failure was forced
@@ -4462,8 +4477,8 @@ Returns:         NULL if expansion fails:
 */
 
 static uschar *
-expand_string_internal(const uschar *string, BOOL ket_ends, const uschar **left,
-  BOOL skipping, BOOL honour_dollar, BOOL *resetok_p)
+expand_string_internal(const uschar * string, esi_flags flags, const uschar ** left,
+  BOOL *resetok_p, BOOL * textonly_p)
 {
 rmark reset_point = store_mark();
 gstring * yield = string_get(Ustrlen(string) + 64);
@@ -4471,7 +4486,7 @@ int item_type;
 const uschar * s = string;
 const uschar * save_expand_nstring[EXPAND_MAXN+1];
 int save_expand_nlength[EXPAND_MAXN+1];
-BOOL resetok = TRUE, first = TRUE;
+BOOL resetok = TRUE, first = TRUE, textonly = TRUE;
 
 expand_level++;
 f.expand_string_forcedfail = FALSE;
@@ -4494,11 +4509,11 @@ while (*s)
     DEBUG(D_noutf8)
       debug_printf_indent("%c%s: %s\n",
 	first ? '/' : '|',
-	skipping ? "---scanning" : "considering", s);
+	flags & ESI_SKIPPING ? "---scanning" : "considering", s);
     else
       debug_printf_indent("%s%s: %s\n",
 	first ? UTF8_DOWN_RIGHT : UTF8_VERT_RIGHT,
-	skipping
+	flags & ESI_SKIPPING
 	? UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ "scanning"
 	: "considering",
 	s);
@@ -4524,7 +4539,7 @@ while (*s)
       for (s = t; *s ; s++) if (*s == '\\' && s[1] == 'N') break;
 
       DEBUG(D_expand)
-	debug_expansion_interim(US"protected", t, (int)(s - t), skipping);
+	debug_expansion_interim(US"protected", t, (int)(s - t), !!(flags & ESI_SKIPPING));
       yield = string_catn(yield, t, s - t);
       if (*s) s += 2;
       }
@@ -4547,20 +4562,21 @@ while (*s)
   /* Anything other than $ is just copied verbatim, unless we are
   looking for a terminating } character. */
 
-  if (ket_ends && *s == '}') break;
+  if (flags & ESI_BRACE_ENDS && *s == '}') break;
 
-  if (*s != '$' || !honour_dollar)
+  if (*s != '$' || !(flags & ESI_HONOR_DOLLAR))
     {
     int i = 1;								/*{*/
     for (const uschar * t = s+1;
 	*t && *t != '$' && *t != '}' && *t != '\\'; t++) i++;
 
-    DEBUG(D_expand) debug_expansion_interim(US"text", s, i, skipping);
+    DEBUG(D_expand) debug_expansion_interim(US"text", s, i, !!(flags & ESI_SKIPPING));
 
     yield = string_catn(yield, s, i);
     s += i;
     continue;
     }
+  textonly = FALSE;
 
   /* No { after the $ - must be a plain name or a number for string
   match variable. There has to be a fudge for variables that are the
@@ -4622,7 +4638,7 @@ while (*s)
 
     /* Variable */
 
-    else if (!(value = find_variable(name, FALSE, skipping, &newsize)))
+    else if (!(value = find_variable(name, FALSE, !!(flags & ESI_SKIPPING), &newsize)))
       {
       expand_string_message =
 	string_sprintf("unknown variable name \"%s\"", name);
@@ -4722,14 +4738,13 @@ while (*s)
       uschar * user_msg;
       int rc;
 
-      switch(read_subs(sub, nelem(sub), 1, &s, skipping, TRUE, name,
-		      &resetok))
+      switch(read_subs(sub, nelem(sub), 1, &s, flags, TRUE, name, &resetok, NULL))
         {
+	case -1: continue;		/* skipping */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
-      if (skipping) continue;
 
       resetok = FALSE;
       switch(rc = eval_acl(sub, nelem(sub), &user_msg))
@@ -4758,13 +4773,13 @@ while (*s)
       {
       uschar * sub_arg[1];
 
-      switch(read_subs(sub_arg, nelem(sub_arg), 1, &s, skipping, TRUE, name,
-		      &resetok))
+      switch(read_subs(sub_arg, nelem(sub_arg), 1, &s, flags, TRUE, name, &resetok, NULL))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
+      /*XXX no skipping-optimisation? */
 
       yield = string_append(yield, 3,
 			US"Authentication-Results: ", sub_arg[0], US"; none");
@@ -4802,14 +4817,14 @@ while (*s)
       uschar * save_lookup_value = lookup_value;
 
       Uskip_whitespace(&s);
-      if (!(next_s = eval_condition(s, &resetok, skipping ? NULL : &cond)))
+      if (!(next_s = eval_condition(s, &resetok, flags & ESI_SKIPPING ? NULL : &cond)))
 	goto EXPAND_FAILED;  /* message already set */
 
       DEBUG(D_expand)
 	{
-	debug_expansion_interim(US"condition", s, (int)(next_s - s), skipping);
+	debug_expansion_interim(US"condition", s, (int)(next_s - s), !!(flags & ESI_SKIPPING));
 	debug_expansion_interim(US"result",
-	  cond ? US"true" : US"false", cond ? 4 : 5, skipping);
+	  cond ? US"true" : US"false", cond ? 4 : 5, !!(flags & ESI_SKIPPING));
 	}
 
       s = next_s;
@@ -4818,12 +4833,12 @@ while (*s)
       function that is also used by ${lookup} and ${extract} and ${run}. */
 
       switch(process_yesno(
-               skipping,                     /* were previously skipping */
-               cond,                         /* success/failure indicator */
-               lookup_value,                 /* value to reset for string2 */
-               &s,                           /* input pointer */
-               &yield,                       /* output pointer */
-               US"if",                       /* condition type */
+               flags,			/* were previously skipping */
+               cond,			/* success/failure indicator */
+               lookup_value,			/* value to reset for string2 */
+               &s,			/* input pointer */
+               &yield,			/* output pointer */
+               US"if",			/* condition type */
 	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
@@ -4845,13 +4860,13 @@ while (*s)
       uschar *sub_arg[3];
       uschar *encoded;
 
-      switch(read_subs(sub_arg, nelem(sub_arg), 1, &s, skipping, TRUE, name,
-		      &resetok))
+      switch(read_subs(sub_arg, nelem(sub_arg), 1, &s, flags, TRUE, name, &resetok, NULL))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
+      /*XXX no skipping-optimisation? */
 
       if (!sub_arg[1])			/* One argument */
 	{
@@ -4867,7 +4882,7 @@ while (*s)
 	goto EXPAND_FAILED;
 	}
 
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
 
       if (!(encoded = imap_utf7_encode(sub_arg[0], headers_charset,
 			  sub_arg[1][0], sub_arg[2], &expand_string_message)))
@@ -4906,7 +4921,8 @@ while (*s)
 
       if (Uskip_whitespace(&s) == '{')					/*}*/
         {
-        key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
+        key = expand_string_internal(s+1,
+		ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL);
         if (!key) goto EXPAND_FAILED;			/*{{*/
         if (*s++ != '}')
 	  {
@@ -4976,7 +4992,8 @@ while (*s)
 	expand_string_message = US"missing '{' for lookup file-or-query arg";
 	goto EXPAND_FAILED_CURLY;						/*}}*/
 	}
-      if (!(filename = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok)))
+      if (!(filename = expand_string_internal(s+1,
+		ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL)))
 	goto EXPAND_FAILED;
       										/*{{*/
       if (*s++ != '}')
@@ -5007,7 +5024,7 @@ while (*s)
       since new variables will have been set. Note that at the end of this
       "lookup" section, the old numeric variables are restored. */
 
-      if (skipping)
+      if (flags & ESI_SKIPPING)
         lookup_value = NULL;
       else
         {
@@ -5033,12 +5050,12 @@ while (*s)
       function that is also used by ${if} and ${extract}. */
 
       switch(process_yesno(
-               skipping,                     /* were previously skipping */
-               lookup_value != NULL,         /* success/failure indicator */
-               save_lookup_value,            /* value to reset for string2 */
-               &s,                           /* input pointer */
-               &yield,                       /* output pointer */
-               US"lookup",                   /* condition type */
+               flags,			/* were previously skipping */
+               lookup_value != NULL,	/* success/failure indicator */
+               save_lookup_value,	/* value to reset for string2 */
+               &s,			/* input pointer */
+               &yield,			/* output pointer */
+               US"lookup",		/* condition type */
 	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
@@ -5051,7 +5068,7 @@ while (*s)
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
 
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
       break;
       }
 
@@ -5079,17 +5096,14 @@ while (*s)
         goto EXPAND_FAILED;
         }
 
-      switch(read_subs(sub_arg, EXIM_PERL_MAX_ARGS + 1, 1, &s, skipping, TRUE,
-           name, &resetok))
+      switch(read_subs(sub_arg, EXIM_PERL_MAX_ARGS + 1, 1, &s, flags, TRUE,
+           name, &resetok, NULL))
         {
+	case -1: continue;	/* If skipping, we don't actually do anything */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
-
-      /* If skipping, we don't actually do anything */
-
-      if (skipping) continue;
 
       /* Start the interpreter if necessary */
 
@@ -5150,15 +5164,13 @@ while (*s)
       {
       uschar * sub_arg[3], * p, * domain;
 
-      switch(read_subs(sub_arg, 3, 2, &s, skipping, TRUE, name, &resetok))
+      switch(read_subs(sub_arg, 3, 2, &s, flags, TRUE, name, &resetok, NULL))
         {
+	case -1: continue;	/* If skipping, we don't actually do anything */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
-
-      /* If skipping, we don't actually do anything */
-      if (skipping) continue;
 
       /* sub_arg[0] is the address */
       if (  !(domain = Ustrrchr(sub_arg[0],'@'))
@@ -5208,30 +5220,21 @@ while (*s)
       gstring * g;
       const pcre2_code * re;
 
-      /* TF: Ugliness: We want to expand parameter 1 first, then set
-         up expansion variables that are used in the expansion of
-         parameter 2. So we clone the string for the first
-         expansion, where we only expand parameter 1.
-
-         PH: Actually, that isn't necessary. The read_subs() function is
-         designed to work this way for the ${if and ${lookup expansions. I've
-         tidied the code.
-      */								/*}}*/
-
       /* Reset expansion variables */
       prvscheck_result = NULL;
       prvscheck_address = NULL;
       prvscheck_keynum = NULL;
 
-      switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, name, &resetok))
+      switch(read_subs(sub_arg, 1, 1, &s, flags, FALSE, name, &resetok, NULL))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
 
-      re = regex_must_compile(US"^prvs\\=([0-9])([0-9]{3})([A-F0-9]{6})\\=(.+)\\@(.+)$",
-                              TRUE,FALSE);
+      re = regex_must_compile(
+	US"^prvs\\=([0-9])([0-9]{3})([A-F0-9]{6})\\=(.+)\\@(.+)$",
+	MCS_CASELESS | MCS_CACHEABLE, FALSE);
 
       if (regex_match_and_setup(re,sub_arg[0],0,-1))
         {
@@ -5241,11 +5244,14 @@ while (*s)
         uschar * hash = string_copyn(expand_nstring[3],expand_nlength[3]);
         uschar * domain = string_copyn(expand_nstring[5],expand_nlength[5]);
 
-        DEBUG(D_expand) debug_printf_indent("prvscheck localpart: %s\n", local_part);
-        DEBUG(D_expand) debug_printf_indent("prvscheck key number: %s\n", key_num);
-        DEBUG(D_expand) debug_printf_indent("prvscheck daystamp: %s\n", daystamp);
-        DEBUG(D_expand) debug_printf_indent("prvscheck hash: %s\n", hash);
-        DEBUG(D_expand) debug_printf_indent("prvscheck domain: %s\n", domain);
+        DEBUG(D_expand)
+	  {
+	  debug_printf_indent("prvscheck localpart: %s\n", local_part);
+	  debug_printf_indent("prvscheck key number: %s\n", key_num);
+	  debug_printf_indent("prvscheck daystamp: %s\n", daystamp);
+	  debug_printf_indent("prvscheck hash: %s\n", hash);
+	  debug_printf_indent("prvscheck domain: %s\n", domain);
+	  }
 
         /* Set up expansion variables */
         g = string_cat (NULL, local_part);
@@ -5255,7 +5261,7 @@ while (*s)
         prvscheck_keynum = string_copy(key_num);
 
         /* Now expand the second argument */
-        switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, name, &resetok))
+        switch(read_subs(sub_arg, 1, 1, &s, flags, FALSE, name, &resetok, NULL))
           {
           case 1: goto EXPAND_FAILED_CURLY;
           case 2:
@@ -5266,7 +5272,6 @@ while (*s)
 
         p = prvs_hmac_sha1(prvscheck_address, sub_arg[0], prvscheck_keynum,
           daystamp);
-
         if (!p)
           {
           expand_string_message = US"hmac-sha1 conversion failed";
@@ -5309,7 +5314,7 @@ while (*s)
         /* Now expand the final argument. We leave this till now so that
         it can include $prvscheck_result. */
 
-        switch(read_subs(sub_arg, 1, 0, &s, skipping, TRUE, name, &resetok))
+        switch(read_subs(sub_arg, 1, 0, &s, flags, TRUE, name, &resetok, NULL))
           {
           case 1: goto EXPAND_FAILED_CURLY;
           case 2:
@@ -5330,14 +5335,14 @@ while (*s)
            We need to make sure all subs are expanded first, so as to skip over
            the entire item. */
 
-        switch(read_subs(sub_arg, 2, 1, &s, skipping, TRUE, name, &resetok))
+        switch(read_subs(sub_arg, 2, 1, &s, flags, TRUE, name, &resetok, NULL))
           {
           case 1: goto EXPAND_FAILED_CURLY;
           case 2:
           case 3: goto EXPAND_FAILED;
           }
 
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
       break;
       }
 
@@ -5354,7 +5359,7 @@ while (*s)
         goto EXPAND_FAILED;
         }
 
-      switch(read_subs(sub_arg, 2, 1, &s, skipping, TRUE, name, &resetok))
+      switch(read_subs(sub_arg, 2, 1, &s, flags, TRUE, name, &resetok, NULL))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -5363,7 +5368,7 @@ while (*s)
 
       /* If skipping, we don't actually do anything */
 
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
 
       /* Open the file and read it */
 
@@ -5395,7 +5400,7 @@ while (*s)
       /* Read up to 4 arguments, but don't do the end of item check afterwards,
       because there may be a string for expansion on failure. */
 
-      switch(read_subs(sub_arg, 4, 2, &s, skipping, FALSE, name, &resetok))
+      switch(read_subs(sub_arg, 4, 2, &s, flags, FALSE, name, &resetok, NULL))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:                             /* Won't occur: no end check */
@@ -5405,7 +5410,7 @@ while (*s)
       /* If skipping, we don't actually do anything. Otherwise, arrange to
       connect to either an IP or a Unix socket. */
 
-      if (!skipping)
+      if (!(flags & ESI_SKIPPING))
         {
 	int stype = search_findtype(US"readsock", 8);
 	gstring * g = NULL;
@@ -5483,7 +5488,8 @@ while (*s)
 
       if (*s == '{')							/*}*/
         {
-        if (!expand_string_internal(s+1, TRUE, &s, TRUE, TRUE, &resetok))
+        if (!expand_string_internal(s+1,
+	  ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | ESI_SKIPPING, &s, &resetok, NULL))
           goto EXPAND_FAILED;						/*{*/
         if (*s++ != '}')
 	  {								/*{*/
@@ -5499,7 +5505,7 @@ while (*s)
 	expand_string_message = US"missing '}' closing readsocket";
 	goto EXPAND_FAILED_CURLY;
 	}
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
       break;
 
       /* Come here on failure to create socket, connect socket, write to the
@@ -5509,7 +5515,8 @@ while (*s)
     SOCK_FAIL:
       if (*s != '{') goto EXPAND_FAILED;				/*}*/
       DEBUG(D_any) debug_printf("%s\n", expand_string_message);
-      if (!(arg = expand_string_internal(s+1, TRUE, &s, FALSE, TRUE, &resetok)))
+      if (!(arg = expand_string_internal(s+1,
+		    ESI_BRACE_ENDS | ESI_HONOR_DOLLAR, &s, &resetok, NULL)))
         goto EXPAND_FAILED;
       yield = string_cat(yield, arg);					/*{*/
       if (*s++ != '}')
@@ -5560,14 +5567,15 @@ while (*s)
       s++;
 
       if (late_expand)		/* this is the default case */
-	{
+	{						/*{*/
 	int n = Ustrcspn(s, "}");
-	arg = skipping ? NULL : string_copyn(s, n);
+	arg = flags & ESI_SKIPPING ? NULL : string_copyn(s, n);
 	s += n;
 	}
       else
 	{
-	if (!(arg = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok)))
+	if (!(arg = expand_string_internal(s,
+		ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL)))
 	  goto EXPAND_FAILED;
 	Uskip_whitespace(&s);
 	}
@@ -5578,7 +5586,7 @@ while (*s)
 	goto EXPAND_FAILED_CURLY;
 	}
 
-      if (skipping)   /* Just pretend it worked when we're skipping */
+      if (flags & ESI_SKIPPING)   /* Just pretend it worked when we're skipping */
 	{
         runrc = 0;
 	lookup_value = NULL;
@@ -5652,19 +5660,19 @@ while (*s)
       /* Process the yes/no strings; $value may be useful in both cases */
 
       switch(process_yesno(
-               skipping,                     /* were previously skipping */
-               runrc == 0,                   /* success/failure indicator */
-               lookup_value,                 /* value to reset for string2 */
-               &s,                           /* input pointer */
-               &yield,                       /* output pointer */
-               US"run",                      /* condition type */
+               flags,			/* were previously skipping */
+               runrc == 0,		/* success/failure indicator */
+               lookup_value,		/* value to reset for string2 */
+               &s,			/* input pointer */
+               &yield,			/* output pointer */
+               US"run",			/* condition type */
 	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
         case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
         }
 
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
       break;
       }
 
@@ -5676,8 +5684,9 @@ while (*s)
       int o2m;
       uschar * sub[3];
 
-      switch(read_subs(sub, 3, 3, &s, skipping, TRUE, name, &resetok))
+      switch(read_subs(sub, 3, 3, &s, flags, TRUE, name, &resetok, NULL))
         {
+	case -1: continue;	/* skipping */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
@@ -5696,7 +5705,6 @@ while (*s)
           }
         }
 
-      if (skipping) continue;
       break;
       }
 
@@ -5717,9 +5725,10 @@ while (*s)
       Ensure that sub[2] is set in the ${length } case. */
 
       sub[2] = NULL;
-      switch(read_subs(sub, (item_type == EITEM_LENGTH)? 2:3, 2, &s, skipping,
-             TRUE, name, &resetok))
+      switch(read_subs(sub, item_type == EITEM_LENGTH ? 2:3, 2, &s, flags,
+             TRUE, name, &resetok, NULL))
         {
+	case -1: continue;	/* skipping */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
@@ -5760,7 +5769,6 @@ while (*s)
       if (!ret)
 	goto EXPAND_FAILED;
       yield = string_catn(yield, ret, len);
-      if (skipping) continue;
       break;
       }
 
@@ -5793,14 +5801,13 @@ while (*s)
       uschar innerkey[MAX_HASHBLOCKLEN];
       uschar outerkey[MAX_HASHBLOCKLEN];
 
-      switch (read_subs(sub, 3, 3, &s, skipping, TRUE, name, &resetok))
+      switch (read_subs(sub, 3, 3, &s, flags, TRUE, name, &resetok, NULL))
         {
+	case -1: continue;	/* skipping */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
-
-      if (skipping) continue;
 
       if (Ustrcmp(sub[0], "md5") == 0)
 	{
@@ -5881,32 +5888,29 @@ while (*s)
       {
       const pcre2_code * re;
       int moffset, moffsetextra, slen;
-      PCRE2_SIZE roffset;
       pcre2_match_data * md;
-      int err, emptyopt;
+      int emptyopt;
       uschar * subject, * sub[3];
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
+      unsigned sub_textonly = 0;
 
-      switch(read_subs(sub, 3, 3, &s, skipping, TRUE, name, &resetok))
+      switch(read_subs(sub, 3, 3, &s, flags, TRUE, name, &resetok, &sub_textonly))
         {
+	case -1: continue;	/* skipping */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
 
-      /*XXX no handling of skipping? */
       /* Compile the regular expression */
 
-      if (!(re = pcre2_compile((PCRE2_SPTR)sub[1], PCRE2_ZERO_TERMINATED,
-		  PCRE_COPT, &err, &roffset, pcre_cmp_ctx)))
-        {
-        uschar errbuf[128];
-	pcre2_get_error_message(err, errbuf, sizeof(errbuf));
-        expand_string_message = string_sprintf("regular expression error in "
-          "\"%s\": %s at offset %ld", sub[1], errbuf, (long)roffset);
+      re = regex_compile(sub[1],
+	      sub_textonly & BIT(1) ? MCS_CACHEABLE : MCS_NOFLAGS,
+	      &expand_string_message, pcre_gen_cmp_ctx);
+      if (!re)
         goto EXPAND_FAILED;
-        }
+
       md = pcre2_match_data_create(EXPAND_MAXN + 1, pcre_gen_ctx);
 
       /* Now run a loop to do the substitutions as often as necessary. It ends
@@ -5922,7 +5926,7 @@ while (*s)
         {
 	PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
 	int n = pcre2_match(re, (PCRE2_SPTR)subject, slen, moffset + moffsetextra,
-	  PCRE_EOPT | emptyopt, md, pcre_mtc_ctx);
+	  PCRE_EOPT | emptyopt, md, pcre_gen_mtc_ctx);
         uschar * insert;
 
         /* No match - if we previously set PCRE_NOTEMPTY after a null match, this
@@ -5984,9 +5988,9 @@ while (*s)
 
       /* All done - restore numerical variables. */
 
+      /* pcre2_match_data_free(md);	gen ctx needs no free */
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
-      if (skipping) continue;
       break;
       }
 
@@ -6021,11 +6025,12 @@ while (*s)
       available (eg. $item) hence cannot decide on numeric vs. keyed.
       Read a maximum of 5 arguments (including the yes/no) */
 
-      if (skipping)
+      if (flags & ESI_SKIPPING)
 	{
         for (int j = 5; j > 0 && *s == '{'; j--)			/*'}'*/
 	  {
-          if (!expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok))
+          if (!expand_string_internal(s+1,
+		ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL))
 	    goto EXPAND_FAILED;					/*'{'*/
           if (*s++ != '}')
 	    {
@@ -6052,7 +6057,8 @@ while (*s)
         {
 	if (Uskip_whitespace(&s) == '{') 				/*'}'*/
           {
-          if (!(sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok)))
+          if (!(sub[i] = expand_string_internal(s+1,
+		ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL)))
 	    goto EXPAND_FAILED;						/*'{'*/
           if (*s++ != '}')
 	    {
@@ -6111,7 +6117,7 @@ while (*s)
       /* Extract either the numbered or the keyed substring into $value. If
       skipping, just pretend the extraction failed. */
 
-      if (skipping)
+      if (flags & ESI_SKIPPING)
 	lookup_value = NULL;
       else switch (fmt)
 	{
@@ -6205,12 +6211,12 @@ while (*s)
       be yes/no strings, as for lookup or if. */
 
       switch(process_yesno(
-               skipping,                     /* were previously skipping */
-               lookup_value != NULL,         /* success/failure indicator */
-               save_lookup_value,            /* value to reset for string2 */
-               &s,                           /* input pointer */
-               &yield,                       /* output pointer */
-               US"extract",                  /* condition type */
+               flags,			/* were previously skipping */
+               lookup_value != NULL,	/* success/failure indicator */
+               save_lookup_value,	/* value to reset for string2 */
+               &s,			/* input pointer */
+               &yield,			/* output pointer */
+               US"extract",		/* condition type */
 	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
@@ -6222,7 +6228,7 @@ while (*s)
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
 
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
       break;
       }
 
@@ -6246,7 +6252,8 @@ while (*s)
 	  goto EXPAND_FAILED_CURLY;
 	  }
 
-	sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
+	sub[i] = expand_string_internal(s+1,
+	      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL);
 	if (!sub[i])     goto EXPAND_FAILED;				/*{{*/
 	if (*s++ != '}')
 	  {
@@ -6271,7 +6278,7 @@ while (*s)
 	  while (len > 0 && isspace(p[len-1])) len--;
 	  p[len] = 0;
 
-	  if (!*p && !skipping)
+	  if (!*p && !(flags & ESI_SKIPPING))
 	    {
 	    expand_string_message = US"first argument of \"listextract\" must "
 	      "not be empty";
@@ -6297,18 +6304,18 @@ while (*s)
       /* Extract the numbered element into $value. If
       skipping, just pretend the extraction failed. */
 
-      lookup_value = skipping ? NULL : expand_getlistele(field_number, sub[1]);
+      lookup_value = flags & ESI_SKIPPING ? NULL : expand_getlistele(field_number, sub[1]);
 
       /* If no string follows, $value gets substituted; otherwise there can
       be yes/no strings, as for lookup or if. */
 
       switch(process_yesno(
-               skipping,                     /* were previously skipping */
-               lookup_value != NULL,         /* success/failure indicator */
-               save_lookup_value,            /* value to reset for string2 */
-               &s,                           /* input pointer */
-               &yield,                       /* output pointer */
-               US"listextract",              /* condition type */
+               flags,				/* were previously skipping */
+               lookup_value != NULL,		/* success/failure indicator */
+               save_lookup_value,		/* value to reset for string2 */
+               &s,				/* input pointer */
+               &yield,				/* output pointer */
+               US"listextract",			/* condition type */
 	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
@@ -6320,15 +6327,16 @@ while (*s)
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
 
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
       break;
       }
 
     case EITEM_LISTQUOTE:
       {
       uschar * sub[2];
-      switch(read_subs(sub, 2, 2, &s, skipping, TRUE, name, &resetok))
+      switch(read_subs(sub, 2, 2, &s, flags, TRUE, name, &resetok, NULL))
         {
+	case -1: continue;	/* skipping */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
@@ -6339,7 +6347,6 @@ while (*s)
 	yield = string_catn(yield, sub[1], 1);
 	}
       else yield = string_catn(yield, US" ", 1);
-      if (skipping) continue;
       break;
       }
 
@@ -6356,7 +6363,8 @@ while (*s)
 	expand_string_message = US"missing '{' for field arg of certextract";
 	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
-      sub[0] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
+      sub[0] = expand_string_internal(s+1,
+		ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL);
       if (!sub[0])     goto EXPAND_FAILED;				/*{{*/
       if (*s++ != '}')
         {
@@ -6388,7 +6396,8 @@ while (*s)
 	  "be a certificate variable";
 	goto EXPAND_FAILED;
 	}
-      sub[1] = expand_string_internal(s+1, TRUE, &s, skipping, FALSE, &resetok);
+      sub[1] = expand_string_internal(s+1,
+		ESI_BRACE_ENDS | flags & ESI_SKIPPING, &s, &resetok, NULL);
       if (!sub[1])     goto EXPAND_FAILED;				/*{{*/
       if (*s++ != '}')
         {
@@ -6396,7 +6405,7 @@ while (*s)
 	goto EXPAND_FAILED_CURLY;
 	}
 
-      if (skipping)
+      if (flags & ESI_SKIPPING)
 	lookup_value = NULL;
       else
 	{
@@ -6404,12 +6413,12 @@ while (*s)
 	if (*expand_string_message) goto EXPAND_FAILED;
 	}
       switch(process_yesno(
-               skipping,                     /* were previously skipping */
-               lookup_value != NULL,         /* success/failure indicator */
-               save_lookup_value,            /* value to reset for string2 */
-               &s,                           /* input pointer */
-               &yield,                       /* output pointer */
-               US"certextract",              /* condition type */
+               flags,				/* were previously skipping */
+               lookup_value != NULL,		/* success/failure indicator */
+               save_lookup_value,		/* value to reset for string2 */
+               &s,				/* input pointer */
+               &yield,				/* output pointer */
+               US"certextract",			/* condition type */
 	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
@@ -6418,7 +6427,7 @@ while (*s)
 
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
       break;
       }
 #endif	/*DISABLE_TLS*/
@@ -6443,7 +6452,8 @@ while (*s)
 	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
 
-      if (!(list = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok)))
+      if (!(list = expand_string_internal(s,
+	      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL)))
 	goto EXPAND_FAILED;						/*{{*/
       if (*s++ != '}')
         {
@@ -6461,7 +6471,8 @@ while (*s)
 	  expand_string_message = US"missing '{' for second arg of reduce";
 	  goto EXPAND_FAILED_CURLY;					/*}*/
 	  }
-        t = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
+        t = expand_string_internal(s,
+	      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL);
         if (!t) goto EXPAND_FAILED;
         lookup_value = t;						/*{{*/
         if (*s++ != '}')
@@ -6488,7 +6499,8 @@ while (*s)
       the normal internal expansion function. */
 
       if (item_type != EITEM_FILTER)
-        temp = expand_string_internal(s, TRUE, &s, TRUE, TRUE, &resetok);
+        temp = expand_string_internal(s,
+	  ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | ESI_SKIPPING, &s, &resetok, NULL);
       else
         if ((temp = eval_condition(expr, &resetok, NULL))) s = temp;
 
@@ -6519,7 +6531,7 @@ while (*s)
       /* If we are skipping, we can now just move on to the next item. When
       processing for real, we perform the iteration. */
 
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
       while ((iterate_item = string_nextinlist(&list, &sep, NULL, 0)))
         {
         *outsep = (uschar)sep;      /* Separator as a string */
@@ -6550,7 +6562,8 @@ while (*s)
 
         else
           {
-	  uschar * t = expand_string_internal(expr, TRUE, NULL, skipping, TRUE, &resetok);
+	  uschar * t = expand_string_internal(expr,
+	    ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, NULL, &resetok, NULL);
           temp = t;
           if (!temp)
             {
@@ -6622,7 +6635,7 @@ while (*s)
       /* Restore preserved $item */
 
       iterate_item = save_iterate_item;
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
       break;
       }
 
@@ -6641,7 +6654,8 @@ while (*s)
 	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
 
-      srclist = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
+      srclist = expand_string_internal(s,
+	      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL);
       if (!srclist) goto EXPAND_FAILED;					/*{{*/
       if (*s++ != '}')
         {
@@ -6656,7 +6670,8 @@ while (*s)
 	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
 
-      cmp = expand_string_internal(s, TRUE, &s, skipping, FALSE, &resetok);
+      cmp = expand_string_internal(s,
+	      ESI_BRACE_ENDS | flags & ESI_SKIPPING, &s, &resetok, NULL);
       if (!cmp) goto EXPAND_FAILED;					/*{{*/
       if (*s++ != '}')
         {
@@ -6691,7 +6706,8 @@ while (*s)
 	}
 
       xtract = s;
-      if (!(tmp = expand_string_internal(s, TRUE, &s, TRUE, TRUE, &resetok)))
+      if (!(tmp = expand_string_internal(s,
+	ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | ESI_SKIPPING, &s, &resetok, NULL)))
 	goto EXPAND_FAILED;
       xtract = string_copyn(xtract, s - xtract);
 									/*{{*/
@@ -6707,7 +6723,7 @@ while (*s)
         goto EXPAND_FAILED;
         }
 
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
 
       while ((srcitem = string_nextinlist(&srclist, &sep, NULL, 0)))
 	{
@@ -6718,8 +6734,8 @@ while (*s)
 
 	/* extract field for comparisons */
 	iterate_item = srcitem;
-	if (  !(srcfield = expand_string_internal(xtract, FALSE, NULL, FALSE,
-					  TRUE, &resetok))
+	if (  !(srcfield = expand_string_internal(xtract,
+				  ESI_HONOR_DOLLAR, NULL, &resetok, NULL))
 	   || !*srcfield)
 	  {
 	  expand_string_message = string_sprintf(
@@ -6824,17 +6840,14 @@ while (*s)
         goto EXPAND_FAILED;
         }
 
-      switch(read_subs(argv, EXPAND_DLFUNC_MAX_ARGS + 2, 2, &s, skipping,
-           TRUE, name, &resetok))
+      switch(read_subs(argv, EXPAND_DLFUNC_MAX_ARGS + 2, 2, &s, flags,
+           TRUE, name, &resetok, NULL))
         {
+	case -1: continue;	/* skipping */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
-
-      /* If skipping, we don't actually do anything */
-
-      if (skipping) continue;
 
       /* Look up the dynamically loaded object handle in the tree. If it isn't
       found, dlopen() the file and put the handle in the tree for next time. */
@@ -6901,7 +6914,8 @@ while (*s)
       if (Uskip_whitespace(&s) != '{')					/*}*/
 	goto EXPAND_FAILED;
 
-      key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
+      key = expand_string_internal(s+1,
+	      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL);
       if (!key) goto EXPAND_FAILED;					/*{{*/
       if (*s++ != '}')
         {
@@ -6912,18 +6926,18 @@ while (*s)
       lookup_value = US getenv(CS key);
 
       switch(process_yesno(
-               skipping,                     /* were previously skipping */
-               lookup_value != NULL,         /* success/failure indicator */
-               save_lookup_value,            /* value to reset for string2 */
-               &s,                           /* input pointer */
-               &yield,                       /* output pointer */
-               US"env",                      /* condition type */
+               flags,				/* were previously skipping */
+               lookup_value != NULL,		/* success/failure indicator */
+               save_lookup_value,		/* value to reset for string2 */
+               &s,				/* input pointer */
+               &yield,				/* output pointer */
+               US"env",				/* condition type */
 	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
         case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
         }
-      if (skipping) continue;
+      if (flags & ESI_SKIPPING) continue;
       break;
       }
 
@@ -6936,13 +6950,13 @@ while (*s)
       gstring * g = NULL;
       BOOL quoted = FALSE;
 
-      switch (read_subs(sub, 3, 3, CUSS &s, skipping, TRUE, name, &resetok))
+      switch (read_subs(sub, 3, 3, CUSS &s, flags, TRUE, name, &resetok, NULL))
         {
+	case -1: continue;	/* skipping */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
-      if (skipping) continue;
 
       if (sub[1] && *(sub[1]))
 	{
@@ -7024,7 +7038,7 @@ while (*s)
   DEBUG(D_expand)
     if (yield && (start > 0 || *s))	/* only if not the sole expansion of the line */
       debug_expansion_interim(US"item-res",
-			      yield->s + start, yield->ptr - start, skipping);
+			      yield->s + start, yield->ptr - start, !!(flags & ESI_SKIPPING));
   continue;
 
 NOT_ITEM: ;
@@ -7070,8 +7084,8 @@ NOT_ITEM: ;
 	if (s[1] == '$')
 	  {
 	  const uschar * s1 = s;
-	  sub = expand_string_internal(s+2, TRUE, &s1, skipping,
-		  FALSE, &resetok);
+	  sub = expand_string_internal(s+2,
+	      ESI_BRACE_ENDS | flags & ESI_SKIPPING, &s1, &resetok, NULL);
 	  if (!sub)       goto EXPAND_FAILED;		/*{*/
 	  if (*s1 != '}')
 	    {						/*{*/
@@ -7089,7 +7103,8 @@ NOT_ITEM: ;
         /*FALLTHROUGH*/
 #endif
       default:
-	sub = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
+	sub = expand_string_internal(s+1,
+		ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL);
 	if (!sub) goto EXPAND_FAILED;
 	s++;
 	break;
@@ -7101,7 +7116,7 @@ NOT_ITEM: ;
     for the existence of $sender_host_address before trying to mask it. For
     other operations, doing them may not fail, but it is a waste of time. */
 
-    if (skipping && c >= 0) continue;
+    if (flags & ESI_SKIPPING && c >= 0) continue;
 
     /* Otherwise, switch on the operator type.  After handling go back
     to the main loop top. */
@@ -7186,7 +7201,8 @@ NOT_ITEM: ;
 
       case EOP_EXPAND:
 	{
-	uschar *expanded = expand_string_internal(sub, FALSE, NULL, skipping, TRUE, &resetok);
+	uschar *expanded = expand_string_internal(sub,
+		ESI_HONOR_DOLLAR | flags & ESI_SKIPPING, NULL, &resetok, NULL);
 	if (!expanded)
 	  {
 	  expand_string_message =
@@ -8177,7 +8193,7 @@ NOT_ITEM: ;
 	  debug_printf_indent("|-----op-res: %.*s\n", i, s);
 	  if (tainted)
 	    {
-	    debug_printf_indent("%s     \\__", skipping ? "|     " : "      ");
+	    debug_printf_indent("%s     \\__", flags & ESI_SKIPPING ? "|     " : "      ");
 	    debug_print_taint(yield->s);
 	    }
 	  }
@@ -8189,7 +8205,7 @@ NOT_ITEM: ;
 	  if (tainted)
 	    {
 	    debug_printf_indent("%s",
-	      skipping
+	      flags & ESI_SKIPPING
 	      ? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
 	    debug_print_taint(yield->s);
 	    }
@@ -8223,7 +8239,7 @@ NOT_ITEM: ;
       reset_point = store_mark();
       g = store_get(sizeof(gstring), GET_UNTAINTED);	/* alloc _before_ calling find_variable() */
       }
-    if (!(value = find_variable(name, FALSE, skipping, &newsize)))
+    if (!(value = find_variable(name, FALSE, !!(flags & ESI_SKIPPING), &newsize)))
       {
       expand_string_message =
         string_sprintf("unknown variable in \"${%s}\"", name);
@@ -8251,11 +8267,11 @@ NOT_ITEM: ;
   goto EXPAND_FAILED;
   }
 
-/* If we hit the end of the string when ket_ends is set, there is a missing
+/* If we hit the end of the string when brace_ends is set, there is a missing
 terminating brace. */
 
-if (ket_ends && !*s)
-  {
+if (flags & ESI_BRACE_ENDS && !*s)
+  {							/*{{*/
   expand_string_message = malformed_header
     ? US"missing } at end of string - could be header name not terminated by colon"
     : US"missing } at end of string";
@@ -8285,13 +8301,13 @@ DEBUG(D_expand)
     {
     debug_printf_indent("|--expanding: %.*s\n", (int)(s - string), string);
     debug_printf_indent("%sresult: %s\n",
-      skipping ? "|-----" : "\\_____", yield->s);
+      flags & ESI_SKIPPING ? "|-----" : "\\_____", yield->s);
     if (tainted)
       {
-      debug_printf_indent("%s     \\__", skipping ? "|     " : "      ");
+      debug_printf_indent("%s     \\__", flags & ESI_SKIPPING ? "|     " : "      ");
       debug_print_taint(yield->s);
       }
-    if (skipping)
+    if (flags & ESI_SKIPPING)
       debug_printf_indent("\\___skipping: result is not used\n");
     }
   else
@@ -8301,20 +8317,21 @@ DEBUG(D_expand)
       (int)(s - string), string);
     debug_printf_indent("%s" UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
       "result: %s\n",
-      skipping ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
+      flags & ESI_SKIPPING ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
       yield->s);
     if (tainted)
       {
       debug_printf_indent("%s",
-	skipping
+	flags & ESI_SKIPPING
 	? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
       debug_print_taint(yield->s);
       }
-    if (skipping)
+    if (flags & ESI_SKIPPING)
       debug_printf_indent(UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
 	"skipping: result is not used\n");
     }
   }
+if (textonly_p) *textonly_p = textonly;
 expand_level--;
 return yield->s;
 
@@ -8363,16 +8380,20 @@ return NULL;
 }
 
 
+
 /* This is the external function call. Do a quick check for any expansion
 metacharacters, and if there are none, just return the input string.
 
-Argument: the string to be expanded
+Arguments
+	the string to be expanded
+	optional pointer for return boolean indicating no-dynamic-expansions
+
 Returns:  the expanded string, or NULL if expansion failed; if failure was
           due to a lookup deferring, search_find_defer will be TRUE
 */
 
 const uschar *
-expand_cstring(const uschar * string)
+expand_string_2(const uschar * string, BOOL * textonly_p)
 {
 if (Ustrpbrk(string, "$\\") != NULL)
   {
@@ -8382,19 +8403,22 @@ if (Ustrpbrk(string, "$\\") != NULL)
   f.search_find_defer = FALSE;
   malformed_header = FALSE;
   store_pool = POOL_MAIN;
-    s = expand_string_internal(string, FALSE, NULL, FALSE, TRUE, NULL);
+    s = expand_string_internal(string, ESI_HONOR_DOLLAR, NULL, NULL, textonly_p);
   store_pool = old_pool;
   return s;
   }
+if (textonly_p) *textonly_p = TRUE;
 return string;
 }
 
+const uschar *
+expand_cstring(const uschar * string)
+{ return expand_string_2(string, NULL); }
 
 uschar *
 expand_string(uschar * string)
-{
-return US expand_cstring(CUS string);
-}
+{ return US expand_string_2(CUS string, NULL); }
+
 
 
 

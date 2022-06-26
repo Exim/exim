@@ -59,7 +59,7 @@ LOG: MAIN
   log from Perl
  ├──expanding: ${perl{log_write}{log from Perl}}
  ╰─────result: Wrote log
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
 LOG: MAIN

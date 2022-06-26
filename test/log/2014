@@ -1,10 +1,10 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from (rhu1.barb) [ip4.ip4.ip4.ip4] (gnutls_handshake): The peer did not send any certificate.
 1999-03-02 09:44:33 H=(rhu2tls.barb) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=
 1999-03-02 09:44:33 TLS error on connection from (rhu5.barb) [ip4.ip4.ip4.ip4] (gnutls_handshake): The peer did not send any certificate.
 1999-03-02 09:44:33 H=(test) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from (rhu7.barb) [ip4.ip4.ip4.ip4] (certificate verification failed): certificate revoked
 1999-03-02 09:44:33 H=(test) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="CN=revoked1.example.com" F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=CN=revoked1.example.com

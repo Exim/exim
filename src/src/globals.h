@@ -199,6 +199,7 @@ extern struct global_flags {
  BOOL   continue_more			:1; /* Flag more addresses waiting */
 
  BOOL   daemon_listen			:1; /* True if listening required */
+ BOOL   daemon_scion			:1; /* Ancestor proc is daemon, and not re-exec'd */
  BOOL   debug_daemon			:1; /* Debug the daemon process only */
  BOOL   deliver_firsttime		:1; /* True for first delivery attempt */
  BOOL   deliver_force			:1; /* TRUE if delivery was forced */
@@ -792,9 +793,12 @@ extern uid_t   originator_uid;         /* Uid of ditto */
 extern uschar *override_local_interfaces; /* Value of -oX argument */
 extern uschar *override_pid_file_path; /* Value of -oP argument */
 
+extern BOOL    panic_coredump;	       /* SEGV rather than exit, on LOG_PANIC_DIE */
 extern pcre2_general_context * pcre_gen_ctx;	/* pcre memory management */
-extern pcre2_compile_context * pcre_cmp_ctx;
-extern pcre2_match_context *   pcre_mtc_ctx;
+extern pcre2_compile_context * pcre_gen_cmp_ctx;
+extern pcre2_match_context *   pcre_gen_mtc_ctx;
+extern pcre2_general_context * pcre_mlc_ctx;
+extern pcre2_compile_context * pcre_mlc_cmp_ctx;
 
 extern uschar *percent_hack_domains;   /* Local domains for which '% operates */
 extern uschar *pid_file_path;          /* For writing daemon pids */
@@ -895,6 +899,7 @@ extern const pcre2_code  *regex_SIZE;        /* For recognizing SIZE settings */
 #ifndef DISABLE_PIPE_CONNECT
 extern const pcre2_code  *regex_EARLY_PIPE;  /* For recognizing PIPE_CONNCT */
 #endif
+extern int    regex_cachesize;		     /* number of entries */
 extern const pcre2_code  *regex_ismsgid;     /* Compiled r.e. for message ID */
 extern const pcre2_code  *regex_smtp_code;   /* For recognizing SMTP codes */
 extern const uschar *regex_vars[];           /* $regexN variables */

@@ -1,22 +1,22 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= t1@dustyshoes.tld U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= t2@dustybelt.tld U=CALLER P=local-smtp S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp -qq
+1999-03-02 09:44:33 Start queue run: pid=p1234 -qq
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
 1999-03-02 09:44:33 10HmaX-0005vi-00 == fred@anotherone.tld R=r1 T=t1 defer (0) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
 1999-03-02 09:44:33 10HmaY-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
 1999-03-02 09:44:33 10HmaY-0005vi-00 == fred@anotherone.tld R=r2 T=t2 defer (0) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
-1999-03-02 09:44:33 End queue run: pid=pppp -qq
-1999-03-02 09:44:33 Start queue run: pid=pppp -qq
+1999-03-02 09:44:33 End queue run: pid=p1234 -qq
+1999-03-02 09:44:33 Start queue run: pid=p1235 -qq
 1999-03-02 09:44:33 10HmaX-0005vi-00 => fred@anotherone.tld F=<t1@dustyshoes.tld> R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 => fred@anotherone.tld F=<t2@dustybelt.tld> R=r2 T=t2 H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qq
+1999-03-02 09:44:33 End queue run: pid=p1235 -qq
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 H=[127.0.0.1] temporarily rejected connection in "connect" ACL
 1999-03-02 09:44:33 H=[ip4.ip4.ip4.ip4] temporarily rejected connection in "connect" ACL
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= t1@dustyshoes.tld H=localhost (the.local.host.name) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@the.local.host.name
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= t2@dustybelt.tld H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaY-0005vi-00@the.local.host.name

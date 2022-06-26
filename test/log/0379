@@ -2,6 +2,6 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@myhost.test.ex R=defer defer (-1): forced defer
 1999-03-02 09:44:33 10HmaX-0005vi-00 => bbbb <aaaa@myhost.test.ex> R=bc T=t1
 1999-03-02 09:44:33 10HmaX-0005vi-00 => cccc <aaaa@myhost.test.ex> R=bc T=t1
-1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 Start queue run: pid=p1234 -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@myhost.test.ex R=defer defer (-1): forced defer
-1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 End queue run: pid=p1234 -qf

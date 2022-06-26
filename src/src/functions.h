@@ -182,6 +182,10 @@ extern BOOL    cutthrough_predata(void);
 extern void    release_cutthrough_connection(const uschar *);
 
 extern void    daemon_go(void);
+#ifndef COMPILE_UTILITY
+extern ssize_t daemon_client_sockname(struct sockaddr_un *, uschar **);
+extern ssize_t daemon_notifier_sockname(struct sockaddr_un *);
+#endif
 
 #ifdef EXPERIMENTAL_DCC
 extern int     dcc_process(uschar **);
@@ -260,6 +264,7 @@ extern int     exp_bool(address_item *addr,
 extern BOOL    expand_check_condition(uschar *, uschar *, uschar *);
 extern uschar *expand_file_big_buffer(const uschar *);
 extern uschar *expand_string(uschar *);	/* public, cannot make const */
+extern const uschar *expand_string_2(const uschar *, BOOL *);
 extern const uschar *expand_cstring(const uschar *); /* ... so use this one */
 extern uschar *expand_getkeyed(const uschar *, const uschar *);
 
@@ -332,7 +337,7 @@ extern BOOL    macro_read_assignment(uschar *);
 extern uschar *macros_expand(int, int *, BOOL *);
 extern void    mainlog_close(void);
 #ifdef WITH_CONTENT_SCAN
-extern int     malware(const uschar *, int);
+extern int     malware(const uschar *, BOOL, int);
 extern int     malware_in_file(uschar *);
 extern void    malware_init(void);
 extern gstring * malware_show_supported(gstring *);
@@ -345,7 +350,7 @@ extern int     match_check_list(const uschar **, int, tree_node **, unsigned int
                  const uschar *, const uschar **);
 extern int     match_isinlist(const uschar *, const uschar **, int, tree_node **,
                  unsigned int *, int, BOOL, const uschar **);
-extern int     match_check_string(const uschar *, const uschar *, int, BOOL, BOOL, BOOL,
+extern int     match_check_string(const uschar *, const uschar *, int, mcs_flags,
                  const uschar **);
 
 extern void    message_start(void);
@@ -360,7 +365,7 @@ extern int     mime_acl_check(uschar *acl, FILE *f,
                  struct mime_boundary_context *, uschar **, uschar **);
 extern int     mime_decode(const uschar **);
 extern ssize_t mime_decode_base64(FILE *, FILE *, uschar *);
-extern int     mime_regex(const uschar **);
+extern int     mime_regex(const uschar **, BOOL);
 extern void    mime_set_anomaly(int);
 #endif
 extern uschar *moan_check_errorcopy(uschar *);
@@ -433,11 +438,14 @@ extern BOOL    receive_msg(BOOL);
 extern int_eximarith_t receive_statvfs(BOOL, int *);
 extern void    receive_swallow_smtp(void);
 #ifdef WITH_CONTENT_SCAN
-extern int     regex(const uschar **);
+extern int     regex(const uschar **, BOOL);
 #endif
+extern void    regex_at_daemon(const uschar *);
 extern BOOL    regex_match(const pcre2_code *, const uschar *, int, uschar **);
 extern BOOL    regex_match_and_setup(const pcre2_code *, const uschar *, int, int);
-extern const pcre2_code *regex_must_compile(const uschar *, BOOL, BOOL);
+extern const pcre2_code *regex_compile(const uschar *, mcs_flags, uschar **,
+		pcre2_compile_context *);
+extern const pcre2_code *regex_must_compile(const uschar *, mcs_flags, BOOL);
 extern void    retry_add_item(address_item *, uschar *, int);
 extern BOOL    retry_check_address(const uschar *, host_item *, uschar *, BOOL,
                  uschar **, uschar **);
@@ -1221,6 +1229,7 @@ pid_t pid;
 DEBUG(D_any) debug_printf("%s forking for %s\n", process_purpose, purpose);
 if ((pid = fork()) == 0)
   {
+  f.daemon_listen = FALSE;
   process_purpose = purpose;
   DEBUG(D_any) debug_printf("postfork: %s\n", purpose);
   }

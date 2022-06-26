@@ -1,0 +1,39 @@
+# regex caching
+#
+exim -d-all+queue_run+expand+lookup -DSERVER=server -bd -oX PORT_D
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO test.ex
+??? 250 
+MAIL FROM:<CALLER@test.ex>
+??? 250
+RCPT TO:<dest_1@test.ex>
+??? 250
+DATA
+??? 354
+.
+??? 250
+QUIT
+??? 221
+****
+client 127.0.0.1 PORT_D
+??? 220
+HELO test.ex
+??? 250 
+MAIL FROM:<CALLER@test.ex>
+??? 250
+RCPT TO:<dest_2@test.ex>
+??? 250
+DATA
+??? 354
+.
+??? 250
+QUIT
+??? 221
+****
+#
+killdaemon
+no_msglog_check
+no_stdout_check

@@ -368,7 +368,7 @@ Returns:         cond if the header exists and contains one of the strings;
 /* First we have a local subroutine to handle a single pattern */
 
 static BOOL
-one_pattern_match(uschar *name, int slen, BOOL has_addresses, uschar *pattern)
+one_pattern_match(uschar * name, int slen, BOOL has_addresses, uschar * pattern)
 {
 BOOL yield = FALSE;
 const pcre2_code *re = NULL;
@@ -376,7 +376,7 @@ const pcre2_code *re = NULL;
 /* If the pattern is a regex, compile it. Bomb out if compiling fails; these
 patterns are all constructed internally and should be valid. */
 
-if (*pattern == '^') re = regex_must_compile(pattern, TRUE, FALSE);
+if (*pattern == '^') re = regex_must_compile(pattern, MCS_CASELESS, FALSE);
 
 /* Scan for the required header(s) and scan each one */
 
@@ -443,7 +443,7 @@ return yield;
 /* The externally visible interface */
 
 BOOL
-header_match(uschar *name, BOOL has_addresses, BOOL cond, string_item *strings,
+header_match(uschar * name, BOOL has_addresses, BOOL cond, string_item * strings,
   int count, ...)
 {
 va_list ap;

@@ -14694,6 +14694,7 @@ listed in more than one group.
 .row &%log_timezone%&                "add timezone to log lines"
 .row &%message_logs%&                "create per-message logs"
 .row &%preserve_message_logs%&       "after message completion"
+.row &%panic_coredump%&              "request coredump on fatal errors"
 .row &%process_log_path%&            "for SIGUSR1 and &'exiwhat'&"
 .row &%slow_lookup_log%&             "control logging of slow DNS lookups"
 .row &%syslog_duplication%&          "controls duplicate log lines on syslog"
@@ -16354,7 +16355,10 @@ local processes, you must create a host list with an empty item. For example:
 .code
 hosts_connection_nolog = :
 .endd
-If the &%smtp_connection%& log selector is not set, this option has no effect.
+.new
+The hosts affected by this option also do not log "no MAIL in SMTP connection"
+lines, as may commonly be produced by a monitoring system.
+.wen
 
 
 .option hosts_require_alpn main "host list&!!" unset
@@ -17030,6 +17034,19 @@ to be used in conjunction with &(oracle)& lookups (see section &<<SECID72>>&).
 The option is available only if Exim has been built with Oracle support.
 
 
+.new
+.option panic_coredump main boolean false
+This option is rarely needed but can help for some debugging investigations.
+If set, when an internal error is detected by Exim which is sufficient
+to terminate the process
+(all such are logged in the paniclog)
+then a coredump is requested.
+
+Note that most systems require additional administrative configuration
+to permit write a core file for a setuid program, which is Exim's
+common installed configuration.
+.wen
+
 .option percent_hack_domains main "domain list&!!" unset
 .cindex "&""percent hack""&"
 .cindex "source routing" "in email address"
@@ -17240,7 +17257,7 @@ domains that do not match are processed. All other deliveries wait until the
 next queue run. See also &%hold_domains%& and &%queue_smtp_domains%&.
 
 
-.option queue_fast_ramp main boolean false
+.option queue_fast_ramp main boolean true
 .cindex "queue runner" "two phase"
 .cindex "queue" "double scanning"
 If set to true, two-phase queue runs, initiated using &%-qq%& on the
@@ -17484,7 +17501,7 @@ initial set of recipients. The remote server should then re-send the message
 for the remaining recipients at a later time.
 
 
-.option remote_max_parallel main integer 2
+.option remote_max_parallel main integer 4
 .cindex "delivery" "parallelism for remote"
 This option controls parallel delivery of one message to a number of remote
 hosts. If the value is less than 2, parallel delivery is disabled, and Exim

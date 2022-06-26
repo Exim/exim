@@ -11,12 +11,12 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 == server_require_bad@test.ex R=client T=send_to_server defer (-18) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: Remote host closed connection in response to EHLO myhost.test.ex
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <client_require@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbA-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbB-0005vi-00 => :blackhole: <server_require_good@test.ex> R=server
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed

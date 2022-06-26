@@ -4,9 +4,9 @@ admin user
 dropping to exim gid; retaining priv uid
 set_process_info: pppp running the queue (single queue run)
 LOG: queue_run MAIN
-  Start queue run: pid=pppp
+  Start queue run: pid=p1234
 set_process_info: pppp running queue: 10HmaX-0005vi-00-H
-set_process_info: pppp delivering 10HmaX-0005vi-00 (queue run pid pppp)
+set_process_info: pppp delivering 10HmaX-0005vi-00 (queue run pid p1234)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
 set_process_info: pppp delivering 10HmaX-0005vi-00 using t1
@@ -18,7 +18,7 @@ checking status of 127.0.0.1
 127.0.0.1 [127.0.0.1]:1111 retry-status = usable
 delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1]:PORT_S (userx@test.ex)
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO the.local.host.name
 cmd buf flush ddd bytes
@@ -85,11 +85,11 @@ checking status of 127.0.0.1
 127.0.0.1 [127.0.0.1]:1111 retry-status = usable
 delivering 10HmaZ-0005vi-00 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.host.name)
 set_process_info: pppp delivering 10HmaZ-0005vi-00 to 127.0.0.1 [127.0.0.1]:PORT_S (CALLER@the.local.host.name)
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  failed: Connection refused
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 set_process_info: pppp delivering 10HmaZ-0005vi-00: just tried 127.0.0.1 [127.0.0.1]:PORT_S for CALLER@the.local.host.name: result DEFER
-added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=2
+added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database
 added 10HmaZ-0005vi-00 to queue for 127.0.0.1
@@ -100,15 +100,15 @@ set_process_info: pppp delivering 10HmaZ-0005vi-00
 LOG: MAIN
   == CALLER@the.local.host.name R=r1 T=t1 defer (dd): Connection refused
 set_process_info: pppp tidying up after delivering 10HmaZ-0005vi-00
->>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1235 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 set_process_info: pppp running queue: 10HmaY-0005vi-00-H
-set_process_info: pppp delivering 10HmaY-0005vi-00 (queue run pid pppp)
+set_process_info: pppp delivering 10HmaY-0005vi-00 (queue run pid p1234)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> usery@test.ex <--------
 set_process_info: pppp delivering 10HmaY-0005vi-00 using t1
@@ -130,9 +130,9 @@ set_process_info: pppp delivering 10HmaY-0005vi-00
 LOG: retry_defer MAIN
   == usery@test.ex R=r1 T=t1 defer (-54): retry time not reached for any host for 'test.ex'
 set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
->>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 LOG: queue_run MAIN
-  End queue run: pid=pppp
->>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+  End queue run: pid=p1234
+>>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

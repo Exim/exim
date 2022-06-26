@@ -8,9 +8,9 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 acl_mail: ocsp in status: 4 (verified)
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=localhost (server1.example.com) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@server1.example.com
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 acl_mail: ocsp in status: 4 (verified)
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> H=localhost (server1.example.com) [127.0.0.1] P=esmtps X=TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-0005vi-00@server1.example.com

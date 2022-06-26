@@ -7203,7 +7203,7 @@ local and remote LMTP deliveries. */
 
 if (!regex_IGNOREQUOTA)
   regex_IGNOREQUOTA =
-    regex_must_compile(US"\\n250[\\s\\-]IGNOREQUOTA(\\s|\\n|$)", FALSE, TRUE);
+    regex_must_compile(US"\\n250[\\s\\-]IGNOREQUOTA(\\s|\\n|$)", MCS_NOFLAGS, TRUE);
 
 /* Handle local deliveries */
 

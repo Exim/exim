@@ -1,18 +1,18 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userx@domain.com
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for abcd@domain.com
-1999-03-02 09:44:33 Start queue run: pid=pppp -qqf
+1999-03-02 09:44:33 Start queue run: pid=p1234 -qqf
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]:PORT_S I=[127.0.0.1]:ppppp C="250 OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 => abcd@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]:PORT_S* I=[127.0.0.1]:ppppp C="250 OK"
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qqf
+1999-03-02 09:44:33 End queue run: pid=p1234 -qqf
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userz@domain.com
-1999-03-02 09:44:33 Start queue run: pid=pppp -qqf
+1999-03-02 09:44:33 Start queue run: pid=p1235 -qqf
 1999-03-02 09:44:33 10HmaZ-0005vi-00 H=127.0.0.1 [127.0.0.1]:1111: SMTP error from remote mail server after MAIL FROM:<>: 450 not right now, sorry
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userz@domain.com R=all T=smtp defer (-45) H=127.0.0.1 [127.0.0.1]:PORT_S I=[127.0.0.1]:ppppp: SMTP error from remote mail server after MAIL FROM:<>: 450 not right now, sorry
-1999-03-02 09:44:33 End queue run: pid=pppp -qqf
-1999-03-02 09:44:33 Start queue run: pid=pppp -qqf
+1999-03-02 09:44:33 End queue run: pid=p1235 -qqf
+1999-03-02 09:44:33 Start queue run: pid=p1236 -qqf
 1999-03-02 09:44:33 10HmaZ-0005vi-00 ** userz@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]:PORT_S I=[127.0.0.1]:ppppp: SMTP error from remote mail server after RCPT TO:<userz@domain.com>: 550 Recipient refused
 1999-03-02 09:44:33 10HmaZ-0005vi-00 userz@domain.com: error ignored
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qqf
+1999-03-02 09:44:33 End queue run: pid=p1236 -qqf
