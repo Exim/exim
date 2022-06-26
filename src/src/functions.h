@@ -100,6 +100,7 @@ extern acl_block *acl_read(uschar *(*)(void), uschar **);
 extern int     acl_check(int, uschar *, uschar *, uschar **, uschar **);
 extern uschar *acl_current_verb(void);
 extern int     acl_eval(int, uschar *, uschar **, uschar **);
+extern uschar *acl_standalone_setvar(const uschar *);
 
 extern tree_node *acl_var_create(uschar *);
 extern void    acl_var_write(uschar *, uschar *, void *);
@@ -425,7 +426,7 @@ extern void    readconf_main(BOOL);
 extern void    readconf_options_from_list(optionlist *, unsigned, const uschar *, uschar *);
 extern BOOL    readconf_print(const uschar *, uschar *, BOOL);
 extern uschar *readconf_printtime(int);
-extern uschar *readconf_readname(uschar *, int, uschar *);
+extern const uschar *readconf_readname(uschar *, int, const uschar *);
 extern int     readconf_readtime(const uschar *, int, BOOL);
 extern void    readconf_rest(void);
 extern uschar *readconf_retry_error(const uschar *, const uschar *, int *, int *);

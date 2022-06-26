@@ -1172,8 +1172,8 @@ Arguments:
 Returns:    new input pointer
 */
 
-uschar *
-readconf_readname(uschar *name, int len, uschar *s)
+const uschar *
+readconf_readname(uschar * name, int len, const uschar * s)
 {
 int p = 0;
 BOOL broken = FALSE;
@@ -1632,7 +1632,7 @@ rmark reset_point;
 int intbase = 0;
 uschar *inttype = US"";
 uschar *sptr;
-uschar *s = buffer;
+const uschar * s = buffer;
 uschar **str_target;
 uschar name[EXIM_DRIVERNAME_MAX];
 uschar name2[EXIM_DRIVERNAME_MAX];
@@ -1752,337 +1752,337 @@ switch (type)
   case opt_gidlist:
   case opt_rewrite:
 
-  reset_point = store_mark();
-  sptr = read_string(s, name);
+    reset_point = store_mark();
+    sptr = read_string(s, name);
 
-  /* Having read a string, we now have several different ways of using it,
-  depending on the data type, so do another switch. If keeping the actual
-  string is not required (because it is interpreted), freesptr is set TRUE,
-  and at the end we reset the pool. */
+    /* Having read a string, we now have several different ways of using it,
+    depending on the data type, so do another switch. If keeping the actual
+    string is not required (because it is interpreted), freesptr is set TRUE,
+    and at the end we reset the pool. */
 
-  switch (type)
-    {
-    /* If this was a string, set the variable to point to the new string,
-    and set the flag so its store isn't reclaimed. If it was a list of rewrite
-    rules, we still keep the string (for printing), and parse the rules into a
-    control block and flags word. */
-
-    case opt_stringptr:
-    str_target = data_block ? USS (US data_block + ol->v.offset)
-			    : USS ol->v.value;
-    if (ol->type & opt_rep_con)
+    switch (type)
       {
-      uschar * saved_condition;
-      /* We already have a condition, we're conducting a crude hack to let
-      multiple condition rules be chained together, despite storing them in
-      text form. */
-      *str_target = string_copy_perm( (saved_condition = *str_target)
-	? string_sprintf("${if and{{bool_lax{%s}}{bool_lax{%s}}}}",
-	    saved_condition, sptr)
-	: sptr,
-	FALSE);
-      /* TODO(pdp): there is a memory leak here and just below
-      when we set 3 or more conditions; I still don't
-      understand the store mechanism enough to know
-      what's the safe way to free content from an earlier store.
-      AFAICT, stores stack, so freeing an early stored item also stores
-      all data alloc'd after it.  If we knew conditions were adjacent,
-      we could survive that, but we don't.  So I *think* we need to take
-      another bit from opt_type to indicate "malloced"; this seems like
-      quite a hack, especially for this one case.  It also means that
-      we can't ever reclaim the store from the *first* condition.
+      /* If this was a string, set the variable to point to the new string,
+      and set the flag so its store isn't reclaimed. If it was a list of rewrite
+      rules, we still keep the string (for printing), and parse the rules into a
+      control block and flags word. */
 
-      Because we only do this once, near process start-up, I'm prepared to
-      let this slide for the time being, even though it rankles.  */
-      }
-    else if (ol->type & opt_rep_str)
-      {
-      uschar sep_o =
-	Ustrncmp(name, "headers_add", 11) == 0	? '\n'
-	: Ustrncmp(name, "set", 3) == 0		? ';'
-	: ':';
-      int    sep_i = -(int)sep_o;
-      const uschar * list = sptr;
-      uschar * s;
-      gstring * list_o = NULL;
+      case opt_stringptr:
+	str_target = data_block ? USS (US data_block + ol->v.offset)
+				: USS ol->v.value;
+	if (ol->type & opt_rep_con)
+	  {
+	  uschar * saved_condition;
+	  /* We already have a condition, we're conducting a crude hack to let
+	  multiple condition rules be chained together, despite storing them in
+	  text form. */
+	  *str_target = string_copy_perm( (saved_condition = *str_target)
+	    ? string_sprintf("${if and{{bool_lax{%s}}{bool_lax{%s}}}}",
+		saved_condition, sptr)
+	    : sptr,
+	    FALSE);
+	  /* TODO(pdp): there is a memory leak here and just below
+	  when we set 3 or more conditions; I still don't
+	  understand the store mechanism enough to know
+	  what's the safe way to free content from an earlier store.
+	  AFAICT, stores stack, so freeing an early stored item also stores
+	  all data alloc'd after it.  If we knew conditions were adjacent,
+	  we could survive that, but we don't.  So I *think* we need to take
+	  another bit from opt_type to indicate "malloced"; this seems like
+	  quite a hack, especially for this one case.  It also means that
+	  we can't ever reclaim the store from the *first* condition.
 
-      if (*str_target)
+	  Because we only do this once, near process start-up, I'm prepared to
+	  let this slide for the time being, even though it rankles.  */
+	  }
+	else if (ol->type & opt_rep_str)
+	  {
+	  uschar sep_o =
+	    Ustrncmp(name, "headers_add", 11) == 0	? '\n'
+	    : Ustrncmp(name, "set", 3) == 0		? ';'
+	    : ':';
+	  int    sep_i = -(int)sep_o;
+	  const uschar * list = sptr;
+	  uschar * s;
+	  gstring * list_o = NULL;
+
+	  if (*str_target)
+	    {
+	    list_o = string_get(Ustrlen(*str_target) + Ustrlen(sptr));
+	    list_o = string_cat(list_o, *str_target);
+	    }
+
+	  while ((s = string_nextinlist(&list, &sep_i, NULL, 0)))
+	    list_o = string_append_listele(list_o, sep_o, s);
+
+	  if (list_o)
+	    *str_target = string_copy_perm(string_from_gstring(list_o), FALSE);
+	  }
+	else
+	  {
+	  *str_target = sptr;
+	  freesptr = FALSE;
+	  }
+	break;
+
+      case opt_rewrite:
+	if (data_block)
+	  *USS (US data_block + ol->v.offset) = sptr;
+	else
+	  *USS ol->v.value = sptr;
+	freesptr = FALSE;
+	if (type == opt_rewrite)
+	  {
+	  int sep = 0;
+	  int *flagptr;
+	  uschar *p = sptr;
+	  rewrite_rule **chain;
+	  optionlist *ol3;
+
+	  sprintf(CS name2, "*%.50s_rules", name);
+	  ol2 = find_option(name2, oltop, last);
+	  sprintf(CS name2, "*%.50s_flags", name);
+	  ol3 = find_option(name2, oltop, last);
+
+	  if (!ol2 || !ol3)
+	    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+	      "rewrite rules not available for driver");
+
+	  if (data_block)
+	    {
+	    chain = (rewrite_rule **)(US data_block + ol2->v.offset);
+	    flagptr = (int *)(US data_block + ol3->v.offset);
+	    }
+	  else
+	    {
+	    chain = (rewrite_rule **)ol2->v.value;
+	    flagptr = (int *)ol3->v.value;
+	    }
+
+	  /* This will trap if sptr is tainted. Not sure if that can happen */
+	  while ((p = string_nextinlist(CUSS &sptr, &sep, big_buffer, BIG_BUFFER_SIZE)))
+	    {
+	    rewrite_rule *next = readconf_one_rewrite(p, flagptr, FALSE);
+	    *chain = next;
+	    chain = &(next->next);
+	    }
+
+	  if ((*flagptr & (rewrite_all_envelope | rewrite_smtp)) != 0)
+	    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "rewrite rule specifies a "
+	      "non-header rewrite - not allowed at transport time -");
+	  }
+	break;
+
+      /* If it was an expanded uid, see if there is any expansion to be
+      done by checking for the presence of a $ character. If there is, save it
+      in the corresponding *expand_user option field. Otherwise, fall through
+      to treat it as a fixed uid. Ensure mutual exclusivity of the two kinds
+      of data. */
+
+      case opt_expand_uid:
+	sprintf(CS name2, "*expand_%.50s", name);
+	if ((ol2 = find_option(name2, oltop, last)))
+	  {
+	  uschar *ss = (Ustrchr(sptr, '$') != NULL) ? sptr : NULL;
+
+	  if (data_block)
+	    *(USS(US data_block + ol2->v.offset)) = ss;
+	  else
+	    *(USS ol2->v.value) = ss;
+
+	  if (ss)
+	    {
+	    *(get_set_flag(name, oltop, last, data_block)) = FALSE;
+	    freesptr = FALSE;
+	    break;
+	    }
+	  }
+
+      /* Look up a fixed uid, and also make use of the corresponding gid
+      if a passwd entry is returned and the gid has not been set. */
+
+      case opt_uid:
+	if (!route_finduser(sptr, &pw, &uid))
+	  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "user %s was not found", sptr);
+	if (data_block)
+	  *(uid_t *)(US data_block + ol->v.offset) = uid;
+	else
+	  *(uid_t *)ol->v.value = uid;
+
+	/* Set the flag indicating a fixed value is set */
+
+	*(get_set_flag(name, oltop, last, data_block)) = TRUE;
+
+	/* Handle matching gid if we have a passwd entry: done by finding the
+	same name with terminating "user" changed to "group"; if not found,
+	ignore. Also ignore if the value is already set. */
+
+	if (pw == NULL) break;
+	Ustrcpy(name+Ustrlen(name)-4, US"group");
+	ol2 = find_option(name, oltop, last);
+	if (ol2 && ((ol2->type & opt_mask) == opt_gid ||
+	    (ol2->type & opt_mask) == opt_expand_gid))
+	  {
+	  BOOL *set_flag = get_set_flag(name, oltop, last, data_block);
+	  if (!*set_flag)
+	    {
+	    if (data_block)
+	      *((gid_t *)(US data_block + ol2->v.offset)) = pw->pw_gid;
+	    else
+	      *((gid_t *)ol2->v.value) = pw->pw_gid;
+	    *set_flag = TRUE;
+	    }
+	  }
+	break;
+
+      /* If it was an expanded gid, see if there is any expansion to be
+      done by checking for the presence of a $ character. If there is, save it
+      in the corresponding *expand_user option field. Otherwise, fall through
+      to treat it as a fixed gid. Ensure mutual exclusivity of the two kinds
+      of data. */
+
+      case opt_expand_gid:
+	sprintf(CS name2, "*expand_%.50s", name);
+	if ((ol2 = find_option(name2, oltop, last)))
+	  {
+	  uschar *ss = (Ustrchr(sptr, '$') != NULL) ? sptr : NULL;
+
+	  if (data_block)
+	    *(USS(US data_block + ol2->v.offset)) = ss;
+	  else
+	    *(USS ol2->v.value) = ss;
+
+	  if (ss)
+	    {
+	    *(get_set_flag(name, oltop, last, data_block)) = FALSE;
+	    freesptr = FALSE;
+	    break;
+	    }
+	  }
+
+      /* Handle freestanding gid */
+
+      case opt_gid:
+	if (!route_findgroup(sptr, &gid))
+	  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "group %s was not found", sptr);
+	if (data_block)
+	  *((gid_t *)(US data_block + ol->v.offset)) = gid;
+	else
+	  *((gid_t *)ol->v.value) = gid;
+	*(get_set_flag(name, oltop, last, data_block)) = TRUE;
+	break;
+
+      /* If it was a uid list, look up each individual entry, and build
+      a vector of uids, with a count in the first element. Put the vector
+      in malloc store so we can free the string. (We are reading into
+      permanent store already.) */
+
+      case opt_uidlist:
 	{
-	list_o = string_get(Ustrlen(*str_target) + Ustrlen(sptr));
-	list_o = string_cat(list_o, *str_target);
+	int count = 1;
+	uid_t *list;
+	int ptr = 0;
+	const uschar *p;
+	const uschar *op = expand_string (sptr);
+
+	if (op == NULL)
+	  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to expand %s: %s",
+	    name, expand_string_message);
+
+	p = op;
+	if (*p != 0) count++;
+	while (*p != 0) if (*p++ == ':' && *p != 0) count++;
+	list = store_malloc(count*sizeof(uid_t));
+	list[ptr++] = (uid_t)(count - 1);
+
+	if (data_block)
+	  *((uid_t **)(US data_block + ol->v.offset)) = list;
+	else
+	  *((uid_t **)ol->v.value) = list;
+
+	p = op;
+	while (count-- > 1)
+	  {
+	  int sep = 0;
+	  /* If p is tainted we trap.  Not sure that can happen */
+	  (void)string_nextinlist(&p, &sep, big_buffer, BIG_BUFFER_SIZE);
+	  if (!route_finduser(big_buffer, NULL, &uid))
+	    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "user %s was not found",
+	      big_buffer);
+	  list[ptr++] = uid;
+	  }
+	break;
 	}
 
-      while ((s = string_nextinlist(&list, &sep_i, NULL, 0)))
-	list_o = string_append_listele(list_o, sep_o, s);
+      /* If it was a gid list, look up each individual entry, and build
+      a vector of gids, with a count in the first element. Put the vector
+      in malloc store so we can free the string. (We are reading into permanent
+      store already.) */
 
-      if (list_o)
-	*str_target = string_copy_perm(string_from_gstring(list_o), FALSE);
+      case opt_gidlist:
+	{
+	int count = 1;
+	gid_t *list;
+	int ptr = 0;
+	const uschar *p;
+	const uschar *op = expand_string (sptr);
+
+	if (!op)
+	  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to expand %s: %s",
+	    name, expand_string_message);
+
+	p = op;
+	if (*p != 0) count++;
+	while (*p != 0) if (*p++ == ':' && *p != 0) count++;
+	list = store_malloc(count*sizeof(gid_t));
+	list[ptr++] = (gid_t)(count - 1);
+
+	if (data_block)
+	  *((gid_t **)(US data_block + ol->v.offset)) = list;
+	else
+	  *((gid_t **)ol->v.value) = list;
+
+	p = op;
+	while (count-- > 1)
+	  {
+	  int sep = 0;
+	  /* If p is tainted we trap.  Not sure that can happen */
+	  (void)string_nextinlist(&p, &sep, big_buffer, BIG_BUFFER_SIZE);
+	  if (!route_findgroup(big_buffer, &gid))
+	    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "group %s was not found",
+	      big_buffer);
+	  list[ptr++] = gid;
+	  }
+	break;
+	}
       }
-    else
-      {
-      *str_target = sptr;
-      freesptr = FALSE;
-      }
+
+    /* Release store if the value of the string doesn't need to be kept. */
+
+    if (freesptr) reset_point = store_reset(reset_point);
     break;
-
-    case opt_rewrite:
-    if (data_block)
-      *USS (US data_block + ol->v.offset) = sptr;
-    else
-      *USS ol->v.value = sptr;
-    freesptr = FALSE;
-    if (type == opt_rewrite)
-      {
-      int sep = 0;
-      int *flagptr;
-      uschar *p = sptr;
-      rewrite_rule **chain;
-      optionlist *ol3;
-
-      sprintf(CS name2, "*%.50s_rules", name);
-      ol2 = find_option(name2, oltop, last);
-      sprintf(CS name2, "*%.50s_flags", name);
-      ol3 = find_option(name2, oltop, last);
-
-      if (!ol2 || !ol3)
-        log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-          "rewrite rules not available for driver");
-
-      if (data_block)
-        {
-        chain = (rewrite_rule **)(US data_block + ol2->v.offset);
-        flagptr = (int *)(US data_block + ol3->v.offset);
-        }
-      else
-        {
-        chain = (rewrite_rule **)ol2->v.value;
-        flagptr = (int *)ol3->v.value;
-        }
-
-      /* This will trap if sptr is tainted. Not sure if that can happen */
-      while ((p = string_nextinlist(CUSS &sptr, &sep, big_buffer, BIG_BUFFER_SIZE)))
-        {
-        rewrite_rule *next = readconf_one_rewrite(p, flagptr, FALSE);
-        *chain = next;
-        chain = &(next->next);
-        }
-
-      if ((*flagptr & (rewrite_all_envelope | rewrite_smtp)) != 0)
-        log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "rewrite rule specifies a "
-          "non-header rewrite - not allowed at transport time -");
-      }
-    break;
-
-    /* If it was an expanded uid, see if there is any expansion to be
-    done by checking for the presence of a $ character. If there is, save it
-    in the corresponding *expand_user option field. Otherwise, fall through
-    to treat it as a fixed uid. Ensure mutual exclusivity of the two kinds
-    of data. */
-
-    case opt_expand_uid:
-    sprintf(CS name2, "*expand_%.50s", name);
-    if ((ol2 = find_option(name2, oltop, last)))
-      {
-      uschar *ss = (Ustrchr(sptr, '$') != NULL) ? sptr : NULL;
-
-      if (data_block)
-        *(USS(US data_block + ol2->v.offset)) = ss;
-      else
-        *(USS ol2->v.value) = ss;
-
-      if (ss)
-        {
-        *(get_set_flag(name, oltop, last, data_block)) = FALSE;
-        freesptr = FALSE;
-        break;
-        }
-      }
-
-    /* Look up a fixed uid, and also make use of the corresponding gid
-    if a passwd entry is returned and the gid has not been set. */
-
-    case opt_uid:
-    if (!route_finduser(sptr, &pw, &uid))
-      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "user %s was not found", sptr);
-    if (data_block)
-      *(uid_t *)(US data_block + ol->v.offset) = uid;
-    else
-      *(uid_t *)ol->v.value = uid;
-
-    /* Set the flag indicating a fixed value is set */
-
-    *(get_set_flag(name, oltop, last, data_block)) = TRUE;
-
-    /* Handle matching gid if we have a passwd entry: done by finding the
-    same name with terminating "user" changed to "group"; if not found,
-    ignore. Also ignore if the value is already set. */
-
-    if (pw == NULL) break;
-    Ustrcpy(name+Ustrlen(name)-4, US"group");
-    ol2 = find_option(name, oltop, last);
-    if (ol2 && ((ol2->type & opt_mask) == opt_gid ||
-        (ol2->type & opt_mask) == opt_expand_gid))
-      {
-      BOOL *set_flag = get_set_flag(name, oltop, last, data_block);
-      if (!*set_flag)
-        {
-        if (data_block)
-          *((gid_t *)(US data_block + ol2->v.offset)) = pw->pw_gid;
-        else
-          *((gid_t *)ol2->v.value) = pw->pw_gid;
-        *set_flag = TRUE;
-        }
-      }
-    break;
-
-    /* If it was an expanded gid, see if there is any expansion to be
-    done by checking for the presence of a $ character. If there is, save it
-    in the corresponding *expand_user option field. Otherwise, fall through
-    to treat it as a fixed gid. Ensure mutual exclusivity of the two kinds
-    of data. */
-
-    case opt_expand_gid:
-    sprintf(CS name2, "*expand_%.50s", name);
-    if ((ol2 = find_option(name2, oltop, last)))
-      {
-      uschar *ss = (Ustrchr(sptr, '$') != NULL) ? sptr : NULL;
-
-      if (data_block)
-        *(USS(US data_block + ol2->v.offset)) = ss;
-      else
-        *(USS ol2->v.value) = ss;
-
-      if (ss)
-        {
-        *(get_set_flag(name, oltop, last, data_block)) = FALSE;
-        freesptr = FALSE;
-        break;
-        }
-      }
-
-    /* Handle freestanding gid */
-
-    case opt_gid:
-    if (!route_findgroup(sptr, &gid))
-      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "group %s was not found", sptr);
-    if (data_block)
-      *((gid_t *)(US data_block + ol->v.offset)) = gid;
-    else
-      *((gid_t *)ol->v.value) = gid;
-    *(get_set_flag(name, oltop, last, data_block)) = TRUE;
-    break;
-
-    /* If it was a uid list, look up each individual entry, and build
-    a vector of uids, with a count in the first element. Put the vector
-    in malloc store so we can free the string. (We are reading into
-    permanent store already.) */
-
-    case opt_uidlist:
-      {
-      int count = 1;
-      uid_t *list;
-      int ptr = 0;
-      const uschar *p;
-      const uschar *op = expand_string (sptr);
-
-      if (op == NULL)
-        log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to expand %s: %s",
-          name, expand_string_message);
-
-      p = op;
-      if (*p != 0) count++;
-      while (*p != 0) if (*p++ == ':' && *p != 0) count++;
-      list = store_malloc(count*sizeof(uid_t));
-      list[ptr++] = (uid_t)(count - 1);
-
-      if (data_block)
-        *((uid_t **)(US data_block + ol->v.offset)) = list;
-      else
-        *((uid_t **)ol->v.value) = list;
-
-      p = op;
-      while (count-- > 1)
-        {
-        int sep = 0;
-	/* If p is tainted we trap.  Not sure that can happen */
-        (void)string_nextinlist(&p, &sep, big_buffer, BIG_BUFFER_SIZE);
-        if (!route_finduser(big_buffer, NULL, &uid))
-          log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "user %s was not found",
-            big_buffer);
-        list[ptr++] = uid;
-        }
-      }
-    break;
-
-    /* If it was a gid list, look up each individual entry, and build
-    a vector of gids, with a count in the first element. Put the vector
-    in malloc store so we can free the string. (We are reading into permanent
-    store already.) */
-
-    case opt_gidlist:
-      {
-      int count = 1;
-      gid_t *list;
-      int ptr = 0;
-      const uschar *p;
-      const uschar *op = expand_string (sptr);
-
-      if (!op)
-        log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to expand %s: %s",
-          name, expand_string_message);
-
-      p = op;
-      if (*p != 0) count++;
-      while (*p != 0) if (*p++ == ':' && *p != 0) count++;
-      list = store_malloc(count*sizeof(gid_t));
-      list[ptr++] = (gid_t)(count - 1);
-
-      if (data_block)
-        *((gid_t **)(US data_block + ol->v.offset)) = list;
-      else
-        *((gid_t **)ol->v.value) = list;
-
-      p = op;
-      while (count-- > 1)
-        {
-        int sep = 0;
-	/* If p is tainted we trap.  Not sure that can happen */
-        (void)string_nextinlist(&p, &sep, big_buffer, BIG_BUFFER_SIZE);
-        if (!route_findgroup(big_buffer, &gid))
-          log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "group %s was not found",
-            big_buffer);
-        list[ptr++] = gid;
-        }
-      }
-    break;
-    }
-
-  /* Release store if the value of the string doesn't need to be kept. */
-
-  if (freesptr) reset_point = store_reset(reset_point);
-  break;
 
   /* Expanded boolean: if no characters follow, or if there are no dollar
   characters, this is a fixed-valued boolean, and we fall through. Otherwise,
   save the string for later expansion in the alternate place. */
 
   case opt_expand_bool:
-  if (*s && Ustrchr(s, '$') != 0)
-    {
-    sprintf(CS name2, "*expand_%.50s", name);
-    if ((ol2 = find_option(name2, oltop, last)))
+    if (*s && Ustrchr(s, '$') != 0)
       {
-      reset_point = store_mark();
-      sptr = read_string(s, name);
-      if (data_block)
-        *(USS(US data_block + ol2->v.offset)) = sptr;
-      else
-        *(USS ol2->v.value) = sptr;
-      freesptr = FALSE;
-      break;
+      sprintf(CS name2, "*expand_%.50s", name);
+      if ((ol2 = find_option(name2, oltop, last)))
+	{
+	reset_point = store_mark();
+	sptr = read_string(s, name);
+	if (data_block)
+	  *(USS(US data_block + ol2->v.offset)) = sptr;
+	else
+	  *(USS ol2->v.value) = sptr;
+	freesptr = FALSE;
+	break;
+	}
       }
-    }
-  /* Fall through */
+    /* Fall through */
 
   /* Boolean: if no characters follow, the value is boolvalue. Otherwise
   look for yes/not/true/false. Some booleans are stored in a single bit in
@@ -2095,121 +2095,121 @@ switch (type)
   case opt_bit:
   case opt_bool_verify:
   case opt_bool_set:
-  if (*s != 0)
-    {
-    s = readconf_readname(name2, EXIM_DRIVERNAME_MAX, s);
-    if (strcmpic(name2, US"true") == 0 || strcmpic(name2, US"yes") == 0)
-      boolvalue = TRUE;
-    else if (strcmpic(name2, US"false") == 0 || strcmpic(name2, US"no") == 0)
-      boolvalue = FALSE;
-    else log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-      "\"%s\" is not a valid value for the \"%s\" option", name2, name);
-    if (*s != 0) extra_chars_error(s, string_sprintf("\"%s\" ", name2),
-      US"for boolean option ", name);
-    }
+    if (*s)
+      {
+      s = readconf_readname(name2, EXIM_DRIVERNAME_MAX, s);
+      if (strcmpic(name2, US"true") == 0 || strcmpic(name2, US"yes") == 0)
+	boolvalue = TRUE;
+      else if (strcmpic(name2, US"false") == 0 || strcmpic(name2, US"no") == 0)
+	boolvalue = FALSE;
+      else log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+	"\"%s\" is not a valid value for the \"%s\" option", name2, name);
+      if (*s != 0) extra_chars_error(s, string_sprintf("\"%s\" ", name2),
+	US"for boolean option ", name);
+      }
 
-  /* Handle single-bit type. */
+    /* Handle single-bit type. */
 
-  if (type == opt_bit)
-    {
-    int bit = 1 << ((ol->type >> 16) & 31);
-    int * ptr = data_block
-      ? (int *)(US data_block + ol->v.offset)
-      : (int *)ol->v.value;
-    if (boolvalue) *ptr |= bit; else *ptr &= ~bit;
+    if (type == opt_bit)
+      {
+      int bit = 1 << ((ol->type >> 16) & 31);
+      int * ptr = data_block
+	? (int *)(US data_block + ol->v.offset)
+	: (int *)ol->v.value;
+      if (boolvalue) *ptr |= bit; else *ptr &= ~bit;
+      break;
+      }
+
+    /* Handle full BOOL types */
+
+    if (data_block)
+      *((BOOL *)(US data_block + ol->v.offset)) = boolvalue;
+    else
+      *((BOOL *)ol->v.value) = boolvalue;
+
+    /* Verify fudge */
+
+    if (type == opt_bool_verify)
+      {
+      sprintf(CS name2, "%.50s_recipient", name + offset);
+      if ((ol2 = find_option(name2, oltop, last)))
+	if (data_block)
+	  *((BOOL *)(US data_block + ol2->v.offset)) = boolvalue;
+	else
+	  *((BOOL *)ol2->v.value) = boolvalue;
+      }
+
+    /* Note that opt_bool_set type is set, if there is somewhere to do so */
+
+    else if (type == opt_bool_set)
+      {
+      sprintf(CS name2, "*set_%.50s", name + offset);
+      if ((ol2 = find_option(name2, oltop, last)))
+	if (data_block)
+	  *((BOOL *)(US data_block + ol2->v.offset)) = TRUE;
+	else
+	  *((BOOL *)ol2->v.value) = TRUE;
+      }
     break;
-    }
-
-  /* Handle full BOOL types */
-
-  if (data_block)
-    *((BOOL *)(US data_block + ol->v.offset)) = boolvalue;
-  else
-    *((BOOL *)ol->v.value) = boolvalue;
-
-  /* Verify fudge */
-
-  if (type == opt_bool_verify)
-    {
-    sprintf(CS name2, "%.50s_recipient", name + offset);
-    if ((ol2 = find_option(name2, oltop, last)))
-      if (data_block)
-        *((BOOL *)(US data_block + ol2->v.offset)) = boolvalue;
-      else
-        *((BOOL *)ol2->v.value) = boolvalue;
-    }
-
-  /* Note that opt_bool_set type is set, if there is somewhere to do so */
-
-  else if (type == opt_bool_set)
-    {
-    sprintf(CS name2, "*set_%.50s", name + offset);
-    if ((ol2 = find_option(name2, oltop, last)))
-      if (data_block)
-        *((BOOL *)(US data_block + ol2->v.offset)) = TRUE;
-      else
-        *((BOOL *)ol2->v.value) = TRUE;
-    }
-  break;
 
   /* Octal integer */
 
   case opt_octint:
-  intbase = 8;
-  inttype = US"octal ";
+    intbase = 8;
+    inttype = US"octal ";
 
   /*  Integer: a simple(ish) case; allow octal and hex formats, and
   suffixes K, M, G, and T.  The different types affect output, not input. */
 
   case opt_mkint:
   case opt_int:
-    {
-    uschar *endptr;
-    long int lvalue;
+     {
+      uschar *endptr;
+      long int lvalue;
 
-    errno = 0;
-    lvalue = strtol(CS s, CSS &endptr, intbase);
+      errno = 0;
+      lvalue = strtol(CS s, CSS &endptr, intbase);
 
-    if (endptr == s)
-      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "%sinteger expected for %s",
-        inttype, name);
+      if (endptr == s)
+	log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "%sinteger expected for %s",
+	  inttype, name);
 
-    if (errno != ERANGE && *endptr)
-      {
-      uschar * mp = US"TtGgMmKk\0";	/* YyZzEePpTtGgMmKk */
-
-      if ((mp = Ustrchr(mp, *endptr)))
+      if (errno != ERANGE && *endptr)
 	{
-	endptr++;
-	do
+	uschar * mp = US"TtGgMmKk\0";	/* YyZzEePpTtGgMmKk */
+
+	if ((mp = Ustrchr(mp, *endptr)))
 	  {
-	  if (lvalue > INT_MAX/1024 || lvalue < INT_MIN/1024)
+	  endptr++;
+	  do
 	    {
-	    errno = ERANGE;
-	    break;
+	    if (lvalue > INT_MAX/1024 || lvalue < INT_MIN/1024)
+	      {
+	      errno = ERANGE;
+	      break;
+	      }
+	    lvalue *= 1024;
 	    }
-	  lvalue *= 1024;
+	  while (*(mp += 2));
 	  }
-	while (*(mp += 2));
 	}
-      }
 
-    if (errno == ERANGE || lvalue > INT_MAX || lvalue < INT_MIN)
-      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-        "absolute value of integer \"%s\" is too large (overflow)", s);
+      if (errno == ERANGE || lvalue > INT_MAX || lvalue < INT_MIN)
+	log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+	  "absolute value of integer \"%s\" is too large (overflow)", s);
 
-    while (isspace(*endptr)) endptr++;
-    if (*endptr)
-      extra_chars_error(endptr, inttype, US"integer value for ", name);
+      while (isspace(*endptr)) endptr++;
+      if (*endptr)
+	extra_chars_error(endptr, inttype, US"integer value for ", name);
 
-    value = (int)lvalue;
-    }
+      value = (int)lvalue;
+     }
 
-  if (data_block)
-    *(int *)(US data_block + ol->v.offset) = value;
-  else
-    *(int *)ol->v.value = value;
-  break;
+    if (data_block)
+      *(int *)(US data_block + ol->v.offset) = value;
+    else
+      *(int *)ol->v.value = value;
+    break;
 
   /*  Integer held in K: again, allow formats and suffixes as above. */
 
@@ -2261,56 +2261,56 @@ switch (type)
   /*  Fixed-point number: held to 3 decimal places. */
 
   case opt_fixed:
-  if (sscanf(CS s, "%d%n", &value, &count) != 1)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-      "fixed-point number expected for %s", name);
+    if (sscanf(CS s, "%d%n", &value, &count) != 1)
+      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+	"fixed-point number expected for %s", name);
 
-  if (value < 0) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-    "integer \"%s\" is too large (overflow)", s);
+    if (value < 0) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+      "integer \"%s\" is too large (overflow)", s);
 
-  value *= 1000;
+    value *= 1000;
 
-  if (value < 0) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-    "integer \"%s\" is too large (overflow)", s);
+    if (value < 0) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+      "integer \"%s\" is too large (overflow)", s);
 
-  /* We get a coverity error here for using count, as it derived
-  from the tainted buffer pointed to by s, as parsed by sscanf().
-  By the definition of sscanf we must be accessing between start
-  and end of s (assuming it is nul-terminated...) so ignore the error.  */
-  /* coverity[tainted_data] */
-  if (s[count] == '.')
-    {
-    int d = 100;
-    while (isdigit(s[++count]))
+    /* We get a coverity error here for using count, as it derived
+    from the tainted buffer pointed to by s, as parsed by sscanf().
+    By the definition of sscanf we must be accessing between start
+    and end of s (assuming it is nul-terminated...) so ignore the error.  */
+    /* coverity[tainted_data] */
+    if (s[count] == '.')
       {
-      value += (s[count] - '0') * d;
-      d /= 10;
+      int d = 100;
+      while (isdigit(s[++count]))
+	{
+	value += (s[count] - '0') * d;
+	d /= 10;
+	}
       }
-    }
 
-  while (isspace(s[count])) count++;
+    while (isspace(s[count])) count++;
 
-  if (s[count] != 0)
-    extra_chars_error(s+count, US"fixed-point value for ", name, US"");
+    if (s[count] != 0)
+      extra_chars_error(s+count, US"fixed-point value for ", name, US"");
 
-  if (data_block)
-    *((int *)(US data_block + ol->v.offset)) = value;
-  else
-    *((int *)ol->v.value) = value;
-  break;
+    if (data_block)
+      *((int *)(US data_block + ol->v.offset)) = value;
+    else
+      *((int *)ol->v.value) = value;
+    break;
 
   /* There's a special routine to read time values. */
 
   case opt_time:
-  value = readconf_readtime(s, 0, FALSE);
-  if (value < 0)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "invalid time value for %s",
-      name);
-  if (data_block)
-    *((int *)(US data_block + ol->v.offset)) = value;
-  else
-    *((int *)ol->v.value) = value;
-  break;
+    value = readconf_readtime(s, 0, FALSE);
+    if (value < 0)
+      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "invalid time value for %s",
+	name);
+    if (data_block)
+      *((int *)(US data_block + ol->v.offset)) = value;
+    else
+      *((int *)ol->v.value) = value;
+    break;
 
   /* A time list is a list of colon-separated times, with the first
   element holding the size of the list and the second the number of
@@ -3714,14 +3714,14 @@ readconf_driver_init(
   optionlist *driver_optionlist,
   int  driver_optionlist_count)
 {
-driver_instance **p = anchor;
-driver_instance *d = NULL;
-uschar *buffer;
+driver_instance ** p = anchor;
+driver_instance * d = NULL;
+uschar * buffer;
 
 while ((buffer = get_config_line()))
   {
   uschar name[EXIM_DRIVERNAME_MAX];
-  uschar *s;
+  const uschar * s;
 
   /* Read the first name on the line and test for the start of a new driver. A
   macro definition indicates the end of the previous driver. If this isn't the
@@ -4241,8 +4241,6 @@ Returns:      nothing
 static void
 readconf_acl(void)
 {
-uschar *p;
-
 /* Read each ACL and add it into the tree. Macro (re)definitions are allowed
 between ACLs. */
 
@@ -4251,10 +4249,10 @@ acl_line = get_config_line();
 while(acl_line)
   {
   uschar name[EXIM_DRIVERNAME_MAX];
-  tree_node *node;
-  uschar *error;
+  tree_node * node;
+  uschar * error;
+  const uschar * p = readconf_readname(name, sizeof(name), acl_line);
 
-  p = readconf_readname(name, sizeof(name), acl_line);
   if (isupper(*name) && *p == '=')
     {
     if (!macro_read_assignment(acl_line)) exim_exit(EXIT_FAILURE);

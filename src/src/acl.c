@@ -734,6 +734,78 @@ return -1;
 }
 
 
+static BOOL
+acl_varname_to_cond(const uschar ** sp, acl_condition_block * cond, uschar ** error)
+{
+const uschar * s = *sp, * endptr;
+
+#ifndef DISABLE_DKIM
+if (  Ustrncmp(s, "dkim_verify_status", 18) == 0
+   || Ustrncmp(s, "dkim_verify_reason", 18) == 0)
+  {
+  endptr = s+18;
+  if (isalnum(*endptr))
+    {
+    *error = string_sprintf("invalid variable name after \"set\" in ACL "
+      "modifier \"set %s\" "
+      "(only \"dkim_verify_status\" or \"dkim_verify_reason\" permitted)",
+      s);
+    return FALSE;
+    }
+  cond->u.varname = string_copyn(s, 18);
+  }
+else
+#endif
+  {
+  if (Ustrncmp(s, "acl_c", 5) != 0 && Ustrncmp(s, "acl_m", 5) != 0)
+    {
+    *error = string_sprintf("invalid variable name after \"set\" in ACL "
+      "modifier \"set %s\" (must start \"acl_c\" or \"acl_m\")", s);
+    return FALSE;
+    }
+
+  endptr = s + 5;
+  if (!isdigit(*endptr) && *endptr != '_')
+    {
+    *error = string_sprintf("invalid variable name after \"set\" in ACL "
+      "modifier \"set %s\" (digit or underscore must follow acl_c or acl_m)",
+      s);
+    return FALSE;
+    }
+
+  for ( ; *endptr && *endptr != '=' && !isspace(*endptr); endptr++)
+    if (!isalnum(*endptr) && *endptr != '_')
+      {
+      *error = string_sprintf("invalid character \"%c\" in variable name "
+	"in ACL modifier \"set %s\"", *endptr, s);
+      return FALSE;
+      }
+
+  cond->u.varname = string_copyn(s + 4, endptr - s - 4);
+  }
+s = endptr;
+Uskip_whitespace(&s);
+*sp = s;
+return TRUE;
+}
+
+
+static BOOL
+acl_data_to_cond(const uschar * s, acl_condition_block * cond,
+  const uschar * name, uschar ** error)
+{
+if (*s++ != '=')
+  {
+  *error = string_sprintf("\"=\" missing after ACL \"%s\" %s", name,
+    conditions[cond->type].is_modifier ? US"modifier" : US"condition");
+  return FALSE;;
+  }
+Uskip_whitespace(&s);
+cond->arg = string_copy(s);
+return TRUE;
+}
+
+
 /*************************************************
 *            Read and parse one ACL              *
 *************************************************/
@@ -760,7 +832,7 @@ acl_block **lastp = &yield;
 acl_block *this = NULL;
 acl_condition_block *cond;
 acl_condition_block **condp = NULL;
-uschar * s;
+const uschar * s;
 
 *error = NULL;
 
@@ -768,7 +840,7 @@ while ((s = (*func)()))
   {
   int v, c;
   BOOL negated = FALSE;
-  uschar *saveline = s;
+  const uschar * saveline = s;
   uschar name[EXIM_DRIVERNAME_MAX];
 
   /* Conditions (but not verbs) are allowed to be negated by an initial
@@ -808,16 +880,15 @@ while ((s = (*func)()))
       *error = string_sprintf("malformed ACL line \"%s\"", saveline);
       return NULL;
       }
-    this = store_get(sizeof(acl_block), GET_UNTAINTED);
-    *lastp = this;
-    lastp = &(this->next);
+    *lastp = this = store_get(sizeof(acl_block), GET_UNTAINTED);
+    lastp = &this->next;
     this->next = NULL;
     this->condition = NULL;
     this->verb = v;
     this->srcline = config_lineno;	/* for debug output */
     this->srcfile = config_filename;	/**/
-    condp = &(this->condition);
-    if (*s == 0) continue;               /* No condition on this line */
+    condp = &this->condition;
+    if (!*s) continue;               /* No condition on this line */
     if (*s == '!')
       {
       negated = TRUE;
@@ -861,7 +932,7 @@ while ((s = (*func)()))
   cond->u.negated = negated;
 
   *condp = cond;
-  condp = &(cond->next);
+  condp = &cond->next;
 
   /* The "set" modifier is different in that its argument is "name=value"
   rather than just a value, and we can check the validity of the name, which
@@ -874,75 +945,13 @@ while ((s = (*func)()))
   compatibility. */
 
   if (c == ACLC_SET)
-#ifndef DISABLE_DKIM
-    if (  Ustrncmp(s, "dkim_verify_status", 18) == 0
-       || Ustrncmp(s, "dkim_verify_reason", 18) == 0)
-      {
-      uschar * endptr = s+18;
-
-      if (isalnum(*endptr))
-	{
-	*error = string_sprintf("invalid variable name after \"set\" in ACL "
-	  "modifier \"set %s\" "
-	  "(only \"dkim_verify_status\" or \"dkim_verify_reason\" permitted)",
-	  s);
-	return NULL;
-	}
-      cond->u.varname = string_copyn(s, 18);
-      s = endptr;
-      Uskip_whitespace(&s);
-      }
-    else
-#endif
-    {
-    uschar *endptr;
-
-    if (Ustrncmp(s, "acl_c", 5) != 0 && Ustrncmp(s, "acl_m", 5) != 0)
-      {
-      *error = string_sprintf("invalid variable name after \"set\" in ACL "
-	"modifier \"set %s\" (must start \"acl_c\" or \"acl_m\")", s);
-      return NULL;
-      }
-
-    endptr = s + 5;
-    if (!isdigit(*endptr) && *endptr != '_')
-      {
-      *error = string_sprintf("invalid variable name after \"set\" in ACL "
-	"modifier \"set %s\" (digit or underscore must follow acl_c or acl_m)",
-	s);
-      return NULL;
-      }
-
-    while (*endptr && *endptr != '=' && !isspace(*endptr))
-      {
-      if (!isalnum(*endptr) && *endptr != '_')
-	{
-	*error = string_sprintf("invalid character \"%c\" in variable name "
-	  "in ACL modifier \"set %s\"", *endptr, s);
-	return NULL;
-	}
-      endptr++;
-      }
-
-    cond->u.varname = string_copyn(s + 4, endptr - s - 4);
-    s = endptr;
-    Uskip_whitespace(&s);
-    }
+    if (!acl_varname_to_cond(&s, cond, error)) return NULL;
 
   /* For "set", we are now positioned for the data. For the others, only
   "endpass" has no data */
 
   if (c != ACLC_ENDPASS)
-    {
-    if (*s++ != '=')
-      {
-      *error = string_sprintf("\"=\" missing after ACL \"%s\" %s", name,
-        conditions[c].is_modifier ? US"modifier" : US"condition");
-      return NULL;
-      }
-    Uskip_whitespace(&s);
-    cond->arg = string_copy(s);
-    }
+    if (!acl_data_to_cond(s, cond, name, error)) return NULL;
   }
 
 return yield;
@@ -4893,6 +4902,29 @@ if (is_tainted(value))
   }
 fprintf(f, "acl%c %s %d\n%s\n", name[0], name+1, Ustrlen(value), value);
 }
+
+
+
+
+uschar *
+acl_standalone_setvar(const uschar * s)
+{
+acl_condition_block * cond = store_get(sizeof(acl_condition_block), GET_UNTAINTED);
+uschar * errstr = NULL, * log_msg = NULL;
+BOOL endpass_seen;
+int e;
+
+cond->next = NULL;
+cond->type = ACLC_SET;
+if (!acl_varname_to_cond(&s, cond, &errstr)) return errstr;
+if (!acl_data_to_cond(s, cond, US"'-be'", &errstr)) return errstr;
+
+if (acl_check_condition(ACL_WARN, cond, ACL_WHERE_UNKNOWN,
+			    NULL, 0, &endpass_seen, &errstr, &log_msg, &e) != OK)
+  return string_sprintf("oops: %s", errstr);
+return string_sprintf("variable %s set", cond->u.varname);
+}
+
 
 #endif	/* !MACRO_PREDEF */
 /* vi: aw ai sw=2
