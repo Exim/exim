@@ -45,7 +45,7 @@
 . Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.95"
+.set previousversion "4.96"
 .include ./local_params
 
 .set ACL "access control lists (ACLs)"
@@ -1820,11 +1820,9 @@ the traditional &'ndbm'& interface.
 To complicate things further, there are several very different versions of the
 Berkeley DB package. Version 1.85 was stable for a very long time, releases
 2.&'x'& and 3.&'x'& were current for a while,
-.new
 but the latest versions when Exim last revamped support were numbered 5.&'x'&.
 Maintenance of some of the earlier releases has ceased,
 and Exim no longer supports versions before 3.&'x'&.
-.wen
 All versions of Berkeley DB could be obtained from
 &url(http://www.sleepycat.com/), which is now a redirect to their new owner's
 page with far newer versions listed.
@@ -1849,9 +1847,7 @@ USE_DB=yes
 .endd
 Similarly, for gdbm you set USE_GDBM, and for tdb you set USE_TDB. An
 error is diagnosed if you set more than one of these.
-.new
 You can set USE_NDBM if needed to override an operating system default.
-.wen
 
 At the lowest level, the build-time configuration sets none of these options,
 thereby assuming an interface of type (1). However, some operating system
@@ -1868,9 +1864,7 @@ DBMLIB = -ldb
 DBMLIB = -ltdb
 DBMLIB = -lgdbm -lgdbm_compat
 .endd
-.new
 The last of those was for a Linux having GDBM provide emulated NDBM facilities.
-.wen
 Settings like that will work if the DBM library is installed in the standard
 place. Sometimes it is not, and the library's header file may also not be in
 the default path. You may need to set INCLUDE to specify where the header
@@ -6774,9 +6768,7 @@ domains = ${lookup{$sender_host_address}lsearch{/some/file}}
 domains = lsearch;/some/file
 .endd
 The first uses a string expansion, the result of which must be a domain list.
-.new
 The key for an expansion-style lookup must be given explicitly.
-.wen
 No strings have been specified for a successful or a failing lookup; the
 defaults in this case are the looked-up data and an empty string, respectively.
 The expansion takes place before the string is processed as a list, and the
@@ -6802,11 +6794,9 @@ domain2:
 Any data that follows the keys is not relevant when checking that the domain
 matches the list item.
 
-.new
 The key for a list-style lookup is implicit, from the lookup context, if
 the lookup is a single-key type (see below).
 For query-style lookup types the key must be given explicitly.
-.wen
 
 It is possible, though no doubt confusing, to use both kinds of lookup at once.
 Consider a file containing lines like this:
@@ -6857,11 +6847,9 @@ The &'query-style'& type accepts a generalized database query. No particular
 key value is assumed by Exim for query-style lookups. You can use whichever
 Exim variables you need to construct the database query.
 .cindex "tainted data" "quoting for lookups"
-.new
 If tainted data is used in the query then it should be quuted by
 using the &*${quote_*&<&'lookup-type'&>&*:*&<&'string'&>&*}*& expansion operator
 appropriate for the lookup.
-.wen
 .endlist
 
 The code for each lookup type is in a separate source file that is included in
@@ -10687,7 +10675,6 @@ expansion item in section &<<SECTexpansionitems>>& above.
 .cindex "expansion" "running a command"
 .cindex "&%run%& expansion item"
 This item runs an external command, as a subprocess.
-.new
 One option is supported after the word &'run'&, comma-separated.
 
 If the option &'preexpand'& is not used,
@@ -10704,7 +10691,6 @@ potential attacker;
 a careful assessment for security vulnerabilities should be done.
 
 If the option &'preexpand'& is used,
-.wen
 the command and its arguments are first expanded as one string. The result is
 split apart into individual arguments by spaces, and then the command is run
 as above.
@@ -10718,9 +10704,7 @@ in a string containing quotes, because it would interfere with the quotes
 around the command arguments. A possible guard against this is to wrap the
 variable in the &%sg%& operator to change any quote marks to some other
 character.
-.new
 Neither the command nor any argument may be tainted.
-.wen
 
 The standard input for the command exists, but is empty. The standard output
 and standard error are set to the same file descriptor.
@@ -11286,9 +11270,7 @@ returns the string &"10.111.131.192/28"&.
 
 Since this operation is expected to
 be mostly used for looking up masked addresses in files, the
-.new
 normal
-.wen
 result for an IPv6
 address uses dots to separate components instead of colons, because colon
 terminates a key string in lsearch files. So, for example,
@@ -11299,10 +11281,8 @@ returns the string
 .code
 3ffe.ffff.836f.0a00.000a.0800.2000.0000/99
 .endd
-.new
 If the optional form &*mask_n*& is used, IPv6 address result are instead
 returned in normailsed form, using colons and with zero-compression.
-.wen
 Letters in IPv6 addresses are always output in lower case.
 
 
@@ -11940,7 +11920,6 @@ ${if inlisti{Needle}{fOo:NeeDLE:bAr}}
   ${if forany{fOo:NeeDLE:bAr}{eqi{$item}{Needle}}}
 .endd
 
-.new
 The variable &$value$& will be set for a successful match and can be
 used in the success clause of an &%if%& expansion item using the condition.
 .cindex "tainted data" "de-tainting"
@@ -11951,7 +11930,6 @@ ${if inlist {$h_mycode:} {0 : 1 : 42} {$value}}
 .endd
 can be used for de-tainting.
 Any previous &$value$& is restored after the if.
-.wen
 
 
 .vitem &*isip&~{*&<&'string'&>&*}*&  &&&
@@ -12150,7 +12128,6 @@ item can be used, as in all address lists, to cause subsequent items to
 have their local parts matched casefully. Domains are always matched
 caselessly.
 
-.new
 The variable &$value$& will be set for a successful match and can be
 used in the success clause of an &%if%& expansion item using the condition.
 .cindex "tainted data" "de-tainting"
@@ -12161,7 +12138,6 @@ ${if match_local_part {$local_part} {alice : bill : charlotte : dave} {$value}}
 .endd
 can be used for de-tainting.
 Any previous &$value$& is restored after the if.
-.wen
 
 Note that <&'string2'&> is not itself subject to string expansion, unless
 Exim was built with the EXPAND_LISTMATCH_RHS option.
@@ -12358,7 +12334,6 @@ parsed but not evaluated.
 This section contains an alphabetical list of all the expansion variables. Some
 of them are available only when Exim is compiled with specific options such as
 support for TLS or the content scanning extension.
-.new
 .cindex "tainted data"
 Variables marked as &'tainted'& are likely to carry data supplied by
 a potential attacker.
@@ -12367,7 +12342,6 @@ values are created.
 Such variables should not be further expanded,
 used as filenames
 or used as command-line arguments for external commands.
-.wen
 
 .vlist
 .vitem "&$0$&, &$1$&, etc"
@@ -12382,9 +12356,7 @@ variables may also be set externally by some other matching process which
 precedes the expansion of the string. For example, the commands available in
 Exim filter files include an &%if%& command with its own regular expression
 matching condition.
-.new
 If the subject string was tainted then any captured substring will also be.
-.wen
 
 .vitem "&$acl_arg1$&, &$acl_arg2$&, etc"
 Within an acl condition, expansion condition or expansion item
@@ -13290,11 +13262,9 @@ This is not an expansion variable, but is mentioned here because the string
 (described under &%transport_filter%& in chapter &<<CHAPtransportgeneric>>&).
 It cannot be used in general expansion strings, and provokes an &"unknown
 variable"& error if encountered.
-.new
 &*Note*&: This value permits data supplied by a potential attacker to
 be used in the command for a &(pipe)& transport.
 Such configurations should be carefully assessed for security vulnerbilities.
-.wen
 
 .vitem &$primary_hostname$&
 .vindex "&$primary_hostname$&"
@@ -13513,9 +13483,7 @@ This variable is set to contain the matching regular expression after a
 When a &%regex%& or &%mime_regex%& ACL condition succeeds,
 these variables contain the
 captured substrings identified by the regular expression.
-.new
 If the subject string was tainted then so will any captured substring.
-.wen
 
 
 .tvar &$reply_address$&
@@ -18565,7 +18533,6 @@ of the later IKE values, which led into RFC7919 providing new fixed constants
 At this point, all of the "ike" values should be considered obsolete;
 they are still in Exim to avoid breaking unusual configurations, but are
 candidates for removal the next time we have backwards-incompatible changes.
-.new
 Two of them in particular (&`ike1`& and &`ike22`&) are called out by RFC 8247
 as MUST NOT use for IPSEC, and two more (&`ike23`& and &`ike24`&) as
 SHOULD NOT.
@@ -18573,7 +18540,6 @@ Because of this, Exim regards them as deprecated; if either of the first pair
 are used, warnings will be logged in the paniclog, and if any are used then
 warnings will be logged in the mainlog.
 All four will be removed in a future Exim release.
-.wen
 
 The TLS protocol does not negotiate an acceptable size for this; clients tend
 to hard-drop connections if what is offered by the server is unacceptable,
@@ -24760,11 +24726,9 @@ This list is a compromise for maximum compatibility with other MTAs. Note that
 the &%environment%& option can be used to add additional variables to this
 environment. The environment for the &(pipe)& transport is not subject
 to the &%add_environment%& and &%keep_environment%& main config options.
-.new
 &*Note*&: Using enviroment variables loses track of tainted data.
 Writers of &(pipe)& transport commands should be wary of data supplied
 by potential attackers.
-.wen
 .display
 &`DOMAIN            `&   the domain of the address
 &`HOME              `&   the home directory, if set
@@ -24856,10 +24820,8 @@ the &%path%& option below). The command is split up into separate arguments by
 Exim, and each argument is separately expanded, as described in section
 &<<SECThowcommandrun>>& above.
 
-.new
 .cindex "tainted data"
 No part of the resulting command may be tainted.
-.wen
 
 
 .option environment pipe string&!! unset
@@ -25568,7 +25530,6 @@ helo_data = ${lookup dnsdb{ptr=$sending_ip_address} \
 The use of &%helo_data%& applies both to sending messages and when doing
 callouts.
 
-.new
 .option host_name_extract smtp "string list&!!" "see below"
 .cindex "load balancer" "hosts behind"
 .cindex TLS resumption
@@ -25598,7 +25559,6 @@ of other destination sites operating load-balancers, and develop a suitable
 expression for this option.
 The smtp:ehlo event and the &$tls_out_resumption$& variable
 will be useful for such work.
-.wen
 
 .option hosts smtp "string list&!!" unset
 Hosts are associated with an address by a router such as &(dnslookup)&, which
@@ -25667,10 +25627,8 @@ so combines well with TCP Fast Open.
 See also the &%pipelining_connect_advertise_hosts%& main option.
 
 Note:
-.new
 When the facility is used, if the transport &%interface%& option is unset
 the &%helo_data%& option
-.wen
 will be expanded before the &$sending_ip_address$& variable
 is filled in.
 A check is made for the use of that variable, without the
@@ -29941,10 +29899,8 @@ nothing more to it.  Choosing a sensible value not derived insecurely is the
 only point of caution.  The &$tls_out_sni$& variable will be set to this string
 for the lifetime of the client connection (including during authentication).
 
-.new
 If DANE validated the connection attempt then the value of the &%tls_sni%& option
 is forced to the name of the destination host, after any MX- or CNAME-following.
-.wen
 
 Except during SMTP client sessions, if &$tls_in_sni$& is set then it is a string
 received from a client.
@@ -30599,10 +30555,8 @@ accepted by an &%accept%& verb that has a &%message%& modifier, the contents of
 the message override the banner message that is otherwise specified by the
 &%smtp_banner%& option.
 
-.new
 For tls-on-connect connections, the ACL is run after the TLS connection
 is accepted (however, &%host_reject_connection%& is tested before).
-.wen
 
 
 .section "The EHLO/HELO ACL" "SECID192"
@@ -31722,14 +31676,12 @@ This control turns on debug logging, almost as though Exim had been invoked
 with &`-d`&, with the output going to a new logfile in the usual logs directory,
 by default called &'debuglog'&.
 
-.new
 Logging set up by the control will be maintained across spool residency.
 
 Options are a slash-separated list.
 If an option takes an argument, the option name and argument are separated by
 an equals character.
 Several options are supported:
-.wen
 .display
 tag=<&'suffix'&>         The filename can be adjusted with thise option.
 		     The argument, which may access any variables already defined,
@@ -32400,13 +32352,11 @@ content-scanning extension, and is available only in the DATA, MIME, and
 non-SMTP ACLs. It causes the incoming message to be scanned for a match with
 any of the regular expressions. For details, see chapter &<<CHAPexiscan>>&.
 
-.new
 .vitem &*seen&~=&~*&<&'parameters'&>
 .cindex "&%sseen%& ACL condition"
 This condition can be used to test if a situation has been previously met,
 for example for greylisting.
 Details are given in section &<<SECTseen>>&.
-.wen
 
 .vitem &*sender_domains&~=&~*&<&'domain&~list'&>
 .cindex "&%sender_domains%& ACL condition"
@@ -33131,7 +33081,6 @@ address you should specify alternate list separators for both the outer
 .endd
 
 
-.new
 .section "Previously seen user and hosts" "SECTseen"
 .cindex "&%sseen%& ACL condition"
 .cindex greylisting
@@ -33184,7 +33133,6 @@ An explicit interval can be set using a
 
 Note that &"seen"& should be added to the list of hints databases
 for maintenance if this ACL condition is used.
-.wen
 
 
 .section "Rate limiting incoming messages" "SECTratelimiting"
@@ -33629,14 +33577,12 @@ output before performing a callout in an ACL, to avoid unexpected timeouts in
 clients when the SMTP PIPELINING extension is in use. The flushing can be
 disabled by using a &%control%& modifier to set &%no_callout_flush%&.
 
-.new
 .cindex "tainted data" "de-tainting"
 .cindex "de-tainting" "using receipient verify"
 A recipient callout which gets a 2&'xx'& code
 will assign untainted values to the
 &$domain_data$& and &$local_part_data$& variables,
 corresponding to the domain and local parts of the recipient address.
-.wen
 
 
 
@@ -35464,10 +35410,8 @@ discussed below.
 .vitem &*header_line&~*header_last*&
 A pointer to the last of the header lines.
 
-.new
 .vitem &*const&~uschar&~*headers_charset*&
 The value of the &%headers_charset%& configuration option.
-.wen
 
 .vitem &*BOOL&~host_checking*&
 This variable is TRUE during a host checking session that is initiated by the
@@ -39631,9 +39575,7 @@ overriding the built-in one.
 .endlist
 
 There is one more option, &%-h%&, which outputs a list of options.
-.new
 At least one selection option, or either the &*-c*& or &*-h*& option, must be given.
-.wen
 
 
 
@@ -40016,12 +39958,10 @@ in a transport)
 .cindex "&'exim_dumpdb'&"
 The entire contents of a database are written to the standard output by the
 &'exim_dumpdb'& program,
-.new
 taking as arguments the spool and database names.
 An option &'-z'& may be given to request times in UTC;
 otherwise times are in the local timezone.
 An option &'-k'& may be given to dump only the record keys.
-.wen
 For example, to dump the retry database:
 .code
 exim_dumpdb /var/spool/exim retry
@@ -40126,11 +40066,9 @@ resets the time of the next delivery attempt. Time values are given as a
 sequence of digit pairs for year, month, day, hour, and minute. Colons can be
 used as optional separators.
 
-.new
 Both displayed and input times are in the local timezone by default.
 If an option &'-z'& is used on the command line, displayed times
 are in UTC.
-.wen
 
 
 
@@ -41153,7 +41091,6 @@ was received, in the conventional Unix form &-- the number of seconds since the
 start of the epoch. The second number is a count of the number of messages
 warning of delayed delivery that have been sent to the sender.
 
-.new
 There follow a number of lines starting with a hyphen.
 These contain variables, can appear in any
 order, and are omitted when not relevant.
@@ -41164,7 +41101,6 @@ If there is a value in parentheses, the data is quoted for a lookup.
 
 The following word specifies a variable,
 and the remainder of the item depends on the variable.
-.wen
 
 .vlist
 .vitem "&%-acl%&&~<&'number'&>&~<&'length'&>"
@@ -42173,9 +42109,7 @@ There is no need to periodically change this key; a timestamp is also
 encoded.
 The second argument should be given as the envelope sender address before this
 encoding operation.
-.new
 If this value is empty the the expansion result will be empty.
-.wen
 The third argument should be the recipient domain of the message when
 it arrived at this system.
 .endlist
@@ -42805,7 +42739,6 @@ Events have names which correspond to the point in process at which they fire.
 The name is placed in the variable &$event_name$& and the event action
 expansion must check this, as it will be called for every possible event type.
 
-.new
 The current list of events is:
 .itable all 0 0 4 1pt left 1pt center 1pt center 1pt left
 .irow dane:fail              after    transport  "per connection"
@@ -42824,7 +42757,6 @@ The current list of events is:
 .irow smtp:connect           after    transport  "per connection"
 .irow smtp:ehlo              after    transport  "per connection"
 .endtable
-.wen
 New event types may be added in future.
 
 The event name is a colon-separated list, defining the type of
