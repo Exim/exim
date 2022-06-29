@@ -473,11 +473,11 @@ PCRE2_CONFIG=yes
 
 
 #------------------------------------------------------------------------------
-# Comment out the following line to remove DANE support
-# Note: Enabling this unconditionally overrides DISABLE_DNSSEC
-# forces you to have SUPPORT_TLS enabled (the default).  For DANE under
-# GnuTLS we need an additional library.  See TLS_LIBS or USE_GNUTLS_PC
-# below.
+# Comment out the following line to remove DANE support.
+# Note: DANE support requires DNSSEC support (the default) and
+# SUPPORT_TLS (the default).  For DANE under GnuTLS we need an additional
+# library.  See TLS_LIBS or USE_GNUTLS_PC below.
+
 SUPPORT_DANE=yes
 
 #------------------------------------------------------------------------------
@@ -568,7 +568,7 @@ DISABLE_MAL_MKS=yes
 # By default, Exim has support for checking the AD bit in a DNS response, to
 # determine if DNSSEC validation was successful.  If your system libraries
 # do not support that bit, then set DISABLE_DNSSEC to "yes"
-# Note: Enabling SUPPORT_DANE unconditionally overrides this setting.
+# Note: DNSSEC is required for DANE support.
 
 # DISABLE_DNSSEC=yes
 
