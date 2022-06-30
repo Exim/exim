@@ -219,6 +219,8 @@
 . at the top level, so we have to put the .chapter directive first.
 
 . These do not turn up in the HTML output, unfortunately.  The PDF does get them.
+. - Worse - they introduce bugus index entries in the HTML, under the
+.  "primary term", a link to the Introduction chapter.
 . /////////////////////////////////////////////////////////////////////////////
 
 .chapter "Introduction" "CHID1"
@@ -348,6 +350,10 @@
   <primary>headers</primary>
   <see><emphasis>header lines</emphasis></see>
 </indexterm>
+. <indexterm role="concept">
+.   <primary>de-tainting</primary>
+.   <see><emphasis>tainted data</emphasis></see>
+. </indexterm>
 
 .literal off
 
