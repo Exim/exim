@@ -32262,7 +32262,7 @@ different variants of this condition to describe briefly here. See sections
 .cindex "domain" "ACL checking"
 .cindex "&ACL;" "testing a recipient domain"
 .vindex "&$domain_data$&"
-This condition is relevant only after a RCPT command. It checks that the domain
+This condition is relevant only in a RCPT ACL. It checks that the domain
 of the recipient address is in the domain list. If percent-hack processing is
 enabled, it is done before this test is done. If the check succeeds with a
 lookup, the result of the lookup is placed in &$domain_data$& until the next
@@ -32330,7 +32330,7 @@ which gives a custom error message for each denied host.
 .cindex "local part" "ACL checking"
 .cindex "&ACL;" "testing a local part"
 .vindex "&$local_part_data$&"
-This condition is relevant only after a RCPT command. It checks that the local
+This condition is relevant only in a RCPT ACL. It checks that the local
 part of the recipient address is in the list. If percent-hack processing is
 enabled, it is done before this test. If the check succeeds with a lookup, the
 result of the lookup is placed in &$local_part_data$&, which remains set until
@@ -32364,7 +32364,7 @@ messages. Details are given in section &<<SECTratelimiting>>&.
 .cindex "&%recipients%& ACL condition"
 .cindex "recipient" "ACL checking"
 .cindex "&ACL;" "testing a recipient"
-This condition is relevant only after a RCPT command. It checks the entire
+This condition is relevant only in a RCPT ACL. It checks the entire
 recipient address against a list of recipients.
 
 .vitem &*regex&~=&~*&<&'list&~of&~regular&~expressions'&>
