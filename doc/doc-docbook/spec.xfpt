@@ -32376,7 +32376,7 @@ non-SMTP ACLs. It causes the incoming message to be scanned for a match with
 any of the regular expressions. For details, see chapter &<<CHAPexiscan>>&.
 
 .vitem &*seen&~=&~*&<&'parameters'&>
-.cindex "&%sseen%& ACL condition"
+.cindex "&%seen%& ACL condition"
 This condition can be used to test if a situation has been previously met,
 for example for greylisting.
 Details are given in section &<<SECTseen>>&.
@@ -33105,7 +33105,7 @@ address you should specify alternate list separators for both the outer
 
 
 .section "Previously seen user and hosts" "SECTseen"
-.cindex "&%sseen%& ACL condition"
+.cindex "&%een%& ACL condition"
 .cindex greylisting
 The &%seen%& ACL condition can be used to test whether a
 situation has been previously met.
@@ -33601,7 +33601,7 @@ clients when the SMTP PIPELINING extension is in use. The flushing can be
 disabled by using a &%control%& modifier to set &%no_callout_flush%&.
 
 .cindex "tainted data" "de-tainting"
-.cindex "de-tainting" "using receipient verify"
+.cindex "de-tainting" "using recipient verify"
 A recipient callout which gets a 2&'xx'& code
 will assign untainted values to the
 &$domain_data$& and &$local_part_data$& variables,
