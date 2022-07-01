@@ -217,10 +217,6 @@
 . These implement index entries of the form "x, see y" and "x, see also y".
 . However, the DocBook DTD doesn't allow <indexterm> entries
 . at the top level, so we have to put the .chapter directive first.
-
-. These do not turn up in the HTML output, unfortunately.  The PDF does get them.
-. - Worse - they introduce bugus index entries in the HTML, under the
-.  "primary term", a link to the Introduction chapter.
 . /////////////////////////////////////////////////////////////////////////////
 
 .chapter "Introduction" "CHID1"
