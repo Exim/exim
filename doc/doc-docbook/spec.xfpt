@@ -214,8 +214,8 @@
 
 
 . /////////////////////////////////////////////////////////////////////////////
-. This chunk of literal XML implements index entries of the form "x, see y" and
-. "x, see also y". However, the DocBook DTD doesn't allow <indexterm> entries
+. These implement index entries of the form "x, see y" and "x, see also y".
+. However, the DocBook DTD doesn't allow <indexterm> entries
 . at the top level, so we have to put the .chapter directive first.
 
 . These do not turn up in the HTML output, unfortunately.  The PDF does get them.
@@ -224,138 +224,57 @@
 . /////////////////////////////////////////////////////////////////////////////
 
 .chapter "Introduction" "CHID1"
+
+.macro seeother
 .literal xml
-
-<indexterm role="variable">
-  <primary>$1, $2, etc.</primary>
-  <see><emphasis>numerical variables</emphasis></see>
+<indexterm role="$2">
+  <primary>$3</primary>
+.arg 5
+  <secondary>$5</secondary>
+.endarg
+  <$1><emphasis>$4</emphasis></$1>
 </indexterm>
-<indexterm role="concept">
-  <primary>address</primary>
-  <secondary>rewriting</secondary>
-  <see><emphasis>rewriting</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>Bounce Address Tag Validation</primary>
-  <see><emphasis>BATV</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>Client SMTP Authorization</primary>
-  <see><emphasis>CSA</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>CR character</primary>
-  <see><emphasis>carriage return</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>CRL</primary>
-  <see><emphasis>certificate revocation list</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>delivery</primary>
-  <secondary>failure report</secondary>
-  <see><emphasis>bounce message</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>dialup</primary>
-  <see><emphasis>intermittently connected hosts</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>exiscan</primary>
-  <see><emphasis>content scanning</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>failover</primary>
-  <see><emphasis>fallback</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>fallover</primary>
-  <see><emphasis>fallback</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>filter</primary>
-  <secondary>Sieve</secondary>
-  <see><emphasis>Sieve filter</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>ident</primary>
-  <see><emphasis>RFC 1413</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>LF character</primary>
-  <see><emphasis>linefeed</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>maximum</primary>
-  <seealso><emphasis>limit</emphasis></seealso>
-</indexterm>
-<indexterm role="concept">
-  <primary>monitor</primary>
-  <see><emphasis>Exim monitor</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>no_<emphasis>xxx</emphasis></primary>
-  <see>entry for xxx</see>
-</indexterm>
-<indexterm role="concept">
-  <primary>NUL</primary>
-  <see><emphasis>binary zero</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>passwd file</primary>
-  <see><emphasis>/etc/passwd</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>process id</primary>
-  <see><emphasis>pid</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>RBL</primary>
-  <see><emphasis>DNS list</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>redirection</primary>
-  <see><emphasis>address redirection</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>return path</primary>
-  <seealso><emphasis>envelope sender</emphasis></seealso>
-</indexterm>
-<indexterm role="concept">
-  <primary>scanning</primary>
-  <see><emphasis>content scanning</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>SSL</primary>
-  <see><emphasis>TLS</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>string</primary>
-  <secondary>expansion</secondary>
-  <see><emphasis>expansion</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>top bit</primary>
-  <see><emphasis>8-bit characters</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>variables</primary>
-  <see><emphasis>expansion, variables</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>zero, binary</primary>
-  <see><emphasis>binary zero</emphasis></see>
-</indexterm>
-<indexterm role="concept">
-  <primary>headers</primary>
-  <see><emphasis>header lines</emphasis></see>
-</indexterm>
-. <indexterm role="concept">
-.   <primary>de-tainting</primary>
-.   <see><emphasis>tainted data</emphasis></see>
-. </indexterm>
-
 .literal off
+.endmacro
+
+. NB: for the 4-arg variant the ordering is awkward
+.macro see
+.seeother see "$1" "$2" "$3" "$4"
+.endmacro
+.macro seealso
+.seeother seealso "$1" "$2" "$3" "$4"
+.endmacro
+
+.see     variable "<emphasis>$1</emphasis>, <emphasis>$2</emphasis>, etc." "numerical variables"
+.see     concept address	rewriting			rewriting
+.see     concept "Bounce Address Tag Validation"	BATV
+.see     concept "Client SMTP Authorization"		CSA
+.see     concept "CR character"	"carriage return"
+.see     concept CRL		"certificate revocation list"
+.seealso concept de-tainting	"tainted data"
+.see     concept delivery	"bounce message"		"failure report"
+.see     concept dialup		"intermittently connected hosts"
+.see     concept exiscan	"content scanning"
+.see     concept fallover	fallback
+.see     concept filter 	"Sieve filter"			Sieve
+.see     concept headers	"header lines"
+.see     concept ident		"RFC 1413"
+.see     concept "LF character"	"linefeed"
+.seealso concept maximum	limit
+.see     concept monitor	"Exim monitor"
+.see     concept "no_<emphasis>xxx</emphasis>"		"entry for xxx"
+.see     concept NUL		"binary zero"
+.see     concept "passwd file"	"/etc/passwd"
+.see     concept "process id"	pid
+.see     concept RBL		"DNS list"
+.see     concept redirection	"address redirection"
+.see     concept "return path"	"envelope sender"
+.see     concept scanning	"content scanning"
+.see     concept SSL		TLS
+.see     concept string		expansion expansion
+.see     concept "top bit"	"8-bit characters"
+.see     concept variables	"expansion, variables"
+.see     concept "zero, binary"	"binary zero"
 
 
 . /////////////////////////////////////////////////////////////////////////////
