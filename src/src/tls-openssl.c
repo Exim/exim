@@ -2405,7 +2405,7 @@ BIO_puts(bp, "\n");
 }
 
 static int
-tls_client_stapling_cb(SSL *s, void *arg)
+tls_client_stapling_cb(SSL * ssl, void * arg)
 {
 exim_openssl_state_st * cbinfo = arg;
 const unsigned char * p;
@@ -2415,10 +2415,10 @@ OCSP_BASICRESP * bs;
 int i;
 
 DEBUG(D_tls) debug_printf("Received TLS status callback (OCSP stapling):\n");
-len = SSL_get_tlsext_status_ocsp_resp(s, &p);
+len = SSL_get_tlsext_status_ocsp_resp(ssl, &p);
 if(!p)
  {				/* Expect this when we requested ocsp but got none */
-  if (SSL_session_reused(s) && tls_out.ocsp == OCSP_VFIED)
+  if (SSL_session_reused(ssl) && tls_out.ocsp == OCSP_VFIED)
     {
     DEBUG(D_tls) debug_printf(" null, but resumed; ocsp vfy stored with session is good\n");
     return 1;
@@ -2476,9 +2476,19 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
       if (ERR_peek_error())
 	{
 	tls_out.ocsp = OCSP_FAILED;
-	if (LOGGING(tls_cipher)) log_write(0, LOG_MAIN,
-		"Received TLS cert status response, itself unverifiable: %s",
-		ERR_reason_error_string(ERR_peek_error()));
+	if (LOGGING(tls_cipher))
+	  {
+	  const uschar * errstr = CUS ERR_reason_error_string(ERR_peek_error());
+	  static uschar peerdn[256];
+	  X509_NAME_oneline(X509_get_subject_name(SSL_get_peer_certificate(ssl)),
+						  CS peerdn, sizeof(peerdn));
+	  log_write(0, LOG_MAIN,
+		"[%s] %s Received TLS cert (DN: '%.*s') status response, "
+		"itself unverifiable: %s",
+		sender_host_address, sender_host_name,
+		(int)sizeof(peerdn), peerdn,
+		errstr);
+	  }
 	DEBUG(D_tls)
 	  {
 	  BIO_printf(bp, "OCSP response verify failure\n");
