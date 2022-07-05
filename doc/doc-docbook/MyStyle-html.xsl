@@ -139,9 +139,9 @@ changed "titleabbrev.markup" to "title.markup". -->
 <!-- The default stylesheets generate both chapters and sections with <h2>
 headings in the HTML. The argument is that the HTML headings don't go deep
 enough to match the DocBook levels. But surely it would be better to stop them
-at the bottom end? Anyway, the Exim documents have only one level of section
-within chapters, and even if they went to two, it wouldn't exhaust HTML's
-capabilities. So I have copied the style stuff here, making a 1-character
+at the bottom end? Anyway, the Exim documents have no more than two levels of
+section within chapters, which won't exhaust HTML's capabilities.
+So I have copied the style stuff here, making a 1-character
 change from "+ 1" to "+ 2" in roughly the middle. -->
 
 <xsl:template name="section.heading">

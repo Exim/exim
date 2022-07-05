@@ -42139,7 +42139,8 @@ This description assumes
 that headers will be in /usr/local/include, and that the libraries
 are in /usr/local/lib.
 
-. subsection
+.subsection Configuration SSECDMARCCONFIG
+.cindex DMARC configuration
 
 There are three main-configuration options:
 .cindex DMARC "configuration options"
@@ -42180,9 +42181,9 @@ If not set (the default), the From: header is expanded from
 the dsn_from option, and <> is used for the
 envelope from.
 
-. I wish we had subsections...
-
+.subsection Controls SSECDMARCCONTROLS
 .cindex DMARC controls
+
 By default, the DMARC processing will run for any remote,
 non-authenticated user.  It makes sense to only verify DMARC
 status of messages coming from remote, untrusted sources.  You can
@@ -42213,7 +42214,8 @@ send them.)
 There are no options to either control.  Both must appear before
 the DATA acl.
 
-. subsection
+.subsection ACL SSECDMARCACL
+.cindex DMARC "ACL condition"
 
 DMARC checks cam be run on incoming SMTP  messages by using the
 &"dmarc_status"& ACL condition in the DATA ACL.  You are required to
@@ -42281,7 +42283,8 @@ are "none", "reject" and "quarantine".  It is blank when there
 is any error, including no DMARC record.
 .endlist
 
-. subsection
+.subsection Logging SSECDMARCLOGGING
+.cindex DMARC logging
 
 By default, Exim's DMARC configuration is intended to be
 non-intrusive and conservative.  To facilitate this, Exim will not
@@ -42308,7 +42311,8 @@ Configure, somewhere before the DATA ACL, the control option to
 enable sending DMARC forensic reports
 .endlist
 
-. subsection
+.subsection Example SSECDMARCEXAMPLE
+.cindex DMARC example
 
 Example usage:
 .code
