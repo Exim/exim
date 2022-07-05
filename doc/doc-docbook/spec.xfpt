@@ -3629,7 +3629,7 @@ of debugging data, respectively. For example, &%-d+filter%& adds filter
 debugging, whereas &%-d-all+filter%& selects only filter debugging. Note that
 no spaces are allowed in the debug setting. The available debugging categories
 are:
-.itable none 0 0 2 1pt left 1pt left
+.itable none 0 0 2 20* left 80* left
 .irow acl            "ACL interpretation"
 .irow auth           "authenticators"
 .irow deliver        "general delivery logic"
@@ -7841,7 +7841,7 @@ be preceded by any number of <&'name'&>=<&'value'&> settings, separated by
 spaces. If a value contains spaces it must be enclosed in double quotes, and
 when double quotes are used, backslash is interpreted in the usual way inside
 them. The following names are recognized:
-.itable none 0 0 2 1pt left 1pt left
+.itable none 0 0 2 20* left 80* left
 .irow DEREFERENCE "set the dereferencing parameter"
 .irow NETTIME     "set a timeout for a network operation"
 .irow USER        "set the DN, for authenticating the LDAP bind"
@@ -11541,7 +11541,7 @@ condition.
 .cindex "expansion" "numeric comparison"
 There are a number of symbolic operators for doing numeric comparisons. They
 are:
-.itable none 0 0 2 1pt left 1pt left
+.itable none 0 0 2 10* left 90* left
 .irow "=   " "equal"
 .irow "==  " "equal"
 .irow ">   " "greater"
@@ -32560,7 +32560,7 @@ This is usually the required action when &%dnslists%& is used with &%deny%&
 (which is the most common usage), because it prevents a DNS failure from
 blocking mail. However, you can change this behaviour by putting one of the
 following special items in the list:
-.itable none 0 0 2 1pt left 1pt left
+.itable none 0 0 2 25* left 75* left
 .irow "+include_unknown"   "behave as if the item is on the list"
 .irow "+exclude_unknown"   "behave as if the item is not on the list (default)"
 .irow "+defer_unknown  "   "give a temporary error"
@@ -32713,7 +32713,7 @@ DNS lists are constructed using address records in the DNS. The original RBL
 just used the address 127.0.0.1 on the right hand side of each record, but the
 RBL+ list and some other lists use a number of values with different meanings.
 The values used on the RBL+ list are:
-.itable none 0 0 2 1pt left 1pt left
+.itable none 0 0 2 20* left 80* left
 .irow 127.1.0.1  "RBL"
 .irow 127.1.0.2  "DUL"
 .irow 127.1.0.3  "DUL and RBL"
@@ -35639,7 +35639,7 @@ added zero byte is not included in the returned count.
 .vitem &*int&~lss_match_domain(uschar&~*domain,&~uschar&~*list)*&
 This function checks for a match in a domain list. Domains are always
 matched caselessly. The return value is one of the following:
-.itable none 0 0 2 1pt left 1pt left
+.itable none 0 0 2 15* left 85* left
 .irow &`OK`&    "match succeeded"
 .irow &`FAIL`&  "match failed"
 .irow &`DEFER`& "match deferred"
@@ -38536,7 +38536,7 @@ One line is written to the main log for each message received, and for each
 successful, unsuccessful, and delayed delivery. These lines can readily be
 picked out by the distinctive two-character flags that immediately follow the
 timestamp. The flags are:
-.itable none 0 0 2 1pt left 1pt left
+.itable none 0 0 2 10* left 90* left
 .irow &%<=%&     "message arrival"
 .irow &%(=%&     "message fakereject"
 .irow &%=>%&     "normal message delivery"
@@ -38864,7 +38864,7 @@ log_selector = +arguments -retry_defer
 .endd
 The list of optional log items is in the following table, with the default
 selection marked by asterisks:
-.itable none 0 0 3 1pt left 10pt center 1pt left
+.itable none 0 0 3 2.8in left 10pt center 3in left
 .irow &`8bitmime`&			&nbsp; "received 8BITMIME status"
 .irow &`acl_warn_skipped`&		*	"skipped &%warn%& statement in ACL"
 .irow &`address_rewrite`&		&nbsp; "address rewriting"
@@ -39419,7 +39419,7 @@ but the format of the output is different. For this reason, there are some
 system configuration options that configure exactly how &'exiwhat'& works. If
 it doesn't seem to be working for you, check the following compile-time
 options:
-.itable none 0 0 2 1pt left 1pt left
+.itable none 0 0 2 30* left 70* left
 .irow &`EXIWHAT_PS_CMD`&	"the command for running &'ps'&"
 .irow &`EXIWHAT_PS_ARG`&	"the argument for &'ps'&"
 .irow &`EXIWHAT_EGREP_ARG`&	"the argument for &'egrep'& to select from &'ps'& output"
@@ -42227,7 +42227,7 @@ The &"dmarc_status"& condition takes a list of strings on its
 right-hand side.  These strings describe recommended action based
 on the DMARC check.  To understand what the policy recommendations
 mean, refer to the DMARC website above.  Valid strings are:
-.itable none 0 0 2 1pt left 1pt left
+.itable none 0 0 2 20* left 80* left
 .irow &'accept'&	"The DMARC check passed and the library recommends accepting the email"
 .irow &'reject'&	"The DMARC check failed and the library recommends rejecting the email"
 .irow &'quarantine'&	"The DMARC check failed and the library recommends keeping it for further inspection"
@@ -42402,7 +42402,7 @@ within &%proxy_protocol_timeout%&, which defaults to 3s.
 The following expansion variables are usable
 (&"internal"& and &"external"& here refer to the interfaces
 of the proxy):
-.itable none 0 0 2 1pt left 1pt left
+.itable none 0 0 2 30* left 70* left
 .irow $proxy_external_address	"IP of host being proxied or IP of remote interface of proxy"
 .irow $proxy_external_port	"Port of host being proxied or Port on remote interface of proxy"
 .irow $proxy_local_address	"IP of proxy server inbound or IP of local interface of proxy"
@@ -42455,7 +42455,7 @@ is an IP address and any subsequent elements are options.
 
 Options are a string <name>=<value>.
 The list of options is in the following table:
-.itable none 0 0 2 1pt left 1pt left
+.itable none 0 0 2 10* left 90* left
 .irow &'auth'&	"authentication method"
 .irow &'name'&	"authentication username"
 .irow &'pass'&	"authentication password"
@@ -42579,7 +42579,7 @@ This is usually for use in a Message Submission Agent context,
 but could be used for any message.
 
 If a value is appended it may be:
-.itable none 0 0 2 1pt right 1pt left
+.itable none 0 0 2 5* right 95* left
 .irow &`1`&	"mandatory downconversion"
 .irow &`0`&	"no downconversion"
 .irow &`-1`&	"if SMTPUTF8 not supported by destination host"
@@ -42684,22 +42684,22 @@ The name is placed in the variable &$event_name$& and the event action
 expansion must check this, as it will be called for every possible event type.
 
 The current list of events is:
-.itable all 0 0 4 1pt left 1pt center 1pt center 1pt left
-.irow dane:fail              after    transport  "per connection"
-.irow msg:complete           after    main       "per message"
-.irow msg:defer              after    transport  "per message per delivery try"
-.irow msg:delivery           after    transport  "per recipient"
-.irow msg:rcpt:host:defer    after    transport  "per recipient per host"
-.irow msg:rcpt:defer         after    transport  "per recipient"
-.irow msg:host:defer         after    transport  "per host per delivery try; host errors"
-.irow msg:fail:delivery      after    transport  "per recipient"
-.irow msg:fail:internal      after    main       "per recipient"
-.irow tcp:connect            before   transport  "per connection"
-.irow tcp:close              after    transport  "per connection"
-.irow tls:cert               before   both       "per certificate in verification chain"
-.irow tls:fail:connect       after    main       "per connection"
-.irow smtp:connect           after    transport  "per connection"
-.irow smtp:ehlo              after    transport  "per connection"
+.itable all 0 0 4 25* left 10* center 15* center 50* left
+.row dane:fail              after    transport  "per connection"
+.row msg:complete           after    main       "per message"
+.row msg:defer              after    transport  "per message per delivery try"
+.row msg:delivery           after    transport  "per recipient"
+.row msg:rcpt:host:defer    after    transport  "per recipient per host"
+.row msg:rcpt:defer         after    transport  "per recipient"
+.row msg:host:defer         after    transport  "per host per delivery try; host errors"
+.row msg:fail:delivery      after    transport  "per recipient"
+.row msg:fail:internal      after    main       "per recipient"
+.row tcp:connect            before   transport  "per connection"
+.row tcp:close              after    transport  "per connection"
+.row tls:cert               before   both       "per certificate in verification chain"
+.row tls:fail:connect       after    main       "per connection"
+.row smtp:connect           after    transport  "per connection"
+.row smtp:ehlo              after    transport  "per connection"
 .endtable
 New event types may be added in future.
 
@@ -42716,19 +42716,19 @@ should define the event action.
 
 An additional variable, &$event_data$&, is filled with information varying
 with the event type:
-.itable all 0 0 2 1pt left 1pt left
-.irow dane:fail            "failure reason"
-.irow msg:defer            "error string"
-.irow msg:delivery         "smtp confirmation message"
-.irow msg:fail:internal    "failure reason"
-.irow msg:fail:delivery    "smtp error message"
-.irow msg:host:defer       "error string"
-.irow msg:rcpt:host:defer  "error string"
-.irow msg:rcpt:defer       "error string"
-.irow tls:cert             "verification chain depth"
-.irow tls:fail:connect     "error string"
-.irow smtp:connect         "smtp banner"
-.irow smtp:ehlo            "smtp ehlo response"
+.itable all 0 0 2 20* left 80* left
+.row dane:fail            "failure reason"
+.row msg:defer            "error string"
+.row msg:delivery         "smtp confirmation message"
+.row msg:fail:internal    "failure reason"
+.row msg:fail:delivery    "smtp error message"
+.row msg:host:defer       "error string"
+.row msg:rcpt:host:defer  "error string"
+.row msg:rcpt:defer       "error string"
+.row tls:cert             "verification chain depth"
+.row tls:fail:connect     "error string"
+.row smtp:connect         "smtp banner"
+.row smtp:ehlo            "smtp ehlo response"
 .endtable
 
 The :defer events populate one extra variable: &$event_defer_errno$&.
@@ -42749,10 +42749,10 @@ a useful way of writing to the main log.
 The expansion of the event_action option should normally
 return an empty string.  Should it return anything else the
 following will be forced:
-.itable all 0 0 2 1pt left 1pt left
-.irow tcp:connect      "do not connect"
-.irow tls:cert         "refuse verification"
-.irow smtp:connect     "close connection"
+.itable all 0 0 2 20* left 80* left
+.row tcp:connect      "do not connect"
+.row tls:cert         "refuse verification"
+.row smtp:connect     "close connection"
 .endtable
 All other message types ignore the result string, and
 no other use is made of it.
