@@ -14,6 +14,11 @@ JH/02 Option default value updates:
 
 JH/03 Cache static regex pattern compilations, for use by ACLs.
 
+JH/04 Bug 2903: avoid exit on an attempt to rewrite a malformed address.
+      Make the rewrite never match and keep the logging.  Trust the
+      admin to be using verify=header-syntax (to actually reject the message).
+
+
 Exim version 4.96
 -----------------
 
