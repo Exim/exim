@@ -1314,7 +1314,7 @@ The preconditions that are tested for each router are listed below, in the
 order in which they are tested. The individual configuration options are
 described in more detail in chapter &<<CHAProutergeneric>>&.
 
-.ilist
+.olist
 .cindex affix "router precondition"
 The &%local_part_prefix%& and &%local_part_suffix%& options can specify that
 the local parts handled by the router may or must have certain prefixes and/or
@@ -1441,7 +1441,7 @@ example, &_.procmailrc_&).
 .cindex "delivery" "in detail"
 When a message is to be delivered, the sequence of events is as follows:
 
-.ilist
+.olist
 If a system-wide filter file is specified, the message is passed to it. The
 filter may add recipients to the message, replace the recipients, discard the
 message, cause a new message to be generated, or cause the message delivery to
@@ -1552,7 +1552,7 @@ as permanent.
 
 
 
-.section "Temporary delivery failure" "SECID20"
+.subsection "Temporary delivery failure" SECID20
 .cindex "delivery" "temporary failure"
 There are many reasons why a message may not be immediately deliverable to a
 particular address. Failure to connect to a remote machine (because it, or the
@@ -1576,7 +1576,7 @@ one connection.
 
 
 
-.section "Permanent delivery failure" "SECID21"
+.subsection "Permanent delivery failure" SECID21
 .cindex "delivery" "permanent failure"
 .cindex "bounce message" "when generated"
 When a message cannot be delivered to some or all of its intended recipients, a
@@ -1604,7 +1604,7 @@ of the list.
 
 
 
-.section "Failures to deliver bounce messages" "SECID22"
+.subsection "Failures to deliver bounce messages" SECID22
 .cindex "bounce message" "failure to deliver"
 If a bounce message (either locally generated or received from a remote host)
 itself suffers a permanent delivery failure, the message is left in the queue,
@@ -7494,7 +7494,7 @@ specified.
 ${lookup dnsdb{>:,; soa=a.b.example.com}}
 .endd
 
-.section "Dnsdb lookup modifiers" "SECTdnsdb_mod"
+.subsection "Dnsdb lookup modifiers" SECTdnsdb_mod
 .cindex "dnsdb modifiers"
 .cindex "modifiers" "dnsdb"
 .cindex "options" "dnsdb"
@@ -7552,7 +7552,7 @@ The cache entry lifetime is limited to the smallest time-to-live (TTL)
 value of the set of returned DNS records.
 
 
-.section "Pseudo dnsdb record types" "SECID66"
+.subsection "Pseudo dnsdb record types" SECID66
 .cindex "MX record" "in &(dnsdb)& lookup"
 By default, both the preference value and the host name are returned for
 each MX record, separated by a space. If you want only host names, you can use
@@ -7608,7 +7608,7 @@ ${lookup dnsdb {>; a+=$sender_helo_name}}
 .endd
 
 
-.section "Multiple dnsdb lookups" "SECID67"
+.subsection "Multiple dnsdb lookups" SECID67
 In the previous sections, &(dnsdb)& lookups for a single domain are described.
 However, you can specify a list of domains or IP addresses in a single
 &(dnsdb)& lookup. The list is specified in the normal Exim way, with colon as
@@ -7673,7 +7673,7 @@ the data returned by a successful lookup is described in the next section.
 First we explain how LDAP queries are coded.
 
 
-.section "Format of LDAP queries" "SECTforldaque"
+.subsection "Format of LDAP queries" SECTforldaque
 .cindex "LDAP" "query format"
 An LDAP query takes the form of a URL as defined in RFC 2255. For example, in
 the configuration of a &(redirect)& router one might have this setting:
@@ -7702,7 +7702,7 @@ methods become optional, only taking effect if not specifically set in
 &_exim.conf_&.
 
 
-.section "LDAP quoting" "SECID68"
+.subsection "LDAP quoting" SECID68
 .cindex "LDAP" "quoting"
 Two levels of quoting are required in LDAP queries, the first for LDAP itself
 and the second because the LDAP query is represented as a URL. Furthermore,
@@ -7759,7 +7759,7 @@ There are some further comments about quoting in the section on LDAP
 authentication below.
 
 
-.section "LDAP connections" "SECID69"
+.subsection "LDAP connections" SECID69
 .cindex "LDAP" "connections"
 The connection to an LDAP server may either be over TCP/IP, or, when OpenLDAP
 is in use, via a Unix domain socket. The example given above does not specify
@@ -7833,7 +7833,7 @@ Using &`ldapi`& with no host or path in the query, and no setting of
 
 
 
-.section "LDAP authentication and control information" "SECID70"
+.subsection "LDAP authentication and control information" SECID70
 .cindex "LDAP" "authentication"
 The LDAP URL syntax provides no way of passing authentication and other control
 information to the server. To make this possible, the URL in an LDAP query may
@@ -7927,7 +7927,7 @@ SMTP authentication. See the &%ldapauth%& expansion string condition in chapter
 
 
 
-.section "Format of data returned by LDAP" "SECID71"
+.subsection "Format of data returned by LDAP" SECID71
 .cindex "LDAP" "returned data formats"
 The &(ldapdn)& lookup type returns the Distinguished Name from a single entry
 as a sequence of values, for example
@@ -8061,7 +8061,7 @@ If the result of the query yields more than one row, it is all concatenated,
 with a newline between the data for each row.
 
 
-.section "More about MySQL, PostgreSQL, Oracle, InterBase, and Redis" "SECID72"
+.subsection "More about MySQL, PostgreSQL, Oracle, InterBase, and Redis" SECID72
 .cindex "MySQL" "lookup type"
 .cindex "PostgreSQL lookup type"
 .cindex "lookup" "MySQL"
@@ -8131,7 +8131,7 @@ itself are escaped with backslashes.
 The &%quote_redis%& expansion operator
 escapes whitespace and backslash characters with a backslash.
 
-.section "Specifying the server in the query" "SECTspeserque"
+.subsection "Specifying the server in the query" SECTspeserque
 For MySQL, PostgreSQL and Redis lookups (but not currently for Oracle and InterBase),
 it is possible to specify a list of servers with an individual query. This is
 done by appending a comma-separated option to the query type:
@@ -8181,7 +8181,7 @@ arguments in the query, for explicit expansion.
 &*Note*&: server specifications in list-style lookups are still problematic.
 
 
-.section "Special MySQL features" "SECID73"
+.subsection "Special MySQL features" SECID73
 For MySQL, an empty host name or the use of &"localhost"& in &%mysql_servers%&
 causes a connection to the server on the local host by means of a Unix domain
 socket. An alternate socket can be specified in parentheses.
@@ -8206,7 +8206,7 @@ anything (for example, setting a field to the value it already has), the result
 is zero because no rows are affected.
 
 
-.section "Special PostgreSQL features" "SECID74"
+.subsection "Special PostgreSQL features" SECID74
 PostgreSQL lookups can also use Unix domain socket connections to the database.
 This is usually faster and costs less CPU time than a TCP/IP connection.
 However it can be used only if the mail server runs on the same machine as the
@@ -8223,7 +8223,7 @@ If a PostgreSQL query is issued that does not request any data (an insert,
 update, or delete command), the result of the lookup is the number of rows
 affected.
 
-.section "More about SQLite" "SECTsqlite"
+.subsection "More about SQLite" SECTsqlite
 .cindex "lookup" "SQLite"
 .cindex "sqlite lookup type"
 SQLite is different to the other SQL lookups because a filename is required in
@@ -8274,7 +8274,7 @@ waits for the lock to be released. In Exim, the default timeout is set
 to 5 seconds, but it can be changed by means of the &%sqlite_lock_timeout%&
 option.
 
-.section "More about Redis" "SECTredis"
+.subsection "More about Redis" SECTredis
 .cindex "lookup" "Redis"
 .cindex "redis lookup type"
 Redis is a non-SQL database. Commands are simple get and set.
@@ -8323,6 +8323,34 @@ domain, host, address and local part lists.
 
 
 
+.section "Results of list checking" SECTlistresults
+The primary result of doing a list check is a truth value.
+In some contexts additional information is stored
+about the list element that matched:
+.vlist
+.vitem hosts
+A &%hosts%& ACL condition
+will store a result in the &$host_data$& variable.
+.vitem local_parts
+A &%local_parts%& router option or &%local_parts%& ACL condition
+will store a result in the &$local_part_data$& variable.
+.vitem domains
+A &%domains%& router option or &%domains%& ACL condition
+will store a result in the &$domain_data$& variable.
+.vitem senders
+A &%senders%& router option or &%senders%& ACL condition
+will store a result in the &$sender_data$& variable.
+.vitem recipients
+A &%recipients%& ACL condition
+will store a result in the &$recipient_data$& variable.
+.endlist
+
+The detail of the additional information depends on the
+type of match and is given below as the &*value*& information.
+
+
+
+
 .section "Expansion of lists" "SECTlistexpand"
 .cindex "expansion" "of lists"
 Each list is expanded as a single string before it is used.
@@ -8358,7 +8386,7 @@ senders based on the receiving domain.
 
 
 
-.section "Negated items in lists" "SECID76"
+.subsection "Negated items in lists" SECID76
 .cindex "list" "negation"
 .cindex "negation" "in lists"
 Items in a list may be positive or negative. Negative items are indicated by a
@@ -8391,7 +8419,7 @@ item.
 
 
 
-.section "File names in lists" "SECTfilnamlis"
+.subsection "File names in lists" SECTfilnamlis
 .cindex "list" "filename in"
 If an item in a domain, host, address, or local part list is an absolute
 filename (beginning with a slash character), each line of the file is read and
@@ -8433,7 +8461,7 @@ any domain matching &`*.b.c`& is not.
 
 
 
-.section "An lsearch file is not an out-of-line list" "SECID77"
+.subsection "An lsearch file is not an out-of-line list" SECID77
 As will be described in the sections that follow, lookups can be used in lists
 to provide indexed methods of checking list membership. There has been some
 confusion about the way &(lsearch)& lookups work in lists. Because
@@ -8450,35 +8478,7 @@ in the previous section. You could also use the &(wildlsearch)& or
 
 
 
-.section "Results of list checking" SECTlistresults
-The primary result of doing a list check is a truth value.
-In some contexts additional information is stored
-about the list element that matched:
-.vlist
-.vitem hosts
-A &%hosts%& ACL condition
-will store a result in the &$host_data$& variable.
-.vitem local_parts
-A &%local_parts%& router option or &%local_parts%& ACL condition
-will store a result in the &$local_part_data$& variable.
-.vitem domains
-A &%domains%& router option or &%domains%& ACL condition
-will store a result in the &$domain_data$& variable.
-.vitem senders
-A &%senders%& router option or &%senders%& ACL condition
-will store a result in the &$sender_data$& variable.
-.vitem recipients
-A &%recipients%& ACL condition
-will store a result in the &$recipient_data$& variable.
-.endlist
-
-The detail of the additional information depends on the
-type of match and is given below as the &*value*& information.
-
-
-
-
-.section "Named lists" "SECTnamedlists"
+.subsection "Named lists" SECTnamedlists
 .cindex "named lists"
 .cindex "list" "named"
 A list of domains, hosts, email addresses, or local parts can be given a name
@@ -8567,7 +8567,7 @@ hosts. The default configuration is set up like this.
 
 
 
-.section "Named lists compared with macros" "SECID78"
+.subsection "Named lists compared with macros" SECID78
 .cindex "list" "named compared with macro"
 .cindex "macro" "compared with named list"
 At first sight, named lists might seem to be no different from macros in the
@@ -8593,7 +8593,7 @@ auth_advertise_hosts = !host1 : !host2
 .endd
 
 
-.section "Named list caching" "SECID79"
+.subsection "Named list caching" SECID79
 .cindex "list" "caching of named"
 .cindex "caching" "named lists"
 While processing a message, Exim caches the result of checking a named list if
@@ -8868,7 +8868,7 @@ You need to be particularly careful with this when single-key lookups are
 involved, to ensure that the right value is being used as the key.
 
 
-.section "Special host list patterns" "SECID80"
+.subsection "Special host list patterns" SECID80
 .cindex "empty item in hosts list"
 .cindex "host list" "empty string in"
 If a host list item is the empty string, it matches only when no remote host is
@@ -8882,7 +8882,7 @@ the IP address nor the name is actually inspected.
 
 
 
-.section "Host list patterns that match by IP address" "SECThoslispatip"
+.subsection "Host list patterns that match by IP address" SECThoslispatip
 .cindex "host list" "matching IP addresses"
 If an IPv4 host calls an IPv6 host and the call is accepted on an IPv6 socket,
 the incoming address actually appears in the IPv6 host as
@@ -8985,8 +8985,8 @@ list.
 
 
 
-.section "Host list patterns for single-key lookups by host address" &&&
-         "SECThoslispatsikey"
+.subsection "Host list patterns for single-key lookups by host address" &&&
+         SECThoslispatsikey
 .cindex "host list" "lookup of IP address"
 When a host is to be identified by a single-key lookup of its complete IP
 address, the pattern takes this form:
@@ -9045,7 +9045,7 @@ case the IP address is used on its own.
 
 
 
-.section "Host list patterns that match by host name" "SECThoslispatnam"
+.subsection "Host list patterns that match by host name" SECThoslispatnam
 .cindex "host" "lookup failures"
 .cindex "unknown host name"
 .cindex "host list" "matching host name"
@@ -9120,7 +9120,7 @@ required.
 
 
 
-.section "Behaviour when an IP address or name cannot be found" "SECTbehipnot"
+.subsection "Behaviour when an IP address or name cannot be found" SECTbehipnot
 .cindex "host" "lookup failures, permanent"
 While processing a host list, Exim may need to look up an IP address from a
 name (see section &<<SECThoslispatip>>&), or it may need to look up a host name
@@ -9166,8 +9166,8 @@ Both &`+include_unknown`& and &`+ignore_unknown`& may appear in the same
 list. The effect of each one lasts until the next, or until the end of the
 list.
 
-.section "Mixing wildcarded host names and addresses in host lists" &&&
-         "SECTmixwilhos"
+.subsection "Mixing wildcarded host names and addresses in host lists" &&&
+         SECTmixwilhos
 .cindex "host list" "mixing names and addresses in"
 
 This section explains the host/ip processing logic with the same concepts
@@ -9203,8 +9203,8 @@ this section.
 .endlist
 
 
-.section "Temporary DNS errors when looking up host information" &&&
-         "SECTtemdnserr"
+.subsection "Temporary DNS errors when looking up host information" &&&
+         SECTtemdnserr
 .cindex "host" "lookup failures, temporary"
 .cindex "&`+include_defer`&"
 .cindex "&`+ignore_defer`&"
@@ -9217,8 +9217,8 @@ host lists such as whitelists.
 
 
 
-.section "Host list patterns for single-key lookups by host name" &&&
-         "SECThoslispatnamsk"
+.subsection "Host list patterns for single-key lookups by host name" &&&
+         SECThoslispatnamsk
 .cindex "unknown host name"
 .cindex "host list" "matching host name"
 If a pattern is of the form
@@ -9242,7 +9242,7 @@ lookup, both using the same file.
 
 
 
-.section "Host list patterns for query-style lookups" "SECID81"
+.subsection "Host list patterns for query-style lookups" SECID81
 If a pattern is of the form
 .display
 <&'query-style-search-type'&>;<&'query'&>
@@ -9474,7 +9474,7 @@ example it is a named domain list.
 
 
 
-.section "Case of letters in address lists" "SECTcasletadd"
+.subsection "Case of letters in address lists" SECTcasletadd
 .cindex "case of local parts"
 .cindex "address list" "case forcing"
 .cindex "case forcing in address lists"
@@ -9620,6 +9620,17 @@ since no message is being processed, variables such as &$local_part$& have no
 value. Nevertheless the &%-be%& option can be useful for checking out file and
 database lookups, and the use of expansion operators such as &%sg%&, &%substr%&
 and &%nhash%&.
+
+.new
+When reading lines from the standard input,
+macros can be defined and ACL variables can be set.
+For example:
+.code
+MY_MACRO = foo
+set acl_m_myvar = bar
+.endd
+Such macros and variables can then be used in later input lines.
+.wen
 
 Exim gives up its root privilege when it is called with the &%-be%& option, and
 instead runs under the uid and gid it was called with, to prevent users from
@@ -26328,7 +26339,7 @@ message's processing.
 
 .vindex "&$sender_address$&"
 At the start of an ACL for MAIL, the sender address may have been rewritten
-by a special SMTP-time rewrite rule (see section &<<SECTrewriteS>>&), but no
+by a special SMTP-time rewrite rule (see section &<<SSECTrewriteS>>&), but no
 ordinary rewrite rules have yet been applied. If, however, the sender address
 is verified in the ACL, it is rewritten before verification, and remains
 rewritten thereafter. The subsequent value of &$sender_address$& is the
@@ -26535,7 +26546,7 @@ entry written to the panic log.
 
 
 
-.section "Rewriting flags" "SECID153"
+.subsection "Rewriting flags" "SSECID153"
 There are three different kinds of flag that may appear on rewriting rules:
 
 .ilist
@@ -26552,11 +26563,11 @@ E, F, T, and S are not permitted.
 
 
 
-.section "Flags specifying which headers and envelope addresses to rewrite" &&&
-         "SECID154"
-.cindex "rewriting" "flags"
+.subsection "Flags specifying which headers and envelope addresses to rewrite" &&&
+         "SSECID154"
+.cindex rewriting flags
 If none of the following flag letters, nor the &"S"& flag (see section
-&<<SECTrewriteS>>&) are present, a main rewriting rule applies to all headers
+&<<SSECTrewriteS>>&) are present, a main rewriting rule applies to all headers
 and to both the sender and recipient fields of the envelope, whereas a
 transport-time rewriting rule just applies to all headers. Otherwise, the
 rewriting rule is skipped unless the relevant addresses are being processed.
@@ -26580,10 +26591,10 @@ You should be particularly careful about rewriting &'Sender:'& headers, and
 restrict this to special known cases in your own domains.
 
 
-.section "The SMTP-time rewriting flag" "SECTrewriteS"
-.cindex "SMTP" "rewriting malformed addresses"
-.cindex "RCPT" "rewriting argument of"
-.cindex "MAIL" "rewriting argument of"
+.subsection "The SMTP-time rewriting flag" SSECTrewriteS
+.cindex SMTP "rewriting malformed addresses"
+.cindex RCPT "rewriting argument of"
+.cindex MAIL "rewriting argument of"
 The rewrite flag &"S"& specifies a rewrite of incoming envelope addresses at
 SMTP time, as soon as an address is received in a MAIL or RCPT command, and
 before any other processing; even before syntax checking. The pattern is
@@ -26600,7 +26611,7 @@ expansion of the replacement string. The result of rewriting replaces the
 original address in the MAIL or RCPT command.
 
 
-.section "Flags controlling the rewriting process" "SECID155"
+.subsection "Flags controlling the rewriting process" SSECID155
 There are four flags which control the way the rewriting process works. These
 take effect only when a rule is invoked, that is, when the address is of the
 correct type (matches the flags) and matches the pattern:
@@ -27280,7 +27291,7 @@ it is enforced.
 .cindex "ESMTP extensions" AUTH
 Very briefly, the way SMTP authentication works is as follows:
 
-.ilist
+.olist
 The server advertises a number of authentication &'mechanisms'& in response to
 the client's EHLO command.
 .next
@@ -29448,7 +29459,7 @@ For outgoing SMTP deliveries, &$tls_out_cipher$& is used and logged
 (again depending on the &%tls_cipher%& log selector).
 
 
-.section "Requesting and verifying client certificates" "SECID183"
+.subsection "Requesting and verifying client certificates" SECID183
 .cindex "certificate" "verification of client"
 .cindex "TLS" "client certificate verification"
 If you want an Exim server to request a certificate when negotiating a TLS
@@ -29754,7 +29765,7 @@ outgoing connection.
 
 
 
-.section "Caching of static client configuration items" "SECTclientTLScache"
+.subsection "Caching of static client configuration items" SECTclientTLScache
 .cindex certificate caching
 .cindex privatekey caching
 .cindex crl caching
@@ -29985,7 +29996,7 @@ Ivan is the author of the popular TLS testing tools at
 &url(https://www.ssllabs.com/).
 
 
-.section "Certificate chains" "SECID186"
+.subsection "Certificate chains" SECID186
 A file named by &%tls_certificate%& may contain more than one
 certificate. This is useful in the case where the certificate that is being
 sent is validated by an intermediate certificate which the other end does
@@ -30006,7 +30017,7 @@ diagnostics in such a case can be frustratingly vague.
 
 
 
-.section "Self-signed certificates" "SECID187"
+.subsection "Self-signed certificates" SECID187
 .cindex "certificate" "self-signed"
 You can create a self-signed certificate using the &'req'& command provided
 with OpenSSL, like this:
@@ -30455,7 +30466,7 @@ trying to deliver the message. It is therefore recommended that you do as much
 testing as possible at RCPT time.
 
 
-.section "The non-SMTP ACLs" "SECID190"
+.subsection "The non-SMTP ACLs" SECID190
 .cindex "non-SMTP messages" "ACLs for"
 The non-SMTP ACLs apply to all non-interactive incoming messages, that is, they
 apply to batched SMTP as well as to non-SMTP messages. (Batched SMTP is not
@@ -30489,7 +30500,7 @@ kind of rejection is treated as permanent, because there is no way of sending a
 temporary error for these kinds of message.
 
 
-.section "The SMTP connect ACL" "SECID191"
+.subsection "The SMTP connect ACL" SECID191
 .cindex "SMTP" "connection, ACL for"
 .oindex &%smtp_banner%&
 The ACL test specified by &%acl_smtp_connect%& happens at the start of an SMTP
@@ -30503,7 +30514,7 @@ For tls-on-connect connections, the ACL is run after the TLS connection
 is accepted (however, &%host_reject_connection%& is tested before).
 
 
-.section "The EHLO/HELO ACL" "SECID192"
+.subsection "The EHLO/HELO ACL" SECID192
 .cindex "EHLO" "ACL for"
 .cindex "HELO" "ACL for"
 The ACL test specified by &%acl_smtp_helo%& happens when the client issues an
@@ -30524,7 +30535,7 @@ affect the EHLO options that are listed on the second and subsequent lines of
 an EHLO response.
 
 
-.section "The DATA ACLs" "SECID193"
+.subsection "The DATA ACLs" SECID193
 .cindex "DATA" "ACLs for"
 Two ACLs are associated with the DATA command, because it is two-stage
 command, with two responses being sent to the client.
@@ -30563,7 +30574,7 @@ the &%acl_smtp_data_prdr%&,
 the &%acl_smtp_dkim%&
 and the &%acl_smtp_mime%& ACLs.
 
-.section "The SMTP DKIM ACL" "SECTDKIMACL"
+.subsection "The SMTP DKIM ACL" SECTDKIMACL
 The &%acl_smtp_dkim%& ACL is available only when Exim is compiled with DKIM support
 enabled (which is the default).
 
@@ -30576,14 +30587,14 @@ This ACL is evaluated before &%acl_smtp_mime%& and &%acl_smtp_data%&.
 For details on the operation of DKIM, see section &<<SECDKIM>>&.
 
 
-.section "The SMTP MIME ACL" "SECID194"
+.subsection "The SMTP MIME ACL" SECID194
 The &%acl_smtp_mime%& option is available only when Exim is compiled with the
 content-scanning extension. For details, see chapter &<<CHAPexiscan>>&.
 
 This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
 
 
-.section "The SMTP PRDR ACL" "SECTPRDRACL"
+.subsection "The SMTP PRDR ACL" SECTPRDRACL
 .cindex "PRDR" "ACL for"
 .oindex "&%prdr_enable%&"
 The &%acl_smtp_data_prdr%& ACL is available only when Exim is compiled
@@ -30617,7 +30628,7 @@ This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
 If the ACL is not defined, processing completes as if
 the feature was not requested by the client.
 
-.section "The QUIT ACL" "SECTQUITACL"
+.subsection "The QUIT ACL" SECTQUITACL
 .cindex "QUIT, ACL for"
 The ACL for the SMTP QUIT command is anomalous, in that the outcome of the ACL
 does not affect the response code to QUIT, which is always 221. Thus, the ACL
@@ -30644,7 +30655,7 @@ client are given temporary error responses until QUIT is received or the
 connection is closed. In these special cases, the QUIT ACL does not run.
 
 
-.section "The not-QUIT ACL" "SECTNOTQUITACL"
+.subsection "The not-QUIT ACL" SECTNOTQUITACL
 .vindex &$acl_smtp_notquit$&
 The not-QUIT ACL, specified by &%acl_smtp_notquit%&, is run in most cases when
 an SMTP session ends without sending QUIT. However, when Exim itself is in bad
@@ -32594,7 +32605,7 @@ or free for small deployments.  An overview can be found at
 
 
 
-.section "Specifying the IP address for a DNS list lookup" "SECID201"
+.subsection "Specifying the IP address for a DNS list lookup" SECID201
 .cindex "DNS list" "keyed by explicit IP address"
 By default, the IP address that is used in a DNS list lookup is the IP address
 of the calling host. However, you can specify another IP address by listing it
@@ -32610,7 +32621,7 @@ MX hosts or nameservers of an email sender address. For an example, see section
 
 
 
-.section "DNS lists keyed on domain names" "SECID202"
+.subsection "DNS lists keyed on domain names" SECID202
 .cindex "DNS list" "keyed by domain name"
 There are some lists that are keyed on domain names rather than inverted IP
 addresses (see, e.g., the &'domain based zones'& link at
@@ -32640,7 +32651,7 @@ name. The whole condition is true if either of the DNS lookups succeeds.
 
 
 
-.section "Multiple explicit keys for a DNS list" "SECTmulkeyfor"
+.subsection "Multiple explicit keys for a DNS list" SECTmulkeyfor
 .cindex "DNS list" "multiple keys for"
 The syntax described above for looking up explicitly-defined values (either
 names or IP addresses) in a DNS blacklist is a simplification. After the domain
@@ -32707,7 +32718,7 @@ The key that was used for a successful DNS list lookup is put into the variable
 
 
 
-.section "Data returned by DNS lists" "SECID203"
+.subsection "Data returned by DNS lists" SECID203
 .cindex "DNS list" "data returned from"
 DNS lists are constructed using address records in the DNS. The original RBL
 just used the address 127.0.0.1 on the right hand side of each record, but the
@@ -32732,7 +32743,7 @@ may start returning other addresses.  Because of this, Exim now ignores
 returned values outside the 127/8 region.
 
 
-.section "Variables set from DNS lists" "SECID204"
+.subsection "Variables set from DNS lists" SECID204
 .cindex "expansion" "variables, set from DNS list"
 .cindex "DNS list" "variables set from"
 .vindex "&$dnslist_domain$&"
@@ -32778,7 +32789,7 @@ deny    hosts = !+local_networks
 
 
 
-.section "Additional matching conditions for DNS lists" "SECTaddmatcon"
+.subsection "Additional matching conditions for DNS lists" SECTaddmatcon
 .cindex "DNS list" "matching specific returned data"
 You can add an equals sign and an IP address after a &%dnslists%& domain name
 in order to restrict its action to DNS records with a matching right hand side.
@@ -32824,7 +32835,7 @@ an odd number.
 
 
 
-.section "Negated DNS matching conditions" "SECID205"
+.subsection "Negated DNS matching conditions" SECID205
 You can supply a negative list of IP addresses as part of a &%dnslists%&
 condition. Whereas
 .code
@@ -32878,7 +32889,7 @@ deny dnslists = zen.spamhaus.org!&0.255.255.0
 
 
 
-.section "Handling multiple DNS records from a DNS list" "SECThanmuldnsrec"
+.subsection "Handling multiple DNS records from a DNS list" SECThanmuldnsrec
 A DNS lookup for a &%dnslists%& condition may return more than one DNS record,
 thereby providing more than one IP address. When an item in a &%dnslists%& list
 is followed by &`=`& or &`&&`& and a list of IP addresses, in order to restrict
@@ -32942,7 +32953,7 @@ between &`=`& and &`==`& and between &`&&`& and &`=&&`&.
 
 
 
-.section "Detailed information from merged DNS lists" "SECTmordetinf"
+.subsection "Detailed information from merged DNS lists" SECTmordetinf
 .cindex "DNS list" "information from merged"
 When the facility for restricting the matching IP values in a DNS list is used,
 the text from the TXT record that is set in &$dnslist_text$& may not reflect
@@ -32991,7 +33002,7 @@ done. Only if there is a match is one of the more specific lists consulted.
 
 
 
-.section "DNS lists and IPv6" "SECTmorednslistslast"
+.subsection "DNS lists and IPv6" SECTmorednslistslast
 .cindex "IPv6" "DNS black lists"
 .cindex "DNS list" "IPv6 usage"
 If Exim is asked to do a dnslist lookup for an IPv6 address, it inverts it
@@ -33147,7 +33158,7 @@ behaviour. The lookup key is not affected by changes to the update mode and
 the &%count=%& option.
 
 
-.section "Ratelimit options for what is being measured" "ratoptmea"
+.subsection "Ratelimit options for what is being measured" ratoptmea
 .cindex "rate limiting" "per_* options"
 The &%per_conn%& option limits the client's connection rate. It is not
 normally used in the &%acl_not_smtp%&, &%acl_not_smtp_mime%&, or
@@ -33194,7 +33205,7 @@ other than &%acl_smtp_rcpt%&). The count does not have to be an integer.
 The &%unique=%& option is described in section &<<ratoptuniq>>& below.
 
 
-.section "Ratelimit update modes" "ratoptupd"
+.subsection "Ratelimit update modes" ratoptupd
 .cindex "rate limiting" "reading data without updating"
 You can specify one of three options with the &%ratelimit%& condition to
 control when its database is updated. This section describes the &%readonly%&
@@ -33235,7 +33246,7 @@ update mode defaults to &%readonly%& and you cannot specify the &%strict%& or
 next section) so you must specify the &%readonly%& option explicitly.
 
 
-.section "Ratelimit options for handling fast clients" "ratoptfast"
+.subsection "Ratelimit options for handling fast clients" ratoptfast
 .cindex "rate limiting" "strict and leaky modes"
 If a client's average rate is greater than the maximum, the rate limiting
 engine can react in two possible ways, depending on the presence of the
@@ -33266,7 +33277,7 @@ attempt to send mail can be calculated with this formula:
 .endd
 
 
-.section "Limiting the rate of different events" "ratoptuniq"
+.subsection "Limiting the rate of different events" ratoptuniq
 .cindex "rate limiting" "counting unique events"
 The &%ratelimit%& &%unique=%& option controls a mechanism for counting the
 rate of different events. For example, the &%per_addr%& option uses this
@@ -33304,7 +33315,7 @@ are logged incorrectly; any countermeasures you configure will be as effective
 as intended.
 
 
-.section "Using rate limiting" "useratlim"
+.subsection "Using rate limiting" useratlim
 Exim's other ACL facilities are used to define what counter-measures are taken
 when the rate limit is exceeded. This might be anything from logging a warning
 (for example, while measuring existing sending rates in order to define
@@ -33531,7 +33542,7 @@ corresponding to the domain and local parts of the recipient address.
 
 
 
-.section "Additional parameters for callouts" "CALLaddparcall"
+.subsection "Additional parameters for callouts" CALLaddparcall
 .cindex "callout" "additional parameters for"
 The &%callout%& option can be followed by an equals sign and a number of
 optional parameters, separated by commas. For example:
@@ -33719,7 +33730,7 @@ actual callouts are performed than when an empty sender or postmaster is used.
 
 
 
-.section "Callout caching" "SECTcallvercache"
+.subsection "Callout caching" SECTcallvercache
 .cindex "hints database" "callout cache"
 .cindex "callout" "cache, description of"
 .cindex "caching" "callout"
@@ -36374,7 +36385,8 @@ incoming SMTP message from a source that is not permitted to send them.
 
 
 
-.section "Resent- header lines" "SECID220"
+.section "Header lines"
+.subsection "Resent- header lines" SECID220
 .chindex Resent-
 RFC 2822 makes provision for sets of header lines starting with the string
 &`Resent-`& to be added to a message when it is resent by the original
@@ -36415,14 +36427,14 @@ The logic for adding &'Sender:'& is duplicated for &'Resent-Sender:'& when any
 
 
 
-.section "The Auto-Submitted: header line" "SECID221"
+.subsection Auto-Submitted: SECID221
 Whenever Exim generates an autoreply, a bounce, or a delay warning message, it
 includes the header line:
 .code
 Auto-Submitted: auto-replied
 .endd
 
-.section "The Bcc: header line" "SECID222"
+.subsection Bcc: SECID222
 .cindex "&'Bcc:'& header line"
 If Exim is called with the &%-t%& option, to take recipient addresses from a
 message's header, it removes any &'Bcc:'& header line that may exist (after
@@ -36430,13 +36442,13 @@ extracting its addresses). If &%-t%& is not present on the command line, any
 existing &'Bcc:'& is not removed.
 
 
-.section "The Date: header line" "SECID223"
+.subsection Date: SECID223
 .cindex Date:
 If a locally-generated or submission-mode message has no &'Date:'& header line,
 Exim adds one, using the current date and time, unless the
 &%suppress_local_fixups%& control has been specified.
 
-.section "The Delivery-date: header line" "SECID224"
+.subsection Delivery-date: SECID224
 .cindex "&'Delivery-date:'& header line"
 .oindex "&%delivery_date_remove%&"
 &'Delivery-date:'& header lines are not part of the standard RFC 2822 header
@@ -36447,7 +36459,7 @@ set (the default), Exim removes &'Delivery-date:'& header lines from incoming
 messages.
 
 
-.section "The Envelope-to: header line" "SECID225"
+.subsection Envelope-to: SECID225
 .chindex Envelope-to:
 .oindex "&%envelope_to_remove%&"
 &'Envelope-to:'& header lines are not part of the standard RFC 2822 header set.
@@ -36458,7 +36470,7 @@ messages in transit. If the &%envelope_to_remove%& configuration option is set
 messages.
 
 
-.section "The From: header line" "SECTthefrohea"
+.subsection From: SECTthefrohea
 .chindex From:
 .cindex "Sendmail compatibility" "&""From""& line"
 .cindex "message" "submission"
@@ -36501,7 +36513,7 @@ user, this is replaced by an address containing the user's login name and full
 name as described in section &<<SECTconstr>>&.
 
 
-.section "The Message-ID: header line" "SECID226"
+.subsection Message-ID: SECID226
 .chindex Message-ID:
 .cindex "message" "submission"
 .oindex "&%message_id_header_text%&"
@@ -36516,7 +36528,7 @@ in this header line by setting the &%message_id_header_text%& and/or
 &%message_id_header_domain%& options.
 
 
-.section "The Received: header line" "SECID227"
+.subsection Received: SECID227
 .chindex Received:
 A &'Received:'& header line is added at the start of every message. The
 contents are defined by the &%received_header_text%& configuration option, and
@@ -36532,7 +36544,7 @@ changed to the time of acceptance, which is (apart from a small delay while the
 -H spool file is written) the earliest time at which delivery could start.
 
 
-.section "The References: header line" "SECID228"
+.subsection References: SECID228
 .chindex References:
 Messages created by the &(autoreply)& transport include a &'References:'&
 header line. This is constructed according to the rules that are described in
@@ -36546,7 +36558,7 @@ incoming message. If there are more than 12, the first one and then the final
 
 
 
-.section "The Return-path: header line" "SECID229"
+.subsection Return-path: SECID229
 .chindex Return-path:
 .oindex "&%return_path_remove%&"
 &'Return-path:'& header lines are defined as something an MTA may insert when
@@ -36557,7 +36569,7 @@ default), Exim removes &'Return-path:'& header lines from incoming messages.
 
 
 
-.section "The Sender: header line" "SECTthesenhea"
+.subsection Sender: SECTthesenhea
 .cindex "&'Sender:'& header line"
 .cindex "message" "submission"
 .chindex Sender:
@@ -36962,7 +36974,7 @@ square bracket of the IP address.
 
 
 
-.section "Errors in outgoing SMTP" "SECToutSMTPerr"
+.subsection "Errors in outgoing SMTP" SECToutSMTPerr
 .cindex "error" "in outgoing SMTP"
 .cindex "SMTP" "errors in outgoing"
 .cindex "host" "error"
@@ -37197,7 +37209,7 @@ however, available with &'inetd'&.
 Exim can be configured to verify addresses in incoming SMTP commands as they
 are received. See chapter &<<CHAPACL>>& for details. It can also be configured
 to rewrite addresses at this time &-- before any syntax checking is done. See
-section &<<SECTrewriteS>>&.
+section &<<SSECTrewriteS>>&.
 
 Exim can also be configured to limit the rate at which a client host submits
 MAIL and RCPT commands in a single SMTP session. See the
@@ -37205,7 +37217,7 @@ MAIL and RCPT commands in a single SMTP session. See the
 
 
 
-.section "Unrecognized SMTP commands" "SECID234"
+.subsection "Unrecognized SMTP commands" SECID234
 .cindex "SMTP" "unrecognized commands"
 If Exim receives more than &%smtp_max_unknown_commands%& unrecognized SMTP
 commands during a single SMTP connection, it drops the connection after sending
@@ -37215,7 +37227,7 @@ abuse that subvert web servers into making connections to SMTP ports; in these
 circumstances, a number of non-SMTP lines are sent first.
 
 
-.section "Syntax and protocol errors in SMTP commands" "SECID235"
+.subsection "Syntax and protocol errors in SMTP commands" SECID235
 .cindex "SMTP" "syntax errors"
 .cindex "SMTP" "protocol errors"
 A syntax error is detected if an SMTP command is recognized, but there is
@@ -37229,7 +37241,7 @@ broken clients that loop sending bad commands (yes, it has been seen).
 
 
 
-.section "Use of non-mail SMTP commands" "SECID236"
+.subsection "Use of non-mail SMTP commands" SECID236
 .cindex "SMTP" "non-mail commands"
 The &"non-mail"& SMTP commands are those other than MAIL, RCPT, and
 DATA. Exim counts such commands, and drops the connection if there are too
@@ -37258,7 +37270,7 @@ specific badly-behaved hosts that you have to live with.
 
 
 
-.section "The VRFY and EXPN commands" "SECID237"
+.subsection "The VRFY and EXPN commands" SECID237
 When Exim receives a VRFY or EXPN command on a TCP/IP connection, it
 runs the ACL specified by &%acl_smtp_vrfy%& or &%acl_smtp_expn%& (as
 appropriate) in order to decide whether the command should be accepted or not.
@@ -37279,12 +37291,12 @@ EXPN is treated as an &"address test"& (similar to the &%-bt%& option) rather
 than a verification (the &%-bv%& option). If an unqualified local part is given
 as the argument to EXPN, it is qualified with &%qualify_domain%&. Rejections
 of VRFY and EXPN commands are logged on the main and reject logs, and
-VRFY verification failures are logged on the main log for consistency with
+VRFY verification failures are logged in the main log for consistency with
 RCPT failures.
 
 
 
-.section "The ETRN command" "SECTETRN"
+.subsection "The ETRN command" SECTETRN
 .cindex "ETRN" "processing"
 .cindex "ESMTP extensions" ETRN
 RFC 1985 describes an ESMTP command called ETRN that is designed to
@@ -41363,8 +41375,8 @@ where you accept mail from relay sources (internal hosts or authenticated
 senders).
 
 
-.section "Signing outgoing messages" "SECDKIMSIGN"
-.cindex "DKIM" "signing"
+.subsection "Signing outgoing messages" SECDKIMSIGN
+.cindex DKIM signing
 
 For signing to be usable you must have published a DKIM record in DNS.
 Note that RFC 8301 (which does not cover EC keys) says:
@@ -41547,8 +41559,8 @@ both creation (t=) and expiry (x=) tags will be included.
 RFC 6376 lists these tags as RECOMMENDED.
 
 
-.section "Verifying DKIM signatures in incoming mail" "SECDKIMVFY"
-.cindex "DKIM" "verification"
+.subsection "Verifying DKIM signatures in incoming mail" SECDKIMVFY
+.cindex DKIM verification
 
 Verification of DKIM signatures in SMTP incoming email is done for all
 messages for which an ACL control &%dkim_disable_verify%& has not been set.
@@ -42017,7 +42029,7 @@ The lookup will return the same result strings as can appear in
 
 
 
-.section "SRS (Sender Rewriting Scheme)" SECTSRS
+.subsection "SRS (Sender Rewriting Scheme)" SECTSRS
 .cindex SRS "sender rewriting scheme"
 
 SRS can be used to modify sender addresses when forwarding so that
