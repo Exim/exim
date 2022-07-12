@@ -7,7 +7,14 @@ log_selector = +received_recipients
 
 # ----- Main settings -----
 
+acl_not_smtp = check
 
+begin acl
+
+check:
+	warn	!verify = header_syntax
+		logwrite = verify header_syntax fails
+	accept
 
 # ----- Rewrite -----
 

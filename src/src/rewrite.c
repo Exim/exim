@@ -495,15 +495,14 @@ while (*s)
 
   if (!recipient)
     {
-    /* Handle unparesable addresses in the header. Slightly ugly because a
+    /* Log unparesable addresses in the header. Slightly ugly because a
     null output from the extract can also result from a header without an
-    address, "To: undisclosed recpients:;" being the classic case. */
+    address, "To: undisclosed recpients:;" being the classic case. Ignore
+    this one and carry on. */
 
     if ((rewrite_rules || routed_old) && Ustrcmp(errmess, "empty address") != 0)
-      {
       log_write(0, LOG_MAIN, "rewrite: %s", errmess);
-      exim_exit(EXIT_FAILURE);
-      }
+
     loop_reset_point = store_reset(loop_reset_point);
     continue;
     }

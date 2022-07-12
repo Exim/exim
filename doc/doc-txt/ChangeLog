@@ -51,6 +51,11 @@ JH/03 Bug 3001: Fix a possible OOB read in the SPA authenticator, which could
       CVE-2023-42114
 
 
+JH/04 Bug 2903: avoid exit on an attempt to rewrite a malformed address.
+      Make the rewrite never match and keep the logging.  Trust the
+      admin to be using verify=header-syntax (to actually reject the message).
+
+
 Exim version 4.96
 -----------------
 
