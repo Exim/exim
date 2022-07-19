@@ -1,0 +1,38 @@
+# Exim test configuration 3418
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : *.test.ex
+
+auth_advertise_hosts = 10.0.0.5
+trusted_users = CALLER
+
+event_action = ${acl {logger}}
+
+# ----- ACL -----
+
+begin acl
+
+.include DIR/aux-fixed/event-logger-acl
+
+
+
+# ----- Authentication -----
+
+begin authenticators
+
+testname:
+  driver = plaintext
+  public_name = mylogin
+  server_debug_print = +++MYLOGIN \$1="$1" \$2=\"$2" \$3="$3"
+  server_condition = "\
+    ${if match{$1}{^(\\\\S+)\\\\s+(\\\\S+)\\$}\
+    {${if and {{eq{$1}{userx}}{eq{$2}{secret}}}{yes}{no}}}{no}}"
+  server_set_id = $auth1
+
+
+# End

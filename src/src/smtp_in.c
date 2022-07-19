@@ -3765,7 +3765,7 @@ smtp_respond(code, len, TRUE, user_msg);
 
 
 static int
-smtp_in_auth(auth_instance *au, uschar ** s, uschar ** ss)
+smtp_in_auth(auth_instance *au, uschar ** smtp_resp, uschar ** errmsg)
 {
 const uschar *set_id = NULL;
 int rc;
@@ -3829,7 +3829,7 @@ switch(rc)
       received_protocol =
 	(sender_host_address ? protocols : protocols_local)
 	  [pextend + pauthed + (tls_in.active.sock >= 0 ? pcrpted:0)];
-      *s = *ss = US"235 Authentication succeeded";
+      *smtp_resp = *errmsg = US"235 Authentication succeeded";
       authenticated_by = au;
       break;
       }
@@ -3842,34 +3842,34 @@ switch(rc)
 
   case DEFER:
     if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
-    *s = string_sprintf("435 Unable to authenticate at present%s",
+    *smtp_resp = string_sprintf("435 Unable to authenticate at present%s",
       auth_defer_user_msg);
-    *ss = string_sprintf("435 Unable to authenticate at present%s: %s",
+    *errmsg = string_sprintf("435 Unable to authenticate at present%s: %s",
       set_id, auth_defer_msg);
     break;
 
   case BAD64:
-    *s = *ss = US"501 Invalid base64 data";
+    *smtp_resp = *errmsg = US"501 Invalid base64 data";
     break;
 
   case CANCELLED:
-    *s = *ss = US"501 Authentication cancelled";
+    *smtp_resp = *errmsg = US"501 Authentication cancelled";
     break;
 
   case UNEXPECTED:
-    *s = *ss = US"553 Initial data not expected";
+    *smtp_resp = *errmsg = US"553 Initial data not expected";
     break;
 
   case FAIL:
     if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
-    *s = US"535 Incorrect authentication data";
-    *ss = string_sprintf("535 Incorrect authentication data%s", set_id);
+    *smtp_resp = US"535 Incorrect authentication data";
+    *errmsg = string_sprintf("535 Incorrect authentication data%s", set_id);
     break;
 
   default:
     if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
-    *s = US"435 Internal error";
-    *ss = string_sprintf("435 Internal error%s: return %d from authentication "
+    *smtp_resp = US"435 Internal error";
+    *errmsg = string_sprintf("435 Internal error%s: return %d from authentication "
       "check", set_id, rc);
     break;
   }
@@ -4098,7 +4098,13 @@ while (done <= 0)
 	  if (smtp_in_auth(au, &s, &ss) == OK)
 	    { DEBUG(D_auth) debug_printf("tls auth succeeded\n"); }
 	  else
-	    { DEBUG(D_auth) debug_printf("tls auth not succeeded\n"); }
+	    {
+	    uschar * save_name = sender_host_authenticated;
+	    DEBUG(D_auth) debug_printf("tls auth not succeeded\n");
+	    sender_host_authenticated = au->name;
+	    (void) event_raise(event_action, US"auth:fail", s, NULL);
+	    sender_host_authenticated = save_name;
+	    }
 	  }
 	break;
 	}
@@ -4188,6 +4194,8 @@ while (done <= 0)
 
 	{
 	auth_instance * au;
+	uschar * smtp_resp, * errmsg;
+
 	for (au = auths; au; au = au->next)
 	  if (strcmpic(s, au->public_name) == 0 && au->server &&
 	      (au->advertised || f.allow_auth_unadvertised))
@@ -4195,12 +4203,19 @@ while (done <= 0)
 
 	if (au)
 	  {
-	  c = smtp_in_auth(au, &s, &ss);
+	  int rc = smtp_in_auth(au, &smtp_resp, &errmsg);
 
-	  smtp_printf("%s\r\n", FALSE, s);
-	  if (c != OK)
+	  smtp_printf("%s\r\n", FALSE, smtp_resp);
+	  if (rc != OK)
+	    {
+	    uschar * save_name = sender_host_authenticated;
+
 	    log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
-	      au->name, host_and_ident(FALSE), ss);
+	      au->name, host_and_ident(FALSE), errmsg);
+	    sender_host_authenticated = au->name;
+	    (void) event_raise(event_action, US"auth:fail", smtp_resp, NULL);
+	    sender_host_authenticated = save_name;
+	    }
 	  }
 	else
 	  done = synprot_error(L_smtp_protocol_error, 504, NULL,
@@ -4389,7 +4404,7 @@ while (done <= 0)
 
       else
 	{
-	char *ss;
+	char * ss;
 	int codelen = 4;
 	smtp_message_code(&smtp_code, &codelen, &user_msg, NULL, TRUE);
 	s = string_sprintf("%.*s%s", codelen, smtp_code, user_msg);

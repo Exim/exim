@@ -1,0 +1,17 @@
+# plaintext server fail event
+#
+# Incorrect auth
+exim -odi -bs -oMa 10.0.0.5
+ehlo testing.testing
+auth mylogin cnggc2VjcmV0
+quit
+****
+#
+# Bad base64
+exim -odi -bs -oMa 10.0.0.5
+ehlo testing.testing
+auth mylogin XNlcnggc2VjcmV0
+quit
+****
+#
+no_msglog_check

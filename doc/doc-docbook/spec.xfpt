@@ -27647,7 +27647,16 @@ no successful authentication.
 Successful authentication sets up information used by the
 &%authresults%& expansion item.
 
-
+.new
+.cindex authentication "failure event"
+If an authenticator is run and does not succeed,
+an event (see &<<CHAPevents>>&) of type "auth:fail" is raised.
+While the event is being processed the variables
+&$sender_host_authenticated$& (with the authenticator name)
+and &$authenticated_fail_id$& (as set by the suthenticator &%server_set_id%& option)
+will be valid.
+See <<CHAPevents>> for details on events.
+.wen
 
 
 .section "Testing server authentication" "SECID169"
@@ -42701,6 +42710,7 @@ expansion must check this, as it will be called for every possible event type.
 
 The current list of events is:
 .itable all 0 0 4 25* left 10* center 15* center 50* left
+.row auth:fail		    after    main	"per driver per authentication attempt"
 .row dane:fail              after    transport  "per connection"
 .row msg:complete           after    main       "per message"
 .row msg:defer              after    transport  "per message per delivery try"
@@ -42733,6 +42743,7 @@ should define the event action.
 An additional variable, &$event_data$&, is filled with information varying
 with the event type:
 .itable all 0 0 2 20* left 80* left
+.row auth:fail		  "smtp response"
 .row dane:fail            "failure reason"
 .row msg:defer            "error string"
 .row msg:delivery         "smtp confirmation message"
