@@ -1,0 +1,18 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 AUTH LOGIN
+AUTH LOGIN
+334 VXNlciBOYW1l
+dXNlcng=
+334 UGFzc3dvcmQ=
+c2VjcmV0
+599 no way, man
+QUIT
+250 OK
+End of script

@@ -1,0 +1,21 @@
+# plaintext client fail event
+need_ipv4
+#
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH LOGIN
+AUTH LOGIN
+334 VXNlciBOYW1l
+dXNlcng
+334 UGFzc3dvcmQ=
+c2VjcmV0
+599 no way, man
+QUIT
+250 OK
+****
+exim -odi userx@domain.com
+.
+no_msglog_check

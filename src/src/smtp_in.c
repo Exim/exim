@@ -4099,11 +4099,16 @@ while (done <= 0)
 	    { DEBUG(D_auth) debug_printf("tls auth succeeded\n"); }
 	  else
 	    {
-	    uschar * save_name = sender_host_authenticated;
 	    DEBUG(D_auth) debug_printf("tls auth not succeeded\n");
-	    sender_host_authenticated = au->name;
-	    (void) event_raise(event_action, US"auth:fail", s, NULL);
-	    sender_host_authenticated = save_name;
+#ifndef DISABLE_EVENT
+	     {
+	      uschar * save_name = sender_host_authenticated, * logmsg;
+	      sender_host_authenticated = au->name;
+	      if ((logmsg = event_raise(event_action, US"auth:fail", s, NULL)))
+		log_write(0, LOG_MAIN, "%s", logmsg);
+	      sender_host_authenticated = save_name;
+	     }
+#endif
 	    }
 	  }
 	break;
@@ -4208,13 +4213,19 @@ while (done <= 0)
 	  smtp_printf("%s\r\n", FALSE, smtp_resp);
 	  if (rc != OK)
 	    {
-	    uschar * save_name = sender_host_authenticated;
-
-	    log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
-	      au->name, host_and_ident(FALSE), errmsg);
-	    sender_host_authenticated = au->name;
-	    (void) event_raise(event_action, US"auth:fail", smtp_resp, NULL);
-	    sender_host_authenticated = save_name;
+	    uschar * logmsg = NULL;
+#ifndef DISABLE_EVENT
+	     {uschar * save_name = sender_host_authenticated;
+	      sender_host_authenticated = au->name;
+	      logmsg = event_raise(event_action, US"auth:fail", smtp_resp, NULL);
+	      sender_host_authenticated = save_name;
+	     }
+#endif
+	    if (logmsg)
+	      log_write(0, LOG_MAIN|LOG_REJECT, "%s", logmsg);
+	    else
+	      log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
+		au->name, host_and_ident(FALSE), errmsg);
 	    }
 	  }
 	else

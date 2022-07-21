@@ -11,13 +11,19 @@ domainlist local_domains = test.ex : *.test.ex
 auth_advertise_hosts = 10.0.0.5
 trusted_users = CALLER
 
-event_action = ${acl {logger}}
+event_action = ${acl {auth_event}}
 
 # ----- ACL -----
 
 begin acl
 
 .include DIR/aux-fixed/event-logger-acl
+
+auth_event:
+  warn		acl =		logger
+  accept	condition =	${if eq {$event_name}{auth:fail}}
+  		message =	custom-message: $sender_host_authenticated authenticator failed \
+				H=$sender_fullhost [$sender_host_address] $event_data $authenticated_fail_id
 
 
 

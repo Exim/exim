@@ -1,0 +1,65 @@
+# Exim test configuration 3419
+
+.include DIR/aux-var/std_conf_prefix
+
+log_selector = +smtp_mailauth
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+
+# ----- ACL -----
+
+begin acl
+
+.include DIR/aux-fixed/event-logger-acl
+
+auth_event:
+  warn		acl =	logger
+  accept	condition =	${if eq {$event_name}{auth:fail}}
+  		message = custom-message: $sender_host_authenticated authenticator failed H=$host [$host_address] $event_data
+
+# ----- Authentication -----
+
+begin authenticators
+
+login:
+  driver = plaintext
+  public_name = LOGIN
+  client_send = : userx : secret
+  client_set_id = userx
+
+# ----- Routers -----
+
+begin routers
+
+force:
+  driver =	manualroute
+  route_list =	domain.com 127.0.0.1 byname
+  self =	send
+  transport =	smtp_force
+  errors_to =	""
+
+# ----- Transports -----
+
+begin transports
+
+smtp_force:
+  driver =	smtp
+  port =	PORT_S
+  hosts_try_fastopen =	:
+  hosts_require_auth =	*
+  event_action =	${acl {auth_event}}
+
+
+# ----- Retry -----
+
+
+begin retry
+
+*  auth_failed
+*  *  F,1h,10m
+
+# End

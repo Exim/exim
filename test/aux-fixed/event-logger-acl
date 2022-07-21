@@ -88,6 +88,6 @@ ev_auth:
 logger:
     warn   logwrite = event $event_name
 	   set acl_m1 = ${listextract{1}{$event_name}}
-    accept condition =	${if !inlist{$acl_m1}{tcp:smtp:msg:auth}}
-	   logwrite =	UNEXPECTED $event_name
-    accept acl = ev_$acl_m1
+    accept condition =	${if inlist{$acl_m1}{tcp:smtp:msg:auth}}
+	   acl =	ev_$acl_m1
+    accept logwrite =	UNEXPECTED $event_name

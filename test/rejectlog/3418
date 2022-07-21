@@ -1,2 +1,2 @@
-1999-03-02 09:44:33 testname authenticator failed for (testing.testing) [10.0.0.5] U=CALLER: 535 Incorrect authentication data (set_id=rx secret)
-1999-03-02 09:44:33 testname authenticator failed for (testing.testing) [10.0.0.5] U=CALLER: 501 Invalid base64 data
+1999-03-02 09:44:33 custom-message: testname authenticator failed H=(testing.testing) [10.0.0.5] [10.0.0.5] 535 Incorrect authentication data  (set_id=rx secret)
+1999-03-02 09:44:33 custom-message: testname authenticator failed H=(testing.testing) [10.0.0.5] [10.0.0.5] 501 Invalid base64 data 

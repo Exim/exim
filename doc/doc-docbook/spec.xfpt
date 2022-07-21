@@ -27648,13 +27648,15 @@ Successful authentication sets up information used by the
 &%authresults%& expansion item.
 
 .new
-.cindex authentication "failure event"
+.cindex authentication "failure event, server"
 If an authenticator is run and does not succeed,
 an event (see &<<CHAPevents>>&) of type "auth:fail" is raised.
 While the event is being processed the variables
 &$sender_host_authenticated$& (with the authenticator name)
-and &$authenticated_fail_id$& (as set by the suthenticator &%server_set_id%& option)
+and &$authenticated_fail_id$& (as set by the authenticator &%server_set_id%& option)
 will be valid.
+If the event is serviced and a string is returned then the string will be logged
+instead of the default log line.
 See <<CHAPevents>> for details on events.
 .wen
 
@@ -27734,6 +27736,19 @@ If the result of the authentication attempt is a temporary error or a timeout,
 Exim abandons trying to send the message to the host for the moment. It will
 try again later. If there are any backup hosts available, they are tried in the
 usual way.
+
+.new
+.next
+.cindex authentication "failure event, client"
+If the response to authentication is a permanent error (5&'xx'& code),
+an event (see &<<CHAPevents>>&) of type "auth:fail" is raised.
+While the event is being processed the variable
+&$sender_host_authenticated$& (with the authenticator name)
+will be valid.
+If the event is serviced and a string is returned then the string will be logged.
+See <<CHAPevents>> for details on events.
+.wen
+
 .next
 If the response to authentication is a permanent error (5&'xx'& code), Exim
 carries on searching the list of authenticators and tries another one if
@@ -42710,7 +42725,7 @@ expansion must check this, as it will be called for every possible event type.
 
 The current list of events is:
 .itable all 0 0 4 25* left 10* center 15* center 50* left
-.row auth:fail		    after    main	"per driver per authentication attempt"
+.row auth:fail		    after    both	"per driver per authentication attempt"
 .row dane:fail              after    transport  "per connection"
 .row msg:complete           after    main       "per message"
 .row msg:defer              after    transport  "per message per delivery try"
@@ -42777,6 +42792,7 @@ The expansion of the event_action option should normally
 return an empty string.  Should it return anything else the
 following will be forced:
 .itable all 0 0 2 20* left 80* left
+.row auth:fail	      "log information to write"
 .row tcp:connect      "do not connect"
 .row tls:cert         "refuse verification"
 .row smtp:connect     "close connection"

@@ -1476,7 +1476,7 @@ rc = (au->info->clientcode)(au, sx, ob->command_timeout,
 			    sx->buffer, sizeof(sx->buffer));
 sx->outblock.authenticating = FALSE;
 driver_srcfile = authenticator_name = NULL; driver_srcline = 0;
-DEBUG(D_transport) debug_printf("%s authenticator yielded %d\n", au->name, rc);
+DEBUG(D_transport) debug_printf("%s authenticator yielded %s\n", au->name, rc_names[rc]);
 
 /* A temporary authentication failure must hold up delivery to
 this host. After a permanent authentication failure, we carry on
@@ -1500,10 +1500,25 @@ switch(rc)
   /* Failure after reading a response */
 
   case FAIL:
+    {
+    uschar * logmsg = NULL;
+
     if (errno != 0 || sx->buffer[0] != '5') return FAIL;
-    log_write(0, LOG_MAIN, "%s authenticator failed H=%s [%s] %s",
-      au->name, host->name, host->address, sx->buffer);
+#ifndef DISABLE_EVENT
+     {
+      uschar * save_name = sender_host_authenticated;
+      sender_host_authenticated = au->name;
+      if ((logmsg = event_raise(sx->conn_args.tblock->event_action, US"auth:fail",
+				sx->buffer, NULL)))
+	log_write(0, LOG_MAIN, "%s", logmsg);
+      sender_host_authenticated = save_name;
+     }
+#endif
+    if (!logmsg)
+      log_write(0, LOG_MAIN, "%s authenticator failed H=%s [%s] %s",
+	au->name, host->name, host->address, sx->buffer);
     break;
+    }
 
   /* Failure by some other means. In effect, the authenticator
   decided it wasn't prepared to handle this case. Typically this
