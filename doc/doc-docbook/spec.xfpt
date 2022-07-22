@@ -98,18 +98,31 @@
 .endmacro
 
 
+. --- A macro for a plain variable, including the .vitem and .vindex
+.macro var
+.vitem $1
+.vindex $1
+.endmacro
+
 . --- A macro for a "tainted" marker, done as a one-element table
 .macro tmark
 .itable none 0 0 1 10pt left
 .row &'Tainted'&
 .endtable
 .endmacro
+
 . --- A macro for a tainted variable, adding a taint-marker
-. --- and including the .vitem and .vindex
 .macro tvar
-.vitem $1
-.vindex $1
+.var $1
 .tmark
+.endmacro
+
+. --- A macro for a cmdline option, including a .oindex
+. --- 1st arg is the option name, undecorated (we do that here).
+. --- 2nd arg, optional, text (decorated as needed) to be appended to the name
+.macro cmdopt
+.vitem  &%$1%&$=2+&~$2+
+.oindex &%$1%&
 .endmacro
 
 . --- A macro that generates .row, but puts &I; at the start of the first
@@ -134,6 +147,8 @@
 . --- style of entry, use .scindex for the start and .ecindex for the end. The
 . --- first argument of .scindex and the only argument of .ecindex must be the
 . --- ID that ties them together.
+. --- The index entry points to the most-recent chapter head, section or subsection
+. --- head, or list-item.
 
 .macro cindex
 &<indexterm role="concept">&
@@ -165,6 +180,9 @@
 .endarg
 &</indexterm>&
 .endmacro
+
+. --- The index entry points to the most-recent chapter head, section or subsection
+. --- head, or varlist item.
 
 .macro vindex
 &<indexterm role="variable">&
@@ -2717,21 +2735,18 @@ outputs a brief message about itself and exits.
 
 
 .vlist
-.vitem &%--%&
-.oindex "--"
+.cmdopt "--" "--"
 .cindex "options" "command line; terminating"
 This is a pseudo-option whose only purpose is to terminate the options and
 therefore to cause subsequent command line items to be treated as arguments
 rather than options, even if they begin with hyphens.
 
-.vitem &%--help%&
-.oindex "&%--help%&"
+.cmdopt --help
 This option causes Exim to output a few sentences stating what it is.
 The same output is generated if the Exim binary is called with no options and
 no arguments.
 
-.vitem &%--version%&
-.oindex "&%--version%&"
+.cmdopt --version
 This option is an alias for &%-bV%& and causes version information to be
 displayed.
 
@@ -2742,15 +2757,14 @@ displayed.
 These options are used by Sendmail for selecting configuration files and are
 ignored by Exim.
 
-.vitem &%-B%&<&'type'&>
+.cmdopt -B <&'type'&>
 .oindex "&%-B%&"
 .cindex "8-bit characters"
 .cindex "Sendmail compatibility" "8-bit characters"
 This is a Sendmail option for selecting 7 or 8 bit processing. Exim is 8-bit
 clean; it ignores this option.
 
-.vitem &%-bd%&
-.oindex "&%-bd%&"
+.cmdopt -bd
 .cindex "daemon"
 .cindex "SMTP" "listener"
 .cindex "queue runner"
@@ -2796,13 +2810,11 @@ of Exim is installed. It is not necessary to do this when other files that are
 referenced from the configuration (for example, alias files) are changed,
 because these are reread each time they are used.
 
-.vitem &%-bdf%&
-.oindex "&%-bdf%&"
+.cmdopt -bdf
 This option has the same effect as &%-bd%& except that it never disconnects
 from the controlling terminal, even when no debugging is specified.
 
-.vitem &%-be%&
-.oindex "&%-be%&"
+.cmdopt -be
 .cindex "testing" "string expansion"
 .cindex "expansion" "testing"
 Run Exim in expansion testing mode. Exim discards its root privilege, to
@@ -2840,8 +2852,7 @@ is recognised specially as defining a value for a variable.
 The syntax is otherwise the same as the ACL modifier &"set ="&.
 .wen
 
-.vitem &%-bem%&&~<&'filename'&>
-.oindex "&%-bem%&"
+.cmdopt -bem <&'filename'&>
 .cindex "testing" "string expansion"
 .cindex "expansion" "testing"
 This option operates like &%-be%& except that it must be followed by the name
@@ -2858,16 +2869,14 @@ recipients are read from the headers in the normal way, and are shown in the
 line, because further arguments are taken as strings to expand (just like
 &%-be%&).
 
-.vitem &%-bF%&&~<&'filename'&>
-.oindex "&%-bF%&"
+.cmdopt -bF <&'filename'&>
 .cindex "system filter" "testing"
 .cindex "testing" "system filter"
 This option is the same as &%-bf%& except that it assumes that the filter being
 tested is a system filter. The additional commands that are available only in
 system filters are recognized.
 
-.vitem &%-bf%&&~<&'filename'&>
-.oindex "&%-bf%&"
+.cmdopt -bf <&'filename'&>
 .cindex "filter" "testing"
 .cindex "testing" "filter file"
 .cindex "forward file" "testing"
@@ -2913,37 +2922,32 @@ that would normally be taken from the envelope recipient address of the message
 can be set by means of additional command line options (see the next four
 options).
 
-.vitem &%-bfd%&&~<&'domain'&>
-.oindex "&%-bfd%&"
+.cmdopt -bfd <&'domain'&>
 .vindex "&$qualify_domain$&"
 This sets the domain of the recipient address when a filter file is being
 tested by means of the &%-bf%& option. The default is the value of
 &$qualify_domain$&.
 
-.vitem &%-bfl%&&~<&'local&~part'&>
-.oindex "&%-bfl%&"
+.cmdopt -bfl <&'local&~part'&>
 This sets the local part of the recipient address when a filter file is being
 tested by means of the &%-bf%& option. The default is the username of the
 process that calls Exim. A local part should be specified with any prefix or
 suffix stripped, because that is how it appears to the filter when a message is
 actually being delivered.
 
-.vitem &%-bfp%&&~<&'prefix'&>
-.oindex "&%-bfp%&"
+.cmdopt -bfp <&'prefix'&>
 .cindex affix "filter testing"
 This sets the prefix of the local part of the recipient address when a filter
 file is being tested by means of the &%-bf%& option. The default is an empty
 prefix.
 
-.vitem &%-bfs%&&~<&'suffix'&>
-.oindex "&%-bfs%&"
+.cmdopt -bfs <&'suffix'&>
 .cindex affix "filter testing"
 This sets the suffix of the local part of the recipient address when a filter
 file is being tested by means of the &%-bf%& option. The default is an empty
 suffix.
 
-.vitem &%-bh%&&~<&'IP&~address'&>
-.oindex "&%-bh%&"
+.cmdopt -bh <&'IP&~address'&>
 .cindex "testing" "incoming SMTP"
 .cindex "SMTP" "testing incoming"
 .cindex "testing" "relay control"
@@ -2995,14 +2999,12 @@ plain text, cannot easily be tested with &%-bh%&. Instead, you should use a
 specialized SMTP test program such as
 &url(https://www.jetmore.org/john/code/swaks/,swaks).
 
-.vitem &%-bhc%&&~<&'IP&~address'&>
-.oindex "&%-bhc%&"
+.cmdopt -bhc <&'IP&~address'&>
 This option operates in the same way as &%-bh%&, except that address
 verification callouts are performed if required. This includes consulting and
 updating the callout cache database.
 
-.vitem &%-bi%&
-.oindex "&%-bi%&"
+.cmdopt -bi
 .cindex "alias file" "building"
 .cindex "building alias file"
 .cindex "Sendmail compatibility" "&%-bi%& option"
@@ -3021,8 +3023,7 @@ if this is required. If the &%bi_command%& option is not set, calling Exim with
 &%-bi%& is a no-op.
 
 . // Keep :help first, then the rest in alphabetical order
-.vitem &%-bI:help%&
-.oindex "&%-bI:help%&"
+.cmdopt -bI:help
 .cindex "querying exim information"
 We shall provide various options starting &`-bI:`& for querying Exim for
 information.  The output of many of these will be intended for machine
@@ -3030,14 +3031,12 @@ consumption.  This one is not.  The &%-bI:help%& option asks Exim for a
 synopsis of supported options beginning &`-bI:`&.  Use of any of these
 options shall cause Exim to exit after producing the requested output.
 
-.vitem &%-bI:dscp%&
-.oindex "&%-bI:dscp%&"
+.cmdopt -bI:dscp
 .cindex "DSCP" "values"
 This option causes Exim to emit an alphabetically sorted list of all
 recognised DSCP names.
 
-.vitem &%-bI:sieve%&
-.oindex "&%-bI:sieve%&"
+.cmdopt -bI:sieve
 .cindex "Sieve filter" "capabilities"
 This option causes Exim to emit an alphabetically sorted list of all supported
 Sieve protocol extensions on stdout, one per line.  This is anticipated to be
@@ -3046,8 +3045,7 @@ useful for ManageSieve (RFC 5804) implementations, in providing that protocol's
 compile-time build options, which this option will adapt to, this is the only
 way to guarantee a correct response.
 
-.vitem &%-bm%&
-.oindex "&%-bm%&"
+.cmdopt -bm
 .cindex "local message reception"
 This option runs an Exim receiving process that accepts an incoming,
 locally-generated message on the standard input. The recipients are given as the
@@ -3092,8 +3090,7 @@ The specified sender is treated as if it were given as the argument to the
 preference to the address taken from the message. The caller of Exim must be a
 trusted user for the sender of a message to be set in this way.
 
-.vitem &%-bmalware%&&~<&'filename'&>
-.oindex "&%-bmalware%&"
+.cmdopt -bmalware <&'filename'&>
 .cindex "testing", "malware"
 .cindex "malware scan test"
 This debugging option causes Exim to scan the given file or directory
@@ -3113,8 +3110,7 @@ The &%-bmalware%& option will not be extended to be more generally useful,
 there are better tools for file-scanning.  This option exists to help
 administrators verify their Exim and AV scanner configuration.
 
-.vitem &%-bnq%&
-.oindex "&%-bnq%&"
+.cmdopt -bnq
 .cindex "address qualification, suppressing"
 By default, Exim automatically qualifies unqualified addresses (those
 without domains) that appear in messages that are submitted locally (that
@@ -3135,8 +3131,7 @@ addresses in the envelope provoke errors (causing message rejection) and
 unqualified addresses in header lines are left alone.
 
 
-.vitem &%-bP%&
-.oindex "&%-bP%&"
+.cmdopt -bP
 .cindex "configuration options" "extracting"
 .cindex "options" "configuration &-- extracting"
 If this option is given with no arguments, it causes the values of all Exim's
@@ -3212,8 +3207,7 @@ The output format is one item per line.
 For the "-bP macro <name>" form, if no such macro is found
 the exit status will be nonzero.
 
-.vitem &%-bp%&
-.oindex "&%-bp%&"
+.cmdopt -bp
 .cindex "queue" "listing messages in"
 .cindex "listing" "messages in the queue"
 This option requests a listing of the contents of the mail queue on the
@@ -3250,48 +3244,41 @@ displayed with a D only when deliveries for all of its child addresses are
 complete.
 
 
-.vitem &%-bpa%&
-.oindex "&%-bpa%&"
+.cmdopt -bpa
 This option operates like &%-bp%&, but in addition it shows delivered addresses
 that were generated from the original top level address(es) in each message by
 alias or forwarding operations. These addresses are flagged with &"+D"& instead
 of just &"D"&.
 
 
-.vitem &%-bpc%&
-.oindex "&%-bpc%&"
+.cmdopt -bpc
 .cindex "queue" "count of messages on"
 This option counts the number of messages in the queue, and writes the total
 to the standard output. It is restricted to admin users, unless
 &%queue_list_requires_admin%& is set false.
 
 
-.vitem &%-bpr%&
-.oindex "&%-bpr%&"
+.cmdopt -bpr
 This option operates like &%-bp%&, but the output is not sorted into
 chronological order of message arrival. This can speed it up when there are
 lots of messages in the queue, and is particularly useful if the output is
 going to be post-processed in a way that doesn't need the sorting.
 
-.vitem &%-bpra%&
-.oindex "&%-bpra%&"
+.cmdopt -bpra
 This option is a combination of &%-bpr%& and &%-bpa%&.
 
-.vitem &%-bpru%&
-.oindex "&%-bpru%&"
+.cmdopt -bpru
 This option is a combination of &%-bpr%& and &%-bpu%&.
 
 
-.vitem &%-bpu%&
-.oindex "&%-bpu%&"
+.cmdopt -bpu
 This option operates like &%-bp%& but shows only undelivered top-level
 addresses for each message displayed. Addresses generated by aliasing or
 forwarding are not shown, unless the message was deferred after processing by a
 router with the &%one_time%& option set.
 
 
-.vitem &%-brt%&
-.oindex "&%-brt%&"
+.cmdopt -brt
 .cindex "testing" "retry configuration"
 .cindex "retry" "configuration testing"
 This option is for testing retry rules, and it must be followed by up to three
@@ -3315,8 +3302,7 @@ exim -brt haydn.comp.mus.example quota_3d
 Retry rule: *@haydn.comp.mus.example quota_3d  F,1h,15m
 .endd
 
-.vitem &%-brw%&
-.oindex "&%-brw%&"
+.cmdopt -brw
 .cindex "testing" "rewriting"
 .cindex "rewriting" "testing"
 This option is for testing address rewriting rules, and it must be followed by
@@ -3325,8 +3311,7 @@ complete address with a fully qualified domain. Exim outputs how this address
 would be rewritten for each possible place it might appear. See chapter
 &<<CHAPrewrite>>& for further details.
 
-.vitem &%-bS%&
-.oindex "&%-bS%&"
+.cmdopt -bS
 .cindex "SMTP" "batched incoming"
 .cindex "batched SMTP input"
 This option is used for batched SMTP input, which is an alternative interface
@@ -3359,8 +3344,7 @@ was detected; otherwise it is 2.
 More details of input using batched SMTP are given in section
 &<<SECTincomingbatchedSMTP>>&.
 
-.vitem &%-bs%&
-.oindex "&%-bs%&"
+.cmdopt -bs
 .cindex "SMTP" "local input"
 .cindex "local SMTP input"
 This option causes Exim to accept one or more messages by reading SMTP commands
@@ -3388,8 +3372,7 @@ above concerning senders and qualification do not apply. In this situation,
 Exim behaves in exactly the same way as it does when receiving a message via
 the listening daemon.
 
-.vitem &%-bt%&
-.oindex "&%-bt%&"
+.cmdopt -bt
 .cindex "testing" "addresses"
 .cindex "address" "testing"
 This option runs Exim in address testing mode, in which each argument is taken
@@ -3434,8 +3417,7 @@ whose behaviour depends on the contents of an incoming message, you cannot test
 those conditions using &%-bt%&. The &%-N%& option provides a possible way of
 doing such tests.
 
-.vitem &%-bV%&
-.oindex "&%-bV%&"
+.cmdopt -bV
 .cindex "version number of Exim"
 This option causes Exim to write the current version number, compilation
 number, and compilation date of the &'exim'& binary to the standard output.
@@ -3451,8 +3433,7 @@ alone to discover (for example) all the typos in the configuration; some
 realistic testing is needed. The &%-bh%& and &%-N%& options provide more
 dynamic testing facilities.
 
-.vitem &%-bv%&
-.oindex "&%-bv%&"
+.cmdopt -bv
 .cindex "verifying address" "using &%-bv%&"
 .cindex "address" "verification"
 This option runs Exim in address verification mode, in which each argument is
@@ -3502,14 +3483,12 @@ address of a message, you should use the &%-f%& option to set an appropriate
 sender when running &%-bv%& tests. Without it, the sender is assumed to be the
 calling user at the default qualifying domain.
 
-.vitem &%-bvs%&
-.oindex "&%-bvs%&"
+.cmdopt -bvs
 This option acts like &%-bv%&, but verifies the address as a sender rather
 than a recipient address. This affects any rewriting and qualification that
 might happen.
 
-.vitem &%-bw%&
-.oindex "&%-bw%&"
+.cmdopt -bw
 .cindex "daemon"
 .cindex "inetd"
 .cindex "inetd" "wait mode"
@@ -3525,8 +3504,7 @@ each port only when the first connection is received.
 If the option is given as &%-bw%&<&'time'&> then the time is a timeout, after
 which the daemon will exit, which should cause inetd to listen once more.
 
-.vitem &%-C%&&~<&'filelist'&>
-.oindex "&%-C%&"
+.cmdopt -C <&'filelist'&>
 .cindex "configuration file" "alternate"
 .cindex "CONFIGURE_FILE"
 .cindex "alternate configuration file"
@@ -3706,14 +3684,12 @@ starts a daemon process. In that case, debugging is turned off for the
 subprocesses that the daemon creates. Thus, it is useful for monitoring the
 behaviour of the daemon without creating as much output as full debugging does.
 
-.vitem &%-dropcr%&
-.oindex "&%-dropcr%&"
+.cmdopt -dropcr
 This is an obsolete option that is now a no-op. It used to affect the way Exim
 handled CR and LF characters in incoming messages. What happens now is
 described in section &<<SECTlineendings>>&.
 
-.vitem &%-E%&
-.oindex "&%-E%&"
+.cmdopt -E
 .cindex "bounce message" "generating"
 This option specifies that an incoming message is a locally-generated delivery
 failure report. It is used internally by Exim when handling delivery failures
@@ -3730,8 +3706,7 @@ called by various programs without the leading &%o%& in the option. For
 example, the &%vacation%& program uses &%-eq%&. Exim treats all options of the
 form &%-e%&&'x'& as synonymous with the corresponding &%-oe%&&'x'& options.
 
-.vitem &%-F%&&~<&'string'&>
-.oindex "&%-F%&"
+.cmdopt -F <&'string'&>
 .cindex "sender" "name"
 .cindex "name" "of sender"
 This option sets the sender's full name for use when a locally-generated
@@ -3740,8 +3715,7 @@ entry from the password data is used. As users are generally permitted to alter
 their &'gecos'& entries, no security considerations are involved. White space
 between &%-F%& and the <&'string'&> is optional.
 
-.vitem &%-f%&&~<&'address'&>
-.oindex "&%-f%&"
+.cmdopt -f <&'address'&>
 .cindex "sender" "address"
 .cindex "address" "sender"
 .cindex "trusted users"
@@ -3785,8 +3759,7 @@ locally-generated message can also be set (when permitted) by an initial
 &"From&~"& line in the message &-- see the description of &%-bm%& above &-- but
 if &%-f%& is also present, it overrides &"From&~"&.
 
-.vitem &%-G%&
-.oindex "&%-G%&"
+.cmdopt -G
 .cindex "submission fixups, suppressing (command-line)"
 This option is equivalent to an ACL applying:
 .code
@@ -3799,15 +3772,13 @@ in future.
 As this affects audit information, the caller must be a trusted user to use
 this option.
 
-.vitem &%-h%&&~<&'number'&>
-.oindex "&%-h%&"
+.cmdopt -h <&'number'&>
 .cindex "Sendmail compatibility" "&%-h%& option ignored"
 This option is accepted for compatibility with Sendmail, but has no effect. (In
 Sendmail it overrides the &"hop count"& obtained by counting &'Received:'&
 headers.)
 
-.vitem &%-i%&
-.oindex "&%-i%&"
+.cmdopt -i
 .cindex "Solaris" "&'mail'& command"
 .cindex "dot" "in incoming non-SMTP message"
 This option, which has the same effect as &%-oi%&, specifies that a dot on a
@@ -3817,8 +3788,7 @@ Solaris 2.4 (SunOS 5.4) Sendmail has a similar &%-i%& processing option
 p. 1M-529), and therefore a &%-oi%& command line option, which both are used
 by its &'mailx'& command.
 
-.vitem &%-L%&&~<&'tag'&>
-.oindex "&%-L%&"
+.cmdopt -L <&'tag'&>
 .cindex "syslog" "process name; set with flag"
 This option is equivalent to setting &%syslog_processname%& in the config
 file and setting &%log_file_path%& to &`syslog`&.
@@ -3828,8 +3798,7 @@ effect, so early configuration file errors will not honour this flag.
 
 The tag should not be longer than 32 characters.
 
-.vitem &%-M%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
-.oindex "&%-M%&"
+.cmdopt -M <&'message&~id'&>&~<&'message&~id'&>&~...
 .cindex "forcing delivery"
 .cindex "delivery" "forcing attempt"
 .cindex "frozen messages" "forcing delivery"
@@ -3851,8 +3820,7 @@ not terminate until all the delivery attempts have finished. No output is
 produced unless there is a serious error. If you want to see what is happening,
 use the &%-v%& option as well, or inspect Exim's main log.
 
-.vitem &%-Mar%&&~<&'message&~id'&>&~<&'address'&>&~<&'address'&>&~...
-.oindex "&%-Mar%&"
+.cmdopt -Mar <&'message&~id'&>&~<&'address'&>&~<&'address'&>&~...
 .cindex "message" "adding recipients"
 .cindex "recipient" "adding"
 This option requests Exim to add the addresses to the list of recipients of the
@@ -3875,59 +3843,50 @@ an existing SMTP connection, which is passed as the standard input. Details are
 given in chapter &<<CHAPSMTP>>&. This must be the final option, and the caller
 must be root or the Exim user in order to use it.
 
-.vitem &%-MCA%&
-.oindex "&%-MCA%&"
+.cmdopt -MCA
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the
 connection to the remote host has been authenticated.
 
-.vitem &%-MCD%&
-.oindex "&%-MCD%&"
+.cmdopt -MCD
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the
 remote host supports the ESMTP &_DSN_& extension.
 
-.vitem &%-MCd%&
-.oindex "&%-MCd%&"
+.cmdopt -MCd
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-d%& option
 to pass on an information string on the purpose of the process.
 
-.vitem &%-MCG%&&~<&'queue&~name'&>
-.oindex "&%-MCG%&"
+.cmdopt -MCG <&'queue&~name'&>
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that an
 alternate queue is used, named by the following argument.
 
-.vitem &%-MCK%&
-.oindex "&%-MCK%&"
+.cmdopt -MCK
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that a
 remote host supports the ESMTP &_CHUNKING_& extension.
 
-.vitem &%-MCL%&
-.oindex "&%-MCL%&"
+.cmdopt -MCL
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the server to
 which Exim is connected advertised limits on numbers of mails, recipients or
 recipient domains.
 The limits are given by the following three arguments.
 
-.vitem &%-MCP%&
-.oindex "&%-MCP%&"
+.cmdopt -MCP
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the server to
 which Exim is connected supports pipelining.
 
-.vitem &%-MCp%&
-.oindex "&%-MCp%&"
+.cmdopt -MCp
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the connection
 t a remote server is via a SOCKS proxy, using addresses and ports given by
 the following four arguments.
 
-.vitem &%-MCQ%&&~<&'process&~id'&>&~<&'pipe&~fd'&>
-.oindex "&%-MCQ%&"
+.cmdopt -MCQ <&'process&~id'&>&~<&'pipe&~fd'&>
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option when the original delivery was
 started by a queue runner. It passes on the process id of the queue runner,
@@ -3935,20 +3894,17 @@ together with the file descriptor number of an open pipe. Closure of the pipe
 signals the final completion of the sequence of processes that are passing
 messages through the same SMTP connection.
 
-.vitem &%-MCq%&&~<&'recipient&~address'&>&~<&'size'&>
-.oindex "&%-MCq%&"
+.cmdopt -MCq <&'recipient&~address'&>&~<&'size'&>
 This option is not intended for use by external callers. It is used internally
 by Exim to implement quota checking for local users.
 
-.vitem &%-MCS%&
-.oindex "&%-MCS%&"
+.cmdopt -MCS
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 ESMTP SIZE option should be used on messages delivered down the existing
 connection.
 
-.vitem &%-MCT%&
-.oindex "&%-MCT%&"
+.cmdopt -MCT
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 host to which Exim is connected supports TLS encryption.
@@ -3963,15 +3919,13 @@ a TLS Server Name Indication was sent as part of the channel establishment.
 The argument gives the SNI string.
 The "r" variant indicates a DANE-verified connection.
 
-.vitem &%-MCt%&&~<&'IP&~address'&>&~<&'port'&>&~<&'cipher'&>
-.oindex "&%-MCt%&"
+.cmdopt -MCt <&'IP&~address'&>&~<&'port'&>&~<&'cipher'&>
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 connection is being proxied by a parent process for handling TLS encryption.
 The arguments give the local address and port being proxied, and the TLS cipher.
 
-.vitem &%-Mc%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
-.oindex "&%-Mc%&"
+.cmdopt -Mc <&'message&~id'&>&~<&'message&~id'&>&~...
 .cindex "hints database" "not overridden by &%-Mc%&"
 .cindex "delivery" "manually started &-- not forced"
 This option requests Exim to run a delivery attempt on each message, in turn,
@@ -3986,8 +3940,7 @@ If you want to run a specific delivery as if in a queue run, you should use
 &%-q%& with a message id argument. A distinction between queue run deliveries
 and other deliveries is made in one or two places.
 
-.vitem &%-Mes%&&~<&'message&~id'&>&~<&'address'&>
-.oindex "&%-Mes%&"
+.cmdopt -Mes <&'message&~id'&>&~<&'address'&>
 .cindex "message" "changing sender"
 .cindex "sender" "changing"
 This option requests Exim to change the sender address in the message to the
@@ -3997,8 +3950,7 @@ be a message id, and the second one an email address. However, if the message
 is active (in the middle of a delivery attempt), its status is not altered.
 This option can be used only by an admin user.
 
-.vitem &%-Mf%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
-.oindex "&%-Mf%&"
+.cmdopt -Mf <&'message&~id'&>&~<&'message&~id'&>&~...
 .cindex "freezing messages"
 .cindex "message" "manually freezing"
 This option requests Exim to mark each listed message as &"frozen"&. This
@@ -4008,8 +3960,7 @@ However, if any of the messages are active (in the middle of a delivery
 attempt), their status is not altered. This option can be used only by an admin
 user.
 
-.vitem &%-Mg%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
-.oindex "&%-Mg%&"
+.cmdopt -Mg <&'message&~id'&>&~<&'message&~id'&>&~...
 .cindex "giving up on messages"
 .cindex "message" "abandoning delivery attempts"
 .cindex "delivery" "abandoning further attempts"
@@ -4020,8 +3971,7 @@ is sent to the sender, containing the text &"cancelled by administrator"&.
 Bounce messages are just discarded. This option can be used only by an admin
 user.
 
-.vitem &%-MG%&&~<&'queue&~name'&>&~<&'message&~id'&>&~<&'message&~id'&>&~...
-.oindex "&%-MG%&"
+.cmdopt -MG <&'queue&~name'&>&~<&'message&~id'&>&~<&'message&~id'&>&~...
 .cindex queue named
 .cindex "named queues" "moving messages"
 .cindex "queue" "moving messages"
@@ -4032,16 +3982,14 @@ string to define the default queue.
 If the messages are not currently located in the default queue,
 a &%-qG<name>%& option will be required to define the source queue.
 
-.vitem &%-Mmad%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
-.oindex "&%-Mmad%&"
+.cmdopt -Mmad <&'message&~id'&>&~<&'message&~id'&>&~...
 .cindex "delivery" "cancelling all"
 This option requests Exim to mark all the recipient addresses in the messages
 as already delivered (&"mad"& for &"mark all delivered"&). However, if any
 message is active (in the middle of a delivery attempt), its status is not
 altered. This option can be used only by an admin user.
 
-.vitem &%-Mmd%&&~<&'message&~id'&>&~<&'address'&>&~<&'address'&>&~...
-.oindex "&%-Mmd%&"
+.cmdopt -Mmd <&'message&~id'&>&~<&'address'&>&~<&'address'&>&~...
 .cindex "delivery" "cancelling by address"
 .cindex "recipient" "removing"
 .cindex "removing recipients"
@@ -4052,8 +4000,7 @@ addresses in the message in a case-sensitive manner. If the message is active
 (in the middle of a delivery attempt), its status is not altered. This option
 can be used only by an admin user.
 
-.vitem &%-Mrm%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
-.oindex "&%-Mrm%&"
+.cmdopt -Mrm <&'message&~id'&>&~<&'message&~id'&>&~...
 .cindex "removing messages"
 .cindex "abandoning mail"
 .cindex "message" "manually discarding"
@@ -4072,8 +4019,7 @@ placed in the queue.
 . a bounce message.
 . .wen
 
-.vitem &%-Mset%&&~<&'message&~id'&>
-.oindex "&%-Mset%&"
+.cmdopt -Mset <&'message&~id'&>
 .cindex "testing" "string expansion"
 .cindex "expansion" "testing"
 This option is useful only in conjunction with &%-be%& (that is, when testing
@@ -4084,8 +4030,7 @@ available. This feature is provided to make it easier to test expansions that
 make use of these variables. However, this option can be used only by an admin
 user. See also &%-bem%&.
 
-.vitem &%-Mt%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
-.oindex "&%-Mt%&"
+.cmdopt -Mt <&'message&~id'&>&~<&'message&~id'&>&~...
 .cindex "thawing messages"
 .cindex "unfreezing messages"
 .cindex "frozen messages" "thawing"
@@ -4095,44 +4040,38 @@ This option requests Exim to &"thaw"& any of the listed messages that are
 messages are active, their status is not altered. This option can be used only
 by an admin user.
 
-.vitem &%-Mvb%&&~<&'message&~id'&>
-.oindex "&%-Mvb%&"
+.cmdopt -Mvb <&'message&~id'&>
 .cindex "listing" "message body"
 .cindex "message" "listing body of"
 This option causes the contents of the message body (-D) spool file to be
 written to the standard output. This option can be used only by an admin user.
 
-.vitem &%-Mvc%&&~<&'message&~id'&>
-.oindex "&%-Mvc%&"
+.cmdopt -Mvc <&'message&~id'&>
 .cindex "message" "listing in RFC 2822 format"
 .cindex "listing" "message in RFC 2822 format"
 This option causes a copy of the complete message (header lines plus body) to
 be written to the standard output in RFC 2822 format. This option can be used
 only by an admin user.
 
-.vitem &%-Mvh%&&~<&'message&~id'&>
-.oindex "&%-Mvh%&"
+.cmdopt -Mvh <&'message&~id'&>
 .cindex "listing" "message headers"
 .cindex "header lines" "listing"
 .cindex "message" "listing header lines"
 This option causes the contents of the message headers (-H) spool file to be
 written to the standard output. This option can be used only by an admin user.
 
-.vitem &%-Mvl%&&~<&'message&~id'&>
-.oindex "&%-Mvl%&"
+.cmdopt -Mvl <&'message&~id'&>
 .cindex "listing" "message log"
 .cindex "message" "listing message log"
 This option causes the contents of the message log spool file to be written to
 the standard output. This option can be used only by an admin user.
 
-.vitem &%-m%&
-.oindex "&%-m%&"
+.cmdopt -m
 This is a synonym for &%-om%& that is accepted by Sendmail
 (&url(https://docs.oracle.com/cd/E19457-01/801-6680-1M/801-6680-1M.pdf)
 p. 1M-258), so Exim treats it that way too.
 
-.vitem &%-N%&
-.oindex "&%-N%&"
+.cmdopt -N
 .cindex "debugging" "&%-N%& option"
 .cindex "debugging" "suppressing delivery"
 This is a debugging option that inhibits delivery of a message at the transport
@@ -4151,27 +4090,23 @@ routing problem. Once &%-N%& has been used for a delivery attempt, it sticks to
 the message, and applies to any subsequent delivery attempts that may happen
 for that message.
 
-.vitem &%-n%&
-.oindex "&%-n%&"
+.cmdopt -n
 This option is interpreted by Sendmail to mean &"no aliasing"&.
 For normal modes of operation, it is ignored by Exim.
 When combined with &%-bP%& it makes the output more terse (suppresses
 option names, environment values and config pretty printing).
 
-.vitem &%-O%&&~<&'data'&>
-.oindex "&%-O%&"
+.cmdopt -O <&'data'&>
 This option is interpreted by Sendmail to mean &`set option`&. It is ignored by
 Exim.
 
-.vitem &%-oA%&&~<&'file&~name'&>
-.oindex "&%-oA%&"
+.cmdopt -oA <&'file&~name'&>
 .cindex "Sendmail compatibility" "&%-oA%& option"
 This option is used by Sendmail in conjunction with &%-bi%& to specify an
 alternative alias filename. Exim handles &%-bi%& differently; see the
 description above.
 
-.vitem &%-oB%&&~<&'n'&>
-.oindex "&%-oB%&"
+.cmdopt -oB <&'n'&>
 .cindex "SMTP" "passed connection"
 .cindex "SMTP" "multiple deliveries"
 .cindex "multiple SMTP deliveries"
@@ -4179,8 +4114,7 @@ This is a debugging option which limits the maximum number of messages that can
 be delivered down one SMTP connection, overriding the value set in any &(smtp)&
 transport. If <&'n'&> is omitted, the limit is set to 1.
 
-.vitem &%-odb%&
-.oindex "&%-odb%&"
+.cmdopt -odb
 .cindex "background delivery"
 .cindex "delivery" "in the background"
 This option applies to all modes in which Exim accepts incoming messages,
@@ -4199,8 +4133,7 @@ If one of the queueing options in the configuration file
 overrides it if &%queue_only_override%& is set true, which is the default
 setting. If &%queue_only_override%& is set false, &%-odb%& has no effect.
 
-.vitem &%-odf%&
-.oindex "&%-odf%&"
+.cmdopt -odf
 .cindex "foreground delivery"
 .cindex "delivery" "in the foreground"
 This option requests &"foreground"& (synchronous) delivery when Exim has
@@ -4221,13 +4154,11 @@ process exits. See chapter &<<CHAPnonqueueing>>& for a way of setting up a
 restricted configuration that never queues messages.
 
 
-.vitem &%-odi%&
-.oindex "&%-odi%&"
+.cmdopt -odi
 This option is synonymous with &%-odf%&. It is provided for compatibility with
 Sendmail.
 
-.vitem &%-odq%&
-.oindex "&%-odq%&"
+.cmdopt -odq
 .cindex "non-immediate delivery"
 .cindex "delivery" "suppressing immediate"
 .cindex "queueing incoming messages"
@@ -4240,8 +4171,7 @@ process encounters them. There are several configuration options (such as
 conditions. This option overrides all of them and also &%-odqs%&. It always
 forces queueing.
 
-.vitem &%-odqs%&
-.oindex "&%-odqs%&"
+.cmdopt -odqs
 .cindex "SMTP" "delaying delivery"
 .cindex "first pass routing"
 This option is a hybrid between &%-odb%&/&%-odi%& and &%-odq%&.
@@ -4260,8 +4190,7 @@ host can be sent in a single SMTP connection. The &%queue_smtp_domains%&
 configuration option has the same effect for specific domains. See also the
 &%-qq%& option.
 
-.vitem &%-oee%&
-.oindex "&%-oee%&"
+.cmdopt -oee
 .cindex "error" "reporting"
 If an error is detected while a non-SMTP message is being received (for
 example, a malformed address), the error is reported to the sender in a mail
@@ -4274,36 +4203,31 @@ exits with a return code of zero. If not, the return code is 2 if the problem
 is that the original message has no recipients, or 1 for any other error.
 This is the default &%-oe%&&'x'& option if Exim is called as &'rmail'&.
 
-.vitem &%-oem%&
-.oindex "&%-oem%&"
+.cmdopt -oem
 .cindex "error" "reporting"
 .cindex "return code" "for &%-oem%&"
 This is the same as &%-oee%&, except that Exim always exits with a non-zero
 return code, whether or not the error message was successfully sent.
 This is the default &%-oe%&&'x'& option, unless Exim is called as &'rmail'&.
 
-.vitem &%-oep%&
-.oindex "&%-oep%&"
+.cmdopt -oep
 .cindex "error" "reporting"
 If an error is detected while a non-SMTP message is being received, the
 error is reported by writing a message to the standard error file (stderr).
 .cindex "return code" "for &%-oep%&"
 The return code is 1 for all errors.
 
-.vitem &%-oeq%&
-.oindex "&%-oeq%&"
+.cmdopt -oeq
 .cindex "error" "reporting"
 This option is supported for compatibility with Sendmail, but has the same
 effect as &%-oep%&.
 
-.vitem &%-oew%&
-.oindex "&%-oew%&"
+.cmdopt -oew
 .cindex "error" "reporting"
 This option is supported for compatibility with Sendmail, but has the same
 effect as &%-oem%&.
 
-.vitem &%-oi%&
-.oindex "&%-oi%&"
+.cmdopt -oi
 .cindex "dot" "in incoming non-SMTP message"
 This option, which has the same effect as &%-i%&, specifies that a dot on a
 line by itself should not terminate an incoming, non-SMTP message. Otherwise, a
@@ -4311,12 +4235,10 @@ single dot does terminate, though Exim does no special processing for other
 lines that start with a dot. This option is set by default if Exim is called as
 &'rmail'&. See also &%-ti%&.
 
-.vitem &%-oitrue%&
-.oindex "&%-oitrue%&"
+.cmdopt -oitrue
 This option is treated as synonymous with &%-oi%&.
 
-.vitem &%-oMa%&&~<&'host&~address'&>
-.oindex "&%-oMa%&"
+.cmdopt -oMa <&'host&~address'&>
 .cindex "sender" "host address, specifying for local message"
 A number of options starting with &%-oM%& can be used to set values associated
 with remote hosts on locally-submitted messages (that is, messages not received
@@ -4339,8 +4261,7 @@ port, if present, in &$sender_host_port$&. If both &%-oMa%& and &%-bh%&
 are present on the command line, the sender host IP address is taken from
 whichever one is last.
 
-.vitem &%-oMaa%&&~<&'name'&>
-.oindex "&%-oMaa%&"
+.cmdopt -oMaa <&'name'&>
 .cindex "authentication" "name, specifying for local message"
 See &%-oMa%& above for general remarks about the &%-oM%& options. The &%-oMaa%&
 option sets the value of &$sender_host_authenticated$& (the authenticator
@@ -4348,8 +4269,7 @@ name). See chapter &<<CHAPSMTPAUTH>>& for a discussion of SMTP authentication.
 This option can be used with &%-bh%& and &%-bs%& to set up an
 authenticated SMTP session without actually using the SMTP AUTH command.
 
-.vitem &%-oMai%&&~<&'string'&>
-.oindex "&%-oMai%&"
+.cmdopt -oMai <&'string'&>
 .cindex "authentication" "id, specifying for local message"
 See &%-oMa%& above for general remarks about the &%-oM%& options. The &%-oMai%&
 option sets the value of &$authenticated_id$& (the id that was authenticated).
@@ -4357,8 +4277,7 @@ This overrides the default value (the caller's login id, except with &%-bh%&,
 where there is no default) for messages from local sources. See chapter
 &<<CHAPSMTPAUTH>>& for a discussion of authenticated ids.
 
-.vitem &%-oMas%&&~<&'address'&>
-.oindex "&%-oMas%&"
+.cmdopt -oMas <&'address'&>
 .cindex "authentication" "sender, specifying for local message"
 See &%-oMa%& above for general remarks about the &%-oM%& options. The &%-oMas%&
 option sets the authenticated sender value in &$authenticated_sender$&. It
@@ -4368,16 +4287,14 @@ default. For both &%-bh%& and &%-bs%&, an authenticated sender that is
 specified on a MAIL command overrides this value. See chapter
 &<<CHAPSMTPAUTH>>& for a discussion of authenticated senders.
 
-.vitem &%-oMi%&&~<&'interface&~address'&>
-.oindex "&%-oMi%&"
+.cmdopt -oMi <&'interface&~address'&>
 .cindex "interface" "address, specifying for local message"
 See &%-oMa%& above for general remarks about the &%-oM%& options. The &%-oMi%&
 option sets the IP interface address value. A port number may be included,
 using the same syntax as for &%-oMa%&. The interface address is placed in
 &$received_ip_address$& and the port number, if present, in &$received_port$&.
 
-.vitem &%-oMm%&&~<&'message&~reference'&>
-.oindex "&%-oMm%&"
+.cmdopt -oMm <&'message&~reference'&>
 .cindex "message reference" "message reference, specifying for local message"
 See &%-oMa%& above for general remarks about the &%-oM%& options. The &%-oMm%&
 option sets the message reference, e.g. message-id, and is logged during
@@ -4390,8 +4307,7 @@ The best example of a message reference is when Exim sends a bounce message.
 The message reference is the message-id of the original message for which Exim
 is sending the bounce.
 
-.vitem &%-oMr%&&~<&'protocol&~name'&>
-.oindex "&%-oMr%&"
+.cmdopt -oMr <&'protocol&~name'&>
 .cindex "protocol, specifying for local message"
 .vindex "&$received_protocol$&"
 See &%-oMa%& above for general remarks about the &%-oM%& options. The &%-oMr%&
@@ -4403,37 +4319,32 @@ SMTP protocol names (see the description of &$received_protocol$& in section
 one of those same names. For &%-bS%& (batched SMTP) however, the protocol can
 be set by &%-oMr%&. Repeated use of this option is not supported.
 
-.vitem &%-oMs%&&~<&'host&~name'&>
-.oindex "&%-oMs%&"
+.cmdopt -oMs <&'host&~name'&>
 .cindex "sender" "host name, specifying for local message"
 See &%-oMa%& above for general remarks about the &%-oM%& options. The &%-oMs%&
 option sets the sender host name in &$sender_host_name$&. When this option is
 present, Exim does not attempt to look up a host name from an IP address; it
 uses the name it is given.
 
-.vitem &%-oMt%&&~<&'ident&~string'&>
-.oindex "&%-oMt%&"
+.cmdopt -oMt <&'ident&~string'&>
 .cindex "sender" "ident string, specifying for local message"
 See &%-oMa%& above for general remarks about the &%-oM%& options. The &%-oMt%&
 option sets the sender ident value in &$sender_ident$&. The default setting for
 local callers is the login id of the calling process, except when &%-bh%& is
 used, when there is no default.
 
-.vitem &%-om%&
-.oindex "&%-om%&"
+.cmdopt -om
 .cindex "Sendmail compatibility" "&%-om%& option ignored"
 In Sendmail, this option means &"me too"&, indicating that the sender of a
 message should receive a copy of the message if the sender appears in an alias
 expansion. Exim always does this, so the option does nothing.
 
-.vitem &%-oo%&
-.oindex "&%-oo%&"
+.cmdopt -oo
 .cindex "Sendmail compatibility" "&%-oo%& option ignored"
 This option is ignored. In Sendmail it specifies &"old style headers"&,
 whatever that means.
 
-.vitem &%-oP%&&~<&'path'&>
-.oindex "&%-oP%&"
+.cmdopt -oP <&'path'&>
 .cindex "pid (process id)" "of daemon"
 .cindex "daemon" "process id (pid)"
 This option is useful only in conjunction with &%-bd%& or &%-q%& with a time
@@ -4442,8 +4353,7 @@ written. When &%-oX%& is used with &%-bd%&, or when &%-q%& with a time is used
 without &%-bd%&, this is the only way of causing Exim to write a pid file,
 because in those cases, the normal pid file is not used.
 
-.vitem &%-oPX%&
-.oindex "&%-oPX%&"
+.cmdopt -oPX
 .cindex "pid (process id)" "of daemon"
 .cindex "daemon" "process id (pid)"
 This option is not intended for general use.
@@ -4451,16 +4361,14 @@ The daemon uses it when terminating due to a SIGTEM, possibly in
 combination with &%-oP%&&~<&'path'&>.
 It causes the pid file to be removed.
 
-.vitem &%-or%&&~<&'time'&>
-.oindex "&%-or%&"
+.cmdopt -or <&'time'&>
 .cindex "timeout" "for non-SMTP input"
 This option sets a timeout value for incoming non-SMTP messages. If it is not
 set, Exim will wait forever for the standard input. The value can also be set
 by the &%receive_timeout%& option. The format used for specifying times is
 described in section &<<SECTtimeformat>>&.
 
-.vitem &%-os%&&~<&'time'&>
-.oindex "&%-os%&"
+.cmdopt -os <&'time'&>
 .cindex "timeout" "for SMTP input"
 .cindex "SMTP" "input timeout"
 This option sets a timeout value for incoming SMTP messages. The timeout
@@ -4468,12 +4376,10 @@ applies to each SMTP command and block of data. The value can also be set by
 the &%smtp_receive_timeout%& option; it defaults to 5 minutes. The format used
 for specifying times is described in section &<<SECTtimeformat>>&.
 
-.vitem &%-ov%&
-.oindex "&%-ov%&"
+.cmdopt -ov
 This option has exactly the same effect as &%-v%&.
 
-.vitem &%-oX%&&~<&'number&~or&~string'&>
-.oindex "&%-oX%&"
+.cmdopt -oX <&'number&~or&~string'&>
 .cindex "TCP/IP" "setting listening ports"
 .cindex "TCP/IP" "setting listening interfaces"
 .cindex "port" "receiving TCP/IP"
@@ -4483,8 +4389,7 @@ of the syntax, and how it interacts with configuration file options, are given
 in chapter &<<CHAPinterfaces>>&. When &%-oX%& is used to start a daemon, no pid
 file is written unless &%-oP%& is also present to specify a pid filename.
 
-.vitem &%-oY%&
-.oindex &%-oY%&
+.cmdopt -oY
 .cindex "daemon notifier socket"
 This option controls the creation of an inter-process communications endpoint
 by the Exim daemon.
@@ -4502,16 +4407,14 @@ fast ramp-up of queue runner processes
 obtaining a current queue size
 .endlist
 
-.vitem &%-pd%&
-.oindex "&%-pd%&"
+.cmdopt -pd
 .cindex "Perl" "starting the interpreter"
 This option applies when an embedded Perl interpreter is linked with Exim (see
 chapter &<<CHAPperl>>&). It overrides the setting of the &%perl_at_start%&
 option, forcing the starting of the interpreter to be delayed until it is
 needed.
 
-.vitem &%-ps%&
-.oindex "&%-ps%&"
+.cmdopt -ps
 .cindex "Perl" "starting the interpreter"
 This option applies when an embedded Perl interpreter is linked with Exim (see
 chapter &<<CHAPperl>>&). It overrides the setting of the &%perl_at_start%&
@@ -4531,8 +4434,7 @@ to embedded Perl. It is therefore impossible to set a protocol value of &`d`&
 or &`s`& using this option (but that does not seem a real limitation).
 Repeated use of this option is not supported.
 
-.vitem &%-q%&
-.oindex "&%-q%&"
+.cmdopt -q
 .cindex "queue runner" "starting manually"
 This option is normally restricted to admin users. However, there is a
 configuration option called &%prod_requires_admin%& which can be set false to
@@ -4748,8 +4650,7 @@ command ETRN is accepted by its ACL (see chapter &<<CHAPACL>>&), its default
 effect is to run Exim with the &%-R%& option, but it can be configured to run
 an arbitrary command instead.
 
-.vitem &%-r%&
-.oindex "&%-r%&"
+.cmdopt -r
 This is a documented (for Sendmail) obsolete alternative name for &%-f%&.
 
 .vitem &%-S%&<&'rsflags'&>&~<&'string'&>
@@ -4761,14 +4662,12 @@ message's sender instead of against the recipients. If &%-R%& is also set, both
 conditions must be met for a message to be selected. If either of the options
 has &'f'& or &'ff'& in its flags, the associated action is taken.
 
-.vitem &%-Tqt%&&~<&'times'&>
-.oindex "&%-Tqt%&"
+.cmdopt -Tqt <&'times'&>
 This is an option that is exclusively for use by the Exim testing suite. It is not
 recognized when Exim is run normally. It allows for the setting up of explicit
 &"queue times"& so that various warning/retry features can be tested.
 
-.vitem &%-t%&
-.oindex "&%-t%&"
+.cmdopt -t
 .cindex "recipient" "extracting from header lines"
 .chindex Bcc:
 .chindex Cc:
@@ -4808,13 +4707,11 @@ are often added at the end of the header, and if a message is resent more than
 once, it is common for the original set of &%Resent-%& headers to be renamed as
 &%X-Resent-%& when a new set is added. This removes any possible ambiguity.
 
-.vitem &%-ti%&
-.oindex "&%-ti%&"
+.cmdopt -ti
 This option is exactly equivalent to &%-t%& &%-i%&. It is provided for
 compatibility with Sendmail.
 
-.vitem &%-tls-on-connect%&
-.oindex "&%-tls-on-connect%&"
+.cmdopt -tls-on-connect
 .cindex "TLS" "use without STARTTLS"
 .cindex "TLS" "automatic start"
 This option is available when Exim is compiled with TLS support. It forces all
@@ -4823,16 +4720,14 @@ incoming SMTP connections to behave as if the incoming port is listed in the
 &<<CHAPTLS>>& for further details.
 
 
-.vitem &%-U%&
-.oindex "&%-U%&"
+.cmdopt -U
 .cindex "Sendmail compatibility" "&%-U%& option ignored"
 Sendmail uses this option for &"initial message submission"&, and its
 documentation states that in future releases, it may complain about
 syntactically invalid messages rather than fixing them when this flag is not
 set. Exim ignores this option.
 
-.vitem &%-v%&
-.oindex "&%-v%&"
+.cmdopt -v
 This option causes Exim to write information to the standard error stream,
 describing what it is doing. In particular, it shows the log lines for
 receiving and delivering a message, and if an SMTP connection is made, the SMTP
@@ -4841,20 +4736,17 @@ the log if the setting of &%log_selector%& discards them. Any relevant
 selectors are shown with each log line. If none are shown, the logging is
 unconditional.
 
-.vitem &%-x%&
-.oindex "&%-x%&"
+.cmdopt -x
 AIX uses &%-x%& for a private purpose (&"mail from a local mail program has
 National Language Support extended characters in the body of the mail item"&).
 It sets &%-x%& when calling the MTA from its &%mail%& command. Exim ignores
 this option.
 
-.vitem &%-X%&&~<&'logfile'&>
-.oindex "&%-X%&"
+.cmdopt -X <&'logfile'&>
 This option is interpreted by Sendmail to cause debug information to be sent
 to the named file.  It is ignored by Exim.
 
-.vitem &%-z%&&~<&'log-line'&>
-.oindex "&%-z%&"
+.cmdopt -z <&'log-line'&>
 This option writes its argument to Exim's logfile.
 Use is restricted to administrators; the intent is for operational notes.
 Quotes should be used to maintain a multi-word item as a single argument,
@@ -33061,7 +32953,7 @@ address you should specify alternate list separators for both the outer
 
 
 .section "Previously seen user and hosts" "SECTseen"
-.cindex "&%een%& ACL condition"
+.cindex "&%seen%& ACL condition"
 .cindex greylisting
 The &%seen%& ACL condition can be used to test whether a
 situation has been previously met.
