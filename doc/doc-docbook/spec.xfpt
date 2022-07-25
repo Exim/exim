@@ -33658,7 +33658,7 @@ a specific address, and the other records information that applies to the
 entire domain (for example, that it accepts the local part &'postmaster'&).
 
 When an original callout fails, a detailed SMTP error message is given about
-the failure. However, for subsequent failures use the cache data, this message
+the failure. However, for subsequent failures that use the cache data, this message
 is not available.
 
 The expiry times for negative and positive address cache records are
