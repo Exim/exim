@@ -6696,11 +6696,11 @@ libraries and header files before building Exim.
 .cindex "single-key lookup" "list of types"
 The following single-key lookup types are implemented:
 
-.ilist
+.subsection cdb
 .cindex "cdb" "description of"
 .cindex "lookup" "cdb"
 .cindex "binary zero" "in lookup key"
-&(cdb)&: The given file is searched as a Constant DataBase file, using the key
+The given file is searched as a Constant DataBase file, using the key
 string without a terminating binary zero. The cdb format is designed for
 indexed files that are read frequently and never updated, except by total
 re-creation. As such, it is particularly suitable for large files containing
@@ -6716,11 +6716,12 @@ A cdb distribution is not needed in order to build Exim with cdb support,
 because the code for reading cdb files is included directly in Exim itself.
 However, no means of building or testing cdb files is provided with Exim, so
 you need to obtain a cdb distribution in order to do this.
-.next
+
+.subsection dbm
 .cindex "DBM" "lookup type"
 .cindex "lookup" "dbm"
 .cindex "binary zero" "in lookup key"
-&(dbm)&: Calls to DBM library functions are used to extract data from the given
+Calls to DBM library functions are used to extract data from the given
 DBM file by looking up the record with the given key. A terminating binary
 zero is included in the key that is passed to the DBM library. See section
 &<<SECTdb>>& for a discussion of DBM libraries.
@@ -6732,25 +6733,27 @@ using Berkeley DB versions 3 or 4, it opens existing databases for reading with
 the DB_UNKNOWN option. This enables it to handle any of the types of database
 that the library supports, and can be useful for accessing DBM files created by
 other applications. (For earlier DB versions, DB_HASH is always used.)
-.next
+
+.subsection dbmjz
 .cindex "lookup" "dbmjz"
 .cindex "lookup" "dbm &-- embedded NULs"
 .cindex "sasldb2"
 .cindex "dbmjz lookup type"
-&(dbmjz)&: This is the same as &(dbm)&, except that the lookup key is
+This is the same as &(dbm)&, except that the lookup key is
 interpreted as an Exim list; the elements of the list are joined together with
 ASCII NUL characters to form the lookup key.  An example usage would be to
 authenticate incoming SMTP calls using the passwords from Cyrus SASL's
 &_/etc/sasldb2_& file with the &(gsasl)& authenticator or Exim's own
 &(cram_md5)& authenticator.
-.next
+
+.subsection dbmnz
 .cindex "lookup" "dbmnz"
 .cindex "lookup" "dbm &-- terminating zero"
 .cindex "binary zero" "in lookup key"
 .cindex "Courier"
 .cindex "&_/etc/userdbshadow.dat_&"
 .cindex "dbmnz lookup type"
-&(dbmnz)&: This is the same as &(dbm)&, except that a terminating binary zero
+This is the same as &(dbm)&, except that a terminating binary zero
 is not included in the key that is passed to the DBM library. You may need this
 if you want to look up data in files that are created by or shared with some
 other application that does not use terminating zeros. For example, you need to
@@ -6758,15 +6761,13 @@ use &(dbmnz)& rather than &(dbm)& if you want to authenticate incoming SMTP
 calls using the passwords from Courier's &_/etc/userdbshadow.dat_& file. Exim's
 utility program for creating DBM files (&'exim_dbmbuild'&) includes the zeros
 by default, but has an option to omit them (see section &<<SECTdbmbuild>>&).
-.next
+
+.subsection dsearch
 .cindex "lookup" "dsearch"
 .cindex "dsearch lookup type"
-&(dsearch)&: The given file must be an
-absolute
-directory path; this is searched for an entry
+The given file must be an absolute directory path; this is searched for an entry
 whose name is the key by calling the &[lstat()]& function.
-The key may not
-contain any forward slash characters.
+The key may not contain any forward slash characters.
 If &[lstat()]& succeeds then so does the lookup.
 .cindex "tainted data" "dsearch result"
 The result is regarded as untainted.
@@ -6795,10 +6796,11 @@ and symlinks.
 An example of how this
 lookup can be used to support virtual domains is given in section
 &<<SECTvirtualdomains>>&.
-.next
+
+.subsection iplsearch
 .cindex "lookup" "iplsearch"
 .cindex "iplsearch lookup type"
-&(iplsearch)&: The given file is a text file containing keys and data. A key is
+The given file is a text file containing keys and data. A key is
 terminated by a colon or white space or the end of the line. The keys in the
 file must be IP addresses, or IP addresses with CIDR masks. Keys that involve
 IPv6 addresses must be enclosed in quotes to prevent the first internal colon
@@ -6831,11 +6833,11 @@ One option is supported, "ret=full", to request the return of the entire line
 rather than omitting the key portion.
 Note however that the key portion will have been de-quoted.
 
-.next
+.subsection json
 .cindex lookup json
 .cindex json "lookup type"
 .cindex JSON expansions
-&(json)&: The given file is a text file with a JSON structure.
+The given file is a text file with a JSON structure.
 An element of the structure is extracted, defined by the search key.
 The key is a list of subelement selectors
 (colon-separated by default but changeable in the usual way)
@@ -6850,11 +6852,11 @@ is returned.
 For elements of type string, the returned value is de-quoted.
 
 
-.next
+.subsection lmdb
 .cindex LMDB
 .cindex lookup lmdb
 .cindex database lmdb
-&(lmdb)&: The given file is an LMDB database.
+The given file is an LMDB database.
 LMDB is a memory-mapped key-value store,
 with API modeled loosely on that of BerkeleyDB.
 See &url(https://symas.com/products/lightning-memory-mapped-database/)
@@ -6869,12 +6871,12 @@ You will need to separately create the LMDB database file,
 possibly using the &"mdb_load"& utility.
 
 
-.next
+.subsection lsearch
 .cindex "linear search"
 .cindex "lookup" "lsearch"
 .cindex "lsearch lookup type"
 .cindex "case sensitivity" "in lsearch lookup"
-&(lsearch)&: The given file is a text file that is searched linearly for a
+The given file is a text file that is searched linearly for a
 line beginning with the search key, terminated by a colon or white space or the
 end of the line. The search is case-insensitive; that is, upper and lower case
 letters are treated as the same. The first occurrence of the key that is found
@@ -6904,17 +6906,17 @@ contents (see section &<<SECTstrings>>&). An optional colon is permitted after
 quoted keys (exactly as for unquoted keys). There is no special handling of
 quotes for the data part of an &(lsearch)& line.
 
-.next
+.subsection nis
 .cindex "NIS lookup type"
 .cindex "lookup" "NIS"
 .cindex "binary zero" "in lookup key"
-&(nis)&: The given file is the name of a NIS map, and a NIS lookup is done with
+The given file is the name of a NIS map, and a NIS lookup is done with
 the given key, without a terminating binary zero. There is a variant called
 &(nis0)& which does include the terminating binary zero in the key. This is
 reportedly needed for Sun-style alias files. Exim does not recognize NIS
 aliases; the full map names must be used.
 
-.next
+.subsection (n)wildlsearch
 .cindex "wildlsearch lookup type"
 .cindex "lookup" "wildlsearch"
 .cindex "nwildlsearch lookup type"
@@ -6930,32 +6932,29 @@ Like &(lsearch)&, the testing is done case-insensitively. However, keys in the
 file that are regular expressions can be made case-sensitive by the use of
 &`(-i)`& within the pattern. The following forms of wildcard are recognized:
 
-. ==== As this is a nested list, any displays it contains must be indented
-. ==== as otherwise they are too far to the left.
-
 .olist
 The string may begin with an asterisk to mean &"ends with"&. For example:
 .code
-    *.a.b.c       data for anything.a.b.c
-    *fish         data for anythingfish
+*.a.b.c       data for anything.a.b.c
+*fish         data for anythingfish
 .endd
 .next
 The string may begin with a circumflex to indicate a regular expression. For
 example, for &(wildlsearch)&:
 .code
-    ^\N\d+\.a\.b\N    data for <digits>.a.b
+^\N\d+\.a\.b\N    data for <digits>.a.b
 .endd
 Note the use of &`\N`& to disable expansion of the contents of the regular
 expression. If you are using &(nwildlsearch)&, where the keys are not
 string-expanded, the equivalent entry is:
 .code
-    ^\d+\.a\.b        data for <digits>.a.b
+^\d+\.a\.b        data for <digits>.a.b
 .endd
 The case-insensitive flag is set at the start of compiling the regular
 expression, but it can be turned off by using &`(-i)`& at an appropriate point.
 For example, to make the entire pattern case-sensitive:
 .code
-    ^(?-i)\d+\.a\.b        data for <digits>.a.b
+^(?-i)\d+\.a\.b        data for <digits>.a.b
 .endd
 
 If the regular expression contains white space or colon characters, you must
@@ -6976,7 +6975,7 @@ is used to implement &((n)wildlsearch)& means that the string may begin with a
 lookup name terminated by a semicolon, and followed by lookup data. For
 example:
 .code
-    cdb;/some/file  data for keys that match the file
+cdb;/some/file  data for keys that match the file
 .endd
 The data that is obtained from the nested lookup is discarded.
 .endlist olist
@@ -6989,13 +6988,12 @@ be followed by optional colons.
 &((n)wildlsearch)& can &'not'& be turned into a DBM or cdb file, because those
 lookup types support only literal keys.
 
-.next
+.subsection spf
 .cindex "spf lookup type"
 .cindex "lookup" "spf"
-&(spf)&: If Exim is built with SPF support, manual lookups can be done
+If Exim is built with SPF support, manual lookups can be done
 (as opposed to the standard ACL condition method).
 For details see section &<<SECSPF>>&.
-.endlist ilist
 
 
 .section "Query-style lookup types" "SECTquerystylelookups"
@@ -7004,44 +7002,50 @@ For details see section &<<SECSPF>>&.
 The supported query-style lookup types are listed below. Further details about
 many of them are given in later sections.
 
-.ilist
+.subsection dnsdb
 .cindex "DNS" "as a lookup type"
 .cindex "lookup" "DNS"
-&(dnsdb)&: This does a DNS search for one or more records whose domain names
+This does a DNS search for one or more records whose domain names
 are given in the supplied query. The resulting data is the contents of the
 records. See section &<<SECTdnsdb>>&.
-.next
+
+.subsection ibase
 .cindex "InterBase lookup type"
 .cindex "lookup" "InterBase"
-&(ibase)&: This does a lookup in an InterBase database.
-.next
+This does a lookup in an InterBase database.
+
+.subsection ldap
 .cindex "LDAP" "lookup type"
 .cindex "lookup" "LDAP"
-&(ldap)&: This does an LDAP lookup using a query in the form of a URL, and
+This does an LDAP lookup using a query in the form of a URL, and
 returns attributes from a single entry. There is a variant called &(ldapm)&
 that permits values from multiple entries to be returned. A third variant
 called &(ldapdn)& returns the Distinguished Name of a single entry instead of
 any attribute values. See section &<<SECTldap>>&.
-.next
+
+.subsection mysql
 .cindex "MySQL" "lookup type"
 .cindex "lookup" "MySQL"
-&(mysql)&: The format of the query is an SQL statement that is passed to a
+The format of the query is an SQL statement that is passed to a
 MySQL database. See section &<<SECTsql>>&.
-.next
+
+.subsection nisplus
 .cindex "NIS+ lookup type"
 .cindex "lookup" "NIS+"
-&(nisplus)&: This does a NIS+ lookup using a query that can specify the name of
+This does a NIS+ lookup using a query that can specify the name of
 the field to be returned. See section &<<SECTnisplus>>&.
-.next
+
+.subsection oracle
 .cindex "Oracle" "lookup type"
 .cindex "lookup" "Oracle"
-&(oracle)&: The format of the query is an SQL statement that is passed to an
+The format of the query is an SQL statement that is passed to an
 Oracle database. See section &<<SECTsql>>&.
-.next
+
+.subsection passwd
 .cindex "lookup" "passwd"
 .cindex "passwd lookup type"
 .cindex "&_/etc/passwd_&"
-&(passwd)& is a query-style lookup with queries that are just user names. The
+This is a query-style lookup with queries that are just user names. The
 lookup calls &[getpwnam()]& to interrogate the system password data, and on
 success, the result string is the same as you would get from an &(lsearch)&
 lookup on a traditional &_/etc/passwd file_&, though with &`*`& for the
@@ -7049,32 +7053,34 @@ password value. For example:
 .code
 *:42:42:King Rat:/home/kr:/bin/bash
 .endd
-.next
+
+.subsection pgsql
 .cindex "PostgreSQL lookup type"
 .cindex "lookup" "PostgreSQL"
-&(pgsql)&: The format of the query is an SQL statement that is passed to a
+The format of the query is an SQL statement that is passed to a
 PostgreSQL database. See section &<<SECTsql>>&.
 
-.next
+.subsection redis
 .cindex "Redis lookup type"
 .cindex lookup Redis
-&(redis)&: The format of the query is either a simple get or simple set,
+The format of the query is either a simple get or simple set,
 passed to a Redis database. See section &<<SECTsql>>&.
 
-.next
+.subsection sqlite
 .cindex "sqlite lookup type"
 .cindex "lookup" "sqlite"
-&(sqlite)&: The format of the query is
+The format of the query is
 an SQL statement that is passed to an SQLite database. See section &<<SECTsqlite>>&.
 
-.next
-&(testdb)&: This is a lookup type that is used for testing Exim. It is
+.subsection testdb
+This is a lookup type that is used for testing Exim. It is
 not likely to be useful in normal operation.
-.next
+
+.subsection whoson
 .cindex "whoson lookup type"
 .cindex "lookup" "whoson"
 . --- still http:-only, 2018-09-07
-&(whoson)&: &'Whoson'& (&url(http://whoson.sourceforge.net)) is a protocol that
+&'Whoson'& (&url(http://whoson.sourceforge.net)) is a protocol that
 allows a server to check whether a particular (dynamically allocated) IP
 address is currently allocated to a known (trusted) user and, optionally, to
 obtain the identity of the said user. For SMTP servers, &'Whoson'& was popular
@@ -7089,7 +7095,6 @@ The query consists of a single IP address. The value returned is the name of
 the authenticated user, which is stored in the variable &$value$&. However, in
 this example, the data in &$value$& is not used; the result of the lookup is
 one of the fixed strings &"yes"& or &"no"&.
-.endlist
 
 
 
