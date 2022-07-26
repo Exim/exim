@@ -6559,15 +6559,17 @@ cause parts of the string to be replaced by data that is obtained from the
 lookup. Lookups of this type are conditional expansion items. Different results
 can be defined for the cases of lookup success and failure. See chapter
 &<<CHAPexpand>>&, where string expansions are described in detail.
-The key for the lookup is &*specified*& as part of the string expansion.
+The key for the lookup is &*specified*& as part of the string to be expanded.
 .next
 Lists of domains, hosts, and email addresses can contain lookup requests as a
 way of avoiding excessively long linear lists. In this case, the data that is
 returned by the lookup is often (but not always) discarded; whether the lookup
 succeeds or fails is what really counts. These kinds of list are described in
 chapter &<<CHAPdomhosaddlists>>&.
-The key for the lookup is &*implicit*&,
-given by the context in which the list is expanded.
+Depending on the lookup type (see below)
+the key for the lookup may need to be &*specified*& as above
+or may be &*implicit*&,
+given by the context in which the list is being checked.
 .endlist
 
 String expansions, lists, and lookups interact with each other in such a way
@@ -6586,6 +6588,7 @@ Be careful to distinguish between the following two examples:
 domains = ${lookup{$sender_host_address}lsearch{/some/file}}
 domains = lsearch;/some/file
 .endd
+.ilist
 The first uses a string expansion, the result of which must be a domain list.
 The key for an expansion-style lookup must be given explicitly.
 No strings have been specified for a successful or a failing lookup; the
@@ -6602,6 +6605,7 @@ possibly other types of item that are allowed in domain lists).
 .cindex "de-tainting" "using a lookup expansion""
 The result of the expansion is not tainted.
 
+.next
 In the second example, the lookup is a single item in a domain list. It causes
 Exim to use a lookup to see if the domain that is being processed can be found
 in the file.
@@ -6615,7 +6619,8 @@ matches the list item.
 
 The key for a list-style lookup is implicit, from the lookup context, if
 the lookup is a single-key type (see below).
-For query-style lookup types the key must be given explicitly.
+For query-style lookup types the query must be given explicitly.
+.endlist
 
 It is possible, though no doubt confusing, to use both kinds of lookup at once.
 Consider a file containing lines like this:
@@ -6660,6 +6665,7 @@ If this is given and the lookup
 (either underlying implementation or cached value)
 returns data, the result is replaced with a non-tainted
 version of the lookup key.
+
 .next
 .cindex "query-style lookup" "definition of"
 The &'query-style'& type accepts a generalized database query. No particular
