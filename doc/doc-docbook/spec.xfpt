@@ -32989,7 +32989,7 @@ address you should specify alternate list separators for both the outer
 The &%seen%& ACL condition can be used to test whether a
 situation has been previously met.
 It uses a hints database to record a timestamp against a key.
-host. The syntax of the condition is:
+The syntax of the condition is:
 .display
 &`seen =`& <&'optional flag'&><&'time interval'&> &`/`& <&'options'&>
 .endd
@@ -33107,16 +33107,23 @@ the &%count=%& option.
 
 .subsection "Ratelimit options for what is being measured" ratoptmea
 .cindex "rate limiting" "per_* options"
-The &%per_conn%& option limits the client's connection rate. It is not
+.vlist
+.vitem per_conn
+.cindex "rate limiting" per_conn
+This option limits the client's connection rate. It is not
 normally used in the &%acl_not_smtp%&, &%acl_not_smtp_mime%&, or
 &%acl_not_smtp_start%& ACLs.
 
-The &%per_mail%& option limits the client's rate of sending messages. This is
+.vitem per_mail
+.cindex "rate limiting" per_conn
+This option limits the client's rate of sending messages. This is
 the default if none of the &%per_*%& options is specified. It can be used in
 &%acl_smtp_mail%&, &%acl_smtp_rcpt%&, &%acl_smtp_predata%&, &%acl_smtp_mime%&,
 &%acl_smtp_data%&, or &%acl_not_smtp%&.
 
-The &%per_byte%& option limits the sender's email bandwidth. It can be used in
+.vitem per_byte
+.cindex "rate limiting" per_conn
+This option limits the sender's email bandwidth. It can be used in
 the same ACLs as the &%per_mail%& option, though it is best to use this option
 in the &%acl_smtp_mime%&, &%acl_smtp_data%& or &%acl_not_smtp%& ACLs; if it is
 used in an earlier ACL, Exim relies on the SIZE parameter given by the client
@@ -33124,7 +33131,9 @@ in its MAIL command, which may be inaccurate or completely missing. You can
 follow the limit &'m'& in the configuration with K, M, or G to specify limits
 in kilobytes, megabytes, or gigabytes, respectively.
 
-The &%per_rcpt%& option causes Exim to limit the rate at which recipients are
+.vitem per_rcpt
+.cindex "rate limiting" per_rcpt
+This option causes Exim to limit the rate at which recipients are
 accepted. It can be used in the &%acl_smtp_rcpt%&, &%acl_smtp_predata%&,
 &%acl_smtp_mime%&, or &%acl_smtp_data%& ACLs. In
 &%acl_smtp_rcpt%& the rate is updated one recipient at a time; in the other
@@ -33132,24 +33141,37 @@ ACLs the rate is updated with the total (accepted) recipient count in one go. No
 in either case the rate limiting engine will see a message with many
 recipients as a large high-speed burst.
 
-The &%per_addr%& option is like the &%per_rcpt%& option, except it counts the
+.vitem per_addr
+.cindex "rate limiting" per_addr
+This option is like the &%per_rcpt%& option, except it counts the
 number of different recipients that the client has sent messages to in the
 last time period. That is, if the client repeatedly sends messages to the same
 recipient, its measured rate is not increased. This option can only be used in
 &%acl_smtp_rcpt%&.
 
-The &%per_cmd%& option causes Exim to recompute the rate every time the
+.vitem per_cmd
+.cindex "rate limiting" per_cmd
+This option causes Exim to recompute the rate every time the
 condition is processed. This can be used to limit the rate of any SMTP
 command. If it is used in multiple ACLs it can limit the aggregate rate of
 multiple different commands.
 
-The &%count=%& option can be used to alter how much Exim adds to the client's
-measured rate. For example, the &%per_byte%& option is equivalent to
-&`per_mail/count=$message_size`&. If there is no &%count=%& option, Exim
+.vitem count
+.cindex "rate limiting" count
+This option can be used to alter how much Exim adds to the client's
+measured rate.
+A value is required, after an equals sign.
+For example, the &%per_byte%& option is equivalent to
+&`per_mail/count=$message_size`&.
+If there is no &%count=%& option, Exim
 increases the measured rate by one (except for the &%per_rcpt%& option in ACLs
-other than &%acl_smtp_rcpt%&). The count does not have to be an integer.
+other than &%acl_smtp_rcpt%&).
+The count does not have to be an integer.
 
-The &%unique=%& option is described in section &<<ratoptuniq>>& below.
+.vitem unique
+.cindex "rate limiting" unique
+This option is described in section &<<ratoptuniq>>& below.
+.endlist
 
 
 .subsection "Ratelimit update modes" ratoptupd
