@@ -7079,7 +7079,6 @@ not likely to be useful in normal operation.
 .subsection whoson
 .cindex "whoson lookup type"
 .cindex "lookup" "whoson"
-. --- still http:-only, 2018-09-07
 &'Whoson'& (&url(http://whoson.sourceforge.net)) is a protocol that
 allows a server to check whether a particular (dynamically allocated) IP
 address is currently allocated to a known (trusted) user and, optionally, to
@@ -29386,7 +29385,7 @@ For outgoing SMTP deliveries, &$tls_out_cipher$& is used and logged
 (again depending on the &%tls_cipher%& log selector).
 
 
-.subsection "Requesting and verifying client certificates" SECID183
+.subsection "Requesting and verifying client certificates"
 .cindex "certificate" "verification of client"
 .cindex "TLS" "client certificate verification"
 If you want an Exim server to request a certificate when negotiating a TLS
@@ -29439,86 +29438,7 @@ Because it is often a long text string, it is not included in the log line or
 certificate is supplied, &$tls_in_peerdn$& is empty.
 
 
-.section "Revoked certificates" "SECID184"
-.cindex "TLS" "revoked certificates"
-.cindex "revocation list"
-.cindex "certificate" "revocation list"
-.cindex "OCSP" "stapling"
-Certificate issuing authorities issue Certificate Revocation Lists (CRLs) when
-certificates are revoked. If you have such a list, you can pass it to an Exim
-server using the global option called &%tls_crl%& and to an Exim client using
-an identically named option for the &(smtp)& transport. In each case, the value
-of the option is expanded and must then be the name of a file that contains a
-CRL in PEM format.
-The downside is that clients have to periodically re-download a potentially huge
-file from every certificate authority they know of.
-
-The way with most moving parts at query time is Online Certificate
-Status Protocol (OCSP), where the client verifies the certificate
-against an OCSP server run by the CA.  This lets the CA track all
-usage of the certs.  It requires running software with access to the
-private key of the CA, to sign the responses to the OCSP queries.  OCSP
-is based on HTTP and can be proxied accordingly.
-
-The only widespread OCSP server implementation (known to this writer)
-comes as part of OpenSSL and aborts on an invalid request, such as
-connecting to the port and then disconnecting.  This requires
-re-entering the passphrase each time some random client does this.
-
-The third way is OCSP Stapling; in this, the server using a certificate
-issued by the CA periodically requests an OCSP proof of validity from
-the OCSP server, then serves it up inline as part of the TLS
-negotiation.   This approach adds no extra round trips, does not let the
-CA track users, scales well with number of certs issued by the CA and is
-resilient to temporary OCSP server failures, as long as the server
-starts retrying to fetch an OCSP proof some time before its current
-proof expires.  The downside is that it requires server support.
-
-Unless Exim is built with the support disabled,
-or with GnuTLS earlier than version 3.3.16 / 3.4.8
-support for OCSP stapling is included.
-
-There is a global option called &%tls_ocsp_file%&.
-The file specified therein is expected to be in DER format, and contain
-an OCSP proof.  Exim will serve it as part of the TLS handshake.  This
-option will be re-expanded for SNI, if the &%tls_certificate%& option
-contains &`tls_in_sni`&, as per other TLS options.
-
-Exim does not at this time implement any support for fetching a new OCSP
-proof.  The burden is on the administrator to handle this, outside of
-Exim.  The file specified should be replaced atomically, so that the
-contents are always valid.  Exim will expand the &%tls_ocsp_file%& option
-on each connection, so a new file will be handled transparently on the
-next connection.
-
-When built with OpenSSL Exim will check for a valid next update timestamp
-in the OCSP proof; if not present, or if the proof has expired, it will be
-ignored.
-
-For the client to be able to verify the stapled OCSP the server must
-also supply, in its stapled information, any intermediate
-certificates for the chain leading to the OCSP proof from the signer
-of the server certificate.  There may be zero or one such. These
-intermediate certificates should be added to the server OCSP stapling
-file named by &%tls_ocsp_file%&.
-
-Note that the proof only covers the terminal server certificate,
-not any of the chain from CA to it.
-
-There is no current way to staple a proof for a client certificate.
-
-.code
-  A helper script "ocsp_fetch.pl" for fetching a proof from a CA
-  OCSP server is supplied.  The server URL may be included in the
-  server certificate, if the CA is helpful.
-
-  One failure mode seen was the OCSP Signer cert expiring before the end
-  of validity of the OCSP proof. The checking done by Exim/OpenSSL
-  noted this as invalid overall, but the re-fetch script did not.
-.endd
-
-
-.section "Caching of static server configuration items" "SECTserverTLScache"
+.subsection "Caching of static server configuration items" "SSECTserverTLScache"
 .cindex certificate caching
 .cindex privatekey caching
 .cindex crl caching
@@ -29824,6 +29744,7 @@ When Exim is built against GnuTLS, SNI support is available as of GnuTLS
 0.5.10.  (Its presence predates the current API which Exim uses, so if Exim
 built, then you have SNI support).
 
+.subsection ALPN
 .cindex TLS ALPN
 .cindex ALPN "general information"
 .cindex TLS "Application Layer Protocol Names"
@@ -29993,6 +29914,94 @@ For information on creating self-signed CA certificates and using them to sign
 user certificates, see the &'General implementation overview'& chapter of the
 Open-source PKI book, available online at
 &url(https://sourceforge.net/projects/ospkibook/).
+
+
+.subsection "Revoked certificates"
+.cindex "TLS" "revoked certificates"
+.cindex "revocation list"
+.cindex "certificate" "revocation list"
+.cindex "OCSP" "stapling"
+There are three ways for a certificate to be made unusable
+before its expiry.
+
+.ilist
+Certificate issuing authorities issue Certificate Revocation Lists (CRLs) when
+certificates are revoked. If you have such a list, you can pass it to an Exim
+server using the global option called &%tls_crl%& and to an Exim client using
+an identically named option for the &(smtp)& transport. In each case, the value
+of the option is expanded and must then be the name of a file that contains a
+CRL in PEM format.
+The downside is that clients have to periodically re-download a potentially huge
+file from every certificate authority they know of.
+
+.next
+The way with most moving parts at query time is Online Certificate
+Status Protocol (OCSP), where the client verifies the certificate
+against an OCSP server run by the CA.  This lets the CA track all
+usage of the certs.  It requires running software with access to the
+private key of the CA, to sign the responses to the OCSP queries.  OCSP
+is based on HTTP and can be proxied accordingly.
+
+The only widespread OCSP server implementation (known to this writer)
+comes as part of OpenSSL and aborts on an invalid request, such as
+connecting to the port and then disconnecting.  This requires
+re-entering the passphrase each time some random client does this.
+
+.next
+The third way is OCSP Stapling; in this, the server using a certificate
+issued by the CA periodically requests an OCSP proof of validity from
+the OCSP server, then serves it up inline as part of the TLS
+negotiation.   This approach adds no extra round trips, does not let the
+CA track users, scales well with number of certs issued by the CA and is
+resilient to temporary OCSP server failures, as long as the server
+starts retrying to fetch an OCSP proof some time before its current
+proof expires.  The downside is that it requires server support.
+
+Unless Exim is built with the support disabled,
+or with GnuTLS earlier than version 3.3.16 / 3.4.8
+support for OCSP stapling is included.
+
+There is a global option called &%tls_ocsp_file%&.
+The file specified therein is expected to be in DER format, and contain
+an OCSP proof.  Exim will serve it as part of the TLS handshake.  This
+option will be re-expanded for SNI, if the &%tls_certificate%& option
+contains &`tls_in_sni`&, as per other TLS options.
+
+Exim does not at this time implement any support for fetching a new OCSP
+proof.  The burden is on the administrator to handle this, outside of
+Exim.  The file specified should be replaced atomically, so that the
+contents are always valid.  Exim will expand the &%tls_ocsp_file%& option
+on each connection, so a new file will be handled transparently on the
+next connection.
+
+When built with OpenSSL Exim will check for a valid next update timestamp
+in the OCSP proof; if not present, or if the proof has expired, it will be
+ignored.
+
+For the client to be able to verify the stapled OCSP the server must
+also supply, in its stapled information, any intermediate
+certificates for the chain leading to the OCSP proof from the signer
+of the server certificate.  There may be zero or one such. These
+intermediate certificates should be added to the server OCSP stapling
+file named by &%tls_ocsp_file%&.
+
+Note that the proof only covers the terminal server certificate,
+not any of the chain from CA to it.
+
+There is no current way to staple a proof for a client certificate.
+
+.code
+  A helper script "ocsp_fetch.pl" for fetching a proof from a CA
+  OCSP server is supplied.  The server URL may be included in the
+  server certificate, if the CA is helpful.
+
+  One failure mode seen was the OCSP Signer cert expiring before the end
+  of validity of the OCSP proof. The checking done by Exim/OpenSSL
+  noted this as invalid overall, but the re-fetch script did not.
+.endd
+.endlist
+
+
 .ecindex IIDencsmtp1
 .ecindex IIDencsmtp2
 
