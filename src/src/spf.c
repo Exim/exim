@@ -204,7 +204,7 @@ spf_nxdomain = SPF_dns_rr_new_init(spf_dns_server,
   "", ns_t_any, 24 * 60 * 60, HOST_NOT_FOUND);
 if (!spf_nxdomain)
   {
-  free(spf_dns_server);
+  store_free(spf_dns_server);
   return NULL;
   }
 
