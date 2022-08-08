@@ -18,6 +18,11 @@ JH/04 Bug 2903: avoid exit on an attempt to rewrite a malformed address.
       Make the rewrite never match and keep the logging.  Trust the
       admin to be using verify=header-syntax (to actually reject the message).
 
+JH/05 Follow symlinks for placing a watch on TLS creds files.  This means
+      (under Linux) we watch the dir containing the final file; previously
+      it would be the dir with the first symlink.  We still do not monitor
+      the entire path.
+
 
 Exim version 4.96
 -----------------

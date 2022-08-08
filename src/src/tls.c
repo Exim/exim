@@ -143,15 +143,29 @@ static BOOL
 tls_set_one_watch(const uschar * filename)
 # ifdef EXIM_HAVE_INOTIFY
 {
+uschar buf[PATH_MAX];
+ssize_t len;
 uschar * s;
 
 if (Ustrcmp(filename, "system,cache") == 0) return TRUE;
-
 if (!(s = Ustrrchr(filename, '/'))) return FALSE;
-s = string_copyn(filename, s - filename);	/* mem released by tls_set_watch */
-DEBUG(D_tls) debug_printf("watch dir '%s'\n", s);
 
-/*XXX unclear what effect symlinked files will have for inotify */
+for (unsigned loop = 20;
+     (len = readlink(CCS filename, CS buf, sizeof(buf))) >= 0; )
+  {						/* a symlink */
+  if (--loop == 0) { errno = ELOOP; return FALSE; }
+  filename = buf[0] == '/'
+    ? string_copyn(buf, (unsigned)len)	/* mem released by tls_set_watch */
+    : string_sprintf("%.*s/%.*s", (int)(s - filename), (int)len);
+  s = Ustrrchr(filename, '/');
+  }
+if (errno != EINVAL)
+  return FALSE;					/* other error */
+
+/* not a symlink */
+s = string_copyn(filename, s - filename);	/* mem released by tls_set_watch */
+
+DEBUG(D_tls) debug_printf("watch dir '%s'\n", s);
 
 if (inotify_add_watch(tls_watch_fd, CCS s,
       IN_ONESHOT | IN_CLOSE_WRITE | IN_DELETE | IN_DELETE_SELF
