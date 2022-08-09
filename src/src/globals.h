@@ -680,6 +680,7 @@ extern uschar *keep_environment;       /* Whitelist for environment variables */
 extern int     keep_malformed;         /* Time to keep malformed messages */
 
 extern uschar *eldap_dn;               /* Where LDAP DNs are left */
+extern const uschar *letter_digit_hyphen_dot; /* Legitimate DNS host name chars */
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
 extern uschar *limits_advertise_hosts; /* for banner/EHLO pipelining */
 #endif

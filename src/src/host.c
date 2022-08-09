@@ -84,13 +84,13 @@ random_number(int limit)
 if (limit < 1)
   return 0;
 if (random_seed == 0)
-  {
-  if (f.running_in_test_harness) random_seed = 42; else
+  if (f.running_in_test_harness)
+    random_seed = 42;
+  else
     {
     int p = (int)getpid();
     random_seed = (int)time(NULL) ^ ((p << 16) | p);
     }
-  }
 random_seed = 1103515245 * random_seed + 12345;
 return (unsigned int)(random_seed >> 16) % limit;
 }
@@ -1646,6 +1646,7 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
            rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == T_PTR)
         {
         uschar * s = store_get(ssize, GET_TAINTED);	/* names are tainted */
+	unsigned slen;
 
         /* If an overlong response was received, the data will have been
         truncated and dn_expand may fail. */
@@ -1658,11 +1659,17 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
           break;
           }
 
-        store_release_above(s + Ustrlen(s) + 1);
-        if (!s[0])
+        store_release_above(s + (slen = Ustrlen(s)) + 1);
+        if (!*s)
           {
           HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an "
             "empty name: treated as non-existent host name\n");
+          continue;
+          }
+	if (Ustrspn(s, letter_digit_hyphen_dot) != slen)
+          {
+          HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an "
+            "illegal name (bad char): treated as non-existent host name\n");
           continue;
           }
         if (!sender_host_name) sender_host_name = s;

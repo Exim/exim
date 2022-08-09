@@ -23,6 +23,9 @@ JH/05 Follow symlinks for placing a watch on TLS creds files.  This means
       it would be the dir with the first symlink.  We still do not monitor
       the entire path.
 
+JH/06 Check for bad chars in rDNS for sender_host_name. The OpenBSD (at least)
+      dn_expand() is happy to pass them through.
+
 
 Exim version 4.96
 -----------------

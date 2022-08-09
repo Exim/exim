@@ -1016,6 +1016,10 @@ uschar *keep_environment       = NULL;
 int     keep_malformed         = 4*24*60*60;    /* 4 days */
 
 uschar *eldap_dn               = NULL;
+const uschar *letter_digit_hyphen_dot =
+    US"abcdefghijklmnopqrstuvwxyz"
+      ".-0123456789"
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
 uschar *limits_advertise_hosts = US"*";
 #endif
