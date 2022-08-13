@@ -547,6 +547,7 @@ extern int     stdin_ferror(void);
 extern BOOL    stdin_hasc(void);
 extern int     stdin_ungetc(int);
 
+extern void    stackdump(void);
 extern void    store_exit(void);
 extern void    store_init(void);
 extern void    store_writeprotect(int);

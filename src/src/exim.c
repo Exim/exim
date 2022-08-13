@@ -232,7 +232,7 @@ exit(1);
 ***********************************************/
 
 #define STACKDUMP_MAX 24
-static void
+void
 stackdump(void)
 {
 #ifndef NO_EXECINFO

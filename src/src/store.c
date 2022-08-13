@@ -274,6 +274,9 @@ for (pp = paired_pools; pp < paired_pools + N_PAIRED_POOLS; pp++)
   for (b = pp->chainbase; b; b = b->next)
     if (is_pointer_in_block(b, p)) return pp;
 
+#ifndef COMPILE_UTILITY
+stackdump();
+#endif
 log_write(0, LOG_MAIN|LOG_PANIC_DIE,
   "bad memory reference; pool not found, at %s %d", func, linenumber);
 return NULL;
