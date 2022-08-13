@@ -6,7 +6,7 @@
 # Disable TFO blackhole-detection as we seem to be running afoul of that
 sudo perl
 system ("tc qdisc add dev lo root netem delay 50ms");
-system ("ip tcp_metrics delete 127.0.0.1");
+system ("ip tcp_metrics delete HOSTIPV4");
 system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
 ****
 #

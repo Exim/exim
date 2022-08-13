@@ -34,7 +34,7 @@ begin transports
 send_to_server:
   driver = smtp
   allow_localhost
-  hosts = 127.0.0.1
+  hosts = HOSTIPV4
   port = PORT_D
   hosts_try_fastopen = *
 
