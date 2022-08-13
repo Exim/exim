@@ -372,7 +372,7 @@ if (!save_errno)
 # ifdef TCP_FASTOPEN_CONNECT
     else
       {						/* expecting client data */
-      debug_printf(" set up lazy-connect\n");
+      DEBUG(D_transport|D_acl|D_v) debug_printf(" set up lazy-connect\n");
       setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN_CONNECT, US &on, sizeof(on));
       /* fastopen_blob = NULL;		 lazy TFO, triggered by data write */
       }

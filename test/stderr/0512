@@ -20,6 +20,7 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
+Clearing TFO as not first host for message
 getting address for 127.0.0.1
 checking status of 127.0.0.1
 no message retry record
@@ -31,6 +32,7 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
+Clearing TFO as not first host for message
 getting address for 127.0.0.1
 checking status of 127.0.0.1
 no message retry record
@@ -42,6 +44,7 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
+Clearing TFO as not first host for message
 getting address for 127.0.0.1
 checking status of 127.0.0.1
 no message retry record
@@ -108,6 +111,7 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
+Clearing TFO as not first host for message
 getting address for 127.0.0.1
 checking status of 127.0.0.1
 no message retry record

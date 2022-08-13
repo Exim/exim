@@ -5312,6 +5312,17 @@ retry_non_continued:
     uschar *retry_message_key = NULL;
     uschar *serialize_key = NULL;
 
+    /* Deal slightly better with a possible Linux kernel bug that results
+    in intermittent TFO-conn fails deep into the TCP flow.  Bug 2907 tracks.
+    Hack: Clear TFO option for any further hosts on this tpt run. */
+
+    if (total_hosts_tried > 0)
+      {
+      DEBUG(D_transport|D_acl|D_v)
+	debug_printf("Clearing TFO as not first host for message\n");
+      ob->hosts_try_fastopen = US"";
+      }
+
     /* Default next host is next host. :-) But this can vary if the
     hosts_max_try limit is hit (see below). It may also be reset if a host
     address is looked up here (in case the host was multihomed). */
