@@ -1442,6 +1442,8 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Postgres version-dependent differences
     s/^initdb: warning: (enabling "trust" authentication for local connections)$/\nWARNING: $1/;
+    # Postgre DB server PID
+    s/ \[\d+\] (?=(LOG:  redirecting log|HINT:  Future log output))/ [pppp] /;
 
     # Not all builds include DMARC
     next if /^DMARC: no (dmarc_tld_file|sender_host_address)$/ ;

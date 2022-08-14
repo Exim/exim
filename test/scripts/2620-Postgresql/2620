@@ -8,10 +8,15 @@ echo Starting DB server
 perl
 system 'DIR/bin.sys/initdb -D DIR/pgsql/data';
 ****
-sudo rm test-stdout
+#
+# I don not understand why, but the DB fails to start if this rm is present.
+#sudo rm test-stdout
+#
+# Start the DB server
 background
 DIR/bin.sys/postgres -D DIR/pgsql/data -p PORT_N -k DIR/pgsql
 ****
+#
 sleep 1
 echo Waiting for DB server
 perl
@@ -28,6 +33,7 @@ system 'psql -h localhost -p PORT_N -d test \
      INSERT INTO them VALUES ( CHR(39) || \'stquot\', \'quote1\' );" \
  ';
 ****
+#
 echo Populated DB server
 #
 # now, the tests
