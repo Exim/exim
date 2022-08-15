@@ -261,11 +261,19 @@ if (X509_print_ex(bp, (X509 *)cert, 0,
   X509_FLAG_NO_AUX) == 1)
   {
   long len = BIO_get_mem_data(bp, &cp);
+  gstring * g = NULL;
 
   /* Strip leading "Signature Algorithm" line */
   while (*cp && *cp != '\n') { cp++; len--; }
+  if (*cp) { cp++; len--; }
 
-  cp = string_copyn(cp+1, len-1);
+  /* Strip possible leading "    Signature Value:\n" (seen with OpenSSL 3.0.5) */
+  if (Ustrncmp(cp, "    Signature Value:\n", 21) == 0) { cp += 21; len -= 21; }
+
+  /* Copy only hexchars and colon (different OpenSSL versions do different spacing) */
+  for ( ; len-- && *cp; cp++)
+    if (Ustrchr("0123456789abcdef:", *cp)) g = string_catn(g, cp, 1);
+  cp = string_from_gstring(g);
   }
 BIO_free(bp);
 return cp;
