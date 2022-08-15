@@ -1056,6 +1056,8 @@ no_conn:
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
         }
 #ifndef DISABLE_DKIM
+      /* DKIM signing needs to add a header after seeing the whole body, so we cannot just copy
+      body bytes to the outbound as they are received, which is the intent of cutthrough. */
       if (ob->dkim.dkim_domain)
         {
         cutthrough.delivery= FALSE;

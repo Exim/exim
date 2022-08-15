@@ -2530,6 +2530,8 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
     DEBUG(D_tls) bp = BIO_new(BIO_s_mem());
 
     /* Use the CA & chain that verified the server cert to verify the stapled info */
+    /*XXX could we do an event here, for observability of ocsp?  What reasonable data could we give access to? */
+    /* Dates would be a start. Do we need another opaque variable type, as for certs, plus an extract expansion? */
 
    {
     /* If this routine is not available, we've avoided [in tls_client_start()]
