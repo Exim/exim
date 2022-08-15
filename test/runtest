@@ -1503,13 +1503,15 @@ RESET_AFTER_EXTRA_LINE_READ:
     # CHUNKING: exact sizes depend on hostnames in headers
     s/(=>.* K C="250- \d)\d+ (byte chunk, total \d)\d+/$1nn $2nn/;
 
-    # openssl version variances
-    s/(TLS error on connection [^:]*: error:)[0-9A-F]{8}(:system library):(?:fopen|func\(4095\)):(No such file or directory)$/$1xxxxxxxx$2:fopen:$3/;
-    s/(DANE attempt failed.*error:)[0-9A-F]{8}(:SSL routines:)(?:(?i)ssl3_get_server_certificate|tls_process_server_certificate|CONNECT_CR_CERT)(?=:certificate verify failed$)/$1xxxxxxxx$2ssl3_get_server_certificate/;
+    # OpenSSL version variances
+    s/(TLS error on connection [^:]*: error:)[0-9A-F]{8}(:system library):(?:fopen|func\(4095\)|):(No such file or directory)$/$1xxxxxxxx$2:fopen:$3/;
+    next if /TLS error \(SSL_read\): error:0A000126:SSL routines::unexpected eof while reading$/ ;
+    s/EVDATA: \K\(SSL_accept\): error:0A000126:SSL routines::unexpected eof while reading/SSL_accept: TCP connection closed by peer/;
+    s/(DANE attempt failed.*error:)[0-9A-F]{8}(:SSL routines:)(?:(?i)ssl3_get_server_certificate|tls_process_server_certificate|CONNECT_CR_CERT|)(?=:certificate verify failed$)/$1xxxxxxxx$2ssl3_get_server_certificate/;
     s/(DKIM: validation error: )error:[0-9A-F]{8}:rsa routines:(?:(?i)int_rsa_verify|CRYPTO_internal):(?:bad signature|algorithm mismatch)$/$1Public key signature verification has failed./;
     s/ARC: AMS signing: privkey PEM-block import: error:\K[0-9A-F]{8}:(PEM routines):get_name:(no start line)/0906D06C:$1:PEM_read_bio:$2/;
 
-    # gnutls version variances
+    # GnuTLS version variances
     if (/TLS error on connection \(recv\): .* (Decode error|peer did not send any certificate)/)
       {
       my $prev = $_;
@@ -1522,8 +1524,10 @@ RESET_AFTER_EXTRA_LINE_READ:
       else
 	{ $_ = $prev; }
       }
-    # translate gnutls error into the openssl one
+    # translate GnuTLS error into the OpenSSL one
     s/ARC: AMS signing: privkey PEM-block import: \KThe requested data were not available.$/error:0906D06C:PEM routines:PEM_read_bio:no start line/;
+    # and then both into the OpenSSL 3.x one
+    s/ARC: AMS signing: privkey PEM-block import: error:\K[0-9A-F]{8}:PEM routines:PEM_read_bio:no start line$/1E08010C:DECODER routines::unsupported/;
 
     # DKIM timestamps
     if ( /(DKIM: d=.*) t=([0-9]*) x=([0-9]*) / )
