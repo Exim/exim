@@ -156,7 +156,7 @@ for (unsigned loop = 20;
   if (--loop == 0) { errno = ELOOP; return FALSE; }
   filename = buf[0] == '/'
     ? string_copyn(buf, (unsigned)len)	/* mem released by tls_set_watch */
-    : string_sprintf("%.*s/%.*s", (int)(s - filename), (int)len);
+    : string_sprintf("%.*s/%.*s", (int)(s - filename), filename, (int)len, buf);
   s = Ustrrchr(filename, '/');
   }
 if (errno != EINVAL)
