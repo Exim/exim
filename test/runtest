@@ -1319,9 +1319,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
 
     # daemon notifier socket
-    s/^(\s*\d+|ppppp) (creating notifier socket)$/ppppp $2/;
-    s/^ \@(.*exim_daemon_notify)$/ $1/;
-    s/^(\s*\d+|ppppp)  \@?(.*exim_daemon_notify)$/ppppp  $2/;
+    s% \@(?=[^ @]+/spool/exim_daemon_notify$)% %;
     next if /unlinking notifier socket/;
 
     # daemon notifier socket

@@ -8,7 +8,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 p1234 creating notifier socket
-p1234  @TESTSUITE/spool/exim_daemon_notify
+p1234  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port PORT_D
 listening on all interfaces (IPv4) port PORT_D
 pid written to TESTSUITE/spool/exim-daemon.pid
@@ -31,7 +31,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 p1235 creating notifier socket
-p1235  @TESTSUITE/spool/exim_daemon_notify
+p1235  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port PORT_D
 listening on all interfaces (IPv4) port PORT_D
 listening on all interfaces (IPv6) port PORT_D2
@@ -56,7 +56,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 p1236 creating notifier socket
-p1236  @TESTSUITE/spool/exim_daemon_notify
+p1236  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port PORT_D
 listening on all interfaces (IPv4) port PORT_D
 listening on all interfaces (IPv6) port PORT_D2
@@ -82,7 +82,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 p1237 creating notifier socket
-p1237  @TESTSUITE/spool/exim_daemon_notify
+p1237  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port PORT_D
 listening on all interfaces (IPv4) port PORT_D
 listening on all interfaces (IPv6) port PORT_D2
@@ -108,7 +108,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 p1238 creating notifier socket
-p1238  @TESTSUITE/spool/exim_daemon_notify
+p1238  TESTSUITE/spool/exim_daemon_notify
 listening on ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port PORT_D
 listening on ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port PORT_D2
 pid written to TESTSUITE/spool/exim-daemon.pid
