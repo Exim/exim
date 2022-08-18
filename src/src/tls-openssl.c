@@ -3191,7 +3191,7 @@ uschar c, * s;
 size_t len;
 
 #ifdef EXIM_HAVE_EXPORT_CHNL_BNGNG
-if (SSL_version(ssl) >= TLS1_3_VERSION)
+if (SSL_version(ssl) > TLS1_2_VERSION)
   {
   /* It's not documented by OpenSSL how big the output buffer must be.
   The OpenSSL testcases use 80 bytes but don't say why. The GnuTLS impl only
