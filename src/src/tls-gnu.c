@@ -121,6 +121,10 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # endif
 #endif
 
+#if GNUTLS_VERSION_NUMBER >= 0x030702
+# define HAVE_GNUTLS_EXPORTER
+#endif
+
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
 #endif
@@ -646,14 +650,20 @@ tlsp->channelbinding = NULL;
 #ifdef HAVE_GNUTLS_SESSION_CHANNEL_BINDING
   {
   gnutls_datum_t channel = {.data = NULL, .size = 0};
-  uschar * buf;
   int rc;
 
-# ifdef HAVE_GNUTLS_PRF_RFC5705
+# ifdef HAVE_GNUTLS_EXPORTER
+  if (gnutls_protocol_get_version(state->session) >= GNUTLS_TLS1_3)
+    {
+    rc = gnutls_session_channel_binding(state->session, GNUTLS_CB_TLS_EXPORTER, &channel);
+    tlsp->channelbind_exporter = TRUE;
+    }
+  else
+# elif defined(HAVE_GNUTLS_PRF_RFC5705)
   /* Older libraries may not have GNUTLS_TLS1_3 defined! */
   if (gnutls_protocol_get_version(state->session) > GNUTLS_TLS1_2)
     {
-    buf = store_get(32, state->host ? GET_TAINTED : GET_UNTAINTED);
+    uschar * buf = store_get(32, state->host ? GET_TAINTED : GET_UNTAINTED);
     rc = gnutls_prf_rfc5705(state->session,
 				(size_t)24,  "EXPORTER-Channel-Binding", (size_t)0, "",
 				32, CS buf);
@@ -670,11 +680,11 @@ tlsp->channelbinding = NULL;
     {
     int old_pool = store_pool;
     /* Declare the taintedness of the binding info.  On server, untainted; on
-    client, tainted - being the Finish msg from the server. */
+    client, tainted if we used the Finish msg from the server. */
 
     store_pool = POOL_PERM;
     tlsp->channelbinding = b64encode_taint(CUS channel.data, (int)channel.size,
-					    state->host ? GET_TAINTED : GET_UNTAINTED);
+		!tlsp->channelbind_exporter && state->host ? GET_TAINTED : GET_UNTAINTED);
     store_pool = old_pool;
     DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
     }

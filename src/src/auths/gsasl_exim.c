@@ -39,22 +39,34 @@ static void dummy(int x) { dummy2(x-1); }
 #include "gsasl_exim.h"
 
 
-#if GSASL_VERSION_MINOR >= 10
+#if GSASL_VERSION_MAJOR == 2
+
 # define EXIM_GSASL_HAVE_SCRAM_SHA_256
 # define EXIM_GSASL_SCRAM_S_KEY
-
-#elif GSASL_VERSION_MINOR == 9
-# define EXIM_GSASL_HAVE_SCRAM_SHA_256
-
-# if GSASL_VERSION_PATCH >= 1
-#  define EXIM_GSASL_SCRAM_S_KEY
+# if GSASL_VERSION_MINOR >= 1
+#  define EXIM_GSASL_HAVE_EXPORTER
+# elif GSASL_VERSION_PATCH >= 1
+#  define EXIM_GSASL_HAVE_EXPORTER
 # endif
-# if GSASL_VERSION_PATCH < 2
+
+#elif GSASL_VERSION_MAJOR == 1
+# if GSASL_VERSION_MINOR >= 10
+#  define EXIM_GSASL_HAVE_SCRAM_SHA_256
+#  define EXIM_GSASL_SCRAM_S_KEY
+
+# elif GSASL_VERSION_MINOR == 9
+#  define EXIM_GSASL_HAVE_SCRAM_SHA_256
+
+#  if GSASL_VERSION_PATCH >= 1
+#   define EXIM_GSASL_SCRAM_S_KEY
+#  endif
+#  if GSASL_VERSION_PATCH < 2
+#   define CHANNELBIND_HACK
+#  endif
+
+# else
 #  define CHANNELBIND_HACK
 # endif
-
-#else
-# define CHANNELBIND_HACK
 #endif
 
 /* Convenience for testing strings */
@@ -258,7 +270,7 @@ if (!cb_state)
   if (prop == GSASL_CB_TLS_UNIQUE)
     {
     uschar * s;
-    if ((s = gsasl_callback_hook_get(ctx)))
+    if ((s = gsasl_callback_hook_get(ctx)))	/* Gross hack for early lib vers */
       {
       HDEBUG(D_auth) debug_printf("GSASL_CB_TLS_UNIQUE from ctx hook\n");
       gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CS s);
@@ -333,6 +345,9 @@ switch (prop)
   case GSASL_SCRAM_STOREDKEY:		return US"SCRAM_STOREDKEY";
   case GSASL_SCRAM_SERVERKEY:		return US"SCRAM_SERVERKEY";
 #endif
+#ifdef EXIM_GSASL_HAVE_EXPORTER		/* v. 2.1.0 */
+  case GSASL_CB_TLS_EXPORTER:		return US"CB_TLS_EXPORTER";
+#endif
   case GSASL_CB_TLS_UNIQUE:		return US"CB_TLS_UNIQUE";
   case GSASL_SAML20_IDP_IDENTIFIER:	return US"SAML20_IDP_IDENTIFIER";
   case GSASL_SAML20_REDIRECT_URL:	return US"SAML20_REDIRECT_URL";
@@ -351,6 +366,14 @@ switch (prop)
 return CUS string_sprintf("(unknown prop: %d)", (int)prop);
 }
 
+static void
+preload_prop(Gsasl_session * sctx, Gsasl_property propcode, const uschar * val)
+{
+DEBUG(D_auth) debug_printf("preloading prop %s val %s\n",
+  gsasl_prop_code_to_name(propcode), val);
+gsasl_property_set(sctx, propcode, CCS val);
+}
+
 /*************************************************
 *             Server entry point                 *
 *************************************************/
@@ -358,12 +381,12 @@ return CUS string_sprintf("(unknown prop: %d)", (int)prop);
 /* For interface, see auths/README */
 
 int
-auth_gsasl_server(auth_instance *ablock, uschar *initial_data)
+auth_gsasl_server(auth_instance * ablock, uschar * initial_data)
 {
-char *tmps;
-char *to_send, *received;
-Gsasl_session *sctx = NULL;
-auth_gsasl_options_block *ob =
+uschar * tmps;
+char * to_send, * received;
+Gsasl_session * sctx = NULL;
+auth_gsasl_options_block * ob =
   (auth_gsasl_options_block *)(ablock->options_block);
 struct callback_exim_state cb_state;
 int rc, auth_result, exim_error, exim_error_override;
@@ -406,18 +429,18 @@ cb_state.ablock = ablock;
 cb_state.currently = CURRENTLY_SERVER;
 gsasl_session_hook_set(sctx, &cb_state);
 
-tmps = CS expand_string(ob->server_service);
-gsasl_property_set(sctx, GSASL_SERVICE, tmps);
-tmps = CS expand_string(ob->server_hostname);
-gsasl_property_set(sctx, GSASL_HOSTNAME, tmps);
+tmps = expand_string(ob->server_service);
+preload_prop(sctx, GSASL_SERVICE, tmps);
+tmps = expand_string(ob->server_hostname);
+preload_prop(sctx, GSASL_HOSTNAME, tmps);
 if (ob->server_realm)
   {
-  tmps = CS expand_string(ob->server_realm);
+  tmps = expand_string(ob->server_realm);
   if (tmps && *tmps)
-    gsasl_property_set(sctx, GSASL_REALM, tmps);
+    preload_prop(sctx, GSASL_REALM, tmps);
   }
 /* We don't support protection layers. */
-gsasl_property_set(sctx, GSASL_QOPS, "qop-auth");
+preload_prop(sctx, GSASL_QOPS, US "qop-auth");
 
 #ifndef DISABLE_TLS
 if (tls_in.channelbinding)
@@ -451,7 +474,12 @@ if (tls_in.channelbinding)
     HDEBUG(D_auth) debug_printf("Auth %s: Enabling channel-binding\n",
 	ablock->name);
 # ifndef CHANNELBIND_HACK
-    gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_in.channelbinding);
+    preload_prop(sctx,
+#  ifdef EXIM_GSASL_HAVE_EXPORTER
+      tls_in.channelbind_exporter ? GSASL_CB_TLS_EXPORTER :
+#  endif
+				    GSASL_CB_TLS_UNIQUE,
+      tls_in.channelbinding);
 # endif
     }
   else
@@ -811,13 +839,13 @@ return TRUE;
 
 int
 auth_gsasl_client(
-  auth_instance *ablock,		/* authenticator block */
+  auth_instance * ablock,		/* authenticator block */
   void * sx,				/* connection */
   int timeout,				/* command timeout */
-  uschar *buffer,			/* buffer for reading response */
+  uschar * buffer,			/* buffer for reading response */
   int buffsize)				/* size of buffer */
 {
-auth_gsasl_options_block *ob =
+auth_gsasl_options_block * ob =
   (auth_gsasl_options_block *)(ablock->options_block);
 Gsasl_session * sctx = NULL;
 struct callback_exim_state cb_state;
@@ -883,7 +911,12 @@ if (tls_out.channelbinding)
     HDEBUG(D_auth) debug_printf("Auth %s: Enabling channel-binding\n",
 	ablock->name);
 # ifndef CHANNELBIND_HACK
-    gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_out.channelbinding);
+    preload_prop(sctx,
+#  ifdef EXIM_GSASL_HAVE_EXPORTER
+      tls_out.channelbind_exporter ? GSASL_CB_TLS_EXPORTER :
+#  endif
+				     GSASL_CB_TLS_UNIQUE,
+      tls_out.channelbinding);
 # endif
     }
   else
@@ -968,9 +1001,18 @@ HDEBUG(D_auth) debug_printf("GNU SASL callback %s for %s/%s as client\n",
 	    gsasl_prop_code_to_name(prop), ablock->name, ablock->public_name);
 switch (prop)
   {
-  case GSASL_CB_TLS_UNIQUE:	/*XXX should never get called for this */
-    HDEBUG(D_auth)
-      debug_printf(" filling in\n");
+#ifdef EXIM_GSASL_HAVE_EXPORTER
+  case GSASL_CB_TLS_EXPORTER:	/* Should never get called for this, as pre-set */
+    if (!tls_out.channelbind_exporter) break;
+    HDEBUG(D_auth) debug_printf(" filling in\n");
+    gsasl_property_set(sctx, GSASL_CB_TLS_EXPORTER, CCS tls_out.channelbinding);
+    return GSASL_OK;
+#endif
+  case GSASL_CB_TLS_UNIQUE:	/* Should never get called for this, as pre-set */
+#ifdef EXIM_GSASL_HAVE_EXPORTER
+    if (tls_out.channelbind_exporter) break;
+#endif
+    HDEBUG(D_auth) debug_printf(" filling in\n");
     gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_out.channelbinding);
     return GSASL_OK;
   case GSASL_SCRAM_SALTED_PASSWORD:

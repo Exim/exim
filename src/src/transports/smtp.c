@@ -4695,7 +4695,10 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	    open, we must shut down TLS.  Not all MTAs allow for the continuation
 	    of the SMTP session when TLS is shut down. We test for this by sending
 	    a new EHLO. If we don't get a good response, we don't attempt to pass
-	    the socket on. */
+	    the socket on.
+	    NB: TLS close is *required* per RFC 9266 when tls-exporter info has
+	    been used, which we do under TLSv1.3 for the gsasl SCRAM*PLUS methods.
+	    But we were always doing it anyway. */
 
 	  tls_close(sx->cctx.tls_ctx,
 	    sx->send_tlsclose ? TLS_SHUTDOWN_WAIT : TLS_SHUTDOWN_WONLY);

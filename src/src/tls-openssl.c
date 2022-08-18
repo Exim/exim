@@ -94,6 +94,10 @@ change this guard and punt the issue for a while longer. */
 # define EXIM_HAVE_OPENSSL_CIPHER_GET_ID
 #endif
 
+#if !defined(LIBRESSL_VERSION_NUMBER) && (OPENSSL_VERSION_NUMBER >= 0x030000000L)
+# define EXIM_HAVE_EXPORT_CHNL_BNGNG
+#endif
+
 #if !defined(LIBRESSL_VERSION_NUMBER) \
     || LIBRESSL_VERSION_NUMBER >= 0x20010000L
 # if !defined(OPENSSL_NO_ECDH)
@@ -111,9 +115,14 @@ change this guard and punt the issue for a while longer. */
 #  define OPENSSL_HAVE_KEYLOG_CB
 #  define OPENSSL_HAVE_NUM_TICKETS
 #  define EXIM_HAVE_OPENSSL_CIPHER_STD_NAME
+#  define EXIM_HAVE_EXP_CHNL_BNGNG
 # else
 #  define OPENSSL_BAD_SRVR_OURCERT
 # endif
+#endif
+
+#if !defined(LIBRESSL_VERSION_NUMBER) && (OPENSSL_VERSION_NUMBER >= 0x010002000L)
+# define EXIM_HAVE_EXPORT_CHNL_BNGNG
 #endif
 
 #if !defined(EXIM_HAVE_OPENSSL_TLSEXT) && !defined(DISABLE_OCSP)
@@ -3170,6 +3179,52 @@ tls_dump_keylog(SSL * ssl)
 }
 
 
+/* Channel-binding info for authenticators
+See description in https://paquier.xyz/postgresql-2/channel-binding-openssl/
+for pre-TLS1.3
+*/
+
+static void
+tls_get_channel_binding(SSL * ssl, tls_support * tlsp, const void * taintval)
+{
+uschar c, * s;
+size_t len;
+
+#ifdef EXIM_HAVE_EXPORT_CHNL_BNGNG
+if (SSL_version(ssl) >= TLS1_3_VERSION)
+  {
+  /* It's not documented by OpenSSL how big the output buffer must be.
+  The OpenSSL testcases use 80 bytes but don't say why. The GnuTLS impl only
+  serves out 32B.  RFC 9266 says it is 32B.
+  Interop fails unless we use the same each end. */
+  len = 32;
+
+  tlsp->channelbind_exporter = TRUE;
+  taintval = GET_UNTAINTED;
+  if (SSL_export_keying_material(ssl,
+	s = store_get((int)len, taintval), len,
+	"EXPORTER-Channel-Binding", (size_t) 24,
+	NULL, 0, 0) != 1)
+    len = 0;
+  }
+else
+#endif
+  {
+  len = SSL_get_peer_finished(ssl, &c, 0);
+  len = SSL_get_peer_finished(ssl, s = store_get((int)len, taintval), len);
+  }
+
+if (len > 0)
+  {
+  int old_pool = store_pool;
+  store_pool = POOL_PERM;
+    tlsp->channelbinding = b64encode_taint(CUS s, (int)len, taintval);
+  store_pool = old_pool;
+  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage %p %p\n", tlsp->channelbinding, tlsp);
+  }
+}
+
+
 /*************************************************
 *       Start a TLS session in a server          *
 *************************************************/
@@ -3446,6 +3501,7 @@ else DEBUG(D_tls)
 adjust the input functions to read via TLS, and initialize things. */
 
 #ifdef SSL_get_extms_support
+/*XXX what does this return for tls1.3 ? */
 tls_in.ext_master_secret = SSL_get_extms_support(ssl) == 1;
 #endif
 peer_cert(ssl, &tls_in, peerdn, sizeof(peerdn));
@@ -3478,19 +3534,7 @@ DEBUG(D_tls)
   tls_in.ourcert = crt ? X509_dup(crt) : NULL;
   }
 
-/* Channel-binding info for authenticators
-See description in https://paquier.xyz/postgresql-2/channel-binding-openssl/ */
-  {
-  uschar c, * s;
-  size_t len = SSL_get_peer_finished(ssl, &c, 0);
-  int old_pool = store_pool;
-
-  SSL_get_peer_finished(ssl, s = store_get((int)len, GET_UNTAINTED), len);
-  store_pool = POOL_PERM;
-    tls_in.channelbinding = b64encode_taint(CUS s, (int)len, GET_UNTAINTED);
-  store_pool = old_pool;
-  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage %p\n", tls_in.channelbinding);
-  }
+tls_get_channel_binding(ssl, &tls_in, GET_UNTAINTED);
 
 /* Only used by the server-side tls (tls_in), including tls_getc.
    Client-side (tls_out) reads (seem to?) go via
@@ -4168,18 +4212,7 @@ tlsp->cipher_stdname = cipher_stdname_ssl(exim_client_ctx->ssl);
   }
 
 /*XXX will this work with continued-TLS? */
-/* Channel-binding info for authenticators */
-  {
-  uschar c, * s;
-  size_t len = SSL_get_finished(exim_client_ctx->ssl, &c, 0);
-  int old_pool = store_pool;
-
-  SSL_get_finished(exim_client_ctx->ssl, s = store_get((int)len, GET_TAINTED), len);
-  store_pool = POOL_PERM;
-    tlsp->channelbinding = b64encode_taint(CUS s, (int)len, GET_TAINTED);
-  store_pool = old_pool;
-  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage %p %p\n", tlsp->channelbinding, tlsp);
-  }
+tls_get_channel_binding(exim_client_ctx->ssl, tlsp, GET_TAINTED);
 
 tlsp->active.sock = cctx->sock;
 tlsp->active.tls_ctx = exim_client_ctx;

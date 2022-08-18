@@ -117,6 +117,7 @@ typedef struct {
 #endif
   BOOL	  verify_override:1;	/* certificate_verified only due to tls_try_verify_hosts */
   BOOL	  ext_master_secret:1;	/* extended-master-secret was used */
+  BOOL	  channelbind_exporter:1; /* channelbinding is EXPORTER not UNIQUE */
 } tls_support;
 extern tls_support tls_in;
 extern tls_support tls_out;
