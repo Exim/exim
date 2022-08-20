@@ -1477,12 +1477,12 @@ return;
 
 
 static void
-ocsp_free_response_list(exim_openssl_state_st * cbinfo)
+ocsp_free_response_list(exim_openssl_state_st * state)
 {
-for (ocsp_resplist * olist = cbinfo->u_ocsp.server.olist; olist;
+for (ocsp_resplist * olist = state->u_ocsp.server.olist; olist;
      olist = olist->next)
   OCSP_RESPONSE_free(olist->resp);
-cbinfo->u_ocsp.server.olist = NULL;
+state->u_ocsp.server.olist = NULL;
 }
 #endif	/*!DISABLE_OCSP*/
 
@@ -1573,6 +1573,11 @@ else
 	  return DEFER;
       if (olist && !*olist)
 	olist = NULL;
+
+      /* If doing a re-expand after SNI, avoid reloading the OCSP
+      responses when the list of filenames has not changed.
+      The creds-invali on content change wipes file_expanded, so that
+      always reloads here. */
 
       if (  state->u_ocsp.server.file_expanded && olist
 	 && (Ustrcmp(olist, state->u_ocsp.server.file_expanded) == 0))
@@ -1918,6 +1923,7 @@ tls_server_creds_invalidate(void)
 {
 SSL_CTX_free(state_server.lib_state.lib_ctx);
 state_server.lib_state = null_tls_preload;
+state_server.u_ocsp.server.file_expanded = NULL;
 }
 
 
@@ -2763,7 +2769,7 @@ if (state->lib_state.conn_certs)
 else
   {
 #ifndef DISABLE_OCSP
-  if (!host)
+  if (!host)					/* server */
     {
     state->u_ocsp.server.file = ocsp_file;
     state->u_ocsp.server.file_expanded = NULL;

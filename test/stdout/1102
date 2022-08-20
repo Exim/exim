@@ -7,7 +7,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-Succeeded in starting TLS
+Succeeded in starting TLS (with OCSP)
 >>> EHLO rhu.barb
 ????250
 >>> MAIL FROM:<>
@@ -29,7 +29,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-Succeeded in starting TLS
+Succeeded in starting TLS (with OCSP)
 >>> EHLO rhu.barb
 ????250
 >>> MAIL FROM:<>

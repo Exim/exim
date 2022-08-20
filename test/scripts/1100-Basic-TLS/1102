@@ -2,13 +2,14 @@
 #
 #
 mkdir -p DIR/tmp/certs
-cp DIR/aux-fixed/cert1 DIR/tmp/certs/servercert
-cp DIR/aux-fixed/cert1 DIR/tmp/certs/serverkey
+cp DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem            DIR/tmp/certs/servercert
+cp DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key   DIR/tmp/certs/serverkey
+cp DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp DIR/tmp/certs/ocsp_proof
 #
 #exim -d-all+tls+receive+timestamp -DSERVER=server -bd -oX PORT_D
 exim -DSERVER=server -bd -oX PORT_D
 ****
-client-anytls 127.0.0.1 PORT_D
+client-anytls -ocsp DIR/aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem 127.0.0.1 PORT_D
 ??? 220
 EHLO rhu.barb
 ????250
@@ -24,12 +25,14 @@ QUIT
 ??? 221
 ****
 sleep 1
-# Now overwrite the cert.  key?
-cp DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem DIR/tmp/certs/servercert
-cp DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key DIR/tmp/certs/serverkey
-# The watch mech waits 5 sec after the last trigger, so give that time to expire the send another message
+# Now overwrite the cert
+# XXX using server2.com fails here, on the ocsp verify.  Why?
+cp DIR/aux-fixed/exim-ca/example.net/server1.example.net/server1.example.net.pem            DIR/tmp/certs/servercert
+cp DIR/aux-fixed/exim-ca/example.net/server1.example.net/server1.example.net.unlocked.key   DIR/tmp/certs/serverkey
+cp DIR/aux-fixed/exim-ca/example.net/server1.example.net/server1.example.net.ocsp.good.resp DIR/tmp/certs/ocsp_proof
+# The watch mech waits 5 sec after the last trigger, so give that time to expire then send another message
 sleep 7
-client-anytls 127.0.0.1 PORT_D
+client-anytls -ocsp DIR/aux-fixed/exim-ca/example.net/server1.example.net/ca_chain.pem 127.0.0.1 PORT_D
 ??? 220
 EHLO rhu.barb
 ????250

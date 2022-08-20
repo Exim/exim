@@ -361,6 +361,8 @@ tls_watch_invalidate();
 #endif
 
 tls_server_creds_invalidate();
+
+/* _expire is for a time-limited selfsign server cert */
 tls_creds_expire = (lifetime = tls_server_creds_init())
   ? time(NULL) + lifetime : 0;
 

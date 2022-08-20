@@ -802,6 +802,8 @@ nextinput:
 	      }
 	    fflush(stdout);
 	    }
+	    else
+	      printf("Succeeded in starting TLS (with OCSP)\n");
 	  #endif
 	  }
 	#endif
@@ -1341,7 +1343,7 @@ if (tls_on_connect)
     printf("Failed to verify certificate status\n");
 #endif
   else
-    printf("Succeeded in starting TLS\n");
+    printf("Succeeded in starting TLS%s\n", ocsp_stapling ? " (with OCSP)":"");
   }
 #endif
 

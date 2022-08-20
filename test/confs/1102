@@ -9,7 +9,9 @@ primary_hostname = myhost.test.ex
 tls_advertise_hosts = *
 
 tls_certificate = DIR/tmp/certs/servercert
-tls_privatekey = DIR/tmp/certs/serverkey
+tls_privatekey =  DIR/tmp/certs/serverkey
+tls_ocsp_file =   DIR/tmp/certs/ocsp_proof
+
 #tls_verify_certificates = DIR/aux-fixed/cert2
 tls_verify_certificates = system,cache
 
