@@ -1923,7 +1923,9 @@ tls_server_creds_invalidate(void)
 {
 SSL_CTX_free(state_server.lib_state.lib_ctx);
 state_server.lib_state = null_tls_preload;
+#ifndef DISABLE_OCSP
 state_server.u_ocsp.server.file_expanded = NULL;
+#endif
 }
 
 
