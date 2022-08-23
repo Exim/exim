@@ -668,5 +668,12 @@ not get the TIME_WAIT */
 # define SERVERSIDE_CLOSE_NOWAIT
 #endif
 
+/* Stand-in for an unused function parameter */
+#ifdef __GNUC__
+#define UNUSED(NAME) NAME __attribute__((unused))
+#else
+#define UNUSED(NAME) NAME
+#endif
+
 #endif
 /* End of exim.h */

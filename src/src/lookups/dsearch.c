@@ -15,6 +15,20 @@ lstat()) rather than a directory scan). */
 #include "../exim.h"
 #include "lf_functions.h"
 
+#if !defined USE_AT_FILE \
+ && !defined NO_AT_FILE \
+ && ( defined O_PATH && defined O_DIRECTORY ) \
+ && ( _XOPEN_SOURCE >= 700 || _POSIX_C_SOURCE >= 200809L \
+      || defined _ATFILE_SOURCE )
+#define USE_AT_FILE
+#endif
+
+#ifdef USE_AT_FILE
+/* Have fstatat() */
+typedef struct {
+  int dir_fd;
+} ds_handle;
+#endif
 
 
 /*************************************************
@@ -29,16 +43,36 @@ actually scanning through the list of files. */
 static void *
 dsearch_open(const uschar * dirname, uschar ** errmsg)
 {
-DIR * dp = exim_opendir(dirname);
-if (!dp)
+if (is_tainted(dirname))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "Tainted dirname '%s'", dirname);
+  errno = EACCES;
+  *errmsg = string_open_failed("%s for directory search", dirname);
+  return NULL;
+  }
+#ifdef USE_AT_FILE
+int dir_fd = open(dirname, O_PATH|O_DIRECTORY);
+if (dir_fd<0)
   {
   *errmsg = string_open_failed("%s for directory search", dirname);
   return NULL;
   }
-closedir(dp);
-return (void *)(-1);
+ds_handle *h = malloc(sizeof (ds_handle));
+h->dir_fd = dir_fd;
+return h;
+#else
+if (f.running_in_test_harness)
+  /* Dereferencing (void*)(-1) will intentionally cause an immediate abort on
+   * most modern architectures. However we only use this return statement
+   * during regression testing, as it has "undefined behaviour" according to
+   * ISO-9899, and in theory could misbehave on exotic architectures even
+   * during normal operation; in particular (void*)(-1)==NULL is allowable.
+   */
+  return (void*)(-1);
+static char ignored_handle[1];
+return ignored_handle;
+#endif
 }
-
 
 /*************************************************
 *             Check entry point                  *
@@ -48,10 +82,9 @@ return (void *)(-1);
 integer as this gives warnings on 64-bit systems. */
 
 static BOOL
-dsearch_check(void * handle, const uschar * filename, int modemask,
+dsearch_check(void * UNUSED(handle), const uschar * filename, int modemask,
   uid_t * owners, gid_t * owngroups, uschar ** errmsg)
 {
-handle = handle;
 if (*filename == '/')
   return lf_check_file(-1, filename, S_IFDIR, modemask, owners, owngroups,
     "dsearch", errmsg) == 0;
@@ -64,26 +97,36 @@ return FALSE;
 *              Find entry point                  *
 *************************************************/
 
-#define RET_FULL	BIT(0)
-#define FILTER_TYPE	BIT(1)
-#define FILTER_ALL	BIT(1)
-#define FILTER_FILE	BIT(2)
-#define FILTER_DIR	BIT(3)
-#define FILTER_SUBDIR	BIT(4)
+#define FILTER_BY(TYPE) BIT( S_I##TYPE / (S_IFMT&-S_IFMT) )   /* X&-X gives the bottom bit of X */
 
-/* See local README for interface description. We use lstat() instead of
-scanning the directory, as it is hopefully faster to let the OS do the scanning
-for us. */
+/* See local README for interface description. We use lstat() or fstatat()
+instead of reading the directory, as it is hopefully faster to let the OS do
+the scanning for us. */
 
 static int
-dsearch_find(void * handle, const uschar * dirname, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
-  const uschar * opts)
+dsearch_find(
+  #ifdef USE_AT_FILE
+  void * handle,
+  #else
+  void * UNUSED(handle),
+  #endif
+  const uschar * dirname, const uschar * keystring, int length,
+  uschar ** result, uschar ** errmsg, uint * do_cache, const uschar * opts)
 {
 struct stat statbuf;
 int save_errno;
-uschar * filename;
-unsigned flags = 0;
+unsigned filter_by_type = 0;
+int exclude_dotdotdot = 0;
+int ret_full = 0;
+int follow_symlink = 0;
+int empty_key = 0;
+#ifdef USE_AT_FILE
+ds_handle *h = handle;
+int statat_flags = 0;
+#else
+const uschar *filename;
+#endif
+int stat_result;
 
 if (Ustrchr(keystring, '/') != 0)
   {
@@ -99,40 +142,91 @@ if (opts)
 
   while ((ele = string_nextinlist(&opts, &sep, NULL, 0)))
     if (Ustrcmp(ele, "ret=full") == 0)
-      flags |= RET_FULL;
+      ret_full = 1;
     else if (Ustrncmp(ele, "filter=", 7) == 0)
       {
       ele += 7;
-      if (Ustrcmp(ele, "file") == 0)
-	flags |= FILTER_TYPE | FILTER_FILE;
-      else if (Ustrcmp(ele, "dir") == 0)
-	flags |= FILTER_TYPE | FILTER_DIR;
-      else if (Ustrcmp(ele, "subdir") == 0)
-	flags |= FILTER_TYPE | FILTER_SUBDIR;	/* like dir but not "." or ".." */
+	   if (Ustrcmp(ele, "file") == 0)    filter_by_type |= FILTER_BY(FREG);
+      else if (Ustrcmp(ele, "dir") == 0)     filter_by_type |= FILTER_BY(FDIR);
+      else if (Ustrcmp(ele, "subdir") == 0)  filter_by_type |= FILTER_BY(FDIR), exclude_dotdotdot = 1;    /* dir but not "." or ".." */
+      else if (Ustrcmp(ele, "pipe") == 0
+	    || Ustrcmp(ele, "fifo") == 0)    filter_by_type |= FILTER_BY(FIFO);
+      else if (Ustrcmp(ele, "socket") == 0)  filter_by_type |= FILTER_BY(FSOCK);
+      else if (Ustrcmp(ele, "link") == 0
+	    || Ustrcmp(ele, "symlink") == 0) filter_by_type |= FILTER_BY(FLNK);
+      else if (Ustrcmp(ele, "bdev") == 0)    filter_by_type |= FILTER_BY(FBLK);
+      else if (Ustrcmp(ele, "cdev") == 0)    filter_by_type |= FILTER_BY(FCHR);
+      else
+	{
+	*errmsg = string_sprintf("unknown filter option for dsearch lookup: %s", ele);
+	return DEFER;
+	}
+      }
+    else if (Ustrcmp(ele, "follow") == 0)
+      follow_symlink = 1;
+    else if (Ustrcmp(ele, "checkpath") == 0)
+      empty_key = follow_symlink = ret_full = 1;
+    else if (Ustrcmp(ele, "emptykey") == 0)
+      empty_key = 1;
+    else
+      {
+      *errmsg = string_sprintf("unknown option for dsearch lookup: %s", ele);
+      return DEFER;
       }
   }
 
-filename = string_sprintf("%s/%s", dirname, keystring);
-if (  Ulstat(filename, &statbuf) >= 0
-   && (  !(flags & FILTER_TYPE)
-      || (flags & FILTER_FILE && S_ISREG(statbuf.st_mode))
-      || (  flags & (FILTER_DIR | FILTER_SUBDIR)
-       	 && S_ISDIR(statbuf.st_mode)
-	 && (  flags & FILTER_DIR
-	    || keystring[0] != '.'
-	    || keystring[1] && keystring[1] != '.'
-   )  )  )  )
+/* exclude "." and ".." when {filter=subdir} included */
+if (exclude_dotdotdot
+    &&  keystring[0] == '.'
+    && (keystring[1] == 0
+     || keystring[1] == '.' && keystring[2] == 0))
+  return FAIL;
+
+if (empty_key)
   {
+  if (keystring && keystring[0] != '\0')
+    {
+    *errmsg = US "non-empty key for dsearch pathcheck";
+    return DEFER;
+    }
+  keystring = "";
+  }
+else if (keystring[0] == 0) /* in case lstat treats "/dir/" the same as "/dir/." */
+  return FAIL;
+
+#ifdef USE_AT_FILE
+if (!follow_symlink) statat_flags |= AT_SYMLINK_NOFOLLOW;
+if (empty_key)       statat_flags |= AT_EMPTY_PATH;
+stat_result = fstatat(h->dir_fd, CCS keystring, &statbuf, statat_flags);
+#else
+filename = empty_key ? dirname
+		     : string_sprintf("%s/%s", dirname, keystring);
+if (follow_symlink)
+  stat_result = Ustat(filename, &statbuf);
+else
+  stat_result = Ulstat(filename, &statbuf);
+#endif
+if (stat_result >= 0
+   && ( !filter_by_type
+      || filter_by_type & BIT((statbuf.st_mode & S_IFMT) / (S_IFMT&-S_IFMT))))
+  {
+  if (ret_full)
+    #ifdef USE_AT_FILE
+    keystring = string_sprintf("%s/%s", dirname, keystring);
+    #else
+    keystring = filename;
+    #endif
+
   /* Since the filename exists in the filesystem, we can return a
   non-tainted result. */
-  *result = string_copy_taint(flags & RET_FULL ? filename : keystring, GET_UNTAINTED);
+  *result = string_copy_taint(keystring, GET_UNTAINTED);
   return OK;
   }
 
 if (errno == ENOENT || errno == 0) return FAIL;
 
 save_errno = errno;
-*errmsg = string_sprintf("%s: lstat: %s", filename, strerror(errno));
+*errmsg = string_sprintf("%s/%s: lstat: %s", dirname, keystring, strerror(errno));
 errno = save_errno;
 return DEFER;
 }
@@ -144,11 +238,20 @@ return DEFER;
 
 /* See local README for interface description */
 
-void
-static dsearch_close(void *handle)
+#ifdef USE_AT_FILE
+static void
+dsearch_close(void *handle)
 {
-handle = handle;   /* Avoid compiler warning */
+ds_handle *h = handle;
+close(h->dir_fd);   /* ignore error */
+free(h);
 }
+#else
+static void
+dsearch_close(void * UNUSED(handle))
+{
+}
+#endif
 
 
 /*************************************************
@@ -178,7 +281,7 @@ static lookup_info _lookup_info = {
   .close = dsearch_close,		/* close function */
   .tidy = NULL,				/* no tidy function */
   .quote = NULL,			/* no quoting function */
-  .version_report = dsearch_version_report         /* version reporting */
+  .version_report = dsearch_version_report /* version reporting */
 };
 
 #ifdef DYNLOOKUP
