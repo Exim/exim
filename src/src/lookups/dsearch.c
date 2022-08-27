@@ -78,26 +78,32 @@ return ignored_handle;
 *             Check entry point                  *
 *************************************************/
 
-/* The handle will always be (void *)(-1), but don't try casting it to an
-integer as this gives warnings on 64-bit systems. */
-
+#ifdef USE_AT_FILE
 static BOOL
-dsearch_check(void * UNUSED(handle), const uschar * filename, int modemask,
+dsearch_check(void * handle, const uschar * UNUSED(dirname), int modemask,
   uid_t * owners, gid_t * owngroups, uschar ** errmsg)
 {
-if (*filename == '/')
-  return lf_check_file(-1, filename, S_IFDIR, modemask, owners, owngroups,
+ds_handle *h = handle;
+return lf_check_file(h->dir_fd, NULL, S_IFDIR, modemask, owners, owngroups,
+  "dsearch", errmsg) == 0;
+}
+#else
+static BOOL
+dsearch_check(void * UNUSED(handle), const uschar * dirname, int modemask,
+  uid_t * owners, gid_t * owngroups, uschar ** errmsg)
+{
+if (*dirname == '/')
+  return lf_check_file(-1, dirname, S_IFDIR, modemask, owners, owngroups,
     "dsearch", errmsg) == 0;
-*errmsg = string_sprintf("dirname '%s' for dsearch is not absolute", filename);
+*errmsg = string_sprintf("dirname '%s' for dsearch is not absolute", dirname);
 return FALSE;
 }
+#endif
 
 
 /*************************************************
 *              Find entry point                  *
 *************************************************/
-
-#define FILTER_BY(TYPE) BIT( S_I##TYPE / (S_IFMT&-S_IFMT) )   /* X&-X gives the bottom bit of X */
 
 /* See local README for interface description. We use lstat() or fstatat()
 instead of reading the directory, as it is hopefully faster to let the OS do
@@ -144,24 +150,34 @@ if (opts)
   uschar * ele;
 
   while ((ele = string_nextinlist(&opts, &sep, NULL, 0)))
-    if (Ustrcmp(ele, "ret=full") == 0)
-      ret_mode = RET_FULL;
+    if (Ustrncmp(ele, "ret=", 4) == 0)
+      {
+      ele += 4;
+      if (Ustrcmp(ele, "full") == 0)
+	ret_mode = RET_FULL;
+      else if (Ustrcmp(ele, "dir") == 0)
+	ret_mode = RET_DIR;
+      #if 0
+      /* XXX ret=key is excluded from opts by special-case code in by search_find() */
+      else if (Ustrcmp(ele, "key") == 0)
+	ret_mode = RET_KEY;
+      #endif
+      else
+	{
+	*errmsg = string_sprintf("unknown parameter for dsearch lookup: %s", ele-=4);
+	return DEFER;
+	}
+      }
     else if (Ustrncmp(ele, "filter=", 7) == 0)
       {
       ele += 7;
-	   if (Ustrcmp(ele, "file") == 0)    filter_by_type |= FILTER_BY(FREG);
-      else if (Ustrcmp(ele, "dir") == 0)     filter_by_type |= FILTER_BY(FDIR);
-      else if (Ustrcmp(ele, "subdir") == 0)  filter_by_type |= FILTER_BY(FDIR), exclude_dotdotdot = 1;    /* dir but not "." or ".." */
-      else if (Ustrcmp(ele, "pipe") == 0
-	    || Ustrcmp(ele, "fifo") == 0)    filter_by_type |= FILTER_BY(FIFO);
-      else if (Ustrcmp(ele, "socket") == 0)  filter_by_type |= FILTER_BY(FSOCK);
-      else if (Ustrcmp(ele, "link") == 0
-	    || Ustrcmp(ele, "symlink") == 0) filter_by_type |= FILTER_BY(FLNK);
-      else if (Ustrcmp(ele, "bdev") == 0)    filter_by_type |= FILTER_BY(FBLK);
-      else if (Ustrcmp(ele, "cdev") == 0)    filter_by_type |= FILTER_BY(FCHR);
+      int i = S_IFMTix_from_name(ele);
+      if (i>=0)
+	filter_by_type |= BIT(i);
+      else if (Ustrcmp(ele, "subdir") == 0) filter_by_type |= BIT(S_IFMT_to_index(S_IFDIR)), exclude_dotdotdot = 1;    /* dir but not "." or ".." */
       else
 	{
-	*errmsg = string_sprintf("unknown filter option for dsearch lookup: %s", ele);
+	*errmsg = string_sprintf("unknown parameter for dsearch lookup: %s", ele-=7);
 	return DEFER;
 	}
       }
@@ -169,7 +185,8 @@ if (opts)
       follow_symlink = 1;
     else if (Ustrcmp(ele, "checkpath") == 0)
       {
-      ignore_key = follow_symlink = 1;
+      /* shortcut for follow,ret=dir */
+      follow_symlink = 1;
       ret_mode = RET_DIR;
       }
     else if (Ustrcmp(ele, "ignorekey") == 0)
@@ -208,7 +225,7 @@ else
 if (stat_result >= 0)
   {
   if (!filter_by_type
-	|| filter_by_type & BIT((statbuf.st_mode & S_IFMT) / (S_IFMT&-S_IFMT)))
+	|| filter_by_type & BIT(S_IFMT_to_index(statbuf.st_mode)))
     {
     switch (ret_mode)
       {

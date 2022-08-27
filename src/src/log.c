@@ -106,6 +106,7 @@ static const uschar * exim_errstrings[] = {
   [- ERRNO_UTF8_FWD] =		US"target not supporting SMTPUTF8",
   [- ERRNO_HOST_IS_LOCAL] =	US"host is local",
   [- ERRNO_TAINT] =		US"tainted filename",
+  [- ERRNO_MISMATCH] =		US"not requested type",
 
   [- ERRNO_RRETRY] =		US"Not time for routing",
 
