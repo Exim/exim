@@ -43,6 +43,11 @@ actually scanning through the list of files. */
 static void *
 dsearch_open(const uschar * dirname, uschar ** errmsg)
 {
+if (*dirname != '/')
+  {
+  *errmsg = string_sprintf("dirname '%s' for dsearch is not absolute", dirname);
+  return NULL;
+  }
 if (is_tainted(dirname))
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "Tainted dirname '%s'", dirname);
@@ -92,11 +97,8 @@ static BOOL
 dsearch_check(void * UNUSED(handle), const uschar * dirname, int modemask,
   uid_t * owners, gid_t * owngroups, uschar ** errmsg)
 {
-if (*dirname == '/')
-  return lf_check_file(-1, dirname, S_IFDIR, modemask, owners, owngroups,
-    "dsearch", errmsg) == 0;
-*errmsg = string_sprintf("dirname '%s' for dsearch is not absolute", dirname);
-return FALSE;
+return lf_check_file(-1, dirname, S_IFDIR, modemask, owners, owngroups,
+  "dsearch", errmsg) == 0;
 }
 #endif
 
