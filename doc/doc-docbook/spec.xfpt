@@ -6830,20 +6830,28 @@ each element starting with a tag name and an equals.
 
 Two options are supported, for the return value and for filtering match
 candidates.
-The "ret" option requests an alternate result value of
-the entire path for the entry. Example:
+The "ret=" options request alternative result values: "ret=key" is the default,
+and just returns the key (filename), "ret=full" requests the entire path for
+the entry, and "ret=dir" requests the directory alone.
+Example:
 .code
+${lookup {passwd} dsearch,ret=key {/etc}}
 ${lookup {passwd} dsearch,ret=full {/etc}}
+${lookup {passwd} dsearch,ret=dir {/etc}}
 .endd
-The default result is just the requested entry.
-The "filter" option requests that only directory entries of a given type
-are matched. The match value is one of "file", "dir" or "subdir" (the latter
-not matching "." or ".."). Example:
-.code
-${lookup {passwd} dsearch,filter=file {/etc}}
-.endd
-The default matching is for any entry type, including directories
-and symlinks.
+gives "passwd", "/etc/passwd" and "/etc".
+
+By default all directory entries are matched, regardless of type. The "filter"
+option requests that only directory entries of the given type(s) are matched:
+"file", "dir", "symlink", "pipe", "socket", "tty", "bdev". The filter option
+may be repeated to allow multiple types.
+
+In addition, "filter=nodots" excludes "." and "..", and "filter=subdir" is
+shorthand for "filter=dir,filter=nodots".
+
+The "follow" option follows any symlinks before applies other checks, and
+dangling symlinks will report as nonexistent; otherwise symlinks are rejected
+if any other file-type filter is applied.
 
 An example of how this
 lookup can be used to support virtual domains is given in section

@@ -132,6 +132,11 @@ MK/08 Numerous changes to dsearch lookups: (a) now performs taint check before
       (c) uses fstatat on systems that support it (reducing the syscall count);
       (d) additional filter options to support matching all inode types; (e)
       new ret=dir option. See documentation for full list.
+MK/09 Bug 2916: dsearch lookups no longer requires "read" permission on the
+      directory.
+
+MK/10 New dsearch lookup features: (a) ret=dir option; (b) filter options for
+      all inode types; (c) can use fstatat(2) where supported.
 
 Exim version 4.96
 -----------------
