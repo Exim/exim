@@ -117,15 +117,18 @@ struct stat statbuf;
 int save_errno;
 unsigned filter_by_type = 0;
 int exclude_dotdotdot = 0;
-int ret_full = 0;
+enum {
+  RET_KEY,  /* return the key */
+  RET_DIR,  /* return the dir without the key */
+  RET_FULL  /* return the path comprising both combined */
+} ret_mode = RET_KEY;
 int follow_symlink = 0;
 int ignore_key = 0;
 #ifdef USE_AT_FILE
 ds_handle *h = handle;
 int statat_flags = 0;
-#else
-const uschar *filename;
 #endif
+const uschar *full_path;
 int stat_result;
 
 if (Ustrchr(keystring, '/') != 0)
@@ -142,7 +145,7 @@ if (opts)
 
   while ((ele = string_nextinlist(&opts, &sep, NULL, 0)))
     if (Ustrcmp(ele, "ret=full") == 0)
-      ret_full = 1;
+      ret_mode = RET_FULL;
     else if (Ustrncmp(ele, "filter=", 7) == 0)
       {
       ele += 7;
@@ -165,7 +168,10 @@ if (opts)
     else if (Ustrcmp(ele, "follow") == 0)
       follow_symlink = 1;
     else if (Ustrcmp(ele, "checkpath") == 0)
-      ignore_key = follow_symlink = ret_full = 1;
+      {
+      ignore_key = follow_symlink = 1;
+      ret_mode = RET_DIR;
+      }
     else if (Ustrcmp(ele, "ignorekey") == 0)
       ignore_key = 1;
     else
@@ -192,28 +198,45 @@ if (!follow_symlink) statat_flags |= AT_SYMLINK_NOFOLLOW;
 if (ignore_key)      statat_flags |= AT_EMPTY_PATH;
 stat_result = fstatat(h->dir_fd, CCS keystring, &statbuf, statat_flags);
 #else
-filename = ignore_key ? dirname
-		      : string_sprintf("%s/%s", dirname, keystring);
+full_path = ignore_key ? dirname
+		       : string_sprintf("%s/%s", dirname, keystring);
 if (follow_symlink)
-  stat_result = Ustat(filename, &statbuf);
+  stat_result = Ustat(full_path, &statbuf);
 else
-  stat_result = Ulstat(filename, &statbuf);
+  stat_result = Ulstat(full_path, &statbuf);
 #endif
-if (stat_result >= 0
-   && ( !filter_by_type
-      || filter_by_type & BIT((statbuf.st_mode & S_IFMT) / (S_IFMT&-S_IFMT))))
+if (stat_result >= 0)
   {
-  if (ret_full)
-    #ifdef USE_AT_FILE
-    keystring = string_sprintf("%s/%s", dirname, keystring);
-    #else
-    keystring = filename;
-    #endif
+  if (!filter_by_type
+	|| filter_by_type & BIT((statbuf.st_mode & S_IFMT) / (S_IFMT&-S_IFMT)))
+    {
+    switch (ret_mode)
+      {
+      default:
+      case RET_KEY:
+	full_path = keystring;
+	break;
+      case RET_DIR:
+	full_path = dirname;
+	break;
+      case RET_FULL:
+	#ifdef USE_AT_FILE
+	full_path = string_sprintf("%s/%s", dirname, keystring);
+	#else
+	full_path = full_path;
+	#endif
+	break;
+      }
 
-  /* Since the filename exists in the filesystem, we can return a
-  non-tainted result. */
-  *result = string_copy_taint(keystring, GET_UNTAINTED);
-  return OK;
+    /* Since the filename exists in the filesystem, we can return a
+    non-tainted result. */
+    *result = string_copy_taint(full_path, GET_UNTAINTED);
+    return OK;
+    }
+  *errmsg = string_sprintf("%s/%s is of unexpected type %s",
+    dirname, keystring, S_IFMT_to_long_name(statbuf.st_mode));
+  errno = ERRNO_MISMATCH;
+  return DEFER;
   }
 
 if (errno == ENOENT || errno == 0) return FAIL;
