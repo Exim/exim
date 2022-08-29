@@ -177,6 +177,7 @@ if (opts)
       if (i>=0)
 	filter_by_type |= BIT(i);
       else if (Ustrcmp(ele, "subdir") == 0) filter_by_type |= BIT(S_IFMT_to_index(S_IFDIR)), exclude_dotdotdot = 1;    /* dir but not "." or ".." */
+      else if (Ustrcmp(ele, "nodots") == 0) exclude_dotdotdot = 1;    /* any but "." or ".." */
       else
 	{
 	*errmsg = string_sprintf("unknown parameter for dsearch lookup: %s", ele-=7);
