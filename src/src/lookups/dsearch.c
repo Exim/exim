@@ -119,7 +119,7 @@ unsigned filter_by_type = 0;
 int exclude_dotdotdot = 0;
 int ret_full = 0;
 int follow_symlink = 0;
-int empty_key = 0;
+int ignore_key = 0;
 #ifdef USE_AT_FILE
 ds_handle *h = handle;
 int statat_flags = 0;
@@ -165,15 +165,20 @@ if (opts)
     else if (Ustrcmp(ele, "follow") == 0)
       follow_symlink = 1;
     else if (Ustrcmp(ele, "checkpath") == 0)
-      empty_key = follow_symlink = ret_full = 1;
-    else if (Ustrcmp(ele, "emptykey") == 0)
-      empty_key = 1;
+      ignore_key = follow_symlink = ret_full = 1;
+    else if (Ustrcmp(ele, "ignorekey") == 0)
+      ignore_key = 1;
     else
       {
       *errmsg = string_sprintf("unknown option for dsearch lookup: %s", ele);
       return DEFER;
       }
   }
+
+if (ignore_key)
+  keystring = "";
+else if (keystring == NULL || keystring[0] == 0) /* in case lstat treats "/dir/" the same as "/dir/." */
+  return FAIL;
 
 /* exclude "." and ".." when {filter=subdir} included */
 if (exclude_dotdotdot
@@ -182,25 +187,13 @@ if (exclude_dotdotdot
      || keystring[1] == '.' && keystring[2] == 0))
   return FAIL;
 
-if (empty_key)
-  {
-  if (keystring && keystring[0] != '\0')
-    {
-    *errmsg = US "non-empty key for dsearch pathcheck";
-    return DEFER;
-    }
-  keystring = "";
-  }
-else if (keystring[0] == 0) /* in case lstat treats "/dir/" the same as "/dir/." */
-  return FAIL;
-
 #ifdef USE_AT_FILE
 if (!follow_symlink) statat_flags |= AT_SYMLINK_NOFOLLOW;
-if (empty_key)       statat_flags |= AT_EMPTY_PATH;
+if (ignore_key)      statat_flags |= AT_EMPTY_PATH;
 stat_result = fstatat(h->dir_fd, CCS keystring, &statbuf, statat_flags);
 #else
-filename = empty_key ? dirname
-		     : string_sprintf("%s/%s", dirname, keystring);
+filename = ignore_key ? dirname
+		      : string_sprintf("%s/%s", dirname, keystring);
 if (follow_symlink)
   stat_result = Ustat(filename, &statbuf);
 else
