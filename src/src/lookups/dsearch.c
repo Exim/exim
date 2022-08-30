@@ -35,10 +35,11 @@ typedef struct {
 *              Open entry point                  *
 *************************************************/
 
-/* See local README for interface description. We open the directory to test
-whether it exists and whether it is searchable. However, we don't need to keep
-it open, because the "search" can be done by a call to lstat() rather than
-actually scanning through the list of files. */
+/* See local README for interface description. We checks that the proposed
+directory is untainted and absolute. On systems where fstatat is supported, we
+also opens the directory in O_PATH mode, meaning that fstatat does not have to
+re-parse the entire path when it subsequently checks for the existence of a
+file within it. */
 
 static void *
 dsearch_open(const uschar * dirname, uschar ** errmsg)
@@ -107,9 +108,9 @@ return lf_check_file(-1, dirname, S_IFDIR, modemask, owners, owngroups,
 *              Find entry point                  *
 *************************************************/
 
-/* See local README for interface description. We use lstat() or fstatat()
-instead of reading the directory, as it is hopefully faster to let the OS do
-the scanning for us. */
+/* See local README for interface description. We use a single lstat() or
+stat() or fstatat() syscall, instead of reading the directory (which takes at
+least 3 syscalls). */
 
 static int
 dsearch_find(
