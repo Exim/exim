@@ -65,6 +65,7 @@ if (dir_fd<0)
   }
 ds_handle *h = malloc(sizeof (ds_handle));
 h->dir_fd = dir_fd;
+DEBUG(D_lookup) debug_printf_indent("  dsearch_open: dirname=%s -> fd=%d h=%p\n", dirname, dir_fd, h);
 return h;
 #else
 if (f.running_in_test_harness)
@@ -90,16 +91,20 @@ dsearch_check(void * handle, const uschar * UNUSED(dirname), int modemask,
   uid_t * owners, gid_t * owngroups, uschar ** errmsg)
 {
 ds_handle *h = handle;
-return lf_check_file(h->dir_fd, NULL, S_IFDIR, modemask, owners, owngroups,
+BOOL r = lf_check_file(h->dir_fd, NULL, S_IFDIR, modemask, owners, owngroups,
   "dsearch", errmsg) == 0;
+DEBUG(D_lookup) debug_printf_indent("  dsearch_check: h=%p fd=%d -> %d\n", h, h->dir_fd, r);
+return r;
 }
 #else
 static BOOL
 dsearch_check(void * UNUSED(handle), const uschar * dirname, int modemask,
   uid_t * owners, gid_t * owngroups, uschar ** errmsg)
 {
-return lf_check_file(-1, dirname, S_IFDIR, modemask, owners, owngroups,
+BOOL r = lf_check_file(-1, dirname, S_IFDIR, modemask, owners, owngroups,
   "dsearch", errmsg) == 0;
+DEBUG(D_lookup) debug_printf_indent("  dsearch_check: dirname=%s -> %d\n", dirname, r);
+return r;
 }
 #endif
 
@@ -207,6 +212,13 @@ if (ignore_key)
 else if (keystring == NULL || keystring[0] == 0) /* in case lstat treats "/dir/" the same as "/dir/." */
   return FAIL;
 
+DEBUG(D_lookup) debug_printf_indent("  dsearch_find: %s%sfilterbits=%#x ret=%s key=%s\n",
+  follow_symlink ? "follow, " : "",
+  exclude_dotdotdot ? "filter=nodots, " : "",
+  filter_by_type,
+  ret_mode == RET_FULL ? "full" : ret_mode == RET_DIR ? "dir" : "key",
+  keystring);
+
 /* exclude "." and ".." when {filter=subdir} included */
 if (exclude_dotdotdot
     &&  keystring[0] == '.'
@@ -251,7 +263,9 @@ if (stat_result >= 0)
 
     /* Since the filename exists in the filesystem, we can return a
     non-tainted result. */
+    full_path =
     *result = string_copy_taint(full_path, GET_UNTAINTED);
+    DEBUG(D_lookup) debug_printf_indent("  dsearch_find: res=%s", full_path);
     return OK;
     }
   *errmsg = string_sprintf("%s/%s is of unexpected type %s",
@@ -280,6 +294,7 @@ static void
 dsearch_close(void *handle)
 {
 ds_handle *h = handle;
+DEBUG(D_lookup) debug_printf_indent("  dsearch_close: h=%p fd=%d\n", h, h->dir_fd);
 close(h->dir_fd);   /* ignore error */
 free(h);
 }
