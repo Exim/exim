@@ -93,16 +93,6 @@ return FAIL;
 }
 
 
-/* reset expansion variables */
-void
-regex_vars_clear(void)
-{
-regex_match_string = NULL;
-for (int i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
-}
-
-
-
 int
 regex(const uschar ** listptr, BOOL cacheable)
 {
