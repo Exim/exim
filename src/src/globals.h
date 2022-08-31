@@ -904,12 +904,12 @@ extern const pcre2_code  *regex_EARLY_PIPE;  /* For recognizing PIPE_CONNCT */
 extern int    regex_cachesize;		     /* number of entries */
 extern const pcre2_code  *regex_ismsgid;     /* Compiled r.e. for message ID */
 extern const pcre2_code  *regex_smtp_code;   /* For recognizing SMTP codes */
-extern const uschar *regex_vars[];           /* $regexN variables */
 #ifdef WHITELIST_D_MACROS
 extern const pcre2_code  *regex_whitelisted_macro; /* For -D macro values */
 #endif
 #ifdef WITH_CONTENT_SCAN
 extern uschar *regex_match_string;     /* regex that matched a line (regex ACL condition) */
+extern const uschar *regex_vars[];
 #endif
 extern int     remote_delivery_count;  /* Number of remote addresses */
 extern int     remote_max_parallel;    /* Maximum parallel delivery */

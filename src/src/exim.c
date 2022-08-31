@@ -1678,17 +1678,6 @@ else
 }
 
 
-/* reset regex expansion variables */
-void
-regex_vars_clear(void)
-{
-regex_match_string = NULL;
-for (int i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
-}
-
-
-
-
 
 /*************************************************
 *          Entry point and high-level code       *
@@ -6092,13 +6081,13 @@ MORELOOP:
   dnslist_domain = dnslist_matched = NULL;
 #ifdef WITH_CONTENT_SCAN
   malware_name = NULL;
+  regex_vars_clear();
 #endif
   callout_address = NULL;
   sending_ip_address = NULL;
   deliver_localpart_data = deliver_domain_data =
   recipient_data = sender_data = NULL;
   acl_var_m = NULL;
-  regex_vars_clear();
 
   store_reset(reset_point);
   }

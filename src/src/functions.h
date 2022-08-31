@@ -440,6 +440,7 @@ extern int_eximarith_t receive_statvfs(BOOL, int *);
 extern void    receive_swallow_smtp(void);
 #ifdef WITH_CONTENT_SCAN
 extern int     regex(const uschar **, BOOL);
+extern void    regex_vars_clear(void);
 #endif
 extern void    regex_at_daemon(const uschar *);
 extern BOOL    regex_match(const pcre2_code *, const uschar *, int, uschar **);
@@ -447,7 +448,6 @@ extern BOOL    regex_match_and_setup(const pcre2_code *, const uschar *, int, in
 extern const pcre2_code *regex_compile(const uschar *, mcs_flags, uschar **,
 		pcre2_compile_context *);
 extern const pcre2_code *regex_must_compile(const uschar *, mcs_flags, BOOL);
-extern void    regex_vars_clear(void);
 extern void    retry_add_item(address_item *, uschar *, int);
 extern BOOL    retry_check_address(const uschar *, host_item *, uschar *, BOOL,
                  uschar **, uschar **);

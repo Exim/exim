@@ -2157,7 +2157,9 @@ prdr_requested = FALSE;
 #ifdef SUPPORT_I18N
 message_smtputf8 = FALSE;
 #endif
+#ifdef WITH_CONTENT_SCAN
 regex_vars_clear();
+#endif
 body_linecount = body_zerocount = 0;
 
 lookup_value = NULL;				/* Can be set by ACL */
