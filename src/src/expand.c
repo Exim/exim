@@ -1860,7 +1860,7 @@ else if (Ustrncmp(name, "r_", 2) == 0)
   return node ? node->data.ptr : strict_acl_vars ? NULL : US"";
   }
 
-/* Handle $auth<n> variables. */
+/* Handle $auth<n>, $regex<n> variables. */
 
 if (Ustrncmp(name, "auth", 4) == 0)
   {

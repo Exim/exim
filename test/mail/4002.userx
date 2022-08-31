@@ -27,9 +27,16 @@ Subject: A real test message
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-ID: <41C2F849.3060203@projectile.test.ex>
 FakeReject: test fakereject
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: CALLER_NAME <CALLER@myhost.test.ex>
 X-Regex: Regex matched <THIS gazornenplaz REGEX> <gazornenplaz>
 
 OK, this should look like a genuine message, but
 it will trip on THIS gazornenplaz REGEX.
+
+This checks proper release of variable used for mime_regex
+firstname@foobar.com
+secondname@blaz.com
+thirdname@blaz.com
 

@@ -2157,8 +2157,10 @@ prdr_requested = FALSE;
 #ifdef SUPPORT_I18N
 message_smtputf8 = FALSE;
 #endif
+regex_vars_clear();
 body_linecount = body_zerocount = 0;
 
+lookup_value = NULL;				/* Can be set by ACL */
 sender_rate = sender_rate_limit = sender_rate_period = NULL;
 ratelimiters_mail = NULL;           /* Updated by ratelimit ACL condition */
                    /* Note that ratelimiters_conn persists across resets. */

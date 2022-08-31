@@ -1324,7 +1324,7 @@ const pcre2_code *regex_EARLY_PIPE   = NULL;
 int    regex_cachesize		     = 0;
 const pcre2_code *regex_ismsgid      = NULL;
 const pcre2_code *regex_smtp_code    = NULL;
-const uschar *regex_vars[REGEX_VARS];
+const uschar *regex_vars[REGEX_VARS] = { 0 };;
 #ifdef WHITELIST_D_MACROS
 const pcre2_code *regex_whitelisted_macro = NULL;
 #endif

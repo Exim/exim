@@ -2000,8 +2000,6 @@ regex_whitelisted_macro =
   regex_must_compile(US"^[A-Za-z0-9_/.-]*$", MCS_NOFLAGS, TRUE);
 #endif
 
-for (i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
-
 /* If the program is called as "mailq" treat it as equivalent to "exim -bp";
 this seems to be a generally accepted convention, since one finds symbolic
 links called "mailq" in standard OS configurations. */
@@ -6089,7 +6087,7 @@ MORELOOP:
   deliver_localpart_data = deliver_domain_data =
   recipient_data = sender_data = NULL;
   acl_var_m = NULL;
-  for(int i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
+  regex_vars_clear();
 
   store_reset(reset_point);
   }

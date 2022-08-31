@@ -10,6 +10,7 @@ rfc1413_query_timeout = 0s
 
 acl_smtp_rcpt = check_rcpt
 acl_smtp_data = check_data
+acl_smtp_mime = check_mime
 acl_not_smtp  = check_data
 
 
@@ -19,6 +20,15 @@ begin acl
 
 check_rcpt:
   accept
+
+check_mime:
+    warn condition = ${if match{$mime_content_type}{text}}
+         mime_regex = \N(?s)([\w.+=-]+@\w[\w-]*\.[\w.-]+\w)\
+                        (.+?([\w.+=-]+@\w[\w-]*\.[\w.-]+\w))?\
+                        (.+?([\w.+=-]+@\w[\w-]*\.[\w.-]+\w))?\
+                        (.+?([\w.+=-]+@\w[\w-]*\.[\w.-]+\w))?\
+                        (.+?([\w.+=-]+@\w[\w-]*\.[\w.-]+\w))?\N
+    accept
 
 check_data:
   warn     regex   = \N(THIS\s((\w+)\s)?REGEX)\N

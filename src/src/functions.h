@@ -447,6 +447,7 @@ extern BOOL    regex_match_and_setup(const pcre2_code *, const uschar *, int, in
 extern const pcre2_code *regex_compile(const uschar *, mcs_flags, uschar **,
 		pcre2_compile_context *);
 extern const pcre2_code *regex_must_compile(const uschar *, mcs_flags, BOOL);
+extern void    regex_vars_clear(void);
 extern void    retry_add_item(address_item *, uschar *, int);
 extern BOOL    retry_check_address(const uschar *, host_item *, uschar *, BOOL,
                  uschar **, uschar **);

@@ -93,19 +93,27 @@ return FAIL;
 }
 
 
+/* reset expansion variables */
+void
+regex_vars_clear(void)
+{
+regex_match_string = NULL;
+for (int i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
+}
+
+
 
 int
-regex(const uschar **listptr, BOOL cacheable)
+regex(const uschar ** listptr, BOOL cacheable)
 {
 unsigned long mbox_size;
-FILE *mbox_file;
-pcre_list *re_list_head;
-uschar *linebuffer;
+FILE * mbox_file;
+pcre_list * re_list_head;
+uschar * linebuffer;
 long f_pos = 0;
 int ret = FAIL;
 
-/* reset expansion variable */
-regex_match_string = NULL;
+regex_vars_clear();
 
 if (!mime_stream)				/* We are in the DATA ACL */
   {
@@ -167,14 +175,13 @@ return ret;
 int
 mime_regex(const uschar **listptr, BOOL cacheable)
 {
-pcre_list *re_list_head = NULL;
-FILE *f;
-uschar *mime_subject = NULL;
+pcre_list * re_list_head = NULL;
+FILE * f;
+uschar * mime_subject = NULL;
 int mime_subject_len = 0;
 int ret;
 
-/* reset expansion variable */
-regex_match_string = NULL;
+regex_vars_clear();
 
 /* precompile our regexes */
 if (!(re_list_head = compile(*listptr, cacheable)))
