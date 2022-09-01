@@ -1869,6 +1869,7 @@ if (Ustrncmp(name, "auth", 4) == 0)
   if (!*endptr && n != 0 && n <= AUTH_VARS)
     return auth_vars[n-1] ? auth_vars[n-1] : US"";
   }
+#ifdef WITH_CONTENT_SCAN
 else if (Ustrncmp(name, "regex", 5) == 0)
   {
   uschar *endptr;
@@ -1876,6 +1877,7 @@ else if (Ustrncmp(name, "regex", 5) == 0)
   if (!*endptr && n != 0 && n <= REGEX_VARS)
     return regex_vars[n-1] ? regex_vars[n-1] : US"";
   }
+#endif
 
 /* For all other variables, search the table */
 
@@ -8715,9 +8717,11 @@ assert_variable_notin() treats as const, so deconst is safe. */
 for (int i = 0; i < AUTH_VARS; i++) if (auth_vars[i])
   assert_variable_notin(US"auth<n>", US auth_vars[i], &e);
 
+#ifdef WITH_CONTENT_SCAN
 /* check regex<n> variables. assert_variable_notin() treats as const. */
 for (int i = 0; i < REGEX_VARS; i++) if (regex_vars[i])
   assert_variable_notin(US"regex<n>", US regex_vars[i], &e);
+#endif
 
 /* check known-name variables */
 for (var_entry * v = var_table; v < var_table + var_table_size; v++)
