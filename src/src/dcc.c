@@ -7,13 +7,17 @@
  * wbreyha@gmx.net
  * See the file NOTICE for conditions of use and distribution.
  *
- * Copyright (c) The Exim Maintainers 2015 - 2021
+ * Copyright (c) The Exim Maintainers 2015 - 2022
  */
 
 /* Code for calling dccifd. Called from acl.c. */
 
 #include "exim.h"
 #ifdef EXPERIMENTAL_DCC
+#ifndef WITH_CONTENT_SCAN
+# error EXPERIMENTAL_DCC requires WITH_CONTENT_SCAN
+#endif
+
 #include "dcc.h"
 #include "unistd.h"
 

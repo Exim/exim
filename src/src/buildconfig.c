@@ -740,19 +740,6 @@ else if (isgroup)
     continue;
     }
 
-  /* WITH_CONTENT_SCAN is another special case: it must be set if it or
-  EXPERIMENTAL_DCC is set. */
-
-  if (strcmp(name, "WITH_CONTENT_SCAN") == 0)
-    {
-    char *wcs = getenv("WITH_CONTENT_SCAN");
-    char *dcc = getenv("EXPERIMENTAL_DCC");
-    fprintf(new, wcs || dcc
-      ? "#define WITH_CONTENT_SCAN     yes\n"
-      : "/* WITH_CONTENT_SCAN not set */\n");
-    continue;
-    }
-
   /* DISABLE_DKIM is special; must be forced if DISABLE_TLS */
   if (strcmp(name, "DISABLE_DKIM") == 0)
     {

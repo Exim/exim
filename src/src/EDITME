@@ -596,7 +596,7 @@ DISABLE_MAL_MKS=yes
 
 # Uncomment the following line to add support for talking to dccifd.  This
 # defaults the socket path to /usr/local/dcc/var/dccifd.
-# Doing so will also explicitly turn on the WITH_CONTENT_SCAN option.
+# This support also requires WITH_CONTENT_SCAN enabled.
 
 # EXPERIMENTAL_DCC=yes
 

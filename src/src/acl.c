@@ -3125,12 +3125,9 @@ acl_check_condition(int verb, acl_condition_block *cb, int where,
   address_item *addr, int level, BOOL *epp, uschar **user_msgptr,
   uschar **log_msgptr, int *basic_errno)
 {
-uschar *user_message = NULL;
-uschar *log_message = NULL;
+uschar * user_message = NULL;
+uschar * log_message = NULL;
 int rc = OK;
-#ifdef WITH_CONTENT_SCAN
-int sep = -'/';
-#endif
 
 for (; cb; cb = cb->next)
   {
@@ -3646,12 +3643,13 @@ for (; cb; cb = cb->next)
       break;
       }
 
-    #ifdef EXPERIMENTAL_DCC
+#ifdef EXPERIMENTAL_DCC
     case ACLC_DCC:
       {
       /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
-      uschar *ss = string_nextinlist(&list, &sep, NULL, 0);
+      int sep = -'/';
+      uschar * ss = string_nextinlist(&list, &sep, NULL, 0);
       /* Run the dcc backend. */
       rc = dcc_process(&ss);
       /* Modify return code based upon the existence of options. */
@@ -3660,13 +3658,13 @@ for (; cb; cb = cb->next)
           rc = FAIL;   /* FAIL so that the message is passed to the next ACL */
       break;
       }
-    #endif
+#endif
 
-    #ifdef WITH_CONTENT_SCAN
+#ifdef WITH_CONTENT_SCAN
     case ACLC_DECODE:
       rc = mime_decode(&arg);
       break;
-    #endif
+#endif
 
     case ACLC_DELAY:
       {
@@ -3813,11 +3811,10 @@ for (; cb; cb = cb->next)
 
     case ACLC_LOG_REJECT_TARGET:
       {
-      int logbits = 0;
-      int sep = 0;
-      const uschar *s = arg;
-      uschar * ss;
-      while ((ss = string_nextinlist(&s, &sep, NULL, 0)))
+      int logbits = 0, sep = 0;
+      const uschar * s = arg;
+
+      for (uschar * ss; ss = string_nextinlist(&s, &sep, NULL, 0); )
         {
         if (Ustrcmp(ss, "main") == 0) logbits |= LOG_MAIN;
         else if (Ustrcmp(ss, "panic") == 0) logbits |= LOG_PANIC;
@@ -3865,17 +3862,16 @@ for (; cb; cb = cb->next)
       break;
       }
 
-    #ifdef WITH_CONTENT_SCAN
+#ifdef WITH_CONTENT_SCAN
     case ACLC_MALWARE:			/* Run the malware backend. */
       {
       /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
-      uschar * ss = string_nextinlist(&list, &sep, NULL, 0);
-      uschar * opt;
       BOOL defer_ok = FALSE;
-      int timeout = 0;
+      int timeout = 0, sep = -'/';
+      uschar * ss = string_nextinlist(&list, &sep, NULL, 0);
 
-      while ((opt = string_nextinlist(&list, &sep, NULL, 0)))
+      for (uschar * opt; opt = string_nextinlist(&list, &sep, NULL, 0); )
         if (strcmpic(opt, US"defer_ok") == 0)
 	  defer_ok = TRUE;
 	else if (  strncmpic(opt, US"tmo=", 4) == 0
@@ -3895,7 +3891,7 @@ for (; cb; cb = cb->next)
     case ACLC_MIME_REGEX:
       rc = mime_regex(&arg, textonly);
       break;
-    #endif
+#endif
 
     case ACLC_QUEUE:
       if (is_tainted(arg))
@@ -3979,7 +3975,8 @@ for (; cb; cb = cb->next)
       {
       /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
-      uschar *ss = string_nextinlist(&list, &sep, NULL, 0);
+      int sep = -'/';
+      uschar * ss = string_nextinlist(&list, &sep, NULL, 0);
 
       rc = spam(CUSS &ss);
       /* Modify return code based upon the existence of options. */
