@@ -6544,6 +6544,9 @@ while (*s)
         if (item_type == EITEM_FILTER)
           {
           BOOL condresult;
+	  /* the condition could modify $value, as a side-effect */
+	  uschar * save_value = lookup_value;
+
           if (!eval_condition(expr, &resetok, &condresult))
             {
             iterate_item = save_iterate_item;
@@ -6552,6 +6555,7 @@ while (*s)
               expand_string_message, name);
             goto EXPAND_FAILED;
             }
+	  lookup_value = save_value;
           DEBUG(D_expand) debug_printf_indent("%s: condition is %s\n", name,
             condresult? "true":"false");
           if (condresult)
@@ -6560,14 +6564,12 @@ while (*s)
             continue;               /* FALSE => skip this item */
           }
 
-        /* EITEM_MAP and EITEM_REDUCE */
-
-        else
+        else			/* EITEM_MAP and EITEM_REDUCE */
           {
+	  /* the expansion could modify $value, as a side-effect */
 	  uschar * t = expand_string_internal(expr,
 	    ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, NULL, &resetok, NULL);
-          temp = t;
-          if (!temp)
+          if (!(temp = t))
             {
             iterate_item = save_iterate_item;
             expand_string_message = string_sprintf("%s inside \"%s\" item",

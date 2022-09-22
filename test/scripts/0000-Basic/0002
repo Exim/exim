@@ -90,6 +90,8 @@ filter: ${filter{a:b:c}{!eq{$item}{b}}}
 filter: ${filter{<' a'b'c}{!eq{$item}{b}}}
 filter: ${filter{<' ''a'b' ''c}{!eq{$item}{b}}}
 filter: "${filter{}{!eq{$item}{b}}}"
+# check operation when the condition modifies the 'value' variable
+${filter {E} {inlisti{$item}{ e }}}
 
 map: "${map{}{$item}}"
 map: ${map{a:b:c}{$item}}

@@ -79,6 +79,8 @@
 > filter: a'c
 > filter: ''a' ''c
 > filter: ""
+> # check operation when the condition modifies the 'value' variable
+> E
 > 
 > map: ""
 > map: a:b:c

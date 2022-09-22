@@ -9907,7 +9907,11 @@ After expansion, <&'string'&> is interpreted as a list, colon-separated by
 default, but the separator can be changed in the usual way (&<<SECTlistsepchange>>&).
 For each item
 in this list, its value is place in &$item$&, and then the condition is
-evaluated. If the condition is true, &$item$& is added to the output as an
+evaluated.
+.new
+Any modification of &$value$& by this evaluation is discarded.
+.wen
+If the condition is true, &$item$& is added to the output as an
 item in a new list; if the condition is false, the item is discarded. The
 separator used for the output list is the same as the one used for the
 input, but a separator setting is not included in the output. For example:
@@ -9915,7 +9919,8 @@ input, but a separator setting is not included in the output. For example:
 ${filter{a:b:c}{!eq{$item}{b}}}
 .endd
 yields &`a:c`&. At the end of the expansion, the value of &$item$& is restored
-to what it was before. See also the &%map%& and &%reduce%& expansion items.
+to what it was before.
+See also the &%map%& and &%reduce%& expansion items.
 
 
 .vitem &*${hash{*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&
