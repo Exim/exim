@@ -30,7 +30,7 @@ extern int     lf_sqlperform(const uschar *, const uschar *, const uschar *,
      printf("%s is a %s\n", filename, t);
    else
      printf("%s is unknown\n", filename);
-   if ( allowed_filetype_mask & BIT(S_IFMT_to_index(s.st_mode)) )
+   if ( allowed_filetype_mask & S_IFMT_to_set(s.st_mode) )
      printf("\tALLOWED\n");
    else
      printf("\tFORBIDDEN\n");
@@ -58,15 +58,17 @@ extern int     lf_sqlperform(const uschar *, const uschar *, const uschar *,
 #define S_IFMT_to_index(S)   ( (S_IFMT & (S)) / S_IFMT_scale )
 #define S_IFMT_from_index(I) (  S_IFMT & (I)  * S_IFMT_scale )
 
+typedef unsigned long ifmt_set_t;
 
-extern const uschar *S_IFMTix_to_name(int index);       /* NULL on error */
+#define S_IFMT_to_set(S) (1UL << S_IFMT_to_index(S))
+
+extern ifmt_set_t S_IFMTset_from_name(const uschar *name);      /* zero on error */
 extern const uschar *S_IFMTix_to_long_name(int index);  /* NULL on error */
-extern const uschar *S_IFMTix_to_ucname(int index);     /* NULL on error */
-extern int S_IFMTix_from_name(const uschar *name);      /* negative on error */
 
-static inline const uschar *S_IFMT_to_name(int index)      { int i = S_IFMT_to_index(index);   return i<0 ? NULL : S_IFMTix_to_name(i);      } /* NULL on error */
-static inline const uschar *S_IFMT_to_long_name(int index) { int i = S_IFMT_to_index(index);   return i<0 ? NULL : S_IFMTix_to_long_name(i); } /* NULL on error */
-static inline const uschar *S_IFMT_to_ucname(int index)    { int i = S_IFMT_to_index(index);   return i<0 ? NULL : S_IFMTix_to_ucname(i);    } /* NULL on error */
-static inline int S_IFMT_from_name(const uschar *name)     { int i = S_IFMTix_from_name(name); return i<0 ? -1   : S_IFMT_from_index(i);     } /* negative on error */
+static inline const uschar *
+S_IFMT_to_long_name(int ifmt) { /* NULL on error */
+int i = S_IFMT_to_index(ifmt);
+return i<0 ? NULL : S_IFMTix_to_long_name(i);
+}
 
 /* End of lf_functions.h */

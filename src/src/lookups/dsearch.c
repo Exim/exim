@@ -129,8 +129,8 @@ dsearch_find(
 {
 struct stat statbuf;
 int save_errno;
-unsigned filter_by_type = 0;
-int exclude_dotdotdot = 0;
+ifmt_set_t filter_by_type = 0;
+int allowdots = 0;
 enum {
   RET_KEY,  /* return the key */
   RET_DIR,  /* return the dir without the key */
@@ -166,7 +166,7 @@ if (opts)
       else if (Ustrcmp(ele, "dir") == 0)
 	ret_mode = RET_DIR;
       #if 0
-      /* XXX ret=key is excluded from opts by special-case code in by search_find() */
+      /* NOTE ret=key is excluded from opts by special-case code in by search_find() */
       else if (Ustrcmp(ele, "key") == 0)
 	ret_mode = RET_KEY;
       #endif
@@ -179,11 +179,19 @@ if (opts)
     else if (Ustrncmp(ele, "filter=", 7) == 0)
       {
       ele += 7;
-      int i = S_IFMTix_from_name(ele);
-      if (i>=0)
-	filter_by_type |= BIT(i);
-      else if (Ustrcmp(ele, "subdir") == 0) filter_by_type |= BIT(S_IFMT_to_index(S_IFDIR)), exclude_dotdotdot = 1;    /* dir but not "." or ".." */
-      else if (Ustrcmp(ele, "nodots") == 0) exclude_dotdotdot = 1;    /* any but "." or ".." */
+      ifmt_set_t m = S_IFMTset_from_name(ele);
+      if (m)
+        {
+	filter_by_type |= m;
+/* XXX issue immediate deprecation warning */
+#ifndef NO_DIR_IMPLIES_ALLOWDOTS
+        /* allow "." or ".." when "dir" rather than "subdir" */
+        if (m == S_IFMT_to_set(S_IFDIR) && ele[0] == 'd')
+          allowdots = 1;
+#endif
+        }
+      else if (Ustrcmp(ele, "allowdots") == 0)
+        allowdots = 1;    /* allow "." or ".." */
       else
 	{
 	*errmsg = string_sprintf("unknown parameter for dsearch lookup: %s", ele-=7);
@@ -206,15 +214,15 @@ if (ignore_key)
 else if (keystring == NULL || keystring[0] == 0) /* in case lstat treats "/dir/" the same as "/dir/." */
   return FAIL;
 
-DEBUG(D_lookup) debug_printf_indent("  dsearch_find: %s%sfilterbits=%#x ret=%s key=%s\n",
+DEBUG(D_lookup) debug_printf_indent("  dsearch_find: %s%sfilter_set=%04jx ret=%s key=%s\n",
   follow_symlink ? "follow, " : "",
-  exclude_dotdotdot ? "filter=nodots, " : "",
-  filter_by_type,
+  allowdots ? "filter=allowdots, " : "",
+  (uintmax_t) filter_by_type,
   ret_mode == RET_FULL ? "full" : ret_mode == RET_DIR ? "dir" : "key",
   keystring);
 
 /* exclude "." and ".." when {filter=subdir} included */
-if (exclude_dotdotdot
+if (! allowdots
     &&  keystring[0] == '.'
     && (keystring[1] == 0
      || keystring[1] == '.' && keystring[2] == 0))
@@ -235,7 +243,7 @@ else
 if (stat_result >= 0)
   {
   if (!filter_by_type
-	|| filter_by_type & BIT(S_IFMT_to_index(statbuf.st_mode)))
+	|| filter_by_type & S_IFMT_to_set(statbuf.st_mode))
     {
     switch (ret_mode)
       {

@@ -77,6 +77,7 @@ static const struct {
   /* sorted in descending order of likelihood */
   { CUS "file",    S_IFMT_to_index(S_IFREG) },
   { CUS "dir",     S_IFMT_to_index(S_IFDIR) },
+  { CUS "subdir",  S_IFMT_to_index(S_IFDIR) },
   #ifdef S_IFLNK
   { CUS "symlink", S_IFMT_to_index(S_IFLNK) },
   { CUS "link",    S_IFMT_to_index(S_IFLNK) },
@@ -100,13 +101,13 @@ static const struct {
 };
 static const size_t num_ni_map = nelem(ni_map);
 
-int
-S_IFMTix_from_name(const uschar *name)
+ifmt_set_t
+S_IFMTset_from_name(const uschar *name)
 {
 for (int i=0 ; i < num_ni_map ; ++i)
   if (Ustrcmp(ni_map[i].name, name) == 0)
-    return ni_map[i].index;
-return -1;
+    return 1UL << ni_map[i].index;
+return 0;
 }
 
 const uschar *
@@ -115,22 +116,6 @@ S_IFMTix_to_long_name(int index)
 if (index < 0 || index >= num_S_IF_names)
   return NULL; /* invalid file type */
 return S_IF_longnames[index];
-}
-
-const uschar *
-S_IFMTix_to_name(int index)
-{
-if (index < 0 || index >= num_S_IF_names)
-  return NULL; /* invalid file type */
-return S_IF_names[index];
-}
-
-const uschar *
-S_IFMTix_to_ucname(int index)
-{
-if (index < 0 || index >= num_S_IF_names)
-  return NULL; /* invalid file type */
-return S_IF_ucnames[index];
 }
 
 /*************************************************
