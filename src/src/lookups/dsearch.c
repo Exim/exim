@@ -192,12 +192,6 @@ if (opts)
       }
     else if (Ustrcmp(ele, "follow") == 0)
       follow_symlink = 1;
-    else if (Ustrcmp(ele, "checkpath") == 0)
-      {
-      /* shortcut for follow,ret=dir */
-      follow_symlink = 1;
-      ret_mode = RET_DIR;
-      }
     else if (Ustrcmp(ele, "ignorekey") == 0)
       ignore_key = 1;
     else
