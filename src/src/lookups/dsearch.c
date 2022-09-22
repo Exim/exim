@@ -63,7 +63,7 @@ if (dir_fd<0)
   *errmsg = string_open_failed("%s for directory search", dirname);
   return NULL;
   }
-ds_handle *h = malloc(sizeof (ds_handle));
+ds_handle *h = store_get(sizeof (ds_handle), GET_UNTAINTED);
 h->dir_fd = dir_fd;
 DEBUG(D_lookup) debug_printf_indent("  dsearch_open: dirname=%s -> fd=%d h=%p\n", dirname, dir_fd, h);
 return h;
@@ -296,7 +296,6 @@ dsearch_close(void *handle)
 ds_handle *h = handle;
 DEBUG(D_lookup) debug_printf_indent("  dsearch_close: h=%p fd=%d\n", h, h->dir_fd);
 close(h->dir_fd);   /* ignore error */
-free(h);
 }
 #else
 static void
