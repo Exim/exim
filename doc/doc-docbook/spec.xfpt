@@ -11658,6 +11658,7 @@ Consider using a dsearch lookup.
 .cindex "first delivery"
 .cindex "expansion" "first delivery test"
 .cindex "&%first_delivery%& expansion condition"
+.cindex retry condition
 This condition, which has no data, is true during a message's first delivery
 attempt. It is false during any subsequent delivery attempts.
 
@@ -35858,6 +35859,7 @@ The system filter is run at the start of a delivery attempt, before any routing
 is done. If a message fails to be completely delivered at the first attempt,
 the system filter is run again at the start of every retry.
 If you want your filter to do something only once per message, you can make use
+.cindex retry condition
 of the &%first_delivery%& condition in an &%if%& command in the filter to
 prevent it happening on retries.
 
