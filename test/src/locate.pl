@@ -36,6 +36,21 @@ foreach my $tool (keys %path) {
 sub locate {
     my ($tool, @dirs) = @_;
 
+    my $n = 0;
+    for ( my @look_in = map { $_.'/' } @dirs; @look_in ;) {
+        my $d = shift @look_in;
+            printf STDERR "\r%7u %s\e[K", ++$n, $d;
+        my $p = "$d/$tool";
+        -x $p && -f _ and do {
+            printf STDERR "\r\e[K";
+            return $p;
+        };
+        push @look_in, glob $d.'*/'
+            unless $d =~ m{bin/$};
+    }
+
+    return;
+
     # use die to break out of the find as soon
     # as we found it
     my $cwd = cwd;
@@ -51,5 +66,5 @@ sub locate {
     };
     chdir $cwd;
 
-    return (ref $@ eq ref {} and $@->{found}) ? $@->{found} : undef;
+    return ref $@ eq 'HASH' && $@->{found} || undef;
 }
