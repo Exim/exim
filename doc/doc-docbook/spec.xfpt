@@ -10511,6 +10511,17 @@ At the end of a &*reduce*& expansion, the values of &$item$& and &$value$& are
 restored to what they were before. See also the &%filter%& and &%map%&
 expansion items.
 
+. A bit of a special-case logic error in writing an expansion;
+. probably not worth including in the mainline of documentation.
+. If only we had footnotes (the html output variant is the problem).
+.
+. .new
+. &*Note*&: if an &'expansion condition'& is used in <&'string3'&>
+. and that condition modifies &$value$&,
+. then the string expansions dependent on the condition cannot use
+. the &$value$& of the reduce iteration.
+. .wen
+
 .vitem &*$rheader_*&<&'header&~name'&>&*:*&&~or&~&*$rh_*&<&'header&~name'&>&*:*&
 This item inserts &"raw"& header lines. It is described with the &%header%&
 expansion item in section &<<SECTexpansionitems>>& above.
