@@ -951,36 +951,35 @@ Returns:    nothing
 */
 
 static void
-info_callback(SSL *s, int where, int ret)
+info_callback(SSL * s, int where, int ret)
 {
 DEBUG(D_tls)
   {
-  const uschar * str;
+  gstring * g = NULL;
 
-  if (where & SSL_ST_CONNECT)
-     str = US"SSL_connect";
-  else if (where & SSL_ST_ACCEPT)
-     str = US"SSL_accept";
-  else
-     str = US"SSL info (undefined)";
+  if (where & SSL_ST_CONNECT) g = string_append_listele(g, ',', US"SSL_connect");
+  if (where & SSL_ST_ACCEPT)  g = string_append_listele(g, ',', US"SSL_accept");
+  if (where & SSL_CB_LOOP)    g = string_append_listele(g, ',', US"state_chg");
+  if (where & SSL_CB_EXIT)    g = string_append_listele(g, ',', US"hshake_exit");
+  if (where & SSL_CB_READ)    g = string_append_listele(g, ',', US"read");
+  if (where & SSL_CB_WRITE)   g = string_append_listele(g, ',', US"write");
+  if (where & SSL_CB_ALERT)   g = string_append_listele(g, ',', US"alert");
+  if (where & SSL_CB_HANDSHAKE_START) g = string_append_listele(g, ',', US"hshake_start");
+  if (where & SSL_CB_HANDSHAKE_DONE)  g = string_append_listele(g, ',', US"hshake_done");
 
   if (where & SSL_CB_LOOP)
-     debug_printf("%s: %s\n", str, SSL_state_string_long(s));
+     debug_printf("SSL %s: %s\n", g->s, SSL_state_string_long(s));
   else if (where & SSL_CB_ALERT)
-    debug_printf("SSL3 alert %s:%s:%s\n",
-	  str = where & SSL_CB_READ ? US"read" : US"write",
+    debug_printf("SSL %s %s:%s\n", g->s,
 	  SSL_alert_type_string_long(ret), SSL_alert_desc_string_long(ret));
   else if (where & SSL_CB_EXIT)
     {
-    if (ret == 0)
-      debug_printf("%s: failed in %s\n", str, SSL_state_string_long(s));
-    else if (ret < 0)
-      debug_printf("%s: error in %s\n", str, SSL_state_string_long(s));
+    if (ret <= 0)
+      debug_printf("SSL %s: %s in %s\n", g->s,
+	ret == 0 ? "failed" : "error", SSL_state_string_long(s));
     }
-  else if (where & SSL_CB_HANDSHAKE_START)
-     debug_printf("%s: hshake start: %s\n", str, SSL_state_string_long(s));
-  else if (where & SSL_CB_HANDSHAKE_DONE)
-     debug_printf("%s: hshake done: %s\n", str, SSL_state_string_long(s));
+  else if (where & (SSL_CB_HANDSHAKE_START | SSL_CB_HANDSHAKE_DONE))
+     debug_printf("SSL %s: %s\n", g->s, SSL_state_string_long(s));
   }
 }
 

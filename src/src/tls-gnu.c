@@ -1142,8 +1142,9 @@ tls_server_clienthello_cb(gnutls_session_t session, unsigned int htype,
   unsigned when, unsigned int incoming, const gnutls_datum_t * msg)
 {
 /* Call fn for each extension seen.  3.6.3 onwards */
-return gnutls_ext_raw_parse(NULL, tls_server_clienthello_ext, msg,
+int rc = gnutls_ext_raw_parse(NULL, tls_server_clienthello_ext, msg,
 			   GNUTLS_EXT_RAW_FLAG_TLS_CLIENT_HELLO);
+return rc == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE ? 0 : rc;
 }
 
 
