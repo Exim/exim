@@ -2737,7 +2737,7 @@ if (init_options)
   DEBUG(D_tls) debug_printf("setting  SSL CTX options: %016lx\n", init_options);
   SSL_CTX_set_options(ctx, init_options);
    {
-    ulong readback = SSL_CTX_clear_options(ctx, ~init_options);
+    uint64_t readback = SSL_CTX_clear_options(ctx, ~init_options);
     if (readback != init_options)
       return tls_error(string_sprintf(
           "SSL_CTX_set_option(%#lx)", init_options), host, NULL, errstr);
