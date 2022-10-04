@@ -2210,7 +2210,9 @@ already exists.  Might even need this selfsame callback, for reneg? */
   SSL_CTX * ctx = state_server.lib_state.lib_ctx;
   SSL_CTX_set_info_callback(server_sni, SSL_CTX_get_info_callback(ctx));
   SSL_CTX_set_mode(server_sni, SSL_CTX_get_mode(ctx));
+  SSL_CTX_set_min_proto_version(server_sni, SSL3_VERSION);
   SSL_CTX_set_options(server_sni, SSL_CTX_get_options(ctx));
+  SSL_CTX_clear_options(server_sni, ~SSL_CTX_get_options(ctx));
   SSL_CTX_set_timeout(server_sni, SSL_CTX_get_timeout(ctx));
   SSL_CTX_set_tlsext_servername_callback(server_sni, tls_servername_cb);
   SSL_CTX_set_tlsext_servername_arg(server_sni, state);
@@ -2726,10 +2728,15 @@ if (init_options)
     }
 #endif
 
-  DEBUG(D_tls) debug_printf("setting SSL CTX options: %#lx\n", init_options);
-  if (!(SSL_CTX_set_options(ctx, init_options)))
-    return tls_error(string_sprintf(
+  SSL_CTX_set_min_proto_version(ctx, SSL3_VERSION);
+  DEBUG(D_tls) debug_printf("setting  SSL CTX options: %016lx\n", init_options);
+  SSL_CTX_set_options(ctx, init_options);
+   {
+    ulong readback = SSL_CTX_clear_options(ctx, ~init_options);
+    if (readback != init_options)
+      return tls_error(string_sprintf(
           "SSL_CTX_set_option(%#lx)", init_options), host, NULL, errstr);
+   }
   }
 else
   DEBUG(D_tls) debug_printf("no SSL CTX options to set\n");

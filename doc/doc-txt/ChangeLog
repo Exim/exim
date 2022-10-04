@@ -43,6 +43,10 @@ JH/09 Fix ${filter } for conditions that modify $value.  Previously the
 JH/10 GnuTLS: fix for (IOT?) clients offering no TLS extensions at all.
       Find and fix by Jasen Betts.
 
+JH/11 OpenSSL: fix for ancient clients needing TLS support for versions earlier
+      than TLSv1,2,  Previously, more-recent versions of OpenSSL were permitting
+      the systemwide configuration to override the Exim config.
+
 
 Exim version 4.96
 -----------------

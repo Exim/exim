@@ -24,6 +24,10 @@ tls_alpn = STRICT
 hosts_require_alpn = *
 .endif
 
+.ifdef _HAVE_OPENSSL
+tls_require_ciphers = ALL:@SECLEVEL=0
+openssl_options = -no_sslv3 -no_tlsv1_1 -no_tlsv1
+.endif
 
 # ------ ACL ------
 

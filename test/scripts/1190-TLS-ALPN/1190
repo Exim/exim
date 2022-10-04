@@ -24,7 +24,33 @@ exim -DCONTROL="" -odf d@test.ex
 # Content-free client option is ok
 exim -DCONTROL=" " -odf e@test.ex
 ****
+#
+# Really dumb (IOT?) client, offering no TLS extensions at all in the Client Hello
+#
+# We're feeding the TLS protocol packet in manually rather then having
+# the TLS-enabled client do it, we (currently) can only drop the TCP conn after
+# the TLS conn completes (or fails).
+# Expect the server to log "TCP connection closed by peer" for the success case;
+# something else logged counts as bad.
+#
+client 127.0.0.1 PORT_D
+??? 220
+EHLO IOTtester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-STARTTLS
+??? 250 HELP
+STARTTLS
+??? 220
+>>> \x16\x03\x00\x00\x43\x01\x00\x00\x3f\x03\x02\xff\xff\xff\xff\x92\x3e\x99\x88\xd0\x2b\x8f\xc2\x76\xbd\xcf\x02\xcc\xb6\xfc\x39\x00\xd0\x52\x82\x8c\x65\x0c\xcd\x8c\x02\x00\x40\x00\x00\x18\x00\x33\x00\x39\x00\x45\x00\x88\x00\x16\x00\x35\x00\x84\x00\x2f\x00\x41\x00\x0a\x00\x05\x00\x04\x01\x00
+****
+millisleep 500
+#
+#
 killdaemon
+millisleep 500
 #
 # Server can be told to ignore (bad) ALPN from client
 exim -DSERVER=server -DSTRICT="" -bd -oX PORT_D

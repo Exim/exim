@@ -31,6 +31,7 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbD-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <e@test.ex> R=server
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 TLS error on connection from (IOTtester) [127.0.0.1] (tls lib accept fn): TCP connection closed by peer
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbF-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbG-0005vi-00 => :blackhole: <f@test.ex> R=server
