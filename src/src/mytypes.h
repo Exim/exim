@@ -42,8 +42,12 @@ so we have to give up on all of the available parameter checking. */
 # define FUNC_MAYBE_UNUSED	__attribute__((__unused__))
 # define WARN_UNUSED_RESULT	__attribute__((__warn_unused_result__))
 # define ALLOC			__attribute__((malloc))
-# define ALLOC_SIZE(A)		__attribute__((alloc_size(A)))
 # define NORETURN		__attribute__((noreturn))
+# ifndef __clang__
+#  define ALLOC_SIZE(A)		__attribute__((alloc_size(A)))
+# else
+#  define ALLOC_SIZE(A)		/**/
+# endif
 #else
 # define ARG_UNUSED		/**/
 # define FUNC_MAYBE_UNUSED	/**/
