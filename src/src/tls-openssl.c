@@ -48,6 +48,7 @@ functions from the OpenSSL library. */
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 # define EXIM_HAVE_OCSP_RESP_COUNT
 # define OPENSSL_AUTO_SHA256
+# define OPENSSL_MIN_PROTO_VERSION
 #else
 # define EXIM_HAVE_EPHEM_RSA_KEX
 # define EXIM_HAVE_RAND_PSEUDO
@@ -2210,7 +2211,9 @@ already exists.  Might even need this selfsame callback, for reneg? */
   SSL_CTX * ctx = state_server.lib_state.lib_ctx;
   SSL_CTX_set_info_callback(server_sni, SSL_CTX_get_info_callback(ctx));
   SSL_CTX_set_mode(server_sni, SSL_CTX_get_mode(ctx));
+#ifdef OPENSSL_MIN_PROTO_VERSION
   SSL_CTX_set_min_proto_version(server_sni, SSL3_VERSION);
+#endif
   SSL_CTX_set_options(server_sni, SSL_CTX_get_options(ctx));
   SSL_CTX_clear_options(server_sni, ~SSL_CTX_get_options(ctx));
   SSL_CTX_set_timeout(server_sni, SSL_CTX_get_timeout(ctx));
@@ -2728,7 +2731,9 @@ if (init_options)
     }
 #endif
 
+#ifdef OPENSSL_MIN_PROTO_VERSION
   SSL_CTX_set_min_proto_version(ctx, SSL3_VERSION);
+#endif
   DEBUG(D_tls) debug_printf("setting  SSL CTX options: %016lx\n", init_options);
   SSL_CTX_set_options(ctx, init_options);
    {
