@@ -2,6 +2,11 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Backported from master
+----------------------
+
+HS/01 Bug 2728: Introduce EDITME option "DMARC_API" to work around incompatible
+      API changes in libopendmarc.
 
 Exim version 4.95
 -----------------
