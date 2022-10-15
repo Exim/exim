@@ -47,6 +47,9 @@ JH/11 OpenSSL: fix for ancient clients needing TLS support for versions earlier
       than TLSv1,2,  Previously, more-recent versions of OpenSSL were permitting
       the systemwide configuration to override the Exim config.
 
+HS/01 Bug 2728: Introduce EDITME option "DMARC_API" to work around incompatible
+      API changes in libopendmarc.
+
 
 Exim version 4.96
 -----------------
