@@ -2,6 +2,55 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Exim version 4.97
+-----------------
+
+JH/01 The hosts_connection_nolog main option now also controls "no MAIL in
+      SMTP connection" log lines.
+
+JH/02 Option default value updates:
+	- queue_fast_ramp (main)	true (was false)
+	- remote_max_parallel (main)	4 (was 2)
+
+JH/03 Cache static regex pattern compilations, for use by ACLs.
+
+JH/04 Bug 2903: avoid exit on an attempt to rewrite a malformed address.
+      Make the rewrite never match and keep the logging.  Trust the
+      admin to be using verify=header-syntax (to actually reject the message).
+
+JH/05 Follow symlinks for placing a watch on TLS creds files.  This means
+      (under Linux) we watch the dir containing the final file; previously
+      it would be the dir with the first symlink.  We still do not monitor
+      the entire path.
+
+JH/06 Check for bad chars in rDNS for sender_host_name.  The OpenBSD (at least)
+      dn_expand() is happy to pass them through.
+
+JH/07 OpenSSL Fix auto-reload of changed server OCSP proof.  Previously, if
+      the file with the proof had an unchanged name, the new proof(s) were
+      loaded on top of the old ones (and nover used; the old ones were stapled).
+
+JH/08 Bug 2915: Fix use-after-free for $regex<n> variables. Previously when
+      more than one message arrived in a single connection a reference from
+      the earlier message could be re-used.  Often a sigsegv resulted.
+      These variables were introduced in Exim 4.87.
+      Debug help from Graeme Fowler.
+
+JH/09 Fix ${filter } for conditions that modify $value.  Previously the
+      modified version would be used in construction the result, and a memory
+      error would occur.
+
+JH/10 GnuTLS: fix for (IOT?) clients offering no TLS extensions at all.
+      Find and fix by Jasen Betts.
+
+JH/11 OpenSSL: fix for ancient clients needing TLS support for versions earlier
+      than TLSv1,2,  Previously, more-recent versions of OpenSSL were permitting
+      the systemwide configuration to override the Exim config.
+
+HS/01 Bug 2728: Introduce EDITME option "DMARC_API" to work around incompatible
+      API changes in libopendmarc.
+
+
 Exim version 4.96
 -----------------
 

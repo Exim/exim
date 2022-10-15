@@ -459,7 +459,12 @@ if (!dmarc_abort && !sender_host_authenticated)
 		  vs == PDKIM_VERIFY_INVALID ? DMARC_POLICY_DKIM_OUTCOME_TMPFAIL :
 		  DMARC_POLICY_DKIM_OUTCOME_NONE;
     libdm_status = opendmarc_policy_store_dkim(dmarc_pctx, US sig->domain,
-					       dkim_result, US"");
+/* The opendmarc project broke its API in a way we can't detect * easily.
+ * The EDITME provides a DMARC_API variable */
+#if DMARC_API >= 100400
+                                               sig->selector,
+#endif
+                                               dkim_result, US"");
     DEBUG(D_receive)
       debug_printf("DMARC adding DKIM sender domain = %s\n", sig->domain);
     if (libdm_status != DMARC_PARSE_OKAY)
