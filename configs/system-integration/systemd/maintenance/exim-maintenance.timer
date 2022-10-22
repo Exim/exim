@@ -1,0 +1,11 @@
+[Unit]
+Description=Exim MTA (maintenance timer)
+Documentation=man:exim
+Documentation=https://exim.org/docs.html
+
+[Timer]
+OnActiveSec=1h
+OnUnitActiveSec=1d
+
+[Install]
+WantedBy=timers.target

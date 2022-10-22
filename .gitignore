@@ -1,4 +1,4 @@
-exim-*
+!/system-integration/
 !/test/aux-fixed/exim-ca
 *~
 *.bak

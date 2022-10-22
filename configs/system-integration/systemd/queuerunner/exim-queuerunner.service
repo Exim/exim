@@ -1,0 +1,21 @@
+[Unit]
+Description=Exim MTA (queue runner service)
+Documentation=man:exim
+Documentation=https://exim.org/docs.html
+
+[Service]
+Type=oneshot
+
+ExecStart={{exim}} -q
+KillMode=process
+
+# If you do not need local deliveries, enabling the
+# next option can improve security
+#NoNewPrivileges=yes
+
+ProtectSystem=strict
+ReadWriteDirectories={{spooldir}}
+ReadWriteDirectories={{logdir}}
+ReadWriteDirectories=/var/mail /var/spool/mail
+
+Slice=exim.slice

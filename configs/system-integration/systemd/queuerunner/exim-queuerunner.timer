@@ -1,0 +1,11 @@
+[Unit]
+Description=Exim MTA (queue runner timer)
+Documentation=man:exim
+Documentation=https://exim.org/docs.html
+
+[Timer]
+OnActiveSec=120
+OnUnitActiveSec=15m
+
+[Install]
+WantedBy=timers.target

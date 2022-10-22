@@ -1,0 +1,29 @@
+[Unit]
+Description=Exim MTA (as daemon)
+Documentation=man:exim
+Documentation=https://exim.org/docs.html
+
+Requires=network.target
+After=networking.target
+
+[Service]
+Environment=DAEMON_OPTS=
+Environment=QUEUE_OPTS=-q15m
+EnvironmentFile=-/etc/default/{{exim}}
+
+Type=exec
+ExecStart={{exim}} -bdf $DAEMON_OPTS $QUEUE_OPTS
+ExecReload=kill -HUP ${MAINPID}
+
+# If you do not need local deliveries, enabling the
+# next option can improve security
+#NoNewPrivileges=yes
+
+ProtectSystem=strict
+ReadWriteDirectories={{spooldir}}
+ReadWriteDirectories={{logdir}}
+
+Slice=exim.slice
+
+[Install]
+WantedBy=multi-user.target

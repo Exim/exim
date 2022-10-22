@@ -1,0 +1,24 @@
+[Unit]
+Description=Exim MTA (maintenance)
+Documentation=man:exim
+Documentation=https://exim.org/docs.html
+
+[Service]
+Type=oneshot
+ExecReload=kill -HUP ${MAINPID}
+
+# Dollars are doubled for systemd!
+WorkingDirectory={{spooldir}}
+ExecStart=sh -ec 'for db in db/* ;\
+		do \
+			test -f "$$db" && [ "$${db##*.}" != lockfile ] || continue ;\
+			exim_tidydb $$PWD "$${db##*/}"; \
+		done'
+
+ProtectSystem=strict
+ReadWriteDirectories={{spooldir}}/db
+
+Slice=exim.slice
+
+[Install]
+WantedBy=multi-user.target

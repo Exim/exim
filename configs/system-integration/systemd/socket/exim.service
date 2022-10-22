@@ -1,0 +1,26 @@
+[Unit]
+Description=Exim MTA (socket activated)
+Documentation=man:exim
+Documentation=https://exim.org/docs.html
+PartOf=exim.socket
+
+[Service]
+Type=exec
+Environment=INACTIVITY_TIMEOUT=5m
+EnvironmentFile=-/etc/default/exim
+
+ExecStart=exim -bw${INACTIVITY_TIMEOUT}
+
+StandardInput=socket
+StandardError=journal
+
+# If you do not need local deliveries, enabling the
+# next option can improve security
+#NoNewPrivileges=yes
+
+ProtectSystem=strict
+ReadWriteDirectories={{spooldir}}
+ReadWriteDirectories={{logdir}}
+ReadWriteDirectories=/var/mail /var/spool/mail
+
+Slice=exim.slice

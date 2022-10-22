@@ -1,0 +1,27 @@
+[Unit]
+Description=Exim MTA (socket activated - inetd mode)
+Documentation=man:exim
+Documentation=https://exim.org/docs.html
+
+[Service]
+Type=exec
+
+# We can't use -odf, as this would ask exim to keep the connection
+# from the client open until the delivery is done
+ExecStart={{exim}} -bs
+
+StandardInput=socket
+StandardError=journal
+
+# Don't kill the delivery process we spawned as a child
+KillMode=process
+
+# If you do not need local deliveries, enabling the
+# next option can improve security
+#NoNewPrivileges=yes
+
+ProtectSystem=strict
+ReadWriteDirectories={{spooldir}}
+ReadWriteDirectories={{logdir}}
+
+Slice=exim.slice

@@ -1,0 +1,92 @@
+#!/bin/bash
+# simple helper, mainly for testing the provided Systemd units.
+
+set -eu
+export LC_ALL=C
+
+: ${EXIM=exim}
+: ${EXIM_LOGDIR=/var/log/exim}
+: ${EXIM_SPOOLDIR=/var/spool/exim}
+
+# Packagers should install to $(systemd-path systemd-system-unit)
+# which mostly is something like /lib/systemd/system
+dstdir=
+
+usage="$0 [OPTIONS] variant...
+  This simple script installs Systemd unit files to the desired destination, replacing
+  the {{Placeholder}}s.
+
+  VARIANT: one of daemon, inet, socket, maintainance, queuerunner
+
+  OPTIONS:
+  --help          print this help and exit cleanly
+  --uninstall|-u  uninstall the installed files
+  --dstdir|-d DIR the destination directory (mandatory, use 'DEFAULT'
+                  to use Systemd's default location (`systemd-path systemd-system-conf`)
+
+  Placeholders:
+  {{exim}} from \$EXIM ($EXIM)
+  {{logdir}} from \$EXIM_LOGDIR ($EXIM_LOGDIR)
+  {{spooldir}} from \$EXIM_SPOOLDIR ($EXIM_SPOOLDIR)
+"
+
+
+tmp=$(getopt -n $0 -o d:n --long dstdir:,help,uninstall -- "$@")
+eval set -- "$tmp"
+while true
+do
+	o=$1; shift
+	case $o in
+                -d|--dstdir) dstdir=$1; shift;;
+                --help) echo "$usage"; exit;;
+		-n|--uninstall) uninstall=1;;
+		--) break
+	esac
+done
+
+if [[ -v uninstall ]]
+then
+	if ! [[ -r .installed ]]
+	then
+		echo "$0: noting to uninstall (.installed is empty or isn't readable)" >&2
+		exit
+	fi
+
+	rm -vf $(<.installed)
+	rm -f .installed
+	exit
+fi
+
+case $dstdir in
+        DEFAULT) dstdir=$(systemd-path systemd-system-conf);;
+        "") echo "$0: --dstdir is mandatory" >&2; exit 1;;
+        *) ;;
+esac
+
+if (( $# == 0 ))
+then echo "$0: need variant" >&2; exit 1;
+fi
+
+function xform() {
+        sed -e "s|{{exim}}|${EXIM:?}|g" \
+            -e "s|{{logdir}}|${EXIM_LOGDIR:?}|g" \
+            -e "s|{{spooldir}}|${EXIM_SPOOLDIR:?}|g"
+}
+
+for dir in ${@:?need source dir(s)}
+do
+		echo "# $dir"
+		for src in "$dir"/*
+		do
+			dst="$dstdir/${src##*/}"
+			echo "installing $dst"
+			xform <"$src" >"$dst"
+			echo $dst >> .installed
+		done
+done
+
+if [[ $dstdir == $(systemd-path systemd-system-conf) ]]
+then
+        echo "# reloading systemd configuration"
+        systemctl daemon-reload
+fi

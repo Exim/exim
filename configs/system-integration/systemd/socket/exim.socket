@@ -1,0 +1,10 @@
+[Unit]
+Description=Exim MTA (socket)
+Documentation=man:exim
+Documentation=https://exim.org/docs.html
+
+[Socket]
+ListenStream=25
+
+[Install]
+WantedBy=sockets.target
