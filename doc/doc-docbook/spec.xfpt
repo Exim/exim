@@ -25607,11 +25607,17 @@ hard failure if required. See also &%hosts_try_auth%&, and chapter
 &<<CHAPSMTPAUTH>>& for details of authentication.
 
 
-.option hosts_request_ocsp smtp "host list&!!" *
+.option hosts_request_ocsp smtp "host list&!!" "see below"
 .cindex "TLS" "requiring for certain servers"
 Exim will request a Certificate Status on a
 TLS session for any host that matches this list.
 &%tls_verify_certificates%& should also be set for the transport.
+
+.new
+The default is &"**"& if DANE is not in use for the connection,
+or if DANE-TA us used.
+It is empty if DANE-EE is used.
+.wen
 
 .option hosts_require_alpn smtp "host list&!!" unset
 .cindex ALPN "require negotiation in client"
