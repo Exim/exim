@@ -7,3 +7,5 @@ exim-*
 *.orig
 *.rej
 .gdb_history
+.xauth*
+cscope.out

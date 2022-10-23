@@ -130,12 +130,13 @@ EOF
     for server in server1 revoked1 expired1 server2 revoked2 expired2
     do
 	SPFX=$idir/$server.$iname/$server.$iname
-	openssl ocsp -issuer $CADIR/Signer.pem -sha256 -cert $SPFX.pem -no_nonce -reqout $SPFX.ocsp.req
+	openssl ocsp -issuer $CADIR/Signer.pem -cert $SPFX.pem -no_nonce -reqout $SPFX.ocsp.req
 	REQIN="-reqin $SPFX.ocsp.req"
 
 	# These ones get used by the "traditional" testcases. OCSP resp signed by a cert which is
 	# signed by the signer of the leaf-cert being attested to.
-	OGENCOMMON="-rsigner $CADIR/OCSP.pem -rkey $CADIR/OCSP.key -CA $CADIR/Signer.pem -noverify"
+	OGENCOMMON="-rsigner $CADIR/OCSP.pem -rkey $CADIR/OCSP.key -CA $CADIR/Signer.pem -rother $CADIR/OCSP.pem -noverify"
+
 	openssl ocsp $IVALID   $OGENCOMMON -ndays 3652 $REQIN -respout $SPFX.ocsp.good.resp
 	openssl ocsp $IVALID   $OGENCOMMON -ndays 30   $REQIN -respout $SPFX.ocsp.dated.resp
 	openssl ocsp $IREVOKED $OGENCOMMON -ndays 3652 $REQIN -respout $SPFX.ocsp.revoked.resp

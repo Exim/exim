@@ -5,7 +5,7 @@ model		: 94
 model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
 stepping	: 3
 microcode	: 0xf0
-cpu MHz		: 2801.293
+cpu MHz		: 3247.978
 cache size	: 8192 KB
 physical id	: 0
 siblings	: 4
@@ -33,7 +33,7 @@ model		: 94
 model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
 stepping	: 3
 microcode	: 0xf0
-cpu MHz		: 2800.004
+cpu MHz		: 3219.870
 cache size	: 8192 KB
 physical id	: 0
 siblings	: 4
@@ -61,7 +61,7 @@ model		: 94
 model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
 stepping	: 3
 microcode	: 0xf0
-cpu MHz		: 2800.040
+cpu MHz		: 3297.002
 cache size	: 8192 KB
 physical id	: 0
 siblings	: 4
@@ -89,7 +89,7 @@ model		: 94
 model name	: Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHz
 stepping	: 3
 microcode	: 0xf0
-cpu MHz		: 2800.139
+cpu MHz		: 3257.630
 cache size	: 8192 KB
 physical id	: 0
 siblings	: 4
@@ -111,80 +111,80 @@ address sizes	: 39 bits physical, 48 bits virtual
 power management:
 
             CPU0       CPU1       CPU2       CPU3       
-   0:         39          0          0          0  IR-IO-APIC    2-edge      timer
-   1:          0          0          0      28568  IR-IO-APIC    1-edge      i8042
-   8:          0          0          0          0  IR-IO-APIC    8-edge      rtc0
-   9:          0     169980          0          0  IR-IO-APIC    9-fasteoi   acpi
-  12:          0          0    1882987          0  IR-IO-APIC   12-edge      i8042
+   0:         38          0          0          0  IR-IO-APIC    2-edge      timer
+   1:          0          0          0       1001  IR-IO-APIC    1-edge      i8042
+   8:          1          0          0          0  IR-IO-APIC    8-edge      rtc0
+   9:          0     139129          0          0  IR-IO-APIC    9-fasteoi   acpi
+  12:          0          0     203647          0  IR-IO-APIC   12-edge      i8042
   16:          0          0          3          0  IR-IO-APIC   16-fasteoi   i801_smbus
  120:          0          0          0          0  DMAR-MSI    0-edge      dmar0
  121:          0          0          0          0  DMAR-MSI    1-edge      dmar1
- 126:          0          0          0    1964147  IR-PCI-MSI 376832-edge      ahci[0000:00:17.0]
- 127:          0       1368    1116015          0  IR-PCI-MSI 327680-edge      xhci_hcd
- 128:          0        556          0          0  IR-PCI-MSI 2097152-edge      rtsx_pci
- 129:          0          0         17    5611255  IR-PCI-MSI 520192-edge      enp0s31f6
- 130:         31          0          0          5  IR-PCI-MSI 1048576-edge      nvkm
- 131:        626          0   13681759          0  IR-PCI-MSI 32768-edge      i915
- 132:          0         63          0          0  IR-PCI-MSI 360448-edge      mei_me
- 133:          0          0          0         46  IR-PCI-MSI 1572864-edge      iwlwifi
- 134:       1333          0          0          0  IR-PCI-MSI 514048-edge      snd_hda_intel:card0
- NMI:        852        841        852        825   Non-maskable interrupts
- LOC:   30596280   29809486   30193297   28627049   Local timer interrupts
+ 126:          0          0          0     703592  IR-PCI-MSI 376832-edge      ahci[0000:00:17.0]
+ 127:          0       5232     633002          0  IR-PCI-MSI 327680-edge      xhci_hcd
+ 128:          0        506          0          0  IR-PCI-MSI 2097152-edge      rtsx_pci
+ 129:          0          0         15    1152253  IR-PCI-MSI 520192-edge      enp0s31f6
+ 130:         13          0          0          5  IR-PCI-MSI 1048576-edge      nvkm
+ 131:        629          0    9212958          0  IR-PCI-MSI 32768-edge      i915
+ 132:          0         65          0          0  IR-PCI-MSI 360448-edge      mei_me
+ 133:          0          0          0         49  IR-PCI-MSI 1572864-edge      iwlwifi
+ 134:       1177          0          0          0  IR-PCI-MSI 514048-edge      snd_hda_intel:card0
+ NMI:        424        425        432        418   Non-maskable interrupts
+ LOC:   24598937   23717971   23109726   22494636   Local timer interrupts
  SPU:          0          0          0          0   Spurious interrupts
- PMI:        852        841        852        825   Performance monitoring interrupts
- IWI:     305001     284107    5538326     310156   IRQ work interrupts
+ PMI:        424        425        432        418   Performance monitoring interrupts
+ IWI:     189009     176188    4015457     194495   IRQ work interrupts
  RTR:          6          0          0          0   APIC ICR read retries
- RES:    5411760    5256548    5121036    5309127   Rescheduling interrupts
- CAL:    5095709    4864789    4783243    4801450   Function call interrupts
- TLB:    3285771    3215624    3242410    3283556   TLB shootdowns
+ RES:    3033153    3055181    3073781    3068125   Rescheduling interrupts
+ CAL:    2007718    1887098    1843366    1823517   Function call interrupts
+ TLB:     834931     821547     882594     886405   TLB shootdowns
  TRM:          0          0          0          0   Thermal event interrupts
  THR:          0          0          0          0   Threshold APIC interrupts
  DFR:          0          0          0          0   Deferred Error APIC interrupts
  MCE:          0          0          0          0   Machine check exceptions
- MCP:        154        155        155        155   Machine check polls
+ MCP:        126        127        127        127   Machine check polls
  ERR:          0
  MIS:          0
  PIN:          0          0          0          0   Posted-interrupt notification event
  NPI:          0          0          0          0   Nested posted-interrupt event
  PIW:          0          0          0          0   Posted-interrupt wakeup event
-MemTotal:       16240472 kB
-MemFree:         5764424 kB
-MemAvailable:   11599400 kB
-Buffers:         1121024 kB
-Cached:          5417236 kB
-SwapCached:          196 kB
-Active:          4165748 kB
-Inactive:        5218356 kB
-Active(anon):     324236 kB
-Inactive(anon):  3375760 kB
-Active(file):    3841512 kB
-Inactive(file):  1842596 kB
-Unevictable:      180276 kB
-Mlocked:              80 kB
+MemTotal:       16241860 kB
+MemFree:         5393212 kB
+MemAvailable:   11215144 kB
+Buffers:          644888 kB
+Cached:          6128956 kB
+SwapCached:           88 kB
+Active:          3326596 kB
+Inactive:        6439360 kB
+Active(anon):     234820 kB
+Inactive(anon):  3722180 kB
+Active(file):    3091776 kB
+Inactive(file):  2717180 kB
+Unevictable:      343224 kB
+Mlocked:             184 kB
 SwapTotal:      16601080 kB
-SwapFree:       16598008 kB
+SwapFree:       16599032 kB
 Zswap:                 0 kB
 Zswapped:              0 kB
-Dirty:               688 kB
+Dirty:               588 kB
 Writeback:             0 kB
-AnonPages:       3026156 kB
-Mapped:           803132 kB
-Shmem:            854148 kB
-KReclaimable:     488452 kB
-Slab:             677268 kB
-SReclaimable:     488452 kB
-SUnreclaim:       188816 kB
-KernelStack:       19728 kB
-PageTables:        46964 kB
+AnonPages:       3335288 kB
+Mapped:           875004 kB
+Shmem:            964876 kB
+KReclaimable:     350568 kB
+Slab:             508532 kB
+SReclaimable:     350568 kB
+SUnreclaim:       157964 kB
+KernelStack:       19800 kB
+PageTables:        47172 kB
 NFS_Unstable:          0 kB
 Bounce:                0 kB
 WritebackTmp:          0 kB
-CommitLimit:    24721316 kB
-Committed_AS:   10893068 kB
+CommitLimit:    24722008 kB
+Committed_AS:   11211996 kB
 VmallocTotal:   34359738367 kB
-VmallocUsed:       85828 kB
+VmallocUsed:       82888 kB
 VmallocChunk:          0 kB
-Percpu:             7712 kB
+Percpu:             7616 kB
 HardwareCorrupted:     0 kB
 AnonHugePages:         0 kB
 ShmemHugePages:        0 kB
@@ -199,13 +199,13 @@ HugePages_Rsvd:        0
 HugePages_Surp:        0
 Hugepagesize:       2048 kB
 Hugetlb:               0 kB
-DirectMap4k:      316904 kB
-DirectMap2M:    13176832 kB
-DirectMap1G:     4194304 kB
+DirectMap4k:      380392 kB
+DirectMap2M:    11016192 kB
+DirectMap1G:     6291456 kB
 Inter-|   Receive                                                |  Transmit
  face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed
-    lo: 203398319  414266    0    0    0     0          0         0 203398319  414266    0    0    0     0       0          0
-enp0s31f6: 5122054605 4199231    4 121766    0     2          0         0 1451864214 3008089    0    0    0     0       0          0
+    lo:  307129    2471    0    0    0     0          0         0   307129    2471    0    0    0     0       0          0
+enp0s31f6: 672645613  686128    0    0    0     0          0         0 60881926  523382    0    0    0     0       0          0
 wlp3s0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
 virbr0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
-virbr2: 177806558086 17365569    0    0    0     0          0        57 943922498 11257216    0    0    0     0       0          0
+virbr2: 131939979990 12949352    0    0    0     0          0        82 724135061 8643862    0    0    0     0       0          0
