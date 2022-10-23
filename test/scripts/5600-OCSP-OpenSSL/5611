@@ -26,7 +26,7 @@ millisleep 500
 #
 #
 # Client accepts good stapled info
-exim CALLER@test.ex
+exim good_staple@test.ex
 test message.
 ****
 sleep 1
@@ -37,7 +37,7 @@ killdaemon
 # Client fails on lack of required stapled info
 exim -bd -oX PORT_D -DSERVER=server -DRETURN=""
 ****
-exim CALLER@test.ex
+exim lack_required@test.ex
 test message.
 ****
 sleep 1
@@ -50,7 +50,7 @@ sudo rm spool/db/retry*
 EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
  -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.revoked.resp
 ****
-exim CALLER@test.ex
+exim revoved@test.ex
 test message.
 ****
 sleep 1
@@ -65,7 +65,7 @@ sudo rm spool/db/retry*
 EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
  -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.dated.resp
 ****
-exim CALLER@test.ex
+exim expired@test.ex
 test message.
 ****
 sleep 1
