@@ -435,6 +435,7 @@ AA a-aa        A V4NET.0.0.100
 
 ; full suite dns chain, sha512
 ;
+; TLSA_AUTOGEN
 ; openssl x509 -in aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem -noout -pubkey \
 ; | openssl pkey -pubin -outform DER \
 ; | openssl dgst -sha512 \
@@ -464,6 +465,7 @@ daneinsecchain              CNAME  dane512ee
 
 ; A-only, sha256
 ;
+; TLSA_AUTOGEN
 ; openssl x509 -in aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem -noout -pubkey \
 ; | openssl pkey -pubin -outform DER \
 ; | openssl dgst -sha256 \
@@ -474,6 +476,7 @@ DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 9177e577d294f52da8eb206eb53e7963fb8d354b
 
 ; full MX, sha256, TA-mode
 ;
+; TLSA_AUTOGEN
 ; openssl x509 -in aux-fixed/exim-ca/example.com/CA/CA.pem -fingerprint -sha256 -noout \
 ; | awk -F= '{print $2}' | tr -d : | tr '[A-F]' '[a-f]'
 ;
@@ -489,6 +492,7 @@ DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 0d41f0b28cf41f19f6f5fe116300e2cc8c6076454
 ; As it happens it is also an intermediate cert in the CA-rooted chain, as this
 ; was initially thought to be a factor.
 ;
+; TLSA_AUTOGEN
 ; openssl x509 -in aux-fixed/exim-ca/example.com/CA/Signer.pem -noout -pubkey \
 ; | openssl pkey -pubin -outform DER \
 ; | openssl dgst -sha256 \
@@ -526,17 +530,37 @@ DNSSEC _1225._tcp.danebroken2 TLSA 2 0 1 cb0fa6000000000000000000000000000000000
 
 ; a broken dane config (or under attack) where the TLSA record is correct but not DNSSEC-assured
 ; (record copied from dane256ee above)
+; TLSA_AUTOGEN
+; openssl x509 -in aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem -noout -pubkey \
+; | openssl pkey -pubin -outform DER \
+; | openssl dgst -sha256 \
+; | awk '{print $2}'
 ; 3 for dane-requested, 4 for dane-required
 DNSSEC danebroken3          A       127.0.0.1
 _1225._tcp.danebroken3 TLSA 2 0 1 9177e577d294f52da8eb206eb53e7963fb8d354bb4a1a62aa8318101dbc11e46
+; TLSA_AUTOGEN
+; openssl x509 -in aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem -noout -pubkey \
+; | openssl pkey -pubin -outform DER \
+; | openssl dgst -sha256 \
+; | awk '{print $2}'
 DNSSEC danebroken4          A       HOSTIPV4
 _1225._tcp.danebroken4 TLSA 2 0 1 9177e577d294f52da8eb206eb53e7963fb8d354bb4a1a62aa8318101dbc11e46
 
 ; a broken dane config (or under attack) where the address record is correct but not DNSSEC-assured
 ; (TLSA record copied from dane256ee above)
 ; 5 for dane-requested, 6 for dane-required
+; TLSA_AUTOGEN
+; openssl x509 -in aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem -noout -pubkey \
+; | openssl pkey -pubin -outform DER \
+; | openssl dgst -sha256 \
+; | awk '{print $2}'
 danebroken5          A       127.0.0.1
 DNSSEC _1225._tcp.danebroken5 TLSA 2 0 1 9177e577d294f52da8eb206eb53e7963fb8d354bb4a1a62aa8318101dbc11e46
+; TLSA_AUTOGEN
+; openssl x509 -in aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem -noout -pubkey \
+; | openssl pkey -pubin -outform DER \
+; | openssl dgst -sha256 \
+; | awk '{print $2}'
 danebroken6          A       HOSTIPV4
 DNSSEC _1225._tcp.danebroken6 TLSA 2 0 1 9177e577d294f52da8eb206eb53e7963fb8d354bb4a1a62aa8318101dbc11e46
 

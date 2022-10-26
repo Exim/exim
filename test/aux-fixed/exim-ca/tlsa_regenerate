@@ -1,0 +1,8 @@
+
+cd `git rev-parse --show-toplevel`/test
+
+for f in dnszones-src/db.test.ex dnszones-src/db.example.com
+do
+  awk -f aux-fixed/exim-ca/tlsa_regenerate.awk $f >new
+  mv new $f
+done
