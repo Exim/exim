@@ -439,7 +439,7 @@ exim_openssl_state_st *client_static_state = NULL;	/*XXX should not use static; 
 exim_openssl_state_st state_server = {.is_server = TRUE};
 
 static int
-setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host,
+setup_certs(SSL_CTX * sctx, uschar ** certs, uschar * crl, host_item * host,
     uschar ** errstr );
 
 /* Callbacks */
@@ -1766,10 +1766,10 @@ if (  opt_set_and_noexpand(tls_verify_certificates)
      && tls_set_watch(tls_verify_certificates, FALSE)
      && tls_set_watch(tls_crl, FALSE))
     {
+    uschar * v_certs = tls_verify_certificates;
     DEBUG(D_tls) debug_printf("TLS: preloading CA bundle for server\n");
 
-    if (setup_certs(ctx, tls_verify_certificates, tls_crl, NULL, &dummy_errstr)
-	== OK)
+    if (setup_certs(ctx, &v_certs, tls_crl, NULL, &dummy_errstr) == OK)
       state_server.lib_state.cabundle = TRUE;
 
     /* If we can, preload the server-side cert, key and ocsp */
@@ -1901,10 +1901,11 @@ if (  opt_set_and_noexpand(ob->tls_verify_certificates)
 	&& tls_set_watch(ob->tls_crl, FALSE)
      )
     {
+    uschar * v_certs = ob->tls_verify_certificates;
     DEBUG(D_tls)
       debug_printf("TLS: preloading CA bundle for transport '%s'\n", t->name);
 
-    if (setup_certs(ctx, ob->tls_verify_certificates,
+    if (setup_certs(ctx, &v_certs,
 	  ob->tls_crl, dummy_host, &dummy_errstr) == OK)
       ob->tls_preload.cabundle = TRUE;
     }
@@ -2242,14 +2243,12 @@ if (state->u_ocsp.server.file)
 #endif
 
   {
-  uschar * expcerts;
-  if (  !expand_check(tls_verify_certificates, US"tls_verify_certificates",
-		  &expcerts, &dummy_errstr)
-     || (rc = setup_certs(server_sni, expcerts, tls_crl, NULL,
+  uschar * v_certs = tls_verify_certificates;
+  if ((rc = setup_certs(server_sni, &v_certs, tls_crl, NULL,
 			&dummy_errstr)) != OK)
     goto bad;
 
-  if (expcerts && *expcerts)
+  if (v_certs && *v_certs)
     setup_cert_verify(server_sni, FALSE, verify_callback_server);
   }
 
@@ -3021,7 +3020,7 @@ repeated after a Server Name Indication.
 
 Arguments:
   sctx          SSL_CTX* to initialise
-  certs         certs file, expanded
+  certs         certs file, returned expanded
   crl           CRL file or NULL
   host          NULL in a server; the remote host in a client
   errstr	error string pointer
@@ -3030,15 +3029,16 @@ Returns:        OK/DEFER/FAIL
 */
 
 static int
-setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host,
+setup_certs(SSL_CTX * sctx, uschar ** certsp, uschar * crl, host_item * host,
     uschar ** errstr)
 {
-uschar *expcerts, *expcrl;
+uschar * expcerts, * expcrl;
 
-if (!expand_check(certs, US"tls_verify_certificates", &expcerts, errstr))
+if (!expand_check(*certsp, US"tls_verify_certificates", &expcerts, errstr))
   return DEFER;
 DEBUG(D_tls) debug_printf("tls_verify_certificates: %s\n", expcerts);
 
+*certsp = expcerts;
 if (expcerts && *expcerts)
   {
   /* Tell the library to use its compiled-in location for the system default
@@ -3334,20 +3334,20 @@ else
   goto skip_certs;
 
  {
-  uschar * expcerts;
-  if (!expand_check(tls_verify_certificates, US"tls_verify_certificates",
-		    &expcerts, errstr))
-    return DEFER;
-  DEBUG(D_tls) debug_printf("tls_verify_certificates: %s\n", expcerts);
+  uschar * v_certs = tls_verify_certificates;
 
   if (state_server.lib_state.cabundle)
-    { DEBUG(D_tls) debug_printf("TLS: CA bundle for server was preloaded\n"); }
-  else
-    if ((rc = setup_certs(ctx, expcerts, tls_crl, NULL, errstr)) != OK)
-      return rc;
-
-  if (expcerts && *expcerts)
+    {
+    DEBUG(D_tls) debug_printf("TLS: CA bundle for server was preloaded\n");
     setup_cert_verify(ctx, server_verify_optional, verify_callback_server);
+    }
+  else
+    {
+    if ((rc = setup_certs(ctx, &v_certs, tls_crl, NULL, errstr)) != OK)
+      return rc;
+    if (v_certs && *v_certs)
+      setup_cert_verify(ctx, server_verify_optional, verify_callback_server);
+    }
  }
 skip_certs: ;
 
@@ -3610,20 +3610,20 @@ else
   return OK;
 
  {
-  uschar * expcerts;
-  if (!expand_check(ob->tls_verify_certificates, US"tls_verify_certificates",
-		    &expcerts, errstr))
-    return DEFER;
-  DEBUG(D_tls) debug_printf("tls_verify_certificates: %s\n", expcerts);
+  uschar * v_certs = ob->tls_verify_certificates;
 
   if (state->lib_state.cabundle)
-    { DEBUG(D_tls) debug_printf("TLS: CA bundle was preloaded\n"); }
-  else
-    if ((rc = setup_certs(ctx, expcerts, ob->tls_crl, host, errstr)) != OK)
-      return rc;
-
-  if (expcerts && *expcerts)
+    {
+    DEBUG(D_tls) debug_printf("TLS: CA bundle for tpt was preloaded\n");
     setup_cert_verify(ctx, client_verify_optional, verify_callback_client);
+    }
+  else
+    {
+    if ((rc = setup_certs(ctx, &v_certs, ob->tls_crl, host, errstr)) != OK)
+      return rc;
+    if (v_certs && *v_certs)
+      setup_cert_verify(ctx, client_verify_optional, verify_callback_client);
+    }
  }
 
 if (verify_check_given_host(CUSS &ob->tls_verify_cert_hostnames, host) == OK)
