@@ -135,7 +135,7 @@ EOF
 
 	# These ones get used by the "traditional" testcases. OCSP resp signed by a cert which is
 	# signed by the signer of the leaf-cert being attested to.
-	OGENCOMMON="-rsigner $CADIR/OCSP.pem -rkey $CADIR/OCSP.key -CA $CADIR/Signer.pem -rother $CADIR/OCSP.pem -noverify"
+	OGENCOMMON="-rsigner $CADIR/OCSP.pem -rkey $CADIR/OCSP.key -CA $CADIR/Signer.pem -noverify"
 
 	openssl ocsp $IVALID   $OGENCOMMON -ndays 3652 $REQIN -respout $SPFX.ocsp.good.resp
 	openssl ocsp $IVALID   $OGENCOMMON -ndays 30   $REQIN -respout $SPFX.ocsp.dated.resp

@@ -40,7 +40,7 @@ exim -bd -oX PORT_D -DSERVER=server \
 ****
 # XXX test sequence might not be quite right; this is for a server refusal
 # and we're expecting a client refusal.
-client-ssl -ocsp aux-fixed/exim-ca/expired1.example.com/CA.pem HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
+client-ssl -ocsp aux-fixed/exim-ca/example.com/CA.pem HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
 ??? 220
 ehlo rhu.barb
 ??? 250-

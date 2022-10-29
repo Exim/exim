@@ -211,18 +211,18 @@ len = SSL_get_tlsext_status_ocsp_resp(s, &p);
 /*BIO_printf(arg, "OCSP response: ");*/
 if (!p)
 	{
-	BIO_printf(arg, "no response received\n");
+	BIO_printf(arg, "no OCSP response received\n");
 	return 1;
 	}
 if(!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
 	{
-	BIO_printf(arg, "response parse error\n");
+	BIO_printf(arg, "OCSP response parse error\n");
 	BIO_dump_indent(arg, (char *)p, len, 4);
 	return 0;
 	}
 if(!(bs = OCSP_response_get1_basic(rsp)))
   {
-  BIO_printf(arg, "error parsing response\n");
+  BIO_printf(arg, "error parsing OCSP response\n");
   return 0;
   }
 
@@ -240,12 +240,12 @@ when OCSP_NOVERIFY is set.  The content from the wire
 
 if(OCSP_basic_verify(bs, sk, NULL, OCSP_NOVERIFY) <= 0)
   {
-  BIO_printf(arg, "Response Verify Failure\n");
+  BIO_printf(arg, "OCSP status response verify failure\n");
   ERR_print_errors(arg);
   ret = 0;
   }
 else
-  BIO_printf(arg, "Response verify OK\n");
+  BIO_printf(arg, "OCSP status response: good signature\n");
 
 cert_stack_free(sk);
 return ret;

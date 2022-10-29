@@ -448,7 +448,7 @@ mxnondane512ee              MX  1  dane512ee
 DNSSEC dane512ee            A      HOSTIPV4
 DNSSEC nodane               A      HOSTIPV4
 
-DNSSEC _1225._tcp.dane512ee TLSA  3 1 2 e76baa2132a3a7b0ac755835748c9eee9a2335621157e87218926c15c28a3ecac31d29340879e4599f2c5d666f64ecf20fa42b39e917239eb3ac653dfb45be2e
+DNSSEC _1225._tcp.dane512ee TLSA 3 1 2 e8173aaefffadc6c96700f7f396a17b8e590ebd15b081f1455abb152afecceb16a5534707ecd64611c8b6d8b9111f82e3fa954b98c6b230cda0e9be386747b71
 
 # mx of mxdane owns a secure A and TLSA record
 # used in 5802
@@ -472,7 +472,7 @@ daneinsecchain              CNAME  dane512ee
 ; | awk '{print $2}'
 ;
 DNSSEC dane256ee            A      HOSTIPV4
-DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 513e1b8805dd64d99510a09da0ed21eab2c60b4e0c8e848571e3de09401fcab9
+DNSSEC _1225._tcp.dane256ee TLSA 3 1 1 e9f6e8fe73b130c720eb1fb5c94eaff522ec6f9759ed4c6815351d827b1226a7
 
 ; full MX, sha256, TA-mode
 ;
@@ -482,7 +482,7 @@ DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 513e1b8805dd64d99510a09da0ed21eab2c60b4e
 ;
 DNSSEC mxdane256ta          MX  1  dane256ta
 DNSSEC dane256ta            A      HOSTIPV4
-DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 3d107e4462e4812ac94467063cc658eea8aeabaf69f022babae5c8343cf92743
+DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 0d643c1ebcdf2cb83634e0c2f5102c1e268983401c9f4d8711d60b44d7fb7a3e
 
 
 ; full MX, sha256, TA-mode, cert-key-only
@@ -500,7 +500,7 @@ DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 3d107e4462e4812ac94467063cc658eea8aeabaf6
 ;
 DNSSEC mxdane256tak          MX  1  dane256tak
 DNSSEC dane256tak            A      HOSTIPV4
-DNSSEC _1225._tcp.dane256tak TLSA 2 1 1 7971d74e280ba3a0f60fb3fc303c890ca653a44b2cf4d3b461b7a42959f90d56
+DNSSEC _1225._tcp.dane256tak TLSA 2 1 1 beabbe636030e4c26d15a015e878c2a607ed5a87774443ffbc6991ec01d2b6b1
 
 
 
@@ -537,9 +537,14 @@ DNSSEC _1225._tcp.danebroken2 TLSA 2 0 1 cb0fa6000000000000000000000000000000000
 ; | awk '{print $2}'
 ; 3 for dane-requested, 4 for dane-required
 DNSSEC danebroken3          A       127.0.0.1
-_1225._tcp.danebroken3 TLSA 2 0 1 349b136f84d8a95023e1e793eb0538002f8ce8d90472bf80a786400369528136
+_1225._tcp.danebroken3 TLSA 2 0 1 beabbe636030e4c26d15a015e878c2a607ed5a87774443ffbc6991ec01d2b6b1
+; TLSA_AUTOGEN
+; openssl x509 -in aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem -noout -pubkey \
+; | openssl pkey -pubin -outform DER \
+; | openssl dgst -sha256 \
+; | awk '{print $2}'
 DNSSEC danebroken4          A       HOSTIPV4
-_1225._tcp.danebroken4 TLSA 2 0 1 349b136f84d8a95023e1e793eb0538002f8ce8d90472bf80a786400369528136
+_1225._tcp.danebroken4 TLSA 2 0 1 beabbe636030e4c26d15a015e878c2a607ed5a87774443ffbc6991ec01d2b6b1
 
 ; a broken dane config (or under attack) where the address record is correct but not DNSSEC-assured
 ; (TLSA record copied from dane256ee above)
@@ -550,9 +555,14 @@ _1225._tcp.danebroken4 TLSA 2 0 1 349b136f84d8a95023e1e793eb0538002f8ce8d90472bf
 ; | openssl dgst -sha256 \
 ; | awk '{print $2}'
 danebroken5          A       127.0.0.1
-DNSSEC _1225._tcp.danebroken5 TLSA 2 0 1 349b136f84d8a95023e1e793eb0538002f8ce8d90472bf80a786400369528136
+DNSSEC _1225._tcp.danebroken5 TLSA 2 0 1 beabbe636030e4c26d15a015e878c2a607ed5a87774443ffbc6991ec01d2b6b1
+; TLSA_AUTOGEN
+; openssl x509 -in aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem -noout -pubkey \
+; | openssl pkey -pubin -outform DER \
+; | openssl dgst -sha256 \
+; | awk '{print $2}'
 danebroken6          A       HOSTIPV4
-DNSSEC _1225._tcp.danebroken6 TLSA 2 0 1 349b136f84d8a95023e1e793eb0538002f8ce8d90472bf80a786400369528136
+DNSSEC _1225._tcp.danebroken6 TLSA 2 0 1 beabbe636030e4c26d15a015e878c2a607ed5a87774443ffbc6991ec01d2b6b1
 
 ; a good dns config saying there is no dane support, by securely returning NOXDOMAIN for TLSA lookups
 ; 3 for dane-required, 4 for merely requested

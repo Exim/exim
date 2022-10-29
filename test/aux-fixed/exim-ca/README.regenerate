@@ -3,3 +3,8 @@ WARNING for Exim Testsuite:
 If you change these certificates you will also need to update the TLSA records in dnszones-src/db.test.ex
 and dnszones-src/db.example.com  (the commands are next to each one).
 The script "tlsa_regenerate" automates this.
+
+Also, because of the certs changes, the following testcase outputs will change:
+2102
+5720
+5800
