@@ -804,5 +804,5 @@ close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********
-2017-07-30 18:51:05.712 BST [pppp] LOG:  redirecting log output to logging collector process
-2017-07-30 18:51:05.712 BST [pppp] HINT:  Future log output will appear in directory "log".
+2017-07-30 18:51:05.712 [pppp] LOG:  redirecting log output to logging collector process
+2017-07-30 18:51:05.712 [pppp] HINT:  Future log output will appear in directory "log".
