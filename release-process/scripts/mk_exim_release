@@ -27,7 +27,7 @@ my $version_pattern = qr/
     (?<release>
     (?<target_release>
            (?<major>\d)         # 4
-         \.(?<minor>\d\d)       #  .90
+         \.(?<minor>\d+)        #  .90 or .105
       (?:\.(?<security>\d+)     #     .0
       (?:\.(?<fixes>)\d+)?)?    #       .22
     )                           # target-release ->|
@@ -39,7 +39,7 @@ my $quick_version_pattern = qr/
    (?<release>
    (?<last_tag>
            (?<major>\d)         # 4
-         \.(?<minor>\d\d)       #  .90
+         \.(?<minor>\d+)        #  .90 or .105
       (?:\.(?<security>\d+)     #     .0
       (?:\.(?<fixes>)\d+)?)?    #       .22
    )                            # last-tag ->|
