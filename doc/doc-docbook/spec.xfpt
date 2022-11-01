@@ -26088,7 +26088,7 @@ If both this option and &%tls_try_verify_hosts%& are unset
 operation is as if this option selected all hosts.
 &*Warning*&: Including a host in &%tls_verify_hosts%& does not require
 that connections use TLS.
-Fallback to in-clear communication will be done unless restricted by 
+Fallback to in-clear communication will be done unless restricted by
 the &%hosts_require_tls%& option.
 
 .option utf8_downconvert smtp integer&!! -1
@@ -42222,7 +42222,7 @@ the DATA acl.
 .subsection ACL SSECDMARCACL
 .cindex DMARC "ACL condition"
 
-DMARC checks cam be run on incoming SMTP  messages by using the
+DMARC checks can be run on incoming SMTP  messages by using the
 &"dmarc_status"& ACL condition in the DATA ACL.  You are required to
 call the &"spf"& condition first in the ACLs, then the &"dmarc_status"&
 condition.  Putting this condition in the ACLs is required in order
