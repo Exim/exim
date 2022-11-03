@@ -10,8 +10,8 @@ V='-v'
 
 clica --help >/dev/null 2>&1
 
-echo Ensure time is set to 2012/11/01 12:34
-echo use -  date -u 110112342012
+echo Ensure time is set to 2019/11/01 12:34
+echo use -  date -u 110112342019
 echo hit return when ready
 read junk
 
