@@ -2344,9 +2344,10 @@ if (expand_arguments)
     else
       {
       const uschar *expanded_arg;
+      BOOL enable_dollar_recipients_g = f.enable_dollar_recipients;
       f.enable_dollar_recipients = allow_dollar_recipients;
       expanded_arg = expand_cstring(argv[i]);
-      f.enable_dollar_recipients = FALSE;
+      f.enable_dollar_recipients = enable_dollar_recipients_g;
 
       if (!expanded_arg)
         {
