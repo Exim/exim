@@ -29778,7 +29778,7 @@ connection.
 The client for the connection proposes a set of protocol names, and
 the server responds with a selected one.
 It is not, as of 2021, commonly used for SMTP connections.
-However, to guard against misirected or malicious use of web clients
+However, to guard against misdirected or malicious use of web clients
 (which often do use ALPN) against MTA ports, Exim by default check that
 there is no incompatible ALPN specified by a client for a TLS connection.
 If there is, the connection is rejected.
