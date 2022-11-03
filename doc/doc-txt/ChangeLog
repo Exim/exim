@@ -54,6 +54,9 @@ JH/12 Bug 2930: Fix daemon startup.  When started from any process apart from
       pid 1, in the normal "background daemon" mode, having to drop process-
       group leadership also lost track of needing to create listener sockets.
 
+JH/13 Bug 2929: Fix using $recipients after ${run...}.  A change made for 4.96
+      resulted in the variable appearing empty.  Find and fix by Ruben Jenster.
+
 
 Exim version 4.96
 -----------------
