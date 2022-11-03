@@ -1776,15 +1776,19 @@ if (f.background_daemon)
   daemon as the result of a SIGHUP. In this case, there is no need to do
   anything, because the controlling terminal has long gone. Otherwise, fork, in
   case current process is a process group leader (see 'man setsid' for an
-  explanation) before calling setsid(). */
+  explanation) before calling setsid().
+  All other forks want daemon_listen cleared. Rather than blow a register, jsut
+  restore it here. */
 
   if (getppid() != 1)
     {
+    BOOL daemon_listen = f.daemon_listen;
     pid_t pid = exim_fork(US"daemon");
     if (pid < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
       "fork() failed when starting daemon: %s", strerror(errno));
     if (pid > 0) exit(EXIT_SUCCESS);      /* in parent process, just exit */
     (void)setsid();                       /* release controlling terminal */
+    f.daemon_listen = daemon_listen;
     }
   }
 
@@ -2122,7 +2126,7 @@ else if (f.daemon_listen)
 	      if (*--p == '}') *p = '\0';	/* drop EOL */
 	      while (isdigit(*--p)) ;		/* char before port */
 
-	      i2->log = *p == ':'		/* no list yet? */
+	      i2->log = *p == ':'		/* no list yet?     { */
 		? string_sprintf("%.*s{%s,%d}",
 		  (int)(p - i2->log + 1), i2->log, p+1, ipa->port)
 		: string_sprintf("%s,%d}", i2->log, ipa->port);

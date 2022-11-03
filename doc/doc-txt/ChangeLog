@@ -50,6 +50,10 @@ JH/11 OpenSSL: fix for ancient clients needing TLS support for versions earlier
 HS/01 Bug 2728: Introduce EDITME option "DMARC_API" to work around incompatible
       API changes in libopendmarc.
 
+JH/12 Bug 2930: Fix daemon startup.  When started from any process apart from
+      pid 1, in the normal "background daemon" mode, having to drop process-
+      group leadership also lost track of needing to create listener sockets.
+
 
 Exim version 4.96
 -----------------
