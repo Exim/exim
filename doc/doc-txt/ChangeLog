@@ -80,6 +80,9 @@ JH/15 Fix argument parsing for ${run } expansion. Previously, when an argument
 HS/02 Backported the essence of 44b6e0 (Fix argument parsing for ${run }
       expansion
 
+JH/13 Bug 2929: Fix using $recipients after ${run...}.  A change made for 4.96
+      resulted in the variable appearing empty.  Find and fix by Ruben Jenster.
+
 
 Exim version 4.96
 -----------------
