@@ -29788,7 +29788,7 @@ The behaviour of both client and server can be configured using the options
 &%tls_alpn%& and &%hosts_require_alpn%&.
 There are no variables providing observability.
 Some feature-specific logging may appear on denied connections, but this
-depends on the behavious of the peer
+depends on the behaviour of the peer
 (not all peers can send a feature-specific TLS Alert).
 
 This feature is available when Exim is built with
