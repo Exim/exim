@@ -1115,6 +1115,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     # and unwanted debug
     next if /^GnuTLS<2>: FIPS140-2 (context is not set|operation mode switched from initial to not-approved)$/;
     next if /^GnuTLS<3>: ASSERT: sign.c\[_gnutls_sign_is_secure2\]:\d+$/;
+    next if /^GnuTLS<3>: ASSERT: \.\.\/\.\.\/lib\/pkcs11.c\[find_multi_objs_cb\]:/;
+    next if /^GnuTLS<3>: ASSERT: \.\.\/\.\.\/lib\/pkcs11.c\[gnutls_pkcs11_obj_list_import_url3\]:/;
 
     # drop openssl version strings
     next if /OpenSSL compile-time version: OpenSSL \d+[\.\da-z]+/;
