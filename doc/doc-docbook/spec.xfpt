@@ -8107,6 +8107,16 @@ or delete command), the result of the lookup is the number of rows affected.
 anything (for example, setting a field to the value it already has), the result
 is zero because no rows are affected.
 
+For TLS secured SQL connections this MySQL configuration snippet might serve as an example:
+.code
+# /etc/mysql/conf.d/my.cnf
+[exim]
+ssl_cert=/etc/ssl/server-cert.pem
+ssl_key=/etc/ssl/server-key.pem
+ssl_ca=/etc/ssl/ca-cert.pem
+.endd
+Then configure the database use with "REQUIRE SSL".
+
 
 .subsection "Special PostgreSQL features" SECID74
 PostgreSQL lookups can also use Unix domain socket connections to the database.
