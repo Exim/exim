@@ -845,7 +845,7 @@ if (LOGGING(tls_certificate_verified) && addr->cipher)
       "yes"
     : "no");
 if (LOGGING(tls_peerdn) && addr->peerdn)
-  g = string_append(g, 3, US" DN=\"", string_printing(addr->peerdn), US"\"");
+  g = string_append(g, 3, US" DN=\"", string_printing2(addr->peerdn, SP_QUOT), US"\"");
 return g;
 }
 #endif

@@ -1180,7 +1180,7 @@ else
       log_write(0, LOG_MAIN,
 	"[%s] SSL verify error%s: certificate name mismatch: DN=\"%s\" H=\"%s\"",
 	tlsp == &tls_out ? deliver_host_address : sender_host_address,
-	extra, dn, verify_cert_hostnames);
+	extra, string_printing2(dn, SP_QUOT), verify_cert_hostnames);
       *calledp = TRUE;
       if (!*optionalp)
 	{
