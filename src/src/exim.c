@@ -134,6 +134,8 @@ if ((yield = (res >= 0)))
     PCRE2_SIZE len;
     pcre2_substring_get_bynumber(md, matchnum,
       (PCRE2_UCHAR **)&expand_nstring[expand_nmax], &len);
+    if (!expand_nstring[expand_nmax])
+      { expand_nstring[expand_nmax] = US""; len = 0; }
     expand_nlength[expand_nmax++] = (int)len;
     }
   expand_nmax--;

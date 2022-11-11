@@ -82,7 +82,7 @@ for (pcre_list * ri = re_list_head; ri; ri = ri->next)
       PCRE2_UCHAR * cstr;
       PCRE2_SIZE cslen;
       pcre2_substring_get_bynumber(md, nn, &cstr, &cslen);	/* uses same ctx as md */
-      regex_vars[nn-1] = CUS cstr;
+      regex_vars[nn-1] = cstr ? CUS cstr : CUS"";
       }
 
     return OK;

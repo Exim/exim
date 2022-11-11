@@ -57,6 +57,11 @@ JH/12 Bug 2930: Fix daemon startup.  When started from any process apart from
 JH/13 Bug 2929: Fix using $recipients after ${run...}.  A change made for 4.96
       resulted in the variable appearing empty.  Find and fix by Ruben Jenster.
 
+JH/14 Bug 2933: Fix regex substring match variables for null matches. Since 4.96
+      a capture group which obtained no text (eg. "(abc)*" matching zero
+      occurrences) could cause a segfault if the corresponding $<n> was
+      expanded.
+
 
 Exim version 4.96
 -----------------
