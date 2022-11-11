@@ -1,5 +1,5 @@
-> SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex
-> "SRS0=ZZZZ=YY=the.local.host.name=CALLER"@test.ex
+> SRS0=ZZZZ=YY=lap.dom.ain=a_test_user@test.ex
+> "SRS0=ZZZZ=YY=lap.dom.ain=a_test_user"@test.ex
 > 
 > ><
 > 
