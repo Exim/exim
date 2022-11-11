@@ -443,6 +443,8 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > match:  cdab
 > Failed: "if" failed and "fail" requested
 > match:  cd[xyz]ab
+> # check for empty capture group
+> match:  <>
 > 
 > match_domain:    yes
 > match_domain:    no

@@ -79,10 +79,10 @@ for (pcre_list * ri = re_list_head; ri; ri = ri->next)
 
     for (int nn = 1; nn < n; nn++)
       {
-      PCRE2_UCHAR * cstr;
-      PCRE2_SIZE cslen;
-      pcre2_substring_get_bynumber(md, nn, &cstr, &cslen);	/* uses same ctx as md */
-      regex_vars[nn-1] = cstr ? CUS cstr : CUS"";
+      PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
+      int off = nn * 2;
+      int len = ovec[off + 1] - ovec[off];
+      regex_vars[nn-1] = string_copyn(linebuffer + ovec[off], len);
       }
 
     return OK;

@@ -1,6 +1,6 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss for alice
 1999-03-02 09:44:33 10HmaX-0005vi-00 original recipients ignored (system filter)
-1999-03-02 09:44:33 10HmaX-0005vi-00 ** |TESTSUITE/aux-fixed/showenv "${if match_address {$thisaddress}{alice@test.ex}{$value}}" $1 <system-filter> T=t1: return message generated
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** |TESTSUITE/aux-fixed/showenv "${if match_address {$thisaddress}{alice@test.ex}{$value}}" "${if inlist {$1}{alice} {$value}}" <system-filter> T=t1: return message generated
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@test.ex
 1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> R=r1 T=t2
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
@@ -14,7 +14,7 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss for jabberwocky
 1999-03-02 09:44:33 10HmbB-0005vi-00 original recipients ignored (system filter)
-1999-03-02 09:44:33 10HmbB-0005vi-00 ** |TESTSUITE/aux-fixed/showenv $1 <system-filter> T=t1: return message generated
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** |TESTSUITE/aux-fixed/showenv "${if inlist {$1}{jab} {$value}}" <system-filter> T=t1: return message generated
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@test.ex
 1999-03-02 09:44:33 10HmbC-0005vi-00 => CALLER <CALLER@test.ex> R=r1 T=t2
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed

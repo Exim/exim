@@ -127,16 +127,15 @@ BOOL yield;
 
 if ((yield = (res >= 0)))
   {
+  PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
   res = pcre2_get_ovector_count(md);
   expand_nmax = setup < 0 ? 0 : setup + 1;
   for (int matchnum = setup < 0 ? 0 : 1; matchnum < res; matchnum++)
     {
-    PCRE2_SIZE len;
-    pcre2_substring_get_bynumber(md, matchnum,
-      (PCRE2_UCHAR **)&expand_nstring[expand_nmax], &len);
-    if (!expand_nstring[expand_nmax])
-      { expand_nstring[expand_nmax] = US""; len = 0; }
-    expand_nlength[expand_nmax++] = (int)len;
+    int off = matchnum * 2;
+    int len = ovec[off + 1] - ovec[off];
+    expand_nstring[expand_nmax] = string_copyn(subject + ovec[off], len);
+    expand_nlength[expand_nmax++] = len;
     }
   expand_nmax--;
   }

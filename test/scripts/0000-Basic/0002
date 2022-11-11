@@ -467,6 +467,8 @@ match:  ${if match{abcd}{^\N([ab]+)(\w+)$\N}{$2$1}fail}
 match:  ${if match{abcd}{^([ab]+)(\\w+)\$}{$2$1}fail}
 match:  ${if match{wxyz}{^([ab]+)(\\w+)\$}{$2$1}fail}
 match:  ${if match{abcd}{^([ab]+)(\\w+)\$}{$2[${if match{xyz}{(.*)}{$1}fail}]$1}fail}
+# check for empty capture group
+match:  ${if match{abc}{\N^(\S+)\s*(\S.+)*$\N}{<$2>}{}}
 
 match_domain:    ${if match_domain{a.b.c}{x.y.z:a.b.c:p.q.r}{yes}{no}}
 match_domain:    ${if match_domain{a.b.c}{x.y.z:p.q.r}{yes}{no}}
