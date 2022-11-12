@@ -104,7 +104,9 @@ pcre_gen_mtc_ctx = pcre2_match_context_create(pcre_gen_ctx);
 
 /* This function runs a regular expression match, and sets up the pointers to
 the matched substrings.  The matched strings are copied so the lifetime of
-the subject is not a problem.
+the subject is not a problem.  Matched strings will have the same taint status
+as the subject string (this is not a de-taint method, and must not be made so
+given the support for wildcards in REs).
 
 Arguments:
   re          the compiled expression
@@ -132,6 +134,11 @@ if ((yield = (res >= 0)))
   expand_nmax = setup < 0 ? 0 : setup + 1;
   for (int matchnum = setup < 0 ? 0 : 1; matchnum < res; matchnum++)
     {
+    /* Although PCRE2 has a pcre2_substring_get_bynumber() conveneience, it
+    seems to return a bad pointer when a capture group had no data, eg. (.*)
+    matching zero letters.  So use the underlying ovec and hope (!) that the
+    offsets are sane (including that case).  Should we go further and range-
+    check each one vs. the subject string length? */
     int off = matchnum * 2;
     int len = ovec[off + 1] - ovec[off];
     expand_nstring[expand_nmax] = string_copyn(subject + ovec[off], len);
