@@ -248,17 +248,17 @@ void * buf[STACKDUMP_MAX];
 char ** ss;
 int nptrs = backtrace(buf, STACKDUMP_MAX);
 
-log_write(0, LOG_MAIN|LOG_PANIC, "backtrace\n");
-log_write(0, LOG_MAIN|LOG_PANIC, "---\n");
+log_write(0, LOG_MAIN|LOG_PANIC, "backtrace");
+log_write(0, LOG_MAIN|LOG_PANIC, "---");
 if ((ss = backtrace_symbols(buf, nptrs)))
   {
   for (int i = 0; i < nptrs; i++)
-    log_write(0, LOG_MAIN|LOG_PANIC, "\t%s\n", ss[i]);
+    log_write(0, LOG_MAIN|LOG_PANIC, "\t%s", ss[i]);
   free(ss);
   }
 else
-  log_write(0, LOG_MAIN|LOG_PANIC, "backtrace_symbols: %s\n", strerror(errno));
-log_write(0, LOG_MAIN|LOG_PANIC, "---\n");
+  log_write(0, LOG_MAIN|LOG_PANIC, "backtrace_symbols: %s", strerror(errno));
+log_write(0, LOG_MAIN|LOG_PANIC, "---");
 #endif
 }
 #undef STACKDUMP_MAX
