@@ -4853,11 +4853,11 @@ while (*s)
 
       switch(read_subs(sub_arg, nelem(sub_arg), 1, &s, flags, TRUE, name, &resetok, NULL))
         {
+	case -1: continue;	/* If skipping, we don't actually do anything */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
-      /*XXX no skipping-optimisation? */
 
       yield = string_append(yield, 3,
 			US"Authentication-Results: ", sub_arg[0], US"; none");
@@ -4944,7 +4944,6 @@ while (*s)
         case 2:
         case 3: goto EXPAND_FAILED;
         }
-      /*XXX no skipping-optimisation? */
 
       if (!sub_arg[1])			/* One argument */
 	{
@@ -5439,14 +5438,11 @@ while (*s)
 
       switch(read_subs(sub_arg, 2, 1, &s, flags, TRUE, name, &resetok, NULL))
         {
+	case -1: continue;	/* If skipping, we don't actually do anything */
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
         case 3: goto EXPAND_FAILED;
         }
-
-      /* If skipping, we don't actually do anything */
-
-      if (flags & ESI_SKIPPING) continue;
 
       /* Open the file and read it */
 
@@ -6327,6 +6323,7 @@ while (*s)
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
       /* Read the field & list arguments */
+      /*XXX Could we use read_subs here (and get better efficiency for skipping)? */
 
       for (int i = 0; i < 2; i++)
         {

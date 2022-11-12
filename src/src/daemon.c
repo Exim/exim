@@ -1258,10 +1258,14 @@ if (sz >= sizeof(buf)) return FALSE;
 #ifdef notdef
 debug_printf("addrlen %d\n", msg.msg_namelen);
 #endif
-DEBUG(D_queue_run) debug_printf("%s from addr '%s%.*s'\n", __FUNCTION__,
-  *sa_un.sun_path ? "" : "@",
-  (int)msg.msg_namelen - (*sa_un.sun_path ? 0 : 1),
-  sa_un.sun_path + (*sa_un.sun_path ? 0 : 1));
+DEBUG(D_queue_run)
+  if (msg.msg_namelen > 0)
+    debug_printf("%s from addr '%s%.*s'\n", __FUNCTION__,
+      *sa_un.sun_path ? "" : "@",
+      (int)msg.msg_namelen - (*sa_un.sun_path ? 0 : 1),
+      sa_un.sun_path + (*sa_un.sun_path ? 0 : 1));
+  else
+    debug_printf("%s (from unknown addr)\n", __FUNCTION__);
 
 /* Refuse to handle the item unless the peer has good credentials */
 #ifdef SCM_CREDENTIALS

@@ -460,17 +460,17 @@ LOG: smtp_connection MAIN
   SMTP connection from (test.ex) [127.0.0.1] closed by QUIT
 p1234 1 SMTP accept process running
 p1234 Listening...
-p1234 daemon_notification from addr ''
+p1234 daemon_notification (from unknown addr)
 p1234 compiled caseless RE '^nomatch_list' not found in local cache
 p1234 compiling caseless RE '^nomatch_list'
 p1234 compiled RE '^nomatch_list' saved in local cache
 p1234 Listening...
-p1234 daemon_notification from addr ''
+p1234 daemon_notification (from unknown addr)
 p1234 compiled RE 'static_RE' not found in local cache
 p1234 compiling RE 'static_RE'
 p1234 compiled RE 'static_RE' saved in local cache
 p1234 Listening...
-p1234 daemon_notification from addr ''
+p1234 daemon_notification (from unknown addr)
 p1234 compiled RE 'tricky_static_RE$' not found in local cache
 p1234 compiling RE 'tricky_static_RE$'
 p1234 compiled RE 'tricky_static_RE$' saved in local cache

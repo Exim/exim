@@ -9652,7 +9652,10 @@ Example use (as an ACL modifier):
 .code
       add_header = :at_start:${authresults {$primary_hostname}}
 .endd
-This is safe even if no authentication results are available.
+This is safe even if no authentication results are available
+.new
+and would generally be placed in the DATA ACL.
+.wen
 
 
 .vitem "&*${certextract{*&<&'field'&>&*}{*&<&'certificate'&>&*}&&&
