@@ -6602,7 +6602,7 @@ file that is searched could contain lines like this:
 When the lookup succeeds, the result of the expansion is a list of domains (and
 possibly other types of item that are allowed in domain lists).
 .cindex "tainted data" "de-tainting"
-.cindex "de-tainting" "using a lookup expansion""
+.cindex "de-tainting" "using a lookup expansion"
 The result of the expansion is not tainted.
 
 .next
