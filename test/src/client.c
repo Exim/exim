@@ -86,7 +86,7 @@ latter needs a whole pile of tables. */
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
 # if GNUTLS_VERSION_NUMBER >= 0x030103
-#  define HAVE_OCSP
+#  define HAVE_GNUTLS_OCSP
 #  include <gnutls/ocsp.h>
 # endif
 # ifndef GNUTLS_NO_EXTENSIONS
@@ -711,7 +711,7 @@ nextinput:
 	if (*inptr != 0)
 	  goto nextinput;
 
-    #ifdef HAVE_TLS
+#ifdef HAVE_TLS
     if (srv->sent_starttls)
       {
       if (lineptr[0] == '2')
@@ -721,11 +721,11 @@ nextinput:
         printf("Attempting to start TLS\n");
         fflush(stdout);
 
-        #ifdef HAVE_OPENSSL
+# ifdef HAVE_OPENSSL
         srv->tls_active = tls_start(srv->sock, &srv->ssl, srv->ctx);
-        #endif
+# endif
 
-        #ifdef HAVE_GNUTLS
+# ifdef HAVE_GNUTLS
 	  {
 	  int rc;
 	  fd_set rfd;
@@ -760,14 +760,20 @@ nextinput:
 	    DEBUG { printf("gnutls_record_recv: %d\n", rc); fflush(stdout); }
 	    }
 	  }
-        #endif
+# endif	/*HAVE_GNUTLS*/
 
         if (!srv->tls_active)
           {
           printf("Failed to start TLS\n");
           fflush(stdout);
           }
-	#ifdef HAVE_GNUTLS
+
+# ifdef HAVE_OPENSSL
+	else if (ocsp_stapling)
+	  printf("Succeeded in starting TLS (with OCSP)\n");
+# endif
+
+# ifdef HAVE_GNUTLS
 	else if (ocsp_stapling)
 	  {
 	  if ((rc= gnutls_certificate_verify_peers2(tls_session, &verify)) < 0)
@@ -780,7 +786,7 @@ nextinput:
 	    printf("Bad certificate\n");
 	    fflush(stdout);
 	    }
-	  #ifdef HAVE_OCSP
+#  ifdef HAVE_GNUTLS_OCSP
 	  else if (gnutls_ocsp_status_request_is_checked(tls_session, 0) == 0)
 	    {
 	    printf("Failed to verify certificate status\n");
@@ -803,14 +809,19 @@ nextinput:
 	    fflush(stdout);
 	    }
 	    else
+	      {
+	      printf("OCSP status response: good signature\n");
 	      printf("Succeeded in starting TLS (with OCSP)\n");
-	  #endif
+	      }
+# endif	/*HAVE_GNUTLS_OCSP*/
 	  }
-	#endif
+# endif	/*HAVE_GNUTLS*/
+
         else
           printf("Succeeded in starting TLS\n");
         }
-      else printf("Abandoning TLS start attempt\n");
+      else
+        printf("Abandoning TLS start attempt\n");
       }
     srv->sent_starttls = 0;
     #endif
@@ -1291,7 +1302,7 @@ if (certfile != NULL) printf("Certificate file = %s\n", certfile);
 if (keyfile != NULL) printf("Key file = %s\n", keyfile);
 tls_init(US certfile, US keyfile);
 tls_session = tls_session_init();
-#ifdef HAVE_OCSP
+#ifdef HAVE_GNUTLS_OCSP
 if (ocsp_stapling)
   gnutls_ocsp_status_request_enable_client(tls_session, NULL, 0, NULL);
 #endif
@@ -1337,7 +1348,7 @@ if (tls_on_connect)
 
   if (!srv.tls_active)
     printf("Failed to start TLS\n");
-#if defined(HAVE_GNUTLS) && defined(HAVE_OCSP)
+#if defined(HAVE_GNUTLS) && defined(HAVE_GNUTLS_OCSP)
   else if (  ocsp_stapling
 	  && gnutls_ocsp_status_request_is_checked(tls_session, 0) == 0)
     printf("Failed to verify certificate status\n");
