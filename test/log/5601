@@ -9,13 +9,13 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for nostaple_required@test.ex
 1999-03-02 09:44:33 10HmbD-0005vi-00 Required TLS certificate status not received
-1999-03-02 09:44:33 10HmbD-0005vi-00 == nostaple_required@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbD-0005vi-00 == nostaple_required@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (SSL_connect) Required TLS certificate status not received
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for revoked@test.ex
 1999-03-02 09:44:33 10HmbE-0005vi-00 Server certificate revoked; reason: superseded
-1999-03-02 09:44:33 10HmbE-0005vi-00 == revoked@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbE-0005vi-00 == revoked@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (SSL_connect) Server certificate revoked
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for expired@test.ex
 1999-03-02 09:44:33 10HmbF-0005vi-00 OCSP dates invalid
-1999-03-02 09:44:33 10HmbF-0005vi-00 == expired@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbF-0005vi-00 == expired@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (SSL_connect) Server certificate status is out-of-date
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D

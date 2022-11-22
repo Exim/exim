@@ -97,6 +97,7 @@ change this guard and punt the issue for a while longer. */
 
 #if !defined(LIBRESSL_VERSION_NUMBER) && (OPENSSL_VERSION_NUMBER >= 0x030000000L)
 # define EXIM_HAVE_EXPORT_CHNL_BNGNG
+# define EXIM_HAVE_OPENSSL_X509_STORE_GET1_ALL_CERTS
 #endif
 
 #if !defined(LIBRESSL_VERSION_NUMBER) \
@@ -117,6 +118,7 @@ change this guard and punt the issue for a while longer. */
 #  define OPENSSL_HAVE_NUM_TICKETS
 #  define EXIM_HAVE_OPENSSL_CIPHER_STD_NAME
 #  define EXIM_HAVE_EXP_CHNL_BNGNG
+#  define EXIM_HAVE_OPENSSL_OCSP_RESP_GET0_SIGNER
 # else
 #  define OPENSSL_BAD_SRVR_OURCERT
 # endif
@@ -408,15 +410,16 @@ typedef struct exim_openssl_state {
   uschar *	privatekey;
   BOOL		is_server;
 #ifndef DISABLE_OCSP
-  STACK_OF(X509) *verify_stack;		/* chain for verifying the proof */
   union {
     struct {
       uschar        *file;
       const uschar  *file_expanded;
       ocsp_resplist *olist;
+      STACK_OF(X509) *verify_stack;	/* chain for verifying the proof */
     } server;
     struct {
       X509_STORE    *verify_store;	/* non-null if status requested */
+      uschar	    *verify_errstr;	/* only if _required */
       BOOL	    verify_required;
     } client;
   } u_ocsp;
@@ -440,7 +443,7 @@ exim_openssl_state_st state_server = {.is_server = TRUE};
 
 static int
 setup_certs(SSL_CTX * sctx, uschar ** certs, uschar * crl, host_item * host,
-    uschar ** errstr );
+    uschar ** errstr);
 
 /* Callbacks */
 #ifndef DISABLE_OCSP
@@ -1119,18 +1122,6 @@ if (preverify_ok == 0)
 else if (depth != 0)
   {
   DEBUG(D_tls) debug_printf("SSL verify ok: depth=%d SN=%s\n", depth, dn);
-#ifndef DISABLE_OCSP
-  if (tlsp == &tls_out && client_static_state->u_ocsp.client.verify_store)
-    {	/* client, wanting stapling  */
-    /* Add the server cert's signing chain as the one
-    for the verification of the OCSP stapled information. */
-
-    if (!X509_STORE_add_cert(client_static_state->u_ocsp.client.verify_store,
-                             cert))
-      ERR_clear_error();
-    sk_X509_push(client_static_state->verify_stack, cert);
-    }
-#endif
 #ifndef DISABLE_EVENT
     if (verify_event(tlsp, cert, depth, dn, calledp, optionalp, US"SSL"))
       return 0;				/* reject, with peercert set */
@@ -1258,21 +1249,7 @@ DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s depth %d %s\n",
 #endif
 
 if (preverify_ok == 1)
-  {
   tls_out.dane_verified = TRUE;
-#ifndef DISABLE_OCSP
-  if (client_static_state->u_ocsp.client.verify_store)
-    {	/* client, wanting stapling  */
-    /* Add the server cert's signing chain as the one
-    for the verification of the OCSP stapled information. */
-
-    if (!X509_STORE_add_cert(client_static_state->u_ocsp.client.verify_store,
-                             cert))
-      ERR_clear_error();
-    sk_X509_push(client_static_state->verify_stack, cert);
-    }
-#endif
-  }
 else
   {
   int err = X509_STORE_CTX_get_error(x509ctx);
@@ -1288,6 +1265,14 @@ return preverify_ok;
 
 
 #ifndef DISABLE_OCSP
+static void
+time_print(BIO * bp, const char * str, ASN1_GENERALIZEDTIME * time)
+{
+BIO_printf(bp, "\t%s: ", str);
+ASN1_GENERALIZEDTIME_print(bp, time);
+BIO_puts(bp, "\n");
+}
+
 /*************************************************
 *       Load OCSP information into state         *
 *************************************************/
@@ -1377,7 +1362,7 @@ if (!(basic_response = OCSP_response_get1_basic(resp)))
   goto bad;
   }
 
-sk = state->verify_stack;	/* set by setup_certs() / chain_from_pem_file() */
+sk = state->u_ocsp.server.verify_stack;	/* set by setup_certs() / chain_from_pem_file() */
 
 /* May need to expose ability to adjust those flags?
 OCSP_NOSIGS OCSP_NOVERIFY OCSP_NOCHAIN OCSP_NOCHECKS OCSP_NOEXPLICIT
@@ -1398,11 +1383,13 @@ cannot used the connection context store, as that would neatly
 handle the "system" case too, but there seems to be no library
 function for getting a stack from a store.
 [ In OpenSSL 1.1 - ?  X509_STORE_CTX_get0_chain(ctx) ? ]
+[ 3.0.0 - sk = X509_STORE_get1_all_certs(store) ]
 We do not free the stack since it could be needed a second time for
 SNI handling.
 
 Separately we might try to replace using OCSP_basic_verify() - which seems to not
 be a public interface into the OpenSSL library (there's no manual entry) -
+(in 3.0.0 + is is public)
 But what with?  We also use OCSP_basic_verify in the client stapling callback.
 And there we NEED it; we must verify that status... unless the
 library does it for us anyway?  */
@@ -1412,7 +1399,7 @@ if ((i = OCSP_basic_verify(basic_response, sk, NULL, OCSP_NOVERIFY)) < 0)
   DEBUG(D_tls)
     {
     ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
-    debug_printf("OCSP response verify failure: %s\n", US ssl_errstring);
+    debug_printf("OCSP response has bad signature: %s\n", US ssl_errstring);
     }
   goto bad;
   }
@@ -1446,7 +1433,16 @@ if (status != V_OCSP_CERTSTATUS_GOOD)
 
 if (!OCSP_check_validity(thisupd, nextupd, EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX_AGE))
   {
-  DEBUG(D_tls) debug_printf("OCSP status invalid times.\n");
+  DEBUG(D_tls)
+    {
+    BIO * bp = BIO_new(BIO_s_mem());
+    uschar * s = NULL;
+    int len;
+    time_print(bp, "This OCSP Update", thisupd);
+    if (nextupd) time_print(bp, "Next OCSP Update", nextupd);
+    if ((len = (int) BIO_get_mem_data(bp, CSS &s)) > 0) debug_printf("%.*s", len, s);
+    debug_printf("OCSP status invalid times.\n");
+    }
   goto bad;
   }
 
@@ -1921,7 +1917,7 @@ else
 #if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 /* Invalidate the creds cached, by dropping the current ones.
 Call when we notice one of the source files has changed. */
- 
+
 static void
 tls_server_creds_invalidate(void)
 {
@@ -1955,28 +1951,61 @@ tls_client_creds_invalidate(transport_instance * t)
 
 
 /* Extreme debug
+ * */
 #ifndef DISABLE_OCSP
-void
-x509_store_dump_cert_s_names(X509_STORE * store)
+static void
+debug_print_sn(const X509 * cert)
 {
-STACK_OF(X509_OBJECT) * roots= store->objs;
+X509_NAME * sn = X509_get_subject_name(cert);
 static uschar name[256];
-
-for (int i= 0; i < sk_X509_OBJECT_num(roots); i++)
+if (X509_NAME_oneline(sn, CS name, sizeof(name)))
   {
-  X509_OBJECT * tmp_obj= sk_X509_OBJECT_value(roots, i);
-  if(tmp_obj->type == X509_LU_X509)
-    {
-    X509_NAME * sn = X509_get_subject_name(tmp_obj->data.x509);
-    if (X509_NAME_oneline(sn, CS name, sizeof(name)))
-      {
-      name[sizeof(name)-1] = '\0';
-      debug_printf(" %s\n", name);
-      }
-    }
+  name[sizeof(name)-1] = '\0';
+  debug_printf(" %s\n", name);
   }
 }
-#endif
+
+static void
+x509_stack_dump_cert_s_names(const STACK_OF(X509) * sk)
+{
+if (!sk)
+  debug_printf(" (null)\n");
+else
+  {
+  int idx = sk_X509_num(sk);
+  if (!idx)
+    debug_printf(" (empty)\n");
+  else
+    while (--idx >= 0) debug_print_sn(sk_X509_value(sk, idx));
+  }
+}
+
+static void
+x509_store_dump_cert_s_names(X509_STORE * store)
+{
+# ifdef EXIM_HAVE_OPENSSL_X509_STORE_GET1_ALL_CERTS
+STACK_OF(X509) * sk = X509_STORE_get1_all_certs(store);
+x509_stack_dump_cert_s_names(sk);
+sk_X509_pop_free(sk, X509_free);
+
+# else
+if (!store)
+  debug_printf(" (no store)\n");
+else
+  {
+  STACK_OF(X509_OBJECT) * objs = X509_STORE_get0_objects(store);
+  if (!objs)
+    debug_printf(" (null objectlist)\n");
+  else for (int i = 0; i < sk_X509_OBJECT_num(objs); i++)
+    {
+    X509 * cert = X509_OBJECT_get0_X509(sk_X509_OBJECT_value(objs, i));
+    if (cert) debug_print_sn(cert);
+    }
+  }
+# endif
+}
+#endif	/*!DISABLE_OCSP*/
+/*
 */
 
 
@@ -2420,11 +2449,21 @@ return SSL_TLSEXT_ERR_OK;
 
 
 static void
-time_print(BIO * bp, const char * str, ASN1_GENERALIZEDTIME * time)
+add_chain_to_store(X509_STORE * store, STACK_OF(X509) * sk,
+  const char * debug_text)
 {
-BIO_printf(bp, "\t%s: ", str);
-ASN1_GENERALIZEDTIME_print(bp, time);
-BIO_puts(bp, "\n");
+int idx;
+
+DEBUG(D_tls)
+  {
+  debug_printf("chain for %s:\n", debug_text);
+  x509_stack_dump_cert_s_names(sk);
+  }
+if (sk)
+  if ((idx = sk_X509_num(sk)) > 0)
+    while (--idx >= 0)
+      X509_STORE_add_cert(store, sk_X509_value(sk, idx));
+
 }
 
 static int
@@ -2440,18 +2479,24 @@ int i;
 DEBUG(D_tls) debug_printf("Received TLS status callback (OCSP stapling):\n");
 len = SSL_get_tlsext_status_ocsp_resp(ssl, &p);
 if(!p)
- {				/* Expect this when we requested ocsp but got none */
+  {				/* Expect this when we requested ocsp but got none */
   if (SSL_session_reused(ssl) && tls_out.ocsp == OCSP_VFIED)
     {
     DEBUG(D_tls) debug_printf(" null, but resumed; ocsp vfy stored with session is good\n");
     return 1;
     }
+
   if (cbinfo->u_ocsp.client.verify_required && LOGGING(tls_cipher))
     log_write(0, LOG_MAIN, "Required TLS certificate status not received");
   else
     DEBUG(D_tls) debug_printf(" null\n");
-  return cbinfo->u_ocsp.client.verify_required ? 0 : 1;
- }
+
+  if (!cbinfo->u_ocsp.client.verify_required)
+    return 1;
+  cbinfo->u_ocsp.client.verify_errstr =
+			US"(SSL_connect) Required TLS certificate status not received";
+  return 0;
+  }
 
 if (!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
   {
@@ -2483,39 +2528,140 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
 */
   {
     BIO * bp = NULL;
+    X509_STORE * verify_store = NULL;
+    BOOL have_verified_OCSP_signer = FALSE;
 #ifndef EXIM_HAVE_OCSP_RESP_COUNT
     STACK_OF(OCSP_SINGLERESP) * sresp = bs->tbsResponseData->responses;
 #endif
 
     DEBUG(D_tls) bp = BIO_new(BIO_s_mem());
 
-    /*OCSP_RESPONSE_print(bp, rsp, 0);   extreme debug: stapling content */
+    /* Use the CA & chain that verified the server cert to verify the stapled info */
 
-    /* Use the chain that verified the server cert to verify the stapled info */
-    /* DEBUG(D_tls) x509_store_dump_cert_s_names(cbinfo->u_ocsp.client.verify_store); */
+   {
+    /* If this routine is not available, we've avoided [in tls_client_start()]
+    asking for certificate-status under DANE, so this callback won't run for
+    that combination. It still will for non-DANE. */
 
-    if ((i = OCSP_basic_verify(bs, cbinfo->verify_stack,
-	      cbinfo->u_ocsp.client.verify_store, OCSP_NOEXPLICIT)) <= 0)
+#ifdef EXIM_HAVE_OPENSSL_OCSP_RESP_GET0_SIGNER
+    X509 * signer;
+
+    if (  tls_out.dane_verified
+       && (have_verified_OCSP_signer =
+	OCSP_resp_get0_signer(bs, &signer, SSL_get0_verified_chain(ssl)) == 1))
+      {
+      DEBUG(D_tls)
+	debug_printf("signer for OCSP basicres is in the verified chain;"
+		      " shortcut its verification\n");
+      }
+    else
+#endif
+      {
+      STACK_OF(X509) * verified_chain;
+
+      verify_store = X509_STORE_new();
+
+      SSL_get0_chain_certs(ssl, &verified_chain);
+      add_chain_to_store(verify_store, verified_chain,
+			      "'current cert' per SSL_get0_chain_certs()");
+
+      verified_chain = SSL_get0_verified_chain(ssl);
+      add_chain_to_store(verify_store, verified_chain,
+			      "SSL_get0_verified_chain()");
+      }
+   }
+
+    DEBUG(D_tls)
+      {
+      debug_printf("Untrusted intermediate cert stack (from SSL_get_peer_cert_chain()):\n");
+      x509_stack_dump_cert_s_names(SSL_get_peer_cert_chain(ssl));
+
+      debug_printf("will use this CA store for verifying basicresp:\n");
+      x509_store_dump_cert_s_names(verify_store);
+
+      /* OCSP_RESPONSE_print(bp, rsp, 0);   extreme debug: stapling content */
+
+      debug_printf("certs contained in basicresp:\n");
+      x509_stack_dump_cert_s_names((STACK_OF(X509 *))OCSP_resp_get0_certs(bs));
+
+#ifdef EXIM_HAVE_OPENSSL_X509_STORE_GET1_ALL_CERTS	/* else, could bodge via X509_STORE_get0_objects()
+						- but is OCSP_resp_get0_signer) avail? from 1.1.1 */
+       {
+	X509 * signer;
+	if (OCSP_resp_get0_signer(bs, &signer, X509_STORE_get1_all_certs(verify_store)) == 1)
+	  {
+	  debug_printf("found signer for basicres:\n");
+	  debug_print_sn(signer);
+	  }
+	else
+	  {
+	  debug_printf("failed to find signer for basicres:\n");
+	  ERR_print_errors(bp);
+	  }
+       }
+#endif
+
+      }
+
+    ERR_clear_error();
+
+    /* Under DANE the trust-anchor (at least in TA mode) is indicated by the TLSA
+    record in DNS, and probably is not the root of the chain of certificates. So
+    accept a partial chain for that case (and hope that anchor is visible for
+    verifying the OCSP stapling).
+    XXX for EE mode it won't even be that.  Does that make OCSP useless for EE?
+
+    Worse, for LetsEncrypt-mode (ocsp signer is leaf-signer) under DANE, the
+    data used within OpenSSL for the signer has nil pointers for signing
+    algorithms - and a crash results.  Avoid this by shortcutting verification,
+    having determined that the OCSP signer is in the (DANE-)validated set.
+    */
+
+#ifndef OCSP_PARTIAL_CHAIN	/* defined for 3.0.0 onwards */
+# define OCSP_PARTIAL_CHAIN 0
+#endif
+
+    if ((i = OCSP_basic_verify(bs, SSL_get_peer_cert_chain(ssl),
+		verify_store,
+		tls_out.dane_verified
+		? have_verified_OCSP_signer
+		  ? OCSP_NOVERIFY | OCSP_NOEXPLICIT
+		  : OCSP_PARTIAL_CHAIN | OCSP_NOEXPLICIT
+		: OCSP_NOEXPLICIT)) <= 0)
+      {
+      DEBUG(D_tls) debug_printf("OCSP_basic_verify() fail: returned %d\n", i);
       if (ERR_peek_error())
 	{
 	tls_out.ocsp = OCSP_FAILED;
 	if (LOGGING(tls_cipher))
 	  {
-	  const uschar * errstr = CUS ERR_reason_error_string(ERR_peek_error());
 	  static uschar peerdn[256];
+	  const uschar * errstr;;
+
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+	  ERR_peek_error_all(NULL, NULL, NULL, CCSS &errstr, NULL);
+	  if (!errstr)
+#endif
+	    errstr = CUS ERR_reason_error_string(ERR_peek_error());
+
 	  X509_NAME_oneline(X509_get_subject_name(SSL_get_peer_certificate(ssl)),
 						  CS peerdn, sizeof(peerdn));
 	  log_write(0, LOG_MAIN,
 		"[%s] %s Received TLS cert (DN: '%.*s') status response, "
 		"itself unverifiable: %s",
-		sender_host_address, sender_host_name,
-		(int)sizeof(peerdn), peerdn,
-		errstr);
+		deliver_host_address, deliver_host,
+		(int)sizeof(peerdn), peerdn, errstr);
 	  }
 	DEBUG(D_tls)
 	  {
 	  BIO_printf(bp, "OCSP response verify failure\n");
 	  ERR_print_errors(bp);
+  {
+  uschar * s = NULL;
+  int len = (int) BIO_get_mem_data(bp, CSS &s);
+  if (len > 0) debug_printf("%.*s", len, s);
+  BIO_reset(bp);
+  }
 	  OCSP_RESPONSE_print(bp, rsp, 0);
 	  }
 	goto failed;
@@ -2523,6 +2669,7 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
       else
 	DEBUG(D_tls) debug_printf("no explicit trust for OCSP signing"
 	  " in the root CA certificate; ignoring\n");
+      }
 
     DEBUG(D_tls) debug_printf("OCSP response well-formed and signed OK\n");
 
@@ -2565,6 +2712,8 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
 	{
 	tls_out.ocsp = OCSP_FAILED;
 	DEBUG(D_tls) ERR_print_errors(bp);
+	cbinfo->u_ocsp.client.verify_errstr =
+		    US"(SSL_connect) Server certificate status is out-of-date";
 	log_write(0, LOG_MAIN, "OCSP dates invalid");
 	goto failed;
 	}
@@ -2576,12 +2725,16 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
 	case V_OCSP_CERTSTATUS_GOOD:
 	  continue;	/* the idx loop */
 	case V_OCSP_CERTSTATUS_REVOKED:
+	  cbinfo->u_ocsp.client.verify_errstr =
+			US"(SSL_connect) Server certificate revoked";
 	  log_write(0, LOG_MAIN, "Server certificate revoked%s%s",
 	      reason != -1 ? "; reason: " : "",
 	      reason != -1 ? OCSP_crl_reason_str(reason) : "");
 	  DEBUG(D_tls) time_print(bp, "Revocation Time", rev);
 	  break;
 	default:
+	  cbinfo->u_ocsp.client.verify_errstr =
+			US"(SSL_connect) Server certificate has unknown status";
 	  log_write(0, LOG_MAIN,
 	      "Server certificate status unknown, in OCSP stapling");
 	  break;
@@ -2635,8 +2788,7 @@ tls_init(host_item * host, smtp_transport_options_block * ob,
   uschar *ocsp_file,
 #endif
   address_item *addr, exim_openssl_state_st ** caller_state,
-  tls_support * tlsp,
-  uschar ** errstr)
+  tls_support * tlsp, uschar ** errstr)
 {
 SSL_CTX * ctx;
 exim_openssl_state_st * state;
@@ -2798,7 +2950,7 @@ else
 
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
 # ifndef DISABLE_OCSP
-  if (!(state->verify_stack = sk_X509_new_null()))
+  if (!host && !(state->u_ocsp.server.verify_stack = sk_X509_new_null()))
     {
     DEBUG(D_tls) debug_printf("failed to create stack for stapling verify\n");
     return FAIL;
@@ -2847,11 +2999,12 @@ else			/* client */
       DEBUG(D_tls) debug_printf("failed to create store for stapling verify\n");
       return FAIL;
       }
+
     SSL_CTX_set_tlsext_status_cb(ctx, tls_client_stapling_cb);
     SSL_CTX_set_tlsext_status_arg(ctx, state);
     }
 # endif
-#endif
+#endif	/*EXIM_HAVE_OPENSSL_TLSEXT*/
 
 state->verify_cert_hostnames = NULL;
 
@@ -2990,7 +3143,7 @@ if (tlsp->peercert)
 *************************************************/
 
 #ifndef DISABLE_OCSP
-/* Load certs from file, return TRUE on success */
+/* In the server, load certs from file, return TRUE on success */
 
 static BOOL
 chain_from_pem_file(const uschar * file, STACK_OF(X509) ** vp)
@@ -3020,7 +3173,7 @@ repeated after a Server Name Indication.
 
 Arguments:
   sctx          SSL_CTX* to initialise
-  certs         certs file, returned expanded
+  certsp        certs file, returned expanded
   crl           CRL file or NULL
   host          NULL in a server; the remote host in a client
   errstr	error string pointer
@@ -3066,19 +3219,20 @@ if (expcerts && *expcerts)
 	{
 	STACK_OF(X509) * verify_stack =
 #ifndef DISABLE_OCSP
-	  !host ? state_server.verify_stack :
+	  !host ? state_server.u_ocsp.server.verify_stack :
 #endif
 	  NULL;
 	STACK_OF(X509) ** vp = &verify_stack;
 
 	file = expcerts; dir = NULL;
 #ifndef DISABLE_OCSP
-	/* In the server if we will be offering an OCSP proof, load chain from
+	/* In the server if we will be offering an OCSP proof; load chain from
 	file for verifying the OCSP proof at load time. */
 
 /*XXX Glitch!   The file here is tls_verify_certs: the chain for verifying the client cert.
 This is inconsistent with the need to verify the OCSP proof of the server cert.
 */
+/* *debug_printf("file for checking server ocsp stapling is: %s\n", file); */
 	if (  !host
 	   && statbuf.st_size > 0
 	   && state_server.u_ocsp.server.file
@@ -3304,7 +3458,7 @@ TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256
 
 if (state_server.lib_state.pri_string)
   { DEBUG(D_tls) debug_printf("TLS: cipher list was preloaded\n"); }
-else 
+else
   {
   if (!expand_check(tls_require_ciphers, US"tls_require_ciphers", &expciphers, errstr))
     return FAIL;
@@ -3707,7 +3861,6 @@ tls_retrieve_session(tls_support * tlsp, SSL * ssl)
 {
 if (tlsp->host_resumable)
   {
-  const uschar * key = tlsp->resume_index;
   dbdata_tls_session * dt;
   int len;
   open_db dbblock, * dbm_file;
@@ -3956,7 +4109,6 @@ tlsp->tlsa_usage = 0;
 #ifndef DISABLE_OCSP
   {
 # ifdef SUPPORT_DANE
-  /*XXX this should be moved to caller, to be common across gnutls/openssl */
   if (  conn_args->dane
      && ob->hosts_request_ocsp[0] == '*'
      && ob->hosts_request_ocsp[1] == '\0'
@@ -3979,6 +4131,15 @@ tlsp->tlsa_usage = 0;
 # endif
       request_ocsp =
 	verify_check_given_host(CUSS &ob->hosts_request_ocsp, host) == OK;
+
+# if defined(SUPPORT_DANE) && !defined(EXIM_HAVE_OPENSSL_OCSP_RESP_GET0_SIGNER)
+  if (conn_args->dane && (require_ocsp || request_ocsp))
+    {
+    DEBUG(D_tls) debug_printf("OpenSSL version to early to combine OCSP"
+			      " and DANE; disabling OCSP\n");
+    require_ocsp = request_ocsp = FALSE;
+    }
+# endif
   }
 #endif
 
@@ -4050,6 +4211,7 @@ if (conn_args->dane)
     tls_error(US"context init", host, NULL, errstr);
     return FALSE;
     }
+  DEBUG(D_tls) debug_printf("since dane-mode conn, not loading the usual CA bundle\n");
   }
 else
 
@@ -4186,7 +4348,12 @@ if (conn_args->dane)
 
 if (rc <= 0)
   {
-  tls_error(US"SSL_connect", host, sigalrm_seen ? US"timed out" : NULL, errstr);
+#ifndef DISABLE_OCSP
+  if (client_static_state->u_ocsp.client.verify_errstr)
+    { if (errstr) *errstr = client_static_state->u_ocsp.client.verify_errstr; }
+  else
+#endif
+    tls_error(US"SSL_connect", host, sigalrm_seen ? US"timed out" : NULL, errstr);
   return FALSE;
   }
 
@@ -4373,7 +4540,6 @@ tls_get_cache(unsigned lim)
 {
 #ifndef DISABLE_DKIM
 int n = ssl_xfer_buffer_hwm - ssl_xfer_buffer_lwm;
-debug_printf("tls_get_cache\n");
 if (n > lim)
   n = lim;
 if (n > 0)
@@ -4633,8 +4799,8 @@ if (do_shutdown > TLS_NO_SHUTDOWN)
 if (!o_ctx)		/* server side */
   {
 #ifndef DISABLE_OCSP
-  sk_X509_pop_free(state_server.verify_stack, X509_free);
-  state_server.verify_stack = NULL;
+  sk_X509_pop_free(state_server.u_ocsp.server.verify_stack, X509_free);
+  state_server.u_ocsp.server.verify_stack = NULL;
 #endif
 
   receive_getc =	smtp_getc;

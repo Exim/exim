@@ -10,7 +10,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 93)
+>>> processing "accept" (TESTSUITE/test-config 88)
 >>> check verify = recipient/callout
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing rcptuser@dane256ee.test.ex

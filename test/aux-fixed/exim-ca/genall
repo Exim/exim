@@ -34,9 +34,12 @@ do
     # -F  create sub-signing cert
     # -C CRL
     # -O create OCSP responder cert
+    # -3 Authority key ID extension
+    # -8 Subject Alternate Names
+
     clica $V -D "$idir" -p password -B 2048 -I -N $iname -F -C http://crl.$iname/latest.crl -O http://oscp.$iname/
 
-    # create server certs
+    # create server leaf certs
     # -m <months>
     clica $V -D $idir -p password -s 101 -S server1.$iname -m 301 \
 	-8 alternatename.server1.example.$tld,alternatename2.server1.example.$tld,*.test.ex

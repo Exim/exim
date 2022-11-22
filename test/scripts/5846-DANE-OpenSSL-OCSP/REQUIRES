@@ -1,0 +1,4 @@
+support DANE
+support OpenSSL
+support OCSP
+running IPv4

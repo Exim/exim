@@ -1,0 +1,78 @@
+# OCSP stapling under DANE, client
+#
+#
+# ============================================
+# Group 1: TLSA (2 1 1) (DANE-TA SPKI SHA2-256)
+#
+# Client works when we request but don't require OCSP stapling and none comes
+exim -bd -oX PORT_D -DSERVER=server -DDETAILS=ta -DRETURN=""
+****
+exim -odf norequire@mxdane256tak.test.ex
+****
+killdaemon
+#
+#
+#
+#
+# Client works when we don't request OCSP stapling
+exim -bd -oX PORT_D -DSERVER=server -DDETAILS=ta \
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
+****
+exim -odf norequest@mxdane256tak.test.ex
+****
+#
+#
+#
+#
+# Client accepts good stapled info
+exim -odf goodstaple@mxdane256tak.test.ex
+****
+killdaemon
+#
+#
+#
+# Client fails on lack of required stapled info
+exim -bd -oX PORT_D -DSERVER=server -DDETAILS=ta -DRETURN=""
+****
+exim -odf nostaple_required@mxdane256tak.test.ex
+****
+killdaemon
+sudo rm -f spool/db/retry* spool/input/*
+#
+#
+#
+# Client fails on revoked stapled info
+EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server -DDETAILS=ta \
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp
+****
+exim -odf revoked@mxdane256tak.test.ex
+****
+killdaemon
+sudo rm -f spool/db/retry* spool/input/*
+#
+#
+#
+#
+# Client fails on expired stapled info
+EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server -DDETAILS=ta \
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
+****
+exim -odf expired@mxdane256tak.test.ex
+****
+killdaemon
+sudo rm -f spool/db/retry* spool/input/*
+#
+#
+# ============================================
+# Group 2: TLSA (2 1 1) (DANE-TA SPKI SHA2-256) but with LE-mode OCSP
+#
+exim -bd -oX PORT_D -DSERVER=server -DDETAILS=ta \
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.good.resp
+****
+#
+# Client accepts good stapled info
+exim -odf goodstaple_le@mxdane256tak.test.ex
+****
+killdaemon
+#
+no_msglog_check

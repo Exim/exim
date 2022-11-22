@@ -1,0 +1,150 @@
+# Exim test configuration 5847
+# OCSP stapling under DANE, client
+
+SERVER =
+
+exim_path = EXIM_PATH
+keep_environment  = ^EXIM_TESTHARNESS_DISABLE_[O]CSPVALIDITYCHECK$
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts =
+primary_hostname = server1.example.com
+
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : *.test.ex
+
+.ifndef OPT
+acl_smtp_rcpt = check_recipient
+.else
+acl_smtp_rcpt = accept verify = recipient/callout
+.endif
+acl_smtp_data = check_data
+
+log_selector =  +received_recipients +tls_peerdn +tls_certificate_verified +tls_sni
+remote_max_parallel = 1
+queue_run_in_order
+
+tls_advertise_hosts = *
+
+CDIR1 = DIR/aux-fixed/exim-ca/example.net/server1.example.net
+CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
+
+.ifdef CERT
+tls_certificate = CERT
+.else
+tls_certificate = ${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}} {eq {DETAILS}{ee}}} \
+                {CDIR2/fullchain.pem}\
+                {CDIR1/fullchain.pem}}
+.endif
+
+.ifdef ALLOW
+tls_privatekey = ALLOW
+.else
+tls_privatekey = ${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}} {eq {DETAILS}{ee}}} \
+                {CDIR2/server1.example.com.unlocked.key}\
+                {CDIR1/server1.example.net.unlocked.key}}
+.endif
+
+tls_ocsp_file = RETURN
+
+
+# ------ ACL ------
+
+begin acl
+
+check_recipient:
+  accept  domains = +local_domains
+  deny    message = relay not permitted
+
+check_data:
+  warn	  condition   = ${if def:h_X-TLS-out:}
+	  logwrite = client claims: $h_X-TLS-out:
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver =	dnslookup
+  condition =	${if eq {SERVER}{server}{no}{yes}}
+  dnssec_request_domains = *
+  self =	send
+  retry_use_local_part
+  transport =	send_to_server${if eq{$local_part}{norequest}{1} \
+				{${if eq{$local_part}{norequire} {2} \
+				{3} \
+			     }}}
+  errors_to =	""
+
+server:
+  driver = redirect
+  data = :blackhole:
+
+
+# ----- Transports -----
+
+begin transports
+
+			# nostaple
+send_to_server1:
+  driver =		smtp
+  allow_localhost
+  port =		PORT_D
+  hosts_try_fastopen =	:
+  tls_verify_certificates = ${if eq {DETAILS}{ca} {CDIR2/ca_chain.pem} {}}
+  tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
+  hosts_try_dane =	*
+  hosts_require_tls =	*
+  hosts_request_ocsp =	:
+  headers_add =		X-TLS-out: ocsp status $tls_out_ocsp \
+		(${listextract {${eval:$tls_out_ocsp+1}} {notreq:notresp:vfynotdone:failed:verified}})
+
+			# norequire
+send_to_server2:
+  driver =		smtp
+  allow_localhost
+  port =		PORT_D
+  hosts_try_fastopen =	:
+  tls_verify_certificates = ${if eq {DETAILS}{ca} {CDIR2/ca_chain.pem} {}}
+  tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
+  hosts_try_dane =	*
+  hosts_require_tls =	*
+# note no ocsp mention here
+  headers_add =		X-TLS-out: ocsp status $tls_out_ocsp \
+		(${listextract {${eval:$tls_out_ocsp+1}} {notreq:notresp:vfynotdone:failed:verified}})
+
+#			default
+send_to_server3:
+  driver =		smtp
+  allow_localhost
+  port =		PORT_D
+  hosts_try_fastopen =	:
+  helo_data =		helo.data.changed
+  tls_verify_certificates = ${if eq {DETAILS}{ca} {CDIR2/ca_chain.pem} {}}
+  tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
+  hosts_try_dane =	*
+  hosts_require_tls =	*
+  hosts_require_ocsp =	*
+  headers_add =		X-TLS-out: ocsp status $tls_out_ocsp \
+		(${listextract {${eval:$tls_out_ocsp+1}} {notreq:notresp:vfynotdone:failed:verified}})
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1s
+
+
+# End
