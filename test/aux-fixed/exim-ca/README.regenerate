@@ -5,6 +5,8 @@ and dnszones-src/db.example.com  (the commands are next to each one).
 The script "tlsa_regenerate" automates this.
 
 Also, because of the certs changes, the following testcase outputs will change:
-2102
-5720
+2002 (GnuTLS)
+2102 (OpenSSL)
+5710 (GnuTLS)
+5720 (OpenSSL)
 5800

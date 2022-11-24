@@ -15,6 +15,14 @@ echo use -  date -u 110112342019
 echo hit return when ready
 read junk
 
+# Calc number of months from then to (about) Nov 2037.
+# We're sticking to a 2038 cutoff for now, to maintain support for 32b systems,
+# but will have to give that up in only a few years.
+#
+tgt_secs=`date -d 'Nov 25 2037' +%s`
+now_secs=`date +%s`
+diff_months=$(( ($tgt_secs - $now_secs) / 60 / 60 / 24 / 31 ))
+
 # Main suite: RSA certs
 for tld in com org net
 do
@@ -41,14 +49,14 @@ do
 
     # create server leaf certs
     # -m <months>
-    clica $V -D $idir -p password -s 101 -S server1.$iname -m 301 \
+    clica $V -D $idir -p password -s 101 -S server1.$iname -m $diff_months \
 	-8 alternatename.server1.example.$tld,alternatename2.server1.example.$tld,*.test.ex
-    clica $V -D $idir -p password -s 102 -S revoked1.$iname -m 301
+    clica $V -D $idir -p password -s 102 -S revoked1.$iname -m $diff_months
     clica $V -D $idir -p password -s 103 -S expired1.$iname -m 1
 
-    clica $V -D $idir -p password -s 201 -S  server2.$iname -m 301 \
+    clica $V -D $idir -p password -s 201 -S  server2.$iname -m $diff_months \
 	-3 "CN=clica CA rsa,O=example.$tld" -8 '*.test.ex'
-    clica $V -D $idir -p password -s 202 -S revoked2.$iname -m 301
+    clica $V -D $idir -p password -s 202 -S revoked2.$iname -m $diff_months
     clica $V -D $idir -p password -s 203 -S expired2.$iname -m 1
 
 ####
@@ -195,7 +203,7 @@ done
 
 # Create one EC leaf cert in the RSA cert tree.  It will have an EC pubkey but be signed using its parent
 # therefore its parent's algo, RSA.
-clica $V -D example.com -p password -k ec -q nistp521 -s 1101 -S server1_ec.example.com -m 301 -8 'server1.example.com,*.test.ex'
+clica $V -D example.com -p password -k ec -q nistp521 -s 1101 -S server1_ec.example.com -m $diff_months -8 'server1.example.com,*.test.ex'
 SDIR=example.com/server1_ec.example.com
 SPFX=$SDIR/server1_ec.example.com
 openssl ec -in $SPFX.key -passin file:$SDIR/pwdfile -out $SPFX.unlocked.key
@@ -225,7 +233,7 @@ do
 
     # create server certs
     # -m <months>
-    clica $V -D $idir -p password -s 2101 -S server1.$iname -m 301 \
+    clica $V -D $idir -p password -s 2101 -S server1.$iname -m $diff_months \
 	-k ec -q nistp521 \
 	-8 server1.example.$tld,alternatename.server1.example.$tld,alternatename2.server1.example.$tld,*.test.ex
 
