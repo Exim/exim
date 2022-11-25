@@ -47,6 +47,7 @@ functions from the OpenSSL library. */
 #endif
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 # define EXIM_HAVE_OCSP_RESP_COUNT
+# define EXIM_HAVE_SSL_GET0_VERIFIED_CHAIN
 # define OPENSSL_AUTO_SHA256
 # define OPENSSL_MIN_PROTO_VERSION
 #else
@@ -78,6 +79,7 @@ change this guard and punt the issue for a while longer. */
 #  define EXIM_HAVE_SESSION_TICKET
 #  define EXIM_HAVE_OPESSL_TRACE
 #  define EXIM_HAVE_OPESSL_GET0_SERIAL
+#  define EXIM_HAVE_OPESSL_OCSP_RESP_GET0_CERTS
 #  ifndef DISABLE_OCSP
 #   define EXIM_HAVE_OCSP
 #  endif
@@ -1956,7 +1958,7 @@ tls_client_creds_invalidate(transport_instance * t)
 static void
 debug_print_sn(const X509 * cert)
 {
-X509_NAME * sn = X509_get_subject_name(cert);
+X509_NAME * sn = X509_get_subject_name((X509 *)cert);
 static uschar name[256];
 if (X509_NAME_oneline(sn, CS name, sizeof(name)))
   {
@@ -1984,23 +1986,13 @@ static void
 x509_store_dump_cert_s_names(X509_STORE * store)
 {
 # ifdef EXIM_HAVE_OPENSSL_X509_STORE_GET1_ALL_CERTS
-STACK_OF(X509) * sk = X509_STORE_get1_all_certs(store);
-x509_stack_dump_cert_s_names(sk);
-sk_X509_pop_free(sk, X509_free);
-
-# else
 if (!store)
   debug_printf(" (no store)\n");
 else
   {
-  STACK_OF(X509_OBJECT) * objs = X509_STORE_get0_objects(store);
-  if (!objs)
-    debug_printf(" (null objectlist)\n");
-  else for (int i = 0; i < sk_X509_OBJECT_num(objs); i++)
-    {
-    X509 * cert = X509_OBJECT_get0_X509(sk_X509_OBJECT_value(objs, i));
-    if (cert) debug_print_sn(cert);
-    }
+  STACK_OF(X509) * sk = X509_STORE_get1_all_certs(store);
+  x509_stack_dump_cert_s_names(sk);
+  sk_X509_pop_free(sk, X509_free);
   }
 # endif
 }
@@ -2564,10 +2556,11 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
       SSL_get0_chain_certs(ssl, &verified_chain);
       add_chain_to_store(verify_store, verified_chain,
 			      "'current cert' per SSL_get0_chain_certs()");
-
+#ifdef EXIM_HAVE_SSL_GET0_VERIFIED_CHAIN
       verified_chain = SSL_get0_verified_chain(ssl);
       add_chain_to_store(verify_store, verified_chain,
 			      "SSL_get0_verified_chain()");
+#endif
       }
    }
 
@@ -2582,10 +2575,16 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
       /* OCSP_RESPONSE_print(bp, rsp, 0);   extreme debug: stapling content */
 
       debug_printf("certs contained in basicresp:\n");
-      x509_stack_dump_cert_s_names((STACK_OF(X509 *))OCSP_resp_get0_certs(bs));
+      x509_stack_dump_cert_s_names(
+#ifdef EXIM_HAVE_OPESSL_OCSP_RESP_GET0_CERTS
+	OCSP_resp_get0_certs(bs)
+#else
+	bs->certs
+#endif
+	);
 
-#ifdef EXIM_HAVE_OPENSSL_X509_STORE_GET1_ALL_CERTS	/* else, could bodge via X509_STORE_get0_objects()
-						- but is OCSP_resp_get0_signer) avail? from 1.1.1 */
+#ifdef EXIM_HAVE_OPENSSL_X509_STORE_GET1_ALL_CERTS
+/* could do via X509_STORE_get0_objects(); not worth it just for debug info */
        {
 	X509 * signer;
 	if (OCSP_resp_get0_signer(bs, &signer, X509_STORE_get1_all_certs(verify_store)) == 1)
@@ -2623,11 +2622,14 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
 
     if ((i = OCSP_basic_verify(bs, SSL_get_peer_cert_chain(ssl),
 		verify_store,
+#ifdef SUPPORT_DANE
 		tls_out.dane_verified
 		? have_verified_OCSP_signer
 		  ? OCSP_NOVERIFY | OCSP_NOEXPLICIT
 		  : OCSP_PARTIAL_CHAIN | OCSP_NOEXPLICIT
-		: OCSP_NOEXPLICIT)) <= 0)
+		:
+#endif
+		OCSP_NOEXPLICIT)) <= 0)
       {
       DEBUG(D_tls) debug_printf("OCSP_basic_verify() fail: returned %d\n", i);
       if (ERR_peek_error())
