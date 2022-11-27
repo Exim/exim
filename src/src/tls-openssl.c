@@ -47,7 +47,6 @@ functions from the OpenSSL library. */
 #endif
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 # define EXIM_HAVE_OCSP_RESP_COUNT
-# define EXIM_HAVE_SSL_GET0_VERIFIED_CHAIN
 # define OPENSSL_AUTO_SHA256
 # define OPENSSL_MIN_PROTO_VERSION
 #else
@@ -80,6 +79,7 @@ change this guard and punt the issue for a while longer. */
 #  define EXIM_HAVE_OPESSL_TRACE
 #  define EXIM_HAVE_OPESSL_GET0_SERIAL
 #  define EXIM_HAVE_OPESSL_OCSP_RESP_GET0_CERTS
+#  define EXIM_HAVE_SSL_GET0_VERIFIED_CHAIN
 #  ifndef DISABLE_OCSP
 #   define EXIM_HAVE_OCSP
 #  endif
@@ -2232,7 +2232,7 @@ if (lib_ctx_new(&server_sni, NULL, &dummy_errstr) != OK)
 /* Not sure how many of these are actually needed, since SSL object
 already exists.  Might even need this selfsame callback, for reneg? */
 
-  {
+ {
   SSL_CTX * ctx = state_server.lib_state.lib_ctx;
   SSL_CTX_set_info_callback(server_sni, SSL_CTX_get_info_callback(ctx));
   SSL_CTX_set_mode(server_sni, SSL_CTX_get_mode(ctx));
@@ -2244,7 +2244,7 @@ already exists.  Might even need this selfsame callback, for reneg? */
   SSL_CTX_set_timeout(server_sni, SSL_CTX_get_timeout(ctx));
   SSL_CTX_set_tlsext_servername_callback(server_sni, tls_servername_cb);
   SSL_CTX_set_tlsext_servername_arg(server_sni, state);
-  }
+ }
 
 if (  !init_dh(server_sni, state->dhparam, &dummy_errstr)
    || !init_ecdh(server_sni, &dummy_errstr)
