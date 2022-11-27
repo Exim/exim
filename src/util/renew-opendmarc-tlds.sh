@@ -1,4 +1,5 @@
 #!/bin/sh -eu
+# SPDX-License-Identifier: GPL-2.0-only
 #
 # Short version of this script:
 #   curl -f -o /var/cache/exim/opendmarc.tlds https://publicsuffix.org/list/public_suffix_list.dat

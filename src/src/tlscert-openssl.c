@@ -4,6 +4,7 @@
 
 /* Copyright (c) The Exim Maintainers 2022 */
 /* Copyright (c) Jeremy Harris 2014 - 2019 */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* This module provides TLS (aka SSL) support for Exim using the OpenSSL
 library. It is #included into the tls.c file when that library is used.

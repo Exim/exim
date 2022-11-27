@@ -4,6 +4,7 @@
 
 /* Copyright (c) Jeremy Harris 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* SHA routine selection */
 

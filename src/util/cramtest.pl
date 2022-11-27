@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# SPDX-License-Identifier: GPL-2.0-only
 
 # This script is contributed by Vadim Vygonets to aid in debugging CRAM-MD5
 # authentication.

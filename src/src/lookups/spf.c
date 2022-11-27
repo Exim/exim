@@ -7,6 +7,7 @@
 
 Copyright (c) The Exim Maintainers 2020 - 2022
 Copyright (c) 2005 Chris Webb, Arachsys Internet Services Ltd
+SPDX-License-Identifier: GPL-2.0-or-later
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

@@ -6,6 +6,7 @@
    Copyright (c) The Exim Maintainers 2021 - 2022
    Copyright (c) Todd Lyons <tlyons@exim.org> 2012 - 2014
    License: GPL */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* Portions Copyright (c) 2012, 2013, The Trusted Domain Project;
    All rights reserved, licensed for use per LICENSE.opendmarc. */

@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Exim Maintainers 2006 - 2022
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
+ * SPDX-License-Identifier: GPL-2.0-or-later
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published

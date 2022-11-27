@@ -4,6 +4,7 @@
 
 /* Copyright (c) Jeremy Harris 2019-2020 */
 /* See the file NOTICE for conditions of use and distribution. */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* This file provides an Exim authenticator driver for
 a server to verify a client SSL certificate, using the EXTERNAL

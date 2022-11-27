@@ -4,6 +4,7 @@
  *  Copyright (c) The Exim Maintainers 2021 - 2022
  *  Copyright (C) 2009 - 2016  Tom Kistner <tom@duncanthrax.net>
  *  Copyright (C) 2016 - 2020  Jeremy Harris <jgh@exim.org>
+ *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  *  http://duncanthrax.net/pdkim/
  *

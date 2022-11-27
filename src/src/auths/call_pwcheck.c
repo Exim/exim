@@ -5,6 +5,7 @@
 /* Copyright (c) University of Cambridge 1995 - 2015 */
 /* Copyright (c) The Exim Maintainers 2020 */
 /* See the file NOTICE for conditions of use and distribution. */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* This module contains interface functions to the two Cyrus authentication
 daemons. The original one was "pwcheck", which gives its name to the source

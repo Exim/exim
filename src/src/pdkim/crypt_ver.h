@@ -4,6 +4,7 @@
 
 /* Copyright (c) Jeremy Harris 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* Signing and hashing routine selection for PDKIM */
 

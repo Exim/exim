@@ -6,6 +6,7 @@
  * Copyright (c) Jeremy Harris 2015 - 2016
  * Copyright (c) The Exim Maintainers 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* This module provides (un)setenv routines for those environments
 lacking them in libraries. It is #include'd by OS/os.c-foo files. */

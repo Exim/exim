@@ -6,6 +6,7 @@
  * Copyright (c) The Exim Maintainers 2016 - 2022
  * Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003-2015
  * License: GPL
+ * SPDX-License-Identifier: GPL-2.0-only
  */
 
 /* Code for matching regular expressions against headers and body.

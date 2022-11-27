@@ -5,6 +5,7 @@
 /*
  * Copyright (c) The Exim Maintainers 2022
  * License: GPL
+ * SPDX-License-Identifier: GPL-2.0-only
  */
 
 /* Caching layers for compiled REs.  There is a local layer in the process,

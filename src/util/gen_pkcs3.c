@@ -2,6 +2,7 @@
  * Copyright (c) The Exim Maintainers 2021
  * This is distributed as part of Exim and licensed under the GPL.
  * See the file "NOTICE" for more details.
+ * SPDX-License-Identifier: GPL-2.0-only
  */
 
 /* Build with:

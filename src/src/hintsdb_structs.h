@@ -5,6 +5,7 @@
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* Copyright (c) The Exim Maintainers 2020 - 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* This header file contains the definitions of the structures used in the
 various hints databases are also kept in this file, which is used by the

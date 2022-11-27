@@ -1,4 +1,5 @@
 #! /bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
 
 # Build the config.h file, using the buildconfig program, first ensuring that
 # it exists.

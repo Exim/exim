@@ -5,6 +5,7 @@
 /* Copyright (c) Jeremy Harris 2017 - 2018 */
 /* Copyright (c) The Exim Maintainers 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* Global functions */
 

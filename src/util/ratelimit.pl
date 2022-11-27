@@ -1,4 +1,5 @@
 #!/usr/bin/perl -wT
+# SPDX-License-Identifier: GPL-2.0-only
 
 use strict;
 

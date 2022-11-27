@@ -2,6 +2,7 @@
 Copyright (c) The Exim Maintainers 2022
 Copyright 1989 by the Massachusetts Institute of Technology,
 Cambridge, Massachusetts.
+SPDX-License-Identifier: GPL-2.0-only
 
                         All Rights Reserved
 

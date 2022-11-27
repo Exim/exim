@@ -1,4 +1,5 @@
 #! /bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
 
 # Shell script to create a link to the appropriate OS-specific header file.
 

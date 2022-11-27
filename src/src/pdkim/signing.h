@@ -2,6 +2,7 @@
  *  PDKIM - a RFC4871 (DKIM) implementation
  *
  *  Copyright (C) 1995 - 2020  Exim maintainers
+ *  SPDX-License-Identifier: GPL-2.0-only
  *
  *  RSA signing/verification interface
  */

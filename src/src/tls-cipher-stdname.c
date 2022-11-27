@@ -4,6 +4,7 @@
 
 /* Copyright (c) Jeremy Harris 2019 */
 /* See the file NOTICE for conditions of use and distribution. */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* Translate an IETF TLS ciphersuite code to an IETF ciphersuite name,
 for use when the TLS library do not provide such names.

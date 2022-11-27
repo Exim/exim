@@ -4,6 +4,7 @@
 
 /* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* This file, which provides support for Microsoft's Secure Password
 Authentication, was contributed by Marc Prud'hommeaux. */

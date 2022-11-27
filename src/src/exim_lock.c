@@ -11,6 +11,7 @@ Default is -fcntl -lockfile.
 Argument: the name of the lock file
 
 Copyright (c) The Exim Maintainers 2016 - 2021
+SPDX-License-Identifier: GPL-2.0-only
 */
 
 #include "os.h"

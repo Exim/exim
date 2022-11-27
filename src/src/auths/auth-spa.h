@@ -9,6 +9,7 @@
  * All the code used here was torn by Marc Prud'hommeaux out of the
  * Samba project (by Andrew Tridgell, Jeremy Allison, and others).
  */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* December 2004: The spa_base64_to_bits() function has no length checking in
 it. I have added a check. PH */

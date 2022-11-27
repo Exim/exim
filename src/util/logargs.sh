@@ -1,4 +1,5 @@
 #! /bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
 
 # This script can be interposed between a calling program and another
 # program, in order to log the arguments which are being used. This can

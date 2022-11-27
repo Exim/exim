@@ -5,6 +5,7 @@
 /* Copyright (c) The Exim Maintainers 2020 - 2022 */
 /* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* The idea for this code came from Matthew Byng-Maddick, but his original has
 been heavily reworked a lot for Exim 4 (and it now uses stat() (more precisely:

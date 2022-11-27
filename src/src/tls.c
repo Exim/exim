@@ -5,6 +5,7 @@
 /* Copyright (c) The Exim Maintainers 2020 - 2022 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 /* This module provides TLS (aka SSL) support for Exim. The code for OpenSSL is
 based on a patch that was originally contributed by Steve Haslam. It was

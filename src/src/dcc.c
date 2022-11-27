@@ -8,6 +8,7 @@
  * See the file NOTICE for conditions of use and distribution.
  *
  * Copyright (c) The Exim Maintainers 2015 - 2022
+ * SPDX-License-Identifier: GPL-2.0-only
  */
 
 /* Code for calling dccifd. Called from acl.c. */

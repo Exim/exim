@@ -1,3 +1,6 @@
+/* Copyright (c)  The Exim Maintainers 2022 *
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #include "exim.h"
 #include <sys/types.h>
 #include <unistd.h>
