@@ -5,7 +5,7 @@
    Copyright (c) Jeremy Harris 2018 - 2020
    Copyright (c) The Exim Maintainers 2021 - 2022
    License: GPL
-   SPDX-License-Identifier: GPL-2.0-only
+   SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #include "exim.h"

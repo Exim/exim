@@ -1,4 +1,5 @@
 /* Exim: OS-specific C header file for Ultrix */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Well, it *does* have statfs(), but its structure is called something
 different, all the members have different names, and the function returns

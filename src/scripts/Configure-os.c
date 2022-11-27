@@ -1,5 +1,7 @@
 #! /bin/sh
-# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (c) The Exim Maintainters 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 
 # Shell script to build os.c. There doesn't have to be an OS-specific os.c
 # file, but if there is, it gets copied at the start of os.c. The basic src

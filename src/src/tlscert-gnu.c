@@ -4,7 +4,7 @@
 
 /* Copyright (c) The Exim Maintainers 2021 - 2022 */
 /* Copyright (c) Jeremy Harris 2014 - 2018 */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* This file provides TLS/SSL support for Exim using the GnuTLS library,
 one of the available supported implementations.  This file is #included into

@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for SunOS4
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 CFLAGS=-O
 

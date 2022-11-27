@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for SunOS5 on a HAL
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 # Note: The HAL runs a standard SunOS5 except that it has a 64 bit C
 # compiler called hcc.  To make things work pass the -KV7 flag to force

@@ -4,6 +4,7 @@
 # specific build directory. It should be run from within that directory.
 #
 # Copyright (c) The Exim Maintainers 1995 - 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 test ! -d ../src && \
   echo "*** $0 should be run in a system-specific subdirectory." && \

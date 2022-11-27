@@ -1,5 +1,6 @@
 #! /bin/sh
-# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (c) The Exim Maintainers 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 # This is a sample script for demonstrating how to handle unknown users in
 # a more friendly way than just returning a "user unknown" error. It can

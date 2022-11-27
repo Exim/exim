@@ -1,4 +1,5 @@
 /* Exim: OS-specific C header file for QNX */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 /* Modified for QNX 6.2.0 with diffs from Samuli Tuomola. */
 
 #include <sys/select.h>

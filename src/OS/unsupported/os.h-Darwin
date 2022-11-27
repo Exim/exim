@@ -1,4 +1,5 @@
 /* Exim: OS-specific C header file for Darwin (Mac OS X) */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* #define CRYPT_H */  /* Apparently this isn't needed */
 

@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# Copyright (c) The Exim Maintainters 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # Script to install Exim binaries in BIN_DIRECTORY, which is defined in
 # the local Makefile. It expects to be run in a build directory. It needs
 # to be run as root in order to make exim setuid to root. If exim runs setuid

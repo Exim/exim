@@ -1,5 +1,6 @@
 #!/usr/bin/perl
-# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (c) The Exim Maintainers 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 # This script is contributed by Vadim Vygonets to aid in debugging CRAM-MD5
 # authentication.

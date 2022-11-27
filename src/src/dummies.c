@@ -5,7 +5,7 @@
 /* Copyright (c) University of Cambridge 1995 - 2009 */
 /* Copyright (c) The Exim Maintainers 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* This file is not part of the main Exim code. There are little bits of test
 code for some of Exim's modules, and when they are used, the module they are

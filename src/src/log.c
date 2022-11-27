@@ -5,7 +5,7 @@
 /* Copyright (c) The Exim Maintainers 2020 - 2022 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Functions for writing log files. The code for maintaining datestamped
 log files was originally contributed by Tony Sheen. */

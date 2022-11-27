@@ -1,4 +1,6 @@
 /* Exim: OS-specific C header file for AIX */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 /* Written by Nick Waterman <nick@cimio.co.uk> */
 /* Modified by Philip Hazel with data from
    Niels Provos <provos@wserver.physnet.uni-hamburg.de>

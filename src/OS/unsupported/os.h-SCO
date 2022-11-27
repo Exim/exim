@@ -1,4 +1,5 @@
 /* Exim: OS-specific C header file for SCO */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #define DN_EXPAND_ARG4_TYPE    u_char *
 

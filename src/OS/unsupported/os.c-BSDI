@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) 2016 Heiko Schlittermann <hs@schlittermann.de> */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* BSDI-specific code. This is concatenated onto the generic

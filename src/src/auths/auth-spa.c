@@ -10,7 +10,7 @@
  * Samba project (by Andrew Tridgell, Jeremy Allison, and others).
  *
  * Copyright (c) The Exim Maintainers 2021
- * SPDX-License-Identifier: GPL-2.0-only
+ * SPDX-License-Identifier: GPL-2.0-or-later
 
  * Tom Kistner provided additional code, adding spa_build_auth_challenge() to
  * support server authentication mode.

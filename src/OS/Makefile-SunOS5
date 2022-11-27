@@ -1,5 +1,6 @@
 # Exim: OS-specific make file for SunOS5
 # Copyright (c) The Exim Maintainers 2020
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 HAVE_ICONV=yes
 

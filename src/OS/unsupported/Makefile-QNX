@@ -1,4 +1,5 @@
 # Exim: OS-specific makefile for QNX
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 BASENAME_COMMAND=/bin/basename
 MAKE_SHELL=/usr/bin/bash

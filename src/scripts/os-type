@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# Copyright (c) The Exim Maintainters 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # Shell script to determine the operating system type. Some of the heuristics
 # herein have accumulated over the years and may not strictly be needed now,
 # but they are left in under the principle of "If it ain't broke, don't fix

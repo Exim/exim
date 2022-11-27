@@ -1,4 +1,5 @@
 /* Exim: OS-specific C header file for NetBSD (a.out binary format) */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include "../OS/os.h-NetBSD"     /* Same as for ELF format */
 

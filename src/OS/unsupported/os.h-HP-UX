@@ -1,4 +1,5 @@
 /* Exim: OS-specific C header file for HP-UX versions greater than 9 */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #define EXIM_SOCKLEN_T size_t
 

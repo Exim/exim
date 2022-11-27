@@ -1,4 +1,6 @@
 # Exim: OS-specific make file for DragonFly
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
 # There's no setting of CFLAGS here, to allow the system default
 # for "make" to be the default.
 

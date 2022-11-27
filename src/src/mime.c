@@ -6,7 +6,7 @@
  * Copyright (c) The Exim Maintainers 2015 - 2022
  * Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004 - 2015
  * License: GPL
- * SPDX-License-Identifier: GPL-2.0-only
+ * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include "exim.h"

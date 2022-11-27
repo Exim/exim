@@ -4,7 +4,7 @@
 
 /* Copyright (c) University of Cambridge, 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 void    dkim_exim_init(void);
 gstring * dkim_exim_sign(int, off_t, uschar *, struct ob_dkim *, const uschar **);

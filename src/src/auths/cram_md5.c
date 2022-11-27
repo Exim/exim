@@ -5,7 +5,7 @@
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* Copyright (c) The Exim Maintainers 2020 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 
 /* The stand-alone version just tests the algorithm. We have to drag

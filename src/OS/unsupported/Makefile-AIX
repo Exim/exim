@@ -1,6 +1,7 @@
 # Exim: OS-specific make file for AIX
 # Written by Nick Waterman (nick@cimio.co.uk)
 # Modified by PH following a message from Mike Meredith
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 # Note that the output of uname -m is probably not what Philip expected,
 # so you might end up with more build-AIX-random_number directories than

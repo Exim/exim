@@ -1,5 +1,7 @@
 # Exim: OS-specific make file for FreeBSD
+#
 # Copyright (c) The Exim Maintainers 2020
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 CHOWN_COMMAND=/usr/sbin/chown
 #STRIP_COMMAND=/usr/bin/strip

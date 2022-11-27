@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for GNU and variants.
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 HAVE_ICONV=yes
 

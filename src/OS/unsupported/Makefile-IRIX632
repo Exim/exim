@@ -1,4 +1,6 @@
 # Exim: OS-specific make file for IRIX 6 on 32-bit systems.
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # There seems to be some variation. The commented settings show
 # some alternatives.
 

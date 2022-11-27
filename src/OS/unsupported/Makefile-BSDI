@@ -1,5 +1,6 @@
 # Exim: OS-specific make file for BSDI aka BSD/OS. Its antique link editor
 # cannot handle the TextPop overriding.
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 CFLAGS=-O
 CHOWN_COMMAND=/usr/sbin/chown

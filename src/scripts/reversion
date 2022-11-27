@@ -1,5 +1,6 @@
 #!/bin/sh
 # Copyright (c) The Exim Maintainers 1995 - 2021
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 set -e
 LC_ALL=C

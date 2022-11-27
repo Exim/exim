@@ -5,7 +5,7 @@
 /* Copyright (c) Andrew Colin Kissa <andrew@topdog.za.net> 2016 */
 /* Copyright (c) University of Cambridge 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Private structure for the private options. */
 

@@ -6,7 +6,7 @@
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004
    License: GPL */
 /* Copyright (c) The Exim Maintainers 2021 - 2022 */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include "exim.h"
 #ifdef EXPERIMENTAL_BRIGHTMAIL

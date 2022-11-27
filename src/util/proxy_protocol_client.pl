@@ -3,7 +3,7 @@
 # Copyright (C) 2014 Todd Lyons
 # License GPLv2: GNU GPL version 2
 # <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: GPL-2.0-or-later
 #
 # This script emulates a proxy which uses Proxy Protocol to communicate
 # to a backend server.  It should be run from an IP which is configured

@@ -5,7 +5,7 @@
 /* Copyright (c) The Exim Maintainers 2021 - 2022 */
 /* Copyright (c) Jeremy Harris 2015 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* SOCKS version 5 proxy, client-mode */
 

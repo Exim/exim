@@ -1,5 +1,6 @@
 /* Exim: OS-specific C header file for GNU/Hurd */
 /* Copyright (c) The Exim Maintainers 2020 - 2021 */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <features.h>
 

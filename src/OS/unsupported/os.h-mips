@@ -1,4 +1,5 @@
 /* Exim: OS-specific C header file for RiscOS4bsd */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #define LOAD_AVG_NEEDS_ROOT
 #define HAVE_DEV_KMEM

@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# Copyright (c) The Exim Maintainters 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # Shell script to build the configurable part of the Exim monitor's start-up
 # script. This is built from various configuration files. The final part is
 # added in the Makefile, using various macros that are available at that stage.

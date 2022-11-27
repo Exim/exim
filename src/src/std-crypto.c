@@ -7,7 +7,7 @@
  * But almost everything here is fixed published constants from RFCs, so also:
  * Copyright (C) The Internet Society (2003)
  * Copyright (C) The IETF Trust (2008)
- * SPDX-License-Identifier: GPL-2.0-only
+ * SPDX-License-Identifier: GPL-2.0-or-later
  *
  * Most of the text in RFC referencing comments is copy/paste from RFC,
  * as is undoubtedly the intention.

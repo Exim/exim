@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for OpenUNIX
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 CC=/usr/bin/cc
 CFLAGS=-O -I/usr/local/include

@@ -1,4 +1,5 @@
 /* Exim: OS-specific C header file for SCO SVR4.2 (and maybe Unixware) */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /**
 *** Note that for SCO 5 the configuration file is called SCO_SV,

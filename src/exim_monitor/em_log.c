@@ -5,7 +5,7 @@
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* Copyright (c) The Exim Maintainters 2021 - 2022 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* This module contains code for scanning the main log,
 extracting information from it, and displaying a "tail". */

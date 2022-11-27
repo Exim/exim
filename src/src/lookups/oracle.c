@@ -5,7 +5,7 @@
 /* Copyright (c) The Exim Maintainers 2020 - 2022 */
 /* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Interface to an Oracle database. This code was originally supplied by
 Paul Kelly, but I have hacked it around for various reasons, and tried to add

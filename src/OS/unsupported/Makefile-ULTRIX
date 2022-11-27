@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for Ultrix
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 MAKE_SHELL=/usr/bin/sh5
 

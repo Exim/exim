@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for HI-UX
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 CC=cc -Aa -D_HIUX_SOURCE
 HAVE_SETRESUID=YES

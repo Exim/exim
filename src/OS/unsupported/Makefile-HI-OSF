@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for HI-OSF/1-MJ and HI-UX/MPP
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 CC=cc
 CFLAGS=-O

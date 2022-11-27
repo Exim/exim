@@ -5,7 +5,7 @@
 /* Copyright (c) The Exim Maintainers 2022 */
 /* Copyright (c) University of Cambridge 1995 - 2012 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Copyright (c) A L Digital Ltd 2004 */
 

@@ -1,5 +1,6 @@
 # Exim: OS-specific make file for Unixware7
 # Based on information from James FitzGibbon <james@ehlo.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 # If you want to use libbind, you need to
 #     add -I/usr/local/bind/include to CFLAGS

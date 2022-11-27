@@ -5,6 +5,9 @@
 # if the second does not exist, the answer is "yes";
 # otherwise their ages are compared using "find".
 
+# Copyright (c) The Exim Maintainters 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 if [ $# -ne 2 ]; then
   echo "*** Two file names needed for 'newer' ***"
   exit 2;

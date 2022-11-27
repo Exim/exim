@@ -1,5 +1,7 @@
 #! /bin/sh
-# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (c) The Exim Maintainters 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 
 # Shell script to create a link to the appropriate OS-specific header file.
 

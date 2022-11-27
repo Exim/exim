@@ -2,6 +2,9 @@
 # These can be overridden by OS-specific scripts and local installation
 # scripts, and also at run time by shell variables.
 
+# Copyright (c) The Exim Maintainers 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # The name of the eximon binary, usually the same as the eximon script,
 # with .bin stuck on the end.
 

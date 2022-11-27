@@ -1,6 +1,7 @@
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Cygwin-specific code. December 2002. Updated Jan 2015.
    This is prefixed to the src/os.c file.

@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for NetBSD (ELF object format)
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 CHOWN_COMMAND=/usr/sbin/chown
 CHMOD_COMMAND=/bin/chmod

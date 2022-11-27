@@ -2,6 +2,9 @@
 
 # A script to be called to run all the other configuring scripts manually.
 
+# Copyright (c) The Exim Maintainters 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 scripts/Configure-Makefile
 scripts/Configure-os.h
 scripts/Configure-os.c

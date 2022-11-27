@@ -1,6 +1,7 @@
 # Exim: OS-specific make file for SCO_SV release 5 (tested on 5.0.5 & 5.0.5)
 #       (see the UNIX_SV files for SCO 4.2)
 # Supplied by: Tony Earnshaw <tonye@ilion.nl>
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 # Note that 'gcc -melf -m486' applies to gcc 2.7.2 and higher;
 # 2.7.1 and SCO's SDK need '-belf'.

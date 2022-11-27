@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for DGUX
+# SPDX-License-Identifier: GPL-2.0-or-later
 #
 # Written by Ken Bailey (K.Bailey@rbgkew.org.uk) Feb 1998
 # on dgux R4.11MU04 generic AViiON mc88100

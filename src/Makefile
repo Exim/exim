@@ -4,6 +4,7 @@
 
 # Copyright (c) The Exim Maintainers 2022
 # Copyright (c) University of Cambridge, 1995 - 2018
+# SPDX-License-Identifier: GPL-2.0-or-later
 # See the file NOTICE for conditions of use and distribution.
 
 # IRIX make uses the shell that is in the SHELL variable, which often defaults

@@ -5,7 +5,7 @@
 /* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003 - 2015
  * License: GPL
  * Copyright (c) The Exim Maintainers 2016 - 2021
- * SPDX-License-Identifier: GPL-2.0-only
+ * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 /* Code for setting up a MBOX style spool file inside a /scan/<msgid>

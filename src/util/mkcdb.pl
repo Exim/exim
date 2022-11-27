@@ -1,5 +1,6 @@
 #!/usr/bin/perl -wT
-# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (c) The Exim Maintainers 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
 #
 # Create cdb file from flat alias file. DPC: 15/10/98.
 # Args:      source  (may be relative or absolute)

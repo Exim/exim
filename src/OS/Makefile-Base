@@ -1,5 +1,4 @@
 # This file is the basis of the main makefile for Exim and friends. The
-#
 # makefile at the top level arranges to build the main makefile by calling
 # scripts/Configure-Makefile from within the build directory. This
 # concatenates the configuration settings from Local/Makefile and other,
@@ -7,6 +6,7 @@
 # build directory.
 #
 # Copyright (c) The Exim Maintainers 1995 - 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 SHELL      = $(MAKE_SHELL)
 SCRIPTS    = ../scripts

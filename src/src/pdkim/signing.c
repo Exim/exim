@@ -1,7 +1,7 @@
 /*
  *  PDKIM - a RFC4871 (DKIM) implementation
  *  Copyright (c) The Exim Maintainers 1995 - 2022
- *  SPDX-License-Identifier: GPL-2.0-only
+ *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  *  signing/verification interface
  */

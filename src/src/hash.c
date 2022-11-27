@@ -3,7 +3,7 @@
  *
  *  Copyright (c) The Exim Maintainers 2010 - 2022
  *  Copyright (c) University of Cambridge 1995 - 2009
- *  SPDX-License-Identifier: GPL-2.0-only
+ *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  *  Hash interface functions
  */

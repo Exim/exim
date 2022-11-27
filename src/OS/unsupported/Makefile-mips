@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for RiscOS4bsd
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 HOSTNAME_COMMAND=/usr/ucb/hostname
 EXIT_FAILURE=1

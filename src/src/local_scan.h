@@ -5,7 +5,7 @@
 /* Copyright (c) The Exim Maintainers 2020 - 2022 */
 /* Copyright (c) University of Cambridge 1995 - 2020 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* This file is the header that is the only Exim header to be included in the
 source for the local_scan.c() function. It contains definitions that are made

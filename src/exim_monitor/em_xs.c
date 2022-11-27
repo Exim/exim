@@ -4,7 +4,7 @@
 
 /* Copyright (c) University of Cambridge, 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* This file contains a number of subroutines that are in effect
 just alternative packaging for calls to various X functions that

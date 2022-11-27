@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for SCO
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 # It was reported that some versions of gcc (e.g. 2.8.1) require this to be
 # CFLAGS=-melf

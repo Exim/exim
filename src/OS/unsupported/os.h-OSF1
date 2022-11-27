@@ -1,4 +1,5 @@
 /* Exim: OS-specific C header file for OSF1 */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #define HAVE_SYS_MOUNT_H
 #define HAVE_GETIPNODEBYNAME    1

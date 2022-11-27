@@ -6,7 +6,7 @@
    Copyright (c) The Exim Maintainers 2016 - 2022
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004
    License: GPL
-   SPDX-License-Identifier: GPL-2.0-only
+   SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 #ifdef SUPPORT_SPF

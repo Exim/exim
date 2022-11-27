@@ -4,7 +4,7 @@
 
 /* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Support functions for calling from local_scan(). These are mostly just
 wrappers for various internal functions. */

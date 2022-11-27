@@ -1,6 +1,8 @@
 #! /bin/sh
-
 # Shell script to determine the architecture type.
+
+# Copyright (c) The Exim Maintainters 2022
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 # If EXIM_ARCHTYPE is set, use it. This allows a manual override.
 

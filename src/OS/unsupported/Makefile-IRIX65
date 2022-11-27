@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for IRIX 6.5
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 HAVE_ICONV=yes
 HOSTNAME_COMMAND=/usr/bsd/hostname
