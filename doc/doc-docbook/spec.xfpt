@@ -16189,9 +16189,12 @@ case. That is why the default tries a DNS lookup first.
 .cindex "host" "rejecting connections from"
 If this option is set, incoming SMTP calls from the hosts listed are rejected
 as soon as the connection is made.
-This option is obsolete, and retained only for backward compatibility, because
+This option is mostly obsolete, retained for backward compatibility because
 nowadays the ACL specified by &%acl_smtp_connect%& can also reject incoming
-connections immediately.
+connections immediately
+.new
+(except for tls-on-connect connections).
+.wen
 
 The ability to give an immediate rejection (either by this option or using an
 ACL) is provided for use in unusual cases. Many hosts will just try again,
