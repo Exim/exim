@@ -715,6 +715,7 @@ static var_entry var_table[] = {
   { "sender_fullhost",     vtype_stringptr,   &sender_fullhost },
   { "sender_helo_dnssec",  vtype_bool,        &sender_helo_dnssec },
   { "sender_helo_name",    vtype_stringptr,   &sender_helo_name },
+  { "sender_helo_verified",vtype_string_func, (void *) &sender_helo_verified_boolstr },
   { "sender_host_address", vtype_stringptr,   &sender_host_address },
   { "sender_host_authenticated",vtype_stringptr, &sender_host_authenticated },
   { "sender_host_dnssec",  vtype_bool,        &sender_host_dnssec },

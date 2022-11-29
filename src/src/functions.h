@@ -489,6 +489,7 @@ extern int     search_findtype_partial(const uschar *, int *, const uschar **, i
                  int *, const uschar **);
 extern void   *search_open(const uschar *, int, int, uid_t *, gid_t *);
 extern void    search_tidyup(void);
+extern uschar *sender_helo_verified_boolstr(void);
 extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    sha1_end(hctx *, const uschar *, int, uschar *);
 extern void    sha1_mid(hctx *, const uschar *);

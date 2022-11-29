@@ -1643,6 +1643,30 @@ return period;
 
 
 
+static BOOL
+sender_helo_verified_internal(void)
+{
+/* We can test the result of optional HELO verification that might have
+occurred earlier. If not, we can attempt the verification now. */
+
+if (!f.helo_verified && !f.helo_verify_failed) smtp_verify_helo();
+return f.helo_verified;
+}
+
+static int
+sender_helo_verified_cond(void)
+{
+return sender_helo_verified_internal() ? OK : FAIL;
+}
+
+uschar *
+sender_helo_verified_boolstr(void)
+{
+return sender_helo_verified_internal() ? US"yes" : US"no";
+}
+
+
+
 /* This function implements the "verify" condition. It is called when
 encountered in any ACL, because some tests are almost always permitted. Some
 just don't make sense, and always fail (for example, an attempt to test a host
@@ -1739,11 +1763,7 @@ switch(vp->value)
     return FAIL;
 
   case VERIFY_HELO:
-    /* We can test the result of optional HELO verification that might have
-    occurred earlier. If not, we can attempt the verification now. */
-
-    if (!f.helo_verified && !f.helo_verify_failed) smtp_verify_helo();
-    return f.helo_verified ? OK : FAIL;
+    return sender_helo_verified_cond();
 
   case VERIFY_CSA:
     /* Do Client SMTP Authorization checks in a separate function, and turn the

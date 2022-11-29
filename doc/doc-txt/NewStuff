@@ -16,6 +16,7 @@ Version 4.97
  3. Variable $sender_helo_verified with the result of an ACL "verify = helo".
 
  4. Predefined macros for expansion items, operators, conditions and variables.
+ 3. Variable $sender_helo_verified with the result of an ACL verify=helo.
 
 Version 4.96
 ------------
