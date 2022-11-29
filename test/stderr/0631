@@ -11,5 +11,6 @@ end of ACL "chk_rcpt": ACCEPT
 using ACL "chk_data"
 processing "accept" (TESTSUITE/test-config 30)
 check control = debug/stop
+debug terminated by stop
 
 ******** SERVER ********

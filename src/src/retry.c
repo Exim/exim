@@ -135,7 +135,7 @@ dbdata_retry * host_retry_record, * message_retry_record;
 
 *retry_host_key = *retry_message_key = NULL;
 
-DEBUG(D_transport|D_retry) debug_printf("checking status of %s\n", host->name);
+DEBUG(D_transport|D_retry) debug_printf("checking retry status of %s\n", host->name);
 
 /* Do nothing if status already set; otherwise initialize status as usable. */
 

@@ -14,7 +14,7 @@ smtp transport entered
   extchange@test.ex
 hostlist:
   '127.0.0.1' IP 127.0.0.1 port PORT_D
-checking status of 127.0.0.1
+checking retry status of 127.0.0.1
 no host retry record
 no message retry record
 127.0.0.1 [127.0.0.1]:1111 retry-status = usable

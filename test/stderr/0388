@@ -72,7 +72,7 @@ search_tidyup called
 changed uid/gid: remote delivery to x@y with transport=smtp
   uid=EXIM_UID gid=EXIM_GID pid=p1235
 set_process_info: pppp delivering 10HmaX-0005vi-00 using smtp
-checking status of 127.0.0.1
+checking retry status of 127.0.0.1
  locking TESTSUITE/spool/db/retry.lockfile
  locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
@@ -111,7 +111,7 @@ address match test: subject=*@127.0.0.1 pattern=*
 127.0.0.1 in "*"? yes (matched "*")
 *@127.0.0.1 in "*"? yes (matched "*")
 Clearing TFO as not first host for message
-checking status of V4NET.0.0.0
+checking retry status of V4NET.0.0.0
  locking TESTSUITE/spool/db/retry.lockfile
  locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY

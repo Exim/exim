@@ -15,7 +15,7 @@ After routing:
     x@y
   Failed addresses:
   Deferred addresses:
-checking status of 127.0.0.1
+checking retry status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 added retry item for R:x@y:<CALLER@myhost.test.ex>: errno=-44 more_errno=dd,A flags=0
@@ -56,7 +56,7 @@ After routing:
     x@y
   Failed addresses:
   Deferred addresses:
-checking status of 127.0.0.1
+checking retry status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
 no message retry record
