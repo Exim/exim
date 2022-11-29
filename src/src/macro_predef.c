@@ -338,6 +338,7 @@ printf("#include \"exim.h\"\n");
 features();
 exp_features();
 options();
+expansions();
 params();
 
 printf("macro_item * macros = &p%d;\n", mp_index-1);

@@ -13,6 +13,10 @@ Version 4.97
 
  2. An event on a failing SMTP AUTH, for both client and server operations.
 
+ 3. Variable $sender_helo_verified with the result of an ACL "verify = helo".
+
+ 4. Predefined macros for expansion items, operators, conditions and variables.
+
 Version 4.96
 ------------
 

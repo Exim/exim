@@ -13,6 +13,10 @@
 
 #include "exim.h"
 
+#ifdef MACRO_PREDEF
+# include "macro_predef.h"
+#endif
+
 typedef unsigned esi_flags;
 #define ESI_NOFLAGS		0
 #define ESI_BRACE_ENDS		BIT(0)	/* expansion should stop at } */
@@ -831,6 +835,76 @@ static var_entry var_table[] = {
 };
 
 static int var_table_size = nelem(var_table);
+
+#ifdef MACRO_PREDEF
+
+/* dummies */
+uschar * fn_arc_domains(void) {return NULL;}
+uschar * fn_hdrs_added(void) {return NULL;}
+uschar * fn_queue_size(void) {return NULL;}
+uschar * fn_recipients(void) {return NULL;}
+uschar * sender_helo_verified_boolstr(void) {return NULL;}
+uschar * smtp_cmd_hist(void) {return NULL;}
+
+
+
+static void
+expansion_items(void)
+{
+uschar buf[64];
+for (int i = 0; i < nelem(item_table); i++)
+  {
+  spf(buf, sizeof(buf), CUS"_EXP_ITEM_%T", item_table[i]);
+  builtin_macro_create(buf);
+  }
+}
+static void
+expansion_operators(void)
+{
+uschar buf[64];
+for (int i = 0; i < nelem(op_table_underscore); i++)
+  {
+  spf(buf, sizeof(buf), CUS"_EXP_OP_%T", op_table_underscore[i]);
+  builtin_macro_create(buf);
+  }
+for (int i = 0; i < nelem(op_table_main); i++)
+  {
+  spf(buf, sizeof(buf), CUS"_EXP_OP_%T", op_table_main[i]);
+  builtin_macro_create(buf);
+  }
+}
+static void
+expansion_conditions(void)
+{
+uschar buf[64];
+for (int i = 0; i < nelem(cond_table); i++)
+  {
+  spf(buf, sizeof(buf), CUS"_EXP_COND_%T", cond_table[i]);
+  builtin_macro_create(buf);
+  }
+}
+static void
+expansion_variables(void)
+{
+uschar buf[64];
+for (int i = 0; i < nelem(var_table); i++)
+  {
+  spf(buf, sizeof(buf), CUS"_EXP_VAR_%T", var_table[i].name);
+  builtin_macro_create(buf);
+  }
+}
+
+void
+expansions(void)
+{
+expansion_items();
+expansion_operators();
+expansion_conditions();
+expansion_variables();
+}
+
+#else	/*!MACRO_PREDEF*/
+
 static uschar var_buffer[256];
 static BOOL malformed_header;
 
@@ -8861,8 +8935,9 @@ search_tidyup();
 return 0;
 }
 
-#endif
+#endif	/*STAND_ALONE*/
 
+#endif	/*!MACRO_PREDEF*/
 /* vi: aw ai sw=2
 */
 /* End of expand.c */
