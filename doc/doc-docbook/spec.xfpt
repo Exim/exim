@@ -31635,7 +31635,7 @@ pretrigger=<&'size'&>    This option specifies a memory buffuer to be used
                      immediate writes to file are done as normal.
 
 trigger=<&'reason'&>     This option selects cause for the pretrigger buffer
-                     see above) to be copied to file.  A reason of $*now*
+                     see above) to be copied to file.  A reason of &*now*&
                      take effect immediately; one of &*paniclog*& triggers
                      on a write to the panic log.
 .endd
