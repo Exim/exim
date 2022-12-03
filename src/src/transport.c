@@ -2190,6 +2190,8 @@ if (expand_arguments)
 
   for (int i = 0; argv[i]; i++)
     {
+    DEBUG(D_expand) debug_printf_indent("arg %d\n", i);
+
     /* Handle special fudge for passing an address list */
 
     if (addr &&
@@ -2364,7 +2366,7 @@ if (expand_arguments)
         return FALSE;
         }
 
-      if ( f.running_in_test_harness && is_tainted(expanded_arg)
+      if (  f.running_in_test_harness && is_tainted(expanded_arg)
 	 && Ustrcmp(etext, "queryprogram router") == 0)
 	{			/* hack, would be good to not need it */
 	DEBUG(D_transport)

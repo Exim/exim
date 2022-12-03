@@ -5614,7 +5614,7 @@ while (*s)
       const uschar * arg, ** argv;
       BOOL late_expand = TRUE;
 
-      if ((expand_forbid & RDO_RUN) != 0)
+      if (expand_forbid & RDO_RUN)
         {
         expand_string_message = US"running a command is not permitted";
         goto EXPAND_FAILED;
@@ -5645,13 +5645,20 @@ while (*s)
       s++;
 
       if (late_expand)		/* this is the default case */
-	{						/*{*/
-	int n = Ustrcspn(s, "}");
+	{
+	int n;
+	const uschar * t;
+	/* Locate the end of the args */
+	(void) expand_string_internal(s,
+	  ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | ESI_SKIPPING, &t, NULL, NULL);
+	n = t - s;
 	arg = flags & ESI_SKIPPING ? NULL : string_copyn(s, n);
 	s += n;
 	}
       else
 	{
+	DEBUG(D_expand)
+	  debug_printf_indent("args string for ${run} expand before split\n");
 	if (!(arg = expand_string_internal(s,
 		ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL)))
 	  goto EXPAND_FAILED;
