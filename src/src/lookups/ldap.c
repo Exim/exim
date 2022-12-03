@@ -1470,27 +1470,20 @@ t = quoted = store_get_quoted(len + count + 1, s, idx);
 /* Handle plain quote_ldap */
 
 if (!dn)
-  {
-  while ((c = *s++))
-    {
+  for (; c = *s++; *t++ = c)
     if (!isalnum(c))
       {
       if (Ustrchr(LDAP_QUOTE, c) != NULL)
         {
         sprintf(CS t, "%%5C%02X", c);        /* e.g. * => %5C2A */
         t += 5;
-        continue;
         }
-      if (Ustrchr(URL_NONQUOTE, c) == NULL)  /* e.g. ] => %5D */
+      else if (Ustrchr(URL_NONQUOTE, c) == NULL)  /* e.g. ] => %5D */
         {
         sprintf(CS t, "%%%02X", c);
         t += 3;
-        continue;
         }
       }
-    *t++ = c;                                /* unquoted character */
-    }
-  }
 
 /* Handle quote_ldap_dn */
 
@@ -1520,8 +1513,8 @@ else
       {
       if (Ustrchr(LDAP_DN_QUOTE, c) != NULL)
         {
-        Ustrncpy(t, US"%5C", 3);               /* insert \ where needed */
-        t += 3;                              /* fall through to check URL */
+        Ustrcpy(t, US"%5C");			/* insert \ where needed */
+        t += 3;					/* fall through to check URL */
         }
       if (Ustrchr(URL_NONQUOTE, c) == NULL)  /* e.g. ] => %5D */
         {
@@ -1535,9 +1528,9 @@ else
 
   /* Handle the trailing spaces */
 
-  while (*ss++ != 0)
+  while (*ss++)
     {
-    Ustrncpy(t, US"%5C%20", 6);
+    Ustrcpy(t, US"%5C%20");
     t += 6;
     }
   }
