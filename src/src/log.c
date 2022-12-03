@@ -1544,6 +1544,7 @@ else DEBUG(D_deliver)
 void
 debug_logging_stop(BOOL kill)
 {
+debug_printf("debug terminated by %s\n", kill ? "kill" : "stop");
 debug_pretrigger_discard();
 if (!debug_file || !debuglog_name[0]) return;
 

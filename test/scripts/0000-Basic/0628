@@ -62,6 +62,7 @@ exim -DNOTDAEMON -DSERVER=server -q
 killdaemon
 #
 #
+# This file should have been written, then removed by the debug/kill in rcpt acl
 1
 cat DIR/spool/log/serverdebuglog_1
 #

@@ -990,7 +990,7 @@ return FALSE;
 
 
 /* Return an auths bitmap for the set of AUTH methods offered by the server
-which match our authenticators. */
+which match our client-side authenticators. */
 
 static unsigned short
 study_ehlo_auths(smtp_context * sx)
@@ -1016,7 +1016,7 @@ for (au = auths, authnum = 0; au; au = au->next, authnum++) if (au->client)
   }
 
 DEBUG(D_transport)
-  debug_printf("server offers %s AUTH, methods '%s', bitmap 0x%04x\n",
+  debug_printf("server offers %s AUTH, methods '%s', usable-bitmap 0x%04x\n",
     tls_out.active.sock >= 0 ? "crypted" : "plaintext", names, authbits);
 
 if (tls_out.active.sock >= 0)

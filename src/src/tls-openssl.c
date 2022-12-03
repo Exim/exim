@@ -3999,7 +3999,7 @@ if (tlsp->host_resumable)
     tls_error(US"set ex_data", host, NULL, errstr);
     return FALSE;
     }
-  debug_printf("tls_exdata_idx %d cbinfo %p\n", tls_exdata_idx, client_static_state);
+  /* debug_printf("tls_exdata_idx %d cbinfo %p\n", tls_exdata_idx, client_static_state); */
   }
 
 tlsp->resumption = RESUME_SUPPORTED;
