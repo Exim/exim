@@ -1,6 +1,6 @@
 # smtp-on-connect drop-before-tls-accept
 #
-exim -DSERVER=server -tls-on-connect -bd -oX PORT_D:PORT_D2:PORT_D3
+exim -DSERVER=server -tls-on-connect -bd -oX PORT_D:PORT_D2:PORT_D3:PORT_D4
 ****
 #
 # Normal, full connect and quit
@@ -22,6 +22,11 @@ client-anytls -tls-on-connect 127.0.0.1 PORT_D2
 #
 # server rejects using conn ACL
 client-anytls -tls-on-connect 127.0.0.1 PORT_D3
+???*
+****
+#
+# server fails banner expansion
+client-anytls -tls-on-connect 127.0.0.1 PORT_D4
 ???*
 ****
 #

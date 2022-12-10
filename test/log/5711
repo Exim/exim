@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 [1237] exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTPS on port PORT_D port PORT_D2 port PORT_D3
+1999-03-02 09:44:33 [1237] exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTPS on port PORT_D port PORT_D2 port PORT_D3 port PORT_D4
 1999-03-02 09:44:33 [1238] eval host_reject_connection
 1999-03-02 09:44:33 [1238] ACL conn
 1999-03-02 09:44:33 [1238] ACL quit
@@ -15,6 +15,9 @@
 1999-03-02 09:44:33 [1235] H=[127.0.0.1] dropped by 'connect' ACL: we dislike you
 1999-03-02 09:44:33 [1240] eval host_reject_connection
 1999-03-02 09:44:33 [1240] ACL conn
-1999-03-02 09:44:33 [1240] EV tls:fail:connect
-1999-03-02 09:44:33 [1240] EVDATA: (gnutls_handshake): The TLS connection was non-properly terminated.
-1999-03-02 09:44:33 [1240] TLS error on connection from [127.0.0.1] (tls lib accept fn): TCP connection closed by peer
+1999-03-02 09:44:33 [1240] Expansion of "${if != {$received_port}{1228} {my banner}fail}" (smtp_banner) failed: "if" failed and "fail" requested
+1999-03-02 09:44:33 [1241] eval host_reject_connection
+1999-03-02 09:44:33 [1241] ACL conn
+1999-03-02 09:44:33 [1241] EV tls:fail:connect
+1999-03-02 09:44:33 [1241] EVDATA: (gnutls_handshake): The TLS connection was non-properly terminated.
+1999-03-02 09:44:33 [1241] TLS error on connection from [127.0.0.1] (tls lib accept fn): TCP connection closed by peer

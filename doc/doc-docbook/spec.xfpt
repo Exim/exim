@@ -17692,13 +17692,18 @@ This facility is only available on Linux.
 .cindex "banner for SMTP"
 .cindex "welcome banner for SMTP"
 .cindex "customizing" "SMTP banner"
-This string, which is expanded every time it is used, is output as the initial
+If a connect ACL does not supply a message,
+this string (which is expanded every time it is used) is output as the initial
 positive response to an SMTP connection. The default setting is:
 .code
 smtp_banner = $smtp_active_hostname ESMTP Exim \
   $version_number $tod_full
 .endd
-Failure to expand the string causes a panic error. If you want to create a
+.new
+Failure to expand the string causes a panic error;
+a forced fail just closes the connection.
+.wen
+If you want to create a
 multiline response to the initial SMTP connection, use &"\n"& in the string at
 appropriate points, but not at the end. Note that the 220 code is not included
 in this string. Exim adds it automatically (several times in the case of a

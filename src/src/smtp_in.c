@@ -3040,13 +3040,7 @@ code = US"220";   /* Default status code */
 esc = US"";       /* Default extended status code */
 esclen = 0;       /* Length of esc */
 
-if (!user_msg)
-  {
-  if (!(s = expand_string(smtp_banner)))
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" (smtp_banner) "
-      "failed: %s", smtp_banner, expand_string_message);
-  }
-else
+if (user_msg)
   {
   int codelen = 3;
   s = user_msg;
@@ -3056,6 +3050,17 @@ else
     esc = code + 4;
     esclen = codelen - 4;
     }
+  }
+else if (!(s = expand_string(smtp_banner)))
+  {
+  log_write(0, f.expand_string_forcedfail ? LOG_MAIN : LOG_MAIN|LOG_PANIC_DIE,
+    "Expansion of \"%s\" (smtp_banner) failed: %s",
+    smtp_banner, expand_string_message);
+  /* for force-fail */
+#ifndef DISABLE_TLS
+  if (tls_in.on_connect) tls_close(NULL, TLS_SHUTDOWN_WAIT);
+#endif
+  return FALSE;
   }
 
 /* Remove any terminating newlines; might as well remove trailing space too */

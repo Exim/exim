@@ -14,6 +14,7 @@ tls_advertise_hosts = *
 tls_certificate = DIR/aux-fixed/cert1
 
 host_reject_connection = ${acl {hrc}}
+smtp_banner = ${if != {$received_port}{PORT_D4} {my banner}fail}
 event_action = ${acl {tls_fail}}
 
 log_selector = +pid
