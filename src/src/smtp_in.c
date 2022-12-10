@@ -2505,6 +2505,22 @@ else DEBUG(D_receive)
 #endif
 
 
+static void
+log_connect_tls_drop(const uschar * what, const uschar * log_msg)
+{
+gstring * g = s_tlslog(NULL);
+uschar * tls = string_from_gstring(g);
+
+log_write(L_connection_reject,
+  log_reject_target, "%s%s%s dropped by %s%s%s",
+  LOGGING(dnssec) && sender_host_dnssec ? US" DS" : US"",
+  host_and_ident(TRUE),
+  tls ? tls : US"",
+  what,
+  log_msg ? US": " : US"", log_msg);
+}
+
+
 /*************************************************
 *          Start an SMTP session                 *
 *************************************************/
@@ -2857,7 +2873,10 @@ if (!f.sender_host_unknown)
     {
     log_write(L_connection_reject, LOG_MAIN|LOG_REJECT, "refused connection "
       "from %s (host_reject_connection)", host_and_ident(FALSE));
-    smtp_printf("554 SMTP service not available\r\n", FALSE);
+#ifndef DISABLE_TLS
+    if (!tls_in.on_connect)
+#endif
+      smtp_printf("554 SMTP service not available\r\n", FALSE);
     return FALSE;
     }
 
@@ -2983,6 +3002,25 @@ if (check_proxy_protocol_host())
   setup_proxy_protocol_host();
 #endif
 
+/* Run the connect ACL if it exists */
+
+user_msg = NULL;
+if (acl_smtp_connect)
+  {
+  int rc;
+  if ((rc = acl_check(ACL_WHERE_CONNECT, NULL, acl_smtp_connect, &user_msg,
+		      &log_msg)) != OK)
+    {
+#ifndef DISABLE_TLS
+    if (tls_in.on_connect)
+      log_connect_tls_drop(US"'connect' ACL", log_msg);
+    else
+#endif
+      (void) smtp_handle_acl_fail(ACL_WHERE_CONNECT, rc, user_msg, log_msg);
+    return FALSE;
+    }
+  }
+
 /* Start up TLS if tls_on_connect is set. This is for supporting the legacy
 smtps port for use with older style SSL MTAs. */
 
@@ -2994,20 +3032,6 @@ if (tls_in.on_connect)
   cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
   }
 #endif
-
-/* Run the connect ACL if it exists */
-
-user_msg = NULL;
-if (acl_smtp_connect)
-  {
-  int rc;
-  if ((rc = acl_check(ACL_WHERE_CONNECT, NULL, acl_smtp_connect, &user_msg,
-		      &log_msg)) != OK)
-    {
-    (void) smtp_handle_acl_fail(ACL_WHERE_CONNECT, rc, user_msg, log_msg);
-    return FALSE;
-    }
-  }
 
 /* Output the initial message for a two-way SMTP connection. It may contain
 newlines, which then cause a multi-line response to be given. */

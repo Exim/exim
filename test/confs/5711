@@ -6,7 +6,7 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-acl_smtp_connect = accept logwrite = ACL conn
+acl_smtp_connect = check_conn
 acl_smtp_quit =    accept logwrite = ACL quit
 acl_smtp_notquit = accept logwrite = ACL notquit
 
@@ -16,13 +16,26 @@ tls_certificate = DIR/aux-fixed/cert1
 host_reject_connection = ${acl {hrc}}
 event_action = ${acl {tls_fail}}
 
+log_selector = +pid
+
 # ------ ACL ------
 
 begin acl
 
 hrc:
-  accept	logwrite = eval host_reject_connection
+  warn		logwrite = eval host_reject_connection
+  accept	condition = ${if eq {$received_port}{PORT_D}}
 		# no mesage= hence host_reject_connection should be empty
+  deny		condition = ${if eq {$received_port}{PORT_D2}}
+		message = *
+                # PORT_D2 gets a host_reject_connection
+
+check_conn:
+  warn		logwrite =	ACL conn
+  deny		condition =	${if eq {$received_port}{PORT_D3}}
+		log_message =	we dislike you
+		# PORT_D3 gets a conn ACL fail
+  accept
 
 tls_fail:
   warn		logwrite =  EV $event_name

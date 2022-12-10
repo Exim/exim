@@ -66,6 +66,15 @@ JH/15 Fix argument parsing for ${run } expansion. Previously, when an argument
       included a close-brace character (eg. it itself used an expansion) an
       error occurred.
 
+JH/16 Move running the smtp connect ACL to before, for TLS-on-connect ports,
+      starting TLS.  Previously it was after, meaning that attackers on such
+      ports had to be screened using the host_reject_connection main config
+      option. The new sequence aligns better with the STARTTLS behaviour, and
+      permits defences against crypto-processing load attacks, even though it
+      is strictly an incompatible change.
+      Also, avoid sending any SMTP fail response for either the connect ACL
+      or host_reject_connection, for TLS-on-connect ports.
+
 
 Exim version 4.96
 -----------------

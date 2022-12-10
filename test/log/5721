@@ -1,13 +1,19 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTPS on port PORT_D
-1999-03-02 09:44:33 eval host_reject_connection
-1999-03-02 09:44:33 ACL conn
-1999-03-02 09:44:33 ACL quit
-1999-03-02 09:44:33 eval host_reject_connection
-1999-03-02 09:44:33 ACL conn
-1999-03-02 09:44:33 ACL notquit
-1999-03-02 09:44:33 eval host_reject_connection
-1999-03-02 09:44:33 EV tls:fail:connect
-1999-03-02 09:44:33 EVDATA: SSL_accept: TCP connection closed by peer
-1999-03-02 09:44:33 TLS error on connection from [127.0.0.1] (tls lib accept fn): TCP connection closed by peer
+1999-03-02 09:44:33 [1237] exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTPS on port PORT_D port PORT_D2 port PORT_D3
+1999-03-02 09:44:33 [1238] eval host_reject_connection
+1999-03-02 09:44:33 [1238] ACL conn
+1999-03-02 09:44:33 [1238] ACL quit
+1999-03-02 09:44:33 [1239] eval host_reject_connection
+1999-03-02 09:44:33 [1239] ACL conn
+1999-03-02 09:44:33 [1239] ACL notquit
+1999-03-02 09:44:33 [1234] eval host_reject_connection
+1999-03-02 09:44:33 [1234] refused connection from [127.0.0.1] (host_reject_connection)
+1999-03-02 09:44:33 [1235] eval host_reject_connection
+1999-03-02 09:44:33 [1235] ACL conn
+1999-03-02 09:44:33 [1235] H=[127.0.0.1] dropped by 'connect' ACL: we dislike you
+1999-03-02 09:44:33 [1240] eval host_reject_connection
+1999-03-02 09:44:33 [1240] ACL conn
+1999-03-02 09:44:33 [1240] EV tls:fail:connect
+1999-03-02 09:44:33 [1240] EVDATA: SSL_accept: TCP connection closed by peer
+1999-03-02 09:44:33 [1240] TLS error on connection from [127.0.0.1] (tls lib accept fn): TCP connection closed by peer

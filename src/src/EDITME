@@ -401,7 +401,7 @@ TRANSPORT_SMTP=yes
 # For Redis you need to have hiredis installed on your system
 # (https://github.com/redis/hiredis).
 # Depending on where it is installed you may have to edit the CFLAGS
-# (often += -I/usr/local/include) and LDFLAGS (-lhiredis) lines.
+# (often += -I/usr/local/include) and LOOKUP_LIBS (-lhiredis) lines.
 
 # If your system has pkg-config then the _INCLUDE/_LIBS setting can be
 # handled for you automatically by also defining the _PC variable to reference

@@ -16193,11 +16193,13 @@ case. That is why the default tries a DNS lookup first.
 .cindex "host" "rejecting connections from"
 If this option is set, incoming SMTP calls from the hosts listed are rejected
 as soon as the connection is made.
-This option is mostly obsolete, retained for backward compatibility because
+This option is obsolete, and retained only for backward compatibility, because
 nowadays the ACL specified by &%acl_smtp_connect%& can also reject incoming
-connections immediately
+connections immediately.
+
 .new
-(except for tls-on-connect connections).
+If the connection is on a TLS-on-connect port then the TCP connection is
+just dropped.  Otherwise, an SMTP error is sent first.
 .wen
 
 The ability to give an immediate rejection (either by this option or using an
@@ -30487,8 +30489,11 @@ accepted by an &%accept%& verb that has a &%message%& modifier, the contents of
 the message override the banner message that is otherwise specified by the
 &%smtp_banner%& option.
 
-For tls-on-connect connections, the ACL is run after the TLS connection
-is accepted (however, &%host_reject_connection%& is tested before).
+.new
+For tls-on-connect connections, the ACL is run before the TLS connection
+is accepted; if the ACL does not accept then the TCP connection is dropped without
+any TLS startup attempt and without any SMTP response being transmitted.
+.wen
 
 
 .subsection "The EHLO/HELO ACL" SECID192

@@ -1,6 +1,6 @@
 # smtp-on-connect drop-before-tls-accept
 #
-exim -DSERVER=server -tls-on-connect -bd -oX PORT_D
+exim -DSERVER=server -tls-on-connect -bd -oX PORT_D:PORT_D2:PORT_D3
 ****
 #
 # Normal, full connect and quit
@@ -13,6 +13,16 @@ quit
 # full connect but no quit
 client-anytls -tls-on-connect 127.0.0.1 PORT_D
 ??? 220
+****
+#
+# server rejects using host_reject_connection option
+client-anytls -tls-on-connect 127.0.0.1 PORT_D2
+???*
+****
+#
+# server rejects using conn ACL
+client-anytls -tls-on-connect 127.0.0.1 PORT_D3
+???*
 ****
 #
 # client disconnects before server TLS accept completes

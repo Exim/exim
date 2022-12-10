@@ -1,0 +1,4 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 [1234] refused connection from [127.0.0.1] (host_reject_connection)
+1999-03-02 09:44:33 [1235] H=[127.0.0.1] dropped by 'connect' ACL: we dislike you
