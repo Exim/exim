@@ -1,20 +1,54 @@
 # TLS server: SNI used to select certificate
 #
+# The interesting output is the DN of server logged by the client
 exim -DSERVER=server -bd -oX PORT_D
 ****
-# Extended: certificate choice is unchanged by received SNI
-exim CALLER@test.ex
+# certificate choice is unchanged by a received SNI
+exim -odf normal@test.ex
 Test message.
 ****
-sleep 2
 #
 #
-# Extended: server uses SNI to change certificate
-exim abcd@test.ex
-Test message.
+# server uses SNI to choose certificate
+exim -odf alternate@test.ex
 ****
-millisleep 500
+#
+# server picks a key file with bad content
+exim -odf badkey@test.ex
+****
+sudo rm DIR/spool/db/retry
+#
+# server picks a non-existing filenam for key
+exim -odf noneistkeyfile@test.ex
+****
+sudo rm DIR/spool/db/retry
+#
+#
+# server gets an expansion-fail for the keyfile
+exim -odf expansionfailkey@test.ex
+****
+sudo rm DIR/spool/db/retry
+#
+#
+#
+#
+# server picks a cert file with bad content
+exim -odf badcert@test.ex
+****
+sudo rm DIR/spool/db/retry
+#
+# server picks a non-existing filenam for cert
+exim -odf nonexistcertfile@test.ex
+****
+sudo rm DIR/spool/db/retry
+#
+# server gets an expansion-fail for the certfile
+exim -odf expansionfailedcert@test.ex
+****
+sudo rm DIR/spool/db/retry
+#
+#
 #
 #
 killdaemon
-sleep 2
+no_msglog_check

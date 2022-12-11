@@ -1553,8 +1553,13 @@ else
      )  )
     reexpand_tls_files_for_sni = TRUE;
 
-  if (!expand_check(state->certificate, US"tls_certificate", &expanded, errstr))
+  if (  !expand_check(state->certificate, US"tls_certificate", &expanded, errstr)
+     || f.expand_string_forcedfail)
+    {
+    if (f.expand_string_forcedfail)
+      *errstr = US"expansion of tls_certificate failed";
     return DEFER;
+    }
 
   if (expanded)
     if (state->is_server)
@@ -1622,9 +1627,14 @@ else
       if ((err = tls_add_certfile(sctx, state, expanded, errstr)))
 	return err;
 
-  if (  state->privatekey
-     && !expand_check(state->privatekey, US"tls_privatekey", &expanded, errstr))
+  if (     state->privatekey
+        && !expand_check(state->privatekey, US"tls_privatekey", &expanded, errstr)
+     || f.expand_string_forcedfail)
+    {
+    if (f.expand_string_forcedfail)
+      *errstr = US"expansion of tls_privatekey failed";
     return DEFER;
+    }
 
   /* If expansion was forced to fail, key_expanded will be NULL. If the result
   of the expansion is an empty string, ignore it also, and assume the private
@@ -2201,13 +2211,13 @@ per https://www.openssl.org/docs/manmaster/man3/SSL_client_hello_cb_fn.html
 
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
 static int
-tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg)
+tls_servername_cb(SSL * s, int * ad ARG_UNUSED, void * arg)
 {
-const char *servername = SSL_get_servername(s, TLSEXT_NAMETYPE_host_name);
-exim_openssl_state_st *state = (exim_openssl_state_st *) arg;
+const char * servername = SSL_get_servername(s, TLSEXT_NAMETYPE_host_name);
+exim_openssl_state_st * state = (exim_openssl_state_st *) arg;
 int rc;
 int old_pool = store_pool;
-uschar * dummy_errstr;
+uschar * errstr;
 
 if (!servername)
   return SSL_TLSEXT_ERR_OK;
@@ -2227,7 +2237,7 @@ if (!reexpand_tls_files_for_sni)
 not confident that memcpy wouldn't break some internal reference counting.
 Especially since there's a references struct member, which would be off. */
 
-if (lib_ctx_new(&server_sni, NULL, &dummy_errstr) != OK)
+if (lib_ctx_new(&server_sni, NULL, &errstr) != OK)
   goto bad;
 
 /* Not sure how many of these are actually needed, since SSL object
@@ -2247,8 +2257,8 @@ already exists.  Might even need this selfsame callback, for reneg? */
   SSL_CTX_set_tlsext_servername_arg(server_sni, state);
  }
 
-if (  !init_dh(server_sni, state->dhparam, &dummy_errstr)
-   || !init_ecdh(server_sni, &dummy_errstr)
+if (  !init_dh(server_sni, state->dhparam, &errstr)
+   || !init_ecdh(server_sni, &errstr)
    )
   goto bad;
 
@@ -2267,7 +2277,7 @@ if (state->u_ocsp.server.file)
   {
   uschar * v_certs = tls_verify_certificates;
   if ((rc = setup_certs(server_sni, &v_certs, tls_crl, NULL,
-			&dummy_errstr)) != OK)
+			&errstr)) != OK)
     goto bad;
 
   if (v_certs && *v_certs)
@@ -2276,14 +2286,16 @@ if (state->u_ocsp.server.file)
 
 /* do this after setup_certs, because this can require the certs for verifying
 OCSP information. */
-if ((rc = tls_expand_session_files(server_sni, state, &dummy_errstr)) != OK)
+if ((rc = tls_expand_session_files(server_sni, state, &errstr)) != OK)
   goto bad;
 
 DEBUG(D_tls) debug_printf("Switching SSL context.\n");
 SSL_set_SSL_CTX(s, server_sni);
 return SSL_TLSEXT_ERR_OK;
 
-bad: return SSL_TLSEXT_ERR_ALERT_FATAL;
+bad:
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s", errstr);
+  return SSL_TLSEXT_ERR_ALERT_FATAL;
 }
 #endif /* EXIM_HAVE_OPENSSL_TLSEXT */
 

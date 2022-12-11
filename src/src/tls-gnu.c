@@ -398,7 +398,8 @@ tls_error_gnu(exim_gnutls_state_st * state, const uschar *prefix, int err,
 {
 return tls_error(prefix,
   state && err == GNUTLS_E_FATAL_ALERT_RECEIVED
-  ? US gnutls_alert_get_name(gnutls_alert_get(state->session))
+  ? string_sprintf("rxd alert: %s",
+		  US gnutls_alert_get_name(gnutls_alert_get(state->session)))
   : US gnutls_strerror(err),
   state ? state->host : NULL,
   errstr);
@@ -1293,7 +1294,7 @@ while (cfile = string_nextinlist(&clist, &csep, NULL, 0))
 
   if (!(kfile = string_nextinlist(&klist, &ksep, NULL, 0)))
     return tls_error(US"cert/key setup: out of keys", NULL, NULL, errstr);
-  else if ((rc = tls_add_certfile(state, NULL, cfile, kfile, errstr)) > 0)
+  else if ((rc = tls_add_certfile(state, NULL, cfile, kfile, errstr)) != OK)
     return rc;
   else
     {
@@ -1810,8 +1811,13 @@ D-H generation. */
 
 if (!state->lib_state.conn_certs)
   {
-  if (!Expand_check_tlsvar(tls_certificate, errstr))
+  if (  !Expand_check_tlsvar(tls_certificate, errstr)
+     || f.expand_string_forcedfail)
+    {
+    if (f.expand_string_forcedfail)
+      *errstr = US"expansion of tls_certificate failed";
     return DEFER;
+    }
 
   /* certificate is mandatory in server, optional in client */
 
@@ -1823,8 +1829,14 @@ if (!state->lib_state.conn_certs)
     else
       DEBUG(D_tls) debug_printf("TLS: no client certificate specified; okay\n");
 
-  if (state->tls_privatekey && !Expand_check_tlsvar(tls_privatekey, errstr))
+  if (  state->tls_privatekey && !Expand_check_tlsvar(tls_privatekey, errstr)
+     || f.expand_string_forcedfail
+     )
+    {
+    if (f.expand_string_forcedfail)
+      *errstr = US"expansion of tls_privatekey failed";
     return DEFER;
+    }
 
   /* tls_privatekey is optional, defaulting to same file as certificate */
 
@@ -1866,7 +1878,11 @@ if (!state->lib_state.conn_certs)
 			      tls_ocsp_file,
 #endif
 			      errstr)
-       )  ) return rc;
+       )  )
+      {
+      DEBUG(D_tls) debug_printf("load-cert: '%s'\n", *errstr);
+      return rc;
+      }
     }
   }
 else
@@ -2710,11 +2726,12 @@ if ((rc = tls_expand_session_files(state, &dummy_errstr)) != OK)
   {
   /* If the setup of certs/etc failed before handshake, TLS would not have
   been offered.  The best we can do now is abort. */
-  return GNUTLS_E_APPLICATION_ERROR_MIN;
+  DEBUG(D_tls) debug_printf("expansion for SNI-dependent session files failed\n");
+  return GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE;
   }
 
 rc = tls_set_remaining_x509(state, &dummy_errstr);
-if (rc != OK) return GNUTLS_E_APPLICATION_ERROR_MIN;
+if (rc != OK) return GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE;
 
 return 0;
 }

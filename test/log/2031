@@ -1,17 +1,35 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER@test.ex R=client T=send_to_server1 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for normal@test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 => normal@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for abcd@test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => abcd@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for alternate@test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => alternate@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for badkey@test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 == badkey@test.ex R=client T=send_to_server defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (gnutls_handshake): rxd alert: Internal error
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for noneistkeyfile@test.ex
+1999-03-02 09:44:33 10HmbC-0005vi-00 == noneistkeyfile@test.ex R=client T=send_to_server defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (gnutls_handshake): rxd alert: Internal error
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for expansionfailkey@test.ex
+1999-03-02 09:44:33 10HmbD-0005vi-00 == expansionfailkey@test.ex R=client T=send_to_server defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (gnutls_handshake): rxd alert: Internal error
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for badcert@test.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 == badcert@test.ex R=client T=send_to_server defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (gnutls_handshake): rxd alert: Internal error
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for nonexistcertfile@test.ex
+1999-03-02 09:44:33 10HmbF-0005vi-00 == nonexistcertfile@test.ex R=client T=send_to_server defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (gnutls_handshake): rxd alert: Internal error
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for expansionfailedcert@test.ex
+1999-03-02 09:44:33 10HmbG-0005vi-00 == expansionfailedcert@test.ex R=client T=send_to_server defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (gnutls_handshake): rxd alert: Internal error
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 SNI <fred>
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=fred S=sss id=E10HmaX-0005vi-00@myhost.test.ex for CALLER@test.ex
-1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <CALLER@test.ex> R=server
+1999-03-02 09:44:33 SNI <normal>
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=normal S=sss id=E10HmaX-0005vi-00@myhost.test.ex for normal@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <normal@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 SNI <bill>
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=bill S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for abcd@test.ex
-1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <abcd@test.ex> R=server
+1999-03-02 09:44:33 SNI <alternate>
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=alternate S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for alternate@test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <alternate@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (gnutls_handshake): The requested data were not available.
+1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (gnutls_handshake): The requested data were not available.
+1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (gnutls_handshake): The requested data were not available.
+1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (gnutls_handshake): The requested data were not available.
+1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (gnutls_handshake): The requested data were not available.
+1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (gnutls_handshake): The requested data were not available.

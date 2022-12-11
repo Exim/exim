@@ -17,13 +17,34 @@ remote_max_parallel = 1
 
 tls_advertise_hosts = *
 
-tls_certificate = DIR/aux-fixed/${if eq {$tls_in_sni}{bill} \
-	    {exim-ca/example.com/server1.example.com/server1.example.com.pem} \
-	    {cert1} }
+tls_certificate = DIR/aux-fixed/${if inlist {$tls_in_sni}{ : normal : badkey : noneistkeyfile : expansionfailkey} \
+	    {cert1} \
+	    {${if eq {$tls_in_sni}{alternate} \
+	      {exim-ca/example.com/server1.example.com/server1.example.com.pem} \
+	      {${if eq {$tls_in_sni}{badcert} \
+		{exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key} \
+		{${if eq {$tls_in_sni}{nonexistcertfile} \
+		  {nonexistent_file} \
+		  fail \
+		} } \
+	      } } \
+	    } } \
+			}
 
-tls_privatekey = DIR/aux-fixed/${if eq {$tls_in_sni}{bill} \
-	    {exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key} \
-	    {cert1} }
+tls_privatekey = DIR/aux-fixed/${if inlist {$tls_in_sni}{ : normal : badcert : nonexistcertfile : expansionfailedcert} \
+	    {cert1} \
+	    {${if eq {$tls_in_sni}{alternate} \
+	      {exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key} \
+	      {${if eq {$tls_in_sni}{badkey} \
+		{cert2} \
+		{${if eq {$tls_in_sni}{noneistkeyfile} \
+		  {nonexist_file} \
+		  fail \
+		} } \
+	      } } \
+	    } } \
+			}
+
 
 # ------ ACL ------
 
@@ -40,7 +61,7 @@ begin routers
 client:
   driver = accept
   condition = ${if !eq {SERVER}{server}}
-  transport = send_to_server${if eq{$local_part}{abcd}{2}{1}}
+  transport = send_to_server_${if inlist {$local_part}{normal} {1}{2}}
 
 server:
   driver = redirect
@@ -51,28 +72,27 @@ server:
 
 begin transports
 
-send_to_server1:
-  driver = smtp
+send_to_server_1:
+  driver =		smtp
   allow_localhost
-  hosts = HOSTIPV4
-  port = PORT_D
+  hosts =		HOSTIPV4
+  port =		PORT_D
   hosts_try_fastopen =	:
-  tls_sni = fred
-  hosts_require_tls = *
+  hosts_require_tls =	*
+  tls_sni =		${local_part}
   tls_verify_certificates = DIR/aux-fixed/cert1
   tls_verify_cert_hostnames = :
 
-send_to_server2:
-  driver = smtp
+send_to_server_2:
+  driver =		smtp
   allow_localhost
-  hosts = HOSTIPV4
-  port = PORT_D
+  hosts =		HOSTIPV4
+  port =		PORT_D
   hosts_try_fastopen =	:
-  tls_sni = bill
-  hosts_require_tls = *
+  hosts_require_tls =	*
+  tls_sni =		${local_part}
   tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem
   tls_verify_cert_hostnames = :
-
 
 # ----- Retry -----
 

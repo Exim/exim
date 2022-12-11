@@ -11763,8 +11763,8 @@ Case and collation order are defined per the system C locale.
 SRS decode.  See SECT &<<SECTSRS>>& for details.
 
 
-.vitem &*inlist&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*& &&&
-       &*inlisti&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
+.vitem &*inlist&~{*&<&'subject'&>&*}{*&<&'list'&>&*}*& &&&
+       &*inlisti&~{*&<&'subject'&>&*}{*&<&'list'&>&*}*&
 .cindex "string" "comparison"
 .cindex "list" "iterative conditions"
 Both strings are expanded; the second string is treated as a list of simple
