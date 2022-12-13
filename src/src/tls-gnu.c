@@ -379,7 +379,7 @@ Argument:
             the connected host if setting up a client
   errstr    pointer to returned error string
 
-Returns:    OK/DEFER/FAIL
+Returns:    DEFER/FAIL
 */
 
 static int
@@ -392,6 +392,7 @@ return host ? FAIL : DEFER;
 }
 
 
+/* Returns:    DEFER/FAIL */
 static int
 tls_error_gnu(exim_gnutls_state_st * state, const uschar *prefix, int err,
   uschar ** errstr)
@@ -1271,6 +1272,7 @@ DEBUG(D_tls)
   debug_printf("TLS: basic cred init, %s\n", server ? "server" : "client");
 }
 
+/* Returns OK/DEFER/FAIL */
 static int
 creds_load_server_certs(exim_gnutls_state_st * state, const uschar * cert,
   const uschar * pkey, const uschar * ocsp, uschar ** errstr)
@@ -1294,7 +1296,7 @@ while (cfile = string_nextinlist(&clist, &csep, NULL, 0))
 
   if (!(kfile = string_nextinlist(&klist, &ksep, NULL, 0)))
     return tls_error(US"cert/key setup: out of keys", NULL, NULL, errstr);
-  else if ((rc = tls_add_certfile(state, NULL, cfile, kfile, errstr)) != OK)
+  else if ((rc = tls_add_certfile(state, NULL, cfile, kfile, errstr)) > OK)
     return rc;
   else
     {
@@ -1372,7 +1374,7 @@ while (cfile = string_nextinlist(&clist, &csep, NULL, 0))
       }
 #endif /* DISABLE_OCSP */
     }
-return 0;
+return OK;
 }
 
 static int
@@ -1382,7 +1384,7 @@ creds_load_client_certs(exim_gnutls_state_st * state, const host_item * host,
 int rc = tls_add_certfile(state, host, cert, pkey, errstr);
 if (rc > 0) return rc;
 DEBUG(D_tls) debug_printf("TLS: cert/key registered\n");
-return 0;
+return OK;
 }
 
 static int
