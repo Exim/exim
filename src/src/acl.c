@@ -223,7 +223,7 @@ static condition_def conditions[] = {
   },
   [ACLC_ENCRYPTED] =		{ US"encrypted",	FALSE, FALSE,
 				  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START |
-				    ACL_BIT_HELO,
+				    ACL_BIT_CONNECT
   },
 
   [ACLC_ENDPASS] =		{ US"endpass",	TRUE, TRUE,	0 },

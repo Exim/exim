@@ -75,6 +75,12 @@ JH/16 Move running the smtp connect ACL to before, for TLS-on-connect ports,
       Also, avoid sending any SMTP fail response for either the connect ACL
       or host_reject_connection, for TLS-on-connect ports.
 
+JH/17 Permit the ACL "encrypted" condition to be used in a HELO/EHLO ACL,
+      Previously this was not permitted, but it makes reasonable sense.
+      While there, restore a restriction on using it from a connect ACL; given
+      the change JH/16 it could only return false (and before 4.91 was not
+      permitted).
+
 
 Exim version 4.96
 -----------------
