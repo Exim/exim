@@ -128,8 +128,15 @@ killdaemon
 exim -DCRL=DIR/aux-fixed/exim-ca/example.com/CA/crl.v2.pem -DSERVER=server -bd -oX PORT_D
 ****
 ### Otherwise good but revoked certificate, certificate required
+# The trace for this test appears in the mainlog
+# - but the stdout from the client is a problem: the server sends a TLS ALERT. If the client sees that early enough
+# then it says that + "Failed to start TLS".  But if it's later, it says "Succeeded in starting TLS"
+# and only another command from the client elicits anything from the server (eg "554 Security failure").
+# How can we test this?
+# An option on client to be quiet about tls problems.
+#
 # GnuTLS seems to not mind the lack of CRLs for the nonleaf certs in the chain, unlike under OpenSSL
-client-gnutls HOSTIPV4 PORT_D aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.com.chain.pem aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.com.unlocked.key
+client-gnutls -tls-quiet HOSTIPV4 PORT_D aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.com.chain.pem aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.com.unlocked.key
 ??? 220
 ehlo rhu7.barb
 ??? 250-
@@ -138,10 +145,12 @@ ehlo rhu7.barb
 ??? 250-
 ??? 250-
 ??? 250
-starttls
+STARTTLS
 ??? 220
-helo test
-??? 554
+NOP
+??? 554 Security failure
+QUIT
+220
 ****
 ### Revoked certificate, certificate optional at TLS time, reject at ACL time
 client-gnutls 127.0.0.1 PORT_D aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.com.chain.pem aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.com.unlocked.key

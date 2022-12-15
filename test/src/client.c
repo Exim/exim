@@ -137,6 +137,7 @@ static const int comp_priority[16] = { GNUTLS_COMP_NULL, 0 };
 #ifdef HAVE_TLS
 char * ocsp_stapling = NULL;
 char * pri_string = NULL;
+int tls_quiet = 0;
 #endif
 
 
@@ -739,7 +740,7 @@ nextinput:
 	  srv->tls_active = rc >= 0;
 	  alarm(0);
 
-	  if (!srv->tls_active) printf("%s\n", gnutls_strerror(rc));
+	  if (!srv->tls_active && !tls_quiet) printf("gnutls_handshake: %s\n", gnutls_strerror(rc));
 
 	  /* look for an error on the TLS conn */
 	  FD_ZERO(&rfd);
@@ -754,7 +755,7 @@ nextinput:
 	      DEBUG { printf("gnutls_record_recv: %s\n", gnutls_strerror(rc)); fflush(stdout); }
 	      if (rc == GNUTLS_E_INTERRUPTED || rc == GNUTLS_E_AGAIN)
 		goto retry2;
-	      printf("%s\n", gnutls_strerror(rc));
+	      if (!tls_quiet) printf("gnutls_record_recv: %s\n", gnutls_strerror(rc));
 	      srv->tls_active = FALSE;
 	      }
 	    DEBUG { printf("gnutls_record_recv: %d\n", rc); fflush(stdout); }
@@ -762,15 +763,16 @@ nextinput:
 	  }
 # endif	/*HAVE_GNUTLS*/
 
-        if (!srv->tls_active)
-          {
-          printf("Failed to start TLS\n");
-          fflush(stdout);
-          }
+        if (!tls_quiet)
+          if (!srv->tls_active)
+            {
+            printf("Failed to start TLS\n");
+            fflush(stdout);
+            }
 
 # ifdef HAVE_OPENSSL
-	else if (ocsp_stapling)
-	  printf("Succeeded in starting TLS (with OCSP)\n");
+	  else if (ocsp_stapling)
+	    printf("Succeeded in starting TLS (with OCSP)\n");
 # endif
 
 # ifdef HAVE_GNUTLS
@@ -965,6 +967,7 @@ Usage: client\n"
 #ifdef HAVE_TLS
 "\
           [-tls-on-connect]\n\
+	  [-tls-quiet]\n\
           [-ocsp]\n"
 # ifdef HAVE_GNUTLS
 "\
@@ -1020,12 +1023,17 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
     puts(HELP_MESSAGE);
     exit(0);
     }
+#ifdef HAVE_TLS
   if (strcmp(argv[argi], "-tls-on-connect") == 0)
     {
     tls_on_connect = 1;
     argi++;
     }
-#ifdef HAVE_TLS
+  else if (strcmp(argv[argi], "-tls-quiet") == 0)
+    {
+    tls_quiet = 1;
+    argi++;
+    }
   else if (strcmp(argv[argi], "-ocsp") == 0)
     {
     if (argc < ++argi + 1)
@@ -1045,8 +1053,7 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
       }
     pri_string = argv[argi++];
     }
-#endif
-
+# endif
 #endif
   else if (argv[argi][1] == 't' && isdigit(argv[argi][2]))
     {
@@ -1346,15 +1353,16 @@ if (tls_on_connect)
   }
 #endif
 
-  if (!srv.tls_active)
-    printf("Failed to start TLS\n");
+  if (!tls_quiet)
+    if (!srv.tls_active)
+      printf("Failed to start TLS\n");
 #if defined(HAVE_GNUTLS) && defined(HAVE_GNUTLS_OCSP)
-  else if (  ocsp_stapling
-	  && gnutls_ocsp_status_request_is_checked(tls_session, 0) == 0)
-    printf("Failed to verify certificate status\n");
+    else if (  ocsp_stapling
+	    && gnutls_ocsp_status_request_is_checked(tls_session, 0) == 0)
+      printf("Failed to verify certificate status\n");
 #endif
-  else
-    printf("Succeeded in starting TLS%s\n", ocsp_stapling ? " (with OCSP)":"");
+    else
+      printf("Succeeded in starting TLS%s\n", ocsp_stapling ? " (with OCSP)":"");
   }
 #endif
 
