@@ -38906,7 +38906,7 @@ selection marked by asterisks:
 .irow &`etrn`&				*	"ETRN commands"
 .irow &`host_lookup_failed`&		*	"as it says"
 .irow &`ident_timeout`&			&nbsp; "timeout for ident connection"
-.irow &`incoming_interface`&		&nbsp; "local interface on <= and => lines"
+.irow &`incoming_interface`&		&nbsp; "local interface &amp; port on <= and => lines"
 .irow &`incoming_port`&			&nbsp; "remote port on <= lines"
 .irow &`lost_incoming_connection`&	*	"as it says (includes timeouts)"
 .irow &`millisec`&			&nbsp; "millisecond timestamps and RT,QT,DT,D times"
