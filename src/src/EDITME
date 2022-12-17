@@ -648,6 +648,29 @@ DISABLE_MAL_MKS=yes
 
 
 #------------------------------------------------------------------------------
+# Which DBM library to use.  If you do not specify a specific here, you get
+# the platform default.  Uncomment the pair of lines as preferred.
+# Note: when changing an installation from one DB type to another all the
+# hints-DB files, in spool/db, should be removed.
+
+# gdbm in native mode
+# USE_GDBM = yes
+# DBMLIB = -lgdbm
+
+# gdbm in Berkeley-DB compatibility mode
+# USE_NDBM = yes
+# DBMLIB = -lgdbm -lgdbm_compat
+
+# tdb
+# USE_TDB = yes
+# DBMLIB = -ltdb
+
+# Berkeley DB
+# USE_DB = yes
+# DBMLIB = -ldb
+
+
+#------------------------------------------------------------------------------
 # Although Exim is normally a setuid program, owned by root, it refuses to run
 # local deliveries as root by default. There is a runtime option called
 # "never_users" which lists the users that must never be used for local
