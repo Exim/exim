@@ -7803,7 +7803,8 @@ connection timeout (the system timeout is used), no user or password, no limit
 on the number of entries returned, and no time limit on queries.
 
 When a DN is quoted in the USER= setting for LDAP authentication, Exim
-removes any URL quoting that it may contain before passing it LDAP. Apparently
+removes any URL quoting that it may contain before passing it to the LDAP library.
+Apparently
 some libraries do this for themselves, but some do not. Removing the URL
 quoting has two advantages:
 
