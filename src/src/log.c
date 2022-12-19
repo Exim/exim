@@ -806,7 +806,7 @@ log_write(unsigned int selector, int flags, const char *format, ...)
 {
 int paniclogfd;
 ssize_t written_len;
-gstring gs = { .size = LOG_BUFFER_SIZE-1, .ptr = 0, .s = log_buffer };
+gstring gs = { .size = LOG_BUFFER_SIZE-2, .ptr = 0, .s = log_buffer };
 gstring * g;
 va_list ap;
 
@@ -952,11 +952,10 @@ DEBUG(D_any|D_v)
     }
   va_end(ap);
 
-  g->size = LOG_BUFFER_SIZE;
   g = string_catn(g, US"\n", 1);
   debug_printf("%s", string_from_gstring(g));
 
-  gs.size = LOG_BUFFER_SIZE-1;	/* Having used the buffer for debug output, */
+  gs.size = LOG_BUFFER_SIZE-2;	/* Having used the buffer for debug output, */
   gs.ptr = 0;			/* reset it for the real use. */
   gs.s = log_buffer;
   }
@@ -1038,6 +1037,8 @@ if (  flags & LOG_RECIPIENTS
     }
   }
 
+/* actual size, now we are placing the newline (and space for NUL) */
+gs.size = LOG_BUFFER_SIZE;
 g = string_catn(g, US"\n", 1);
 string_from_gstring(g);
 

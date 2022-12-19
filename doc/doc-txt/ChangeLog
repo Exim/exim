@@ -81,6 +81,11 @@ JH/17 Permit the ACL "encrypted" condition to be used in a HELO/EHLO ACL,
       the change JH/16 it could only return false (and before 4.91 was not
       permitted).
 
+JH/18 Fix a fencepost error in logging.  Previously (since 4.92) when a log line
+      was exactly sized compared to the log buffer, a crash occurred with the
+      misleading message "bad memory reference; pool not found".
+      Found and traced by Jasen Betts.
+
 
 Exim version 4.96
 -----------------
