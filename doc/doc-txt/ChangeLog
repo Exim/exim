@@ -27,6 +27,11 @@ JH/34 Bug 3013: Fix use of $recipients within arguments for ${run...}.
 JH/39 Bug 3023: Fix crash induced by some combinations of zero-length strings
       and ${tr...}.  Found and diagnosed by Heiko Schlichting.
 
+JH/18 Fix a fencepost error in logging.  Previously (since 4.92) when a log line
+      was exactly sized compared to the log buffer, a crash occurred with the
+      misleading message "bad memory reference; pool not found".
+      Found and traced by Jasen Betts.
+
 
 Exim version 4.96.1
 -------------------
