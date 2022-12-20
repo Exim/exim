@@ -20,6 +20,7 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
+OCSP status response: good signature
 Succeeded in starting TLS (with OCSP)
 >>> helo test
 ??? 250

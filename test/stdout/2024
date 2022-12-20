@@ -20,7 +20,7 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-A TLS fatal alert has been received.
+gnutls_record_recv: A TLS fatal alert has been received.
 Failed to start TLS
 >>> nop
 ????554
