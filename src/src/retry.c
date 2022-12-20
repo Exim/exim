@@ -518,8 +518,8 @@ Returns:        nothing
 */
 
 void
-retry_update(address_item **addr_defer, address_item **addr_failed,
-  address_item **addr_succeed)
+retry_update(address_item ** addr_defer, address_item ** addr_failed,
+  address_item ** addr_succeed)
 {
 open_db dbblock;
 open_db *dbm_file = NULL;
@@ -533,11 +533,10 @@ to the failed chain if they have timed out. */
 
 for (int i = 0; i < 3; i++)
   {
-  address_item *endaddr, *addr;
-  address_item *last_first = NULL;
-  address_item **paddr = i==0 ? addr_succeed :
-    i==1 ? addr_failed : addr_defer;
-  address_item **saved_paddr = NULL;
+  address_item * endaddr, *addr;
+  address_item * last_first = NULL;
+  address_item ** paddr = i==0 ? addr_succeed : i==1 ? addr_failed : addr_defer;
+  address_item ** saved_paddr = NULL;
 
   DEBUG(D_retry) debug_printf("%s addresses:\n",
     i == 0 ? "Succeeded" : i == 1 ? "Failed" : "Deferred");

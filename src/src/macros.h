@@ -1125,4 +1125,15 @@ typedef unsigned mcs_flags;
 #define MCS_AT_SPECIAL		BIT(2)	/* recognize @, @[], etc. */
 #define MCS_CACHEABLE		BIT(3)	/* no dynamic expansions used for pattern */
 
+/* Flags for open() */
+#ifdef O_CLOEXEC
+# define EXIM_CLOEXEC O_CLOEXEC
+#else
+# define EXIM_CLOEXEC 0
+#endif
+#ifdef O_NOFOLLOW
+# define EXIM_NOFOLLOW O_NOFOLLOW
+#else
+# define EXIM_NOFOLLOW 0
+#endif
 /* End of macros.h */

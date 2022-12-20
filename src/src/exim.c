@@ -841,6 +841,7 @@ exim_fail(const char * fmt, ...)
 va_list ap;
 va_start(ap, fmt);
 vfprintf(stderr, fmt, ap);
+va_end(ap);
 exit(EXIT_FAILURE);
 }
 
@@ -1224,13 +1225,11 @@ DEBUG(D_any)
 #if defined(__clang__)
   g = string_fmt_append(g, "Compiler: CLang [%s]\n", __clang_version__);
 #elif defined(__GNUC__)
-  g = string_fmt_append(g, "Compiler: GCC [%s]\n",
 # ifdef __VERSION__
-      __VERSION__
+  g = string_fmt_append(g, "Compiler: GCC [%s]\n", __VERSION__);
 # else
-      "? unknown version ?"
+  g = string_fmt_append(g, "Compiler: GCC [%s]\n", "? unknown version ?";
 # endif
-      );
 #else
   g = string_cat(g, US"Compiler: <unknown>\n");
 #endif

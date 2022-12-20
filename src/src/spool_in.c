@@ -64,13 +64,7 @@ for (int i = 0; i < 2; i++)
    * No -D file inside the spool area should be a symlink.
    */
   if ((fd = Uopen(fname,
-#ifdef O_CLOEXEC
-		      O_CLOEXEC |
-#endif
-#ifdef O_NOFOLLOW
-		      O_NOFOLLOW |
-#endif
-		      O_RDWR | O_APPEND, 0)) >= 0)
+		  EXIM_CLOEXEC | EXIM_NOFOLLOW | O_RDWR | O_APPEND, 0)) >= 0)
     break;
   save_errno = errno;
   if (errno == ENOENT)

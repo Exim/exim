@@ -912,7 +912,7 @@ Returns:     the number of ints used
 */
 
 int
-host_aton(const uschar *address, int *bin)
+host_aton(const uschar * address, int * bin)
 {
 int x[4];
 int v4offset = 0;
@@ -924,13 +924,10 @@ supported. */
 
 if (Ustrchr(address, ':') != NULL)
   {
-  const uschar *p = address;
-  const uschar *component[8];
+  const uschar * p = address;
+  const uschar * component[8];
   BOOL ipv4_ends = FALSE;
-  int ci = 0;
-  int nulloffset = 0;
-  int v6count = 8;
-  int i;
+  int ci = 0, nulloffset = 0, v6count = 8, i;
 
   /* If the address starts with a colon, it will start with two colons.
   Just lose the first one, which will leave a null first component. */
@@ -942,7 +939,7 @@ if (Ustrchr(address, ':') != NULL)
   overlooked; to guard against that happening again, check here and crash if
   there are too many components. */
 
-  while (*p != 0 && *p != '%')
+  while (*p && *p != '%')
     {
     int len = Ustrcspn(p, ":%");
     if (len == 0) nulloffset = ci;

@@ -11,6 +11,8 @@
 # include <signal.h>
 # include <stdio.h>
 # include <time.h>
+#else
+# define DEBUG(x) if (debug_selector & (x))
 #endif
 
 #ifndef CS
@@ -50,9 +52,9 @@ sigemptyset(&(act.sa_mask));
 act.sa_flags = SA_RESTART;
 sigaction(sig, &act, NULL);
 
-#ifdef STAND_ALONE
+# ifdef STAND_ALONE
 printf("Used SA_RESTART\n");
-#endif
+# endif
 
 /* SunOS4 and Ultrix default to non-interruptable signals, with SV_INTERRUPT
 for making them interruptable. This seems to be a dying fashion. */
@@ -60,9 +62,9 @@ for making them interruptable. This seems to be a dying fashion. */
 #elif defined SV_INTERRUPT
 signal(sig, handler);
 
-#ifdef STAND_ALONE
+# ifdef STAND_ALONE
 printf("Used default signal()\n");
-#endif
+# endif
 
 
 /* If neither SA_RESTART nor SV_INTERRUPT is available we don't know how to
@@ -71,9 +73,9 @@ set up a restarting signal, so simply suppress the facility. */
 #else
 signal(sig, SIG_IGN);
 
-#ifdef STAND_ALONE
+# ifdef STAND_ALONE
 printf("Used SIG_IGN\n");
-#endif
+# endif
 
 #endif
 }
@@ -361,9 +363,9 @@ here as there is the -hal variant, and other systems might follow this road one
 day. */
 
 #if !defined(OS_LOAD_AVERAGE) && defined(HAVE_KSTAT)
-#define OS_LOAD_AVERAGE
+# define OS_LOAD_AVERAGE
 
-#include <kstat.h>
+# include <kstat.h>
 
 int
 os_getloadavg(void)
@@ -397,7 +399,7 @@ return avg;
 #if !defined(OS_LOAD_AVERAGE) && defined(HAVE_DEV_KMEM)
 #define OS_LOAD_AVERAGE
 
-#include <nlist.h>
+# include <nlist.h>
 
 static int  avg_kd = -1;
 static long avg_offset;
@@ -481,7 +483,7 @@ Returns:      a chain of ip_address_items, each pointing to a textual
 
 #ifdef HAVE_GETIFADDRS
 
-#include <ifaddrs.h>
+# include <ifaddrs.h>
 
 ip_address_item *
 os_common_find_running_interfaces(void)
@@ -630,13 +632,13 @@ what we want to know. */
 
 if ((vs = socket(FAMILY, SOCK_DGRAM, 0)) < 0)
   {
-  #if HAVE_IPV6
+#if HAVE_IPV6
   DEBUG(D_interface)
     debug_printf("Unable to create IPv6 socket to find interface addresses:\n  "
       "error %d %s\nTrying for an IPv4 socket\n", errno, strerror(errno));
   vs = socket(AF_INET, SOCK_DGRAM, 0);
   if (vs < 0)
-  #endif
+#endif
   log_write(0, LOG_PANIC_DIE, "Unable to create IPv4 socket to find interface "
     "addresses: %d %s", errno, strerror(errno));
   }
@@ -816,7 +818,7 @@ programmer creates their own structs. */
 
 #if !defined(OS_GET_DNS_RESOLVER_RES) && !defined(COMPILE_UTILITY)
 
-#include <resolv.h>
+# include <resolv.h>
 
 /* confirmed that res_state is typedef'd as a struct* on BSD and Linux, will
 find out how unportable it is on other OSes, but most resolver implementations

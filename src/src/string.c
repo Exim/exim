@@ -1783,7 +1783,7 @@ while (fgets(CS buffer, sizeof(buffer), stdin) != NULL)
   int llflag = 0;
   int n = 0;
   int count;
-  int countset = 0;
+  BOOL countset = FASE;
   uschar format[256];
   uschar outbuf[256];
   uschar *s;
@@ -1825,7 +1825,7 @@ while (fgets(CS buffer, sizeof(buffer), stdin) != NULL)
     else if (Ustrcmp(ss, "*") == 0)
       {
       args[n++] = (void *)(&count);
-      countset = 1;
+      countset = TRUE;
       }
 
     else

@@ -342,13 +342,7 @@ if (Ustrstr(filename, US"/../"))
 for (int i = 2; i > 0; i--)
   {
   int fd = Uopen(filename,
-#ifdef O_CLOEXEC
-    O_CLOEXEC |
-#endif
-#ifdef O_NOFOLLOW
-    O_NOFOLLOW |
-#endif
-		O_WRONLY|O_APPEND|O_CREAT, mode);
+		EXIM_CLOEXEC | EXIM_NOFOLLOW | O_WRONLY|O_APPEND|O_CREAT, mode);
   if (fd >= 0)
     {
     /* Set the close-on-exec flag and change the owner to the exim uid/gid (this
@@ -4705,17 +4699,13 @@ all pipes, so I do not see a reason to use non-blocking IO here
     {
     uschar * fname = spool_fname(US"input", message_subdir, message_id, US"-D");
 
-    if ((deliver_datafile = Uopen(fname,
-#ifdef O_CLOEXEC
-					O_CLOEXEC |
-#endif
-					O_RDWR | O_APPEND, 0)) < 0)
+    if (  (deliver_datafile = Uopen(fname, EXIM_CLOEXEC | O_RDWR | O_APPEND, 0))
+	< 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed to reopen %s for remote "
         "parallel delivery: %s", fname, strerror(errno));
     }
 
-    /* Set the close-on-exec flag */
-#ifndef O_CLOEXEC
+#ifndef O_CLOEXEC			/* Set the close-on-exec flag */
     (void)fcntl(deliver_datafile, F_SETFD, fcntl(deliver_datafile, F_GETFD) |
       FD_CLOEXEC);
 #endif
@@ -5749,14 +5739,8 @@ Otherwise it might be needed again. */
   uschar * fname = spool_fname(US"input", message_subdir, id, US"-J");
   FILE * jread;
 
-  if (  (journal_fd = Uopen(fname, O_RDWR|O_APPEND
-#ifdef O_CLOEXEC
-				    | O_CLOEXEC
-#endif
-#ifdef O_NOFOLLOW
-				    | O_NOFOLLOW
-#endif
-	, SPOOL_MODE)) >= 0
+  if (  (journal_fd = Uopen(fname,
+	      O_RDWR|O_APPEND | EXIM_CLOEXEC | EXIM_NOFOLLOW, SPOOL_MODE)) >= 0
      && lseek(journal_fd, 0, SEEK_SET) == 0
      && (jread = fdopen(journal_fd, "rb"))
      )
@@ -7154,10 +7138,7 @@ if (addr_local || addr_remote)
     uschar * fname = spool_fname(US"input", message_subdir, id, US"-J");
 
     if ((journal_fd = Uopen(fname,
-#ifdef O_CLOEXEC
-			O_CLOEXEC |
-#endif
-			O_WRONLY|O_APPEND|O_CREAT|O_EXCL, SPOOL_MODE)) < 0)
+	      EXIM_CLOEXEC | O_WRONLY|O_APPEND|O_CREAT|O_EXCL, SPOOL_MODE)) < 0)
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't open journal file %s: %s",
 	fname, strerror(errno));

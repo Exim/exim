@@ -2550,6 +2550,7 @@ else switch(mode)
     anchor = NULL; /* silence an "unused" complaint */
     log_write(0, LOG_MAIN|LOG_PANIC_DIE,
       "internal ACL error: unknown ratelimit mode %d", mode);
+    /*NOTREACHED*/
     break;
   }
 

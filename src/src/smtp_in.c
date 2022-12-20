@@ -2680,32 +2680,32 @@ if (!f.sender_host_unknown)
 
 #if !HAVE_IPV6 && !defined(NO_IP_OPTIONS)
 
-  #ifdef GLIBC_IP_OPTIONS
-    #if (!defined __GLIBC__) || (__GLIBC__ < 2)
-    #define OPTSTYLE 1
-    #else
-    #define OPTSTYLE 2
-    #endif
-  #elif defined DARWIN_IP_OPTIONS
-    #define OPTSTYLE 2
-  #else
-    #define OPTSTYLE 3
-  #endif
+# ifdef GLIBC_IP_OPTIONS
+#  if (!defined __GLIBC__) || (__GLIBC__ < 2)
+#   define OPTSTYLE 1
+#  else
+#   define OPTSTYLE 2
+#  endif
+# elif defined DARWIN_IP_OPTIONS
+# define OPTSTYLE 2
+# else
+# define OPTSTYLE 3
+# endif
 
   if (!host_checking && !f.sender_host_notsocket)
     {
-    #if OPTSTYLE == 1
+# if OPTSTYLE == 1
     EXIM_SOCKLEN_T optlen = sizeof(struct ip_options) + MAX_IPOPTLEN;
     struct ip_options *ipopt = store_get(optlen, GET_UNTAINTED);
-    #elif OPTSTYLE == 2
+# elif OPTSTYLE == 2
     struct ip_opts ipoptblock;
     struct ip_opts *ipopt = &ipoptblock;
     EXIM_SOCKLEN_T optlen = sizeof(ipoptblock);
-    #else
+# else
     struct ipoption ipoptblock;
     struct ipoption *ipopt = &ipoptblock;
     EXIM_SOCKLEN_T optlen = sizeof(ipoptblock);
-    #endif
+# endif
 
     /* Occasional genuine failures of getsockopt() have been seen - for
     example, "reset by peer". Therefore, just log and give up on this
@@ -2735,19 +2735,19 @@ if (!f.sender_host_unknown)
 
     else if (optlen > 0)
       {
-      uschar *p = big_buffer;
-      uschar *pend = big_buffer + big_buffer_size;
-      uschar *adptr;
+      uschar * p = big_buffer;
+      uschar * pend = big_buffer + big_buffer_size;
+      uschar * adptr;
       int optcount;
       struct in_addr addr;
 
-      #if OPTSTYLE == 1
-      uschar *optstart = US (ipopt->__data);
-      #elif OPTSTYLE == 2
-      uschar *optstart = US (ipopt->ip_opts);
-      #else
-      uschar *optstart = US (ipopt->ipopt_list);
-      #endif
+# if OPTSTYLE == 1
+      uschar * optstart = US (ipopt->__data);
+# elif OPTSTYLE == 2
+      uschar * optstart = US (ipopt->ip_opts);
+# else
+      uschar * optstart = US (ipopt->ipopt_list);
+# endif
 
       DEBUG(D_receive) debug_printf("IP options exist\n");
 
@@ -2758,59 +2758,65 @@ if (!f.sender_host_unknown)
         switch (*opt)
           {
           case IPOPT_EOL:
-          opt = NULL;
-          break;
+	    opt = NULL;
+	    break;
 
           case IPOPT_NOP:
-          opt++;
-          break;
+	    opt++;
+	    break;
 
           case IPOPT_SSRR:
           case IPOPT_LSRR:
-          if (!string_format(p, pend-p, " %s [@%s",
-               (*opt == IPOPT_SSRR)? "SSRR" : "LSRR",
-               #if OPTSTYLE == 1
-               inet_ntoa(*((struct in_addr *)(&(ipopt->faddr))))))
-               #elif OPTSTYLE == 2
-               inet_ntoa(ipopt->ip_dst)))
-               #else
-               inet_ntoa(ipopt->ipopt_dst)))
-               #endif
-            {
-            opt = NULL;
-            break;
-            }
+	    if (!
+# if OPTSTYLE == 1
+	         string_format(p, pend-p, " %s [@%s",
+		 (*opt == IPOPT_SSRR)? "SSRR" : "LSRR",
+		 inet_ntoa(*((struct in_addr *)(&(ipopt->faddr)))))
+# elif OPTSTYLE == 2
+	         string_format(p, pend-p, " %s [@%s",
+		 (*opt == IPOPT_SSRR)? "SSRR" : "LSRR",
+		 inet_ntoa(ipopt->ip_dst))
+# else
+	         string_format(p, pend-p, " %s [@%s",
+		 (*opt == IPOPT_SSRR)? "SSRR" : "LSRR",
+		 inet_ntoa(ipopt->ipopt_dst))
+# endif
+	      )
+	      {
+	      opt = NULL;
+	      break;
+	      }
 
-          p += Ustrlen(p);
-          optcount = (opt[1] - 3) / sizeof(struct in_addr);
-          adptr = opt + 3;
-          while (optcount-- > 0)
-            {
-            memcpy(&addr, adptr, sizeof(addr));
-            if (!string_format(p, pend - p - 1, "%s%s",
-                  (optcount == 0)? ":" : "@", inet_ntoa(addr)))
-              {
-              opt = NULL;
-              break;
-              }
-            p += Ustrlen(p);
-            adptr += sizeof(struct in_addr);
-            }
-          *p++ = ']';
-          opt += opt[1];
-          break;
+	    p += Ustrlen(p);
+	    optcount = (opt[1] - 3) / sizeof(struct in_addr);
+	    adptr = opt + 3;
+	    while (optcount-- > 0)
+	      {
+	      memcpy(&addr, adptr, sizeof(addr));
+	      if (!string_format(p, pend - p - 1, "%s%s",
+		    (optcount == 0)? ":" : "@", inet_ntoa(addr)))
+		{
+		opt = NULL;
+		break;
+		}
+	      p += Ustrlen(p);
+	      adptr += sizeof(struct in_addr);
+	      }
+	    *p++ = ']';
+	    opt += opt[1];
+	    break;
 
           default:
-            {
-            if (pend - p < 4 + 3*opt[1]) { opt = NULL; break; }
-            Ustrcat(p, "[ ");
-            p += 2;
-            for (int i = 0; i < opt[1]; i++)
-              p += sprintf(CS p, "%2.2x ", opt[i]);
-            *p++ = ']';
-            }
-          opt += opt[1];
-          break;
+	      {
+	      if (pend - p < 4 + 3*opt[1]) { opt = NULL; break; }
+	      Ustrcat(p, "[ ");
+	      p += 2;
+	      for (int i = 0; i < opt[1]; i++)
+		p += sprintf(CS p, "%2.2x ", opt[i]);
+	      *p++ = ']';
+	      }
+	    opt += opt[1];
+	    break;
           }
 
       *p = 0;

@@ -408,7 +408,7 @@ Returns:    nothing
 */
 
 static void
-native_sha1_end(sha1 *base, const uschar *text, int length, uschar *digest)
+native_sha1_end(sha1 * base, const uschar * text, int length, uschar * digest)
 {
 uschar work[64];
 
@@ -426,7 +426,7 @@ out to 64, process it, and then set up the final chunk as 56 bytes of
 padding. If it has less than 56 bytes, we pad it out to 56 bytes as the
 final chunk. */
 
-memcpy(work, text, length);
+if (length) memcpy(work, text, length);
 work[length] = 0x80;
 
 if (length > 55)
