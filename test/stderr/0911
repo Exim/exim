@@ -264,10 +264,10 @@ LOG: MAIN
   permreject@test.ex: error ignored
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1242 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1241 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -334,7 +334,7 @@ all IP addresses skipped or deferred at least one address
 Leaving send_to_server transport
 LOG: MAIN
   == dataloss@test.ex R=client T=send_to_server defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined end of data
->>>>>>>>>>>>>>>> Exim pid=p1244 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1243 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=p1243 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1242 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

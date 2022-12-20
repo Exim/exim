@@ -342,7 +342,7 @@ return @yield;
 # into the same standard values throughout the data from a single test.
 # Message ids get this treatment (can't be made reliable for times), and
 # times in dumped retry databases are also handled in a special way, as are
-# incoming port numbers.
+# incoming port numbers and PIDs.
 
 # On entry to the subroutine, the file to write to is already opened with the
 # name MUNGED. The input file name is the only argument to the subroutine.
@@ -1077,7 +1077,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 	      /x;
 
     # Lines with a leading pid
-    s/^(\d+)\s(?!(?:previous message|in\s))/new_value($1, "p%s", \$next_pid) . ' '/e;
+    s/^(\d+)\s(?!(?:previous message|in\s|bytes remain in))/new_value($1, "p%s", \$next_pid) . ' '/e;
 
     # Debugging lines for Exim terminations and process-generation
 
