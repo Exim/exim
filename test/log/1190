@@ -2,9 +2,9 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 => a@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-0005vi-00 == b@test.ex R=client T=send_to_server defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (gnutls_handshake): rxd alert: No supported application protocol could be negotiated
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == b@test.ex R=client T=send_to_server defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbA-0005vi-00 == c@test.ex R=client T=send_to_server defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (gnutls_handshake): rxd alert: No supported application protocol could be negotiated
+1999-03-02 09:44:33 10HmbA-0005vi-00 == c@test.ex R=client T=send_to_server defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbB-0005vi-00 => d@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbC-0005vi-00"
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
