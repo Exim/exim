@@ -23,7 +23,7 @@ p1235 using ACL "delay4_accept"
 p1235 processing "accept" (TESTSUITE/test-config 24)
 p1235 check delay = 4s
 p1235 delay modifier requests 4-second delay
-p1236 SMTP accept process running
+1 SMTP accept process running
 Listening...
 p1235 accept: condition test succeeded in ACL "delay4_accept"
 p1235 end of ACL "delay4_accept": ACCEPT
@@ -32,23 +32,23 @@ p1235   SMTP connection from (test) [127.0.0.1] closed by QUIT
 p1235 >>>>>>>>>>>>>>>> Exim pid=p1235 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 child p1235 ended: status=0x0
   normal exit, 0
-p1237 SMTP accept processes now running
+0 SMTP accept processes now running
 Listening...
 Connection request from 127.0.0.1 port sssss
 LOG: smtp_connection MAIN
   SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
-p1238 Process p1238 is handling incoming connection from [127.0.0.1]
-p1238 Process p1238 is ready for new message
-p1238 using ACL "delay4_accept"
-p1238 processing "accept" (TESTSUITE/test-config 24)
-p1238 check delay = 4s
-p1238 delay modifier requests 4-second delay
-p1238 delay cancelled by peer close
-p1238 accept: condition test succeeded in ACL "delay4_accept"
-p1238 end of ACL "delay4_accept": ACCEPT
-p1238 LOG: lost_incoming_connection MAIN
-p1238   unexpected disconnection while reading SMTP command from (test) [127.0.0.1] D=qqs
-p1238 >>>>>>>>>>>>>>>> Exim pid=p1238 (daemon-accept) terminating with rc=1 >>>>>>>>>>>>>>>>
-p1236 SMTP accept process running
+p1236 Process p1236 is handling incoming connection from [127.0.0.1]
+p1236 Process p1236 is ready for new message
+p1236 using ACL "delay4_accept"
+p1236 processing "accept" (TESTSUITE/test-config 24)
+p1236 check delay = 4s
+p1236 delay modifier requests 4-second delay
+p1236 delay cancelled by peer close
+p1236 accept: condition test succeeded in ACL "delay4_accept"
+p1236 end of ACL "delay4_accept": ACCEPT
+p1236 LOG: lost_incoming_connection MAIN
+p1236   unexpected disconnection while reading SMTP command from (test) [127.0.0.1] D=qqs
+p1236 >>>>>>>>>>>>>>>> Exim pid=p1236 (daemon-accept) terminating with rc=1 >>>>>>>>>>>>>>>>
+1 SMTP accept process running
 SIGTERM/SIGINT seen
 >>>>>>>>>>>>>>>> Exim pid=p1234 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

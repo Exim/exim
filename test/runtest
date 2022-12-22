@@ -1076,12 +1076,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 		)
 	      /x;
 
-    # Lines with a leading pid
-    s/^(\d+)\s(?!(?:previous message|in\s|bytes remain in))/new_value($1, "p%s", \$next_pid) . ' '/e;
+    # Lines with a leading pid.  Only handle >= 4-digit PIDs to avoid converting SMTP respose codes
+    s/^(\s*\d{4,})\s(?!(?:previous message|in\s|bytes remain in|SMTP accept process running))/new_value($1, "p%s", \$next_pid) . ' '/e;
 
     # Debugging lines for Exim terminations and process-generation
-
-    s/^\s*\K(\d+)(?=\sexec\s.*\s-oPX$)/new_value($1, "%s", \$next_pid)/xe;
     next if /(?:postfork: | fork(?:ing|ed) for )/;
 
     # IP address lookups use gethostbyname() when IPv6 is not supported,

@@ -213,7 +213,7 @@ Listening...
 Connection request from 127.0.0.1 port sssss
 p1238 Process p1238 is handling incoming connection from [127.0.0.1]
 p1238 Process p1238 is ready for new message
-p1240 SMTP accept process running
+1 SMTP accept process running
 Listening...
 p1238 dnslists check: rbl.test.ex/V4NET.11.12.14
 p1238 new DNS lookup for 14.12.11.V4NET.rbl.test.ex
