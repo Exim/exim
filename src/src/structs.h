@@ -183,7 +183,7 @@ typedef struct transport_instance {
   uschar *expand_multi_domain;    /* )                                  */
   BOOL    multi_domain;           /* )                                  */
   BOOL    overrides_hosts;        /* ) Used only for remote transports  */
-  int     max_addresses;          /* )                                  */
+  uschar *max_addresses;          /* )                                  */
   int     connection_max_messages;/* )                                  */
                                   /**************************************/
   BOOL    deliver_as_creator;     /* Used only by pipe at present */

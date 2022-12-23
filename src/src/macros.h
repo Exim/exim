@@ -1136,4 +1136,8 @@ typedef unsigned mcs_flags;
 #else
 # define EXIM_NOFOLLOW 0
 #endif
+
+/* A big number for (effectively) unlimited envelope addresses */
+#define UNLIMITED_ADDRS		999999
+
 /* End of macros.h */

@@ -4290,10 +4290,14 @@ So look out for the place it gets used.
     }
 
   /* Get the maximum it can handle in one envelope, with zero meaning
-  unlimited, which is forced for the MUA wrapper case. */
+  unlimited, which is forced for the MUA wrapper case and if the
+  value could vary depending on the messages.
+  For those, we only split (below) by (tpt,dest,erraddr,hdrs) and rely on the
+  transport splitting further by max_rcp.  So we potentially lose some
+  parallellism. */
 
-  address_count_max = tp->max_addresses;
-  if (address_count_max == 0 || mua_wrapper) address_count_max = 999999;
+  address_count_max = mua_wrapper || Ustrchr(tp->max_addresses, '$')
+    ? UNLIMITED_ADDRS : expand_max_rcpt(tp->max_addresses);
 
 
   /************************************************************************/

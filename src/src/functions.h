@@ -1307,6 +1307,14 @@ debug_printf("cmdlog: '%s'\n", client_cmd_log ? client_cmd_log->s : US"(unset)")
 
 
 
+static inline int
+expand_max_rcpt(const uschar * str_max_rcpt)
+{
+const uschar * s = expand_cstring(str_max_rcpt);
+int res;
+return !s || !*s || (res = Uatoi(s)) == 0 ? UNLIMITED_ADDRS : res;
+}
+
 # endif	/* !COMPILE_UTILITY */
 
 /******************************************************************************/
@@ -1314,6 +1322,6 @@ debug_printf("cmdlog: '%s'\n", client_cmd_log ? client_cmd_log->s : US"(unset)")
 
 #endif  /* _FUNCTIONS_H_ */
 
-/* vi: aw
+/* vi: aw ai sw=2
 */
 /* End of functions.h */

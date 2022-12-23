@@ -114,7 +114,7 @@ optionlist smtp_transport_options[] = {
   { "interface",            opt_stringptr, LOFF(interface) },
   { "keepalive",            opt_bool,	   LOFF(keepalive) },
   { "lmtp_ignore_quota",    opt_bool,	   LOFF(lmtp_ignore_quota) },
-  { "max_rcpt",             opt_int | opt_public,
+  { "max_rcpt",             opt_stringptr | opt_public,
       OPT_OFF(transport_instance, max_addresses) },
   { "message_linelength_limit", opt_int,   LOFF(message_linelength_limit) },
   { "multi_domain",         opt_expand_bool | opt_public,
@@ -2121,8 +2121,9 @@ sx->dane_required =
   verify_check_given_host(CUSS &ob->hosts_require_dane, sx->conn_args.host) == OK;
 #endif
 
-if ((sx->max_mail = sx->conn_args.tblock->connection_max_messages) == 0) sx->max_mail = 999999;
-if ((sx->max_rcpt = sx->conn_args.tblock->max_addresses) == 0)           sx->max_rcpt = 999999;
+if ((sx->max_mail = sx->conn_args.tblock->connection_max_messages) == 0)
+  sx->max_mail = UNLIMITED_ADDRS;
+sx->max_rcpt = expand_max_rcpt(sx->conn_args.tblock->max_addresses);
 sx->igquotstr = US"";
 if (!sx->helo_data) sx->helo_data = ob->helo_data;
 
@@ -2819,8 +2820,9 @@ if (tls_out.active.sock >= 0)
 #ifdef EXPERIMMENTAL_ESMTP_LIMITS
   /* As we are about to send another EHLO, forget any LIMITS received so far. */
   sx->peer_limit_mail = sx->peer_limit_rcpt = sx->peer_limit_rcptdom = 0;
-  if ((sx->max_mail = sx->conn_args.tblock->connection_max_message) == 0) sx->max_mail = 999999;
-  if ((sx->max_rcpt = sx->conn_args.tblock->max_addresses) == 0)          sx->max_rcpt = 999999;
+  if ((sx->max_mail = sx->conn_args.tblock->connection_max_message) == 0)
+    sx->max_mail = UNLIMITED_ADDRS;
+  sx->max_rcpt = expand_max_rcpt(sx->conn_args.tblock->max_addresses);
   sx->single_rcpt_domain = FALSE;
 #endif
 

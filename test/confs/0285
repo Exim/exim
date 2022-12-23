@@ -23,7 +23,7 @@ all:
   driver = manualroute
   route_list = * 127.0.0.1 byname
   self = send
-  transport = smtp
+  transport = ${if eq {$domain}{test.ex} {smtp}{magic_smtp}}
 
 
 # ----- Transports -----
@@ -31,10 +31,17 @@ all:
 begin transports
 
 smtp:
-  driver = smtp
-  port = PORT_S
+  driver =	smtp
+  port =	PORT_S
   hosts_try_fastopen = :
-  max_rcpt = 2
+  max_rcpt = 	2
+  connection_max_messages = 3
+
+magic_smtp:
+  driver =	smtp
+  port =	PORT_S
+  hosts_try_fastopen = :
+  max_rcpt = 	${if match {$domain}{magic(\\d+)} {$1} {2}}
   connection_max_messages = 3
 
 

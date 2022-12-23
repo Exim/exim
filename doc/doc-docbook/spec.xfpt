@@ -22397,7 +22397,7 @@ its removal from incoming messages, so that delivered messages can safely be
 resent to other recipients.
 
 &*Note:*& If used on a transport handling multiple recipients
-(the smtp transport unless &%rcpt_max%& is 1, the appendfile, pipe or lmtp
+(the smtp transport unless &%max_rcpt%& is 1, the appendfile, pipe or lmtp
 transport if &%batch_max%& is greater than 1)
 then information about Bcc recipients will be leaked.
 Doing so is generally not advised.
@@ -25778,12 +25778,22 @@ If this option is set true when the &%protocol%& option is set to &"lmtp"&, the
 string &`IGNOREQUOTA`& is added to RCPT commands, provided that the LMTP server
 has advertised support for IGNOREQUOTA in its response to the LHLO command.
 
-.option max_rcpt smtp integer 100
+.option max_rcpt smtp integer&!! 100
 .cindex "RCPT" "maximum number of outgoing"
-This option limits the number of RCPT commands that are sent in a single
-SMTP message transaction. Each set of addresses is treated independently, and
+This option,
+.new
+after expansion,
+.wen
+limits the number of RCPT commands that are sent in a single
+SMTP message transaction.
+A value setting of zero disables the limit.
+
+.new
+If a constant is given,
+.wen
+each set of addresses is treated independently, and
 so can cause parallel connections to the same host if &%remote_max_parallel%&
-permits this. A value setting of zero disables the limit.
+permits this.
 
 
 .option message_linelength_limit smtp integer 998

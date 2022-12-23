@@ -100,3 +100,32 @@ QUIT
 ****
 exim -odi -q
 ****
+#
+# Extended version of pulling a max_rcpt out of an expansion
+# Expect log with two => lines on one conn
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250  HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odf x@magic1.test.ex y@magic1.test.ex
+****

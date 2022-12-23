@@ -1592,7 +1592,7 @@ transport_instance  transport_defaults = {
     /* All non-mentioned elements zero/NULL/FALSE */
     .batch_max =		1,
     .multi_domain =		TRUE,
-    .max_addresses =		100,
+    .max_addresses =		US"100",
     .connection_max_messages =	500,
     .uid =			(uid_t)(-1),
     .gid =			(gid_t)(-1),
