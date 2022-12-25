@@ -45,6 +45,9 @@ static smtp_slot *smtp_slots = NULL;
 
 static BOOL  write_pid = TRUE;
 
+#ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
+static uschar * notifier_socket_name;
+#endif
 
 
 /*************************************************
@@ -129,15 +132,14 @@ if (smtp_out) smtp_printf("421 %s\r\n", FALSE, smtp_msg);
 /*************************************************
 *************************************************/
 
-#ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
 static void
 unlink_notifier_socket(void)
 {
-uschar * s = expand_string(notifier_socket);
-DEBUG(D_any) debug_printf("unlinking notifier socket %s\n", s);
-Uunlink(s);
-}
+#ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
+DEBUG(D_any) debug_printf("unlinking notifier socket %s\n", notifier_socket_name);
+Uunlink(notifier_socket_name);
 #endif
+}
 
 
 static void
@@ -148,9 +150,6 @@ if (daemon_notifier_fd >= 0)
   {
   (void) close(daemon_notifier_fd);
   daemon_notifier_fd = -1;
-#ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
-  unlink_notifier_socket();
-#endif
   }
 
 for (int i = 0; i < listen_socket_count; i++) (void) close(fd_polls[i].fd);
@@ -1105,9 +1104,7 @@ if (daemon_notifier_fd >= 0)
   {
   close(daemon_notifier_fd);
   daemon_notifier_fd = -1;
-#ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
   unlink_notifier_socket();
-#endif
   }
 
 if (f.running_in_test_harness || write_pid)
@@ -1143,7 +1140,7 @@ return offsetof(struct sockaddr_un, sun_path) + 1
 #else
 *sname = string_sprintf("%s/p_%d", spool_directory, getpid());
 return offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sup->sun_path, sizeof(sup->sun_path), "%s", sname);
+  + snprintf(sup->sun_path, sizeof(sup->sun_path), "%s", CS *sname);
 #endif
 }
 
@@ -1154,11 +1151,12 @@ daemon_notifier_sockname(struct sockaddr_un * sup)
 sup->sun_path[0] = 0;  /* Abstract local socket addr - Linux-specific? */
 return offsetof(struct sockaddr_un, sun_path) + 1
   + snprintf(sup->sun_path+1, sizeof(sup->sun_path)-1, "%s",
-              expand_string(notifier_socket));
+              CS expand_string(notifier_socket));
 #else
+notifier_socket_name = expand_string(notifier_socket);
 return offsetof(struct sockaddr_un, sun_path)
   + snprintf(sup->sun_path, sizeof(sup->sun_path), "%s",
-              expand_string(notifier_socket));
+              CS notifier_socket_name);
 #endif
 }
 
@@ -1260,10 +1258,17 @@ debug_printf("addrlen %d\n", msg.msg_namelen);
 #endif
 DEBUG(D_queue_run)
   if (msg.msg_namelen > 0)
-    debug_printf("%s from addr '%s%.*s'\n", __FUNCTION__,
-      *sa_un.sun_path ? "" : "@",
-      (int)msg.msg_namelen - (*sa_un.sun_path ? 0 : 1),
-      sa_un.sun_path + (*sa_un.sun_path ? 0 : 1));
+    {
+    BOOL abstract = !*sa_un.sun_path;
+    char * name = sa_un.sun_path + (abstract ? 1 : 0);
+    int namelen =  (int)msg.msg_namelen - abstract ? 1 : 0;
+    if (*name)
+      debug_printf("%s from addr '%s%.*s'\n", __FUNCTION__,
+	abstract ? "@" : "",
+	namelen, name);
+    else
+      debug_printf("%s (from unknown addr)\n", __FUNCTION__);
+    }
   else
     debug_printf("%s (from unknown addr)\n", __FUNCTION__);
 
@@ -2673,6 +2678,7 @@ for (;;)
     log_write(0, LOG_MAIN, "pid %d: SIGHUP received: re-exec daemon",
       getpid());
     close_daemon_sockets(daemon_notifier_fd, fd_polls, listen_socket_count);
+    unlink_notifier_socket();
     ALARM_CLR(0);
     signal(SIGHUP, SIG_IGN);
     sighup_argv[0] = exim_path;
