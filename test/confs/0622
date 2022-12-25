@@ -58,11 +58,12 @@ client:
 begin transports
 
 send_to_server:
-  driver = smtp
+  driver =		smtp
   allow_localhost
-  hosts = 127.0.0.1
-  port = PORT_D
-  max_rcpt = 0
+  hosts_try_fastopen =	:
+  hosts =		127.0.0.1
+  port =		PORT_D
+  max_rcpt =		0
   HAP
 
 # ----- Retry -----
