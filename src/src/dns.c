@@ -802,6 +802,7 @@ dns_basic_lookup(dns_answer * dnsa, const uschar * name, int type)
 int rc;
 #ifndef STAND_ALONE
 const uschar * save_domain;
+static BOOL try_again_recursion = FALSE;
 #endif
 
 /* DNS lookup failures of any kind are cached in a tree. This is mainly so that
@@ -906,11 +907,22 @@ if (dnsa->answerlen < 0) switch (h_errno)
 
     /* Cut this out for various test programs */
 #ifndef STAND_ALONE
+    if (try_again_recursion)
+      {
+      log_write(0, LOG_MAIN|LOG_PANIC,
+	"dns_again_means_nonexist recursion seen for %s (assuming nonexist)",
+	name);
+      return dns_fail_return(name, type, dns_expire_from_soa(dnsa, type), DNS_NOMATCH);
+      }
+
+    try_again_recursion = TRUE;
     save_domain = deliver_domain;
     deliver_domain = string_copy(name);  /* set $domain */
     rc = match_isinlist(name, CUSS &dns_again_means_nonexist, 0,
       &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL);
     deliver_domain = save_domain;
+    try_again_recursion = FALSE;
+
     if (rc != OK)
       {
       DEBUG(D_dns) debug_printf("returning DNS_AGAIN\n");

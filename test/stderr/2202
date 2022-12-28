@@ -34,7 +34,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<a@b>
 using ACL "rcpt"
-processing "accept" (TESTSUITE/test-config 23)
+processing "accept" (TESTSUITE/test-config 35)
 check hosts = +ignore_unknown : *.$sender_address_domain : $sender_address_domain : ${lookup dnsdb{>:defer_never,mxh=$sender_address_domain}}
  search_open: dnsdb "NULL"
  search_find: file="NULL"
@@ -93,3 +93,59 @@ LOG: smtp_connection MAIN
   SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4] closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=p1235
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=p1235
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [ip4.ip4.ip4.ip4]
+sender_rcvhost = [ip4.ip4.ip4.ip4]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [ip4.ip4.ip4.ip4]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [ip4.ip4.ip4.ip4]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< vrfy a@test.again.dns
+host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+using ACL "vrfy"
+processing "warn" (TESTSUITE/test-config 28)
+check domains = +try_again_dns_list
+DNS lookup of test.again.dns (MX) using fakens
+DNS lookup of test.again.dns (MX) gave TRY_AGAIN
+DNS lookup of test.again.dns (MX) using fakens
+DNS lookup of test.again.dns (MX) gave TRY_AGAIN
+LOG: MAIN PANIC
+  dns_again_means_nonexist recursion seen for test.again.dns (assuming nonexist)
+DNS: couldn't fake dnsa len
+DNS: no SOA record found for neg-TTL
+ writing neg-cache entry for test.again.dns-MX-xxxx, ttl -1
+test.again.dns in "@mx_any"? no (end of list)
+test.again.dns in dns_again_means_nonexist? yes (end of list)
+test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
+DNS: couldn't fake dnsa len
+DNS: no SOA record found for neg-TTL
+ update neg-cache entry for test.again.dns-MX-xxxx, ttl -1
+test.again.dns in "@mx_any"? no (end of list)
+test.again.dns in "+try_again_dns_list"? no (end of list)
+warn: condition test failed in ACL "vrfy"
+end of ACL "vrfy": implicit DENY
+SMTP>> 252 Administrative prohibition
+LOG: MAIN REJECT
+  H=[ip4.ip4.ip4.ip4] rejected VRFY a@test.again.dns
+SMTP>> 421 myhost.test.ex lost input connection
+LOG: smtp_connection MAIN
+  SMTP connection from [ip4.ip4.ip4.ip4] lost D=qqs
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -1,20 +1,32 @@
 # Exim test configuration 2202
 
-CONNECTCOND=
-
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
+acl_smtp_vrfy = vrfy
 acl_smtp_rcpt = rcpt
-dns_again_means_nonexist = *
 disable_ipv6
+
+.ifdef DNS_RECURSE
+hosts_treat_as_local =		test.again.dns
+domainlist try_again_dns_list =	@mx_any
+dns_again_means_nonexist =	!+try_again_dns_list
+# that last line tries to set up a recursion
+.else
+dns_again_means_nonexist =	*
+.endif
 
 # ----- ACL -----
 
 begin acl
+
+vrfy:
+.ifdef DNS_RECURSE
+  warn	domains = +try_again_dns_list
+.endif
 
 rcpt:
   accept hosts = +ignore_unknown : \
