@@ -1,6 +1,22 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -99,11 +115,14 @@ To: random@test.example,
 **** debug string too long - truncated ****
 
 qualify & rewrite recipients list
+ list element: ^.{40,}@*
  address match test: subject=r1@test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' not found in local cache
  compiled RE '^.{40,}@*' saved in local cache
  r1@test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=r1@test.ex pattern=*@*
+ list element: *
  test.ex in "*"? yes (matched "*")
  r1@test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -126,10 +145,13 @@ qualify & rewrite recipients list
   creating new cache entry
   lookup failed
 global rewrite rules
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -241,10 +263,13 @@ rewrite headers
     random@test.example,
     random@test.exam
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -424,10 +449,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -606,10 +634,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -788,10 +819,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -970,10 +1004,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -1152,10 +1189,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -1334,10 +1374,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -1516,10 +1559,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -1698,10 +1744,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -1880,10 +1929,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2061,10 +2113,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2242,10 +2297,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2423,10 +2481,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2604,10 +2665,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2785,10 +2849,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2966,10 +3033,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -3147,10 +3217,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -3328,10 +3401,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -3509,10 +3585,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -3690,10 +3769,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -3871,10 +3953,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -4052,10 +4137,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -4233,10 +4321,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -4413,10 +4504,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -4593,10 +4687,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -4773,10 +4870,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -4953,10 +5053,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -5133,10 +5236,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -5313,10 +5419,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -5493,10 +5602,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -5673,10 +5785,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -5853,10 +5968,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6033,10 +6151,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6213,10 +6334,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6393,10 +6517,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6572,10 +6699,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6751,10 +6881,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6930,10 +7063,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -7109,10 +7245,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -7288,10 +7427,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -7467,10 +7609,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -7646,10 +7791,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -7825,10 +7973,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8004,10 +8155,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8183,10 +8337,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8362,10 +8519,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8541,10 +8701,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8720,10 +8883,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8898,10 +9064,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9076,10 +9245,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9254,10 +9426,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9432,10 +9607,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9610,10 +9788,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9788,10 +9969,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9966,10 +10150,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -10144,10 +10331,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -10322,10 +10512,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -10500,10 +10693,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -10678,10 +10874,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -10856,10 +11055,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11033,10 +11235,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11210,10 +11415,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11387,10 +11595,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11564,10 +11775,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11741,10 +11955,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11918,10 +12135,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12095,10 +12315,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12272,10 +12495,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12449,10 +12675,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12626,10 +12855,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12803,10 +13035,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12980,10 +13215,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -13157,10 +13395,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -13333,10 +13574,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -13509,10 +13753,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -13685,10 +13932,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -13861,10 +14111,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14037,10 +14290,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14213,10 +14469,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14389,10 +14648,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14565,10 +14827,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14741,10 +15006,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14916,10 +15184,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15090,10 +15361,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15263,10 +15537,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15435,10 +15712,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15606,10 +15886,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15776,10 +16059,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15945,10 +16231,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16113,10 +16402,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16280,10 +16572,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16446,10 +16741,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16611,10 +16909,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16775,10 +17076,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16938,10 +17242,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17100,10 +17407,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17261,10 +17571,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17421,10 +17734,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17580,10 +17896,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17738,10 +18057,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17895,10 +18217,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18051,10 +18376,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18206,10 +18534,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18360,10 +18691,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18513,10 +18847,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18665,10 +19002,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18816,10 +19156,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18966,10 +19309,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19115,10 +19461,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19263,10 +19612,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19410,10 +19762,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19556,10 +19911,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19701,10 +20059,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19845,10 +20206,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19988,10 +20352,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20130,10 +20497,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20271,10 +20641,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20411,10 +20784,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20550,10 +20926,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20688,10 +21067,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20825,10 +21207,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20961,10 +21346,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21096,10 +21484,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21230,10 +21621,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21363,10 +21757,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21495,10 +21892,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21626,10 +22026,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21756,10 +22159,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21885,10 +22291,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22013,10 +22422,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22140,10 +22552,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22266,10 +22681,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22391,10 +22809,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22515,10 +22936,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22638,10 +23062,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22760,10 +23187,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22881,10 +23311,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23001,10 +23434,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23120,10 +23556,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23238,10 +23677,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23355,10 +23797,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23471,10 +23916,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23586,10 +24034,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23700,10 +24151,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23813,10 +24267,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23925,10 +24382,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24036,10 +24496,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24146,10 +24609,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24255,10 +24721,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24363,10 +24832,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24470,10 +24942,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24576,10 +25051,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24681,10 +25159,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24785,10 +25266,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24888,10 +25372,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24990,10 +25477,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25091,10 +25581,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25191,10 +25684,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25290,10 +25786,13 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25388,10 +25887,13 @@ To: random@rwtest.example,
 remainder: random@test.example,
     random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25485,10 +25987,13 @@ To: random@rwtest.example,
 **** debug string too long - truncated ****
 remainder: random@test.example,
     random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25581,10 +26086,13 @@ To: random@rwtest.example,
     random@rwtest.example,
 **** debug string too long - truncated ****
 remainder: random@test.example
+ list element: ^.{40,}@*
  address match test: subject=random@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  random@test.example in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=random@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  random@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25679,10 +26187,13 @@ To: random@rwtest.example,
 remainder: 
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25899,6 +26410,22 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -25916,11 +26443,14 @@ search_tidyup called
 To: localpart_with_056_chars_56789012345678901234567890123456@test.example
 
 qualify & rewrite recipients list
+ list element: ^.{40,}@*
  address match test: subject=r2@test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' not found in local cache
  compiled RE '^.{40,}@*' saved in local cache
  r2@test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=r2@test.ex pattern=*@*
+ list element: *
  test.ex in "*"? yes (matched "*")
  r2@test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25943,10 +26473,13 @@ qualify & rewrite recipients list
   creating new cache entry
   lookup failed
 global rewrite rules
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25979,12 +26512,15 @@ rewritten sender = CALLER@myhost.test.ex
 rewrite headers
  rewrite_one_header: type=T:
    To: localpart_with_056_chars_56789012345678901234567890123456@test.example
+ list element: ^.{40,}@*
  address match test: subject=localpart_with_056_chars_56789012345678901234567890123456@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  localpart_with_056_chars_56789012345678901234567890123456@test.example in "^.{40,}@*"? yes (matched "^.{40,}@*")
 LOG: address_rewrite MAIN
   "localpart_with_056_chars_56789012345678901234567890123456@test.example" from to: rewritten as "deny_me@test.example" by rule 1
+ list element: *@*
  address match test: subject=deny_me@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  deny_me@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26007,10 +26543,13 @@ To: deny_me@rwtest.example
 remainder: 
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26071,6 +26610,22 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1236
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -26088,11 +26643,14 @@ search_tidyup called
 To: localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
 
 qualify & rewrite recipients list
+ list element: ^.{40,}@*
  address match test: subject=r3@test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' not found in local cache
  compiled RE '^.{40,}@*' saved in local cache
  r3@test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=r3@test.ex pattern=*@*
+ list element: *
  test.ex in "*"? yes (matched "*")
  r3@test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26115,10 +26673,13 @@ qualify & rewrite recipients list
   creating new cache entry
   lookup failed
 global rewrite rules
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26151,12 +26712,15 @@ rewritten sender = CALLER@myhost.test.ex
 rewrite headers
  rewrite_one_header: type=T:
    To: localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+ list element: ^.{40,}@*
  address match test: subject=localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example in "^.{40,}@*"? yes (matched "^.{40,}@*")
 LOG: address_rewrite MAIN
   "localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example" from to: rewritten as "deny_me@test.example" by rule 1
+ list element: *@*
  address match test: subject=deny_me@test.example pattern=*@*
+ list element: *
  test.example in "*"? yes (matched "*")
  deny_me@test.example in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26179,10 +26743,13 @@ To: deny_me@rwtest.example
 remainder: 
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26243,6 +26810,22 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1237
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -26260,11 +26843,14 @@ search_tidyup called
 To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
 
 qualify & rewrite recipients list
+ list element: ^.{40,}@*
  address match test: subject=r4@test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' not found in local cache
  compiled RE '^.{40,}@*' saved in local cache
  r4@test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=r4@test.ex pattern=*@*
+ list element: *
  test.ex in "*"? yes (matched "*")
  r4@test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26287,10 +26873,13 @@ qualify & rewrite recipients list
   creating new cache entry
   lookup failed
 global rewrite rules
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26327,10 +26916,13 @@ LOG: MAIN
   rewrite: address is ridiculously long: localpart_with_256_chars_567890123456789012345678901234567890123...
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26393,6 +26985,22 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1238
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -26410,11 +27018,14 @@ search_tidyup called
 To: undisclosed recpients:;
 
 qualify & rewrite recipients list
+ list element: ^.{40,}@*
  address match test: subject=r5@test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' not found in local cache
  compiled RE '^.{40,}@*' saved in local cache
  r5@test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=r5@test.ex pattern=*@*
+ list element: *
  test.ex in "*"? yes (matched "*")
  r5@test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26437,10 +27048,13 @@ qualify & rewrite recipients list
   creating new cache entry
   lookup failed
 global rewrite rules
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26475,10 +27089,13 @@ rewrite headers
    To: undisclosed recpients:;
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26538,6 +27155,22 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1239
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -26555,11 +27188,14 @@ search_tidyup called
 To: fred@
 
 qualify & rewrite recipients list
+ list element: ^.{40,}@*
  address match test: subject=r6@test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' not found in local cache
  compiled RE '^.{40,}@*' saved in local cache
  r6@test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=r6@test.ex pattern=*@*
+ list element: *
  test.ex in "*"? yes (matched "*")
  r6@test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26582,10 +27218,13 @@ qualify & rewrite recipients list
   creating new cache entry
   lookup failed
 global rewrite rules
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -26622,10 +27261,13 @@ LOG: MAIN
   rewrite: domain missing or malformed
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
+ list element: ^.{40,}@*
  address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
  compiled RE '^.{40,}@*' found in local cache
  CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+ list element: *@*
  address match test: subject=CALLER@myhost.test.ex pattern=*@*
+ list element: *
  myhost.test.ex in "*"? yes (matched "*")
  CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
   search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"

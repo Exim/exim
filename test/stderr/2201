@@ -3,6 +3,31 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1236
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -21,37 +46,43 @@ routing test.ex@test.ex
 --------> r0 router <--------
 local_part=test.ex domain=test.ex
 checking senders
-address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
+CALLER@myhost.test.ex in "a@shorthost.test.ex"?
+ list element: a@shorthost.test.ex
+ address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
 CALLER@myhost.test.ex in "a@shorthost.test.ex"? no (end of list)
 r0 router skipped: senders mismatch
 --------> r1 router <--------
 local_part=test.ex domain=test.ex
 checking domains
-search_open: dnsdb "NULL"
-search_find: file="NULL"
-  key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="NULL"
-  type=dnsdb key="test.ex" opts=NULL
-database lookup required for test.ex
-                             (tainted)
-dnsdb key: test.ex
+test.ex in "dnsdb;test.ex"?
+ list element: dnsdb;test.ex
+ search_open: dnsdb "NULL"
+ search_find: file="NULL"
+   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=dnsdb key="test.ex" opts=NULL
+ database lookup required for test.ex
+                              (tainted)
+ dnsdb key: test.ex
 DNS lookup of test.ex (TXT) using fakens
 DNS lookup of test.ex (TXT) succeeded
-creating new cache entry
-lookup yielded: A TXT record for test.ex.
-test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+ creating new cache entry
+ lookup yielded: A TXT record for test.ex.
+ test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
 checking local_parts
-search_open: dnsdb "NULL"
-  cached open
-search_find: file="NULL"
-  key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="NULL"
-  type=dnsdb key="test.ex" opts=NULL
-cached data used for lookup of test.ex
-lookup yielded: A TXT record for test.ex.
-test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+test.ex in "dnsdb;test.ex"?
+ list element: dnsdb;test.ex
+ search_open: dnsdb "NULL"
+   cached open
+ search_find: file="NULL"
+   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=dnsdb key="test.ex" opts=NULL
+ cached data used for lookup of test.ex
+ lookup yielded: A TXT record for test.ex.
+ test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
 calling r1 router
 r1 router called for test.ex@test.ex
   domain = test.ex
@@ -72,71 +103,81 @@ routing unknown@test.ex
 --------> r0 router <--------
 local_part=unknown domain=test.ex
 checking senders
-address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
+CALLER@myhost.test.ex in "a@shorthost.test.ex"?
+ list element: a@shorthost.test.ex
+ address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
 CALLER@myhost.test.ex in "a@shorthost.test.ex"? no (end of list)
 r0 router skipped: senders mismatch
 --------> r1 router <--------
 local_part=unknown domain=test.ex
 checking domains
-search_open: dnsdb "NULL"
-  cached open
-search_find: file="NULL"
-  key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="NULL"
-  type=dnsdb key="test.ex" opts=NULL
-cached data used for lookup of test.ex
-lookup yielded: A TXT record for test.ex.
-test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+test.ex in "dnsdb;test.ex"?
+ list element: dnsdb;test.ex
+ search_open: dnsdb "NULL"
+   cached open
+ search_find: file="NULL"
+   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=dnsdb key="test.ex" opts=NULL
+ cached data used for lookup of test.ex
+ lookup yielded: A TXT record for test.ex.
+ test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
 checking local_parts
-search_open: dnsdb "NULL"
-  cached open
-search_find: file="NULL"
-  key="unknown" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="NULL"
-  type=dnsdb key="unknown" opts=NULL
-database lookup required for unknown
-                             (tainted)
-dnsdb key: unknown
+unknown in "dnsdb;unknown"?
+ list element: dnsdb;unknown
+ search_open: dnsdb "NULL"
+   cached open
+ search_find: file="NULL"
+   key="unknown" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=dnsdb key="unknown" opts=NULL
+ database lookup required for unknown
+                              (tainted)
+ dnsdb key: unknown
 DNS lookup of unknown (TXT) using fakens
 DNS lookup of unknown (TXT) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 faking res_search(TXT) response length as 65535
  writing neg-cache entry for unknown-TXT-xxxx, ttl 3000
-creating new cache entry
-lookup failed
+ creating new cache entry
+ lookup failed
 unknown in "dnsdb;unknown"? no (end of list)
 r1 router skipped: local_parts mismatch
 --------> r2 router <--------
 local_part=unknown domain=test.ex
 checking domains
-search_open: dnsdb "NULL"
-  cached open
-search_find: file="NULL"
-  key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="NULL"
-  type=dnsdb key="test.ex" opts=NULL
-cached data used for lookup of test.ex
-lookup yielded: A TXT record for test.ex.
-test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+test.ex in "dnsdb;test.ex"?
+ list element: dnsdb;test.ex
+ search_open: dnsdb "NULL"
+   cached open
+ search_find: file="NULL"
+   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=dnsdb key="test.ex" opts=NULL
+ cached data used for lookup of test.ex
+ lookup yielded: A TXT record for test.ex.
+ test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
 checking senders
-address match test: subject=CALLER@myhost.test.ex pattern=dnsdb;A=myhost.test.ex
-search_open: dnsdb "NULL"
-  cached open
-search_find: file="NULL"
-  key="A=myhost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="NULL"
-  type=dnsdb key="A=myhost.test.ex" opts=NULL
-database lookup required for A=myhost.test.ex
-dnsdb key: myhost.test.ex
+CALLER@myhost.test.ex in "dnsdb;A=myhost.test.ex"?
+ list element: dnsdb;A=myhost.test.ex
+ address match test: subject=CALLER@myhost.test.ex pattern=dnsdb;A=myhost.test.ex
+ search_open: dnsdb "NULL"
+   cached open
+ search_find: file="NULL"
+   key="A=myhost.test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=dnsdb key="A=myhost.test.ex" opts=NULL
+ database lookup required for A=myhost.test.ex
+ dnsdb key: myhost.test.ex
 DNS lookup of myhost.test.ex (A) using fakens
 DNS lookup of myhost.test.ex (A) succeeded
-creating new cache entry
-lookup yielded: V4NET.10.10.10
-CALLER@myhost.test.ex in "dnsdb;A=myhost.test.ex"? yes (matched "dnsdb;A=myhost.test.ex")
+ creating new cache entry
+ lookup yielded: V4NET.10.10.10
+ CALLER@myhost.test.ex in "dnsdb;A=myhost.test.ex"? yes (matched "dnsdb;A=myhost.test.ex")
 calling r2 router
 r2 router called for unknown@test.ex
   domain = test.ex

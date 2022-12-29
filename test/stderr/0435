@@ -1,6 +1,22 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed

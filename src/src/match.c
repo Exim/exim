@@ -430,9 +430,9 @@ int yield = OK;
 unsigned int * original_cache_bits = *cache_ptr;
 BOOL include_unknown = FALSE, ignore_unknown = FALSE,
       include_defer = FALSE, ignore_defer = FALSE;
-const uschar *list;
-uschar *sss;
-uschar *ot = NULL;
+const uschar * list;
+uschar * sss;
+uschar * ot = NULL;
 BOOL textonly_re;
 
 /* Save time by not scanning for the option name when we don't need it. */
@@ -514,6 +514,11 @@ HDEBUG(D_any) if (!ot)
   gstring_release_unused(g);
   ot = string_from_gstring(g);
   }
+HDEBUG(D_lists)
+  {
+  debug_printf_indent("%s\n", ot);
+  expand_level++;
+  }
 
 /* Now scan the list and process each item in turn, until one of them matches,
 or we hit an error. */
@@ -521,6 +526,8 @@ or we hit an error. */
 while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
   {
   uschar * ss = sss;
+
+  HDEBUG(D_lists) debug_printf_indent("list element: %s\n", ss);
 
   /* Address lists may contain +caseful, to restore caseful matching of the
   local part. We have to know the layout of the control block, unfortunately.
@@ -605,13 +612,14 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
     {
     if (*ss == '+' && anchorptr)
       {
-      int bits = 0;
-      int offset = 0;
-      int shift = 0;
-      unsigned int *use_cache_bits = original_cache_bits;
-      uschar *cached = US"";
-      namedlist_block *nb;
+      int bits = 0, offset = 0, shift = 0;
+      unsigned int * use_cache_bits = original_cache_bits;
+      uschar * cached = US"";
+      namedlist_block * nb;
       tree_node * t;
+
+      DEBUG(D_lists)
+	{ debug_printf_indent(" start sublist %s\n", ss+1); expand_level += 2; }
 
       if (!(t = tree_search(*anchorptr, ss+1)))
 	{
@@ -621,7 +629,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
           type == MCL_ADDRESS ?   " address" :
           type == MCL_LOCALPART ? " local part" : "",
           ss);
-	return DEFER;
+	goto DEFER_RETURN;
 	}
       nb = t->data.ptr;
 
@@ -645,8 +653,12 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 
       if (bits == 0)
         {
-        switch (match_check_list(&(nb->string), 0, anchorptr, &use_cache_bits,
-                func, arg, type, name, valueptr))
+        int res = match_check_list(&(nb->string), 0, anchorptr, &use_cache_bits,
+                func, arg, type, name, valueptr);
+	DEBUG(D_lists)
+	  { expand_level -= 2; debug_printf_indent(" end sublist %s\n", ss+1); }
+
+        switch (res)
           {
           case OK:   bits = 1; break;
           case FAIL: bits = 3; break;
@@ -695,8 +707,12 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 
       else
         {
-        DEBUG(D_lists) debug_printf_indent("cached %s match for %s\n",
-          (bits & (-bits)) == bits ? "yes" : "no", ss);
+        DEBUG(D_lists)
+	  {
+	  expand_level -= 2;
+	  debug_printf_indent("cached %s match for %s\n",
+	    (bits & (-bits)) == bits ? "yes" : "no", ss);
+	  }
 
         cached = US" - cached";
         if (valueptr)
@@ -720,7 +736,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
         {
         HDEBUG(D_lists) debug_printf_indent("%s %s (matched \"%s\"%s)\n", ot,
           yield == OK ? "yes" : "no", sss, cached);
-        return yield;
+	goto YIELD_RETURN;
         }
       }
 
@@ -734,7 +750,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
         case OK:
 	  HDEBUG(D_lists) debug_printf_indent("%s %s (matched \"%s\")\n", ot,
 	    (yield == OK)? "yes" : "no", sss);
-	  return yield;
+	  goto YIELD_RETURN;
 
         case DEFER:
 	  if (!error)
@@ -852,7 +868,8 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 	  Copy it to allocated memory now we know it matched. */
 
 	  if (valueptr) *valueptr = string_copy(ss);
-	  return file_yield;
+	  yield = file_yield;
+	  goto YIELD_RETURN;
 
         case DEFER:
 	  if (!error)
@@ -864,12 +881,10 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 	    break;
 	    }
 	  (void)fclose(f);
-	  if (include_defer)
-	    {
-	    log_write(0, LOG_MAIN, "%s: accepted by +include_defer", error);
-	    return OK;
-	    }
-	  goto DEFER_RETURN;
+	  if (!include_defer)
+	    goto DEFER_RETURN;
+	  log_write(0, LOG_MAIN, "%s: accepted by +include_defer", error);
+	  goto OK_RETURN;
 
         case ERROR:		/* host name lookup failed - this can only */
 	  if (ignore_unknown)	/* be for an incoming host (not outgoing) */
@@ -886,10 +901,10 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 	      {
 	      if (LOGGING(unknown_in_list))
 		log_write(0, LOG_MAIN, "list matching forced to fail: %s", error);
-	      return FAIL;
+	      goto FAIL_RETURN;
 	      }
 	    log_write(0, LOG_MAIN, "%s: accepted by +include_unknown", error);
-	    return OK;
+	    goto OK_RETURN;
 	    }
         }
       }
@@ -905,14 +920,33 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 /* End of list reached: if the last item was negated yield OK, else FAIL. */
 
 HDEBUG(D_lists)
-  debug_printf_indent("%s %s (end of list)\n", ot, yield == OK ? "no":"yes");
-return yield == OK ? FAIL : OK;
+  HDEBUG(D_lists)
+    {
+    expand_level--;
+    debug_printf_indent("%s %s (end of list)\n", ot, yield == OK ? "no":"yes");
+    }
+  return yield == OK ? FAIL : OK;
 
 /* Something deferred */
 
 DEFER_RETURN:
-HDEBUG(D_lists) debug_printf("%s list match deferred for %s\n", ot, sss);
-return DEFER;
+  HDEBUG(D_lists)
+    {
+    expand_level--;
+    debug_printf_indent("%s list match deferred for %s\n", ot, sss);
+    }
+  return DEFER;
+
+FAIL_RETURN:
+  yield = FAIL;
+  goto YIELD_RETURN;
+
+OK_RETURN:
+  yield = OK;
+
+YIELD_RETURN:
+  HDEBUG(D_lists) expand_level--;
+  return yield;
 }
 
 

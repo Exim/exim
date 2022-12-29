@@ -1,6 +1,22 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -16,6 +32,9 @@ routing ph@mxt1.test.ex
 --------> r1 router <--------
 local_part=ph domain=mxt1.test.ex
 checking domains
+list element: +anymx
+ start sublist anymx
+  list element: @mx_any
 DNS lookup of mxt1.test.ex (MX) using fakens
 DNS lookup of mxt1.test.ex (MX) succeeded
 DNS lookup of eximtesthost.test.ex (A) using fakens
@@ -23,10 +42,14 @@ DNS lookup of eximtesthost.test.ex (A) succeeded
 local host has lowest MX
 host_find_bydns yield = HOST_FOUND_LOCAL (4); returned hosts:
   eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 
-mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
+  mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
+ end sublist anymx
 data from lookup saved for cache for +anymx: key 'mxt1.test.ex' value '@mx_any'
 mxt1.test.ex in "+anymx"? yes (matched "+anymx")
 checking "condition" "${if match_domain{$domain}{+anymx}{yes}}"...
+ list element: +anymx
+  start sublist anymx
+   list element: @mx_any
 DNS lookup of mxt1.test.ex (MX) using fakens
 DNS lookup of mxt1.test.ex (MX) succeeded
 DNS lookup of eximtesthost.test.ex (A) using fakens
@@ -34,7 +57,8 @@ DNS lookup of eximtesthost.test.ex (A) succeeded
 local host has lowest MX
 host_find_bydns yield = HOST_FOUND_LOCAL (4); returned hosts:
   eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 
- mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
+   mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
+  end sublist anymx
  mxt1.test.ex in "+anymx"? yes (matched "+anymx")
 calling r1 router
 r1 router called for ph@mxt1.test.ex

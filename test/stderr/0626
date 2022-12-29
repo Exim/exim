@@ -6,6 +6,9 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -22,6 +25,9 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -36,6 +42,9 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -51,6 +60,9 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -67,6 +79,9 @@ LOG: H=(test) [ip4.ip4.ip4.ip4] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -84,6 +99,9 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -99,6 +117,9 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -115,6 +136,9 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -132,6 +156,9 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 19)

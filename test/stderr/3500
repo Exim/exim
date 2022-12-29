@@ -6,13 +6,32 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test.host in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test.host in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> host in pipelining_advertise_hosts? yes (matched "*")
->>> host in "10.0.0.1 : 10.0.0.5"? no (end of list)
->>> host in "10.0.0.4"? yes (matched "10.0.0.4")
->>> host in auth_advertise_hosts? no (matched "!+relay_hosts")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in auth_advertise_hosts?
+>>>  list element: +auth_hosts
+>>>  host in "10.0.0.1 : 10.0.0.5"?
+>>>   list element: 10.0.0.1
+>>>   list element: 10.0.0.5
+>>>  host in "10.0.0.1 : 10.0.0.5"? no (end of list)
+>>>  list element: !+relay_hosts
+>>>  host in "10.0.0.4"?
+>>>   list element: 10.0.0.4
+>>>   host in "10.0.0.4"? yes (matched "10.0.0.4")
+>>>  host in auth_advertise_hosts? no (matched "!+relay_hosts")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -21,12 +40,27 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test.host in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test.host in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> host in pipelining_advertise_hosts? yes (matched "*")
->>> host in "10.0.0.1 : 10.0.0.5"? yes (matched "10.0.0.1")
->>> host in auth_advertise_hosts? yes (matched "+auth_hosts")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in auth_advertise_hosts?
+>>>  list element: +auth_hosts
+>>>  host in "10.0.0.1 : 10.0.0.5"?
+>>>   list element: 10.0.0.1
+>>>   host in "10.0.0.1 : 10.0.0.5"? yes (matched "10.0.0.1")
+>>>  host in auth_advertise_hosts? yes (matched "+auth_hosts")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
 >>> CRAM-MD5: user name = tim
 >>>           challenge = <1896.697170952@postoffice.reston.mci.net>
@@ -40,27 +74,41 @@
 >>> using ACL "check_recipient"
 >>> processing "warn" (TESTSUITE/test-config 31)
 >>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"?
+>>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> warn: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 33)
 >>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"?
+>>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 34)
 >>> check hosts = :
+>>> host in ":"?
+>>>  list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 35)
 >>> check hosts = +auth_hosts
->>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>> host in "+auth_hosts"?
+>>>  list element: +auth_hosts
+>>>  host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
->>> cram_md5 in "*"? yes (matched "*")
+>>> cram_md5 in "*"?
+>>>  list element: *
+>>>  cram_md5 in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 38)
 >>> check domains = +local_domains
->>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> test.ex in "+local_domains"?
+>>>  list element: +local_domains
+>>>  test.ex in "test.ex : *.test.ex"?
+>>>   list element: test.ex
+>>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
@@ -73,12 +121,28 @@ LOG: 10HmaY-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.1] P=esmtpa A=c
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test.host in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test.host in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> host in pipelining_advertise_hosts? yes (matched "*")
->>> host in "10.0.0.1 : 10.0.0.5"? yes (matched "10.0.0.5")
->>> host in auth_advertise_hosts? yes (matched "+auth_hosts")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in auth_advertise_hosts?
+>>>  list element: +auth_hosts
+>>>  host in "10.0.0.1 : 10.0.0.5"?
+>>>   list element: 10.0.0.1
+>>>   list element: 10.0.0.5
+>>>   host in "10.0.0.1 : 10.0.0.5"? yes (matched "10.0.0.5")
+>>>  host in auth_advertise_hosts? yes (matched "+auth_hosts")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
 >>> CRAM-MD5: user name = tim
 >>>           challenge = <1896.697170952@postoffice.reston.mci.net>
@@ -93,12 +157,16 @@ LOG: cram_md5 authenticator failed for (test.host) [10.0.0.5]: 535 Incorrect aut
 >>> using ACL "check_recipient"
 >>> processing "warn" (TESTSUITE/test-config 31)
 >>> check hosts = 10.0.0.5
->>> host in "10.0.0.5"? yes (matched "10.0.0.5")
+>>> host in "10.0.0.5"?
+>>>  list element: 10.0.0.5
+>>>  host in "10.0.0.5"? yes (matched "10.0.0.5")
 >>>   message: authentication-failed: $authentication_failed
 >>> warn: condition test succeeded in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 33)
 >>> check hosts = 10.0.0.5
->>> host in "10.0.0.5"? yes (matched "10.0.0.5")
+>>> host in "10.0.0.5"?
+>>>  list element: 10.0.0.5
+>>>  host in "10.0.0.5"? yes (matched "10.0.0.5")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)

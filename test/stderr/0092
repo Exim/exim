@@ -6,6 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
 LOG: SMTP command timeout on connection from [V4NET.0.0.1]
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -15,19 +16,26 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1]
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 27)
 >>> check hosts = :
+>>> list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 28)
 >>>   message: unrouteable address
 >>> check recipients = verify@test.ex
+>>> list element: verify@test.ex
 >>> userx@test.ex in "verify@test.ex"? no (end of list)
 >>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 31)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: test.ex
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
@@ -36,6 +44,22 @@ LOG: SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
@@ -93,9 +117,12 @@ host in helo_accept_junk_hosts? no (option unset)
  ├considering: $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
+list element: @
+list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.0.0.1]
 sender_rcvhost = [V4NET.0.0.1] (helo=test)
@@ -109,17 +136,23 @@ SMTP<< rcpt to:userx@test.ex
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 27)
 check hosts = :
+list element: 
 host in ":"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "deny" (TESTSUITE/test-config 28)
   message: unrouteable address
 check recipients = verify@test.ex
+list element: verify@test.ex
 address match test: subject=userx@test.ex pattern=verify@test.ex
 userx@test.ex in "verify@test.ex"? no (end of list)
 deny: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 31)
 check domains = +local_domains
-test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+list element: +local_domains
+ start sublist local_domains
+  list element: test.ex
+  test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+ end sublist local_domains
 data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 test.ex in "+local_domains"? yes (matched "+local_domains")
 accept: condition test succeeded in ACL "check_recipient"
@@ -143,20 +176,28 @@ exim: timed out while reading - message abandoned
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 27)
 >>> check hosts = :
+>>> list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 28)
 >>>   message: unrouteable address
 >>> check recipients = verify@test.ex
+>>> list element: verify@test.ex
+>>> list element: test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> verify@test.ex in "verify@test.ex"? yes (matched "verify@test.ex")
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing verify@test.ex
+>>> list element: ! +local_domains
+>>> list element: test.ex
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "! +local_domains"? no (matched "! +local_domains")
 >>> calling forward router

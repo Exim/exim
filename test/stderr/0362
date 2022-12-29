@@ -1,6 +1,22 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -22,9 +38,12 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+list element: 
 SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
+list element: @
+list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.0.0.0]
 sender_rcvhost = [V4NET.0.0.0] (helo=test)
@@ -38,18 +57,28 @@ SMTP<< rcpt to:<x@a.b.c>
 using ACL "check_rcpt"
 processing "accept" (TESTSUITE/test-config 22)
 check domains = +local_domains
-a.b.c in "*.test.ex"? no (end of list)
+list element: +local_domains
+ start sublist local_domains
+  list element: *.test.ex
+  a.b.c in "*.test.ex"? no (end of list)
+ end sublist local_domains
 a.b.c in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_rcpt"
 processing "accept" (TESTSUITE/test-config 23)
 check domains = +relay_domains
-a.b.c in "a.b.c"? yes (matched "a.b.c")
+list element: +relay_domains
+ start sublist relay_domains
+  list element: a.b.c
+  a.b.c in "a.b.c"? yes (matched "a.b.c")
+ end sublist relay_domains
 data from lookup saved for cache for +relay_domains: key 'a.b.c' value 'a.b.c'
 a.b.c in "+relay_domains"? yes (matched "+relay_domains")
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@a.b.c
+list element: x@a.b.c
 address match test: subject=x@a.b.c pattern=x@a.b.c
+list element: a.b.c
 a.b.c in "a.b.c"? yes (matched "a.b.c")
 x@a.b.c in "x@a.b.c"? yes (matched "x@a.b.c")
 LOG: address_rewrite MAIN
@@ -61,13 +90,21 @@ routing x@x.test.ex
 --------> r1 router <--------
 local_part=x domain=x.test.ex
 checking domains
-x.test.ex in "a.b.c"? no (end of list)
+list element: +relay_domains
+ start sublist relay_domains
+  list element: a.b.c
+  x.test.ex in "a.b.c"? no (end of list)
+ end sublist relay_domains
 x.test.ex in "+relay_domains"? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=x domain=x.test.ex
 checking domains
-x.test.ex in "*.test.ex"? yes (matched "*.test.ex")
+list element: +local_domains
+ start sublist local_domains
+  list element: *.test.ex
+  x.test.ex in "*.test.ex"? yes (matched "*.test.ex")
+ end sublist local_domains
 data from lookup saved for cache for +local_domains: key 'x.test.ex' value '*.test.ex'
 x.test.ex in "+local_domains"? yes (matched "+local_domains")
 calling r2 router

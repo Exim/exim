@@ -6,5 +6,8 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> xxxx in helo_lookup_domains? no (end of list)
 LOG: SMTP call from (xxxx) [V4NET.0.0.1] dropped: too many syntax or protocol errors (last command was "rcpt to:<bad syntax@x.y.z>",  C=HELO,MAIL,RCPT,RCPT,RCPT,RCPT)

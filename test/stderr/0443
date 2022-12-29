@@ -6,6 +6,9 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
 >>> processing "accept" (TESTSUITE/test-config 20)
@@ -13,6 +16,7 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1.test.ex
 >>> calling r1 router
+>>> list element: *
 >>> ten-1.test.ex in "*"? yes (matched "*")
 >>> routed by r1 router
 >>> Attempting full verification using callout

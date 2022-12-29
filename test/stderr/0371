@@ -1,6 +1,22 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -28,14 +44,18 @@ check set acl_c9 = $acl_c9; connect
                  = ; connect
 accept: condition test succeeded in ACL "connect"
 end of ACL "connect": ACCEPT
+list element: 
 SMTP>> 220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< ehlo something
+list element: @
+list element: @[]
 something in helo_lookup_domains? no (end of list)
 sender_fullhost = (something) [V4NET.0.0.0]
 sender_rcvhost = [V4NET.0.0.0] (helo=something)
 set_process_info: pppp handling incoming connection from (something) [V4NET.0.0.0]
 host in dsn_advertise_hosts? no (option unset)
+list element: *
 host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-mail.test.ex Hello something [V4NET.0.0.0]
@@ -103,6 +123,7 @@ LOG: MAIN
 SMTP>> 250 OK id=10HmaX-0005vi-00
 smtp_setup_msg entered
 SMTP<< vrfy x@y
+list element: *
 host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 using ACL "vrfy"
 processing "accept" (TESTSUITE/test-config 41)

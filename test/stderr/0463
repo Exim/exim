@@ -1,6 +1,22 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -16,6 +32,7 @@ routing x@ten-1
 --------> all router <--------
 local_part=x domain=ten-1
 checking domains
+list element: !@mx_any
 DNS lookup of ten-1 (MX) using fakens
 DNS lookup of ten-1 (MX) gave NO_DATA
 returning DNS_NODATA
@@ -26,6 +43,7 @@ ten-1 in "!@mx_any"? yes (end of list)
 calling all router
 all router called for x@ten-1
   domain = ten-1
+list element: *
 ten-1 in "*"? yes (matched "*")
 DNS lookup of ten-1 (MX) using fakens
 DNS lookup of ten-1 (MX) gave NO_DATA
@@ -47,6 +65,7 @@ routing x@ten-1.test.ex
 --------> all router <--------
 local_part=x domain=ten-1.test.ex
 checking domains
+list element: !@mx_any
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
@@ -57,6 +76,7 @@ ten-1.test.ex in "!@mx_any"? yes (end of list)
 calling all router
 all router called for x@ten-1.test.ex
   domain = ten-1.test.ex
+list element: *
 ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA

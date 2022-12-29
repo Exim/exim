@@ -6,6 +6,11 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_9"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -14,12 +19,25 @@
 >>> accept: condition test failed in ACL "acl_5_6_9"
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
->>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> host in smtp_accept_max_nonmail_hosts?
+>>>  list element: *
+>>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> rhu.barb in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> rhu.barb in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> host in pipelining_advertise_hosts? yes (matched "*")
->>> host in auth_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in auth_advertise_hosts?
+>>>  list element: *
+>>>  host in auth_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> auth1 authenticator server_condition:
 >>>   $auth1 = 
 >>>   $auth2 = userx
@@ -32,7 +50,9 @@ LOG: H=(test) [5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>>   message: You must authenticate
 >>> check authenticated = *
->>> auth1 in "*"? yes (matched "*")
+>>> auth1 in "*"?
+>>>  list element: *
+>>>  auth1 in "*"? yes (matched "*")
 >>> accept: condition test succeeded in ACL "acl_5_6_9"
 >>> end of ACL "acl_5_6_9": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -43,6 +63,11 @@ LOG: H=(test) [5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_10"
 >>> processing "accept" (TESTSUITE/test-config 24)
@@ -50,12 +75,25 @@ LOG: H=(test) [5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> accept: condition test failed in ACL "acl_5_6_10"
 >>> end of ACL "acl_5_6_10": implicit DENY
 LOG: H=(test) [5.6.10.1] F=<x@y> rejected RCPT <x@y>
->>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> host in smtp_accept_max_nonmail_hosts?
+>>>  list element: *
+>>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> rhu.barb in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> rhu.barb in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> host in pipelining_advertise_hosts? yes (matched "*")
->>> host in auth_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in auth_advertise_hosts?
+>>>  list element: *
+>>>  host in auth_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> auth1 authenticator server_condition:
 >>>   $auth1 = 
 >>>   $auth2 = userx
@@ -67,7 +105,9 @@ LOG: H=(test) [5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> using ACL "acl_5_6_10"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check authenticated = auth1
->>> auth1 in "auth1"? yes (matched "auth1")
+>>> auth1 in "auth1"?
+>>>  list element: auth1
+>>>  auth1 in "auth1"? yes (matched "auth1")
 >>> accept: condition test succeeded in ACL "acl_5_6_10"
 >>> end of ACL "acl_5_6_10": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -78,11 +118,24 @@ LOG: H=(test) [5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> rhu.barb in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> rhu.barb in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> host in pipelining_advertise_hosts? yes (matched "*")
->>> host in auth_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in auth_advertise_hosts?
+>>>  list element: *
+>>>  host in auth_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> auth2 authenticator server_condition:
 >>>   $auth1 = userx
 >>>   $auth2 = secret
@@ -92,6 +145,8 @@ LOG: H=(test) [5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> using ACL "acl_5_6_10"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check authenticated = auth1
+>>> auth2 in "auth1"?
+>>>  list element: auth1
 >>> auth2 in "auth1"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_10"
 >>> end of ACL "acl_5_6_10": implicit DENY

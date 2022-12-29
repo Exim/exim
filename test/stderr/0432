@@ -6,6 +6,9 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
 >>> processing "accept" (TESTSUITE/test-config 20)
@@ -27,6 +30,22 @@ MUNGED: ::1 will be omitted in what follows
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -46,9 +65,12 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
+list element: @
+list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [1.2.3.4]
 sender_rcvhost = [1.2.3.4] (helo=test)
@@ -97,7 +119,8 @@ Attempting full verification using callout
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
 interface=NULL port=PORT_S
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ... list element: 
+ connected
   SMTP<< 220 server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
@@ -147,6 +170,22 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -166,9 +205,12 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
+list element: @
+list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [1.2.3.4]
 sender_rcvhost = [1.2.3.4] (helo=test)
@@ -236,6 +278,9 @@ search_tidyup called
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
 >>> processing "accept" (TESTSUITE/test-config 20)
@@ -263,6 +308,9 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
 >>> processing "accept" (TESTSUITE/test-config 20)
@@ -279,7 +327,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> callout cache: no domain record found for b
 >>> callout cache: no address record found for a@b
 >>> interface=NULL port=PORT_S
->>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
+>>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ... list element: 
+>>> >>>  connected
 >>>   SMTP<< 220 server ready
 >>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
 >>>   SMTP>> EHLO myhost.test.ex
@@ -311,6 +360,9 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
 >>> processing "accept" (TESTSUITE/test-config 20)
@@ -327,7 +379,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> callout cache: no domain record found for q
 >>> callout cache: no address record found for p1@q
 >>> interface=NULL port=PORT_S
->>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
+>>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ... list element: 
+>>> >>>  connected
 >>>   SMTP<< 220 server ready
 >>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
 >>>   SMTP>> EHLO myhost.test.ex

@@ -138,6 +138,31 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -159,9 +184,14 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
+test in helo_lookup_domains?
+ list element: @
+ list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [10.0.0.0]
 sender_rcvhost = [10.0.0.0] (helo=test)
@@ -175,22 +205,34 @@ SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 32)
 check domains = +local_domains
-d in "@"? no (end of list)
+d in "+local_domains"?
+ list element: +local_domains
+  start sublist local_domains
+   d in "@"?
+   ╎list element: @
+   d in "@"? no (end of list)
+  end sublist local_domains
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 33)
 check hosts = +relay_hosts
-search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
-search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts="file=TESTSUITE/aux-fixed/sqlitedb"
-LRU list:
-internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  type=sqlite key="select * from them where id='10.0.0.0'" opts="file=TESTSUITE/aux-fixed/sqlitedb"
-file lookup required for select * from them where id='10.0.0.0'
-  in TESTSUITE/aux-fixed/sqlitedb
-lookup forced cache cleanup
-lookup failed
-host in "sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'"? no (end of list)
+host in "+relay_hosts"?
+ list element: +relay_hosts
+  start sublist relay_hosts
+  host in "sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'"?
+   ╎list element: sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'
+   ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+   ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts="file=TESTSUITE/aux-fixed/sqlitedb"
+   ╎LRU list:
+   ╎internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  type=sqlite key="select * from them where id='10.0.0.0'" opts="file=TESTSUITE/aux-fixed/sqlitedb"
+   ╎file lookup required for select * from them where id='10.0.0.0'
+   ╎  in TESTSUITE/aux-fixed/sqlitedb
+   ╎lookup forced cache cleanup
+   ╎lookup failed
+  host in "sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'"? no (end of list)
+  end sublist relay_hosts
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "deny" (TESTSUITE/test-config 34)
@@ -204,23 +246,35 @@ SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 32)
 check domains = +local_domains
-d in "@"? no (end of list)
+d in "+local_domains"?
+ list element: +local_domains
+  start sublist local_domains
+   d in "@"?
+   ╎list element: @
+   d in "@"? no (end of list)
+  end sublist local_domains
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 33)
 check hosts = +relay_hosts
-search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
-  cached open
-search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts="file=TESTSUITE/aux-fixed/sqlitedb"
-LRU list:
-internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  type=sqlite key="select * from them where id='10.0.0.0'" opts="file=TESTSUITE/aux-fixed/sqlitedb"
-file lookup required for select * from them where id='10.0.0.0'
-  in TESTSUITE/aux-fixed/sqlitedb
-lookup forced cache cleanup
-lookup failed
-host in "sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'"? no (end of list)
+host in "+relay_hosts"?
+ list element: +relay_hosts
+  start sublist relay_hosts
+  host in "sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'"?
+   ╎list element: sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'
+   ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+   ╎  cached open
+   ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts="file=TESTSUITE/aux-fixed/sqlitedb"
+   ╎LRU list:
+   ╎internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  type=sqlite key="select * from them where id='10.0.0.0'" opts="file=TESTSUITE/aux-fixed/sqlitedb"
+   ╎file lookup required for select * from them where id='10.0.0.0'
+   ╎  in TESTSUITE/aux-fixed/sqlitedb
+   ╎lookup forced cache cleanup
+   ╎lookup failed
+  host in "sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'"? no (end of list)
+  end sublist relay_hosts
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "deny" (TESTSUITE/test-config 34)
@@ -239,6 +293,31 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1236
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -260,9 +339,14 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
+test in helo_lookup_domains?
+ list element: @
+ list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [10.0.0.0]
 sender_rcvhost = [10.0.0.0] (helo=test)
@@ -276,22 +360,34 @@ SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 32)
 check domains = +local_domains
-d in "@"? no (end of list)
+d in "+local_domains"?
+ list element: +local_domains
+  start sublist local_domains
+   d in "@"?
+   ╎list element: @
+   d in "@"? no (end of list)
+  end sublist local_domains
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 33)
 check hosts = +relay_hosts
-search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
-search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  type=sqlite key="select * from them where id='10.0.0.0'" opts=NULL
-file lookup required for select * from them where id='10.0.0.0'
-  in TESTSUITE/aux-fixed/sqlitedb
-lookup forced cache cleanup
-lookup failed
-host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
+host in "+relay_hosts"?
+ list element: +relay_hosts
+  start sublist relay_hosts
+  host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"?
+   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'
+   ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+   ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎LRU list:
+   ╎internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  type=sqlite key="select * from them where id='10.0.0.0'" opts=NULL
+   ╎file lookup required for select * from them where id='10.0.0.0'
+   ╎  in TESTSUITE/aux-fixed/sqlitedb
+   ╎lookup forced cache cleanup
+   ╎lookup failed
+  host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
+  end sublist relay_hosts
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "deny" (TESTSUITE/test-config 34)
@@ -305,23 +401,35 @@ SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 32)
 check domains = +local_domains
-d in "@"? no (end of list)
+d in "+local_domains"?
+ list element: +local_domains
+  start sublist local_domains
+   d in "@"?
+   ╎list element: @
+   d in "@"? no (end of list)
+  end sublist local_domains
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 33)
 check hosts = +relay_hosts
-search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
-  cached open
-search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  type=sqlite key="select * from them where id='10.0.0.0'" opts=NULL
-file lookup required for select * from them where id='10.0.0.0'
-  in TESTSUITE/aux-fixed/sqlitedb
-lookup forced cache cleanup
-lookup failed
-host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
+host in "+relay_hosts"?
+ list element: +relay_hosts
+  start sublist relay_hosts
+  host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"?
+   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'
+   ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+   ╎  cached open
+   ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎LRU list:
+   ╎internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  type=sqlite key="select * from them where id='10.0.0.0'" opts=NULL
+   ╎file lookup required for select * from them where id='10.0.0.0'
+   ╎  in TESTSUITE/aux-fixed/sqlitedb
+   ╎lookup forced cache cleanup
+   ╎lookup failed
+  host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
+  end sublist relay_hosts
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "deny" (TESTSUITE/test-config 34)
@@ -340,6 +448,31 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1237
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -361,9 +494,14 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
+test in helo_lookup_domains?
+ list element: @
+ list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [10.10.10.10]
 sender_rcvhost = [10.10.10.10] (helo=test)
@@ -377,23 +515,35 @@ SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 32)
 check domains = +local_domains
-d in "@"? no (end of list)
+d in "+local_domains"?
+ list element: +local_domains
+  start sublist local_domains
+   d in "@"?
+   ╎list element: @
+   d in "@"? no (end of list)
+  end sublist local_domains
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 33)
 check hosts = +relay_hosts
-search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
-search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  key="select * from them where id='10.10.10.10'" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  type=sqlite key="select * from them where id='10.10.10.10'" opts=NULL
-file lookup required for select * from them where id='10.10.10.10'
-  in TESTSUITE/aux-fixed/sqlitedb
-creating new cache entry
-lookup yielded: name=ok id=10.10.10.10 
-host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
-host in "+relay_hosts"? yes (matched "+relay_hosts")
+host in "+relay_hosts"?
+ list element: +relay_hosts
+  start sublist relay_hosts
+  host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"?
+   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'
+   ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+   ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  key="select * from them where id='10.10.10.10'" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎LRU list:
+   ╎internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  type=sqlite key="select * from them where id='10.10.10.10'" opts=NULL
+   ╎file lookup required for select * from them where id='10.10.10.10'
+   ╎  in TESTSUITE/aux-fixed/sqlitedb
+   ╎creating new cache entry
+   ╎lookup yielded: name=ok id=10.10.10.10 
+   ╎host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
+  end sublist relay_hosts
+  host in "+relay_hosts"? yes (matched "+relay_hosts")
 accept: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": ACCEPT
 SMTP>> 250 Accepted
@@ -401,23 +551,35 @@ SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 32)
 check domains = +local_domains
-d in "@"? no (end of list)
+d in "+local_domains"?
+ list element: +local_domains
+  start sublist local_domains
+   d in "@"?
+   ╎list element: @
+   d in "@"? no (end of list)
+  end sublist local_domains
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 33)
 check hosts = +relay_hosts
-search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
-  cached open
-search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  key="select * from them where id='10.10.10.10'" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  type=sqlite key="select * from them where id='10.10.10.10'" opts=NULL
-cached data used for lookup of select * from them where id='10.10.10.10'
-  in TESTSUITE/aux-fixed/sqlitedb
-lookup yielded: name=ok id=10.10.10.10 
-host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
-host in "+relay_hosts"? yes (matched "+relay_hosts")
+host in "+relay_hosts"?
+ list element: +relay_hosts
+  start sublist relay_hosts
+  host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"?
+   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'
+   ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+   ╎  cached open
+   ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  key="select * from them where id='10.10.10.10'" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎LRU list:
+   ╎internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+   ╎  type=sqlite key="select * from them where id='10.10.10.10'" opts=NULL
+   ╎cached data used for lookup of select * from them where id='10.10.10.10'
+   ╎  in TESTSUITE/aux-fixed/sqlitedb
+   ╎lookup yielded: name=ok id=10.10.10.10 
+   ╎host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
+  end sublist relay_hosts
+  host in "+relay_hosts"? yes (matched "+relay_hosts")
 accept: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": ACCEPT
 SMTP>> 250 Accepted
@@ -430,6 +592,31 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1238
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -478,6 +665,13 @@ exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DOPT=y -C TESTSU
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1239
+PATH in keep_environment?
+ list element: PATH
+SSLKEYLOGFILE in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

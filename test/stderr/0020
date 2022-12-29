@@ -1,5 +1,7 @@
 >>> host in hosts_connection_nolog? no (option unset)
->>> host in host_lookup? yes (matched "10.250.104.0/21")
+>>> host in host_lookup?
+>>>  list element: 10.250.104.0/21
+>>>  host in host_lookup? yes (matched "10.250.104.0/21")
 >>> looking up host name for 10.250.104.42
 >>> IP address lookup yielded "manyhome.test.ex"
 >>> checking addresses for manyhome.test.ex
@@ -583,6 +585,10 @@
 >>> using ACL "check_connect"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = 10.250.104.0/21
->>> host in "10.250.104.0/21"? yes (matched "10.250.104.0/21")
+>>> host in "10.250.104.0/21"?
+>>>  list element: 10.250.104.0/21
+>>>  host in "10.250.104.0/21"? yes (matched "10.250.104.0/21")
 >>> accept: condition test succeeded in ACL "check_connect"
 >>> end of ACL "check_connect": ACCEPT
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 

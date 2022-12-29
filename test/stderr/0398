@@ -1,6 +1,22 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -25,7 +41,9 @@ SMTP<< rcpt to:<abc@local>
 using ACL "rcpt"
 processing "deny" (TESTSUITE/test-config 19)
 check senders = qq@remote
+list element: qq@remote
 address match test: subject=qq@remote pattern=qq@remote
+list element: remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 check !verify = sender
@@ -38,16 +56,19 @@ routing qq@remote
 --------> r1 router <--------
 local_part=qq domain=remote
 checking domains
+list element: local
 remote in "local"? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=qq domain=remote
 checking domains
+list element: remote
 remote in "remote"? yes (matched "remote")
 calling r2 router
 r2 router called for qq@remote
   domain = remote
 route_item = * 127.0.0.1
+list element: *
 remote in "*"? yes (matched "*")
 original list of hosts = '127.0.0.1' options = ''
 expanded list of hosts = '127.0.0.1' options = ''
@@ -74,7 +95,9 @@ sender qq@remote verified ok
 deny: condition test failed in ACL "rcpt"
 processing "warn" (TESTSUITE/test-config 21)
 check senders = qq@remote
+list element: qq@remote
 address match test: subject=qq@remote pattern=qq@remote
+list element: remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 check !verify = sender/callout
@@ -87,16 +110,19 @@ routing qq@remote
 --------> r1 router <--------
 local_part=qq domain=remote
 checking domains
+list element: local
 remote in "local"? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=qq domain=remote
 checking domains
+list element: remote
 remote in "remote"? yes (matched "remote")
 calling r2 router
 r2 router called for qq@remote
   domain = remote
 route_item = * 127.0.0.1
+list element: *
 remote in "*"? yes (matched "*")
 original list of hosts = '127.0.0.1' options = ''
 expanded list of hosts = '127.0.0.1' options = ''
@@ -130,7 +156,8 @@ Attempting full verification using callout
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
 interface=NULL port=PORT_S
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ... list element: 
+ connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO mail.test.ex
@@ -173,7 +200,9 @@ LOG: MAIN
   U=CALLER Warning: Sender verify failed: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<qq@remote>: 550 Unknown
 processing "accept" (TESTSUITE/test-config 24)
 check senders = qq@remote
+list element: qq@remote
 address match test: subject=qq@remote pattern=qq@remote
+list element: remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 accept: condition test succeeded in ACL "rcpt"
@@ -183,7 +212,9 @@ SMTP<< rcpt to:<xyz@local>
 using ACL "rcpt"
 processing "deny" (TESTSUITE/test-config 19)
 check senders = qq@remote
+list element: qq@remote
 address match test: subject=qq@remote pattern=qq@remote
+list element: remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 check !verify = sender
@@ -191,7 +222,9 @@ using cached sender verify result
 deny: condition test failed in ACL "rcpt"
 processing "warn" (TESTSUITE/test-config 21)
 check senders = qq@remote
+list element: qq@remote
 address match test: subject=qq@remote pattern=qq@remote
+list element: remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 check !verify = sender/callout
@@ -204,16 +237,19 @@ routing qq@remote
 --------> r1 router <--------
 local_part=qq domain=remote
 checking domains
+list element: local
 remote in "local"? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=qq domain=remote
 checking domains
+list element: remote
 remote in "remote"? yes (matched "remote")
 calling r2 router
 r2 router called for qq@remote
   domain = remote
 route_item = * 127.0.0.1
+list element: *
 remote in "*"? yes (matched "*")
 original list of hosts = '127.0.0.1' options = ''
 expanded list of hosts = '127.0.0.1' options = ''
@@ -254,7 +290,9 @@ LOG: MAIN
   U=CALLER Warning: Sender verify failed
 processing "accept" (TESTSUITE/test-config 24)
 check senders = qq@remote
+list element: qq@remote
 address match test: subject=qq@remote pattern=qq@remote
+list element: remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 accept: condition test succeeded in ACL "rcpt"

@@ -1,6 +1,31 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -18,17 +43,27 @@ routing userx@test.ex
 --------> r1 router <--------
 local_part=userx domain=test.ex
 checking domains
-search_open: testdb "NULL"
-search_find: file="NULL"
-  key="defer" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="NULL"
-  type=testdb key="defer" opts=NULL
-database lookup required for defer
-testdb lookup forced DEFER
-lookup deferred: testdb lookup forced DEFER
-test.ex in "testdb;defer"? list match deferred for testdb;defer
-test.ex in "+defer_lookup : test.ex"? list match deferred for +defer_lookup
+test.ex in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   test.ex in "+defer_lookup : test.ex"?
+   ╎list element: +defer_lookup
+   ╎ start sublist defer_lookup
+   ╎  test.ex in "testdb;defer"?
+   ╎   list element: testdb;defer
+   ╎   search_open: testdb "NULL"
+   ╎   search_find: file="NULL"
+   ╎     key="defer" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎   LRU list:
+   ╎   internal_search_find: file="NULL"
+   ╎     type=testdb key="defer" opts=NULL
+   ╎   database lookup required for defer
+   ╎   testdb lookup forced DEFER
+   ╎   lookup deferred: testdb lookup forced DEFER
+   ╎  test.ex in "testdb;defer"? list match deferred for testdb;defer
+   ╎ end sublist defer_lookup
+   test.ex in "+defer_lookup : test.ex"? list match deferred for +defer_lookup
+  end sublist local_domains
 test.ex in "! +local_domains"? list match deferred for ! +local_domains
 domains check lookup or other defer
 search_tidyup called

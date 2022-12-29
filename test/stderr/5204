@@ -226,6 +226,31 @@ routed by pm router
   transport: null
 >>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 host in hosts_connection_nolog? no (option unset)
@@ -238,10 +263,21 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+host in pipelining_connect_advertise_hosts?
+ list element: 
+some.name in helo_lookup_domains?
+ list element: @
+ list element: @[]
 some.name in helo_lookup_domains? no (end of list)
+host in limits_advertise_hosts?
+ list element: !*
 host in dsn_advertise_hosts? no (option unset)
-host in pipelining_advertise_hosts? yes (matched "*")
+host in pipelining_advertise_hosts?
+ list element: *
+  host in pipelining_advertise_hosts? yes (matched "*")
+host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
+host in tls_advertise_hosts?
 processing "accept" (TESTSUITE/test-config 79)
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -249,13 +285,20 @@ routing "FAIL cannot route this one (FAIL)"@some.host
 --------> b router <--------
 local_part=fail cannot route this one (fail) domain=some.host
 checking senders
-y in ""? no (end of list)
+x@y in ":"?
+ list element: 
+ y in ""?
+ y in ""? no (end of list)
 x@y in ":"? no (end of list)
 b router skipped: senders mismatch
 --------> q router <--------
 local_part=FAIL cannot route this one (FAIL) domain=some.host
 checking domains
-some.host in "test.ex"? no (end of list)
+some.host in "! +local_domains"?
+ list element: ! +local_domains
+ some.host in "test.ex"?
+  list element: test.ex
+ some.host in "test.ex"? no (end of list)
 some.host in "! +local_domains"? yes (end of list)
 calling q router
 q router called for "FAIL cannot route this one (FAIL)"@some.host: domain = some.host

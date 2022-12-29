@@ -421,6 +421,28 @@ sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1238
+SHELL in keep_environment?
+ list element: USER
+EXIM_TEST_NUMBER in keep_environment?
+ list element: USER
+PWD in keep_environment?
+ list element: USER
+TERM in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
+SHLVL in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
+PATH in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
+_ in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -443,6 +465,10 @@ host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect1"
 processing "deny" (TESTSUITE/test-config 45)
 check hosts = <\n partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch \n 1.2.3.4
+host in "<
+ partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
+ 1.2.3.4"?
+ list element: partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
 sender host name required, to match against partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
 looking up host name for V4NET.0.0.1
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) using fakens
@@ -456,21 +482,21 @@ Forward DNS security status: unverified
   V4NET.0.0.1 OK
 sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
 sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1])
-search_open: lsearch "TESTSUITE/aux-fixed/0002.lsearch"
-search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
-  key="ten-1.test.ex" partial=2 affix=*. starflags=0 opts=NULL
-LRU list:
-  0TESTSUITE/aux-fixed/0002.lsearch
-  End
-internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
-  type=lsearch key="ten-1.test.ex" opts=NULL
-file lookup required for ten-1.test.ex
-  in TESTSUITE/aux-fixed/0002.lsearch
-creating new cache entry
-lookup yielded: 
-host in "<
- partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
- 1.2.3.4"? yes (matched "partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch")
+ search_open: lsearch "TESTSUITE/aux-fixed/0002.lsearch"
+ search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
+   key="ten-1.test.ex" partial=2 affix=*. starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0002.lsearch
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
+   type=lsearch key="ten-1.test.ex" opts=NULL
+ file lookup required for ten-1.test.ex
+   in TESTSUITE/aux-fixed/0002.lsearch
+ creating new cache entry
+ lookup yielded: 
+  host in "<
+  partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
+  1.2.3.4"? yes (matched "partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch")
 deny: condition test succeeded in ACL "connect1"
 end of ACL "connect1": DENY
 SMTP>> 550 Administrative prohibition
@@ -481,6 +507,28 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1239
+SHELL in keep_environment?
+ list element: USER
+EXIM_TEST_NUMBER in keep_environment?
+ list element: USER
+PWD in keep_environment?
+ list element: USER
+TERM in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
+SHLVL in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
+PATH in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
+_ in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -503,18 +551,20 @@ host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect2"
 processing "deny" (TESTSUITE/test-config 48)
 check hosts = net-lsearch;TESTSUITE/aux-fixed/0002.lsearch
-search_open: lsearch "TESTSUITE/aux-fixed/0002.lsearch"
-search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
-  key="V4NET.0.0.2" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-  0TESTSUITE/aux-fixed/0002.lsearch
-  End
-internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
-  type=lsearch key="V4NET.0.0.2" opts=NULL
-file lookup required for V4NET.0.0.2
-  in TESTSUITE/aux-fixed/0002.lsearch
-creating new cache entry
-lookup failed
+host in "net-lsearch;TESTSUITE/aux-fixed/0002.lsearch"?
+ list element: net-lsearch;TESTSUITE/aux-fixed/0002.lsearch
+ search_open: lsearch "TESTSUITE/aux-fixed/0002.lsearch"
+ search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
+   key="V4NET.0.0.2" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0002.lsearch
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
+   type=lsearch key="V4NET.0.0.2" opts=NULL
+ file lookup required for V4NET.0.0.2
+   in TESTSUITE/aux-fixed/0002.lsearch
+ creating new cache entry
+ lookup failed
 host in "net-lsearch;TESTSUITE/aux-fixed/0002.lsearch"? no (end of list)
 deny: condition test failed in ACL "connect2"
 end of ACL "connect2": implicit DENY
@@ -535,6 +585,11 @@ search_tidyup called
 >>> processing "accept" (TESTSUITE/test-config 42)
 >>> accept: condition test succeeded in ACL "connect0"
 >>> end of ACL "connect0": ACCEPT
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 70)
 >>> accept: condition test succeeded in inline ACL
@@ -622,6 +677,11 @@ LOG: 10HmbB-0005vi-00 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_add
 >>> processing "accept" (TESTSUITE/test-config 42)
 >>> accept: condition test succeeded in ACL "connect0"
 >>> end of ACL "connect0": ACCEPT
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 70)
 >>> accept: condition test succeeded in inline ACL
@@ -650,6 +710,11 @@ LOG: 10HmbC-0005vi-00 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_add
 >>> processing "accept" (TESTSUITE/test-config 42)
 >>> accept: condition test succeeded in ACL "connect0"
 >>> end of ACL "connect0": ACCEPT
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 70)
 >>> accept: condition test succeeded in inline ACL
@@ -669,12 +734,38 @@ LOG: 10HmbD-0005vi-00 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_add
 Exim version x.yz ....
 changed uid/gid: -C, -D, -be or -bf forces real uid
   uid=CALLER_UID gid=CALLER_GID pid=p1240
+SHELL in keep_environment?
+ list element: USER
+EXIM_TEST_NUMBER in keep_environment?
+ list element: USER
+PWD in keep_environment?
+ list element: USER
+TERM in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
+SHLVL in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
+PATH in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
+_ in keep_environment?
+ list element: USER
+USER in keep_environment?
+ list element: USER
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
- 1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask)
- 1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask)
-search_tidyup called
+ 1.2.3.4 in "1.2.3"?
+  list element: 1.2.3
+  1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask)
+  1.2.3.4 in "1.2.3.4/abc"?
+   list element: 1.2.3.4/abc
+   1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask)
+  search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -1,6 +1,31 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -23,16 +48,18 @@ host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect1"
 processing "deny" (TESTSUITE/test-config 18)
 check hosts = testdb;fail
-search_open: testdb "NULL"
-search_find: file="NULL"
-  key="fail" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="NULL"
-  type=testdb key="fail" opts=NULL
-database lookup required for fail
-testdb lookup forced FAIL
-creating new cache entry
-lookup failed
+host in "testdb;fail"?
+ list element: testdb;fail
+ search_open: testdb "NULL"
+ search_find: file="NULL"
+   key="fail" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=testdb key="fail" opts=NULL
+ database lookup required for fail
+ testdb lookup forced FAIL
+ creating new cache entry
+ lookup failed
 host in "testdb;fail"? no (end of list)
 deny: condition test failed in ACL "connect1"
 end of ACL "connect1": implicit DENY
@@ -44,6 +71,31 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -66,16 +118,18 @@ host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect2"
 processing "deny" (TESTSUITE/test-config 21)
 check hosts = net-testdb;fail
-search_open: testdb "NULL"
-search_find: file="NULL"
-  key="fail" partial=-1 affix=NULL starflags=0 opts=NULL
-LRU list:
-internal_search_find: file="NULL"
-  type=testdb key="fail" opts=NULL
-database lookup required for fail
-testdb lookup forced FAIL
-creating new cache entry
-lookup failed
+host in "net-testdb;fail"?
+ list element: net-testdb;fail
+ search_open: testdb "NULL"
+ search_find: file="NULL"
+   key="fail" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=testdb key="fail" opts=NULL
+ database lookup required for fail
+ testdb lookup forced FAIL
+ creating new cache entry
+ lookup failed
 host in "net-testdb;fail"? no (end of list)
 deny: condition test failed in ACL "connect2"
 end of ACL "connect2": implicit DENY

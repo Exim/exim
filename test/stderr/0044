@@ -1,6 +1,31 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -22,16 +47,25 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< ehlo exim.test.ex
+exim.test.ex in helo_lookup_domains?
+ list element: @
+ list element: @[]
 exim.test.ex in helo_lookup_domains? no (end of list)
 sender_fullhost = (exim.test.ex) [V4NET.11.12.13]
 sender_rcvhost = [V4NET.11.12.13] (helo=exim.test.ex)
 set_process_info: pppp handling incoming connection from (exim.test.ex) [V4NET.11.12.13]
 host in dsn_advertise_hosts? no (option unset)
-host in pipelining_advertise_hosts? yes (matched "*")
+host in pipelining_advertise_hosts?
+ list element: *
+  host in pipelining_advertise_hosts? yes (matched "*")
+host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
+host in tls_advertise_hosts?
 SMTP>> 250-the.local.host.name Hello exim.test.ex [V4NET.11.12.13]
        250-SIZE 52428800
        250-8BITMIME
@@ -45,13 +79,19 @@ SMTP<< rcpt to:<postmaster@exim.test.ex>
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 19)
 check hosts = :
+host in ":"?
+ list element: 
 host in ":"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 20)
 check recipients = postmaster@exim.test.ex
-address match test: subject=postmaster@exim.test.ex pattern=postmaster@exim.test.ex
-exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
-postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
+postmaster@exim.test.ex in "postmaster@exim.test.ex"?
+ list element: postmaster@exim.test.ex
+ address match test: subject=postmaster@exim.test.ex pattern=postmaster@exim.test.ex
+ exim.test.ex in "exim.test.ex"?
+  list element: exim.test.ex
+  exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
+ postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
 accept: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": ACCEPT
 SMTP>> 250 Accepted
@@ -59,16 +99,22 @@ SMTP<< rcpt to:list@exim.test.ex
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 19)
 check hosts = :
+host in ":"?
+ list element: 
 host in ":"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 20)
 check recipients = postmaster@exim.test.ex
-address match test: subject=list@exim.test.ex pattern=postmaster@exim.test.ex
+list@exim.test.ex in "postmaster@exim.test.ex"?
+ list element: postmaster@exim.test.ex
+ address match test: subject=list@exim.test.ex pattern=postmaster@exim.test.ex
 list@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 21)
 check senders = myfriend@*
-address match test: subject=postmaster@exim.test.ex pattern=myfriend@*
+postmaster@exim.test.ex in "myfriend@*"?
+ list element: myfriend@*
+ address match test: subject=postmaster@exim.test.ex pattern=myfriend@*
 postmaster@exim.test.ex in "myfriend@*"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "deny" (TESTSUITE/test-config 22)
@@ -92,16 +138,22 @@ SMTP<< rcpt to:list2@exim.test.ex
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 19)
 check hosts = :
+host in ":"?
+ list element: 
 host in ":"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 20)
 check recipients = postmaster@exim.test.ex
-address match test: subject=list2@exim.test.ex pattern=postmaster@exim.test.ex
+list2@exim.test.ex in "postmaster@exim.test.ex"?
+ list element: postmaster@exim.test.ex
+ address match test: subject=list2@exim.test.ex pattern=postmaster@exim.test.ex
 list2@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 21)
 check senders = myfriend@*
-address match test: subject=postmaster@exim.test.ex pattern=myfriend@*
+postmaster@exim.test.ex in "myfriend@*"?
+ list element: myfriend@*
+ address match test: subject=postmaster@exim.test.ex pattern=myfriend@*
 postmaster@exim.test.ex in "myfriend@*"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "deny" (TESTSUITE/test-config 22)
@@ -155,23 +207,40 @@ search_tidyup called
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> exim.test.ex in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> exim.test.ex in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
->>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check hosts = :
+>>> host in ":"?
+>>>  list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check recipients = postmaster@exim.test.ex
+>>> list@exim.test.ex in "postmaster@exim.test.ex"?
+>>>  list element: postmaster@exim.test.ex
 >>> list@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 21)
 >>> check senders = myfriend@*
->>> there.test.ex in "*"? yes (matched "*")
->>> myfriend@there.test.ex in "myfriend@*"? yes (matched "myfriend@*")
+>>> myfriend@there.test.ex in "myfriend@*"?
+>>>  list element: myfriend@*
+>>>  there.test.ex in "*"?
+>>>   list element: *
+>>>   there.test.ex in "*"? yes (matched "*")
+>>>  myfriend@there.test.ex in "myfriend@*"? yes (matched "myfriend@*")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
@@ -179,6 +248,31 @@ LOG: 10HmaY-0005vi-00 <= myfriend@there.test.ex H=(exim.test.ex) [V4NET.11.12.13
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -200,16 +294,25 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< ehlo exim.test.ex
+exim.test.ex in helo_lookup_domains?
+ list element: @
+ list element: @[]
 exim.test.ex in helo_lookup_domains? no (end of list)
 sender_fullhost = (exim.test.ex) [V4NET.99.99.99]
 sender_rcvhost = [V4NET.99.99.99] (helo=exim.test.ex)
 set_process_info: pppp handling incoming connection from (exim.test.ex) [V4NET.99.99.99]
 host in dsn_advertise_hosts? no (option unset)
-host in pipelining_advertise_hosts? yes (matched "*")
+host in pipelining_advertise_hosts?
+ list element: *
+  host in pipelining_advertise_hosts? yes (matched "*")
+host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
+host in tls_advertise_hosts?
 SMTP>> 250-the.local.host.name Hello exim.test.ex [V4NET.99.99.99]
        250-SIZE 52428800
        250-8BITMIME
@@ -223,16 +326,22 @@ SMTP<< rcpt to:list@exim.test.ex
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 19)
 check hosts = :
+host in ":"?
+ list element: 
 host in ":"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 20)
 check recipients = postmaster@exim.test.ex
-address match test: subject=list@exim.test.ex pattern=postmaster@exim.test.ex
+list@exim.test.ex in "postmaster@exim.test.ex"?
+ list element: postmaster@exim.test.ex
+ address match test: subject=list@exim.test.ex pattern=postmaster@exim.test.ex
 list@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 21)
 check senders = myfriend@*
-address match test: subject=postmaster@exim.test.ex pattern=myfriend@*
+postmaster@exim.test.ex in "myfriend@*"?
+ list element: myfriend@*
+ address match test: subject=postmaster@exim.test.ex pattern=myfriend@*
 postmaster@exim.test.ex in "myfriend@*"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "deny" (TESTSUITE/test-config 22)
@@ -261,6 +370,8 @@ routing postmaster@exim.test.ex
 --------> localuser router <--------
 local_part=postmaster domain=exim.test.ex
 checking local_parts
+postmaster in "userx"?
+ list element: userx
 postmaster in "userx"? no (end of list)
 localuser router skipped: local_parts mismatch
 no more routers

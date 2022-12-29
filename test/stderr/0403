@@ -1,6 +1,22 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -49,6 +65,10 @@ exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1235
+list element: PATH
+list element: PATH
+list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -87,6 +107,7 @@ routing userx@test.ex
 --------> r1 router <--------
 local_part=userx domain=test.ex
 checking domains
+list element: lsearch;TESTSUITE/aux-fixed/0403.data
 search_open: lsearch "TESTSUITE/aux-fixed/0403.data"
 search_find: file="TESTSUITE/aux-fixed/0403.data"
   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
@@ -101,6 +122,7 @@ creating new cache entry
 lookup yielded: [DOMAINDATA_test.ex]
 test.ex in "lsearch;TESTSUITE/aux-fixed/0403.data"? yes (matched "lsearch;TESTSUITE/aux-fixed/0403.data")
 checking local_parts
+list element: lsearch;TESTSUITE/aux-fixed/0403.data
 search_open: lsearch "TESTSUITE/aux-fixed/0403.data"
   cached open
 search_find: file="TESTSUITE/aux-fixed/0403.data"

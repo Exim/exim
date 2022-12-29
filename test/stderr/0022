@@ -1,6 +1,31 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -11,6 +36,9 @@ originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 sender_fullhost = [V4NET.9.8.7]
 sender_rcvhost = [V4NET.9.8.7]
+host in hosts_connection_nolog?
+ list element: 
+ list element: 127.0.0.1
 host in hosts_connection_nolog? no (end of list)
 LOG: smtp_connection MAIN
   SMTP connection from [V4NET.9.8.7]
@@ -22,9 +50,14 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
+test in helo_lookup_domains?
+ list element: @
+ list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.9.8.7]
 sender_rcvhost = [V4NET.9.8.7] (helo=test)
@@ -75,6 +108,31 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1236
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -85,6 +143,9 @@ originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 sender_fullhost = [V4NET.9.8.7]
 sender_rcvhost = [V4NET.9.8.7]
+host in hosts_connection_nolog?
+ list element: 
+ list element: 127.0.0.1
 host in hosts_connection_nolog? no (end of list)
 LOG: smtp_connection MAIN
   SMTP connection from [V4NET.9.8.7]
@@ -96,9 +157,14 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
+test in helo_lookup_domains?
+ list element: @
+ list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.9.8.7]
 sender_rcvhost = [V4NET.9.8.7] (helo=test)
@@ -152,6 +218,31 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1237
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -162,6 +253,9 @@ originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 sender_fullhost = [V4NET.9.8.7]
 sender_rcvhost = [V4NET.9.8.7]
+host in hosts_connection_nolog?
+ list element: 
+ list element: 127.0.0.1
 host in hosts_connection_nolog? no (end of list)
 LOG: smtp_connection MAIN
   SMTP connection from [V4NET.9.8.7]
@@ -173,9 +267,14 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
+test in helo_lookup_domains?
+ list element: @
+ list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.9.8.7]
 sender_rcvhost = [V4NET.9.8.7] (helo=test)
@@ -227,6 +326,9 @@ LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>> host in hosts_connection_nolog?
+>>>  list element: 
+>>>  list element: 127.0.0.1
 >>> host in hosts_connection_nolog? no (end of list)
 LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in host_lookup? no (option unset)
@@ -236,6 +338,11 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "defer"
 >>> processing "defer" (TESTSUITE/test-config 51)
@@ -254,6 +361,9 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@y> temporarily rejected RCPT <defer@y>: forcibl
 >>> end of ACL "drop": DROP
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <drop@y>: forcibly dropped
 LOG: SMTP connection from (test) [V4NET.9.8.7] closed by DROP in ACL
+>>> host in hosts_connection_nolog?
+>>>  list element: 
+>>>  list element: 127.0.0.1
 >>> host in hosts_connection_nolog? no (end of list)
 LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in host_lookup? no (option unset)
@@ -263,15 +373,25 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "defer_senders"
 >>> processing "defer" (TESTSUITE/test-config 54)
 >>> check senders = :
->>>  in ":"? yes (matched "")
+>>>  in ":"?
+>>>  list element: 
+>>>   in ":"? yes (matched "")
 >>> defer: condition test succeeded in ACL "defer_senders"
 >>> end of ACL "defer_senders": DEFER
 LOG: H=(test) [V4NET.9.8.7] F=<> temporarily rejected RCPT <defer_senders@y>
 LOG: SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
+>>> host in hosts_connection_nolog?
+>>>  list element: 
+>>>  list element: 127.0.0.1
 >>> host in hosts_connection_nolog? no (end of list)
 LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in host_lookup? no (option unset)
@@ -281,6 +401,11 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "delay_accept"
 >>> processing "accept" (TESTSUITE/test-config 57)
@@ -299,6 +424,9 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> accept: condition test succeeded in ACL "delay_warn"
 >>> end of ACL "delay_warn": ACCEPT
 LOG: SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
+>>> host in hosts_connection_nolog?
+>>>  list element: 
+>>>  list element: 127.0.0.1
 >>> host in hosts_connection_nolog? no (end of list)
 LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in host_lookup? no (option unset)
@@ -308,11 +436,18 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "host_check"
 >>> processing "deny" (TESTSUITE/test-config 71)
 >>> check hosts = net-lsearch;TESTSUITE/aux-var/0022.hosts
->>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
+>>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"?
+>>>  list element: net-lsearch;TESTSUITE/aux-var/0022.hosts
+>>>  host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
 >>>   message: host data >$host_data<
 >>> deny: condition test succeeded in ACL "host_check"
 >>> end of ACL "host_check": DENY
@@ -320,7 +455,9 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A h
 >>> using ACL "host_check"
 >>> processing "deny" (TESTSUITE/test-config 71)
 >>> check hosts = net-lsearch;TESTSUITE/aux-var/0022.hosts
->>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
+>>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"?
+>>>  list element: net-lsearch;TESTSUITE/aux-var/0022.hosts
+>>>  host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
 >>>   message: host data >$host_data<
 >>> deny: condition test succeeded in ACL "host_check"
 >>> end of ACL "host_check": DENY
@@ -329,8 +466,12 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A h
 >>> processing "deny" (TESTSUITE/test-config 75)
 >>>   message: host data >$host_data<
 >>> check hosts = +some_hosts
->>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
->>> host in "+some_hosts"? yes (matched "+some_hosts")
+>>> host in "+some_hosts"?
+>>>  list element: +some_hosts
+>>>  host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"?
+>>>   list element: net-lsearch;TESTSUITE/aux-var/0022.hosts
+>>>   host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
+>>>  host in "+some_hosts"? yes (matched "+some_hosts")
 >>> deny: condition test succeeded in ACL "host_check2"
 >>> end of ACL "host_check2": DENY
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check2@y>: host data >A host-specific message<
@@ -338,7 +479,9 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check2@y>: host data >A 
 >>> processing "deny" (TESTSUITE/test-config 75)
 >>>   message: host data >$host_data<
 >>> check hosts = +some_hosts
->>> host in "+some_hosts"? yes (matched "+some_hosts" - cached)
+>>> host in "+some_hosts"?
+>>>  list element: +some_hosts
+>>>  host in "+some_hosts"? yes (matched "+some_hosts" - cached)
 >>> deny: condition test succeeded in ACL "host_check2"
 >>> end of ACL "host_check2": DENY
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check2@y>: host data >A host-specific message<
@@ -371,6 +514,9 @@ LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
+>>> host in hosts_connection_nolog?
+>>>  list element: 
+>>>  list element: 127.0.0.1
 >>> host in hosts_connection_nolog? no (end of list)
 LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in host_lookup? no (option unset)
@@ -380,6 +526,11 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "nested_drop"
 >>> processing "accept" (TESTSUITE/test-config 44)
@@ -393,6 +544,9 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <nested_drop@y>: forcibly dropped
 LOG: SMTP connection from (test) [V4NET.9.8.7] closed by DROP in ACL
+>>> host in hosts_connection_nolog?
+>>>  list element: 
+>>>  list element: 127.0.0.1
 >>> host in hosts_connection_nolog? no (end of list)
 LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in host_lookup? no (option unset)
@@ -402,6 +556,11 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "nested_drop_require"
 >>> processing "require" (TESTSUITE/test-config 48)

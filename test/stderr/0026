@@ -6,6 +6,11 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 61)
 >>> accept: condition test succeeded in inline ACL
@@ -35,6 +40,11 @@ LOG: 10HmbI-0005vi-00 H=(test) [10.0.0.0] F=<x@y> rejected after DATA: domain mi
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 61)
 >>> accept: condition test succeeded in inline ACL

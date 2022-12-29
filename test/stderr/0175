@@ -6,15 +6,21 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@bad.domain
+>>> list element: ! +local_domains
+>>> list element: test.ex
 >>> bad.domain in "test.ex"? no (end of list)
 >>> bad.domain in "! +local_domains"? yes (end of list)
 >>> calling fail_sender router
+>>> list element: bad.domain
 >>> bad.domain in "bad.domain"? yes (matched "bad.domain")
 >>> local host found for non-MX address
 >>> fully qualified name = localhost
@@ -35,19 +41,27 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain> rejected RCPT <userx@test.ex>: S
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@bad.domain2
+>>> list element: ! +local_domains
+>>> list element: test.ex
 >>> bad.domain2 in "test.ex"? no (end of list)
 >>> bad.domain2 in "! +local_domains"? yes (end of list)
 >>> calling fail_sender router
+>>> list element: bad.domain
 >>> bad.domain2 in "bad.domain"? no (end of list)
 >>> fail_sender router declined for user@bad.domain2
+>>> list element: ! +local_domains
 >>> bad.domain2 in "! +local_domains"? yes (end of list)
 >>> calling fail_sender2 router
+>>> list element: bad.domain2
 >>> bad.domain2 in "bad.domain2"? yes (matched "bad.domain2")
 >>> local host found for non-MX address
 >>> fully qualified name = localhost
@@ -67,29 +81,41 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: 
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@ten-1.test.ex
+>>> list element: ! +local_domains
+>>> list element: test.ex
 >>> ten-1.test.ex in "test.ex"? no (end of list)
 >>> ten-1.test.ex in "! +local_domains"? yes (end of list)
 >>> calling fail_sender router
+>>> list element: bad.domain
 >>> ten-1.test.ex in "bad.domain"? no (end of list)
 >>> fail_sender router declined for user@ten-1.test.ex
+>>> list element: ! +local_domains
 >>> ten-1.test.ex in "! +local_domains"? yes (end of list)
 >>> calling fail_sender2 router
+>>> list element: bad.domain2
 >>> ten-1.test.ex in "bad.domain2"? no (end of list)
 >>> fail_sender2 router declined for user@ten-1.test.ex
+>>> list element: ! +local_domains
 >>> ten-1.test.ex in "! +local_domains"? yes (end of list)
 >>> calling lookuphost router
+>>> list element: *
 >>> ten-1.test.ex in "*"? yes (matched "*")
 >>> routed by lookuphost router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"

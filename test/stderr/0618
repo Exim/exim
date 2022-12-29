@@ -6,12 +6,17 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> tester in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check local_parts = lsearch;TESTSUITE/aux-fixed/0618.list
+>>> list element: lsearch;TESTSUITE/aux-fixed/0618.list
 >>> fred in "lsearch;TESTSUITE/aux-fixed/0618.list"? yes (matched "lsearch;TESTSUITE/aux-fixed/0618.list")
 >>> check domains = lsearch;TESTSUITE/aux-fixed/0618.list
+>>> list element: lsearch;TESTSUITE/aux-fixed/0618.list
 >>> good1.ex in "lsearch;TESTSUITE/aux-fixed/0618.list"? yes (matched "lsearch;TESTSUITE/aux-fixed/0618.list")
 >>> accept: condition test succeeded in ACL "chk_rcpt"
 >>> end of ACL "chk_rcpt": ACCEPT
@@ -19,8 +24,10 @@ LOG: 10HmbA-0005vi-00 <= a@test.ex H=(tester) [99.99.99.99] P=smtp S=sss
 >>> using ACL "chk_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check local_parts = lsearch;TESTSUITE/aux-fixed/0618.list
+>>> list element: lsearch;TESTSUITE/aux-fixed/0618.list
 >>> jim in "lsearch;TESTSUITE/aux-fixed/0618.list"? yes (matched "lsearch;TESTSUITE/aux-fixed/0618.list")
 >>> check domains = lsearch;TESTSUITE/aux-fixed/0618.list
+>>> list element: lsearch;TESTSUITE/aux-fixed/0618.list
 >>> good2.ex in "lsearch;TESTSUITE/aux-fixed/0618.list"? yes (matched "lsearch;TESTSUITE/aux-fixed/0618.list")
 >>> accept: condition test succeeded in ACL "chk_rcpt"
 >>> end of ACL "chk_rcpt": ACCEPT

@@ -6,8 +6,12 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> a.b.c.d in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
+>>> list element: *
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
@@ -16,6 +20,7 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt2.test.ex
 >>> calling r1 router
+>>> list element: *
 >>> mxt2.test.ex in "*"? yes (matched "*")
 >>> r1 router declined for x@mxt2.test.ex
 >>> no more routers

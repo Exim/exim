@@ -6,12 +6,16 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing should_log@delay1500.test.ex
 >>> calling all router
+>>> list element: *
 >>> delay1500.test.ex in "*"? yes (matched "*")
 LOG: Long A lookup for 'delay1500.test.ex': ssss msec
 >>> local host found for non-MX address
@@ -27,12 +31,16 @@ LOG: Long A lookup for 'delay1500.test.ex': ssss msec
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing should_not_log@delay500.test.ex
 >>> calling all router
+>>> list element: *
 >>> delay500.test.ex in "*"? yes (matched "*")
 >>> local host found for non-MX address
 >>> routed by all router

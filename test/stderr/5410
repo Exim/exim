@@ -1,4 +1,29 @@
 Exim version x.yz ....
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
@@ -14,10 +39,17 @@ LOG: smtp_connection MAIN
  ├considering: $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ in limits_advertise_hosts?
+ list element: !*
  in dsn_advertise_hosts? no (option unset)
- in pipelining_advertise_hosts? yes (matched "*")
+ in pipelining_advertise_hosts?
+ list element: *
+  in pipelining_advertise_hosts? yes (matched "*")
+ in chunking_advertise_hosts?
  in chunking_advertise_hosts? no (end of list)
- in tls_advertise_hosts? yes (matched "*")
+ in tls_advertise_hosts?
+ list element: *
+  in tls_advertise_hosts? yes (matched "*")
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
   ╭considering: SERVER}{server}{queue}{cutthrough}}
   ├───────text: SERVER
@@ -48,25 +80,45 @@ using ACL "cutthrough"
 processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
-domain.com in "test.ex : *.test.ex"? no (end of list)
+domain.com in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   domain.com in "test.ex : *.test.ex"?
+   ╎list element: test.ex
+   ╎list element: *.test.ex
+   domain.com in "test.ex : *.test.ex"? no (end of list)
+  end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: userx
             ╰──(tainted)
-domain.com in "*"? yes (matched "*")
+domain.com in "*"?
+ list element: *
+ domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
-domain.com in "test.ex : *.test.ex"? no (end of list)
+domain.com in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   domain.com in "test.ex : *.test.ex"?
+   ╎list element: test.ex
+   ╎list element: *.test.ex
+   domain.com in "test.ex : *.test.ex"? no (end of list)
+  end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: userx
             ╰──(tainted)
-domain.com in "*"? yes (matched "*")
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...  connected
+domain.com in "*"?
+ list element: *
+ domain.com in "*"? yes (matched "*")
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... 127.0.0.1 in hosts_try_fastopen?
+ list element: 
+ connected
  ╭considering: $primary_hostname
  ├──expanding: $primary_hostname
  ╰─────result: myhost.test.ex
@@ -141,6 +193,8 @@ cmd buf flush ddd bytes
   ╰─────result: :
  ├──expanding: ${if eq {$address_data}{usery}{*}{:}}
  ╰─────result: :
+127.0.0.1 in hosts_avoid_tls?
+ list element: 
 127.0.0.1 in hosts_avoid_tls? no (end of list)
  ╭considering: ${if eq {$address_data}{userz}{*}{:}}
   ╭considering: $address_data}{userz}{*}{:}}
@@ -168,12 +222,20 @@ cmd buf flush ddd bytes
   ╰─────result: :
  ├──expanding: ${if eq {$address_data}{userz}{*}{:}}
  ╰─────result: :
+127.0.0.1 in hosts_verify_avoid_tls?
+ list element: 
 127.0.0.1 in hosts_verify_avoid_tls? no (end of list)
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
   SMTP<< 220 TLS go ahead
+127.0.0.1 in hosts_request_ocsp?
+ list element: *
 127.0.0.1 in tls_verify_hosts? no (option unset)
-127.0.0.1 in tls_try_verify_hosts? yes (matched "*")
+127.0.0.1 in tls_try_verify_hosts?
+ list element: *
+ 127.0.0.1 in tls_try_verify_hosts? yes (matched "*")
+127.0.0.1 in tls_verify_cert_hostnames?
+ list element: 
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
@@ -558,6 +620,31 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
@@ -573,10 +660,17 @@ LOG: smtp_connection MAIN
  ├considering: $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ in limits_advertise_hosts?
+ list element: !*
  in dsn_advertise_hosts? no (option unset)
- in pipelining_advertise_hosts? yes (matched "*")
+ in pipelining_advertise_hosts?
+ list element: *
+  in pipelining_advertise_hosts? yes (matched "*")
+ in chunking_advertise_hosts?
  in chunking_advertise_hosts? no (end of list)
- in tls_advertise_hosts? yes (matched "*")
+ in tls_advertise_hosts?
+ list element: *
+  in tls_advertise_hosts? yes (matched "*")
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
   ╭considering: SERVER}{server}{queue}{cutthrough}}
   ├───────text: SERVER
@@ -607,25 +701,45 @@ using ACL "cutthrough"
 processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
-domain.com in "test.ex : *.test.ex"? no (end of list)
+domain.com in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   domain.com in "test.ex : *.test.ex"?
+   ╎list element: test.ex
+   ╎list element: *.test.ex
+   domain.com in "test.ex : *.test.ex"? no (end of list)
+  end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: usery
             ╰──(tainted)
-domain.com in "*"? yes (matched "*")
+domain.com in "*"?
+ list element: *
+ domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
-domain.com in "test.ex : *.test.ex"? no (end of list)
+domain.com in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   domain.com in "test.ex : *.test.ex"?
+   ╎list element: test.ex
+   ╎list element: *.test.ex
+   domain.com in "test.ex : *.test.ex"? no (end of list)
+  end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: usery
             ╰──(tainted)
-domain.com in "*"? yes (matched "*")
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...  connected
+domain.com in "*"?
+ list element: *
+ domain.com in "*"? yes (matched "*")
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... 127.0.0.1 in hosts_try_fastopen?
+ list element: 
+ connected
  ╭considering: $primary_hostname
  ├──expanding: $primary_hostname
  ╰─────result: myhost.test.ex
@@ -700,7 +814,9 @@ cmd buf flush ddd bytes
   ╰───skipping: result is not used
  ├──expanding: ${if eq {$address_data}{usery}{*}{:}}
  ╰─────result: *
-127.0.0.1 in hosts_avoid_tls? yes (matched "*")
+127.0.0.1 in hosts_avoid_tls?
+ list element: *
+ 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
 127.0.0.1 in hosts_avoid_pipelining? no (option unset)
 using PIPELINING
 not using DSN
@@ -1078,6 +1194,31 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
@@ -1093,10 +1234,17 @@ LOG: smtp_connection MAIN
  ├considering: $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ in limits_advertise_hosts?
+ list element: !*
  in dsn_advertise_hosts? no (option unset)
- in pipelining_advertise_hosts? yes (matched "*")
+ in pipelining_advertise_hosts?
+ list element: *
+  in pipelining_advertise_hosts? yes (matched "*")
+ in chunking_advertise_hosts?
  in chunking_advertise_hosts? no (end of list)
- in tls_advertise_hosts? yes (matched "*")
+ in tls_advertise_hosts?
+ list element: *
+  in tls_advertise_hosts? yes (matched "*")
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
   ╭considering: SERVER}{server}{queue}{cutthrough}}
   ├───────text: SERVER
@@ -1127,25 +1275,45 @@ using ACL "cutthrough"
 processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
-domain.com in "test.ex : *.test.ex"? no (end of list)
+domain.com in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   domain.com in "test.ex : *.test.ex"?
+   ╎list element: test.ex
+   ╎list element: *.test.ex
+   domain.com in "test.ex : *.test.ex"? no (end of list)
+  end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: usery
             ╰──(tainted)
-domain.com in "*"? yes (matched "*")
+domain.com in "*"?
+ list element: *
+ domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
-domain.com in "test.ex : *.test.ex"? no (end of list)
+domain.com in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   domain.com in "test.ex : *.test.ex"?
+   ╎list element: test.ex
+   ╎list element: *.test.ex
+   domain.com in "test.ex : *.test.ex"? no (end of list)
+  end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: usery
             ╰──(tainted)
-domain.com in "*"? yes (matched "*")
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...  connected
+domain.com in "*"?
+ list element: *
+ domain.com in "*"? yes (matched "*")
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... 127.0.0.1 in hosts_try_fastopen?
+ list element: 
+ connected
  ╭considering: $primary_hostname
  ├──expanding: $primary_hostname
  ╰─────result: myhost.test.ex
@@ -1220,7 +1388,9 @@ cmd buf flush ddd bytes
   ╰───skipping: result is not used
  ├──expanding: ${if eq {$address_data}{usery}{*}{:}}
  ╰─────result: *
-127.0.0.1 in hosts_avoid_tls? yes (matched "*")
+127.0.0.1 in hosts_avoid_tls?
+ list element: *
+ 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
 127.0.0.1 in hosts_avoid_pipelining? no (option unset)
 using PIPELINING
 not using DSN

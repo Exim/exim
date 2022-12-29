@@ -6,16 +6,28 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> host in smtp_accept_max_nonmail_hosts?
+>>>  list element: *
+>>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> processing "accept" (TESTSUITE/test-config 47)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
->>> test.ex in "test.ex"? yes (matched "test.ex")
->>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> test.ex in "! +local_domains"?
+>>>  list element: ! +local_domains
+>>>  test.ex in "test.ex"?
+>>>   list element: test.ex
+>>>   test.ex in "test.ex"? yes (matched "test.ex")
+>>>  test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> userx in "expan"?
+>>>  list element: expan
 >>> userx in "expan"? no (end of list)
->>> userx in "userx"? yes (matched "userx")
+>>> userx in "userx"?
+>>>  list element: userx
+>>>  userx in "userx"? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> processing "accept" (TESTSUITE/test-config 47)
@@ -23,9 +35,17 @@
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing junkjunk@test.ex
->>> test.ex in "test.ex"? yes (matched "test.ex")
->>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> test.ex in "! +local_domains"?
+>>>  list element: ! +local_domains
+>>>  test.ex in "test.ex"?
+>>>   list element: test.ex
+>>>   test.ex in "test.ex"? yes (matched "test.ex")
+>>>  test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> junkjunk in "expan"?
+>>>  list element: expan
 >>> junkjunk in "expan"? no (end of list)
+>>> junkjunk in "userx"?
+>>>  list element: userx
 >>> junkjunk in "userx"? no (end of list)
 >>> no more routers
 LOG: VRFY failed for junkjunk@test.ex H=[1.1.1.1]
@@ -34,9 +54,15 @@ LOG: VRFY failed for junkjunk@test.ex H=[1.1.1.1]
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing expan@test.ex
->>> test.ex in "test.ex"? yes (matched "test.ex")
->>> test.ex in "! +local_domains"? no (matched "! +local_domains")
->>> expan in "expan"? yes (matched "expan")
+>>> test.ex in "! +local_domains"?
+>>>  list element: ! +local_domains
+>>>  test.ex in "test.ex"?
+>>>   list element: test.ex
+>>>   test.ex in "test.ex"? yes (matched "test.ex")
+>>>  test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> expan in "expan"?
+>>>  list element: expan
+>>>  expan in "expan"? yes (matched "expan")
 >>> calling fail_expansion router
 >>> fail_expansion router: defer for expan@test.ex
 >>>   message: failed to expand "${if with syntax error": unknown condition "with"

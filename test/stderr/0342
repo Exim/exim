@@ -6,6 +6,9 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_rcpt"
 >>> processing "deny" (TESTSUITE/test-config 17)
@@ -14,11 +17,13 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1
 >>> calling dnslookup router
+>>> list element: *
 >>> ten-1 in "*"? yes (matched "*")
 >>> re-routed to x@ten-1.test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1.test.ex
 >>> calling dnslookup router
+>>> list element: *
 >>> ten-1.test.ex in "*"? yes (matched "*")
 >>> routed by dnslookup router
 >>> ----------- end verify ------------

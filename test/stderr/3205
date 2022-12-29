@@ -6,10 +6,17 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_1_2_3_4"
 >>> processing "deny" (TESTSUITE/test-config 17)
 >>> check senders = testdb;defer
+>>> userx@external.test.ex in "testdb;defer"?
+>>>  list element: testdb;defer
 >>> userx@external.test.ex in "testdb;defer"? list match deferred for testdb;defer
 >>> deny: condition test deferred in ACL "acl_1_2_3_4"
 LOG: H=(test) [1.2.3.4] F=<userx@external.test.ex> temporarily rejected RCPT <userx@test.ex>: testdb lookup forced DEFER
@@ -21,14 +28,23 @@ LOG: H=(test) [1.2.3.4] F=<userx@external.test.ex> temporarily rejected RCPT <us
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_4_3_2_1"
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> check hosts = :
+>>> host in ":"?
+>>>  list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "acl_4_3_2_1"
 >>> processing "deny" (TESTSUITE/test-config 24)
 >>> check hosts = testdb;defer
+>>> host in "testdb;defer"?
+>>>  list element: testdb;defer
 >>> host in "testdb;defer"? list match deferred for testdb;defer
 >>> deny: condition test deferred in ACL "acl_4_3_2_1"
 LOG: H=(test) [4.3.2.1] F=<userx@external.test.ex> temporarily rejected RCPT <userx@test.ex>: testdb lookup forced DEFER

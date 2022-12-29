@@ -6,6 +6,9 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 21)
@@ -13,9 +16,12 @@
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@not.test.ex
+>>> list element: ! +local_domains
+>>> list element: test.ex
 >>> not.test.ex in "test.ex"? no (end of list)
 >>> not.test.ex in "! +local_domains"? yes (end of list)
 >>> calling islocal router
+>>> list element: *
 >>> not.test.ex in "*"? yes (matched "*")
 >>> local host found for non-MX address
 >>> fully qualified name = localhost

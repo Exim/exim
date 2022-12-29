@@ -6,15 +6,24 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
+>>> test.ex in "!nopass"?
+>>>  list element: !nopass
 >>> test.ex in "!nopass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 46)
 >>>   message: $local_part@$domain shall not pass
 >>> check domains = !wontpass
+>>> test.ex in "!wontpass"?
+>>>  list element: !wontpass
 >>> test.ex in "!wontpass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny" (TESTSUITE/test-config 49)
@@ -22,25 +31,37 @@
 >>> l_message: DOMAIN EXPLICITLY DENIED
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
+>>> test.ex in "deny.test.ex"?
+>>>  list element: deny.test.ex
 >>> test.ex in "deny.test.ex"? no (end of list)
 >>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept" (TESTSUITE/test-config 54)
 >>> check domains = +local_domains
->>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> test.ex in "+local_domains"?
+>>>  list element: +local_domains
+>>>  test.ex in "test.ex : *.test.ex"?
+>>>   list element: test.ex
+>>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>>   message: $domain gets refused
 >>> check domains = !refuse.test.ex
+>>> test.ex in "!refuse.test.ex"?
+>>>  list element: !refuse.test.ex
 >>> test.ex in "!refuse.test.ex"? yes (end of list)
 >>> accept: condition test succeeded in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": ACCEPT
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
+>>> z in "!nopass"?
+>>>  list element: !nopass
 >>> z in "!nopass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 46)
 >>>   message: $local_part@$domain shall not pass
 >>> check domains = !wontpass
+>>> z in "!wontpass"?
+>>>  list element: !wontpass
 >>> z in "!wontpass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny" (TESTSUITE/test-config 49)
@@ -48,20 +69,33 @@
 >>> l_message: DOMAIN EXPLICITLY DENIED
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
+>>> z in "deny.test.ex"?
+>>>  list element: deny.test.ex
 >>> z in "deny.test.ex"? no (end of list)
 >>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept" (TESTSUITE/test-config 54)
 >>> check domains = +local_domains
->>> z in "test.ex : *.test.ex"? no (end of list)
+>>> z in "+local_domains"?
+>>>  list element: +local_domains
+>>>  z in "test.ex : *.test.ex"?
+>>>   list element: test.ex
+>>>   list element: *.test.ex
+>>>  z in "test.ex : *.test.ex"? no (end of list)
 >>> z in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept" (TESTSUITE/test-config 60)
 >>> check domains = +relay_domains
->>> z in "relay.test.ex"? no (end of list)
+>>> z in "+relay_domains"?
+>>>  list element: +relay_domains
+>>>  z in "relay.test.ex"?
+>>>   list element: relay.test.ex
+>>>  z in "relay.test.ex"? no (end of list)
 >>> z in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept" (TESTSUITE/test-config 61)
 >>> check domains = +relay_domains
+>>> z in "+relay_domains"?
+>>>  list element: +relay_domains
 >>> z in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": implicit DENY
@@ -69,11 +103,15 @@ LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <z@z>
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
+>>> test.ex in "!nopass"?
+>>>  list element: !nopass
 >>> test.ex in "!nopass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 46)
 >>>   message: $local_part@$domain shall not pass
 >>> check domains = !wontpass
+>>> test.ex in "!wontpass"?
+>>>  list element: !wontpass
 >>> test.ex in "!wontpass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny" (TESTSUITE/test-config 49)
@@ -81,25 +119,37 @@ LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <z@z>
 >>> l_message: DOMAIN EXPLICITLY DENIED
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
+>>> test.ex in "deny.test.ex"?
+>>>  list element: deny.test.ex
 >>> test.ex in "deny.test.ex"? no (end of list)
 >>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept" (TESTSUITE/test-config 54)
 >>> check domains = +local_domains
->>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> test.ex in "+local_domains"?
+>>>  list element: +local_domains
+>>>  test.ex in "test.ex : *.test.ex"?
+>>>   list element: test.ex
+>>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>>   message: $domain gets refused
 >>> check domains = !refuse.test.ex
+>>> test.ex in "!refuse.test.ex"?
+>>>  list element: !refuse.test.ex
 >>> test.ex in "!refuse.test.ex"? yes (end of list)
 >>> accept: condition test succeeded in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": ACCEPT
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
+>>> test.ex in "!nopass"?
+>>>  list element: !nopass
 >>> test.ex in "!nopass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 46)
 >>>   message: $local_part@$domain shall not pass
 >>> check domains = !wontpass
+>>> test.ex in "!wontpass"?
+>>>  list element: !wontpass
 >>> test.ex in "!wontpass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny" (TESTSUITE/test-config 49)
@@ -107,25 +157,37 @@ LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <z@z>
 >>> l_message: DOMAIN EXPLICITLY DENIED
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
+>>> test.ex in "deny.test.ex"?
+>>>  list element: deny.test.ex
 >>> test.ex in "deny.test.ex"? no (end of list)
 >>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept" (TESTSUITE/test-config 54)
 >>> check domains = +local_domains
->>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> test.ex in "+local_domains"?
+>>>  list element: +local_domains
+>>>  test.ex in "test.ex : *.test.ex"?
+>>>   list element: test.ex
+>>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>>   message: $domain gets refused
 >>> check domains = !refuse.test.ex
+>>> test.ex in "!refuse.test.ex"?
+>>>  list element: !refuse.test.ex
 >>> test.ex in "!refuse.test.ex"? yes (end of list)
 >>> accept: condition test succeeded in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": ACCEPT
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
+>>> relay.test.ex in "!nopass"?
+>>>  list element: !nopass
 >>> relay.test.ex in "!nopass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 46)
 >>>   message: $local_part@$domain shall not pass
 >>> check domains = !wontpass
+>>> relay.test.ex in "!wontpass"?
+>>>  list element: !wontpass
 >>> relay.test.ex in "!wontpass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny" (TESTSUITE/test-config 49)
@@ -133,25 +195,38 @@ LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <z@z>
 >>> l_message: DOMAIN EXPLICITLY DENIED
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
+>>> relay.test.ex in "deny.test.ex"?
+>>>  list element: deny.test.ex
 >>> relay.test.ex in "deny.test.ex"? no (end of list)
 >>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept" (TESTSUITE/test-config 54)
 >>> check domains = +local_domains
->>> relay.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
->>> relay.test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> relay.test.ex in "+local_domains"?
+>>>  list element: +local_domains
+>>>  relay.test.ex in "test.ex : *.test.ex"?
+>>>   list element: test.ex
+>>>   list element: *.test.ex
+>>>   relay.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
+>>>  relay.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>>   message: $domain gets refused
 >>> check domains = !refuse.test.ex
+>>> relay.test.ex in "!refuse.test.ex"?
+>>>  list element: !refuse.test.ex
 >>> relay.test.ex in "!refuse.test.ex"? yes (end of list)
 >>> accept: condition test succeeded in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": ACCEPT
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
+>>> deny.test.ex in "!nopass"?
+>>>  list element: !nopass
 >>> deny.test.ex in "!nopass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 46)
 >>>   message: $local_part@$domain shall not pass
 >>> check domains = !wontpass
+>>> deny.test.ex in "!wontpass"?
+>>>  list element: !wontpass
 >>> deny.test.ex in "!wontpass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny" (TESTSUITE/test-config 49)
@@ -159,18 +234,24 @@ LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <z@z>
 >>> l_message: DOMAIN EXPLICITLY DENIED
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
->>> deny.test.ex in "deny.test.ex"? yes (matched "deny.test.ex")
+>>> deny.test.ex in "deny.test.ex"?
+>>>  list element: deny.test.ex
+>>>  deny.test.ex in "deny.test.ex"? yes (matched "deny.test.ex")
 >>> deny: condition test succeeded in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": DENY
 LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@deny.test.ex>: DOMAIN EXPLICITLY DENIED
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
+>>> refuse.test.ex in "!nopass"?
+>>>  list element: !nopass
 >>> refuse.test.ex in "!nopass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 46)
 >>>   message: $local_part@$domain shall not pass
 >>> check domains = !wontpass
+>>> refuse.test.ex in "!wontpass"?
+>>>  list element: !wontpass
 >>> refuse.test.ex in "!wontpass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny" (TESTSUITE/test-config 49)
@@ -178,34 +259,49 @@ LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@deny.test.ex>: DOMAIN EXPLICITL
 >>> l_message: DOMAIN EXPLICITLY DENIED
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
+>>> refuse.test.ex in "deny.test.ex"?
+>>>  list element: deny.test.ex
 >>> refuse.test.ex in "deny.test.ex"? no (end of list)
 >>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept" (TESTSUITE/test-config 54)
 >>> check domains = +local_domains
->>> refuse.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
->>> refuse.test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> refuse.test.ex in "+local_domains"?
+>>>  list element: +local_domains
+>>>  refuse.test.ex in "test.ex : *.test.ex"?
+>>>   list element: test.ex
+>>>   list element: *.test.ex
+>>>   refuse.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
+>>>  refuse.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>>   message: $domain gets refused
 >>> check domains = !refuse.test.ex
->>> refuse.test.ex in "!refuse.test.ex"? no (matched "!refuse.test.ex")
+>>> refuse.test.ex in "!refuse.test.ex"?
+>>>  list element: !refuse.test.ex
+>>>  refuse.test.ex in "!refuse.test.ex"? no (matched "!refuse.test.ex")
 >>> accept: condition test failed in ACL "acl_1_2_3"
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@refuse.test.ex>: refuse.test.ex gets refused
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
->>> nopass in "!nopass"? no (matched "!nopass")
+>>> nopass in "!nopass"?
+>>>  list element: !nopass
+>>>  nopass in "!nopass"? no (matched "!nopass")
 >>> require: condition test failed in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": not OK
 LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@nopass>
 >>> using ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 44)
 >>> check domains = !nopass
+>>> wontpass in "!nopass"?
+>>>  list element: !nopass
 >>> wontpass in "!nopass"? yes (end of list)
 >>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require" (TESTSUITE/test-config 46)
 >>>   message: $local_part@$domain shall not pass
 >>> check domains = !wontpass
->>> wontpass in "!wontpass"? no (matched "!wontpass")
+>>> wontpass in "!wontpass"?
+>>>  list element: !wontpass
+>>>  wontpass in "!wontpass"? no (matched "!wontpass")
 >>> require: condition test failed in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": not OK
 LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@wontpass>: x@wontpass shall not pass
@@ -217,10 +313,17 @@ LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@wontpass>: x@wontpass shall not
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_7"
 >>> processing "accept" (TESTSUITE/test-config 64)
 >>> check domains = lsearch;TESTSUITE/aux-fixed/0023.doms
+>>> y in "lsearch;TESTSUITE/aux-fixed/0023.doms"?
+>>>  list element: lsearch;TESTSUITE/aux-fixed/0023.doms
 >>> y in "lsearch;TESTSUITE/aux-fixed/0023.doms"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_7"
 >>> end of ACL "acl_5_6_7": implicit DENY
@@ -228,8 +331,13 @@ LOG: H=(test) [5.6.7.8] F=<x@y> rejected RCPT <x@y>
 >>> using ACL "acl_5_6_7"
 >>> processing "accept" (TESTSUITE/test-config 64)
 >>> check domains = lsearch;TESTSUITE/aux-fixed/0023.doms
->>> test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"? yes (matched "lsearch;TESTSUITE/aux-fixed/0023.doms")
+>>> test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"?
+>>>  list element: lsearch;TESTSUITE/aux-fixed/0023.doms
+>>>  test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"? yes (matched "lsearch;TESTSUITE/aux-fixed/0023.doms")
 >>> check local_parts = $domain_data
+>>> x in "userx : spqr"?
+>>>  list element: userx
+>>>  list element: spqr
 >>> x in "userx : spqr"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_7"
 >>> end of ACL "acl_5_6_7": implicit DENY
@@ -237,17 +345,26 @@ LOG: H=(test) [5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> using ACL "acl_5_6_7"
 >>> processing "accept" (TESTSUITE/test-config 64)
 >>> check domains = lsearch;TESTSUITE/aux-fixed/0023.doms
->>> test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"? yes (matched "lsearch;TESTSUITE/aux-fixed/0023.doms")
+>>> test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"?
+>>>  list element: lsearch;TESTSUITE/aux-fixed/0023.doms
+>>>  test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"? yes (matched "lsearch;TESTSUITE/aux-fixed/0023.doms")
 >>> check local_parts = $domain_data
->>> userx in "userx : spqr"? yes (matched "userx")
+>>> userx in "userx : spqr"?
+>>>  list element: userx
+>>>  userx in "userx : spqr"? yes (matched "userx")
 >>> accept: condition test succeeded in ACL "acl_5_6_7"
 >>> end of ACL "acl_5_6_7": ACCEPT
 >>> using ACL "acl_5_6_7"
 >>> processing "accept" (TESTSUITE/test-config 64)
 >>> check domains = lsearch;TESTSUITE/aux-fixed/0023.doms
->>> test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"? yes (matched "lsearch;TESTSUITE/aux-fixed/0023.doms")
+>>> test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"?
+>>>  list element: lsearch;TESTSUITE/aux-fixed/0023.doms
+>>>  test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"? yes (matched "lsearch;TESTSUITE/aux-fixed/0023.doms")
 >>> check local_parts = $domain_data
->>> spqr in "userx : spqr"? yes (matched "spqr")
+>>> spqr in "userx : spqr"?
+>>>  list element: userx
+>>>  list element: spqr
+>>>  spqr in "userx : spqr"? yes (matched "spqr")
 >>> accept: condition test succeeded in ACL "acl_5_6_7"
 >>> end of ACL "acl_5_6_7": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -258,18 +375,29 @@ LOG: H=(test) [5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 91)
 >>> check hosts = +ok9_hosts
->>> host in "9.9.9.9"? yes (matched "9.9.9.9")
->>> host in "+ok9_hosts"? yes (matched "+ok9_hosts")
+>>> host in "+ok9_hosts"?
+>>>  list element: +ok9_hosts
+>>>  host in "9.9.9.9"?
+>>>   list element: 9.9.9.9
+>>>   host in "9.9.9.9"? yes (matched "9.9.9.9")
+>>>  host in "+ok9_hosts"? yes (matched "+ok9_hosts")
 >>> accept: condition test succeeded in ACL "acl_9_9_9"
 >>> end of ACL "acl_9_9_9": ACCEPT
 >>> using ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 91)
 >>> check hosts = +ok9_hosts
->>> host in "+ok9_hosts"? yes (matched "+ok9_hosts" - cached)
+>>> host in "+ok9_hosts"?
+>>>  list element: +ok9_hosts
+>>>  host in "+ok9_hosts"? yes (matched "+ok9_hosts" - cached)
 >>> accept: condition test succeeded in ACL "acl_9_9_9"
 >>> end of ACL "acl_9_9_9": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -280,29 +408,44 @@ LOG: H=(test) [5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 91)
 >>> check hosts = +ok9_hosts
->>> host in "9.9.9.9"? no (end of list)
+>>> host in "+ok9_hosts"?
+>>>  list element: +ok9_hosts
+>>>  host in "9.9.9.9"?
+>>>   list element: 9.9.9.9
+>>>  host in "9.9.9.9"? no (end of list)
 >>> host in "+ok9_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny" (TESTSUITE/test-config 92)
 >>>   message: don't like this host
 >>> check hosts = 9.9.9.0/26
->>> host in "9.9.9.0/26"? yes (matched "9.9.9.0/26")
+>>> host in "9.9.9.0/26"?
+>>>  list element: 9.9.9.0/26
+>>>  host in "9.9.9.0/26"? yes (matched "9.9.9.0/26")
 >>> deny: condition test succeeded in ACL "acl_9_9_9"
 >>> end of ACL "acl_9_9_9": DENY
 LOG: H=(test) [9.9.9.8] F=<x@y> rejected RCPT <x@y>: don't like this host
 >>> using ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 91)
 >>> check hosts = +ok9_hosts
+>>> host in "+ok9_hosts"?
+>>>  list element: +ok9_hosts
 >>> host in "+ok9_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny" (TESTSUITE/test-config 92)
 >>>   message: don't like this host
 >>> check hosts = 9.9.9.0/26
->>> host in "9.9.9.0/26"? yes (matched "9.9.9.0/26")
+>>> host in "9.9.9.0/26"?
+>>>  list element: 9.9.9.0/26
+>>>  host in "9.9.9.0/26"? yes (matched "9.9.9.0/26")
 >>> deny: condition test succeeded in ACL "acl_9_9_9"
 >>> end of ACL "acl_9_9_9": DENY
 LOG: H=(test) [9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
@@ -314,36 +457,55 @@ LOG: H=(test) [9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 91)
 >>> check hosts = +ok9_hosts
->>> host in "9.9.9.9"? no (end of list)
+>>> host in "+ok9_hosts"?
+>>>  list element: +ok9_hosts
+>>>  host in "9.9.9.9"?
+>>>   list element: 9.9.9.9
+>>>  host in "9.9.9.9"? no (end of list)
 >>> host in "+ok9_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny" (TESTSUITE/test-config 92)
 >>>   message: don't like this host
 >>> check hosts = 9.9.9.0/26
+>>> host in "9.9.9.0/26"?
+>>>  list element: 9.9.9.0/26
 >>> host in "9.9.9.0/26"? no (end of list)
 >>> deny: condition test failed in ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 94)
 >>> check hosts = 9.9.9.0/24
->>> host in "9.9.9.0/24"? yes (matched "9.9.9.0/24")
+>>> host in "9.9.9.0/24"?
+>>>  list element: 9.9.9.0/24
+>>>  host in "9.9.9.0/24"? yes (matched "9.9.9.0/24")
 >>> accept: condition test succeeded in ACL "acl_9_9_9"
 >>> end of ACL "acl_9_9_9": ACCEPT
 >>> using ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 91)
 >>> check hosts = +ok9_hosts
+>>> host in "+ok9_hosts"?
+>>>  list element: +ok9_hosts
 >>> host in "+ok9_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny" (TESTSUITE/test-config 92)
 >>>   message: don't like this host
 >>> check hosts = 9.9.9.0/26
+>>> host in "9.9.9.0/26"?
+>>>  list element: 9.9.9.0/26
 >>> host in "9.9.9.0/26"? no (end of list)
 >>> deny: condition test failed in ACL "acl_9_9_9"
 >>> processing "accept" (TESTSUITE/test-config 94)
 >>> check hosts = 9.9.9.0/24
->>> host in "9.9.9.0/24"? yes (matched "9.9.9.0/24")
+>>> host in "9.9.9.0/24"?
+>>>  list element: 9.9.9.0/24
+>>>  host in "9.9.9.0/24"? yes (matched "9.9.9.0/24")
 >>> accept: condition test succeeded in ACL "acl_9_9_9"
 >>> end of ACL "acl_9_9_9": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -354,12 +516,25 @@ LOG: H=(test) [9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_8"
 >>> processing "accept" (TESTSUITE/test-config 68)
 >>> check senders = user1@domain1 : domain2 : +ok_senders
->>> y in "domain2"? no (end of list)
->>> x@y in "ok@ok.ok"? no (end of list)
+>>> x@y in "user1@domain1 : domain2 : +ok_senders"?
+>>>  list element: user1@domain1
+>>>  list element: domain2
+>>>  y in "domain2"?
+>>>   list element: domain2
+>>>  y in "domain2"? no (end of list)
+>>>  list element: +ok_senders
+>>>  x@y in "ok@ok.ok"?
+>>>   list element: ok@ok.ok
+>>>  x@y in "ok@ok.ok"? no (end of list)
 >>> x@y in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
@@ -367,7 +542,13 @@ LOG: H=(test) [5.6.8.1] F=<x@y> rejected RCPT <x@y>
 >>> using ACL "acl_5_6_8"
 >>> processing "accept" (TESTSUITE/test-config 68)
 >>> check senders = user1@domain1 : domain2 : +ok_senders
->>> y in "domain2"? no (end of list)
+>>> x@y in "user1@domain1 : domain2 : +ok_senders"?
+>>>  list element: user1@domain1
+>>>  list element: domain2
+>>>  y in "domain2"?
+>>>   list element: domain2
+>>>  y in "domain2"? no (end of list)
+>>>  list element: +ok_senders
 >>> x@y in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
@@ -375,16 +556,30 @@ LOG: H=(test) [5.6.8.1] F=<x@y> rejected RCPT <y@x>
 >>> using ACL "acl_5_6_8"
 >>> processing "accept" (TESTSUITE/test-config 68)
 >>> check senders = user1@domain1 : domain2 : +ok_senders
->>> domain1 in "domain1"? yes (matched "domain1")
->>> user1@domain1 in "user1@domain1 : domain2 : +ok_senders"? yes (matched "user1@domain1")
+>>> user1@domain1 in "user1@domain1 : domain2 : +ok_senders"?
+>>>  list element: user1@domain1
+>>>  domain1 in "domain1"?
+>>>   list element: domain1
+>>>   domain1 in "domain1"? yes (matched "domain1")
+>>>  user1@domain1 in "user1@domain1 : domain2 : +ok_senders"? yes (matched "user1@domain1")
 >>> accept: condition test succeeded in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": ACCEPT
->>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> host in smtp_accept_max_nonmail_hosts?
+>>>  list element: *
+>>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "acl_5_6_8"
 >>> processing "accept" (TESTSUITE/test-config 68)
 >>> check senders = user1@domain1 : domain2 : +ok_senders
->>> domain1 in "domain2"? no (end of list)
->>> user2@domain1 in "ok@ok.ok"? no (end of list)
+>>> user2@domain1 in "user1@domain1 : domain2 : +ok_senders"?
+>>>  list element: user1@domain1
+>>>  list element: domain2
+>>>  domain1 in "domain2"?
+>>>   list element: domain2
+>>>  domain1 in "domain2"? no (end of list)
+>>>  list element: +ok_senders
+>>>  user2@domain1 in "ok@ok.ok"?
+>>>   list element: ok@ok.ok
+>>>  user2@domain1 in "ok@ok.ok"? no (end of list)
 >>> user2@domain1 in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
@@ -392,25 +587,48 @@ LOG: H=(test) [5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
 >>> using ACL "acl_5_6_8"
 >>> processing "accept" (TESTSUITE/test-config 68)
 >>> check senders = user1@domain1 : domain2 : +ok_senders
->>> domain2 in "domain1"? no (end of list)
->>> domain2 in "domain2"? yes (matched "domain2")
->>> user1@domain2 in "user1@domain1 : domain2 : +ok_senders"? yes (matched "domain2")
+>>> user1@domain2 in "user1@domain1 : domain2 : +ok_senders"?
+>>>  list element: user1@domain1
+>>>  domain2 in "domain1"?
+>>>   list element: domain1
+>>>  domain2 in "domain1"? no (end of list)
+>>>  list element: domain2
+>>>  domain2 in "domain2"?
+>>>   list element: domain2
+>>>   domain2 in "domain2"? yes (matched "domain2")
+>>>  user1@domain2 in "user1@domain1 : domain2 : +ok_senders"? yes (matched "domain2")
 >>> accept: condition test succeeded in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": ACCEPT
 >>> using ACL "acl_5_6_8"
 >>> processing "accept" (TESTSUITE/test-config 68)
 >>> check senders = user1@domain1 : domain2 : +ok_senders
->>> ok.ok in "domain2"? no (end of list)
->>> ok.ok in "ok.ok"? yes (matched "ok.ok")
->>> ok@ok.ok in "ok@ok.ok"? yes (matched "ok@ok.ok")
->>> ok@ok.ok in "user1@domain1 : domain2 : +ok_senders"? yes (matched "+ok_senders")
+>>> ok@ok.ok in "user1@domain1 : domain2 : +ok_senders"?
+>>>  list element: user1@domain1
+>>>  list element: domain2
+>>>  ok.ok in "domain2"?
+>>>   list element: domain2
+>>>  ok.ok in "domain2"? no (end of list)
+>>>  list element: +ok_senders
+>>>  ok@ok.ok in "ok@ok.ok"?
+>>>   list element: ok@ok.ok
+>>>   ok.ok in "ok.ok"?
+>>>    list element: ok.ok
+>>>    ok.ok in "ok.ok"? yes (matched "ok.ok")
+>>>   ok@ok.ok in "ok@ok.ok"? yes (matched "ok@ok.ok")
+>>>  ok@ok.ok in "user1@domain1 : domain2 : +ok_senders"? yes (matched "+ok_senders")
 >>> accept: condition test succeeded in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": ACCEPT
 >>> using ACL "acl_5_6_8"
 >>> processing "accept" (TESTSUITE/test-config 68)
 >>> check senders = user1@domain1 : domain2 : +ok_senders
->>> ok.ok in "domain2"? no (end of list)
->>> ok@ok.ok in "user1@domain1 : domain2 : +ok_senders"? yes (matched "+ok_senders" - cached)
+>>> ok@ok.ok in "user1@domain1 : domain2 : +ok_senders"?
+>>>  list element: user1@domain1
+>>>  list element: domain2
+>>>  ok.ok in "domain2"?
+>>>   list element: domain2
+>>>  ok.ok in "domain2"? no (end of list)
+>>>  list element: +ok_senders
+>>>  ok@ok.ok in "user1@domain1 : domain2 : +ok_senders"? yes (matched "+ok_senders" - cached)
 >>> accept: condition test succeeded in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -421,6 +639,11 @@ LOG: H=(test) [5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_11"
 >>> processing "accept" (TESTSUITE/test-config 71)
@@ -452,17 +675,26 @@ LOG: H=(test) [5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_12"
 >>> processing "accept" (TESTSUITE/test-config 75)
 >>> check hosts = 5.6.12.1
->>> host in "5.6.12.1"? yes (matched "5.6.12.1")
+>>> host in "5.6.12.1"?
+>>>  list element: 5.6.12.1
+>>>  host in "5.6.12.1"? yes (matched "5.6.12.1")
 >>>   message: failed nested acl
 >>> check acl = acl_5_6_12A
 >>>  using ACL "acl_5_6_12A"
 >>>  processing "accept" (TESTSUITE/test-config 82)
 >>>  check domains = ok
->>>  ok in "ok"? yes (matched "ok")
+>>>  ok in "ok"?
+>>>   list element: ok
+>>>   ok in "ok"? yes (matched "ok")
 >>>  accept: condition test succeeded in ACL "acl_5_6_12A"
 >>>  end of ACL "acl_5_6_12A": ACCEPT
 >>> accept: condition test succeeded in ACL "acl_5_6_12"
@@ -470,12 +702,16 @@ LOG: H=(test) [5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>> using ACL "acl_5_6_12"
 >>> processing "accept" (TESTSUITE/test-config 75)
 >>> check hosts = 5.6.12.1
->>> host in "5.6.12.1"? yes (matched "5.6.12.1")
+>>> host in "5.6.12.1"?
+>>>  list element: 5.6.12.1
+>>>  host in "5.6.12.1"? yes (matched "5.6.12.1")
 >>>   message: failed nested acl
 >>> check acl = acl_5_6_12A
 >>>  using ACL "acl_5_6_12A"
 >>>  processing "accept" (TESTSUITE/test-config 82)
 >>>  check domains = ok
+>>>  y in "ok"?
+>>>   list element: ok
 >>>  y in "ok"? no (end of list)
 >>>  accept: condition test failed in ACL "acl_5_6_12A"
 >>>  end of ACL "acl_5_6_12A": implicit DENY
@@ -490,10 +726,17 @@ LOG: H=(test) [5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_12"
 >>> processing "accept" (TESTSUITE/test-config 75)
 >>> check hosts = 5.6.12.1
+>>> host in "5.6.12.1"?
+>>>  list element: 5.6.12.1
 >>> host in "5.6.12.1"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_12"
 >>> processing "accept" (TESTSUITE/test-config 79)
@@ -502,6 +745,8 @@ LOG: H=(test) [5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>> using ACL "acl_5_6_12"
 >>> processing "accept" (TESTSUITE/test-config 75)
 >>> check hosts = 5.6.12.1
+>>> host in "5.6.12.1"?
+>>>  list element: 5.6.12.1
 >>> host in "5.6.12.1"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_12"
 >>> processing "accept" (TESTSUITE/test-config 79)
@@ -515,6 +760,11 @@ LOG: H=(test) [5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_8_8_8"
 >>> processing "accept" (TESTSUITE/test-config 88)
@@ -609,6 +859,11 @@ LOG: H=(test) [8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too 
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_5_6_13"
 >>> processing "accept" (TESTSUITE/test-config 85)
@@ -616,9 +871,13 @@ LOG: H=(test) [8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too 
 >>>  read ACL from file TESTSUITE/aux-fixed/0023.acl1
 >>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = y
->>>  y in "y"? yes (matched "y")
+>>>  y in "y"?
+>>>   list element: y
+>>>   y in "y"? yes (matched "y")
 >>>  check local_parts = x
->>>  x in "x"? yes (matched "x")
+>>>  x in "x"?
+>>>   list element: x
+>>>   x in "x"? yes (matched "x")
 >>>  accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl1": ACCEPT
 >>> accept: condition test succeeded in ACL "acl_5_6_13"
@@ -629,8 +888,12 @@ LOG: H=(test) [8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too 
 >>>  using ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = y
->>>  y in "y"? yes (matched "y")
+>>>  y in "y"?
+>>>   list element: y
+>>>   y in "y"? yes (matched "y")
 >>>  check local_parts = x
+>>>  x1 in "x"?
+>>>   list element: x
 >>>  x1 in "x"? no (end of list)
 >>>  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
@@ -643,8 +906,12 @@ LOG: H=(test) [5.6.13.1] F=<x@y> rejected RCPT <x1@y>
 >>>  using ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = y
->>>  y in "y"? yes (matched "y")
+>>>  y in "y"?
+>>>   list element: y
+>>>   y in "y"? yes (matched "y")
 >>>  check local_parts = x
+>>>  x2 in "x"?
+>>>   list element: x
 >>>  x2 in "x"? no (end of list)
 >>>  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
@@ -659,6 +926,11 @@ LOG: H=(test) [5.6.13.1] F=<x@y> rejected RCPT <x2@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_11_12"
 >>> processing "deny" (TESTSUITE/test-config 105)
@@ -693,6 +965,11 @@ LOG: H=(test) [V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.e
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_11_12"
 >>> processing "deny" (TESTSUITE/test-config 105)
@@ -729,6 +1006,11 @@ LOG: H=(test) [V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.e
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_20_20_20"
 >>> processing "accept" (TESTSUITE/test-config 111)
@@ -736,8 +1018,15 @@ LOG: H=(test) [V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.e
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
+>>> x in "^ok"?
+>>>  list element: ^ok
 >>> x in "^ok"? no (end of list)
+>>> x in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  list element: ^cond-
 >>> x in "^userx : ^cond-"? no (end of list)
+>>> x in "fail"?
+>>>  list element: fail
 >>> x in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
@@ -761,6 +1050,11 @@ LOG: H=(test) [20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_20_20_20"
 >>> processing "accept" (TESTSUITE/test-config 111)
@@ -768,8 +1062,12 @@ LOG: H=(test) [20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@y
+>>> userx in "^ok"?
+>>>  list element: ^ok
 >>> userx in "^ok"? no (end of list)
->>> userx in "^userx : ^cond-"? yes (matched "^userx")
+>>> userx in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  userx in "^userx : ^cond-"? yes (matched "^userx")
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
@@ -777,8 +1075,15 @@ LOG: H=(test) [20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x1@y
+>>> x1 in "^ok"?
+>>>  list element: ^ok
 >>> x1 in "^ok"? no (end of list)
+>>> x1 in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  list element: ^cond-
 >>> x1 in "^userx : ^cond-"? no (end of list)
+>>> x1 in "fail"?
+>>>  list element: fail
 >>> x1 in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
@@ -794,8 +1099,12 @@ LOG: H=(test) [20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable addres
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@y
+>>> userx in "^ok"?
+>>>  list element: ^ok
 >>> userx in "^ok"? no (end of list)
->>> userx in "^userx : ^cond-"? yes (matched "^userx")
+>>> userx in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  userx in "^userx : ^cond-"? yes (matched "^userx")
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
@@ -809,22 +1118,38 @@ LOG: H=(test) [20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable addres
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_21_21_21"
 >>> processing "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@y
+>>> userx in "^ok"?
+>>>  list element: ^ok
 >>> userx in "^ok"? no (end of list)
->>> userx in "^userx : ^cond-"? yes (matched "^userx")
+>>> userx in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  userx in "^userx : ^cond-"? yes (matched "^userx")
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x1@y
+>>> x1 in "^ok"?
+>>>  list element: ^ok
 >>> x1 in "^ok"? no (end of list)
+>>> x1 in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  list element: ^cond-
 >>> x1 in "^userx : ^cond-"? no (end of list)
+>>> x1 in "fail"?
+>>>  list element: fail
 >>> x1 in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
@@ -838,8 +1163,12 @@ LOG: H=(test) [21.21.21.21] F=<userx@y> rejected RCPT <x1@y>: Unrouteable addres
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@y
+>>> userx in "^ok"?
+>>>  list element: ^ok
 >>> userx in "^ok"? no (end of list)
->>> userx in "^userx : ^cond-"? yes (matched "^userx")
+>>> userx in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  userx in "^userx : ^cond-"? yes (matched "^userx")
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
@@ -852,9 +1181,16 @@ LOG: H=(test) [21.21.21.21] F=<userx@y> rejected RCPT <x1@y>: Unrouteable addres
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing fail@y
+>>> fail in "^ok"?
+>>>  list element: ^ok
 >>> fail in "^ok"? no (end of list)
+>>> fail in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  list element: ^cond-
 >>> fail in "^userx : ^cond-"? no (end of list)
->>> fail in "fail"? yes (matched "fail")
+>>> fail in "fail"?
+>>>  list element: fail
+>>>  fail in "fail"? yes (matched "fail")
 >>> calling r2 router
 >>> r2 router forced address failure
 >>> ----------- end verify ------------
@@ -866,8 +1202,15 @@ LOG: H=(test) [21.21.21.21] F=<userx@y> rejected RCPT <fail@y>: here is a fail m
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
+>>> x in "^ok"?
+>>>  list element: ^ok
 >>> x in "^ok"? no (end of list)
+>>> x in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  list element: ^cond-
 >>> x in "^userx : ^cond-"? no (end of list)
+>>> x in "fail"?
+>>>  list element: fail
 >>> x in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
@@ -882,15 +1225,24 @@ LOG: H=(test) [21.21.21.21] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> accept: condition test failed in ACL "acl_21_21_21"
 >>> end of ACL "acl_21_21_21": implicit DENY
 LOG: H=(test) [21.21.21.21] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
->>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> host in smtp_accept_max_nonmail_hosts?
+>>>  list element: *
+>>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "acl_21_21_21"
 >>> processing "accept" (TESTSUITE/test-config 118)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing fail@y
+>>> fail in "^ok"?
+>>>  list element: ^ok
 >>> fail in "^ok"? no (end of list)
+>>> fail in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  list element: ^cond-
 >>> fail in "^userx : ^cond-"? no (end of list)
->>> fail in "fail"? yes (matched "fail")
+>>> fail in "fail"?
+>>>  list element: fail
+>>>  fail in "fail"? yes (matched "fail")
 >>> calling r2 router
 >>> r2 router forced address failure
 >>> ----------- end verify ------------
@@ -906,10 +1258,17 @@ LOG: H=(test) [21.21.21.21] F=<fail@y> rejected RCPT <x@y>: Sender verify failed
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_22_22_22"
 >>> processing "accept" (TESTSUITE/test-config 123)
 >>> check recipients = x@y
+>>> userx@y in "x@y"?
+>>>  list element: x@y
 >>> userx@y in "x@y"? no (end of list)
 >>> accept: condition test failed in ACL "acl_22_22_22"
 >>> end of ACL "acl_22_22_22": implicit DENY
@@ -917,8 +1276,12 @@ LOG: H=(test) [22.22.22.22] F=<userx@y> rejected RCPT <userx@y>
 >>> using ACL "acl_22_22_22"
 >>> processing "accept" (TESTSUITE/test-config 123)
 >>> check recipients = x@y
->>> y in "y"? yes (matched "y")
->>> x@y in "x@y"? yes (matched "x@y")
+>>> x@y in "x@y"?
+>>>  list element: x@y
+>>>  y in "y"?
+>>>   list element: y
+>>>   y in "y"? yes (matched "y")
+>>>  x@y in "x@y"? yes (matched "x@y")
 >>> accept: condition test succeeded in ACL "acl_22_22_22"
 >>> end of ACL "acl_22_22_22": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -929,17 +1292,31 @@ LOG: H=(test) [22.22.22.22] F=<userx@y> rejected RCPT <userx@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_23_23_23"
 >>> processing "deny" (TESTSUITE/test-config 126)
 >>> check hosts = 23.23.23.0
->>> host in "23.23.23.0"? yes (matched "23.23.23.0")
+>>> host in "23.23.23.0"?
+>>>  list element: 23.23.23.0
+>>>  host in "23.23.23.0"? yes (matched "23.23.23.0")
 >>>   message: sender must verify
 >>> check !verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
+>>> x in "^ok"?
+>>>  list element: ^ok
 >>> x in "^ok"? no (end of list)
+>>> x in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  list element: ^cond-
 >>> x in "^userx : ^cond-"? no (end of list)
+>>> x in "fail"?
+>>>  list element: fail
 >>> x in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
@@ -950,13 +1327,19 @@ LOG: H=(test) [23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>> using ACL "acl_23_23_23"
 >>> processing "deny" (TESTSUITE/test-config 126)
 >>> check hosts = 23.23.23.0
->>> host in "23.23.23.0"? yes (matched "23.23.23.0")
+>>> host in "23.23.23.0"?
+>>>  list element: 23.23.23.0
+>>>  host in "23.23.23.0"? yes (matched "23.23.23.0")
 >>>   message: sender must verify
 >>> check !verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@y
+>>> userx in "^ok"?
+>>>  list element: ^ok
 >>> userx in "^ok"? no (end of list)
->>> userx in "^userx : ^cond-"? yes (matched "^userx")
+>>> userx in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  userx in "^userx : ^cond-"? yes (matched "^userx")
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
@@ -972,10 +1355,17 @@ LOG: H=(test) [23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_23_23_23"
 >>> processing "deny" (TESTSUITE/test-config 126)
 >>> check hosts = 23.23.23.0
+>>> host in "23.23.23.0"?
+>>>  list element: 23.23.23.0
 >>> host in "23.23.23.0"? no (end of list)
 >>> deny: condition test failed in ACL "acl_23_23_23"
 >>> processing "accept" (TESTSUITE/test-config 129)
@@ -989,6 +1379,11 @@ LOG: H=(test) [23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_24_24_24"
 >>> processing "warn" (TESTSUITE/test-config 132)
@@ -1005,11 +1400,18 @@ LOG: H=(test) [24.24.24.24] F=<x@y> rejected RCPT <userx@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_25_25_25"
 >>> processing "deny" (TESTSUITE/test-config 136)
 >>>   message: denying domains=x
 >>> check domains = x
+>>> y in "x"?
+>>>  list element: x
 >>> y in "x"? no (end of list)
 >>> deny: condition test failed in ACL "acl_25_25_25"
 >>> end of ACL "acl_25_25_25": implicit DENY
@@ -1022,11 +1424,18 @@ LOG: H=(test) [25.25.25.25] F=<x@y> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_26_26_26"
 >>> processing "deny" (TESTSUITE/test-config 140)
 >>> check senders = :
->>>  in ":"? yes (matched "")
+>>>  in ":"?
+>>>  list element: 
+>>>   in ":"? yes (matched "")
 >>>   message: bounce messages can have only one recipient
 >>> check condition = ${if > {$recipients_count}{0}{yes}{no}}
 >>>                 = no
@@ -1037,7 +1446,9 @@ LOG: H=(test) [25.25.25.25] F=<x@y> rejected RCPT <x@y>
 >>> using ACL "acl_26_26_26"
 >>> processing "deny" (TESTSUITE/test-config 140)
 >>> check senders = :
->>>  in ":"? yes (matched "")
+>>>  in ":"?
+>>>  list element: 
+>>>   in ":"? yes (matched "")
 >>>   message: bounce messages can have only one recipient
 >>> check condition = ${if > {$recipients_count}{0}{yes}{no}}
 >>>                 = yes
@@ -1047,7 +1458,9 @@ LOG: H=(test) [26.26.26.26] F=<> rejected RCPT <y@y>: bounce messages can have o
 >>> using ACL "acl_26_26_26"
 >>> processing "deny" (TESTSUITE/test-config 140)
 >>> check senders = :
->>>  in ":"? yes (matched "")
+>>>  in ":"?
+>>>  list element: 
+>>>   in ":"? yes (matched "")
 >>>   message: bounce messages can have only one recipient
 >>> check condition = ${if > {$recipients_count}{0}{yes}{no}}
 >>>                 = yes
@@ -1062,6 +1475,11 @@ LOG: H=(test) [26.26.26.26] F=<> rejected RCPT <z@y>: bounce messages can have o
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_27_27_27"
 >>> processing "deny" (TESTSUITE/test-config 147)
@@ -1079,23 +1497,38 @@ LOG: H=(test) [26.26.26.26] F=<> rejected RCPT <z@y>: bounce messages can have o
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_28_28_28"
 >>> processing "accept" (TESTSUITE/test-config 151)
 >>> check sender_domains = : okdomain
->>>  in ": okdomain"? yes (matched "")
+>>>  in ": okdomain"?
+>>>  list element: 
+>>>   in ": okdomain"? yes (matched "")
 >>> accept: condition test succeeded in ACL "acl_28_28_28"
 >>> end of ACL "acl_28_28_28": ACCEPT
 >>> using ACL "acl_28_28_28"
 >>> processing "accept" (TESTSUITE/test-config 151)
 >>> check sender_domains = : okdomain
->>> okdomain in ": okdomain"? yes (matched "okdomain")
+>>> okdomain in ": okdomain"?
+>>>  list element: 
+>>>  list element: okdomain
+>>>  okdomain in ": okdomain"? yes (matched "okdomain")
 >>> accept: condition test succeeded in ACL "acl_28_28_28"
 >>> end of ACL "acl_28_28_28": ACCEPT
->>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> host in smtp_accept_max_nonmail_hosts?
+>>>  list element: *
+>>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "acl_28_28_28"
 >>> processing "accept" (TESTSUITE/test-config 151)
 >>> check sender_domains = : okdomain
+>>> baddomain in ": okdomain"?
+>>>  list element: 
+>>>  list element: okdomain
 >>> baddomain in ": okdomain"? no (end of list)
 >>> accept: condition test failed in ACL "acl_28_28_28"
 >>> end of ACL "acl_28_28_28": implicit DENY
@@ -1108,6 +1541,11 @@ LOG: H=(test) [28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_0_0"
 >>> processing "require" (TESTSUITE/test-config 97)
@@ -1132,6 +1570,11 @@ LOG: H=(test) [28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_0_0"
 >>> processing "require" (TESTSUITE/test-config 97)
@@ -1150,10 +1593,17 @@ LOG: H=(test) [V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for re
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_99_99"
 >>> processing "accept" (TESTSUITE/test-config 100)
 >>> check local_parts = defer_ok
+>>> x in "defer_ok"?
+>>>  list element: defer_ok
 >>> x in "defer_ok"? no (end of list)
 >>> accept: condition test failed in ACL "acl_V4NET_99_99"
 >>> processing "accept" (TESTSUITE/test-config 102)
@@ -1173,11 +1623,18 @@ LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_99_99"
 >>> processing "accept" (TESTSUITE/test-config 100)
 >>> check local_parts = defer_ok
->>> defer_ok in "defer_ok"? yes (matched "defer_ok")
+>>> defer_ok in "defer_ok"?
+>>>  list element: defer_ok
+>>>  defer_ok in "defer_ok"? yes (matched "defer_ok")
 >>> check verify = reverse_host_lookup/defer_ok
 >>> looking up host name to force name/address consistency check
 >>> looking up host name for V4NET.99.99.96
@@ -1194,6 +1651,11 @@ LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_29_29_29"
 >>> processing "deny" (TESTSUITE/test-config 154)
@@ -1228,6 +1690,11 @@ LOG: H=(test) [29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_30_30_30"
 >>> processing "deny" (TESTSUITE/test-config 161)
@@ -1257,7 +1724,9 @@ LOG: H=(test) [30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
 >>> processing "accept" (TESTSUITE/test-config 163)
 >>> accept: condition test succeeded in ACL "acl_30_30_30"
 >>> end of ACL "acl_30_30_30": ACCEPT
->>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> host in smtp_accept_max_nonmail_hosts?
+>>>  list element: *
+>>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "acl_30_30_30"
 >>> processing "deny" (TESTSUITE/test-config 161)
 >>>   message: domain=$dnslist_domain\nvalue=$dnslist_value\nmatched=$dnslist_matched\ntext="$dnslist_text"
@@ -1279,6 +1748,11 @@ LOG: H=(test) [30.30.30.30] F=<a@13.12.11.V4NET.rbl> rejected RCPT <x@y>: domain
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_31_31_31"
 >>> processing "deny" (TESTSUITE/test-config 167)
@@ -1298,6 +1772,11 @@ LOG: dnslist query is too long (ignored): y+extra+extra+extra+extra+extra+extra+
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_33_33_33"
 >>> processing "accept" (TESTSUITE/test-config 184)
@@ -1305,8 +1784,15 @@ LOG: dnslist query is too long (ignored): y+extra+extra+extra+extra+extra+extra+
 >>> check verify = sender/no_details
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
+>>> x in "^ok"?
+>>>  list element: ^ok
 >>> x in "^ok"? no (end of list)
+>>> x in "^userx : ^cond-"?
+>>>  list element: ^userx
+>>>  list element: ^cond-
 >>> x in "^userx : ^cond-"? no (end of list)
+>>> x in "fail"?
+>>>  list element: fail
 >>> x in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
@@ -1329,6 +1815,11 @@ LOG: H=(test) [33.33.33.33] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_44_44_44"
 >>> processing "warn" (TESTSUITE/test-config 192)
@@ -1373,6 +1864,11 @@ LOG: H=(test) [44.44.44.1] Warning: ACL "warn" statement skipped: condition test
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_60_60_60"
 >>> processing "accept" (TESTSUITE/test-config 226)
@@ -1380,6 +1876,8 @@ LOG: H=(test) [44.44.44.1] Warning: ACL "warn" statement skipped: condition test
 >>>  read ACL from file TESTSUITE/aux-fixed/0023.acl2
 >>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = b
+>>>  y in "b"?
+>>>   list element: b
 >>>  y in "b"? no (end of list)
 >>>  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl2"
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl2": implicit DENY
@@ -1391,9 +1889,13 @@ LOG: H=(test) [44.44.44.1] Warning: ACL "warn" statement skipped: condition test
 >>>  using ACL "TESTSUITE/aux-fixed/0023.acl2"
 >>>  processing "accept" (TESTSUITE/test-config 272)
 >>>  check domains = b
->>>  b in "b"? yes (matched "b")
+>>>  b in "b"?
+>>>   list element: b
+>>>   b in "b"? yes (matched "b")
 >>>  check local_parts = a
->>>  a in "a"? yes (matched "a")
+>>>  a in "a"?
+>>>   list element: a
+>>>   a in "a"? yes (matched "a")
 >>>  accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0023.acl2"
 >>>  end of ACL "TESTSUITE/aux-fixed/0023.acl2": ACCEPT
 >>> accept: condition test failed in ACL "acl_60_60_60"

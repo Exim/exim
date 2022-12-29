@@ -1,6 +1,7 @@
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
+>>> list element: *N-99.test.EX
 >>> sender host name required, to match against *N-99.test.EX
 >>> looking up host name for V4NET.0.0.0
 LOG: no host name found for IP address V4NET.0.0.0
@@ -8,18 +9,26 @@ LOG: no host name found for IP address V4NET.0.0.0
 >>> host in recipient_unqualified_hosts? no (option unset)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
+>>> list element: *N-99.test.ex
 >>> sender host name required, to match against *N-99.test.ex
 >>> host in helo_accept_junk_hosts? no (failed to find host name for V4NET.0.0.0)
+>>> list element: 
 LOG: rejected HELO from [V4NET.0.0.0]: syntactically invalid argument(s): @#$%^&*()
+>>> list element: *
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> list element: @
+>>> list element: @[]
 >>> abc_xyz in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
+>>> list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: Test.ex
 >>> test.ex in "Test.ex : myhost.test.EX"? yes (matched "Test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
@@ -27,15 +36,22 @@ LOG: rejected HELO from [V4NET.0.0.0]: syntactically invalid argument(s): @#$%^&
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
+>>> list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: Test.ex
+>>> list element: myhost.test.EX
 >>> else.where in "Test.ex : myhost.test.EX"? no (end of list)
 >>> else.where in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 26)
 >>> check domains = +relay_domains
+>>> list element: +relay_domains
+>>> list element: Test.ex
+>>> list element: Relay.one.ex
 >>> else.where in "Test.ex : Relay.one.ex"? no (end of list)
 >>> else.where in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
@@ -47,6 +63,7 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
+>>> list element: *N-99.test.EX
 >>> sender host name required, to match against *N-99.test.EX
 >>> looking up host name for V4NET.0.0.99
 >>> IP address lookup yielded "ten-99.test.ex"
@@ -56,19 +73,28 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>> host in recipient_unqualified_hosts? no (option unset)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
+>>> list element: *N-99.test.ex
 >>> host in helo_accept_junk_hosts? yes (matched "*N-99.test.ex")
+>>> list element: 
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
+>>> list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: Test.ex
+>>> list element: myhost.test.EX
 >>> relay.one.ex in "Test.ex : myhost.test.EX"? no (end of list)
 >>> relay.one.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 26)
 >>> check domains = +relay_domains
+>>> list element: +relay_domains
+>>> list element: Test.ex
+>>> list element: Relay.one.ex
 >>> relay.one.ex in "Test.ex : Relay.one.ex"? yes (matched "Relay.one.ex")
 >>> relay.one.ex in "+relay_domains"? yes (matched "+relay_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
@@ -76,15 +102,22 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
+>>> list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: Test.ex
+>>> list element: myhost.test.EX
 >>> relay.two.ex in "Test.ex : myhost.test.EX"? no (end of list)
 >>> relay.two.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 26)
 >>> check domains = +relay_domains
+>>> list element: +relay_domains
+>>> list element: Test.ex
+>>> list element: Relay.one.ex
 >>> relay.two.ex in "Test.ex : Relay.one.ex"? no (end of list)
 >>> relay.two.ex in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"

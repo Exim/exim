@@ -6,12 +6,22 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> myhost.test.ex in helo_lookup_domains? yes (matched "@")
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> myhost.test.ex in helo_lookup_domains?
+>>>  list element: @
+>>>  myhost.test.ex in helo_lookup_domains? yes (matched "@")
 >>> looking up host name for 1.2.3.4
 LOG: no host name found for IP address 1.2.3.4
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> using ACL "ar"
 >>> processing "warn" (TESTSUITE/test-config 21)
 >>> check control = cutthrough_delivery
@@ -35,12 +45,22 @@ LOG: 10HmaX-0005vi-00 <= CALLER@myhost.test.ex H=(myhost.test.ex) [1.2.3.4] P=es
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> myhost.test.ex in helo_lookup_domains? yes (matched "@")
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> myhost.test.ex in helo_lookup_domains?
+>>>  list element: @
+>>>  myhost.test.ex in helo_lookup_domains? yes (matched "@")
 >>> looking up host name for 1.2.3.4
 LOG: no host name found for IP address 1.2.3.4
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> using ACL "ar"
 >>> processing "warn" (TESTSUITE/test-config 21)
 >>> check control = cutthrough_delivery
@@ -54,12 +74,25 @@ LOG: rcpt for verify@domain.com
 >>> check verify = recipient/callout=use_sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing verify@domain.com
+>>> domain.com in "localhost.test.ex : localhost4.test.ex : thishost.test.ex"?
+>>>  list element: localhost.test.ex
+>>>  list element: localhost4.test.ex
+>>>  list element: thishost.test.ex
 >>> domain.com in "localhost.test.ex : localhost4.test.ex : thishost.test.ex"? no (end of list)
->>> domain.com in "test.ex : *.test.ex"? no (end of list)
+>>> domain.com in "! +local_domains"?
+>>>  list element: ! +local_domains
+>>>  domain.com in "test.ex : *.test.ex"?
+>>>   list element: test.ex
+>>>   list element: *.test.ex
+>>>  domain.com in "test.ex : *.test.ex"? no (end of list)
 >>> domain.com in "! +local_domains"? yes (end of list)
 >>> calling all router
+>>> domain.com in "special.com"?
+>>>  list element: special.com
 >>> domain.com in "special.com"? no (end of list)
->>> domain.com in "*"? yes (matched "*")
+>>> domain.com in "*"?
+>>>  list element: *
+>>>  domain.com in "*"? yes (matched "*")
 >>> local host found for non-MX address
 >>> fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
@@ -69,7 +102,9 @@ MUNGED: ::1 will be omitted in what follows
 >>> Attempting full verification using callout
 >>> callout cache: disabled by no_cache
 >>> interface=ip4.ip4.ip4.ip4 port=PORT_S
->>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S from ip4.ip4.ip4.ip4 ...  connected
+>>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S from ip4.ip4.ip4.ip4 ... 127.0.0.1 in hosts_try_fastopen?
+>>>  list element: 
+>>> >>>  connected
 >>>   SMTP<< 220 server ready
 >>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
 >>>   SMTP>> EHLO myhost.test.ex

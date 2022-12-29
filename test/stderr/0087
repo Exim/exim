@@ -6,17 +6,23 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
+>>> list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
+>>> list element: defer
 >>> userx in "defer"? no (end of list)
+>>> list element: userx
 >>> userx in "userx"? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
@@ -24,6 +30,8 @@
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
@@ -47,17 +55,23 @@ LOG: 10HmaX-0005vi-00 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
+>>> list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
+>>> list element: defer
 >>> userx in "defer"? no (end of list)
+>>> list element: userx
 >>> userx in "userx"? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
@@ -65,6 +79,8 @@ LOG: 10HmaX-0005vi-00 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
@@ -88,17 +104,23 @@ LOG: 10HmaY-0005vi-00 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
+>>> list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
+>>> list element: defer
 >>> userx in "defer"? no (end of list)
+>>> list element: userx
 >>> userx in "userx"? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
@@ -106,6 +128,8 @@ LOG: 10HmaY-0005vi-00 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
@@ -117,7 +141,9 @@ LOG: 10HmaY-0005vi-00 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> verifying From: header address badbad@test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing badbad@test.ex
+>>> list element: defer
 >>> badbad in "defer"? no (end of list)
+>>> list element: userx
 >>> badbad in "userx"? no (end of list)
 >>> no more routers
 >>> require: condition test failed in ACL "check_message"
@@ -131,17 +157,23 @@ LOG: 10HmbA-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejected after
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
+>>> list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
+>>> list element: defer
 >>> userx in "defer"? no (end of list)
+>>> list element: userx
 >>> userx in "userx"? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
@@ -149,6 +181,8 @@ LOG: 10HmbA-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejected after
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
@@ -160,7 +194,9 @@ LOG: 10HmbA-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejected after
 >>> verifying From: header address badbad@test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing badbad@test.ex
+>>> list element: defer
 >>> badbad in "defer"? no (end of list)
+>>> list element: userx
 >>> badbad in "userx"? no (end of list)
 >>> no more routers
 >>> verifying From: header address userx@test.ex
@@ -178,17 +214,23 @@ LOG: 10HmaZ-0005vi-00 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
+>>> list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
+>>> list element: defer
 >>> userx in "defer"? no (end of list)
+>>> list element: userx
 >>> userx in "userx"? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
@@ -196,6 +238,8 @@ LOG: 10HmaZ-0005vi-00 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
@@ -207,6 +251,7 @@ LOG: 10HmaZ-0005vi-00 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> verifying From: header address defer@test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing defer@test.ex
+>>> list element: defer
 >>> defer in "defer"? yes (matched "defer")
 >>> calling defer router
 >>> defer router: defer for defer@test.ex

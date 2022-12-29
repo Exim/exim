@@ -17,14 +17,24 @@ routing joe-real@testexim.test.ex
 --------> router1 router <--------
 local_part=joe-real domain=testexim.test.ex
 checking local_parts
-joe-real in "joe:sam:tom"? no (end of list)
+list element: +aliases
+ start sublist aliases
+  list element: joe
+  list element: sam
+  list element: tom
+  joe-real in "joe:sam:tom"? no (end of list)
+ end sublist aliases
 joe-real in "+aliases"? no (end of list)
 router1 router skipped: local_parts mismatch
 --------> router2 router <--------
 local_part=joe-real domain=testexim.test.ex
 stripped suffix -real
 checking local_parts
-joe in "joe:sam:tom"? yes (matched "joe")
+list element: +aliases
+ start sublist aliases
+  list element: joe
+  joe in "joe:sam:tom"? yes (matched "joe")
+ end sublist aliases
 joe in "+aliases"? yes (matched "+aliases")
 calling router2 router
 router2 router called for joe-real@testexim.test.ex

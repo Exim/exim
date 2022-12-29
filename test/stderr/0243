@@ -6,8 +6,12 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> list element: 
+>>> list element: @
+>>> list element: @[]
 >>> xxxx in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
+>>> list element: *
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_recipient"
@@ -16,11 +20,13 @@
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing faq@nl.demon.net
+>>> list element: *.demon.net
 >>> nl.demon.net in "*.demon.net"? yes (matched "*.demon.net")
 >>> calling auto_antwoord router
 >>> routed by auto_antwoord router (unseen)
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing faq@nl.demon.net
+>>> list element: nl.demon.net
 >>> nl.demon.net in "nl.demon.net:*.nl.demon.net:fax-gw.demon.nl: www-3.demon.nl : localhost"? yes (matched "nl.demon.net")
 >>> calling algemeen_aliases router
 >>> routed by algemeen_aliases router
@@ -28,6 +34,8 @@
 >>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
+>>> list element: +local_domains
+>>> list element: nl.demon.net
 >>> nl.demon.net in "nl.demon.net"? yes (matched "nl.demon.net")
 >>> nl.demon.net in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"

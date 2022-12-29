@@ -1,6 +1,31 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -20,9 +45,14 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
+test in helo_lookup_domains?
+ list element: @
+ list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [ip4.ip4.ip4.ip4]
 sender_rcvhost = [ip4.ip4.ip4.ip4] (helo=test)
@@ -47,13 +77,18 @@ check hosts = +ignore_unknown : *.$sender_address_domain : $sender_address_domai
  dnsdb key: cioce.test.again.dns
 DNS lookup of cioce.test.again.dns (MX) using fakens
 DNS lookup of cioce.test.again.dns (MX) gave TRY_AGAIN
- cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
+ cioce.test.again.dns in dns_again_means_nonexist?
+  list element: *
+  cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
 cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
 DNS: couldn't fake dnsa len
 DNS: no SOA record found for neg-TTL
  writing neg-cache entry for cioce.test.again.dns-MX-xxxx, ttl -1
  creating new cache entry
  lookup failed
+host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "?
+ list element: +ignore_unknown
+ list element: *.cioce.test.again.dns
 sender host name required, to match against *.cioce.test.again.dns
 looking up host name for ip4.ip4.ip4.ip4
 DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens
@@ -68,10 +103,13 @@ Forward DNS security status: unverified
   ip4.ip4.ip4.ip4 OK
 sender_fullhost = the.local.host.name (test) [ip4.ip4.ip4.ip4]
 sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4] helo=test)
+ list element: cioce.test.again.dns
 using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
 DNS lookup of cioce.test.again.dns (A) using fakens
 DNS lookup of cioce.test.again.dns (A) gave TRY_AGAIN
-cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
+ cioce.test.again.dns in dns_again_means_nonexist?
+  list element: *
+  cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
 cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
 DNS: couldn't fake dnsa len
 DNS: no SOA record found for neg-TTL
@@ -80,7 +118,7 @@ host_fake_gethostbyname(af=inet) returned 1 (HOST_NOT_FOUND)
 no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
 LOG: host_lookup_failed MAIN
   no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
-failed to find IP address for cioce.test.again.dns: item ignored by +ignore_unknown
+ failed to find IP address for cioce.test.again.dns: item ignored by +ignore_unknown
 host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "? no (end of list)
 accept: condition test failed in ACL "rcpt"
 end of ACL "rcpt": implicit DENY
@@ -96,6 +134,31 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
+SHELL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+EXIM_TEST_NUMBER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PWD in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+TERM in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+USER in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+SHLVL in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
+_ in keep_environment?
+ list element: PATH
+ list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
+PATH in keep_environment?
+ list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -115,15 +178,29 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< vrfy a@test.again.dns
-host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+host in smtp_accept_max_nonmail_hosts?
+ list element: *
+  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 using ACL "vrfy"
 processing "warn" (TESTSUITE/test-config 28)
 check domains = +try_again_dns_list
+test.again.dns in "+try_again_dns_list"?
+ list element: +try_again_dns_list
+  start sublist try_again_dns_list
+   test.again.dns in "@mx_any"?
+   ╎list element: @mx_any
 DNS lookup of test.again.dns (MX) using fakens
 DNS lookup of test.again.dns (MX) gave TRY_AGAIN
+   ╎test.again.dns in dns_again_means_nonexist?
+   ╎ list element: !+try_again_dns_list
+   ╎  start sublist try_again_dns_list
+   ╎   test.again.dns in "@mx_any"?
+   ╎   ╎list element: @mx_any
 DNS lookup of test.again.dns (MX) using fakens
 DNS lookup of test.again.dns (MX) gave TRY_AGAIN
 LOG: MAIN PANIC
@@ -131,13 +208,15 @@ LOG: MAIN PANIC
 DNS: couldn't fake dnsa len
 DNS: no SOA record found for neg-TTL
  writing neg-cache entry for test.again.dns-MX-xxxx, ttl -1
-test.again.dns in "@mx_any"? no (end of list)
-test.again.dns in dns_again_means_nonexist? yes (end of list)
+   ╎   test.again.dns in "@mx_any"? no (end of list)
+   ╎  end sublist try_again_dns_list
+   ╎test.again.dns in dns_again_means_nonexist? yes (end of list)
 test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
 DNS: couldn't fake dnsa len
 DNS: no SOA record found for neg-TTL
  update neg-cache entry for test.again.dns-MX-xxxx, ttl -1
-test.again.dns in "@mx_any"? no (end of list)
+   test.again.dns in "@mx_any"? no (end of list)
+  end sublist try_again_dns_list
 test.again.dns in "+try_again_dns_list"? no (end of list)
 warn: condition test failed in ACL "vrfy"
 end of ACL "vrfy": implicit DENY
