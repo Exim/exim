@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> myhost.test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  myhost.test.ex in helo_lookup_domains? yes (matched "@")
@@ -19,7 +17,6 @@ LOG: no host name found for IP address 1.2.3.4
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "ar"
 >>> processing "warn" (TESTSUITE/test-config 21)
 >>> check control = cutthrough_delivery
@@ -43,8 +40,6 @@ LOG: 10HmaX-0005vi-00 <= CALLER@myhost.test.ex H=(myhost.test.ex) [1.2.3.4] P=es
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> myhost.test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  myhost.test.ex in helo_lookup_domains? yes (matched "@")
@@ -56,7 +51,6 @@ LOG: no host name found for IP address 1.2.3.4
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "ar"
 >>> processing "warn" (TESTSUITE/test-config 21)
 >>> check control = cutthrough_delivery

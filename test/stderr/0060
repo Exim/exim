@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -69,8 +67,6 @@ LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.0.0.1] P=smt
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -141,8 +137,6 @@ LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.0.0.2] P=smt
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -209,8 +203,6 @@ LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.0.0.5] P=smt
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -277,8 +269,6 @@ LOG: 10HmbA-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.0.0.6] P=smt
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -337,8 +327,6 @@ LOG: 10HmbB-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.255.0.1] P=s
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -398,8 +386,6 @@ LOG: 10HmbC-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.255.0.2] P=s
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -460,8 +446,6 @@ LOG: 10HmbD-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.255.0.3] P=s
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]

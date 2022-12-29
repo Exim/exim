@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 LOG: SMTP call from [V4NET.0.0.0] dropped: too many unrecognized commands (last was "four")
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -17,6 +15,4 @@ LOG: SMTP call from [V4NET.0.0.0] dropped: too many unrecognized commands (last 
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 LOG: SMTP call from [V4NET.0.0.0] dropped: too many unrecognized commands (last was "two")

@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> myhost.test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  myhost.test.ex in helo_lookup_domains? yes (matched "@")
@@ -23,8 +21,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> [127.0.0.1] in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -33,15 +29,12 @@
 >>> IP address lookup yielded "ten-1.test.ex"
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -50,8 +43,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> rhubarb.custard in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -81,8 +72,6 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
-host in pipelining_connect_advertise_hosts?
- list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< EHLO [V4NET.2.3.4]
@@ -93,15 +82,12 @@ SMTP<< EHLO [V4NET.2.3.4]
 sender_fullhost = ([V4NET.2.3.4]) [V4NET.2.3.4]
 sender_rcvhost = [V4NET.2.3.4]
 set_process_info: pppp handling incoming connection from ([V4NET.2.3.4]) [V4NET.2.3.4]
-host in limits_advertise_hosts?
- list element: !*
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts?
  list element: *
   host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
-host in tls_advertise_hosts?
 SMTP>> 250-myhost.test.ex Hello [V4NET.2.3.4] [V4NET.2.3.4]
        250-SIZE 52428800
        250-8BITMIME
@@ -170,23 +156,18 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
-host in pipelining_connect_advertise_hosts?
- list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< EHLO [V4NET.2.3.4]
 sender_fullhost = host.name.tld [V4NET.2.3.4]
 sender_rcvhost = host.name.tld ([V4NET.2.3.4])
 set_process_info: pppp handling incoming connection from host.name.tld [V4NET.2.3.4]
-host in limits_advertise_hosts?
- list element: !*
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts?
  list element: *
   host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
-host in tls_advertise_hosts?
 SMTP>> 250-myhost.test.ex Hello host.name.tld [V4NET.2.3.4]
        250-SIZE 52428800
        250-8BITMIME

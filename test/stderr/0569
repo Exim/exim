@@ -8,8 +8,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -47,8 +45,6 @@ LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=smtp S=s
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -84,8 +80,6 @@ LOG: 10HmbA-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -123,8 +117,6 @@ LOG: 10HmbB-0005vi-00 H=(test) [V4NET.10.10.10] F=<usery@exim.test.ex> rejected 
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -160,8 +152,6 @@ LOG: 10HmbC-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -199,8 +189,6 @@ LOG: 10HmaY-0005vi-00 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=smtp S=s
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]

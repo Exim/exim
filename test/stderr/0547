@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> rhu.barb in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -15,13 +13,6 @@
 >>> host in smtp_accept_max_nonmail_hosts?
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
->>> host in tls_advertise_hosts?
->>> host in tls_advertise_hosts?
->>> host in tls_advertise_hosts?
->>> host in tls_advertise_hosts?
->>> host in tls_advertise_hosts?
->>> host in tls_advertise_hosts?
->>> host in tls_advertise_hosts?
 LOG: no MAIL in SMTP connection from (rhu.barb) [10.9.8.7] D=qqs C=...HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,QUIT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -31,8 +22,6 @@ LOG: no MAIL in SMTP connection from (rhu.barb) [10.9.8.7] D=qqs C=...HELP,RSET,
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> rhu.barb in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -40,9 +29,6 @@ LOG: no MAIL in SMTP connection from (rhu.barb) [10.9.8.7] D=qqs C=...HELP,RSET,
 >>> host in smtp_accept_max_nonmail_hosts?
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
->>> host in tls_advertise_hosts?
->>> host in tls_advertise_hosts?
->>> host in tls_advertise_hosts?
 LOG: SMTP call from (rhu.barb) [10.9.8.7] dropped: too many nonmail commands (last was "HELP")
 LOG: no MAIL in SMTP connection from (rhu.barb) [10.9.8.7] D=qqs C=HELO,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP
 

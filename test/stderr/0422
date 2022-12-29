@@ -19,8 +19,6 @@
 >>> processing "accept" (TESTSUITE/test-config 21)
 >>> accept: condition test succeeded in ACL "connect"
 >>> end of ACL "connect": ACCEPT
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)

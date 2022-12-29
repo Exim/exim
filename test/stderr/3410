@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -35,7 +33,6 @@ LOG: H=(test) [5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>>  host in auth_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> auth1 authenticator server_condition:
 >>>   $auth1 = 
 >>>   $auth2 = userx
@@ -61,8 +58,6 @@ LOG: H=(test) [5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -89,7 +84,6 @@ LOG: H=(test) [5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>>  host in auth_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> auth1 authenticator server_condition:
 >>>   $auth1 = 
 >>>   $auth2 = userx
@@ -114,8 +108,6 @@ LOG: H=(test) [5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> rhu.barb in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -129,7 +121,6 @@ LOG: H=(test) [5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>>  host in auth_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> auth2 authenticator server_condition:
 >>>   $auth1 = userx
 >>>   $auth2 = secret

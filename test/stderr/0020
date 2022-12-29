@@ -590,5 +590,3 @@
 >>>  host in "10.250.104.0/21"? yes (matched "10.250.104.0/21")
 >>> accept: condition test succeeded in ACL "check_connect"
 >>> end of ACL "check_connect": ACCEPT
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 

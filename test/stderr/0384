@@ -7,23 +7,18 @@
 >>>  list element: *
 >>>  host in helo_verify_hosts? yes (matched "*")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> [V4NET.9.8.7] in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
 >>> [V4NET.9.8.7] in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "[V4NET.9.8.7]"
 >>> matched host address
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> host in smtp_accept_max_nonmail_hosts?
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")

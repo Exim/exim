@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -51,8 +49,6 @@ LOG: 10HmaY-0005vi-00 H=(test) [V4NET.0.0.1] F=<junk@jink.jonk.test.ex> rejected
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -83,8 +79,6 @@ LOG: H=(test) [V4NET.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <root@test.
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -137,8 +131,6 @@ LOG: 10HmaZ-0005vi-00 H=(test) [V4NET.0.0.2] F=<userx@test.ex> rejected after DA
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]

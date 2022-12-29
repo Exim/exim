@@ -6,21 +6,16 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "check_rcpt"
 >>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/strict
@@ -56,21 +51,16 @@ LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "check_rcpt"
 >>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/strict
@@ -105,21 +95,16 @@ LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "check_rcpt"
 >>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/per_conn/strict
@@ -155,21 +140,16 @@ LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "check_rcpt"
 >>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/per_conn/strict
@@ -204,21 +184,16 @@ LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "check_rcpt"
 >>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/per_rcpt
@@ -282,21 +257,16 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "check_rcpt2"
 >>> processing "warn" (TESTSUITE/test-config 31)
 >>> check ratelimit = 1/1m/per_rcpt/noupdate

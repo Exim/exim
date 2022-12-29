@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test.host in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -29,7 +27,6 @@
 >>>  host in auth_advertise_hosts? no (matched "!+relay_hosts")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -38,8 +35,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test.host in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -56,7 +51,6 @@
 >>>  host in auth_advertise_hosts? yes (matched "+auth_hosts")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
 >>> CRAM-MD5: user name = tim
 >>>           challenge = <1896.697170952@postoffice.reston.mci.net>
@@ -117,8 +111,6 @@ LOG: 10HmaY-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.1] P=esmtpa A=c
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test.host in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -136,7 +128,6 @@ LOG: 10HmaY-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.1] P=esmtpa A=c
 >>>  host in auth_advertise_hosts? yes (matched "+auth_hosts")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
 >>> CRAM-MD5: user name = tim
 >>>           challenge = <1896.697170952@postoffice.reston.mci.net>

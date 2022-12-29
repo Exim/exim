@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> remote.host in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -18,7 +16,6 @@
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> test.ex in percent_hack_domains?
 >>>  list element: !*relay.ex
 >>>  list element: !test.ex

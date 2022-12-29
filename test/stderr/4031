@@ -8,8 +8,6 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>>  list element: ip4.ip4.ip4.ip4
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> clientname in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -47,8 +45,6 @@ LOG: 10HmaX-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2] P=smtp S=sss
 >>>  list element: ip4.ip4.ip4.ip4
 >>> looking up host name for 127.0.0.2
 LOG: no host name found for IP address 127.0.0.2
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> clientname in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -86,8 +82,6 @@ LOG: 10HmaY-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2]:1113 P=smtp PRX=ip
 >>>  list element: ip4.ip4.ip4.ip4
 >>> looking up host name for 127.0.0.2
 LOG: no host name found for IP address 127.0.0.2
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> clientname in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -123,8 +117,6 @@ LOG: 10HmaZ-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2]:1115 P=smtp PRX=ip
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>>  list element: ip4.ip4.ip4.ip4
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 
 ******** SERVER ********
 ### non-prox plain receive

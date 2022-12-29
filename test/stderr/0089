@@ -14,8 +14,6 @@ LOG: no host name found for IP address V4NET.0.0.0
 >>>   list element: *N-99.test.ex
 >>> sender host name required, to match against *N-99.test.ex
 >>>   host in helo_accept_junk_hosts? no (failed to find host name for V4NET.0.0.0)
->>>   host in pipelining_connect_advertise_hosts?
->>>    list element: 
 LOG: rejected HELO from [V4NET.0.0.0]: syntactically invalid argument(s): @#$%^&*()
 >>>   host in smtp_accept_max_nonmail_hosts?
 >>>    list element: *
@@ -90,8 +88,6 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>> host in helo_accept_junk_hosts?
 >>>  list element: *N-99.test.ex
 >>>  host in helo_accept_junk_hosts? yes (matched "*N-99.test.ex")
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :

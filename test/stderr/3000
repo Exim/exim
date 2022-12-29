@@ -76,8 +76,6 @@ LOG: smtp_connection MAIN
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> x.y.z in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -88,7 +86,6 @@ LOG: smtp_connection MAIN
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "check_rcpt"
 >>> processing "accept" (TESTSUITE/test-config 20)
 LOG: this is a warning at TESTSUITE/aux-fixed/3000.pl line 25.

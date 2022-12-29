@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> host in smtp_accept_max_nonmail_hosts?
 >>>  list element: !10.0.0.1
 >>> host in smtp_accept_max_nonmail_hosts? yes (end of list)
@@ -20,8 +18,6 @@ LOG: SMTP call from [10.0.0.2] dropped: too many nonmail commands (last was "rse
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> host in smtp_accept_max_nonmail_hosts?
 >>>  list element: !10.0.0.1
 >>>  host in smtp_accept_max_nonmail_hosts? no (matched "!10.0.0.1")

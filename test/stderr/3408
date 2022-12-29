@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> exim.test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -21,7 +19,6 @@
 >>>  host in auth_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 18)
 >>> check hosts = :
@@ -74,8 +71,6 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> exim.test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -89,7 +84,6 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>>  host in auth_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> plain authenticator server_condition:
 >>>   $auth1 = 
 >>>   $auth2 = userx

@@ -6,8 +6,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> a.b.c in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -20,8 +18,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> a.b.c in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -35,8 +31,6 @@ LOG: failed to expand "${if eq{$received_ip_address}{V4NET.0.0.1}{host.V4NET.0.0
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> a.b.c in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]

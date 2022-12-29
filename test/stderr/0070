@@ -10,8 +10,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
 >>>  host in helo_verify_hosts? yes (matched "ten-1.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 LOG: rejected MAIL from [V4NET.0.0.1]: no HELO/EHLO given
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -35,8 +33,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> host in hosts_require_helo?
 >>> host in hosts_require_helo? no (end of list)
 >>> using ACL "rcpt"
@@ -70,8 +66,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>>  host in helo_try_verify_hosts? yes (matched "ten-2.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> [V4NET.0.0.1] in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -107,8 +101,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>>  host in helo_try_verify_hosts? yes (matched "ten-2.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> [V4NET.0.0.2] in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -137,8 +129,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
 >>>  host in helo_verify_hosts? yes (matched "ten-1.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> ten-1.test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -165,8 +155,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-3.test.ex address=V4NET.0.0.3
 >>>  host in helo_verify_hosts? yes (matched "ten-3.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> ten-3.test.ex in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -206,8 +194,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
 >>>  host in helo_verify_hosts? yes (matched "ten-1.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> rhubarb in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -241,8 +227,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>  list element: 99.99.99.99
 >>>  host in helo_verify_hosts? yes (matched "99.99.99.99")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> rhubarb in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -279,8 +263,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> [V4NET.0.0.99] in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -315,8 +297,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> [V4NET.0.0.13] in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -355,21 +335,16 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> rhubarb in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
 >>> rhubarb in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "rcpt"
 >>> processing "require" (TESTSUITE/test-config 23)
 >>>   message: helo not verified

@@ -14,8 +14,6 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> using ACL "check_recipientx"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
@@ -47,8 +45,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  host in helo_verify_hosts? no (option unset)
 >>>  host in helo_try_verify_hosts? no (option unset)
 >>>  host in helo_accept_junk_hosts? no (option unset)
->>>  host in pipelining_connect_advertise_hosts?
->>>   list element: 
 >>>  test in helo_lookup_domains?
 >>>   list element: @
 >>>   list element: @[]
@@ -86,8 +82,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  host in helo_verify_hosts? no (option unset)
 >>>  host in helo_try_verify_hosts? no (option unset)
 >>>  host in helo_accept_junk_hosts? no (option unset)
->>>  host in pipelining_connect_advertise_hosts?
->>>   list element: 
 >>>  test in helo_lookup_domains?
 >>>   list element: @
 >>>   list element: @[]
@@ -121,8 +115,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  host in helo_verify_hosts? no (option unset)
 >>>  host in helo_try_verify_hosts? no (option unset)
 >>>  host in helo_accept_junk_hosts? no (option unset)
->>>  host in pipelining_connect_advertise_hosts?
->>>   list element: 
 >>>  test in helo_lookup_domains?
 >>>   list element: @
 >>>   list element: @[]
@@ -155,8 +147,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  host in helo_verify_hosts? no (option unset)
 >>>  host in helo_try_verify_hosts? no (option unset)
 >>>  host in helo_accept_junk_hosts? no (option unset)
->>>  host in pipelining_connect_advertise_hosts?
->>>   list element: 
 >>>  test in helo_lookup_domains?
 >>>   list element: @
 >>>   list element: @[]
@@ -191,8 +181,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  host in helo_verify_hosts? no (option unset)
 >>>  host in helo_try_verify_hosts? no (option unset)
 >>>  host in helo_accept_junk_hosts? no (option unset)
->>>  host in pipelining_connect_advertise_hosts?
->>>   list element: 
 >>>  test in helo_lookup_domains?
 >>>   list element: @
 >>>   list element: @[]
@@ -231,8 +219,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  host in helo_verify_hosts? no (option unset)
 >>>  host in helo_try_verify_hosts? no (option unset)
 >>>  host in helo_accept_junk_hosts? no (option unset)
->>>  host in pipelining_connect_advertise_hosts?
->>>   list element: 
 >>>  test in helo_lookup_domains?
 >>>   list element: @
 >>>   list element: @[]
@@ -263,8 +249,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  host in helo_verify_hosts? no (option unset)
 >>>  host in helo_try_verify_hosts? no (option unset)
 >>>  host in helo_accept_junk_hosts? no (option unset)
->>>  host in pipelining_connect_advertise_hosts?
->>>   list element: 
 >>>  test in helo_lookup_domains?
 >>>   list element: @
 >>>   list element: @[]

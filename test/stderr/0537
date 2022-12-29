@@ -43,8 +43,6 @@ LOG: sender_ident=
 >>>  end of ACL "log": ACCEPT
 >>> accept: condition test succeeded in ACL "connect"
 >>> end of ACL "connect": ACCEPT
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -88,17 +86,12 @@ LOG: sender_ident=ident
 >>>  end of ACL "log": ACCEPT
 >>> accept: condition test succeeded in ACL "connect"
 >>> end of ACL "connect": ACCEPT
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> host in tls_advertise_hosts?
 >>> using ACL "mail"
 >>> processing "accept" (TESTSUITE/test-config 27)
 >>> check acl = log

@@ -1248,6 +1248,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Skip tls_advertise_hosts and hosts_require_tls checks when the options
     # are unset, because tls ain't always there.
 
+    next if  /^(>>>)?\s*host in tls_advertise_hosts\?$/;
     next if /in\s(?:tls_advertise_hosts\?|hosts_require_tls\?)
                 \sno\s\((option\sunset|end\sof\slist)\)/x;
 
@@ -1341,7 +1342,13 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /host in hosts_proxy\?/;
 
     # PIPE_CONNECT
-    next if / in (pipelining_connect_advertise_hosts|hosts_pipe_connect)?\? no /;
+    if ( /^(>>>)?\s*host in pipelining_connect_advertise_hosts\?$/ )
+      {
+      $_ = <IN>;
+      while ( /^(>>>)?\s*list element:/ ) { $_ = <IN>; }
+      goto RESET_AFTER_EXTRA_LINE_READ;
+      }
+    next if / in (?:pipelining_connect_advertise_hosts|hosts_pipe_connect)?\? no /;
 
     # Experimental_International
     next if / in smtputf8_advertise_hosts\? no \(option unset\)/;
@@ -1350,6 +1357,12 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if / in tls_advertise_requiretls?\? no \(end of list\)/;
 
     # Experimental_LIMITS
+    if ( /^(>>>)?\s*host in limits_advertise_hosts\?$/ )
+      {
+      $_ = <IN>;
+      while ( /^(>>>)?\s*list element: !\*$/ ) { $_ = <IN>; }
+      goto RESET_AFTER_EXTRA_LINE_READ;
+      }
     next if / in limits_advertise_hosts?\? no \(matched "!\*"\)/;
 
     # TCP Fast Open

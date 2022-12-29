@@ -549,8 +549,6 @@ search_tidyup called
 >>> processing "accept" (TESTSUITE/test-config 42)
 >>> accept: condition test succeeded in ACL "connect0"
 >>> end of ACL "connect0": ACCEPT
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -641,8 +639,6 @@ LOG: 10HmbB-0005vi-00 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_add
 >>> processing "accept" (TESTSUITE/test-config 42)
 >>> accept: condition test succeeded in ACL "connect0"
 >>> end of ACL "connect0": ACCEPT
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
@@ -674,8 +670,6 @@ LOG: 10HmbC-0005vi-00 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_add
 >>> processing "accept" (TESTSUITE/test-config 42)
 >>> accept: condition test succeeded in ACL "connect0"
 >>> end of ACL "connect0": ACCEPT
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]

@@ -20,8 +20,6 @@ LOG: H=[2001:0ab8:037f:0020:0000:0000:0000:0001] Warning: matched hostlist
 >>>                 = true
 >>> accept: condition test succeeded in ACL "check_connect"
 >>> end of ACL "check_connect": ACCEPT
->>> host in pipelining_connect_advertise_hosts?
->>>  list element: 
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup?
 >>>  list element: *
