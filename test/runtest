@@ -1043,6 +1043,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # TLS resumption is not always supported by the build
     next if /^tls_resumption_hosts =/;
     next if /^-tls_resumption/;
+    next if /^host_name_extract = /;
 
     # gsasl library version may not support some methods
     s/250-AUTH ANONYMOUS PLAIN SCRAM-SHA-1\K SCRAM-SHA-256//;
@@ -1248,7 +1249,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Skip tls_advertise_hosts and hosts_require_tls checks when the options
     # are unset, because tls ain't always there.
 
-    next if  /^(>>>)?\s*host in tls_advertise_hosts\?$/;
+    next if /^((>>>)?\s*host)? in tls_advertise_hosts\?$/;
     next if /in\s(?:tls_advertise_hosts\?|hosts_require_tls\?)
                 \sno\s\((option\sunset|end\sof\slist)\)/x;
 
@@ -1357,7 +1358,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if / in tls_advertise_requiretls?\? no \(end of list\)/;
 
     # Experimental_LIMITS
-    if ( /^(>>>)?\s*host in limits_advertise_hosts\?$/ )
+    if ( /^((>>>)?\s*host)? in limits_advertise_hosts\?$/ )
       {
       $_ = <IN>;
       while ( /^(>>>)?\s*list element: !\*$/ ) { $_ = <IN>; }
@@ -1367,6 +1368,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # TCP Fast Open
     next if /^(ppppp )?setsockopt FASTOPEN: Network Error/;
+
+    # DISABLE_TLS_RESUME
+    next if /RE '.outlook.com/;
 
     # Environment cleaning
     next if /\w+ in keep_environment\? (yes|no)/;
