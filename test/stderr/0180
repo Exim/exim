@@ -6,14 +6,21 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> some.host in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> some.host in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> list element: *
->>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -22,11 +29,18 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> some.host in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> some.host in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> list element: *
->>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?

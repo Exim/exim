@@ -6,23 +6,32 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> exim.test.ex in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> exim.test.ex in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> list element: *
->>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 17)
 >>> check hosts = :
->>> list element: 
+>>> host in ":"?
+>>>  list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 18)
 >>> check recipients = postmaster@exim.test.ex
->>> list element: postmaster@exim.test.ex
+>>> userx@exim.test.ex in "postmaster@exim.test.ex"?
+>>>  list element: postmaster@exim.test.ex
 >>> userx@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -37,12 +46,14 @@
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 17)
 >>> check hosts = :
->>> list element: 
+>>> host in ":"?
+>>>  list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 18)
 >>> check recipients = postmaster@exim.test.ex
->>> list element: postmaster@exim.test.ex
+>>> list@exim.test.ex in "postmaster@exim.test.ex"?
+>>>  list element: postmaster@exim.test.ex
 >>> list@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -63,23 +74,32 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> exim.test.ex in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> exim.test.ex in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> list element: *
->>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 17)
 >>> check hosts = :
->>> list element: 
+>>> host in ":"?
+>>>  list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 18)
 >>> check recipients = postmaster@exim.test.ex
->>> list element: postmaster@exim.test.ex
+>>> userx@exim.test.ex in "postmaster@exim.test.ex"?
+>>>  list element: postmaster@exim.test.ex
 >>> userx@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
@@ -118,8 +138,9 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> routing userx@exim.test.ex
 >>> calling system_aliases router
 >>> system_aliases router declined for userx@exim.test.ex
->>> list element: userx
->>> userx in "userx"? yes (matched "userx")
+>>> userx in "userx"?
+>>>  list element: userx
+>>>  userx in "userx"? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
@@ -131,18 +152,21 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> routing userx@exim.test.ex
 >>> calling system_aliases router
 >>> system_aliases router declined for userx@exim.test.ex
->>> list element: userx
->>> userx in "userx"? yes (matched "userx")
+>>> userx in "userx"?
+>>>  list element: userx
+>>>  userx in "userx"? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
 >>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 27)
 >>> check domains = +local_domains
->>> list element: +local_domains
->>> list element: exim.test.ex
->>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
->>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> exim.test.ex in "+local_domains"?
+>>>  list element: +local_domains
+>>>  exim.test.ex in "exim.test.ex"?
+>>>   list element: exim.test.ex
+>>>   exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
+>>>  exim.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)

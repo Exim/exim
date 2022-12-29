@@ -6,9 +6,11 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 20)
@@ -16,35 +18,44 @@
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing oklist@listr.test.ex
->>> list element: listr.test.ex
->>> listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
->>> list element: TESTSUITE/aux-fixed/0251.restrict.oklist
->>> list element: sender
->>> sender in "sender"? yes (matched "sender")
->>> ok@sender in "TESTSUITE/aux-fixed/0251.restrict.oklist"? yes (matched "ok@sender" in TESTSUITE/aux-fixed/0251.restrict.oklist)
+>>> listr.test.ex in "listr.test.ex"?
+>>>  list element: listr.test.ex
+>>>  listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
+>>> ok@sender in "TESTSUITE/aux-fixed/0251.restrict.oklist"?
+>>>  list element: TESTSUITE/aux-fixed/0251.restrict.oklist
+>>>  sender in "sender"?
+>>>   list element: sender
+>>>   sender in "sender"? yes (matched "sender")
+>>>  ok@sender in "TESTSUITE/aux-fixed/0251.restrict.oklist"? yes (matched "ok@sender" in TESTSUITE/aux-fixed/0251.restrict.oklist)
 >>> calling exeter_listr router
 >>> routed by exeter_listr router
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing xxx@listr.test.ex
->>> list element: listr.test.ex
->>> listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
->>> list element: zzzz
->>> list element: zzzz
->>> sender in "zzzz"? no (end of list)
+>>> listr.test.ex in "listr.test.ex"?
+>>>  list element: listr.test.ex
+>>>  listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
+>>> ok@sender in "zzzz"?
+>>>  list element: zzzz
+>>>  sender in "zzzz"?
+>>>   list element: zzzz
+>>>  sender in "zzzz"? no (end of list)
 >>> ok@sender in "zzzz"? no (end of list)
->>> list element: listr.test.ex
->>> listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
+>>> listr.test.ex in "listr.test.ex"?
+>>>  list element: listr.test.ex
+>>>  listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
 >>> calling exeter_listf router
 >>> routed by exeter_listf router
 >>> ----------- end verify ------------
 >>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
->>> list element: +local_domains
->>> list element: test.ex
->>> list element: *.test.ex
->>> listr.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
->>> listr.test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> listr.test.ex in "+local_domains"?
+>>>  list element: +local_domains
+>>>  listr.test.ex in "test.ex : *.test.ex"?
+>>>   list element: test.ex
+>>>   list element: *.test.ex
+>>>   listr.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
+>>>  listr.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
@@ -53,23 +64,28 @@
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing oklist@listr.test.ex
->>> list element: listr.test.ex
->>> listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
->>> list element: TESTSUITE/aux-fixed/0251.restrict.oklist
+>>> listr.test.ex in "listr.test.ex"?
+>>>  list element: listr.test.ex
+>>>  listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
+>>> bad@sender in "TESTSUITE/aux-fixed/0251.restrict.oklist"?
+>>>  list element: TESTSUITE/aux-fixed/0251.restrict.oklist
 >>> bad@sender in "TESTSUITE/aux-fixed/0251.restrict.oklist"? no (end of list)
->>> list element: listr.test.ex
->>> listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
+>>> listr.test.ex in "listr.test.ex"?
+>>>  list element: listr.test.ex
+>>>  listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
 >>> calling exeter_listf router
 >>> routed by exeter_listf router
 >>> ----------- end verify ------------
 >>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
->>> list element: +local_domains
->>> list element: test.ex
->>> list element: *.test.ex
->>> listr.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
->>> listr.test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> listr.test.ex in "+local_domains"?
+>>>  list element: +local_domains
+>>>  listr.test.ex in "test.ex : *.test.ex"?
+>>>   list element: test.ex
+>>>   list element: *.test.ex
+>>>   listr.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
+>>>  listr.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 

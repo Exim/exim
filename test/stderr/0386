@@ -3,22 +3,6 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -41,12 +25,14 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
-list element: 
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
-list element: @
-list element: @[]
+test in helo_lookup_domains?
+ list element: @
+ list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.9.8.7]
 sender_rcvhost = [V4NET.9.8.7] (helo=test)
@@ -60,20 +46,23 @@ SMTP<< rcpt to:<1@b>
 using ACL "chk_rcpt"
 processing "accept" (TESTSUITE/test-config 18)
 check local_parts = 1
-list element: 1
-1 in "1"? yes (matched "1")
+1 in "1"?
+ list element: 1
+ 1 in "1"? yes (matched "1")
 check acl = TESTSUITE/aux-fixed/0386.acl1
  read ACL from file TESTSUITE/aux-fixed/0386.acl1
  processing "accept" (TESTSUITE/test-config 44)
  check hosts = :
- list element: 
+  host in ":"?
+  list element: 
   host in ":"? no (end of list)
  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "deny" (TESTSUITE/test-config 44)
  check local_parts = ^.*[@%!/|]
- list element: ^.*[@%!/|]
- compiled caseless RE '^.*[@%!/|]' not found in local cache
- compiled RE '^.*[@%!/|]' saved in local cache
+ 1 in "^.*[@%!/|]"?
+  list element: ^.*[@%!/|]
+  compiled caseless RE '^.*[@%!/|]' not found in local cache
+  compiled RE '^.*[@%!/|]' saved in local cache
  1 in "^.*[@%!/|]"? no (end of list)
  deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "require" (TESTSUITE/test-config 44)
@@ -121,19 +110,22 @@ SMTP<< rcpt to:<1@b>
 using ACL "chk_rcpt"
 processing "accept" (TESTSUITE/test-config 18)
 check local_parts = 1
-list element: 1
-1 in "1"? yes (matched "1")
+1 in "1"?
+ list element: 1
+ 1 in "1"? yes (matched "1")
 check acl = TESTSUITE/aux-fixed/0386.acl1
  using ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "accept" (TESTSUITE/test-config 44)
  check hosts = :
- list element: 
+  host in ":"?
+  list element: 
   host in ":"? no (end of list)
  accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "deny" (TESTSUITE/test-config 44)
  check local_parts = ^.*[@%!/|]
- list element: ^.*[@%!/|]
- compiled caseless RE '^.*[@%!/|]' found in local cache
+ 1 in "^.*[@%!/|]"?
+  list element: ^.*[@%!/|]
+  compiled caseless RE '^.*[@%!/|]' found in local cache
  1 in "^.*[@%!/|]"? no (end of list)
  deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
  processing "require" (TESTSUITE/test-config 44)
@@ -181,22 +173,6 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -221,12 +197,14 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
-list element: 
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
-list element: @
-list element: @[]
+test in helo_lookup_domains?
+ list element: @
+ list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.11.12.13]
 sender_rcvhost = [V4NET.11.12.13] (helo=test ident=CALLER)
@@ -240,13 +218,15 @@ SMTP<< rcpt to:<2@b>
 using ACL "chk_rcpt"
 processing "accept" (TESTSUITE/test-config 18)
 check local_parts = 1
-list element: 1
+2 in "1"?
+ list element: 1
 2 in "1"? no (end of list)
 accept: condition test failed in ACL "chk_rcpt"
 processing "accept" (TESTSUITE/test-config 21)
 check local_parts = 2
-list element: 2
-2 in "2"? yes (matched "2")
+2 in "2"?
+ list element: 2
+ 2 in "2"? yes (matched "2")
 check acl = TESTSUITE/aux-fixed/0386.acl2
  read ACL from file TESTSUITE/aux-fixed/0386.acl2
  processing "warn" (TESTSUITE/test-config 44)
@@ -310,10 +290,6 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1236
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -445,13 +421,15 @@ SMTP<< rcpt to:<2@b>
 using ACL "chk_rcpt"
 processing "accept" (TESTSUITE/test-config 18)
 check local_parts = 1
-list element: 1
+2 in "1"?
+ list element: 1
 2 in "1"? no (end of list)
 accept: condition test failed in ACL "chk_rcpt"
 processing "accept" (TESTSUITE/test-config 21)
 check local_parts = 2
-list element: 2
-2 in "2"? yes (matched "2")
+2 in "2"?
+ list element: 2
+ 2 in "2"? yes (matched "2")
 check acl = TESTSUITE/aux-fixed/0386.acl2
  using ACL "TESTSUITE/aux-fixed/0386.acl2"
  processing "warn" (TESTSUITE/test-config 44)
@@ -509,10 +487,6 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1238
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

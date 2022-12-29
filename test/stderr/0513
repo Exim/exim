@@ -6,22 +6,30 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> a.b.c.d in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> a.b.c.d in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> list element: *
->>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> using ACL "check_rcpt"
 >>> processing "defer" (TESTSUITE/test-config 19)
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt2.test.ex
 >>> calling r1 router
->>> list element: *
->>> mxt2.test.ex in "*"? yes (matched "*")
+>>> mxt2.test.ex in "*"?
+>>>  list element: *
+>>>  mxt2.test.ex in "*"? yes (matched "*")
 >>> r1 router declined for x@mxt2.test.ex
 >>> no more routers
 >>> ----------- end verify ------------

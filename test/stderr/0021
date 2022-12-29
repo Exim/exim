@@ -1,29 +1,4 @@
 Exim version x.yz ....
-SHELL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-EXIM_TEST_NUMBER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PWD in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-TERM in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-USER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-SHLVL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
-_ in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -184,31 +159,6 @@ LOG: smtp_connection MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 ACL "warn" with "message" setting found in a non-message (EHLO or HELO) ACL: cannot specify header lines here: message ignored
 Exim version x.yz ....
-SHELL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-EXIM_TEST_NUMBER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PWD in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-TERM in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-USER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-SHLVL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
-_ in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -336,13 +286,6 @@ end of ACL "rcpt": ACCEPT
 LOG: MAIN
   <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
 Exim version x.yz ....
-PATH in keep_environment?
- list element: PATH
-SSLKEYLOGFILE in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

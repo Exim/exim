@@ -1,6 +1,8 @@
 
 ******** SERVER ********
 Exim version x.yz ....
+environment after trimming:
+ PATH=<munged>
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user

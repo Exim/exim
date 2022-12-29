@@ -6,16 +6,19 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 14)
 >>> check hosts = test.again.dns
->>> list element: test.again.dns
->>> test.again.dns in dns_again_means_nonexist? no (option unset)
+>>> host in "test.again.dns"?
+>>>  list element: test.again.dns
+>>>  test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> no IP address found for host test.again.dns (during SMTP connection from (test) [ip4.ip4.ip4.ip4])
->>> test.again.dns in dns_again_means_nonexist? no (option unset)
+>>>  test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> host in "test.again.dns"? list match deferred for test.again.dns
 >>> accept: condition test deferred in inline ACL
 LOG: H=(test) [ip4.ip4.ip4.ip4] F=<ralph@dustyshoes.tld> temporarily rejected RCPT <bob@anotherone.tld>: DNS lookup of "test.again.dns" deferred

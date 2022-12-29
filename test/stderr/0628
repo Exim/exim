@@ -27,10 +27,8 @@
 01:01:01 p1239  macros_trusted overridden to true by whitelisting
 01:01:01 p1239  changed uid/gid: forcing real = effective
 01:01:01 p1239    uid=uuuu gid=EXIM_GID pid=p1239
-01:01:01 p1239  list element: PATH
-01:01:01 p1239  list element: PATH
-01:01:01 p1239  list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-01:01:01 p1239  list element: PATH
+01:01:01 p1239  environment after trimming:
+01:01:01 p1239   PATH=CALLER_HOME/.local/sbin:CALLER_HOME/.local/bin:CALLER_HOME/sbin:CALLER_HOME/bin:/usr/lib64/ccache:/usr/local/bin:/usr/bin:/sbin:/bin:/usr/local/sbin:/usr/sbin
 01:01:01 p1239  adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 01:01:01 p1239  configuration file is TESTSUITE/test-config
 01:01:01 p1239  trusted user

@@ -3,31 +3,6 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1236
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-SHELL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-EXIM_TEST_NUMBER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PWD in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-TERM in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-USER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-SHLVL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
-_ in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

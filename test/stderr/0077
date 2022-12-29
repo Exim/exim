@@ -6,29 +6,34 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! @ : ! localhost
->>> list element: ! @
+>>> host in "! @ : ! localhost"?
+>>>  list element: ! @
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=myhost.test.ex address=V4NET.10.10.10
->>> list element: ! localhost
+>>>  list element: ! localhost
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=localhost address=127.0.0.1
->>> host in "! @ : ! localhost"? no (matched "! localhost")
+>>>  host in "! @ : ! localhost"? no (matched "! localhost")
 >>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check domains = +local_domains
->>> list element: +local_domains
->>> list element: test.ex
->>> test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
->>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> test.ex in "+local_domains"?
+>>>  list element: +local_domains
+>>>  test.ex in "test.ex : myhost.test.ex"?
+>>>   list element: test.ex
+>>>   test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
+>>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -39,25 +44,30 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! @ : ! localhost
->>> list element: ! @
+>>> host in "! @ : ! localhost"?
+>>>  list element: ! @
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=myhost.test.ex address=V4NET.10.10.10
->>> host in "! @ : ! localhost"? no (matched "! @")
+>>>  host in "! @ : ! localhost"? no (matched "! @")
 >>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check domains = +local_domains
->>> list element: +local_domains
->>> list element: test.ex
->>> test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
->>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> test.ex in "+local_domains"?
+>>>  list element: +local_domains
+>>>  test.ex in "test.ex : myhost.test.ex"?
+>>>   list element: test.ex
+>>>   test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
+>>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -68,18 +78,21 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! @ : ! localhost
->>> list element: ! @
+>>> host in "! @ : ! localhost"?
+>>>  list element: ! @
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=myhost.test.ex address=V4NET.10.10.10
->>> list element: ! localhost
+>>>  list element: ! localhost
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=localhost address=127.0.0.1

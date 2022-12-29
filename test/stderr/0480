@@ -6,9 +6,11 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> a.b.c in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> a.b.c in helo_lookup_domains? no (end of list)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -18,9 +20,11 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> a.b.c in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> a.b.c in helo_lookup_domains? no (end of list)
 LOG: failed to expand "${if eq{$received_ip_address}{V4NET.0.0.1}{host.V4NET.0.0.1}{${if eq{$received_ip_address}{V4NET.0.0.2}{}{${if eq{$received_ip_address}{V4NET.0.0.3}{${lookup{x}lsearch{/non/exist}}}fail}}}}}" (smtp_active_hostname): failed to open /non/exist for linear search: No such file or directory
 >>> host in hosts_connection_nolog? no (option unset)
@@ -31,9 +35,11 @@ LOG: failed to expand "${if eq{$received_ip_address}{V4NET.0.0.1}{host.V4NET.0.0
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> a.b.c in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> a.b.c in helo_lookup_domains? no (end of list)
 
 ******** SERVER ********

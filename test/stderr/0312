@@ -6,9 +6,11 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_rcpt"
 >>> processing "deny" (TESTSUITE/test-config 16)

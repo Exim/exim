@@ -1,22 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -36,12 +20,14 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
-list element: 
+host in pipelining_connect_advertise_hosts?
+ list element: 
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test
-list element: @
-list element: @[]
+test in helo_lookup_domains?
+ list element: @
+ list element: @[]
 test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [1.2.3.4]
 sender_rcvhost = [1.2.3.4] (helo=test)
@@ -57,11 +43,13 @@ processing "accept" (TESTSUITE/test-config 18)
 check verify = sender
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying U@W.x.y
-list element: *@*.x.y
-address match test: subject=U@w.x.y pattern=*@*.x.y
-list element: *.x.y
-w.x.y in "*.x.y"? yes (matched "*.x.y")
-U@W.x.y in "*@*.x.y"? yes (matched "*@*.x.y")
+U@W.x.y in "*@*.x.y"?
+ list element: *@*.x.y
+ address match test: subject=U@w.x.y pattern=*@*.x.y
+ w.x.y in "*.x.y"?
+  list element: *.x.y
+  w.x.y in "*.x.y"? yes (matched "*.x.y")
+ U@W.x.y in "*@*.x.y"? yes (matched "*@*.x.y")
 LOG: address_rewrite MAIN
   "U@W.x.y" from env-from rewritten as "U@x.y" by rule 1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

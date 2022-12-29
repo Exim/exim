@@ -1,22 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -65,10 +49,6 @@ exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1235
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -107,8 +87,9 @@ routing userx@test.ex
 --------> r1 router <--------
 local_part=userx domain=test.ex
 checking local_parts
-list element: userx
-userx in "userx : usery"? yes (matched "userx")
+userx in "userx : usery"?
+ list element: userx
+ userx in "userx : usery"? yes (matched "userx")
 calling r1 router
 r1 router called for userx@test.ex
   domain = test.ex
@@ -122,9 +103,10 @@ routing usery@test.ex
 --------> r1 router <--------
 local_part=usery domain=test.ex
 checking local_parts
-list element: userx
-list element: usery
-usery in "userx : usery"? yes (matched "usery")
+usery in "userx : usery"?
+ list element: userx
+ list element: usery
+ usery in "userx : usery"? yes (matched "usery")
 calling r1 router
 r1 router called for usery@test.ex
   domain = test.ex

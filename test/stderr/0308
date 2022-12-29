@@ -6,25 +6,29 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_0_0"
 >>> processing "accept" (TESTSUITE/test-config 17)
 >>> check hosts = *.test.ex
->>> list element: *.test.ex
+>>> host in "*.test.ex"?
+>>>  list element: *.test.ex
 >>> sender host name required, to match against *.test.ex
 >>> looking up host name for V4NET.0.0.97
 LOG: no host name found for IP address V4NET.0.0.97
->>> host in "*.test.ex"? no (failed to find host name for V4NET.0.0.97)
->>> accept: condition test failed in ACL "acl_V4NET_0_0"
->>> processing "accept" (TESTSUITE/test-config 18)
->>> check hosts = V4NET.0.0.97
->>> list element: V4NET.0.0.97
->>> host in "V4NET.0.0.97"? yes (matched "V4NET.0.0.97")
->>> accept: condition test succeeded in ACL "acl_V4NET_0_0"
->>> end of ACL "acl_V4NET_0_0": ACCEPT
+>>>  host in "*.test.ex"? no (failed to find host name for V4NET.0.0.97)
+>>>  accept: condition test failed in ACL "acl_V4NET_0_0"
+>>>  processing "accept" (TESTSUITE/test-config 18)
+>>>  check hosts = V4NET.0.0.97
+>>>  host in "V4NET.0.0.97"?
+>>>   list element: V4NET.0.0.97
+>>>   host in "V4NET.0.0.97"? yes (matched "V4NET.0.0.97")
+>>>  accept: condition test succeeded in ACL "acl_V4NET_0_0"
+>>>  end of ACL "acl_V4NET_0_0": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -33,19 +37,22 @@ LOG: no host name found for IP address V4NET.0.0.97
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_V4NET_0_0"
 >>> processing "accept" (TESTSUITE/test-config 17)
 >>> check hosts = *.test.ex
->>> list element: *.test.ex
+>>> host in "*.test.ex"?
+>>>  list element: *.test.ex
 >>> sender host name required, to match against *.test.ex
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
->>> host in "*.test.ex"? yes (matched "*.test.ex")
+>>>  host in "*.test.ex"? yes (matched "*.test.ex")
 >>> accept: condition test succeeded in ACL "acl_V4NET_0_0"
 >>> end of ACL "acl_V4NET_0_0": ACCEPT

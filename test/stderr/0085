@@ -1,22 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -35,18 +19,21 @@ routing x@y.z
 --------> smart1 router <--------
 local_part=x domain=y.z
 checking domains
-list element: smart.domain
+y.z in "smart.domain"?
+ list element: smart.domain
 y.z in "smart.domain"? no (end of list)
 smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
 local_part=x domain=y.z
 checking domains
-list element: ! +local_domains
- start sublist local_domains
-  list element: test.ex
-  list element: myhost.test.ex
-  y.z in "test.ex : myhost.test.ex"? no (end of list)
- end sublist local_domains
+y.z in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   y.z in "test.ex : myhost.test.ex"?
+   ╎list element: test.ex
+   ╎list element: myhost.test.ex
+   y.z in "test.ex : myhost.test.ex"? no (end of list)
+  end sublist local_domains
 y.z in "! +local_domains"? yes (end of list)
 calling fail_remote_domains router
 rda_interpret (string): ':fail: unrouteable mail domain "$domain"'
@@ -64,8 +51,9 @@ routing x@smart.domain
 --------> smart1 router <--------
 local_part=x domain=smart.domain
 checking domains
-list element: smart.domain
-smart.domain in "smart.domain"? yes (matched "smart.domain")
+smart.domain in "smart.domain"?
+ list element: smart.domain
+ smart.domain in "smart.domain"? yes (matched "smart.domain")
 checking local_parts
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
  search_find: file="TESTSUITE/aux-fixed/0085.data"
@@ -79,8 +67,9 @@ checking local_parts
    in TESTSUITE/aux-fixed/0085.data
  creating new cache entry
  lookup yielded: x : y : abc@d.e.f
-list element: x
-x in "x : y : abc@d.e.f"? yes (matched "x")
+x in "x : y : abc@d.e.f"?
+ list element: x
+ x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
@@ -94,25 +83,30 @@ checking senders
  cached data used for lookup of smart.domain
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f
-list element: x
-address match test: subject=abc@d.e.f pattern=x
-list element: x
-d.e.f in "x"? no (end of list)
-list element: y
-address match test: subject=abc@d.e.f pattern=y
-list element: y
-d.e.f in "y"? no (end of list)
-list element: abc@d.e.f
-address match test: subject=abc@d.e.f pattern=abc@d.e.f
-list element: d.e.f
-d.e.f in "d.e.f"? yes (matched "d.e.f")
-abc@d.e.f in "x : y : abc@d.e.f"? yes (matched "abc@d.e.f")
+abc@d.e.f in "x : y : abc@d.e.f"?
+ list element: x
+ address match test: subject=abc@d.e.f pattern=x
+ d.e.f in "x"?
+  list element: x
+ d.e.f in "x"? no (end of list)
+ list element: y
+ address match test: subject=abc@d.e.f pattern=y
+ d.e.f in "y"?
+  list element: y
+ d.e.f in "y"? no (end of list)
+ list element: abc@d.e.f
+ address match test: subject=abc@d.e.f pattern=abc@d.e.f
+ d.e.f in "d.e.f"?
+  list element: d.e.f
+  d.e.f in "d.e.f"? yes (matched "d.e.f")
+ abc@d.e.f in "x : y : abc@d.e.f"? yes (matched "abc@d.e.f")
 calling smart1 router
 smart1 router called for x@smart.domain
   domain = smart.domain
 route_item = *
-list element: *
-smart.domain in "*"? yes (matched "*")
+smart.domain in "*"?
+ list element: *
+ smart.domain in "*"? yes (matched "*")
 original list of hosts = '' options = ''
 expanded list of hosts = '' options = ''
 queued for <unset> transport: local_part = x
@@ -131,25 +125,29 @@ routing x@test.ex
 --------> smart1 router <--------
 local_part=x domain=test.ex
 checking domains
-list element: smart.domain
+test.ex in "smart.domain"?
+ list element: smart.domain
 test.ex in "smart.domain"? no (end of list)
 smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
 local_part=x domain=test.ex
 checking domains
-list element: ! +local_domains
- start sublist local_domains
-  list element: test.ex
-  test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
- end sublist local_domains
-data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
-test.ex in "! +local_domains"? no (matched "! +local_domains")
+test.ex in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   test.ex in "test.ex : myhost.test.ex"?
+   ╎list element: test.ex
+   ╎test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
+  end sublist local_domains
+ data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+ test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
 local_part=x domain=test.ex
 checking domains
-list element: test.ex
-test.ex in "test.ex"? yes (matched "test.ex")
+test.ex in "test.ex"?
+ list element: test.ex
+ test.ex in "test.ex"? yes (matched "test.ex")
 checking local_parts
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
@@ -164,8 +162,9 @@ checking local_parts
    in TESTSUITE/aux-fixed/0085.data
  creating new cache entry
  lookup yielded: x : y : abc@d.e.f
-list element: x
-x in "x : y : abc@d.e.f"? yes (matched "x")
+x in "x : y : abc@d.e.f"?
+ list element: x
+ x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
@@ -179,19 +178,23 @@ checking senders
  cached data used for lookup of test.ex
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f
-list element: x
-address match test: subject=abc@d.e.f pattern=x
-list element: x
-d.e.f in "x"? no (end of list)
-list element: y
-address match test: subject=abc@d.e.f pattern=y
-list element: y
-d.e.f in "y"? no (end of list)
-list element: abc@d.e.f
-address match test: subject=abc@d.e.f pattern=abc@d.e.f
-list element: d.e.f
-d.e.f in "d.e.f"? yes (matched "d.e.f")
-abc@d.e.f in "x : y : abc@d.e.f"? yes (matched "abc@d.e.f")
+abc@d.e.f in "x : y : abc@d.e.f"?
+ list element: x
+ address match test: subject=abc@d.e.f pattern=x
+ d.e.f in "x"?
+  list element: x
+ d.e.f in "x"? no (end of list)
+ list element: y
+ address match test: subject=abc@d.e.f pattern=y
+ d.e.f in "y"?
+  list element: y
+ d.e.f in "y"? no (end of list)
+ list element: abc@d.e.f
+ address match test: subject=abc@d.e.f pattern=abc@d.e.f
+ d.e.f in "d.e.f"?
+  list element: d.e.f
+  d.e.f in "d.e.f"? yes (matched "d.e.f")
+ abc@d.e.f in "x : y : abc@d.e.f"? yes (matched "abc@d.e.f")
 checking require_files
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
@@ -229,25 +232,29 @@ routing x@myhost.test.ex
 --------> smart1 router <--------
 local_part=x domain=myhost.test.ex
 checking domains
-list element: smart.domain
+myhost.test.ex in "smart.domain"?
+ list element: smart.domain
 myhost.test.ex in "smart.domain"? no (end of list)
 smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
 local_part=x domain=myhost.test.ex
 checking domains
-list element: ! +local_domains
- start sublist local_domains
-  list element: test.ex
-  list element: myhost.test.ex
-  myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
- end sublist local_domains
-data from lookup saved for cache for +local_domains: key 'myhost.test.ex' value 'myhost.test.ex'
-myhost.test.ex in "! +local_domains"? no (matched "! +local_domains")
+myhost.test.ex in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   myhost.test.ex in "test.ex : myhost.test.ex"?
+   ╎list element: test.ex
+   ╎list element: myhost.test.ex
+   ╎myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
+  end sublist local_domains
+ data from lookup saved for cache for +local_domains: key 'myhost.test.ex' value 'myhost.test.ex'
+ myhost.test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
 local_part=x domain=myhost.test.ex
 checking domains
-list element: test.ex
+myhost.test.ex in "test.ex"?
+ list element: test.ex
 myhost.test.ex in "test.ex"? no (end of list)
 smart2 router skipped: domains mismatch
 no more routers
@@ -256,22 +263,6 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -290,18 +281,21 @@ routing x@y.z
 --------> smart1 router <--------
 local_part=x domain=y.z
 checking domains
-list element: smart.domain
+y.z in "smart.domain"?
+ list element: smart.domain
 y.z in "smart.domain"? no (end of list)
 smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
 local_part=x domain=y.z
 checking domains
-list element: ! +local_domains
- start sublist local_domains
-  list element: test.ex
-  list element: myhost.test.ex
-  y.z in "test.ex : myhost.test.ex"? no (end of list)
- end sublist local_domains
+y.z in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   y.z in "test.ex : myhost.test.ex"?
+   ╎list element: test.ex
+   ╎list element: myhost.test.ex
+   y.z in "test.ex : myhost.test.ex"? no (end of list)
+  end sublist local_domains
 y.z in "! +local_domains"? yes (end of list)
 calling fail_remote_domains router
 rda_interpret (string): ':fail: unrouteable mail domain "$domain"'
@@ -319,8 +313,9 @@ routing x@smart.domain
 --------> smart1 router <--------
 local_part=x domain=smart.domain
 checking domains
-list element: smart.domain
-smart.domain in "smart.domain"? yes (matched "smart.domain")
+smart.domain in "smart.domain"?
+ list element: smart.domain
+ smart.domain in "smart.domain"? yes (matched "smart.domain")
 checking local_parts
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
  search_find: file="TESTSUITE/aux-fixed/0085.data"
@@ -334,8 +329,9 @@ checking local_parts
    in TESTSUITE/aux-fixed/0085.data
  creating new cache entry
  lookup yielded: x : y : abc@d.e.f
-list element: x
-x in "x : y : abc@d.e.f"? yes (matched "x")
+x in "x : y : abc@d.e.f"?
+ list element: x
+ x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
@@ -349,27 +345,32 @@ checking senders
  cached data used for lookup of smart.domain
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f
-list element: x
-address match test: subject=CALLER@myhost.test.ex pattern=x
-list element: x
-myhost.test.ex in "x"? no (end of list)
-list element: y
-address match test: subject=CALLER@myhost.test.ex pattern=y
-list element: y
-myhost.test.ex in "y"? no (end of list)
-list element: abc@d.e.f
-address match test: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
+CALLER@myhost.test.ex in "x : y : abc@d.e.f"?
+ list element: x
+ address match test: subject=CALLER@myhost.test.ex pattern=x
+ myhost.test.ex in "x"?
+  list element: x
+ myhost.test.ex in "x"? no (end of list)
+ list element: y
+ address match test: subject=CALLER@myhost.test.ex pattern=y
+ myhost.test.ex in "y"?
+  list element: y
+ myhost.test.ex in "y"? no (end of list)
+ list element: abc@d.e.f
+ address match test: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
 CALLER@myhost.test.ex in "x : y : abc@d.e.f"? no (end of list)
 smart1 router skipped: senders mismatch
 --------> fail_remote_domains router <--------
 local_part=x domain=smart.domain
 checking domains
-list element: ! +local_domains
- start sublist local_domains
-  list element: test.ex
-  list element: myhost.test.ex
-  smart.domain in "test.ex : myhost.test.ex"? no (end of list)
- end sublist local_domains
+smart.domain in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   smart.domain in "test.ex : myhost.test.ex"?
+   ╎list element: test.ex
+   ╎list element: myhost.test.ex
+   smart.domain in "test.ex : myhost.test.ex"? no (end of list)
+  end sublist local_domains
 smart.domain in "! +local_domains"? yes (end of list)
 calling fail_remote_domains router
 rda_interpret (string): ':fail: unrouteable mail domain "$domain"'
@@ -387,25 +388,29 @@ routing x@test.ex
 --------> smart1 router <--------
 local_part=x domain=test.ex
 checking domains
-list element: smart.domain
+test.ex in "smart.domain"?
+ list element: smart.domain
 test.ex in "smart.domain"? no (end of list)
 smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
 local_part=x domain=test.ex
 checking domains
-list element: ! +local_domains
- start sublist local_domains
-  list element: test.ex
-  test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
- end sublist local_domains
-data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
-test.ex in "! +local_domains"? no (matched "! +local_domains")
+test.ex in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   test.ex in "test.ex : myhost.test.ex"?
+   ╎list element: test.ex
+   ╎test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
+  end sublist local_domains
+ data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+ test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
 local_part=x domain=test.ex
 checking domains
-list element: test.ex
-test.ex in "test.ex"? yes (matched "test.ex")
+test.ex in "test.ex"?
+ list element: test.ex
+ test.ex in "test.ex"? yes (matched "test.ex")
 checking local_parts
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
@@ -420,8 +425,9 @@ checking local_parts
    in TESTSUITE/aux-fixed/0085.data
  creating new cache entry
  lookup yielded: x : y : abc@d.e.f
-list element: x
-x in "x : y : abc@d.e.f"? yes (matched "x")
+x in "x : y : abc@d.e.f"?
+ list element: x
+ x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
@@ -435,16 +441,19 @@ checking senders
  cached data used for lookup of test.ex
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f
-list element: x
-address match test: subject=CALLER@myhost.test.ex pattern=x
-list element: x
-myhost.test.ex in "x"? no (end of list)
-list element: y
-address match test: subject=CALLER@myhost.test.ex pattern=y
-list element: y
-myhost.test.ex in "y"? no (end of list)
-list element: abc@d.e.f
-address match test: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
+CALLER@myhost.test.ex in "x : y : abc@d.e.f"?
+ list element: x
+ address match test: subject=CALLER@myhost.test.ex pattern=x
+ myhost.test.ex in "x"?
+  list element: x
+ myhost.test.ex in "x"? no (end of list)
+ list element: y
+ address match test: subject=CALLER@myhost.test.ex pattern=y
+ myhost.test.ex in "y"?
+  list element: y
+ myhost.test.ex in "y"? no (end of list)
+ list element: abc@d.e.f
+ address match test: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
 CALLER@myhost.test.ex in "x : y : abc@d.e.f"? no (end of list)
 smart2 router skipped: senders mismatch
 no more routers
@@ -457,25 +466,29 @@ routing x@myhost.test.ex
 --------> smart1 router <--------
 local_part=x domain=myhost.test.ex
 checking domains
-list element: smart.domain
+myhost.test.ex in "smart.domain"?
+ list element: smart.domain
 myhost.test.ex in "smart.domain"? no (end of list)
 smart1 router skipped: domains mismatch
 --------> fail_remote_domains router <--------
 local_part=x domain=myhost.test.ex
 checking domains
-list element: ! +local_domains
- start sublist local_domains
-  list element: test.ex
-  list element: myhost.test.ex
-  myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
- end sublist local_domains
-data from lookup saved for cache for +local_domains: key 'myhost.test.ex' value 'myhost.test.ex'
-myhost.test.ex in "! +local_domains"? no (matched "! +local_domains")
+myhost.test.ex in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   myhost.test.ex in "test.ex : myhost.test.ex"?
+   ╎list element: test.ex
+   ╎list element: myhost.test.ex
+   ╎myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
+  end sublist local_domains
+ data from lookup saved for cache for +local_domains: key 'myhost.test.ex' value 'myhost.test.ex'
+ myhost.test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
 local_part=x domain=myhost.test.ex
 checking domains
-list element: test.ex
+myhost.test.ex in "test.ex"?
+ list element: test.ex
 myhost.test.ex in "test.ex"? no (end of list)
 smart2 router skipped: domains mismatch
 no more routers

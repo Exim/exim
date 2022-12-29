@@ -226,31 +226,6 @@ routed by pm router
   transport: null
 >>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
-SHELL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-EXIM_TEST_NUMBER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PWD in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-TERM in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-USER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-SHLVL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
-_ in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 host in hosts_connection_nolog? no (option unset)
@@ -269,8 +244,6 @@ some.name in helo_lookup_domains?
  list element: @
  list element: @[]
 some.name in helo_lookup_domains? no (end of list)
-host in limits_advertise_hosts?
- list element: !*
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts?
  list element: *

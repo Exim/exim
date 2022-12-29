@@ -1,22 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -33,39 +17,46 @@ routing k@mxt13.test.ex
 --------> dnslookup router <--------
 local_part=k domain=mxt13.test.ex
 checking domains
-list element: ! +local_domains
- start sublist local_domains
-  list element: !mxt13.test.ex
-  mxt13.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!mxt13.test.ex")
- end sublist local_domains
-data from lookup saved for cache for +local_domains: key 'mxt13.test.ex' value 'mxt13.test.ex'
+mxt13.test.ex in "! +local_domains"?
+ list element: ! +local_domains
+  start sublist local_domains
+   mxt13.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"?
+   ╎list element: !mxt13.test.ex
+   ╎mxt13.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!mxt13.test.ex")
+  end sublist local_domains
+ data from lookup saved for cache for +local_domains: key 'mxt13.test.ex' value 'mxt13.test.ex'
 mxt13.test.ex in "! +local_domains"? yes (end of list)
 calling dnslookup router
 dnslookup router called for k@mxt13.test.ex
   domain = mxt13.test.ex
-list element: *
-mxt13.test.ex in "*"? yes (matched "*")
+mxt13.test.ex in "*"?
+ list element: *
+ mxt13.test.ex in "*"? yes (matched "*")
 DNS lookup of mxt13.test.ex (MX) using fakens
 DNS lookup of mxt13.test.ex (MX) succeeded
 DNS lookup of other1.test.ex (A) using fakens
 DNS lookup of other1.test.ex (A) succeeded
 DNS lookup of other2.test.ex (A) using fakens
 DNS lookup of other2.test.ex (A) succeeded
-list element: +local_domains
- start sublist local_domains
-  list element: !mxt13.test.ex
-  list element: !other1.test.ex
-  other1.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!other1.test.ex")
- end sublist local_domains
+other1.test.ex in hosts_treat_as_local?
+ list element: +local_domains
+  start sublist local_domains
+   other1.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"?
+   ╎list element: !mxt13.test.ex
+   ╎list element: !other1.test.ex
+   ╎other1.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!other1.test.ex")
+  end sublist local_domains
 other1.test.ex in hosts_treat_as_local? no (end of list)
-list element: +local_domains
- start sublist local_domains
-  list element: !mxt13.test.ex
-  list element: !other1.test.ex
-  list element: *.test.ex
-  other2.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? yes (matched "*.test.ex")
- end sublist local_domains
-other2.test.ex in hosts_treat_as_local? yes (matched "+local_domains")
+other2.test.ex in hosts_treat_as_local?
+ list element: +local_domains
+  start sublist local_domains
+   other2.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"?
+   ╎list element: !mxt13.test.ex
+   ╎list element: !other1.test.ex
+   ╎list element: *.test.ex
+   ╎other2.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? yes (matched "*.test.ex")
+  end sublist local_domains
+ other2.test.ex in hosts_treat_as_local? yes (matched "+local_domains")
 local host in host list - removed hosts:
   other2.test.ex V4NET.12.3.2 5
   other2.test.ex V4NET.12.3.1 5

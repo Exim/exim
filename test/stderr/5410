@@ -1,29 +1,6 @@
 Exim version x.yz ....
-SHELL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-EXIM_TEST_NUMBER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PWD in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-TERM in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-USER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-SHLVL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
-_ in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
+environment after trimming:
+ PATH=<munged>
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
@@ -620,31 +597,8 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
-SHELL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-EXIM_TEST_NUMBER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PWD in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-TERM in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-USER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-SHLVL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
-_ in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
+environment after trimming:
+ PATH=<munged>
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
@@ -1194,31 +1148,8 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
-SHELL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-EXIM_TEST_NUMBER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PWD in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-TERM in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-USER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-SHLVL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
-_ in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
+environment after trimming:
+ PATH=<munged>
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user

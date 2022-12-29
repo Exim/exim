@@ -14,12 +14,13 @@
 01:01:01 p1235   ├──expanding: /$local_part
 01:01:01 p1235   ╰─────result: /dest3
 01:01:01 p1235              ╰──(tainted)
-01:01:01 p1235  list element: /dest3
+01:01:01 p1235  dest3 in "/dest3"?
+01:01:01 p1235   list element: /dest3
 01:01:01 p1235  LOG: MAIN PANIC
 01:01:01 p1235    Tainted filename '/dest3'
 01:01:01 p1235  LOG: MAIN PANIC DIE
 01:01:01 p1235    failed to open /dest3 when checking "/$local_part": Permission denied (euid=uuuu egid=EXIM_GID)
-01:01:01 p1235  search_tidyup called
+01:01:01 p1235   search_tidyup called
 01:01:01 p1235  >>>>>>>>>>>>>>>> Exim pid=p1235 (daemon-accept-delivery) terminating with rc=1 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

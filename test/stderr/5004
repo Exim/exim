@@ -1,31 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
-SHELL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-EXIM_TEST_NUMBER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PWD in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-TERM in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-USER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-SHLVL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
-_ in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -76,13 +51,6 @@ exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1235
-PATH in keep_environment?
- list element: PATH
-SSLKEYLOGFILE in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

@@ -1,31 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
-SHELL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-EXIM_TEST_NUMBER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PWD in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-TERM in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-USER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-SHLVL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
-_ in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -59,6 +34,8 @@ exim.test.ex in helo_lookup_domains? no (end of list)
 sender_fullhost = (exim.test.ex) [V4NET.11.12.13]
 sender_rcvhost = [V4NET.11.12.13] (helo=exim.test.ex)
 set_process_info: pppp handling incoming connection from (exim.test.ex) [V4NET.11.12.13]
+host in limits_advertise_hosts?
+ list element: !*
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts?
  list element: *
@@ -213,6 +190,8 @@ search_tidyup called
 >>>  list element: @
 >>>  list element: @[]
 >>> exim.test.ex in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -248,31 +227,6 @@ LOG: 10HmaY-0005vi-00 <= myfriend@there.test.ex H=(exim.test.ex) [V4NET.11.12.13
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
-SHELL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-EXIM_TEST_NUMBER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PWD in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-TERM in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-USER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-SHLVL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
-_ in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -306,6 +260,8 @@ exim.test.ex in helo_lookup_domains? no (end of list)
 sender_fullhost = (exim.test.ex) [V4NET.99.99.99]
 sender_rcvhost = [V4NET.99.99.99] (helo=exim.test.ex)
 set_process_info: pppp handling incoming connection from (exim.test.ex) [V4NET.99.99.99]
+host in limits_advertise_hosts?
+ list element: !*
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts?
  list element: *

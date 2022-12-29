@@ -124,8 +124,6 @@ LOG: H=(test) [10.0.0.2] Warning: accepted ETRN #abcd
 >>>  list element: @
 >>>  list element: @[]
 >>> test.host in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -425,8 +423,6 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>>  list element: @
 >>>  list element: @[]
 >>> test.host in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -581,8 +577,6 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>>  list element: @
 >>>  list element: @[]
 >>> test.host in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -605,31 +599,6 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-SHELL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-EXIM_TEST_NUMBER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PWD in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-TERM in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-USER in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-SHLVL in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
-_ in keep_environment?
- list element: PATH
- list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-PATH in keep_environment?
- list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -676,8 +645,6 @@ testing.testing in helo_lookup_domains? no (end of list)
 sender_fullhost = (testing.testing) [10.0.0.5]
 sender_rcvhost = [10.0.0.5] (helo=testing.testing ident=CALLER)
 set_process_info: pppp handling incoming connection from (testing.testing) [10.0.0.5] U=CALLER
-host in limits_advertise_hosts?
- list element: !*
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts?
  list element: *

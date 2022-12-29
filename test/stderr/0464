@@ -1,22 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -39,25 +23,27 @@ SMTP<< rcpt to:<abc@domain1>
 using ACL "rcpt"
 processing "require" (TESTSUITE/test-config 20)
 check domains = +special_domains
-list element: +special_domains
- start sublist special_domains
-  list element: lsearch;TESTSUITE/aux-fixed/0464.domains
-  search_open: lsearch "TESTSUITE/aux-fixed/0464.domains"
-  search_find: file="TESTSUITE/aux-fixed/0464.domains"
-    key="domain1" partial=-1 affix=NULL starflags=0 opts=NULL
-  LRU list:
-    0TESTSUITE/aux-fixed/0464.domains
-    End
-  internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
-    type=lsearch key="domain1" opts=NULL
-  file lookup required for domain1
-    in TESTSUITE/aux-fixed/0464.domains
-  creating new cache entry
-  lookup yielded: data for domain1
-  domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? yes (matched "lsearch;TESTSUITE/aux-fixed/0464.domains")
- end sublist special_domains
-data from lookup saved for cache for +special_domains: key 'domain1' value 'data for domain1'
-domain1 in "+special_domains"? yes (matched "+special_domains")
+domain1 in "+special_domains"?
+ list element: +special_domains
+  start sublist special_domains
+   domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"?
+   ╎list element: lsearch;TESTSUITE/aux-fixed/0464.domains
+   ╎search_open: lsearch "TESTSUITE/aux-fixed/0464.domains"
+   ╎search_find: file="TESTSUITE/aux-fixed/0464.domains"
+   ╎  key="domain1" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎LRU list:
+   ╎  <TESTSUITE/aux-fixed/0464.domains
+   ╎  End
+   ╎internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
+   ╎  type=lsearch key="domain1" opts=NULL
+   ╎file lookup required for domain1
+   ╎  in TESTSUITE/aux-fixed/0464.domains
+   ╎creating new cache entry
+   ╎lookup yielded: data for domain1
+   ╎domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? yes (matched "lsearch;TESTSUITE/aux-fixed/0464.domains")
+  end sublist special_domains
+ data from lookup saved for cache for +special_domains: key 'domain1' value 'data for domain1'
+ domain1 in "+special_domains"? yes (matched "+special_domains")
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying abc@domain1
@@ -68,11 +54,12 @@ routing abc@domain1
 --------> r1 router <--------
 local_part=abc domain=domain1
 checking domains
-list element: +special_domains
- start sublist special_domains
-cached yes match for +special_domains
-cached lookup data = data for domain1
-domain1 in "+special_domains"? yes (matched "+special_domains" - cached)
+domain1 in "+special_domains"?
+ list element: +special_domains
+  start sublist special_domains
+ cached yes match for +special_domains
+ cached lookup data = data for domain1
+ domain1 in "+special_domains"? yes (matched "+special_domains" - cached)
 calling r1 router
 rda_interpret (string): '$local_part@xxx.$domain'
 expanded: 'abc@xxx.domain1' (tainted)
@@ -92,24 +79,26 @@ routing abc@xxx.domain1
 --------> r1 router <--------
 local_part=abc domain=xxx.domain1
 checking domains
-list element: +special_domains
- start sublist special_domains
-  list element: lsearch;TESTSUITE/aux-fixed/0464.domains
-  search_open: lsearch "TESTSUITE/aux-fixed/0464.domains"
-    cached open
-  search_find: file="TESTSUITE/aux-fixed/0464.domains"
-    key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
-  LRU list:
-    0TESTSUITE/aux-fixed/0464.domains
-    End
-  internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
-    type=lsearch key="xxx.domain1" opts=NULL
-  file lookup required for xxx.domain1
-    in TESTSUITE/aux-fixed/0464.domains
-  creating new cache entry
-  lookup failed
-  xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? no (end of list)
- end sublist special_domains
+xxx.domain1 in "+special_domains"?
+ list element: +special_domains
+  start sublist special_domains
+   xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"?
+   ╎list element: lsearch;TESTSUITE/aux-fixed/0464.domains
+   ╎search_open: lsearch "TESTSUITE/aux-fixed/0464.domains"
+   ╎  cached open
+   ╎search_find: file="TESTSUITE/aux-fixed/0464.domains"
+   ╎  key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎LRU list:
+   ╎  <TESTSUITE/aux-fixed/0464.domains
+   ╎  End
+   ╎internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
+   ╎  type=lsearch key="xxx.domain1" opts=NULL
+   ╎file lookup required for xxx.domain1
+   ╎  in TESTSUITE/aux-fixed/0464.domains
+   ╎creating new cache entry
+   ╎lookup failed
+   xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? no (end of list)
+  end sublist special_domains
 xxx.domain1 in "+special_domains"? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
@@ -129,11 +118,12 @@ routed by r2 router
 require: condition test succeeded in ACL "rcpt"
 processing "require" (TESTSUITE/test-config 23)
 check domains = +special_domains
-list element: +special_domains
- start sublist special_domains
-cached yes match for +special_domains
-cached lookup data = data for domain1
-domain1 in "+special_domains"? yes (matched "+special_domains" - cached)
+domain1 in "+special_domains"?
+ list element: +special_domains
+  start sublist special_domains
+ cached yes match for +special_domains
+ cached lookup data = data for domain1
+ domain1 in "+special_domains"? yes (matched "+special_domains" - cached)
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying abc@domain1
@@ -144,11 +134,12 @@ routing abc@domain1
 --------> r1 router <--------
 local_part=abc domain=domain1
 checking domains
-list element: +special_domains
- start sublist special_domains
-cached yes match for +special_domains
-cached lookup data = data for domain1
-domain1 in "+special_domains"? yes (matched "+special_domains" - cached)
+domain1 in "+special_domains"?
+ list element: +special_domains
+  start sublist special_domains
+ cached yes match for +special_domains
+ cached lookup data = data for domain1
+ domain1 in "+special_domains"? yes (matched "+special_domains" - cached)
 calling r1 router
 rda_interpret (string): '$local_part@xxx.$domain'
 expanded: 'abc@xxx.domain1' (tainted)
@@ -168,23 +159,25 @@ routing abc@xxx.domain1
 --------> r1 router <--------
 local_part=abc domain=xxx.domain1
 checking domains
-list element: +special_domains
- start sublist special_domains
-  list element: lsearch;TESTSUITE/aux-fixed/0464.domains
-  search_open: lsearch "TESTSUITE/aux-fixed/0464.domains"
-    cached open
-  search_find: file="TESTSUITE/aux-fixed/0464.domains"
-    key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
-  LRU list:
-    0TESTSUITE/aux-fixed/0464.domains
-    End
-  internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
-    type=lsearch key="xxx.domain1" opts=NULL
-  cached data used for lookup of xxx.domain1
-    in TESTSUITE/aux-fixed/0464.domains
-  lookup failed
-  xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? no (end of list)
- end sublist special_domains
+xxx.domain1 in "+special_domains"?
+ list element: +special_domains
+  start sublist special_domains
+   xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"?
+   ╎list element: lsearch;TESTSUITE/aux-fixed/0464.domains
+   ╎search_open: lsearch "TESTSUITE/aux-fixed/0464.domains"
+   ╎  cached open
+   ╎search_find: file="TESTSUITE/aux-fixed/0464.domains"
+   ╎  key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎LRU list:
+   ╎  <TESTSUITE/aux-fixed/0464.domains
+   ╎  End
+   ╎internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
+   ╎  type=lsearch key="xxx.domain1" opts=NULL
+   ╎cached data used for lookup of xxx.domain1
+   ╎  in TESTSUITE/aux-fixed/0464.domains
+   ╎lookup failed
+   xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? no (end of list)
+  end sublist special_domains
 xxx.domain1 in "+special_domains"? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------

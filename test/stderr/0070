@@ -3,35 +3,41 @@
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
->>> list element: ten-1.test.ex
+>>> host in helo_verify_hosts?
+>>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>> host in helo_verify_hosts? yes (matched "ten-1.test.ex")
+>>>  host in helo_verify_hosts? yes (matched "ten-1.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
 LOG: rejected MAIL from [V4NET.0.0.1]: no HELO/EHLO given
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
->>> list element: ten-1.test.ex
+>>> host in helo_verify_hosts?
+>>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>> list element: ten-3.test.ex
+>>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
->>> list element: ten-2.test.ex
+>>> host in helo_try_verify_hosts?
+>>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> host in hosts_require_helo?
 >>> host in hosts_require_helo? no (end of list)
 >>> using ACL "rcpt"
 >>> processing "require" (TESTSUITE/test-config 23)
@@ -47,24 +53,28 @@ LOG: H=[V4NET.0.0.13] F=<userx@cus.cam.ac.uk> rejected RCPT <a@b>: helo not veri
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
->>> list element: ten-1.test.ex
+>>> host in helo_verify_hosts?
+>>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>> list element: ten-3.test.ex
+>>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
->>> list element: ten-2.test.ex
+>>> host in helo_try_verify_hosts?
+>>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
->>> host in helo_try_verify_hosts? yes (matched "ten-2.test.ex")
+>>>  host in helo_try_verify_hosts? yes (matched "ten-2.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> [V4NET.0.0.1] in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> [V4NET.0.0.1] in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "[V4NET.0.0.1]"
 >>> HELO verification failed but host is in helo_try_verify_hosts
@@ -80,24 +90,28 @@ LOG: H=([V4NET.0.0.1]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo not verif
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
->>> list element: ten-1.test.ex
+>>> host in helo_verify_hosts?
+>>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>> list element: ten-3.test.ex
+>>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
->>> list element: ten-2.test.ex
+>>> host in helo_try_verify_hosts?
+>>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
->>> host in helo_try_verify_hosts? yes (matched "ten-2.test.ex")
+>>>  host in helo_try_verify_hosts? yes (matched "ten-2.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> [V4NET.0.0.2] in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> [V4NET.0.0.2] in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "[V4NET.0.0.2]"
 >>> matched host address
@@ -116,15 +130,18 @@ LOG: H=([V4NET.0.0.2]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo did verif
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
->>> list element: ten-1.test.ex
+>>> host in helo_verify_hosts?
+>>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>> host in helo_verify_hosts? yes (matched "ten-1.test.ex")
+>>>  host in helo_verify_hosts? yes (matched "ten-1.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> ten-1.test.ex in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> ten-1.test.ex in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "ten-1.test.ex"
 >>> looking up host name for V4NET.0.0.1
@@ -137,19 +154,22 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
->>> list element: ten-1.test.ex
+>>> host in helo_verify_hosts?
+>>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>> list element: ten-3.test.ex
+>>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-3.test.ex address=V4NET.0.0.3
->>> host in helo_verify_hosts? yes (matched "ten-3.test.ex")
+>>>  host in helo_verify_hosts? yes (matched "ten-3.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> ten-3.test.ex in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> ten-3.test.ex in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "ten-3.test.ex"
 >>> looking up host name for V4NET.0.0.3
@@ -160,15 +180,18 @@ MUNGED: ::1 will be omitted in what follows
 >>> checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>> matched host name
->>> list element: *
->>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> host in smtp_accept_max_nonmail_hosts?
+>>>  list element: *
+>>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> verifying EHLO/HELO argument "ten-3-alias.test.ex"
 >>> matched alias ten-3-alias.test.ex
 >>> verifying EHLO/HELO argument "ten-3xtra.test.ex"
 >>> getting IP address for ten-3xtra.test.ex
+>>> ten-3xtra.test.ex in ""?
 >>> ten-3xtra.test.ex in ""? no (end of list)
->>> list element: *
->>> ten-3xtra.test.ex in "*"? yes (matched "*")
+>>> ten-3xtra.test.ex in "*"?
+>>>  list element: *
+>>>  ten-3xtra.test.ex in "*"? yes (matched "*")
 >>> IP address for ten-3xtra.test.ex matches calling address
 >>> Forward DNS security status: unverified
 >>> host in hosts_connection_nolog? no (option unset)
@@ -176,15 +199,18 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
->>> list element: ten-1.test.ex
+>>> host in helo_verify_hosts?
+>>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>> host in helo_verify_hosts? yes (matched "ten-1.test.ex")
+>>>  host in helo_verify_hosts? yes (matched "ten-1.test.ex")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> rhubarb in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> rhubarb in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "rhubarb"
 >>> looking up host name for V4NET.0.0.1
@@ -192,61 +218,72 @@ MUNGED: ::1 will be omitted in what follows
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> getting IP address for rhubarb
+>>> rhubarb in ""?
 >>> rhubarb in ""? no (end of list)
->>> list element: *
->>> rhubarb in "*"? yes (matched "*")
+>>> rhubarb in "*"?
+>>>  list element: *
+>>>  rhubarb in "*"? yes (matched "*")
 LOG: rejected "EHLO rhubarb" from (rhubarb) [V4NET.0.0.1]
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
->>> list element: ten-1.test.ex
+>>> host in helo_verify_hosts?
+>>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>> list element: ten-3.test.ex
+>>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-3.test.ex address=V4NET.0.0.3
->>> list element: 99.99.99.99
->>> host in helo_verify_hosts? yes (matched "99.99.99.99")
+>>>  list element: 99.99.99.99
+>>>  host in helo_verify_hosts? yes (matched "99.99.99.99")
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> rhubarb in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> rhubarb in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "rhubarb"
 >>> looking up host name for 99.99.99.99
 >>> Test harness: host name lookup returns DEFER
 >>> getting IP address for rhubarb
+>>> rhubarb in ""?
 >>> rhubarb in ""? no (end of list)
->>> list element: *
->>> rhubarb in "*"? yes (matched "*")
+>>> rhubarb in "*"?
+>>>  list element: *
+>>>  rhubarb in "*"? yes (matched "*")
 LOG: temporarily rejected "EHLO rhubarb" from (rhubarb) [99.99.99.99]
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
->>> list element: ten-1.test.ex
+>>> host in helo_verify_hosts?
+>>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>> list element: ten-3.test.ex
+>>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
->>> list element: ten-2.test.ex
+>>> host in helo_try_verify_hosts?
+>>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> [V4NET.0.0.99] in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> [V4NET.0.0.99] in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
 >>> processing "require" (TESTSUITE/test-config 23)
@@ -261,24 +298,28 @@ LOG: H=([V4NET.0.0.99]) [V4NET.0.0.13] F=<a@b> rejected RCPT <c@d>: helo not ver
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
->>> list element: ten-1.test.ex
+>>> host in helo_verify_hosts?
+>>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>> list element: ten-3.test.ex
+>>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
->>> list element: ten-2.test.ex
+>>> host in helo_try_verify_hosts?
+>>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> [V4NET.0.0.13] in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> [V4NET.0.0.13] in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
 >>> processing "require" (TESTSUITE/test-config 23)
@@ -297,29 +338,38 @@ LOG: H=([V4NET.0.0.13]) [V4NET.0.0.13] F=<a@b> rejected RCPT <c@d>: helo did ver
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
 >>> host in recipient_unqualified_hosts? no (option unset)
->>> list element: ten-1.test.ex
+>>> host in helo_verify_hosts?
+>>>  list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>> list element: ten-3.test.ex
+>>>  list element: ten-3.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-3.test.ex address=V4NET.0.0.3
 >>> host in helo_verify_hosts? no (end of list)
->>> list element: ten-2.test.ex
+>>> host in helo_try_verify_hosts?
+>>>  list element: ten-2.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> rhubarb in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> rhubarb in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> list element: *
->>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> using ACL "rcpt"
 >>> processing "require" (TESTSUITE/test-config 23)
 >>>   message: helo not verified
@@ -328,9 +378,11 @@ MUNGED: ::1 will be omitted in what follows
 >>> looking up host name for 99.99.99.99
 >>> Test harness: host name lookup returns DEFER
 >>> getting IP address for rhubarb
+>>> rhubarb in ""?
 >>> rhubarb in ""? no (end of list)
->>> list element: *
->>> rhubarb in "*"? yes (matched "*")
+>>> rhubarb in "*"?
+>>>  list element: *
+>>>  rhubarb in "*"? yes (matched "*")
 >>> require: condition test failed in ACL "rcpt"
 >>> end of ACL "rcpt": not OK
 LOG: H=(rhubarb) [99.99.99.99] F=<a@b> rejected RCPT <c@d>: helo not verified

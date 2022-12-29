@@ -8,22 +8,6 @@ LOG: MAIN
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -71,10 +55,6 @@ exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1235
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -113,22 +93,25 @@ routing kilos@recurse.test.ex
 --------> r1 router <--------
 local_part=kilos domain=recurse.test.ex
 checking domains
-list element: !thishost.test.ex
-list element: !recurse.test.ex.test.ex
+recurse.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"?
+ list element: !thishost.test.ex
+ list element: !recurse.test.ex.test.ex
 recurse.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"? yes (end of list)
 calling r1 router
 r1 router called for kilos@recurse.test.ex
   domain = recurse.test.ex
-list element: *
-recurse.test.ex in "*"? yes (matched "*")
+recurse.test.ex in "*"?
+ list element: *
+ recurse.test.ex in "*"? yes (matched "*")
 DNS lookup of recurse.test.ex (MX) using fakens
 DNS lookup of recurse.test.ex (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 faking res_search(MX) response length as 65535
  writing neg-cache entry for recurse.test.ex-MX-xxxx, ttl 3000
 r1 router widened recurse.test.ex to recurse.test.ex.test.ex
-list element: *
-recurse.test.ex.test.ex in "*"? yes (matched "*")
+recurse.test.ex.test.ex in "*"?
+ list element: *
+ recurse.test.ex.test.ex in "*"? yes (matched "*")
 DNS lookup of recurse.test.ex.test.ex (MX) using fakens
 DNS lookup of recurse.test.ex.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
@@ -161,21 +144,24 @@ routing kilos@recurse.test.ex.test.ex
 --------> r1 router <--------
 local_part=kilos domain=recurse.test.ex.test.ex
 checking domains
-list element: !thishost.test.ex
-list element: !recurse.test.ex.test.ex
-recurse.test.ex.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"? no (matched "!recurse.test.ex.test.ex")
+recurse.test.ex.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"?
+ list element: !thishost.test.ex
+ list element: !recurse.test.ex.test.ex
+ recurse.test.ex.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"? no (matched "!recurse.test.ex.test.ex")
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=kilos domain=recurse.test.ex.test.ex
 checking local_parts
-list element: miles
+kilos in "miles"?
+ list element: miles
 kilos in "miles"? no (end of list)
 r2 router skipped: local_parts mismatch
 --------> r3 router <--------
 local_part=kilos domain=recurse.test.ex.test.ex
 checking local_parts
-list element: kilos
-kilos in "kilos"? yes (matched "kilos")
+kilos in "kilos"?
+ list element: kilos
+ kilos in "kilos"? yes (matched "kilos")
 calling r3 router
 rda_interpret (string): '$local_part@$domain'
 expanded: 'kilos@recurse.test.ex.test.ex' (tainted)
@@ -205,14 +191,16 @@ routing kilos@recurse.test.ex.test.ex
 --------> r1 router <--------
 local_part=kilos domain=recurse.test.ex.test.ex
 checking domains
-list element: !thishost.test.ex
-list element: !recurse.test.ex.test.ex
-recurse.test.ex.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"? no (matched "!recurse.test.ex.test.ex")
+recurse.test.ex.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"?
+ list element: !thishost.test.ex
+ list element: !recurse.test.ex.test.ex
+ recurse.test.ex.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"? no (matched "!recurse.test.ex.test.ex")
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=kilos domain=recurse.test.ex.test.ex
 checking local_parts
-list element: miles
+kilos in "miles"?
+ list element: miles
 kilos in "miles"? no (end of list)
 r2 router skipped: local_parts mismatch
 --------> r3 router <--------

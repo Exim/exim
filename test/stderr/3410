@@ -26,8 +26,6 @@ LOG: H=(test) [5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>>  list element: @
 >>>  list element: @[]
 >>> rhu.barb in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -82,8 +80,6 @@ LOG: H=(test) [5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>>  list element: @
 >>>  list element: @[]
 >>> rhu.barb in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -124,8 +120,6 @@ LOG: H=(test) [5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>>  list element: @
 >>>  list element: @[]
 >>> rhu.barb in helo_lookup_domains? no (end of list)
->>> host in limits_advertise_hosts?
->>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *

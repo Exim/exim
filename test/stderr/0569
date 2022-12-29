@@ -2,19 +2,23 @@
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
 >>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
->>> list element: usery@exim.test.ex
+>>> userx@exim.test.ex in "usery@exim.test.ex"?
+>>>  list element: usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 22)
@@ -37,19 +41,23 @@ LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=smtp S=s
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
 >>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
->>> list element: usery@exim.test.ex
+>>> userx@exim.test.ex in "usery@exim.test.ex"?
+>>>  list element: usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 22)
@@ -70,22 +78,27 @@ LOG: 10HmbA-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
 >>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
->>> list element: usery@exim.test.ex
->>> list element: exim.test.ex
->>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
->>> usery@exim.test.ex in "usery@exim.test.ex"? yes (matched "usery@exim.test.ex")
+>>> usery@exim.test.ex in "usery@exim.test.ex"?
+>>>  list element: usery@exim.test.ex
+>>>  exim.test.ex in "exim.test.ex"?
+>>>   list element: exim.test.ex
+>>>   exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
+>>>  usery@exim.test.ex in "usery@exim.test.ex"? yes (matched "usery@exim.test.ex")
 >>> check set acl_m_message = I do not like your message
 >>> accept: condition test succeeded in ACL "check_from"
 >>> end of ACL "check_from": ACCEPT
@@ -104,19 +117,23 @@ LOG: 10HmbB-0005vi-00 H=(test) [V4NET.10.10.10] F=<usery@exim.test.ex> rejected 
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
 >>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
->>> list element: usery@exim.test.ex
+>>> userx@exim.test.ex in "usery@exim.test.ex"?
+>>>  list element: usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 22)
@@ -137,19 +154,23 @@ LOG: 10HmbC-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
 >>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
->>> list element: usery@exim.test.ex
+>>> userx@exim.test.ex in "usery@exim.test.ex"?
+>>>  list element: usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 22)
@@ -172,19 +193,23 @@ LOG: 10HmaY-0005vi-00 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=smtp S=s
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
 >>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
->>> list element: usery@exim.test.ex
+>>> userx@exim.test.ex in "usery@exim.test.ex"?
+>>>  list element: usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_from"
 >>> processing "accept" (TESTSUITE/test-config 22)

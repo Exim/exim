@@ -6,15 +6,18 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "a1"
 >>> processing "deny" (TESTSUITE/test-config 16)
 >>> check hosts = 1.2.3.4 : <; 1.2.3.4::5.6.7.8
->>> list element: 1.2.3.4
->>> list element: <; 1.2.3.4:5.6.7.8
+>>> host in "1.2.3.4 : <; 1.2.3.4::5.6.7.8"?
+>>>  list element: 1.2.3.4
+>>>  list element: <; 1.2.3.4:5.6.7.8
 LOG: unknown lookup type "<" in host list item "<; 1.2.3.4:5.6.7.8"
 >>> host in "1.2.3.4 : <; 1.2.3.4::5.6.7.8"? list match deferred for <; 1.2.3.4:5.6.7.8
 >>> deny: condition test deferred in ACL "a1"
@@ -22,8 +25,9 @@ LOG: H=(test) [V4NET.0.0.0] F=<> temporarily rejected RCPT <a1@b>: unknown looku
 >>> using ACL "a2"
 >>> processing "deny" (TESTSUITE/test-config 19)
 >>> check hosts = 1.2.3/24
->>> list element: 1.2.3/24
->>> host in "1.2.3/24"? no (malformed IPv4 address or address mask)
->>> deny: condition test failed in ACL "a2"
->>> end of ACL "a2": implicit DENY
+>>> host in "1.2.3/24"?
+>>>  list element: 1.2.3/24
+>>>  host in "1.2.3/24"? no (malformed IPv4 address or address mask)
+>>>  deny: condition test failed in ACL "a2"
+>>>  end of ACL "a2": implicit DENY
 LOG: H=(test) [V4NET.0.0.0] F=<> rejected RCPT <a2@b>

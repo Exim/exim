@@ -1,4 +1,6 @@
 Exim version x.yz ....
+environment after trimming:
+ USER=CALLER
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -134,6 +136,8 @@ LOG: MAIN PANIC
  ╰─────result: match_address:   no
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+environment after trimming:
+ USER=CALLER
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -263,6 +267,8 @@ LOG: MAIN PANIC
  \_____result: match_address:   no
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+environment after trimming:
+ USER=CALLER
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -321,6 +327,8 @@ dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 no host name found for IP address V4NET.11.12.13
 Exim version x.yz ....
+environment after trimming:
+ USER=CALLER
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -421,28 +429,6 @@ sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1238
-SHELL in keep_environment?
- list element: USER
-EXIM_TEST_NUMBER in keep_environment?
- list element: USER
-PWD in keep_environment?
- list element: USER
-TERM in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
-SHLVL in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
-PATH in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
-_ in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -507,28 +493,6 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1239
-SHELL in keep_environment?
- list element: USER
-EXIM_TEST_NUMBER in keep_environment?
- list element: USER
-PWD in keep_environment?
- list element: USER
-TERM in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
-SHLVL in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
-PATH in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
-_ in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -734,28 +698,6 @@ LOG: 10HmbD-0005vi-00 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_add
 Exim version x.yz ....
 changed uid/gid: -C, -D, -be or -bf forces real uid
   uid=CALLER_UID gid=CALLER_GID pid=p1240
-SHELL in keep_environment?
- list element: USER
-EXIM_TEST_NUMBER in keep_environment?
- list element: USER
-PWD in keep_environment?
- list element: USER
-TERM in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
-SHLVL in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
-PATH in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
-_ in keep_environment?
- list element: USER
-USER in keep_environment?
- list element: USER
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid

@@ -6,27 +6,37 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> exim.test.ex in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> exim.test.ex in helo_lookup_domains? no (end of list)
+>>> host in limits_advertise_hosts?
+>>>  list element: !*
 >>> host in dsn_advertise_hosts? no (option unset)
->>> list element: *
->>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
+>>> host in tls_advertise_hosts?
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check recipients = postmaster@exim.test.ex
->>> list element: postmaster@exim.test.ex
->>> list element: exim.test.ex
->>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
->>> postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
+>>> postmaster@exim.test.ex in "postmaster@exim.test.ex"?
+>>>  list element: postmaster@exim.test.ex
+>>>  exim.test.ex in "exim.test.ex"?
+>>>   list element: exim.test.ex
+>>>   exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
+>>>  postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 19)
 >>> check recipients = postmaster@exim.test.ex
->>> list element: postmaster@exim.test.ex
+>>> list@exim.test.ex in "postmaster@exim.test.ex"?
+>>>  list element: postmaster@exim.test.ex
 >>> list@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 20)

@@ -6,9 +6,11 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 18)
@@ -16,8 +18,9 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt10.test.ex
 >>> calling domainlist router
->>> list element: *
->>> mxt10.test.ex in "*"? yes (matched "*")
+>>> mxt10.test.ex in "*"?
+>>>  list element: *
+>>>  mxt10.test.ex in "*"? yes (matched "*")
 >>> domainlist router declined for x@mxt10.test.ex
 >>> "more" is false: skipping remaining routers
 >>> no more routers
@@ -34,9 +37,11 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender veri
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "require" (TESTSUITE/test-config 18)
@@ -44,8 +49,9 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender veri
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1.test.ex
 >>> calling domainlist router
->>> list element: *
->>> ten-1.test.ex in "*"? yes (matched "*")
+>>> ten-1.test.ex in "*"?
+>>>  list element: *
+>>>  ten-1.test.ex in "*"? yes (matched "*")
 >>> routed by domainlist router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
@@ -54,8 +60,9 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender veri
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt10.test.ex
 >>> calling domainlist router
->>> list element: *
->>> mxt10.test.ex in "*"? yes (matched "*")
+>>> mxt10.test.ex in "*"?
+>>>  list element: *
+>>>  mxt10.test.ex in "*"? yes (matched "*")
 >>> domainlist router declined for x@mxt10.test.ex
 >>> "more" is false: skipping remaining routers
 >>> no more routers

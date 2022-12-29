@@ -6,27 +6,34 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
 >>> processing "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list1-request@lists.test.ex
->>> list element: lists.test.ex
->>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> lists.test.ex in "lists.test.ex"?
+>>>  list element: lists.test.ex
+>>>  lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
 >>> calling r1 router
 >>> routed by r1 router
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing manager-list1@test.ex
->>> list element: lists.test.ex
+>>> test.ex in "lists.test.ex"?
+>>>  list element: lists.test.ex
 >>> test.ex in "lists.test.ex"? no (end of list)
->>> list element: lists.test.ex
+>>> test.ex in "lists.test.ex"?
+>>>  list element: lists.test.ex
 >>> test.ex in "lists.test.ex"? no (end of list)
->>> list element: 
->>> anywhere in ""? no (end of list)
+>>> anyone@anywhere in ":"?
+>>>  list element: 
+>>>  anywhere in ""?
+>>>  anywhere in ""? no (end of list)
 >>> anyone@anywhere in ":"? no (end of list)
 >>> calling r5 router
 >>> routed by r5 router
@@ -38,28 +45,34 @@
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list1@lists.test.ex
->>> list element: lists.test.ex
->>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
->>> list element: lsearch;TESTSUITE/aux-fixed/0306/list1
->>> sub1@test.ex in "lsearch;TESTSUITE/aux-fixed/0306/list1"? yes (matched "lsearch;TESTSUITE/aux-fixed/0306/list1")
+>>> lists.test.ex in "lists.test.ex"?
+>>>  list element: lists.test.ex
+>>>  lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> sub1@test.ex in "lsearch;TESTSUITE/aux-fixed/0306/list1"?
+>>>  list element: lsearch;TESTSUITE/aux-fixed/0306/list1
+>>>  sub1@test.ex in "lsearch;TESTSUITE/aux-fixed/0306/list1"? yes (matched "lsearch;TESTSUITE/aux-fixed/0306/list1")
 >>> calling r2 router
 >>> routed by r2 router
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in ACL "rcpt"
 >>> end of ACL "rcpt": ACCEPT
->>> list element: *
->>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> host in smtp_accept_max_nonmail_hosts?
+>>>  list element: *
+>>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "rcpt"
 >>> processing "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list1@lists.test.ex
->>> list element: lists.test.ex
->>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
->>> list element: lsearch;TESTSUITE/aux-fixed/0306/list1
+>>> lists.test.ex in "lists.test.ex"?
+>>>  list element: lists.test.ex
+>>>  lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> anyone@anywhere in "lsearch;TESTSUITE/aux-fixed/0306/list1"?
+>>>  list element: lsearch;TESTSUITE/aux-fixed/0306/list1
 >>> anyone@anywhere in "lsearch;TESTSUITE/aux-fixed/0306/list1"? no (end of list)
->>> list element: lists.test.ex
->>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> lists.test.ex in "lists.test.ex"?
+>>>  list element: lists.test.ex
+>>>  lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
 >>> calling r3 router
 >>> r3 router forced address failure
 >>> ----------- end verify ------------
@@ -71,16 +84,20 @@ LOG: H=(test) [1.2.3.4] F=<anyone@anywhere> rejected RCPT <list1@lists.test.ex>:
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing nonlist@lists.test.ex
->>> list element: lists.test.ex
->>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
->>> list element: *
->>> list element: *
->>> anywhere in "*"? yes (matched "*")
->>> anyone@anywhere in "*"? yes (matched "*")
+>>> lists.test.ex in "lists.test.ex"?
+>>>  list element: lists.test.ex
+>>>  lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> anyone@anywhere in "*"?
+>>>  list element: *
+>>>  anywhere in "*"?
+>>>   list element: *
+>>>   anywhere in "*"? yes (matched "*")
+>>>  anyone@anywhere in "*"? yes (matched "*")
 >>> calling r2 router
 >>> r2 router declined for nonlist@lists.test.ex
->>> list element: lists.test.ex
->>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> lists.test.ex in "lists.test.ex"?
+>>>  list element: lists.test.ex
+>>>  lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
 >>> calling r3 router
 >>> r3 router forced address failure
 >>> ----------- end verify ------------

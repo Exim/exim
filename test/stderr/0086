@@ -2,14 +2,17 @@
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
 >>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> accept: condition test succeeded in inline ACL
@@ -28,14 +31,17 @@ LOG: 10HmaY-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
 >>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> accept: condition test succeeded in inline ACL
@@ -54,14 +60,17 @@ LOG: 10HmaZ-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
 >>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> accept: condition test succeeded in inline ACL
@@ -80,14 +89,17 @@ LOG: 10HmbA-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
 >>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> accept: condition test succeeded in inline ACL
@@ -106,14 +118,17 @@ LOG: 10HmbB-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
 >>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> accept: condition test succeeded in inline ACL
@@ -132,14 +147,17 @@ LOG: 10HmbC-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> list element: V4NET.10.10.9
->>> host in recipient_unqualified_hosts? yes (matched "V4NET.10.10.9")
+>>> host in recipient_unqualified_hosts?
+>>>  list element: V4NET.10.10.9
+>>>  host in recipient_unqualified_hosts? yes (matched "V4NET.10.10.9")
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> list element: 
->>> list element: @
->>> list element: @[]
+>>> host in pipelining_connect_advertise_hosts?
+>>>  list element: 
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> accept: condition test succeeded in inline ACL

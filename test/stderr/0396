@@ -1,22 +1,6 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
-list element: PATH
-list element: EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-list element: PATH
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -38,10 +22,11 @@ SMTP>> 250 OK
 SMTP<< rcpt to:<x@y>
 processing "accept" (TESTSUITE/test-config 12)
 check domains = +fail
-list element: +fail
- start sublist fail
-  expansion of "${if eq {x}{y}{}fail}" forced failure: assume not in this list
- end sublist fail
+y in "+fail"?
+ list element: +fail
+  start sublist fail
+   expansion of "${if eq {x}{y}{}fail}" forced failure: assume not in this list
+  end sublist fail
 y in "+fail"? no (end of list)
 accept: condition test failed in inline ACL
 end of inline ACL: implicit DENY
