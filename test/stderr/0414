@@ -30,7 +30,7 @@ b.domain in "!+C"?
    ╎   search_find: file="TESTSUITE/aux-fixed/0414.list1"
    ╎     key="b.domain" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎   LRU list:
-   ╎     <TESTSUITE/aux-fixed/0414.list1
+   ╎     0TESTSUITE/aux-fixed/0414.list1
    ╎     End
    ╎   internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
    ╎     type=lsearch key="b.domain" opts=NULL
@@ -48,8 +48,8 @@ b.domain in "!+C"?
    ╎   search_find: file="TESTSUITE/aux-fixed/0414.list2"
    ╎     key="b.domain" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎   LRU list:
-   ╎     <TESTSUITE/aux-fixed/0414.list2
-   ╎     <TESTSUITE/aux-fixed/0414.list1
+   ╎     0TESTSUITE/aux-fixed/0414.list2
+   ╎     0TESTSUITE/aux-fixed/0414.list1
    ╎     End
    ╎   internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
    ╎     type=lsearch key="b.domain" opts=NULL
@@ -108,8 +108,8 @@ a.domain in "!+C"?
    ╎   search_find: file="TESTSUITE/aux-fixed/0414.list1"
    ╎     key="a.domain" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎   LRU list:
-   ╎     <TESTSUITE/aux-fixed/0414.list1
-   ╎     <TESTSUITE/aux-fixed/0414.list2
+   ╎     0TESTSUITE/aux-fixed/0414.list1
+   ╎     0TESTSUITE/aux-fixed/0414.list2
    ╎     End
    ╎   internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
    ╎     type=lsearch key="a.domain" opts=NULL
@@ -138,8 +138,8 @@ a.domain in "+B"?
    ╎search_find: file="TESTSUITE/aux-fixed/0414.list2"
    ╎  key="a.domain" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎LRU list:
-   ╎  <TESTSUITE/aux-fixed/0414.list2
-   ╎  <TESTSUITE/aux-fixed/0414.list1
+   ╎  0TESTSUITE/aux-fixed/0414.list2
+   ╎  0TESTSUITE/aux-fixed/0414.list1
    ╎  End
    ╎internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
    ╎  type=lsearch key="a.domain" opts=NULL

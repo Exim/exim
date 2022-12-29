@@ -32,7 +32,7 @@ domain1 in "+special_domains"?
    ╎search_find: file="TESTSUITE/aux-fixed/0464.domains"
    ╎  key="domain1" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎LRU list:
-   ╎  <TESTSUITE/aux-fixed/0464.domains
+   ╎  0TESTSUITE/aux-fixed/0464.domains
    ╎  End
    ╎internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
    ╎  type=lsearch key="domain1" opts=NULL
@@ -89,7 +89,7 @@ xxx.domain1 in "+special_domains"?
    ╎search_find: file="TESTSUITE/aux-fixed/0464.domains"
    ╎  key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎LRU list:
-   ╎  <TESTSUITE/aux-fixed/0464.domains
+   ╎  0TESTSUITE/aux-fixed/0464.domains
    ╎  End
    ╎internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
    ╎  type=lsearch key="xxx.domain1" opts=NULL
@@ -169,7 +169,7 @@ xxx.domain1 in "+special_domains"?
    ╎search_find: file="TESTSUITE/aux-fixed/0464.domains"
    ╎  key="xxx.domain1" partial=-1 affix=NULL starflags=0 opts=NULL
    ╎LRU list:
-   ╎  <TESTSUITE/aux-fixed/0464.domains
+   ╎  0TESTSUITE/aux-fixed/0464.domains
    ╎  End
    ╎internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
    ╎  type=lsearch key="xxx.domain1" opts=NULL

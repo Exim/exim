@@ -1335,6 +1335,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Different builds will have different lookup types included
     s/^\s*search_type \K\d+ \((\w+)\) quoting -1 \(none\)$/NN ($1) quoting -1 (none)/;
+    # and different numbers of lookup types result in different type-code letters,
+    # so convert them all to "0"
+    s%(?<!lsearch)[^ ](?=TESTSUITE/aux-fixed/(?:0414.list[12]|0464.domains)$)%0%;
 
     # DISABLE_OCSP
     next if /in hosts_requ(est|ire)_ocsp\? (no|yes)/;
@@ -1370,6 +1373,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^(ppppp )?setsockopt FASTOPEN: Network Error/;
 
     # DISABLE_TLS_RESUME
+    # TLS resumption is not always supported by the build
+    next if /in tls_resumption_hosts\?/;
     next if /RE '.outlook.com/;
 
     # Environment cleaning
@@ -1462,9 +1467,6 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Not all builds include DMARC
     next if /^DMARC: no (dmarc_tld_file|sender_host_address)$/ ;
-
-    # TLS resumption is not always supported by the build
-    next if /in tls_resumption_hosts\?/;
 
     # Platform differences in errno strings
     s/  SMTP\(Operation timed out\)<</  SMTP(Connection timed out)<</;
