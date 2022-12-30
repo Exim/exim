@@ -2553,7 +2553,19 @@ for (;;)
 	  if (p->revents & POLLIN)
             {
 	    EXIM_SOCKLEN_T alen = sizeof(accepted);
-#ifdef TCP_INFO
+#if defined(__FreeBSD__) && defined(SO_LISTENQLEN)
+	    int backlog;
+	    socklen_t blen = sizeof(backlog);
+
+	    if (  smtp_backlog_monitor > 0
+	       && getsockopt(p->fd, SOL_SOCKET, SO_LISTENQLEN, &backlog, &blen) == 0)
+	      {
+	      DEBUG(D_interface)
+		debug_printf("listen fd %d queue curr %d\n", p->fd, backlog);
+	      smtp_listen_backlog = backlog;
+	      }
+
+#elif defined(TCP_INFO) && defined(EXIM_HAVE_TCPI_UNACKED)
 	    struct tcp_info ti;
 	    socklen_t tlen = sizeof(ti);
 
@@ -2563,15 +2575,9 @@ for (;;)
 	    if (  smtp_backlog_monitor > 0
 	       && getsockopt(p->fd, IPPROTO_TCP, TCP_INFO, &ti, &tlen) == 0)
 	      {
-# ifdef EXIM_HAVE_TCPI_UNACKED
 	      DEBUG(D_interface) debug_printf("listen fd %d queue max %u curr %u\n",
 		      p->fd, ti.tcpi_sacked, ti.tcpi_unacked);
 	      smtp_listen_backlog = ti.tcpi_unacked;
-# elif defined(__FreeBSD__)	/* This does not work. Investigate kernel sourcecode. */
-	      DEBUG(D_interface) debug_printf("listen fd %d queue max %u curr %u\n",
-		      p->fd, ti.__tcpi_sacked, ti.__tcpi_unacked);
-	      smtp_listen_backlog = ti.__tcpi_unacked;
-# endif
 	      }
 #endif
 	    p->revents = 0;
