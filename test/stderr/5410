@@ -16,15 +16,12 @@ LOG: smtp_connection MAIN
  ├considering: $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
- in limits_advertise_hosts?
- list element: !*
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts?
  list element: *
   in pipelining_advertise_hosts? yes (matched "*")
  in chunking_advertise_hosts?
  in chunking_advertise_hosts? no (end of list)
- in tls_advertise_hosts?
  list element: *
   in tls_advertise_hosts? yes (matched "*")
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
@@ -121,9 +118,6 @@ cmd buf flush ddd bytes
   ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: .outlook.com\$
   ╰─────result: .outlook.com$
- compiled RE '.outlook.com$' not found in local cache
- compiling RE '.outlook.com$'
- compiled RE '.outlook.com$' saved in local cache
   ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $item
@@ -614,15 +608,12 @@ LOG: smtp_connection MAIN
  ├considering: $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
- in limits_advertise_hosts?
- list element: !*
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts?
  list element: *
   in pipelining_advertise_hosts? yes (matched "*")
  in chunking_advertise_hosts?
  in chunking_advertise_hosts? no (end of list)
- in tls_advertise_hosts?
  list element: *
   in tls_advertise_hosts? yes (matched "*")
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
@@ -719,9 +710,6 @@ cmd buf flush ddd bytes
   ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: .outlook.com\$
   ╰─────result: .outlook.com$
- compiled RE '.outlook.com$' not found in local cache
- compiling RE '.outlook.com$'
- compiled RE '.outlook.com$' saved in local cache
   ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $item
@@ -1165,15 +1153,12 @@ LOG: smtp_connection MAIN
  ├considering: $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
- in limits_advertise_hosts?
- list element: !*
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts?
  list element: *
   in pipelining_advertise_hosts? yes (matched "*")
  in chunking_advertise_hosts?
  in chunking_advertise_hosts? no (end of list)
- in tls_advertise_hosts?
  list element: *
   in tls_advertise_hosts? yes (matched "*")
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
@@ -1270,9 +1255,6 @@ cmd buf flush ddd bytes
   ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: .outlook.com\$
   ╰─────result: .outlook.com$
- compiled RE '.outlook.com$' not found in local cache
- compiling RE '.outlook.com$'
- compiled RE '.outlook.com$' saved in local cache
   ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $item

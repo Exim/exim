@@ -4,21 +4,21 @@
 exim -DSERVER=server -DOPTION=+no_tlsv1_3 -bd -oX PORT_D
 ****
 exim -DVALUE=resume -odf getticket@test.ex
-Test message. Contains FF: ÿ
+Test message.
 ****
-exim -DVALUE=resume -odf resume@test.ex abcd@test.ex xyz@test.ex
+exim -DVALUE=resume -odf resume@test.ex hostnotresume@test.ex xyz@test.ex
 Test message to two different hosts, one does not support resume
 ****
 # allow time for ticket to hit renewal time
-sleep 3
+sleep 5
 exim -DVALUE=resume -odf renewal@test.ex
 Test message.
 ****
 exim -DVALUE=resume -odf postrenewal@test.ex
 Test message.
 ****
-sleep 3
-exim -DVALUE=resume -odf timeout@test.ex
+sleep 5
+exim -DVALUE=resume -odf aftertimeout@test.ex
 Test message.
 ****
 exim -odf notreq@test.ex

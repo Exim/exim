@@ -155,6 +155,7 @@ change this guard and punt the issue for a while longer. */
 # endif
 #endif
 
+#define TESTSUITE_TICKET_LIFE 10	/* seconds */
 /*************************************************
 *        OpenSSL option parse                    *
 *************************************************/
@@ -2044,7 +2045,7 @@ if (exim_tk.name[0])
   exim_tk_old = exim_tk;
   }
 
-if (f.running_in_test_harness) ssl_session_timeout = 6;
+if (f.running_in_test_harness) ssl_session_timeout = TESTSUITE_TICKET_LIFE;
 
 DEBUG(D_tls) debug_printf("OpenSSL: %s STEK\n", exim_tk.name[0] ? "rotating" : "creating");
 if (RAND_bytes(exim_tk.aes_key, sizeof(exim_tk.aes_key)) <= 0) return;
@@ -3908,16 +3909,17 @@ if (tlsp->host_resumable)
 #ifdef EXIM_HAVE_SESSION_TICKET
 	  SSL_SESSION_get_ticket_lifetime_hint(ss);
 #else			/* Use, fairly arbitrilarily, what we as server would */
-	  f.running_in_test_harness ? 6 : ssl_session_timeout;
+	  f.running_in_test_harness ? TESTSUITE_TICKET_LIFE : ssl_session_timeout;
 #endif
-	if (lifetime + dt->time_stamp < time(NULL))
+	time_t now = time(NULL), expires = lifetime + dt->time_stamp;
+	if (expires < now)
 	  {
-	  DEBUG(D_tls) debug_printf("session expired\n");
+	  DEBUG(D_tls) debug_printf("session expired (by " TIME_T_FMT "s from %lus)\n", now - expires, lifetime);
 	  dbfn_delete(dbm_file, tlsp->resume_index);
 	  }
 	else if (SSL_set_session(ssl, ss))
 	  {
-	  DEBUG(D_tls) debug_printf("good session\n");
+	  DEBUG(D_tls) debug_printf("good session (" TIME_T_FMT "s left of %lus)\n", expires - now, lifetime);
 	  tlsp->resumption |= RESUME_CLIENT_SUGGESTED;
 	  tlsp->verify_override = dt->verify_override;
 	  tlsp->ocsp = dt->ocsp;

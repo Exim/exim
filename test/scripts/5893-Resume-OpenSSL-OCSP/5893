@@ -10,14 +10,14 @@ exim -DVALUE=resume -odf resume@test.ex abcd@test.ex xyz@test.ex
 Test message to two different hosts, one does not support resume
 ****
 # allow time for ticket to hit renewal time
-sleep 3
+sleep 5
 exim -DVALUE=resume -odf renewal@test.ex
 Test message.
 ****
 exim -DVALUE=resume -odf postrenewal@test.ex
 Test message.
 ****
-sleep 3
+sleep 5
 exim -DVALUE=resume -odf timeout@test.ex
 Test message.
 ****
