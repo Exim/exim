@@ -166,4 +166,17 @@ quit
 killdaemon
 exim -bp
 ****
+sudo rm DIR/spool/input/*
+#
+#
+#
+#
+exim -DSERVER=server -DCONTROL='acl_smtp_connect=drop message=550 client disliked' -odq -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 550 client disliked
+???*
+****
+killdaemon
+#
 no_msglog_check

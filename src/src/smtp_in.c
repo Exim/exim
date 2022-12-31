@@ -3565,6 +3565,19 @@ problem, because we get here only if some other ACL has issued "drop", and
 in that case, *its* custom messages will have been used above. */
 
 smtp_notquit_exit(US"acl-drop", NULL, NULL);
+
+/* An overenthusiastic fail2ban/iptables implimentation has been seen to result
+in the TCP conn staying open, and retrying, despite this process exiting. A
+malicious client could possibly do the same, tying up server netowrking
+resources. Close the socket explicitly to try to avoid that (there's a note in
+the Linux socket(7) manpage, SO_LINGER para, to the effect that exim() without
+close() results in the socket always lingering). */
+
+(void) poll_one_fd(fileno(smtp_in), POLLIN, 200);
+DEBUG(D_any) debug_printf_indent("SMTP(close)>>\n");
+(void) fclose(smtp_in);
+(void) fclose(smtp_out);
+
 return 2;
 }
 

@@ -1,85 +1,5 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
-  uid=uuuu gid=CALLER_GID pid=p1235
-configuration file is TESTSUITE/test-config
-admin user
-changed uid/gid: privilege not needed
-  uid=EXIM_UID gid=EXIM_GID pid=p1235
-seeking password data for user "CALLER": cache not available
-getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
-sender address = CALLER@test.ex
-sender_fullhost = [V4NET.9.8.7]
-sender_rcvhost = [V4NET.9.8.7]
-host in hosts_connection_nolog?
- list element: 
- list element: 127.0.0.1
-host in hosts_connection_nolog? no (end of list)
-LOG: smtp_connection MAIN
-  SMTP connection from [V4NET.9.8.7]
-host in host_lookup? no (option unset)
-set_process_info: pppp handling incoming connection from [V4NET.9.8.7]
-host in host_reject_connection? no (option unset)
-host in sender_unqualified_hosts? no (option unset)
-host in recipient_unqualified_hosts? no (option unset)
-host in helo_verify_hosts? no (option unset)
-host in helo_try_verify_hosts? no (option unset)
-host in helo_accept_junk_hosts? no (option unset)
-SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-smtp_setup_msg entered
-SMTP<< helo test
-test in helo_lookup_domains?
- list element: @
- list element: @[]
-test in helo_lookup_domains? no (end of list)
-sender_fullhost = (test) [V4NET.9.8.7]
-sender_rcvhost = [V4NET.9.8.7] (helo=test)
-set_process_info: pppp handling incoming connection from (test) [V4NET.9.8.7]
-SMTP>> 250 myhost.test.ex Hello test [V4NET.9.8.7]
-SMTP<< mail from:<x@y>
-spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
-log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
-SMTP>> 250 OK
-SMTP<< rcpt to:<warn_empty@test.ex>
-using ACL "warn_empty"
-processing "warn" (TESTSUITE/test-config 29)
-warn: condition test succeeded in ACL "warn_empty"
-processing "accept" (TESTSUITE/test-config 30)
-accept: condition test succeeded in ACL "warn_empty"
-end of ACL "warn_empty": ACCEPT
-SMTP>> 250 Accepted
-SMTP<< data
-SMTP>> 354 Enter message, ending with "." on a line by itself
-search_tidyup called
->>Headers received:
-
-qualify & rewrite recipients list
-global rewrite rules
-rewrite headers
-search_tidyup called
->>Headers after rewriting and local additions:
-
-Data file name: TESTSUITE/spool//input//10HmbF-0005vi-00-D
-Data file written for message 10HmbF-0005vi-00
->>Generated Received: header line
-P Received: from [V4NET.9.8.7] (helo=test)
-	by myhost.test.ex with smtp (Exim x.yz)
-	(envelope-from <x@y>)
-	id 10HmbF-0005vi-00
-	for warn_empty@test.ex;
-	Tue, 2 Mar 1999 09:44:33 +0000
-LOG: MAIN
-  <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
-SMTP>> 250 OK id=10HmbF-0005vi-00
-smtp_setup_msg entered
-SMTP<< quit
-SMTP>> 221 myhost.test.ex closing connection
-LOG: smtp_connection MAIN
-  SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
-search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
-Exim version x.yz ....
-changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1236
 configuration file is TESTSUITE/test-config
 admin user
@@ -120,16 +40,13 @@ SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
-SMTP<< rcpt to:<warn_log@test.ex>
-using ACL "warn_log"
-processing "warn" (TESTSUITE/test-config 33)
-l_message: warn log message
-warn: condition test succeeded in ACL "warn_log"
-LOG: MAIN
-  H=(test) [V4NET.9.8.7] Warning: warn log message
-processing "accept" (TESTSUITE/test-config 34)
-accept: condition test succeeded in ACL "warn_log"
-end of ACL "warn_log": ACCEPT
+SMTP<< rcpt to:<warn_empty@test.ex>
+using ACL "warn_empty"
+processing "warn" (TESTSUITE/test-config 31)
+warn: condition test succeeded in ACL "warn_empty"
+processing "accept" (TESTSUITE/test-config 32)
+accept: condition test succeeded in ACL "warn_empty"
+end of ACL "warn_empty": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -142,18 +59,18 @@ rewrite headers
 search_tidyup called
 >>Headers after rewriting and local additions:
 
-Data file name: TESTSUITE/spool//input//10HmbG-0005vi-00-D
-Data file written for message 10HmbG-0005vi-00
+Data file name: TESTSUITE/spool//input//10HmbF-0005vi-00-D
+Data file written for message 10HmbF-0005vi-00
 >>Generated Received: header line
 P Received: from [V4NET.9.8.7] (helo=test)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
-	id 10HmbG-0005vi-00
-	for warn_log@test.ex;
+	id 10HmbF-0005vi-00
+	for warn_empty@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
-SMTP>> 250 OK id=10HmbG-0005vi-00
+SMTP>> 250 OK id=10HmbF-0005vi-00
 smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -203,12 +120,95 @@ SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
+SMTP<< rcpt to:<warn_log@test.ex>
+using ACL "warn_log"
+processing "warn" (TESTSUITE/test-config 35)
+l_message: warn log message
+warn: condition test succeeded in ACL "warn_log"
+LOG: MAIN
+  H=(test) [V4NET.9.8.7] Warning: warn log message
+processing "accept" (TESTSUITE/test-config 36)
+accept: condition test succeeded in ACL "warn_log"
+end of ACL "warn_log": ACCEPT
+SMTP>> 250 Accepted
+SMTP<< data
+SMTP>> 354 Enter message, ending with "." on a line by itself
+search_tidyup called
+>>Headers received:
+
+qualify & rewrite recipients list
+global rewrite rules
+rewrite headers
+search_tidyup called
+>>Headers after rewriting and local additions:
+
+Data file name: TESTSUITE/spool//input//10HmbG-0005vi-00-D
+Data file written for message 10HmbG-0005vi-00
+>>Generated Received: header line
+P Received: from [V4NET.9.8.7] (helo=test)
+	by myhost.test.ex with smtp (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmbG-0005vi-00
+	for warn_log@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+LOG: MAIN
+  <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
+SMTP>> 250 OK id=10HmbG-0005vi-00
+smtp_setup_msg entered
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=p1238
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=p1238
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+sender_fullhost = [V4NET.9.8.7]
+sender_rcvhost = [V4NET.9.8.7]
+host in hosts_connection_nolog?
+ list element: 
+ list element: 127.0.0.1
+host in hosts_connection_nolog? no (end of list)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.9.8.7]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [V4NET.9.8.7]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< helo test
+test in helo_lookup_domains?
+ list element: @
+ list element: @[]
+test in helo_lookup_domains? no (end of list)
+sender_fullhost = (test) [V4NET.9.8.7]
+sender_rcvhost = [V4NET.9.8.7] (helo=test)
+set_process_info: pppp handling incoming connection from (test) [V4NET.9.8.7]
+SMTP>> 250 myhost.test.ex Hello test [V4NET.9.8.7]
+SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
+SMTP>> 250 OK
 SMTP<< rcpt to:<warn_user@test.ex>
 using ACL "warn_user"
-processing "warn" (TESTSUITE/test-config 37)
+processing "warn" (TESTSUITE/test-config 39)
   message: warn user message
 warn: condition test succeeded in ACL "warn_user"
-processing "accept" (TESTSUITE/test-config 38)
+processing "accept" (TESTSUITE/test-config 40)
 accept: condition test succeeded in ACL "warn_user"
 end of ACL "warn_user": ACCEPT
 SMTP>> 250 Accepted
@@ -244,7 +244,7 @@ SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog?
 >>>  list element: 
 >>>  list element: 127.0.0.1
@@ -262,17 +262,17 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "defer"
->>> processing "defer" (TESTSUITE/test-config 51)
+>>> processing "defer" (TESTSUITE/test-config 53)
 >>>   message: forcibly deferred
 >>> defer: condition test succeeded in ACL "defer"
 >>> end of ACL "defer": DEFER
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> temporarily rejected RCPT <defer@y>: forcibly deferred
 >>> using ACL "accept"
->>> processing "accept" (TESTSUITE/test-config 24)
+>>> processing "accept" (TESTSUITE/test-config 26)
 >>> accept: condition test succeeded in ACL "accept"
 >>> end of ACL "accept": ACCEPT
 >>> using ACL "drop"
->>> processing "drop" (TESTSUITE/test-config 41)
+>>> processing "drop" (TESTSUITE/test-config 43)
 >>>   message: forcibly dropped
 >>> drop: condition test succeeded in ACL "drop"
 >>> end of ACL "drop": DROP
@@ -295,7 +295,7 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "defer_senders"
->>> processing "defer" (TESTSUITE/test-config 54)
+>>> processing "defer" (TESTSUITE/test-config 56)
 >>> check senders = :
 >>>  in ":"?
 >>>  list element: 
@@ -321,19 +321,19 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "delay_accept"
->>> processing "accept" (TESTSUITE/test-config 57)
+>>> processing "accept" (TESTSUITE/test-config 59)
 >>> check delay = 1s
 >>> delay modifier requests 1-second delay
 >>> delay skipped in -bh checking mode
 >>> accept: condition test succeeded in ACL "delay_accept"
 >>> end of ACL "delay_accept": ACCEPT
 >>> using ACL "delay_warn"
->>> processing "warn" (TESTSUITE/test-config 60)
+>>> processing "warn" (TESTSUITE/test-config 62)
 >>> check delay = 1s
 >>> delay modifier requests 1-second delay
 >>> delay skipped in -bh checking mode
 >>> warn: condition test succeeded in ACL "delay_warn"
->>> processing "accept" (TESTSUITE/test-config 61)
+>>> processing "accept" (TESTSUITE/test-config 63)
 >>> accept: condition test succeeded in ACL "delay_warn"
 >>> end of ACL "delay_warn": ACCEPT
 LOG: SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
@@ -354,7 +354,7 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "host_check"
->>> processing "deny" (TESTSUITE/test-config 71)
+>>> processing "deny" (TESTSUITE/test-config 73)
 >>> check hosts = net-lsearch;TESTSUITE/aux-var/0022.hosts
 >>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"?
 >>>  list element: net-lsearch;TESTSUITE/aux-var/0022.hosts
@@ -364,7 +364,7 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> end of ACL "host_check": DENY
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A host-specific message<
 >>> using ACL "host_check"
->>> processing "deny" (TESTSUITE/test-config 71)
+>>> processing "deny" (TESTSUITE/test-config 73)
 >>> check hosts = net-lsearch;TESTSUITE/aux-var/0022.hosts
 >>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"?
 >>>  list element: net-lsearch;TESTSUITE/aux-var/0022.hosts
@@ -374,7 +374,7 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A h
 >>> end of ACL "host_check": DENY
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A host-specific message<
 >>> using ACL "host_check2"
->>> processing "deny" (TESTSUITE/test-config 75)
+>>> processing "deny" (TESTSUITE/test-config 77)
 >>>   message: host data >$host_data<
 >>> check hosts = +some_hosts
 >>> host in "+some_hosts"?
@@ -387,7 +387,7 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A h
 >>> end of ACL "host_check2": DENY
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check2@y>: host data >A host-specific message<
 >>> using ACL "host_check2"
->>> processing "deny" (TESTSUITE/test-config 75)
+>>> processing "deny" (TESTSUITE/test-config 77)
 >>>   message: host data >$host_data<
 >>> check hosts = +some_hosts
 >>> host in "+some_hosts"?
@@ -442,10 +442,10 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "nested_drop"
->>> processing "accept" (TESTSUITE/test-config 44)
+>>> processing "accept" (TESTSUITE/test-config 46)
 >>> check acl = drop
 >>>  using ACL "drop"
->>>  processing "drop" (TESTSUITE/test-config 41)
+>>>  processing "drop" (TESTSUITE/test-config 43)
 >>>    message: forcibly dropped
 >>>  drop: condition test succeeded in ACL "drop"
 >>>  end of ACL "drop": DROP
@@ -470,10 +470,10 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "nested_drop_require"
->>> processing "require" (TESTSUITE/test-config 48)
+>>> processing "require" (TESTSUITE/test-config 50)
 >>> check acl = drop
 >>>  using ACL "drop"
->>>  processing "drop" (TESTSUITE/test-config 41)
+>>>  processing "drop" (TESTSUITE/test-config 43)
 >>>    message: forcibly dropped
 >>>  drop: condition test succeeded in ACL "drop"
 >>>  end of ACL "drop": DROP

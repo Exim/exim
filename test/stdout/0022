@@ -235,3 +235,9 @@ End of script
  0m   sss 10HmbE-0005vi-00 <x@y>
           accept@y
 
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 550 client disliked
+<<< 550 client disliked
+???*
+Expected EOF read
+End of script

@@ -1,6 +1,7 @@
 # Exim test configuration 0022
 
 SERVER=
+CONTROL=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -10,6 +11,7 @@ primary_hostname = myhost.test.ex
 
 hostlist some_hosts = net-lsearch;DIR/aux-var/TESTNUM.hosts
 
+CONTROL
 acl_smtp_rcpt = $local_part
 log_selector = +smtp_connection
 hosts_connection_nolog = : 127.0.0.1
