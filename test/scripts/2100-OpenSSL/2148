@@ -1,0 +1,50 @@
+# TLS: DH params for OpenSSL
+#
+# DH param from file
+exim -DSERVER=server -DDATA=DIR/aux-fixed/dh2048 -bd -oX PORT_D
+****
+exim -odf userw@test.ex
+Test message
+****
+killdaemon
+#
+# Too-big DH param (vs. tls_dh_max_bits), from file
+exim -DSERVER=server -DDATA=DIR/aux-fixed/dh3072 -bd -oX PORT_D
+****
+exim -odf userx@test.ex
+Test message
+****
+killdaemon
+#
+# Too-small DH param (library limitation), from file
+exim -DSERVER=server -DDATA=DIR/aux-fixed/dh512 -bd -oX PORT_D
+****
+exim -odf usery@test.ex
+Test message
+****
+killdaemon
+#
+# Named DH-param
+exim -DSERVER=server -DDATA=ffdhe2048 -bd -oX PORT_D
+****
+exim -odf userz@test.ex
+Test message
+****
+killdaemon
+#
+# Named DH-param, logged deprecation
+exim -DSERVER=server -DDATA=ike24 -bd -oX PORT_D
+****
+exim -odf usera@test.ex
+Test message
+****
+killdaemon
+#
+# Named DH-param, panic-logged deprecation
+exim -DSERVER=server -DDATA=ike22 -bd -oX PORT_D
+****
+exim -odf userb@test.ex
+Test message
+****
+killdaemon
+no_message_check

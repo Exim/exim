@@ -1,50 +1,52 @@
-# TLS: DH ciphers for OpenSSL
+# TLS: EC curves for OpenSSL
 #
-# DH param from file
-exim -DSERVER=server -DDATA=DIR/aux-fixed/dh2048 -bd -oX PORT_D
-****
-exim -odf userw@test.ex
-Test message
-****
-killdaemon
+# This is only checking the acceptability of option settings, not their effect
+# See packet captures for actual effects
 #
-# Too-big DH param (vs. tls_dh_max_bits), from file
-exim -DSERVER=server -DDATA=DIR/aux-fixed/dh3072 -bd -oX PORT_D
+# Baseline: tls_eccurve option not present
+exim -DSERVER=server -bd -oX PORT_D
 ****
 exim -odf userx@test.ex
-Test message
 ****
 killdaemon
 #
-# Too-small DH param (library limitation), from file
-exim -DSERVER=server -DDATA=DIR/aux-fixed/dh512 -bd -oX PORT_D
+# Explicit tls_eccurve setting of "auto"
+exim -DSERVER=server -DDATA=auto -bd -oX PORT_D
 ****
-exim -odf usery@test.ex
-Test message
-****
-killdaemon
-#
-# Named DH-param
-exim -DSERVER=server -DDATA=ffdhe2048 -bd -oX PORT_D
-****
-exim -odf userz@test.ex
-Test message
+exim -odf userx@test.ex
 ****
 killdaemon
 #
-# Named DH-param, logged deprecation
-exim -DSERVER=server -DDATA=ike24 -bd -oX PORT_D
+# Explicit tls_eccurve setting of ""
+# - unclear this works.  At least with OpenSSL 3.0.5 we still get an x25519 keyshare in the Server Hello
+exim -DSERVER=server -DDATA= -bd -oX PORT_D
 ****
-exim -odf usera@test.ex
-Test message
+exim -odf userx@test.ex
 ****
 killdaemon
 #
-# Named DH-param, panic-logged deprecation
-exim -DSERVER=server -DDATA=ike22 -bd -oX PORT_D
+# prime256v1
+exim -DSERVER=server -DDATA=prime256v1 -bd -oX PORT_D
 ****
-exim -odf userb@test.ex
-Test message
+exim -odf userx@test.ex
 ****
 killdaemon
+#
+# X448
+# Client Hello offers an x25519 keyshare, server says "Hello Retry Request" with a KeyShare extension "X448"
+# and the client retries Client Hello with that in the KeyShare.
+exim -DSERVER=server -DDATA=X448 -bd -oX PORT_D
+****
+exim -odf userx@test.ex
+****
+killdaemon
+#
+# "bogus".  Should fail to make connection.
+exim -DSERVER=server -DDATA=bogus -bd -oX PORT_D
+****
+exim -odf userx@test.ex
+****
+killdaemon
+#
+#
 no_message_check

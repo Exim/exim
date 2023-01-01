@@ -94,6 +94,10 @@ JH/19 Bug 2911: Fix a recursion in DNS lookups.  Previously, if the main option
       whine (as this is likely a configuration error), and returning
       DNS_NOMATCH.
 
+JH/20 Bug 2954: (OpenSSL) Fix setting of explicit EC curve/group.  Previously
+      this always failed, probably leading to the usual downgrade to in-clear
+      connections.
+
 
 Exim version 4.96
 -----------------

@@ -676,12 +676,12 @@ if (dh_bitsize <= tls_dh_max_bits)
     }
   else
     DEBUG(D_tls)
-      debug_printf("Diffie-Hellman initialized from %s with %d-bit prime\n",
+      debug_printf(" Diffie-Hellman initialized from %s with %d-bit prime\n",
 	dhexpanded ? dhexpanded : US"default", dh_bitsize);
   }
 else
   DEBUG(D_tls)
-    debug_printf("dhparams '%s' %d bits, is > tls_dh_max_bits limit of %d\n",
+    debug_printf(" dhparams '%s' %d bits, is > tls_dh_max_bits limit of %d\n",
 	dhexpanded ? dhexpanded : US"default", dh_bitsize, tls_dh_max_bits);
 
 #if OPENSSL_VERSION_NUMBER < 0x30000000L
@@ -731,19 +731,27 @@ return TRUE;
 #else
 
 uschar * exp_curve;
-int nid;
-BOOL rv;
+int nid, rc;
 
 # ifndef EXIM_HAVE_ECDH
 DEBUG(D_tls)
-  debug_printf("No OpenSSL API to define ECDH parameters, skipping\n");
+  debug_printf(" No OpenSSL API to define ECDH parameters, skipping\n");
 return TRUE;
 # else
 
 if (!expand_check(tls_eccurve, US"tls_eccurve", &exp_curve, errstr))
   return FALSE;
+
+/* Is the option deliberately empty? */
+
 if (!exp_curve || !*exp_curve)
+  {
+#if OPENSSL_VERSION_NUMBER >= 0x10002000L
+  DEBUG(D_tls) debug_printf( " ECDH OpenSSL 1.0.2+: clearing curves list\n");
+  (void) SSL_CTX_set1_curves(sctx, &nid, 0);
+#endif
   return TRUE;
+  }
 
 /* "auto" needs to be handled carefully.
  * OpenSSL <  1.0.2: we do not select anything, but fallback to prime256v1
@@ -756,23 +764,22 @@ if (Ustrcmp(exp_curve, "auto") == 0)
   {
 #if OPENSSL_VERSION_NUMBER < 0x10002000L
   DEBUG(D_tls) debug_printf(
-    "ECDH OpenSSL < 1.0.2: temp key parameter settings: overriding \"auto\" with \"prime256v1\"\n");
+    " ECDH OpenSSL < 1.0.2: temp key parameter settings: overriding \"auto\" with \"prime256v1\"\n");
   exp_curve = US"prime256v1";
 #else
 # if defined SSL_CTRL_SET_ECDH_AUTO
   DEBUG(D_tls) debug_printf(
-    "ECDH OpenSSL 1.0.2+: temp key parameter settings: autoselection\n");
+    " ECDH OpenSSL 1.0.2+: temp key parameter settings: autoselection\n");
   SSL_CTX_set_ecdh_auto(sctx, 1);
   return TRUE;
 # else
   DEBUG(D_tls) debug_printf(
-    "ECDH OpenSSL 1.1.0+: temp key parameter settings: default selection\n");
+    " ECDH OpenSSL 1.1.0+: temp key parameter settings: library default selection\n");
   return TRUE;
 # endif
 #endif
   }
 
-DEBUG(D_tls) debug_printf("ECDH: curve '%s'\n", exp_curve);
 if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
 #   ifdef EXIM_HAVE_OPENSSL_EC_NIST2NID
    && (nid = EC_curve_nist2nid(CCS exp_curve)) == NID_undef
@@ -796,23 +803,23 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
   /* The "tmp" in the name here refers to setting a temporary key
   not to the stability of the interface. */
 
-  if ((rv = SSL_CTX_set_tmp_ecdh(sctx, ecdh) == 0))
+  if ((rc = SSL_CTX_set_tmp_ecdh(sctx, ecdh) == 0))
     tls_error(string_sprintf("Error enabling '%s' curve", exp_curve), NULL, NULL, errstr);
   else
-    DEBUG(D_tls) debug_printf("ECDH: enabled '%s' curve\n", exp_curve);
+    DEBUG(D_tls) debug_printf(" ECDH: enabled '%s' curve\n", exp_curve);
   EC_KEY_free(ecdh);
  }
 
 #else	/* v 3.0.0 + */
 
-if ((rv = SSL_CTX_set1_groups(sctx, &nid, 1)) == 0)
+if ((rc = SSL_CTX_set1_groups(sctx, &nid, 1)) == 0)
   tls_error(string_sprintf("Error enabling '%s' group", exp_curve), NULL, NULL, errstr);
 else
-  DEBUG(D_tls) debug_printf("ECDH: enabled '%s' group\n", exp_curve);
+  DEBUG(D_tls) debug_printf(" ECDH: enabled '%s' group\n", exp_curve);
 
 #endif
 
-return !rv;
+return !!rc;
 
 # endif	/*EXIM_HAVE_ECDH*/
 #endif /*OPENSSL_NO_ECDH*/
@@ -1746,7 +1753,7 @@ state_server.lib_state.lib_ctx = ctx;
 
 if (opt_unset_or_noexpand(tls_dhparam))
   {
-  DEBUG(D_tls) debug_printf("TLS: preloading DH params for server\n");
+  DEBUG(D_tls) debug_printf("TLS: preloading DH params '%s' for server\n", tls_dhparam);
   if (init_dh(ctx, tls_dhparam, &dummy_errstr))
     state_server.lib_state.dh = TRUE;
   }
@@ -1754,7 +1761,7 @@ else
   DEBUG(D_tls) debug_printf("TLS: not preloading DH params for server\n");
 if (opt_unset_or_noexpand(tls_eccurve))
   {
-  DEBUG(D_tls) debug_printf("TLS: preloading ECDH curve for server\n");
+  DEBUG(D_tls) debug_printf("TLS: preloading ECDH curve '%s' for server\n", tls_eccurve);
   if (init_ecdh(ctx, &dummy_errstr))
     state_server.lib_state.ecdh = TRUE;
   }

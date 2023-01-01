@@ -1,4 +1,4 @@
-# Exim test configuration 2149
+# Exim test configuration 2148
 
 SERVER =
 
@@ -12,10 +12,7 @@ acl_smtp_rcpt = accept
 
 tls_advertise_hosts =	*
 tls_certificate =	DIR/aux-fixed/cert1
-
-.ifdef DATA
-tls_eccurve =		DATA
-.endif
+tls_dhparam =		DATA
 
 
 # ----- Routers -----
@@ -27,7 +24,6 @@ client:
   condition =	${if eq {SERVER}{server}{no}{yes}}
   retry_use_local_part
   transport =	send_to_server
-  errors_to =	""
 
 server:
   driver =	accept
@@ -44,16 +40,15 @@ local_delivery:
   file =	DIR/test-mail/$local_part
   create_file =	DIR/test-mail
   headers_add =	TLS: cipher=$tls_cipher peerdn=$tls_peerdn
-  user =	CALLER
+  user = CALLER
 
 send_to_server:
   driver =	smtp
   allow_localhost
   hosts =	127.0.0.1
   port =	PORT_D
-  hosts_try_fastopen =		:
+  hosts_try_fastopen =	:
   tls_verify_certificates =	DIR/aux-fixed/cert1
   tls_verify_cert_hostnames =	:
-  hosts_require_tls =		*
 
 # End
