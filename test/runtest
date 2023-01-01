@@ -1127,10 +1127,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # TLS preload
     # only OpenSSL speaks of these
-    next if /^TLS: (preloading (DH params|ECDH curve|CA bundle) for server|generating selfsigned server cert)/;
-    next if /^Diffie-Hellman initialized from default/;
-    next if /^ECDH OpenSSL (< )?[\d.+]+: temp key parameter settings:/;
-    next if /^ECDH: .*'prime256v1'/;
+    next if /^TLS: (preloading (DH params \S+|ECDH curve \S+|CA bundle) for server|generating selfsigned server cert)/;
+    next if /^ Diffie-Hellman initialized from default/;
+    next if /^ ECDH OpenSSL (< )?[\d.+]+: temp key parameter settings:/;
+    next if /^ ECDH: .*'prime256v1'/;
     next if /^tls_verify_certificates: system$/;
     next if /^tls_set_watch: .*\/cert.pem/;
     next if /^Generating 2048 bit RSA key/;
