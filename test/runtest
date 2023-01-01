@@ -1078,7 +1078,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 	      /x;
 
     # Lines with a leading pid.  Only handle >= 4-digit PIDs to avoid converting SMTP respose codes
-    s/^(\s*\d{4,})\s(?!(?:previous message|in\s|bytes remain in|SMTP accept process running))/new_value($1, "p%s", \$next_pid) . ' '/e;
+    s/^\s*(\d{4,})\s(?!(?:previous message|in\s|bytes remain in|SMTP accept process running))/new_value($1, "p%s", \$next_pid) . ' '/e;
 
     # Debugging lines for Exim terminations and process-generation
     next if /(?:postfork: | fork(?:ing|ed) for )/;
