@@ -805,7 +805,7 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
 
 #else	/* v 3.0.0 + */
 
-if ((rv = SSL_CTX_set1_groups(sctx, &nid, 1)) == 0)
+if ((rv = SSL_CTX_set1_groups(sctx, &nid, 1) == 0))
   tls_error(string_sprintf("Error enabling '%s' group", exp_curve), NULL, NULL, errstr);
 else
   DEBUG(D_tls) debug_printf("ECDH: enabled '%s' group\n", exp_curve);
