@@ -786,8 +786,9 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
 #   endif
    )
   {
-  tls_error(string_sprintf("Unknown curve name tls_eccurve '%s'", exp_curve),
-    NULL, NULL, errstr);
+  uschar * s = string_sprintf("Unknown curve name tls_eccurve '%s'", exp_curve);
+  DEBUG(D_tls) debug_printf("TLS error '%s'\n", s);
+  if (errstr) *errstr = s;
   return FALSE;
   }
 
@@ -803,7 +804,7 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
   /* The "tmp" in the name here refers to setting a temporary key
   not to the stability of the interface. */
 
-  if ((rc = SSL_CTX_set_tmp_ecdh(sctx, ecdh) == 0))
+  if ((rc = SSL_CTX_set_tmp_ecdh(sctx, ecdh)) == 0)
     tls_error(string_sprintf("Error enabling '%s' curve", exp_curve), NULL, NULL, errstr);
   else
     DEBUG(D_tls) debug_printf(" ECDH: enabled '%s' curve\n", exp_curve);

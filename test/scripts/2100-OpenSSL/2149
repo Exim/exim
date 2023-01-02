@@ -6,14 +6,14 @@
 # Baseline: tls_eccurve option not present
 exim -DSERVER=server -bd -oX PORT_D
 ****
-exim -odf userx@test.ex
+exim -odf optnotpresent@test.ex
 ****
 killdaemon
 #
 # Explicit tls_eccurve setting of "auto"
 exim -DSERVER=server -DDATA=auto -bd -oX PORT_D
 ****
-exim -odf userx@test.ex
+exim -odf explicitauto@test.ex
 ****
 killdaemon
 #
@@ -21,30 +21,32 @@ killdaemon
 # - unclear this works.  At least with OpenSSL 3.0.5 we still get an x25519 keyshare in the Server Hello
 exim -DSERVER=server -DDATA= -bd -oX PORT_D
 ****
-exim -odf userx@test.ex
+exim -odf explicitempty@test.ex
 ****
 killdaemon
 #
 # prime256v1
+# Oddly,  3.0.5 packets show an EC-groups negotiation of C:x255519 S:secp256r1 C:secp384r1 S:secp384r1.
+# Hoever, note that RFC 8446 (TLS1.3) does NOT include prime256v1 as one of the allowable
+# supported groups (and it's not in the client "supported groups" extension, so what we see seems good.
 exim -DSERVER=server -DDATA=prime256v1 -bd -oX PORT_D
 ****
-exim -odf userx@test.ex
+exim -odf prime256v1@test.ex
 ****
 killdaemon
 #
-# X448
-# Client Hello offers an x25519 keyshare, server says "Hello Retry Request" with a KeyShare extension "X448"
-# and the client retries Client Hello with that in the KeyShare.
-exim -DSERVER=server -DDATA=X448 -bd -oX PORT_D
+# secp384r1
+# C:x25519 S:secp384r1
+exim -DSERVER=server -DDATA=secp384r1 -bd -oX PORT_D
 ****
-exim -odf userx@test.ex
+exim -odf secp384r1@test.ex
 ****
 killdaemon
 #
 # "bogus".  Should fail to make connection.
 exim -DSERVER=server -DDATA=bogus -bd -oX PORT_D
 ****
-exim -odf userx@test.ex
+exim -odf user_fail@test.ex
 ****
 killdaemon
 #
