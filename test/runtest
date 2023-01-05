@@ -1562,6 +1562,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/signer: [^ ]* bits:\K 256/ 253/;
     s/public key too short:\K 256 bits/ 253 bits/;
 
+    # with GnuTLS we cannot log single bad ALPN.  So ignore the with-OpenSSL log line.
+    # next if /TLS ALPN (http) rejected$/;
+
     # port numbers
     s/(?:\[[^\]]*\]:|port )\K$parm_port_d/PORT_D/;
     s/(?:\[[^\]]*\]:|port )\K$parm_port_d2/PORT_D2/;

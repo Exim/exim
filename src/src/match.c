@@ -968,6 +968,7 @@ Arguments:
   s              string to search for
   listptr        ptr to ptr to colon separated list of patterns, or NULL
   sep            a separator value for the list (see string_nextinlist())
+		 or zero for auto
   anchorptr      ptr to tree for named items, or NULL if no named items
   cache_bits     ptr to cache_bits for ditto, or NULL if not caching
   type           MCL_DOMAIN when matching a domain list

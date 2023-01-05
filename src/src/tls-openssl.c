@@ -2324,6 +2324,8 @@ static int
 tls_server_alpn_cb(SSL *ssl, const uschar ** out, uschar * outlen,
   const uschar * in, unsigned int inlen, void * arg)
 {
+gstring * g = NULL;
+
 server_seen_alpn = TRUE;
 DEBUG(D_tls)
   {
@@ -2354,12 +2356,19 @@ if (  inlen > 1		/* at least one name */
       }
   }
 
-/* More than one name from clilent, or name did not match our list. */
+/* More than one name from client, or name did not match our list. */
 
 /* This will be fatal to the TLS conn; would be nice to kill TCP also.
 Maybe as an option in future; for now leave control to the config (must-tls). */
 
-DEBUG(D_tls) debug_printf("TLS ALPN rejected\n");
+for (int pos = 0, siz; pos < inlen; pos += siz+1)
+  {
+  siz = in[pos];
+  if (pos + 1 + siz > inlen) siz = inlen - pos - 1;
+  g = string_append_listele_n(g, ':', in + pos + 1, siz);
+  }
+log_write(0, LOG_MAIN, "TLS ALPN (%s) rejected", string_from_gstring(g));
+gstring_release_unused(g);
 return SSL_TLSEXT_ERR_ALERT_FATAL;
 }
 #endif	/* EXIM_HAVE_ALPN */

@@ -1119,21 +1119,28 @@ switch (tls_id)
     /* The format of "data" here doesn't seem to be documented, but appears
     to be a 2-byte field with a (redundant, given the "size" arg) total length
     then a sequence of one-byte size then string (not nul-term) names.  The
-    latter is as described in OpenSSL documentation. */
+    latter is as described in OpenSSL documentation.
+    Note that we do not get called for a match_fail, making it hard to log
+    a single bad ALPN being offered (the common case). */
+    {
+    gstring * g = NULL;
 
     DEBUG(D_tls) debug_printf("Seen ALPN extension from client (s=%u):", size);
     for (const uschar * s = data+2; s-data < size-1; s += *s + 1)
       {
       server_seen_alpn++;
+      g = string_append_listele_n(g, ':', s+1, *s);
       DEBUG(D_tls) debug_printf(" '%.*s'", (int)*s, s+1);
       }
     DEBUG(D_tls) debug_printf("\n");
     if (server_seen_alpn > 1)
       {
+      log_write(0, LOG_MAIN, "TLS ALPN (%s) rejected", string_from_gstring(g));
       DEBUG(D_tls) debug_printf("TLS: too many ALPNs presented in handshake\n");
       return GNUTLS_E_NO_APPLICATION_PROTOCOL;
       }
     break;
+    }
 #endif
   }
 return 0;
