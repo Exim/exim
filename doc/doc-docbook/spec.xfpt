@@ -15621,7 +15621,12 @@ by a setting such as this:
 .code
 dns_again_means_nonexist = *.in-addr.arpa
 .endd
-This option applies to all DNS lookups that Exim does. It also applies when the
+This option applies to all DNS lookups that Exim does,
+.new
+except for TLSA lookups (where knowing about such failures
+is security-relevant).
+.wen
+It also applies when the
 &[gethostbyname()]& or &[getipnodebyname()]& functions give temporary errors,
 since these are most likely to be caused by DNS lookup problems. The
 &(dnslookup)& router has some options of its own for controlling what happens

@@ -907,21 +907,30 @@ if (dnsa->answerlen < 0) switch (h_errno)
 
     /* Cut this out for various test programs */
 #ifndef STAND_ALONE
-    if (try_again_recursion)
-      {
-      log_write(0, LOG_MAIN|LOG_PANIC,
-	"dns_again_means_nonexist recursion seen for %s (assuming nonexist)",
-	name);
-      return dns_fail_return(name, type, dns_expire_from_soa(dnsa, type), DNS_NOMATCH);
-      }
+    /* Permitting dns_again_means nonexist for TLSA lookups breaks the
+    doewngrade resistance of dane, so avoid for those. */
 
-    try_again_recursion = TRUE;
-    save_domain = deliver_domain;
-    deliver_domain = string_copy(name);  /* set $domain */
-    rc = match_isinlist(name, CUSS &dns_again_means_nonexist, 0,
-      &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL);
-    deliver_domain = save_domain;
-    try_again_recursion = FALSE;
+    if (type == T_TLSA)
+      rc = FAIL;
+    else
+      {
+      if (try_again_recursion)
+	{
+	log_write(0, LOG_MAIN|LOG_PANIC,
+	  "dns_again_means_nonexist recursion seen for %s"
+	  " (assuming nonexist)", name);
+	return dns_fail_return(name, type, dns_expire_from_soa(dnsa, type),
+			      DNS_NOMATCH);
+	}
+
+      try_again_recursion = TRUE;
+      save_domain = deliver_domain;
+      deliver_domain = string_copy(name);  /* set $domain */
+      rc = match_isinlist(name, CUSS &dns_again_means_nonexist, 0,
+	&domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL);
+      deliver_domain = save_domain;
+      try_again_recursion = FALSE;
+      }
 
     if (rc != OK)
       {

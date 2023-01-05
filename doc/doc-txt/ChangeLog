@@ -98,6 +98,10 @@ JH/20 Bug 2954: (OpenSSL) Fix setting of explicit EC curve/group.  Previously
       this always failed, probably leading to the usual downgrade to in-clear
       connections.
 
+JH/20 Fix TLSA lookups.  Previously dns_again_means_nonexist would affect
+      SERVFAIL results, which breaks the downgrade resistance of DANE.  Change
+      to not checking that list for these looks.
+
 
 Exim version 4.96
 -----------------
