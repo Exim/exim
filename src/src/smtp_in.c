@@ -1187,6 +1187,16 @@ errno = EOVERFLOW;
 return -1;
 }
 
+
+static void
+proxy_debug(uschar * buf, unsigned start, unsigned end)
+{
+debug_printf("PROXY<<");
+while (start < end) debug_printf(" %02x", buf[start++]);
+debug_printf("\n");
+}
+
+
 /*************************************************
 *         Setup host for proxy protocol          *
 *************************************************/
@@ -1263,11 +1273,11 @@ So to safely handle v1 and v2, with client-sent-first supported correctly,
 we have to do a minimum of 3 read calls, not 1.  Eww.
 */
 
-#define PROXY_INITIAL_READ 14
-#define PROXY_V2_HEADER_SIZE 16
-#if PROXY_INITIAL_READ > PROXY_V2_HEADER_SIZE
-# error Code bug in sizes of data to read for proxy usage
-#endif
+# define PROXY_INITIAL_READ 14
+# define PROXY_V2_HEADER_SIZE 16
+# if PROXY_INITIAL_READ > PROXY_V2_HEADER_SIZE
+#  error Code bug in sizes of data to read for proxy usage
+# endif
 
 int get_ok = 0;
 int size, ret;
@@ -1287,17 +1297,19 @@ do
   "safe". Can't take it all because TLS-on-connect clients follow
   immediately with TLS handshake. */
   ret = read(fd, &hdr, PROXY_INITIAL_READ);
-  }
-  while (ret == -1 && errno == EINTR && !had_command_timeout);
+  } while (ret == -1 && errno == EINTR && !had_command_timeout);
 
 if (ret == -1)
   goto proxyfail;
+DEBUG(D_receive) proxy_debug(US &hdr, 0, ret);
 
 /* For v2, handle reading the length, and then the rest. */
 if ((ret == PROXY_INITIAL_READ) && (memcmp(&hdr.v2, v2sig, sizeof(v2sig)) == 0))
   {
   int retmore;
   uint8_t ver;
+
+  DEBUG(D_receive) debug_printf("v2\n");
 
   /* First get the length fields. */
   do
@@ -1306,6 +1318,8 @@ if ((ret == PROXY_INITIAL_READ) && (memcmp(&hdr.v2, v2sig, sizeof(v2sig)) == 0))
     } while (retmore == -1 && errno == EINTR && !had_command_timeout);
   if (retmore == -1)
     goto proxyfail;
+  DEBUG(D_receive) proxy_debug(US &hdr, ret, ret + retmore);
+
   ret += retmore;
 
   ver = (hdr.v2.ver_cmd & 0xf0) >> 4;
@@ -1343,6 +1357,7 @@ if ((ret == PROXY_INITIAL_READ) && (memcmp(&hdr.v2, v2sig, sizeof(v2sig)) == 0))
       } while (retmore == -1 && errno == EINTR && !had_command_timeout);
     if (retmore == -1)
       goto proxyfail;
+    DEBUG(D_receive) proxy_debug(US &hdr, ret, ret + retmore);
     ret += retmore;
     DEBUG(D_receive) debug_printf("PROXYv2: have %d/%d required octets\n", ret, size);
     } while (ret < size);
@@ -1588,7 +1603,7 @@ bad:
 ALARM(0);
 return;
 }
-#endif
+#endif	/*SUPPORT_PROXY*/
 
 /*************************************************
 *           Read one command line                *
