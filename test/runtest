@@ -918,6 +918,11 @@ RESET_AFTER_EXTRA_LINE_READ:
   # OpenSSL 3.0.0
   s/TLS error \(D-H param setting .* error:\K.*dh key too small/xxxxxxxx:SSL routines::dh key too small/;
 
+  # OpenSSL 1.1.1
+  s/error:\K0B080074:x509 certificate routines:X509_check_private_key(?=:key values mismatch$)/05800074:x509 certificate routines:/;
+  s/error:\K02001002:system library:fopen(?=:No such file or directory$)/80000002:system library:/;
+  s/error:\K0909006C:PEM routines:get_name(?=:no start line$)/0480006C:PEM routines:/;
+
   # ======== Maildir things ========
   # timestamp output in maildir processing
   s/(timestamp=|\(timestamp_only\): )\d+/$1ddddddd/g;
