@@ -17,16 +17,8 @@ exim -odf explicitauto@test.ex
 ****
 killdaemon
 #
-# Explicit tls_eccurve setting of ""
-# - unclear this works.  At least with OpenSSL 3.0.5 we still get an x25519 keyshare in the Server Hello
-exim -DSERVER=server -DDATA= -bd -oX PORT_D
-****
-exim -odf explicitempty@test.ex
-****
-killdaemon
-#
 # prime256v1
-# Oddly,  3.0.5 packets show an EC-groups negotiation of C:x255519 S:secp256r1 C:secp384r1 S:secp384r1.
+# Oddly,  3.0.5 packets show an EC-groups negotiation of C:x255519 S:secp256r1 C:secp256r1 S:secp256r1.
 # Hoever, note that RFC 8446 (TLS1.3) does NOT include prime256v1 as one of the allowable
 # supported groups (and it's not in the client "supported groups" extension, so what we see seems good.
 exim -DSERVER=server -DDATA=prime256v1 -bd -oX PORT_D
@@ -50,5 +42,20 @@ exim -odf user_fail@test.ex
 ****
 killdaemon
 #
+# Two-element list - will fail for pre- 1.1.1 OpenSSL
+# - the Hello Retry Req goes out with the earliest one from the list which matches the client's Supported Groups
+exim -DSERVER=server -DDATA=P-521:secp384r1 -bd -oX PORT_D
+****
+exim -odf user_list2@test.ex
+****
+killdaemon
+#
+#
+# List with an "auto" element embedded, which should override.
+exim -DSERVER=server '-DDATA= P-521 : P-384 : auto : P-256' -bd -oX PORT_D
+****
+exim -odf user_list_auto@test.ex
+****
+killdaemon
 #
 no_message_check

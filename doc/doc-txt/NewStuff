@@ -19,6 +19,8 @@ Version 4.97
 
  5. The smtp transport option "max_rcpt" is now expanded before use.
 
+ 6. The tls_eccurve option for OpenSSL now takes a list of group names
+
 Version 4.96
 ------------
 

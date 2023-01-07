@@ -30,21 +30,12 @@ client:
   errors_to =	""
 
 server:
-  driver =	accept
-  retry_use_local_part
-  transport =	local_delivery
-
+  driver =	redirect
+  data =	:blackhole:
 
 # ----- Transports -----
 
 begin transports
-
-local_delivery:
-  driver =	appendfile
-  file =	DIR/test-mail/$local_part
-  create_file =	DIR/test-mail
-  headers_add =	TLS: cipher=$tls_cipher peerdn=$tls_peerdn
-  user =	CALLER
 
 send_to_server:
   driver =	smtp

@@ -106,7 +106,8 @@ Returns:    TRUE if OK; result may still be NULL after forced failure
 */
 
 static BOOL
-expand_check(const uschar *s, const uschar *name, uschar **result, uschar ** errstr)
+expand_check(const uschar * s, const uschar * name,
+  uschar ** result, uschar ** errstr)
 {
 if (!s)
   *result = NULL;

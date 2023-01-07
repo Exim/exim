@@ -122,6 +122,7 @@ change this guard and punt the issue for a while longer. */
 #  define EXIM_HAVE_OPENSSL_CIPHER_STD_NAME
 #  define EXIM_HAVE_EXP_CHNL_BNGNG
 #  define EXIM_HAVE_OPENSSL_OCSP_RESP_GET0_SIGNER
+#  define EXIM_HAVE_OPENSSL_SET1_GROUPS
 # else
 #  define OPENSSL_BAD_SRVR_OURCERT
 # endif
@@ -700,6 +701,41 @@ return TRUE;
 *               Initialize for ECDH              *
 *************************************************/
 
+/* "auto" needs to be handled carefully.
+OpenSSL <  1.0.2: we do not select anything, but fallback to prime256v1
+OpenSSL <  1.1.0: we have to call SSL_CTX_set_ecdh_auto
+                  (openssl/ssl.h defines SSL_CTRL_SET_ECDH_AUTO)
+OpenSSL >= 1.1.0: we do not set anything, the libray does autoselection
+                  https://github.com/openssl/openssl/commit/fe6ef2472db933f01b59cad82aa925736935984b
+
+*/
+
+static uschar *
+init_ecdh_auto(SSL_CTX * ctx)
+{
+#if OPENSSL_VERSION_NUMBER < 0x10002000L
+DEBUG(D_tls) debug_printf(
+  " ECDH OpenSSL < 1.0.2: temp key parameter settings: overriding \"auto\" with \"prime256v1\"\n");
+return US"prime256v1";
+
+#else
+# if defined SSL_CTRL_SET_ECDH_AUTO
+
+DEBUG(D_tls) debug_printf(
+  " ECDH OpenSSL 1.0.2+: temp key parameter settings: autoselection\n");
+SSL_CTX_set_ecdh_auto(sctx, 1);
+return NULL;
+
+# else
+
+DEBUG(D_tls) debug_printf(
+  " ECDH OpenSSL 1.1.0+: temp key parameter settings: library default selection\n");
+return NULL;
+
+# endif
+#endif
+}
+
 /* Load parameters for ECDH encryption.  Server only.
 
 For now, we stick to NIST P-256 because: it's simple and easy to configure;
@@ -730,14 +766,20 @@ init_ecdh(SSL_CTX * sctx, uschar ** errstr)
 return TRUE;
 #else
 
-uschar * exp_curve;
-int nid, rc;
-
 # ifndef EXIM_HAVE_ECDH
 DEBUG(D_tls)
   debug_printf(" No OpenSSL API to define ECDH parameters, skipping\n");
 return TRUE;
 # else
+
+uschar * exp_curve;
+int ngroups, rc, sep;
+const uschar * curves_list,  * curve;
+#  ifdef EXIM_HAVE_OPENSSL_SET1_GROUPS
+int nids[16];
+#  else
+int nids[1];
+#  endif
 
 if (!expand_check(tls_eccurve, US"tls_eccurve", &exp_curve, errstr))
   return FALSE;
@@ -745,57 +787,55 @@ if (!expand_check(tls_eccurve, US"tls_eccurve", &exp_curve, errstr))
 /* Is the option deliberately empty? */
 
 if (!exp_curve || !*exp_curve)
-  {
-#if OPENSSL_VERSION_NUMBER >= 0x10002000L
-  DEBUG(D_tls) debug_printf( " ECDH OpenSSL 1.0.2+: clearing curves list\n");
-  (void) SSL_CTX_set1_curves(sctx, &nid, 0);
-#endif
   return TRUE;
-  }
 
-/* "auto" needs to be handled carefully.
- * OpenSSL <  1.0.2: we do not select anything, but fallback to prime256v1
- * OpenSSL <  1.1.0: we have to call SSL_CTX_set_ecdh_auto
- *                   (openssl/ssl.h defines SSL_CTRL_SET_ECDH_AUTO)
- * OpenSSL >= 1.1.0: we do not set anything, the libray does autoselection
- *                   https://github.com/openssl/openssl/commit/fe6ef2472db933f01b59cad82aa925736935984b
- */
-if (Ustrcmp(exp_curve, "auto") == 0)
-  {
-#if OPENSSL_VERSION_NUMBER < 0x10002000L
-  DEBUG(D_tls) debug_printf(
-    " ECDH OpenSSL < 1.0.2: temp key parameter settings: overriding \"auto\" with \"prime256v1\"\n");
-  exp_curve = US"prime256v1";
-#else
-# if defined SSL_CTRL_SET_ECDH_AUTO
-  DEBUG(D_tls) debug_printf(
-    " ECDH OpenSSL 1.0.2+: temp key parameter settings: autoselection\n");
-  SSL_CTX_set_ecdh_auto(sctx, 1);
-  return TRUE;
-# else
-  DEBUG(D_tls) debug_printf(
-    " ECDH OpenSSL 1.1.0+: temp key parameter settings: library default selection\n");
-  return TRUE;
-# endif
-#endif
-  }
+/* Limit the list to hardwired array size. Drop out if any element is "suto". */
 
-if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
-#   ifdef EXIM_HAVE_OPENSSL_EC_NIST2NID
-   && (nid = EC_curve_nist2nid(CCS exp_curve)) == NID_undef
-#   endif
-   )
-  {
-  uschar * s = string_sprintf("Unknown curve name tls_eccurve '%s'", exp_curve);
-  DEBUG(D_tls) debug_printf("TLS error '%s'\n", s);
-  if (errstr) *errstr = s;
-  return FALSE;
-  }
+curves_list = exp_curve;
+sep = 0;
+for (ngroups = 0;
+       ngroups < nelem(nids)
+    && (curve = string_nextinlist(&curves_list, &sep, NULL, 0));
+    )
+  if (Ustrcmp(curve, "auto") == 0)
+    {
+    DEBUG(D_tls) if (ngroups > 0)
+      debug_printf(" tls_eccurve 'auto' item takes precedence\n");
+    if ((exp_curve = init_ecdh_auto(sctx))) break; /* have a curve name to set */
+    return TRUE;				   /* all done */
+    }
+  else
+    ngroups++;
 
-# if OPENSSL_VERSION_NUMBER < 0x30000000L
+/* Translate to NIDs */
+
+curves_list = exp_curve;
+for (ngroups = 0; curve = string_nextinlist(&curves_list, &sep, NULL, 0);
+     ngroups++)
+  if (  (nids[ngroups] = OBJ_sn2nid       (CCS curve)) == NID_undef
+#  ifdef EXIM_HAVE_OPENSSL_EC_NIST2NID
+     && (nids[ngroups] = EC_curve_nist2nid(CCS curve)) == NID_undef
+#  endif
+     )
+    {
+    uschar * s = string_sprintf("Unknown curve name in tls_eccurve '%s'", curve);
+    DEBUG(D_tls) debug_printf("TLS error: %s\n", s);
+    if (errstr) *errstr = s;
+    return FALSE;
+    }
+
+#  ifdef EXIM_HAVE_OPENSSL_SET1_GROUPS
+/* Set the groups */
+
+if ((rc = SSL_CTX_set1_groups(sctx, nids, ngroups)) == 0)
+  tls_error(string_sprintf("Error enabling '%s' group(s)", exp_curve), NULL, NULL, errstr);
+else
+  DEBUG(D_tls) debug_printf(" ECDH: enabled '%s' group(s)\n", exp_curve);
+
+#  else		/* Cannot handle a list; only 1 element nids array */
  {
   EC_KEY * ecdh;
-  if (!(ecdh = EC_KEY_new_by_curve_name(nid)))
+  if (!(ecdh = EC_KEY_new_by_curve_name(nids[0])))
     {
     tls_error(US"Unable to create ec curve", NULL, NULL, errstr);
     return FALSE;
@@ -810,15 +850,7 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
     DEBUG(D_tls) debug_printf(" ECDH: enabled '%s' curve\n", exp_curve);
   EC_KEY_free(ecdh);
  }
-
-#else	/* v 3.0.0 + */
-
-if ((rc = SSL_CTX_set1_groups(sctx, &nid, 1)) == 0)
-  tls_error(string_sprintf("Error enabling '%s' group", exp_curve), NULL, NULL, errstr);
-else
-  DEBUG(D_tls) debug_printf(" ECDH: enabled '%s' group\n", exp_curve);
-
-#endif
+#  endif	/*!EXIM_HAVE_OPENSSL_SET1_GROUPS*/
 
 return !!rc;
 
