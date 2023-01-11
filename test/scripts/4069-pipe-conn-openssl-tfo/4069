@@ -1,9 +1,13 @@
 # early-pipe, starttls, tfo
 #
+# NOTE: ensure that TFO is fully enabled in the kernel.
+# For linux: sysctl net.ipv4.tcp_fastopen=3
+# 
 # Network delay so we can see tfo efects
 # Clear any previously-obtained tfo cookie:
 sudo perl
 system ("tc qdisc add dev lo root netem delay 50ms");
+system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
 system ("ip tcp_metrics delete 127.0.0.1");
 ****
 #

@@ -1,5 +1,8 @@
 # early-pipe, starttls, tfo
 #
+# NOTE: ensure that TFO is fully enabled in the kernel.
+# For linux: sysctl net.ipv4.tcp_fastopen=3
+# 
 # Not attempted without a cache entry
 exim -bd -DSERVER=server -oX PORT_D
 ****

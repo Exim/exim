@@ -6,6 +6,7 @@ OPT=
 CONNECTCOND=
 
 keep_environment = PATH
+add_environment = SSLKEYLOGFILE=DIR/spool/sslkeys
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 spool_directory = DIR/spool

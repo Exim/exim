@@ -1,5 +1,8 @@
 # socks5 proxy on smtp transport, TCP Fast Open
 #
+# NOTE: ensure that TFO is fully enabled in the kernel.
+# For linux: sysctl net.ipv4.tcp_fastopen=3
+# 
 munge loopback
 #
 #
