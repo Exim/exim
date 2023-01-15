@@ -239,7 +239,7 @@ regex_at_daemon(const uschar * reqbuf)
 {
 const re_req * req = (const re_req *)reqbuf;
 uschar * errstr;
-const pcre2_code * cre;
+const pcre2_code * cre = NULL;
 
 if (regex_cachesize >= REGEX_CACHESIZE_LIMIT)
   errstr = US"regex cache size limit reached";

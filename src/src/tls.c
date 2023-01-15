@@ -26,11 +26,6 @@ functions from the OpenSSL or GNU TLS libraries. */
 #endif
 
 
-/* Forward decl. */
-static void tls_client_resmption_key(tls_support *, smtp_connect_args *,
-  smtp_transport_options_block *);
-
-
 #if defined(MACRO_PREDEF) && !defined(DISABLE_TLS)
 # include "macro_predef.h"
 # ifdef USE_GNUTLS
@@ -459,6 +454,10 @@ tzset();
 /*************************************************
 *        Many functions are package-specific     *
 *************************************************/
+/* Forward decl. */
+static void tls_client_resmption_key(tls_support *, smtp_connect_args *,
+  smtp_transport_options_block *);
+
 
 #ifdef USE_GNUTLS
 # include "tls-gnu.c"

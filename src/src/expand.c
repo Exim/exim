@@ -23,16 +23,18 @@ typedef unsigned esi_flags;
 #define ESI_HONOR_DOLLAR	BIT(1)	/* $ is meaningfull */
 #define ESI_SKIPPING		BIT(2)	/* value will not be needed */
 
+#ifdef STAND_ALONE
+# ifndef SUPPORT_CRYPTEQ
+#  define SUPPORT_CRYPTEQ
+# endif
+#else
+
 /* Recursively called function */
 
 static uschar *expand_string_internal(const uschar *, esi_flags, const uschar **, BOOL *, BOOL *);
 static int_eximarith_t expanded_string_integer(const uschar *, BOOL);
 
-#ifdef STAND_ALONE
-# ifndef SUPPORT_CRYPTEQ
-#  define SUPPORT_CRYPTEQ
-# endif
-#endif
+#endif	/*!STAND_ALONE*/
 
 #ifdef LOOKUP_LDAP
 # include "lookups/ldap.h"
@@ -835,8 +837,6 @@ static var_entry var_table[] = {
   { "warnmsg_recipients",  vtype_stringptr,   &warnmsg_recipients }
 };
 
-static int var_table_size = nelem(var_table);
-
 #ifdef MACRO_PREDEF
 
 /* dummies */
@@ -1278,7 +1278,7 @@ static var_entry *
 find_var_ent(uschar * name)
 {
 int first = 0;
-int last = var_table_size;
+int last = nelem(var_table);
 
 while (last > first)
   {
@@ -8806,7 +8806,7 @@ for (int i = 0; i < REGEX_VARS; i++) if (regex_vars[i])
 #endif
 
 /* check known-name variables */
-for (var_entry * v = var_table; v < var_table + var_table_size; v++)
+for (var_entry * v = var_table; v < var_table + nelem(var_table); v++)
   if (v->type == vtype_stringptr)
     assert_variable_notin(US v->name, *(USS v->value), &e);
 

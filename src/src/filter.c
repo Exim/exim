@@ -671,8 +671,8 @@ for (;;)
       {
 //      if (toplevel) *saveptr = 0;
 //      else
-   if (!toplevel)
-      *error_pointer = string_sprintf("missing \")\" at end of "
+      if (!toplevel)
+        *error_pointer = string_sprintf("missing \")\" at end of "
           "condition near line %d of filter file", line_number);
       break;
       }
