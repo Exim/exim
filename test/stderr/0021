@@ -153,7 +153,7 @@ LOG: PANIC
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
 LOG: smtp_connection MAIN
-  SMTP connection from CALLER closed by QUIT
+  SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 ACL "warn" with "message" setting found in a non-message (EHLO or HELO) ACL: cannot specify header lines here: message ignored
 Exim version x.yz ....
@@ -295,7 +295,7 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
-  SMTP connection from CALLER closed by QUIT
+  SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 ACL "warn" with "message" setting found in a non-message (EHLO or HELO) ACL: cannot specify header lines here: message ignored
 1999-03-02 09:44:33 rcpt accepted C=EHLO,MAIL,RCPT

@@ -6,7 +6,7 @@
 2017-07-30 18:51:05.712 10HmaZ-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
 2017-07-30 18:51:05.712 10HmbA-0005vi-00 <= some_ne@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
 2017-07-30 18:51:05.712 10HmbB-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
-2017-07-30 18:51:05.712 10HmbC-0005vi-00 SMTP data timeout (message abandoned) on connection from (tester) [127.0.0.1] F=<someone@some.domain>
+2017-07-30 18:51:05.712 10HmbC-0005vi-00 SMTP data timeout (message abandoned) on connection from (tester) [127.0.0.1] F=<someone@some.domain> D=q.qqqs
 2017-07-30 18:51:05.712 SMTP connection from (tester) [127.0.0.1] lost while reading message data
 2017-07-30 18:51:05.712 SMTP connection from (tester) [127.0.0.1] lost while reading message data
 2017-07-30 18:51:05.712 10HmbD-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex

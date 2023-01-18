@@ -75,7 +75,7 @@ smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
+  SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -158,7 +158,7 @@ smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
+  SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -242,7 +242,7 @@ smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
+  SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog?
@@ -277,7 +277,7 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@y> temporarily rejected RCPT <defer@y>: forcibl
 >>> drop: condition test succeeded in ACL "drop"
 >>> end of ACL "drop": DROP
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <drop@y>: forcibly dropped
-LOG: SMTP connection from (test) [V4NET.9.8.7] closed by DROP in ACL
+LOG: SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by DROP in ACL
 >>> host in hosts_connection_nolog?
 >>>  list element: 
 >>>  list element: 127.0.0.1
@@ -303,7 +303,7 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> defer: condition test succeeded in ACL "defer_senders"
 >>> end of ACL "defer_senders": DEFER
 LOG: H=(test) [V4NET.9.8.7] F=<> temporarily rejected RCPT <defer_senders@y>
-LOG: SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
+LOG: SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
 >>> host in hosts_connection_nolog?
 >>>  list element: 
 >>>  list element: 127.0.0.1
@@ -336,7 +336,7 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> processing "accept" (TESTSUITE/test-config 63)
 >>> accept: condition test succeeded in ACL "delay_warn"
 >>> end of ACL "delay_warn": ACCEPT
-LOG: SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
+LOG: SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
 >>> host in hosts_connection_nolog?
 >>>  list element: 
 >>>  list element: 127.0.0.1
@@ -396,7 +396,7 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check2@y>: host data >A 
 >>> deny: condition test succeeded in ACL "host_check2"
 >>> end of ACL "host_check2": DENY
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check2@y>: host data >A host-specific message<
-LOG: SMTP connection from (test) [V4NET.9.8.7] closed by QUIT
+LOG: SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
 LOG: MAIN
@@ -424,7 +424,7 @@ LOG: MAIN
 LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
-  SMTP connection from CALLER closed by QUIT
+  SMTP connection from CALLER D=qqs closed by QUIT
 >>> host in hosts_connection_nolog?
 >>>  list element: 
 >>>  list element: 127.0.0.1
@@ -452,7 +452,7 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> accept: condition test yielded "drop" in ACL "nested_drop"
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <nested_drop@y>: forcibly dropped
-LOG: SMTP connection from (test) [V4NET.9.8.7] closed by DROP in ACL
+LOG: SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by DROP in ACL
 >>> host in hosts_connection_nolog?
 >>>  list element: 
 >>>  list element: 127.0.0.1
@@ -480,6 +480,6 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> require: condition test yielded "drop" in ACL "nested_drop_require"
 >>> end of ACL "nested_drop_require": not OK
 LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <nested_drop_require@y>: forcibly dropped
-LOG: SMTP connection from (test) [V4NET.9.8.7] closed by DROP in ACL
+LOG: SMTP connection from (test) [V4NET.9.8.7] D=qqs closed by DROP in ACL
 
 ******** SERVER ********

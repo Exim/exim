@@ -13,7 +13,7 @@ LOG: PANIC
 SMTP<< QUIT
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from (test.ex) [127.0.0.1] closed by QUIT
+  SMTP connection from (test.ex) [127.0.0.1] D=qqs closed by QUIT
 search_tidyup called
 SMTP>>(close on process exit)
 >>>>>>>>>>>>>>>> Exim pid=p1235 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>

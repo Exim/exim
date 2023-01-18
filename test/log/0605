@@ -2,4 +2,4 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 SMTP connection from [ip4.ip4.ip4.ip4] (TCP/IP connection count = 1)
-1999-03-02 09:44:33 SMTP connection from [ip4.ip4.ip4.ip4] closed by QUIT
+1999-03-02 09:44:33 SMTP connection from [ip4.ip4.ip4.ip4] D=qqs closed by QUIT

@@ -458,7 +458,7 @@ LOG: MAIN REJECT
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from (test) [10.0.0.0] closed by QUIT
+  SMTP connection from (test) [10.0.0.0] D=qqs closed by QUIT
 search_tidyup called
 close MYSQL connection: 127.0.0.1:PORT_N/test/root
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

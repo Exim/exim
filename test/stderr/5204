@@ -283,5 +283,5 @@ end of inline ACL: implicit DENY
 LOG: MAIN REJECT
   H=(some.name) [V4NET.2.3.4] F=<x@y> rejected RCPT <"FAIL cannot route this one (FAIL)"@some.host>: cannot route this one (FAIL)
 LOG: smtp_connection MAIN
-  SMTP connection from (some.name) [V4NET.2.3.4] closed by QUIT
+  SMTP connection from (some.name) [V4NET.2.3.4] D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1242 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

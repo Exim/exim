@@ -128,7 +128,7 @@ smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from ([V4NET.2.3.4]) [V4NET.2.3.4] closed by QUIT
+  SMTP connection from ([V4NET.2.3.4]) [V4NET.2.3.4] D=qqs closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -208,6 +208,6 @@ smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from host.name.tld [V4NET.2.3.4] closed by QUIT
+  SMTP connection from host.name.tld [V4NET.2.3.4] D=qqs closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -459,7 +459,7 @@ LOG: MAIN
 search_tidyup called
 Process p1235 is ready for new message
 LOG: smtp_connection MAIN
-  SMTP connection from (test.ex) [127.0.0.1] closed by QUIT
+  SMTP connection from (test.ex) [127.0.0.1] D=qqs closed by QUIT
 p1234 1 SMTP accept process running
 p1234 Listening...
 p1234 daemon_notification (from unknown addr)
@@ -896,7 +896,7 @@ LOG: MAIN
 search_tidyup called
 Process p1236 is ready for new message
 LOG: smtp_connection MAIN
-  SMTP connection from (test.ex) [127.0.0.1] closed by QUIT
+  SMTP connection from (test.ex) [127.0.0.1] D=qqs closed by QUIT
 p1234 1 SMTP accept process running
 p1234 Listening...
 search_tidyup called

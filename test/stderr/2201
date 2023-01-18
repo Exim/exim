@@ -249,7 +249,7 @@ LOG: MAIN
   <= a@shorthost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
 Process p1238 is ready for new message
 LOG: smtp_connection MAIN
-  SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+  SMTP connection from localhost (myhost.test.ex) [127.0.0.1] D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1238 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 p1235 child p1238 ended: status=0x0
 p1235   normal exit, 0

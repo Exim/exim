@@ -333,7 +333,7 @@ Returns:    nothing
 */
 
 static void
-incomplete_transaction_log(uschar *what)
+incomplete_transaction_log(uschar * what)
 {
 if (!sender_address				/* No transaction in progress */
    || !LOGGING(smtp_incomplete_transaction))
@@ -355,13 +355,21 @@ log_write(L_smtp_incomplete_transaction, LOG_MAIN|LOG_SENDER|LOG_RECIPIENTS,
 
 
 
+static void
+log_close_event(const uschar * reason)
+{
+log_write(L_smtp_connection, LOG_MAIN, "%s D=%s closed %s",
+  smtp_get_connection_info(), string_timesince(&smtp_connection_start), reason);
+}
+
 
 void
 smtp_command_timeout_exit(void)
 {
 log_write(L_lost_incoming_connection,
-	  LOG_MAIN, "SMTP command timeout on%s connection from %s",
-	  tls_in.active.sock >= 0 ? " TLS" : "", host_and_ident(FALSE));
+	  LOG_MAIN, "SMTP command timeout on%s connection from %s D=%s",
+	  tls_in.active.sock >= 0 ? " TLS" : "", host_and_ident(FALSE),
+	  string_timesince(&smtp_connection_start));
 if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SMTP command timeout"); /* Does not return */
 smtp_notquit_exit(US"command-timeout", US"421",
@@ -373,7 +381,7 @@ exim_exit(EXIT_FAILURE);
 void
 smtp_command_sigterm_exit(void)
 {
-log_write(0, LOG_MAIN, "%s closed after SIGTERM", smtp_get_connection_info());
+log_close_event(US"after SIGTERM");
 if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SIGTERM received");  /* Does not return */
 smtp_notquit_exit(US"signal-exit", US"421",
@@ -384,9 +392,10 @@ exim_exit(EXIT_FAILURE);
 void
 smtp_data_timeout_exit(void)
 {
-log_write(L_lost_incoming_connection,
-  LOG_MAIN, "SMTP data timeout (message abandoned) on connection from %s F=<%s>",
-  sender_fullhost ? sender_fullhost : US"local process", sender_address);
+log_write(L_lost_incoming_connection, LOG_MAIN,
+  "SMTP data timeout (message abandoned) on connection from %s F=<%s> D=%s",
+  sender_fullhost ? sender_fullhost : US"local process", sender_address,
+  string_timesince(&smtp_connection_start));
 receive_bomb_out(US"data-timeout", US"SMTP incoming data timeout");
 /* Does not return */
 }
@@ -394,8 +403,7 @@ receive_bomb_out(US"data-timeout", US"SMTP incoming data timeout");
 void
 smtp_data_sigint_exit(void)
 {
-log_write(0, LOG_MAIN, "%s closed after %s",
-  smtp_get_connection_info(), had_data_sigint == SIGTERM ? "SIGTERM":"SIGINT");
+log_close_event(had_data_sigint == SIGTERM ? US"SIGTERM":US"SIGINT");
 receive_bomb_out(US"signal-exit",
   US"Service not available - SIGTERM or SIGINT received");
 /* Does not return */
@@ -3572,8 +3580,7 @@ if (log_reject_target != 0)
 
 if (!drop) return 0;
 
-log_write(L_smtp_connection, LOG_MAIN, "%s closed by DROP in ACL",
-  smtp_get_connection_info());
+log_close_event(US"by DROP in ACL");
 
 /* Run the not-quit ACL, but without any custom messages. This should not be a
 problem, because we get here only if some other ACL has issued "drop", and
@@ -3999,16 +4006,14 @@ else
 tls_close(NULL, TLS_SHUTDOWN_NOWAIT);
 # endif
 
-log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
-  smtp_get_connection_info());
+log_close_event(US"by QUIT");
 #else
 
 # ifndef DISABLE_TLS
 tls_close(NULL, TLS_SHUTDOWN_WAIT);
 # endif
 
-log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
-  smtp_get_connection_info());
+log_close_event(US"by QUIT");
 
 /* Pause, hoping client will FIN first so that they get the TIME_WAIT.
 The socket should become readble (though with no data) */
@@ -5763,8 +5768,7 @@ while (done <= 0)
       while (done <= 0) switch(smtp_read_command(FALSE, GETC_BUFFER_UNLIMITED))
 	{
 	case EOF_CMD:
-	  log_write(L_smtp_connection, LOG_MAIN, "%s closed by EOF",
-	    smtp_get_connection_info());
+	  log_close_event(US"by EOF");
 	  smtp_notquit_exit(US"tls-failed", NULL, NULL);
 	  done = 2;
 	  break;
@@ -5786,8 +5790,7 @@ while (done <= 0)
 	    smtp_respond(US"221", 3, TRUE, user_msg);
 	  else
 	    smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
-	  log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
-	    smtp_get_connection_info());
+	  log_close_event(US"by QUIT");
 	  done = 2;
 	  break;
 

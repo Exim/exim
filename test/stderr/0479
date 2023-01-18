@@ -95,6 +95,6 @@ SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from ([1.2.3.4]) [1.2.3.4] closed by QUIT
+  SMTP connection from ([1.2.3.4]) [1.2.3.4] D=qqs closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

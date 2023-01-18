@@ -3,7 +3,7 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
 1999-03-02 09:44:33 TLS error on connection from (timeout.rhu.barb) [127.0.0.1] (tls lib accept fn): timed out
-1999-03-02 09:44:33 SMTP command timeout on connection from (timeout.rhu.barb) [127.0.0.1]
+1999-03-02 09:44:33 SMTP command timeout on connection from (timeout.rhu.barb) [127.0.0.1] D=qqs
 1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
 1999-03-02 09:44:33 TLS error on connection from (close.rhu.barb) [127.0.0.1] (tls lib accept fn): TCP connection closed by peer
-1999-03-02 09:44:33 SMTP connection from (close.rhu.barb) [127.0.0.1] closed by EOF
+1999-03-02 09:44:33 SMTP connection from (close.rhu.barb) [127.0.0.1] D=qqs closed by EOF

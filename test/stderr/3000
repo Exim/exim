@@ -67,7 +67,7 @@ LOG: smtp_connection MAIN
 LOG: MAIN
   this is a warning at TESTSUITE/aux-fixed/3000.pl line 25.
 LOG: smtp_connection MAIN
-  SMTP connection from CALLER closed by QUIT
+  SMTP connection from CALLER D=qqs closed by QUIT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)

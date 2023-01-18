@@ -596,6 +596,6 @@ LOG: MAIN REJECT
 SMTP<< QUIT
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from (test) [127.0.0.1] closed by QUIT
+  SMTP connection from (test) [127.0.0.1] D=qqs closed by QUIT
   search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

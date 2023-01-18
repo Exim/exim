@@ -208,6 +208,6 @@ LOG: MAIN REJECT
 SMTP<< quit
 SMTP>> 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from oneback.test.ex (test) [V4NET.99.99.90] closed by QUIT
+  SMTP connection from oneback.test.ex (test) [V4NET.99.99.90] D=qqs closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -168,7 +168,7 @@ smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN
-  SMTP connection from (exim.test.ex) [V4NET.11.12.13] closed by QUIT
+  SMTP connection from (exim.test.ex) [V4NET.11.12.13] D=qqs closed by QUIT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog? no (option unset)

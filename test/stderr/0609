@@ -28,7 +28,7 @@ Listening...
 p1235 accept: condition test succeeded in ACL "delay4_accept"
 p1235 end of ACL "delay4_accept": ACCEPT
 p1235 LOG: smtp_connection MAIN
-p1235   SMTP connection from (test) [127.0.0.1] closed by QUIT
+p1235   SMTP connection from (test) [127.0.0.1] D=qqs closed by QUIT
 p1235 >>>>>>>>>>>>>>>> Exim pid=p1235 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 child p1235 ended: status=0x0
   normal exit, 0

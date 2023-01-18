@@ -6,7 +6,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
-LOG: SMTP command timeout on connection from [V4NET.0.0.1]
+LOG: SMTP command timeout on connection from [V4NET.0.0.1] D=qqs
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -43,7 +43,7 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1]
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex>
+LOG: SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex> D=qqs
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
@@ -155,7 +155,7 @@ SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
 LOG: lost_incoming_connection MAIN
-  SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex>
+  SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex> D=qqs
 SMTP>> 421 myhost.test.ex SMTP incoming data timeout - closing connection.
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>
@@ -205,7 +205,7 @@ exim: timed out while reading - message abandoned
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
 LOG: H=(test) [V4NET.0.0.1] F=<userx@test.ex> rejected RCPT verify@test.ex: Unrouteable address
-LOG: SMTP command timeout on connection from (test) [V4NET.0.0.1]
+LOG: SMTP command timeout on connection from (test) [V4NET.0.0.1] D=qqs
 An error was detected while processing a file of BSMTP input.
 The error message was:
 

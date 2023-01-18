@@ -463,5 +463,5 @@ LOG: smtp_connection MAIN
  ╰─────result: domain=recipient.domain/sender_domain=sender.domain
             ╰──(tainted)
 LOG: smtp_connection MAIN
-  SMTP connection from CALLER closed by QUIT
+  SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -44,7 +44,7 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <D@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <C@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] D=qqs closed by QUIT
 1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <B@test.ex>: 452 4.5.3 Try again
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <C@test.ex>: 452 4.5.3 Try again
@@ -54,7 +54,7 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp L- S=sss id=E10HmbB-0005vi-00@myhost.test.ex for A@test.ex
 1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <A@test.ex> R=server
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] D=qqs closed by QUIT
 1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <C@test.ex>: 452 4.5.3 Try again
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <D@test.ex>: 452 4.5.3 Try again
@@ -63,10 +63,10 @@
 1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <E@test.ex> R=server
 1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <B@test.ex> R=server
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] D=qqs closed by QUIT
 1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp L- S=sss id=E10HmbB-0005vi-00@myhost.test.ex for C@test.ex D@test.ex
 1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <D@test.ex> R=server
 1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <C@test.ex> R=server
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
-1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] D=qqs closed by QUIT

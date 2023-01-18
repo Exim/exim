@@ -63,7 +63,7 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1235 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
-  SMTP connection from root closed by QUIT
+  SMTP connection from root D=q.qqqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -128,7 +128,7 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1237 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
-  SMTP connection from root closed by QUIT
+  SMTP connection from root D=q.qqqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -196,7 +196,7 @@ LOG: MAIN
   == tempreject@test.ex R=client T=send_to_server defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined end of data: 451 Service not available
 >>>>>>>>>>>>>>>> Exim pid=p1239 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
-  SMTP connection from root closed by QUIT
+  SMTP connection from root D=q.qqqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -266,7 +266,7 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1241 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
-  SMTP connection from root closed by QUIT
+  SMTP connection from root D=q.qqqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -336,5 +336,5 @@ LOG: MAIN
   == dataloss@test.ex R=client T=send_to_server defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined end of data
 >>>>>>>>>>>>>>>> Exim pid=p1243 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
-  SMTP connection from root closed by QUIT
+  SMTP connection from root D=q.qqqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1242 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -14,10 +14,10 @@ LOG: delay_delivery MAIN
 LOG: MAIN REJECT
   rejected MAIL command U=CALLER: too many messages in one connection
 LOG: smtp_connection MAIN
-  SMTP connection from CALLER closed by QUIT
+  SMTP connection from CALLER D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
 LOG: MAIN REJECT
   rejected MAIL command U=CALLER: too many messages in one connection
 LOG: smtp_connection MAIN
-  SMTP connection from CALLER closed by QUIT
+  SMTP connection from CALLER D=qqs closed by QUIT

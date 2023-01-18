@@ -102,6 +102,9 @@ JH/20 Fix TLSA lookups.  Previously dns_again_means_nonexist would affect
       SERVFAIL results, which breaks the downgrade resistance of DANE.  Change
       to not checking that list for these looks.
 
+JH/21 Bug 2434: Add connection-elapsed "D=" element to more connection
+      closure log lines.
+
 
 Exim version 4.96
 -----------------
