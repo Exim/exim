@@ -2759,6 +2759,10 @@ if (/^(cat)?write\s+(\S+)(?:\s+(.*))?\s*$/)
 
 if (/^client/ || /^(sudo\s+)?perl\b/)
   {
+  if (defined($tls)) {
+    s/^client-anytls/client-ssl/ if ($tls eq 'openssl');
+    s/^client-anytls/client-gnutls/ if ($tls eq 'gnutls');
+    }
   s"client"./bin/client";
   $cmd = "$_ >>test-stdout 2>>test-stderr";
   }
@@ -2812,15 +2816,15 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
 
     if (defined $queuespec)
       {
-      @listcmd  = ("$parm_cwd/eximdir/exim", '-bp',
+      @listcmd  = ("$parm_cwd/$exim_server", '-bp',
 		   $queuespec,
-                   "-DEXIM_PATH=$parm_cwd/eximdir/exim",
+                   "-DEXIM_PATH=$parm_cwd$exim_server",
                    -C => "$parm_cwd/test-config");
       }
     else
       {
-      @listcmd  = ("$parm_cwd/eximdir/exim", '-bp',
-                   "-DEXIM_PATH=$parm_cwd/eximdir/exim",
+      @listcmd  = ("$parm_cwd/$exim_server", '-bp',
+                   "-DEXIM_PATH=$parm_cwd/$exim_server",
                    -C => "$parm_cwd/test-config");
       }
     print ">> Getting queue list from:\n>>    @listcmd\n" if $debug;
@@ -2852,11 +2856,24 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
 
   my $opt_valgrind = $valgrind ? "valgrind --leak-check=yes --suppressions=$parm_cwd/aux-fixed/valgrind.supp " : '';
 
-  $cmd = "$envset$sudo$opt_valgrind" .
-         "$parm_cwd/eximdir/exim$special$optargs " .
-         "-DEXIM_PATH=$parm_cwd/eximdir/exim$special " .
-         "-C $parm_cwd/test-config $args " .
+  $cmd = "$envset$sudo$opt_valgrind";
+
+  if ($special ne '') {
+    $cmd .= "$parm_cwd/eximdir/exim$special$optargs " .
+	    "-DEXIM_PATH=$parm_cwd/eximdir/exim$special ";
+    }
+  elsif ($args =~ /(^|\s)-DSERVER=server\s/) {
+    $cmd .= "$parm_cwd/$exim_server$optargs " .
+	    "-DEXIM_PATH=$parm_cwd/$exim_server ";
+    }
+  else {
+    $cmd .= "$parm_cwd/$exim_client$optargs " .
+	    "-DEXIM_PATH=$parm_cwd/$exim_client ";
+    }
+
+  $cmd .= "-C $parm_cwd/test-config $args " .
          ">>test-stdout 2>>test-stderr";
+
   # If the command is starting an Exim daemon, we run it in the same
   # way as the "server" command above, that is, we don't want to wait
   # for the process to finish. That happens when "killdaemon" is obeyed later
@@ -3335,6 +3352,7 @@ GetOptions(
     'ipv6!'    => \$have_ipv6,
     'keep'     => \$save_output,
     'slow'     => \$slow,
+    'tls=s'    => \my $tls,
     'valgrind' => \$valgrind,
     'range=s{2}'       => \my @range_wanted,
     'test=i@'          => \my @tests_wanted,
@@ -3911,6 +3929,45 @@ else
 
 die "** Unable to make patched exim: $!\n"
   if (system("sudo ./patchexim $parm_exim") != 0);
+
+# If TLS-library-specific binaries have been made, grab them too
+
+$suff = 'openssl';
+$f = $parm_exim . '_' . $suff;
+if (-f $f) {
+  $exim_openssl = "eximdir/exim_$suff";
+  die "** Unable to make patched exim: $!\n"
+    if (system("sudo ./patchexim -o $exim_openssl $f") != 0);
+  }
+$suff = 'gnutls';
+$f = $parm_exim . '_' . $suff;
+if (-f $f) {
+  $exim_gnutls = "eximdir/exim_$suff";
+  die "** Unable to make patched exim: $!\n"
+    if (system("sudo ./patchexim -o $exim_gnutls $f") != 0);
+  }
+
+if (defined($tls))
+  {
+  die "** Need both $exim_openssl and $exim_gnutls for cross-library teting\n"
+    if ( !defined($exim_openssl) || !defined($exim_gnutls) );
+  if ($tls eq 'openssl')
+    {
+    $exim_client = $exim_openssl;
+    $exim_server = $exim_gnutls;
+    }
+  elsif ($tls eq 'gnutls')
+    {
+    $exim_client = $exim_gnutls;
+    $exim_server = $exim_openssl;
+    }
+  else
+    { die "** need eother openssl or gnutls speified as the client for cross-library testing, saw $tls\n"; }
+  }
+else
+  { $exim_client = $exim_server = 'eximdir/exim'; }
+print ">> \$exim_client <$exim_client>\n";;
+print ">> \$exim_server <$exim_server>\n";;
 
 # From this point on, exits from the program must go via the subroutine
 # tests_exit(), so that suitable cleaning up can be done when required.

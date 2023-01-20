@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use Getopt::Std;
 
 ###############################################################################
 # This is an auxiliary script that is part of the Exim test suite. It must be #
@@ -11,10 +12,17 @@ use warnings;
 #                                                                             #
 # The only argument to this script is the name of the Exim binary that is to  #
 # be copied. The script must be run in the correct current directory.         #
+#									      #
+# One option, -o <outfile> can be given.  Default is "eximdir/exim"           #
 ###############################################################################
 
+our ($opt_o);
+getopts('o:');
+
+my $outfile = defined($opt_o) ? $opt_o : 'eximdir/exim';
+
 open(IN, $ARGV[0]) || die "** Failed to open $ARGV[0]: $!\n";
-open(OUT, '>eximdir/exim') || die "** Failed to open eximdir/exim: $!\n";
+open(OUT, ">$outfile") || die "** Failed to open $outfile: $!\n";
 
 while(<IN>)
   {
@@ -37,6 +45,6 @@ while(<IN>)
 close(IN);
 close(OUT);
 
-chmod 04755, 'eximdir/exim';
+chmod 04755, $outfile;
 
 # End of patchexim script

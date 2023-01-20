@@ -39,6 +39,9 @@ FE       = $(FULLECHO)
 all:       utils exim
 config:    $(EDITME) checklocalmake Makefile os.c config.h version.h version.sh macro.c
 
+exim_openssl exim_gnutls: clean exim
+	cp exim $@
+
 checklocalmake:
 	@if $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(OSTYPE) $(EDITME) || \
 	  $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(ARCHTYPE) $(EDITME) || \

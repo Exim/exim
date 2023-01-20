@@ -301,6 +301,11 @@ There are some options for the ./runtest script itself:
   -SLOW     For very slow hosts that appear to have Heisenbugs, delay before
             comparing output files from a testcase
 
+  -TLS <client>  For cross-library testing. Specify 'openssl" or 'gnutls'
+            as the client; the other is used as the server (assumes that
+	    both have been built: set up Local/Makefile for OpenSSL and
+	    "make exim_openssl", then for GnuTLS and "make exim_gnutls")
+
 The options for ./runtest must be given first (but after the name of the
 binary, if present). Any further options, that is, items on the command line
 that start with a hyphen, are passed to the Exim binary when it is run as part
