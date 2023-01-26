@@ -2986,6 +2986,231 @@ return $yield;            # Ran command and waited
 ###############################################################################
 ###############################################################################
 
+##################################################
+#    Check for SpamAssassin and ClamAV           #
+##################################################
+
+# These are crude tests. If they aren't good enough, we'll have to improve
+# them, for example by actually passing a message through spamc or clamscan.
+
+sub check_running_spamassassin
+{
+my $sock = new FileHandle;
+
+if (system("spamc -h 2>/dev/null >/dev/null") == 0)
+  {
+  print "The spamc command works:\n";
+
+  # This test for an active SpamAssassin is courtesy of John Jetmore.
+  # The tests are hard coded to localhost:783, so no point in making
+  # this test flexible like the clamav test until the test scripts are
+  # changed.  spamd doesn't have the nice PING/PONG protocol that
+  # clamd does, but it does respond to errors in an informative manner,
+  # so use that.
+
+  my($sint,$sport) = ('127.0.0.1',783);
+  eval
+    {
+    my $sin = sockaddr_in($sport, inet_aton($sint))
+	or die "** Failed packing $sint:$sport\n";
+    socket($sock, PF_INET, SOCK_STREAM, getprotobyname('tcp'))
+	or die "** Unable to open socket $sint:$sport\n";
+
+    local $SIG{ALRM} =
+	sub { die "** Timeout while connecting to socket $sint:$sport\n"; };
+    alarm(5);
+    connect($sock, $sin)
+	or die "** Unable to connect to socket $sint:$sport\n";
+    alarm(0);
+
+    select((select($sock), $| = 1)[0]);
+    print $sock "bad command\r\n";
+
+    $SIG{ALRM} =
+	sub { die "** Timeout while reading from socket $sint:$sport\n"; };
+    alarm(10);
+    my $res = <$sock>;
+    alarm(0);
+
+    $res =~ m|^SPAMD/|
+	or die "** Did not get SPAMD from socket $sint:$sport. "
+	      ."It said: $res\n";
+    };
+  alarm(0);
+  if($@)
+    {
+    print "  $@";
+    print "  Assume SpamAssassin (spamd) is not running\n";
+    }
+  else
+    {
+    $parm_running{SpamAssassin} = ' ';
+    print "  SpamAssassin (spamd) seems to be running\n";
+    }
+  }
+else
+  {
+  print "The spamc command failed: assume SpamAssassin (spamd) is not running\n";
+  }
+}
+
+sub check_running_clamav
+{
+my $sock;
+
+# For ClamAV, we need to find the clamd socket for use in the Exim
+# configuration. Search for the clamd configuration file.
+
+if (system("clamscan -h 2>/dev/null >/dev/null") == 0)
+  {
+  my($f, $clamconf, $test_prefix);
+
+  print "The clamscan command works";
+
+  $test_prefix = $ENV{EXIM_TEST_PREFIX};
+  $test_prefix = '' if !defined $test_prefix;
+
+  foreach $f ("$test_prefix/etc/clamd.conf",
+	      "$test_prefix/usr/local/etc/clamd.conf",
+	      "$test_prefix/etc/clamav/clamd.conf", '')
+    {
+    if (-e $f)
+      {
+      $clamconf = $f;
+      last;
+      }
+    }
+
+  # Read the ClamAV configuration file and find the socket interface.
+
+  if ($clamconf ne '')
+    {
+    my $socket_domain;
+    open(IN, "$clamconf") || die "\n** Unable to open $clamconf: $!\n";
+    while (<IN>)
+      {
+      if (/^LocalSocket\s+(.*)/)
+	{
+	$parm_clamsocket = $1;
+	$socket_domain = AF_UNIX;
+	last;
+	}
+      if (/^TCPSocket\s+(\d+)/)
+	{
+	if (defined $parm_clamsocket)
+	  {
+	  $parm_clamsocket .= " $1";
+	  $socket_domain = AF_INET;
+	  last;
+	  }
+	else
+	  {
+	  $parm_clamsocket = " $1";
+	  }
+	}
+      elsif (/^TCPAddr\s+(\S+)/)
+	{
+	if (defined $parm_clamsocket)
+	  {
+	  $parm_clamsocket = $1 . $parm_clamsocket;
+	  $socket_domain = AF_INET;
+	  last;
+	  }
+	else
+	  {
+	  $parm_clamsocket = $1;
+	  }
+	}
+      }
+    close(IN);
+
+    if (defined $socket_domain)
+      {
+      print ":\n  The clamd socket is $parm_clamsocket\n";
+      # This test for an active ClamAV is courtesy of Daniel Tiefnig.
+      eval
+	{
+	my $socket;
+	if ($socket_domain == AF_UNIX)
+	  {
+	  $socket = sockaddr_un($parm_clamsocket) or die "** Failed packing '$parm_clamsocket'\n";
+	  }
+	elsif ($socket_domain == AF_INET)
+	  {
+	  my ($ca_host, $ca_port) = split(/\s+/,$parm_clamsocket);
+	  my $ca_hostent = gethostbyname($ca_host) or die "** Failed to get raw address for host '$ca_host'\n";
+	  $socket = sockaddr_in($ca_port, $ca_hostent) or die "** Failed packing '$parm_clamsocket'\n";
+	  }
+	else
+	  {
+	  die "** Unknown socket domain '$socket_domain' (should not happen)\n";
+	  }
+	socket($sock, $socket_domain, SOCK_STREAM, 0) or die "** Unable to open socket '$parm_clamsocket'\n";
+	local $SIG{ALRM} = sub { die "** Timeout while connecting to socket '$parm_clamsocket'\n"; };
+	alarm(5);
+	connect($sock, $socket) or die "** Unable to connect to socket '$parm_clamsocket'\n";
+	alarm(0);
+
+	my $ofh = select $sock; $| = 1; select $ofh;
+	print $sock "PING\n";
+
+	$SIG{ALRM} = sub { die "** Timeout while reading from socket '$parm_clamsocket'\n"; };
+	alarm(10);
+	my $res = <$sock>;
+	alarm(0);
+
+	$res =~ /PONG/ or die "** Did not get PONG from socket '$parm_clamsocket'. It said: $res\n";
+	};
+      alarm(0);
+
+      if($@)
+	{
+	print "  $@";
+	print "  Assume ClamAV is not running\n";
+	}
+      else
+	{
+	$parm_running{ClamAV} = ' ';
+	print "  ClamAV seems to be running\n";
+	}
+      }
+    else
+      {
+      print ", but the socket for clamd could not be determined\n";
+      print "Assume ClamAV is not running\n";
+      }
+    }
+
+  else
+    {
+    print ", but I can't find a configuration for clamd\n";
+    print "Assume ClamAV is not running\n";
+    }
+  }
+}
+
+
+sub check_running_redis
+{
+if (defined $parm_lookups{redis})
+  {
+  if (system("redis-server -v 2>/dev/null >/dev/null") == 0)
+    {
+    print "The redis-server command works\n";
+    $parm_running{redis} = ' ';
+    }
+  else
+    {
+    print "The redis-server command failed: assume Redis not installed\n";
+    }
+  }
+}
+
+
+
+###############################################################################
+###############################################################################
+
 # Here begins the Main Program ...
 
 ###############################################################################
@@ -3335,220 +3560,14 @@ print "-" x 78, "\n";
 
 unlink("$parm_cwd/test-config");
 
-##################################################
-#    Check for SpamAssassin and ClamAV           #
-##################################################
 
-# These are crude tests. If they aren't good enough, we'll have to improve
-# them, for example by actually passing a message through spamc or clamscan.
 
 if (defined $parm_support{Content_Scanning})
   {
-  my $sock = new FileHandle;
-
-  if (system("spamc -h 2>/dev/null >/dev/null") == 0)
-    {
-    print "The spamc command works:\n";
-
-    # This test for an active SpamAssassin is courtesy of John Jetmore.
-    # The tests are hard coded to localhost:783, so no point in making
-    # this test flexible like the clamav test until the test scripts are
-    # changed.  spamd doesn't have the nice PING/PONG protocol that
-    # clamd does, but it does respond to errors in an informative manner,
-    # so use that.
-
-    my($sint,$sport) = ('127.0.0.1',783);
-    eval
-      {
-      my $sin = sockaddr_in($sport, inet_aton($sint))
-          or die "** Failed packing $sint:$sport\n";
-      socket($sock, PF_INET, SOCK_STREAM, getprotobyname('tcp'))
-          or die "** Unable to open socket $sint:$sport\n";
-
-      local $SIG{ALRM} =
-          sub { die "** Timeout while connecting to socket $sint:$sport\n"; };
-      alarm(5);
-      connect($sock, $sin)
-          or die "** Unable to connect to socket $sint:$sport\n";
-      alarm(0);
-
-      select((select($sock), $| = 1)[0]);
-      print $sock "bad command\r\n";
-
-      $SIG{ALRM} =
-          sub { die "** Timeout while reading from socket $sint:$sport\n"; };
-      alarm(10);
-      my $res = <$sock>;
-      alarm(0);
-
-      $res =~ m|^SPAMD/|
-          or die "** Did not get SPAMD from socket $sint:$sport. "
-                ."It said: $res\n";
-      };
-    alarm(0);
-    if($@)
-      {
-      print "  $@";
-      print "  Assume SpamAssassin (spamd) is not running\n";
-      }
-    else
-      {
-      $parm_running{SpamAssassin} = ' ';
-      print "  SpamAssassin (spamd) seems to be running\n";
-      }
-    }
-  else
-    {
-    print "The spamc command failed: assume SpamAssassin (spamd) is not running\n";
-    }
-
-  # For ClamAV, we need to find the clamd socket for use in the Exim
-  # configuration. Search for the clamd configuration file.
-
-  if (system("clamscan -h 2>/dev/null >/dev/null") == 0)
-    {
-    my($f, $clamconf, $test_prefix);
-
-    print "The clamscan command works";
-
-    $test_prefix = $ENV{EXIM_TEST_PREFIX};
-    $test_prefix = '' if !defined $test_prefix;
-
-    foreach $f ("$test_prefix/etc/clamd.conf",
-                "$test_prefix/usr/local/etc/clamd.conf",
-                "$test_prefix/etc/clamav/clamd.conf", '')
-      {
-      if (-e $f)
-        {
-        $clamconf = $f;
-        last;
-        }
-      }
-
-    # Read the ClamAV configuration file and find the socket interface.
-
-    if ($clamconf ne '')
-      {
-      my $socket_domain;
-      open(IN, "$clamconf") || die "\n** Unable to open $clamconf: $!\n";
-      while (<IN>)
-        {
-        if (/^LocalSocket\s+(.*)/)
-          {
-          $parm_clamsocket = $1;
-          $socket_domain = AF_UNIX;
-          last;
-          }
-        if (/^TCPSocket\s+(\d+)/)
-          {
-          if (defined $parm_clamsocket)
-            {
-            $parm_clamsocket .= " $1";
-            $socket_domain = AF_INET;
-            last;
-            }
-          else
-            {
-            $parm_clamsocket = " $1";
-            }
-          }
-        elsif (/^TCPAddr\s+(\S+)/)
-          {
-          if (defined $parm_clamsocket)
-            {
-            $parm_clamsocket = $1 . $parm_clamsocket;
-            $socket_domain = AF_INET;
-            last;
-            }
-          else
-            {
-            $parm_clamsocket = $1;
-            }
-          }
-        }
-      close(IN);
-
-      if (defined $socket_domain)
-        {
-        print ":\n  The clamd socket is $parm_clamsocket\n";
-        # This test for an active ClamAV is courtesy of Daniel Tiefnig.
-        eval
-          {
-          my $socket;
-          if ($socket_domain == AF_UNIX)
-            {
-            $socket = sockaddr_un($parm_clamsocket) or die "** Failed packing '$parm_clamsocket'\n";
-            }
-          elsif ($socket_domain == AF_INET)
-            {
-            my ($ca_host, $ca_port) = split(/\s+/,$parm_clamsocket);
-            my $ca_hostent = gethostbyname($ca_host) or die "** Failed to get raw address for host '$ca_host'\n";
-            $socket = sockaddr_in($ca_port, $ca_hostent) or die "** Failed packing '$parm_clamsocket'\n";
-            }
-          else
-            {
-            die "** Unknown socket domain '$socket_domain' (should not happen)\n";
-            }
-          socket($sock, $socket_domain, SOCK_STREAM, 0) or die "** Unable to open socket '$parm_clamsocket'\n";
-          local $SIG{ALRM} = sub { die "** Timeout while connecting to socket '$parm_clamsocket'\n"; };
-          alarm(5);
-          connect($sock, $socket) or die "** Unable to connect to socket '$parm_clamsocket'\n";
-          alarm(0);
-
-          my $ofh = select $sock; $| = 1; select $ofh;
-          print $sock "PING\n";
-
-          $SIG{ALRM} = sub { die "** Timeout while reading from socket '$parm_clamsocket'\n"; };
-          alarm(10);
-          my $res = <$sock>;
-          alarm(0);
-
-          $res =~ /PONG/ or die "** Did not get PONG from socket '$parm_clamsocket'. It said: $res\n";
-          };
-        alarm(0);
-
-        if($@)
-          {
-          print "  $@";
-          print "  Assume ClamAV is not running\n";
-          }
-        else
-          {
-          $parm_running{ClamAV} = ' ';
-          print "  ClamAV seems to be running\n";
-          }
-        }
-      else
-        {
-        print ", but the socket for clamd could not be determined\n";
-        print "Assume ClamAV is not running\n";
-        }
-      }
-
-    else
-      {
-      print ", but I can't find a configuration for clamd\n";
-      print "Assume ClamAV is not running\n";
-      }
-    }
+  check_running_spamassassin();
+  check_running_clamav();
   }
-
-
-##################################################
-#       Check for redis                          #
-##################################################
-if (defined $parm_lookups{redis})
-  {
-  if (system("redis-server -v 2>/dev/null >/dev/null") == 0)
-    {
-    print "The redis-server command works\n";
-    $parm_running{redis} = ' ';
-    }
-  else
-    {
-    print "The redis-server command failed: assume Redis not installed\n";
-    }
-  }
+check_running_redis();
 
 ##################################################
 #         Test for the basic requirements        #
