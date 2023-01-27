@@ -4489,23 +4489,33 @@ every domain. Addresses are routed, local deliveries happen, but no remote
 transports are run.
 
 Performance will be best if the &%queue_run_in_order%& option is false.
-If that is so and the &%queue_fast_ramp%& option is true then
-in the first phase of the run,
+If that is so and
+the &%queue_fast_ramp%& option is true
+and a daemon-notifier socket is available
+then in the first phase of the run,
 once a threshold number of messages are routed for a given host,
 a delivery process is forked in parallel with the rest of the scan.
 
 .cindex "hints database" "remembering routing"
 The hints database that remembers which messages are waiting for specific hosts
-is updated, as if delivery to those hosts had been deferred. After this is
-complete, a second, normal queue scan happens, with routing and delivery taking
-place as normal. Messages that are routed to the same host should mostly be
+is updated, as if delivery to those hosts had been deferred.
+
+After the first queue scan complete,
+a second, normal queue scan is done, with routing and delivery taking
+place as normal.
+Messages that are routed to the same host should mostly be
 delivered down a single SMTP
 .cindex "SMTP" "passed connection"
 .cindex "SMTP" "multiple deliveries"
 .cindex "multiple SMTP deliveries"
 connection because of the hints that were set up during the first queue scan.
-This option may be useful for hosts that are connected to the Internet
+
+.new
+Two-phase queue runs should be used on systems which, even intermittently,
+have a large queue (such as mailing-list operators).
+They may also be useful for hosts that are connected to the Internet
 intermittently.
+.wen
 
 .vitem &%-q[q]i...%&
 .oindex "&%-qi%&"
