@@ -2810,6 +2810,14 @@ of Exim is installed. It is not necessary to do this when other files that are
 referenced from the configuration (for example, alias files) are changed,
 because these are reread each time they are used.
 
+.new
+Either a SIGTERM or a SIGINT signal should be used to cause the daemon
+to cleanly shut down.
+Subprocesses handling recceiving or delivering messages,
+or for scanning the queue,
+will not be affected by the termination of the daemon process.
+.wen
+
 .cmdopt -bdf
 This option has the same effect as &%-bd%& except that it never disconnects
 from the controlling terminal, even when no debugging is specified.

@@ -1923,6 +1923,7 @@ signal(SIGSEGV, segv_handler);				/* log faults */
 
 /* If running in a dockerized environment, the TERM signal is only
 delegated to the PID 1 if we request it by setting an signal handler */
+
 if (getpid() == 1) signal(SIGTERM, term_handler);
 
 /* SIGHUP is used to get the daemon to reconfigure. It gets set as appropriate
