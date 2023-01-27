@@ -18458,7 +18458,7 @@ acceptable bound from 1024 to 2048.
 .cindex TLS "EC cryptography"
 This option selects EC curves for use by Exim when used with OpenSSL.
 It has no effect when Exim is used with GnuTLS
- (the equivalent can be done using a priority string for the
+(the equivalent can be done using a priority string for the
 &%tls_require_ciphers%& option).
 
 After expansion it must contain
@@ -30000,13 +30000,10 @@ file from every certificate authority they know of.
 .next
 The way with most moving parts at query time is Online Certificate
 Status Protocol (OCSP), where the client verifies the certificate
-against an OCSP server run by the CA.
-OCSP is based on HTTP and can be proxied accordingly.
-It requires the CA running software with access to the
-private key of the CA, to sign the responses to the OCSP queries.
-Because every client TLS transaction with a server results in an OCSP
-access to the CA, it results in a heavy load on the CA.
-It also lets the CA track all usage of the certs, which is a privacy problem.
+against an OCSP server run by the CA.  This lets the CA track all
+usage of the certs.  It requires running software with access to the
+private key of the CA, to sign the responses to the OCSP queries.  OCSP
+is based on HTTP and can be proxied accordingly.
 
 The only widespread OCSP server implementation (known to this writer)
 comes as part of OpenSSL and aborts on an invalid request, such as
@@ -30016,8 +30013,7 @@ re-entering the passphrase each time some random client does this.
 .next
 The third way is OCSP Stapling; in this, the server using a certificate
 issued by the CA periodically requests an OCSP proof of validity from
-the OCSP server (probably using the original OCSP above),
-then serves it up inline as part of the TLS
+the OCSP server, then serves it up inline as part of the TLS
 negotiation.   This approach adds no extra round trips, does not let the
 CA track users, scales well with number of certs issued by the CA and is
 resilient to temporary OCSP server failures, as long as the server
