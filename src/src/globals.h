@@ -246,6 +246,7 @@ extern struct global_flags {
  BOOL   no_mbox_unspool			:1; /* don't unlink files in /scan directory */
 #endif
  BOOL   no_multiline_responses		:1; /* For broken clients */
+ BOOL   notifier_socket_en		:1; /* Permit create of notifier socket */
 
  BOOL   parse_allow_group		:1; /* Allow group syntax */
  BOOL   parse_found_group		:1; /* In the middle of a group */

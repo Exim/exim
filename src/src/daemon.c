@@ -1169,7 +1169,7 @@ const uschar * where;
 struct sockaddr_un sa_un = {.sun_family = AF_UNIX};
 ssize_t len;
 
-if (!notifier_socket || !*notifier_socket)
+if (!f.notifier_socket_en)
   {
   DEBUG(D_any) debug_printf("-oY used so not creating notifier socket\n");
   return;
@@ -1178,6 +1178,11 @@ if (override_local_interfaces && !override_pid_file_path)
   {
   DEBUG(D_any)
     debug_printf("-oX used without -oP so not creating notifier socket\n");
+  return;
+  }
+if (!notifier_socket || !*notifier_socket)
+  {
+  DEBUG(D_any) debug_printf("no name for notifier socket\n");
   return;
   }
 

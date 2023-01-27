@@ -4397,15 +4397,21 @@ It is only relevant when the &%-bd%& (start listening daemon) option is also
 given.
 Normally the daemon creates this socket, unless a &%-oX%& and &*no*& &%-oP%&
 option is also present.
-If this option is given then the socket will not be created.  This could be
-required if the system is running multiple daemons.
+.new
+If this option is given then the socket will not be created.  This is required
+if the system is running multiple daemons, in which case it should
+be used on all.
+The features supported by the socket will not be available in such cases.
 
 The socket is currently used for
 .ilist
 fast ramp-up of queue runner processes
 .next
+caching compiled regexes
+.next
 obtaining a current queue size
 .endlist
+.wen
 
 .cmdopt -pd
 .cindex "Perl" "starting the interpreter"

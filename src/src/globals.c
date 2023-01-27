@@ -280,6 +280,7 @@ struct global_flags f =
 	.no_mbox_unspool        = FALSE,
 #endif
 	.no_multiline_responses = FALSE,
+	.notifier_socket_en	= TRUE,
 
 	.parse_allow_group      = FALSE,
 	.parse_found_group      = FALSE,

@@ -3450,7 +3450,7 @@ on the second character (the one after '-'), to save some effort. */
 
       case 'Y':
 	if (*argrest) badarg = TRUE;
-	else notifier_socket = NULL;
+	else f.notifier_socket_en = FALSE;
 	break;
 
       /* Unknown -o argument */
