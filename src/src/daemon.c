@@ -1348,6 +1348,184 @@ return FALSE;
 
 
 
+static void
+daemon_inetd_wtimeout(time_t last_connection_time)
+{
+time_t resignal_interval = inetd_wait_timeout;
+
+if (last_connection_time == (time_t)0)
+  {
+  DEBUG(D_any)
+    debug_printf("inetd wait timeout expired, but still not seen first message, ignoring\n");
+  }
+else
+  {
+  time_t now = time(NULL);
+  if (now == (time_t)-1)
+    {
+    DEBUG(D_any) debug_printf("failed to get time: %s\n", strerror(errno));
+    }
+  else if ((now - last_connection_time) >= inetd_wait_timeout)
+    {
+    DEBUG(D_any)
+      debug_printf("inetd wait timeout %d expired, ending daemon\n",
+	  inetd_wait_timeout);
+    log_write(0, LOG_MAIN, "exim %s daemon terminating, inetd wait timeout reached.\n",
+	version_string);
+    daemon_die();		/* Does not return */
+    }
+  else
+    resignal_interval -= (now - last_connection_time);
+  }
+
+sigalrm_seen = FALSE;
+ALARM(resignal_interval);
+}
+
+
+static void
+daemon_qrun(int local_queue_run_max, struct pollfd * fd_polls, int listen_socket_count)
+{
+DEBUG(D_any) debug_printf("%s received\n",
+#ifndef DISABLE_QUEUE_RAMP
+  *queuerun_msgid ? "qrun notification" :
+#endif
+  "SIGALRM");
+
+/* Do a full queue run in a child process, if required, unless we already
+have enough queue runners on the go. If we are not running as root, a
+re-exec is required. */
+
+if (  queue_interval > 0
+   && (local_queue_run_max <= 0 || queue_run_count < local_queue_run_max))
+  {
+pid_t pid;
+
+  if ((pid = exim_fork(US"queue-runner")) == 0)
+    {
+    /* Disable debugging if it's required only for the daemon process. We
+    leave the above message, because it ties up with the "child ended"
+    debugging messages. */
+
+    if (f.debug_daemon) debug_selector = 0;
+
+    /* Close any open listening sockets in the child */
+
+    close_daemon_sockets(daemon_notifier_fd,
+      fd_polls, listen_socket_count);
+
+    /* Reset SIGHUP and SIGCHLD in the child in both cases. */
+
+    signal(SIGHUP,  SIG_DFL);
+    signal(SIGCHLD, SIG_DFL);
+    signal(SIGTERM, SIG_DFL);
+    signal(SIGINT, SIG_DFL);
+
+    /* Re-exec if privilege has been given up, unless deliver_drop_
+    privilege is set. Reset SIGALRM before exec(). */
+
+    if (geteuid() != root_uid && !deliver_drop_privilege)
+      {
+      uschar opt[8];
+      uschar *p = opt;
+      uschar *extra[7];
+      int extracount = 1;
+
+      signal(SIGALRM, SIG_DFL);
+      *p++ = '-';
+      *p++ = 'q';
+      if (  f.queue_2stage
+#ifndef DISABLE_QUEUE_RAMP
+	 && !*queuerun_msgid
+#endif
+	 ) *p++ = 'q';
+      if (f.queue_run_first_delivery) *p++ = 'i';
+      if (f.queue_run_force) *p++ = 'f';
+      if (f.deliver_force_thaw) *p++ = 'f';
+      if (f.queue_run_local) *p++ = 'l';
+      *p = 0;
+      extra[0] = *queue_name
+	? string_sprintf("%sG%s", opt, queue_name) : opt;
+
+#ifndef DISABLE_QUEUE_RAMP
+      if (*queuerun_msgid)
+	{
+	log_write(0, LOG_MAIN, "notify triggered queue run");
+	extra[extracount++] = queuerun_msgid;	/* Trigger only the */
+	extra[extracount++] = queuerun_msgid;	/* one message      */
+	}
+#endif
+
+      /* If -R or -S were on the original command line, ensure they get
+      passed on. */
+
+      if (deliver_selectstring)
+	{
+	extra[extracount++] = f.deliver_selectstring_regex ? US"-Rr" : US"-R";
+	extra[extracount++] = deliver_selectstring;
+	}
+
+      if (deliver_selectstring_sender)
+	{
+	extra[extracount++] = f.deliver_selectstring_sender_regex
+	  ? US"-Sr" : US"-S";
+	extra[extracount++] = deliver_selectstring_sender;
+	}
+
+      /* Overlay this process with a new execution. */
+
+      (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, extracount,
+	extra[0], extra[1], extra[2], extra[3], extra[4], extra[5], extra[6]);
+
+      /* Control never returns here. */
+      }
+
+    /* No need to re-exec; SIGALRM remains set to the default handler */
+
+#ifndef DISABLE_QUEUE_RAMP
+    if (*queuerun_msgid)
+      {
+      log_write(0, LOG_MAIN, "notify triggered queue run");
+      f.queue_2stage = FALSE;
+      queue_run(queuerun_msgid, queuerun_msgid, FALSE);
+      }
+    else
+#endif
+      queue_run(NULL, NULL, FALSE);
+    exim_underbar_exit(EXIT_SUCCESS);
+    }
+
+  if (pid < 0)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC, "daemon: fork of queue-runner "
+      "process failed: %s", strerror(errno));
+    log_close_all();
+    }
+  else
+    {
+    for (int i = 0; i < local_queue_run_max; ++i)
+      if (queue_pid_slots[i] <= 0)
+	{
+	queue_pid_slots[i] = pid;
+	queue_run_count++;
+	break;
+	}
+    DEBUG(D_any) debug_printf("%d queue-runner process%s running\n",
+      queue_run_count, queue_run_count == 1 ? "" : "es");
+    }
+  }
+
+/* Reset the alarm clock */
+
+sigalrm_seen = FALSE;
+#ifndef DISABLE_QUEUE_RAMP
+if (*queuerun_msgid)
+  *queuerun_msgid = 0;
+else
+#endif
+  ALARM(queue_interval);
+}
+
 /*************************************************
 *              Exim Daemon Mainline              *
 *************************************************/
@@ -2267,8 +2445,6 @@ report_time_since(&timestamp_startup, US"daemon loop start");	/* testcase 0022 *
 
 for (;;)
   {
-  pid_t pid;
-
   if (sigterm_seen)
     daemon_die();	/* Does not return */
 
@@ -2279,186 +2455,10 @@ for (;;)
   The other option is that we have an inetd wait timeout specified to -bw. */
 
   if (sigalrm_seen)
-    {
     if (inetd_wait_timeout > 0)
-      {
-      time_t resignal_interval = inetd_wait_timeout;
-
-      if (last_connection_time == (time_t)0)
-        {
-        DEBUG(D_any)
-          debug_printf("inetd wait timeout expired, but still not seen first message, ignoring\n");
-        }
-      else
-        {
-        time_t now = time(NULL);
-        if (now == (time_t)-1)
-          {
-          DEBUG(D_any) debug_printf("failed to get time: %s\n", strerror(errno));
-          }
-        else
-          {
-          if ((now - last_connection_time) >= inetd_wait_timeout)
-            {
-            DEBUG(D_any)
-              debug_printf("inetd wait timeout %d expired, ending daemon\n",
-                  inetd_wait_timeout);
-            log_write(0, LOG_MAIN, "exim %s daemon terminating, inetd wait timeout reached.\n",
-                version_string);
-            exit(EXIT_SUCCESS);
-            }
-          else
-            {
-            resignal_interval -= (now - last_connection_time);
-            }
-          }
-        }
-
-      sigalrm_seen = FALSE;
-      ALARM(resignal_interval);
-      }
-
+      daemon_inetd_wtimeout(last_connection_time);	/* Might not return */
     else
-      {
-      DEBUG(D_any) debug_printf("%s received\n",
-#ifndef DISABLE_QUEUE_RAMP
-	*queuerun_msgid ? "qrun notification" :
-#endif
-	"SIGALRM");
-
-      /* Do a full queue run in a child process, if required, unless we already
-      have enough queue runners on the go. If we are not running as root, a
-      re-exec is required. */
-
-      if (  queue_interval > 0
-         && (local_queue_run_max <= 0 || queue_run_count < local_queue_run_max))
-        {
-        if ((pid = exim_fork(US"queue-runner")) == 0)
-          {
-          /* Disable debugging if it's required only for the daemon process. We
-          leave the above message, because it ties up with the "child ended"
-          debugging messages. */
-
-          if (f.debug_daemon) debug_selector = 0;
-
-          /* Close any open listening sockets in the child */
-
-	  close_daemon_sockets(daemon_notifier_fd,
-	    fd_polls, listen_socket_count);
-
-          /* Reset SIGHUP and SIGCHLD in the child in both cases. */
-
-          signal(SIGHUP,  SIG_DFL);
-          signal(SIGCHLD, SIG_DFL);
-          signal(SIGTERM, SIG_DFL);
-          signal(SIGINT, SIG_DFL);
-
-          /* Re-exec if privilege has been given up, unless deliver_drop_
-          privilege is set. Reset SIGALRM before exec(). */
-
-          if (geteuid() != root_uid && !deliver_drop_privilege)
-            {
-            uschar opt[8];
-            uschar *p = opt;
-            uschar *extra[7];
-            int extracount = 1;
-
-            signal(SIGALRM, SIG_DFL);
-            *p++ = '-';
-            *p++ = 'q';
-            if (  f.queue_2stage
-#ifndef DISABLE_QUEUE_RAMP
-	       && !*queuerun_msgid
-#endif
-	       ) *p++ = 'q';
-            if (f.queue_run_first_delivery) *p++ = 'i';
-            if (f.queue_run_force) *p++ = 'f';
-            if (f.deliver_force_thaw) *p++ = 'f';
-            if (f.queue_run_local) *p++ = 'l';
-            *p = 0;
-	    extra[0] = *queue_name
-	      ? string_sprintf("%sG%s", opt, queue_name) : opt;
-
-#ifndef DISABLE_QUEUE_RAMP
-	    if (*queuerun_msgid)
-	      {
-	      log_write(0, LOG_MAIN, "notify triggered queue run");
-	      extra[extracount++] = queuerun_msgid;	/* Trigger only the */
-	      extra[extracount++] = queuerun_msgid;	/* one message      */
-	      }
-#endif
-
-            /* If -R or -S were on the original command line, ensure they get
-            passed on. */
-
-            if (deliver_selectstring)
-              {
-              extra[extracount++] = f.deliver_selectstring_regex ? US"-Rr" : US"-R";
-              extra[extracount++] = deliver_selectstring;
-              }
-
-            if (deliver_selectstring_sender)
-              {
-              extra[extracount++] = f.deliver_selectstring_sender_regex
-	        ? US"-Sr" : US"-S";
-              extra[extracount++] = deliver_selectstring_sender;
-              }
-
-            /* Overlay this process with a new execution. */
-
-            (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, extracount,
-              extra[0], extra[1], extra[2], extra[3], extra[4], extra[5], extra[6]);
-
-            /* Control never returns here. */
-            }
-
-          /* No need to re-exec; SIGALRM remains set to the default handler */
-
-#ifndef DISABLE_QUEUE_RAMP
-	  if (*queuerun_msgid)
-	    {
-	    log_write(0, LOG_MAIN, "notify triggered queue run");
-	    f.queue_2stage = FALSE;
-	    queue_run(queuerun_msgid, queuerun_msgid, FALSE);
-	    }
-	  else
-#endif
-	    queue_run(NULL, NULL, FALSE);
-          exim_underbar_exit(EXIT_SUCCESS);
-          }
-
-        if (pid < 0)
-          {
-          log_write(0, LOG_MAIN|LOG_PANIC, "daemon: fork of queue-runner "
-            "process failed: %s", strerror(errno));
-          log_close_all();
-          }
-        else
-          {
-          for (int i = 0; i < local_queue_run_max; ++i)
-            if (queue_pid_slots[i] <= 0)
-              {
-              queue_pid_slots[i] = pid;
-              queue_run_count++;
-              break;
-              }
-          DEBUG(D_any) debug_printf("%d queue-runner process%s running\n",
-            queue_run_count, queue_run_count == 1 ? "" : "es");
-          }
-        }
-
-      /* Reset the alarm clock */
-
-      sigalrm_seen = FALSE;
-#ifndef DISABLE_QUEUE_RAMP
-      if (*queuerun_msgid)
-	*queuerun_msgid = 0;
-      else
-#endif
-	ALARM(queue_interval);
-      }
-
-    } /* sigalrm_seen */
+      daemon_qrun(local_queue_run_max, fd_polls, listen_socket_count);
 
 
   /* Sleep till a connection happens if listening, and handle the connection if
