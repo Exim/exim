@@ -4733,6 +4733,7 @@ while (*s)
     reset in the middle of the buffer will make it inaccessible. */
 
     len = Ustrlen(value);
+    DEBUG(D_expand) debug_expansion_interim(US"value", value, len, !!(flags & ESI_SKIPPING));
     if (!yield && newsize != 0)
       {
       yield = g;
@@ -4751,7 +4752,10 @@ while (*s)
     int n;
     s = read_cnumber(&n, s);
     if (n >= 0 && n <= expand_nmax)
+      {
+      DEBUG(D_expand) debug_expansion_interim(US"value", expand_nstring[n], expand_nlength[n], !!(flags & ESI_SKIPPING));
       yield = string_catn(yield, expand_nstring[n], expand_nlength[n]);
+      }
     continue;
     }
 
@@ -4776,7 +4780,10 @@ while (*s)
       goto EXPAND_FAILED;
       }
     if (n >= 0 && n <= expand_nmax)
+      {
+      DEBUG(D_expand) debug_expansion_interim(US"value", expand_nstring[n], expand_nlength[n], !!(flags & ESI_SKIPPING));
       yield = string_catn(yield, expand_nstring[n], expand_nlength[n]);
+      }
     continue;
     }
 

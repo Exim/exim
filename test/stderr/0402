@@ -77,6 +77,7 @@ Data file written for message 10HmaX-0005vi-00
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: 
   ├───scanning: 
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -124,6 +125,7 @@ Data file written for message 10HmaX-0005vi-00
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
+   ╎├──────value: CALLER
    ╎├considering: } }}${if def:sender_helo_name {(helo=$sender_helo_name)
    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    ╎	}}(Exim $version_number)
@@ -170,6 +172,7 @@ Data file written for message 10HmaX-0005vi-00
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
+   ├──────value: 
    ├───scanning: )
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
@@ -209,6 +212,7 @@ Data file written for message 10HmaX-0005vi-00
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: mail.test.ex
  ├considering:  ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
@@ -233,6 +237,7 @@ Data file written for message 10HmaX-0005vi-00
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: local
   ├considering:  }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -252,6 +257,7 @@ Data file written for message 10HmaX-0005vi-00
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+  	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding:  ($tls_in_ver)
@@ -276,6 +282,7 @@ Data file written for message 10HmaX-0005vi-00
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: 
   ├───scanning: 
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -302,6 +309,7 @@ Data file written for message 10HmaX-0005vi-00
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: x.yz
  ├considering: )
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
@@ -320,6 +328,7 @@ Data file written for message 10HmaX-0005vi-00
   ├considering: $sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: CALLER@test.ex
   ├considering: >)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
@@ -338,6 +347,7 @@ Data file written for message 10HmaX-0005vi-00
  ├───────text: id 
  ├considering: $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: 10HmaX-0005vi-00
  ├considering: ${if def:received_for {
  	for $received_for}}
  ├──condition: def:received_for
@@ -347,6 +357,7 @@ Data file written for message 10HmaX-0005vi-00
   ├───────text: 
   	for 
   ├───scanning: $received_for}}
+  ├──────value: 
   ├───scanning: }}
   ├──expanding: 
   	for $received_for
@@ -505,6 +516,8 @@ usery in "usery"?
  ╭considering: /non-exist/$domain
  ├───────text: /non-exist/
  ├considering: $domain
+ ├──────value: test.ex
+            ╰──(tainted)
  ├──expanding: /non-exist/$domain
  ╰─────result: /non-exist/test.ex
             ╰──(tainted)
@@ -555,6 +568,8 @@ CALLER in "CALLER"?
  ╭considering: /non-exist/$local_part
  ├───────text: /non-exist/
  ├considering: $local_part
+ ├──────value: CALLER
+            ╰──(tainted)
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/CALLER
             ╰──(tainted)
@@ -597,6 +612,8 @@ userz in "userz"?
  ╭considering: /non-exist/$domain
  ├───────text: /non-exist/
  ├considering: $domain
+ ├──────value: test.ex
+            ╰──(tainted)
  ├──expanding: /non-exist/$domain
  ╰─────result: /non-exist/test.ex
             ╰──(tainted)
@@ -629,6 +646,8 @@ usery in "usery"?
  ╭considering: /non-exist/$domain
  ├───────text: /non-exist/
  ├considering: $domain
+ ├──────value: test.ex
+            ╰──(tainted)
  ├──expanding: /non-exist/$domain
  ╰─────result: /non-exist/test.ex
             ╰──(tainted)
@@ -654,6 +673,8 @@ CALLER in "CALLER"?
  ╭considering: /non-exist/$local_part
  ├───────text: /non-exist/
  ├considering: $local_part
+ ├──────value: CALLER
+            ╰──(tainted)
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/CALLER
             ╰──(tainted)
@@ -705,6 +726,8 @@ no retry data available
  ╭considering: /non-exist/$local_part
  ├───────text: /non-exist/
  ├considering: $local_part
+ ├──────value: usery
+            ╰──(tainted)
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/usery
             ╰──(tainted)
@@ -715,6 +738,7 @@ changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail
 set_process_info: pppp delivering 10HmaX-0005vi-00 to TESTSUITE/test-mail/junk using ft1
 appendfile transport entered
  ╭considering: $address_file
+ ├──────value: TESTSUITE/test-mail/junk
  ├──expanding: $address_file
  ╰─────result: TESTSUITE/test-mail/junk
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
@@ -737,6 +761,8 @@ writing to file TESTSUITE/test-mail/junk
  ├─────result: true
   ╭considering: $return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
   
+  ├──────value: CALLER@test.ex
+             ╰──(tainted)
   ├considering: }{MAILER-DAEMON}} ${tod_bsdinbox}
   
   ├──expanding: $return_path
@@ -793,6 +819,7 @@ changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail
 set_process_info: pppp delivering 10HmaX-0005vi-00 to TESTSUITE/test-mail/junk using ft1
 appendfile transport entered
  ╭considering: $address_file
+ ├──────value: TESTSUITE/test-mail/junk
  ├──expanding: $address_file
  ╰─────result: TESTSUITE/test-mail/junk
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
@@ -815,6 +842,8 @@ writing to file TESTSUITE/test-mail/junk
  ├─────result: true
   ╭considering: $return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
   
+  ├──────value: CALLER@test.ex
+             ╰──(tainted)
   ├considering: }{MAILER-DAEMON}} ${tod_bsdinbox}
   
   ├──expanding: $return_path
@@ -893,6 +922,8 @@ no retry data available
  ╭considering: /non-exist/$local_part
  ├───────text: /non-exist/
  ├considering: $local_part
+ ├──────value: usery
+            ╰──(tainted)
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/usery
             ╰──(tainted)
@@ -925,6 +956,8 @@ no retry data available
  ╭considering: /$local_part
  ├───────text: /
  ├considering: $local_part
+ ├──────value: userz
+            ╰──(tainted)
  ├──expanding: /$local_part
  ╰─────result: /userz
             ╰──(tainted)

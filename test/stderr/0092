@@ -70,6 +70,7 @@ set_process_info: pppp handling incoming connection from [V4NET.0.0.1]
   ├──expanding: V4NET.0.0.1
   ╰─────result: V4NET.0.0.1
   ╭considering: $sender_host_address} {2} {30}}s
+  ├──────value: V4NET.0.0.1
   ├considering: } {2} {30}}s
   ├──expanding: $sender_host_address
   ╰─────result: V4NET.0.0.1
@@ -98,12 +99,15 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ├──────value: myhost.test.ex
  ├considering:  ESMTP Exim $version_number $tod_full
  ├───────text:  ESMTP Exim 
  ├considering: $version_number $tod_full
+ ├──────value: x.yz
  ├considering:  $tod_full
  ├───────text:  
  ├considering: $tod_full
+ ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

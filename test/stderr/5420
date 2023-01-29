@@ -8,12 +8,15 @@ admin user
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ├──────value: myhost.test.ex
  ├considering:  ESMTP Exim $version_number $tod_full
  ├───────text:  ESMTP Exim 
  ├considering: $version_number $tod_full
+ ├──────value: x.yz
  ├considering:  $tod_full
  ├───────text:  
  ├considering: $tod_full
+ ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  in dsn_advertise_hosts? no (option unset)
@@ -22,7 +25,6 @@ LOG: smtp_connection MAIN
   in pipelining_advertise_hosts? yes (matched "*")
  in chunking_advertise_hosts?
  in chunking_advertise_hosts? no (end of list)
- in tls_advertise_hosts?
  list element: *
   in tls_advertise_hosts? yes (matched "*")
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
@@ -65,6 +67,8 @@ domain.com in "! +local_domains"?
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
+ ├──────value: userx
+            ╰──(tainted)
  ├──expanding: $local_part
  ╰─────result: userx
             ╰──(tainted)
@@ -85,6 +89,8 @@ domain.com in "! +local_domains"?
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
+ ├──────value: userx
+            ╰──(tainted)
  ├──expanding: $local_part
  ╰─────result: userx
             ╰──(tainted)
@@ -95,6 +101,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... 127.0.0.1 in
  list element: 
  connected
  ╭considering: $primary_hostname
+ ├──────value: myhost.test.ex
  ├──expanding: $primary_hostname
  ╰─────result: myhost.test.ex
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -109,6 +116,7 @@ cmd buf flush ddd bytes
          250 HELP
  ╭considering: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ╭considering: $host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──────value: 127.0.0.1
   ├considering: }{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $host
   ╰─────result: 127.0.0.1
@@ -119,10 +127,8 @@ cmd buf flush ddd bytes
   ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: .outlook.com\$
   ╰─────result: .outlook.com$
- compiled RE '.outlook.com$' not found in local cache
- compiling RE '.outlook.com$'
- compiled RE '.outlook.com$' saved in local cache
   ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──────value: 
   ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $item
   ├─────result: 
@@ -144,6 +150,8 @@ cmd buf flush ddd bytes
  ╰─────result: 
  ╭considering: ${if eq {$address_data}{usery}{*}{:}}
   ╭considering: $address_data}{usery}{*}{:}}
+  ├──────value: userx
+             ╰──(tainted)
   ├considering: }{usery}{*}{:}}
   ├──expanding: $address_data
   ╰─────result: userx
@@ -173,6 +181,8 @@ cmd buf flush ddd bytes
 127.0.0.1 in hosts_avoid_tls? no (end of list)
  ╭considering: ${if eq {$address_data}{userz}{*}{:}}
   ╭considering: $address_data}{userz}{*}{:}}
+  ├──────value: userx
+             ╰──(tainted)
   ├considering: }{userz}{*}{:}}
   ├──expanding: $address_data
   ╰─────result: userx
@@ -271,6 +281,7 @@ end of inline ACL: ACCEPT
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: 
   ├───scanning: 
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -318,6 +329,7 @@ end of inline ACL: ACCEPT
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
+   ╎├──────value: CALLER
    ╎├considering: } }}${if def:sender_helo_name {(helo=$sender_helo_name)
    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    ╎	}}(Exim $version_number)
@@ -364,6 +376,8 @@ end of inline ACL: ACCEPT
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
+   ├──────value: myhost.test.ex
+              ╰──(tainted)
    ├considering: )
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
@@ -409,6 +423,7 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: myhost.test.ex
  ├considering:  ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
@@ -433,6 +448,7 @@ end of inline ACL: ACCEPT
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: local-esmtp
   ├considering:  }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -453,6 +469,7 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+  	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding:  ($tls_in_ver)
@@ -478,6 +495,7 @@ end of inline ACL: ACCEPT
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: 
   ├───scanning: 
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -505,6 +523,7 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: x.yz
  ├considering: )
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
@@ -523,6 +542,7 @@ end of inline ACL: ACCEPT
   ├considering: $sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: CALLER@myhost.test.ex
   ├considering: >)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
@@ -542,6 +562,7 @@ end of inline ACL: ACCEPT
  ├───────text: id 
  ├considering: $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: 10HmaX-0005vi-00
  ├considering: ${if def:received_for {
  	for $received_for}}
  ├──condition: def:received_for
@@ -551,6 +572,8 @@ end of inline ACL: ACCEPT
   ├───────text: 
   	for 
   ├considering: $received_for}}
+  ├──────value: userx@domain.com
+             ╰──(tainted)
   ├considering: }}
   ├──expanding: 
   	for $received_for
@@ -604,12 +627,15 @@ admin user
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ├──────value: myhost.test.ex
  ├considering:  ESMTP Exim $version_number $tod_full
  ├───────text:  ESMTP Exim 
  ├considering: $version_number $tod_full
+ ├──────value: x.yz
  ├considering:  $tod_full
  ├───────text:  
  ├considering: $tod_full
+ ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  in dsn_advertise_hosts? no (option unset)
@@ -618,7 +644,6 @@ LOG: smtp_connection MAIN
   in pipelining_advertise_hosts? yes (matched "*")
  in chunking_advertise_hosts?
  in chunking_advertise_hosts? no (end of list)
- in tls_advertise_hosts?
  list element: *
   in tls_advertise_hosts? yes (matched "*")
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
@@ -661,6 +686,8 @@ domain.com in "! +local_domains"?
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
+ ├──────value: usery
+            ╰──(tainted)
  ├──expanding: $local_part
  ╰─────result: usery
             ╰──(tainted)
@@ -681,6 +708,8 @@ domain.com in "! +local_domains"?
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
+ ├──────value: usery
+            ╰──(tainted)
  ├──expanding: $local_part
  ╰─────result: usery
             ╰──(tainted)
@@ -691,6 +720,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... 127.0.0.1 in
  list element: 
  connected
  ╭considering: $primary_hostname
+ ├──────value: myhost.test.ex
  ├──expanding: $primary_hostname
  ╰─────result: myhost.test.ex
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -705,6 +735,7 @@ cmd buf flush ddd bytes
          250 HELP
  ╭considering: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ╭considering: $host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──────value: 127.0.0.1
   ├considering: }{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $host
   ╰─────result: 127.0.0.1
@@ -715,10 +746,8 @@ cmd buf flush ddd bytes
   ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: .outlook.com\$
   ╰─────result: .outlook.com$
- compiled RE '.outlook.com$' not found in local cache
- compiling RE '.outlook.com$'
- compiled RE '.outlook.com$' saved in local cache
   ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──────value: 
   ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $item
   ├─────result: 
@@ -740,6 +769,8 @@ cmd buf flush ddd bytes
  ╰─────result: 
  ╭considering: ${if eq {$address_data}{usery}{*}{:}}
   ╭considering: $address_data}{usery}{*}{:}}
+  ├──────value: usery
+             ╰──(tainted)
   ├considering: }{usery}{*}{:}}
   ├──expanding: $address_data
   ╰─────result: usery
@@ -820,6 +851,7 @@ end of inline ACL: ACCEPT
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: 
   ├───scanning: 
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -867,6 +899,7 @@ end of inline ACL: ACCEPT
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
+   ╎├──────value: CALLER
    ╎├considering: } }}${if def:sender_helo_name {(helo=$sender_helo_name)
    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    ╎	}}(Exim $version_number)
@@ -913,6 +946,8 @@ end of inline ACL: ACCEPT
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
+   ├──────value: myhost.test.ex
+              ╰──(tainted)
    ├considering: )
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
@@ -958,6 +993,7 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: myhost.test.ex
  ├considering:  ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
@@ -982,6 +1018,7 @@ end of inline ACL: ACCEPT
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: local-esmtp
   ├considering:  }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -1002,6 +1039,7 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+  	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding:  ($tls_in_ver)
@@ -1027,6 +1065,7 @@ end of inline ACL: ACCEPT
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: 
   ├───scanning: 
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -1054,6 +1093,7 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: x.yz
  ├considering: )
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
@@ -1072,6 +1112,7 @@ end of inline ACL: ACCEPT
   ├considering: $sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: CALLER@myhost.test.ex
   ├considering: >)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
@@ -1091,6 +1132,7 @@ end of inline ACL: ACCEPT
  ├───────text: id 
  ├considering: $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: 10HmaZ-0005vi-00
  ├considering: ${if def:received_for {
  	for $received_for}}
  ├──condition: def:received_for
@@ -1100,6 +1142,8 @@ end of inline ACL: ACCEPT
   ├───────text: 
   	for 
   ├considering: $received_for}}
+  ├──────value: usery@domain.com
+             ╰──(tainted)
   ├considering: }}
   ├──expanding: 
   	for $received_for
@@ -1153,12 +1197,15 @@ admin user
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ├──────value: myhost.test.ex
  ├considering:  ESMTP Exim $version_number $tod_full
  ├───────text:  ESMTP Exim 
  ├considering: $version_number $tod_full
+ ├──────value: x.yz
  ├considering:  $tod_full
  ├───────text:  
  ├considering: $tod_full
+ ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  in dsn_advertise_hosts? no (option unset)
@@ -1167,7 +1214,6 @@ LOG: smtp_connection MAIN
   in pipelining_advertise_hosts? yes (matched "*")
  in chunking_advertise_hosts?
  in chunking_advertise_hosts? no (end of list)
- in tls_advertise_hosts?
  list element: *
   in tls_advertise_hosts? yes (matched "*")
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
@@ -1210,6 +1256,8 @@ domain.com in "! +local_domains"?
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
+ ├──────value: usery
+            ╰──(tainted)
  ├──expanding: $local_part
  ╰─────result: usery
             ╰──(tainted)
@@ -1230,6 +1278,8 @@ domain.com in "! +local_domains"?
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
+ ├──────value: usery
+            ╰──(tainted)
  ├──expanding: $local_part
  ╰─────result: usery
             ╰──(tainted)
@@ -1240,6 +1290,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... 127.0.0.1 in
  list element: 
  connected
  ╭considering: $primary_hostname
+ ├──────value: myhost.test.ex
  ├──expanding: $primary_hostname
  ╰─────result: myhost.test.ex
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -1254,6 +1305,7 @@ cmd buf flush ddd bytes
          250 HELP
  ╭considering: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ╭considering: $host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──────value: 127.0.0.1
   ├considering: }{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $host
   ╰─────result: 127.0.0.1
@@ -1264,10 +1316,8 @@ cmd buf flush ddd bytes
   ├considering: }} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: .outlook.com\$
   ╰─────result: .outlook.com$
- compiled RE '.outlook.com$' not found in local cache
- compiling RE '.outlook.com$'
- compiled RE '.outlook.com$' saved in local cache
   ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}} {$1}}
+  ├──────value: 
   ├───scanning: }{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──expanding: $item
   ├─────result: 
@@ -1289,6 +1339,8 @@ cmd buf flush ddd bytes
  ╰─────result: 
  ╭considering: ${if eq {$address_data}{usery}{*}{:}}
   ╭considering: $address_data}{usery}{*}{:}}
+  ├──────value: usery
+             ╰──(tainted)
   ├considering: }{usery}{*}{:}}
   ├──expanding: $address_data
   ╰─────result: usery
@@ -1369,6 +1421,7 @@ end of inline ACL: ACCEPT
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: 
   ├───scanning: 
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -1416,6 +1469,7 @@ end of inline ACL: ACCEPT
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
+   ╎├──────value: CALLER
    ╎├considering: } }}${if def:sender_helo_name {(helo=$sender_helo_name)
    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    ╎	}}(Exim $version_number)
@@ -1462,6 +1516,8 @@ end of inline ACL: ACCEPT
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
+   ├──────value: myhost.test.ex
+              ╰──(tainted)
    ├considering: )
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
@@ -1507,6 +1563,7 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: myhost.test.ex
  ├considering:  ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
@@ -1531,6 +1588,7 @@ end of inline ACL: ACCEPT
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: local-esmtp
   ├considering:  }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -1551,6 +1609,7 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+  	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding:  ($tls_in_ver)
@@ -1576,6 +1635,7 @@ end of inline ACL: ACCEPT
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: 
   ├───scanning: 
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -1603,6 +1663,7 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: x.yz
  ├considering: )
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
@@ -1621,6 +1682,7 @@ end of inline ACL: ACCEPT
   ├considering: $sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: CALLER@myhost.test.ex
   ├considering: >)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
@@ -1640,6 +1702,7 @@ end of inline ACL: ACCEPT
  ├───────text: id 
  ├considering: $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: 10HmbB-0005vi-00
  ├considering: ${if def:received_for {
  	for $received_for}}
  ├──condition: def:received_for
@@ -1649,6 +1712,8 @@ end of inline ACL: ACCEPT
   ├───────text: 
   	for 
   ├considering: $received_for}}
+  ├──────value: usery@domain.com
+             ╰──(tainted)
   ├considering: }}
   ├──expanding: 
   	for $received_for

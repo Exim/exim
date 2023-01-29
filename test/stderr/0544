@@ -39,6 +39,7 @@ admin user
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: 
   ├───scanning: 
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -86,6 +87,7 @@ admin user
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
+   ╎├──────value: CALLER
    ╎├considering: } }}${if def:sender_helo_name {(helo=$sender_helo_name)
    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    ╎	}}(Exim $version_number)
@@ -132,6 +134,7 @@ admin user
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
+   ├──────value: 
    ├───scanning: )
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
@@ -171,6 +174,7 @@ admin user
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: the.local.host.name
  ├considering:  ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
@@ -195,6 +199,7 @@ admin user
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: local
   ├considering:  }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -214,6 +219,7 @@ admin user
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+  	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding:  ($tls_in_ver)
@@ -238,6 +244,7 @@ admin user
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: 
   ├───scanning: 
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -264,6 +271,7 @@ admin user
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: x.yz
  ├considering: )
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
@@ -282,6 +290,7 @@ admin user
   ├considering: $sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
+  ├──────value: CALLER@test.ex
   ├considering: >)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
@@ -300,6 +309,7 @@ admin user
  ├───────text: id 
  ├considering: $message_exim_id${if def:received_for {
  	for $received_for}}
+ ├──────value: 10HmaX-0005vi-00
  ├considering: ${if def:received_for {
  	for $received_for}}
  ├──condition: def:received_for
@@ -309,6 +319,7 @@ admin user
   ├───────text: 
   	for 
   ├───scanning: $received_for}}
+  ├──────value: 
   ├───scanning: }}
   ├──expanding: 
   	for $received_for
@@ -341,6 +352,8 @@ trusted user
 admin user
 dropping to exim gid; retaining priv uid
  ╭considering: $domain
+ ├──────value: domain1.ex
+            ╰──(tainted)
  ├──expanding: $domain
  ╰─────result: domain1.ex
             ╰──(tainted)
@@ -408,16 +421,21 @@ admin user
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ├──────value: the.local.host.name
  ├considering:  ESMTP Exim $version_number $tod_full
  ├───────text:  ESMTP Exim 
  ├considering: $version_number $tod_full
+ ├──────value: x.yz
  ├considering:  $tod_full
  ├───────text:  
  ├considering: $tod_full
+ ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  ╭considering: ${if match_domain {$sender_helo_name}{+dlist}}
   ╭considering: $sender_helo_name}{+dlist}}
+  ├──────value: ehlo.domain
+             ╰──(tainted)
   ├considering: }{+dlist}}
   ├──expanding: $sender_helo_name
   ╰─────result: ehlo.domain
@@ -428,6 +446,8 @@ LOG: smtp_connection MAIN
   ├──expanding: +dlist
   ╰─────result: +dlist
   ╭considering: $domain
+  ├──────value: ehlo.domain
+             ╰──(tainted)
   ├──expanding: $domain
   ╰─────result: ehlo.domain
              ╰──(tainted)
@@ -438,27 +458,38 @@ LOG: smtp_connection MAIN
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
  ├───────text: domain=
  ├considering: $domain/sender_domain=$sender_address_domain
+ ├──────value: 
  ├considering: /sender_domain=$sender_address_domain
  ├───────text: /sender_domain=
  ├considering: $sender_address_domain
+ ├──────value: sender.domain
+            ╰──(tainted)
  ├──expanding: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=/sender_domain=sender.domain
             ╰──(tainted)
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
  ├───────text: domain=
  ├considering: $domain/sender_domain=$sender_address_domain
+ ├──────value: recipient.domain
+            ╰──(tainted)
  ├considering: /sender_domain=$sender_address_domain
  ├───────text: /sender_domain=
  ├considering: $sender_address_domain
+ ├──────value: sender.domain
+            ╰──(tainted)
  ├──expanding: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=recipient.domain/sender_domain=sender.domain
             ╰──(tainted)
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
  ├───────text: domain=
  ├considering: $domain/sender_domain=$sender_address_domain
+ ├──────value: recipient.domain
+            ╰──(tainted)
  ├considering: /sender_domain=$sender_address_domain
  ├───────text: /sender_domain=
  ├considering: $sender_address_domain
+ ├──────value: sender.domain
+            ╰──(tainted)
  ├──expanding: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=recipient.domain/sender_domain=sender.domain
             ╰──(tainted)

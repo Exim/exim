@@ -11,6 +11,7 @@ daemon_smtp_port overridden by -oX:
   <: 1225
 creating notifier socket
  ╭considering: $spool_directory/exim_daemon_notify
+ ├──────value: TESTSUITE/spool
  ├considering: /exim_daemon_notify
  ├───────text: /exim_daemon_notify
  ├──expanding: $spool_directory/exim_daemon_notify
@@ -27,12 +28,15 @@ Connection request from 127.0.0.1 port sssss
 search_tidyup called
 p1235 Process p1235 is handling incoming connection from [127.0.0.1]
 p1235  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+p1235  ├──────value: myhost.test.ex
 p1235  ├considering:  ESMTP Exim $version_number $tod_full
 p1235  ├───────text:  ESMTP Exim 
 p1235  ├considering: $version_number $tod_full
+p1235  ├──────value: x.yz
 p1235  ├considering:  $tod_full
 p1235  ├───────text:  
 p1235  ├considering: $tod_full
+p1235  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
 p1235  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
 p1235  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 p1235 Process p1235 is ready for new message
@@ -40,6 +44,7 @@ p1235 compiled caseless RE '^nomatch_list' not found in local cache
 p1235 compiled RE '^nomatch_list' saved in local cache
 p1235 sending RE '^nomatch_list' to daemon
 p1235  ╭considering: $spool_directory/exim_daemon_notify
+p1235  ├──────value: TESTSUITE/spool
 p1235  ├considering: /exim_daemon_notify
 p1235  ├───────text: /exim_daemon_notify
 p1235  ├──expanding: $spool_directory/exim_daemon_notify
@@ -60,6 +65,7 @@ p1235  compiling RE 'static_RE'
 p1235  compiled RE 'static_RE' saved in local cache
 p1235  sending RE 'static_RE' to daemon
 p1235   ╭considering: $spool_directory/exim_daemon_notify
+p1235   ├──────value: TESTSUITE/spool
 p1235   ├considering: /exim_daemon_notify
 p1235   ├───────text: /exim_daemon_notify
 p1235   ├──expanding: $spool_directory/exim_daemon_notify
@@ -86,6 +92,7 @@ p1235  compiling RE 'tricky_static_RE$'
 p1235  compiled RE 'tricky_static_RE$' saved in local cache
 p1235  sending RE 'tricky_static_RE$' to daemon
 p1235   ╭considering: $spool_directory/exim_daemon_notify
+p1235   ├──────value: TESTSUITE/spool
 p1235   ├considering: /exim_daemon_notify
 p1235   ├───────text: /exim_daemon_notify
 p1235   ├──expanding: $spool_directory/exim_daemon_notify
@@ -150,6 +157,8 @@ p1235   	}}(Exim $version_number)
 p1235   	${if def:sender_address {(envelope-from <$sender_address>)
 p1235   	}}id $message_exim_id${if def:received_for {
 p1235   	for $received_for}}
+p1235   ├──────value: [127.0.0.1] (helo=test.ex)
+p1235              ╰──(tainted)
 p1235   ├considering: 
 p1235   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 p1235   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -197,6 +206,7 @@ p1235    ╎	}}(Exim $version_number)
 p1235    ╎	${if def:sender_address {(envelope-from <$sender_address>)
 p1235    ╎	}}id $message_exim_id${if def:received_for {
 p1235    ╎	for $received_for}}
+p1235    ╎├──────value: 
 p1235    ╎├───scanning: } }}${if def:sender_helo_name {(helo=$sender_helo_name)
 p1235    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
 p1235    ╎	}}(Exim $version_number)
@@ -244,6 +254,7 @@ p1235    	}}(Exim $version_number)
 p1235    	${if def:sender_address {(envelope-from <$sender_address>)
 p1235    	}}id $message_exim_id${if def:received_for {
 p1235    	for $received_for}}
+p1235    ├──────value: 
 p1235    ├───scanning: )
 p1235    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
 p1235    	}}(Exim $version_number)
@@ -286,6 +297,7 @@ p1235  	}}(Exim $version_number)
 p1235  	${if def:sender_address {(envelope-from <$sender_address>)
 p1235  	}}id $message_exim_id${if def:received_for {
 p1235  	for $received_for}}
+p1235  ├──────value: myhost.test.ex
 p1235  ├considering:  ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
 p1235  	}}(Exim $version_number)
 p1235  	${if def:sender_address {(envelope-from <$sender_address>)
@@ -310,6 +322,7 @@ p1235   	}}(Exim $version_number)
 p1235   	${if def:sender_address {(envelope-from <$sender_address>)
 p1235   	}}id $message_exim_id${if def:received_for {
 p1235   	for $received_for}}
+p1235   ├──────value: smtp
 p1235   ├considering:  }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
 p1235   	}}(Exim $version_number)
 p1235   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -330,6 +343,7 @@ p1235  	}}(Exim $version_number)
 p1235  	${if def:sender_address {(envelope-from <$sender_address>)
 p1235  	}}id $message_exim_id${if def:received_for {
 p1235  	for $received_for}}
+p1235   	${if def:sender_address {(envelope-from <$sender_address>)
 p1235   	}}id $message_exim_id${if def:received_for {
 p1235   	for $received_for}}
 p1235   ├──expanding:  ($tls_in_ver)
@@ -355,6 +369,7 @@ p1235   	}}(Exim $version_number)
 p1235   	${if def:sender_address {(envelope-from <$sender_address>)
 p1235   	}}id $message_exim_id${if def:received_for {
 p1235   	for $received_for}}
+p1235   ├──────value: 
 p1235   ├───scanning: 
 p1235   	}}(Exim $version_number)
 p1235   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -382,6 +397,7 @@ p1235  ├considering: $version_number)
 p1235  	${if def:sender_address {(envelope-from <$sender_address>)
 p1235  	}}id $message_exim_id${if def:received_for {
 p1235  	for $received_for}}
+p1235  ├──────value: x.yz
 p1235  ├considering: )
 p1235  	${if def:sender_address {(envelope-from <$sender_address>)
 p1235  	}}id $message_exim_id${if def:received_for {
@@ -400,6 +416,8 @@ p1235   ├───────text: (envelope-from <
 p1235   ├considering: $sender_address>)
 p1235   	}}id $message_exim_id${if def:received_for {
 p1235   	for $received_for}}
+p1235   ├──────value: CALLER@test.ex
+p1235              ╰──(tainted)
 p1235   ├considering: >)
 p1235   	}}id $message_exim_id${if def:received_for {
 p1235   	for $received_for}}
@@ -420,6 +438,7 @@ p1235  	for $received_for}}
 p1235  ├───────text: id 
 p1235  ├considering: $message_exim_id${if def:received_for {
 p1235  	for $received_for}}
+p1235  ├──────value: 10HmaX-0005vi-00
 p1235  ├considering: ${if def:received_for {
 p1235  	for $received_for}}
 p1235  ├──condition: def:received_for
@@ -429,6 +448,8 @@ p1235   	for $received_for}}
 p1235   ├───────text: 
 p1235   	for 
 p1235   ├considering: $received_for}}
+p1235   ├──────value: dest_1@test.ex
+p1235              ╰──(tainted)
 p1235   ├considering: }}
 p1235   ├──expanding: 
 p1235   	for $received_for
@@ -487,12 +508,15 @@ p1234 Connection request from 127.0.0.1 port sssss
 p1234 search_tidyup called
 p1236 Process p1236 is handling incoming connection from [127.0.0.1]
 p1236  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+p1236  ├──────value: myhost.test.ex
 p1236  ├considering:  ESMTP Exim $version_number $tod_full
 p1236  ├───────text:  ESMTP Exim 
 p1236  ├considering: $version_number $tod_full
+p1236  ├──────value: x.yz
 p1236  ├considering:  $tod_full
 p1236  ├───────text:  
 p1236  ├considering: $tod_full
+p1236  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
 p1236  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
 p1236  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 p1236 Process p1236 is ready for new message
@@ -587,6 +611,8 @@ p1236   	}}(Exim $version_number)
 p1236   	${if def:sender_address {(envelope-from <$sender_address>)
 p1236   	}}id $message_exim_id${if def:received_for {
 p1236   	for $received_for}}
+p1236   ├──────value: [127.0.0.1] (helo=test.ex)
+p1236              ╰──(tainted)
 p1236   ├considering: 
 p1236   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 p1236   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -634,6 +660,7 @@ p1236    ╎	}}(Exim $version_number)
 p1236    ╎	${if def:sender_address {(envelope-from <$sender_address>)
 p1236    ╎	}}id $message_exim_id${if def:received_for {
 p1236    ╎	for $received_for}}
+p1236    ╎├──────value: 
 p1236    ╎├───scanning: } }}${if def:sender_helo_name {(helo=$sender_helo_name)
 p1236    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
 p1236    ╎	}}(Exim $version_number)
@@ -681,6 +708,7 @@ p1236    	}}(Exim $version_number)
 p1236    	${if def:sender_address {(envelope-from <$sender_address>)
 p1236    	}}id $message_exim_id${if def:received_for {
 p1236    	for $received_for}}
+p1236    ├──────value: 
 p1236    ├───scanning: )
 p1236    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
 p1236    	}}(Exim $version_number)
@@ -723,6 +751,7 @@ p1236  	}}(Exim $version_number)
 p1236  	${if def:sender_address {(envelope-from <$sender_address>)
 p1236  	}}id $message_exim_id${if def:received_for {
 p1236  	for $received_for}}
+p1236  ├──────value: myhost.test.ex
 p1236  ├considering:  ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
 p1236  	}}(Exim $version_number)
 p1236  	${if def:sender_address {(envelope-from <$sender_address>)
@@ -747,6 +776,7 @@ p1236   	}}(Exim $version_number)
 p1236   	${if def:sender_address {(envelope-from <$sender_address>)
 p1236   	}}id $message_exim_id${if def:received_for {
 p1236   	for $received_for}}
+p1236   ├──────value: smtp
 p1236   ├considering:  }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
 p1236   	}}(Exim $version_number)
 p1236   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -767,6 +797,7 @@ p1236  	}}(Exim $version_number)
 p1236  	${if def:sender_address {(envelope-from <$sender_address>)
 p1236  	}}id $message_exim_id${if def:received_for {
 p1236  	for $received_for}}
+p1236   	${if def:sender_address {(envelope-from <$sender_address>)
 p1236   	}}id $message_exim_id${if def:received_for {
 p1236   	for $received_for}}
 p1236   ├──expanding:  ($tls_in_ver)
@@ -792,6 +823,7 @@ p1236   	}}(Exim $version_number)
 p1236   	${if def:sender_address {(envelope-from <$sender_address>)
 p1236   	}}id $message_exim_id${if def:received_for {
 p1236   	for $received_for}}
+p1236   ├──────value: 
 p1236   ├───scanning: 
 p1236   	}}(Exim $version_number)
 p1236   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -819,6 +851,7 @@ p1236  ├considering: $version_number)
 p1236  	${if def:sender_address {(envelope-from <$sender_address>)
 p1236  	}}id $message_exim_id${if def:received_for {
 p1236  	for $received_for}}
+p1236  ├──────value: x.yz
 p1236  ├considering: )
 p1236  	${if def:sender_address {(envelope-from <$sender_address>)
 p1236  	}}id $message_exim_id${if def:received_for {
@@ -837,6 +870,8 @@ p1236   ├───────text: (envelope-from <
 p1236   ├considering: $sender_address>)
 p1236   	}}id $message_exim_id${if def:received_for {
 p1236   	for $received_for}}
+p1236   ├──────value: CALLER@test.ex
+p1236              ╰──(tainted)
 p1236   ├considering: >)
 p1236   	}}id $message_exim_id${if def:received_for {
 p1236   	for $received_for}}
@@ -857,6 +892,7 @@ p1236  	for $received_for}}
 p1236  ├───────text: id 
 p1236  ├considering: $message_exim_id${if def:received_for {
 p1236  	for $received_for}}
+p1236  ├──────value: 10HmaY-0005vi-00
 p1236  ├considering: ${if def:received_for {
 p1236  	for $received_for}}
 p1236  ├──condition: def:received_for
@@ -866,6 +902,8 @@ p1236   	for $received_for}}
 p1236   ├───────text: 
 p1236   	for 
 p1236   ├considering: $received_for}}
+p1236   ├──────value: dest_2@test.ex
+p1236              ╰──(tainted)
 p1236   ├considering: }}
 p1236   ├──expanding: 
 p1236   	for $received_for

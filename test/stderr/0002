@@ -7,11 +7,14 @@ dropping to exim gid; retaining priv uid
  ╭considering: primary_hostname: $primary_hostname
  ├───────text: primary_hostname: 
  ├considering: $primary_hostname
+ ├──────value: myhost.test.ex
  ├──expanding: primary_hostname: $primary_hostname
  ╰─────result: primary_hostname: myhost.test.ex
  ╭considering: sender_address: $sender_address
  ├───────text: sender_address: 
  ├considering: $sender_address
+ ├──────value: sndr@dom
+            ╰──(tainted)
  ├──expanding: sender_address: $sender_address
  ╰─────result: sender_address: sndr@dom
             ╰──(tainted)
@@ -34,7 +37,9 @@ dropping to exim gid; retaining priv uid
  ├──condition: match{abcd}{\N^([ab]+)(\w+)$\N}
  ├─────result: true
   ╭considering: $2$1}fail}
+  ├──────value: cd
   ├considering: $1}fail}
+  ├──────value: ab
   ├considering: }fail}
   ├──expanding: $2$1
   ╰─────result: cdab
@@ -144,6 +149,7 @@ dropping to exim gid; retaining priv uid
  /considering: primary_hostname: $primary_hostname
  |-------text: primary_hostname: 
  |considering: $primary_hostname
+ |------value: myhost.test.ex
  |--expanding: primary_hostname: $primary_hostname
  \_____result: primary_hostname: myhost.test.ex
  /considering: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
@@ -165,7 +171,9 @@ dropping to exim gid; retaining priv uid
  |--condition: match{abcd}{\N^([ab]+)(\w+)$\N}
  |-----result: true
   /considering: $2$1}fail}
+  |------value: cd
   |considering: $1}fail}
+  |------value: ab
   |considering: }fail}
   |--expanding: $2$1
   \_____result: cdab
@@ -275,52 +283,68 @@ dropping to exim gid; retaining priv uid
  ╭considering: -oMa  sender_host_address = $sender_host_address
  ├───────text: -oMa  sender_host_address = 
  ├considering: $sender_host_address
+ ├──────value: V4NET.0.0.1
+            ╰──(tainted)
  ├──expanding: -oMa  sender_host_address = $sender_host_address
  ╰─────result: -oMa  sender_host_address = V4NET.0.0.1
             ╰──(tainted)
  ╭considering:       sender_host_port = $sender_host_port
  ├───────text:       sender_host_port = 
  ├considering: $sender_host_port
+ ├──────value: 1234
  ├──expanding:       sender_host_port = $sender_host_port
  ╰─────result:       sender_host_port = 1234
  ╭considering: -oMaa sender_host_authenticated = $sender_host_authenticated
  ├───────text: -oMaa sender_host_authenticated = 
  ├considering: $sender_host_authenticated
+ ├──────value: AAA
+            ╰──(tainted)
  ├──expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
  ╰─────result: -oMaa sender_host_authenticated = AAA
             ╰──(tainted)
  ╭considering: -oMai authenticated_id = $authenticated_id
  ├───────text: -oMai authenticated_id = 
  ├considering: $authenticated_id
+ ├──────value: philip
+            ╰──(tainted)
  ├──expanding: -oMai authenticated_id = $authenticated_id
  ╰─────result: -oMai authenticated_id = philip
             ╰──(tainted)
  ╭considering: -oMas authenticated_sender = $authenticated_sender
  ├───────text: -oMas authenticated_sender = 
  ├considering: $authenticated_sender
+ ├──────value: xx@yy.zz
+            ╰──(tainted)
  ├──expanding: -oMas authenticated_sender = $authenticated_sender
  ╰─────result: -oMas authenticated_sender = xx@yy.zz
             ╰──(tainted)
  ╭considering: -oMi  interface_address = $interface_address
  ├───────text: -oMi  interface_address = 
  ├considering: $interface_address
+ ├──────value: 1.1.1.1
+            ╰──(tainted)
  ├──expanding: -oMi  interface_address = $interface_address
  ╰─────result: -oMi  interface_address = 1.1.1.1
             ╰──(tainted)
  ╭considering:       interface_port = $interface_port
  ├───────text:       interface_port = 
  ├considering: $interface_port
+ ├──────value: 99
  ├──expanding:       interface_port = $interface_port
  ╰─────result:       interface_port = 99
  ╭considering: -oMr  received_protocol = $received_protocol
  ├───────text: -oMr  received_protocol = 
  ├considering: $received_protocol
+ ├──────value: special
+            ╰──(tainted)
  ├──expanding: -oMr  received_protocol = $received_protocol
  ╰─────result: -oMr  received_protocol = special
             ╰──(tainted)
  ╭considering: -oMt  sender_ident = $sender_ident
  ├───────text: -oMt  sender_ident = 
  ├considering: $sender_ident
+ ├──────value: me
+            ╰──(tainted)
  ├──expanding: -oMt  sender_ident = $sender_ident
  ╰─────result: -oMt  sender_ident = me
             ╰──(tainted)
@@ -335,46 +359,60 @@ dropping to exim gid; retaining priv uid
  ╭considering: -oMa  sender_host_address = $sender_host_address
  ├───────text: -oMa  sender_host_address = 
  ├considering: $sender_host_address
+ ├──────value: V4NET.0.0.1
+            ╰──(tainted)
  ├──expanding: -oMa  sender_host_address = $sender_host_address
  ╰─────result: -oMa  sender_host_address = V4NET.0.0.1
             ╰──(tainted)
  ╭considering:       sender_host_port = $sender_host_port
  ├───────text:       sender_host_port = 
  ├considering: $sender_host_port
+ ├──────value: 1234
  ├──expanding:       sender_host_port = $sender_host_port
  ╰─────result:       sender_host_port = 1234
  ╭considering: -oMaa sender_host_authenticated = $sender_host_authenticated
  ├───────text: -oMaa sender_host_authenticated = 
  ├considering: $sender_host_authenticated
+ ├──────value: AAA
+            ╰──(tainted)
  ├──expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
  ╰─────result: -oMaa sender_host_authenticated = AAA
             ╰──(tainted)
  ╭considering: -oMai authenticated_id = $authenticated_id
  ├───────text: -oMai authenticated_id = 
  ├considering: $authenticated_id
+ ├──────value: philip
+            ╰──(tainted)
  ├──expanding: -oMai authenticated_id = $authenticated_id
  ╰─────result: -oMai authenticated_id = philip
             ╰──(tainted)
  ╭considering: -oMas authenticated_sender = $authenticated_sender
  ├───────text: -oMas authenticated_sender = 
  ├considering: $authenticated_sender
+ ├──────value: xx@yy.zz
+            ╰──(tainted)
  ├──expanding: -oMas authenticated_sender = $authenticated_sender
  ╰─────result: -oMas authenticated_sender = xx@yy.zz
             ╰──(tainted)
  ╭considering: -oMi  interface_address = $interface_address
  ├───────text: -oMi  interface_address = 
  ├considering: $interface_address
+ ├──────value: 1.1.1.1
+            ╰──(tainted)
  ├──expanding: -oMi  interface_address = $interface_address
  ╰─────result: -oMi  interface_address = 1.1.1.1
             ╰──(tainted)
  ╭considering:       interface_port = $interface_port
  ├───────text:       interface_port = 
  ├considering: $interface_port
+ ├──────value: 99
  ├──expanding:       interface_port = $interface_port
  ╰─────result:       interface_port = 99
  ╭considering: -oMr  received_protocol = $received_protocol
  ├───────text: -oMr  received_protocol = 
  ├considering: $received_protocol
+ ├──────value: special
+            ╰──(tainted)
  ├──expanding: -oMr  received_protocol = $received_protocol
  ╰─────result: -oMr  received_protocol = special
             ╰──(tainted)
@@ -394,6 +432,7 @@ dropping to exim gid; retaining priv uid
  ├──condition: eq{black}{white}
  ├─────result: false
   ╭───scanning: $sender_host_name}{No}}
+  ├──────value: 
   ├───scanning: }{No}}
   ├──expanding: $sender_host_name
   ├─────result: 
@@ -416,12 +455,16 @@ checking addresses for ten-1.test.ex
   V4NET.0.0.1 OK
 sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
 sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
+ ├──────value: ten-1.test.ex
+            ╰──(tainted)
  ├──expanding: -oMs  sender_host_name = $sender_host_name
  ╰─────result: -oMs  sender_host_name = ten-1.test.ex
             ╰──(tainted)
  ╭considering: -oMt  sender_ident = $sender_ident
  ├───────text: -oMt  sender_ident = 
  ├considering: $sender_ident
+ ├──────value: me
+            ╰──(tainted)
  ├──expanding: -oMt  sender_ident = $sender_ident
  ╰─────result: -oMt  sender_ident = me
             ╰──(tainted)
