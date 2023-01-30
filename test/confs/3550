@@ -1,0 +1,68 @@
+# Exim test configuration 3550
+
+AUTHS=DIR/tmp/dovecot_auth_socket
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : *.test.ex
+
+hostlist auth_hosts = 10.0.0.1
+hostlist relay_hosts = 10.0.0.4
+hostlist auth_relay_hosts = 10.0.0.3 : 10.0.0.4
+
+acl_smtp_rcpt = check_recipient
+auth_advertise_hosts = +auth_hosts : !+relay_hosts : +auth_relay_hosts : \
+                       10.0.0.5
+smtp_accept_max_nonmail = 20
+trusted_users = CALLER
+
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  deny     message = authentication required
+          !authenticated = *
+  accept
+
+# ----- Authentication -----
+
+begin authenticators
+
+plain:
+  driver =		dovecot
+  public_name =		PLAIN
+  server_socket =	AUTHS
+  server_condition =	${if eq {$auth1}{userx} {yes}{no}}
+  server_set_id =	$auth1
+
+# ----- Routers -----
+
+begin routers
+
+localuser:
+  driver =	accept
+  local_parts =	userx
+  transport =	appendfile
+
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver =	appendfile
+  delivery_date_add
+  envelope_to_add
+  file =	DIR/test-mail/$local_part
+  create_file =	DIR/test-mail
+  return_path_add
+  user =	CALLER
+
+
+# End

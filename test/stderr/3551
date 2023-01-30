@@ -1,0 +1,20 @@
+### LOGIN/userx/secret
+### ditto, on two lines from client rather than three; fails
+###  (not legit; the username & passwd should be suplied separately in response to prompts)
+### ditto, on one line; fails
+### ditto, a different split of two lines; passes (though not strictly within spec)
+### LOGIN - cancelled part-way through (returns a fail)
+### LOGIN (empty username; bad auth)   should fail
+### LOGIN (bad username; bad auth)   should fail
+### Shut down dovecot
+
+******** SERVER ********
+### LOGIN/userx/secret
+### ditto, on two lines from client rather than three; fails
+###  (not legit; the username & passwd should be suplied separately in response to prompts)
+### ditto, on one line; fails
+### ditto, a different split of two lines; passes (though not strictly within spec)
+### LOGIN - cancelled part-way through (returns a fail)
+### LOGIN (empty username; bad auth)   should fail
+### LOGIN (bad username; bad auth)   should fail
+### Shut down dovecot

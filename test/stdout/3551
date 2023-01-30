@@ -1,0 +1,97 @@
+### LOGIN/userx/secret
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH LOGIN
+250 HELP
+334 VXNlcm5hbWU6
+334 UGFzc3dvcmQ6
+235 Authentication succeeded
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+221 myhost.test.ex closing connection
+### ditto, on two lines from client rather than three; fails
+###  (not legit; the username & passwd should be suplied separately in response to prompts)
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH LOGIN
+250 HELP
+334 VXNlcm5hbWU6
+535 Incorrect authentication data
+221 myhost.test.ex closing connection
+### ditto, on one line; fails
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH LOGIN
+250 HELP
+535 Incorrect authentication data
+221 myhost.test.ex closing connection
+### ditto, a different split of two lines; passes (though not strictly within spec)
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH LOGIN
+250 HELP
+334 UGFzc3dvcmQ6
+235 Authentication succeeded
+221 myhost.test.ex closing connection
+### LOGIN - cancelled part-way through (returns a fail)
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH LOGIN
+250 HELP
+334 VXNlcm5hbWU6
+334 UGFzc3dvcmQ6
+501 Authentication cancelled
+221 myhost.test.ex closing connection
+### LOGIN (empty username; bad auth)   should fail
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH LOGIN
+250 HELP
+334 VXNlcm5hbWU6
+535 Incorrect authentication data
+500 unrecognized command
+221 myhost.test.ex closing connection
+### LOGIN (bad username; bad auth)   should fail
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH LOGIN
+250 HELP
+334 VXNlcm5hbWU6
+535 Incorrect authentication data
+500 unrecognized command
+221 myhost.test.ex closing connection
+### Shut down dovecot
+
+******** SERVER ********
+### LOGIN/userx/secret
+### ditto, on two lines from client rather than three; fails
+###  (not legit; the username & passwd should be suplied separately in response to prompts)
+### ditto, on one line; fails
+### ditto, a different split of two lines; passes (though not strictly within spec)
+### LOGIN - cancelled part-way through (returns a fail)
+### LOGIN (empty username; bad auth)   should fail
+### LOGIN (bad username; bad auth)   should fail
+### Shut down dovecot

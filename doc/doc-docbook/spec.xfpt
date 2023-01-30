@@ -28293,7 +28293,7 @@ Dovecot 2 POP/IMAP server, which can support a number of authentication methods.
 Note that Dovecot must be configured to use auth-client not auth-userdb.
 If you are using Dovecot to authenticate POP/IMAP clients, it might be helpful
 to use the same mechanisms for SMTP authentication. This is a server
-authenticator only. There is only one option:
+authenticator only. There is only one non-generic option:
 
 .option server_socket dovecot string unset
 
@@ -28305,6 +28305,7 @@ authenticators for different mechanisms. For example:
 dovecot_plain:
   driver = dovecot
   public_name = PLAIN
+  server_advertise_condition = ${if def:tls_in_cipher}
   server_socket = /var/run/dovecot/auth-client
   server_set_id = $auth1
 
@@ -28314,6 +28315,13 @@ dovecot_ntlm:
   server_socket = /var/run/dovecot/auth-client
   server_set_id = $auth1
 .endd
+
+.new
+&*Note*&: plaintext authentication methods such as PLAIN and LOGIN
+should not be advertised on cleartext SMTP connections.
+See the discussion in section &<<SECTplain_TLS>>&.
+.wen
+
 If the SMTP connection is encrypted, or if &$sender_host_address$& is equal to
 &$received_ip_address$& (that is, the connection is local), the &"secured"&
 option is passed in the Dovecot authentication command. If, for a TLS

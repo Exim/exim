@@ -1,0 +1,5 @@
+1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data
+1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data
+1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 501 Authentication cancelled
+1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data
+1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data (set_id=\001rserx)

@@ -62,9 +62,9 @@ auth_plaintext_init(auth_instance *ablock)
 {
 auth_plaintext_options_block *ob =
   (auth_plaintext_options_block *)(ablock->options_block);
-if (ablock->public_name == NULL) ablock->public_name = ablock->name;
-if (ablock->server_condition != NULL) ablock->server = TRUE;
-if (ob->client_send != NULL) ablock->client = TRUE;
+if (!ablock->public_name) ablock->public_name = ablock->name;
+if (ablock->server_condition) ablock->server = TRUE;
+if (ob->client_send) ablock->client = TRUE;
 }
 
 

@@ -1,0 +1,64 @@
+### Lack of attempt to auth
+
+**** SMTP testing session as if from host 10.0.0.2
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello test [10.0.0.2]
+250 OK
+550 authentication required
+221 myhost.test.ex closing connection
+### PLAIN/userx/secret
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH PLAIN
+250 HELP
+235 Authentication succeeded
+221 myhost.test.ex closing connection
+### ditto, split over two lines
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH PLAIN
+250 HELP
+334 
+235 Authentication succeeded
+221 myhost.test.ex closing connection
+### Check auth_advertise_hosts no-match
+
+**** SMTP testing session as if from host 10.0.0.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello test.host [10.0.0.4]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+221 myhost.test.ex closing connection
+### PLAIN (bad auth)   should fail
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH PLAIN
+250 HELP
+535 Incorrect authentication data
+221 myhost.test.ex closing connection
+### Shut down dovecot
+
+******** SERVER ********
+### Lack of attempt to auth
+### PLAIN/userx/secret
+### ditto, split over two lines
+### Check auth_advertise_hosts no-match
+### PLAIN (bad auth)   should fail
+### Shut down dovecot

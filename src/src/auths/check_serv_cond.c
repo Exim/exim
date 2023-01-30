@@ -31,9 +31,9 @@ Returns:
 */
 
 int
-auth_check_serv_cond(auth_instance *ablock)
+auth_check_serv_cond(auth_instance * ablock)
 {
-  return auth_check_some_cond(ablock,
+return auth_check_some_cond(ablock,
       US"server_condition", ablock->server_condition, OK);
 }
 
@@ -58,10 +58,10 @@ Returns:
 */
 
 int
-auth_check_some_cond(auth_instance *ablock,
-    uschar *label, uschar *condition, int unset)
+auth_check_some_cond(auth_instance * ablock,
+    uschar * label, uschar * condition, int unset)
 {
-uschar *cond;
+uschar * cond;
 
 HDEBUG(D_auth)
   {

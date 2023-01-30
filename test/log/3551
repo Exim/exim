@@ -1,0 +1,8 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= userx@cus.cam.ac.uk H=(test.host) [10.0.0.1] U=CALLER P=esmtpa A=login:userx S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=localuser T=appendfile
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data
+1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data
+1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 501 Authentication cancelled
+1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data
+1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data (set_id=\001rserx)

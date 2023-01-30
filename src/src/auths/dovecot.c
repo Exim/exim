@@ -97,13 +97,15 @@ static int socket_buffer_left;
 enable consistency checks to be done, or anything else that needs
 to be set up. */
 
-void auth_dovecot_init(auth_instance *ablock)
+void
+auth_dovecot_init(auth_instance * ablock)
 {
-auth_dovecot_options_block *ob =
+auth_dovecot_options_block * ob =
        (auth_dovecot_options_block *)(ablock->options_block);
 
 if (!ablock->public_name) ablock->public_name = ablock->name;
 if (ob->server_socket) ablock->server = TRUE;
+else DEBUG(D_auth) debug_printf("Dovecot auth driver: no server_socket for %s\n", ablock->public_name);
 ablock->client = FALSE;
 }
 
@@ -304,16 +306,14 @@ auth_defer_msg = US"authentication socket protocol error";
 socket_buffer_left = 0;  /* Global, used to read more than a line but return by line */
 for (;;)
   {
-debug_printf("%s %d\n", __FUNCTION__, __LINE__);
   if (!dc_gets(buffer, sizeof(buffer), &cctx))
     OUT("authentication socket read error or premature eof");
-debug_printf("%s %d\n", __FUNCTION__, __LINE__);
   p = buffer + Ustrlen(buffer) - 1;
   if (*p != '\n')
     OUT("authentication socket protocol line too long");
 
   *p = '\0';
-  HDEBUG(D_auth) debug_printf("received: '%s'\n", buffer);
+  HDEBUG(D_auth) debug_printf("  DOVECOT<< '%s'\n", buffer);
 
   nargs = strcut(buffer, args, nelem(args));
 
@@ -423,12 +423,12 @@ if ((
   HDEBUG(D_auth) debug_printf("error sending auth_command: %s\n",
     strerror(errno));
 
-HDEBUG(D_auth) debug_printf("sent: '%s'\n", auth_command);
+HDEBUG(D_auth) debug_printf("  DOVECOT>> '%s'\n", auth_command);
 
 while (1)
   {
-  uschar *temp;
-  uschar *auth_id_pre = NULL;
+  uschar * temp;
+  uschar * auth_id_pre = NULL;
 
   if (!dc_gets(buffer, sizeof(buffer), &cctx))
     {
@@ -437,7 +437,7 @@ while (1)
     }
 
   buffer[Ustrlen(buffer) - 1] = 0;
-  HDEBUG(D_auth) debug_printf("received: '%s'\n", buffer);
+  HDEBUG(D_auth) debug_printf("  DOVECOT<< '%s'\n", buffer);
   nargs = strcut(buffer, args, nelem(args));
   HDEBUG(D_auth) debug_strcut(args, nargs, nelem(args));
 
@@ -471,6 +471,8 @@ while (1)
 #endif
 	  write(cctx.sock, temp, Ustrlen(temp))) < 0)
 	OUT("authentication socket write error");
+
+      HDEBUG(D_auth) debug_printf("  DOVECOT>> '%s'\n", temp);
       break;
 
     case 'F':
@@ -524,7 +526,10 @@ if (cctx.sock >= 0)
   close(cctx.sock);
 
 /* Expand server_condition as an authorization check */
-return ret == OK ? auth_check_serv_cond(ablock) : ret;
+if (ret == OK) ret = auth_check_serv_cond(ablock);
+
+HDEBUG(D_auth) debug_printf("dovecot auth ret: %s\n", rc_names[ret]);
+return ret;
 }
 
 

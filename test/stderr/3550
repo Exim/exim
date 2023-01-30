@@ -1,0 +1,61 @@
+### Lack of attempt to auth
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
+>>> test in helo_lookup_domains? no (end of list)
+>>> using ACL "check_recipient"
+>>> processing "deny" (TESTSUITE/test-config 29)
+>>>   message: authentication required
+>>> check !authenticated = *
+>>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
+LOG: H=(test) [10.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <fail_no_auth@test.ex>: authentication required
+### PLAIN/userx/secret
+### ditto, split over two lines
+### Check auth_advertise_hosts no-match
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test.host in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
+>>> test.host in helo_lookup_domains? no (end of list)
+>>> host in dsn_advertise_hosts? no (option unset)
+>>> host in pipelining_advertise_hosts?
+>>>  list element: *
+>>>  host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in auth_advertise_hosts?
+>>>  list element: +auth_hosts
+>>>  host in "10.0.0.1"?
+>>>   list element: 10.0.0.1
+>>>  host in "10.0.0.1"? no (end of list)
+>>>  list element: !+relay_hosts
+>>>  host in "10.0.0.4"?
+>>>   list element: 10.0.0.4
+>>>   host in "10.0.0.4"? yes (matched "10.0.0.4")
+>>>  host in auth_advertise_hosts? no (matched "!+relay_hosts")
+>>> host in chunking_advertise_hosts?
+>>> host in chunking_advertise_hosts? no (end of list)
+### PLAIN (bad auth)   should fail
+### Shut down dovecot
+
+******** SERVER ********
+### Lack of attempt to auth
+### PLAIN/userx/secret
+### ditto, split over two lines
+### Check auth_advertise_hosts no-match
+### PLAIN (bad auth)   should fail
+### Shut down dovecot

@@ -1,0 +1,80 @@
+# dovecot server auth, LOGIN
+#
+mkdir DIR/tmp
+#
+background
+dovecot -F -c DIR/aux-var/TESTNUM.dovecot.conf
+****
+sleep 1
+#
+#
+#
+### LOGIN/userx/secret
+exim -odi -bs -oMa 10.0.0.1
+EHLO test.host
+AUTH LOGIN
+dXNlcng=
+c2VjcmV0
+MAIL FROM:<userx@cus.cam.ac.uk>
+RCPT TO:<userx@test.ex>
+DATA
+Testing authenticated.
+.
+quit
+****
+### ditto, on two lines from client rather than three; fails
+###  (not legit; the username & passwd should be suplied separately in response to prompts)
+# the Exim "plaintext" authenticator is fine with it, but it's outside what we know of the "specification"
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN
+dXNlcngAc2VjcmV0
+quit
+****
+### ditto, on one line; fails
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN dXNlcngAc2VjcmV0
+quit
+****
+### ditto, a different split of two lines; passes (though not strictly within spec)
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN dXNlcng=
+c2VjcmV0
+quit
+****
+### LOGIN - cancelled part-way through (returns a fail)
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN
+dXNlcng=
+*
+quit
+****
+#
+#
+### LOGIN (empty username; bad auth)   should fail
+exim -odi -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN
+
+c2VjcmV0
+quit
+****
+#
+### LOGIN (bad username; bad auth)   should fail
+exim -odi -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN
+DXNlcng=
+c2VjcmV0
+quit
+****
+#
+#
+### Shut down dovecot
+killdaemon
+#
+sudo rm -fr DIR/tmp
+no_msglog_check

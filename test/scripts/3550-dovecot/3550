@@ -1,0 +1,55 @@
+# dovecot server auth, PLAIN
+#
+mkdir DIR/tmp
+#
+background
+dovecot -F -c DIR/aux-var/TESTNUM.dovecot.conf
+****
+sleep 1
+#
+#
+#
+#
+### Lack of attempt to auth
+exim -bh 10.0.0.2
+HELO test
+MAIL FROM:<junk@jink.jonk.test.ex>
+RCPT TO:<fail_no_auth@test.ex>
+QUIT
+****
+#
+### PLAIN/userx/secret
+exim -bs -oMa 10.0.0.1
+EHLO test.host
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+QUIT
+****
+### ditto, split over two lines
+exim -bs -oMa 10.0.0.1
+EHLO test.host
+AUTH PLAIN 
+AHVzZXJ4AHNlY3JldA==
+QUIT
+****
+#
+#
+### Check auth_advertise_hosts no-match
+exim -bh 10.0.0.4
+ehlo test.host
+quit
+****
+#
+#
+### PLAIN (bad auth)   should fail
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+auth plain AGVzZXJ4AHNlY3JldA==
+quit
+****
+#
+#
+### Shut down dovecot
+killdaemon
+#
+sudo rm -fr DIR/tmp
+no_msglog_check

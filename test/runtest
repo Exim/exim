@@ -3206,6 +3206,20 @@ if (defined $parm_lookups{redis})
   }
 }
 
+sub check_running_dovecot
+{
+system('dovecot --version >/dev/null');
+if ($? == 0)
+  {
+  print "Dovecot appears to be available\n";
+  $parm_running{dovecot} = ' ';
+  }
+else
+  {
+  print "Dovecot not found\n";
+  }
+}
+
 
 
 ###############################################################################
@@ -3568,6 +3582,7 @@ if (defined $parm_support{Content_Scanning})
   check_running_clamav();
   }
 check_running_redis();
+check_running_dovecot();
 
 ##################################################
 #         Test for the basic requirements        #
