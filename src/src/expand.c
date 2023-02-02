@@ -4747,7 +4747,7 @@ while (*s)
     continue;
     }
 
-  if (isdigit(*s))
+  if (isdigit(*s))		/* A $<n> variable */
     {
     int n;
     s = read_cnumber(&n, s);
@@ -7165,6 +7165,7 @@ NOT_ITEM: ;
 
     /* Deal specially with operators that might take a certificate variable
     as we do not want to do the usual expansion. For most, expand the string.*/
+
     switch(c)
       {
 #ifndef DISABLE_TLS
@@ -7213,7 +7214,7 @@ NOT_ITEM: ;
     to the main loop top. */
 
      {
-     int start = yield->ptr;
+     unsigned expansion_start = gstring_length(yield);
      switch(c)
       {
       case EOP_BASE32:
@@ -8275,8 +8276,8 @@ NOT_ITEM: ;
 
        DEBUG(D_expand)
 	{
-	const uschar * s = yield->s + start;
-	int i = yield->ptr - start;
+	const uschar * s = yield->s + expansion_start;
+	int i = gstring_length(yield) - expansion_start;
 	BOOL tainted = is_tainted(s);
 
 	DEBUG(D_noutf8)
