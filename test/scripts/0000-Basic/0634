@@ -1,0 +1,24 @@
+# Empty variables
+#
+exim -DACL_RCPT='$acl_c_empty' -bh V4NET.0.0.0
+EHLO test1
+MAIL FROM:<CALLER@test.ex>
+RCPT TO:<test1@test.ex>
+QUIT
+****
+# expanson-operator after empty variable
+exim -DACL_RCPT='$acl_c_empty${hexquote:A}' -bh V4NET.0.0.0
+EHLO test2
+MAIL FROM:<CALLER@test.ex>
+RCPT TO:<test2@test.ex>
+QUIT
+****
+# expanson-item after empty variable
+exim -DACL_RCPT='$acl_c_empty${listquote{:}{A}}' -bh V4NET.0.0.0
+EHLO test3
+MAIL FROM:<CALLER@test.ex>
+RCPT TO:<test3@test.ex>
+QUIT
+****
+#
+no_stdout_check

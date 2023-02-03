@@ -1,0 +1,13 @@
+# Exim test configuration 0634
+
+.include aux-var/std_conf_prefix
+
+acl_smtp_rcpt = check_acl_smtp_rcpt
+
+begin acl
+
+check_acl_smtp_rcpt:
+
+  accept
+    set acl_m_empty =
+    set acl_m0 = ACL_RCPT
