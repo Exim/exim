@@ -1045,7 +1045,7 @@ splitting is done; in those cases use the original field. */
 else
   {
   uschar * cmp;
-  int off = g->ptr;	/* start of the "full address" */
+  int off = gstring_length(g);	/* start of the "full address" */
 
   if (addr->local_part)
     {
@@ -1338,23 +1338,25 @@ if (LOGGING(deliver_time))
 if (addr->message)
   g = string_append(g, 2, US": ", addr->message);
 
-(void) string_from_gstring(g);
+ {
+  const uschar * s = string_from_gstring(g);
 
-/* Log the deferment in the message log, but don't clutter it
-up with retry-time defers after the first delivery attempt. */
+  /* Log the deferment in the message log, but don't clutter it
+  up with retry-time defers after the first delivery attempt. */
 
-if (f.deliver_firsttime || addr->basic_errno > ERRNO_RETRY_BASE)
-  deliver_msglog("%s %s\n", now, g->s);
+  if (f.deliver_firsttime || addr->basic_errno > ERRNO_RETRY_BASE)
+    deliver_msglog("%s %s\n", now, s);
 
-/* Write the main log and reset the store.
-For errors of the type "retry time not reached" (also remotes skipped
-on queue run), logging is controlled by L_retry_defer. Note that this kind
-of error number is negative, and all the retry ones are less than any
-others. */
+  /* Write the main log and reset the store.
+  For errors of the type "retry time not reached" (also remotes skipped
+  on queue run), logging is controlled by L_retry_defer. Note that this kind
+  of error number is negative, and all the retry ones are less than any
+  others. */
 
 
-log_write(addr->basic_errno <= ERRNO_RETRY_BASE ? L_retry_defer : 0, logflags,
-  "== %s", g->s);
+  log_write(addr->basic_errno <= ERRNO_RETRY_BASE ? L_retry_defer : 0, logflags,
+    "== %s", s);
+ }
 
 store_reset(reset_point);
 return;
@@ -1417,17 +1419,19 @@ if (addr->message)
 if (LOGGING(deliver_time))
   g = string_append(g, 2, US" DT=", string_timediff(&addr->delivery_time));
 
-(void) string_from_gstring(g);
-
 /* Do the logging. For the message log, "routing failed" for those cases,
 just to make it clearer. */
 
-if (driver_kind)
-  deliver_msglog("%s %s failed for %s\n", now, driver_kind, g->s);
-else
-  deliver_msglog("%s %s\n", now, g->s);
+ {
+  const uschar * s = string_from_gstring(g);
 
-log_write(0, LOG_MAIN, "** %s", g->s);
+  if (driver_kind)
+    deliver_msglog("%s %s failed for %s\n", now, driver_kind, s);
+  else
+    deliver_msglog("%s %s\n", now, s);
+
+  log_write(0, LOG_MAIN, "** %s", s);
+ }
 
 store_reset(reset_point);
 return;

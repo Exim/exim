@@ -326,17 +326,19 @@ if (!lcp)
     g = string_catn(NULL, ldap_url, init_ptr - ldap_url);
     g = string_fmt_append(g, "//%s:%d/", shost, port);
     }
-  string_from_gstring(g);
 
   /* Call ldap_initialize() and check the result */
+   {
+    const uschar * s = string_from_gstring(g);
 
-  DEBUG(D_lookup) debug_printf_indent("ldap_initialize with URL %s\n", g->s);
-  if ((rc = ldap_initialize(&ld, CS g->s)) != LDAP_SUCCESS)
-    {
-    *errmsg = string_sprintf("ldap_initialize: (error %d) URL \"%s\"\n",
-      rc, g->s);
-    goto RETURN_ERROR;
-    }
+    DEBUG(D_lookup) debug_printf_indent("ldap_initialize with URL %s\n", s);
+    if ((rc = ldap_initialize(&ld, CS s)) != LDAP_SUCCESS)
+      {
+      *errmsg = string_sprintf("ldap_initialize: (error %d) URL \"%s\"\n",
+	rc, s);
+      goto RETURN_ERROR;
+      }
+   }
   store_reset(reset_point);   /* Might as well save memory when we can */
 
 

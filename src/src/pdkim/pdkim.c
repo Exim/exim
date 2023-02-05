@@ -957,9 +957,8 @@ return;
 static int
 pdkim_header_complete(pdkim_ctx * ctx)
 {
-if ( (ctx->cur_header->ptr > 1) &&
-     (ctx->cur_header->s[ctx->cur_header->ptr-1] == '\r') )
-  --ctx->cur_header->ptr;
+if (ctx->cur_header->ptr > 1)
+  gstring_trim_trailing(ctx->cur_header, '\r');
 (void) string_from_gstring(ctx->cur_header);
 
 #ifdef EXPERIMENTAL_ARC

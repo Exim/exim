@@ -963,10 +963,56 @@ g->s[g->ptr] = '\0';
 return g->s;
 }
 
+static inline int
+len_string_from_gstring(gstring * g, uschar ** sp)
+{
+if (g)
+  {
+  *sp = g->s;
+  g->s[g->ptr] = '\0';
+  return g->ptr;
+  }
+else
+  {
+  *sp = NULL;
+  return 0;
+  }
+}
+
+static inline uschar *
+string_copy_from_gstring(gstring * g)
+{
+return g ? string_copyn(g->s, g->ptr) : NULL;
+}
+
 static inline unsigned
 gstring_length(const gstring * g)
 {
 return g ? (unsigned)g->ptr : 0;
+}
+
+static inline uschar
+gstring_last_char(gstring * g)
+{
+return g->s[g->ptr-1];
+}
+
+static inline void
+gstring_trim(gstring * g, unsigned amount)
+{
+g->ptr -= amount;
+}
+
+static inline void
+gstring_trim_trailing(gstring * g, uschar c)
+{
+if (gstring_last_char(g) == c) gstring_trim(g, 1);
+}
+
+static inline void
+gstring_reset(gstring * g)
+{
+g->ptr = 0;
 }
 
 
@@ -1012,6 +1058,13 @@ gstring_rebuffer(gstring * g, const void * proto_mem)
 uschar * s = store_get_3(g->size, proto_mem, __FUNCTION__, __LINE__);
 memcpy(s, g->s, g->ptr);
 g->s = s;
+}
+
+/* Append one gstring to another */
+static inline gstring *
+gstring_append(gstring * dest, gstring * item)
+{
+return string_catn(dest, item->s, item->ptr);
 }
 
 

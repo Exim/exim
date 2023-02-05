@@ -755,7 +755,7 @@ while(1)
     int result = 0;
 
     /* must find first free sequential filename */
-    for (gstring * g = string_get(64); result != -1; g->ptr = 0)
+    for (gstring * g = string_get(64); result != -1; gstring_reset(g))
       {
       struct stat mystat;
       g = string_fmt_append(g,

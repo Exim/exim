@@ -439,8 +439,7 @@ if (*uri && *uri!='?')
       {
       gstring * g = string_catn(NULL, start, uri-start);
 
-      to.character = string_from_gstring(g);
-      to.length = g->ptr;
+      to.length = len_string_from_gstring(g, &to.character);
       if (uri_decode(&to)==-1)
         {
         filter->errmsg=US"Invalid URI encoding";
@@ -472,8 +471,7 @@ if (*uri=='?')
       {
       gstring * g = string_catn(NULL, start, uri-start);
 
-      hname.character = string_from_gstring(g);
-      hname.length = g->ptr;
+      hname.length = len_string_from_gstring(g, &hname.character);
       if (uri_decode(&hname)==-1)
         {
         filter->errmsg=US"Invalid URI encoding";
@@ -494,8 +492,7 @@ if (*uri=='?')
       {
       gstring * g = string_catn(NULL, start, uri-start);
 
-      hname.character = string_from_gstring(g);
-      hname.length = g->ptr;
+      hname.length = len_string_from_gstring(g, &hname.character);
       if (uri_decode(&hvalue)==-1)
         {
         filter->errmsg=US"Invalid URI encoding";
@@ -541,8 +538,7 @@ if (*uri=='?')
         g = string_catn(g, hvalue.character, hvalue.length);
         g = string_catn(g, CUS "\n", 1);
 
-	header->character = string_from_gstring(g);
-	header->length = g->ptr;
+	hname.length = len_string_from_gstring(g, &hname.character);
         }
       }
     if (*uri=='&') ++uri;
@@ -1482,10 +1478,7 @@ if (*filter->pc=='"') /* quoted string */
       ++filter->pc;
 
       if (g)
-	{
-	data->character = string_from_gstring(g);
-	data->length = g->ptr;
-	}
+	data->length = len_string_from_gstring(g, &data->character);
       else
 	data->character = US"\0";
       /* that way, there will be at least one character allocated */
@@ -1569,10 +1562,7 @@ else if (Ustrncmp(filter->pc,CUS "text:",5)==0) /* multiline string */
 #endif
         {
 	if (g)
-	  {
-	  data->character = string_from_gstring(g);
-	  data->length = g->ptr;
-	  }
+	  data->length = len_string_from_gstring(g, &data->character);
 	else
 	  data->character = US"\0";
 	/* that way, there will be at least one character allocated */
@@ -3303,7 +3293,7 @@ while (*filter->pc)
 
           if (subject.length==-1)
             {
-            uschar *subject_def;
+            uschar * subject_def;
 
             subject_def = expand_string(US"${if def:header_subject {true}{false}}");
             if (subject_def && Ustrcmp(subject_def,"true")==0)
@@ -3312,13 +3302,12 @@ while (*filter->pc)
 
               expand_header(&subject,&str_subject);
               g = string_catn(g, subject.character, subject.length);
-	      subject.character = string_from_gstring(g);
-              subject.length = g->ptr;
+	      subject.length = len_string_from_gstring(g, &subject.character);
               }
             else
               {
-              subject.character=US"Automated reply";
-              subject.length=Ustrlen(subject.character);
+              subject.character = US"Automated reply";
+              subject.length = Ustrlen(subject.character);
               }
             }
 

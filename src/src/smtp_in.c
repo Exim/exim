@@ -4508,7 +4508,7 @@ while (done <= 0)
 
       if (fl.esmtp)
 	{
-	g->s[3] = '-';
+	g->s[3] = '-';	/* overwrite the space after the SMTP response code */
 
 	/* I'm not entirely happy with this, as an MTA is supposed to check
 	that it has enough room to accept a message of maximum size before
@@ -4639,9 +4639,9 @@ while (done <= 0)
 		  first = FALSE;
 		  fl.auth_advertised = TRUE;
 		  }
-		saveptr = g->ptr;
+		saveptr = gstring_length(g);
 		g = string_catn(g, US" ", 1);
-		g = string_cat (g, au->public_name);
+		g = string_cat(g, au->public_name);
 		while (++saveptr < g->ptr) g->s[saveptr] = toupper(g->s[saveptr]);
 		au->advertised = TRUE;
 		}
@@ -4704,25 +4704,29 @@ while (done <= 0)
       /* Terminate the string (for debug), write it, and note that HELO/EHLO
       has been seen. */
 
+       {
+	uschar * ehlo_resp;
+	int len = len_string_from_gstring(g, &ehlo_resp);
 #ifndef DISABLE_TLS
-      if (tls_in.active.sock >= 0)
-	(void)tls_write(NULL, g->s, g->ptr,
+	if (tls_in.active.sock >= 0)
+	  (void) tls_write(NULL, ehlo_resp, len,
 # ifndef DISABLE_PIPE_CONNECT
-			fl.pipe_connect_acceptable && pipeline_connect_sends());
+			  fl.pipe_connect_acceptable && pipeline_connect_sends());
 # else
-			FALSE);
+			  FALSE);
 # endif
-      else
+	else
 #endif
-	(void) fwrite(g->s, 1, g->ptr, smtp_out);
+	  (void) fwrite(ehlo_resp, 1, len, smtp_out);
 
-      DEBUG(D_receive) for (const uschar * t, * s = string_from_gstring(g);
-			    s && (t = Ustrchr(s, '\r'));
-			    s = t + 2)				/* \r\n */
-	  debug_printf("%s %.*s\n",
-			s == g->s ? "SMTP>>" : "      ",
-			(int)(t - s), s);
-      fl.helo_seen = TRUE;
+	DEBUG(D_receive) for (const uschar * t, * s = ehlo_resp;
+			      s && (t = Ustrchr(s, '\r'));
+			      s = t + 2)				/* \r\n */
+	    debug_printf("%s %.*s\n",
+			  s == g->s ? "SMTP>>" : "      ",
+			  (int)(t - s), s);
+	fl.helo_seen = TRUE;
+       }
 
       /* Reset the protocol and the state, abandoning any previous message. */
       received_protocol =

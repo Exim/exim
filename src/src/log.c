@@ -684,11 +684,11 @@ Returns:
   length actually written, persisting an errno from write()
 */
 ssize_t
-write_to_fd_buf(int fd, const uschar *buf, size_t length)
+write_to_fd_buf(int fd, const uschar * buf, size_t length)
 {
 ssize_t wrote;
 size_t total_written = 0;
-const uschar *p = buf;
+const uschar * p = buf;
 size_t left = length;
 
 while (1)
@@ -709,6 +709,12 @@ while (1)
     }
   }
 return total_written;
+}
+
+static inline ssize_t
+write_gstring_to_fd_buf(int fd, const gstring * g)
+{
+return write_to_fd_buf(fd, g->s, g->ptr);
 }
 
 
@@ -1113,7 +1119,7 @@ if (  flags & LOG_MAIN
 
     /* Failing to write to the log is disastrous */
 
-    written_len = write_to_fd_buf(mainlogfd, g->s, g->ptr);
+    written_len = write_gstring_to_fd_buf(mainlogfd, g);
     if (written_len != g->ptr)
       {
       log_write_failed(US"main log", g->ptr, written_len);
@@ -1172,8 +1178,8 @@ if (flags & LOG_REJECT)
 	g = g2;
       else		/* Buffer is full; truncate */
         {
-        g->ptr -= 100;        /* For message and separator */
-        if (g->s[g->ptr-1] == '\n') g->ptr--;
+	gstring_trim(g, 100);        /* For message and separator */
+	gstring_trim_trailing(g, '\n');
         g = string_cat(g, US"\n*** truncated ***\n");
         break;
         }
@@ -1228,7 +1234,7 @@ if (flags & LOG_REJECT)
       if (fstat(rejectlogfd, &statbuf) >= 0) rejectlog_inode = statbuf.st_ino;
       }
 
-    written_len = write_to_fd_buf(rejectlogfd, g->s, g->ptr);
+    written_len = write_gstring_to_fd_buf(rejectlogfd, g);
     if (written_len != g->ptr)
       {
       log_write_failed(US"reject log", g->ptr, written_len);
@@ -1263,7 +1269,7 @@ if (flags & LOG_PANIC)
     if (panic_save_buffer)
       (void) write(paniclogfd, panic_save_buffer, Ustrlen(panic_save_buffer));
 
-    written_len = write_to_fd_buf(paniclogfd, g->s, g->ptr);
+    written_len = write_gstring_to_fd_buf(paniclogfd, g);
     if (written_len != g->ptr)
       {
       int save_errno = errno;

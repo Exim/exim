@@ -1667,12 +1667,13 @@ Returns:        NULL if the header does not exist, else a pointer to a new
 */
 
 static uschar *
-find_header(uschar *name, int *newsize, unsigned flags, const uschar *charset)
+find_header(uschar * name, int * newsize, unsigned flags, const uschar * charset)
 {
 BOOL found = !name;
 int len = name ? Ustrlen(name) : 0;
 BOOL comma = FALSE;
 gstring * g = NULL;
+uschar * rawhdr;
 
 for (header_line * h = header_list; h; h = h->next)
   if (h->type != htype_old && h->text)  /* NULL => Received: placeholder */
@@ -1735,8 +1736,9 @@ if (!g) return US"";
 /* That's all we do for raw header expansion. */
 
 *newsize = g->size;
+rawhdr = string_from_gstring(g);
 if (flags & FH_WANT_RAW)
-  return string_from_gstring(g);
+  return rawhdr;
 
 /* Otherwise do RFC 2047 decoding, translating the charset if requested.
 The rfc2047_decode2() function can return an error with decoded data if the
@@ -1744,12 +1746,12 @@ charset translation fails. If decoding fails, it returns NULL. */
 
 else
   {
-  uschar * error, * decoded = rfc2047_decode2(string_from_gstring(g),
+  uschar * error, * decoded = rfc2047_decode2(rawhdr,
     check_rfc2047_length, charset, '?', NULL, newsize, &error);
   if (error)
     DEBUG(D_any) debug_printf("*** error in RFC 2047 decoding: %s\n"
-      "    input was: %s\n", error, g->s);
-  return decoded ? decoded : string_from_gstring(g);
+      "    input was: %s\n", error, rawhdr);
+  return decoded ? decoded : rawhdr;
   }
 }
 
@@ -1814,7 +1816,7 @@ for (int i = 0; i < recipients_count; i++)
   s = recipients_list[i].address;
   g = string_append2_listele_n(g, US", ", s, Ustrlen(s));
   }
-return g ? g->s : NULL;
+return string_from_gstring(g);
 }
 
 
@@ -4804,7 +4806,7 @@ while (*s)
   skipping, but "break" otherwise so we get debug output for the item
   expansion. */
   {
-  int start = gstring_length(yield);
+  int expansion_start = gstring_length(yield);
   switch(item_type)
     {
     /* Call an ACL from an expansion.  We feed data in via $acl_arg1 - $acl_arg9.
@@ -4868,7 +4870,7 @@ while (*s)
 
       yield = string_append(yield, 3,
 			US"Authentication-Results: ", sub_arg[0], US"; none");
-      yield->ptr -= 6;
+      yield->ptr -= 6;			/* ignore tha ": none" for now */
 
       yield = authres_local(yield, sub_arg[0]);
       yield = authres_iprev(yield);
@@ -5785,7 +5787,7 @@ while (*s)
 
       if (o2m >= 0) for (; oldptr < yield->ptr; oldptr++)
         {
-        uschar *m = Ustrrchr(sub[1], yield->s[oldptr]);
+        uschar * m = Ustrrchr(sub[1], yield->s[oldptr]);
         if (m)
           {
           int o = m - sub[1];
@@ -7107,7 +7109,7 @@ while (*s)
 	it was for good reason */
 
 	if (quoted) yield = string_catn(yield, US"\"", 1);
-	yield = string_catn(yield, g->s, g->ptr);
+	yield = gstring_append(yield, g);
 	if (quoted) yield = string_catn(yield, US"\"", 1);
 
 	/* @$original_domain */
@@ -7126,10 +7128,11 @@ while (*s)
     }	/* EITEM_* switch */
     /*NOTREACHED*/
 
-  DEBUG(D_expand)
-    if (yield && (start > 0 || *s))	/* only if not the sole expansion of the line */
+  DEBUG(D_expand)		/* only if not the sole expansion of the line */
+    if (yield && (expansion_start > 0 || *s))
       debug_expansion_interim(US"item-res",
-			      yield->s + start, yield->ptr - start, !!(flags & ESI_SKIPPING));
+	  yield->s + expansion_start, yield->ptr - expansion_start,
+	  !!(flags & ESI_SKIPPING));
   continue;
 
 NOT_ITEM: ;
@@ -7219,11 +7222,11 @@ NOT_ITEM: ;
       {
       case EOP_BASE32:
 	{
-	uschar *t;
+	uschar * t;
 	unsigned long int n = Ustrtoul(sub, &t, 10);
 	gstring * g = NULL;
 
-	if (*t != 0)
+	if (*t)
 	  {
 	  expand_string_message = string_sprintf("argument for base32 "
 	    "operator is \"%s\", which is not a decimal number", sub);
@@ -7832,16 +7835,19 @@ NOT_ITEM: ;
 
 	case EOP_UTF8CLEAN:
 	  {
-	  int seq_len = 0, index = 0;
-	  int bytes_left = 0;
+	  int seq_len = 0, index = 0, bytes_left = 0, complete;
 	  long codepoint = -1;
-	  int complete;
 	  uschar seq_buff[4];			/* accumulate utf-8 here */
 
 	  /* Manually track tainting, as we deal in individual chars below */
 
-	  if (!yield->s || !yield->ptr)
+	  if (!yield)
+	    yield = string_get_tainted(Ustrlen(sub), sub);
+	  else if (!yield->s || !yield->ptr)
+	    {
 	    yield->s = store_get(yield->size = Ustrlen(sub), sub);
+	    gstring_reset(yield);
+	    }
 	  else if (is_incompatible(yield->s, sub))
 	    gstring_rebuffer(yield, sub);
 
@@ -7967,7 +7973,7 @@ NOT_ITEM: ;
 	    goto EXPAND_FAILED;
 	    }
 	  yield = string_cat(yield, s);
-	  DEBUG(D_expand) debug_printf_indent("yield: '%s'\n", yield->s);
+	  DEBUG(D_expand) debug_printf_indent("yield: '%s'\n", string_from_gstring(yield));
 	  break;
 	  }
 
@@ -8276,7 +8282,8 @@ NOT_ITEM: ;
 
        DEBUG(D_expand)
 	{
-	const uschar * s = yield->s + expansion_start;
+	const uschar * res = string_from_gstring(yield);
+	const uschar * s = res + expansion_start;
 	int i = gstring_length(yield) - expansion_start;
 	BOOL tainted = is_tainted(s);
 
@@ -8286,7 +8293,7 @@ NOT_ITEM: ;
 	  if (tainted)
 	    {
 	    debug_printf_indent("%s     \\__", flags & ESI_SKIPPING ? "|     " : "      ");
-	    debug_print_taint(yield->s);
+	    debug_print_taint(res);
 	    }
 	  }
 	else
@@ -8299,7 +8306,7 @@ NOT_ITEM: ;
 	    debug_printf_indent("%s",
 	      flags & ESI_SKIPPING
 	      ? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
-	    debug_print_taint(yield->s);
+	    debug_print_taint(res);
 	    }
 	  }
 	}
@@ -8374,58 +8381,62 @@ if (flags & ESI_BRACE_ENDS && !*s)
 added to the string. If so, set up an empty string. Add a terminating zero. If
 left != NULL, return a pointer to the terminator. */
 
-if (!yield)
-  yield = string_get(1);
-(void) string_from_gstring(yield);
-if (left) *left = s;
+ {
+  uschar * res;
 
-/* Any stacking store that was used above the final string is no longer needed.
-In many cases the final string will be the first one that was got and so there
-will be optimal store usage. */
+  if (!yield)
+    yield = string_get(1);
+  res = string_from_gstring(yield);
+  if (left) *left = s;
 
-if (resetok) gstring_release_unused(yield);
-else if (resetok_p) *resetok_p = FALSE;
+  /* Any stacking store that was used above the final string is no longer needed.
+  In many cases the final string will be the first one that was got and so there
+  will be optimal store usage. */
 
-DEBUG(D_expand)
-  {
-  BOOL tainted = is_tainted(yield->s);
-  DEBUG(D_noutf8)
+  if (resetok) gstring_release_unused(yield);
+  else if (resetok_p) *resetok_p = FALSE;
+
+  DEBUG(D_expand)
     {
-    debug_printf_indent("|--expanding: %.*s\n", (int)(s - string), string);
-    debug_printf_indent("%sresult: %s\n",
-      flags & ESI_SKIPPING ? "|-----" : "\\_____", yield->s);
-    if (tainted)
+    BOOL tainted = is_tainted(res);
+    DEBUG(D_noutf8)
       {
-      debug_printf_indent("%s     \\__", flags & ESI_SKIPPING ? "|     " : "      ");
-      debug_print_taint(yield->s);
+      debug_printf_indent("|--expanding: %.*s\n", (int)(s - string), string);
+      debug_printf_indent("%sresult: %s\n",
+	flags & ESI_SKIPPING ? "|-----" : "\\_____", res);
+      if (tainted)
+	{
+	debug_printf_indent("%s     \\__", flags & ESI_SKIPPING ? "|     " : "      ");
+	debug_print_taint(res);
+	}
+      if (flags & ESI_SKIPPING)
+	debug_printf_indent("\\___skipping: result is not used\n");
       }
-    if (flags & ESI_SKIPPING)
-      debug_printf_indent("\\___skipping: result is not used\n");
-    }
-  else
-    {
-    debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
-      "expanding: %.*s\n",
-      (int)(s - string), string);
-    debug_printf_indent("%s" UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-      "result: %s\n",
-      flags & ESI_SKIPPING ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
-      yield->s);
-    if (tainted)
+    else
       {
-      debug_printf_indent("%s",
-	flags & ESI_SKIPPING
-	? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
-      debug_print_taint(yield->s);
+      debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
+	"expanding: %.*s\n",
+	(int)(s - string), string);
+      debug_printf_indent("%s" UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+	"result: %s\n",
+	flags & ESI_SKIPPING ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
+	res);
+      if (tainted)
+	{
+	debug_printf_indent("%s",
+	  flags & ESI_SKIPPING
+	  ? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
+	debug_print_taint(res);
+	}
+      if (flags & ESI_SKIPPING)
+	debug_printf_indent(UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+	  "skipping: result is not used\n");
       }
-    if (flags & ESI_SKIPPING)
-      debug_printf_indent(UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-	"skipping: result is not used\n");
     }
-  }
-if (textonly_p) *textonly_p = textonly;
-expand_level--;
-return yield->s;
+  if (textonly_p) *textonly_p = textonly;
+  expand_level--;
+  return res;
+ }
 
 /* This is the failure exit: easiest to program with a goto. We still need
 to update the pointer to the terminator, for cases of nested calls with "fail".

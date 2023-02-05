@@ -203,15 +203,16 @@ Returns:   nothing
 */
 
 void
-set_process_info(const char *format, ...)
+set_process_info(const char * format, ...)
 {
 gstring gs = { .size = PROCESS_INFO_SIZE - 2, .ptr = 0, .s = process_info };
 gstring * g;
 int len;
+uschar * s;
 va_list ap;
 
 g = string_fmt_append(&gs, "%5d ", (int)getpid());
-len = g->ptr;
+len = gstring_length(g);
 va_start(ap, format);
 if (!string_vformat(g, 0, format, ap))
   {
@@ -219,8 +220,7 @@ if (!string_vformat(g, 0, format, ap))
   g = string_cat(&gs, US"**** string overflowed buffer ****");
   }
 g = string_catn(g, US"\n", 1);
-string_from_gstring(g);
-process_info_len = g->ptr;
+process_info_len = len_string_from_gstring(g, &s);
 DEBUG(D_process_info) debug_printf("set_process_info: %s", process_info);
 va_end(ap);
 }
@@ -1501,10 +1501,10 @@ for (int i = 0;; i++)
 #endif
 
   /* g can only be NULL if ss==p */
-  if (ss == p || g->s[g->ptr-1] != '\\') /* not continuation; done */
+  if (ss == p || gstring_last_char(g) != '\\') /* not continuation; done */
     break;
 
-  --g->ptr;				/* drop the \ */
+  gstring_trim(g, 1);				/* drop the \ */
   }
 
 if (had_input) return g ? string_from_gstring(g) : US"";

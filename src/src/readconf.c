@@ -3219,7 +3219,7 @@ if (config_file)
     g = string_cat(NULL, buf);
 
     /* If the dir does not end with a "/", append one */
-    if (g->s[g->ptr-1] != '/')
+    if (gstring_last_char(g) != '/')
       g = string_catn(g, US"/", 1);
 
     /* If the config file contains a "/", extract the directory part */

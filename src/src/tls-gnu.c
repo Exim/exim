@@ -2302,7 +2302,7 @@ old_pool = store_pool;
 
     for (s++; (c = *s) && c != ')'; s++) g = string_catn(g, s, 1);
 
-    tlsp->ver = string_copyn(g->s, g->ptr);
+    tlsp->ver = string_copy_from_gstring(g);
     for (uschar * p = US tlsp->ver; *p; p++)
       if (*p == '-') { *p = '\0'; break; }	/* TLS1.0-PKIX -> TLS1.0 */
 

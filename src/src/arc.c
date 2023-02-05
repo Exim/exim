@@ -261,8 +261,7 @@ while ((c = *s))
 	    if (c != ' ' && c != '\t' && c != '\n' && c != '\r')
 	      g = string_catn(g, s, 1);
 	  if (!g) return US"no b= value";
-	  al->b.data = string_from_gstring(g);
-	  al->b.len = g->ptr;
+	  al->b.len = len_string_from_gstring(g, &al->b.data);
 	  gstring_release_unused(g);
 	  bend = s;
 	  break;
@@ -278,8 +277,7 @@ while ((c = *s))
 	    if (c != ' ' && c != '\t' && c != '\n' && c != '\r')
 	      g = string_catn(g, s, 1);
 	  if (!g) return US"no bh= value";
-	  al->bh.data = string_from_gstring(g);
-	  al->bh.len = g->ptr;
+	  al->bh.len = len_string_from_gstring(g, &al->bh.data);
 	  gstring_release_unused(g);
 	  break;
 	default:
@@ -1308,7 +1306,7 @@ header_line * h = (header_line *)(al+1);
 
 /* Construct the to-be-signed AMS pseudo-header: everything but the sig. */
 
-ams_off = g->ptr;
+ams_off = gstring_length(g);
 g = string_fmt_append(g, "%s i=%d; a=rsa-sha256; c=relaxed; d=%s; s=%s",
       ARC_HDR_AMS, instance, identity, selector);	/*XXX hardwired a= */
 if (options & ARC_SIGN_OPT_TSTAMP)
@@ -1352,7 +1350,7 @@ for(col = 3; rheaders; rheaders = rheaders->prev)
 
 /* Lose the last colon from the h= list */
 
-if (g->s[g->ptr - 1] == ':') g->ptr--;
+gstring_trim_trailing(g, ':');
 
 g = string_catn(g, US";\r\n\tb=;", 7);
 
@@ -1370,7 +1368,7 @@ if (!arc_sig_from_pseudoheader(hdata, hashtype, privkey, &sig, US"AMS"))
 /* Lose the trailing semicolon from the psuedo-header, and append the signature
 (folded over lines) and termination to complete it. */
 
-g->ptr--;
+gstring_trim(g, 1);
 g = arc_sign_append_sig(g, &sig);
 
 h->slen = g->ptr - ams_off;
@@ -1548,7 +1546,7 @@ into the copies.
 static const uschar *
 arc_header_sign_feed(gstring * g)
 {
-uschar * s = string_copyn(g->s, g->ptr);
+uschar * s = string_copy_from_gstring(g);
 headers_rlist = arc_rlist_entry(headers_rlist, s, g->ptr);
 return arc_try_header(&arc_sign_ctx, headers_rlist->h, TRUE);
 }
@@ -1772,10 +1770,9 @@ if (strncmpic(ARC_HDR_AMS, g->s, ARC_HDRLEN_AMS) != 0) return US"not AMS";
 DEBUG(D_receive) debug_printf("ARC: spotted AMS header\n");
 /* Parse the AMS header */
 
-h.next = NULL;
-h.slen = g->size;
-h.text = g->s;
 memset(&al, 0, sizeof(arc_line));
+h.next = NULL;
+h.slen = len_string_from_gstring(g, &h.text);
 if ((errstr = arc_parse_line(&al, &h, ARC_HDRLEN_AMS, FALSE)))
   {
   DEBUG(D_acl) if (errstr) debug_printf("ARC: %s\n", errstr);
@@ -1857,7 +1854,8 @@ for (as = arc_verify_ctx.arcset_chain, inst = 1; as; as = as->next, inst++)
   else
     g = string_catn(g, US":", 1);
   }
-return g ? g->s : US"";
+if (!g) return US"";
+return string_from_gstring(g);
 }
 
 
@@ -1870,7 +1868,7 @@ if (arc_state)
   {
   arc_line * highest_ams;
   int start = 0;		/* Compiler quietening */
-  DEBUG(D_acl) start = g->ptr;
+  DEBUG(D_acl) start = gstring_length(g);
 
   g = string_append(g, 2, US";\n\tarc=", arc_state);
   if (arc_received_instance > 0)
@@ -1890,7 +1888,7 @@ if (arc_state)
   else if (arc_state_reason)
     g = string_append(g, 3, US" (", arc_state_reason, US")");
   DEBUG(D_acl) debug_printf("ARC:  authres '%.*s'\n",
-		  g->ptr - start - 3, g->s + start + 3);
+		  gstring_length(g) - start - 3, g->s + start + 3);
   }
 else
   DEBUG(D_acl) debug_printf("ARC:  no authres\n");

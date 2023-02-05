@@ -136,15 +136,12 @@ dnsdb_find(void * handle, const uschar * filename, const uschar * keystring,
 {
 int rc;
 int sep = 0;
-int defer_mode = PASS;
-int dnssec_mode = PASS;
-int save_retrans = dns_retrans;
-int save_retry =   dns_retry;
+int defer_mode = PASS, dnssec_mode = PASS;
+int save_retrans = dns_retrans, save_retry =   dns_retry;
 int type;
 int failrc = FAIL;
-const uschar *outsep = CUS"\n";
-const uschar *outsep2 = NULL;
-uschar *equals, *domain, *found;
+const uschar * outsep = CUS"\n", * outsep2 = NULL;
+uschar * equals, * domain, * found;
 
 dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
@@ -385,10 +382,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
       if (type == T_A || type == T_AAAA || type == T_ADDRESSES)
         {
         for (dns_address * da = dns_address_from_rr(dnsa, rr); da; da = da->next)
-          {
-          if (yield->ptr) yield = string_catn(yield, outsep, 1);
-          yield = string_cat(yield, da->address);
-          }
+	  yield = string_append_listele(yield, *outsep, da->address);
         continue;
         }
 
@@ -399,21 +393,17 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
       if (type == T_TXT || type == T_SPF)
         {
-        if (outsep2 == NULL)	/* output only the first item of data */
+        if (!outsep2)			/* output only the first item of data */
           yield = string_catn(yield, US (rr->data+1), (rr->data)[0]);
         else
-          {
-          /* output all items */
-          int data_offset = 0;
-          while (data_offset < rr->size)
+          for (unsigned data_offset = 0; data_offset < rr->size; )
             {
-            uschar chunk_len = (rr->data)[data_offset++];
-            if (outsep2[0] != '\0' && data_offset != 1)
+            uschar chunk_len = (rr->data)[data_offset];
+            if (*outsep2  && data_offset != 0)
               yield = string_catn(yield, outsep2, 1);
-            yield = string_catn(yield, US ((rr->data)+data_offset), chunk_len);
+            yield = string_catn(yield, US ((rr->data) + ++data_offset), chunk_len);
             data_offset += chunk_len;
             }
-          }
         }
       else if (type == T_TLSA)
         {

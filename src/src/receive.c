@@ -4214,7 +4214,8 @@ if (message_logs && !blackholed_by)
       }
     else
       {
-      uschar *now = tod_stamp(tod_log);
+      uschar * now = tod_stamp(tod_log);
+      /* Drop the initial "<= " */
       fprintf(message_log, "%s Received from %s\n", now, g->s+3);
       if (f.deliver_freeze) fprintf(message_log, "%s frozen by %s\n", now,
         frozen_by);
@@ -4266,7 +4267,7 @@ if (  smtp_input && sender_host_address && !f.sender_host_notsocket
 
       /* Re-use the log line workspace */
 
-      g->ptr = 0;
+      gstring_reset(g);
       g = string_cat(g, US"SMTP connection lost after final dot");
       g = add_host_info_for_log(g);
       log_write(0, LOG_MAIN, "%s", string_from_gstring(g));

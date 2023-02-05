@@ -83,7 +83,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
       return string_from_gstring(g);
       }
 
-    g->ptr = 0;		/* overwrite previous record */
+    gstring_reset(g);		/* overwrite previous record */
     }
 
 bad:
@@ -822,7 +822,7 @@ authres_dkim(gstring * g)
 {
 int start = 0;		/* compiler quietening */
 
-DEBUG(D_acl) start = g->ptr;
+DEBUG(D_acl) start = gstring_length(g);
 
 for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
   {
@@ -884,7 +884,7 @@ for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
   }
 
 DEBUG(D_acl)
-  if (g->ptr == start)
+  if (gstring_length(g) == start)
     debug_printf("DKIM: no authres\n");
   else
     debug_printf("DKIM: authres '%.*s'\n", g->ptr - start - 3, g->s + start + 3);

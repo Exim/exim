@@ -875,26 +875,26 @@ Returns:       pointer to the original string, if no quoting needed, or
 */
 
 const uschar *
-parse_quote_2047(const uschar *string, int len, const uschar *charset,
+parse_quote_2047(const uschar * string, int len, const uschar * charset,
   BOOL fold)
 {
 const uschar * s = string;
-int hlen, l;
+int hlen, line_off;
 BOOL coded = FALSE;
 BOOL first_byte = FALSE;
 gstring * g =
-  string_fmt_append(NULL, "=?%s?Q?", charset ? charset : US"iso-8859-1");
+  string_fmt_append(NULL, "=?%s?Q?%n", charset ? charset : US"iso-8859-1", &hlen);
 
-hlen = l = g->ptr;
+line_off = hlen;
 
 for (s = string; len > 0; s++, len--)
   {
   int ch = *s;
 
-  if (g->ptr - l > 67 && !first_byte)
+  if (g->ptr - line_off > 67 && !first_byte)
     {
     g = fold ? string_catn(g, US"?=\n ", 4) : string_catn(g, US"?= ", 3);
-    l = g->ptr;
+    line_off = g->ptr;
     g = string_catn(g, g->s, hlen);
     }
 

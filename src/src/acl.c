@@ -1092,7 +1092,7 @@ for (header_line * h = acl_added_headers; h; h = h->next)
   g = string_append_listele_n(g, '\n', h->text, i);
   }
 
-return g ? g->s : NULL;
+return string_from_gstring(g);
 }
 
 
