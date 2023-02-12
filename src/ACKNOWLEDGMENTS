@@ -357,6 +357,7 @@ David Woodhouse           Dynamic modules. Security.
 Contributors
 ------------
 Andrew Aitchison          Spotted cmdline AV scanner regression with -bmalware
+                          exim_msgdate
 Simon Arlott              Code for outbound SSL-on-connect
                           Patch implementing %M datestamping in log filenames
                           Patch restoring SIGPIPE handler for child_open_uid

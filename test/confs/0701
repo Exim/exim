@@ -1,0 +1,12 @@
+# Exim test configuration 0700
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = HOSTNAME
+
+localhost_number = 3
+
+# End

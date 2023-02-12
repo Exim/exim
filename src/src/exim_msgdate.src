@@ -1,0 +1,579 @@
+#!PERL_COMMAND -WT
+#
+# Utility to convert an exim message-id to a human readable form
+#
+# https://bugs.exim.org/show_bug.cgi?id=2956
+# Written by Andrew C Aitchison
+#
+# Copyright (c) 2023 The Exim Maintainers 2023
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# Portions taken from exicyclog.src, which is
+#   Copyright (c) University of Cambridge, 1995 - 2015
+#   See the file NOTICE for conditions of use and distribution.
+
+# https://bugs.exim.org/show_bug.cgi?id=2956
+# https://exim.org/exim-html-current/doc/html/spec_html/ch-how_exim_receives_and_delivers_mail.html#SECTmessiden
+
+# Except when they appear in comments, the following placeholders in this
+# source are replaced when it is turned into a runnable script:
+#
+# BASE_62
+# BIN_DIRECTORY
+# CONFIGURE_FILE
+# PERL_COMMAND
+# EXIM_RELEASE_VERSION
+# EXIM_VARIANT_VERSION
+#
+# PROCESSED_FLAG
+
+use strict;
+use File::Basename;
+use Getopt::Long;
+use Pod::Usage;
+
+use constant { TRUE => 1, FALSE => 0 };
+
+if (defined $ENV{TZ}) {
+   my $zonefile = "/usr/share/zoneinfo/$ENV{TZ}";
+   if (defined $ENV{TZDIR}) {
+       if (-d $ENV{TZDIR}) {
+	   $zonefile="$ENV{TZDIR}/$ENV{TZ}";
+       } else {
+	   warn "No directory TZDIR=$ENV{TZDIR}\n"
+       }
+   }
+   warn "Cannot read timezone file $zonefile (from TZDIR/TZ)\n\t'man tzset' may help.\n"
+       unless -r $zonefile;
+}
+
+my $localhost_number;  # An Exim config value
+
+my $p_name    = basename $0;
+my $p_version = "20230203.0";
+my $p_cp      = <<EOM;
+ Copyright (c) 2023 The Exim Maintainers 2023
+
+ Portions taken from exicyclog.src, which is
+   Copyright (c) University of Cambridge, 1995 - 2015
+   See the file NOTICE for conditions of use and distribution.
+EOM
+
+$ENV{PATH} = "/bin:/usr/bin:/usr/sbin";
+
+use POSIX qw(strftime);
+
+sub main::VERSION_MESSAGE()
+{
+    print basename($0), ": $0\n";
+    print "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n";
+    print "perl(	      runtime): $]\n";
+}
+
+my ($debug, $nodebug,
+    $optbase, $optbase36, $optbase62,
+    $optunix, $optgmt, $optlocal,
+    $optpid,
+    $opteximpath,$optconfigfile);
+
+# Cannot use $debug here, since we haven't read ARGV yet.
+if (FALSE) {
+    warn join(" ", $0, @ARGV), "\n";
+}
+
+# Case is ignored, abbreviations are allowed.
+GetOptions (
+    # Allow windows style arguments /...
+    # "--|-|\+|\/" => \$prefix_pattern,
+    # "--|\/" => \$long_prefix_pattern,
+
+    "b=i" => \$optbase,
+    "base=i" => \$optbase,
+    "b36" => \$optbase36,
+    "base36" => \$optbase36,
+    "b62" => \$optbase62,
+    "base62" => \$optbase62,
+
+    "localhost_number=s" => \$localhost_number,  # cf "local"
+
+    "unix" => \$optunix,
+    "u" => \$optunix,
+    "GMT" => \$optgmt,
+    "UTC" => \$optgmt,
+    "zulu" => \$optgmt,
+    "local" => \$optlocal,   # cf "localhost_number"
+    "l" => \$optlocal,   # cf "localhost_number"
+
+    "pid" => \$optpid,
+
+    # exim args given by the test harness
+    "C=s" => \$optconfigfile,
+    "dexim_path=s" => \$opteximpath,
+
+    "debug" => \$debug,
+    "nodebug" => \$nodebug,
+    "no-debug" => \$nodebug,
+
+    'help' => sub { pod2usage(-exit => 0) },
+    'man'  => sub {
+        pod2usage(
+            -exit      => 0,
+            -verbose   => 2,
+            -noperldoc => system('perldoc -V 2>/dev/null 1>&2')
+       );
+    },
+) or pod2usage;
+# die("Error in command line arguments\n");
+
+$debug = undef if $nodebug;
+
+   
+if ($debug) {
+    warn "$0 ", join(" ", @ARGV), "\n";
+    warn "C=$optconfigfile\n" if defined $optconfigfile;
+    warn "dexim_path=$opteximpath\n" if defined $opteximpath;
+}
+
+unless ($optgmt || $optunix || $optlocal) {
+    $optlocal = TRUE;
+}
+
+if (defined($optbase36) && defined($optbase62)) {
+    die "cannot be base36 and base62\n";
+}
+
+if (defined $optbase36) {
+    $optbase = 36;
+}
+if (defined $optbase62) {
+    $optbase = 62;
+}
+if (defined $optbase) {
+    if ($optbase =~ 62) {
+        $optbase = 62;
+    } elsif ($optbase =~ 36) {
+        $optbase = 36;
+    } else {
+        warn "\toptbase36=$optbase36\n" if defined $optbase36;
+        warn "\toptbase62=$optbase62\n"if defined $optbase62;
+        die "unknown base option $optbase\n";
+    }
+}
+
+# Some Operating Systems have case-insensitive file systems
+# (at least by default).
+# This limits the characters available for the message-id
+# and hence the base Exim uses to encode numbers.
+#
+# We use Perl's idea of the operating system.
+# Should we instead use the script "scripts/os-type" which comes with Exim ?
+my $defaultbase;
+if ($^O =~ /darwin|cygwin/i) { # darwin aka MacOS X
+    $defaultbase = 36;
+} else {
+    $defaultbase = 62;
+}
+
+if ("BASE_62" != $defaultbase and !defined $optbase) {
+    die "base_62 mismatch: OS implies $defaultbase but config has BASE_62\n";
+}
+
+my $base=$defaultbase;
+$base = $optbase if $optbase;
+
+my $base62_chars =
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+my $base36_chars="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+my $base_chars;
+if ($base == 62) {
+    $base_chars = $base62_chars;
+} else {
+    $base_chars = $base36_chars;
+}
+
+# We use this to decode both base62 and base36
+sub decode62($) {
+    #warn "decode62(", join(",", @_), ")\n";
+    my ($text) = @_;
+    unless ($text =~ /^[$base_chars]+$/) {
+        die "$text is not base $base\n";
+    }
+    my $n=0;
+    foreach my $tt (split //, $text) {
+        $n = $n * $base + index($base_chars, $tt);
+    }
+    #warn "$text -> $n\n";
+    return $n;
+} # decode62
+
+sub get_configfilename()
+{
+    if (defined $optconfigfile) {
+        if ( -r $optconfigfile ) {
+            warn "using config $optconfigfile\n" if $debug;
+            return $optconfigfile;
+        } else {
+            die "cannot read $optconfigfile\n";
+        }
+    }
+
+    # See if this installation is using the esoteric "USE_EUID" feature of
+    # Exim, in which it uses the effective user id as a suffix for the
+    # configuration file name. In order for this to work, exim_msgdate
+    # must be run under the appropriate euid.
+    my $euid = "";
+    if ("CONFIGURE_FILE_USE_EUID" eq "yes" ) {
+        $euid=`id -u`;
+    }
+
+    # See if this installation is using the esoteric "USE_NODE"
+    # feature of Exim, in which it uses the host's name as a suffix
+    # for the configuration file name.
+    my $hostsuffix="";
+    if ("CONFIGURE_FILE_USE_NODE" eq "yes") {
+        $hostsuffix=`uname -n`;
+    }
+
+    # Now find the configuration file name.
+    # This has got complicated because the CONFIGURE_FILE value may now
+    # be a list of files. The one that is used is the first one that
+    # exists. Mimic the code in readconf.c by testing first for the
+    # suffixed file in each case.
+
+    my $config="";
+    my $baseconfig;
+    foreach $baseconfig (split /:/, "CONFIGURE_FILE") {
+        chomp $baseconfig;
+        if (-f "$baseconfig$euid$hostsuffix" ) {
+            $config="$baseconfig$euid$hostsuffix";
+        } elsif (-f "$baseconfig$euid" ) {
+            $config="$baseconfig$euid";
+        } elsif (-f "$baseconfig$hostsuffix" ) {
+            $config="$baseconfig$hostsuffix";
+        } elsif (-f "$baseconfig" ) {
+            $config="$baseconfig";
+        }
+        last if $config;
+    }
+    unless ($config) {
+            die "No config file found\n";
+    }
+
+    return $config;
+} # sub get_configfilename
+
+
+if ($debug) {
+    warn "before reading configfiles:\n";
+    if (defined $localhost_number) {
+        warn "localhost_number=$localhost_number\n";
+    } else {
+        warn "localhost_number unset\n";
+    }
+}
+
+if (defined $localhost_number) {
+    if ($localhost_number eq "none") {
+        $localhost_number = undef;
+    }
+} else {
+    my $config = get_configfilename();
+    warn "Reading config $config to find localhost_number\n" if $debug;
+
+    if (-r $config) {
+        # This does not do any expansions or lookups,
+        # so could be end up with a different value for localhost_number
+        # from the one that exim finds.
+        open(CONFIG, "<", $config) or
+        die "cannot open config $config :$!\n";
+
+        while(<CONFIG>) {
+            if (/^\s*localhost_number\s*=\s*(\d+)\s*$/) {
+                $localhost_number = $1;
+            }
+        }
+        close CONFIG or die "cannot close config $config: $!\n";
+        warn "$config gives localhost_number $localhost_number\n"
+            if $debug and defined $localhost_number;
+    } else {
+        # This way we get the expanded value for localhost_number
+        # directly from exim, but we have to guess which exim binary ...
+        # On Debian and Ubuntu, /usr/sbin/exim is a link to exim4 so is OK.
+        #
+        # Even if given on command line, we cannot use $opteximpath
+        # since it is the full path to this script,
+        # or $config since it is tainted.
+        #
+        warn "running system exim -bP localhost_number\n" if $debug;
+        my $exim_bP_localhost_number = `/usr/sbin/exim -bP localhost_number`;
+        if ($exim_bP_localhost_number =~ /^localhost_number\s*=\s*(\d*)/) {
+            $localhost_number = $1;
+        }
+        warn "exim_bP_localhost_number $exim_bP_localhost_number gives localhost_number $localhost_number\n"
+            if $debug and defined $localhost_number; 
+    }
+}
+
+if (defined $localhost_number) {
+    die "localhost_number > 16\n"
+        if $localhost_number > 16;
+    die "localhost_number > 10\n"
+        if $localhost_number > 10 && ($base != 62);
+}
+
+if ($debug) {
+    if (defined $localhost_number) {
+        warn "localhost_number=$localhost_number\n";
+    } else {
+        warn "localhost_number unset\n";
+    }
+}
+
+sub unpack_time($$) {
+    my ($seconds, $fractions) = @_;
+    # warn "encoded: seconds: $seconds fractions: $fractions\n";
+    $seconds = decode62($seconds);
+    $fractions = decode62($fractions) if $fractions;
+    my $id_resolution;
+    if (defined $localhost_number && $localhost_number ne "none") {
+        print "localhost_number $localhost_number\n" if $debug;
+        if ($base != 62) {
+            # MacOS/Darwin and Cygwin
+            $id_resolution = 100;
+        } else {
+            # Standard UNIX etc.
+            $id_resolution = 200;
+        }
+        $fractions -= $localhost_number * $id_resolution;
+    } else {
+        if ($base != 62) {
+            # MacOS/Darwin and Cygwin
+            $id_resolution = 1000;
+        } else {
+            # Standard UNIX etc.
+            $id_resolution = 2000;
+        }
+    }
+    while ($fractions > $id_resolution) {
+        $seconds++;
+        $fractions -= $id_resolution;
+    }
+    while ($fractions < -1e-7) {
+        $seconds--;
+        $fractions += $id_resolution;
+    }
+    # $seconds += $fractions / $id_resolution;
+
+    # warn "decoded: seconds: $seconds, fractions: $fractions/$id_resolution\n";
+
+    return ($seconds, $fractions / $id_resolution);
+} # sub unpack_time($$)
+
+sub print_time($$$$$$)
+{
+    my ($seconds, $decimal, $unix, $zulu, $localtm, $pid) = @_;
+
+    if ($debug) {
+        my $ounix = defined($unix) ? $unix : "undef";
+        my $ozulu = defined($zulu) ? $zulu : "undef";
+        my $olocal = defined($localtm) ? $localtm : "undef";
+        my $opid = defined($pid) ? $pid : "undef";
+        warn "print_time($seconds, $decimal, $ounix, $ozulu, $olocal, $opid)\n"
+    }
+
+    my $pidstring = "";
+    $pidstring = "\tpid $pid" if defined $pid;
+
+    my $decimalstring = "";
+    # if ($decimal>0)
+    {
+        $decimalstring = sprintf(".%6.6d", 1000000*$decimal);
+    }
+    my $secondsstring;
+    unless (defined $unix or defined $zulu or defined $localtm) {
+        warn "No time type requested. Reporting UNIX time\n";
+        $unix = TRUE;
+    }
+    if (defined $unix) {
+        $secondsstring = $seconds;
+        print "$secondsstring$decimalstring$pidstring\n";
+    }
+    if (defined $zulu) {
+        $secondsstring = strftime("%F %T", gmtime($seconds));
+        print "$secondsstring$decimalstring$pidstring\n";
+    }
+    if (defined $localtm) {
+        $secondsstring = strftime("%F %T%%s %Z%%s\n", localtime($seconds));
+        # print "secondstring $secondsstring\n" if $debug;
+        printf($secondsstring, $decimalstring, $pidstring);
+    }
+
+} # sub print_time($$$$$$)
+
+foreach my $msgid (@ARGV) {
+    my ($seconds, $pid, $fractions, $decimal);
+
+    if ($msgid =~
+        /(^|[\s<])E?([a-zA-Z0-9]{6})-([a-zA-Z0-9]{6})-([a-zA-Z0-9]{2})/)
+    {
+        # Should take either the log form of timestamp,
+        # the Message-ID: header form with the leading 'E', ...
+        ($seconds, $pid, $fractions) = ($2, $3, $4);
+        ($seconds, $decimal) = unpack_time($seconds, $fractions);
+        $pid = decode62($pid);
+        #warn "$seconds, $pid, $fractions\n";
+    } elsif ($msgid =~ /(^|[^0-9A-Za-z])([a-zA-Z0-9]{6})$/) {
+        # ... or just the timecode section before the first '-'
+        ($seconds, $pid, $decimal) = (decode62($2), undef, 0);
+    } else {
+        warn "$msgid not parsed\n";
+        next;
+    }
+
+    if ($debug) {
+        print "msgid: $msgid\n";
+        my $ogmt = defined($optgmt) ? $optgmt : "undef";
+        my $ounix = defined($optunix) ? $optunix : "undef";
+        my $olocal = defined($optlocal) ? $optlocal : "undef";
+        my $opid = defined($optpid) ? $optpid : "undef";
+        print "print_time($seconds, $decimal, $ounix, $ogmt, $olocal, $opid)\n";
+    }
+    $pid = undef unless $optpid;
+    print_time($seconds, $decimal, $optunix, $optgmt, $optlocal, $pid);
+}
+
+=head1 NAME
+
+  exim_msgdate -  Utility to convert an exim message-id to a human readable date+time
+
+=head1 SYNOPSIS
+
+B<exim_msgdate> [ -u|--unix | --GMT | --z|-Zulu | --UTC | -l|--local ]
+      [ --base 36 | --base 62 | --base36 | --base62 | --b36 | --b62 ]
+      [ --pid ] [ --debug ] [ --localhost_number ]
+      [ -c c<full path to exim cnfig file> ]
+      exim-message-id [ | exim-message-id ...]
+
+B<exim_msgdate> --help|--man
+
+=head1 DESCRIPTION
+
+B<exim_msgdate> is a tool which converts an exim message-id to a human
+readable form, usuall just the date+time, but with the I<--pid> option
+the process id as well.
+
+=head1 Message IDs:
+
+Three exim message ID formats are recognized.
+In each case the 'X's are taken from the base (see below) which depends upon the platform.
+
+=over 4
+
+=item XXXXXX-XXXXXX-XX
+
+found in the exim logfile,
+
+=item EXXXXXX-XXXXXX-XX
+
+found in the Message-Id header,
+
+=item XXXXXX
+
+just the first six characters of the message id.
+
+=back
+
+=head1 OPTIONS
+
+=head2 Time Zones and Unix Time
+
+=over 4
+
+=item     B<-u | --unix>
+
+Display time as seconds since 1 Jan 1970, the Unix Epoch.
+
+=item     B<--GMT> B<-u|--UTC> B<-z|--zulu>
+
+Display time in GMT/UTC - we assume these are the same.
+Zulu time is another name for GMT.
+
+=item     B<-l | --local>
+
+Display time in the local time-zone.
+
+Do not confuse this with the L<--localhost_number|/--localhost_number-n> option.
+
+=back
+
+The default is the local timezone.
+
+=head2 User Assistance Options
+
+=over 4
+
+=item     B<--help>
+
+A brief list of the options
+
+=item     B<--man>
+
+A more detailed manual for B<exim_msgdate>
+
+=item B<--debug>
+
+Information about what went wrong, mostly for developers.
+
+=back
+
+=head2 Specialized Options
+
+=over 4
+
+=item B<--base> n | B<--base36> | B<--base62>
+
+The message-id is usually encoded in base-62 (0-9A-Za-z),
+but on systems with case-insensitive file systems, such as MacOS and Cygwin,
+base-36 (0-9A-Z) is used instead.
+The installation script should have set the default appropriately,
+but these options allow the default base to be overridden.
+
+The default matches C<exim>; in this installation it is base-BASE_62.
+
+=item B<--pid>
+
+Report the process id as well as the date and time in the message-id.
+
+=item B<--localhost_number> n
+
+If the Exim configuration option B<localhost_number> has been set,
+the third and final section of the message-id will include this and
+the timer resolution will change (see the Exim Spec. for details).
+C<Exim_msgdate> reads the Exim config file (see L<--C|/C-full-path-to-exim-configuration-file>) to find this value,
+but it can be overridden with this option.
+
+The value is an integer between 0 and 16, or the value "none" which
+means there is no localhost_number.
+
+Do not confuse this with the L<--local|/l---local> option, which displays times
+ in the local timezone.
+
+=item B<--C> B<full path to exim configuration file>
+
+This overrides the usual exim search path.
+We set C<localhost_number> from the exim configfile.
+
+=item B<-dexim_path>
+
+The test test harness passes the full path of the C<exim> binary,
+or here the C<exim_msgdate> being tested. Not currently used.
+
+=back
+
+=head1 SEE ALSO:
+
+L<exim(8)>
+
+L<Exim spec.txt chapter 4|https://exim.org/exim-html-current/doc/html/spec_html/ch-how_exim_receives_and_delivers_mail.html#SECTmessiden>
+
+=cut

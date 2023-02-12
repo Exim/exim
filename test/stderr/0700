@@ -1,0 +1,67 @@
+### A Message ID as it appears in an email:
+### A Message ID as it appears in the exim log:
+### Just the date part of the Message ID:
+###    The Epoch ...
+### ... the script was under development at this time ...
+### ... the end of exim msg-id time
+### All three time zones with a non-GMT time
+### All three types of message-ids, at once:
+### Message IDs generated on a system, such as Mac or Cygwin,
+### which has low-resolution Message-ID timestamps
+zzzzzz is not base 36
+### An invalid base option
+unknown base option 32
+### Message IDs generated on a standard system
+### with high-resolution Message-ID timestamps
+### Some strings that are similar to, but not Exim Message IDs:
+zzzzzz-005xgk-z@ not parsed
+zzzzz-z005xgk-zz not parsed
+zzzzzzz not parsed
+### Print date with localtime
+### Print date with timezone GMT/Zulu
+### Print date as seconds since the UNIX epoch.
+### Show the process id too
+### Override the value of localhost_number set in the exim configuation file
+localhost_number > 10
+localhost_number > 16
+### From here as 701 - 703
+### Each msg-id type, all zone
+### All msg-id types, all zones,  localhost_number = 3
+### All msg-id types, all zones,  localhost_number = 13
+### All msg-id types, all zones,  localhost_number = 20
+localhost_number > 16
+localhost_number > 16
+localhost_number > 16
+localhost_number > 16
+### All msg-id types, all zones,  base=36
+zz is not base 36
+zzzzzz is not base 36
+### All msg-id types, all zones,  base=62
+
+******** SERVER ********
+### A Message ID as it appears in an email:
+### A Message ID as it appears in the exim log:
+### Just the date part of the Message ID:
+###    The Epoch ...
+### ... the script was under development at this time ...
+### ... the end of exim msg-id time
+### All three time zones with a non-GMT time
+### All three types of message-ids, at once:
+### Message IDs generated on a system, such as Mac or Cygwin,
+### which has low-resolution Message-ID timestamps
+### An invalid base option
+### Message IDs generated on a standard system
+### with high-resolution Message-ID timestamps
+### Some strings that are similar to, but not Exim Message IDs:
+### Print date with localtime
+### Print date with timezone GMT/Zulu
+### Print date as seconds since the UNIX epoch.
+### Show the process id too
+### Override the value of localhost_number set in the exim configuation file
+### From here as 701 - 703
+### Each msg-id type, all zone
+### All msg-id types, all zones,  localhost_number = 3
+### All msg-id types, all zones,  localhost_number = 13
+### All msg-id types, all zones,  localhost_number = 20
+### All msg-id types, all zones,  base=36
+### All msg-id types, all zones,  base=62

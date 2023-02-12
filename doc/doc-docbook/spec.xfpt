@@ -1,3 +1,4 @@
+
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
 . converted into DocBook XML for subsequent conversion into printable and online
@@ -948,6 +949,7 @@ User filters are run as part of the routing process, described below.
 .cindex "base36"
 .cindex "Darwin"
 .cindex "Cygwin"
+.cindex "exim_msgdate"
 Every message handled by Exim is given a &'message id'& which is sixteen
 characters long. It is divided into three parts, separated by hyphens, for
 example &`16VDhn-0001bo-D3`&. Each part is a sequence of letters and digits,
@@ -993,6 +995,10 @@ appropriate resolution before proceeding, so that if another message is
 received by the same process, or by another process with the same (re-used)
 pid, it is guaranteed that the time will be different. In most cases, the clock
 will already have ticked while the message was being received.
+
+The exim_msgdate utility (see section &<<SECTexim_msgdate>>&) can be
+used to display the date, and optionally the process id, of an Exim
+Message ID.
 
 
 .section "Receiving mail" "SECID13"
@@ -39475,6 +39481,7 @@ the next chapter. The utilities described here are:
 .irow &<<SECTtidydb>>&        &'exim_tidydb'&   "clean up a hints database"
 .irow &<<SECTfixdb>>&         &'exim_fixdb'&    "patch a hints database"
 .irow &<<SECTmailboxmaint>>&  &'exim_lock'&     "lock a mailbox file"
+.irow &<<SECTexim_msgdate>>&  &'exim_msgdate'&  "Message Ids for humans (exim_msgdate)"
 .endtable
 
 Another utility that might be of use to sites with many MTAs is Tom Kistner's
@@ -40198,9 +40205,16 @@ exim_lock -q /var/spool/mail/spqr \
 .endd
 Note that if a command is supplied, it must be entirely contained within the
 second argument &-- hence the quotes.
+
+
+.section "Message Ids for humans (exim_msgdate)" "SECTexim_msgdate"
+.cindex "exim_msgdate"
+The &'exim_msgdate'& utility is written by Andrew Aitchison and included in the Exim distribution.
+This Perl script converts an Exim Mesage ID back into a human readable form.
+For details of &'exim_msgdate'&'s options, run &'exim_msgdate'& with the &%--help%& option.
+
+Section &<<SECTmessiden>>& (Message identification) describes Exim Mesage IDs.
 .ecindex IIDutils
-
-
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 

@@ -820,6 +820,14 @@ are still in existence at the end of the run (for messages that were not
 delivered) are not compared with saved versions.
 
 
+  no_munge
+
+If this command is encountered anywhere in the script, the output is not
+munged before it is compared with a saved version.
+This option allows meaningful tests of the exim_msgdate utility;
+without it all date comparison checks would succeed.
+
+
   no_stderr_check
 
 If this command is encountered anywhere in the script, the stderr output from

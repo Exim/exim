@@ -385,6 +385,15 @@ $spid = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 LINE: while(<IN>)
   {
 RESET_AFTER_EXTRA_LINE_READ:
+  if ($munge_skip)
+    {
+    # Munging is a no-op.
+    # Useful when testing exim_msgdate so that
+    # we compare unmunged dates and message-ids.
+    print MUNGED;
+    next;
+    }
+
   # Custom munges
   if ($extra)
     {
@@ -3894,7 +3903,7 @@ if (defined $parm_lookups{dbm} && not cp("$parm_exim_dir/exim_dbmbuild", "eximdi
   $dbm_build_deleted = 1;
   }
 
-foreach my $tool (qw(exim_dumpdb exim_lock exinext exigrep eximstats exiqgrep)) {
+foreach my $tool (qw(exim_dumpdb exim_lock exinext exigrep eximstats exiqgrep exim_msgdate)) {
   cp("$parm_exim_dir/$tool" => "eximdir/$tool")
     or tests_exit(-1, "Failed to make a copy of $tool: $!");
 }
@@ -4357,6 +4366,7 @@ foreach $test (@test_list)
   $next_port = 1111;
   $message_skip = 0;
   $msglog_skip = 0;
+  $munge_skip = 0;
   $stderr_skip = 0;
   $stdout_skip = 0;
   $rmfiltertest = 0;
@@ -4376,6 +4386,7 @@ foreach $test (@test_list)
     {
     if (/^no_message_check/) { $message_skip = 1; next; }
     if (/^no_msglog_check/)  { $msglog_skip = 1; next; }
+    if (/^no_munge/)         { $munge_skip = 1; next; }
     if (/^no_stderr_check/)  { $stderr_skip = 1; next; }
     if (/^no_stdout_check/)  { $stdout_skip = 1; next; }
     if (/^rmfiltertest/)     { $rmfiltertest = 1; next; }
@@ -4410,6 +4421,7 @@ foreach $test (@test_list)
       # set above, but doesn't hurt to leave them here.
       if (/^no_message_check/) { $message_skip = 1; next; }
       if (/^no_msglog_check/)  { $msglog_skip = 1; next; }
+      if (/^no_munge/)         { $munge_skip = 1; next; }
       if (/^no_stderr_check/)  { $stderr_skip = 1; next; }
       if (/^no_stdout_check/)  { $stdout_skip = 1; next; }
       if (/^rmfiltertest/)     { $rmfiltertest = 1; next; }

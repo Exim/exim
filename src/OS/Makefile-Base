@@ -249,7 +249,8 @@ utils: $(EXIM_MONITOR) exicyclog exinext exiwhat \
         exigrep eximstats exipick exiqgrep exiqsumm \
         transport-filter.pl convert4r3 convert4r4 \
         exim_checkaccess \
-        exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb exim_lock
+        exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb exim_lock \
+        exim_msgdate
 
 
 # Targets for special-purpose configuration header builders
@@ -382,6 +383,23 @@ exigrep: config ../src/exigrep.src
 	@mv exigrep-t exigrep
 	@chmod a+x exigrep
 	@echo ">>> exigrep script built"
+
+exim_msgdate: config ../src/exim_msgdate.src
+	@rm -f exim_msgdate
+	@. ./version.sh && sed \
+	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
+	  -e "/^[ \t]*# /p" \
+	  -e "/^[ \t]*# /d" \
+	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
+	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	  -e "s?BASE_62?$${BASE_62:-62}?" \
+	  -e "s?CONFIGURE_FILE\"?$(CONFIGURE_FILE)\"?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
+	  ../src/exim_msgdate.src > exim_msgdate-t
+	@mv exim_msgdate-t exim_msgdate
+	@chmod a+x exim_msgdate
+	@echo ">>> exim_msgdate script built"
 
 eximstats: config ../src/eximstats.src
 	@rm -f eximstats

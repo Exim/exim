@@ -1,0 +1,20 @@
+### Each msg-id type, all zone
+### All msg-id types, all zones,  localhost_number = 3
+### All msg-id types, all zones,  localhost_number = 13
+### All msg-id types, all zones,  localhost_number = 20
+localhost_number > 16
+localhost_number > 16
+localhost_number > 16
+localhost_number > 16
+### All msg-id types, all zones,  base=36
+zz is not base 36
+zzzzzz is not base 36
+### All msg-id types, all zones,  base=62
+
+******** SERVER ********
+### Each msg-id type, all zone
+### All msg-id types, all zones,  localhost_number = 3
+### All msg-id types, all zones,  localhost_number = 13
+### All msg-id types, all zones,  localhost_number = 20
+### All msg-id types, all zones,  base=36
+### All msg-id types, all zones,  base=62
