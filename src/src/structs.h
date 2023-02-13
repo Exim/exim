@@ -958,4 +958,22 @@ struct ob_dkim {
 #endif
 };
 
+
+/* per-queue-runner info */
+typedef struct qrunner {
+  struct qrunner * next;	/* list sorted by next tick */
+
+  uschar *	name;		/* NULL for the default queue */
+  unsigned	interval;	/* tick rate, seconds */
+  time_t	next_tick;	/* next run should, or should have, start(ed) */
+  unsigned	run_max;	/* concurrent queue runner limit */
+  unsigned	run_count;	/* current runners */
+
+  BOOL queue_run_force :1;
+  BOOL deliver_force_thaw :1;
+  BOOL queue_run_first_delivery :1;
+  BOOL queue_run_local :1;
+  BOOL queue_2stage :1;
+} qrunner;
+
 /* End of structs.h */

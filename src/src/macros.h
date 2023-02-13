@@ -1113,9 +1113,9 @@ should not be one active. */
 
 #define NOTIFIER_SOCKET_NAME	"exim_daemon_notify"
 /* Notify message types */
-#define NOTIFY_MSG_QRUN		1
-#define NOTIFY_QUEUE_SIZE_REQ	2
-#define NOTIFY_REGEX		3
+#define NOTIFY_MSG_QRUN		1	/* 2stage qrun fast-ramp trigger */
+#define NOTIFY_QUEUE_SIZE_REQ	2	/* obtain current queue count */
+#define NOTIFY_REGEX		3	/* an RE for caching */
 
 /* Flags for match_check_string() */
 typedef unsigned mcs_flags;

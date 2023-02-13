@@ -104,8 +104,10 @@ exim -bp
 exim -bp -qGalternate
 ****
 #
+### move msg from default to third q
 exim -MG third $msg1
 ****
+### move msg from alternate q to third q
 exim -qGalternate -MG third $msg1
 ****
 ### third q

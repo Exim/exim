@@ -257,8 +257,6 @@ extern struct global_flags {
 
  BOOL   queue_2stage			:1; /* Run queue in 2-stage manner */
  BOOL   queue_only_policy		:1; /* ACL or local_scan wants queue_only */
- BOOL   queue_run_first_delivery	:1; /* If TRUE, first deliveries only */
- BOOL   queue_run_force			:1; /* TRUE to force during queue run */
  BOOL   queue_run_local			:1; /* Local deliveries only in queue run */
  BOOL   queue_running			:1; /* TRUE for queue running process and */
  BOOL   queue_smtp			:1; /* Disable all immediate SMTP (-odqs)*/
@@ -836,6 +834,8 @@ extern BOOL    proxy_session;          /* TRUE if receiving mail from valid prox
 extern uschar *prvscheck_address;      /* Set during prvscheck expansion item */
 extern uschar *prvscheck_keynum;       /* Set during prvscheck expansion item */
 extern uschar *prvscheck_result;       /* Set during prvscheck expansion item */
+
+extern qrunner *qrunners;	       /* tracking data for queues */
 
 extern const uschar *qualify_domain_recipient; /* Domain to qualify recipients with */
 extern uschar *qualify_domain_sender;  /* Domain to qualify senders with */

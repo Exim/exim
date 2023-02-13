@@ -4615,6 +4615,15 @@ combined daemon at system boot time is to use a command such as
 Such a daemon listens for incoming SMTP calls, and also starts a queue runner
 process every 30 minutes.
 
+.new
+.cindex "named queues" "queue runners"
+It is possible to set up runners for multiple named queues within one daemon,
+For example:
+.code
+exim -qGhipri/2m -q10m -qqGmailinglist/1h
+.endd
+.wen
+
 When a daemon is started by &%-q%& with a time value, but without &%-bd%&, no
 pid file is written unless one is explicitly requested by the &%-oP%& option.
 

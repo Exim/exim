@@ -291,8 +291,6 @@ struct global_flags f =
 
 	.queue_2stage           = FALSE,
 	.queue_only_policy      = FALSE,
-	.queue_run_first_delivery = FALSE,
-	.queue_run_force        = FALSE,
 	.queue_run_local        = FALSE,
 	.queue_running          = FALSE,
 	.queue_smtp             = FALSE,
@@ -1247,6 +1245,8 @@ uschar *prvscheck_address      = NULL;
 uschar *prvscheck_keynum       = NULL;
 uschar *prvscheck_result       = NULL;
 
+
+qrunner *qrunners	       = NULL;
 
 const uschar *qualify_domain_recipient = NULL;
 uschar *qualify_domain_sender  = NULL;

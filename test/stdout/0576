@@ -53,7 +53,9 @@
  0m   sss 10HmbC-0005vi-00 <CALLER@the.local.host.name>
           alternate@test.ex
 
+### move msg from default to third q
 Message 10HmbB-0005vi-00 
+### move msg from alternate q to third q
 Message 10HmbC-0005vi-00 
 ### third q
  0m   sss 10HmbB-0005vi-00 <CALLER@the.local.host.name>
@@ -79,6 +81,8 @@ Message 10HmbB-0005vi-00 Message 10HmbC-0005vi-00
 ### load messages
 ### default q
 ### alternate q
+### move msg from default to third q
+### move msg from alternate q to third q
 ### third q
 ### default q
 ### alternate q

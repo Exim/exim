@@ -1688,6 +1688,33 @@ else
 
 
 /*************************************************
+*          Queue-runner operations               *
+*************************************************/
+
+/* Prefix a new qrunner descriptor to the qrunners list */
+
+static qrunner *
+alloc_qrunner(void)
+{
+qrunner * q = qrunners;
+qrunners = store_get(sizeof(qrunner), GET_UNTAINTED);
+memset(qrunners, 0, sizeof(qrunner));		/* default queue, zero interval */
+qrunners->next = q;
+qrunners->next_tick = time(NULL);		/* run right away */
+return qrunners;
+}
+
+static qrunner *
+alloc_onetime_qrunner(void)
+{
+qrunners = store_get_perm(sizeof(qrunner), GET_UNTAINTED);
+memset(qrunners, 0, sizeof(qrunner));		/* default queue, zero interval */
+qrunners->next_tick = time(NULL);		/* run right away */
+qrunners->run_max = 1;
+}
+
+
+/*************************************************
 *          Entry point and high-level code       *
 *************************************************/
 
@@ -2051,7 +2078,7 @@ this is a smail convention. */
 if ((namelen == 4 && Ustrcmp(argv[0], "runq") == 0) ||
     (namelen  > 4 && Ustrncmp(argv[0] + namelen - 5, "/runq", 5) == 0))
   {
-  queue_interval = 0;
+  alloc_onetime_qrunner();
   receiving_message = FALSE;
   called_as = US"-runq";
   }
@@ -2110,7 +2137,7 @@ on the second character (the one after '-'), to save some effort. */
   BOOL badarg = FALSE;
   uschar * arg = argv[i];
   uschar * argrest;
-  int switchchar;
+  uschar switchchar;
 
   /* An argument not starting with '-' is the start of a recipients list;
   break out of the options-scanning loop. */
@@ -3504,87 +3531,100 @@ on the second character (the one after '-'), to save some effort. */
       }
     break;
 
+    /* -q:  set up queue runs */
 
     case 'q':
-    receiving_message = FALSE;
-    if (queue_interval >= 0)
-      exim_fail("exim: -q specified more than once\n");
-
-    /* -qq...: Do queue runs in a 2-stage manner */
-
-    if (*argrest == 'q')
       {
-      f.queue_2stage = TRUE;
-      argrest++;
-      }
+      BOOL two_stage, first_del, force, thaw = FALSE, local;
 
-    /* -qi...: Do only first (initial) deliveries */
+      receiving_message = FALSE;
 
-    if (*argrest == 'i')
-      {
-      f.queue_run_first_delivery = TRUE;
-      argrest++;
-      }
+      /* -qq...: Do queue runs in a 2-stage manner */
 
-    /* -qf...: Run the queue, forcing deliveries
-       -qff..: Ditto, forcing thawing as well */
+      if ((two_stage = *argrest == 'q'))
+	argrest++;
 
-    if (*argrest == 'f')
-      {
-      f.queue_run_force = TRUE;
-      if (*++argrest == 'f')
-        {
-        f.deliver_force_thaw = TRUE;
-        argrest++;
-        }
-      }
+      /* -qi...: Do only first (initial) deliveries */
 
-    /* -q[f][f]l...: Run the queue only on local deliveries */
+      if ((first_del = *argrest == 'i'))
+	argrest++;
 
-    if (*argrest == 'l')
-      {
-      f.queue_run_local = TRUE;
-      argrest++;
-      }
+      /* -qf...: Run the queue, forcing deliveries
+	 -qff..: Ditto, forcing thawing as well */
 
-    /* -q[f][f][l][G<name>]... Work on the named queue */
+      if ((force = *argrest == 'f'))
+	if ((thaw = *++argrest == 'f'))
+	  argrest++;
 
-    if (*argrest == 'G')
-      {
-      int i;
-      for (argrest++, i = 0; argrest[i] && argrest[i] != '/'; ) i++;
-      exim_len_fail_toolong(i, EXIM_DRIVERNAME_MAX, "-q*G<name>");
-      queue_name = string_copyn(argrest, i);
-      argrest += i;
-      if (*argrest == '/') argrest++;
-      }
+      /* -q[f][f]l...: Run the queue only on local deliveries */
 
-    /* -q[f][f][l][G<name>]: Run the queue, optionally forced, optionally local
-    only, optionally named, optionally starting from a given message id. */
+      if ((local = *argrest == 'l'))
+	argrest++;
 
-    if (!(list_queue || count_queue))
-      if (  !*argrest
-	 && (i + 1 >= argc || argv[i+1][0] == '-' || mac_ismsgid(argv[i+1])))
+      /* -q[f][f][l][G<name>]... Work on the named queue */
+
+      if (*argrest == 'G')
 	{
-	queue_interval = 0;
-	if (i+1 < argc && mac_ismsgid(argv[i+1]))
-	  start_queue_run_id = string_copy_taint(argv[++i], GET_TAINTED);
-	if (i+1 < argc && mac_ismsgid(argv[i+1]))
-	  stop_queue_run_id = string_copy_taint(argv[++i], GET_TAINTED);
+	int i;
+	for (argrest++, i = 0; argrest[i] && argrest[i] != '/'; ) i++;
+	exim_len_fail_toolong(i, EXIM_DRIVERNAME_MAX, "-q*G<name>");
+	queue_name = string_copyn(argrest, i);
+	argrest += i;
+	if (*argrest == '/') argrest++;
 	}
 
-    /* -q[f][f][l][G<name>/]<n>: Run the queue at regular intervals, optionally
-    forced, optionally local only, optionally named. */
+      /* -q[f][f][l][G<name>]: Run the queue, optionally forced, optionally local
+      only, optionally named, optionally starting from a given message id. */
 
-      else if ((queue_interval = readconf_readtime(*argrest ? argrest : argv[++i],
-						  0, FALSE)) <= 0)
-	exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
-    break;
+      if (!(list_queue || count_queue))
+	{
+	qrunner * q;
+
+	if (  !*argrest
+	   && (i + 1 >= argc || argv[i+1][0] == '-' || mac_ismsgid(argv[i+1])))
+	  {
+	  q = alloc_onetime_qrunner();
+	  if (i+1 < argc && mac_ismsgid(argv[i+1]))
+	    start_queue_run_id = string_copy_taint(argv[++i], GET_TAINTED);
+	  if (i+1 < argc && mac_ismsgid(argv[i+1]))
+	    stop_queue_run_id = string_copy_taint(argv[++i], GET_TAINTED);
+	  }
+
+      /* -q[f][f][l][G<name>/]<n>: Run the queue at regular intervals, optionally
+      forced, optionally local only, optionally named. */
+
+	else
+	  {
+	  int intvl = readconf_readtime(*argrest ? argrest : argv[++i], 0, FALSE);
+	  if (intvl <= 0)
+	    exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
+
+	  for (qrunner * qq = qrunners; qq; qq = qq->next)
+	    if (  queue_name && qq->name && Ustrcmp(queue_name, qq->name) == 0
+	       || !queue_name && !qq->name)
+	      exim_fail("exim: queue-runner specified more than once\n");
+
+	  q = alloc_qrunner();
+	  q->interval = intvl;
+	  }
+
+	q->name = *queue_name ? queue_name : NULL;	/* will be NULL for the default queue */
+	q->queue_run_force = force;
+	q->deliver_force_thaw = thaw;
+	q->queue_run_first_delivery = first_del;
+	q->queue_run_local = local;
+	q->queue_2stage = two_stage;
+	}
+
+      break;
+      }
 
 
     case 'R':   /* Synonymous with -qR... */
+    case 'S':   /* Synonymous with -qS... */
       {
-      const uschar *tainted_selectstr;
+      const uschar * tainted_selectstr;
+      uschar * s;
 
       receiving_message = FALSE;
 
@@ -3594,20 +3634,28 @@ on the second character (the one after '-'), to save some effort. */
        -Rrf:  Regex and force
        -Rrff: Regex and force and thaw
 
+       -S...: Like -R but works on sender.
+
     in all cases provided there are no further characters in this
     argument. */
 
+      alloc_onetime_qrunner();
+      qrunners->queue_2stage = f.queue_2stage;
       if (*argrest)
 	for (int i = 0; i < nelem(rsopts); i++)
 	  if (Ustrcmp(argrest, rsopts[i]) == 0)
 	    {
-	    if (i != 2) f.queue_run_force = TRUE;
-	    if (i >= 2) f.deliver_selectstring_regex = TRUE;
-	    if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
+	    if (i != 2) qrunners->queue_run_force = TRUE;
+	    if (i >= 2)
+	      if (switchchar == 'R')
+		f.deliver_selectstring_regex = TRUE;
+	      else
+		f.deliver_selectstring_sender_regex = TRUE;
+	    if (i == 1 || i == 4) qrunners->deliver_force_thaw = TRUE;
 	    argrest += Ustrlen(rsopts[i]);
 	    }
 
-    /* -R: Set string to match in addresses for forced queue run to
+    /* -R or -S: Set string to match in addresses for forced queue run to
     pick out particular messages. */
 
       /* Avoid attacks from people providing very long strings, and do so before
@@ -3617,57 +3665,21 @@ on the second character (the one after '-'), to save some effort. */
       else if (i+1 < argc)
 	tainted_selectstr = argv[++i];
       else
-	exim_fail("exim: string expected after -R\n");
-      deliver_selectstring = string_copy_taint(
+	exim_fail("exim: string expected after %s\n", switchchar == 'R' ? "-R" : "-S");
+
+      s = string_copy_taint(
 	exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-R"),
 	GET_TAINTED);
+
+      if (switchchar == 'R')
+	deliver_selectstring = s;
+      else
+	deliver_selectstring_sender = s;
       }
     break;
+
 
     /* -r: an obsolete synonym for -f (see above) */
-
-
-    /* -S: Like -R but works on sender. */
-
-    case 'S':   /* Synonymous with -qS... */
-      {
-      const uschar *tainted_selectstr;
-
-      receiving_message = FALSE;
-
-    /* -Sf:   As -S (below) but force all deliveries,
-       -Sff:  Ditto, but also thaw all frozen messages,
-       -Sr:   String is regex
-       -Srf:  Regex and force
-       -Srff: Regex and force and thaw
-
-    in all cases provided there are no further characters in this
-    argument. */
-
-      if (*argrest)
-	for (int i = 0; i < nelem(rsopts); i++)
-	  if (Ustrcmp(argrest, rsopts[i]) == 0)
-	    {
-	    if (i != 2) f.queue_run_force = TRUE;
-	    if (i >= 2) f.deliver_selectstring_sender_regex = TRUE;
-	    if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
-	    argrest += Ustrlen(rsopts[i]);
-	    }
-
-    /* -S: Set string to match in addresses for forced queue run to
-    pick out particular messages. */
-
-      if (*argrest)
-	tainted_selectstr = argrest;
-      else if (i+1 < argc)
-	tainted_selectstr = argv[++i];
-      else
-	exim_fail("exim: string expected after -S\n");
-      deliver_selectstring_sender = string_copy_taint(
-	exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-S"),
-	GET_TAINTED);
-      }
-    break;
 
     /* -Tqt is an option that is exclusively for use by the testing suite.
     It is not recognized in other circumstances. It allows for the setting up
@@ -3777,9 +3789,8 @@ on the second character (the one after '-'), to save some effort. */
 
 /* If -R or -S have been specified without -q, assume a single queue run. */
 
- if (  (deliver_selectstring || deliver_selectstring_sender)
-    && queue_interval < 0)
-  queue_interval = 0;
+ if ((deliver_selectstring || deliver_selectstring_sender) && !qrunners)
+  alloc_onetime_qrunner();
 
 
 END_ARG:
@@ -3791,22 +3802,22 @@ if (usage_wanted) exim_usage(called_as);
 
 /* Arguments have been processed. Check for incompatibilities. */
 if (  (  (smtp_input || extract_recipients || recipients_arg < argc)
-      && (  f.daemon_listen || queue_interval >= 0 || bi_option
+      && (  f.daemon_listen || qrunners || bi_option
 	 || test_retry_arg >= 0 || test_rewrite_arg >= 0
 	 || filter_test != FTEST_NONE
 	 || msg_action_arg > 0 && !one_msg_action
       )  )
    || (  msg_action_arg > 0
-      && (  f.daemon_listen || queue_interval > 0 || list_options
+      && (  f.daemon_listen || is_multiple_qrun() || list_options
 	 || checking && msg_action != MSG_LOAD
 	 || bi_option || test_retry_arg >= 0 || test_rewrite_arg >= 0
       )  )
-   || (  (f.daemon_listen || queue_interval > 0)
+   || (  (f.daemon_listen || is_multiple_qrun())
       && (  sender_address || list_options || list_queue || checking
 	 || bi_option
       )  )
-   || f.daemon_listen && queue_interval == 0
-   || f.inetd_wait_mode && queue_interval >= 0
+   || f.daemon_listen && is_onetime_qrun()
+   || f.inetd_wait_mode && qrunners
    || (  list_options
       && (  checking || smtp_input || extract_recipients
 	 || filter_test != FTEST_NONE || bi_option
@@ -3822,7 +3833,7 @@ if (  (  (smtp_input || extract_recipients || recipients_arg < argc)
    || (  smtp_input
       && (sender_address || filter_test != FTEST_NONE || extract_recipients)
       )
-   || deliver_selectstring && queue_interval < 0
+   || deliver_selectstring && !qrunners
    || msg_action == MSG_LOAD && (!expansion_test || expansion_test_message)
    )
   exim_fail("exim: incompatible command-line options or arguments\n");
@@ -4444,7 +4455,7 @@ if (!f.admin_user)
   if (  deliver_give_up || f.daemon_listen || malware_test_file
      || count_queue && queue_list_requires_admin
      || list_queue && queue_list_requires_admin
-     || queue_interval >= 0 && prod_requires_admin
+     || qrunners && prod_requires_admin
      || queue_name_dest && prod_requires_admin
      || debugset && !f.running_in_test_harness
      )
@@ -4460,7 +4471,7 @@ regression testing. */
 if (  real_uid != root_uid && real_uid != exim_uid
    && (  continue_hostname
       || (  f.dont_deliver
-	 && (queue_interval >= 0 || f.daemon_listen || msg_action_arg > 0)
+	 && (qrunners || f.daemon_listen || msg_action_arg > 0)
       )  )
    && !f.running_in_test_harness
    )
@@ -4577,11 +4588,11 @@ to the state Exim usually runs in. */
 if (  !unprivileged				/* originally had root AND */
    && !removed_privilege			/* still got root AND      */
    && !f.daemon_listen				/* not starting the daemon */
-   && queue_interval <= 0			/* (either kind of daemon) */
+   && (!qrunners || is_onetime_qrun())		/* (either kind of daemon) */
    && (						/*    AND EITHER           */
          deliver_drop_privilege			/* requested unprivileged  */
       || (					/*       OR                */
-            queue_interval < 0			/* not running the queue   */
+            !qrunners				/* not running the queue   */
          && (  msg_action_arg < 0		/*       and               */
             || msg_action != MSG_DELIVER	/* not delivering          */
 	    )					/*       and               */
@@ -4696,7 +4707,7 @@ if (msg_action_arg > 0 && msg_action != MSG_DELIVER && msg_action != MSG_LOAD)
   }
 
 /* We used to set up here to skip reading the ACL section, on
- (msg_action_arg > 0 || (queue_interval == 0 && !f.daemon_listen)
+ (msg_action_arg > 0 || (is_onetime_qrun() && !f.daemon_listen)
 Now, since the intro of the ${acl } expansion, ACL definitions may be
 needed in transports so we lost the optimisation. */
 
@@ -4947,18 +4958,9 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
 /* If only a single queue run is requested, without SMTP listening, we can just
 turn into a queue runner, with an optional starting message id. */
 
-if (queue_interval == 0 && !f.daemon_listen)
+if (is_onetime_qrun() && !f.daemon_listen)
   {
-  DEBUG(D_queue_run) debug_printf("Single queue run%s%s%s%s\n",
-    start_queue_run_id ? US" starting at " : US"",
-    start_queue_run_id ? start_queue_run_id: US"",
-    stop_queue_run_id ?  US" stopping at " : US"",
-    stop_queue_run_id ?  stop_queue_run_id : US"");
-  if (*queue_name)
-    set_process_info("running the '%s' queue (single queue run)", queue_name);
-  else
-    set_process_info("running the queue (single queue run)");
-  queue_run(start_queue_run_id, stop_queue_run_id, FALSE);
+  single_queue_run(qrunners, start_queue_run_id, stop_queue_run_id);
   exim_exit(EXIT_SUCCESS);
   }
 
@@ -5083,7 +5085,7 @@ returns. We leave this till here so that the originator_ fields are available
 for incoming messages via the daemon. The daemon cannot be run in mua_wrapper
 mode. */
 
-if (f.daemon_listen || f.inetd_wait_mode || queue_interval > 0)
+if (f.daemon_listen || f.inetd_wait_mode || is_multiple_qrun())
   {
   if (mua_wrapper)
     {

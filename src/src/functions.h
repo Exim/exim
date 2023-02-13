@@ -411,7 +411,7 @@ extern void    queue_list(int, uschar **, int);
 #ifndef DISABLE_QUEUE_RAMP
 extern void    queue_notify_daemon(const uschar * hostname);
 #endif
-extern void    queue_run(uschar *, uschar *, BOOL);
+extern void    queue_run(qrunner *, uschar *, uschar *, BOOL);
 
 extern int     random_number(int);
 extern const uschar *rc_to_string(int);
@@ -498,6 +498,7 @@ extern int     sieve_interpret(const uschar *, int, const uschar *,
 		 const uschar *, const uschar *, const uschar *,
 		 address_item **, uschar **);
 extern void    sigalrm_handler(int);
+extern void    single_queue_run(qrunner *, uschar *, uschar *);
 extern int     smtp_boundsock(smtp_connect_args *);
 extern void    smtp_closedown(uschar *);
 extern void    smtp_command_timeout_exit(void) NORETURN;
@@ -1367,6 +1368,22 @@ const uschar * s = expand_cstring(str_max_rcpt);
 int res;
 return !s || !*s || (res = Uatoi(s)) == 0 ? UNLIMITED_ADDRS : res;
 }
+
+/******************************************************************************/
+/* Queue-runner operations */
+
+static inline BOOL
+is_onetime_qrun(void)
+{
+return qrunners && !qrunners->next && qrunners->interval == 0;
+}
+
+static inline BOOL
+is_multiple_qrun(void)
+{
+return qrunners && (qrunners->interval > 0 || qrunners->next);
+}
+
 
 # endif	/* !COMPILE_UTILITY */
 
