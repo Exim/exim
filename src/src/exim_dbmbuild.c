@@ -52,6 +52,9 @@ void
 store_release_above_3(void *ptr, const char *func, int linenumber)
 { }
 gstring *
+string_catn(gstring * g, const uschar * s, int count)
+{ return NULL; }
+gstring *
 string_vformat_trc(gstring * g, const uschar * func, unsigned line,
   unsigned size_limit, unsigned flags, const char *format, va_list ap)
 { return NULL; }

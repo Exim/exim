@@ -478,8 +478,8 @@ typedef struct {
   int  *length;
 } alblock;
 
-static uschar * fn_recipients(void);
 typedef uschar * stringptr_fn_t(void);
+static uschar * fn_recipients(void);
 static uschar * fn_queue_size(void);
 
 /* This table must be kept in alphabetical order. */
@@ -685,7 +685,7 @@ static var_entry var_table[] = {
   { "qualify_domain",      vtype_stringptr,   &qualify_domain_sender },
   { "qualify_recipient",   vtype_stringptr,   &qualify_domain_recipient },
   { "queue_name",          vtype_stringptr,   &queue_name },
-  { "queue_size",          vtype_string_func, &fn_queue_size },
+  { "queue_size",          vtype_string_func, (void *) &fn_queue_size },
   { "rcpt_count",          vtype_int,         &rcpt_count },
   { "rcpt_defer_count",    vtype_int,         &rcpt_defer_count },
   { "rcpt_fail_count",     vtype_int,         &rcpt_fail_count },
