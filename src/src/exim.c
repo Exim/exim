@@ -1711,6 +1711,7 @@ qrunners = store_get_perm(sizeof(qrunner), GET_UNTAINTED);
 memset(qrunners, 0, sizeof(qrunner));		/* default queue, zero interval */
 qrunners->next_tick = time(NULL);		/* run right away */
 qrunners->run_max = 1;
+return qrunners;
 }
 
 
