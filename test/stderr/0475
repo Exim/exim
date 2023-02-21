@@ -25,7 +25,7 @@ LOG: H=(test) [V4NET.0.0.0] F=<> temporarily rejected RCPT <a1@b>: unknown looku
 >>> check hosts = 1.2.3/24
 >>> host in "1.2.3/24"?
 >>>  list element: 1.2.3/24
->>>  host in "1.2.3/24"? no (malformed IPv4 address or address mask)
+>>>  host in "1.2.3/24"? no (malformed IPv4 address or address mask: 1.2.3)
 >>>  deny: condition test failed in ACL "a2"
 >>>  end of ACL "a2": implicit DENY
 LOG: H=(test) [V4NET.0.0.0] F=<> rejected RCPT <a2@b>

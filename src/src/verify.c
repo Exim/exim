@@ -2958,7 +2958,7 @@ dots). */
 for (t = ss; isdigit(*t) || *t == '.'; ) t++;
 if (!*t  || (*t == '/' && t != ss))
   {
-  *error = US"malformed IPv4 address or address mask";
+  *error = string_sprintf("malformed IPv4 address or address mask: %.*s", (int)(t - ss), ss);
   return ERROR;
   }
 

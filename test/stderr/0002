@@ -742,9 +742,9 @@ originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
  1.2.3.4 in "1.2.3"?
   list element: 1.2.3
-  1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask)
+  1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask: 1.2.3)
   1.2.3.4 in "1.2.3.4/abc"?
    list element: 1.2.3.4/abc
-   1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask)
+   1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask: 1.2.3.4)
   search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
