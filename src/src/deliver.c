@@ -5994,6 +5994,181 @@ wording. */
 }
 
 /*************************************************
+*              Send a warning message            *
+*************************************************/
+/* Return: boolean success */
+
+static BOOL
+send_warning_message(const uschar * recipients, int queue_time, int show_time)
+{
+int fd;
+pid_t pid = child_open_exim(&fd, US"delay-warning-message");
+FILE * wmf = NULL, * f = fdopen(fd, "wb");
+uschar * wmf_text, * bound;
+transport_ctx tctx = {{0}};
+
+
+if (pid <= 0) return FALSE;
+
+if (warn_message_file)
+  wmf = expand_open(warn_message_file,
+	  US"warn_message_file", US"warning");
+
+warnmsg_recipients = recipients;
+warnmsg_delay = queue_time < 120*60
+  ? string_sprintf("%d minutes", show_time/60)
+  : string_sprintf("%d hours", show_time/3600);
+
+if (errors_reply_to)
+  fprintf(f, "Reply-To: %s\n", errors_reply_to);
+fprintf(f, "Auto-Submitted: auto-replied\n");
+moan_write_from(f);
+fprintf(f, "To: %s\n", recipients);
+moan_write_references(f, NULL);
+
+/* generated boundary string and output MIME-Headers */
+bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
+
+fprintf(f, "Content-Type: multipart/report;"
+    " report-type=delivery-status; boundary=%s\n"
+    "MIME-Version: 1.0\n",
+  bound);
+
+if ((wmf_text = next_emf(wmf, US"header")))
+  fprintf(f, "%s\n", wmf_text);
+else
+  fprintf(f, "Subject: Warning: message %s delayed %s\n\n",
+    message_id, warnmsg_delay);
+
+/* output human readable part as text/plain section */
+fprintf(f, "--%s\n"
+    "Content-type: text/plain; charset=us-ascii\n\n",
+  bound);
+
+if ((wmf_text = next_emf(wmf, US"intro")))
+  fprintf(f, "%s", CS wmf_text);
+else
+  {
+  fprintf(f,
+"This message was created automatically by mail delivery software.\n");
+
+  if (Ustrcmp(recipients, sender_address) == 0)
+    fprintf(f,
+"A message that you sent has not yet been delivered to one or more of its\n"
+"recipients after more than ");
+
+  else
+    fprintf(f,
+"A message sent by\n\n  <%s>\n\n"
+"has not yet been delivered to one or more of its recipients after more than \n",
+      sender_address);
+
+  fprintf(f, "%s on the queue on %s.\n\n"
+      "The message identifier is:     %s\n",
+    warnmsg_delay, primary_hostname, message_id);
+
+  for (header_line * h = header_list; h; h = h->next)
+    if (strncmpic(h->text, US"Subject:", 8) == 0)
+      fprintf(f, "The subject of the message is: %s", h->text + 9);
+    else if (strncmpic(h->text, US"Date:", 5) == 0)
+      fprintf(f, "The date of the message is:    %s", h->text + 6);
+  fputc('\n', f);
+
+  fprintf(f, "The address%s to which the message has not yet been "
+    "delivered %s:\n",
+    !addr_defer->next ? "" : "es",
+    !addr_defer->next ? "is": "are");
+  }
+
+/* List the addresses, with error information if allowed */
+
+fputc('\n', f);
+for (address_item * addr = addr_defer; addr; addr = addr->next)
+  {
+  if (print_address_information(addr, f, US"  ", US"\n    ", US""))
+    print_address_error(addr, f, US"Delay reason: ");
+  fputc('\n', f);
+  }
+fputc('\n', f);
+
+/* Final text */
+
+if (wmf)
+  {
+  if ((wmf_text = next_emf(wmf, US"final")))
+    fprintf(f, "%s", CS wmf_text);
+  (void)fclose(wmf);
+  }
+else
+  {
+  fprintf(f,
+"No action is required on your part. Delivery attempts will continue for\n"
+"some time, and this warning may be repeated at intervals if the message\n"
+"remains undelivered. Eventually the mail delivery software will give up,\n"
+"and when that happens, the message will be returned to you.\n");
+  }
+
+/* output machine readable part */
+fprintf(f, "\n--%s\n"
+    "Content-type: message/delivery-status\n\n"
+    "Reporting-MTA: dns; %s\n",
+  bound,
+  smtp_active_hostname);
+
+
+if (dsn_envid)
+  {
+  /* must be decoded from xtext: see RFC 3461:6.3a */
+  uschar *xdec_envid;
+  if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
+    fprintf(f,"Original-Envelope-ID: %s\n", dsn_envid);
+  else
+    fprintf(f,"X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");
+  }
+fputc('\n', f);
+
+for (address_item * addr = addr_defer; addr; addr = addr->next)
+  {
+  host_item * hu;
+
+  print_dsn_addr_action(f, addr, US"delayed", US"4.0.0");
+
+  if ((hu = addr->host_used) && hu->name)
+    {
+    fprintf(f, "Remote-MTA: dns; %s\n", hu->name);
+    print_dsn_diagnostic_code(addr, f);
+    }
+  fputc('\n', f);
+  }
+
+fprintf(f, "--%s\n"
+    "Content-type: text/rfc822-headers\n\n",
+  bound);
+
+fflush(f);
+/* header only as required by RFC. only failure DSN needs to honor RET=FULL */
+tctx.u.fd = fileno(f);
+tctx.options = topt_add_return_path | topt_no_body;
+transport_filter_argv = NULL;   /* Just in case */
+return_path = sender_address;   /* In case not previously set */
+
+/* Write the original email out */
+/*XXX no checking for failure!  buggy! */
+transport_write_message(&tctx, 0);
+fflush(f);
+
+fprintf(f,"\n--%s--\n", bound);
+
+fflush(f);
+
+/* Close and wait for child process to complete, without a timeout.
+If there's an error, don't update the count. */
+
+(void)fclose(f);
+return child_close(pid, 0) == 0;
+}
+
+/*************************************************
 *              Deliver one message               *
 *************************************************/
 
@@ -8115,7 +8290,7 @@ was set just to keep the message on the spool, so there is nothing to do here.
 
 else if (addr_defer != (address_item *)(+1))
   {
-  uschar *recipients = US"";
+  uschar * recipients = US"";
   BOOL want_warning_msg = FALSE;
 
   deliver_domain = testflag(addr_defer, af_pfr)
@@ -8123,7 +8298,7 @@ else if (addr_defer != (address_item *)(+1))
 
   for (address_item * addr = addr_defer; addr; addr = addr->next)
     {
-    address_item *otaddr;
+    address_item * otaddr;
 
     if (addr->basic_errno > ERRNO_WARN_BASE) want_warning_msg = TRUE;
 
@@ -8245,181 +8420,11 @@ else if (addr_defer != (address_item *)(+1))
     have been. */
 
     if (warning_count < count)
-      {
-      header_line *h;
-      int fd;
-      pid_t pid = child_open_exim(&fd, US"delay-warning-message");
-
-      if (pid > 0)
-        {
-        uschar * wmf_text;
-        FILE * wmf = NULL;
-        FILE * f = fdopen(fd, "wb");
-	uschar * bound;
-	transport_ctx tctx = {{0}};
-
-        if (warn_message_file)
-	  wmf = expand_open(warn_message_file,
-		  US"warn_message_file", US"warning");
-
-        warnmsg_recipients = recipients;
-        warnmsg_delay = queue_time < 120*60
-	  ? string_sprintf("%d minutes", show_time/60)
-	  : string_sprintf("%d hours", show_time/3600);
-
-        if (errors_reply_to)
-          fprintf(f, "Reply-To: %s\n", errors_reply_to);
-        fprintf(f, "Auto-Submitted: auto-replied\n");
-        moan_write_from(f);
-        fprintf(f, "To: %s\n", recipients);
-	moan_write_references(f, NULL);
-
-        /* generated boundary string and output MIME-Headers */
-        bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
-
-        fprintf(f, "Content-Type: multipart/report;"
-	    " report-type=delivery-status; boundary=%s\n"
-	    "MIME-Version: 1.0\n",
-	  bound);
-
-        if ((wmf_text = next_emf(wmf, US"header")))
-          fprintf(f, "%s\n", wmf_text);
-        else
-          fprintf(f, "Subject: Warning: message %s delayed %s\n\n",
-            message_id, warnmsg_delay);
-
-        /* output human readable part as text/plain section */
-        fprintf(f, "--%s\n"
-	    "Content-type: text/plain; charset=us-ascii\n\n",
-	  bound);
-
-        if ((wmf_text = next_emf(wmf, US"intro")))
-	  fprintf(f, "%s", CS wmf_text);
-	else
-          {
-          fprintf(f,
-"This message was created automatically by mail delivery software.\n");
-
-          if (Ustrcmp(recipients, sender_address) == 0)
-            fprintf(f,
-"A message that you sent has not yet been delivered to one or more of its\n"
-"recipients after more than ");
-
-          else
-	    fprintf(f,
-"A message sent by\n\n  <%s>\n\n"
-"has not yet been delivered to one or more of its recipients after more than \n",
-	      sender_address);
-
-          fprintf(f, "%s on the queue on %s.\n\n"
-	      "The message identifier is:     %s\n",
-	    warnmsg_delay, primary_hostname, message_id);
-
-          for (h = header_list; h; h = h->next)
-            if (strncmpic(h->text, US"Subject:", 8) == 0)
-              fprintf(f, "The subject of the message is: %s", h->text + 9);
-            else if (strncmpic(h->text, US"Date:", 5) == 0)
-              fprintf(f, "The date of the message is:    %s", h->text + 6);
-          fputc('\n', f);
-
-          fprintf(f, "The address%s to which the message has not yet been "
-            "delivered %s:\n",
-            !addr_defer->next ? "" : "es",
-            !addr_defer->next ? "is": "are");
-          }
-
-        /* List the addresses, with error information if allowed */
-
-        fputc('\n', f);
-	for (address_item * addr = addr_defer; addr; addr = addr->next)
-          {
-          if (print_address_information(addr, f, US"  ", US"\n    ", US""))
-            print_address_error(addr, f, US"Delay reason: ");
-          fputc('\n', f);
-          }
-        fputc('\n', f);
-
-        /* Final text */
-
-        if (wmf)
-          {
-          if ((wmf_text = next_emf(wmf, US"final")))
-	    fprintf(f, "%s", CS wmf_text);
-          (void)fclose(wmf);
-          }
-        else
-          {
-          fprintf(f,
-"No action is required on your part. Delivery attempts will continue for\n"
-"some time, and this warning may be repeated at intervals if the message\n"
-"remains undelivered. Eventually the mail delivery software will give up,\n"
-"and when that happens, the message will be returned to you.\n");
-          }
-
-        /* output machine readable part */
-        fprintf(f, "\n--%s\n"
-	    "Content-type: message/delivery-status\n\n"
-	    "Reporting-MTA: dns; %s\n",
-	  bound,
-	  smtp_active_hostname);
-
-
-        if (dsn_envid)
-	  {
-          /* must be decoded from xtext: see RFC 3461:6.3a */
-          uschar *xdec_envid;
-          if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
-            fprintf(f,"Original-Envelope-ID: %s\n", dsn_envid);
-          else
-            fprintf(f,"X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");
-          }
-        fputc('\n', f);
-
-	for (address_item * addr = addr_defer; addr; addr = addr->next)
-          {
-	  host_item * hu;
-
-	  print_dsn_addr_action(f, addr, US"delayed", US"4.0.0");
-
-          if ((hu = addr->host_used) && hu->name)
-            {
-            fprintf(f, "Remote-MTA: dns; %s\n", hu->name);
-            print_dsn_diagnostic_code(addr, f);
-            }
-	  fputc('\n', f);
-          }
-
-        fprintf(f, "--%s\n"
-	    "Content-type: text/rfc822-headers\n\n",
-	  bound);
-
-        fflush(f);
-        /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
-	tctx.u.fd = fileno(f);
-        tctx.options = topt_add_return_path | topt_no_body;
-        transport_filter_argv = NULL;   /* Just in case */
-        return_path = sender_address;   /* In case not previously set */
-
-        /* Write the original email out */
-	/*XXX no checking for failure!  buggy! */
-        transport_write_message(&tctx, 0);
-        fflush(f);
-
-        fprintf(f,"\n--%s--\n", bound);
-
-        fflush(f);
-
-        /* Close and wait for child process to complete, without a timeout.
-        If there's an error, don't update the count. */
-
-        (void)fclose(f);
-        if (child_close(pid, 0) == 0)
-          {
-          warning_count = count;
-          update_spool = TRUE;    /* Ensure spool rewritten */
-          }
-        }
-      }
+      if (send_warning_message(recipients, queue_time, show_time))
+	{
+	warning_count = count;
+	update_spool = TRUE;    /* Ensure spool rewritten */
+	}
     }
 
   /* Clear deliver_domain */

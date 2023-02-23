@@ -1114,8 +1114,8 @@ extern uschar *uucp_from_pattern;      /* For recognizing "From " lines */
 extern uschar *uucp_from_sender;       /* For building the sender */
 
 extern uschar *warn_message_file;      /* Template for warning messages */
-extern uschar *warnmsg_delay;          /* String form of delay time */
-extern uschar *warnmsg_recipients;     /* Recipients of warning message */
+extern const uschar *warnmsg_delay;    /* String form of delay time */
+extern const uschar *warnmsg_recipients; /* Recipients of warning message */
 extern BOOL    write_rejectlog;        /* Control of reject logging */
 
 extern uschar *verify_mode;	       /* Running a router in verify mode */

@@ -1657,8 +1657,8 @@ uschar *version_string         = US"?";
 
 uschar *warn_message_file      = NULL;
 int     warning_count          = 0;
-uschar *warnmsg_delay          = NULL;
-uschar *warnmsg_recipients     = NULL;
+const uschar *warnmsg_delay    = NULL;
+const uschar *warnmsg_recipients = NULL;
 
 
 /*  End of globals.c */
