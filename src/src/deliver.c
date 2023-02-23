@@ -38,8 +38,8 @@ enum { RECIP_ACCEPT, RECIP_IGNORE, RECIP_DEFER,
 
 /* Mutually recursive functions for marking addresses done. */
 
-static void child_done(address_item *, uschar *);
-static void address_done(address_item *, uschar *);
+static void child_done(address_item *, const uschar *);
+static void address_done(address_item *, const uschar *);
 
 /* Table for turning base-62 numbers into binary */
 
@@ -663,7 +663,7 @@ Returns:      nothing
 */
 
 static void
-address_done(address_item *addr, uschar *now)
+address_done(address_item * addr, const uschar * now)
 {
 update_spool = TRUE;        /* Ensure spool gets updated */
 
@@ -720,7 +720,7 @@ Returns:    nothing
 */
 
 static void
-child_done(address_item *addr, uschar *now)
+child_done(address_item * addr, const uschar * now)
 {
 while (addr->parent)
   {
@@ -1458,12 +1458,12 @@ Returns:       nothing
 */
 
 static void
-post_process_one(address_item *addr, int result, int logflags, int driver_type,
+post_process_one(address_item * addr, int result, int logflags, int driver_type,
   int logchar)
 {
-uschar *now = tod_stamp(tod_log);
-uschar *driver_kind = NULL;
-uschar *driver_name = NULL;
+uschar * now = tod_stamp(tod_log);
+uschar * driver_kind = NULL;
+uschar * driver_name = NULL;
 
 DEBUG(D_deliver) debug_printf("post-process %s (%d)\n", addr->address, result);
 
@@ -2316,7 +2316,7 @@ if ((pid = exim_fork(US"delivery-local")) == 0)
 
   if (addr->transport->setup)
     switch((addr->transport->setup)(addr->transport, addr, NULL, uid, gid,
-           &(addr->message)))
+           &addr->message))
       {
       case DEFER:
 	addr->transport_return = DEFER;
@@ -3481,7 +3481,7 @@ while (!done)
     guarantee it won't be split in the pipe. */
 
 #ifndef DISABLE_TLS
-    case 'X':
+    case 'X':		/* TLS details */
       if (!addr) goto ADDR_MISMATCH;          /* Below, in 'A' handler */
       switch (*subid)
 	{
@@ -3565,7 +3565,7 @@ while (!done)
       DEBUG(D_deliver) debug_printf("DSN read: addr->dsn_aware = %d\n", addr->dsn_aware);
       break;
 
-    case 'A':
+    case 'A':		/* Per-address info */
       if (!addr)
 	{
 	ADDR_MISMATCH:
@@ -3609,7 +3609,7 @@ while (!done)
 	  break;
 #endif
 
-	case '0':
+	case '0':	/* results of trying to send to this address */
 	  DEBUG(D_deliver) debug_printf("A0 %s tret %d\n", addr->address, *ptr);
 	  addr->transport_return = *ptr++;
 	  addr->special_action = *ptr++;
@@ -3758,7 +3758,7 @@ Returns:     nothing
 */
 
 static void
-remote_post_process(address_item *addr, int logflags, uschar *msg,
+remote_post_process(address_item * addr, int logflags, uschar * msg,
   BOOL fallback)
 {
 /* If any host addresses were found to be unusable, add them to the unusable
@@ -3773,7 +3773,7 @@ into the special_action field for each successful delivery. */
 
 while (addr)
   {
-  address_item *next = addr->next;
+  address_item * next = addr->next;
 
   /* If msg == NULL (normal processing) and the result is DEFER and we are
   processing the main hosts and there are fallback hosts available, put the
@@ -4098,7 +4098,7 @@ par_reduce(int max, BOOL fallback)
 {
 while (parcount > max)
   {
-  address_item *doneaddr = par_wait();
+  address_item * doneaddr = par_wait();
   if (!doneaddr)
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
@@ -5553,6 +5553,447 @@ return fp;
 }
 
 /*************************************************
+*              Send a bounce message             *
+*************************************************/
+
+/* Find the error address for the first address, then send a message that
+includes all failed addresses that have the same error address. Note the
+bounce_recipient is a global so that it can be accessed by $bounce_recipient
+while creating a customized error message. */
+
+static void
+send_bounce_message(time_t now, const uschar * logtod)
+{
+pid_t pid;
+int fd;
+
+if (!(bounce_recipient = addr_failed->prop.errors_address))
+  bounce_recipient = sender_address;
+
+/* Make a subprocess to send a message, using its stdin */
+
+if ((pid = child_open_exim(&fd, US"bounce-message")) < 0)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
+    "create child process to send failure message: %s", getpid(),
+    getppid(), strerror(errno));
+
+/* Creation of child succeeded */
+
+else
+  {
+  int ch, rc, filecount = 0, rcount = 0;
+  uschar * bcc, * emf_text;
+  FILE * fp = fdopen(fd, "wb"), * emf = NULL;
+  BOOL to_sender = strcmpic(sender_address, bounce_recipient) == 0;
+  int max = (bounce_return_size_limit/DELIVER_IN_BUFFER_SIZE + 1) *
+    DELIVER_IN_BUFFER_SIZE;
+  uschar * bound, * dsnlimitmsg, * dsnnotifyhdr;
+  int topt;
+  address_item ** paddr;
+  address_item * msgchain = NULL, ** pmsgchain = &msgchain;
+  address_item * handled_addr = NULL;
+
+  DEBUG(D_deliver)
+    debug_printf("sending error message to: %s\n", bounce_recipient);
+
+  /* Scan the addresses for all that have the same errors address, removing
+  them from the addr_failed chain, and putting them on msgchain. */
+
+  paddr = &addr_failed;
+  for (address_item * addr = addr_failed; addr; addr = *paddr)
+    if (Ustrcmp(bounce_recipient, addr->prop.errors_address
+	  ? addr->prop.errors_address : sender_address) == 0)
+      {                          /* The same - dechain */
+      *paddr = addr->next;
+      *pmsgchain = addr;
+      addr->next = NULL;
+      pmsgchain = &addr->next;
+      }
+    else
+      paddr = &addr->next;        /* Not the same; skip */
+
+  /* Include X-Failed-Recipients: for automatic interpretation, but do
+  not let any one header line get too long. We do this by starting a
+  new header every 50 recipients. Omit any addresses for which the
+  "hide_child" flag is set. */
+
+  for (address_item * addr = msgchain; addr; addr = addr->next)
+    {
+    if (testflag(addr, af_hide_child)) continue;
+    if (rcount >= 50)
+      {
+      fprintf(fp, "\n");
+      rcount = 0;
+      }
+    fprintf(fp, "%s%s",
+      rcount++ == 0
+      ? "X-Failed-Recipients: "
+      : ",\n  ",
+      testflag(addr, af_pfr) && addr->parent
+      ? string_printing(addr->parent->address)
+      : string_printing(addr->address));
+    }
+  if (rcount > 0) fprintf(fp, "\n");
+
+  /* Output the standard headers */
+
+  if (errors_reply_to)
+    fprintf(fp, "Reply-To: %s\n", errors_reply_to);
+  fprintf(fp, "Auto-Submitted: auto-replied\n");
+  moan_write_from(fp);
+  fprintf(fp, "To: %s\n", bounce_recipient);
+  moan_write_references(fp, NULL);
+
+  /* generate boundary string and output MIME-Headers */
+  bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
+
+  fprintf(fp, "Content-Type: multipart/report;"
+	" report-type=delivery-status; boundary=%s\n"
+      "MIME-Version: 1.0\n",
+    bound);
+
+  /* Open a template file if one is provided. Log failure to open, but
+  carry on - default texts will be used. */
+
+  if (bounce_message_file)
+    emf = expand_open(bounce_message_file,
+	    US"bounce_message_file", US"error");
+
+  /* Quietly copy to configured additional addresses if required. */
+
+  if ((bcc = moan_check_errorcopy(bounce_recipient)))
+    fprintf(fp, "Bcc: %s\n", bcc);
+
+  /* The texts for the message can be read from a template file; if there
+  isn't one, or if it is too short, built-in texts are used. The first
+  emf text is a Subject: and any other headers. */
+
+  if ((emf_text = next_emf(emf, US"header")))
+    fprintf(fp, "%s\n", emf_text);
+  else
+    fprintf(fp, "Subject: Mail delivery failed%s\n\n",
+      to_sender? ": returning message to sender" : "");
+
+  /* output human readable part as text/plain section */
+  fprintf(fp, "--%s\n"
+      "Content-type: text/plain; charset=us-ascii\n\n",
+    bound);
+
+  if ((emf_text = next_emf(emf, US"intro")))
+    fprintf(fp, "%s", CS emf_text);
+  else
+    {
+    fprintf(fp,
+/* This message has been reworded several times. It seems to be confusing to
+somebody, however it is worded. I have retreated to the original, simple
+wording. */
+"This message was created automatically by mail delivery software.\n");
+
+    if (bounce_message_text)
+      fprintf(fp, "%s", CS bounce_message_text);
+    if (to_sender)
+      fprintf(fp,
+"\nA message that you sent could not be delivered to one or more of its\n"
+"recipients. This is a permanent error. The following address(es) failed:\n");
+    else
+      fprintf(fp,
+"\nA message sent by\n\n  <%s>\n\n"
+"could not be delivered to one or more of its recipients. The following\n"
+"address(es) failed:\n", sender_address);
+    }
+  fputc('\n', fp);
+
+  /* Process the addresses, leaving them on the msgchain if they have a
+  file name for a return message. (There has already been a check in
+  post_process_one() for the existence of data in the message file.) A TRUE
+  return from print_address_information() means that the address is not
+  hidden. */
+
+  paddr = &msgchain;
+  for (address_item * addr = msgchain; addr; addr = *paddr)
+    {
+    if (print_address_information(addr, fp, US"  ", US"\n    ", US""))
+      print_address_error(addr, fp, US"");
+
+    /* End the final line for the address */
+
+    fputc('\n', fp);
+
+    /* Leave on msgchain if there's a return file. */
+
+    if (addr->return_file >= 0)
+      {
+      paddr = &(addr->next);
+      filecount++;
+      }
+
+    /* Else save so that we can tick off the recipient when the
+    message is sent. */
+
+    else
+      {
+      *paddr = addr->next;
+      addr->next = handled_addr;
+      handled_addr = addr;
+      }
+    }
+
+  fputc('\n', fp);
+
+  /* Get the next text, whether we need it or not, so as to be
+  positioned for the one after. */
+
+  emf_text = next_emf(emf, US"generated text");
+
+  /* If there were any file messages passed by the local transports,
+  include them in the message. Then put the address on the handled chain.
+  In the case of a batch of addresses that were all sent to the same
+  transport, the return_file field in all of them will contain the same
+  fd, and the return_filename field in the *last* one will be set (to the
+  name of the file). */
+
+  if (msgchain)
+    {
+    address_item * nextaddr;
+
+    if (emf_text)
+      fprintf(fp, "%s", CS emf_text);
+    else
+      fprintf(fp,
+	"The following text was generated during the delivery "
+	"attempt%s:\n", (filecount > 1)? "s" : "");
+
+    for (address_item * addr = msgchain; addr; addr = nextaddr)
+      {
+      FILE *fm;
+      address_item *topaddr = addr;
+
+      /* List all the addresses that relate to this file */
+
+      fputc('\n', fp);
+      while(addr)                   /* Insurance */
+	{
+	print_address_information(addr, fp, US"------ ",  US"\n       ",
+	  US" ------\n");
+	if (addr->return_filename) break;
+	addr = addr->next;
+	}
+      fputc('\n', fp);
+
+      /* Now copy the file */
+
+      if (!(fm = Ufopen(addr->return_filename, "rb")))
+	fprintf(fp, "    +++ Exim error... failed to open text file: %s\n",
+	  strerror(errno));
+      else
+	{
+	while ((ch = fgetc(fm)) != EOF) fputc(ch, fp);
+	(void)fclose(fm);
+	}
+      Uunlink(addr->return_filename);
+
+      /* Can now add to handled chain, first fishing off the next
+      address on the msgchain. */
+
+      nextaddr = addr->next;
+      addr->next = handled_addr;
+      handled_addr = topaddr;
+      }
+    fputc('\n', fp);
+    }
+
+  /* output machine readable part */
+#ifdef SUPPORT_I18N
+  if (message_smtputf8)
+    fprintf(fp, "--%s\n"
+	"Content-type: message/global-delivery-status\n\n"
+	"Reporting-MTA: dns; %s\n",
+      bound, smtp_active_hostname);
+  else
+#endif
+    fprintf(fp, "--%s\n"
+	"Content-type: message/delivery-status\n\n"
+	"Reporting-MTA: dns; %s\n",
+      bound, smtp_active_hostname);
+
+  if (dsn_envid)
+    {
+    /* must be decoded from xtext: see RFC 3461:6.3a */
+    uschar *xdec_envid;
+    if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
+      fprintf(fp, "Original-Envelope-ID: %s\n", dsn_envid);
+    else
+      fprintf(fp, "X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");
+    }
+  fputc('\n', fp);
+
+  for (address_item * addr = handled_addr; addr; addr = addr->next)
+    {
+    host_item * hu;
+
+    print_dsn_addr_action(fp, addr, US"failed", US"5.0.0");
+
+    if ((hu = addr->host_used) && hu->name)
+      {
+      fprintf(fp, "Remote-MTA: dns; %s\n", hu->name);
+#ifdef EXPERIMENTAL_DSN_INFO
+      {
+      const uschar * s;
+      if (hu->address)
+	{
+	uschar * p = hu->port == 25
+	  ? US"" : string_sprintf(":%d", hu->port);
+	fprintf(fp, "Remote-MTA: X-ip; [%s]%s\n", hu->address, p);
+	}
+      if ((s = addr->smtp_greeting) && *s)
+	fprintf(fp, "X-Remote-MTA-smtp-greeting: X-str; %.900s\n", s);
+      if ((s = addr->helo_response) && *s)
+	fprintf(fp, "X-Remote-MTA-helo-response: X-str; %.900s\n", s);
+      if ((s = addr->message) && *s)
+	fprintf(fp, "X-Exim-Diagnostic: X-str; %.900s\n", s);
+      }
+#endif
+      print_dsn_diagnostic_code(addr, fp);
+      }
+    fputc('\n', fp);
+    }
+
+  /* Now copy the message, trying to give an intelligible comment if
+  it is too long for it all to be copied. The limit isn't strictly
+  applied because of the buffering. There is, however, an option
+  to suppress copying altogether. */
+
+  emf_text = next_emf(emf, US"copy");
+
+  /* add message body
+     we ignore the intro text from template and add
+     the text for bounce_return_size_limit at the end.
+
+     bounce_return_message is ignored
+     in case RET= is defined we honor these values
+     otherwise bounce_return_body is honored.
+
+     bounce_return_size_limit is always honored.
+  */
+
+  fprintf(fp, "--%s\n", bound);
+
+  dsnlimitmsg = US"X-Exim-DSN-Information: Due to administrative limits only headers are returned";
+  dsnnotifyhdr = NULL;
+  topt = topt_add_return_path;
+
+  /* RET=HDRS? top priority */
+  if (dsn_ret == dsn_ret_hdrs)
+    topt |= topt_no_body;
+  else
+    {
+    struct stat statbuf;
+
+    /* no full body return at all? */
+    if (!bounce_return_body)
+      {
+      topt |= topt_no_body;
+      /* add header if we overrule RET=FULL */
+      if (dsn_ret == dsn_ret_full)
+	dsnnotifyhdr = dsnlimitmsg;
+      }
+    /* line length limited... return headers only if oversize */
+    /* size limited ... return headers only if limit reached */
+    else if (  max_received_linelength > bounce_return_linesize_limit
+	    || (  bounce_return_size_limit > 0
+	       && fstat(deliver_datafile, &statbuf) == 0
+	       && statbuf.st_size > max
+	    )  )
+      {
+      topt |= topt_no_body;
+      dsnnotifyhdr = dsnlimitmsg;
+      }
+    }
+
+#ifdef SUPPORT_I18N
+  if (message_smtputf8)
+    fputs(topt & topt_no_body ? "Content-type: message/global-headers\n\n"
+			      : "Content-type: message/global\n\n",
+	  fp);
+  else
+#endif
+    fputs(topt & topt_no_body ? "Content-type: text/rfc822-headers\n\n"
+			      : "Content-type: message/rfc822\n\n",
+	  fp);
+
+  fflush(fp);
+  transport_filter_argv = NULL;   /* Just in case */
+  return_path = sender_address;   /* In case not previously set */
+    {			      /* Dummy transport for headers add */
+    transport_ctx tctx = {{0}};
+    transport_instance tb = {0};
+
+    tctx.u.fd = fileno(fp);
+    tctx.tblock = &tb;
+    tctx.options = topt;
+    tb.add_headers = dsnnotifyhdr;
+
+    /*XXX no checking for failure!  buggy! */
+    transport_write_message(&tctx, 0);
+    }
+  fflush(fp);
+
+  /* we never add the final text. close the file */
+  if (emf)
+    (void)fclose(emf);
+
+  fprintf(fp, "\n--%s--\n", bound);
+
+  /* Close the file, which should send an EOF to the child process
+  that is receiving the message. Wait for it to finish. */
+
+  (void)fclose(fp);
+  rc = child_close(pid, 0);     /* Waits for child to close, no timeout */
+
+  /* If the process failed, there was some disaster in setting up the
+  error message. Unless the message is very old, ensure that addr_defer
+  is non-null, which will have the effect of leaving the message on the
+  spool. The failed addresses will get tried again next time. However, we
+  don't really want this to happen too often, so freeze the message unless
+  there are some genuine deferred addresses to try. To do this we have
+  to call spool_write_header() here, because with no genuine deferred
+  addresses the normal code below doesn't get run. */
+
+  if (rc != 0)
+    {
+    uschar *s = US"";
+    if (now - received_time.tv_sec < retry_maximum_timeout && !addr_defer)
+      {
+      addr_defer = (address_item *)(+1);
+      f.deliver_freeze = TRUE;
+      deliver_frozen_at = time(NULL);
+      /* Panic-dies on error */
+      (void)spool_write_header(message_id, SW_DELIVERING, NULL);
+      s = US" (frozen)";
+      }
+    deliver_msglog("Process failed (%d) when writing error message "
+      "to %s%s", rc, bounce_recipient, s);
+    log_write(0, LOG_MAIN, "Process failed (%d) when writing error message "
+      "to %s%s", rc, bounce_recipient, s);
+    }
+
+  /* The message succeeded. Ensure that the recipients that failed are
+  now marked finished with on the spool and their parents updated. */
+
+  else
+    {
+    for (address_item * addr = handled_addr; addr; addr = addr->next)
+      {
+      address_done(addr, logtod);
+      child_done(addr, logtod);
+      }
+    /* Panic-dies on error */
+    (void)spool_write_header(message_id, SW_DELIVERING, NULL);
+    }
+  }
+}
+
+/*************************************************
 *              Deliver one message               *
 *************************************************/
 
@@ -6394,7 +6835,7 @@ deliver_out_buffer = store_malloc(DELIVER_OUT_BUFFER_SIZE);
 f.header_rewritten = FALSE;          /* No headers rewritten yet */
 while (addr_new)           /* Loop until all addresses dealt with */
   {
-  address_item *addr, *parent;
+  address_item * addr, * parent;
 
   /* Failure to open the retry database is treated the same as if it does
   not exist. In both cases, dbm_file is NULL. */
@@ -7449,7 +7890,7 @@ if (addr_senddsn)
 
     if (dsn_envid)
       {			/* must be decoded from xtext: see RFC 3461:6.3a */
-      uschar *xdec_envid;
+      uschar * xdec_envid;
       if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
         fprintf(f, "Original-Envelope-ID: %s\n", dsn_envid);
       else
@@ -7501,14 +7942,8 @@ requirements. */
 
 while (addr_failed)
   {
-  pid_t pid;
-  int fd;
-  uschar *logtod = tod_stamp(tod_log);
-  address_item *addr;
-  address_item *handled_addr = NULL;
-  address_item **paddr;
-  address_item *msgchain = NULL;
-  address_item **pmsgchain = &msgchain;
+  const uschar * logtod = tod_stamp(tod_log);
+  address_item * addr;
 
   /* There are weird cases when logging is disabled in the transport. However,
   there may not be a transport (address failed by a router). */
@@ -7578,439 +8013,10 @@ while (addr_failed)
 
   /* Otherwise, handle the sending of a message. Find the error address for
   the first address, then send a message that includes all failed addresses
-  that have the same error address. Note the bounce_recipient is a global so
-  that it can be accessed by $bounce_recipient while creating a customized
-  error message. */
+  that have the same error address. */
 
   else
-    {
-    if (!(bounce_recipient = addr_failed->prop.errors_address))
-      bounce_recipient = sender_address;
-
-    /* Make a subprocess to send a message */
-
-    if ((pid = child_open_exim(&fd, US"bounce-message")) < 0)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
-        "create child process to send failure message: %s", getpid(),
-        getppid(), strerror(errno));
-
-    /* Creation of child succeeded */
-
-    else
-      {
-      int ch, rc;
-      int filecount = 0;
-      int rcount = 0;
-      uschar *bcc, *emf_text;
-      FILE * fp = fdopen(fd, "wb");
-      FILE * emf = NULL;
-      BOOL to_sender = strcmpic(sender_address, bounce_recipient) == 0;
-      int max = (bounce_return_size_limit/DELIVER_IN_BUFFER_SIZE + 1) *
-        DELIVER_IN_BUFFER_SIZE;
-      uschar * bound;
-      uschar *dsnlimitmsg;
-      uschar *dsnnotifyhdr;
-      int topt;
-
-      DEBUG(D_deliver)
-        debug_printf("sending error message to: %s\n", bounce_recipient);
-
-      /* Scan the addresses for all that have the same errors address, removing
-      them from the addr_failed chain, and putting them on msgchain. */
-
-      paddr = &addr_failed;
-      for (addr = addr_failed; addr; addr = *paddr)
-        if (Ustrcmp(bounce_recipient, addr->prop.errors_address
-	      ? addr->prop.errors_address : sender_address) == 0)
-          {                          /* The same - dechain */
-          *paddr = addr->next;
-          *pmsgchain = addr;
-          addr->next = NULL;
-          pmsgchain = &(addr->next);
-          }
-        else
-          paddr = &addr->next;        /* Not the same; skip */
-
-      /* Include X-Failed-Recipients: for automatic interpretation, but do
-      not let any one header line get too long. We do this by starting a
-      new header every 50 recipients. Omit any addresses for which the
-      "hide_child" flag is set. */
-
-      for (addr = msgchain; addr; addr = addr->next)
-        {
-        if (testflag(addr, af_hide_child)) continue;
-        if (rcount >= 50)
-          {
-          fprintf(fp, "\n");
-          rcount = 0;
-          }
-        fprintf(fp, "%s%s",
-          rcount++ == 0
-	  ? "X-Failed-Recipients: "
-	  : ",\n  ",
-          testflag(addr, af_pfr) && addr->parent
-	  ? string_printing(addr->parent->address)
-	  : string_printing(addr->address));
-        }
-      if (rcount > 0) fprintf(fp, "\n");
-
-      /* Output the standard headers */
-
-      if (errors_reply_to)
-        fprintf(fp, "Reply-To: %s\n", errors_reply_to);
-      fprintf(fp, "Auto-Submitted: auto-replied\n");
-      moan_write_from(fp);
-      fprintf(fp, "To: %s\n", bounce_recipient);
-      moan_write_references(fp, NULL);
-
-      /* generate boundary string and output MIME-Headers */
-      bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
-
-      fprintf(fp, "Content-Type: multipart/report;"
-	    " report-type=delivery-status; boundary=%s\n"
-	  "MIME-Version: 1.0\n",
-	bound);
-
-      /* Open a template file if one is provided. Log failure to open, but
-      carry on - default texts will be used. */
-
-      if (bounce_message_file)
-	emf = expand_open(bounce_message_file,
-		US"bounce_message_file", US"error");
-
-      /* Quietly copy to configured additional addresses if required. */
-
-      if ((bcc = moan_check_errorcopy(bounce_recipient)))
-	fprintf(fp, "Bcc: %s\n", bcc);
-
-      /* The texts for the message can be read from a template file; if there
-      isn't one, or if it is too short, built-in texts are used. The first
-      emf text is a Subject: and any other headers. */
-
-      if ((emf_text = next_emf(emf, US"header")))
-	fprintf(fp, "%s\n", emf_text);
-      else
-        fprintf(fp, "Subject: Mail delivery failed%s\n\n",
-          to_sender? ": returning message to sender" : "");
-
-      /* output human readable part as text/plain section */
-      fprintf(fp, "--%s\n"
-	  "Content-type: text/plain; charset=us-ascii\n\n",
-	bound);
-
-      if ((emf_text = next_emf(emf, US"intro")))
-	fprintf(fp, "%s", CS emf_text);
-      else
-        {
-        fprintf(fp,
-/* This message has been reworded several times. It seems to be confusing to
-somebody, however it is worded. I have retreated to the original, simple
-wording. */
-"This message was created automatically by mail delivery software.\n");
-
-        if (bounce_message_text)
-	  fprintf(fp, "%s", CS bounce_message_text);
-        if (to_sender)
-          fprintf(fp,
-"\nA message that you sent could not be delivered to one or more of its\n"
-"recipients. This is a permanent error. The following address(es) failed:\n");
-        else
-          fprintf(fp,
-"\nA message sent by\n\n  <%s>\n\n"
-"could not be delivered to one or more of its recipients. The following\n"
-"address(es) failed:\n", sender_address);
-        }
-      fputc('\n', fp);
-
-      /* Process the addresses, leaving them on the msgchain if they have a
-      file name for a return message. (There has already been a check in
-      post_process_one() for the existence of data in the message file.) A TRUE
-      return from print_address_information() means that the address is not
-      hidden. */
-
-      paddr = &msgchain;
-      for (addr = msgchain; addr; addr = *paddr)
-        {
-        if (print_address_information(addr, fp, US"  ", US"\n    ", US""))
-          print_address_error(addr, fp, US"");
-
-        /* End the final line for the address */
-
-        fputc('\n', fp);
-
-        /* Leave on msgchain if there's a return file. */
-
-        if (addr->return_file >= 0)
-          {
-          paddr = &(addr->next);
-          filecount++;
-          }
-
-        /* Else save so that we can tick off the recipient when the
-        message is sent. */
-
-        else
-          {
-          *paddr = addr->next;
-          addr->next = handled_addr;
-          handled_addr = addr;
-          }
-        }
-
-      fputc('\n', fp);
-
-      /* Get the next text, whether we need it or not, so as to be
-      positioned for the one after. */
-
-      emf_text = next_emf(emf, US"generated text");
-
-      /* If there were any file messages passed by the local transports,
-      include them in the message. Then put the address on the handled chain.
-      In the case of a batch of addresses that were all sent to the same
-      transport, the return_file field in all of them will contain the same
-      fd, and the return_filename field in the *last* one will be set (to the
-      name of the file). */
-
-      if (msgchain)
-        {
-        address_item *nextaddr;
-
-        if (emf_text)
-	  fprintf(fp, "%s", CS emf_text);
-	else
-          fprintf(fp,
-            "The following text was generated during the delivery "
-            "attempt%s:\n", (filecount > 1)? "s" : "");
-
-        for (addr = msgchain; addr; addr = nextaddr)
-          {
-          FILE *fm;
-          address_item *topaddr = addr;
-
-          /* List all the addresses that relate to this file */
-
-	  fputc('\n', fp);
-          while(addr)                   /* Insurance */
-            {
-            print_address_information(addr, fp, US"------ ",  US"\n       ",
-              US" ------\n");
-            if (addr->return_filename) break;
-            addr = addr->next;
-            }
-	  fputc('\n', fp);
-
-          /* Now copy the file */
-
-          if (!(fm = Ufopen(addr->return_filename, "rb")))
-            fprintf(fp, "    +++ Exim error... failed to open text file: %s\n",
-              strerror(errno));
-          else
-            {
-            while ((ch = fgetc(fm)) != EOF) fputc(ch, fp);
-            (void)fclose(fm);
-            }
-          Uunlink(addr->return_filename);
-
-          /* Can now add to handled chain, first fishing off the next
-          address on the msgchain. */
-
-          nextaddr = addr->next;
-          addr->next = handled_addr;
-          handled_addr = topaddr;
-          }
-	fputc('\n', fp);
-        }
-
-      /* output machine readable part */
-#ifdef SUPPORT_I18N
-      if (message_smtputf8)
-	fprintf(fp, "--%s\n"
-	    "Content-type: message/global-delivery-status\n\n"
-	    "Reporting-MTA: dns; %s\n",
-	  bound, smtp_active_hostname);
-      else
-#endif
-	fprintf(fp, "--%s\n"
-	    "Content-type: message/delivery-status\n\n"
-	    "Reporting-MTA: dns; %s\n",
-	  bound, smtp_active_hostname);
-
-      if (dsn_envid)
-	{
-        /* must be decoded from xtext: see RFC 3461:6.3a */
-        uschar *xdec_envid;
-        if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
-          fprintf(fp, "Original-Envelope-ID: %s\n", dsn_envid);
-        else
-          fprintf(fp, "X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");
-        }
-      fputc('\n', fp);
-
-      for (addr = handled_addr; addr; addr = addr->next)
-        {
-	host_item * hu;
-
-	print_dsn_addr_action(fp, addr, US"failed", US"5.0.0");
-
-        if ((hu = addr->host_used) && hu->name)
-	  {
-	  fprintf(fp, "Remote-MTA: dns; %s\n", hu->name);
-#ifdef EXPERIMENTAL_DSN_INFO
-	  {
-	  const uschar * s;
-	  if (hu->address)
-	    {
-	    uschar * p = hu->port == 25
-	      ? US"" : string_sprintf(":%d", hu->port);
-	    fprintf(fp, "Remote-MTA: X-ip; [%s]%s\n", hu->address, p);
-	    }
-	  if ((s = addr->smtp_greeting) && *s)
-	    fprintf(fp, "X-Remote-MTA-smtp-greeting: X-str; %.900s\n", s);
-	  if ((s = addr->helo_response) && *s)
-	    fprintf(fp, "X-Remote-MTA-helo-response: X-str; %.900s\n", s);
-	  if ((s = addr->message) && *s)
-	    fprintf(fp, "X-Exim-Diagnostic: X-str; %.900s\n", s);
-	  }
-#endif
-	  print_dsn_diagnostic_code(addr, fp);
-	  }
-	fputc('\n', fp);
-        }
-
-      /* Now copy the message, trying to give an intelligible comment if
-      it is too long for it all to be copied. The limit isn't strictly
-      applied because of the buffering. There is, however, an option
-      to suppress copying altogether. */
-
-      emf_text = next_emf(emf, US"copy");
-
-      /* add message body
-         we ignore the intro text from template and add
-         the text for bounce_return_size_limit at the end.
-
-         bounce_return_message is ignored
-         in case RET= is defined we honor these values
-         otherwise bounce_return_body is honored.
-
-         bounce_return_size_limit is always honored.
-      */
-
-      fprintf(fp, "--%s\n", bound);
-
-      dsnlimitmsg = US"X-Exim-DSN-Information: Due to administrative limits only headers are returned";
-      dsnnotifyhdr = NULL;
-      topt = topt_add_return_path;
-
-      /* RET=HDRS? top priority */
-      if (dsn_ret == dsn_ret_hdrs)
-        topt |= topt_no_body;
-      else
-	{
-	struct stat statbuf;
-
-        /* no full body return at all? */
-        if (!bounce_return_body)
-          {
-          topt |= topt_no_body;
-          /* add header if we overrule RET=FULL */
-          if (dsn_ret == dsn_ret_full)
-            dsnnotifyhdr = dsnlimitmsg;
-          }
-	/* line length limited... return headers only if oversize */
-        /* size limited ... return headers only if limit reached */
-	else if (  max_received_linelength > bounce_return_linesize_limit
-		|| (  bounce_return_size_limit > 0
-		   && fstat(deliver_datafile, &statbuf) == 0
-		   && statbuf.st_size > max
-		)  )
-	  {
-	  topt |= topt_no_body;
-	  dsnnotifyhdr = dsnlimitmsg;
-          }
-	}
-
-#ifdef SUPPORT_I18N
-      if (message_smtputf8)
-	fputs(topt & topt_no_body ? "Content-type: message/global-headers\n\n"
-				  : "Content-type: message/global\n\n",
-	      fp);
-      else
-#endif
-	fputs(topt & topt_no_body ? "Content-type: text/rfc822-headers\n\n"
-				  : "Content-type: message/rfc822\n\n",
-	      fp);
-
-      fflush(fp);
-      transport_filter_argv = NULL;   /* Just in case */
-      return_path = sender_address;   /* In case not previously set */
-	{			      /* Dummy transport for headers add */
-	transport_ctx tctx = {{0}};
-	transport_instance tb = {0};
-
-	tctx.u.fd = fileno(fp);
-	tctx.tblock = &tb;
-	tctx.options = topt;
-	tb.add_headers = dsnnotifyhdr;
-
-	/*XXX no checking for failure!  buggy! */
-	transport_write_message(&tctx, 0);
-	}
-      fflush(fp);
-
-      /* we never add the final text. close the file */
-      if (emf)
-        (void)fclose(emf);
-
-      fprintf(fp, "\n--%s--\n", bound);
-
-      /* Close the file, which should send an EOF to the child process
-      that is receiving the message. Wait for it to finish. */
-
-      (void)fclose(fp);
-      rc = child_close(pid, 0);     /* Waits for child to close, no timeout */
-
-      /* If the process failed, there was some disaster in setting up the
-      error message. Unless the message is very old, ensure that addr_defer
-      is non-null, which will have the effect of leaving the message on the
-      spool. The failed addresses will get tried again next time. However, we
-      don't really want this to happen too often, so freeze the message unless
-      there are some genuine deferred addresses to try. To do this we have
-      to call spool_write_header() here, because with no genuine deferred
-      addresses the normal code below doesn't get run. */
-
-      if (rc != 0)
-        {
-        uschar *s = US"";
-        if (now - received_time.tv_sec < retry_maximum_timeout && !addr_defer)
-          {
-          addr_defer = (address_item *)(+1);
-          f.deliver_freeze = TRUE;
-          deliver_frozen_at = time(NULL);
-          /* Panic-dies on error */
-          (void)spool_write_header(message_id, SW_DELIVERING, NULL);
-          s = US" (frozen)";
-          }
-        deliver_msglog("Process failed (%d) when writing error message "
-          "to %s%s", rc, bounce_recipient, s);
-        log_write(0, LOG_MAIN, "Process failed (%d) when writing error message "
-          "to %s%s", rc, bounce_recipient, s);
-        }
-
-      /* The message succeeded. Ensure that the recipients that failed are
-      now marked finished with on the spool and their parents updated. */
-
-      else
-        {
-        for (addr = handled_addr; addr; addr = addr->next)
-          {
-          address_done(addr, logtod);
-          child_done(addr, logtod);
-          }
-        /* Panic-dies on error */
-        (void)spool_write_header(message_id, SW_DELIVERING, NULL);
-        }
-      }
-    }
+    send_bounce_message(now, logtod);
   }
 
 f.disable_logging = FALSE;  /* In case left set */
