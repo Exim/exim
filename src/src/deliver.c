@@ -68,7 +68,6 @@ static address_item *addr_new = NULL;
 static address_item *addr_remote = NULL;
 static address_item *addr_route = NULL;
 static address_item *addr_succeed = NULL;
-static address_item *addr_senddsn = NULL;
 
 static FILE *message_log = NULL;
 static BOOL update_spool;
@@ -6169,6 +6168,162 @@ return child_close(pid, 0) == 0;
 }
 
 /*************************************************
+*              Send a success-DSN                *
+*************************************************/
+
+static void
+maybe_send_dsn(void)
+{
+address_item * addr_senddsn = NULL;
+
+for (address_item * a = addr_succeed; a; a = a->next)
+  {
+  /* af_ignore_error not honored here. it's not an error */
+  DEBUG(D_deliver) debug_printf("DSN: processing router : %s\n"
+      "DSN: processing successful delivery address: %s\n"
+      "DSN: Sender_address: %s\n"
+      "DSN: orcpt: %s  flags: 0x%x\n"
+      "DSN: envid: %s  ret: %d\n"
+      "DSN: Final recipient: %s\n"
+      "DSN: Remote SMTP server supports DSN: %d\n",
+      a->router ? a->router->name : US"(unknown)",
+      a->address,
+      sender_address,
+      a->dsn_orcpt ? a->dsn_orcpt : US"NULL",
+      a->dsn_flags,
+      dsn_envid ? dsn_envid : US"NULL", dsn_ret,
+      a->address,
+      a->dsn_aware
+      );
+
+  /* send report if next hop not DSN aware or a router flagged "last DSN hop"
+  and a report was requested */
+
+  if (  (a->dsn_aware != dsn_support_yes || a->dsn_flags & rf_dsnlasthop)
+     && a->dsn_flags & rf_notify_success
+     )
+    {
+    /* copy and relink address_item and send report with all of them at once later */
+    address_item * addr_next = addr_senddsn;
+    addr_senddsn = store_get(sizeof(address_item), GET_UNTAINTED);
+    *addr_senddsn = *a;
+    addr_senddsn->next = addr_next;
+    }
+  else
+    DEBUG(D_deliver) debug_printf("DSN: not sending DSN success message\n");
+  }
+
+if (addr_senddsn)
+  {				/* create exim process to send message */
+  int fd;
+  pid_t pid = child_open_exim(&fd, US"DSN");
+
+  DEBUG(D_deliver) debug_printf("DSN: child_open_exim returns: %d\n", pid);
+
+  if (pid < 0)  /* Creation of child failed */
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
+      "create child process to send success-dsn message: %s", getpid(),
+      getppid(), strerror(errno));
+
+    DEBUG(D_deliver) debug_printf("DSN: child_open_exim failed\n");
+    }
+  else  /* Creation of child succeeded */
+    {
+    FILE * f = fdopen(fd, "wb");
+    /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
+    uschar * bound;
+    transport_ctx tctx = {{0}};
+
+    DEBUG(D_deliver)
+      debug_printf("sending success-dsn to: %s\n", sender_address);
+
+    /* build unique id for MIME boundary */
+    bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
+    DEBUG(D_deliver) debug_printf("DSN: MIME boundary: %s\n", bound);
+
+    if (errors_reply_to)
+      fprintf(f, "Reply-To: %s\n", errors_reply_to);
+
+    moan_write_from(f);
+    fprintf(f, "Auto-Submitted: auto-generated\n"
+	"To: %s\n"
+	"Subject: Delivery Status Notification\n",
+      sender_address);
+    moan_write_references(f, NULL);
+    fprintf(f, "Content-Type: multipart/report;"
+    		" report-type=delivery-status; boundary=%s\n"
+	"MIME-Version: 1.0\n\n"
+
+	"--%s\n"
+	"Content-type: text/plain; charset=us-ascii\n\n"
+
+	"This message was created automatically by mail delivery software.\n"
+	" ----- The following addresses had successful delivery notifications -----\n",
+      bound, bound);
+
+    for (address_item * a = addr_senddsn; a; a = a->next)
+      fprintf(f, "<%s> (relayed %s)\n\n",
+	a->address,
+	a->dsn_flags & rf_dsnlasthop ? "via non DSN router"
+	: a->dsn_aware == dsn_support_no ? "to non-DSN-aware mailer"
+	: "via non \"Remote SMTP\" router"
+	);
+
+    fprintf(f, "--%s\n"
+	"Content-type: message/delivery-status\n\n"
+	"Reporting-MTA: dns; %s\n",
+      bound, smtp_active_hostname);
+
+    if (dsn_envid)
+      {			/* must be decoded from xtext: see RFC 3461:6.3a */
+      uschar * xdec_envid;
+      if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
+        fprintf(f, "Original-Envelope-ID: %s\n", dsn_envid);
+      else
+        fprintf(f, "X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");
+      }
+    fputc('\n', f);
+
+    for (address_item * a = addr_senddsn; a; a = a->next)
+      {
+      host_item * hu;
+
+      print_dsn_addr_action(f, a, US"delivered", US"2.0.0");
+
+      if ((hu = a->host_used) && hu->name)
+        fprintf(f, "Remote-MTA: dns; %s\nDiagnostic-Code: smtp; 250 Ok\n\n",
+	  hu->name);
+      else
+	fprintf(f, "Diagnostic-Code: X-Exim; relayed via non %s router\n\n",
+	  a->dsn_flags & rf_dsnlasthop ? "DSN" : "SMTP");
+      }
+
+    fprintf(f, "--%s\nContent-type: text/rfc822-headers\n\n", bound);
+
+    fflush(f);
+    transport_filter_argv = NULL;   /* Just in case */
+    return_path = sender_address;   /* In case not previously set */
+
+    /* Write the original email out */
+
+    tctx.u.fd = fd;
+    tctx.options = topt_add_return_path | topt_no_body;
+    /*XXX hmm, FALSE(fail) retval ignored.
+    Could error for any number of reasons, and they are not handled. */
+    transport_write_message(&tctx, 0);
+    fflush(f);
+
+    fprintf(f,"\n--%s--\n", bound);
+
+    fflush(f);
+    fclose(f);
+    (void) child_close(pid, 0);     /* Waits for child to close, no timeout */
+    }
+  }
+}
+
+/*************************************************
 *              Deliver one message               *
 *************************************************/
 
@@ -7959,156 +8114,8 @@ else if (!f.dont_deliver)
   retry_update(&addr_defer, &addr_failed, &addr_succeed);
 
 /* Send DSN for successful messages if requested */
-addr_senddsn = NULL;
 
-for (address_item * a = addr_succeed; a; a = a->next)
-  {
-  /* af_ignore_error not honored here. it's not an error */
-  DEBUG(D_deliver) debug_printf("DSN: processing router : %s\n"
-      "DSN: processing successful delivery address: %s\n"
-      "DSN: Sender_address: %s\n"
-      "DSN: orcpt: %s  flags: 0x%x\n"
-      "DSN: envid: %s  ret: %d\n"
-      "DSN: Final recipient: %s\n"
-      "DSN: Remote SMTP server supports DSN: %d\n",
-      a->router ? a->router->name : US"(unknown)",
-      a->address,
-      sender_address,
-      a->dsn_orcpt ? a->dsn_orcpt : US"NULL",
-      a->dsn_flags,
-      dsn_envid ? dsn_envid : US"NULL", dsn_ret,
-      a->address,
-      a->dsn_aware
-      );
-
-  /* send report if next hop not DSN aware or a router flagged "last DSN hop"
-  and a report was requested */
-
-  if (  (a->dsn_aware != dsn_support_yes || a->dsn_flags & rf_dsnlasthop)
-     && a->dsn_flags & rf_notify_success
-     )
-    {
-    /* copy and relink address_item and send report with all of them at once later */
-    address_item * addr_next = addr_senddsn;
-    addr_senddsn = store_get(sizeof(address_item), GET_UNTAINTED);
-    *addr_senddsn = *a;
-    addr_senddsn->next = addr_next;
-    }
-  else
-    DEBUG(D_deliver) debug_printf("DSN: not sending DSN success message\n");
-  }
-
-if (addr_senddsn)
-  {
-  pid_t pid;
-  int fd;
-
-  /* create exim process to send message */
-  pid = child_open_exim(&fd, US"DSN");
-
-  DEBUG(D_deliver) debug_printf("DSN: child_open_exim returns: %d\n", pid);
-
-  if (pid < 0)  /* Creation of child failed */
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
-      "create child process to send success-dsn message: %s", getpid(),
-      getppid(), strerror(errno));
-
-    DEBUG(D_deliver) debug_printf("DSN: child_open_exim failed\n");
-    }
-  else  /* Creation of child succeeded */
-    {
-    FILE * f = fdopen(fd, "wb");
-    /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
-    uschar * bound;
-    transport_ctx tctx = {{0}};
-
-    DEBUG(D_deliver)
-      debug_printf("sending success-dsn to: %s\n", sender_address);
-
-    /* build unique id for MIME boundary */
-    bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
-    DEBUG(D_deliver) debug_printf("DSN: MIME boundary: %s\n", bound);
-
-    if (errors_reply_to)
-      fprintf(f, "Reply-To: %s\n", errors_reply_to);
-
-    moan_write_from(f);
-    fprintf(f, "Auto-Submitted: auto-generated\n"
-	"To: %s\n"
-	"Subject: Delivery Status Notification\n",
-      sender_address);
-    moan_write_references(f, NULL);
-    fprintf(f, "Content-Type: multipart/report;"
-    		" report-type=delivery-status; boundary=%s\n"
-	"MIME-Version: 1.0\n\n"
-
-	"--%s\n"
-	"Content-type: text/plain; charset=us-ascii\n\n"
-
-	"This message was created automatically by mail delivery software.\n"
-	" ----- The following addresses had successful delivery notifications -----\n",
-      bound, bound);
-
-    for (address_item * a = addr_senddsn; a; a = a->next)
-      fprintf(f, "<%s> (relayed %s)\n\n",
-	a->address,
-	a->dsn_flags & rf_dsnlasthop ? "via non DSN router"
-	: a->dsn_aware == dsn_support_no ? "to non-DSN-aware mailer"
-	: "via non \"Remote SMTP\" router"
-	);
-
-    fprintf(f, "--%s\n"
-	"Content-type: message/delivery-status\n\n"
-	"Reporting-MTA: dns; %s\n",
-      bound, smtp_active_hostname);
-
-    if (dsn_envid)
-      {			/* must be decoded from xtext: see RFC 3461:6.3a */
-      uschar * xdec_envid;
-      if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
-        fprintf(f, "Original-Envelope-ID: %s\n", dsn_envid);
-      else
-        fprintf(f, "X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");
-      }
-    fputc('\n', f);
-
-    for (address_item * a = addr_senddsn; a; a = a->next)
-      {
-      host_item * hu;
-
-      print_dsn_addr_action(f, a, US"delivered", US"2.0.0");
-
-      if ((hu = a->host_used) && hu->name)
-        fprintf(f, "Remote-MTA: dns; %s\nDiagnostic-Code: smtp; 250 Ok\n\n",
-	  hu->name);
-      else
-	fprintf(f, "Diagnostic-Code: X-Exim; relayed via non %s router\n\n",
-	  a->dsn_flags & rf_dsnlasthop ? "DSN" : "SMTP");
-      }
-
-    fprintf(f, "--%s\nContent-type: text/rfc822-headers\n\n", bound);
-
-    fflush(f);
-    transport_filter_argv = NULL;   /* Just in case */
-    return_path = sender_address;   /* In case not previously set */
-
-    /* Write the original email out */
-
-    tctx.u.fd = fd;
-    tctx.options = topt_add_return_path | topt_no_body;
-    /*XXX hmm, FALSE(fail) retval ignored.
-    Could error for any number of reasons, and they are not handled. */
-    transport_write_message(&tctx, 0);
-    fflush(f);
-
-    fprintf(f,"\n--%s--\n", bound);
-
-    fflush(f);
-    fclose(f);
-    rc = child_close(pid, 0);     /* Waits for child to close, no timeout */
-    }
-  }
+maybe_send_dsn();
 
 /* If any addresses failed, we must send a message to somebody, unless
 af_ignore_error is set, in which case no action is taken. It is possible for
@@ -8449,27 +8456,23 @@ else if (addr_defer != (address_item *)(+1))
 
   if (f.deliver_freeze)
     {
-    if (freeze_tell && freeze_tell[0] != 0 && !f.local_error_message)
+    if (freeze_tell && *freeze_tell && !f.local_error_message)
       {
-      uschar *s = string_copy(frozen_info);
-      uschar *ss = Ustrstr(s, " by the system filter: ");
+      uschar * s = string_copy(frozen_info);
+      uschar * ss = Ustrstr(s, " by the system filter: ");
 
-      if (ss != NULL)
+      if (ss)
         {
         ss[21] = '.';
         ss[22] = '\n';
         }
 
-      ss = s;
-      while (*ss != 0)
-        {
+      for (ss = s; *ss; )
         if (*ss == '\\' && ss[1] == 'n')
-          {
-          *ss++ = ' ';
-          *ss++ = '\n';
-          }
-        else ss++;
-        }
+          { *ss++ = ' '; *ss++ = '\n'; }
+        else
+	  ss++;
+
       moan_tell_someone(freeze_tell, addr_defer, US"Message frozen",
         "Message %s has been frozen%s.\nThe sender is <%s>.\n", message_id,
         s, sender_address);
