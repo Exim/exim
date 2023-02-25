@@ -399,6 +399,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     {
     next if $extra =~ m%^/%  &&  eval $extra;
     eval $extra if $extra =~ m/^s/;
+    eval substr($extra, 1) if $extra =~ m/^R/;
     }
 
   # Check for "*** truncated ***"
@@ -1926,7 +1927,8 @@ return 2;
 # Usable files are:
 #  paniclog, rejectlog, mainlog, stdout, stderr, msglog, mail
 # Search strings starting with 's' do substitutions;
-# with '/' do line-skips.
+# with '/' do line-skips,
+# with 'R' run given code.
 # Triggered by a scriptfile line "munge <name>"
 ##################################################
 $munges =
@@ -1973,7 +1975,13 @@ $munges =
     },
 
     'optional_dsn_info' =>
-    { 'mail' => '/^(X-(Remote-MTA-(smtp-greeting|helo-response)|Exim-Diagnostic|(body|message)-linecount):|Remote-MTA: X-ip;)/'
+    { 'mail' => 'Rif (/^(X-(Remote-MTA-(smtp-greeting|helo-response)|Exim-Diagnostic|(body|message)-linecount):|Remote-MTA: X-ip;)/) {
+		    while (1) {
+		      $_ = <IN>;
+		      next if /^ /;
+		      goto RESET_AFTER_EXTRA_LINE_READ;
+		    }
+		  }'
     },
 
     'optional_config' =>

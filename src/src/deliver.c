@@ -5400,19 +5400,18 @@ uschar * s = testflag(addr, af_pass_message) ? addr->message : NULL;
 unsigned cnt;
 
 /* af_pass_message and addr->message set ? print remote host answer */
-if (s)
-  {
-  DEBUG(D_deliver)
-    debug_printf("DSN Diagnostic-Code: addr->message = %s\n", addr->message);
+if (!s)
+  return;
 
-  /* search first ": ". we assume to find the remote-MTA answer there */
-  if (!(s = Ustrstr(addr->message, ": ")))
-    return;				/* not found, bail out */
-  s += 2;  /* skip ": " */
-  cnt = fprintf(f, "Diagnostic-Code: smtp; ");
-  }
-/* no message available. do nothing */
-else return;
+DEBUG(D_deliver)
+  debug_printf("DSN Diagnostic-Code: addr->message = %s\n", addr->message);
+
+/* search first ": ". we assume to find the remote-MTA answer there */
+if (!(s = Ustrstr(addr->message, ": ")))
+  return;				/* not found, bail out */
+
+s += 2;  /* skip ": " */
+cnt = fprintf(f, "Diagnostic-Code: smtp; ");
 
 while (*s)
   {
@@ -5550,6 +5549,82 @@ else if (!(fp = Ufopen(s, "rb")))
     "message texts: %s", s, reason, strerror(errno));
 return fp;
 }
+
+
+/* Output the given header and string, converting either
+the sequence "\n" or a real newline into newline plus space.
+If that still takes us past column 78, look for the last space
+and split there too.
+Append a newline if string did not have one.
+Limit to about 1024 chars total. */
+
+static void
+dsn_put_wrapped(FILE * fp, const uschar * header, const uschar * s)
+{
+const uschar * t;
+int llen = fprintf(fp, "%s", CS header), sleft = Ustrlen(s);
+int remain = 1022 - llen;
+
+if (*s && remain > 0)
+  {
+  for(;;)
+    {
+    unsigned ltail;	/* source chars to skip */
+
+    /* Chop at a newline, or end of string */
+
+    if ((t = Ustrchr(s, '\\')) && t[1] == 'n')
+      ltail = 2;
+    else if ((t = Ustrchr(s, '\n')))
+      ltail = 1;
+    else
+      {
+      t = s + sleft;
+      ltail = 0;
+      }
+
+    /* If that is too long, search backward for a space */
+
+    if ((llen + t - s) > 78)
+      {
+      const uschar * u;
+      for (u = s + 78 - llen; u > s + 10; --u) if (*u == ' ') break;
+      if (u > s + 10)
+	{				/* found a space to linebreak at */
+	llen = u - s;
+	remain -= fprintf(fp, "%.*s", (int)llen, s);
+	s += ++llen;			/* skip the space also */
+	}
+      else if (llen < 78)
+	{				/* just linebreak at 78 */
+	llen = 78 - llen;
+	remain -= fprintf(fp, "%.*s", llen, s);
+	s += llen;
+	}
+      else				/* header rather long */
+	llen = 0;
+      }
+    else
+      {
+      llen = t - s;
+      remain -= fprintf(fp, "%.*s", llen, s);
+      s = t + ltail;
+      }
+
+    sleft -= llen;
+    remain -= 2;
+    if (!*s || remain <= 0)
+      break;
+    fputs("\n ", fp);
+    llen = 1;		/* one for the leading space output above */
+    }
+
+  if (s[-1] != '\n') fputs("\n", fp);
+  }
+else
+  fputs("\n", fp);
+}
+
 
 /*************************************************
 *              Send a bounce message             *
@@ -5818,7 +5893,7 @@ wording. */
   if (dsn_envid)
     {
     /* must be decoded from xtext: see RFC 3461:6.3a */
-    uschar *xdec_envid;
+    uschar * xdec_envid;
     if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
       fprintf(fp, "Original-Envelope-ID: %s\n", dsn_envid);
     else
@@ -5845,11 +5920,11 @@ wording. */
 	fprintf(fp, "Remote-MTA: X-ip; [%s]%s\n", hu->address, p);
 	}
       if ((s = addr->smtp_greeting) && *s)
-	fprintf(fp, "X-Remote-MTA-smtp-greeting: X-str; %.900s\n", s);
+	dsn_put_wrapped(fp, US"X-Remote-MTA-smtp-greeting: X-str; ", s);
       if ((s = addr->helo_response) && *s)
-	fprintf(fp, "X-Remote-MTA-helo-response: X-str; %.900s\n", s);
+	dsn_put_wrapped(fp, US"X-Remote-MTA-helo-response: X-str; ", s);
       if ((s = addr->message) && *s)
-	fprintf(fp, "X-Exim-Diagnostic: X-str; %.900s\n", s);
+	dsn_put_wrapped(fp, US"X-Exim-Diagnostic: X-str; ", s);
       }
 #endif
       print_dsn_diagnostic_code(addr, fp);

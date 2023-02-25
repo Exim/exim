@@ -1,0 +1,31 @@
+# Exim test configuration 0635
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+trusted_users = CALLER
+bounce_return_linesize_limit = 20
+acl_smtp_rcpt = accept
+
+
+# ----- Routers -----
+
+begin routers
+
+my_main_router:
+  driver =	manualroute
+  transport =	t1
+  route_list =	* 127.0.0.1::PORT_S
+  self =	send
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver =	smtp
+
+# End

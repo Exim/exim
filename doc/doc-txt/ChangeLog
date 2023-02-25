@@ -98,16 +98,21 @@ JH/20 Bug 2954: (OpenSSL) Fix setting of explicit EC curve/group.  Previously
       this always failed, probably leading to the usual downgrade to in-clear
       connections.
 
-JH/20 Fix TLSA lookups.  Previously dns_again_means_nonexist would affect
+JH/21 Fix TLSA lookups.  Previously dns_again_means_nonexist would affect
       SERVFAIL results, which breaks the downgrade resistance of DANE.  Change
-      to not checking that list for these looks.
+      to not checking that list for these lookups.
 
-JH/21 Bug 2434: Add connection-elapsed "D=" element to more connection
+JH/22 Bug 2434: Add connection-elapsed "D=" element to more connection
       closure log lines.
 
 JH/23 Fix crash in string expansions. Previously, if an empty variable was
       immediately followed by an expansion operator, a null-indirection read
       was done, killing the process.
+
+JH/24 Bug 2997: When built with EXPERIMENTAL_DSN_INFO, bounce messages can
+      include an SMTP response string which is longer than that supported
+      by the delivering transport.  Alleviate by wrapping such lines before
+      column 80.
 
 
 Exim version 4.96
