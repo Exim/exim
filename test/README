@@ -696,6 +696,17 @@ be replaced by the local host's name. Long commands can be continued over
 several lines by using \ as a continuation character. This does *not* apply to
 data lines.
 
+A line with a leading number followed by a space and then an uppercase
+word, equals character, value sets an expected return code as above
+plus an environment variable.  Example:
+
+  255 TZ=GB
+  exim_msgdate -l -u -z -localhost_number=20 000000 1PANS3 ZZZZZZ
+  ****
+
+
+
+
 Here follows a list of supported commands. They can be divided into two groups:
 
 

@@ -2304,10 +2304,11 @@ my($yield) = 1;
 
 our %ENV = map { $_ => $ENV{$_} } grep { /^(?:USER|SHELL|PATH|TERM|EXIM_TEST_.*)$/ } keys %ENV;
 
-if (/^(\d+)\s*$/)                # Handle unusual return code
+if (/^(\d+)\s*(?:([A-Z]+)=(\S+))?$/)                # Handle unusual return code
   {
   my($r) = $_[2];
   $$r = $1 << 8;
+  $ENV{$2} = $3 if (defined $2);
   $_ = <SCRIPT>;
   return 4 if !defined $_;       # Missing command
   $lineno++;
