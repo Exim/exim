@@ -23,6 +23,8 @@ Version 4.97
 
  7. Queue runners for several queues can now be started from one daemon.
 
+ 8. New utility exim_msgdate converts message-ids to human readable format.
+
 Version 4.96
 ------------
 
