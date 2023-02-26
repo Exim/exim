@@ -1,165 +1,220 @@
-# Exercising exim_msgdate
-#
+# exim_msgdate
 #
 # Without this, runtest would munge all dates and message-ids,
 # destroying the things we wish to test:
 no_munge
 #
+#
 ### A Message ID as it appears in an email:
+0 TZ=GB
 exim_msgdate E1pAnS3-003fPj-Tw
 ****
 ### A Message ID as it appears in the exim log:
+0 TZ=GB
 exim_msgdate 1pEPHo-005xgk-2e
 ****
 ### Just the date part of the Message ID:
 ###    The Epoch ...
+0 TZ=GB
 exim_msgdate 000000
 ****
 ### ... the script was under development at this time ...
+0 TZ=GB
 exim_msgdate 1pEPHo
 ****
 ### ... the end of exim msg-id time
+0 TZ=GB
 exim_msgdate zzzzzz
 ****
 ### All three time zones with a non-GMT time
+0 TZ=GB
 exim_msgdate -l -u -z 1o6fde-003z7E-PS
 ****
 ### All three types of message-ids, at once:
+0 TZ=GB
 exim_msgdate E000000-005XGK-00 1pAnS3-003fPj-Tw zzzzzz
 ****
 ### Message IDs generated on a system, such as Mac or Cygwin,
 ### which has low-resolution Message-ID timestamps
+0 TZ=GB
 exim_msgdate --base36 000000-005XGK-00
 ****
+0 TZ=GB
 exim_msgdate --base36 ZZZZZZ-005XGK-ZZ
 ****
-255
+255 TZ=GB
 exim_msgdate --base36 zzzzzz-005xgk-zz
 ****
 ### An invalid base option
-255
+255 TZ=GB
 exim_msgdate --base 32 ZZZZZZ
 ****
 ### Message IDs generated on a standard system
 ### with high-resolution Message-ID timestamps
+0 TZ=GB
 exim_msgdate --base62 000000-005XGK-00
 ****
+0 TZ=GB
 exim_msgdate --base62 ZZZZZZ-005XGK-ZZ
 ****
+0 TZ=GB
 exim_msgdate --base62 zzzzzz-005xgk-zz
 ****
 ### Some strings that are similar to, but not Exim Message IDs:
+0 TZ=GB
 exim_msgdate  zzzzzz-005xgk-z@
 ****
+0 TZ=GB
 exim_msgdate  zzzzz-z005xgk-zz
 ****
+0 TZ=GB
 exim_msgdate  zzzzzzz
 ****
 ### Print date with localtime
+0 TZ=GB
 exim_msgdate -local 000000
 ****
+0 TZ=GB
 exim_msgdate -local E1pAnS3-003fPj-Tw
 ****
+0 TZ=GB
 exim_msgdate -local zzzzzz-003fPj-zz
 ****
 ### Print date with timezone GMT/Zulu
+0 TZ=GB
 exim_msgdate -GMT 000000-003fPj-00
 ****
+0 TZ=GB
 exim_msgdate -GMT E1pAnS3-003fPj-Tw
 ****
+0 TZ=GB
 exim_msgdate -zulu E1pAnS3-003fPj-Tw
 ****
+0 TZ=GB
 exim_msgdate -zulu EZZZZZZ-003fPj-ZZ
 ****
 ### Print date as seconds since the UNIX epoch.
+0 TZ=GB
 exim_msgdate -unix E000000-003fPj-00
 ****
+0 TZ=GB
 exim_msgdate -unix E1pAnS3-003fPj-tw
 ****
+0 TZ=GB
 exim_msgdate -unix Ezzzzzz-003fpj-zz
 ****
 ### Show the process id too
+0 TZ=GB
 exim_msgdate -unix --pid EZZZZZZ-003fPj-ZZ
 ****
+0 TZ=GB
 exim_msgdate -pid EZZZZZZ-003fPj-ZZ
 ****
+0 TZ=GB
 exim_msgdate -local --pid EZZZZZZ-003fPj-ZZ
 ****
 ### Override the value of localhost_number set in the exim configuation file
+0 TZ=GB
 exim_msgdate -local --localhost_number 11 -base 62 EZZZZZZ-003FPJ-ZZ
 ****
+0 TZ=GB
 exim_msgdate --localhost_number 11 -base 62 EZZZZZZ-003FPJ-ZZ
 ****
+0 TZ=GB
 exim_msgdate --localhost_number 9 -base 36 EZZZZZZ-003FPJ-ZZ
 ****
-255
+255 TZ=GB
 exim_msgdate --localhost_number 11 -base 36 EZZZZZZ-003FPJ-ZZ
 ****
+0 TZ=GB
 exim_msgdate -localhost_number 11 --local -base 62 EZZZZZZ-003FPJ-ZZ
 ****
+0 TZ=GB
 exim_msgdate --localhost_number -1 -base 36 EZZZZZZ-003FPJ-ZZ
 ****
-255
+255 TZ=GB
 exim_msgdate --localhost_number 19 -base 62 EZZZZZZ-003FPJ-ZZ
 ****
+#
+#
+#
+#
 ### From here as 701 - 703
 ### Each msg-id type, all zone
+0 TZ=GB
 exim_msgdate -l -u -z -pid E000000-005XGK-00
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -pid 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -pid 000000 1PANS3 zzzzzz
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -pid 000000 1PANS3 ZZZZZZ
 ****
 ### All msg-id types, all zones,  localhost_number = 3
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=3 E000000-005XGK-00
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=3 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=3 000000 1PANS3 zzzzzz
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=3 000000 1PANS3 ZZZZZZ
 ****
 ### All msg-id types, all zones,  localhost_number = 13
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=13 E000000-005XGK-00
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=13 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=13 000000 1PANS3 zzzzzz
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=13 000000 1PANS3 ZZZZZZ
 ****
 ### All msg-id types, all zones,  localhost_number = 20
-255
+255 TZ=GB
 exim_msgdate -l -u -z -localhost_number=20 E000000-005XGK-00
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z -localhost_number=20 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z -localhost_number=20 000000 1PANS3 zzzzzz
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z -localhost_number=20 000000 1PANS3 ZZZZZZ
 ****
 ### All msg-id types, all zones,  base=36
+0 TZ=GB
 exim_msgdate -l -u -z --b36 E000000-005XGK-00
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z --b36 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z --b36 000000 1PANS3 zzzzzz
 ****
+0 TZ=GB
 exim_msgdate -l -u -z --b36 000000 1PANS3 ZZZZZZ
 ****
 ### All msg-id types, all zones,  base=62
+0 TZ=GB
 exim_msgdate -l -u -z --b62 E000000-005XGK-00
 ****
+0 TZ=GB
 exim_msgdate -l -u -z --b62 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
+0 TZ=GB
 exim_msgdate -l -u -z --b62 000000 1PANS3 zzzzzz
 ****
+0 TZ=GB
 exim_msgdate -l -u -z --b62 000000 1PANS3 ZZZZZZ
 ****

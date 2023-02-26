@@ -1,4 +1,4 @@
-# Exercising exim_msgdate
+# exim_msgdate, bad localhost_number in config
 #
 # This file is intended for a config with
 #   localhost_number = 20
@@ -7,73 +7,82 @@
 # destroying the things we wish to test:
 no_munge
 #
+#
 ### Each msg-id type, all zone
-255
+255 TZ=GB
 exim_msgdate -l -u -z -pid E000000-005XGK-00
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z -pid 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z -pid 000000 1PANS3 zzzzzz
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z -pid 000000 1PANS3 ZZZZZZ
 ****
 ### All msg-id types, all zones,  localhost_number = 3
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=3 E000000-005XGK-00
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=3 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=3 000000 1PANS3 zzzzzz
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=3 000000 1PANS3 ZZZZZZ
 ****
 ### All msg-id types, all zones,  localhost_number = 13
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=13 E000000-005XGK-00
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=13 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=13 000000 1PANS3 zzzzzz
 ****
+0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=13 000000 1PANS3 ZZZZZZ
 ****
 ### All msg-id types, all zones,  localhost_number = 20
-255
+255 TZ=GB
 exim_msgdate -l -u -z -localhost_number=20 E000000-005XGK-00
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z -localhost_number=20 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z -localhost_number=20 000000 1PANS3 zzzzzz
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z -localhost_number=20 000000 1PANS3 ZZZZZZ
 ****
 ### All msg-id types, all zones,  base=36
-255
+255 TZ=GB
 exim_msgdate -l -u -z --b36 E000000-005XGK-00
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z --b36 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z --b36 000000 1PANS3 zzzzzz
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z --b36 000000 1PANS3 ZZZZZZ
 ****
 ### All msg-id types, all zones,  base=62
-255
+255 TZ=GB
 exim_msgdate -l -u -z --b62 E000000-005XGK-00
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z --b62 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z --b62 000000 1PANS3 zzzzzz
 ****
-255
+255 TZ=GB
 exim_msgdate -l -u -z --b62 000000 1PANS3 ZZZZZZ
 ****
