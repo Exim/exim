@@ -42212,8 +42212,9 @@ Example usage:
   # one, plus the max_rcpt and return_path options
   remote_forwarded_smtp:
     driver =              smtp
-    # modify the envelope from, for mails that we forward
+    # single-recipient so that $original_domain is valid
     max_rcpt =            1
+    # modify the envelope from, for mails that we forward
     return_path =         ${srs_encode {SRS_SECRET} {$return_path} {$original_domain}}
 .endd
 
