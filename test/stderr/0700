@@ -23,6 +23,7 @@ zzzzzzz not parsed
 ### Show the process id too
 ### Override the value of localhost_number set in the exim configuation file
 localhost_number > 10
+localhost_number must be a number >=0
 localhost_number > 16
 ### From here as 701 - 703
 ### Each msg-id type, all zone

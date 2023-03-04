@@ -1,4 +1,4 @@
-#!PERL_COMMAND -WT
+#!PERL_COMMAND -T
 #
 # Utility to convert an exim message-id to a human readable form
 #
@@ -27,6 +27,11 @@
 #
 # PROCESSED_FLAG
 
+# These match runtest
+use v5.10.1;
+use warnings;
+use if $^V >= v5.19.11, experimental => 'smartmatch';
+
 use strict;
 use File::Basename;
 use Getopt::Long;
@@ -48,6 +53,7 @@ if (defined $ENV{TZ}) {
 }
 
 my $localhost_number;  # An Exim config value
+my $nolocalhost_number;
 
 my $p_name    = basename $0;
 my $p_version = "20230203.0";
@@ -56,19 +62,12 @@ my $p_cp      = <<EOM;
 
  Portions taken from exicyclog.src, which is
    Copyright (c) University of Cambridge, 1995 - 2015
-   See the file NOTICE for conditions of use and distribution.
+ See the file NOTICE for conditions of use and distribution.
 EOM
 
 $ENV{PATH} = "/bin:/usr/bin:/usr/sbin";
 
 use POSIX qw(strftime);
-
-sub main::VERSION_MESSAGE()
-{
-    print basename($0), ": $0\n";
-    print "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n";
-    print "perl(	      runtime): $]\n";
-}
 
 my ($debug, $nodebug,
     $optbase, $optbase36, $optbase62,
@@ -95,6 +94,9 @@ GetOptions (
     "base62" => \$optbase62,
 
     "localhost_number=s" => \$localhost_number,  # cf "local"
+    "nolocalhost_number" => \$nolocalhost_number,
+    "no-localhost_number" => \$nolocalhost_number,
+    "no_localhost_number" => \$nolocalhost_number,
 
     "unix" => \$optunix,
     "u" => \$optunix,
@@ -121,6 +123,11 @@ GetOptions (
             -verbose   => 2,
             -noperldoc => system('perldoc -V 2>/dev/null 1>&2')
        );
+    },
+    'version'  => sub {
+	print basename($0), ": $0\n";
+	print "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n";
+	print "perl(runtime): $]\n";
     },
 ) or pod2usage;
 # die("Error in command line arguments\n");
@@ -270,13 +277,27 @@ if ($debug) {
     } else {
         warn "localhost_number unset\n";
     }
+    if (defined $nolocalhost_number) {
+        warn "nolocalhost_number=$nolocalhost_number\n";
+    } else {
+        warn "nolocalhost_number unset\n";
+    }
 }
 
 if (defined $localhost_number) {
     if ($localhost_number eq "none") {
         $localhost_number = undef;
+        $nolocalhost_number = TRUE;
+    } else {
+	if ($nolocalhost_number) {
+	    die "aborting: localhost_number and nolocalhost_number both set\n ";
+	}
+        $nolocalhost_number = FALSE;
     }
-} else {
+}
+
+unless (defined $nolocalhost_number) {
+    warn "Looking for config file\n" if $debug;
     my $config = get_configfilename();
     warn "Reading config $config to find localhost_number\n" if $debug;
 
@@ -296,6 +317,9 @@ if (defined $localhost_number) {
         warn "$config gives localhost_number $localhost_number\n"
             if $debug and defined $localhost_number;
     } else {
+	if ($debug) {
+	    warn "cannot read config file $config\n";
+	}
         # This way we get the expanded value for localhost_number
         # directly from exim, but we have to guess which exim binary ...
         # On Debian and Ubuntu, /usr/sbin/exim is a link to exim4 so is OK.
@@ -315,10 +339,18 @@ if (defined $localhost_number) {
 }
 
 if (defined $localhost_number) {
-    die "localhost_number > 16\n"
-        if $localhost_number > 16;
-    die "localhost_number > 10\n"
-        if $localhost_number > 10 && ($base != 62);
+    if ($localhost_number =~ /\D/) {
+	die "localhost_number must be a number >=0\n";
+    } elsif ($localhost_number =~ /^\d*$/) {
+	die "localhost_number > 16\n"
+	    if $localhost_number > 16;
+	die "localhost_number > 10\n"
+	    if $localhost_number > 10 && ($base != 62);
+    } else {
+	warn "clearing localhost_number - was $localhost_number\n";
+	undef $localhost_number;
+	$nolocalhost_number=TRUE;
+    }
 }
 
 if ($debug) {

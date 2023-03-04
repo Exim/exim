@@ -129,7 +129,7 @@ exim_msgdate --localhost_number 11 -base 36 EZZZZZZ-003FPJ-ZZ
 0 TZ=GB
 exim_msgdate -localhost_number 11 --local -base 62 EZZZZZZ-003FPJ-ZZ
 ****
-0 TZ=GB
+255 TZ=GB
 exim_msgdate --localhost_number -1 -base 36 EZZZZZZ-003FPJ-ZZ
 ****
 255 TZ=GB
