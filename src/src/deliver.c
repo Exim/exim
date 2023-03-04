@@ -5370,6 +5370,11 @@ while (*s)
       fprintf(f, "\n   ");  /* sic (because space follows) */
       count = 0;
       }
+    else if (count > 254)	/* arbitrary limit */
+      {
+      fprintf(f, "[truncated]");
+      do s++; while (*s && !(*s == '\\' && s[1] == '\n'));
+      }
     }
 }
 
