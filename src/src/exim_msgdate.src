@@ -56,7 +56,7 @@ my $localhost_number;  # An Exim config value
 my $nolocalhost_number;
 
 my $p_name    = basename $0;
-my $p_version = "20230203.0";
+my $p_version = "20230304.0";
 my $p_cp      = <<EOM;
  Copyright (c) 2023 The Exim Maintainers 2023
 
@@ -125,9 +125,10 @@ GetOptions (
        );
     },
     'version'  => sub {
-	print basename($0), ": $0\n";
-	print "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n";
+	print basename($0), ": $p_version $0\n";
+	print "exim build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n";
 	print "perl(runtime): $]\n";
+	exit 0;
     },
 ) or pod2usage;
 # die("Error in command line arguments\n");
