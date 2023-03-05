@@ -79,8 +79,8 @@
 2017-07-30 18:51:05.712 10HmdX-0005vi-00 no immediate delivery: queued by ACL
 2017-07-30 18:51:05.712 10HmdY-0005vi-00 no immediate delivery: queued by ACL
 2017-07-30 18:51:05.712 10HmdZ-0005vi-00 no immediate delivery: queued by ACL
-2017-07-30 18:51:05.712 Start queue run: pid=pppp -qq
-2017-07-30 18:51:05.712 End queue run: pid=pppp -qq
+2017-07-30 18:51:05.712 Start queue run: pid=p1234 -qq
+2017-07-30 18:51:05.712 End queue run: pid=p1234 -qq
 81 messages in
 2017-07-30 18:51:05.712 notify triggered queue run
 daemon did make at least one delivery

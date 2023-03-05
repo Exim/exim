@@ -1344,7 +1344,10 @@ switch (buf[0])
     memcpy(queuerun_msgid, buf+1, MESSAGE_ID_LENGTH+1);
 
     for (qrunner * q = qrunners; q; q = q->next)
-      if (Ustrcmp(q->name, buf+1+MESSAGE_ID_LENGTH+1) == 0)
+      if (q->name
+	  ? Ustrcmp(q->name, buf+1+MESSAGE_ID_LENGTH+1) == 0
+	  : !buf[1+MESSAGE_ID_LENGTH+1]
+	 )
 	{ queuerun_msg_qname = q->name; break; }
     return TRUE;
 #endif
