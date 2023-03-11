@@ -521,7 +521,7 @@ if (s && *s)
 	}
       else
         llen = 0;
-      LDONE:
+      LDONE: ;
       }
     else				/* rest of s fits in line */
       {
