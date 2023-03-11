@@ -11060,6 +11060,24 @@ abbreviation &%h%& can be used when &%hash%& is used as an operator.
 
 
 
+.new
+.vitem &*${headerwrap_*&<&'cols'&>&*_*&<&'limit'&>&*:*&<&'string'&>&*}*&
+.cindex header "wrapping operator"
+.cindex expansion "header wrapping"
+This operator line-wraps its argument in a way useful for headers.
+The &'cols'& value gives the column number to wrap after,
+the &'limit'& gives a limit number of result characters to truncate at.
+Either just the &'limit'& and the preceding underbar, or both, can be omitted;
+the defaults are 80 and 998.
+Wrapping will be inserted at a space if possible before the
+column number is reached.
+Whitespace at a chosen wrap point is removed.
+A line-wrap consists of a newline followed by a tab,
+and the tab is counted as 8 columns.
+.wen
+
+
+
 .vitem &*${hex2b64:*&<&'hexstring'&>&*}*&
 .cindex "base64 encoding" "conversion from hex"
 .cindex "expansion" "hex to base64"

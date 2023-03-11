@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2022 */
+/* Copyright (c) The Exim Maintainers 2020 - 2023 */
 /* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -465,5 +465,86 @@ va_end(ap);
 
 return !cond;
 }
+
+
+
+/* Wrap and truncate a string for use as a header.
+Convert either the sequence "\n" or a real newline into newline plus indent.
+If that still takes us past the column limit, look for the last space
+and split there too.
+Limit to the given max total char count.
+
+Return: string or NULL */
+
+uschar *
+wrap_header(const uschar * s, unsigned cols, unsigned maxchars,
+  const uschar * indent, unsigned indent_cols)
+{
+gstring * g = NULL;
+
+if (maxchars == 0) maxchars = INT_MAX;
+if (cols == 0) cols = INT_MAX;
+
+if (s && *s)
+  {
+  int sleft = Ustrlen(s);
+  for(unsigned llen = 0; ; llen = indent_cols)
+    {
+    const uschar * t;
+    unsigned ltail = 0, glen;
+
+    if ((t = Ustrchr(s, '\\')) && t[1] == 'n')
+      ltail = 2;
+    else if ((t = Ustrchr(s, '\n')))
+      ltail = 1;
+    else
+      t = s + sleft;
+
+    if ((llen + t - s) > cols)		/* more than a linesworth of s */
+      {					/* look backward for whitespace */
+      for (const uschar * u = s + cols - llen; u > s + 10; --u) if (isspace(*u))
+	{
+	llen = u - s;
+	while (u > s+1 && isspace(u[-1])) --u;	/* find start of whitespace */
+	g = string_catn(g, s, u - s);
+	s += ++llen;				/* skip the space */
+	while (*s && isspace(*s))		/* and any trailing */
+	  s++, llen++;
+	goto LDONE;
+	}
+					/* no whitespace */
+      if (llen < cols)
+	{					/* just linebreak at 80 */
+	llen = cols - llen;
+	g = string_catn(g, s, llen);
+	s += llen;
+	}
+      else
+        llen = 0;
+      LDONE:
+      }
+    else				/* rest of s fits in line */
+      {
+      llen = t - s;
+      g = string_catn(g, s, llen);
+      s = t + ltail;
+      }
+
+    if (!*s)
+      break;				/* no trailing linebreak */
+    if ((glen = gstring_length(g)) >= maxchars)
+      {
+      gstring_trim(g, glen - maxchars);
+      break;				/* no trailing linebreak */
+      }
+    sleft -= llen;
+    g = string_catn(g, US"\n", 1);
+    g = string_catn(g, indent, 1);
+    }
+  }
+gstring_release_unused(g);
+return string_from_gstring(g);
+}
+
 
 /* End of header.c */

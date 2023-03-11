@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2022 */
+/* Copyright (c) The Exim Maintainers 2020 - 2023 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -237,6 +237,7 @@ static uschar *op_table_main[] = {
   US"expand",
   US"h",
   US"hash",
+  US"headerwrap",
   US"hex2b64",
   US"hexquote",
   US"ipv6denorm",
@@ -284,6 +285,7 @@ enum {
   EOP_EXPAND,
   EOP_H,
   EOP_HASH,
+  EOP_HEADERWRAP,
   EOP_HEX2B64,
   EOP_HEXQUOTE,
   EOP_IPV6DENORM,
@@ -7262,7 +7264,7 @@ NOT_ITEM: ;
 	{
 	uschar *t;
 	unsigned long int n = Ustrtoul(sub, &t, 10);
-	if (*t != 0)
+	if (*t)
 	  {
 	  expand_string_message = string_sprintf("argument for base62 "
 	    "operator is \"%s\", which is not a decimal number", sub);
@@ -7278,7 +7280,7 @@ NOT_ITEM: ;
 	{
 	uschar *tt = sub;
 	unsigned long int n = 0;
-	while (*tt != 0)
+	while (*tt)
 	  {
 	  uschar *t = Ustrchr(base62_chars, *tt++);
 	  if (!t)
@@ -7427,6 +7429,29 @@ NOT_ITEM: ;
 	expand_string_message = US"sha3 only supported with GnuTLS 3.5.0 + or OpenSSL 1.1.1 +";
 	goto EXPAND_FAILED;
 #endif
+
+      /* Line-wrap a string as if it is a header line */
+
+      case EOP_HEADERWRAP:
+	{
+	unsigned col = 80, lim = 998;
+	uschar * s;
+
+	if (arg)
+	  {
+	  const uschar * list = arg;
+	  int sep = '_';
+	  if ((s = string_nextinlist(&list, &sep, NULL, 0)))
+	    {
+	    col = atoi(CS s);
+	    if ((s = string_nextinlist(&list, &sep, NULL, 0)))
+	      lim = atoi(CS s);
+	    }
+	  }
+	  if ((s =  wrap_header(sub, col, lim, US"\t", 8)))
+	    yield = string_cat(yield, s);
+	}
+	break;
 
       /* Convert hex encoding to base64 encoding */
 

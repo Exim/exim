@@ -25,6 +25,8 @@ Version 4.97
 
  8. New utility exim_msgdate converts message-ids to human readable format.
 
+ 9. An expansion operator for wrapping long header lines.
+
 Version 4.96
 ------------
 

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2022 */
+/* Copyright (c) The Exim Maintainers 2020 - 2023 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -5566,69 +5566,14 @@ Limit to about 1024 chars total. */
 static void
 dsn_put_wrapped(FILE * fp, const uschar * header, const uschar * s)
 {
-const uschar * t;
-int llen = fprintf(fp, "%s", CS header), sleft = Ustrlen(s);
-int remain = 1022 - llen;
+gstring * g = string_cat(NULL, header);
 
-if (*s && remain > 0)
-  {
-  for(;;)
-    {
-    unsigned ltail;	/* source chars to skip */
-
-    /* Chop at a newline, or end of string */
-
-    if ((t = Ustrchr(s, '\\')) && t[1] == 'n')
-      ltail = 2;
-    else if ((t = Ustrchr(s, '\n')))
-      ltail = 1;
-    else
-      {
-      t = s + sleft;
-      ltail = 0;
-      }
-
-    /* If that is too long, search backward for a space */
-
-    if ((llen + t - s) > 78)
-      {
-      const uschar * u;
-      for (u = s + 78 - llen; u > s + 10; --u) if (*u == ' ') break;
-      if (u > s + 10)
-	{				/* found a space to linebreak at */
-	llen = u - s;
-	remain -= fprintf(fp, "%.*s", (int)llen, s);
-	s += ++llen;			/* skip the space also */
-	}
-      else if (llen < 78)
-	{				/* just linebreak at 78 */
-	llen = 78 - llen;
-	remain -= fprintf(fp, "%.*s", llen, s);
-	s += llen;
-	}
-      else				/* header rather long */
-	llen = 0;
-      }
-    else
-      {
-      llen = t - s;
-      remain -= fprintf(fp, "%.*s", llen, s);
-      s = t + ltail;
-      }
-
-    sleft -= llen;
-    remain -= 2;
-    if (!*s || remain <= 0)
-      break;
-    fputs("\n ", fp);
-    llen = 1;		/* one for the leading space output above */
-    }
-
-  if (s[-1] != '\n') fputs("\n", fp);
-  }
-else
-  fputs("\n", fp);
+g = string_cat(g, s);
+gstring_release_unused(g);
+fprintf(fp, "%s\n", wrap_header(string_from_gstring(g), 79, 1023, US" ", 1));
 }
+
+
 
 
 /*************************************************

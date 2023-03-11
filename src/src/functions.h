@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2022 */
+/* Copyright (c) The Exim Maintainers 2020 - 2023 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -678,6 +678,7 @@ extern void    version_init(void);
 
 extern BOOL    write_chunk(transport_ctx *, uschar *, int);
 extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
+extern uschar *wrap_header(const uschar *, unsigned, unsigned, const uschar *, unsigned);
 
 
 /******************************************************************************/
