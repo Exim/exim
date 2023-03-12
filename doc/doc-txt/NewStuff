@@ -27,6 +27,8 @@ Version 4.97
 
  9. An expansion operator for wrapping long header lines.
 
+ 10. A commandline option to print just the message IDs of the queue
+
 Version 4.96
 ------------
 

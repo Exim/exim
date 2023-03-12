@@ -913,7 +913,7 @@ Returns:      nothing
 */
 
 void
-queue_list(int option, uschar **list, int count)
+queue_list(int option, uschar ** list, int count)
 {
 int subcount;
 int now = (int)time(NULL);
@@ -942,21 +942,25 @@ if (count > 0)
 
 else
   qf = queue_get_spool_list(
-          -1,             /* entire queue */
-          subdirs,        /* for holding sub list */
-          &subcount,      /* for subcount */
-          option >= 8,	  /* randomize if required */
-	  NULL);	  /* don't just count */
+          -1,				/* entire queue */
+          subdirs,			/* for holding sub list */
+          &subcount,			/* for subcount */
+          option >= QL_UNSORTED,	/* randomize if required */
+	  NULL);			/* don't just count */
 
-if (option >= 8) option -= 8;
+option &= ~QL_UNSORTED;
 
 /* Now scan the chain and print information, resetting store used
 each time. */
 
-for (;
-    qf && (reset_point = store_mark());
-    spool_clear_header_globals(), store_reset(reset_point), qf = qf->next
-    )
+if (option == QL_MSGID_ONLY)	/* Print only the message IDs from the chain */
+  for (; qf; qf = qf->next)
+    fprintf(stdout, "%.*s\n", MESSAGE_ID_LENGTH, qf->text);
+
+else for (;
+	  qf && (reset_point = store_mark());
+	  spool_clear_header_globals(), store_reset(reset_point), qf = qf->next
+	 )
   {
   int rc, save_errno;
   int size = 0;
@@ -1010,8 +1014,8 @@ for (;
       }
     }
 
-  fprintf(stdout, "%s ", string_format_size(size, big_buffer));
-  for (int i = 0; i < 16; i++) fputc(qf->text[i], stdout);
+  fprintf(stdout, "%s %.*s",
+    string_format_size(size, big_buffer), MESSAGE_ID_LENGTH, qf->text);
 
   if (env_read && sender_address)
     {
@@ -1048,14 +1052,14 @@ for (;
     {
     for (int i = 0; i < recipients_count; i++)
       {
-      tree_node *delivered =
+      tree_node * delivered =
         tree_search(tree_nonrecipients, recipients_list[i].address);
-      if (!delivered || option != 1)
+      if (!delivered || option != QL_UNDELIVERED_ONLY)
         printf("        %s %s\n",
 	  delivered ? "D" : " ", recipients_list[i].address);
       if (delivered) delivered->data.val = TRUE;
       }
-    if (option == 2 && tree_nonrecipients)
+    if (option == QL_PLUS_GENERATED && tree_nonrecipients)
       queue_list_extras(tree_nonrecipients);
     printf("\n");
     }

@@ -1140,4 +1140,11 @@ typedef unsigned mcs_flags;
 /* A big number for (effectively) unlimited envelope addresses */
 #define UNLIMITED_ADDRS		999999
 
+/* Flags for queue_list() */
+#define QL_BASIC		0
+#define QL_UNDELIVERED_ONLY	1
+#define QL_PLUS_GENERATED	2
+#define QL_MSGID_ONLY		3
+#define QL_UNSORTED		8
+
 /* End of macros.h */

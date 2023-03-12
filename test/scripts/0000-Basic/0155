@@ -28,7 +28,11 @@ exim -odq i@test.ex
 millisleep 500
 exim -odq j@test.ex
 ****
+### exim -bp
 exim -bp
+****
+### exim -bpi
+exim -bpi
 ****
 exim -q
 ****

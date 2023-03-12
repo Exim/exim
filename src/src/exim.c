@@ -1745,7 +1745,7 @@ int  filter_sfd = -1;
 int  filter_ufd = -1;
 int  group_count;
 int  i, rv;
-int  list_queue_option = 0;
+int  list_queue_option = QL_BASIC;
 int  msg_action = 0;
 int  msg_action_arg = -1;
 int  namelen = argv[0] ? Ustrlen(argv[0]) : 0;
@@ -2388,11 +2388,9 @@ on the second character (the one after '-'), to save some effort. */
 	    }
 
 	  if (*argrest == 'r')
-	    {
-	    list_queue_option = 8;
-	    argrest++;
-	    }
-	  else list_queue_option = 0;
+	    list_queue_option = QL_UNSORTED, argrest++;
+	  else
+	    list_queue_option = QL_BASIC;
 
 	  list_queue = TRUE;
 
@@ -2402,11 +2400,15 @@ on the second character (the one after '-'), to save some effort. */
 
 	  /* -bpu: List the contents of the mail queue, top-level undelivered */
 
-	  else if (Ustrcmp(argrest, "u") == 0) list_queue_option += 1;
+	  else if (Ustrcmp(argrest, "u") == 0) list_queue_option |= QL_UNDELIVERED_ONLY;
 
 	  /* -bpa: List the contents of the mail queue, including all delivered */
 
-	  else if (Ustrcmp(argrest, "a") == 0) list_queue_option += 2;
+	  else if (Ustrcmp(argrest, "a") == 0) list_queue_option |= QL_PLUS_GENERATED;
+
+	  /* -bpi: List only message IDs */
+
+	  else if (Ustrcmp(argrest, "i") == 0) list_queue_option |= QL_MSGID_ONLY;
 
 	  /* Unknown after -bp[r] */
 

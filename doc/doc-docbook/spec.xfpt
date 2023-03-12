@@ -3272,6 +3272,12 @@ to the standard output. It is restricted to admin users, unless
 &%queue_list_requires_admin%& is set false.
 
 
+.cmdopt -bpi
+.cindex queue "list of message IDs"
+This option operates like &%-bp%&, but only outputs message ids
+(one per line).
+
+
 .cmdopt -bpr
 This option operates like &%-bp%&, but the output is not sorted into
 chronological order of message arrival. This can speed it up when there are
@@ -3280,6 +3286,9 @@ going to be post-processed in a way that doesn't need the sorting.
 
 .cmdopt -bpra
 This option is a combination of &%-bpr%& and &%-bpa%&.
+
+.cmdopt -bpri
+This option is a combination of &%-bpr%& and &%-bpi%&.
 
 .cmdopt -bpru
 This option is a combination of &%-bpr%& and &%-bpu%&.

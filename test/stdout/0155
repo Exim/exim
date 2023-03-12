@@ -1,3 +1,4 @@
+### exim -bp
  0m   sss 10HmaX-0005vi-00 <CALLER@test.ex>
           a@test.ex
 
@@ -28,3 +29,18 @@
  0m   sss 10HmbG-0005vi-00 <CALLER@test.ex>
           j@test.ex
 
+### exim -bpi
+10HmaX-0005vi-00
+10HmaY-0005vi-00
+10HmaZ-0005vi-00
+10HmbA-0005vi-00
+10HmbB-0005vi-00
+10HmbC-0005vi-00
+10HmbD-0005vi-00
+10HmbE-0005vi-00
+10HmbF-0005vi-00
+10HmbG-0005vi-00
+
+******** SERVER ********
+### exim -bp
+### exim -bpi
