@@ -2356,11 +2356,8 @@ switch (type)
     }
 
   case opt_func:
-    {
-    void (*fn)() = ol->v.fn;
-    fn(name, s, 0);
+    ol->v.fn(name, s, 0);
     break;
-    }
   }
 
 return TRUE;
@@ -2384,11 +2381,7 @@ readconf_printtime(int t)
 int s, m, h, d, w;
 uschar *p = time_buffer;
 
-if (t < 0)
-  {
-  *p++ = '-';
-  t = -t;
-  }
+if (t < 0) *p++ = '-', t = -t;
 
 s = t % 60;
 t /= 60;

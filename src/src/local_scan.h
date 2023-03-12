@@ -133,7 +133,7 @@ typedef struct {
   union {
     void *	value;
     long	offset;
-    void (*	fn)();
+    void (*	fn)(const uschar *, const uschar *, unsigned);
   } v;
 } optionlist;
 #define OPT_OFF(s, field) {.offset = offsetof(s, field)}
