@@ -29,6 +29,8 @@ Version 4.97
 
  10. A commandline option to print just the message IDs of the queue
 
+ 11. An option for the ${readsocket } expansion to set an SNI for TLS.
+
 Version 4.96
 ------------
 

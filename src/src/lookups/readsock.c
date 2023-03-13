@@ -13,7 +13,7 @@
 
 static int
 internal_readsock_open(client_conn_ctx * cctx, const uschar * sspec,
-  int timeout, BOOL do_tls, uschar ** errmsg)
+  int timeout, uschar * do_tls, uschar ** errmsg)
 {
 const uschar * server_name;
 host_item host;
@@ -116,27 +116,8 @@ else
 
 #ifndef DISABLE_TLS
 if (do_tls)
-  {
-  union sockaddr_46 interface_sock;
-  EXIM_SOCKLEN_T size = sizeof(interface_sock);
-  smtp_connect_args conn_args = {.host = &host };
-  tls_support tls_dummy = { .sni = NULL };
-  uschar * errstr;
-
-  if (getsockname(cctx->sock, (struct sockaddr *) &interface_sock, &size) == 0)
-    conn_args.sending_ip_address = host_ntoa(-1, &interface_sock, NULL, NULL);
-  else
-    {
-    *errmsg = string_sprintf("getsockname failed: %s", strerror(errno));
+  if (!tls_client_adjunct_start(&host, cctx, do_tls, errmsg))
     goto bad;
-    }
-
-  if (!tls_client_start(cctx, &conn_args, NULL, &tls_dummy, &errstr))
-    {
-    *errmsg = string_sprintf("TLS connect failed: %s", errstr);
-    goto bad;
-    }
-  }
 #endif
 
 DEBUG(D_expand|D_lookup) debug_printf_indent("  connected to socket %s\n", sspec);
@@ -187,8 +168,8 @@ client_conn_ctx * cctx = handle;
 int sep = ',';
 struct {
 	BOOL do_shutdown:1;
-	BOOL do_tls:1;
 	BOOL cache:1;
+	uschar * do_tls;	/* NULL, empty-string, or SNI */
 } lf = {.do_shutdown = TRUE};
 uschar * eol = NULL;
 int timeout = 5;
@@ -207,8 +188,10 @@ if (opts) for (uschar * s; s = string_nextinlist(&opts, &sep, NULL, 0); )
   else if (Ustrncmp(s, "shutdown=", 9) == 0)
     lf.do_shutdown = Ustrcmp(s + 9, "no") != 0;
 #ifndef DISABLE_TLS
-  else if (Ustrncmp(s, "tls=", 4) == 0 && Ustrcmp(s + 4, US"no") != 0)
-    lf.do_tls = TRUE;
+  else if (Ustrncmp(s, "tls=", 4) == 0 && Ustrcmp(s + 4, US"no") != 0 && !lf.do_tls)
+    lf.do_tls = US"";
+  else if (Ustrncmp(s, "sni=", 4) == 0)
+    lf.do_tls = s + 4;
 #endif
   else if (Ustrncmp(s, "eol=", 4) == 0)
     eol = string_unprinting(s + 4);

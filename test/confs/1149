@@ -13,4 +13,6 @@ tls_advertise_hosts = *
 tls_certificate = DIR/aux-fixed/cert1
 tls_privatekey = DIR/aux-fixed/cert1
 
+acl_smtp_helo = accept logwrite = HELO <$sender_helo_name> SNI <$tls_in_sni>
+
 # End

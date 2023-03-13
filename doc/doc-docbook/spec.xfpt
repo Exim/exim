@@ -10496,6 +10496,11 @@ sending the request. Values are &"yes"& (the default) or &"no"&
 (preferred, eg. by some webservers).
 
 .next
+&*sni*&
+Controls the use of Server Name Identification on the connection.
+Any nonempty value will be the SNI sent; TLS will be forced.
+
+.next
 &*tls*&
 Controls the use of TLS on the connection.
 Values are &"yes"& or &"no"& (the default).

@@ -852,6 +852,57 @@ DEBUG(D_tls) debug_printf("TLS: resume session index %s\n", tlsp->resume_index);
 #endif
 }
 
+
+
+/* Start TLS as a client for an ajunct connection, eg. readsocket
+Return boolean success.
+*/
+
+BOOL
+tls_client_adjunct_start(host_item * host, client_conn_ctx * cctx,
+  const uschar * sni, uschar ** errmsg)
+{
+union sockaddr_46 interface_sock;
+EXIM_SOCKLEN_T size = sizeof(interface_sock);
+smtp_connect_args conn_args = {.host = host };
+tls_support tls_dummy = { .sni = NULL };
+uschar * errstr;
+
+if (getsockname(cctx->sock, (struct sockaddr *) &interface_sock, &size) == 0)
+  conn_args.sending_ip_address = host_ntoa(-1, &interface_sock, NULL, NULL);
+else
+  {
+  *errmsg = string_sprintf("getsockname failed: %s", strerror(errno));
+  return FALSE;
+  }
+
+/* To handle SNI we need to emulate more of a real transport because the
+base tls code assumes that is where the SNI string lives. */
+
+if (*sni)
+  {
+  transport_instance * tb;
+  smtp_transport_options_block * ob;
+
+  conn_args.tblock = tb = store_get(sizeof(*tb), GET_UNTAINTED);
+  memset(tb, 0, sizeof(*tb));
+
+  tb->options_block = ob = store_get(sizeof(*ob), GET_UNTAINTED);
+  memcpy(ob, &smtp_transport_option_defaults, sizeof(*ob));
+
+  ob->tls_sni = sni;
+  }
+
+if (!tls_client_start(cctx, &conn_args, NULL, &tls_dummy, &errstr))
+  {
+  *errmsg = string_sprintf("TLS connect failed: %s", errstr);
+  return FALSE;
+  }
+return TRUE;
+}
+
+
+
 #endif	/*!DISABLE_TLS*/
 #endif	/*!MACRO_PREDEF*/
 
