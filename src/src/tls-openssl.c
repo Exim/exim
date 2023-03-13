@@ -1001,7 +1001,7 @@ Returns:    nothing
 */
 
 static void
-info_callback(SSL * s, int where, int ret)
+info_callback(const SSL * s, int where, int ret)
 {
 DEBUG(D_tls)
   {
@@ -1750,13 +1750,13 @@ level. */
 
 DEBUG(D_tls)
   {
-  SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
+  SSL_CTX_set_info_callback(ctx, info_callback);
 #if defined(EXIM_HAVE_OPESSL_TRACE) && !defined(OPENSSL_NO_SSL_TRACE)
   /* this needs a debug build of OpenSSL */
-  SSL_CTX_set_msg_callback(ctx, (void (*)())SSL_trace);
+  SSL_CTX_set_msg_callback(ctx, SSL_trace);
 #endif
 #ifdef OPENSSL_HAVE_KEYLOG_CB
-  SSL_CTX_set_keylog_callback(ctx, (void (*)())keylog_callback);
+  SSL_CTX_set_keylog_callback(ctx, keylog_callback);
 #endif
   }
 
