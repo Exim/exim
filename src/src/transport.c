@@ -706,7 +706,7 @@ BOOL
 transport_headers_send(transport_ctx * tctx,
   BOOL (*sendfn)(transport_ctx * tctx, uschar * s, int len))
 {
-const uschar *list;
+const uschar * list;
 transport_instance * tblock = tctx ? tctx->tblock : NULL;
 address_item * addr = tctx ? tctx->addr : NULL;
 
@@ -761,15 +761,18 @@ for (header_line * h = header_list; h; h = h->next) if (h->type != htype_old)
 
   if (include_header)
     {
+    int len;
     if (tblock && tblock->rewrite_rules)
       {
       rmark reset_point = store_mark();
-      header_line *hh;
+      header_line * hh;
 
       if ((hh = rewrite_header(h, NULL, NULL, tblock->rewrite_rules,
 		  tblock->rewrite_existflags, FALSE)))
 	{
-	if (!sendfn(tctx, hh->text, hh->slen)) return FALSE;
+	len = hh->slen;
+	if (tctx->options & topt_truncate_headers && len > 998) len = 998;
+	if (!sendfn(tctx, hh->text, len)) return FALSE;
 	store_reset(reset_point);
 	continue;     /* With the next header line */
 	}
@@ -777,7 +780,9 @@ for (header_line * h = header_list; h; h = h->next) if (h->type != htype_old)
 
     /* Either no rewriting rules, or it didn't get rewritten */
 
-    if (!sendfn(tctx, h->text, h->slen)) return FALSE;
+    len = h->slen;
+    if (tctx->options & topt_truncate_headers && len > 998) len = 998;
+    if (!sendfn(tctx, h->text, len)) return FALSE;
     }
 
   /* Header removed */

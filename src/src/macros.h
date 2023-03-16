@@ -868,19 +868,20 @@ enum {
 
 /* Options for transport_write_message */
 
-#define topt_add_return_path    0x0001
-#define topt_add_delivery_date  0x0002
-#define topt_add_envelope_to    0x0004
-#define topt_escape_headers     0x0008	/* Apply escape check to headers */
-#define topt_use_crlf           0x0010	/* Terminate lines with CRLF */
-#define topt_no_headers         0x0020	/* Omit headers */
-#define topt_no_body            0x0040	/* Omit body */
-#define topt_end_dot            0x0080	/* Send terminating dot line */
-#define topt_no_flush		0x0100	/* more data expected after message (eg QUIT) */
-#define topt_use_bdat		0x0200	/* prepend chunks with RFC3030 BDAT header */
-#define topt_output_string	0x0400	/* create string rather than write to fd */
-#define topt_continuation	0x0800	/* do not reset buffer */
-#define topt_not_socket		0x1000	/* cannot do socket-only syscalls */
+#define topt_add_return_path    BIT(0)
+#define topt_add_delivery_date  BIT(1)
+#define topt_add_envelope_to    BIT(2)
+#define topt_escape_headers     BIT(3)	/* Apply escape check to headers */
+#define topt_truncate_headers   BIT(4)	/* Truncate header lines at 998 chars */
+#define topt_use_crlf           BIT(5)	/* Terminate lines with CRLF */
+#define topt_no_headers         BIT(6)	/* Omit headers */
+#define topt_no_body            BIT(7)	/* Omit body */
+#define topt_end_dot            BIT(8)	/* Send terminating dot line */
+#define topt_no_flush		BIT(9)	/* more data expected after message (eg QUIT) */
+#define topt_use_bdat		BIT(10)	/* prepend chunks with RFC3030 BDAT header */
+#define topt_output_string	BIT(11)	/* create string rather than write to fd */
+#define topt_continuation	BIT(12)	/* do not reset buffer */
+#define topt_not_socket		BIT(13)	/* cannot do socket-only syscalls */
 
 /* Options for smtp_write_command */
 

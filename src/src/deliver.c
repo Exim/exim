@@ -5954,7 +5954,7 @@ wording. */
 
     tctx.u.fd = fileno(fp);
     tctx.tblock = &tb;
-    tctx.options = topt;
+    tctx.options = topt | topt_truncate_headers;
     tb.add_headers = dsnnotifyhdr;
 
     /*XXX no checking for failure!  buggy! */
@@ -6172,13 +6172,12 @@ fprintf(f, "--%s\n"
 fflush(f);
 /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
 tctx.u.fd = fileno(f);
-tctx.options = topt_add_return_path | topt_no_body;
+tctx.options = topt_add_return_path | topt_truncate_headers | topt_no_body;
 transport_filter_argv = NULL;   /* Just in case */
 return_path = sender_address;   /* In case not previously set */
 
 /* Write the original email out */
 /*XXX no checking for failure!  buggy! */
-/*XXX overlong headers in the original become overlong body lines here*/
 transport_write_message(&tctx, 0);
 fflush(f);
 
@@ -6334,7 +6333,7 @@ if (addr_senddsn)
     /* Write the original email out */
 
     tctx.u.fd = fd;
-    tctx.options = topt_add_return_path | topt_no_body;
+    tctx.options = topt_add_return_path | topt_truncate_headers | topt_no_body;
     /*XXX hmm, FALSE(fail) retval ignored.
     Could error for any number of reasons, and they are not handled. */
     transport_write_message(&tctx, 0);
