@@ -80,11 +80,17 @@ if (!h)
 /* We limit the total length of references.  Although there is no fixed
 limit, some systems do not like headers growing beyond recognition.
 Keep the first message ID for the thread root and the last few for
-the position inside the thread, up to a maximum of 12 altogether. */
+the position inside the thread, up to a maximum of 12 altogether.
+Also apply the max line length limit from RFC 2822 2.1.1
+
+XXX preferably we would get any limit from the outbound transport,
+passed in here for a limit value.
+*/
 
 if (h || message_id)
   {
-  fprintf(fp, "References:");
+  unsigned use = fprintf(fp, "References:");
+  if (message_id) use += Ustrlen(message_id) + 1;
   if (h)
     {
     const uschar * s;
@@ -95,14 +101,27 @@ if (h || message_id)
     s = Ustrchr(h->text, ':') + 1;
     f.parse_allow_group = FALSE;
     while (*s && (s = parse_message_id(s, &id, &error)))
-      if (reference_count == nelem(referenced_ids))
-        {
-        memmove(referenced_ids + 1, referenced_ids + 2,
-           sizeof(referenced_ids) - 2*sizeof(uschar *));
-        referenced_ids[reference_count - 1] = id;
-        }
+      {
+      unsigned this = Ustrlen(id);
+      if (  reference_count == nelem(referenced_ids)
+	 || use + this + reference_count > 998
+         )
+	{
+	if (reference_count > 1)
+	  {
+	  /* drop position 1 and shuffle down */
+	  use -= Ustrlen(referenced_ids + 1);
+	  memmove(referenced_ids + 1, referenced_ids + 2,
+	     sizeof(referenced_ids) - 2*sizeof(*referenced_ids));
+
+	  /* append new one */
+	  referenced_ids[reference_count - 1] = id;
+	  }
+	}
       else
 	referenced_ids[reference_count++] = id;
+      use += this;
+      }
 
     for (int i = 0; i < reference_count; ++i)
       fprintf(fp, " %s", referenced_ids[i]);

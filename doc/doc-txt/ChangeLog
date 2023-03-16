@@ -114,6 +114,11 @@ JH/24 Bug 2997: When built with EXPERIMENTAL_DSN_INFO, bounce messages can
       by the delivering transport.  Alleviate by wrapping such lines before
       column 80.
 
+JH/25 Bug 2827: Restrict size of References: header in bounce messages to 998
+      chars (RFC limit).  Previously a limit of 12 items was made, which with
+      a not-impossible References: in the message being bounced could still
+      be over-large and get stopped in the transport.
+
 
 Exim version 4.96
 -----------------

@@ -6178,6 +6178,7 @@ return_path = sender_address;   /* In case not previously set */
 
 /* Write the original email out */
 /*XXX no checking for failure!  buggy! */
+/*XXX overlong headers in the original become overlong body lines here*/
 transport_write_message(&tctx, 0);
 fflush(f);
 
