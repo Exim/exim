@@ -1230,9 +1230,9 @@ Returns:     nothing
 */
 
 static void
-add_acl_headers(int where, uschar *acl_name)
+add_acl_headers(int where, uschar * acl_name)
 {
-header_line *last_received = NULL;
+header_line * last_received = NULL;
 
 switch(where)
   {
@@ -1254,15 +1254,22 @@ if (acl_removed_headers)
 
   for (header_line * h = header_list; h; h = h->next) if (h->type != htype_old)
     {
-    const uschar * list = acl_removed_headers;
+    const uschar * list = acl_removed_headers, * s;
     int sep = ':';         /* This is specified as a colon-separated list */
-    uschar *s;
 
+    /* If a list element has a leading '^' then it is an RE for
+    the whole header, else just a header name. */
     while ((s = string_nextinlist(&list, &sep, NULL, 0)))
-      if (header_testname(h, s, Ustrlen(s), FALSE))
+      if (  (  *s == '^'
+	    && regex_match(
+		regex_must_compile(s, MCS_CACHEABLE, FALSE),
+		h->text, h->slen, NULL)
+            )
+	 || header_testname(h, s, Ustrlen(s), FALSE)
+	 )
 	{
 	h->type = htype_old;
-        DEBUG(D_receive|D_acl) debug_printf_indent("  %s", h->text);
+	DEBUG(D_receive|D_acl) debug_printf_indent("  %s", h->text);
 	}
     }
   acl_removed_headers = NULL;

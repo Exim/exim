@@ -31,6 +31,8 @@ Version 4.97
 
  11. An option for the ${readsocket } expansion to set an SNI for TLS.
 
+ 12. The ACL remove_header modifier can take a pattern.
+
 Version 4.96
 ------------
 

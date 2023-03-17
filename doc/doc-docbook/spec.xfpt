@@ -32134,8 +32134,24 @@ Headers will not be removed from the message if the modifier is used in
 DATA, MIME or DKIM ACLs for a message delivered by cutthrough routing.
 
 More than one header can be removed at the same time by using a colon separated
-list of header names. The header matching is case insensitive. Wildcards are
-not permitted, nor is list expansion performed, so you cannot use hostlists to
+list of header specifiers.
+.new
+If a specifier does not start with a circumflex (^)
+then it is treated as a header name.
+The header name matching is case insensitive.
+If it does, then it is treated as a (front-anchored)
+regular expression applied to the whole header.
+
+&*Note*&: The colon terminating a header name will need to be doubled
+if used in an RE, and there can legitimately be whitepace before it.
+
+Example:
+.code
+remove_header = \N^(?i)Authentication-Results\s*::\s*example.org;\N
+.endd
+.wen
+
+List expansion is not performed, so you cannot use hostlists to
 create a list of headers, however both connection and message variable expansion
 are performed (&%$acl_c_*%& and &%$acl_m_*%&), illustrated in this example:
 .code
@@ -32144,14 +32160,14 @@ warn   hosts           = +internal_hosts
 warn   message         = Remove internal headers
        remove_header   = $acl_c_ihdrs
 .endd
-Header names for removal are accumulated during the MAIL, RCPT, and predata ACLs.
+Header specifiers for removal are accumulated during the MAIL, RCPT, and predata ACLs.
 Matching header lines are removed from the message before processing the DATA and MIME ACLs.
 If multiple header lines match, all are removed.
 There is no harm in attempting to remove the same header twice nor in removing
-a non-existent header. Further header lines to be removed may be accumulated
-during the DATA and MIME ACLs, after which they are removed from the message,
-if present. In the case of non-SMTP messages, headers to be removed are
-accumulated during the non-SMTP ACLs, and are removed from the message after
+a non-existent header. Further header specifiers for removal may be accumulated
+during the DATA and MIME ACLs, after which matching headers are removed
+if present. In the case of non-SMTP messages, remove speifiers are
+accumulated during the non-SMTP ACLs, and are acted on after
 all the ACLs have run. If a message is rejected after DATA or by the non-SMTP
 ACL, there really is no effect because there is no logging of what headers
 would have been removed.

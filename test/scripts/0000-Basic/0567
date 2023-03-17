@@ -33,6 +33,12 @@ X-Predata-1: Line twenty
 X-NotSMTP-1: Line twenty-one
 X-NotSMTP-2: Line twenty-two
 X-NotSMTP-3: Line twenty-three
+Authentication-Results: remove.org; foo bar
+Authentication-Results: keep.org; baz barf
+authentication-Results : REMOVE.ORG;
+	foo bar multiline
+Authentication-Results: keep.org;
+	multiline
 
 Test message
 .

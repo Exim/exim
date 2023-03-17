@@ -58,6 +58,7 @@ data:
          remove_header = x-data-2
   warn   log_message   = Verified removed header X-Data-3 in this ACL still visible
          condition     = ${if !eq{$h_x-data-3:}{}}
+  warn	 remove_header = \N^(?i)Authentication-Results\s*::\s*remove.org;\N
   accept
 
 notsmtp:

@@ -30,11 +30,12 @@ Returns:    TRUE or FALSE
 */
 
 BOOL
-header_testname(header_line *h, const uschar *name, int len, BOOL notdel)
+header_testname(const header_line * h, const uschar * name, int len,
+  BOOL notdel)
 {
 uschar *tt;
 if (h->type == '*' && notdel) return FALSE;
-if (h->text == NULL || strncmpic(h->text, name, len) != 0) return FALSE;
+if (!h->text || strncmpic(h->text, name, len) != 0) return FALSE;
 tt = h->text + len;
 while (*tt == ' ' || *tt == '\t') tt++;
 return *tt == ':';
@@ -46,11 +47,11 @@ return *tt == ':';
    header_testname() above. */
 
 BOOL
-header_testname_incomplete(header_line *h, const uschar *name,
+header_testname_incomplete(const header_line * h, const uschar * name,
     int len, BOOL notdel)
 {
 if (h->type == '*' && notdel) return FALSE;
-if (h->text == NULL || strncmpic(h->text, name, len) != 0) return FALSE;
+if (!h->text || strncmpic(h->text, name, len) != 0) return FALSE;
 return TRUE;
 }
 

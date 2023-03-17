@@ -24,6 +24,9 @@ X-Predata-2: Line nineteen
 X-NotSMTP-1: Line twenty-one
 X-NotSMTP-2: Line twenty-two
 X-NotSMTP-3: Line twenty-three
+Authentication-Results: keep.org; baz barf
+Authentication-Results: keep.org;
+	multiline
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: mailok@test.ex
 Date: Tue, 2 Mar 1999 09:44:33 +0000
