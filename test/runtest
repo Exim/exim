@@ -4072,7 +4072,7 @@ DIR: for (my $i = 0; $i < @test_dirs; $i++)
 	if (!defined $1 && $? != 0 || defined $1 && $? == 0) {
 	  $wantthis = 0;
 	  unlink("$parm_cwd/test-config");
-	  $_ = "$1feature $2";
+	  $_ = $1 || "" . "feature $2";
 	  last;
 	}
 	unlink("$parm_cwd/test-config");
