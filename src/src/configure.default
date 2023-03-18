@@ -183,11 +183,15 @@ tls_resumption_hosts = ${if inlist {$received_port}{587:465} {:}{*}}
 # In order to support roaming users who wish to send email from anywhere,
 # you may want to make Exim listen on other ports as well as port 25, in
 # case these users need to send email from a network that blocks port 25.
-# The standard port for this purpose is port 587, the "message submission"
-# port. See RFC 4409 for details. Microsoft MUAs cannot be configured to
+# The standard ports for this purpose are:
+# port 587, the "message submission" port - see RFC 4409 for details,
+# and 465 the TLS-encrypted "submission" port, service name is "submissions",
+# see RFC 8314.
+
+# Microsoft MUAs cannot be configured to
 # talk the message submission protocol correctly, so if you need to support
-# them you should also allow TLS-on-connect on the traditional but
-# non-standard port 465.
+# them you should also allow TLS-on-connect on the traditional (and now
+# standard) port 465.
 
 # daemon_smtp_ports = 25 : 465 : 587
 # tls_on_connect_ports = 465
