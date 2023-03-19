@@ -9962,7 +9962,7 @@ leading and trailing quotes are removed from the returned value.
 After expansion, <&'string'&> is interpreted as a list, colon-separated by
 default, but the separator can be changed in the usual way (&<<SECTlistsepchange>>&).
 For each item
-in this list, its value is place in &$item$&, and then the condition is
+in this list, its value is placed in &$item$&, and then the condition is
 evaluated.
 .new
 Any modification of &$value$& by this evaluation is discarded.
@@ -22844,7 +22844,17 @@ example:
 transport_filter = '/bin/cmd${if eq{$host}{a.b.c}{1}{2}}'
 .endd
 This runs the command &(/bin/cmd1)& if the host name is &'a.b.c'&, and
-&(/bin/cmd2)& otherwise. If double quotes had been used, they would have been
+&(/bin/cmd2)& otherwise.
+
+Option strings in general have any fully-surrounding double quote wrapping
+removed early in parsing (see &<<SECTstrings>>&).
+Then, for this option, quotes protect against whitespace being
+regarded as a separator while splitting into the command argument vector.
+Either double or single quotes can be used here;
+the former interprets backlash-quoted charachters
+and the latter does not.
+
+If double quotes had been used in this example, they would have been
 stripped by Exim when it read the option's value. When the value is used, if
 the single quotes were missing, the line would be split into two items,
 &`/bin/cmd${if`& and &`eq{$host}{a.b.c}{1}{2}`&, and an error would occur when
