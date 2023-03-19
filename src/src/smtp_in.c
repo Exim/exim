@@ -189,16 +189,22 @@ count of non-mail commands and possibly provoke an error.
 tls_auth is a pseudo-command, never expected in input.  It is activated
 on TLS startup and looks for a tls authenticator. */
 
+enum {	CL_RSET, CL_HELO, CL_EHLO, CL_AUTH,
+#ifndef DISABLE_TLS
+	CL_STLS, CL_TLAU,
+#endif
+};
+
 static smtp_cmd_list cmd_list[] = {
   /* name         len                     cmd     has_arg is_mail_cmd */
 
-  { "rset",       sizeof("rset")-1,       RSET_CMD, FALSE, FALSE },  /* First */
-  { "helo",       sizeof("helo")-1,       HELO_CMD, TRUE,  FALSE },
-  { "ehlo",       sizeof("ehlo")-1,       EHLO_CMD, TRUE,  FALSE },
-  { "auth",       sizeof("auth")-1,       AUTH_CMD, TRUE,  TRUE  },
+  [CL_RSET] = { "rset",       sizeof("rset")-1,       RSET_CMD,	FALSE, FALSE },  /* First */
+  [CL_HELO] = { "helo",       sizeof("helo")-1,       HELO_CMD, TRUE,  FALSE },
+  [CL_EHLO] = { "ehlo",       sizeof("ehlo")-1,       EHLO_CMD, TRUE,  FALSE },
+  [CL_AUTH] = { "auth",       sizeof("auth")-1,       AUTH_CMD,     TRUE,  TRUE  },
 #ifndef DISABLE_TLS
-  { "starttls",   sizeof("starttls")-1,   STARTTLS_CMD, FALSE, FALSE },
-  { "tls_auth",   0,                      TLS_AUTH_CMD, FALSE, FALSE },
+  [CL_STLS] = { "starttls",   sizeof("starttls")-1,   STARTTLS_CMD, FALSE, FALSE },
+  [CL_TLAU] = { "tls_auth",   0,                      TLS_AUTH_CMD, FALSE, FALSE },
 #endif
 
 /* If you change anything above here, also fix the definitions below. */
@@ -215,24 +221,27 @@ static smtp_cmd_list cmd_list[] = {
   { "help",       sizeof("help")-1,       HELP_CMD, TRUE,  FALSE }
 };
 
-static smtp_cmd_list *cmd_list_end =
-  cmd_list + sizeof(cmd_list)/sizeof(smtp_cmd_list);
-
-#define CMD_LIST_RSET      0
-#define CMD_LIST_HELO      1
-#define CMD_LIST_EHLO      2
-#define CMD_LIST_AUTH      3
-#define CMD_LIST_STARTTLS  4
-#define CMD_LIST_TLS_AUTH  5
-
-/* This list of names is used for performing the smtp_no_mail logging action.
-It must be kept in step with the SCH_xxx enumerations. */
+/* This list of names is used for performing the smtp_no_mail logging action. */
 
 uschar * smtp_names[] =
   {
-  US"NONE", US"AUTH", US"DATA", US"BDAT", US"EHLO", US"ETRN", US"EXPN",
-  US"HELO", US"HELP", US"MAIL", US"NOOP", US"QUIT", US"RCPT", US"RSET",
-  US"STARTTLS", US"VRFY" };
+  [SCH_NONE] = US"NONE",
+  [SCH_AUTH] = US"AUTH",
+  [SCH_DATA] = US"DATA",
+  [SCH_BDAT] = US"BDAT",
+  [SCH_EHLO] = US"EHLO",
+  [SCH_ETRN] = US"ETRN",
+  [SCH_EXPN] = US"EXPN",
+  [SCH_HELO] = US"HELO",
+  [SCH_HELP] = US"HELP",
+  [SCH_MAIL] = US"MAIL",
+  [SCH_NOOP] = US"NOOP",
+  [SCH_QUIT] = US"QUIT",
+  [SCH_RCPT] = US"RCPT",
+  [SCH_RSET] = US"RSET",
+  [SCH_STARTTLS] = US"STARTTLS",
+  [SCH_VRFY] = US"VRFY",
+  };
 
 static uschar *protocols_local[] = {
   US"local-smtp",        /* HELO */
@@ -1685,7 +1694,7 @@ if (hadnull) return BADCHAR_CMD;
 to the start of the actual data characters. Check for SMTP synchronization
 if required. */
 
-for (smtp_cmd_list * p = cmd_list; p < cmd_list_end; p++)
+for (smtp_cmd_list * p = cmd_list; p < cmd_list + nelem(cmd_list); p++)
   {
 #ifdef SUPPORT_PROXY
   /* Only allow QUIT command if Proxy Protocol parsing failed */
@@ -3058,7 +3067,7 @@ if (tls_in.on_connect)
   {
   if (tls_server_start(&user_msg) != OK)
     return smtp_log_tls_fail(user_msg);
-  cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
+  cmd_list[CL_TLAU].is_mail_cmd = TRUE;
   }
 #endif
 
@@ -4029,7 +4038,7 @@ smtp_rset_handler(void)
 HAD(SCH_RSET);
 incomplete_transaction_log(US"RSET");
 smtp_printf("250 Reset OK\r\n", FALSE);
-cmd_list[CMD_LIST_RSET].is_mail_cmd = FALSE;
+cmd_list[CL_RSET].is_mail_cmd = FALSE;
 if (chunking_state > CHUNKING_OFFERED)
   chunking_state = CHUNKING_OFFERED;
 }
@@ -4091,11 +4100,11 @@ message_ended = END_NOTSTARTED;
 
 chunking_state = f.chunking_offered ? CHUNKING_OFFERED : CHUNKING_NOT_OFFERED;
 
-cmd_list[CMD_LIST_RSET].is_mail_cmd = TRUE;
-cmd_list[CMD_LIST_HELO].is_mail_cmd = TRUE;
-cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
+cmd_list[CL_RSET].is_mail_cmd = TRUE;
+cmd_list[CL_HELO].is_mail_cmd = TRUE;
+cmd_list[CL_EHLO].is_mail_cmd = TRUE;
 #ifndef DISABLE_TLS
-cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = TRUE;
+cmd_list[CL_STLS].is_mail_cmd = TRUE;
 #endif
 
 if (lwr_receive_getc != NULL)
@@ -4151,10 +4160,10 @@ while (done <= 0)
   if (  tls_in.active.sock >= 0
      && tls_in.peercert
      && tls_in.certificate_verified
-     && cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd
+     && cmd_list[CL_TLAU].is_mail_cmd
      )
     {
-    cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = FALSE;
+    cmd_list[CL_TLAU].is_mail_cmd = FALSE;
 
     for (auth_instance * au = auths; au; au = au->next)
       if (strcmpic(US"tls", au->driver_name) == 0)
@@ -4214,7 +4223,7 @@ while (done <= 0)
     case AUTH_CMD:
       HAD(SCH_AUTH);
       authentication_failed = TRUE;
-      cmd_list[CMD_LIST_AUTH].is_mail_cmd = FALSE;
+      cmd_list[CL_AUTH].is_mail_cmd = FALSE;
 
       if (!fl.auth_advertised && !f.allow_auth_unadvertised)
 	{
@@ -4336,8 +4345,8 @@ while (done <= 0)
       fl.esmtp = TRUE;
 
     HELO_EHLO:      /* Common code for HELO and EHLO */
-      cmd_list[CMD_LIST_HELO].is_mail_cmd = FALSE;
-      cmd_list[CMD_LIST_EHLO].is_mail_cmd = FALSE;
+      cmd_list[CL_HELO].is_mail_cmd = FALSE;
+      cmd_list[CL_EHLO].is_mail_cmd = FALSE;
 
       /* Reject the HELO if its argument was invalid or non-existent. A
       successful check causes the argument to be saved in malloc store. */
@@ -5685,7 +5694,7 @@ while (done <= 0)
       cancel_cutthrough_connection(TRUE, US"STARTTLS received");
       reset_point = smtp_reset(reset_point);
       toomany = FALSE;
-      cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = FALSE;
+      cmd_list[CL_STLS].is_mail_cmd = FALSE;
 
       /* There's an attack where more data is read in past the STARTTLS command
       before TLS is negotiated, then assumed to be part of the secure session
@@ -5726,9 +5735,9 @@ while (done <= 0)
 	{
 	if (!tls_remember_esmtp)
 	  fl.helo_seen = fl.esmtp = fl.auth_advertised = f.smtp_in_pipelining_advertised = FALSE;
-	cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
-	cmd_list[CMD_LIST_AUTH].is_mail_cmd = TRUE;
-	cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
+	cmd_list[CL_EHLO].is_mail_cmd = TRUE;
+	cmd_list[CL_AUTH].is_mail_cmd = TRUE;
+	cmd_list[CL_TLAU].is_mail_cmd = TRUE;
 	if (sender_helo_name)
 	  {
 	  sender_helo_name = NULL;
@@ -5838,23 +5847,19 @@ while (done <= 0)
 
     case HELP_CMD:
       HAD(SCH_HELP);
-      smtp_printf("214-Commands supported:\r\n", TRUE);
-	{
-	uschar buffer[256];
-	buffer[0] = 0;
-	Ustrcat(buffer, US" AUTH");
-	#ifndef DISABLE_TLS
-	if (tls_in.active.sock < 0 &&
-	    verify_check_host(&tls_advertise_hosts) != FAIL)
-	  Ustrcat(buffer, US" STARTTLS");
-	#endif
-	Ustrcat(buffer, US" HELO EHLO MAIL RCPT DATA BDAT");
-	Ustrcat(buffer, US" NOOP QUIT RSET HELP");
-	if (acl_smtp_etrn) Ustrcat(buffer, US" ETRN");
-	if (acl_smtp_expn) Ustrcat(buffer, US" EXPN");
-	if (acl_smtp_vrfy) Ustrcat(buffer, US" VRFY");
-	smtp_printf("214%s\r\n", FALSE, buffer);
-	}
+      smtp_printf("214-Commands supported:\r\n214", TRUE);
+      smtp_printf(" AUTH", TRUE);
+#ifndef DISABLE_TLS
+      if (tls_in.active.sock < 0 &&
+	  verify_check_host(&tls_advertise_hosts) != FAIL)
+	smtp_printf(" STARTTLS", TRUE);
+#endif
+      smtp_printf(" HELO EHLO MAIL RCPT DATA BDAT", TRUE);
+      smtp_printf(" NOOP QUIT RSET HELP", TRUE);
+      if (acl_smtp_etrn) smtp_printf(" ETRN", TRUE);
+      if (acl_smtp_expn) smtp_printf(" EXPN", TRUE);
+      if (acl_smtp_vrfy) smtp_printf(" VRFY", TRUE);
+      smtp_printf("\r\n", FALSE);
       break;
 
 
