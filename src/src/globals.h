@@ -821,7 +821,7 @@ extern uschar *process_log_path;       /* Alternate path */
 extern const uschar *process_purpose;  /* for debug output */
 extern BOOL    prod_requires_admin;    /* TRUE if prodding requires admin */
 
-#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
+#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS) || defined(EXPERIMENTAL_XCLIENT)
 extern uschar *hosts_proxy;            /* Hostlist which (require) use proxy protocol */
 extern uschar *proxy_external_address; /* IP of remote interface of proxy */
 extern int     proxy_external_port;    /* Port on remote interface of proxy */

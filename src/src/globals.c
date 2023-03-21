@@ -387,7 +387,7 @@ BOOL    mua_wrapper            = FALSE;
 BOOL    preserve_message_logs  = FALSE;
 BOOL    print_topbitchars      = FALSE;
 BOOL    prod_requires_admin    = TRUE;
-#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
+#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS) || defined(EXPERIMETAL_XCLIENT)
 BOOL    proxy_session          = FALSE;
 #endif
 

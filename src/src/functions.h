@@ -400,9 +400,9 @@ extern const uschar *parse_quote_2047(const uschar *, int, const uschar *,
 extern const uschar *parse_date_time(const uschar *str, time_t *t);
 extern void priv_drop_temp(const uid_t, const gid_t);
 extern void priv_restore(void);
-extern int     vaguely_random_number(int);
-#ifndef DISABLE_TLS
-extern int     vaguely_random_number_fallback(int);
+#ifdef SUPPORT_PROXY
+extern BOOL	proxy_protocol_host(void);
+extern void	proxy_protocol_setup(void);
 #endif
 
 extern BOOL    queue_action(uschar *, int, uschar **, int, int);
@@ -658,6 +658,10 @@ extern void    unspool_mbox(void);
 extern gstring *utf8_version_report(gstring *);
 #endif
 
+extern int     vaguely_random_number(int);
+#ifndef DISABLE_TLS
+extern int     vaguely_random_number_fallback(int);
+#endif
 extern int     verify_address(address_item *, FILE *, int, int, int, int,
                  uschar *, uschar *, BOOL *);
 extern int     verify_check_dnsbl(int, const uschar **, uschar **);
