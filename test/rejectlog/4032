@@ -1,0 +1,5 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 rejected XCLIENT from (anotherhelo) [127.0.0.3]:1111: mail transaction in progress
+1999-03-02 09:44:33 rejected MAIL from miss.ehlo.after.xclient (anotherhelo) [127.0.0.3]:1111: no HELO/EHLO given
+1999-03-02 09:44:33 SMTP call from (xclientproxy) [ip4.ip4.ip4.ip4]:1112 dropped: too many syntax or protocol errors (last command was "XCLIENT SIXSIX=",  C=EHLO,XCLIENT,XCLIENT,XCLIENT,XCLIENT)

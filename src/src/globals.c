@@ -995,11 +995,18 @@ uschar *host_lookup_msg        = US"";
 int     host_number            = 0;
 uschar *host_number_string     = NULL;
 uschar *host_reject_connection = NULL;
-tree_node *hostlist_anchor     = NULL;
-int     hostlist_count         = 0;
+uschar *hosts_connection_nolog = NULL;
+#ifdef SUPPORT_PROXY
+uschar *hosts_proxy            = NULL;
+#endif
 uschar *hosts_treat_as_local   = NULL;
 uschar *hosts_require_helo     = US"*";
-uschar *hosts_connection_nolog = NULL;
+#ifdef EXPERIMENTAL_XCLIENT
+uschar *hosts_xclient	       = NULL;
+#endif
+tree_node *hostlist_anchor     = NULL;
+int     hostlist_count         = 0;
+
 
 int     ignore_bounce_errors_after = 10*7*24*60*60;  /* 10 weeks */
 uschar *ignore_fromline_hosts  = NULL;
@@ -1232,8 +1239,7 @@ int     process_info_len       = 0;
 uschar *process_log_path       = NULL;
 const uschar *process_purpose  = US"fresh-exec";
 
-#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
-uschar *hosts_proxy            = NULL;
+#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS) || defined(EXPERIMENTAL_XCLIENT)
 uschar *proxy_external_address = NULL;
 int     proxy_external_port    = 0;
 uschar *proxy_local_address    = NULL;
@@ -1659,6 +1665,5 @@ uschar *warn_message_file      = NULL;
 int     warning_count          = 0;
 const uschar *warnmsg_delay    = NULL;
 const uschar *warnmsg_recipients = NULL;
-
 
 /*  End of globals.c */

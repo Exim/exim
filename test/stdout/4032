@@ -1,0 +1,199 @@
+### (1) non-prox plain receive (not advertised) (2) XCLIENT refules when not advertised
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO plainclient
+??? 250-
+<<< 250-myhost.test.ex Hello plainclient [IP_LOOPBACK_ADDR]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<a@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<b@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> 
+>>> body
+>>> .
+??? 250
+<<< 250 OK id=10HmaX-0005vi-00
+>>> XCLIENT NAME=proxylookedupname.net ADDR=127.0.0.2 PORT=4242
+??? 550
+<<< 550 XCLIENT command used when not advertised
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+### receive, (1) fully loaded (2) new conn (3) bad: transaction in progress (4) bad: missing EHLO after XCLIENT
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO xclientproxy
+??? 250-
+<<< 250-myhost.test.ex Hello xclientproxy [ip4.ip4.ip4.ip4]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-XCLIENT
+<<< 250-XCLIENT ADDR NAME PORT LOGIN DESTADDR DESTPORT
+??? 250 HELP
+<<< 250 HELP
+>>> XCLIENT NAME=proxylookedupname.net ADDR=127.0.0.2 PORT=4242 DESTADDR=10.42.42.42 DESTPORT=25 LOGIN=hisloginname
+??? 220
+<<< 220 XCLIENT success
+>>> EHLO clienthelo
+??? 250-
+<<< 250-myhost.test.ex Hello proxylookedupname.net [127.0.0.2]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-XCLIENT
+<<< 250-XCLIENT ADDR NAME PORT LOGIN DESTADDR DESTPORT
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<c@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<d@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> 
+>>> body
+>>> .
+??? 250
+<<< 250 OK id=10HmaY-0005vi-00
+>>> XCLIENT NAME=[TEMPUNAVAIL] ADDR=127.0.0.3 PORT=4243 LOGIN=[UNAVAILABLE]
+??? 220
+<<< 220 XCLIENT success
+>>> EHLO anotherhelo
+??? 250-
+<<< 250-myhost.test.ex Hello anotherhelo [127.0.0.3]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-XCLIENT
+<<< 250-XCLIENT ADDR NAME PORT LOGIN DESTADDR DESTPORT
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<c2@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<d2@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> 
+>>> body
+>>> .
+??? 250
+<<< 250 OK id=10HmaZ-0005vi-00
+>>> MAIL FROM:<c2@test.ex>
+??? 250
+<<< 250 OK
+>>> XCLIENT NAME=bad.time.for.xclient
+??? 503
+<<< 503 mail transaction in progress
+>>> RSET
+??? 250
+<<< 250 Reset OK
+>>> XCLIENT NAME=miss.ehlo.after.xclient
+??? 220
+<<< 220 XCLIENT success
+>>> MAIL FROM:<bad@test.ex>
+??? 503
+<<< 503 HELO or EHLO required
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+###          (5) no operands to XCLIENT (6,7) unrecognised operands
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO xclientproxy
+??? 250-
+<<< 250-myhost.test.ex Hello xclientproxy [ip4.ip4.ip4.ip4]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-XCLIENT
+<<< 250-XCLIENT ADDR NAME PORT LOGIN DESTADDR DESTPORT
+??? 250 HELP
+<<< 250 HELP
+>>> XCLIENT
+??? 501
+<<< 501 XCLIENT must have at least one operand
+>>> XCLIENT NONO=
+??? 501
+<<< 501 XCLIENT: unrecognised parameter 'NONO'
+>>> XCLIENT NAMEfoobar=
+??? 501
+<<< 501 XCLIENT: unrecognised parameter 'NAMEfoobar'
+>>> XCLIENT SIXSIX=
+??? 501-
+<<< 501-XCLIENT: unrecognised parameter 'SIXSIX'
+??? 501 Too many
+<<< 501 Too many syntax or protocol errors
+???*
+Expected EOF read
+End of script
+###          (7) operand with zero-len value (8) operand with no value
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO xclientproxy
+??? 250-
+<<< 250-myhost.test.ex Hello xclientproxy [ip4.ip4.ip4.ip4]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-XCLIENT
+<<< 250-XCLIENT ADDR NAME PORT LOGIN DESTADDR DESTPORT
+??? 250 HELP
+<<< 250 HELP
+>>> XCLIENT NAME=
+??? 501
+<<< 501 XCLIENT: zero-length value for param
+>>> XCLIENT NAME
+??? 501
+<<< 501 XCLIENT: missing value for parameter 'NAME'
+End of script
+
+******** SERVER ********
+### (1) non-prox plain receive (not advertised) (2) XCLIENT refules when not advertised
+### receive, (1) fully loaded (2) new conn (3) bad: transaction in progress (4) bad: missing EHLO after XCLIENT
+###          (5) no operands to XCLIENT (6,7) unrecognised operands
+###          (7) operand with zero-len value (8) operand with no value

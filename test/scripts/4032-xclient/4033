@@ -1,0 +1,62 @@
+# XCLIENT proxy on inbound -bh
+#
+### (1) non-prox plain receive (not advertised) (2) XCLIENT refules when not advertised
+exim -bh 127.0.0.1.4241 -oMi 127.0.0.1
+EHLO plainclient
+MAIL FROM:<a@test.ex>
+RCPT TO:<b@test.ex>
+DATA
+Subject: test
+
+body
+.
+XCLIENT NAME=proxylookedupname.net ADDR=127.0.0.2 PORT=4242
+QUIT
+****
+#
+### receive, (1) fully loaded (2) new conn (3) bad: transaction in progress
+exim -bh HOSTIPV4.4241 -oMi HOSTIPV4
+EHLO xclientproxy
+XCLIENT NAME=proxylookedupname.net ADDR=127.0.0.2 PORT=4242 DESTADDR=10.42.42.42 DESTPORT=25 LOGIN=hisloginname
+EHLO clienthelo
+MAIL FROM:<c@test.ex>
+RCPT TO:<d@test.ex>
+DATA
+Subject: test
+
+body
+.
+XCLIENT NAME=[TEMPUNAVAIL] ADDR=127.0.0.3 PORT=4243 LOGIN=[UNAVAILABLE]
+EHLO anotherhelo
+MAIL FROM:<c2@test.ex>
+RCPT TO:<d2@test.ex>
+DATA
+Subject: test
+
+body
+.
+MAIL FROM:<c2@test.ex>
+XCLIENT NAME=bad.time.for.xclient
+RSET
+XCLIENT NAME=miss.ehlo.after.xclient
+MAIL FROM:<bad@test.ex>
+QUIT
+****
+#
+###          (4) no operands to XCLIENT (5,6) unrecognised operands
+exim -bh HOSTIPV4.4241 -oMi HOSTIPV4
+EHLO xclientproxy
+XCLIENT
+XCLIENT NONO=
+XCLIENT NAMEfoobar=
+XCLIENT SIXSIX=
+****
+#
+###          (7) operand with zero-len value (8) operand with no value
+exim -bh HOSTIPV4.4241 -oMi HOSTIPV4
+EHLO xclientproxy
+XCLIENT NAME=
+XCLIENT NAME
+****
+#
+no_stderr_check

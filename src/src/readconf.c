@@ -187,6 +187,9 @@ static optionlist optionlist_config[] = {
 #endif
   { "hosts_require_helo",       opt_stringptr,   {&hosts_require_helo} },
   { "hosts_treat_as_local",     opt_stringptr,   {&hosts_treat_as_local} },
+#ifdef EXPERIMENTAL_XCLIENT
+  { "hosts_xclient",		opt_stringptr,	 {&hosts_xclient} },
+#endif
 #ifdef LOOKUP_IBASE
   { "ibase_servers",            opt_stringptr,   {&ibase_servers} },
 #endif
@@ -399,7 +402,7 @@ static optionlist optionlist_config[] = {
   { "uucp_from_pattern",        opt_stringptr,   {&uucp_from_pattern} },
   { "uucp_from_sender",         opt_stringptr,   {&uucp_from_sender} },
   { "warn_message_file",        opt_stringptr,   {&warn_message_file} },
-  { "write_rejectlog",          opt_bool,        {&write_rejectlog} }
+  { "write_rejectlog",          opt_bool,        {&write_rejectlog} },
 };
 
 #ifndef MACRO_PREDEF

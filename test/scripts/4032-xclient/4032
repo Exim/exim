@@ -1,0 +1,140 @@
+# XCLIENT proxy on inbound smtp
+#
+munge loopback
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+### (1) non-prox plain receive (not advertised) (2) XCLIENT refules when not advertised
+client 127.0.0.1 PORT_D
+??? 220
+EHLO plainclient
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250 HELP
+MAIL FROM:<a@test.ex>
+??? 250
+RCPT TO:<b@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+XCLIENT NAME=proxylookedupname.net ADDR=127.0.0.2 PORT=4242
+??? 550
+QUIT
+??? 221
+****
+#
+### receive, (1) fully loaded (2) new conn (3) bad: transaction in progress (4) bad: missing EHLO after XCLIENT
+client HOSTIPV4 PORT_D
+??? 220
+EHLO xclientproxy
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-XCLIENT
+??? 250 HELP
+XCLIENT NAME=proxylookedupname.net ADDR=127.0.0.2 PORT=4242 DESTADDR=10.42.42.42 DESTPORT=25 LOGIN=hisloginname
+??? 220
+EHLO clienthelo
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-XCLIENT
+??? 250 HELP
+MAIL FROM:<c@test.ex>
+??? 250
+RCPT TO:<d@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+XCLIENT NAME=[TEMPUNAVAIL] ADDR=127.0.0.3 PORT=4243 LOGIN=[UNAVAILABLE]
+??? 220
+EHLO anotherhelo
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-XCLIENT
+??? 250 HELP
+MAIL FROM:<c2@test.ex>
+??? 250
+RCPT TO:<d2@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+MAIL FROM:<c2@test.ex>
+??? 250
+XCLIENT NAME=bad.time.for.xclient
+??? 503
+RSET
+??? 250
+XCLIENT NAME=miss.ehlo.after.xclient
+??? 220
+MAIL FROM:<bad@test.ex>
+??? 503
+QUIT
+??? 221
+****
+#
+###          (5) no operands to XCLIENT (6,7) unrecognised operands
+client HOSTIPV4 PORT_D
+??? 220
+EHLO xclientproxy
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-XCLIENT
+??? 250 HELP
+XCLIENT
+??? 501
+XCLIENT NONO=
+??? 501
+XCLIENT NAMEfoobar=
+??? 501
+XCLIENT SIXSIX=
+??? 501-
+??? 501 Too many
+???*
+****
+#
+###          (7) operand with zero-len value (8) operand with no value
+client HOSTIPV4 PORT_D
+??? 220
+EHLO xclientproxy
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-XCLIENT
+??? 250 HELP
+XCLIENT NAME=
+??? 501
+XCLIENT NAME
+??? 501
+****
+#
+#
+killdaemon
+no_msglog_check
+no_stdout_check
+no_stderr_check

@@ -205,6 +205,9 @@ due to conflicts with other common macros. */
 #ifndef DISABLE_TLS_RESUME
   builtin_macro_create(US"_HAVE_TLS_RESUME");
 #endif
+#ifdef EXPERIMENTAL_XCLIENT
+  builtin_macro_create(US"_HAVE_XCLIENT");
+#endif
 
 #ifdef LOOKUP_LSEARCH
   builtin_macro_create(US"_HAVE_LOOKUP_LSEARCH");

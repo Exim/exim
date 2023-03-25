@@ -497,7 +497,8 @@ OBJ_EXPERIMENTAL =	arc.o \
 			dmarc.o \
 			imap_utf7.o \
 			spf.o \
-			utf8.o
+			utf8.o \
+			xclient.o
 
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
@@ -873,6 +874,7 @@ dmarc.o:	$(HDRS) pdkim/pdkim.h dmarc.h dmarc.c
 imap_utf7.o:	$(HDRS) imap_utf7.c
 spf.o:		$(HDRS) spf.h spf.c
 utf8.o:		$(HDRS) utf8.c
+xclient.o:	$(HDRS) xclient.c
 
 # The module containing tables of available lookups, routers, auths, and
 # transports must be rebuilt if any of them are. However, because the makefiles

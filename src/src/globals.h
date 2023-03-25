@@ -661,12 +661,16 @@ extern uschar *host_lookup_order;      /* Order of host lookup types */
 extern uschar *host_lookup_msg;        /* Text for why it failed */
 extern int     host_number;            /* For sharing spools */
 extern uschar *host_number_string;     /* For expanding */
-extern uschar *hosts_require_helo;     /* check for HELO/EHLO before MAIL */
 extern uschar *host_reject_connection; /* Reject these hosts */
+extern uschar *hosts_connection_nolog; /* Limits the logging option */
+extern uschar *hosts_require_helo;     /* check for HELO/EHLO before MAIL */
+extern uschar *hosts_treat_as_local;   /* For routing */
+#ifdef EXPERIMENTAL_XCLIENT
+extern uschar *hosts_xclient;	       /* Allow XCLIENT command for specified hosts */
+#endif
 extern tree_node *hostlist_anchor;     /* Tree of defined host lists */
 extern int     hostlist_count;         /* Number defined */
-extern uschar *hosts_connection_nolog; /* Limits the logging option */
-extern uschar *hosts_treat_as_local;   /* For routing */
+
 
 extern int     ignore_bounce_errors_after; /* Keep them for this time. */
 extern BOOL    ignore_fromline_local;  /* Local SMTP ignore fromline */
@@ -828,7 +832,8 @@ extern int     proxy_external_port;    /* Port on remote interface of proxy */
 extern uschar *proxy_local_address;    /* IP of local interface of proxy */
 extern int     proxy_local_port;       /* Port on local interface of proxy */
 extern int     proxy_protocol_timeout; /* Timeout for proxy negotiation */
-extern BOOL    proxy_session;          /* TRUE if receiving mail from valid proxy  */
+extern BOOL    proxy_session;          /* TRUE if receiving mail from valid proxy
+					  or sending via one */
 #endif
 
 extern uschar *prvscheck_address;      /* Set during prvscheck expansion item */

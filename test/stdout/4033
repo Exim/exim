@@ -1,0 +1,108 @@
+### (1) non-prox plain receive (not advertised) (2) XCLIENT refules when not advertised
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello plainclient [127.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+
+**** SMTP testing: that is not a real message id!
+
+550 XCLIENT command used when not advertised
+221 myhost.test.ex closing connection
+### receive, (1) fully loaded (2) new conn (3) bad: transaction in progress
+
+**** SMTP testing session as if from host ip4.ip4.ip4.ip4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello xclientproxy [ip4.ip4.ip4.ip4]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-XCLIENT ADDR NAME PORT LOGIN DESTADDR DESTPORT
+250 HELP
+220 XCLIENT success
+250-myhost.test.ex Hello proxylookedupname.net [127.0.0.2]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-XCLIENT ADDR NAME PORT LOGIN DESTADDR DESTPORT
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaY-0005vi-00
+
+**** SMTP testing: that is not a real message id!
+
+220 XCLIENT success
+250-myhost.test.ex Hello anotherhelo [127.0.0.3]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-XCLIENT ADDR NAME PORT LOGIN DESTADDR DESTPORT
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaZ-0005vi-00
+
+**** SMTP testing: that is not a real message id!
+
+250 OK
+503 mail transaction in progress
+250 Reset OK
+220 XCLIENT success
+503 HELO or EHLO required
+221 myhost.test.ex closing connection
+###          (4) no operands to XCLIENT (5,6) unrecognised operands
+
+**** SMTP testing session as if from host ip4.ip4.ip4.ip4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello xclientproxy [ip4.ip4.ip4.ip4]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-XCLIENT ADDR NAME PORT LOGIN DESTADDR DESTPORT
+250 HELP
+501 XCLIENT must have at least one operand
+501 XCLIENT: unrecognised parameter 'NONO'
+501 XCLIENT: unrecognised parameter 'NAMEfoobar'
+501-XCLIENT: unrecognised parameter 'SIXSIX'
+501 Too many syntax or protocol errors
+###          (7) operand with zero-len value (8) operand with no value
+
+**** SMTP testing session as if from host ip4.ip4.ip4.ip4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello xclientproxy [ip4.ip4.ip4.ip4]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-XCLIENT ADDR NAME PORT LOGIN DESTADDR DESTPORT
+250 HELP
+501 XCLIENT: zero-length value for param
+501 XCLIENT: missing value for parameter 'NAME'
+421 myhost.test.ex lost input connection
+
+******** SERVER ********
+### (1) non-prox plain receive (not advertised) (2) XCLIENT refules when not advertised
+### receive, (1) fully loaded (2) new conn (3) bad: transaction in progress
+###          (4) no operands to XCLIENT (5,6) unrecognised operands
+###          (7) operand with zero-len value (8) operand with no value

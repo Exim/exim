@@ -75,6 +75,9 @@ enum {
   ETRN_CMD,                     /* This by analogy with TURN from the RFC */
   STARTTLS_CMD,                 /* Required by the STARTTLS RFC */
   TLS_AUTH_CMD,			/* auto-command at start of SSL */
+#ifdef EXPERIMENTAL_XCLIENT
+  XCLIENT_CMD,			/* per xlexkiro implementation */
+#endif
 
   /* This is a dummy to identify the non-sync commands when pipelining */
 
@@ -189,14 +192,22 @@ count of non-mail commands and possibly provoke an error.
 tls_auth is a pseudo-command, never expected in input.  It is activated
 on TLS startup and looks for a tls authenticator. */
 
-enum {	CL_RSET, CL_HELO, CL_EHLO, CL_AUTH,
+enum {
+	CL_RSET = 0,
+	CL_HELO,
+	CL_EHLO,
+	CL_AUTH,
 #ifndef DISABLE_TLS
-	CL_STLS, CL_TLAU,
+	CL_STLS,
+	CL_TLAU,
+#endif
+#ifdef EXPERIMENTAL_XCLIENT
+	CL_XCLI,
 #endif
 };
 
 static smtp_cmd_list cmd_list[] = {
-  /* name         len                     cmd     has_arg is_mail_cmd */
+  /*             name         len                     cmd     has_arg is_mail_cmd */
 
   [CL_RSET] = { "rset",       sizeof("rset")-1,       RSET_CMD,	FALSE, FALSE },  /* First */
   [CL_HELO] = { "helo",       sizeof("helo")-1,       HELO_CMD, TRUE,  FALSE },
@@ -206,8 +217,9 @@ static smtp_cmd_list cmd_list[] = {
   [CL_STLS] = { "starttls",   sizeof("starttls")-1,   STARTTLS_CMD, FALSE, FALSE },
   [CL_TLAU] = { "tls_auth",   0,                      TLS_AUTH_CMD, FALSE, FALSE },
 #endif
-
-/* If you change anything above here, also fix the definitions below. */
+#ifdef EXPERIMENTAL_XCLIENT
+  [CL_XCLI] = { "xclient",    sizeof("xclient")-1,    XCLIENT_CMD, TRUE,  FALSE },
+#endif
 
   { "mail from:", sizeof("mail from:")-1, MAIL_CMD, TRUE,  TRUE  },
   { "rcpt to:",   sizeof("rcpt to:")-1,   RCPT_CMD, TRUE,  TRUE  },
@@ -241,6 +253,9 @@ uschar * smtp_names[] =
   [SCH_RSET] = US"RSET",
   [SCH_STARTTLS] = US"STARTTLS",
   [SCH_VRFY] = US"VRFY",
+#ifdef EXPERIMENTAL_XCLIENT
+  [SCH_XCLIENT] = US"XCLIENT",
+#endif
   };
 
 static uschar *protocols_local[] = {
@@ -1260,6 +1275,7 @@ return OTHER_CMD;
 
 
 
+
 /*************************************************
 *          Forced closedown of call              *
 *************************************************/
@@ -1773,7 +1789,6 @@ while (done <= 0)
       reset_point = smtp_reset(reset_point);
       bsmtp_transaction_linecount = receive_linecount;
       break;
-
 
     /* The MAIL FROM command requires an address as an operand. All we
     do here is to parse it for syntactic correctness. The form "<>" is
@@ -4178,7 +4193,13 @@ while (done <= 0)
 	  fl.tls_advertised = TRUE;
 	  }
 #endif
-
+#ifdef EXPERIMENTAL_XCLIENT
+	if (proxy_session || verify_check_host(&hosts_xclient) != FAIL)
+	  {
+	  g = string_catn(g, smtp_code, 3);
+	  g = xclient_smtp_advertise_str(g);
+	  }
+#endif
 #ifndef DISABLE_PRDR
 	/* Per Recipient Data Response, draft by Eric A. Hall extending RFC */
 	if (prdr_enable)
@@ -4243,6 +4264,41 @@ while (done <= 0)
       reset_point = smtp_reset(reset_point);
       toomany = FALSE;
       break;   /* HELO/EHLO */
+
+#ifdef EXPERIMENTAL_XCLIENT
+    case XCLIENT_CMD:
+      {
+      BOOL fatal = fl.helo_seen;
+      uschar * errmsg;
+      int resp;
+
+      HAD(SCH_XCLIENT);
+      smtp_mailcmd_count++;
+
+      if ((errmsg = xclient_smtp_command(smtp_cmd_data, &resp, &fatal)))
+	if (fatal)
+	  done = synprot_error(L_smtp_syntax_error, resp, NULL, errmsg);
+	else
+	  {
+	  smtp_printf("%d %s\r\n", FALSE, resp, errmsg);
+	  log_write(0, LOG_MAIN|LOG_REJECT, "rejected XCLIENT from %s: %s",
+	    host_and_ident(FALSE), errmsg);
+	  }
+      else
+	{
+	fl.helo_seen = FALSE;			/* Require another EHLO */
+	smtp_code = string_sprintf("%d", resp);
+
+	/*XXX unclear in spec. if this needs to be an ESMTP banner,
+	nor whether we get the original client's HELO after (or a proxy fake).
+	We require that we do; the following HELO/EHLO handling will set
+	sender_helo_name as normal. */
+
+	smtp_printf("%s XCLIENT success\r\n", FALSE, smtp_code);
+	}
+      break; /* XCLIENT */
+      }
+#endif
 
 
     /* The MAIL command requires an address as an operand. All we do
@@ -5353,6 +5409,10 @@ while (done <= 0)
       if (acl_smtp_etrn) smtp_printf(" ETRN", TRUE);
       if (acl_smtp_expn) smtp_printf(" EXPN", TRUE);
       if (acl_smtp_vrfy) smtp_printf(" VRFY", TRUE);
+#ifdef EXPERIMENTAL_XCLIENT
+      if (proxy_session || verify_check_host(&hosts_xclient) != FAIL)
+	smtp_printf(" XCLIENT", TRUE);
+#endif
       smtp_printf("\r\n", FALSE);
       break;
 

@@ -1,0 +1,29 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 Warning: No server certificate defined; will use a selfsigned one.
+ Suggested action: either install a certificate or change tls_advertise_hosts option
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 tls session:   yes
+1999-03-02 09:44:33 proxy session: no
+1999-03-02 09:44:33 local          [127.0.0.1]:1113
+1999-03-02 09:44:33 proxy internal []:0
+1999-03-02 09:44:33 proxy external []:0
+1999-03-02 09:44:33 remote         [127.0.0.1]:1114
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= a@test.ex H=(plainclient) [127.0.0.1]:1114 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
+1999-03-02 09:44:33 tls session:   yes
+1999-03-02 09:44:33 proxy session: yes
+1999-03-02 09:44:33 local          [ip4.ip4.ip4.ip4]:1113
+1999-03-02 09:44:33 proxy internal [ip4.ip4.ip4.ip4]:1115
+1999-03-02 09:44:33 proxy external [10.42.42.42]:1116
+1999-03-02 09:44:33 remote         [127.0.0.2]:1117
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= c@test.ex H=proxylookedupname.net (clienthelo) [127.0.0.2]:1117 P=esmtpsa X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no A=xclient:hisloginname PRX=ip4.ip4.ip4.ip4 S=sss
+1999-03-02 09:44:33 tls session:   yes
+1999-03-02 09:44:33 proxy session: yes
+1999-03-02 09:44:33 local          [ip4.ip4.ip4.ip4]:1113
+1999-03-02 09:44:33 proxy internal [127.0.0.2]:1117
+1999-03-02 09:44:33 proxy external [10.42.42.42]:1116
+1999-03-02 09:44:33 remote         [127.0.0.3]:1111
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= c2@test.ex H=(anotherhelo) [127.0.0.3]:1111 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no PRX=127.0.0.2 S=sss
+1999-03-02 09:44:33 rejected XCLIENT from (anotherhelo) [127.0.0.3]:1111: mail transaction in progress
+1999-03-02 09:44:33 rejected MAIL from miss.ehlo.after.xclient (anotherhelo) [127.0.0.3]:1111: no HELO/EHLO given
+1999-03-02 09:44:33 SMTP call from (xclientproxy) [ip4.ip4.ip4.ip4]:1112 dropped: too many syntax or protocol errors (last command was "XCLIENT SIXSIX=",  C=EHLO,STARTTLS,EHLO,XCLIENT,XCLIENT,XCLIENT,XCLIENT)

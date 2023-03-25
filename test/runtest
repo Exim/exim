@@ -1387,6 +1387,9 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
     next if / in limits_advertise_hosts?\? no \(matched "!\*"\)/;
 
+    # Experimental_XCLIENT
+    next if / in hosts_xclient?\? no \(option unset\)/;
+
     # TCP Fast Open
     next if /^(ppppp )?setsockopt FASTOPEN: Network Error/;
 

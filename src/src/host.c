@@ -824,9 +824,9 @@ Returns:     pointer to character string
 */
 
 uschar *
-host_ntoa(int type, const void *arg, uschar *buffer, int *portptr)
+host_ntoa(int type, const void * arg, uschar * buffer, int * portptr)
 {
-uschar *yield;
+uschar * yield;
 
 /* The new world. It is annoying that we have to fish out the address from
 different places in the block, depending on what kind of address it is. It

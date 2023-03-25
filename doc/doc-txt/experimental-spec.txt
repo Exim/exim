@@ -662,6 +662,37 @@ Values advertised are only noted for TLS connections and ones for which
 the server does not advertise TLS support.
 
 
+
+XCLIENT proxy support
+---------------------------------------------------------------
+Per https://www.postfix.org/XCLIENT_README.html
+
+XCLIENT is an ESMTP extension supporting an inbound proxy.
+The only client immplementation known is in Nginx
+(https://nginx.org/en/docs/mail/ngx_mail_proxy_module.html)
+
+If compiled with EXPERIMENTAL_XCLIENT=yes :-
+
+As a server, Exim will advertise XCLIENT support (conditional on a new option
+"hosts_xclient") and service XCLIENT commands with parameters
+  ADDR
+  NAME
+  PORT
+  LOGIN
+  DESTADDR
+  DESTPORT
+A fresh HELO/EHLO is required after a succesful XCLIENT, and the usual
+values are derived from that (making the HELO and PROTO paramemters redundant).
+
+An XCLIENT command must give both ADDR and PORT parameters if no previous
+XCLIENT has succeeded in the SMTP session.
+
+After a success:
+  $proxy_session variable becomes "yes"
+  $proxy_local_address, $proxy_local_port have the proxy "inside" values
+  $proxy_external_address, $proxy_external_port have the proxy "outside" values
+  $sender_host_address, $sender_host_port have the remot client values
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

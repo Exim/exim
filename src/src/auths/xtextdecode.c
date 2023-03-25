@@ -32,9 +32,9 @@ Returns:      the number of bytes in the result, excluding the final zero;
 */
 
 int
-auth_xtextdecode(uschar *code, uschar **ptr)
+auth_xtextdecode(uschar * code, uschar ** ptr)
 {
-register int x;
+int x;
 uschar * result = store_get(Ustrlen(code) + 1, code);
 *ptr = result;
 
