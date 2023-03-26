@@ -2371,7 +2371,9 @@ if ((pid = exim_fork(US"delivery-local")) == 0)
      addr->local_part, tp->name);
 
     /* Setting these globals in the subprocess means we need never clear them */
-    transport_name = addr->transport->name;
+
+    transport_name = tp->name;
+    if (addr->router) router_name = addr->router->name;
     driver_srcfile = tp->srcfile;
     driver_srcline = tp->srcline;
 
@@ -4663,7 +4665,9 @@ all pipes, so I do not see a reason to use non-blocking IO here
     host_item *h;
 
     /* Setting these globals in the subprocess means we need never clear them */
-    transport_name = addr->transport->name;
+
+    transport_name = tp->name;
+    if (addr->router) router_name = addr->router->name;
     driver_srcfile = tp->srcfile;
     driver_srcline = tp->srcline;
 

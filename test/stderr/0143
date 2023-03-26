@@ -12,7 +12,7 @@ dropping to exim gid; retaining priv uid
 router_name <my_main_router>
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@domain.com <--------
-transport_name <my_smtp>
+transport_name <my_smtp> from router <my_main_router>
 my_smtp transport entered
   userx@domain.com
 hostlist:
