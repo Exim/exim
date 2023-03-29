@@ -634,6 +634,9 @@ DISABLE_MAL_MKS=yes
 
 # Uncomment the following line to add queuefile transport support
 # EXPERIMENTAL_QUEUEFILE=yes
+#
+# Uncomment the following line to add XCLIENT support
+# EXPERIMENTAL_XCLIENT=yes
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
