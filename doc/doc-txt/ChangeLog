@@ -119,6 +119,9 @@ JH/25 Bug 2827: Restrict size of References: header in bounce messages to 998
       a not-impossible References: in the message being bounced could still
       be over-large and get stopped in the transport.
 
+JH/26 For a ${readsocket } in TLS mode, send a TLS Close Alert before the TCP
+      close.  Previously a bare socket close was done.
+
 
 Exim version 4.96
 -----------------

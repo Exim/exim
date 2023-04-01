@@ -275,6 +275,10 @@ if (!lf.cache) *do_cache = 0;
 
 out:
 
+#ifndef DISABLE_TLS
+if (cctx->tls_ctx) tls_close(cctx->tls_ctx, TLS_SHUTDOWN_NOWAIT);
+#endif
+
 (void) close(cctx->sock);
 cctx->sock = -1;
 return ret;
@@ -294,7 +298,7 @@ readsock_close(void * handle)
 client_conn_ctx * cctx = handle;
 if (cctx->sock < 0) return;
 #ifndef DISABLE_TLS
-if (cctx->tls_ctx) tls_close(cctx->tls_ctx, TRUE);
+if (cctx->tls_ctx) tls_close(cctx->tls_ctx, TLS_SHUTDOWN_NOWAIT);
 #endif
 close(cctx->sock);
 cctx->sock = -1;
