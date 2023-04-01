@@ -10587,12 +10587,13 @@ expansion items.
 This item inserts &"raw"& header lines. It is described with the &%header%&
 expansion item in section &<<SECTexpansionitems>>& above.
 
-.vitem "&*${run <&'options'&> {*&<&'command&~arg&~list'&>&*}{*&<&'string1'&>&*}&&&
+.vitem "&*${run<&'options'&> {*&<&'command&~arg&~list'&>&*}{*&<&'string1'&>&*}&&&
         {*&<&'string2'&>&*}}*&"
 .cindex "expansion" "running a command"
 .cindex "&%run%& expansion item"
 This item runs an external command, as a subprocess.
-One option is supported after the word &'run'&, comma-separated.
+One option is supported after the word &'run'&, comma-separated
+and without whitespace.
 
 If the option &'preexpand'& is not used,
 the command string is split into individual arguments by spaces

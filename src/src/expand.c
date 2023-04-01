@@ -5630,7 +5630,6 @@ while (*s)
       /* Handle options to the "run" */
 
       while (*s == ',')
-	{
 	if (Ustrncmp(++s, "preexpand", 9) == 0)
 	  { late_expand = FALSE; s += 9; }
 	else
@@ -5641,7 +5640,6 @@ while (*s)
 						  (int)(t-s), s);
 	  goto EXPAND_FAILED;
 	  }
-	}
       Uskip_whitespace(&s);
 
       if (*s != '{')					/*}*/
