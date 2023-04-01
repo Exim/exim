@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) The Exim Maintainers 2020 - 2022 */
-/* Copyright (c) University of Cambridge 1995 - 2018 */
+/* Copyright (c) University of Cambridge 1995 - 2023 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
@@ -1329,7 +1329,13 @@ cutthrough_data_puts(US"\r\n", 2);
 }
 
 
-/* Get and check response from cutthrough target */
+/* Get and check response from cutthrough target.
+Used for
+- nonfirst RCPT
+- predata
+- data finaldot
+- cutthrough conn close
+*/
 static uschar
 cutthrough_response(client_conn_ctx * cctx, char expect, uschar ** copy, int timeout)
 {
@@ -1343,7 +1349,7 @@ sx.inblock.ptr = inbuffer;
 sx.inblock.ptrend = inbuffer;
 sx.inblock.cctx = cctx;
 if(!smtp_read_response(&sx, responsebuffer, sizeof(responsebuffer), expect, timeout))
-  cancel_cutthrough_connection(TRUE, US"target timeout on read");
+  cancel_cutthrough_connection(TRUE, US"unexpected response to smtp command");
 
 if(copy)
   {
