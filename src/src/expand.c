@@ -27,13 +27,6 @@ typedef unsigned esi_flags;
 # ifndef SUPPORT_CRYPTEQ
 #  define SUPPORT_CRYPTEQ
 # endif
-#else
-
-/* Recursively called function */
-
-static uschar *expand_string_internal(const uschar *, esi_flags, const uschar **, BOOL *, BOOL *);
-static int_eximarith_t expanded_string_integer(const uschar *, BOOL);
-
 #endif	/*!STAND_ALONE*/
 
 #ifdef LOOKUP_LDAP
@@ -941,6 +934,10 @@ static uschar *mtable_sticky[] =
 #define FH_EXISTS_ONLY	BIT(0)
 #define FH_WANT_RAW	BIT(1)
 #define FH_WANT_LIST	BIT(2)
+
+/* Recursively called function */
+static uschar *expand_string_internal(const uschar *, esi_flags, const uschar **, BOOL *, BOOL *);
+static int_eximarith_t expanded_string_integer(const uschar *, BOOL);
 
 
 /*************************************************

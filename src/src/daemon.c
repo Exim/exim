@@ -1691,7 +1691,6 @@ int listen_socket_count = 0, poll_fd_count;
 ip_address_item * addresses = NULL;
 time_t last_connection_time = (time_t)0;
 int local_queue_run_max = 0;
-BOOL queue_run_max_has_dollar;
 
 if (is_multiple_qrun())
 

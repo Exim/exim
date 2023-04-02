@@ -92,11 +92,9 @@ return node ? node->data.ptr : NULL;
 static void
 regex_to_cache(const uschar * key, BOOL caseless, const pcre2_code * cre)
 {
-PCRE2_SIZE srelen;
-uschar * sre;
-tree_node * node;
 
-node = store_get(sizeof(tree_node) + Ustrlen(key) + 1, key);	/* we are called with STORE_PERM */
+/* we are called with STORE_PERM */
+tree_node * node = store_get(sizeof(tree_node) + Ustrlen(key) + 1, key);
 Ustrcpy(node->name, key);
 node->data.ptr = (void *)cre;
 
