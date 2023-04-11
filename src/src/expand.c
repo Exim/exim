@@ -3523,7 +3523,7 @@ switch(cond_type = identify_operator(&s, &opname))
 
     /* Match the given local_part against the SRS-encoded pattern */
 
-    re = regex_must_compile(US"^(?i)SRS0=([^=]+)=([A-Z2-7]+)=([^=]*)=(.*)$",
+    re = regex_must_compile(US"^(?i)SRS0=([^=]+)=([A-Z2-7]{2})=([^=]*)=(.*)$",
 			    MCS_CASELESS | MCS_CACHEABLE, FALSE);
     md = pcre2_match_data_create(4+1, pcre_gen_ctx);
     if (pcre2_match(re, sub[0], PCRE2_ZERO_TERMINATED, 0, PCRE_EOPT,
@@ -7061,13 +7061,11 @@ while (*s)
 	  {
 	  struct timeval now;
 	  unsigned long i;
-	  gstring * h = NULL;
 
 	  gettimeofday(&now, NULL);
-	  for (unsigned long i = (now.tv_sec / 86400) & 0x3ff; i; i >>= 5)
-	    h = string_catn(h, &base32_chars[i & 0x1f], 1);
-	  if (h) while (h->ptr > 0)
-	    g = string_catn(g, &h->s[--h->ptr], 1);
+	  i = (now.tv_sec / 86400) & 0x3ff;
+	  g = string_catn(g, &base32_chars[i >> 5], 1);
+	  g = string_catn(g, &base32_chars[i & 0x1f], 1);
 	  }
 	g = string_catn(g, US"=", 1);
 
