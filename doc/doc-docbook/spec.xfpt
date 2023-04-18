@@ -39011,7 +39011,7 @@ logging and the message has a DKIM signature header.
 .section "Reducing or increasing what is logged" "SECTlogselector"
 .cindex "log" "selectors"
 By setting the &%log_selector%& global option, you can disable some of Exim's
-default logging, or you can request additional logging. The value of
+default logging to the main log, or you can request additional logging. The value of
 &%log_selector%& is made up of names preceded by plus or minus characters. For
 example:
 .code
