@@ -26161,7 +26161,8 @@ This option give a list of hosts for which,
 while verifying the server certificate,
 checks will be included on the host name
 (note that this will generally be the result of a DNS MX lookup)
-versus Subject and Subject-Alternate-Name fields.  Wildcard names are permitted
+versus the Subject-Alternate-Name (or, if none, Subject-Name) fields.
+Wildcard names are permitted,
 limited to being the initial component of a 3-or-more component FQDN.
 
 There is no equivalent checking on client certificates.

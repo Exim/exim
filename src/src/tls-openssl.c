@@ -1192,6 +1192,8 @@ else
     uschar * name;
     int rc;
     while ((name = string_nextinlist(&list, &sep, NULL, 0)))
+      {
+      DEBUG(D_tls|D_lookup) debug_printf_indent("%s suitable for cert, per OpenSSL?", name);
       if ((rc = X509_check_host(cert, CCS name, 0,
 		  X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
 		  | X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS,
@@ -1203,8 +1205,11 @@ else
 	    tlsp == &tls_out ? deliver_host_address : sender_host_address);
 	  name = NULL;
 	  }
+	DEBUG(D_tls|D_lookup) debug_printf_indent("  yes\n");
 	break;
 	}
+      else DEBUG(D_tls|D_lookup) debug_printf_indent("  no\n");
+      }
     if (!name)
 #else
     if (!tls_is_name_for_cert(verify_cert_hostnames, cert))

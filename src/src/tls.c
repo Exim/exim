@@ -670,21 +670,24 @@ Returns:
 BOOL
 tls_is_name_for_cert(const uschar * namelist, void * cert)
 {
-uschar * altnames = tls_cert_subject_altname(cert, US"dns");
-uschar * subjdn;
-uschar * certname;
+uschar * altnames, * subjdn, * certname, * cmpname;
 int cmp_sep = 0;
-uschar * cmpname;
 
 if ((altnames = tls_cert_subject_altname(cert, US"dns")))
   {
   int alt_sep = '\n';
+  DEBUG(D_tls|D_lookup) debug_printf_indent("cert has SAN\n");
   while ((cmpname = string_nextinlist(&namelist, &cmp_sep, NULL, 0)))
     {
     const uschar * an = altnames;
+    DEBUG(D_tls|D_lookup) debug_printf_indent(" %s in SANs?", cmpname);
     while ((certname = string_nextinlist(&an, &alt_sep, NULL, 0)))
       if (is_name_match(cmpname, certname))
+	{
+	DEBUG(D_tls|D_lookup) debug_printf_indent("  yes (matched %s)\n", certname);
 	return TRUE;
+	}
+    DEBUG(D_tls|D_lookup) debug_printf_indent(" no (end of SAN list)\n");
     }
   }
 
@@ -696,13 +699,18 @@ else if ((subjdn = tls_cert_subject(cert, NULL)))
   while ((cmpname = string_nextinlist(&namelist, &cmp_sep, NULL, 0)))
     {
     const uschar * sn = subjdn;
+    DEBUG(D_tls|D_lookup) debug_printf_indent(" %s in SN?", cmpname);
     while ((certname = string_nextinlist(&sn, &sn_sep, NULL, 0)))
       if (  *certname++ == 'C'
 	 && *certname++ == 'N'
 	 && *certname++ == '='
 	 && is_name_match(cmpname, certname)
 	 )
+	{
+	DEBUG(D_tls|D_lookup) debug_printf_indent("  yes (matched %s)\n", certname);
 	return TRUE;
+	}
+    DEBUG(D_tls|D_lookup) debug_printf_indent(" no (end of CN)\n");
     }
   }
 return FALSE;

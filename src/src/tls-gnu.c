@@ -2620,7 +2620,7 @@ else
      )
     {
     DEBUG(D_tls)
-      debug_printf("TLS certificate verification failed: cert name mismatch\n");
+      debug_printf("TLS certificate verification failed: cert name mismatch (per GnuTLS)\n");
     if (state->verify_requirement >= VERIFY_REQUIRED)
       goto badcert;
     return TRUE;
