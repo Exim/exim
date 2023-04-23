@@ -3143,9 +3143,8 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.delivery)
       sender_address,
       sender_fullhost ? "H=" : "", sender_fullhost ? sender_fullhost : US"",
       sender_ident ? "U=" : "", sender_ident ? sender_ident : US"");
-    message_id[0] = 0;                       /* Indicate no message accepted */
     smtp_reply = US"550 Too many \"Received\" headers - suspected mail loop";
-    goto TIDYUP;                             /* Skip to end of function */
+    goto NOT_ACCEPTED;				/* Skip to end of function */
     }
   received_header_gen();
   add_acl_headers(ACL_WHERE_RCPT, US"MAIL or RCPT");
@@ -3242,12 +3241,12 @@ if (!ferror(spool_data_file) && !(receive_feof)() && message_ended != END_DOT)
     case END_EOF:
       if (smtp_input)
 	{
-	Uunlink(spool_name);                 /* Lose data file when closed */
+	Uunlink(spool_name);		/* Lose data file when closed */
 	cancel_cutthrough_connection(TRUE, US"sender closed connection");
-	message_id[0] = 0;                   /* Indicate no message accepted */
+	message_id[0] = 0;		/* Indicate no message_accepted */
 	smtp_reply = handle_lost_connection(US"");
 	smtp_yield = FALSE;
-	goto TIDYUP;                         /* Skip to end of function */
+	goto TIDYUP;				/* Skip to end of function */
 	}
       break;
 
@@ -3272,8 +3271,7 @@ if (!ferror(spool_data_file) && !(receive_feof)() && message_ended != END_DOT)
       if (smtp_input)
 	{
 	smtp_reply = US"552 Message size exceeds maximum permitted";
-	message_id[0] = 0;               /* Indicate no message accepted */
-	goto TIDYUP;                     /* Skip to end of function */
+	goto NOT_ACCEPTED;			/* Skip to end of function */
 	}
       else
 	{
@@ -3291,8 +3289,7 @@ if (!ferror(spool_data_file) && !(receive_feof)() && message_ended != END_DOT)
       Uunlink(spool_name);		/* Lose the data file when closed */
       cancel_cutthrough_connection(TRUE, US"sender protocol error");
       smtp_reply = US"";		/* Response already sent */
-      message_id[0] = 0;		/* Indicate no message accepted */
-      goto TIDYUP;			/* Skip to end of function */
+      goto NOT_ACCEPTED;			/* Skip to end of function */
     }
   }
 
@@ -3333,8 +3330,7 @@ if (fflush(spool_data_file) == EOF || ferror(spool_data_file) ||
       smtp_reply = US"451 Error while writing spool file";
       receive_swallow_smtp();
       }
-    message_id[0] = 0;               /* Indicate no message accepted */
-    goto TIDYUP;                     /* Skip to end of function */
+    goto NOT_ACCEPTED;			/* Skip to end of function */
     }
 
   else
@@ -3567,8 +3563,7 @@ else
 	  if (smtp_handle_acl_fail(ACL_WHERE_DKIM, rc, user_msg, log_msg) != 0)
 	    smtp_yield = FALSE;    /* No more messages after dropped connection */
 	  smtp_reply = US"";       /* Indicate reply already sent */
-	  message_id[0] = 0;       /* Indicate no message accepted */
-	  goto TIDYUP;             /* Skip to end of function */
+	  goto NOT_ACCEPTED;			/* Skip to end of function */
 	  }
         }
       else
@@ -3649,10 +3644,7 @@ else
 			   ? US"accepted"
 			   : US"accepted for some recipients");
       if (recipients_count == 0)
-        {
-        message_id[0] = 0;       /* Indicate no message accepted */
-	goto TIDYUP;
-	}
+	goto NOT_ACCEPTED;
       }
     else
       prdr_requested = FALSE;
@@ -3686,8 +3678,7 @@ else
         if (smtp_handle_acl_fail(ACL_WHERE_DATA, rc, user_msg, log_msg) != 0)
           smtp_yield = FALSE;    /* No more messages after dropped connection */
         smtp_reply = US"";       /* Indicate reply already sent */
-        message_id[0] = 0;       /* Indicate no message accepted */
-        goto TIDYUP;             /* Skip to end of function */
+        goto NOT_ACCEPTED;			/* Skip to end of function */
         }
       }
     }
@@ -3925,9 +3916,8 @@ else
     if (!smtp_batched_input)
       {
       smtp_respond(smtp_code, 3, TRUE, errmsg);
-      message_id[0] = 0;            /* Indicate no message accepted */
       smtp_reply = US"";            /* Indicate reply already sent */
-      goto TIDYUP;                  /* Skip to end of function */
+      goto NOT_ACCEPTED;			/* Skip to end of function */
       }
     else
       moan_smtp_batch(NULL, "%s %s", smtp_code, errmsg);
@@ -4004,8 +3994,7 @@ else
     if (smtp_input)
       {
       smtp_reply = US"451 Error in writing spool file";
-      message_id[0] = 0;          /* Indicate no message accepted */
-      goto TIDYUP;
+      goto NOT_ACCEPTED;
       }
     else
       {
@@ -4035,8 +4024,7 @@ if (fflush(spool_data_file))
   if (smtp_input)
     {
     smtp_reply = US"451 Error in writing spool file";
-    message_id[0] = 0;          /* Indicate no message accepted */
-    goto TIDYUP;
+    goto NOT_ACCEPTED;
     }
   else
     {
@@ -4385,6 +4373,11 @@ possible for fclose() to fail - but what to do? What has happened to the lock
 if this happens?  We can at least log it; if it is observed on some platform
 then we can think about properly declaring the message not-received. */
 
+
+goto TIDYUP;
+
+NOT_ACCEPTED:
+message_id[0] = 0;				/* Indicate no message accepted */
 
 TIDYUP:
 process_info[process_info_len] = 0;			/* Remove message id */

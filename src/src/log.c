@@ -996,7 +996,7 @@ if (LOGGING(pid))
   if (!syslog_pid) pid_position[1] = g->ptr;		/*  … and end+1 of the PID */
   }
 
-if (f.really_exim && message_id[0] != 0)
+if (f.really_exim && message_id[0])
   g = string_fmt_append(g, "%s ", message_id);
 
 if (flags & LOG_CONFIG)

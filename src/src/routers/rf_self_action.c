@@ -74,7 +74,7 @@ switch (code)
     and where it has come from. Otherwise, during message delivery, the normal
     logging for the address will be sufficient. */
 
-    if (message_id[0] == 0)
+    if (!message_id[0])
       if (sender_fullhost)
 	log_write(0, LOG_MAIN, "%s: %s (while verifying <%s> from host %s)",
 	  msg, addr->domain, addr->address, sender_fullhost);

@@ -2078,11 +2078,11 @@ so we pass that back. */
 if (!host->address)
   {
   uschar *msg =
-    #ifndef STAND_ALONE
+#ifndef STAND_ALONE
     !message_id[0] && smtp_in
       ? string_sprintf("no IP address found for host %s (during %s)", host->name,
           smtp_get_connection_info()) :
-    #endif
+#endif
     string_sprintf("no IP address found for host %s", host->name);
 
   HDEBUG(D_host_lookup) debug_printf("%s\n", msg);

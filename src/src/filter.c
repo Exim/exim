@@ -1463,22 +1463,21 @@ switch (c->type)
     testing and verification. */
 
   case cond_errormsg:
-    yield = message_id[0] != 0 &&
-      (sender_address == NULL || sender_address[0] == 0);
+    yield = message_id[0] && (!sender_address || !*sender_address);
     break;
 
     /* Only FALSE if a message is actually being processed; TRUE for address
     and filter testing and verification. */
 
   case cond_firsttime:
-    yield = filter_test != FTEST_NONE || message_id[0] == 0 || f.deliver_firsttime;
+    yield = filter_test != FTEST_NONE || !message_id[0] || f.deliver_firsttime;
     break;
 
     /* Only TRUE if a message is actually being processed; FALSE for address
     testing and verification. */
 
   case cond_manualthaw:
-    yield = message_id[0] != 0 && f.deliver_manual_thaw;
+    yield = message_id[0] && f.deliver_manual_thaw;
     break;
 
     /* The foranyaddress condition loops through a list of addresses */

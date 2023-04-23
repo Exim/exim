@@ -564,7 +564,7 @@ if (pid == 0)
         smtp_log_no_mail();               /* Log no mail if configured */
         exim_underbar_exit(EXIT_SUCCESS);
         }
-      if (message_id[0] == 0) continue;   /* No message was accepted */
+      if (!message_id[0]) continue;	/* No message was accepted */
       }
     else				/* bad smtp_setup_msg() */
       {
