@@ -4973,7 +4973,7 @@ smtp_transport_closedown(transport_instance *tblock)
 {
 smtp_transport_options_block * ob = SOB tblock->options_block;
 client_conn_ctx cctx;
-smtp_context sx;
+smtp_context sx = {0};
 uschar buffer[256];
 uschar inbuffer[4096];
 uschar outbuffer[16];

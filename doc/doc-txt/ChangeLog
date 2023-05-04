@@ -125,6 +125,14 @@ JH/26 For a ${readsocket } in TLS mode, send a TLS Close Alert before the TCP
 JH/27 Fix ${srs_encode ..}.  Previously it would give a bad result for one day
       every 1024 days.
 
+JH/28 Bug 2996: Fix a crash in the smtp transport.  When finding that the
+      message being considered for delivery was already being handled by
+      another process, and having an SMTP connection already open, the function
+      to close it tried to use an uninitialized variable.  This would afftect
+      high-volume sites more, especially when running mailing-list-style loads.
+      Pollution of logs was the major effect, as the other process delivered
+      the message.  Found and partly investigated by Graeme Fowler.
+
 
 Exim version 4.96
 -----------------
