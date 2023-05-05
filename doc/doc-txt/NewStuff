@@ -9,7 +9,7 @@ the documentation is updated, this file is reduced to a short list.
 Version 4.97
 ------------
 
- 1. The expansion-test faciility (exim -be) can set variables.
+ 1. The expansion-test facility (exim -be) can set variables.
 
  2. An event on a failing SMTP AUTH, for both client and server operations.
 
@@ -32,6 +32,25 @@ Version 4.97
  11. An option for the ${readsocket } expansion to set an SNI for TLS.
 
  12. The ACL remove_header modifier can take a pattern.
+ 3. Dsearch lookup will now check for taint violations before doing anything
+    else (this prevents an attacker from inferring the locations of files from
+    differences in error messages).
+
+ 4. Dsearch lookup no longer requires read access to directories; consider
+    revoking read access using chmod go-r /path/to/containing/dir/.
+
+ 5. Dsearch lookup will use fstatat() on systems that support it.
+
+ 6. Dsearch lookup has new option "ret=dir" to return only the name of the
+    containing directory without the target (this simplifies some kinds of
+    nested loopup expansions).
+
+ 7. Dsearch lookup now has filter= parameters to match all common inode types
+    (file, dir, symlink, pipe, socket, tty, & bdev).
+
+ 8. Dsearch lookup has new option "filter=nodots" to exclude "." and ".."
+    even when directory matching is not required; equivalent to "filter=subdir"
+    but without requiring that the target actually be a directory.
 
 Version 4.96
 ------------

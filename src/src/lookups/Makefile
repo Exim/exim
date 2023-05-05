@@ -30,47 +30,47 @@ lf_check_file.o: $(HDRS) lf_check_file.c  lf_functions.h
 lf_quote.o:      $(HDRS) lf_quote.c       lf_functions.h
 lf_sqlperform.o: $(HDRS) lf_sqlperform.c  lf_functions.h
 
-cdb.o:           $(HDRS) cdb.c
-dbmdb.o:         $(HDRS) dbmdb.c
-dnsdb.o:         $(HDRS) dnsdb.c
-dsearch.o:       $(HDRS) dsearch.c
-ibase.o:         $(HDRS) ibase.c
-ldap.o:          $(HDRS) ldap.c
+cdb.o:           $(HDRS) cdb.c            lf_functions.h
+dbmdb.o:         $(HDRS) dbmdb.c          lf_functions.h
+dnsdb.o:         $(HDRS) dnsdb.c          lf_functions.h
+dsearch.o:       $(HDRS) dsearch.c        lf_functions.h
+ibase.o:         $(HDRS) ibase.c          lf_functions.h
+ldap.o:          $(HDRS) ldap.c           lf_functions.h
 lmdb.o:          $(HDRS) lmdb.c
-json.o:          $(HDRS) json.c
-lsearch.o:       $(HDRS) lsearch.c
-mysql.o:         $(HDRS) mysql.c
-nis.o:           $(HDRS) nis.c
-nisplus.o:       $(HDRS) nisplus.c
+json.o:          $(HDRS) json.c           lf_functions.h
+lsearch.o:       $(HDRS) lsearch.c        lf_functions.h
+mysql.o:         $(HDRS) mysql.c          lf_functions.h
+nis.o:           $(HDRS) nis.c            lf_functions.h
+nisplus.o:       $(HDRS) nisplus.c        lf_functions.h
 oracle.o:        $(HDRS) oracle.c
 passwd.o:        $(HDRS) passwd.c
-pgsql.o:         $(HDRS) pgsql.c
-readsock.o:      $(HDRS) readsock.c
-redis.o:         $(HDRS) redis.c
-spf.o:           $(HDRS) spf.c
-sqlite.o:        $(HDRS) sqlite.c
-testdb.o:        $(HDRS) testdb.c
+pgsql.o:         $(HDRS) pgsql.c          lf_functions.h
+readsock.o:      $(HDRS) readsock.c       lf_functions.h
+redis.o:         $(HDRS) redis.c          lf_functions.h
+spf.o:           $(HDRS) spf.c            lf_functions.h
+sqlite.o:        $(HDRS) sqlite.c         lf_functions.h
+testdb.o:        $(HDRS) testdb.c         lf_functions.h
 whoson.o:        $(HDRS) whoson.c
 
-cdb.so:           $(HDRS) cdb.c
-dbmdb.so:         $(HDRS) dbmdb.c
-dnsdb.so:         $(HDRS) dnsdb.c
-dsearch.so:       $(HDRS) dsearch.c
-ibase.so:         $(HDRS) ibase.c
-json.so:          $(HDRS) json.c
+cdb.so:           $(HDRS) cdb.c           lf_functions.h
+dbmdb.so:         $(HDRS) dbmdb.c         lf_functions.h
+dnsdb.so:         $(HDRS) dnsdb.c         lf_functions.h
+dsearch.so:       $(HDRS) dsearch.c       lf_functions.h
+ibase.so:         $(HDRS) ibase.c         lf_functions.h
+json.so:          $(HDRS) json.c          lf_functions.h
 ldap.so:          $(HDRS) ldap.c
-lmdb.so:          $(HDRS) lmdb.c
-lsearch.so:       $(HDRS) lsearch.c
-mysql.so:         $(HDRS) mysql.c
-nis.so:           $(HDRS) nis.c
-nisplus.so:       $(HDRS) nisplus.c
+lmdb.so:          $(HDRS) lmdb.c          lf_functions.h
+lsearch.so:       $(HDRS) lsearch.c       lf_functions.h
+mysql.so:         $(HDRS) mysql.c         lf_functions.h
+nis.so:           $(HDRS) nis.c           lf_functions.h
+nisplus.so:       $(HDRS) nisplus.c       lf_functions.h
 oracle.so:        $(HDRS) oracle.c
 passwd.so:        $(HDRS) passwd.c
-pgsql.so:         $(HDRS) pgsql.c
-redis.so:         $(HDRS) redis.c
-spf.so:           $(HDRS) spf.c
-sqlite.so:        $(HDRS) sqlite.c
-testdb.so:        $(HDRS) testdb.c
+pgsql.so:         $(HDRS) pgsql.c         lf_functions.h
+redis.so:         $(HDRS) redis.c         lf_functions.h
+spf.so:           $(HDRS) spf.c           lf_functions.h
+sqlite.so:        $(HDRS) sqlite.c        lf_functions.h
+testdb.so:        $(HDRS) testdb.c        lf_functions.h
 whoson.so:        $(HDRS) whoson.c
 
 # End

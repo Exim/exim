@@ -26,6 +26,15 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
+Exim version 4.97
+-----------------
+
+The dsearch lookup type no longer requires read permission on its target
+directories; scan permission alone now suffices. If you were relying on
+unreadable directories to block dsearch lookups, you should now make other
+arrangements. Conversely, you may now tighten up the permissions on any
+directories that used to require world or group read access.
+
 Exim version 4.95
 -----------------
 
