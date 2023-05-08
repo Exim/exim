@@ -28981,9 +28981,10 @@ for which it must have been requested via the
 (see &<<CHAPTLS>>&).
 
 If an authenticator of this type is configured it is
-run before any SMTP-level communication is done,
+run immediately after a TLS connection being negotiated
+(due to either STARTTLS or TLS-on-connect)
 and can authenticate the connection.
-If it does, SMTP authentication is not offered.
+If it does, SMTP authentication is not subsequently offered.
 
 A maximum of one authenticator of this type may be present.
 
