@@ -444,10 +444,11 @@ Please do not ask for configuration help in the bug-tracker.
 The following Exim mailing lists exist:
 
 .table2 140pt
-.row &'exim-announce@exim.org'&   "Moderated, low volume announcements list"
-.row &'exim-users@exim.org'&      "General discussion list"
-.row &'exim-dev@exim.org'&        "Discussion of bugs, enhancements, etc."
-.row &'exim-cvs@exim.org'&        "Automated commit messages from the VCS"
+.row &'exim-announce@lists.exim.org'&   "Moderated, low volume announcements list"
+.row &'exim-users@lists.exim.org'&      "General discussion list"
+.row &'exim-users-de@lists.exim.org'&   "General discussion list in German language"
+.row &'exim-dev@lists.exim.org'&        "Discussion of bugs, enhancements, etc."
+.row &'exim-cvs@lists.exim.org'&        "Automated commit messages from the VCS"
 .endtable
 
 You can subscribe to these lists, change your existing subscriptions, and view
