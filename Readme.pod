@@ -59,7 +59,7 @@ it already. In this case it is probably prudent to use these packages
 unless you have specialised requirements.
 
 In any case you can always ask on the
-Exim Users mailing list L<https://lists.exim.org/mailman/listinfo/exim-users>
+Exim Users mailing list L<https://lists.exim.org/mailman3/postorius/lists/exim-users.lists.exim.org/>
 for further information.
 
 [End]

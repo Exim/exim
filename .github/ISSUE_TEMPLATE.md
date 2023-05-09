@@ -13,7 +13,7 @@ It's not a really supported workflow.
 
 If you need help with configuration, or _think_ you've found a bug, then the
 Exim Users mailing-list is the place to start.  Many experienced postmasters
-hang out there: <https://lists.exim.org/mailman/listinfo/exim-users>
+hang out there: <https://lists.exim.org/mailman3/postorius/lists/exim-users.lists.exim.org/>
 
 Our documentation is _very_ extensive and if the behavior does not match the
 documentation, then that's a bug to be reported.
