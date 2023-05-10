@@ -743,8 +743,8 @@ for(;;)
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
       "(next input sent too soon: pipelining was not advertised): "
       "rejected \"%s\" %s next input=\"%s\"%s",
-      smtp_cmd_buffer, host_and_ident(TRUE),
-      string_printing(string_copyn(smtp_inptr, n)),
+      string_printing2(smtp_cmd_buffer, SP_QUOT), host_and_ident(TRUE),
+      string_printing2(string_copyn(smtp_inptr, n), SP_QUOT),
       smtp_inend - smtp_inptr > n ? "..." : "");
     (void) synprot_error(L_smtp_protocol_error, 554, NULL,
       US"SMTP synchronization error");
@@ -1383,7 +1383,7 @@ if (LOGGING(tls_cipher) && tls_in.cipher)
 if (LOGGING(tls_certificate_verified) && tls_in.cipher)
   g = string_append(g, 2, US" CV=", tls_in.certificate_verified? "yes":"no");
 if (LOGGING(tls_peerdn) && tls_in.peerdn)
-  g = string_append(g, 3, US" DN=\"", string_printing(tls_in.peerdn), US"\"");
+  g = string_append(g, 3, US" DN=\"", string_printing2(tls_in.peerdn, SP_QUOT), US"\"");
 if (LOGGING(tls_sni) && tls_in.sni)
   g = string_append(g, 2, US" SNI=", string_printing2(tls_in.sni, SP_TAB|SP_SPACE));
 return g;
@@ -2434,7 +2434,7 @@ if (!f.sender_host_unknown)
   errno = 0;
   if (!(tcp_wrappers_name = expand_string(tcp_wrappers_daemon_name)))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" "
-      "(tcp_wrappers_name) failed: %s", string_printing(tcp_wrappers_name),
+      "(tcp_wrappers_name) failed: %s", string_printing2(tcp_wrappers_name, SP_QUOT),
         expand_string_message);
 
   if (!hosts_ctl(tcp_wrappers_name,
@@ -2672,7 +2672,7 @@ if (!check_sync())
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
       "synchronization error (input sent without waiting for greeting): "
       "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
-      string_printing(string_copyn(smtp_inptr, n)));
+      string_printing2(string_copyn(smtp_inptr, n)), SP_QUOT);
     smtp_printf("554 SMTP synchronization error\r\n", FALSE);
     return FALSE;
     }
@@ -2729,14 +2729,14 @@ int yield = -1;
 
 log_write(type, LOG_MAIN, "SMTP %s error in \"%s\" %s %s",
   type == L_smtp_syntax_error ? "syntax" : "protocol",
-  string_printing(smtp_cmd_buffer), host_and_ident(TRUE), errmess);
+  string_printing2(smtp_cmd_buffer, SP_QUOT), host_and_ident(TRUE), errmess);
 
 if (++synprot_error_count > smtp_max_synprot_errors)
   {
   yield = 1;
   log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
     "syntax or protocol errors (last command was \"%s\", %s)",
-    host_and_ident(FALSE), string_printing(smtp_cmd_buffer),
+    host_and_ident(FALSE), string_printing2(smtp_cmd_buffer, SP_QUOT),
     string_from_gstring(s_connhad_log(NULL))
     );
   }
@@ -3873,7 +3873,7 @@ while (done <= 0)
 	  {
 	  log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
 	    "syntax or protocol errors (last command was \"%s\", %s)",
-	    host_and_ident(FALSE), string_printing(smtp_cmd_buffer),
+	    host_and_ident(FALSE), string_printing2(smtp_cmd_buffer, SP_QUOT),
 	    string_from_gstring(s_connhad_log(NULL))
 	    );
 	  done = 1;
@@ -5640,8 +5640,8 @@ while (done <= 0)
 	"(next input sent too soon: pipelining was%s advertised): "
 	"rejected \"%s\" %s next input=\"%s\"",
 	f.smtp_in_pipelining_advertised ? "" : " not",
-	smtp_cmd_buffer, host_and_ident(TRUE),
-	string_printing(smtp_inptr));
+	string_printing2(smtp_cmd_buffer, SP_QUOT), host_and_ident(TRUE),
+	string_printing2(smtp_inptr, SP_QUOT));
       smtp_notquit_exit(US"synchronization-error", US"554",
 	US"SMTP synchronization error");
       done = 1;   /* Pretend eof - drops connection */
@@ -5651,10 +5651,11 @@ while (done <= 0)
     case TOO_MANY_NONMAIL_CMD:
       s = smtp_cmd_buffer;
       while (*s != 0 && !isspace(*s)) s++;
+        *s = 0;
       incomplete_transaction_log(US"too many non-mail commands");
       log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
-	"nonmail commands (last was \"%.*s\")",  host_and_ident(FALSE),
-	(int)(s - smtp_cmd_buffer), smtp_cmd_buffer);
+	"nonmail commands (last was \"%s\")",  host_and_ident(FALSE),
+	string_printing2(smtp_cmd_buffer, SP_QUOT));
       smtp_notquit_exit(US"bad-commands", US"554", US"Too many nonmail commands");
       done = 1;   /* Pretend eof - drops connection */
       break;
@@ -5670,7 +5671,7 @@ while (done <= 0)
 	{
 	log_write(L_smtp_syntax_error, LOG_MAIN,
 	  "SMTP syntax error in \"%s\" %s %s",
-	  string_printing(smtp_cmd_buffer), host_and_ident(TRUE),
+	  string_printing2(smtp_cmd_buffer, SP_QUOT), host_and_ident(TRUE),
 	  US"unrecognized command");
 	incomplete_transaction_log(US"unrecognized command");
 	smtp_notquit_exit(US"bad-commands", US"500",
@@ -5678,7 +5679,7 @@ while (done <= 0)
 	done = 2;
 	log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
 	  "unrecognized commands (last was \"%s\")", host_and_ident(FALSE),
-	  string_printing(smtp_cmd_buffer));
+	  string_printing2(smtp_cmd_buffer, SP_QUOT));
 	}
       else
 	done = synprot_error(L_smtp_syntax_error, 500, NULL,

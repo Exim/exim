@@ -305,6 +305,7 @@ while (*t)
   if (  !mac_isprint(c)
      || flags & SP_TAB && c == '\t'
      || flags & SP_SPACE && c == ' '
+     || flags & SP_QUOT && c == '\"'
      ) nonprintcount++;
   length++;
   }
@@ -324,6 +325,7 @@ for (t = s; *t; )
   if (  mac_isprint(c)
      && (!(flags & SP_TAB) || c != '\t')
      && (!(flags & SP_SPACE) || c != ' ')
+     && (!(flags & SP_QUOT) || c != '\"')
      )
     *tt++ = *t++;
   else
