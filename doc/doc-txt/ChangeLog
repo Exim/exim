@@ -196,6 +196,9 @@ JH/39 Bug 3023: Fix crash induced by some combinations of zero-length strings
 JH/40 Bug 2999: Fix a possible OOB write in the external authenticator, which
       could be triggered by externally-supplied input.  Found by Trend Micro.
 
+JH/41 Bug 3000: Fix a possible OOB write in the SPA authenticator, which could
+      be triggered by externally-controlled input.  Found by Trend Micro.
+
 
 Exim version 4.96
 -----------------
