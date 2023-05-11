@@ -155,6 +155,9 @@ int main (int argc, char ** argv)
    up with a different answer to the one above)
 */
 
+#ifndef MACRO_PREDEF
+
+
 #define DEBUG_X(a,b) ;
 
 extern int DEBUGLEVEL;
@@ -1229,21 +1232,21 @@ else \
 
 #define spa_string_add(ptr, header, string) \
 { \
-char *p = string; \
+uschar * p = string; \
 int len = 0; \
-if (p) len = strlen(p); \
-spa_bytes_add(ptr, header, (US p), len); \
+if (p) len = Ustrlen(p); \
+spa_bytes_add(ptr, header, p, len); \
 }
 
 #define spa_unicode_add_string(ptr, header, string) \
 { \
-char *p = string; \
-uschar *b = NULL; \
+uschar * p = string; \
+uschar * b = NULL; \
 int len = 0; \
 if (p) \
   { \
-  len = strlen(p); \
-  b = strToUnicode(p); \
+  len = Ustrlen(p); \
+  b = US strToUnicode(CS p); \
   } \
 spa_bytes_add(ptr, header, b, len*2); \
 }
@@ -1366,15 +1369,15 @@ fprintf (fp, "      Flags = %08x\n", IVAL (&response->flags, 0));
 #endif
 
 void
-spa_build_auth_request (SPAAuthRequest * request, char *user, char *domain)
+spa_build_auth_request (SPAAuthRequest * request, uschar * user, uschar * domain)
 {
-char *u = strdup (user);
-char *p = strchr (u, '@');
+uschar * u = string_copy(user);
+uschar * p = Ustrchr(u, '@');
 
 if (p)
   {
   if (!domain)
-   domain = p + 1;
+    domain = p + 1;
   *p = '\0';
   }
 
@@ -1384,7 +1387,6 @@ SIVAL (&request->msgType, 0, 1);
 SIVAL (&request->flags, 0, 0x0000b207);      /* have to figure out what these mean */
 spa_string_add (request, user, u);
 spa_string_add (request, domain, domain);
-free (u);
 }
 
 
@@ -1475,16 +1477,16 @@ free (u);
 
 void
 spa_build_auth_response (SPAAuthChallenge * challenge,
-                        SPAAuthResponse * response, char *user,
-                        char *password)
+                        SPAAuthResponse * response, uschar * user,
+                        uschar * password)
 {
 uint8x lmRespData[24];
 uint8x ntRespData[24];
 uint32x cf = IVAL(&challenge->flags, 0);
-char *u = strdup (user);
-char *p = strchr (u, '@');
-char *d = NULL;
-char *domain;
+uschar * u = string_copy(user);
+uschar * p = Ustrchr(u, '@');
+uschar * d = NULL;
+uschar * domain;
 
 if (p)
   {
@@ -1492,33 +1494,33 @@ if (p)
   *p = '\0';
   }
 
-else domain = d = strdup((cf & 0x1)?
-  CCS GetUnicodeString(challenge, uDomain) :
-  CCS GetString(challenge, uDomain));
+else domain = d = string_copy(cf & 0x1
+  ? CUS GetUnicodeString(challenge, uDomain)
+  : CUS GetString(challenge, uDomain));
 
-spa_smb_encrypt (US password, challenge->challengeData, lmRespData);
-spa_smb_nt_encrypt (US password, challenge->challengeData, ntRespData);
+spa_smb_encrypt(password, challenge->challengeData, lmRespData);
+spa_smb_nt_encrypt(password, challenge->challengeData, ntRespData);
 
 response->bufIndex = 0;
 memcpy (response->ident, "NTLMSSP\0\0\0", 8);
 SIVAL (&response->msgType, 0, 3);
 
-spa_bytes_add (response, lmResponse, lmRespData, (cf & 0x200) ? 24 : 0);
-spa_bytes_add (response, ntResponse, ntRespData, (cf & 0x8000) ? 24 : 0);
+spa_bytes_add(response, lmResponse, lmRespData, cf & 0x200 ? 24 : 0);
+spa_bytes_add(response, ntResponse, ntRespData, cf & 0x8000 ? 24 : 0);
 
 if (cf & 0x1) {      /* Unicode Text */
-     spa_unicode_add_string (response, uDomain, domain);
-     spa_unicode_add_string (response, uUser, u);
-     spa_unicode_add_string (response, uWks, u);
+     spa_unicode_add_string(response, uDomain, domain);
+     spa_unicode_add_string(response, uUser, u);
+     spa_unicode_add_string(response, uWks, u);
 } else {             /* OEM Text */
-     spa_string_add (response, uDomain, domain);
-     spa_string_add (response, uUser, u);
-     spa_string_add (response, uWks, u);
+     spa_string_add(response, uDomain, domain);
+     spa_string_add(response, uUser, u);
+     spa_string_add(response, uWks, u);
 }
 
-spa_string_add (response, sessionKey, NULL);
+spa_string_add(response, sessionKey, NULL);
 response->flags = challenge->flags;
-
-if (d != NULL) free (d);
-free (u);
 }
+
+
+#endif   /*!MACRO_PREDEF*/

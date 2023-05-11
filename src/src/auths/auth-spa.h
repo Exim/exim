@@ -79,10 +79,10 @@ typedef struct
 
 void spa_bits_to_base64 (unsigned char *, const unsigned char *, int);
 int spa_base64_to_bits(char *, int, const char *);
-void spa_build_auth_response (SPAAuthChallenge *challenge,
-       SPAAuthResponse *response, char *user, char *password);
-void spa_build_auth_request (SPAAuthRequest *request, char *user,
-       char *domain);
+void spa_build_auth_response (SPAAuthChallenge * challenge,
+       SPAAuthResponse * response, uschar * user, uschar * password);
+void spa_build_auth_request (SPAAuthRequest * request, uschar * user,
+       uschar * domain);
 extern void spa_smb_encrypt (unsigned char * passwd, unsigned char * c8,
                              unsigned char * p24);
 extern void spa_smb_nt_encrypt (unsigned char * passwd, unsigned char * c8,
