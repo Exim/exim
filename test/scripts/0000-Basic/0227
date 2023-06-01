@@ -111,6 +111,17 @@ MAIL FROM:<uncheckable2@localhost1>
 RCPT TO:<z@test.ex>
 QUIT
 ****
+# sender, fail to bind local IP
+sudo exim -v -bs -oMa V4NET.0.0.1
+HELO test
+MAIL FROM:<bindfail@localhost1>
+RCPT TO:<z@test.ex>
+QUIT
+****
+#
+#
+#
+#
 server PORT_S
 220 Server ready
 EHLO

@@ -8,6 +8,8 @@
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.1] U=root F=<uncheckable@localhost1> rejected RCPT <z@test.ex>: Sender verify failed
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.1] U=root sender verify fail for <uncheckable2@localhost1>: 127.0.0.1 [127.0.0.1] : response to "MAIL FROM:<>" was: 550 Bad-char error for <> topbitchar:\200\377\377
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.1] U=root F=<uncheckable2@localhost1> rejected RCPT <z@test.ex>: Sender verify failed
+1999-03-02 09:44:33 H=(test) [V4NET.0.0.1] U=root sender verify defer for <bindfail@localhost1>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : Netwk addr not available
+1999-03-02 09:44:33 H=(test) [V4NET.0.0.1] U=root F=<bindfail@localhost1> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.domain>: 550 Recipient not liked
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.domain>: 550-Recipient not liked on two lines\n550 Here's the second
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.domain>: 550 Recipient not liked, with bad char:\200\377\377

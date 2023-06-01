@@ -305,7 +305,7 @@ if (sc->interface)
      )
     {
     HDEBUG(D_transport|D_acl|D_v)
-      debug_printf_indent("unable to bind outgoing SMTP call to %s: %s", sc->interface,
+      debug_printf_indent("unable to bind outgoing SMTP call to %s: %s\n", sc->interface,
 	strerror(errno));
     close(sock);
     return -1;

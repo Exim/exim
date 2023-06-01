@@ -709,6 +709,30 @@ tls_retry_connection:
     if (yield != OK)
       {
       errno = addr->basic_errno;
+
+      /* For certain errors we want specifically to log the transport name,
+      for ease of fixing config errors. Slightly ugly doing it here, but we want
+      to not leak that also in the SMTP response. */
+      switch (errno)
+	{
+	case EPROTOTYPE:
+	case ENOPROTOOPT:
+	case EPROTONOSUPPORT:
+	case ESOCKTNOSUPPORT:
+	case EOPNOTSUPP:
+	case EPFNOSUPPORT:
+	case EAFNOSUPPORT:
+	case EADDRINUSE:
+	case EADDRNOTAVAIL:
+	case ENETDOWN:
+	case ENETUNREACH:
+	  log_write(0, LOG_MAIN|LOG_PANIC,
+	    "%s verify %s (making calloout connection): T=%s %s",
+	    options & vopt_is_recipient ? "sender" : "recipient",
+	    yield == FAIL ? "fail" : "defer",
+	    transport_name, strerror(errno));
+	}
+
       transport_name = NULL;
       deliver_host = deliver_host_address = NULL;
       deliver_domain = save_deliver_domain;

@@ -845,10 +845,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # ======== IP error numbers and messages ========
   # These vary between operating systems
-  s/Can(no|')t assign requested address/Network Error/;
+  s/Can(no|')t assign requested address/Netwk addr not available/;
   s/Operation timed out/Connection timed out/;
   s/Address family not supported by protocol family/Network Error/;
-  s/Network( is)? unreachable/Network Error/;
+  s/Network( is)? unreachable/Network unreachable/;
   s/Invalid argument/Network Error/;
 
   s/\(\d+\): Network/(dd): Network/;

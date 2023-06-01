@@ -79,14 +79,15 @@ all:
 begin transports
 
 smtp:
-  driver = smtp
-  port = PORT_S
+  driver =	smtp
+  port =	PORT_S
+  interface =	${if eq {bindfail}{$local_part} {1.1.1.1}{}}
   hosts_try_fastopen =	:
 
 lmtp:
-  driver = smtp
-  port = PORT_S
-  protocol = lmtp
+  driver =	smtp
+  port =	PORT_S
+  protocol =	lmtp
 
 
 # ----- Retry -----

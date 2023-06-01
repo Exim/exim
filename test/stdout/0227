@@ -48,6 +48,11 @@
 550 Sender verify failed
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello root at test [V4NET.0.0.1]
+250 OK
+451 Could not complete sender verify callout
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 myhost.test.ex Hello root at test [V4NET.0.0.3]
 250 OK
 550-Callout verification failed:
