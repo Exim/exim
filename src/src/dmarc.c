@@ -246,8 +246,8 @@ dmarc_write_history_file()
 int history_file_fd;
 ssize_t written_len;
 int tmp_ans;
-u_char **rua; /* aggregate report addressees */
-uschar *history_buffer = NULL;
+u_char ** rua; /* aggregate report addressees */
+gstring * g;
 
 if (!dmarc_history_file)
   {
@@ -264,43 +264,40 @@ if (history_file_fd < 0)
   }
 
 /* Generate the contents of the history file */
-history_buffer = string_sprintf(
+g = string_fmt_append(NULL,
   "job %s\nreporter %s\nreceived %ld\nipaddr %s\nfrom %s\nmfrom %s\n",
   message_id, primary_hostname, time(NULL), sender_host_address,
   header_from_sender, expand_string(US"$sender_address_domain"));
 
 if (spf_response)
-  history_buffer = string_sprintf("%sspf %d\n", history_buffer, dmarc_spf_ares_result);
-  /* history_buffer = string_sprintf("%sspf -1\n", history_buffer); */
+  g = string_fmt_append(s, "spf %d\n", dmarc_spf_ares_result);
 
-history_buffer = string_sprintf(
-  "%s%spdomain %s\npolicy %d\n",
-  history_buffer, dkim_history_buffer, dmarc_used_domain, dmarc_policy);
+g = string_fmt_append(g, "%spdomain %s\npolicy %d\n",
+  dkim_history_buffer, dmarc_used_domain, dmarc_policy);
 
 if ((rua = opendmarc_policy_fetch_rua(dmarc_pctx, NULL, 0, 1)))
   for (tmp_ans = 0; rua[tmp_ans]; tmp_ans++)
-    history_buffer = string_sprintf("%srua %s\n", history_buffer, rua[tmp_ans]);
+    g = string_fmd_append(g, "rua %s\n", rua[tmp_ans]);
 else
-  history_buffer = string_sprintf("%srua -\n", history_buffer);
+  g = string_fmtappend(g, "rua -\n");
 
 opendmarc_policy_fetch_pct(dmarc_pctx, &tmp_ans);
-history_buffer = string_sprintf("%spct %d\n", history_buffer, tmp_ans);
+g = atring_fmt_append(g, "pct %d\n", tmp_ans);
 
 opendmarc_policy_fetch_adkim(dmarc_pctx, &tmp_ans);
-history_buffer = string_sprintf("%sadkim %d\n", history_buffer, tmp_ans);
+g = atring_fmt_append(g, "adkim %d\n", tmp_ans);
 
 opendmarc_policy_fetch_aspf(dmarc_pctx, &tmp_ans);
-history_buffer = string_sprintf("%saspf %d\n", history_buffer, tmp_ans);
+g = atring_fmt_append(g, "aspf %d\n", tmp_ans);
 
 opendmarc_policy_fetch_p(dmarc_pctx, &tmp_ans);
-history_buffer = string_sprintf("%sp %d\n", history_buffer, tmp_ans);
+g = atring_fmt_append(g, "p %d\n", tmp_ans);
 
 opendmarc_policy_fetch_sp(dmarc_pctx, &tmp_ans);
-history_buffer = string_sprintf("%ssp %d\n", history_buffer, tmp_ans);
+g = atring_fmt_append(g, "sp %d\n", tmp_ans);
 
-history_buffer = string_sprintf(
-  "%salign_dkim %d\nalign_spf %d\naction %d\n",
-  history_buffer, da, sa, action);
+g = atring_fmt_append(g, "align_dkim %d\nalign_spf %d\naction %d\n",
+  da, sa, action);
 
 /* Write the contents to the history file */
 DEBUG(D_receive)
@@ -309,13 +306,13 @@ DEBUG(D_receive)
 if (host_checking || f.running_in_test_harness)
   {
   DEBUG(D_receive)
-    debug_printf("DMARC history data for debugging:\n%s", history_buffer);
+    debug_printf("DMARC history data for debugging:\n%s", string_from_gstring(g));
   }
 else
   {
   written_len = write_to_fd_buf(history_file_fd,
-				history_buffer,
-				Ustrlen(history_buffer));
+				g->s,
+				gstring_length(g));
   if (written_len == 0)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "failure to write to DMARC history file: %s",
@@ -341,18 +338,18 @@ int tmp_ans, c;
 pdkim_signature * sig = dkim_signatures;
 uschar * rr;
 BOOL has_dmarc_record = TRUE;
-u_char **ruf; /* forensic report addressees, if called for */
+u_char ** ruf; /* forensic report addressees, if called for */
 
 /* ACLs have "control=dmarc_disable_verify" */
 if (f.dmarc_disable_verify)
   return OK;
 
 /* Store the header From: sender domain for this part of DMARC.
- * If there is no from_header struct, then it's likely this message
- * is locally generated and relying on fixups to add it.  Just skip
- * the entire DMARC system if we can't find a From: header....or if
- * there was a previous error.
- */
+If there is no from_header struct, then it's likely this message
+is locally generated and relying on fixups to add it.  Just skip
+the entire DMARC system if we can't find a From: header....or if
+there was a previous error.  */
+
 if (!from_header)
   {
   DEBUG(D_receive) debug_printf("DMARC: no From: header\n");
@@ -374,7 +371,8 @@ else if (!dmarc_abort)
   *p = saveend;
 
   /* The opendmarc library extracts the domain from the email address, but
-   * only try to store it if it's not empty.  Otherwise, skip out of DMARC. */
+  only try to store it if it's not empty.  Otherwise, skip out of DMARC. */
+
   if (!header_from_sender || (strcmp( CCS header_from_sender, "") == 0))
     dmarc_abort = TRUE;
   libdm_status = dmarc_abort
@@ -390,17 +388,21 @@ else if (!dmarc_abort)
   }
 
 /* Skip DMARC if connection is SMTP Auth. Temporarily, admin should
- * instead do this in the ACLs.  */
+instead do this in the ACLs.  */
+
 if (!dmarc_abort && !sender_host_authenticated)
   {
   uschar * dmarc_domain;
+  gstring * g = NULL;
 
   /* Use the envelope sender domain for this part of DMARC */
+
   spf_sender_domain = expand_string(US"$sender_address_domain");
   if (!spf_response)
     {
     /* No spf data means null envelope sender so generate a domain name
-     * from the sender_helo_name  */
+    from the sender_helo_name  */
+
     if (!spf_sender_domain)
       {
       spf_sender_domain = sender_helo_name;
@@ -448,9 +450,9 @@ if (!dmarc_abort && !sender_host_authenticated)
     }
 
   /* Now we cycle through the dkim signature results and put into
-   * the opendmarc context, further building the DMARC reply.  */
-  dkim_history_buffer = US"";
-  while (sig)
+  the opendmarc context, further building the DMARC reply. */
+
+  for(pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
     {
     int dkim_result, dkim_ares_result, vs, ves;
 
@@ -461,8 +463,9 @@ if (!dmarc_abort && !sender_host_authenticated)
 		  vs == PDKIM_VERIFY_INVALID ? DMARC_POLICY_DKIM_OUTCOME_TMPFAIL :
 		  DMARC_POLICY_DKIM_OUTCOME_NONE;
     libdm_status = opendmarc_policy_store_dkim(dmarc_pctx, US sig->domain,
+
 /* The opendmarc project broke its API in a way we can't detect * easily.
- * The EDITME provides a DMARC_API variable */
+The EDITME provides a DMARC_API variable */
 #if DMARC_API >= 100400
                                                sig->selector,
 #endif
@@ -485,10 +488,9 @@ if (!dmarc_abort && !sender_host_authenticated)
        ves == PDKIM_VERIFY_INVALID_PUBKEY_IMPORT      ? ARES_RESULT_PERMERROR :
        ARES_RESULT_UNKNOWN :
       ARES_RESULT_UNKNOWN;
-    dkim_history_buffer = string_sprintf("%sdkim %s %d\n", dkim_history_buffer,
-					 sig->domain, dkim_ares_result);
-    sig = sig->next;
+    g = string_fmt_append(g, "dkim %s %d\n", sig->domain, dkim_ares_result);
     }
+  dkim_history_buffer = string_from_gstring(g);
 
   /* Look up DMARC policy record in DNS.  We do this explicitly, rather than
   letting the dmarc library do it with opendmarc_policy_query_dmarc(), so that

@@ -3773,8 +3773,9 @@ for (; cb; cb = cb->next)
       if (!f.dmarc_has_been_checked)
 	dmarc_process();
       f.dmarc_has_been_checked = TRUE;
+
       /* used long way of dmarc_exim_expand_query() in case we need more
-       * view into the process in the future. */
+      view into the process in the future. */
       rc = match_isinlist(dmarc_exim_expand_query(DMARC_VERIFY_STATUS),
 			  &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
       break;
