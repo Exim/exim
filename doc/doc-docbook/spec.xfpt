@@ -40083,6 +40083,8 @@ Serializing delivery to a specific host (when &%serialize_hosts%& is set in an
 .next
 Limiting the concurrency of specific transports (when &%max_parallel%& is set
 in a transport)
+.next
+Recording EHLO-time facilities advertised by hosts
 .endlist
 
 

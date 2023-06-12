@@ -168,7 +168,7 @@ JH/31 Bug 2998: Fix ${utf8clean:...} to disallow UTF-16 surrogate codepoints.
       editor insists on emitting only valid UTF-8.
 
 JH/32 Fix "tls_dhparam = none" under GnuTLS.  At least with 3.7.9 this gave
-      a null-indireciton SIGSEGV for the receive process.
+      a null-indirection SIGSEGV for the receive process.
 
 
 Exim version 4.96
