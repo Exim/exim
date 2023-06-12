@@ -1115,7 +1115,10 @@ if (pending_EHLO)
       write_ehlo_cache_entry(sx);
       }
     else
+      {
       invalidate_ehlo_cache_entry(sx);
+      sx->early_pipe_active = FALSE;	/* cancel further early-pipe on this conn */
+      }
 
     return OK;		/* just carry on */
     }
