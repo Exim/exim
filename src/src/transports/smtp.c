@@ -931,6 +931,16 @@ if (  sx->early_pipe_active
    && (dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
   {
   uschar * ehlo_resp_key = ehlo_cache_key(sx);
+  HDEBUG(D_transport)
+    {
+    dbdata_ehlo_resp * er;
+
+    if (!(er = dbfn_read_enforce_length(dbm_file, ehlo_resp_key, sizeof(dbdata_ehlo_resp))))
+      debug_printf("no ehlo-resp record!\n");
+    else
+      debug_printf("ehlo-resp record is %d seconds old\n", time(NULL) - er->time_stamp);
+    }
+
   dbfn_delete(dbm_file, ehlo_resp_key);
   dbfn_close(dbm_file);
   }
