@@ -13744,6 +13744,11 @@ there actually are, because many other connections may come and go while a
 single connection is being processed. When a child process terminates, the
 daemon decrements its copy of the variable.
 
+.vitem &$smtp_notquit_reason$&
+.vindex "&$smtp_notquit_reason$&"
+When the not-QUIT ACL is running, this variable is set to a string
+that indicates the reason for the termination of the SMTP connection.
+
 .vitem "&$sn0$& &-- &$sn9$&"
 These variables are copies of the values of the &$n0$& &-- &$n9$& accumulators
 that were current at the end of the system filter file. This allows a system
