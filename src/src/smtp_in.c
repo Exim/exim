@@ -5630,27 +5630,27 @@ while (done <= 0)
 
     case BADSYN_CMD:
     SYNC_FAILURE:
-      if (smtp_inend >= smtp_inbuffer + IN_BUFFER_SIZE)
-	smtp_inend = smtp_inbuffer + IN_BUFFER_SIZE - 1;
-      c = smtp_inend - smtp_inptr;
-      if (c > 150) c = 150;	/* limit logged amount */
-      smtp_inptr[c] = 0;
-      incomplete_transaction_log(US"sync failure");
-      log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
-	"(next input sent too soon: pipelining was%s advertised): "
-	"rejected \"%s\" %s next input=\"%s\"",
-	f.smtp_in_pipelining_advertised ? "" : " not",
-	smtp_cmd_buffer, host_and_ident(TRUE),
-	string_printing(smtp_inptr));
-      smtp_notquit_exit(US"synchronization-error", US"554",
-	US"SMTP synchronization error");
-      done = 1;   /* Pretend eof - drops connection */
-      break;
+      {
+	unsigned nchars = 150;
+	uschar * buf = receive_getbuf(&nchars);		/* destructive read */
+	buf[nchars] = '\0';
+	incomplete_transaction_log(US"sync failure");
+	log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
+	  "(next input sent too soon: pipelining was%s advertised): "
+	  "rejected \"%s\" %s next input=\"%s\" (%u bytes)",
+	  f.smtp_in_pipelining_advertised ? "" : " not",
+	  smtp_cmd_buffer, host_and_ident(TRUE),
+	  string_printing(buf), nchars);
+	smtp_notquit_exit(US"synchronization-error", US"554",
+	  US"SMTP synchronization error");
+	done = 1;   /* Pretend eof - drops connection */
+	break;
+      }
 
 
     case TOO_MANY_NONMAIL_CMD:
       s = smtp_cmd_buffer;
-      while (*s != 0 && !isspace(*s)) s++;
+      while (*s && !isspace(*s)) s++;
       incomplete_transaction_log(US"too many non-mail commands");
       log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
 	"nonmail commands (last was \"%.*s\")",  host_and_ident(FALSE),

@@ -1,7 +1,7 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was advertised): rejected "data" H=(abcd) [127.0.0.1] next input="Start: sent early ...\r\n"
+1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was advertised): rejected "data" H=(abcd) [127.0.0.1] next input="Start: sent early ...\r\n" (23 bytes)
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "mail from:<userx@test.ex>" H=(abcd) [127.0.0.1] next input="rcpt to:<userx@test.ex>\r\n"
-1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "rcpt to:<userx@test.ex>" H=(abcd) [127.0.0.1] next input="data\r\n"
+1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "mail from:<userx@test.ex>" H=(abcd) [127.0.0.1] next input="rcpt to:<userx@test.ex>\r\n" (25 bytes)
+1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "rcpt to:<userx@test.ex>" H=(abcd) [127.0.0.1] next input="data\r\n" (6 bytes)
