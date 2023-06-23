@@ -16045,6 +16045,7 @@ search the file multiple times for non-existent users, and also cause delay.
 
 .option freeze_tell main "string list, comma separated" unset
 .cindex "freezing messages" "sending a message when freezing"
+.cindex "frozen messages" "sending a message when freezing"
 On encountering certain errors, or when configured to do so in a system filter,
 ACL, or special router, Exim freezes a message. This means that no further
 delivery attempts take place until an administrator thaws the message, or the
