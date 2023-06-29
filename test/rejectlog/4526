@@ -1,13 +1,13 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 10HmaX-0005vi-00 H=(xxx) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no rejected DKIM 
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=(xxx) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no rejected DKIM 
 Envelope-from: <shouldfail@bloggs.com>
 Envelope-to: <a@test.ex>
 P Received: from [127.0.0.1] (helo=xxx)
 	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <shouldfail@bloggs.com>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for a@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
   DKIM-Signature: v=1; a=rsa-sha1; c=simple/simple; d=test.ex; h=from:to

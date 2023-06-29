@@ -1,5 +1,5 @@
-Message 10HmaX-0005vi-00 has been removed
-Message 10HmaY-0005vi-00 has been removed
+Message 10HmaX-000000005vi-0000 has been removed
+Message 10HmaY-000000005vi-0000 has been removed
 
 ******** SERVER ********
 Listening on port 1224 ... 
@@ -31,9 +31,9 @@ DATA
 354 Go ahead
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaZ-0005vi-00;
+	id 10HmaZ-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaZ-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

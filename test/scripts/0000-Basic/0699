@@ -1,0 +1,40 @@
+# message ID format manipulation
+# This testcase is for the 4.97 message-id format changeover
+# should can be dropped after a few further releases.
+#
+# Ensure spooldir exists
+sudo mkdir -p DIR/spool/input
+#
+# Check that delivery of old-format spoolfiles works
+sudo cp DIR/aux-fixed/TESTNUM/* DIR/spool/input/
+sudo chown -R EXIMUSER:EXIMGROUP DIR/spool/input/
+sudo chmod -R 640 DIR/spool/input/*
+exim -q
+****
+#
+# Check that the format-mangler utility can downgrade spoolfiles
+exim -odq nulldeliver@test.ex
+Subject: originally-new id format spoolfile
+
+This is the only body content line
+****
+exim -bp
+****
+exim_id_update -d
+exim -bp
+****
+exim -q
+****
+#
+# Check that the format-mangler utility can upgrade spoolfiles
+sudo cp DIR/aux-fixed/TESTNUM/* DIR/spool/input/
+sudo chown -R EXIMUSER:EXIMGROUP DIR/spool/input/
+sudo chmod -R 640 DIR/spool/input/*
+exim_id_update -u
+exim -bp
+****
+exim -q
+****
+#
+#
+no_msglog_check

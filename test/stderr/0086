@@ -21,10 +21,10 @@
 >>> check !verify = header_syntax
 >>> check logwrite = acl_verify_message: '$acl_verify_message'
 >>>                = acl_verify_message: ''>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z'
-LOG: 10HmaY-0005vi-00 acl_verify_message: ''>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z'
+LOG: 10HmaY-000000005vi-0000 acl_verify_message: ''>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z'
 >>> deny: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": DENY
-LOG: 10HmaY-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z
+LOG: 10HmaY-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -48,10 +48,10 @@ LOG: 10HmaY-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> check !verify = header_syntax
 >>> check logwrite = acl_verify_message: '$acl_verify_message'
 >>>                = acl_verify_message: ''>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z'
-LOG: 10HmaZ-0005vi-00 acl_verify_message: ''>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z'
+LOG: 10HmaZ-000000005vi-0000 acl_verify_message: ''>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z'
 >>> deny: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": DENY
-LOG: 10HmaZ-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z
+LOG: 10HmaZ-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -75,10 +75,10 @@ LOG: 10HmaZ-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> check !verify = header_syntax
 >>> check logwrite = acl_verify_message: '$acl_verify_message'
 >>>                = acl_verify_message: ''>' missing at end of address: failing address in "Resent-To:" header is: <xyz@a.b.c.d'
-LOG: 10HmbA-0005vi-00 acl_verify_message: ''>' missing at end of address: failing address in "Resent-To:" header is: <xyz@a.b.c.d'
+LOG: 10HmbA-000000005vi-0000 acl_verify_message: ''>' missing at end of address: failing address in "Resent-To:" header is: <xyz@a.b.c.d'
 >>> deny: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": DENY
-LOG: 10HmbA-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Resent-To:" header is: <xyz@a.b.c.d
+LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Resent-To:" header is: <xyz@a.b.c.d
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -102,10 +102,10 @@ LOG: 10HmbA-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> check !verify = header_syntax
 >>> check logwrite = acl_verify_message: '$acl_verify_message'
 >>>                = acl_verify_message: 'unmatched doublequote in local part: failing address in "Cc:" header begins: "abcd@x.y.z (missing quote),\n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addre'
-LOG: 10HmbB-0005vi-00 acl_verify_message: 'unmatched doublequote in local part: failing address in "Cc:" header begins: "abcd@x.y.z (missing quote),\n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addre'
+LOG: 10HmbB-000000005vi-0000 acl_verify_message: 'unmatched doublequote in local part: failing address in "Cc:" header begins: "abcd@x.y.z (missing quote),\n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addre'
 >>> deny: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": DENY
-LOG: 10HmbB-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: unmatched doublequote in local part: failing address in "Cc:" header begins: "abcd@x.y.z (missing quote),\n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addre
+LOG: 10HmbB-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: unmatched doublequote in local part: failing address in "Cc:" header begins: "abcd@x.y.z (missing quote),\n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addre
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -129,10 +129,10 @@ LOG: 10HmbB-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> check !verify = header_syntax
 >>> check logwrite = acl_verify_message: '$acl_verify_message'
 >>>                = acl_verify_message: 'unqualified address not permitted: failing address in "Cc:" header is: <abcd>'
-LOG: 10HmbC-0005vi-00 acl_verify_message: 'unqualified address not permitted: failing address in "Cc:" header is: <abcd>'
+LOG: 10HmbC-000000005vi-0000 acl_verify_message: 'unqualified address not permitted: failing address in "Cc:" header is: <abcd>'
 >>> deny: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": DENY
-LOG: 10HmbC-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: unqualified address not permitted: failing address in "Cc:" header is: <abcd>
+LOG: 10HmbC-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: unqualified address not permitted: failing address in "Cc:" header is: <abcd>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -158,4 +158,4 @@ LOG: 10HmbC-0005vi-00 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected 
 >>> processing "accept" (TESTSUITE/test-config 21)
 >>> accept: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": ACCEPT
-LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=(test) [V4NET.10.10.9] P=smtp S=sss
+LOG: 10HmaX-000000005vi-0000 <= userx@exim.test.ex H=(test) [V4NET.10.10.9] P=smtp S=sss

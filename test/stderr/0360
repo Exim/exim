@@ -9,7 +9,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-delivering 10HmaX-0005vi-00
+delivering 10HmaX-000000005vi-0000
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

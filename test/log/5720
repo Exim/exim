@@ -1,71 +1,71 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=p1234 -qf
-1999-03-02 09:44:33 10HmaX-0005vi-00 smtp:ehlo 250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-8BITMIME\n250-PIPELINING\n250-STARTTLS\n250 HELP
-1999-03-02 09:44:33 10HmaX-0005vi-00 cipher_ 
-1999-03-02 09:44:33 10HmaX-0005vi-00 ver:    
-1999-03-02 09:44:33 10HmaX-0005vi-00 [127.0.0.1] SSL verify error: depth=2 error=self signed certificate in certificate chain cert=/O=example.com/CN=clica CA rsa
-1999-03-02 09:44:33 10HmaX-0005vi-00 msg:host:defer bad
-1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented
-1999-03-02 09:44:33 10HmaX-0005vi-00 Peer cert:
-1999-03-02 09:44:33 10HmaX-0005vi-00 ver <2>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SN  <CN=clica CA rsa,O=example.com>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SN; <CN=clica CA rsa;O=example.com>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SNO <example.com>
-1999-03-02 09:44:33 10HmaX-0005vi-00 IN  <CN=clica CA rsa,O=example.com>
-1999-03-02 09:44:33 10HmaX-0005vi-00 NB  <Nov  1 12:34:16 2019 +0000>
-1999-03-02 09:44:33 10HmaX-0005vi-00 NA  <Jan  1 12:34:16 2038 +0000>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SA  <sha256WithRSAEncryption>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <7c:57:01:1a:fe:b4:1b:c2:84:7e:2f:74:e2:e2:4f:2a:0d:35:00:b0:df:86:5c:8d:36:05:90:e9:f2:8f:1b:c0:0e:2e:36:b6:7f:85:42:60:0b:04:71:d4:ab:ea:c1:2c:ea:9a:56:7c:01:81:0d:6e:f3:2a:55:f9:56:7d:8d:d9:9d:d6:48:f0:15:47:6c:9d:01:13:73:01:b2:4a:51:39:aa:b6:fa:61:ee:9d:71:89:e3:f8:6b:6d:c1:a8:6b:df:af:d8:31:28:f0:e7:e2:26:a5:35:c9:8a:ed:46:2f:3d:5b:ff:9c:90:fe:f9:7a:fa:b0:de:48:5f:8a:0c:b1:ea:8c:7e:a1:84:9f:5b:16:33:da:4b:63:02:2e:b0:be:08:29:d1:61:ab:76:ef:7f:19:d4:12:15:98:3e:1a:71:4d:69:fb:3e:6c:f3:13:19:63:b0:b2:7b:b7:1f:47:d0:53:3e:79:e3:82:e4:2e:b2:c3:7c:d0:b9:10:9a:70:03:f0:3a:2c:a4:8a:af:a1:48:a0:6f:08:7b:4e:ed:14:ca:a7:ed:c3:1c:b8:c3:5e:98:be:d4:54:20:97:30:f7:43:c7:4e:3a:91:30:45:6b:12:ac:5f:26:fa:03:58:e8:e6:09:8f:37:07:06:3e:7d:a3:65:4e:e7:24:10:39:77:ca:05>
-1999-03-02 09:44:33 10HmaX-0005vi-00 (no SAN)
-1999-03-02 09:44:33 10HmaX-0005vi-00 (no OCU)
-1999-03-02 09:44:33 10HmaX-0005vi-00 (no CRU)
-1999-03-02 09:44:33 10HmaX-0005vi-00 (no SAN)
-1999-03-02 09:44:33 10HmaX-0005vi-00 (no SAN)
-1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session: (SSL_connect): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmaX-0005vi-00 smtp:ehlo 250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-8BITMIME\n250-PIPELINING\n250-STARTTLS\n250 HELP
-1999-03-02 09:44:33 10HmaX-0005vi-00 cipher_ 
-1999-03-02 09:44:33 10HmaX-0005vi-00 ver:    
-1999-03-02 09:44:33 10HmaX-0005vi-00 => bad@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 msg:delivery bad
-1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented
-1999-03-02 09:44:33 10HmaX-0005vi-00 No Peer cert
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaY-0005vi-00 smtp:ehlo 250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-8BITMIME\n250-PIPELINING\n250-STARTTLS\n250 HELP
-1999-03-02 09:44:33 10HmaY-0005vi-00 cipher_ 
-1999-03-02 09:44:33 10HmaY-0005vi-00 ver:    
-1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=2 <CN=clica CA rsa,O=example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=1 <CN=clica Signing Cert rsa,O=example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=0 <CN=server1.example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 TLS1.x:ke-RSA-AES256-SHAnnn:xxx smtp:ehlo 250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-8BITMIME\n250-PIPELINING\n250 HELP
-1999-03-02 09:44:33 10HmaY-0005vi-00 cipher_ TLS1.x:ke_RSA_WITH_ci_mac
-1999-03-02 09:44:33 10HmaY-0005vi-00 ver:    TLS1.x
-1999-03-02 09:44:33 10HmaY-0005vi-00 => good@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
-1999-03-02 09:44:33 10HmaY-0005vi-00 msg:delivery good
-1999-03-02 09:44:33 10HmaY-0005vi-00 Our cert SN: CN=server2.example.com
-1999-03-02 09:44:33 10HmaY-0005vi-00 Peer cert:
-1999-03-02 09:44:33 10HmaY-0005vi-00 ver <2>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SN  <CN=server1.example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SN; <CN=server1.example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SNO <>
-1999-03-02 09:44:33 10HmaY-0005vi-00 IN  <CN=clica Signing Cert rsa,O=example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 NB  <Nov  1 12:34:21 2019 +0000>
-1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Dec  1 12:34:21 2044 +0000>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SA  <sha256WithRSAEncryption>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <1b:2e:d8:cd:93:4d:b3:d1:d6:59:f5:74:03:0b:2a:8a:00:3a:32:19:91:c1:5c:45:17:7d:6c:80:aa:b6:ca:6b:df:6a:7e:d3:ef:e6:c8:4f:c2:ea:95:49:cb:4d:ab:4a:0e:8f:c9:93:f3:22:e7:65:08:e8:ad:0c:31:cd:97:61:8b:67:3c:ee:28:af:a7:41:13:85:ea:22:60:55:9c:bb:8a:ae:b2:df:f1:95:5a:7b:81:a7:44:46:0c:0e:5f:ec:62:78:1b:58:e8:d6:45:01:0f:ab:16:86:8a:0b:25:a6:cc:da:7b:9f:7e:67:ee:ec:dd:07:da:1b:35:45:50:b5:d3:5f:65:26:49:4a:99:e6:f4:41:8a:ea:9d:9f:c7:55:71:c0:ae:c5:02:63:b7:47:76:31:9d:6a:8e:5c:b5:f0:aa:63:28:3d:65:d3:c1:12:45:4c:b4:80:34:e1:3e:e8:0f:7c:8a:fb:c1:23:72:c3:a1:a8:06:99:17:15:d5:eb:44:87:82:06:bd:59:7e:7a:ec:28:53:bd:c9:75:28:54:63:d8:c1:e6:11:34:70:6b:0b:2e:df:12:9e:f5:00:19:1a:8e:f4:e3:6a:20:0d:bb:7c:70:ed:5b:ae:9a:b9:55:79:78:21:cc:e2:19:f1:4e:59:fa:61:1b:89:37:ee:4e>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=alternatename.server1.example.com;DNS=server1.example.com;DNS=*.test.ex;DNS=alternatename2.server1.example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 OCU <http://oscp.example.com/>
-1999-03-02 09:44:33 10HmaY-0005vi-00 CRU <http://crl.example.com/latest.crl>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <alternatename.server1.example.com:server1.example.com:*.test.ex:alternatename2.server1.example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <alternatename.server1.example.com:server1.example.com:*.test.ex:alternatename2.server1.example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 smtp:ehlo 250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-8BITMIME\n250-PIPELINING\n250-STARTTLS\n250 HELP
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 cipher_ 
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ver:    
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 [127.0.0.1] SSL verify error: depth=2 error=self signed certificate in certificate chain cert=/O=example.com/CN=clica CA rsa
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 msg:host:defer bad
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 NO CLIENT CERT presented
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Peer cert:
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ver <2>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 SN  <CN=clica CA rsa,O=example.com>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 SN; <CN=clica CA rsa;O=example.com>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 SNO <example.com>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 IN  <CN=clica CA rsa,O=example.com>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 NB  <Nov  1 12:34:16 2019 +0000>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 NA  <Jan  1 12:34:16 2038 +0000>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 SA  <sha256WithRSAEncryption>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 SG  <7c:57:01:1a:fe:b4:1b:c2:84:7e:2f:74:e2:e2:4f:2a:0d:35:00:b0:df:86:5c:8d:36:05:90:e9:f2:8f:1b:c0:0e:2e:36:b6:7f:85:42:60:0b:04:71:d4:ab:ea:c1:2c:ea:9a:56:7c:01:81:0d:6e:f3:2a:55:f9:56:7d:8d:d9:9d:d6:48:f0:15:47:6c:9d:01:13:73:01:b2:4a:51:39:aa:b6:fa:61:ee:9d:71:89:e3:f8:6b:6d:c1:a8:6b:df:af:d8:31:28:f0:e7:e2:26:a5:35:c9:8a:ed:46:2f:3d:5b:ff:9c:90:fe:f9:7a:fa:b0:de:48:5f:8a:0c:b1:ea:8c:7e:a1:84:9f:5b:16:33:da:4b:63:02:2e:b0:be:08:29:d1:61:ab:76:ef:7f:19:d4:12:15:98:3e:1a:71:4d:69:fb:3e:6c:f3:13:19:63:b0:b2:7b:b7:1f:47:d0:53:3e:79:e3:82:e4:2e:b2:c3:7c:d0:b9:10:9a:70:03:f0:3a:2c:a4:8a:af:a1:48:a0:6f:08:7b:4e:ed:14:ca:a7:ed:c3:1c:b8:c3:5e:98:be:d4:54:20:97:30:f7:43:c7:4e:3a:91:30:45:6b:12:ac:5f:26:fa:03:58:e8:e6:09:8f:37:07:06:3e:7d:a3:65:4e:e7:24:10:39:77:ca:05>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 (no SAN)
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 (no OCU)
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 (no CRU)
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 (no SAN)
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 (no SAN)
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 smtp:ehlo 250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-8BITMIME\n250-PIPELINING\n250-STARTTLS\n250 HELP
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 cipher_ 
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ver:    
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => bad@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 msg:delivery bad
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 NO CLIENT CERT presented
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 No Peer cert
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 smtp:ehlo 250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-8BITMIME\n250-PIPELINING\n250-STARTTLS\n250 HELP
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 cipher_ 
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 ver:    
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 tls:cert depth=2 <CN=clica CA rsa,O=example.com>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 tls:cert depth=1 <CN=clica Signing Cert rsa,O=example.com>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 tls:cert depth=0 <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 TLS1.x:ke-RSA-AES256-SHAnnn:xxx smtp:ehlo 250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-8BITMIME\n250-PIPELINING\n250 HELP
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 cipher_ TLS1.x:ke_RSA_WITH_ci_mac
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 ver:    TLS1.x
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => good@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbA-000000005vi-0000"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 msg:delivery good
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Our cert SN: CN=server2.example.com
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Peer cert:
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 ver <2>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 SN  <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 SN; <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 SNO <>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 IN  <CN=clica Signing Cert rsa,O=example.com>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 NB  <Nov  1 12:34:21 2019 +0000>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 NA  <Dec  1 12:34:21 2044 +0000>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 SA  <sha256WithRSAEncryption>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 SG  <1b:2e:d8:cd:93:4d:b3:d1:d6:59:f5:74:03:0b:2a:8a:00:3a:32:19:91:c1:5c:45:17:7d:6c:80:aa:b6:ca:6b:df:6a:7e:d3:ef:e6:c8:4f:c2:ea:95:49:cb:4d:ab:4a:0e:8f:c9:93:f3:22:e7:65:08:e8:ad:0c:31:cd:97:61:8b:67:3c:ee:28:af:a7:41:13:85:ea:22:60:55:9c:bb:8a:ae:b2:df:f1:95:5a:7b:81:a7:44:46:0c:0e:5f:ec:62:78:1b:58:e8:d6:45:01:0f:ab:16:86:8a:0b:25:a6:cc:da:7b:9f:7e:67:ee:ec:dd:07:da:1b:35:45:50:b5:d3:5f:65:26:49:4a:99:e6:f4:41:8a:ea:9d:9f:c7:55:71:c0:ae:c5:02:63:b7:47:76:31:9d:6a:8e:5c:b5:f0:aa:63:28:3d:65:d3:c1:12:45:4c:b4:80:34:e1:3e:e8:0f:7c:8a:fb:c1:23:72:c3:a1:a8:06:99:17:15:d5:eb:44:87:82:06:bd:59:7e:7a:ec:28:53:bd:c9:75:28:54:63:d8:c1:e6:11:34:70:6b:0b:2e:df:12:9e:f5:00:19:1a:8e:f4:e3:6a:20:0d:bb:7c:70:ed:5b:ae:9a:b9:55:79:78:21:cc:e2:19:f1:4e:59:fa:61:1b:89:37:ee:4e>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 SAN <DNS=alternatename.server1.example.com;DNS=server1.example.com;DNS=*.test.ex;DNS=alternatename2.server1.example.com>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 OCU <http://oscp.example.com/>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 CRU <http://crl.example.com/latest.crl>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 SAN <alternatename.server1.example.com:server1.example.com:*.test.ex:alternatename2.server1.example.com>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 SAN <alternatename.server1.example.com:server1.example.com:*.test.ex:alternatename2.server1.example.com>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234 -qf
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex
 1999-03-02 09:44:33 [127.0.0.1] depth=2 CN=clica CA rsa,O=example.com
 1999-03-02 09:44:33 [127.0.0.1] depth=1 CN=clica Signing Cert rsa,O=example.com
 1999-03-02 09:44:33 [127.0.0.1] depth=0 CN=server2.example.com
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server2.example.com" S=sss id=E10HmaY-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server2.example.com" S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex

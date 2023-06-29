@@ -1898,7 +1898,11 @@ sub generate_parser {
       next if ($length < 38 + $extra);
     }
 
-    $id   = substr($_, 20 + $extra, 16);
+    # $id = substr($_, 20 + $extra, 16);	# old ID was 16 chars
+    $id = substr($_, 20 + $extra, 23);		# new IS is 23 chars
+    $id =~ s/(\S+).*/$1/;
+    $extra += length($id) - 16;
+
     $flag = substr($_, 37 + $extra, 2);
 
     if ($flag !~ /^([<>=*-]+|SA)$/ && /rejected|refused|dropped/) {

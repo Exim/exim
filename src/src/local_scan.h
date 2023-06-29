@@ -109,12 +109,22 @@ enum { opt_stringptr, opt_int, opt_octint, opt_mkint, opt_Kint, opt_fixed,
 by exim. The external version for use in Received: strings has a leading 'E'
 added to ensure it starts with a letter. */
 
-#define MESSAGE_ID_LENGTH 16
+#define MESSAGE_ID_PID_LEN_OLD		6
+#define MESSAGE_ID_SUBTIME_LEN_OLD	2
+
+/* tttttt-ppppppppppp-ssss */
+# define MESSAGE_ID_TIME_LEN	6	/*III could these be not-exposed to local_scan? */
+# define MESSAGE_ID_PID_LEN	11
+# define MESSAGE_ID_SUBTIME_LEN	4
+
+#define MESSAGE_ID_LENGTH_OLD	(MESSAGE_ID_TIME_LEN+1+MESSAGE_ID_PID_LEN_OLD+1+MESSAGE_ID_SUBTIME_LEN_OLD)
+#define MESSAGE_ID_LENGTH	(MESSAGE_ID_TIME_LEN+1+MESSAGE_ID_PID_LEN    +1+MESSAGE_ID_SUBTIME_LEN)
 
 /* The offset to the start of the data in the data file - this allows for
 the name of the data file to be present in the first line. */
 
-#define SPOOL_DATA_START_OFFSET (MESSAGE_ID_LENGTH+3)
+#define SPOOL_DATA_START_OFFSET_OLD	(MESSAGE_ID_LENGTH_OLD+3)
+#define SPOOL_DATA_START_OFFSET		(MESSAGE_ID_LENGTH+3)
 
 /* Structure definitions that are documented as visible in the function. */
 

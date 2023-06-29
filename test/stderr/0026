@@ -23,13 +23,13 @@
 >>> processing "warn" (TESTSUITE/test-config 23)
 >>> check logwrite = \$h_from: '$h_from:'
 >>>                = $h_from: '@'
-LOG: 10HmbI-0005vi-00 $h_from: '@'
+LOG: 10HmbI-000000005vi-0000 $h_from: '@'
 >>> warn: condition test succeeded in ACL "acl_data"
 >>> processing "require" (TESTSUITE/test-config 24)
 >>> check verify = header_syntax
 >>> require: condition test failed in ACL "acl_data"
 >>> end of ACL "acl_data": not OK
-LOG: 10HmbI-0005vi-00 H=(test) [10.0.0.0] F=<x@y> rejected after DATA: domain missing or malformed: failing address in "From:" header is: @
+LOG: 10HmbI-000000005vi-0000 H=(test) [10.0.0.0] F=<x@y> rejected after DATA: domain missing or malformed: failing address in "From:" header is: @
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -53,4 +53,4 @@ LOG: 10HmbI-0005vi-00 H=(test) [10.0.0.0] F=<x@y> rejected after DATA: domain mi
 >>>                 = yes
 >>> deny: condition test succeeded in ACL "acl_data"
 >>> end of ACL "acl_data": DENY
-LOG: 10HmbJ-0005vi-00 H=(test) [10.0.0.0] F=<x@y> rejected after DATA: body contains trigger
+LOG: 10HmbJ-000000005vi-0000 H=(test) [10.0.0.0] F=<x@y> rejected after DATA: body contains trigger

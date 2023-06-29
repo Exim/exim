@@ -1,64 +1,64 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=r1 T=local_delivery defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/userx)
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 => usery <usery@test.ex> R=r1 T=local_delivery
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == userx@test.ex R=r1 T=local_delivery defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/userx)
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => usery <usery@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=p1234
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=r1 T=local_delivery defer (-53): Retry time not yet reached
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => userz <userz@test.ex> R=r1 T=local_delivery
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == userx@test.ex R=r1 T=local_delivery defer (-53): Retry time not yet reached
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => userz <userz@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbA-0005vi-00 == notuser@test.ex R=r2 T=local_delivery2 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/notuser)
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbB-0005vi-00 == notuser2@test.ex R=r2 T=local_delivery2 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/notuser2)
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 == notuser@test.ex R=r2 T=local_delivery2 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/notuser)
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 == notuser2@test.ex R=r2 T=local_delivery2 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/notuser2)
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=p1235
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=r1 T=local_delivery defer (-53): Retry time not yet reached
-1999-03-02 09:44:33 10HmbA-0005vi-00 == notuser@test.ex R=r2 T=local_delivery2 defer (-53): Retry time not yet reached
-1999-03-02 09:44:33 10HmbB-0005vi-00 == notuser2@test.ex R=r2 T=local_delivery2 defer (-53): Retry time not yet reached
-1999-03-02 09:44:33 10HmbC-0005vi-00 == notuser3@test.ex R=r2 T=local_delivery2 defer (-53): Retry time not yet reached
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == userx@test.ex R=r1 T=local_delivery defer (-53): Retry time not yet reached
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 == notuser@test.ex R=r2 T=local_delivery2 defer (-53): Retry time not yet reached
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 == notuser2@test.ex R=r2 T=local_delivery2 defer (-53): Retry time not yet reached
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 == notuser3@test.ex R=r2 T=local_delivery2 defer (-53): Retry time not yet reached
 1999-03-02 09:44:33 End queue run: pid=p1235
-1999-03-02 09:44:33 10HmaX-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbA-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbB-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbC-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbD-0005vi-00 == r3.a@outside R=r3 defer (-1): not just now
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 removed by CALLER
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 removed by CALLER
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 removed by CALLER
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 removed by CALLER
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 == r3.a@outside R=r3 defer (-1): not just now
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=p1236
-1999-03-02 09:44:33 10HmbD-0005vi-00 == r3.a@outside routing defer (-52): retry time not reached
-1999-03-02 09:44:33 10HmbE-0005vi-00 == r3.b@outside R=r3 defer (-1): not just now
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 == r3.a@outside routing defer (-52): retry time not reached
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 == r3.b@outside R=r3 defer (-1): not just now
 1999-03-02 09:44:33 End queue run: pid=p1236
-1999-03-02 09:44:33 10HmbD-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbE-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbF-0005vi-00 == r4.a@outside R=r4 defer (-1): not just now
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 removed by CALLER
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 removed by CALLER
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 == r4.a@outside R=r4 defer (-1): not just now
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=p1237
-1999-03-02 09:44:33 10HmbF-0005vi-00 == r4.a@outside routing defer (-52): retry time not reached
-1999-03-02 09:44:33 10HmbG-0005vi-00 == r4.b@outside R=r4 defer (-1): not just now
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 == r4.a@outside routing defer (-52): retry time not reached
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 == r4.b@outside R=r4 defer (-1): not just now
 1999-03-02 09:44:33 End queue run: pid=p1237
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbH-0005vi-00 == r5.a@r5domain.ex R=r5 defer (-1): not just now
-1999-03-02 09:44:33 10HmbF-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbG-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbH-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbI-0005vi-00 == rz.a@outside R=r_remain defer (-1): not just now
-1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbJ-0005vi-00 == rz.b@outside R=r_remain defer (-1): not just now
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 == r5.a@r5domain.ex R=r5 defer (-1): not just now
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 removed by CALLER
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 removed by CALLER
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 removed by CALLER
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 == rz.a@outside R=r_remain defer (-1): not just now
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 == rz.b@outside R=r_remain defer (-1): not just now
 1999-03-02 09:44:33 Start queue run: pid=p1238
-1999-03-02 09:44:33 10HmbI-0005vi-00 == rz.a@outside routing defer (-52): retry time not reached
-1999-03-02 09:44:33 10HmbJ-0005vi-00 == rz.b@outside routing defer (-52): retry time not reached
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 == rz.a@outside routing defer (-52): retry time not reached
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 == rz.b@outside routing defer (-52): retry time not reached
 1999-03-02 09:44:33 End queue run: pid=p1238

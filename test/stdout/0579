@@ -26,7 +26,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> body
 >>> .
 ??? 250
-<<< 250 OK id=10HmaX-0005vi-00
+<<< 250 OK id=10HmaX-000000005vi-0000
 >>> QUIT
 ??? 221
 <<< 221 myhost.test.ex closing connection

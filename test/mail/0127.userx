@@ -4,11 +4,11 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: Sender in original <sender@original.ex>
-Message-Id: <E10HmaX-0005vi-00@myhost.ex>
+Message-Id: <E10HmaX-000000005vi-0000@myhost.ex>
 From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -20,11 +20,11 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: Sender in original <sender@original.ex>
-Message-Id: <E10HmaY-0005vi-00@myhost.ex>
+Message-Id: <E10HmaY-000000005vi-0000@myhost.ex>
 From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -36,11 +36,11 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
-	id 10HmaZ-0005vi-00
+	id 10HmaZ-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: Sender in original <sender@original.ex>
-Message-Id: <E10HmaZ-0005vi-00@myhost.ex>
+Message-Id: <E10HmaZ-000000005vi-0000@myhost.ex>
 From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -52,11 +52,11 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
-	id 10HmbA-0005vi-00
+	id 10HmbA-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: Sender in original <sender@original.ex>
-Message-Id: <E10HmbA-0005vi-00@myhost.ex>
+Message-Id: <E10HmbA-000000005vi-0000@myhost.ex>
 From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -69,11 +69,11 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER (helo=test)
 	by myhost.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
-	id 10HmbB-0005vi-00
+	id 10HmbB-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: Sender in original <sender@original.ex>
-Message-Id: <E10HmbB-0005vi-00@myhost.ex>
+Message-Id: <E10HmbB-000000005vi-0000@myhost.ex>
 From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -85,12 +85,12 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
-	id 10HmbC-0005vi-00
+	id 10HmbC-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: Sender in original <sender@original.ex>
 From: From person <from@some.where>
-Message-Id: <E10HmbC-0005vi-00@myhost.ex>
+Message-Id: <E10HmbC-000000005vi-0000@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message.
@@ -101,12 +101,12 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
-	id 10HmbD-0005vi-00
+	id 10HmbD-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: Sender in original <sender@original.ex>
 From: From person <from@some.where>
-Message-Id: <E10HmbD-0005vi-00@myhost.ex>
+Message-Id: <E10HmbD-000000005vi-0000@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message.
@@ -117,12 +117,12 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
-	id 10HmbE-0005vi-00
+	id 10HmbE-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: Sender in original <sender@original.ex>
 From: From person <from@some.where>
-Message-Id: <E10HmbE-0005vi-00@myhost.ex>
+Message-Id: <E10HmbE-000000005vi-0000@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message.
@@ -133,12 +133,12 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by myhost.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
-	id 10HmbF-0005vi-00
+	id 10HmbF-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: Sender in original <sender@original.ex>
 From: From person <from@some.where>
-Message-Id: <E10HmbF-0005vi-00@myhost.ex>
+Message-Id: <E10HmbF-000000005vi-0000@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message.
@@ -150,12 +150,12 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER (helo=test)
 	by myhost.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.ex>)
-	id 10HmbG-0005vi-00
+	id 10HmbG-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: Sender in original <sender@original.ex>
 From: From person <from@some.where>
-Message-Id: <E10HmbG-0005vi-00@myhost.ex>
+Message-Id: <E10HmbG-000000005vi-0000@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message.

@@ -1,20 +1,20 @@
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-delivering 10HmaX-0005vi-00
+delivering 10HmaX-000000005vi-0000
 LOG: MAIN
   *> x@srv01.test.ex R=r1 T=t1 H=ten-1.test.ex [V4NET.0.0.1]:25 C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-delivering 10HmaY-0005vi-00
+delivering 10HmaY-000000005vi-0000
 LOG: MAIN
   *> x@srv03.test.ex R=r1 T=t1 H=ten-4.test.ex [V4NET.0.0.4]:88 C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-delivering 10HmaZ-0005vi-00
+delivering 10HmaZ-000000005vi-0000
 Transport port=25 replaced by host-specific port=PORT_S
 Connecting to localhost.test.ex [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready

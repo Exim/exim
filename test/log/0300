@@ -2,16 +2,16 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "ehlo abcd" H=[127.0.0.1] next input="mail fr<suppressed>
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= userx@test.ex H=(abcd) [127.0.0.1] P=esmtp S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 => :blackhole: <userx@test.ex> R=r1
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= userx@test.ex H=(abcd) [127.0.0.1] P=esmtp S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => :blackhole: <userx@test.ex> R=r1
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was advertised): rejected "data" H=(abcd) [127.0.0.1] next input="the mes<suppressed>
 1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "mail from:<userx@test.ex>" H=(abcd) [127.0.0.1] next input="rcpt to<suppressed>
 1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "mail from:<userx@test.ex>" H=(abcd) [ip4.ip4.ip4.ip4] next input="rcpt to<suppressed>
 1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "junk1" H=[ip4.ip4.ip4.ip4] next input="junk2\r<suppressed>
 1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "rset" H=(abcd) [ip4.ip4.ip4.ip4] next input="quit\r\<suppressed>
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= userx@test.ex H=(dis.able) [127.0.0.1] P=esmtp S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <userx@test.ex> R=r1
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= userx@test.ex H=(dis.able) [127.0.0.1] P=esmtp S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <userx@test.ex> R=r1
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 SMTP protocol synchronization error (input sent without waiting for greeting): rejected connection from H=[127.0.0.1] input="helo abcd\r\n"

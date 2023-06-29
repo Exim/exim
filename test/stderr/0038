@@ -38,11 +38,11 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> ratelimit found pre-computed rate 1.0
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
-LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
+LOG: 10HmaX-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
-LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
+LOG: 10HmaX-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -82,11 +82,11 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=
 >>> ratelimit found pre-computed rate 2.0
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
-LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
+LOG: 10HmaY-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
-LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
+LOG: 10HmaY-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -127,11 +127,11 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> ratelimit found pre-computed rate 1.0
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
-LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
+LOG: 10HmaZ-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
-LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
+LOG: 10HmaZ-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -171,11 +171,11 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=
 >>> ratelimit found pre-computed rate 2.0
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
-LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
+LOG: 10HmbA-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
-LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
+LOG: 10HmbA-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -244,11 +244,11 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> ratelimit computed rate 3.0
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
-LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=3.0 sender_rate_limit=0 sender_rate_period=1h
+LOG: 10HmbB-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=3.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
-LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
+LOG: 10HmbB-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -312,8 +312,8 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit computed rate 19.0
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
-LOG: 10HmbC-0005vi-00 H=(test.ex) [V4NET.9.8.6] Warning: DATA: sender_rate=19.0 sender_rate_limit=0 sender_rate_period=1h
+LOG: 10HmbC-000000005vi-0000 H=(test.ex) [V4NET.9.8.6] Warning: DATA: sender_rate=19.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
-LOG: 10HmbC-0005vi-00 H=(test.ex) [V4NET.9.8.6] F=<> rejected after DATA
+LOG: 10HmbC-000000005vi-0000 H=(test.ex) [V4NET.9.8.6] F=<> rejected after DATA

@@ -249,8 +249,8 @@ utils: $(EXIM_MONITOR) exicyclog exinext exiwhat \
         exigrep eximstats exipick exiqgrep exiqsumm \
         transport-filter.pl convert4r3 convert4r4 \
         exim_checkaccess \
-        exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb exim_lock \
-        exim_msgdate
+        exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb \
+	exim_lock exim_msgdate exim_id_update
 
 
 # Targets for special-purpose configuration header builders
@@ -450,6 +450,19 @@ exipick: config ../src/exipick.src
 	@mv exipick-t exipick
 	@chmod a+x exipick
 	@echo ">>> exipick script built"
+
+exim_id_update: config ../src/exim_id_update.src
+	@rm -f exim_id_update
+	@. ./version.sh && sed \
+	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	  -e "s?SPOOL_DIRECTORY?$(SPOOL_DIRECTORY)?" \
+	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
+	  ../src/exim_id_update.src > exim_id_update-t
+	@mv exim_id_update-t exim_id_update
+	@chmod a+x exim_id_update
+	@echo ">>> exim_id_update script built"
 
 transport-filter.pl: config ../src/transport-filter.src
 	@rm -f transport-filter.pl

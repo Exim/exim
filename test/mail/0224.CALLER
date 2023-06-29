@@ -3,18 +3,18 @@ Return-path: <>
 Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: bounce@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
-References: <E10HmaX-0005vi-00@the.local.host.name>
+References: <E10HmaX-000000005vi-0000@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaY-000000005vi-0000@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -50,10 +50,10 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaX-0005vi-00;
+	id 10HmaX-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: first message
-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaX-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -65,17 +65,17 @@ Return-path: <>
 Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
-	id 10HmbA-0005vi-00
+	id 10HmbA-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
-References: <E10HmaZ-0005vi-00@the.local.host.name>
+References: <E10HmaZ-000000005vi-0000@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
-Subject: Warning: message 10HmaZ-0005vi-00 delayed 0 minutes
-Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+Subject: Warning: message 10HmaZ-000000005vi-0000 delayed 0 minutes
+Message-Id: <E10HmbA-000000005vi-0000@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -85,7 +85,7 @@ This message was created automatically by mail delivery software.
 A message that you sent has not yet been delivered to one or more of its
 recipients after more than 0 minutes on the queue on the.local.host.name.
 
-The message identifier is:     10HmaZ-0005vi-00
+The message identifier is:     10HmaZ-000000005vi-0000
 The subject of the message is: second message
 The date of the message is:    Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -127,10 +127,10 @@ Content-type: text/rfc822-headers
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaZ-0005vi-00;
+	id 10HmaZ-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: second message
-Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaZ-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

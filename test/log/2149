@@ -1,52 +1,52 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 => optnotpresent@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmaY-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => explicitauto@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-0005vi-00"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbB-0005vi-00 => prime256v1@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbC-0005vi-00"
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbD-0005vi-00 => secp384r1@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbE-0005vi-00"
-1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbF-0005vi-00 H=127.0.0.1 [127.0.0.1]: a TLS session is required, but an attempt to start TLS failed
-1999-03-02 09:44:33 10HmbF-0005vi-00 == user_fail@test.ex R=client T=send_to_server defer (-38) H=127.0.0.1 [127.0.0.1]: a TLS session is required, but an attempt to start TLS failed
-1999-03-02 09:44:33 10HmbF-0005vi-00 ** user_fail@test.ex: retry timeout exceeded
-1999-03-02 09:44:33 10HmbF-0005vi-00 user_fail@test.ex: error ignored
-1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbG-0005vi-00 => user_list2@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbH-0005vi-00"
-1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbI-0005vi-00 => user_list_auto@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbJ-0005vi-00"
-1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => optnotpresent@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => explicitauto@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-000000005vi-0000"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 => prime256v1@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbC-000000005vi-0000"
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 => secp384r1@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbE-000000005vi-0000"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: a TLS session is required, but an attempt to start TLS failed
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 == user_fail@test.ex R=client T=send_to_server defer (-38) H=127.0.0.1 [127.0.0.1]: a TLS session is required, but an attempt to start TLS failed
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 ** user_fail@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 user_fail@test.ex: error ignored
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 => user_list2@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbH-000000005vi-0000"
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 => user_list_auto@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbJ-000000005vi-0000"
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <optnotpresent@test.ex> R=server
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <optnotpresent@test.ex> R=server
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <explicitauto@test.ex> R=server
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <explicitauto@test.ex> R=server
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbB-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <prime256v1@test.ex> R=server
-1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbB-000000005vi-0000@myhost.test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 => :blackhole: <prime256v1@test.ex> R=server
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbD-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <secp384r1@test.ex> R=server
-1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbD-000000005vi-0000@myhost.test.ex
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 => :blackhole: <secp384r1@test.ex> R=server
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] Unknown curve name in tls_eccurve 'bogus'
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1239, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbG-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbH-0005vi-00 => :blackhole: <user_list2@test.ex> R=server
-1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbG-000000005vi-0000@myhost.test.ex
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 => :blackhole: <user_list2@test.ex> R=server
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1240, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmbJ-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbI-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbJ-0005vi-00 => :blackhole: <user_list_auto@test.ex> R=server
-1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbI-000000005vi-0000@myhost.test.ex
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 => :blackhole: <user_list_auto@test.ex> R=server
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 Completed

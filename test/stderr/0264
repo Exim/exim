@@ -1,9 +1,9 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-Writing spool header file: TESTSUITE/spool//input//hdr.10HmbJ-0005vi-00
+Writing spool header file: TESTSUITE/spool//input//hdr.10HmbJ-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <rz.b@outside> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
-Renaming spool header file: TESTSUITE/spool//input//10HmbJ-0005vi-00-H
+Renaming spool header file: TESTSUITE/spool//input//10HmbJ-000000005vi-0000-H
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 Exim version x.yz ....
@@ -11,9 +11,9 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-delivering 10HmbJ-0005vi-00
-Trying spool file TESTSUITE/spool//input//10HmbJ-0005vi-00-D
-reading spool file 10HmbJ-0005vi-00-H
+delivering 10HmbJ-000000005vi-0000
+Trying spool file TESTSUITE/spool//input//10HmbJ-000000005vi-0000-D
+reading spool file 10HmbJ-000000005vi-0000-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@test.ex
 sender_local=1 ident=CALLER
 Non-recipients:
@@ -88,12 +88,12 @@ Writing retry data for R:outside
   first failed=dddd last try=dddd next try=+300 expired=0
   errno=-1 more_errno=dd not just now
 end of retry processing
-time on queue = 0s  id 10HmbJ-0005vi-00  addr rz.b@outside
+time on queue = 0s  id 10HmbJ-000000005vi-0000  addr rz.b@outside
 warning counts: required 0 done 0
 delivery deferred: update_spool=1 header_rewritten=0
-Writing spool header file: TESTSUITE/spool//input//hdr.10HmbJ-0005vi-00
+Writing spool header file: TESTSUITE/spool//input//hdr.10HmbJ-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <rz.b@outside> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
-Renaming spool header file: TESTSUITE/spool//input//10HmbJ-0005vi-00-H
-end delivery of 10HmbJ-0005vi-00
+Renaming spool header file: TESTSUITE/spool//input//10HmbJ-000000005vi-0000-H
+end delivery of 10HmbJ-000000005vi-0000
 >>>>>>>>>>>>>>>> Exim pid=p1240 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

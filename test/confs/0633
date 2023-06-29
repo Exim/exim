@@ -12,10 +12,10 @@ acl_smtp_data = check_data
 begin acl
 
 check_data:
-  accept	set acl_m0 =	${sg{${sg{${sg{aaa}{a}{bbbbbbbbbbb}}}{b}{ccccccccccccc}}}{c}{ddddddddddddddddddd}}
-		logwrite =	${acl_m0}
-		logwrite =	${acl_m0}a
-		logwrite =	${acl_m0}aa
-		logwrite =	${acl_m0}aaa
+  accept	set acl_m0 =	${sg{${sg{${sg{aaa}{a}{bbbbbbbbbbb}}}{b}{cccccccccccc}}}{c}{ddddddddddddddddddd}}
+		logwrite =	${acl_m0}eeeeeeeeeeeeeee
+		logwrite =	${acl_m0}eeeeeeeeeeeeeeea
+		logwrite =	${acl_m0}eeeeeeeeeeeeeeeaa
+		logwrite =	${acl_m0}eeeeeeeeeeeeeeeaaa
 
 # End

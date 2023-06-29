@@ -1,24 +1,24 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:connect
-1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1]:1111
-1999-03-02 09:44:33 10HmaX-0005vi-00 event smtp:connect
-1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
-1999-03-02 09:44:33 10HmaX-0005vi-00 . banner <220 ESMTP>
-1999-03-02 09:44:33 10HmaX-0005vi-00 event smtp:ehlo
-1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
-1999-03-02 09:44:33 10HmaX-0005vi-00 . ehlo-resp <250-OK\n250-HELP\n250 AUTH LOGIN>
-1999-03-02 09:44:33 10HmaX-0005vi-00 event auth:fail
-1999-03-02 09:44:33 10HmaX-0005vi-00 . "auth fail" event_data <599 no way, man> sender_host_authenticated <login> authenticated_fail_id <>
-1999-03-02 09:44:33 10HmaX-0005vi-00 custom-message: login authenticator failed H=127.0.0.1 [127.0.0.1] 599 no way, man
-1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:close
-1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
-1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:host:defer
-1999-03-02 09:44:33 10HmaX-0005vi-00 . host deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain.com> errno <-42> errstr <authentication required but authentication attempt(s) failed> router <force> transport <smtp_force>
-1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:defer
-1999-03-02 09:44:33 10HmaX-0005vi-00 . message deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain.com> errno <-42> errstr <authentication required but authentication attempt(s) failed> router <force> transport <smtp_force>
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@domain.com R=force T=smtp_force defer (-42): authentication required but authentication attempt(s) failed
-1999-03-02 09:44:33 10HmaX-0005vi-00 ** userx@domain.com: retry timeout exceeded
-1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:fail:delivery
-1999-03-02 09:44:33 10HmaX-0005vi-00 . refused by fdqn <> local_part <userx> domain <domain.com> errstr <authentication required but authentication attempt(s) failed: retry timeout exceeded>
-1999-03-02 09:44:33 10HmaX-0005vi-00 userx@domain.com: error ignored
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event tcp:connect
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1]:1111
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event smtp:connect
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . banner <220 ESMTP>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event smtp:ehlo
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . ehlo-resp <250-OK\n250-HELP\n250 AUTH LOGIN>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event auth:fail
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . "auth fail" event_data <599 no way, man> sender_host_authenticated <login> authenticated_fail_id <>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 custom-message: login authenticator failed H=127.0.0.1 [127.0.0.1] 599 no way, man
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event tcp:close
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:host:defer
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . host deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain.com> errno <-42> errstr <authentication required but authentication attempt(s) failed> router <force> transport <smtp_force>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:defer
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . message deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain.com> errno <-42> errstr <authentication required but authentication attempt(s) failed> router <force> transport <smtp_force>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == userx@domain.com R=force T=smtp_force defer (-42): authentication required but authentication attempt(s) failed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** userx@domain.com: retry timeout exceeded
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:fail:delivery
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . refused by fdqn <> local_part <userx> domain <domain.com> errstr <authentication required but authentication attempt(s) failed: retry timeout exceeded>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 userx@domain.com: error ignored
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed

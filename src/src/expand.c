@@ -2037,7 +2037,8 @@ switch (vp->type)
     if (!*ss && deliver_datafile >= 0)  /* Read body when needed */
       {
       uschar * body;
-      off_t start_offset = SPOOL_DATA_START_OFFSET;
+      off_t start_offset_o = spool_data_start_offset(message_id);
+      off_t start_offset = start_offset_o;
       int len = message_body_visible;
 
       if (len > message_size) len = message_size;
@@ -2049,8 +2050,8 @@ switch (vp->type)
 	if (fstat(deliver_datafile, &statbuf) == 0)
 	  {
 	  start_offset = statbuf.st_size - len;
-	  if (start_offset < SPOOL_DATA_START_OFFSET)
-	    start_offset = SPOOL_DATA_START_OFFSET;
+	  if (start_offset < start_offset_o)
+	    start_offset = start_offset_o;
 	  }
 	}
       if (lseek(deliver_datafile, start_offset, SEEK_SET) < 0)
@@ -7264,7 +7265,7 @@ NOT_ITEM: ;
 	    "operator is \"%s\", which is not a decimal number", sub);
 	  goto EXPAND_FAILED;
 	  }
-	yield = string_cat(yield, string_base62(n));
+	yield = string_cat(yield, string_base62_32(n));		/*XXX only handles 32b input range.  Need variants? */
 	break;
 	}
 

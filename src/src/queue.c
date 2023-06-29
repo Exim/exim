@@ -54,8 +54,13 @@ queue_filename **append = &first;
 while (a && b)
   {
   int d;
-  if ((d = Ustrncmp(a->text, b->text, 6)) == 0)
-    d = Ustrcmp(a->text + 14, b->text + 14);
+  if ((d = Ustrncmp(a->text, b->text, MESSAGE_ID_TIME_LEN)) == 0)
+    {
+    BOOL a_old = is_old_message_id(a->text), b_old = is_old_message_id(b->text);
+    /* Do not worry over the sub-second sorting wrt. old vs. new */
+    d = Ustrcmp(a->text + (a_old ? 6+1+6+1 : MESSAGE_ID_TIME_LEN + 1 + MESSAGE_ID_PID_LEN + 1),
+		b->text + (b_old ? 6+1+6+1 : MESSAGE_ID_TIME_LEN + 1 + MESSAGE_ID_PID_LEN + 1));
+    }
   if (d < 0)
     {
     *append = a;
@@ -188,9 +193,9 @@ for (; i <= *subcount; i++)
 
   /* Now scan the directory. */
 
-  for (struct dirent *ent; ent = readdir(dd); )
+  for (struct dirent * ent; ent = readdir(dd); )
     {
-    uschar *name = US ent->d_name;
+    uschar * name = US ent->d_name;
     int len = Ustrlen(name);
 
     /* Count entries */
@@ -209,14 +214,15 @@ for (; i <= *subcount; i++)
 
     /* Otherwise, if it is a header spool file, add it to the list */
 
-    if (len == SPOOL_NAME_LENGTH &&
-        Ustrcmp(name + SPOOL_NAME_LENGTH - 2, "-H") == 0)
+    if (  (len == SPOOL_NAME_LENGTH || len == SPOOL_NAME_LENGTH_OLD)
+       && Ustrcmp(name + len - 2, "-H") == 0
+       )
       if (pcount)
 	(*pcount)++;
       else
 	{
 	queue_filename * next =
-	  store_get(sizeof(queue_filename) + Ustrlen(name), name);
+	  store_get(sizeof(queue_filename) + len, name);
 	Ustrcpy(next->text, name);
 	next->dir_uschar = subdirchar;
 
@@ -657,8 +663,8 @@ for (int i = queue_run_in_order ? -1 : 0;
     /* Now deliver the message; get the id by cutting the -H off the file
     name. The return of the process is zero if a delivery was attempted. */
 
+    fq->text[Ustrlen(fq->text)-2] = 0;
     set_process_info("running queue: %s", fq->text);
-    fq->text[SPOOL_NAME_LENGTH-2] = 0;
 #ifdef MEASURE_TIMING
     report_time_since(&timestamp_startup, US"queue msg selected");
 #endif
@@ -990,7 +996,7 @@ else for (;
     that precedes the data. */
 
     if (Ustat(fname, &statbuf) == 0)
-      size = message_size + statbuf.st_size - SPOOL_DATA_START_OFFSET + 1;
+      size = message_size + statbuf.st_size - spool_data_start_offset(qf->text) + 1;
     i = (now - received_time.tv_sec)/60;  /* minutes on queue */
     if (i > 90)
       {
@@ -1087,7 +1093,8 @@ Returns:          FALSE if there was any problem
 */
 
 BOOL
-queue_action(uschar *id, int action, uschar **argv, int argc, int recipients_arg)
+queue_action(uschar * id, int action, uschar ** argv, int argc,
+  int recipients_arg)
 {
 BOOL yield = TRUE;
 BOOL removed = FALSE;
@@ -1156,7 +1163,7 @@ if (action >= MSG_SHOW_BODY)
     }
 
   while((rc = read(fd, big_buffer, big_buffer_size)) > 0)
-    rc = write(fileno(stdout), big_buffer, rc);
+    rc = write(fileno(stdout), big_buffer, rc);			/*XXX why not fwrite() ? */
 
   (void)close(fd);
   return TRUE;
@@ -1299,11 +1306,9 @@ switch(action)
 
   case MSG_REMOVE:
     {
-    uschar suffix[3];
+    uschar suffix[3] = { [0]='-', [2]=0 };
 
-    suffix[0] = '-';
-    suffix[2] = 0;
-    message_subdir[0] = id[5];
+    message_subdir[0] = id[MESSAGE_ID_TIME_LEN - 1];
 
     for (int j = 0; j < 2; message_subdir[0] = 0, j++)
       {

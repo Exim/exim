@@ -3,20 +3,20 @@ Return-path: <>
 Envelope-to: someone@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by mail.test.ex with local (Exim x.yz)
-	id 10HmbM-0005vi-00
+	id 10HmbM-000000005vi-0000
 	for someone@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 From: userx13@test.ex
 To: someone@test.ex
 Subject: Automated reply
-In-Reply-To: <E10HmbL-0005vi-00@mail.test.ex>
-References: <E10HmbL-0005vi-00@mail.test.ex>
+In-Reply-To: <E10HmbL-000000005vi-0000@mail.test.ex>
+References: <E10HmbL-000000005vi-0000@mail.test.ex>
 Auto-Submitted: auto-replied
 MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <E10HmbM-0005vi-00@mail.test.ex>
+Message-Id: <E10HmbM-000000005vi-0000@mail.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 I am gone.  Not here.

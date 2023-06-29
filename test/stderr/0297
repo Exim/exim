@@ -48,7 +48,7 @@ routed by r1 router
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   <= fil@ter U=CALLER P=local S=sss
-delivering 10HmaX-0005vi-00
+delivering 10HmaX-000000005vi-0000
 LOG: MAIN
   original recipients ignored (system filter)
 LOG: MAIN
@@ -57,7 +57,7 @@ LOG: MAIN
   Completed
 LOG: MAIN
   <= fil@ter U=CALLER P=local S=sss
-delivering 10HmaY-0005vi-00
+delivering 10HmaY-000000005vi-0000
 LOG: MAIN
   original recipients ignored (system filter)
 LOG: MAIN
@@ -66,7 +66,7 @@ LOG: MAIN
   Completed
 LOG: MAIN
   <= fil@ter U=CALLER P=local S=sss
-delivering 10HmaZ-0005vi-00
+delivering 10HmaZ-000000005vi-0000
 LOG: MAIN
   original recipients ignored (system filter)
 LOG: MAIN
@@ -75,7 +75,7 @@ LOG: MAIN
   Completed
 LOG: MAIN
   <= fil@ter U=CALLER P=local S=sss
-delivering 10HmbA-0005vi-00
+delivering 10HmbA-000000005vi-0000
 LOG: MAIN
   original recipients ignored (system filter)
 LOG: MAIN

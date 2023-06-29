@@ -40,7 +40,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 550
 <<< 550 PRDR R=<userz@test.ex> refusal
 ??? 250
-<<< 250 id=10HmaY-0005vi-00 message accepted for some recipients
+<<< 250 id=10HmaY-000000005vi-0000 message accepted for some recipients
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -115,7 +115,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> Sender: sender@some.where
 >>> .
 ??? 250
-<<< 250 OK id=10HmaZ-0005vi-00
+<<< 250 OK id=10HmaZ-000000005vi-0000
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -157,7 +157,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 450
 <<< 450 PRDR R=<usery@test.ex> temporary refusal
 ??? 250
-<<< 250 id=10HmbA-0005vi-00 message accepted for some recipients
+<<< 250 id=10HmbA-000000005vi-0000 message accepted for some recipients
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -199,7 +199,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 550
 <<< 550 PRDR R=<userz@test.ex> refusal
 ??? 550
-<<< 550 id=10HmbB-0005vi-00 message rejected for all recipients
+<<< 550 id=10HmbB-000000005vi-0000 message rejected for all recipients
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -232,7 +232,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> Sender: sender@some.where
 >>> .
 ??? 250
-<<< 250 OK id=10HmbC-0005vi-00
+<<< 250 OK id=10HmbC-000000005vi-0000
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection

@@ -1,0 +1,224 @@
+#!PERL_COMMAND
+# Copyright (c) 2023 The Exim Maintainers
+# SPDX-License-Identifier: GPL-2.0-or-later
+# See the file NOTICE for conditions of use and distribution.
+
+# Utility for one-time upgrage/downgrade between exim message-id formats,
+# around the 4.97 transition
+
+
+# This variables should be set by the building process
+my $spool = 'SPOOL_DIRECTORY';  # may be overridden later
+
+use strict;
+use warnings;
+use Getopt::Std;
+use File::Find;
+use Fcntl;
+use File::FcntlLock;
+use IO::Handle;
+
+
+my %opt;
+my $mode_upgrade;
+my $id;
+
+my $b62 = '[0-9A-Za-z]';
+
+if (  !getopts('hud', \%opt)
+   || $opt{h}
+   || !$opt{u} && !$opt{d}
+   ) {
+  &help; exit 1;
+}
+
+$spool = $ARGV[0] if ($ARGV[0]);
+$mode_upgrade = $opt{u};
+
+sub help(){
+  print <<'EOF'
+Utility for one-time down/upgrade of Exim message-id formats
+in spool files.  Only the filenames is first-line ID tag values
+are affected; not message content such as Message-ID fields.
+Only -H, -D and -J files are handled.
+
+Syntax:  exim_id_update [-d | -u | -h] [spooldir]
+
+	-d	Downgrade mode
+	-h	This help message
+	-u	Upgrade mode
+
+Exactly one of -d or -u must be given.
+The spool directory defaults to the build-time value,
+or can be given as a command-line argument.
+EOF
+}
+
+# For downgrade mode:
+# - Check exim not running
+# - Wipe any wait-hints DBs, buy just removing the files.
+# For all queue (main and named), with split-spool if needed, for each file identifiable
+# as a spoolfile (name starts with an ID, ends with -H -D -J -K)
+#  XXX are there only subsets we can handle - eg. a -H + a -D ?
+#    mainline code sequence is -D (locks msg) -H ?-J
+#    mainline locking sequence (spool_open_datafile()) is
+#	- open -D
+#	- fnctl F_LOCK  (amount = first line of file)
+
+# The -H and -D files contain the ID as their initial line.
+# The -J file
+# - records successful deliveries, as insurance vs. crashes
+# - has lines with mail addresses
+# The -K file
+# - is a temp for DKIM'd delivery when a transport-filter is in use
+# - contains the message that would have been put on the wire (except for encryption)
+#  - the transport, with tpt-filter, writes the file - and then reads it
+#    so as to generate the DKIM signature.  Then it sends the message, with
+#    generated headers and reading the file again, down the wire.
+#    And then it deletes it.
+# - unclear if we really want to rewrite these files, if we do see then
+#   Probably not.
+
+# - if old-format name:
+#   - lock old message
+#   - generate new files, in safe sequence
+#   - remove old files	(do we need to archive?)
+#
+
+# loop for default Q, named Qs
+#  loop for plain, split-spool
+#   loop over files
+#    if is -H, and -D exists
+#
+#     create new ID string from old
+#     lock the old -D
+#     create new -D
+#     lock new -D
+#     create new -H
+#
+#     if -J exists
+#      rename old -J to new -J
+#
+#     remove old -H
+#     remove old -D
+#     unlock new -D
+#
+
+chdir $spool or die "failed cd to $spool";
+find( sub {
+	  do_file($_)
+	    if ($_ =~ ($mode_upgrade ? "${b62}{6}-${b62}{6}-${b62}{2}-D" : "${b62}{6}-${b62}{11}-${b62}{4}-D") );
+	  },
+      '.' );
+exit 0;
+
+
+sub do_file {
+  my $old_dfile = shift;
+  my $old_prefix = $old_dfile;
+  my ($old_hfile , $new_prefix);
+  my ($d_old, $d_new);
+  my $line;
+
+  $old_prefix =~ s/-D$//;
+  $old_hfile = $old_prefix . '-H';
+
+  # The -H file must also exist
+  return if (! -e $old_hfile);
+
+  $new_prefix = $old_prefix;
+  if ($mode_upgrade) {
+    $new_prefix =~ s/^([^-]*)-([^-]*)-(.*)$/$1-00000$2-${3}00/;
+  } else {
+    $new_prefix =~ s/^([^-]*)-.....([^-]*)-(..)..$/$1-$2-${3}/;
+  }
+
+  ####### create the new -D file
+
+  open $d_old, '+<', $old_dfile
+      or die "Can't open file: $!\n";
+
+  # lock the old -D file
+  dfile_lock($d_old, $mode_upgrade ? 16 : 23);
+  # seek past the first line
+  <$d_old>;
+
+  # create the new -D file
+  $d_new = f_create($new_prefix . '-D');
+
+  # lock the new -D file
+  dfile_lock($d_new, $mode_upgrade ? 23 : 16);
+
+  # write the new message-id to the first line
+  print $d_new "$new_prefix-D\n";
+
+  # copy the rest of the -D file
+  while ($line = <$d_old>) {
+    print $d_new $line;
+  }
+
+  ####### create the new -H file
+
+  open my $h_old, '<', $old_hfile
+      or die "Can't open file: $!\n";
+  <$h_old>;
+
+  my $h_new = f_create($new_prefix . '-H');
+  print $h_new "$new_prefix-H\n";
+  while ($line = <$h_old>) {
+    print $h_new $line;
+  }
+
+  ###### rename a journal file if it exists
+
+  rename $old_prefix . '-J', $new_prefix . '-J' if (-e $old_prefix . '-J');
+
+  ###### tidy up
+
+  close $h_old;
+  unlink $old_hfile or die "failed to remove $old_hfile";
+  close $d_old;
+  unlink $old_dfile or die "failed to remove $old_dfile";
+
+  dfile_unlock($d_new, $mode_upgrade ? 23 : 16);
+  close $d_new;
+}
+
+
+
+sub dfile_lock {
+  my $fh = shift;
+  my $nbytes = shift;
+  my $fs = new File::FcntlLock;
+
+  $fs->l_type( F_WRLCK );
+  $fs->l_whence( SEEK_CUR );
+  $fs->l_start( 0 );
+  $fs->l_len( $nbytes );
+
+  $fs->lock( $fh, F_SETLK )
+      or die "Locking failed: " . $fs->error . "\n";
+}
+
+sub dfile_unlock {
+  my $fh = shift;
+  my $nbytes = shift;
+  my $fs = new File::FcntlLock;
+
+  $fs->l_type( F_UNLCK );
+  $fs->l_whence( SEEK_CUR );
+  $fs->l_start( 0 );
+  $fs->l_len( $nbytes );
+  $fs->lock( $fh, F_SETLK )
+      or die "Unlocking failed: " . $fs->error . "\n";
+}
+
+sub f_create {
+  my $filename = shift;
+  sysopen(my $fh, $filename, O_RDWR|O_CREAT|O_EXCL)
+      or die "Can't create $filename: $!";
+  $fh->autoflush(1);
+  #
+  # TODO: chown, chgrp exim; chmod 0640
+  return $fh;
+}

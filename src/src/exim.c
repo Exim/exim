@@ -2022,7 +2022,14 @@ this here, because the -M options check their arguments for syntactic validity
 using mac_ismsgid, which uses this. */
 
 regex_ismsgid =
-  regex_must_compile(US"^(?:[^\\W_]{6}-){2}[^\\W_]{2}$", MCS_NOFLAGS, TRUE);
+  regex_must_compile(US"^(?:"
+	  "[^\\W_]{" str(MESSAGE_ID_TIME_LEN) "}"
+	  "-[^\\W_]{" str(MESSAGE_ID_PID_LEN) "}"
+	  "-[^\\W_]{" str(MESSAGE_ID_SUBTIME_LEN) "}"
+	"|"
+	  "(?:[^\\W_]{6}-){2}[^\\W_]{2}"		/* old ID format */
+	")$",
+    MCS_NOFLAGS, TRUE);
 
 /* Precompile the regular expression that is used for matching an SMTP error
 code, possibly extended, at the start of an error message. Note that the

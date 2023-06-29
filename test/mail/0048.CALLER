@@ -3,18 +3,18 @@ Return-path: <>
 Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: pipe@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
-References: <E10HmaX-0005vi-00@the.local.host.name>
+References: <E10HmaX-000000005vi-0000@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaY-000000005vi-0000@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -51,7 +51,7 @@ LOCAL_PART_PREFIX=
 LOCAL_PART_SUFFIX=
 LOGNAME=pipe
 ME=pipe
-MESSAGE_ID=10HmaX-0005vi-00
+MESSAGE_ID=10HmaX-000000005vi-0000
 PATH=/bin:/usr/bin
 QUALIFY_DOMAIN=test.ex
 RECIPIENT=pipe@test.ex
@@ -62,10 +62,10 @@ USER=pipe
 >From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for pipe@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaX-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -88,10 +88,10 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for pipe@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaX-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -104,18 +104,18 @@ Return-path: <>
 Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
-	id 10HmbA-0005vi-00
+	id 10HmbA-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: prefixed+pipe@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
-References: <E10HmaZ-0005vi-00@the.local.host.name>
+References: <E10HmaZ-000000005vi-0000@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbA-000000005vi-0000@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -152,7 +152,7 @@ LOCAL_PART_PREFIX=prefixed+
 LOCAL_PART_SUFFIX=
 LOGNAME=pipe
 ME=pipe
-MESSAGE_ID=10HmaZ-0005vi-00
+MESSAGE_ID=10HmaZ-000000005vi-0000
 PATH=/bin:/usr/bin
 QUALIFY_DOMAIN=test.ex
 RECIPIENT=prefixed+pipe@test.ex
@@ -163,10 +163,10 @@ USER=pipe
 >From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaZ-0005vi-00
+	id 10HmaZ-000000005vi-0000
 	for prefixed+pipe@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaZ-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -189,10 +189,10 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaZ-0005vi-00
+	id 10HmaZ-000000005vi-0000
 	for prefixed+pipe@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaZ-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -205,18 +205,18 @@ Return-path: <>
 Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
-	id 10HmbC-0005vi-00
+	id 10HmbC-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: pipe-suffixed@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
-References: <E10HmbB-0005vi-00@the.local.host.name>
+References: <E10HmbB-000000005vi-0000@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbC-000000005vi-0000@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -253,7 +253,7 @@ LOCAL_PART_PREFIX=
 LOCAL_PART_SUFFIX=-suffixed
 LOGNAME=pipe
 ME=pipe
-MESSAGE_ID=10HmbB-0005vi-00
+MESSAGE_ID=10HmbB-000000005vi-0000
 PATH=/bin:/usr/bin
 QUALIFY_DOMAIN=test.ex
 RECIPIENT=pipe-suffixed@test.ex
@@ -264,10 +264,10 @@ USER=pipe
 >From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbB-0005vi-00
+	id 10HmbB-000000005vi-0000
 	for pipe-suffixed@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbB-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -290,10 +290,10 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbB-0005vi-00
+	id 10HmbB-000000005vi-0000
 	for pipe-suffixed@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbB-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -306,18 +306,18 @@ Return-path: <>
 Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
-	id 10HmbE-0005vi-00
+	id 10HmbE-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: prefixed+pipe-suffixed@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
-References: <E10HmbD-0005vi-00@the.local.host.name>
+References: <E10HmbD-000000005vi-0000@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmbE-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbE-000000005vi-0000@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -354,7 +354,7 @@ LOCAL_PART_PREFIX=prefixed+
 LOCAL_PART_SUFFIX=-suffixed
 LOGNAME=pipe
 ME=pipe
-MESSAGE_ID=10HmbD-0005vi-00
+MESSAGE_ID=10HmbD-000000005vi-0000
 PATH=/bin:/usr/bin
 QUALIFY_DOMAIN=test.ex
 RECIPIENT=prefixed+pipe-suffixed@test.ex
@@ -365,10 +365,10 @@ USER=pipe
 >From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbD-0005vi-00
+	id 10HmbD-000000005vi-0000
 	for prefixed+pipe-suffixed@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbD-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -391,10 +391,10 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbD-0005vi-00
+	id 10HmbD-000000005vi-0000
 	for prefixed+pipe-suffixed@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbD-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -407,18 +407,18 @@ Return-path: <>
 Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
-	id 10HmbG-0005vi-00
+	id 10HmbG-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: pipe@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
-References: <E10HmbF-0005vi-00@the.local.host.name>
+References: <E10HmbF-000000005vi-0000@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmbG-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbG-000000005vi-0000@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -455,7 +455,7 @@ LOCAL_PART_PREFIX=
 LOCAL_PART_SUFFIX=
 LOGNAME=pipe
 ME=pipe
-MESSAGE_ID=10HmbF-0005vi-00
+MESSAGE_ID=10HmbF-000000005vi-0000
 PATH=/bin:/usr/bin
 QUALIFY_DOMAIN=test.ex
 RECIPIENT=pipe@test.ex
@@ -466,10 +466,10 @@ USER=pipe
 >From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbF-0005vi-00
+	id 10HmbF-000000005vi-0000
 	for pipe@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbF-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -492,10 +492,10 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbF-0005vi-00
+	id 10HmbF-000000005vi-0000
 	for pipe@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbF-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

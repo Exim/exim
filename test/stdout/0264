@@ -6,18 +6,18 @@ first failed = time last try = time2 next try = time2 + 600
 first failed = time last try = time2 next try = time2 + 1200
   T:userx@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/userx)
 first failed = time last try = time2 next try = time2 + 600
-Message 10HmaX-0005vi-00 has been removed
-Message 10HmbA-0005vi-00 has been removed
-Message 10HmbB-0005vi-00 has been removed
-Message 10HmbC-0005vi-00 has been removed
-Message 10HmbD-0005vi-00 has been removed
-Message 10HmbE-0005vi-00 has been removed
+Message 10HmaX-000000005vi-0000 has been removed
+Message 10HmbA-000000005vi-0000 has been removed
+Message 10HmbB-000000005vi-0000 has been removed
+Message 10HmbC-000000005vi-0000 has been removed
+Message 10HmbD-000000005vi-0000 has been removed
+Message 10HmbE-000000005vi-0000 has been removed
 +++++++++++++++++++++++++++
   R:r4.a@outside -1 0 not just now
 first failed = time last try = time2 next try = time2 + 300
-Message 10HmbF-0005vi-00 has been removed
-Message 10HmbG-0005vi-00 has been removed
-Message 10HmbH-0005vi-00 has been removed
+Message 10HmbF-000000005vi-0000 has been removed
+Message 10HmbG-000000005vi-0000 has been removed
+Message 10HmbH-000000005vi-0000 has been removed
 +++++++++++++++++++++++++++
   R:outside -1 0 not just now
 first failed = time last try = time2 next try = time2 + 300

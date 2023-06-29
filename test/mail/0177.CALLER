@@ -1,17 +1,17 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
-	id 10HmaZ-0005vi-00
+	id 10HmaZ-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: userx@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
-References: <E10HmaX-0005vi-00@the.local.host.name>
+References: <E10HmaX-000000005vi-0000@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaZ-000000005vi-0000@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -40,11 +40,11 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: fail this
-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaX-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

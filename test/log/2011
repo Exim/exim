@@ -1,8 +1,8 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss for fred@test.net
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss for fred@test.net
 1999-03-02 09:44:33 Start queue run: pid=p1234
-1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<fred@test.net>: 451 Temporary local problem - please try later
-1999-03-02 09:44:33 10HmaX-0005vi-00 => fred@test.net R=d0 T=gsmtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmaY-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<fred@test.net>: 451 Temporary local problem - please try later
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => fred@test.net R=d0 T=gsmtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234
 
 ******** SERVER ********
@@ -10,4 +10,4 @@
  Suggested action: either install a certificate or change tls_advertise_hosts option
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 H=the.local.host.name (test.ex) [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no F=<CALLER@test.ex> temporarily rejected RCPT <fred@test.net>
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex H=localhost (test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaX-0005vi-00@test.ex for fred@test.net
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@test.ex H=localhost (test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaX-000000005vi-0000@test.ex for fred@test.net

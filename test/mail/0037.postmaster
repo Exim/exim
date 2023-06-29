@@ -3,18 +3,18 @@ Return-path: <>
 Envelope-to: postmaster@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
-	id 10HmbB-0005vi-00
+	id 10HmbB-000000005vi-0000
 	for postmaster@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: postmaster@test.ex
-References: <E10HmbA-0005vi-00@the.local.host.name>
+References: <E10HmbA-000000005vi-0000@the.local.host.name>
 Subject: Message frozen
-Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbB-000000005vi-0000@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-Message 10HmbA-0005vi-00 has been frozen by the system filter.
+Message 10HmbA-000000005vi-0000 has been frozen by the system filter.
 subject was "should freeze this" 
 Here are two extra 
 lines of text.
@@ -28,18 +28,18 @@ Return-path: <>
 Envelope-to: postmaster@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
-	id 10HmbV-0005vi-00
+	id 10HmbV-000000005vi-0000
 	for postmaster@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: postmaster@test.ex
-References: <E10HmbU-0005vi-00@the.local.host.name>
+References: <E10HmbU-000000005vi-0000@the.local.host.name>
 Subject: Message frozen
-Message-Id: <E10HmbV-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbV-000000005vi-0000@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-Message 10HmbU-0005vi-00 has been frozen by the system filter.
+Message 10HmbU-000000005vi-0000 has been frozen by the system filter.
 subject was "should freeze this" 
 Here are two extra 
 lines of text.

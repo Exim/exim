@@ -1,10 +1,10 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> rejected during MIME ACL checks: this is a deny from the mime acl
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 U=CALLER F=<CALLER@myhost.test.ex> rejected during MIME ACL checks: this is a deny from the mime acl
 Envelope-from: <CALLER@myhost.test.ex>
 Envelope-to: <userx@test.ex>
 P Received: from CALLER (helo=test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
   Date: Tue, 2 Mar 1999 09:44:33 +0000

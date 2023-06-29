@@ -8,7 +8,7 @@
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbB-0005vi-00
+250 OK id=10HmbB-000000005vi-0000
 221 myhost.test.ex closing connection
 ### scanner tmpfail -> defer
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -64,7 +64,7 @@
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbC-0005vi-00
+250 OK id=10HmbC-000000005vi-0000
 221 myhost.test.ex closing connection
 
 ******** SERVER ********
@@ -77,7 +77,7 @@ Connection request
 >LF>FLAGS -fullfiles
 >LF>FLAGS +extra
 >LF>200 FLAGS OK
-<SCAN TESTSUITE/spool/scan/10HmbB-0005vi-00
+<SCAN TESTSUITE/spool/scan/10HmbB-000000005vi-0000
 >LF>210 SCAN DATA
 >LF>/bin/clean1\x09[+]
 >LF>/bin/clean2\x09[+]
@@ -89,7 +89,7 @@ End of script
 Listening on TESTSUITE/eximdir/avast_sock ... 
 Connection request
 >LF>220 ready
-<SCAN TESTSUITE/spool/scan/10HmaX-0005vi-00
+<SCAN TESTSUITE/spool/scan/10HmaX-000000005vi-0000
 >LF>210 SCAN DATA
 >LF>/bin/error\x09[E]0.0\x09Error 13 Permission\\ denied
 >LF>451 SCAN Engine error 13 Permission denied
@@ -99,7 +99,7 @@ End of script
 Listening on TESTSUITE/eximdir/avast_sock ... 
 Connection request
 >LF>220 ready
-<SCAN TESTSUITE/spool/scan/10HmaY-0005vi-00
+<SCAN TESTSUITE/spool/scan/10HmaY-000000005vi-0000
 >LF>210 SCAN DATA
 >LF>/bin/clean\x09[+]
 >LF>v\\ i\\ a\\ r\\ u\\ s\x09[L]9.0\x090 This\\ is\\ not\\ even\\ an\\ EICAR\\ test\\ virus.
@@ -110,7 +110,7 @@ End of script
 Listening on TESTSUITE/eximdir/avast_sock ... 
 Connection request
 >LF>220 ready
-<SCAN TESTSUITE/spool/scan/10HmaZ-0005vi-00
+<SCAN TESTSUITE/spool/scan/10HmaZ-000000005vi-0000
 >LF>210 SCAN DATA
 >LF>/bin/clean\x09[+]
 >LF>/bin/error\x09[E]0.0\x09Error 42110 The\\ file\\ is\\ a\\ decompression\\ bomb
@@ -122,7 +122,7 @@ End of script
 Listening on TESTSUITE/eximdir/avast_sock ... 
 Connection request
 >LF>220 ready
-<SCAN TESTSUITE/spool/scan/10HmbA-0005vi-00
+<SCAN TESTSUITE/spool/scan/10HmbA-000000005vi-0000
 >LF>210 SCAN DATA
 >LF>/bin/clean\x09[+]
 >LF>/bin/error\x09[E]0.0\x09Error 42110 The\\ file\\ is\\ a\\ decompression\\ bomb
@@ -133,7 +133,7 @@ End of script
 Listening on TESTSUITE/eximdir/avast_sock ... 
 Connection request
 >LF>220 ready
-<SCAN TESTSUITE/spool/scan/10HmbC-0005vi-00
+<SCAN TESTSUITE/spool/scan/10HmbC-000000005vi-0000
 >LF>210 SCAN DATA
 >LF>/bin/clean\x09[+]
 >LF>/bin/error\x09[E]0.0\x09Error 42110 The\\ file\\ is\\ a\\ decompression\\ bomb

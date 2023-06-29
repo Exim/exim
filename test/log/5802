@@ -1,75 +1,75 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t0@mxdane512ee.test.ex t0@mxdane512ee1.test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => t0@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmaY-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 => t0@mxdane512ee1.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmaZ-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t1@mxdane512ee.test.ex t1@mxnodane.test.ex
-1999-03-02 09:44:33 10HmbA-0005vi-00 => t1@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbB-0005vi-00"
-1999-03-02 09:44:33 10HmbA-0005vi-00 => t1@mxnodane.test.ex R=client T=send_to_server H=nodane.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbC-0005vi-00"
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t2@mxdanesecchain.test.ex
-1999-03-02 09:44:33 10HmbD-0005vi-00 => t2@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbE-0005vi-00"
-1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t3@mxdaneinsecchain.test.ex
-1999-03-02 09:44:33 10HmbF-0005vi-00 ** t3@mxdaneinsecchain.test.ex R=client T=send_to_server: DANE error: dane512ee.test.ex lookup not DNSSEC
-1999-03-02 09:44:33 10HmbF-0005vi-00 t3@mxdaneinsecchain.test.ex: error ignored
-1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t4@mxdaneinsecchain.test.ex
-1999-03-02 09:44:33 10HmbG-0005vi-00 => t4@mxdaneinsecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbH-0005vi-00"
-1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t5@mxdanesecchain.test.ex t5@mxdaneinsecchain.test.ex
-1999-03-02 09:44:33 10HmbI-0005vi-00 => t5@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbJ-0005vi-00"
-1999-03-02 09:44:33 10HmbI-0005vi-00 => t5@mxdaneinsecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbK-0005vi-00"
-1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t6@mxdaneinsecchain.test.ex t6@mxdanesecchain.test.ex
-1999-03-02 09:44:33 10HmbL-0005vi-00 => t6@mxdaneinsecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbM-0005vi-00"
-1999-03-02 09:44:33 10HmbL-0005vi-00 => t6@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbN-0005vi-00"
-1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbO-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t7@mxdanesecchain.test.ex t7@mxdaneinsecchain.test.ex
-1999-03-02 09:44:33 10HmbO-0005vi-00 => t7@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbP-0005vi-00"
-1999-03-02 09:44:33 10HmbO-0005vi-00 ** t7@mxdaneinsecchain.test.ex R=client T=send_to_server: DANE error: dane512ee.test.ex lookup not DNSSEC
-1999-03-02 09:44:33 10HmbO-0005vi-00 t7@mxdaneinsecchain.test.ex: error ignored
-1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbQ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t8@mxdaneinsecchain.test.ex t8@mxdanesecchain.test.ex
-1999-03-02 09:44:33 10HmbQ-0005vi-00 ** t8@mxdaneinsecchain.test.ex R=client T=send_to_server: DANE error: dane512ee.test.ex lookup not DNSSEC
-1999-03-02 09:44:33 10HmbQ-0005vi-00 => t8@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbR-0005vi-00"
-1999-03-02 09:44:33 10HmbQ-0005vi-00 t8@mxdaneinsecchain.test.ex: error ignored
-1999-03-02 09:44:33 10HmbQ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t0@mxdane512ee.test.ex t0@mxdane512ee1.test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => t0@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => t0@mxdane512ee1.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmaZ-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t1@mxdane512ee.test.ex t1@mxnodane.test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => t1@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbB-000000005vi-0000"
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => t1@mxnodane.test.ex R=client T=send_to_server H=nodane.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbC-000000005vi-0000"
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t2@mxdanesecchain.test.ex
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 => t2@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbE-000000005vi-0000"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t3@mxdaneinsecchain.test.ex
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 ** t3@mxdaneinsecchain.test.ex R=client T=send_to_server: DANE error: dane512ee.test.ex lookup not DNSSEC
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 t3@mxdaneinsecchain.test.ex: error ignored
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t4@mxdaneinsecchain.test.ex
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 => t4@mxdaneinsecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbH-000000005vi-0000"
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t5@mxdanesecchain.test.ex t5@mxdaneinsecchain.test.ex
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 => t5@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbJ-000000005vi-0000"
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 => t5@mxdaneinsecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbK-000000005vi-0000"
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t6@mxdaneinsecchain.test.ex t6@mxdanesecchain.test.ex
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 => t6@mxdaneinsecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbM-000000005vi-0000"
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 => t6@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbN-000000005vi-0000"
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t7@mxdanesecchain.test.ex t7@mxdaneinsecchain.test.ex
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 => t7@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbP-000000005vi-0000"
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 ** t7@mxdaneinsecchain.test.ex R=client T=send_to_server: DANE error: dane512ee.test.ex lookup not DNSSEC
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 t7@mxdaneinsecchain.test.ex: error ignored
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t8@mxdaneinsecchain.test.ex t8@mxdanesecchain.test.ex
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 ** t8@mxdaneinsecchain.test.ex R=client T=send_to_server: DANE error: dane512ee.test.ex lookup not DNSSEC
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 => t8@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbR-000000005vi-0000"
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 t8@mxdaneinsecchain.test.ex: error ignored
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmaX-0005vi-00@myhost.test.ex for t0@mxdane512ee.test.ex
-1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <t0@mxdane512ee.test.ex> R=server
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmaX-0005vi-00@myhost.test.ex for t0@mxdane512ee1.test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <t0@mxdane512ee1.test.ex> R=server
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbA-0005vi-00@myhost.test.ex for t1@mxdane512ee.test.ex
-1999-03-02 09:44:33 10HmbB-0005vi-00 => :blackhole: <t1@mxdane512ee.test.ex> R=server
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbA-0005vi-00@myhost.test.ex for t1@mxnodane.test.ex
-1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <t1@mxnodane.test.ex> R=server
-1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbD-0005vi-00@myhost.test.ex for t2@mxdanesecchain.test.ex
-1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <t2@mxdanesecchain.test.ex> R=server
-1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbG-0005vi-00@myhost.test.ex for t4@mxdaneinsecchain.test.ex
-1999-03-02 09:44:33 10HmbH-0005vi-00 => :blackhole: <t4@mxdaneinsecchain.test.ex> R=server
-1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbJ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbI-0005vi-00@myhost.test.ex for t5@mxdanesecchain.test.ex
-1999-03-02 09:44:33 10HmbJ-0005vi-00 => :blackhole: <t5@mxdanesecchain.test.ex> R=server
-1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbK-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbI-0005vi-00@myhost.test.ex for t5@mxdaneinsecchain.test.ex
-1999-03-02 09:44:33 10HmbK-0005vi-00 => :blackhole: <t5@mxdaneinsecchain.test.ex> R=server
-1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbM-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbL-0005vi-00@myhost.test.ex for t6@mxdaneinsecchain.test.ex
-1999-03-02 09:44:33 10HmbM-0005vi-00 => :blackhole: <t6@mxdaneinsecchain.test.ex> R=server
-1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbN-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbL-0005vi-00@myhost.test.ex for t6@mxdanesecchain.test.ex
-1999-03-02 09:44:33 10HmbN-0005vi-00 => :blackhole: <t6@mxdanesecchain.test.ex> R=server
-1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbP-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbO-0005vi-00@myhost.test.ex for t7@mxdanesecchain.test.ex
-1999-03-02 09:44:33 10HmbP-0005vi-00 => :blackhole: <t7@mxdanesecchain.test.ex> R=server
-1999-03-02 09:44:33 10HmbP-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbR-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbQ-0005vi-00@myhost.test.ex for t8@mxdanesecchain.test.ex
-1999-03-02 09:44:33 10HmbR-0005vi-00 => :blackhole: <t8@mxdanesecchain.test.ex> R=server
-1999-03-02 09:44:33 10HmbR-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for t0@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <t0@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for t0@mxdane512ee1.test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => :blackhole: <t0@mxdane512ee1.test.ex> R=server
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbA-000000005vi-0000@myhost.test.ex for t1@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 => :blackhole: <t1@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbA-000000005vi-0000@myhost.test.ex for t1@mxnodane.test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 => :blackhole: <t1@mxnodane.test.ex> R=server
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbD-000000005vi-0000@myhost.test.ex for t2@mxdanesecchain.test.ex
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 => :blackhole: <t2@mxdanesecchain.test.ex> R=server
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbG-000000005vi-0000@myhost.test.ex for t4@mxdaneinsecchain.test.ex
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 => :blackhole: <t4@mxdaneinsecchain.test.ex> R=server
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbI-000000005vi-0000@myhost.test.ex for t5@mxdanesecchain.test.ex
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 => :blackhole: <t5@mxdanesecchain.test.ex> R=server
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbI-000000005vi-0000@myhost.test.ex for t5@mxdaneinsecchain.test.ex
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 => :blackhole: <t5@mxdaneinsecchain.test.ex> R=server
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbL-000000005vi-0000@myhost.test.ex for t6@mxdaneinsecchain.test.ex
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 => :blackhole: <t6@mxdaneinsecchain.test.ex> R=server
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbL-000000005vi-0000@myhost.test.ex for t6@mxdanesecchain.test.ex
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 => :blackhole: <t6@mxdanesecchain.test.ex> R=server
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbO-000000005vi-0000@myhost.test.ex for t7@mxdanesecchain.test.ex
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 => :blackhole: <t7@mxdanesecchain.test.ex> R=server
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbQ-000000005vi-0000@myhost.test.ex for t8@mxdanesecchain.test.ex
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 => :blackhole: <t8@mxdanesecchain.test.ex> R=server
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 Completed

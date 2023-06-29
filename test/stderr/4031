@@ -32,7 +32,7 @@ LOG: remote         [127.0.0.2]:1111
 >>> accept: condition test succeeded in ACL "r_acl"
 >>> end of ACL "r_acl": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
-LOG: 10HmaX-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2] P=smtp S=sss
+LOG: 10HmaX-000000005vi-0000 <= a@test.ex H=(clientname) [127.0.0.2] P=smtp S=sss
 ### protocol v1 receive
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -69,7 +69,7 @@ LOG: remote         [127.0.0.2]:1113
 >>> accept: condition test succeeded in ACL "r_acl"
 >>> end of ACL "r_acl": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
-LOG: 10HmaY-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2]:1113 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
+LOG: 10HmaY-000000005vi-0000 <= a@test.ex H=(clientname) [127.0.0.2]:1113 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
 ### protocol v2 receive
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -106,7 +106,7 @@ LOG: remote         [127.0.0.2]:1115
 >>> accept: condition test succeeded in ACL "r_acl"
 >>> end of ACL "r_acl": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
-LOG: 10HmaZ-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2]:1115 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
+LOG: 10HmaZ-000000005vi-0000 <= a@test.ex H=(clientname) [127.0.0.2]:1115 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
 ### proxy timeout
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)

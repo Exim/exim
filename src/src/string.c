@@ -190,24 +190,42 @@ return buffer;
 *************************************************/
 
 /* Convert a long integer into an ASCII base 62 string. For Cygwin the value of
-BASE_62 is actually 36. Always return exactly 6 characters plus zero, in a
-static area.
+BASE_62 is actually 36. Always return exactly 6 characters plus a NUL, in a
+static area.  This is enough for a 32b input, for 62  (for 64b we would want 11+nul);
+but with 36 we lose half the input range of a 32b input.
 
 Argument: a long integer
 Returns:  pointer to base 62 string
 */
 
 uschar *
-string_base62(unsigned long int value)
+string_base62_32(unsigned long int value)
 {
 static uschar yield[7];
-uschar *p = yield + sizeof(yield) - 1;
+uschar * p = yield + sizeof(yield) - 1;
 *p = 0;
 while (p > yield)
   {
-  *(--p) = base62_chars[value % BASE_62];
+  *--p = base62_chars[value % BASE_62];
   value /= BASE_62;
   }
+return yield;
+}
+
+uschar *
+string_base62_64(unsigned long int value)
+{
+static uschar yield[12];
+uschar * p = yield + sizeof(yield) - 1;
+*p = '\0';
+while (p > yield)
+  if (value)
+    {
+    *--p = base62_chars[value % BASE_62];
+    value /= BASE_62;
+    }
+  else
+    *--p = '0';
 return yield;
 }
 #endif  /* COMPILE_UTILITY */

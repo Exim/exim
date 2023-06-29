@@ -4,11 +4,11 @@ Envelope-to: userx8@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbG-0005vi-00
+	id 10HmbG-000000005vi-0000
 	for userx8@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Sieve: 99
-Message-Id: <E10HmbG-0005vi-00@mail.test.ex>
+Message-Id: <E10HmbG-000000005vi-0000@mail.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -25,11 +25,11 @@ Envelope-to: userx10@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbI-0005vi-00
+	id 10HmbI-000000005vi-0000
 	for userx10@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Sieve: 99-
-Message-Id: <E10HmbI-0005vi-00@mail.test.ex>
+Message-Id: <E10HmbI-000000005vi-0000@mail.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -46,11 +46,11 @@ Envelope-to: userx11@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbJ-0005vi-00
+	id 10HmbJ-000000005vi-0000
 	for userx11@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Sieve: -99
-Message-Id: <E10HmbJ-0005vi-00@mail.test.ex>
+Message-Id: <E10HmbJ-000000005vi-0000@mail.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -67,11 +67,11 @@ Envelope-to: userx12@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbK-0005vi-00
+	id 10HmbK-000000005vi-0000
 	for userx12@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Sieve: -99
-Message-Id: <E10HmbK-0005vi-00@mail.test.ex>
+Message-Id: <E10HmbK-000000005vi-0000@mail.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

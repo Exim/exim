@@ -160,8 +160,8 @@ arc_sign_init();
 in wireformat. */
 
 dkim->dot_stuffed = f.spool_file_wireformat;
-if (!(dkim_signature = dkim_exim_sign(deliver_datafile, SPOOL_DATA_START_OFFSET,
-				    hdrs, dkim, &errstr)))
+if (!(dkim_signature = dkim_exim_sign(deliver_datafile,
+	      spool_data_start_offset(message_id), hdrs, dkim, &errstr)))
   if (!(rc = dkt_sign_fail(dkim, &errno)))
     {
     *err = errstr;

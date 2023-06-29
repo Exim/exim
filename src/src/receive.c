@@ -1693,7 +1693,9 @@ int  error_rc = error_handling == ERRORS_SENDER
 int  header_size = 256;
 int  had_zero = 0;
 int  prevlines_length = 0;
-const int id_resolution = BASE_62 == 62 ? 5000 : 10000;
+const int id_resolution = BASE_62 == 62 && !host_number_string ? 1
+  : BASE_62 != 62 && host_number_string ? 4
+  : 2;
 
 int ptr = 0;
 
@@ -2693,41 +2695,37 @@ if (extract_recip)
   }
 
 /* Now build the unique message id. This has changed several times over the
-lifetime of Exim. This description was rewritten for Exim 4.14 (February 2003).
-Retaining all the history in the comment has become too unwieldy - read
-previous release sources if you want it.
+lifetime of Exim, and is changing for Exim 4.97.
+The previous change was in about 2003.
 
-The message ID has 3 parts: tttttt-pppppp-ss. Each part is a number in base 62.
-The first part is the current time, in seconds. The second part is the current
-pid. Both are large enough to hold 32-bit numbers in base 62. The third part
-can hold a number in the range 0-3843. It used to be a computed sequence
-number, but is now the fractional component of the current time in units of
-1/2000 of a second (i.e. a value in the range 0-1999). After a message has been
-received, Exim ensures that the timer has ticked at the appropriate level
-before proceeding, to avoid duplication if the pid happened to be re-used
-within the same time period. It seems likely that most messages will take at
-least half a millisecond to be received, so no delay will normally be
+Detail for the pre-4.97 version is here in [square-brackets].
+
+The message ID has 3 parts: tttttt-ppppppppppp-ssss  (6, 11, 4 - total 23 with
+the dashes).  Each part is a number in base 62.
+[ tttttt-pppppp-ss  6, 6, 2 => 16 ]
+
+The first part is the current time, in seconds.  Six chars is enough until
+year 3700 with case-sensitive filesystes, but will run out in 2038 on
+case-insensitive ones (Cygwin, Darwin - where we have to use base-36.
+Both of those are in the "unsupported" bucket, so ignore for now).
+
+The second part is the current pid, and supports 64b [31b] PIDs.
+
+The third part holds sub-second time, plus (when localhost_number is set)
+the host number multiplied by a number large enough to keep it away from
+the time portion. Host numbers are restricted to the range 0-16.
+The time resolution is variously 1, 2 or 4 microseconds [0.5 or 1 ms]
+depending on the use of localhost_nubmer and of case-insensitive filesystems.
+
+After a message has been received, Exim ensures that the timer has ticked at the
+appropriate level before proceeding, to avoid duplication if the pid happened to
+be re-used within the same time period. It seems likely that most messages will
+take at least half a millisecond to be received, so no delay will normally be
 necessary. At least for some time...
 
-There is a modification when localhost_number is set. Formerly this was allowed
-to be as large as 255. Now it is restricted to the range 0-16, and the final
-component of the message id becomes (localhost_number * 200) + fractional time
-in units of 1/200 of a second (i.e. a value in the range 0-3399).
-
-Some not-really-Unix operating systems use case-insensitive file names (Darwin,
-Cygwin). For these, we have to use base 36 instead of base 62. Luckily, this
-still allows the tttttt field to hold a large enough number to last for some
-more decades, and the final two-digit field can hold numbers up to 1295, which
-is enough for milliseconds (instead of 1/2000 of a second).
-
-However, the pppppp field cannot hold a 32-bit pid, but it can hold a 31-bit
-pid, so it is probably safe because pids have to be positive. The
-localhost_number is restricted to 0-10 for these hosts, and when it is set, the
-final field becomes (localhost_number * 100) + fractional time in centiseconds.
-
-Note that string_base62() returns its data in a static storage block, so it
-must be copied before calling string_base62() again. It always returns exactly
-6 characters.
+Note that string_base62_XX() returns its data in a static storage block, so it
+must be copied before calling string_base62_XXX) again. It always returns exactly
+11 (_64) or 6 (_32) characters.
 
 There doesn't seem to be anything in the RFC which requires a message id to
 start with a letter, but Smail was changed to ensure this. The external form of
@@ -2740,27 +2738,35 @@ checking that a string is in this format must be updated in a corresponding
 way. It appears in the initializing code in exim.c. The macro MESSAGE_ID_LENGTH
 must also be changed to reflect the correct string length. The queue-sort code
 needs to know the layout. Then, of course, other programs that rely on the
-message id format will need updating too. */
+message id format will need updating too (inc. at least exim_msgdate). */
 
-Ustrncpy(message_id, string_base62((long int)(message_id_tv.tv_sec)), 6);
-message_id[6] = '-';
-Ustrncpy(message_id + 7, string_base62((long int)getpid()), 6);
+Ustrncpy(message_id, string_base62_32((long int)(message_id_tv.tv_sec)), MESSAGE_ID_TIME_LEN);
+message_id[MESSAGE_ID_TIME_LEN] = '-';
+Ustrncpy(message_id + MESSAGE_ID_TIME_LEN + 1,
+	string_base62_64((long int)getpid()),
+	MESSAGE_ID_PID_LEN
+	);
 
 /* Deal with the case where the host number is set. The value of the number was
 checked when it was read, to ensure it isn't too big. */
 
 if (host_number_string)
-  sprintf(CS(message_id + MESSAGE_ID_LENGTH - 3), "-%2s",
-    string_base62((long int)(
-      host_number * (1000000/id_resolution) +
-        message_id_tv.tv_usec/id_resolution)) + 4);
+  sprintf(CS(message_id + MESSAGE_ID_TIME_LEN + 1 + MESSAGE_ID_PID_LEN),
+	"-%" str(MESSAGE_ID_SUBTIME_LEN) "s",
+	string_base62_32((long int)(
+	  host_number * (1000000/id_resolution)
+	  + message_id_tv.tv_usec/id_resolution))
+	+ (6 - MESSAGE_ID_SUBTIME_LEN)
+	 );
 
 /* Host number not set: final field is just the fractional time at an
 appropriate resolution. */
 
 else
-  sprintf(CS(message_id + MESSAGE_ID_LENGTH - 3), "-%2s",
-    string_base62((long int)(message_id_tv.tv_usec/id_resolution)) + 4);
+  sprintf(CS(message_id + MESSAGE_ID_TIME_LEN + 1 + MESSAGE_ID_PID_LEN),
+    "-%" str(MESSAGE_ID_SUBTIME_LEN) "s",
+	string_base62_32((long int)(message_id_tv.tv_usec/id_resolution))
+	+ (6 - MESSAGE_ID_SUBTIME_LEN));
 
 /* Add the current message id onto the current process info string if
 it will fit. */
@@ -3191,7 +3197,7 @@ spool_data_file = fdopen(data_fd, "w+");
 lock_data.l_type = F_WRLCK;
 lock_data.l_whence = SEEK_SET;
 lock_data.l_start = 0;
-lock_data.l_len = SPOOL_DATA_START_OFFSET;
+lock_data.l_len = spool_data_start_offset(message_id);
 
 if (fcntl(data_fd, F_SETLK, &lock_data) < 0)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Cannot lock %s (%d): %s", spool_name,
@@ -3275,7 +3281,7 @@ if (!ferror(spool_data_file) && !(receive_feof)() && message_ended != END_DOT)
 	}
       else
 	{
-	fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+	fseek(spool_data_file, (long int)spool_data_start_offset(message_id), SEEK_SET);
 	give_local_error(ERRMESS_TOOBIG,
 	  string_sprintf("message too big (max=%d)", thismessage_size_limit),
 	  US"message rejected: ", error_rc, spool_data_file, header_list);
@@ -3335,7 +3341,7 @@ if (fflush(spool_data_file) == EOF || ferror(spool_data_file) ||
 
   else
     {
-    fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+    fseek(spool_data_file, (long int)spool_data_start_offset(message_id), SEEK_SET);
     give_local_error(ERRMESS_IOERR, msg, US"", error_rc, spool_data_file,
       header_list);
     /* Does not return */
@@ -3376,7 +3382,7 @@ if (extract_recip && (bad_addresses || recipients_count == 0))
   log_write(0, LOG_MAIN|LOG_PANIC, "%s %s found in headers",
     message_id, bad_addresses ? "bad addresses" : "no recipients");
 
-  fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+  fseek(spool_data_file, (long int)spool_data_start_offset(message_id), SEEK_SET);
 
   /* If configured to send errors to the sender, but this fails, force
   a failure error code. We use a special one for no recipients so that it
@@ -3443,7 +3449,7 @@ if (!received_header->text)	/* Non-cutthrough case */
   /* Set the value of message_body_size for the DATA ACL and for local_scan() */
 
   message_body_size = (fstat(data_fd, &statbuf) == 0)?
-    statbuf.st_size - SPOOL_DATA_START_OFFSET : -1;
+    statbuf.st_size - spool_data_start_offset(message_id) : -1;
 
   /* If an ACL from any RCPT commands set up any warning headers to add, do so
   now, before running the DATA ACL. */
@@ -3452,7 +3458,7 @@ if (!received_header->text)	/* Non-cutthrough case */
   }
 else
   message_body_size = (fstat(data_fd, &statbuf) == 0)?
-    statbuf.st_size - SPOOL_DATA_START_OFFSET : -1;
+    statbuf.st_size - spool_data_start_offset(message_id) : -1;
 
 /* If an ACL is specified for checking things at this stage of reception of a
 message, run it, unless all the recipients were removed by "discard" in earlier
@@ -3731,7 +3737,7 @@ else
           /* Does not return */
         else
           {
-          fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+          fseek(spool_data_file, (long int)spool_data_start_offset(message_id), SEEK_SET);
           give_local_error(ERRMESS_LOCAL_ACL, user_msg,
             US"message rejected by non-SMTP ACL: ", error_rc, spool_data_file,
               header_list);
@@ -3763,7 +3769,7 @@ version supplied with Exim always accepts, but this is a hook for sysadmins to
 supply their own checking code. The local_scan() function is run even when all
 the recipients have been discarded. */
 
-lseek(data_fd, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+lseek(data_fd, (long int)spool_data_start_offset(message_id), SEEK_SET);
 
 /* Arrange to catch crashes in local_scan(), so that the -D file gets
 deleted, and the incident gets logged. */
@@ -3924,7 +3930,7 @@ else
       /* Does not return */
   else
     {
-    fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+    fseek(spool_data_file, (long int)spool_data_start_offset(message_id), SEEK_SET);
     give_local_error(ERRMESS_LOCAL_SCAN, errmsg,
       US"message rejected by local scan code: ", error_rc, spool_data_file,
         header_list);
@@ -3947,7 +3953,7 @@ f.deliver_firsttime = TRUE;
 #ifdef EXPERIMENTAL_BRIGHTMAIL
 if (bmi_run == 1)
   { /* rewind data file */
-  lseek(data_fd, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+  lseek(data_fd, (long int)spool_data_start_offset(message_id), SEEK_SET);
   bmi_verdicts = bmi_process_message(header_list, data_fd);
   }
 #endif
@@ -3998,7 +4004,7 @@ else
       }
     else
       {
-      fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+      fseek(spool_data_file, (long int)spool_data_start_offset(message_id), SEEK_SET);
       give_local_error(ERRMESS_IOERR, errmsg, US"", error_rc, spool_data_file,
         header_list);
       /* Does not return */
@@ -4028,7 +4034,7 @@ if (fflush(spool_data_file))
     }
   else
     {
-    fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+    fseek(spool_data_file, (long int)spool_data_start_offset(message_id), SEEK_SET);
     give_local_error(ERRMESS_IOERR, errmsg, US"", error_rc, spool_data_file,
       header_list);
     /* Does not return */
@@ -4036,7 +4042,7 @@ if (fflush(spool_data_file))
   }
 fstat(data_fd, &statbuf);
 
-msg_size += statbuf.st_size - SPOOL_DATA_START_OFFSET + 1;
+msg_size += statbuf.st_size - spool_data_start_offset(message_id) + 1;
 
 /* Generate a "message received" log entry. We do this by building up a dynamic
 string as required.  We log the arrival of a new message while the

@@ -309,7 +309,7 @@ admin user
  ├───────text: id 
  ├considering: $message_exim_id${if def:received_for {
  	for $received_for}}
- ├──────value: 10HmaX-0005vi-00
+ ├──────value: 10HmaX-000000005vi-0000
  ├considering: ${if def:received_for {
  	for $received_for}}
  ├──condition: def:received_for
@@ -336,7 +336,7 @@ admin user
  	for $received_for}}
  ╰─────result: Received: from CALLER by the.local.host.name with local (Exim x.yz)
  	(envelope-from <CALLER@test.ex>)
- 	id 10HmaX-0005vi-00
+ 	id 10HmaX-000000005vi-0000
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000

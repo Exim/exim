@@ -1,7 +1,7 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from [1.2.3.4] (helo=x.y.z ident=CALLER)
 	by myhost.test.ex with esmtp (Exim x.yz)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -11,7 +11,7 @@ From nonnull@non.null Tue Mar 02 09:44:33 1999
 Received: from [1.2.3.4] (helo=x.y.z ident=CALLER)
 	by myhost.test.ex with esmtp (Exim x.yz)
 	(envelope-from <nonnull@non.null>)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 

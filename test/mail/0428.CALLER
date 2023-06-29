@@ -3,18 +3,18 @@ Return-path: <>
 Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by mail.test.ex with local (Exim x.yz)
-	id 10HmbC-0005vi-00
+	id 10HmbC-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: restrict-userx@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
-References: <E10HmbB-0005vi-00@mail.test.ex>
+References: <E10HmbB-000000005vi-0000@mail.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmbC-0005vi-00@mail.test.ex>
+Message-Id: <E10HmbC-000000005vi-0000@mail.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -43,11 +43,11 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbB-0005vi-00
+	id 10HmbB-000000005vi-0000
 	for restrict-userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Filter: require "fileinto"; fileinto "userx-extra";
-Message-Id: <E10HmbB-0005vi-00@mail.test.ex>
+Message-Id: <E10HmbB-000000005vi-0000@mail.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -60,18 +60,18 @@ Return-path: <>
 Envelope-to: CALLER@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by mail.test.ex with local (Exim x.yz)
-	id 10HmbE-0005vi-00
+	id 10HmbE-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: restrict-userx@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
-References: <E10HmbD-0005vi-00@mail.test.ex>
+References: <E10HmbD-000000005vi-0000@mail.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmbE-0005vi-00@mail.test.ex>
+Message-Id: <E10HmbE-000000005vi-0000@mail.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -100,11 +100,11 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbD-0005vi-00
+	id 10HmbD-000000005vi-0000
 	for restrict-userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Filter: fileinto "userx-extra";
-Message-Id: <E10HmbD-0005vi-00@mail.test.ex>
+Message-Id: <E10HmbD-000000005vi-0000@mail.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

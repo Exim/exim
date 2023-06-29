@@ -1,5 +1,6 @@
 ### A Message ID as it appears in an email:
 ### A Message ID as it appears in the exim log:
+### New-format log message ID
 ### Just the date part of the Message ID:
 ###    The Epoch ...
 ### ... the script was under development at this time ...
@@ -22,26 +23,37 @@ zzzzzzz not parsed
 ### Print date as seconds since the UNIX epoch.
 ### Show the process id too
 ### Override the value of localhost_number set in the exim configuation file
+localhost 9 from message-id != given number 11 at /data/jgh/git/exim/test/eximdir/exim_msgdate line 387.
+localhost 9 from message-id != given number 11 at /data/jgh/git/exim/test/eximdir/exim_msgdate line 387.
 localhost_number > 10
+localhost 9 from message-id != given number 11 at /data/jgh/git/exim/test/eximdir/exim_msgdate line 387.
 localhost_number must be a number >=0
 localhost_number > 16
 ### From here as 701 - 703
 ### Each msg-id type, all zone
 ### All msg-id types, all zones,  localhost_number = 3
+localhost 0 from message-id != given number 3 at /data/jgh/git/exim/test/eximdir/exim_msgdate line 387.
+localhost 0 from message-id != given number 3 at /data/jgh/git/exim/test/eximdir/exim_msgdate line 387.
+localhost 9 from message-id != given number 3 at /data/jgh/git/exim/test/eximdir/exim_msgdate line 387.
+localhost 9 from message-id != given number 3 at /data/jgh/git/exim/test/eximdir/exim_msgdate line 387.
 ### All msg-id types, all zones,  localhost_number = 13
+localhost 0 from message-id != given number 13 at /data/jgh/git/exim/test/eximdir/exim_msgdate line 387.
+localhost 0 from message-id != given number 13 at /data/jgh/git/exim/test/eximdir/exim_msgdate line 387.
+localhost 9 from message-id != given number 13 at /data/jgh/git/exim/test/eximdir/exim_msgdate line 387.
+localhost 9 from message-id != given number 13 at /data/jgh/git/exim/test/eximdir/exim_msgdate line 387.
 ### All msg-id types, all zones,  localhost_number = 20
 localhost_number > 16
 localhost_number > 16
 localhost_number > 16
 localhost_number > 16
 ### All msg-id types, all zones,  base=36
-zz is not base 36
 zzzzzz is not base 36
 ### All msg-id types, all zones,  base=62
 
 ******** SERVER ********
 ### A Message ID as it appears in an email:
 ### A Message ID as it appears in the exim log:
+### New-format log message ID
 ### Just the date part of the Message ID:
 ###    The Epoch ...
 ### ... the script was under development at this time ...

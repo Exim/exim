@@ -1,4 +1,4 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 10HmaX-0005vi-00 Tainted filename '/dest3'
-1999-03-02 09:44:33 10HmaX-0005vi-00 failed to open /dest3 when checking "/$local_part": Permission denied (euid=uuuu egid=EXIM_GID)
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Tainted filename '/dest3'
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 failed to open /dest3 when checking "/$local_part": Permission denied (euid=uuuu egid=EXIM_GID)

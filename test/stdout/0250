@@ -1,4 +1,4 @@
-10HmaX-0005vi-00-H
+10HmaX-000000005vi-0000-H
 CALLER UID GID
 <CALLER-rewritten@test.ex>
 ddddddddd 0
@@ -20,18 +20,18 @@ SomeOne-rewritten@test.ex
 
 dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER-rewritten@test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for SomeOne-rewritten@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 ddd* From: userx@test.ex
 dddF From: userx-rewritten@test.ex
-047I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+054I Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
 ddd* X-rewrote-original-recipient: SomeOne@test.ex
 ddd* Sender: CALLER_NAME <CALLER@test.ex>
 dddS Sender: CALLER_NAME <CALLER-rewritten@test.ex>
 ddd* X-rewrote-sender: CALLER@test.ex
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
-10HmaY-0005vi-00-H
+10HmaY-000000005vi-0000-H
 CALLER UID GID
 <CALLER-rewritten@test.ex>
 ddddddddd 0
@@ -53,18 +53,18 @@ OtherOne-rewritten@test.ex
 
 dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER-rewritten@test.ex>)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for OtherOne-rewritten@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 ddd* From: usery@test.ex
 dddF From: usery-rewritten@test.ex
-047I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+054I Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
 ddd* X-rewrote-original-recipient: OtherOne@test.ex
 ddd* Sender: CALLER_NAME <CALLER@test.ex>
 dddS Sender: CALLER_NAME <CALLER-rewritten@test.ex>
 ddd* X-rewrote-sender: CALLER@test.ex
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
-10HmaZ-0005vi-00-H
+10HmaZ-000000005vi-0000-H
 CALLER UID GID
 <CALLER-rewritten@test.ex>
 ddddddddd 0
@@ -86,10 +86,10 @@ ThirdOne-rewritten@test.ex
 
 dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER-rewritten@test.ex>)
-	id 10HmaZ-0005vi-00
+	id 10HmaZ-000000005vi-0000
 	for ThirdOne-rewritten@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-047I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+054I Message-Id: <E10HmaZ-000000005vi-0000@myhost.test.ex>
 ddd* X-rewrote-original-recipient: ThirdOne@test.ex
 ddd* From: CALLER_NAME <CALLER@test.ex>
 dddF From: CALLER_NAME <CALLER-rewritten@test.ex>

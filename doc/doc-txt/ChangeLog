@@ -133,6 +133,30 @@ JH/28 Bug 2996: Fix a crash in the smtp transport.  When finding that the
       Pollution of logs was the major effect, as the other process delivered
       the message.  Found and partly investigated by Graeme Fowler.
 
+JH/29 Change format of the internal ID used for message identification. The old
+      version only supported 31 bits for a PID element; the new 64 (on systems
+      which can use Base-62 encoding, which is all currently supported ones
+      but not Darwin (MacOS) or Cygwin, which have case-insensitive filesystems
+      and must use Base-36).  The new ID is 23 characters rather than 16, and is
+      visible in various places - notably logs, message headers, and spool file
+      names.  Various of the ancillary utilities also have to know the format.
+	As well as the expanded PID portion, the sub-second part of the time
+      recorded in the ID is expanded to support finer precision.  Theoretically
+      this permits a receive rate from a single comms channel of better than the
+      previous 2000/sec.
+        The major timestamp part of the ID is not changed; at 6 characters it is
+      usable until about year 3700.
+        Updating from previously releases is fully supported: old-format spool
+      files are still usable, and the utilities support both formats.  New
+      message will use the new format.  The one hints-DB file type which uses
+      message-IDs (the transport wait- DB) will be discarded if an old-format ID
+      is seen; new ones will be built with only new-format IDs.
+      Optionally, a utility can be used to convert spool files from old to new,
+      but this is only an efficiency measure not a requirement for operation
+        Downgrading from new to old requires running a provided utility, having
+      first stopped all operations.  This will convert any spool files from new
+      back to old (losing time-precision and PID information) and remove any
+      wait- hints databases.
 
 Exim version 4.96
 -----------------

@@ -397,14 +397,14 @@
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmaX-0005vi-00
+250 OK id=10HmaX-000000005vi-0000
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 myhost.test.ex Hello CALLER at test [32.32.32.32]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmaY-0005vi-00
+250 OK id=10HmaY-000000005vi-0000
 221 myhost.test.ex closing connection
 
 **** SMTP testing session as if from host 33.33.33.33
@@ -432,71 +432,71 @@
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmaZ-0005vi-00
+250 OK id=10HmaZ-000000005vi-0000
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 myhost.test.ex Hello CALLER at test [56.56.56.56]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbA-0005vi-00
+250 OK id=10HmbA-000000005vi-0000
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbB-0005vi-00
+250 OK id=10HmbB-000000005vi-0000
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbC-0005vi-00
+250 OK id=10HmbC-000000005vi-0000
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbD-0005vi-00
+250 OK id=10HmbD-000000005vi-0000
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbE-0005vi-00
+250 OK id=10HmbE-000000005vi-0000
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbF-0005vi-00
+250 OK id=10HmbF-000000005vi-0000
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbG-0005vi-00
+250 OK id=10HmbG-000000005vi-0000
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbH-0005vi-00
+250 OK id=10HmbH-000000005vi-0000
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbI-0005vi-00
+250 OK id=10HmbI-000000005vi-0000
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbJ-0005vi-00
+250 OK id=10HmbJ-000000005vi-0000
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 myhost.test.ex Hello CALLER at test [56.56.57.57]
 250 OK
 250 accepted by condition
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbK-0005vi-00
+250 OK id=10HmbK-000000005vi-0000
 250 OK
 451 Temporary local problem - please try later
 250 Reset OK
 250 OK
 250 accepted by condition
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbL-0005vi-00
+250 OK id=10HmbL-000000005vi-0000
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 myhost.test.ex Hello CALLER at test [56.56.56.56]
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbM-0005vi-00
+250 OK id=10HmbM-000000005vi-0000
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 myhost.test.ex Hello CALLER at test [56.56.58.58]
@@ -508,7 +508,7 @@
 550 Administrative prohibition
 550 Administrative prohibition
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbN-0005vi-00
+250 OK id=10HmbN-000000005vi-0000
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 myhost.test.ex Hello CALLER at test [56.56.59.59]

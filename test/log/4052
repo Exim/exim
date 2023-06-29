@@ -1,72 +1,72 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for nocache@test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for nocache@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1234
-1999-03-02 09:44:33 10HmaX-0005vi-00 => nocache@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmaY-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => nocache@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for hascache@test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for hascache@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1235
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => hascache@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 OK id=10HmbA-0005vi-00"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => hascache@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 OK id=10HmbA-000000005vi-0000"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1235
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for client_old@test.ex
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for client_old@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1236
-1999-03-02 09:44:33 10HmbB-0005vi-00 => client_old@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmbC-0005vi-00"
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 => client_old@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmbC-000000005vi-0000"
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1236
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for nocache2@test.ex
-1999-03-02 09:44:33 10HmbD-0005vi-00 => nocache2@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L C="250 message accepted"
-1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for withcache2@test.ex
-1999-03-02 09:44:33 10HmbE-0005vi-00 => withcache2@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 message accepted"
-1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for badbanner@test.ex
-1999-03-02 09:44:33 10HmbF-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 450 sorry no banner for you today
-1999-03-02 09:44:33 10HmbF-0005vi-00 == badbanner@test.ex R=client T=smtp defer (0) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 450 sorry no banner for you today
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for nocache3@test.ex
-1999-03-02 09:44:33 10HmbG-0005vi-00 => nocache3@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L C="250 message accepted"
-1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for withcache3@test.ex
-1999-03-02 09:44:33 10HmbH-0005vi-00 => withcache3@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 message accepted"
-1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for baddata3@test.ex
-1999-03-02 09:44:33 10HmbI-0005vi-00 ** baddata3@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 550 obscure data error
-1999-03-02 09:44:33 10HmbJ-0005vi-00 <= <> R=10HmbI-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@the.local.host.name
-1999-03-02 09:44:33 10HmbJ-0005vi-00 => :blackhole: <CALLER@the.local.host.name> R=clientbounce
-1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for badrcpt3@test.ex
-1999-03-02 09:44:33 10HmbK-0005vi-00 ** badrcpt3@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<badrcpt3@test.ex>: 550 rcpt refused
-1999-03-02 09:44:33 10HmbL-0005vi-00 <= <> R=10HmbK-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@the.local.host.name
-1999-03-02 09:44:33 10HmbL-0005vi-00 => :blackhole: <CALLER@the.local.host.name> R=clientbounce
-1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for badmail3@test.ex
-1999-03-02 09:44:33 10HmbM-0005vi-00 ** badmail3@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@the.local.host.name>: 550 mail cmd refused
-1999-03-02 09:44:33 10HmbN-0005vi-00 <= <> R=10HmbM-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@the.local.host.name
-1999-03-02 09:44:33 10HmbN-0005vi-00 => :blackhole: <CALLER@the.local.host.name> R=clientbounce
-1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbO-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for withcache23@test.ex
-1999-03-02 09:44:33 10HmbO-0005vi-00 => withcache23@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 message accepted"
-1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbP-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for extchange@test.ex
-1999-03-02 09:44:33 10HmbP-0005vi-00 => extchange@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 message accepted"
-1999-03-02 09:44:33 10HmbP-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for nocache2@test.ex
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 => nocache2@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L C="250 message accepted"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for withcache2@test.ex
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 => withcache2@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 message accepted"
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for badbanner@test.ex
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 450 sorry no banner for you today
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 == badbanner@test.ex R=client T=smtp defer (0) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 450 sorry no banner for you today
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for nocache3@test.ex
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 => nocache3@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L C="250 message accepted"
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for withcache3@test.ex
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 => withcache3@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 message accepted"
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for baddata3@test.ex
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 ** baddata3@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 550 obscure data error
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= <> R=10HmbI-000000005vi-0000 U=EXIMUSER P=local S=sss for CALLER@the.local.host.name
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 => :blackhole: <CALLER@the.local.host.name> R=clientbounce
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for badrcpt3@test.ex
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 ** badrcpt3@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<badrcpt3@test.ex>: 550 rcpt refused
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= <> R=10HmbK-000000005vi-0000 U=EXIMUSER P=local S=sss for CALLER@the.local.host.name
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 => :blackhole: <CALLER@the.local.host.name> R=clientbounce
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for badmail3@test.ex
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 ** badmail3@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@the.local.host.name>: 550 mail cmd refused
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= <> R=10HmbM-000000005vi-0000 U=EXIMUSER P=local S=sss for CALLER@the.local.host.name
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 => :blackhole: <CALLER@the.local.host.name> R=clientbounce
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for withcache23@test.ex
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 => withcache23@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 message accepted"
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss for extchange@test.ex
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 => extchange@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 message accepted"
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtp L. S=sss id=E10HmaX-0005vi-00@the.local.host.name for nocache@test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtp L. S=sss id=E10HmaX-000000005vi-0000@the.local.host.name for nocache@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1238
-1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <nocache@test.ex> R=server
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <nocache@test.ex> R=server
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1238
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtp L* S=sss id=E10HmaZ-0005vi-00@the.local.host.name for hascache@test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtp L* S=sss id=E10HmaZ-000000005vi-0000@the.local.host.name for hascache@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1239
-1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <hascache@test.ex> R=server
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <hascache@test.ex> R=server
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1239
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtp L. S=sss id=E10HmbB-0005vi-00@the.local.host.name for client_old@test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtp L. S=sss id=E10HmbB-000000005vi-0000@the.local.host.name for client_old@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1240
-1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <client_old@test.ex> R=server
-1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 => :blackhole: <client_old@test.ex> R=server
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1240

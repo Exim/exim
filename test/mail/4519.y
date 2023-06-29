@@ -2,7 +2,7 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Return-path: <>
 Received: from localhost ([127.0.0.1] helo=testhost.test.ex)
 	by testhost.test.ex with esmtp (Exim x.yz)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for y@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
@@ -13,7 +13,7 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
 Received: from [127.0.0.1] (helo=xxx)
 	by testhost.test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
-	id 10HmbA-0005vi-00
+	id 10HmbA-000000005vi-0000
 	for y@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: simple test

@@ -14,10 +14,10 @@ DATA
 351 Send more
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for a@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -32,10 +32,10 @@ DATA
 351 Send more
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for b@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -82,10 +82,10 @@ DATA
 351 OK
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbC-0005vi-00
+	id 10HmbC-000000005vi-0000
 	for c@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbC-000000005vi-0000@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

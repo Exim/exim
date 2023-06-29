@@ -16,7 +16,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> Subject: 1
 >>> .
 ??? 250
-<<< 250 OK id=10HmaX-0005vi-00
+<<< 250 OK id=10HmaX-000000005vi-0000
 >>> RSET
 ??? 250
 <<< 250 Reset OK
@@ -32,7 +32,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> Subject: 2
 >>> .
 ??? 250
-<<< 250 OK id=10HmaZ-0005vi-00
+<<< 250 OK id=10HmaZ-000000005vi-0000
 >>> QUIT
 End of script
 Connecting to 127.0.0.1 port 1225 ... connected
@@ -53,7 +53,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> Subject: 1
 >>> .
 ??? 250
-<<< 250 OK id=10HmbB-0005vi-00
+<<< 250 OK id=10HmbB-000000005vi-0000
 >>> RSET
 ??? 250
 <<< 250 Reset OK
@@ -69,6 +69,6 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> Subject: 2
 >>> .
 ??? 250
-<<< 250 OK id=10HmbD-0005vi-00
+<<< 250 OK id=10HmbD-000000005vi-0000
 >>> QUIT
 End of script

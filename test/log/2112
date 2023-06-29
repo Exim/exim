@@ -1,59 +1,59 @@
 1999-03-02 09:44:33 this will fail to verify the cert at ip4.ip4.ip4.ip4 so fail the crypt requirement
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userx@test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userx@test.ex
 1999-03-02 09:44:33 this will fail to verify the cert at ip4.ip4.ip4.ip4 so fail the crypt, then retry on 127.1; ok
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for usery@test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for usery@test.ex
 1999-03-02 09:44:33 this will fail to verify the cert but continue unverified though crypted
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userz@test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userz@test.ex
 1999-03-02 09:44:33 this will fail to verify the cert at ip4.ip4.ip4.ip4 and fallback to unencrypted
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userq@test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userq@test.ex
 1999-03-02 09:44:33 this will fail to verify the cert name and fallback to unencrypted
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userr@test.ex
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userr@test.ex
 1999-03-02 09:44:33 this will pass the cert verify including name check
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for user_s@test.ex
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for usert@test.ex
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for useru@test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for user_s@test.ex
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for usert@test.ex
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for useru@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1234 -qf
-1999-03-02 09:44:33 10HmaX-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=client_x T=send_to_server_failcert defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmaX-0005vi-00 ** userx@test.ex: retry timeout exceeded
-1999-03-02 09:44:33 10HmaX-0005vi-00 userx@test.ex: error ignored
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaY-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
-1999-03-02 09:44:33 10HmaY-0005vi-00 => usery@test.ex R=client_y T=send_to_server_retry H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbF-0005vi-00"
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
-1999-03-02 09:44:33 10HmaZ-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to verify the first certificate cert=/CN=server1.example.com
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => userz@test.ex R=client_z T=send_to_server_crypt H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbG-0005vi-00"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbA-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
-1999-03-02 09:44:33 10HmbA-0005vi-00 TLS session: (SSL_connect): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmbA-0005vi-00 => userq@test.ex R=client_q T=send_to_server_req_fail H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbH-0005vi-00"
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbB-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: certificate name mismatch: DN="/CN=server1.example.com" H="serverbadname.example.com"
-1999-03-02 09:44:33 10HmbB-0005vi-00 TLS session: (SSL_connect): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmbB-0005vi-00 => userr@test.ex R=client_r T=send_to_server_req_failname H=serverbadname.example.com [ip4.ip4.ip4.ip4] C="250 OK id=10HmbI-0005vi-00"
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbC-0005vi-00 => user_s@test.ex R=client_s T=send_to_server_req_passname H=server1.example.com [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbJ-0005vi-00"
-1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbD-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: certificate name mismatch: DN="/CN=server1.example.com" H="serverchain1.example.com"
-1999-03-02 09:44:33 10HmbD-0005vi-00 TLS session: (SSL_connect): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmbD-0005vi-00 => usert@test.ex R=client_t T=send_to_server_req_failchain H=server1.example.com [ip4.ip4.ip4.ip4] C="250 OK id=10HmbK-0005vi-00"
-1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbE-0005vi-00 => useru@test.ex R=client_u T=send_to_server_req_passchain H=server1.example.com [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbL-0005vi-00"
-1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == userx@test.ex R=client_x T=send_to_server_failcert defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** userx@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 userx@test.ex: error ignored
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => usery@test.ex R=client_y T=send_to_server_retry H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbF-000000005vi-0000"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to verify the first certificate cert=/CN=server1.example.com
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => userz@test.ex R=client_z T=send_to_server_crypt H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbG-000000005vi-0000"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => userq@test.ex R=client_q T=send_to_server_req_fail H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbH-000000005vi-0000"
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 [ip4.ip4.ip4.ip4] SSL verify error: certificate name mismatch: DN="/CN=server1.example.com" H="serverbadname.example.com"
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 => userr@test.ex R=client_r T=send_to_server_req_failname H=serverbadname.example.com [ip4.ip4.ip4.ip4] C="250 OK id=10HmbI-000000005vi-0000"
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 => user_s@test.ex R=client_s T=send_to_server_req_passname H=server1.example.com [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbJ-000000005vi-0000"
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 [ip4.ip4.ip4.ip4] SSL verify error: certificate name mismatch: DN="/CN=server1.example.com" H="serverchain1.example.com"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 => usert@test.ex R=client_t T=send_to_server_req_failchain H=server1.example.com [ip4.ip4.ip4.ip4] C="250 OK id=10HmbK-000000005vi-0000"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 => useru@test.ex R=client_u T=send_to_server_req_passchain H=server1.example.com [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbL-000000005vi-0000"
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234 -qf
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmaY-0005vi-00@myhost.test.ex for usery@test.ex
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for userz@test.ex
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex for usery@test.ex
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for userz@test.ex
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmbA-0005vi-00@myhost.test.ex for userq@test.ex
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmbA-000000005vi-0000@myhost.test.ex for userq@test.ex
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmbB-0005vi-00@myhost.test.ex for userr@test.ex
-1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmbC-0005vi-00@myhost.test.ex for user_s@test.ex
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmbB-000000005vi-0000@myhost.test.ex for userr@test.ex
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmbC-000000005vi-0000@myhost.test.ex for user_s@test.ex
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmbD-0005vi-00@myhost.test.ex for usert@test.ex
-1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmbE-0005vi-00@myhost.test.ex for useru@test.ex
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmbD-000000005vi-0000@myhost.test.ex for usert@test.ex
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmbE-000000005vi-0000@myhost.test.ex for useru@test.ex

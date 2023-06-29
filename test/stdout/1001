@@ -26,7 +26,7 @@ Connecting to ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225 ... connected
 >>> EHLO [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
 >>> .
 ??? 250
-<<< 250 OK id=10HmaX-0005vi-00
+<<< 250 OK id=10HmaX-000000005vi-0000
 >>> ehlo [IPV6:ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
 ??? 250-
 <<< 250-myhost.test.ex Hello [IPV6:ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6] [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
@@ -52,7 +52,7 @@ Connecting to ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225 ... connected
 >>> EHLO [IPV6:ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
 >>> .
 ??? 250
-<<< 250 OK id=10HmaY-0005vi-00
+<<< 250 OK id=10HmaY-000000005vi-0000
 >>> ehlo [IPV6:V6NET:0:12:1:a00:20ff:fe86:a062]
 ??? 250-
 <<< 250-myhost.test.ex Hello [IPV6:V6NET:0:12:1:a00:20ff:fe86:a062] [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
@@ -78,7 +78,7 @@ Connecting to ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225 ... connected
 >>> EHLO [IPV6:V6NET:0:12:1:a00:20ff:fe86:a062]
 >>> .
 ??? 250
-<<< 250 OK id=10HmaZ-0005vi-00
+<<< 250 OK id=10HmaZ-000000005vi-0000
 >>> ehlo ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6
 ??? 501
 <<< 501 Syntactically invalid EHLO argument(s)

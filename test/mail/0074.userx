@@ -4,11 +4,11 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: first message
-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaX-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -19,11 +19,11 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaZ-0005vi-00
+	id 10HmaZ-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: second message
-Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaZ-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -34,11 +34,11 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbA-0005vi-00
+	id 10HmbA-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: third message
-Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbA-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -49,12 +49,12 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbC-0005vi-00
+	id 10HmbC-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: fourth message
 X-nltest: xxxx
-Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbC-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -64,13 +64,13 @@ Return-path: <>
 Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	id 10HmbD-0005vi-00;
+	id 10HmbD-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
 To: userx@test.ex,  abey seedy <abcd@test.ex>
-In-Reply-To: <E10HmbC-0005vi-00@the.local.host.name>
-References: <E10HmbC-0005vi-00@the.local.host.name>
+In-Reply-To: <E10HmbC-000000005vi-0000@the.local.host.name>
+References: <E10HmbC-000000005vi-0000@the.local.host.name>
 Auto-Submitted: auto-replied
-Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbD-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -82,13 +82,13 @@ Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbE-0005vi-00
+	id 10HmbE-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: fifth message
 Reply-to: userx@test.ex,
   abcd@test.ex
-Message-Id: <E10HmbE-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbE-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -98,13 +98,13 @@ Return-path: <>
 Envelope-to: userx@test.ex
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	id 10HmbF-0005vi-00;
+	id 10HmbF-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
 To: userx@test.ex,   abcd@test.ex
-In-Reply-To: <E10HmbE-0005vi-00@the.local.host.name>
-References: <E10HmbE-0005vi-00@the.local.host.name>
+In-Reply-To: <E10HmbE-000000005vi-0000@the.local.host.name>
+References: <E10HmbE-000000005vi-0000@the.local.host.name>
 Auto-Submitted: auto-replied
-Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbF-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

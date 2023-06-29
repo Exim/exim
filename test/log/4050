@@ -3,4 +3,4 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= a@test.ex H=(testclient) [127.0.0.1] P=esmtp L* S=sss for a@test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= a@test.ex H=(testclient) [127.0.0.1] P=esmtp L* S=sss for a@test.ex

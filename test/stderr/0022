@@ -59,18 +59,18 @@ rewrite headers
 search_tidyup called
 >>Headers after rewriting and local additions:
 
-Data file name: TESTSUITE/spool//input//10HmbF-0005vi-00-D
-Data file written for message 10HmbF-0005vi-00
+Data file name: TESTSUITE/spool//input//10HmbF-000000005vi-0000-D
+Data file written for message 10HmbF-000000005vi-0000
 >>Generated Received: header line
 P Received: from [V4NET.9.8.7] (helo=test)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
-	id 10HmbF-0005vi-00
+	id 10HmbF-000000005vi-0000
 	for warn_empty@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
-SMTP>> 250 OK id=10HmbF-0005vi-00
+SMTP>> 250 OK id=10HmbF-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -142,18 +142,18 @@ rewrite headers
 search_tidyup called
 >>Headers after rewriting and local additions:
 
-Data file name: TESTSUITE/spool//input//10HmbG-0005vi-00-D
-Data file written for message 10HmbG-0005vi-00
+Data file name: TESTSUITE/spool//input//10HmbG-000000005vi-0000-D
+Data file written for message 10HmbG-000000005vi-0000
 >>Generated Received: header line
 P Received: from [V4NET.9.8.7] (helo=test)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
-	id 10HmbG-0005vi-00
+	id 10HmbG-000000005vi-0000
 	for warn_log@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
-SMTP>> 250 OK id=10HmbG-0005vi-00
+SMTP>> 250 OK id=10HmbG-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -223,13 +223,13 @@ rewrite headers
 search_tidyup called
 >>Headers after rewriting and local additions:
 
-Data file name: TESTSUITE/spool//input//10HmbH-0005vi-00-D
-Data file written for message 10HmbH-0005vi-00
+Data file name: TESTSUITE/spool//input//10HmbH-000000005vi-0000-D
+Data file written for message 10HmbH-000000005vi-0000
 >>Generated Received: header line
 P Received: from [V4NET.9.8.7] (helo=test)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <x@y>)
-	id 10HmbH-0005vi-00
+	id 10HmbH-000000005vi-0000
 	for warn_user@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 >>Headers added by MAIL or RCPT ACL:
@@ -237,7 +237,7 @@ P Received: from [V4NET.9.8.7] (helo=test)
 >>
 LOG: MAIN
   <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
-SMTP>> 250 OK id=10HmbH-0005vi-00
+SMTP>> 250 OK id=10HmbH-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -407,7 +407,7 @@ LOG: MAIN
   frozen by ACL
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local-smtp S=sss
-delivering 10HmaY-0005vi-00
+delivering 10HmaY-000000005vi-0000
 LOG: MAIN
   *> accept <accept@y> R=accept T=appendfile
 LOG: MAIN
@@ -418,7 +418,7 @@ LOG: delay_delivery MAIN
   no immediate delivery: queued by ACL
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local-smtp S=sss
-delivering 10HmbA-0005vi-00
+delivering 10HmbA-000000005vi-0000
 LOG: MAIN
   *> accept <accept@y> R=accept T=appendfile
 LOG: MAIN

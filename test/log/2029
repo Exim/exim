@@ -1,5 +1,5 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaX-0005vi-00 TLS error on connection from (test) [127.0.0.1] (recv): The TLS connection was non-properly terminated.
-1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP connection lost after final dot H=(test) [127.0.0.1] P=smtps
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 TLS error on connection from (test) [127.0.0.1] (recv): The TLS connection was non-properly terminated.
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 SMTP connection lost after final dot H=(test) [127.0.0.1] P=smtps

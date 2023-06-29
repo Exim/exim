@@ -1,18 +1,18 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@thishost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@thishost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=p1234
-1999-03-02 09:44:33 10HmaX-0005vi-00 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=Exim Developers/CN=thishost.test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@thishost.test.ex R=abc T=t1 H=thishost.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/C=UK/O=Exim Developers/CN=thishost.test.ex" C="250 OK id=10HmaY-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=Exim Developers/CN=thishost.test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => userx@thishost.test.ex R=abc T=t1 H=thishost.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/C=UK/O=Exim Developers/CN=thishost.test.ex" C="250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234
 1999-03-02 09:44:33 Start queue run: pid=p1235
-1999-03-02 09:44:33 10HmaY-0005vi-00 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=Exim Developers/CN=thishost.test.ex
-1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@thishost.test.ex R=abc T=t1 H=thishost.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/C=UK/O=Exim Developers/CN=thishost.test.ex" C="250 OK id=10HmaZ-0005vi-00"
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=Exim Developers/CN=thishost.test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => userx@thishost.test.ex R=abc T=t1 H=thishost.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/C=UK/O=Exim Developers/CN=thishost.test.ex" C="250 OK id=10HmaZ-000000005vi-0000"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1235
 
 ******** SERVER ********
 1999-03-02 09:44:33 Warning: No server certificate defined; will use a selfsigned one.
  Suggested action: either install a certificate or change tls_advertise_hosts option
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@thishost.test.ex H=localhost (thishost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@thishost.test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@thishost.test.ex H=localhost (thishost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@thishost.test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@thishost.test.ex H=localhost (thishost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-000000005vi-0000@thishost.test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@thishost.test.ex H=localhost (thishost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-000000005vi-0000@thishost.test.ex

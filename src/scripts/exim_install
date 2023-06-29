@@ -198,7 +198,7 @@ else
   set exim${EXE} ${exim_monitor} exim_dumpdb${EXE} exim_fixdb${EXE} \
       exim_tidydb${EXE} exinext exiwhat exim_dbmbuild${EXE} exicyclog \
       exigrep eximstats exipick exiqgrep exiqsumm exim_lock${EXE} \
-      exim_checkaccess exim_msgdate
+      exim_checkaccess exim_msgdate exim_id_update
 fi
 
 echo $com ""

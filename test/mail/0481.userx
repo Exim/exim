@@ -1,11 +1,11 @@
 From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for userx@myhost.test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Another: This is another header
-Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-Was-Remove-Me: >this header is to be removed<
@@ -14,12 +14,12 @@ X-Was-Remove-Me: >this header is to be removed<
 From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for userx@myhost.test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Another: This is another header
 X-Ren-dont:	test globbing
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-Was-Remove-Me: >this header is to be removed<

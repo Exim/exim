@@ -24,7 +24,7 @@ Display options:
 	-R		Reverse order
 	-a		All recipients (including delivered)
 exiqgrep exit code = 0
- 0m   sss 10HmaX-0005vi-00 <CALLER@test.ex>
+ 0m   278 10HmaX-000000005vi-0000 <CALLER@test.ex>
 	  a@test.ex
 	  b@test.ex
 	  c@test.ex

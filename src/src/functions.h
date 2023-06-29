@@ -562,7 +562,8 @@ extern gstring *string_append(gstring *, int, ...) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele(gstring *, uschar, const uschar *) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele_n(gstring *, uschar, const uschar *, unsigned) WARN_UNUSED_RESULT;
 extern gstring *string_append2_listele_n(gstring *, const uschar *, const uschar *, unsigned) WARN_UNUSED_RESULT;
-extern uschar *string_base62(unsigned long int);
+extern uschar *string_base62_32(unsigned long int);
+extern uschar *string_base62_64(unsigned long int);
 extern gstring *string_cat (gstring *, const uschar *     ) WARN_UNUSED_RESULT;
 extern gstring *string_catn(gstring *, const uschar *, int) WARN_UNUSED_RESULT;
 extern int     string_compare_by_pointer(const void *, const void *);
@@ -1166,8 +1167,30 @@ set_subdir_str(uschar * subdir_str, const uschar * name,
 	int search_sequence)
 {
 subdir_str[0] = split_spool_directory == (search_sequence == 0)
-       ? name[5] : '\0';
+       ? name[MESSAGE_ID_TIME_LEN-1] : '\0';
 subdir_str[1] = '\0';
+}
+
+/******************************************************************************/
+/* Message-ID format transition knowlege */
+
+static inline BOOL
+is_new_message_id(const uschar * id)
+{
+return id[MESSAGE_ID_TIME_LEN + 1 + MESSAGE_ID_PID_LEN] == '-';
+}
+
+static inline BOOL
+is_old_message_id(const uschar * id)
+{
+return id[MESSAGE_ID_TIME_LEN + 1 + MESSAGE_ID_PID_LEN_OLD] == '-';
+}
+
+static inline unsigned
+spool_data_start_offset(const uschar * id)
+{
+if (is_old_message_id(id)) return SPOOL_DATA_START_OFFSET_OLD;
+return SPOOL_DATA_START_OFFSET;
 }
 
 /******************************************************************************/

@@ -102,7 +102,7 @@
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
-LOG: 10HmaY-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.1] P=esmtpa A=cram_md5:tim S=sss
+LOG: 10HmaY-000000005vi-0000 <= userx@some.domain H=(test.host) [10.0.0.1] P=esmtpa A=cram_md5:tim S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -155,4 +155,4 @@ LOG: cram_md5 authenticator failed for (test.host) [10.0.0.5]: 535 Incorrect aut
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
-LOG: 10HmaZ-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.5] P=esmtp S=sss
+LOG: 10HmaZ-000000005vi-0000 <= userx@some.domain H=(test.host) [10.0.0.5] P=esmtp S=sss

@@ -1,144 +1,144 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t1@dane256ee.test.ex
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t2@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t1@dane256ee.test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t2@mxdane512ee.test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1234 -qf
-1999-03-02 09:44:33 10HmaX-0005vi-00 => t1@dane256ee.test.ex R=client T=send_to_server H=dane256ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmaZ-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaY-0005vi-00 => t2@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => t1@dane256ee.test.ex R=client T=send_to_server H=dane256ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmaZ-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => t2@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmbA-000000005vi-0000"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234 -qf
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t4@mxdane256ta.test.ex
-1999-03-02 09:44:33 10HmbB-0005vi-00 => t4@mxdane256ta.test.ex R=client T=send_to_server H=dane256ta.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmbC-0005vi-00"
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t5@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmbD-0005vi-00 => t5@mxdane256tak.test.ex R=client T=send_to_server H=dane256tak.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server2.example.com" C="250 OK id=10HmbE-0005vi-00"
-1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t6@thishost.test.ex
-1999-03-02 09:44:33 10HmbF-0005vi-00 => t6@thishost.test.ex R=client T=send_to_server H=thishost.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.net" C="250 OK id=10HmbG-0005vi-00"
-1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t7@thishost.test.ex
-1999-03-02 09:44:33 10HmbH-0005vi-00 => t7@thishost.test.ex R=client T=send_to_server H=thishost.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbI-0005vi-00"
-1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t4@mxdane256ta.test.ex
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 => t4@mxdane256ta.test.ex R=client T=send_to_server H=dane256ta.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmbC-000000005vi-0000"
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t5@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 => t5@mxdane256tak.test.ex R=client T=send_to_server H=dane256tak.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server2.example.com" C="250 OK id=10HmbE-000000005vi-0000"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t6@thishost.test.ex
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 => t6@thishost.test.ex R=client T=send_to_server H=thishost.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.net" C="250 OK id=10HmbG-000000005vi-0000"
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t7@thishost.test.ex
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 => t7@thishost.test.ex R=client T=send_to_server H=thishost.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbI-000000005vi-0000"
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
 1999-03-02 09:44:33 Start queue run: pid=p1235 -qf
 1999-03-02 09:44:33 End queue run: pid=p1235 -qf
-1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t8@mxdanelazy.test.ex
-1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t9@dane.no.1.test.ex
-1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t10@dane.no.2.test.ex
-1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t11@danebroken1.test.ex
-1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t12@dane.no.3.test.ex
-1999-03-02 09:44:33 10HmbO-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t13@dane.no.4.test.ex
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t8@mxdanelazy.test.ex
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t9@dane.no.1.test.ex
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t10@dane.no.2.test.ex
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t11@danebroken1.test.ex
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t12@dane.no.3.test.ex
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t13@dane.no.4.test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1236 -qf
-1999-03-02 09:44:33 10HmbJ-0005vi-00 H=danelazy.test.ex [ip4.ip4.ip4.ip4]: DANE error: tlsa lookup DEFER
-1999-03-02 09:44:33 10HmbJ-0005vi-00 H=danelazy2.test.ex [127.0.0.1]: DANE error: tlsa lookup DEFER
-1999-03-02 09:44:33 10HmbJ-0005vi-00 == t8@mxdanelazy.test.ex R=client T=send_to_server defer (-36): DANE error: tlsa lookup DEFER
-1999-03-02 09:44:33 10HmbK-0005vi-00 ** t9@dane.no.1.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
-1999-03-02 09:44:33 10HmbK-0005vi-00 t9@dane.no.1.test.ex: error ignored
-1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbL-0005vi-00 => t10@dane.no.2.test.ex R=client T=send_to_server H=dane.no.2.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbP-0005vi-00"
-1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbM-0005vi-00 H=danebroken1.test.ex [127.0.0.1]: DANE error: tlsa lookup DEFER
-1999-03-02 09:44:33 10HmbM-0005vi-00 == t11@danebroken1.test.ex R=client T=send_to_server defer (-36): DANE error: tlsa lookup DEFER
-1999-03-02 09:44:33 10HmbN-0005vi-00 ** t12@dane.no.3.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
-1999-03-02 09:44:33 10HmbN-0005vi-00 t12@dane.no.3.test.ex: error ignored
-1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbO-0005vi-00 => t13@dane.no.4.test.ex R=client T=send_to_server H=dane.no.4.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbQ-0005vi-00"
-1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 H=danelazy.test.ex [ip4.ip4.ip4.ip4]: DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 H=danelazy2.test.ex [127.0.0.1]: DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 == t8@mxdanelazy.test.ex R=client T=send_to_server defer (-36): DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 ** t9@dane.no.1.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 t9@dane.no.1.test.ex: error ignored
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 => t10@dane.no.2.test.ex R=client T=send_to_server H=dane.no.2.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbP-000000005vi-0000"
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 H=danebroken1.test.ex [127.0.0.1]: DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 == t11@danebroken1.test.ex R=client T=send_to_server defer (-36): DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 ** t12@dane.no.3.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 t12@dane.no.3.test.ex: error ignored
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 => t13@dane.no.4.test.ex R=client T=send_to_server H=dane.no.4.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbQ-000000005vi-0000"
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1236 -qf
-1999-03-02 09:44:33 10HmbJ-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbM-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbR-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t14@danebroken2.test.ex
-1999-03-02 09:44:33 10HmbR-0005vi-00 DANE attempt failed; TLS connection to danebroken2.test.ex [127.0.0.1]: (SSL_connect): error:xxxxxxxx:SSL routines:ssl3_get_server_certificate:certificate verify failed
-1999-03-02 09:44:33 10HmbR-0005vi-00 == t14@danebroken2.test.ex R=client T=send_to_server defer (-37) H=danebroken2.test.ex [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmbS-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t15@danebroken3.test.ex
-1999-03-02 09:44:33 10HmbS-0005vi-00 DANE error: TLSA lookup for danebroken3.test.ex not DNSSEC
-1999-03-02 09:44:33 10HmbS-0005vi-00 => t15@danebroken3.test.ex R=client T=send_to_server H=danebroken3.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbT-0005vi-00"
-1999-03-02 09:44:33 10HmbS-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbU-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t16@danebroken4.test.ex
-1999-03-02 09:44:33 10HmbU-0005vi-00 DANE error: TLSA lookup for danebroken4.test.ex not DNSSEC
-1999-03-02 09:44:33 10HmbU-0005vi-00 ** t16@danebroken4.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
-1999-03-02 09:44:33 10HmbU-0005vi-00 t16@danebroken4.test.ex: error ignored
-1999-03-02 09:44:33 10HmbU-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbV-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t17@danebroken5.test.ex
-1999-03-02 09:44:33 10HmbV-0005vi-00 => t17@danebroken5.test.ex R=client T=send_to_server H=danebroken5.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbW-0005vi-00"
-1999-03-02 09:44:33 10HmbV-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t18@danebroken6.test.ex
-1999-03-02 09:44:33 10HmbX-0005vi-00 ** t18@danebroken6.test.ex R=client T=send_to_server: DANE error: danebroken6.test.ex lookup not DNSSEC
-1999-03-02 09:44:33 10HmbX-0005vi-00 t18@danebroken6.test.ex: error ignored
-1999-03-02 09:44:33 10HmbX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t19@danebroken7.example.com
-1999-03-02 09:44:33 10HmbY-0005vi-00 DANE attempt failed; TLS connection to danebroken7.example.com [127.0.0.1]: (SSL_connect): error:xxxxxxxx:SSL routines:ssl3_get_server_certificate:certificate verify failed
-1999-03-02 09:44:33 10HmbY-0005vi-00 == t19@danebroken7.example.com R=client T=send_to_server defer (-37) H=danebroken7.example.com [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmbZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t20@danebroken8.example.com
-1999-03-02 09:44:33 10HmbZ-0005vi-00 => t20@danebroken8.example.com R=client T=send_to_server H=danebroken8.example.com [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.net" C="250 OK id=10HmcA-0005vi-00"
-1999-03-02 09:44:33 10HmbZ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmcB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t21@danebroken2.test.ex
-1999-03-02 09:44:33 10HmcB-0005vi-00 => t21@danebroken2.test.ex R=client T=send_to_server H=danebroken2.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmcC-0005vi-00"
-1999-03-02 09:44:33 10HmcB-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbR-0005vi-00 => t14@danebroken2.test.ex R=client T=send_to_server H=danebroken2.test.ex [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmcD-0005vi-00"
-1999-03-02 09:44:33 10HmbR-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 removed by CALLER
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 removed by CALLER
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t14@danebroken2.test.ex
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 DANE attempt failed; TLS connection to danebroken2.test.ex [127.0.0.1]: (SSL_connect): error:xxxxxxxx:SSL routines:ssl3_get_server_certificate:certificate verify failed
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 == t14@danebroken2.test.ex R=client T=send_to_server defer (-37) H=danebroken2.test.ex [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbS-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t15@danebroken3.test.ex
+1999-03-02 09:44:33 10HmbS-000000005vi-0000 DANE error: TLSA lookup for danebroken3.test.ex not DNSSEC
+1999-03-02 09:44:33 10HmbS-000000005vi-0000 => t15@danebroken3.test.ex R=client T=send_to_server H=danebroken3.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbT-000000005vi-0000"
+1999-03-02 09:44:33 10HmbS-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbU-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t16@danebroken4.test.ex
+1999-03-02 09:44:33 10HmbU-000000005vi-0000 DANE error: TLSA lookup for danebroken4.test.ex not DNSSEC
+1999-03-02 09:44:33 10HmbU-000000005vi-0000 ** t16@danebroken4.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
+1999-03-02 09:44:33 10HmbU-000000005vi-0000 t16@danebroken4.test.ex: error ignored
+1999-03-02 09:44:33 10HmbU-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbV-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t17@danebroken5.test.ex
+1999-03-02 09:44:33 10HmbV-000000005vi-0000 => t17@danebroken5.test.ex R=client T=send_to_server H=danebroken5.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbW-000000005vi-0000"
+1999-03-02 09:44:33 10HmbV-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t18@danebroken6.test.ex
+1999-03-02 09:44:33 10HmbX-000000005vi-0000 ** t18@danebroken6.test.ex R=client T=send_to_server: DANE error: danebroken6.test.ex lookup not DNSSEC
+1999-03-02 09:44:33 10HmbX-000000005vi-0000 t18@danebroken6.test.ex: error ignored
+1999-03-02 09:44:33 10HmbX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t19@danebroken7.example.com
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 DANE attempt failed; TLS connection to danebroken7.example.com [127.0.0.1]: (SSL_connect): error:xxxxxxxx:SSL routines:ssl3_get_server_certificate:certificate verify failed
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 == t19@danebroken7.example.com R=client T=send_to_server defer (-37) H=danebroken7.example.com [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbZ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t20@danebroken8.example.com
+1999-03-02 09:44:33 10HmbZ-000000005vi-0000 => t20@danebroken8.example.com R=client T=send_to_server H=danebroken8.example.com [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.net" C="250 OK id=10HmcA-000000005vi-0000"
+1999-03-02 09:44:33 10HmbZ-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmcB-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t21@danebroken2.test.ex
+1999-03-02 09:44:33 10HmcB-000000005vi-0000 => t21@danebroken2.test.ex R=client T=send_to_server H=danebroken2.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmcC-000000005vi-0000"
+1999-03-02 09:44:33 10HmcB-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 => t14@danebroken2.test.ex R=client T=send_to_server H=danebroken2.test.ex [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmcD-000000005vi-0000"
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256ee.test.ex S=sss id=E10HmaX-0005vi-00@myhost.test.ex for t1@dane256ee.test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <t1@dane256ee.test.ex> R=server
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256ee.test.ex S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for t1@dane256ee.test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => :blackhole: <t1@dane256ee.test.ex> R=server
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmaY-0005vi-00@myhost.test.ex for t2@mxdane512ee.test.ex
-1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <t2@mxdane512ee.test.ex> R=server
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex for t2@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <t2@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL"
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256ta.test.ex S=sss id=E10HmbB-0005vi-00@myhost.test.ex for t4@mxdane256ta.test.ex
-1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <t4@mxdane256ta.test.ex> R=server
-1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256ta.test.ex S=sss id=E10HmbB-000000005vi-0000@myhost.test.ex for t4@mxdane256ta.test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 => :blackhole: <t4@mxdane256ta.test.ex> R=server
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1239, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmbD-0005vi-00@myhost.test.ex for t5@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <t5@mxdane256tak.test.ex> R=server
-1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmbD-000000005vi-0000@myhost.test.ex for t5@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 => :blackhole: <t5@mxdane256tak.test.ex> R=server
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1240, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbF-0005vi-00@myhost.test.ex for t6@thishost.test.ex
-1999-03-02 09:44:33 10HmbG-0005vi-00 => :blackhole: <t6@thishost.test.ex> R=server
-1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbF-000000005vi-0000@myhost.test.ex for t6@thishost.test.ex
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 => :blackhole: <t6@thishost.test.ex> R=server
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1241, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbI-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbH-0005vi-00@myhost.test.ex for t7@thishost.test.ex
-1999-03-02 09:44:33 10HmbI-0005vi-00 => :blackhole: <t7@thishost.test.ex> R=server
-1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbH-000000005vi-0000@myhost.test.ex for t7@thishost.test.ex
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 => :blackhole: <t7@thishost.test.ex> R=server
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1242, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbP-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbL-0005vi-00@myhost.test.ex for t10@dane.no.2.test.ex
-1999-03-02 09:44:33 10HmbP-0005vi-00 => :blackhole: <t10@dane.no.2.test.ex> R=server
-1999-03-02 09:44:33 10HmbP-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbL-000000005vi-0000@myhost.test.ex for t10@dane.no.2.test.ex
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 => :blackhole: <t10@dane.no.2.test.ex> R=server
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbQ-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbO-0005vi-00@myhost.test.ex for t13@dane.no.4.test.ex
-1999-03-02 09:44:33 10HmbQ-0005vi-00 => :blackhole: <t13@dane.no.4.test.ex> R=server
-1999-03-02 09:44:33 10HmbQ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbO-000000005vi-0000@myhost.test.ex for t13@dane.no.4.test.ex
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 => :blackhole: <t13@dane.no.4.test.ex> R=server
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 Completed
 1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbT-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbS-0005vi-00@myhost.test.ex for t15@danebroken3.test.ex
-1999-03-02 09:44:33 10HmbT-0005vi-00 => :blackhole: <t15@danebroken3.test.ex> R=server
-1999-03-02 09:44:33 10HmbT-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbT-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbS-000000005vi-0000@myhost.test.ex for t15@danebroken3.test.ex
+1999-03-02 09:44:33 10HmbT-000000005vi-0000 => :blackhole: <t15@danebroken3.test.ex> R=server
+1999-03-02 09:44:33 10HmbT-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbW-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbV-0005vi-00@myhost.test.ex for t17@danebroken5.test.ex
-1999-03-02 09:44:33 10HmbW-0005vi-00 => :blackhole: <t17@danebroken5.test.ex> R=server
-1999-03-02 09:44:33 10HmbW-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbV-000000005vi-0000@myhost.test.ex for t17@danebroken5.test.ex
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 => :blackhole: <t17@danebroken5.test.ex> R=server
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1243, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmcA-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=danebroken8.example.com S=sss id=E10HmbZ-0005vi-00@myhost.test.ex for t20@danebroken8.example.com
-1999-03-02 09:44:33 10HmcA-0005vi-00 => :blackhole: <t20@danebroken8.example.com> R=server
-1999-03-02 09:44:33 10HmcA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcA-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=danebroken8.example.com S=sss id=E10HmbZ-000000005vi-0000@myhost.test.ex for t20@danebroken8.example.com
+1999-03-02 09:44:33 10HmcA-000000005vi-0000 => :blackhole: <t20@danebroken8.example.com> R=server
+1999-03-02 09:44:33 10HmcA-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1244, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmcC-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmcB-0005vi-00@myhost.test.ex for t21@danebroken2.test.ex
-1999-03-02 09:44:33 10HmcC-0005vi-00 => :blackhole: <t21@danebroken2.test.ex> R=server
-1999-03-02 09:44:33 10HmcC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcC-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmcB-000000005vi-0000@myhost.test.ex for t21@danebroken2.test.ex
+1999-03-02 09:44:33 10HmcC-000000005vi-0000 => :blackhole: <t21@danebroken2.test.ex> R=server
+1999-03-02 09:44:33 10HmcC-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmcD-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbR-0005vi-00@myhost.test.ex for t14@danebroken2.test.ex
-1999-03-02 09:44:33 10HmcD-0005vi-00 => :blackhole: <t14@danebroken2.test.ex> R=server
-1999-03-02 09:44:33 10HmcD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcD-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbR-000000005vi-0000@myhost.test.ex for t14@danebroken2.test.ex
+1999-03-02 09:44:33 10HmcD-000000005vi-0000 => :blackhole: <t14@danebroken2.test.ex> R=server
+1999-03-02 09:44:33 10HmcD-000000005vi-0000 Completed

@@ -2512,9 +2512,9 @@ else
 
   else
     {
-    FILE *env_file;
+    FILE * env_file;
     mailstore_basename = string_sprintf("%s/%s-%s", path, message_id,
-      string_base62((long int)getpid()));
+      string_base62_64((long int)getpid()));
 
     DEBUG(D_transport)
       debug_printf("delivering in mailstore format in %s\n", path);

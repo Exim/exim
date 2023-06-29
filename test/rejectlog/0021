@@ -1,34 +1,34 @@
-1999-03-02 09:44:33 10HmaY-0005vi-00 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
 Envelope-from: <userx@test1>
 Envelope-to: <userx@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test1>)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+I Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
 F From: userx@test1
   Date: Tue, 2 Mar 1999 09:44:33 +0000
-1999-03-02 09:44:33 10HmaZ-0005vi-00 F=<ok@test2> rejected by non-SMTP ACL: cannot test hosts condition in non-SMTP ACL
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 F=<ok@test2> rejected by non-SMTP ACL: cannot test hosts condition in non-SMTP ACL
 Envelope-from: <ok@test2>
 Envelope-to: <userx@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <ok@test2>)
-	id 10HmaZ-0005vi-00
+	id 10HmaZ-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+I Message-Id: <E10HmaZ-000000005vi-0000@myhost.test.ex>
 F From: ok@test2
   Date: Tue, 2 Mar 1999 09:44:33 +0000
-1999-03-02 09:44:33 10HmbA-0005vi-00 F=<ok@test4> rejected by non-SMTP ACL: no verified certificate
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 F=<ok@test4> rejected by non-SMTP ACL: no verified certificate
 Envelope-from: <ok@test4>
 Envelope-to: <userx@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <ok@test4>)
-	id 10HmbA-0005vi-00
+	id 10HmbA-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+I Message-Id: <E10HmbA-000000005vi-0000@myhost.test.ex>
 F From: ok@test4
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 1999-03-02 09:44:33 H=[10.9.8.7] U=CALLER rejected connection in "connect" ACL
@@ -39,26 +39,26 @@ F From: ok@test4
 1999-03-02 09:44:33 U=CALLER rejected connection in "connect" ACL
 1999-03-02 09:44:33 H=(x.y.z) [10.9.8.10] U=CALLER rejected EHLO or HELO x.y.z
 1999-03-02 09:44:33 mail accepted "mail from:<ok@test3>" "<ok@test3>"
-1999-03-02 09:44:33 10HmbB-0005vi-00 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
 Envelope-from: <userx@test1>
 Envelope-to: <userx@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test1>)
-	id 10HmbB-0005vi-00
+	id 10HmbB-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-I Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+I Message-Id: <E10HmbB-000000005vi-0000@myhost.test.ex>
 F From: userx@test1
   Date: Tue, 2 Mar 1999 09:44:33 +0000
-1999-03-02 09:44:33 10HmbC-0005vi-00 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
 Envelope-from: <userx@test1>
 Envelope-to: <userx@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test1>)
-	id 10HmbC-0005vi-00
+	id 10HmbC-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-I Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+I Message-Id: <E10HmbC-000000005vi-0000@myhost.test.ex>
 F From: userx@test1
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 1999-03-02 09:44:33 H=(test.ex) [10.9.8.8] U=CALLER rejected EHLO or HELO test.ex

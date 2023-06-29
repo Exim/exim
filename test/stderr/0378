@@ -119,7 +119,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 LOG: MAIN
-  <= <> R=10HmaX-0005vi-00 U=CALLER P=local S=sss
+  <= <> R=10HmaX-000000005vi-0000 U=CALLER P=local S=sss
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user

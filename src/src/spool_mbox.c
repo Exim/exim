@@ -99,6 +99,7 @@ if (!spool_mbox_ok)
 	}
 
   /* End headers */
+
   if (fwrite("\n", 1, 1, mbox_file) != 1)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Error/short write while writing \
@@ -109,20 +110,18 @@ if (!spool_mbox_ok)
   /* Copy body file.  If the main receive still has it open then it is holding
   a lock, and we must not close it (which releases the lock), so just use the
   global file handle. */
+
   if (source_file_override)
     l_data_file = Ufopen(source_file_override, "rb");
   else if (spool_data_file)
     l_data_file = spool_data_file;
   else
-    {
-    message_subdir[1] = '\0';
     for (int i = 0; i < 2; i++)
       {
       set_subdir_str(message_subdir, message_id, i);
       temp_string = spool_fname(US"input", message_subdir, message_id, US"-D");
       if ((l_data_file = Ufopen(temp_string, "rb"))) break;
       }
-    }
 
   if (!l_data_file)
     {
@@ -141,7 +140,7 @@ if (!spool_mbox_ok)
      explicitly, because the one in the file is parted of the locked area.  */
 
   if (!source_file_override)
-    (void)fseek(l_data_file, SPOOL_DATA_START_OFFSET, SEEK_SET);
+    (void)fseek(l_data_file, spool_data_start_offset(message_id), SEEK_SET);
 
   do
     {

@@ -46,4 +46,4 @@
 >>> end of ACL "check_recipient": DENY
 LOG: H=(exim.test.ex) [V4NET.11.12.14] F=<postmaster@exim.test.ex> rejected RCPT list@exim.test.ex: host is listed in rbl.test.ex
 >>> host in ignore_fromline_hosts? no (option unset)
-LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.14] P=esmtp S=sss
+LOG: 10HmaX-000000005vi-0000 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.14] P=esmtp S=sss

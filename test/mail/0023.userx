@@ -2,7 +2,7 @@ From userx@test.ex Tue Mar 02 09:44:33 1999
 Received: from [32.32.32.32] (helo=test ident=CALLER)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Start: domain=test.ex local_part=userx
@@ -15,7 +15,7 @@ From userx@test.ex Tue Mar 02 09:44:33 1999
 Received: from [55.55.55.55] (helo=test ident=CALLER)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
-	id 10HmaZ-0005vi-00
+	id 10HmaZ-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-rcpt-added: An added header at RCPT time

@@ -3,10 +3,10 @@ RCPT TO:<userx@test.ex>
 DATA
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbG-0005vi-00
+	id 10HmbG-000000005vi-0000
 	for batch-userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbG-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbG-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -18,9 +18,9 @@ RCPT TO:<usery@test.ex>
 DATA
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbH-0005vi-00;
+	id 10HmbH-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbH-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbH-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

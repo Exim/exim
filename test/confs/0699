@@ -1,0 +1,27 @@
+# Exim test configuration 0699
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+acl_smtp_rcpt = accept
+
+log_selector = +received_recipients +subject
+
+# ----- ACL -----
+
+begin acl
+
+# ----- Routers -----
+
+begin routers
+
+nulldeliver:
+  driver =	redirect
+  local_parts =	nulldeliver
+  data =	:blackhole:
+
+# End

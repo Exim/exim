@@ -1,43 +1,43 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for norequire@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => norequire@mxdane256tak.test.ex R=client T=send_to_server2 H=dane256tak.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmaY-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for norequest@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => norequest@mxdane256tak.test.ex R=client T=send_to_server1 H=dane256tak.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for goodstaple@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmbB-0005vi-00 => goodstaple@mxdane256tak.test.ex R=client T=send_to_server3 H=dane256tak.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmbC-0005vi-00"
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for nostaple_required@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmbD-0005vi-00 Required TLS certificate status not received
-1999-03-02 09:44:33 10HmbD-0005vi-00 DANE attempt failed; TLS connection to dane256tak.test.ex [ip4.ip4.ip4.ip4]: (SSL_connect) Required TLS certificate status not received
-1999-03-02 09:44:33 10HmbD-0005vi-00 == nostaple_required@mxdane256tak.test.ex R=client T=send_to_server3 defer (-37) H=dane256tak.test.ex [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect) Required TLS certificate status not received
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for revoked@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmbE-0005vi-00 Server certificate revoked; reason: superseded
-1999-03-02 09:44:33 10HmbE-0005vi-00 DANE attempt failed; TLS connection to dane256tak.test.ex [ip4.ip4.ip4.ip4]: (SSL_connect) Server certificate revoked
-1999-03-02 09:44:33 10HmbE-0005vi-00 == revoked@mxdane256tak.test.ex R=client T=send_to_server3 defer (-37) H=dane256tak.test.ex [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect) Server certificate revoked
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for expired@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmbF-0005vi-00 OCSP dates invalid
-1999-03-02 09:44:33 10HmbF-0005vi-00 DANE attempt failed; TLS connection to dane256tak.test.ex [ip4.ip4.ip4.ip4]: (SSL_connect) Server certificate status is out-of-date
-1999-03-02 09:44:33 10HmbF-0005vi-00 == expired@mxdane256tak.test.ex R=client T=send_to_server3 defer (-37) H=dane256tak.test.ex [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect) Server certificate status is out-of-date
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for goodstaple_le@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmbG-0005vi-00 => goodstaple_le@mxdane256tak.test.ex R=client T=send_to_server3 H=dane256tak.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmbH-0005vi-00"
-1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@server1.example.com U=CALLER P=local S=sss for norequire@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => norequire@mxdane256tak.test.ex R=client T=send_to_server2 H=dane256tak.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@server1.example.com U=CALLER P=local S=sss for norequest@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => norequest@mxdane256tak.test.ex R=client T=send_to_server1 H=dane256tak.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmbA-000000005vi-0000"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@server1.example.com U=CALLER P=local S=sss for goodstaple@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 => goodstaple@mxdane256tak.test.ex R=client T=send_to_server3 H=dane256tak.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmbC-000000005vi-0000"
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@server1.example.com U=CALLER P=local S=sss for nostaple_required@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 Required TLS certificate status not received
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 DANE attempt failed; TLS connection to dane256tak.test.ex [ip4.ip4.ip4.ip4]: (SSL_connect) Required TLS certificate status not received
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 == nostaple_required@mxdane256tak.test.ex R=client T=send_to_server3 defer (-37) H=dane256tak.test.ex [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect) Required TLS certificate status not received
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= CALLER@server1.example.com U=CALLER P=local S=sss for revoked@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 Server certificate revoked; reason: superseded
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 DANE attempt failed; TLS connection to dane256tak.test.ex [ip4.ip4.ip4.ip4]: (SSL_connect) Server certificate revoked
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 == revoked@mxdane256tak.test.ex R=client T=send_to_server3 defer (-37) H=dane256tak.test.ex [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect) Server certificate revoked
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@server1.example.com U=CALLER P=local S=sss for expired@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 OCSP dates invalid
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 DANE attempt failed; TLS connection to dane256tak.test.ex [ip4.ip4.ip4.ip4]: (SSL_connect) Server certificate status is out-of-date
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 == expired@mxdane256tak.test.ex R=client T=send_to_server3 defer (-37) H=dane256tak.test.ex [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect) Server certificate status is out-of-date
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@server1.example.com U=CALLER P=local S=sss for goodstaple_le@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 => goodstaple_le@mxdane256tak.test.ex R=client T=send_to_server3 H=dane256tak.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmbH-000000005vi-0000"
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaY-0005vi-00 client claims: ocsp status 1 (notresp)
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmaX-0005vi-00@server1.example.com for norequire@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <norequire@mxdane256tak.test.ex> R=server
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 client claims: ocsp status 1 (notresp)
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmaX-000000005vi-0000@server1.example.com for norequire@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <norequire@mxdane256tak.test.ex> R=server
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmbA-0005vi-00 client claims: ocsp status 0 (notreq)
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmaZ-0005vi-00@server1.example.com for norequest@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <norequest@mxdane256tak.test.ex> R=server
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbC-0005vi-00 client claims: ocsp status 4 (verified)
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> H=(helo.data.changed) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmbB-0005vi-00@server1.example.com for goodstaple@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <goodstaple@mxdane256tak.test.ex> R=server
-1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 client claims: ocsp status 0 (notreq)
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmaZ-000000005vi-0000@server1.example.com for norequest@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <norequest@mxdane256tak.test.ex> R=server
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 client claims: ocsp status 4 (verified)
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> H=(helo.data.changed) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmbB-000000005vi-0000@server1.example.com for goodstaple@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 => :blackhole: <goodstaple@mxdane256tak.test.ex> R=server
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from (helo.data.changed) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D
@@ -45,7 +45,7 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from (helo.data.changed) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1239, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmbH-0005vi-00 client claims: ocsp status 4 (verified)
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> H=(helo.data.changed) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmbG-0005vi-00@server1.example.com for goodstaple_le@mxdane256tak.test.ex
-1999-03-02 09:44:33 10HmbH-0005vi-00 => :blackhole: <goodstaple_le@mxdane256tak.test.ex> R=server
-1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 client claims: ocsp status 4 (verified)
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= <> H=(helo.data.changed) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmbG-000000005vi-0000@server1.example.com for goodstaple_le@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 => :blackhole: <goodstaple_le@mxdane256tak.test.ex> R=server
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed

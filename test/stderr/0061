@@ -54,7 +54,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.0.0.1] P=smtp S=sss
+LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.1] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -115,4 +115,4 @@ MUNGED: ::1 will be omitted in what follows
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
 LOG: H=(test) [V4NET.0.0.2] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
-LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=(test) [V4NET.0.0.2] P=smtp S=sss
+LOG: 10HmaY-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.2] P=smtp S=sss

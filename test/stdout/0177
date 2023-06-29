@@ -1,8 +1,8 @@
- 0m   sss 10HmbA-0005vi-00 <CALLER@test.ex> *** frozen ***
+ 0m   354 10HmbA-000000005vi-0000 <CALLER@test.ex> *** frozen ***
           userx@test.ex
        +D >usery:userx@test.ex
 
- 0m   sss 10HmbG-0005vi-00 <CALLER@test.ex> *** frozen ***
+ 0m   360 10HmbG-000000005vi-0000 <CALLER@test.ex> *** frozen ***
           userz@test.ex
 
 
@@ -21,11 +21,11 @@ DATA
 350 Send message
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbG-0005vi-00
+	id 10HmbG-000000005vi-0000
 	for userz@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: freeze this (3)
-Message-Id: <E10HmbG-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbG-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

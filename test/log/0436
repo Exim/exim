@@ -1,6 +1,6 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 => a <a@d1.ex> R=r1 T=t1
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> b <b@d1.ex> R=r1 T=t1
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> c <c@d2.ex> R=r1 T=t1
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> d <d@d2.ex> R=r1 T=t1
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => a <a@d1.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 -> b <b@d1.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 -> c <c@d2.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 -> d <d@d2.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed

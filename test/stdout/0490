@@ -7,9 +7,9 @@
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmaY-0005vi-00
+250 OK id=10HmaY-000000005vi-0000
 221 myhost.test.ex closing connection
-10HmaY-0005vi-00-H
+10HmaY-000000005vi-0000-H
 CALLER UID GID
 <CALLER@myhost.test.ex>
 ddddddddd 0
@@ -32,9 +32,9 @@ bb@test.ex
 dddP Received: from CALLER (helo=test)
 	by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for bb@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-047I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+054I Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
 dddF From: CALLER_NAME <CALLER@myhost.test.ex>
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000

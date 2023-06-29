@@ -1,70 +1,70 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@x.y R=r1 T=t1 defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
-1999-03-02 09:44:33 10HmaX-0005vi-00 ** userx@x.y: retry timeout exceeded
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=r0
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@x.y R=r1 T=t1 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@x.y>: 452 temporary error
-1999-03-02 09:44:33 10HmaZ-0005vi-00 ** userx@x.y: retry timeout exceeded
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=r0
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbB-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after DATA: 452 temporary error
-1999-03-02 09:44:33 10HmbB-0005vi-00 == userx@x.y R=r1 T=t1 defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after DATA: 452 temporary error
-1999-03-02 09:44:33 10HmbB-0005vi-00 ** userx@x.y: retry timeout exceeded
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=r0
-1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbD-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 452 temporary error
-1999-03-02 09:44:33 10HmbD-0005vi-00 == userx@x.y R=r1 T=t1 defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 452 temporary error
-1999-03-02 09:44:33 10HmbD-0005vi-00 ** userx@x.y: retry timeout exceeded
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmbD-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=r0
-1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbF-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
-1999-03-02 09:44:33 10HmbF-0005vi-00 == userx@x.y R=r1 T=t1 defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
-1999-03-02 09:44:33 10HmbF-0005vi-00 ** userx@x.y: retry timeout exceeded
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> R=10HmbF-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbG-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=r0
-1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbH-0005vi-00 == userx@x.y R=r1 T=t1 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@x.y>: 452 temporary error
-1999-03-02 09:44:33 10HmbH-0005vi-00 ** userx@x.y: retry timeout exceeded
-1999-03-02 09:44:33 10HmbI-0005vi-00 <= <> R=10HmbH-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbI-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=r0
-1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbJ-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 452 temporary error
-1999-03-02 09:44:33 10HmbJ-0005vi-00 == userx@x.y R=r1 T=t1 defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 452 temporary error
-1999-03-02 09:44:33 10HmbJ-0005vi-00 ** userx@x.y: retry timeout exceeded
-1999-03-02 09:44:33 10HmbK-0005vi-00 <= <> R=10HmbJ-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbK-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=r0
-1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbL-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 452 temporary error
-1999-03-02 09:44:33 10HmbL-0005vi-00 == userx@x.y R=r1 T=t1 defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 452 temporary error
-1999-03-02 09:44:33 10HmbL-0005vi-00 ** userx@x.y: retry timeout exceeded
-1999-03-02 09:44:33 10HmbM-0005vi-00 <= <> R=10HmbL-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbM-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=r0
-1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbN-0005vi-00 H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined RCPT TO:<userx@x.y>
-1999-03-02 09:44:33 10HmbN-0005vi-00 == userx@x.y R=r1 T=t1 defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined RCPT TO:<userx@x.y>
-1999-03-02 09:44:33 10HmbN-0005vi-00 ** userx@x.y: retry timeout exceeded
-1999-03-02 09:44:33 10HmbO-0005vi-00 <= <> R=10HmbN-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbO-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=r0
-1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == userx@x.y R=r1 T=t1 defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** userx@x.y: retry timeout exceeded
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=r0
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 == userx@x.y R=r1 T=t1 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@x.y>: 452 temporary error
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** userx@x.y: retry timeout exceeded
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> R=10HmaZ-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=r0
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after DATA: 452 temporary error
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 == userx@x.y R=r1 T=t1 defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after DATA: 452 temporary error
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** userx@x.y: retry timeout exceeded
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> R=10HmbB-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=r0
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 452 temporary error
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 == userx@x.y R=r1 T=t1 defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 452 temporary error
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 ** userx@x.y: retry timeout exceeded
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> R=10HmbD-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=r0
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 == userx@x.y R=r1 T=t1 defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 ** userx@x.y: retry timeout exceeded
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= <> R=10HmbF-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=r0
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 == userx@x.y R=r1 T=t1 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@x.y>: 452 temporary error
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 ** userx@x.y: retry timeout exceeded
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= <> R=10HmbH-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=r0
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 452 temporary error
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 == userx@x.y R=r1 T=t1 defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 452 temporary error
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 ** userx@x.y: retry timeout exceeded
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 <= <> R=10HmbJ-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=r0
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 452 temporary error
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 == userx@x.y R=r1 T=t1 defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 452 temporary error
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 ** userx@x.y: retry timeout exceeded
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 <= <> R=10HmbL-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=r0
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined RCPT TO:<userx@x.y>
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 == userx@x.y R=r1 T=t1 defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined RCPT TO:<userx@x.y>
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 ** userx@x.y: retry timeout exceeded
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 <= <> R=10HmbN-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=r0
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 Completed

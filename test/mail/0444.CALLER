@@ -1,16 +1,16 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 From: Mailer-Daemon@test.ex
 Reply-To: postmaster@test.ex
 To: CALLER@test.ex
 Subject: Submission of mail from CALLER@test.ex directly to the XXX hosts
-In-Reply-To: <E10HmaX-0005vi-00@myhost.test.ex>
-References: <E10HmaX-0005vi-00@myhost.test.ex>
+In-Reply-To: <E10HmaX-000000005vi-0000@myhost.test.ex>
+References: <E10HmaX-000000005vi-0000@myhost.test.ex>
 Auto-Submitted: auto-replied
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
 Sender: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -35,10 +35,10 @@ to correct the fault described above.
 
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

@@ -51,7 +51,7 @@
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=(test) [1.2.3.4] P=smtp S=sss
+LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.2.3.4] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -110,7 +110,7 @@ LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=(test) [1.2.3.4] P=smtp S=
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
 LOG: H=(test) [1.2.3.5] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
-LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=(test) [1.2.3.5] P=smtp S=sss
+LOG: 10HmaY-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.2.3.5] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -166,7 +166,7 @@ LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=(test) [1.2.3.5] P=smtp S=
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=(test) [1.2.4.5] P=smtp S=sss
+LOG: 10HmaZ-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.2.4.5] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -229,7 +229,7 @@ LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=(test) [1.2.4.5] P=smtp S=
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
 LOG: H=(test) [1.3.2.4] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
-LOG: 10HmbA-0005vi-00 <= userx@somehost.example.com H=(test) [1.3.2.4] P=smtp S=sss
+LOG: 10HmbA-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.3.2.4] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -286,7 +286,7 @@ LOG: 10HmbA-0005vi-00 <= userx@somehost.example.com H=(test) [1.3.2.4] P=smtp S=
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmbB-0005vi-00 <= userx@somehost.example.com H=(test) [131.111.8.2] P=smtp S=sss
+LOG: 10HmbB-000000005vi-0000 <= userx@somehost.example.com H=(test) [131.111.8.2] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -344,7 +344,7 @@ LOG: 10HmbB-0005vi-00 <= userx@somehost.example.com H=(test) [131.111.8.2] P=smt
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmbC-0005vi-00 <= userx@somehost.example.com H=(test) [192.152.98.3] P=smtp S=sss
+LOG: 10HmbC-000000005vi-0000 <= userx@somehost.example.com H=(test) [192.152.98.3] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -403,4 +403,4 @@ LOG: 10HmbC-0005vi-00 <= userx@somehost.example.com H=(test) [192.152.98.3] P=sm
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
-LOG: 10HmbD-0005vi-00 <= userx@somehost.example.com H=(test) [192.153.98.4] P=smtp S=sss
+LOG: 10HmbD-000000005vi-0000 <= userx@somehost.example.com H=(test) [192.153.98.4] P=smtp S=sss

@@ -1,6 +1,6 @@
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
-delivering 10HmaX-0005vi-00
+delivering 10HmaX-000000005vi-0000
 LOG: MAIN
   *> miles <miles@thishost.test.ex> R=r4 T=t2
 LOG: MAIN
@@ -32,26 +32,26 @@ rewrite headers
    From: CALLER_NAME <CALLER@test.ex>
 search_tidyup called
 >>Headers after rewriting and local additions:
-I Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+I Message-Id: <E10HmaY-000000005vi-0000@the.local.host.name>
 F From: CALLER_NAME <CALLER@test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-Data file name: TESTSUITE/spool//input//10HmaY-0005vi-00-D
-Data file written for message 10HmaY-0005vi-00
+Data file name: TESTSUITE/spool//input//10HmaY-000000005vi-0000-D
+Data file written for message 10HmaY-000000005vi-0000
 >>Generated Received: header line
 P Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for kilos@recurse.test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-0005vi-00
+Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <kilos@recurse.test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
-Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
+Renaming spool header file: TESTSUITE/spool//input//10HmaY-000000005vi-0000-H
 Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 search_tidyup called
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -N -odi -Mc 10HmaY-0005vi-00
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -N -odi -Mc 10HmaY-000000005vi-0000
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1235
@@ -62,9 +62,9 @@ dropping to exim gid; retaining priv uid
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
-set_process_info: pppp delivering 10HmaY-0005vi-00
-Trying spool file TESTSUITE/spool//input//10HmaY-0005vi-00-D
-reading spool file 10HmaY-0005vi-00-H
+set_process_info: pppp delivering 10HmaY-000000005vi-0000
+Trying spool file TESTSUITE/spool//input//10HmaY-000000005vi-0000-D
+reading spool file 10HmaY-000000005vi-0000-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@test.ex
 sender_local=1 ident=CALLER
 Non-recipients:
@@ -238,7 +238,7 @@ search_tidyup called
 changed uid/gid: local delivery to kilos <kilos@recurse.test.ex.test.ex> transport=t2
   uid=CALLER_UID gid=CALLER_GID pid=p1236
   home=NULL current=/
-set_process_info: pppp delivering 10HmaY-0005vi-00 to kilos using t2
+set_process_info: pppp delivering 10HmaY-000000005vi-0000 to kilos using t2
 appendfile transport entered
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   file=/dev/null format=unix
@@ -259,7 +259,7 @@ LOG: MAIN
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
 changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=p1235
-set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
+set_process_info: pppp tidying up after delivering 10HmaY-000000005vi-0000
 DSN: processing router : r4
 DSN: processing successful delivery address: kilos@recurse.test.ex.test.ex
 DSN: Sender_address: CALLER@test.ex
@@ -278,7 +278,7 @@ DSN: Remote SMTP server supports DSN: 0
 DSN: not sending DSN success message
 LOG: MAIN
   Completed
-end delivery of 10HmaY-0005vi-00
+end delivery of 10HmaY-000000005vi-0000
 search_tidyup called
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1235 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>

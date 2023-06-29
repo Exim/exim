@@ -20,18 +20,18 @@
 >>> processing "warn" (TESTSUITE/test-config 38)
 >>> check logwrite = signer: $dkim_cur_signer bits: $dkim_key_length
 >>>                = signer: test.ex bits: 1024
-LOG: 10HmaX-0005vi-00 signer: test.ex bits: 1024
+LOG: 10HmaX-000000005vi-0000 signer: test.ex bits: 1024
 >>> warn: condition test succeeded in ACL "check_dkim"
 >>> processing "accept" (TESTSUITE/test-config 41)
 >>> accept: condition test succeeded in ACL "check_dkim"
 >>> end of ACL "check_dkim": ACCEPT
-LOG: 10HmaX-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=1024 [verification succeeded]
+LOG: 10HmaX-000000005vi-0000 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=1024 [verification succeeded]
 >>> using ACL "check_data"
 >>> processing "accept" (TESTSUITE/test-config 45)
 >>> check logwrite = ${authresults {$primary_hostname}}
 >>>                = Authentication-Results: myhost.test.ex;
 >>> 	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha1
-LOG: 10HmaX-0005vi-00 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha1
+LOG: 10HmaX-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha1
 >>> accept: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": ACCEPT
-LOG: 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=qwerty1234@disco-zombie.net
+LOG: 10HmaX-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=qwerty1234@disco-zombie.net

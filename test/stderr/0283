@@ -49,7 +49,7 @@ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 LOG: MAIN
-  <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
+  <= <> R=10HmaY-000000005vi-0000 U=EXIMUSER P=local S=sss
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1238

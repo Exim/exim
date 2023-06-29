@@ -13,6 +13,10 @@ exim_msgdate E1pAnS3-003fPj-Tw
 0 TZ=GB
 exim_msgdate 1pEPHo-005xgk-2e
 ****
+### New-format log message ID
+0 TZ=GB
+exim_msgdate 1ptUlY-00000000PfG-46ri
+****
 ### Just the date part of the Message ID:
 ###    The Epoch ...
 0 TZ=GB
@@ -40,7 +44,7 @@ exim_msgdate E000000-005XGK-00 1pAnS3-003fPj-Tw zzzzzz
 exim_msgdate --base36 000000-005XGK-00
 ****
 0 TZ=GB
-exim_msgdate --base36 ZZZZZZ-005XGK-ZZ
+exim_msgdate --base36 ZZZZZZ-005XGK-RR
 ****
 255 TZ=GB
 exim_msgdate --base36 zzzzzz-005xgk-zz
@@ -55,10 +59,10 @@ exim_msgdate --base 32 ZZZZZZ
 exim_msgdate --base62 000000-005XGK-00
 ****
 0 TZ=GB
-exim_msgdate --base62 ZZZZZZ-005XGK-ZZ
+exim_msgdate --base62 ZZZZZZ-005XGK-WF
 ****
 0 TZ=GB
-exim_msgdate --base62 zzzzzz-005xgk-zz
+exim_msgdate --base62 zzzzzz-005xgk-WF
 ****
 ### Some strings that are similar to, but not Exim Message IDs:
 0 TZ=GB
@@ -78,7 +82,7 @@ exim_msgdate -local 000000
 exim_msgdate -local E1pAnS3-003fPj-Tw
 ****
 0 TZ=GB
-exim_msgdate -local zzzzzz-003fPj-zz
+exim_msgdate -local zzzzzz-003fPj-WF
 ****
 ### Print date with timezone GMT/Zulu
 0 TZ=GB
@@ -91,49 +95,49 @@ exim_msgdate -GMT E1pAnS3-003fPj-Tw
 exim_msgdate -zulu E1pAnS3-003fPj-Tw
 ****
 0 TZ=GB
-exim_msgdate -zulu EZZZZZZ-003fPj-ZZ
+exim_msgdate -zulu EZZZZZZ-003fPj-WF
 ****
 ### Print date as seconds since the UNIX epoch.
 0 TZ=GB
 exim_msgdate -unix E000000-003fPj-00
 ****
 0 TZ=GB
-exim_msgdate -unix E1pAnS3-003fPj-tw
+exim_msgdate -unix E1pAnS3-003fPj-WF
 ****
 0 TZ=GB
-exim_msgdate -unix Ezzzzzz-003fpj-zz
+exim_msgdate -unix Ezzzzzz-003fpj-WF
 ****
 ### Show the process id too
 0 TZ=GB
-exim_msgdate -unix --pid EZZZZZZ-003fPj-ZZ
+exim_msgdate -unix --pid EZZZZZZ-003fPj-WF
 ****
 0 TZ=GB
-exim_msgdate -pid EZZZZZZ-003fPj-ZZ
+exim_msgdate -pid EZZZZZZ-003fPj-WF
 ****
 0 TZ=GB
-exim_msgdate -local --pid EZZZZZZ-003fPj-ZZ
+exim_msgdate -local --pid EZZZZZZ-003fPj-WF
 ****
 ### Override the value of localhost_number set in the exim configuation file
 0 TZ=GB
-exim_msgdate -local --localhost_number 11 -base 62 EZZZZZZ-003FPJ-ZZ
+exim_msgdate -local --localhost_number 11 -base 62 EZZZZZZ-003FPJ-WF
 ****
 0 TZ=GB
-exim_msgdate --localhost_number 11 -base 62 EZZZZZZ-003FPJ-ZZ
+exim_msgdate --localhost_number 11 -base 62 EZZZZZZ-003FPJ-WF
 ****
 0 TZ=GB
-exim_msgdate --localhost_number 9 -base 36 EZZZZZZ-003FPJ-ZZ
+exim_msgdate --localhost_number 9 -base 36 EZZZZZZ-003FPJ-Q0
 ****
 255 TZ=GB
-exim_msgdate --localhost_number 11 -base 36 EZZZZZZ-003FPJ-ZZ
+exim_msgdate --localhost_number 11 -base 36 EZZZZZZ-003FPJ-WF
 ****
 0 TZ=GB
-exim_msgdate -localhost_number 11 --local -base 62 EZZZZZZ-003FPJ-ZZ
+exim_msgdate -localhost_number 11 --local -base 62 EZZZZZZ-003FPJ-WF
 ****
 255 TZ=GB
-exim_msgdate --localhost_number -1 -base 36 EZZZZZZ-003FPJ-ZZ
+exim_msgdate --localhost_number -1 -base 36 EZZZZZZ-003FPJ-WF
 ****
 255 TZ=GB
-exim_msgdate --localhost_number 19 -base 62 EZZZZZZ-003FPJ-ZZ
+exim_msgdate --localhost_number 19 -base 62 EZZZZZZ-003FPJ-WF
 ****
 #
 #
@@ -145,7 +149,7 @@ exim_msgdate --localhost_number 19 -base 62 EZZZZZZ-003FPJ-ZZ
 exim_msgdate -l -u -z -pid E000000-005XGK-00
 ****
 0 TZ=GB
-exim_msgdate -l -u -z -pid 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
+exim_msgdate -l -u -z -pid 000000-005XGK-00 ZZZZZZ-005XGK-WF 1PANS3-003FPJ-TW
 ****
 0 TZ=GB
 exim_msgdate -l -u -z -pid 000000 1PANS3 zzzzzz
@@ -158,7 +162,7 @@ exim_msgdate -l -u -z -pid 000000 1PANS3 ZZZZZZ
 exim_msgdate -l -u -z -localhost_number=3 E000000-005XGK-00
 ****
 0 TZ=GB
-exim_msgdate -l -u -z -localhost_number=3 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
+exim_msgdate -l -u -z -localhost_number=3 000000-005XGK-00 ZZZZZZ-005XGK-WF 1PANS3-003FPJ-TW
 ****
 0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=3 000000 1PANS3 zzzzzz
@@ -171,7 +175,7 @@ exim_msgdate -l -u -z -localhost_number=3 000000 1PANS3 ZZZZZZ
 exim_msgdate -l -u -z -localhost_number=13 E000000-005XGK-00
 ****
 0 TZ=GB
-exim_msgdate -l -u -z -localhost_number=13 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
+exim_msgdate -l -u -z -localhost_number=13 000000-005XGK-00 ZZZZZZ-005XGK-WF 1PANS3-003FPJ-TW
 ****
 0 TZ=GB
 exim_msgdate -l -u -z -localhost_number=13 000000 1PANS3 zzzzzz
@@ -184,7 +188,7 @@ exim_msgdate -l -u -z -localhost_number=13 000000 1PANS3 ZZZZZZ
 exim_msgdate -l -u -z -localhost_number=20 E000000-005XGK-00
 ****
 255 TZ=GB
-exim_msgdate -l -u -z -localhost_number=20 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
+exim_msgdate -l -u -z -localhost_number=20 000000-005XGK-00 ZZZZZZ-005XGK-WF 1PANS3-003FPJ-TW
 ****
 255 TZ=GB
 exim_msgdate -l -u -z -localhost_number=20 000000 1PANS3 zzzzzz
@@ -196,8 +200,8 @@ exim_msgdate -l -u -z -localhost_number=20 000000 1PANS3 ZZZZZZ
 0 TZ=GB
 exim_msgdate -l -u -z --b36 E000000-005XGK-00
 ****
-255 TZ=GB
-exim_msgdate -l -u -z --b36 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
+0 TZ=GB
+exim_msgdate -l -u -z --b36 000000-005XGK-00 ZZZZZZ-005XGK-R0 1PANS3-003FPJ-RR
 ****
 255 TZ=GB
 exim_msgdate -l -u -z --b36 000000 1PANS3 zzzzzz
@@ -210,7 +214,7 @@ exim_msgdate -l -u -z --b36 000000 1PANS3 ZZZZZZ
 exim_msgdate -l -u -z --b62 E000000-005XGK-00
 ****
 0 TZ=GB
-exim_msgdate -l -u -z --b62 000000-005XGK-00 ZZZZZZ-005XGK-zz 1PANS3-003FPJ-TW
+exim_msgdate -l -u -z --b62 000000-005XGK-00 ZZZZZZ-005XGK-WF 1PANS3-003FPJ-TW
 ****
 0 TZ=GB
 exim_msgdate -l -u -z --b62 000000 1PANS3 zzzzzz

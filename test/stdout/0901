@@ -26,7 +26,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250- 88 byte chunk, total 88
 ??? 250
-<<< 250 OK id=10HmaX-0005vi-00
+<<< 250 OK id=10HmaX-000000005vi-0000
 >>> quit
 ??? 221
 <<< 221 testhost.test.ex closing connection
@@ -66,7 +66,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250- 0 byte chunk, total 100
 ??? 250
-<<< 250 OK id=10HmaY-0005vi-00
+<<< 250 OK id=10HmaY-000000005vi-0000
 >>> mail from:someone3@some.domain
 ??? 250
 <<< 250 OK
@@ -85,7 +85,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250- 78 byte chunk, total 88
 ??? 250
-<<< 250 OK id=10HmaZ-0005vi-00
+<<< 250 OK id=10HmaZ-000000005vi-0000
 >>> quit
 ??? 221
 <<< 221 testhost.test.ex closing connection
@@ -125,7 +125,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250- 0 byte chunk, total 100
 ??? 250
-<<< 250 OK id=10HmbA-0005vi-00
+<<< 250 OK id=10HmbA-000000005vi-0000
 >>> mail from:someone3A@some.domain
 ??? 250
 <<< 250 OK
@@ -144,7 +144,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250- 78 byte chunk, total 88
 ??? 250
-<<< 250 OK id=10HmbB-0005vi-00
+<<< 250 OK id=10HmbB-000000005vi-0000
 >>> quit
 ??? 221
 <<< 221 testhost.test.ex closing connection
@@ -305,7 +305,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250- 88 byte chunk, total 88
 ??? 250
-<<< 250 OK id=10HmbD-0005vi-00
+<<< 250 OK id=10HmbD-000000005vi-0000
 >>> quit
 ??? 221
 <<< 221 testhost.test.ex closing connection

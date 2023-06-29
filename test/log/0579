@@ -2,6 +2,6 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 cmd 'RCPT TO:<"name with spaces"@test.ex>'
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= <> H=(test) [127.0.0.1] P=esmtp S=sss for "name with spaces"@test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => :blackhole: <"name with spaces"@test.ex> R=r1
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= <> H=(test) [127.0.0.1] P=esmtp S=sss for "name with spaces"@test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => :blackhole: <"name with spaces"@test.ex> R=r1
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed

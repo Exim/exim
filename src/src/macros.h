@@ -184,7 +184,8 @@ written on the spool, it gets read into big_buffer. */
 /* The length of the base names of spool files, which consist of an internal
 message id with a trailing "-H" or "-D" added. */
 
-#define SPOOL_NAME_LENGTH (MESSAGE_ID_LENGTH+2)
+#define SPOOL_NAME_LENGTH_OLD	(MESSAGE_ID_LENGTH_OLD + 2)
+#define SPOOL_NAME_LENGTH	(MESSAGE_ID_LENGTH     + 2)
 
 /* The maximum number of message ids to store in a waiting database
 record, and the max number of continuation records allowed. */
@@ -199,6 +200,8 @@ record, and the max number of continuation records allowed. */
 
 /* Macros for trivial functions */
 
+#define xstr(x)		#x
+#define str(x)		xstr(x)	/* stringize, expanding macros in arg first */
 #define mac_ismsgid(s)	(regex_match(regex_ismsgid, (s), -1, NULL))
 
 

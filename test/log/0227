@@ -15,8 +15,8 @@
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.domain>: 550-Recipient not liked on two lines\n550 Here's the second
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.domain>: 550 Recipient not liked, with bad char:\200\377\377
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.3] U=root F=<uncheckable@localhost1> temporarily rejected RCPT <z@remote.domain>: Could not complete recipient verify callout
-1999-03-02 09:44:33 10HmaX-0005vi-00 H=(test) [V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
-1999-03-02 09:44:33 10HmaY-0005vi-00 H=(test) [V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=(test) [V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 H=(test) [V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.5] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: relay not permitted
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.5] U=root sender verify fail for <ok@localhost1>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<postmaster@localhost1>: 550 Don't like postmaster
 1999-03-02 09:44:33 H=(test) [V4NET.0.0.5] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: Sender verify failed

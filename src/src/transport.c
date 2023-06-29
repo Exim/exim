@@ -1043,7 +1043,7 @@ if (tctx->options & topt_use_bdat)
   if (!(tctx->options & topt_no_body))
     {
     if ((fsize = lseek(deliver_datafile, 0, SEEK_END)) < 0) return FALSE;
-    fsize -= SPOOL_DATA_START_OFFSET;
+    fsize -= spool_data_start_offset(message_id);
     if (size_limit > 0  &&  fsize > size_limit)
       fsize = size_limit;
     size = hsize + fsize;
@@ -1101,7 +1101,7 @@ if (  f.spool_file_wireformat
    )
   {
   ssize_t copied = 0;
-  off_t offset = SPOOL_DATA_START_OFFSET;
+  off_t offset = spool_data_start_offset(message_id);
 
   /* Write out any header data in the buffer */
 
@@ -1139,7 +1139,7 @@ if (!(tctx->options & topt_no_body))
 
   nl_check_length = abs(nl_check_length);
   nl_partial_match = 0;
-  if (lseek(deliver_datafile, SPOOL_DATA_START_OFFSET, SEEK_SET) < 0)
+  if (lseek(deliver_datafile, spool_data_start_offset(message_id), SEEK_SET) < 0)
     return FALSE;
   while (  (len = MIN(DELIVER_IN_BUFFER_SIZE, size)) > 0
 	&& (len = read(deliver_datafile, deliver_in_buffer, len)) > 0)
@@ -1497,11 +1497,18 @@ Returns:    nothing
 */
 
 void
-transport_update_waiting(host_item *hostlist, uschar *tpname)
+transport_update_waiting(host_item * hostlist, uschar * tpname)
 {
 const uschar *prevname = US"";
 open_db dbblock;
 open_db *dbm_file;
+
+if (!is_new_message_id(message_id))
+  {
+  DEBUG(D_transport) debug_printf("message_id %s is not new format; "
+    "skipping wait-%s database update\n", tpname);
+  return;
+  }
 
 DEBUG(D_transport) debug_printf("updating wait-%s database\n", tpname);
 
@@ -1517,7 +1524,7 @@ that the message id is in each host record. */
 for (host_item * host = hostlist; host; host = host->next)
   {
   BOOL already = FALSE;
-  dbdata_wait *host_record;
+  dbdata_wait * host_record;
   int host_length;
   uschar buffer[256];
 
@@ -1543,8 +1550,27 @@ for (host_item * host = hostlist; host; host = host->next)
 
   for (uschar * s = host_record->text; s < host_record->text + host_length;
        s += MESSAGE_ID_LENGTH)
+    {
+    /* If any ID is seen which is not new-format, wipe the record and
+    any continuations */
+
+    if (!is_new_message_id(s))
+      {
+      DEBUG(D_hints_lookup)
+	debug_printf_indent("NOTE: old or corrupt message-id found in wait=%.200s"
+	  " hints DB; deleting records for %s\n", tpname, host->name);
+
+      (void) dbfn_delete(dbm_file, host->name);
+      for (int i = host_record->sequence - 1; i >= 0; i--)
+	(void) dbfn_delete(dbm_file,
+		    (sprintf(CS buffer, "%.200s:%d", host->name, i), buffer));
+
+      host_record->count = host_record->sequence = 0;
+      break;
+      }
     if (Ustrncmp(s, message_id, MESSAGE_ID_LENGTH) == 0)
       { already = TRUE; break; }
+    }
 
   /* If we haven't found this message in the main record, search any
   continuation records that exist. */
@@ -1652,13 +1678,14 @@ typedef struct msgq_s
 } msgq_t;
 
 BOOL
-transport_check_waiting(const uschar *transport_name, const uschar *hostname,
-  int local_message_max, uschar *new_message_id, oicf oicf_func, void *oicf_data)
+transport_check_waiting(const uschar * transport_name, const uschar * hostname,
+  int local_message_max, uschar * new_message_id,
+  oicf oicf_func, void * oicf_data)
 {
-dbdata_wait *host_record;
+dbdata_wait * host_record;
 int host_length;
 open_db dbblock;
-open_db *dbm_file;
+open_db * dbm_file;
 
 int         i;
 struct stat statbuf;
@@ -1735,6 +1762,22 @@ while (1)
 
   for (i = 0; i < host_record->count; ++i)
     {
+    /* If any ID is seen which is not new-format, wipe the record and
+    any continuations */
+
+    if (!is_new_message_id(host_record->text + (i * MESSAGE_ID_LENGTH)))
+      {
+      uschar buffer[256];
+      DEBUG(D_hints_lookup)
+	debug_printf_indent("NOTE: old or corrupt message-id found in wait=%.200s"
+	  " hints DB; deleting records for %s\n", transport_name, hostname);
+      (void) dbfn_delete(dbm_file, hostname);
+      for (int i = host_record->sequence - 1; i >= 0; i--)
+	(void) dbfn_delete(dbm_file,
+		    (sprintf(CS buffer, "%.200s:%d", hostname, i), buffer));
+      dbfn_close(dbm_file);
+      goto retfalse;
+      }
     msgq[i].bKeep = TRUE;
 
     Ustrncpy_nt(msgq[i].message_id, host_record->text + (i * MESSAGE_ID_LENGTH),
@@ -1885,8 +1928,8 @@ return FALSE;
 
 /* Just the regain-root-privilege exec portion */
 void
-transport_do_pass_socket(const uschar *transport_name, const uschar *hostname,
-  const uschar *hostaddress, uschar *id, int socket_fd)
+transport_do_pass_socket(const uschar * transport_name, const uschar * hostname,
+  const uschar * hostaddress, uschar * id, int socket_fd)
 {
 int i = 13;
 const uschar **argv;

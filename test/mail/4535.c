@@ -3,7 +3,7 @@ Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=myhost.test.ex)
 	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmbC-0005vi-00
+	id 10HmbC-000000005vi-0000
 	for c@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
@@ -13,11 +13,11 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
 	ygZGjs=;
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmbB-0005vi-00
+	id 10HmbB-000000005vi-0000
 	for c@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 From: nobody@example.com
-Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbB-000000005vi-0000@myhost.test.ex>
 Sender: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -32,7 +32,7 @@ Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=myhost.test.ex)
 	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmbG-0005vi-00
+	id 10HmbG-000000005vi-0000
 	for c@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
@@ -42,11 +42,11 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
 	ygZGjs=;
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmbF-0005vi-00
+	id 10HmbF-000000005vi-0000
 	for c@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 From: nobody@example.com
-Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbF-000000005vi-0000@myhost.test.ex>
 Sender: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

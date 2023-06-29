@@ -1,42 +1,42 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 ** xxx@unknown.test.ex: unknown.test.ex is not local, and can't route by DNS
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 *> CALLER <CALLER@myhost.ex> R=localuser T=local_delivery
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-0005vi-00 == xxx@local.test.ex routing defer (-56): domain is in queue_domains
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** xxx@unknown.test.ex: unknown.test.ex is not local, and can't route by DNS
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 *> CALLER <CALLER@myhost.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 == xxx@local.test.ex routing defer (-56): domain is in queue_domains
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@myhost.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=p1234 -ql
-1999-03-02 09:44:33 10HmaZ-0005vi-00 *> xxx@local.test.ex R=localreally T=local_delivery
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@myhost.ex> R=localuser T=local_delivery
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 *> xxx@local.test.ex R=localreally T=local_delivery
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => userx <userx@myhost.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234 -ql
 1999-03-02 09:44:33 Start queue run: pid=p1235
 1999-03-02 09:44:33 End queue run: pid=p1235
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbB-0005vi-00 *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbC-0005vi-00 == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 1999-03-02 09:44:33 Start queue run: pid=p1236
-1999-03-02 09:44:33 10HmbC-0005vi-00 *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
-1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1236
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= CALLER@myhost.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=p1237 -qq
-1999-03-02 09:44:33 10HmbD-0005vi-00 *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
-1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbE-0005vi-00 *> yyy@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
-1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 *> yyy@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1237 -qq
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbF-0005vi-00 == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
-1999-03-02 09:44:33 10HmbF-0005vi-00 *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
-1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbG-0005vi-00 == xxx@local.test.ex routing defer (-56): domain is in queue_domains
-1999-03-02 09:44:33 10HmbG-0005vi-00 *> xxx@local.test.ex R=localreally T=local_delivery
-1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 == xxx@local.test.ex routing defer (-56): domain is in queue_domains
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 *> xxx@local.test.ex R=localreally T=local_delivery
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed

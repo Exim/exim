@@ -1,6 +1,6 @@
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
-delivering 10HmbL-0005vi-00
+delivering 10HmbL-000000005vi-0000
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
@@ -823,8 +823,8 @@ LOG: MAIN
 LOG: MAIN
   ** n199@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<n199@test.ex>: 550 NO
 LOG: MAIN
-  <= <> R=10HmbL-0005vi-00 U=EXIMUSER P=local S=sss
-delivering 10HmbM-0005vi-00
+  <= <> R=10HmbL-000000005vi-0000 U=EXIMUSER P=local S=sss
+delivering 10HmbM-000000005vi-0000
 LOG: MAIN
   ** CALLER@test.ex R=bounce: just discard
 LOG: MAIN
@@ -833,7 +833,7 @@ LOG: MAIN
   Completed
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
-delivering 10HmbP-0005vi-00
+delivering 10HmbP-000000005vi-0000
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex

@@ -246,7 +246,7 @@ p1238 dnslists: wrote cache entry, ttl=2
 p1238 DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 p1238 => that means V4NET.11.12.14 is listed at rbl.test.ex
 LOG: MAIN
-  <= a@shorthost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+  <= a@shorthost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex
 Process p1238 is ready for new message
 LOG: smtp_connection MAIN
   SMTP connection from localhost (myhost.test.ex) [127.0.0.1] D=qqs closed by QUIT

@@ -40,7 +40,7 @@
 >>> no more routers
 >>> require: condition test failed in ACL "check_message"
 >>> end of ACL "check_message": not OK
-LOG: 10HmaY-0005vi-00 H=(test) [V4NET.0.0.1] F=<junk@jink.jonk.test.ex> rejected after DATA: there is no valid sender in any header line
+LOG: 10HmaY-000000005vi-0000 H=(test) [V4NET.0.0.1] F=<junk@jink.jonk.test.ex> rejected after DATA: there is no valid sender in any header line
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -122,7 +122,7 @@ LOG: H=(test) [V4NET.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <root@test.
 >>> no more routers
 >>> require: condition test failed in ACL "check_message"
 >>> end of ACL "check_message": not OK
-LOG: 10HmaZ-0005vi-00 H=(test) [V4NET.0.0.2] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
+LOG: 10HmaZ-000000005vi-0000 H=(test) [V4NET.0.0.2] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -177,4 +177,4 @@ LOG: 10HmaZ-0005vi-00 H=(test) [V4NET.0.0.2] F=<userx@test.ex> rejected after DA
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> accept: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": ACCEPT
-LOG: 10HmaX-0005vi-00 <= userx@test.ex H=(test) [V4NET.0.0.2] P=smtp S=sss
+LOG: 10HmaX-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.0.0.2] P=smtp S=sss

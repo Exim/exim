@@ -1,11 +1,11 @@
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbC-0005vi-00
+	id 10HmbC-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: reply to this
-Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbC-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -14,11 +14,11 @@ This is a message to be replied to.
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbA-0005vi-00
+	id 10HmbA-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: freeze this (1)
-Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbA-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -27,11 +27,11 @@ This is a message to be frozen.
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbE-0005vi-00
+	id 10HmbE-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: freeze this (2)
-Message-Id: <E10HmbE-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbE-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

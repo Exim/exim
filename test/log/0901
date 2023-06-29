@@ -1,15 +1,15 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= someone1@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= someone2@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= someone3@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= someone2A@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= someone3A@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
-1999-03-02 09:44:33 10HmbC-0005vi-00 SMTP data timeout (message abandoned) on connection from (tester) [127.0.0.1] F=<someone4@some.domain> D=qqs
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= someone1@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= someone2@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= someone3@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= someone2A@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= someone3A@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 SMTP data timeout (message abandoned) on connection from (tester) [127.0.0.1] F=<someone4@some.domain> D=qqs
 1999-03-02 09:44:33 SMTP connection from (tester) [127.0.0.1] lost while reading message data
 1999-03-02 09:44:33 SMTP connection from (tester) [127.0.0.1] lost while reading message data
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= someone8@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= someone8@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
 1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "BDAT 1" H=(tester) [127.0.0.1] next input="BDAT 87 last\r\no: Susan@random.co"...
 1999-03-02 09:44:33 SMTP call from (tester) [127.0.0.1] dropped: too many syntax or protocol errors (last command was "From: Sam@random.com",  C=EHLO,MAIL,RCPT,BDAT)
 1999-03-02 09:44:33 SMTP connection from (tester) [127.0.0.1] lost while reading message data (header)

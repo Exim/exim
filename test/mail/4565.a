@@ -8,7 +8,7 @@ Authentication-Results: test.ex;
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for a@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=1; cv=none; a=rsa-sha256; d=test.ex; s=sel;
@@ -41,7 +41,7 @@ Authentication-Results: test.ex;
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for za@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;

@@ -1,14 +1,14 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 => 127.0.0.1@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => 127.0.0.1@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-000000005vi-0000"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, -q1h, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 Start queue run: pid=p1235
-1999-03-02 09:44:33 10HmaX-0005vi-00 H=V4NET.0.0.1 [V4NET.0.0.1] Network unreachable
-1999-03-02 09:44:33 10HmaX-0005vi-00 == V4NET.0.0.1@test.ex R=r1 T=t1 defer (dd): Network unreachable
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=V4NET.0.0.1 [V4NET.0.0.1] Network unreachable
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == V4NET.0.0.1@test.ex R=r1 T=t1 defer (dd): Network unreachable
 1999-03-02 09:44:33 End queue run: pid=p1235
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtp S=sss id=E10HmaY-0005vi-00@the.local.host.name
-1999-03-02 09:44:33 10HmaZ-0005vi-00 H=V4NET.0.0.2 [V4NET.0.0.2] Network unreachable
-1999-03-02 09:44:33 10HmaZ-0005vi-00 == 127.0.0.1@test.ex R=r1 T=t1 defer (dd): Network unreachable
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtp S=sss id=E10HmaY-000000005vi-0000@the.local.host.name
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 H=V4NET.0.0.2 [V4NET.0.0.2] Network unreachable
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 == 127.0.0.1@test.ex R=r1 T=t1 defer (dd): Network unreachable

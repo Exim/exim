@@ -5,19 +5,19 @@ dropping to exim gid; retaining priv uid
 set_process_info: pppp running the queue (single queue run)
 LOG: queue_run MAIN
   Start queue run: pid=p1234
-set_process_info: pppp running queue: 10HmaX-0005vi-00-H
-set_process_info: pppp delivering 10HmaX-0005vi-00 (queue run pid p1234)
+set_process_info: pppp running queue: 10HmaX-000000005vi-0000
+set_process_info: pppp delivering 10HmaX-000000005vi-0000 (queue run pid p1234)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
-set_process_info: pppp delivering 10HmaX-0005vi-00 using t1
+set_process_info: pppp delivering 10HmaX-000000005vi-0000 using t1
 t1 transport entered
   userx@test.ex
 hostlist:
   '127.0.0.1' IP 127.0.0.1 port -1
 checking retry status of 127.0.0.1
 127.0.0.1 [127.0.0.1]:1111 retry-status = usable
-delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
-set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1]:PORT_S (userx@test.ex)
+delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
+set_process_info: pppp delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1]:PORT_S (userx@test.ex)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP<< 220 Server ready
   SMTP>> EHLO the.local.host.name
@@ -49,15 +49,15 @@ cmd buf flush ddd bytes
 H=127.0.0.1 [127.0.0.1] Remote host closed connection in response to RSET
   SMTP(close)>>
 cmdlog: '220:EHLO:250-:MAIL|:RCPT|:DATA:250:550:RSET'
-set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1]:PORT_S for userx@test.ex: result OK
+set_process_info: pppp delivering 10HmaX-000000005vi-0000: just tried 127.0.0.1 [127.0.0.1]:PORT_S for userx@test.ex: result OK
 Leaving t1 transport
-set_process_info: pppp delivering 10HmaX-0005vi-00 (just run t1 for userx@test.ex in subprocess)
-set_process_info: pppp running queue: waiting for 10HmaX-0005vi-00 (pppp)
-set_process_info: pppp delivering 10HmaX-0005vi-00: waiting for a remote delivery subprocess to finish
-set_process_info: pppp delivering 10HmaX-0005vi-00
+set_process_info: pppp delivering 10HmaX-000000005vi-0000 (just run t1 for userx@test.ex in subprocess)
+set_process_info: pppp running queue: waiting for 10HmaX-000000005vi-0000 (pppp)
+set_process_info: pppp delivering 10HmaX-000000005vi-0000: waiting for a remote delivery subprocess to finish
+set_process_info: pppp delivering 10HmaX-000000005vi-0000
 LOG: MAIN
   ** userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 550 NO
-set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
+set_process_info: pppp tidying up after delivering 10HmaX-000000005vi-0000
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -66,40 +66,40 @@ set_process_info: pppp accepting a local non-SMTP message from <>
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 LOG: MAIN
-  <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+  <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
 set_process_info: pppp delivering specified messages
-set_process_info: pppp delivering 10HmaZ-0005vi-00
+set_process_info: pppp delivering 10HmaZ-000000005vi-0000
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> CALLER@the.local.host.name <--------
-set_process_info: pppp delivering 10HmaZ-0005vi-00 using t1
+set_process_info: pppp delivering 10HmaZ-000000005vi-0000 using t1
 t1 transport entered
   CALLER@the.local.host.name
 hostlist:
   '127.0.0.1' IP 127.0.0.1 port -1
 checking retry status of 127.0.0.1
 127.0.0.1 [127.0.0.1]:1111 retry-status = usable
-delivering 10HmaZ-0005vi-00 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.host.name)
-set_process_info: pppp delivering 10HmaZ-0005vi-00 to 127.0.0.1 [127.0.0.1]:PORT_S (CALLER@the.local.host.name)
+delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.host.name)
+set_process_info: pppp delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1]:PORT_S (CALLER@the.local.host.name)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
-set_process_info: pppp delivering 10HmaZ-0005vi-00: just tried 127.0.0.1 [127.0.0.1]:PORT_S for CALLER@the.local.host.name: result DEFER
+set_process_info: pppp delivering 10HmaZ-000000005vi-0000: just tried 127.0.0.1 [127.0.0.1]:PORT_S for CALLER@the.local.host.name: result DEFER
 added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database
-added 10HmaZ-0005vi-00 to queue for 127.0.0.1
+added 10HmaZ-000000005vi-0000 to queue for 127.0.0.1
 Leaving t1 transport
-set_process_info: pppp delivering 10HmaZ-0005vi-00 (just run t1 for CALLER@the.local.host.name in subprocess)
-set_process_info: pppp delivering 10HmaZ-0005vi-00: waiting for a remote delivery subprocess to finish
-set_process_info: pppp delivering 10HmaZ-0005vi-00
+set_process_info: pppp delivering 10HmaZ-000000005vi-0000 (just run t1 for CALLER@the.local.host.name in subprocess)
+set_process_info: pppp delivering 10HmaZ-000000005vi-0000: waiting for a remote delivery subprocess to finish
+set_process_info: pppp delivering 10HmaZ-000000005vi-0000
 LOG: MAIN
   == CALLER@the.local.host.name R=r1 T=t1 defer (dd): Connection refused
-set_process_info: pppp tidying up after delivering 10HmaZ-0005vi-00
+set_process_info: pppp tidying up after delivering 10HmaZ-000000005vi-0000
 >>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1235 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
@@ -107,11 +107,11 @@ LOG: MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1237 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
-set_process_info: pppp running queue: 10HmaY-0005vi-00-H
-set_process_info: pppp delivering 10HmaY-0005vi-00 (queue run pid p1234)
+set_process_info: pppp running queue: 10HmaY-000000005vi-0000
+set_process_info: pppp delivering 10HmaY-000000005vi-0000 (queue run pid p1234)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> usery@test.ex <--------
-set_process_info: pppp delivering 10HmaY-0005vi-00 using t1
+set_process_info: pppp delivering 10HmaY-000000005vi-0000 using t1
 t1 transport entered
   usery@test.ex
 hostlist:
@@ -121,15 +121,15 @@ no message retry record
 127.0.0.1 [127.0.0.1]:1111 retry-status = unusable
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database
-added 10HmaY-0005vi-00 to queue for 127.0.0.1
+added 10HmaY-000000005vi-0000 to queue for 127.0.0.1
 Leaving t1 transport
-set_process_info: pppp delivering 10HmaY-0005vi-00 (just run t1 for usery@test.ex in subprocess)
-set_process_info: pppp running queue: waiting for 10HmaY-0005vi-00 (pppp)
-set_process_info: pppp delivering 10HmaY-0005vi-00: waiting for a remote delivery subprocess to finish
-set_process_info: pppp delivering 10HmaY-0005vi-00
+set_process_info: pppp delivering 10HmaY-000000005vi-0000 (just run t1 for usery@test.ex in subprocess)
+set_process_info: pppp running queue: waiting for 10HmaY-000000005vi-0000 (pppp)
+set_process_info: pppp delivering 10HmaY-000000005vi-0000: waiting for a remote delivery subprocess to finish
+set_process_info: pppp delivering 10HmaY-000000005vi-0000
 LOG: retry_defer MAIN
   == usery@test.ex R=r1 T=t1 defer (-54): retry time not reached for any host for 'test.ex'
-set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
+set_process_info: pppp tidying up after delivering 10HmaY-000000005vi-0000
 >>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue

@@ -1,18 +1,18 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 To: CALLER@test.ex
 Subject: Auto generated
-In-Reply-To: <E10HmaX-0005vi-00@myhost.test.ex>
-References: <E10HmaX-0005vi-00@myhost.test.ex>
+In-Reply-To: <E10HmaX-000000005vi-0000@myhost.test.ex>
+References: <E10HmaX-000000005vi-0000@myhost.test.ex>
 Auto-Submitted: auto-replied
 h1: the first added header
 h2: the second added header
  continued on another line
 h3: the third added header
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -20,18 +20,18 @@ This is some body text
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbA-0005vi-00
+	id 10HmbA-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: userx@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
-References: <E10HmaZ-0005vi-00@myhost.test.ex>
+References: <E10HmaZ-000000005vi-0000@myhost.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbA-000000005vi-0000@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -60,11 +60,11 @@ Content-type: message/rfc822
 Return-path: <CALLER@test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaZ-0005vi-00
+	id 10HmaZ-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 fno: 2
-Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaZ-000000005vi-0000@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

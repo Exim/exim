@@ -1,7 +1,7 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from [127.0.0.1] (helo=rhu.barb)
 	by myhost.test.ex with esmtp (Exim x.yz)
-	id 10HmaY-0005vi-00;
+	id 10HmaY-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: sender@some.where
 
@@ -9,7 +9,7 @@ Sender: sender@some.where
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from [127.0.0.1] (helo=rhu.barb)
 	by myhost.test.ex with esmtp (Exim x.yz)
-	id 10HmbC-0005vi-00
+	id 10HmbC-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Sender: sender@some.where

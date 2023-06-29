@@ -272,7 +272,7 @@ if (flushbuffer(sockfd, sendbuf) != 0)
 /* now send the body */
 DEBUG(D_acl)
   debug_printf("DCC: ***********************************\nDCC: Writing body:\n");
-(void)fseek(data_file, SPOOL_DATA_START_OFFSET, SEEK_SET);
+(void)fseek(data_file, spool_data_start_offset(message_id), SEEK_SET);
 
 gstring filebuf = { .size = big_buffer_size, .ptr = 0, .s = big_buffer };
 

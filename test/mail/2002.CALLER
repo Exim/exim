@@ -3,7 +3,7 @@ Received: from [127.0.0.1] (helo=rhu.barb)
 	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 tls-certificate-verified: 0
@@ -16,7 +16,7 @@ Received: from [127.0.0.1] (helo=test)
 	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <"name with spaces"@test.ex>)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 tls-certificate-verified: 0
@@ -29,7 +29,7 @@ Received: from [ip4.ip4.ip4.ip4] (helo=test)
 	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaZ-0005vi-00
+	id 10HmaZ-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 tls-certificate-verified: 1
@@ -42,7 +42,7 @@ Received: from [127.0.0.1] (helo=test)
 	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbA-0005vi-00
+	id 10HmbA-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 tls-certificate-verified: 0
@@ -56,7 +56,7 @@ Received: from [127.0.0.1] (helo=test)
 	by myhost.test.ex with smtps (TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbB-0005vi-00
+	id 10HmbB-000000005vi-0000
 	for CALLER@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 tls-certificate-verified: 0

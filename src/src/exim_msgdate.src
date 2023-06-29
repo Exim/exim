@@ -56,7 +56,7 @@ my $localhost_number;  # An Exim config value
 my $nolocalhost_number;
 
 my $p_name    = basename $0;
-my $p_version = "20230304.0";
+my $p_version = "20230501.0";
 my $p_cp      = <<EOM;
  Copyright (c) 2023 The Exim Maintainers 2023
 
@@ -364,42 +364,44 @@ if ($debug) {
 
 sub unpack_time($$) {
     my ($seconds, $fractions) = @_;
-    # warn "encoded: seconds: $seconds fractions: $fractions\n";
+    #warn "encoded: seconds: $seconds fractions: $fractions\n";
+
+    my ($id_resolution, $lcl_hostnum, $new_format);
+
+    $new_format = 1 if (length $fractions) == 4;
+
     $seconds = decode62($seconds);
     $fractions = decode62($fractions) if $fractions;
-    my $id_resolution;
+
     if (defined $localhost_number && $localhost_number ne "none") {
         print "localhost_number $localhost_number\n" if $debug;
         if ($base != 62) {
             # MacOS/Darwin and Cygwin
-            $id_resolution = 100;
+            $id_resolution = defined($new_format) ? 4 : 10000;
         } else {
             # Standard UNIX etc.
-            $id_resolution = 200;
+            $id_resolution = defined($new_format) ? 2 : 5000;
         }
-        $fractions -= $localhost_number * $id_resolution;
+	my $frac_divisor = 1000000 / $id_resolution;
+	$lcl_hostnum = int($fractions / $frac_divisor);
+	warn "localhost $lcl_hostnum from message-id != given number $localhost_number"
+	  if ($lcl_hostnum != $localhost_number);
+
+        $fractions -= $lcl_hostnum * $frac_divisor;
     } else {
         if ($base != 62) {
             # MacOS/Darwin and Cygwin
-            $id_resolution = 1000;
+            $id_resolution = defined($new_format) ? 2 : 1000;
         } else {
             # Standard UNIX etc.
-            $id_resolution = 2000;
+            $id_resolution = defined($new_format) ? 1 : 500;
         }
     }
-    while ($fractions > $id_resolution) {
-        $seconds++;
-        $fractions -= $id_resolution;
-    }
-    while ($fractions < -1e-7) {
-        $seconds--;
-        $fractions += $id_resolution;
-    }
-    # $seconds += $fractions / $id_resolution;
+    $fractions *= $id_resolution;
+    #warn "decoded: seconds: $seconds, fractions: $fractions";
+    ($fractions < 1000000) or die "bad microsecond count: $fractions\n";
 
-    # warn "decoded: seconds: $seconds, fractions: $fractions/$id_resolution\n";
-
-    return ($seconds, $fractions / $id_resolution);
+    return ($seconds, $fractions);
 } # sub unpack_time($$)
 
 sub print_time($$$$$$)
@@ -420,7 +422,7 @@ sub print_time($$$$$$)
     my $decimalstring = "";
     # if ($decimal>0)
     {
-        $decimalstring = sprintf(".%6.6d", 1000000*$decimal);
+        $decimalstring = sprintf(".%6.6d", $decimal);
     }
     my $secondsstring;
     unless (defined $unix or defined $zulu or defined $localtm) {
@@ -447,17 +449,31 @@ foreach my $msgid (@ARGV) {
     my ($seconds, $pid, $fractions, $decimal);
 
     if ($msgid =~
-        /(^|[\s<])E?([a-zA-Z0-9]{6})-([a-zA-Z0-9]{6})-([a-zA-Z0-9]{2})/)
+        /(?:(?:^|[\s<])E?
+	    (?<seconds>[a-zA-Z0-9]{6})			# new format
+	    -(?<pid>[a-zA-Z0-9]{11})
+	    -(?<fractions>[a-zA-Z0-9]{4})
+	  |
+	    (?<seconds>[a-zA-Z0-9]{6})			# old format
+	    -(?<pid>[a-zA-Z0-9]{6})
+	    -(?<fractions>[a-zA-Z0-9]{2})
+	 )/x)
     {
+print "saw full mesgid\n" if $debug;
+
         # Should take either the log form of timestamp,
         # the Message-ID: header form with the leading 'E', ...
-        ($seconds, $pid, $fractions) = ($2, $3, $4);
-        ($seconds, $decimal) = unpack_time($seconds, $fractions);
-        $pid = decode62($pid);
-        #warn "$seconds, $pid, $fractions\n";
-    } elsif ($msgid =~ /(^|[^0-9A-Za-z])([a-zA-Z0-9]{6})$/) {
+        ($seconds, $decimal) = unpack_time($+{seconds}, $+{fractions});
+        $pid = decode62($+{pid});
+        #warn "$seconds, $pid, $+{fractions}\n";
+    } elsif ($msgid =~ /(?:^|[^0-9A-Za-z])
+			(?<seconds>
+			[a-zA-Z0-9]{11}			# new format
+			|[a-zA-Z0-9]{6}			# old format
+			)$/x) {
         # ... or just the timecode section before the first '-'
-        ($seconds, $pid, $decimal) = (decode62($2), undef, 0);
+print "saw just timecode\n" if $debug;
+        ($seconds, $pid, $decimal) = (decode62($+{seconds}), undef, 0);
     } else {
         warn "$msgid not parsed\n";
         next;

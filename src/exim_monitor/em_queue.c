@@ -154,7 +154,7 @@ return node;
 *************************************************/
 
 static queue_item *
-set_up(uschar *name, int dir_char)
+set_up(uschar * name, int dir_char)
 {
 int i, rc, save_errno;
 struct stat statdata;
@@ -271,15 +271,15 @@ sender_address = NULL;
 snprintf(CS buffer, sizeof(buffer), "%s/input/%s/%s/%s-D",
   spool_directory, queue_name, message_subdir, name);
 if (Ustat(buffer, &statdata) == 0)
-  q->size = message_size + statdata.st_size - SPOOL_DATA_START_OFFSET + 1;
+  q->size = message_size + statdata.st_size - spool_data_start_offset(name) + 1;
 
 /* Scan and process the recipients list, skipping any that have already
 been delivered, and removing visible names. */
 
-if (recipients_list != NULL)
+if (recipients_list)
   for (i = 0; i < recipients_count; i++)
     {
-    uschar *r = recipients_list[i].address;
+    uschar * r = recipients_list[i].address;
     if (tree_search(tree_nonrecipients, r) == NULL)
       {
       if ((p = strstric(r+1, qualify_domain, FALSE)) != NULL &&

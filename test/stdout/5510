@@ -17,9 +17,9 @@ DATA
 300 gimme yer body
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test.ex>)
-	id 10HmaX-0005vi-00;
+	id 10HmaX-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
 From: userx@test.ex
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -49,9 +49,9 @@ DATA
 300 gimme that body
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test.ex>)
-	id 10HmaY-0005vi-00;
+	id 10HmaY-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
 From: userx@test.ex
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -78,9 +78,9 @@ DATA
 300 gimme yer body
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test.ex>)
-	id 10HmaZ-0005vi-00;
+	id 10HmaZ-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaZ-000000005vi-0000@myhost.test.ex>
 From: userx@test.ex
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -109,9 +109,9 @@ RCPT TO:<userq@test.ex>
 DATA
 300 gimme yer body
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbA-0005vi-00;
+	id 10HmbA-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbA-000000005vi-0000@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Some message text.
@@ -137,9 +137,9 @@ RCPT TO:<user5.2@test.ex>
 DATA
 300 yeah baby
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbB-0005vi-00;
+	id 10HmbB-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbB-000000005vi-0000@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 text
@@ -167,9 +167,9 @@ RCPT TO:<user6.2@test.ex>
 DATA
 300 yeah baby
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbC-0005vi-00;
+	id 10HmbC-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbC-000000005vi-0000@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 text
@@ -196,9 +196,9 @@ RCPT TO:<user7.3@test.ex>
 DATA
 300 go ahead
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbD-0005vi-00;
+	id 10HmbD-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbD-000000005vi-0000@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 text
@@ -225,10 +225,10 @@ RCPT TO:<user8.1@test.ex>
 DATA
 300 go ahead
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbE-0005vi-00
+	id 10HmbE-000000005vi-0000
 	for user8.1@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbE-000000005vi-0000@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 text

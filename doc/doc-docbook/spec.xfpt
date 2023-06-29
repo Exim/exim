@@ -953,7 +953,7 @@ User filters are run as part of the routing process, described below.
 .cindex "exim_msgdate"
 Every message handled by Exim is given a &'message id'& which is sixteen
 characters long. It is divided into three parts, separated by hyphens, for
-example &`16VDhn-0001bo-D3`&. Each part is a sequence of letters and digits,
+example &`16VDhn-000000001bo-D342`&. Each part is a sequence of letters and digits,
 normally encoding numbers in base 62. However, in the Darwin operating
 system (Mac OS X) and when Exim is compiled to run under Cygwin, base 36
 (avoiding the use of lower case letters) is used instead, because the message
@@ -974,21 +974,29 @@ started to be received, to a granularity of one second. That is, this field
 contains the number of seconds since the start of the epoch (the normal Unix
 way of representing the date and time of day).
 .next
-After the first hyphen, the next six characters are the id of the process that
-received the message.
+After the first hyphen, the next
+.new
+eleven
+.wen
+characters are the id of the process that received the message.
 .next
-There are two different possibilities for the final two characters:
+.new
+There are two different possibilities for the final four characters:
 .olist
 .oindex "&%localhost_number%&"
 If &%localhost_number%& is not set, this value is the fractional part of the
-time of reception, normally in units of 1/2000 of a second, but for systems
+time of reception, normally in units of
+microseconds.
+but for systems
 that must use base 36 instead of base 62 (because of case-insensitive file
-systems), the units are 1/1000 of a second.
+systems), the units are
+2 us.
 .next
-If &%localhost_number%& is set, it is multiplied by 200 (100) and added to
-the fractional part of the time, which in this case is in units of 1/200
-(1/100) of a second.
+If &%localhost_number%& is set, it is multiplied by
+500000 (250000) and added to
+the fractional part of the time, which in this case is in units of 2 us (4 us).
 .endlist
+.wen
 .endlist
 
 After a message has been received, Exim waits for the clock to tick at the

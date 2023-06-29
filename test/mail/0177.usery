@@ -1,14 +1,14 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for usery@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 To: usery@test.ex
 Subject: auto fail message
-In-Reply-To: <E10HmaX-0005vi-00@the.local.host.name>
-References: <E10HmaX-0005vi-00@the.local.host.name>
+In-Reply-To: <E10HmaX-000000005vi-0000@the.local.host.name>
+References: <E10HmaX-000000005vi-0000@the.local.host.name>
 Auto-Submitted: auto-replied
-Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+Message-Id: <E10HmaY-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -16,15 +16,15 @@ failing userx@test.ex
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	id 10HmbB-0005vi-00
+	id 10HmbB-000000005vi-0000
 	for usery@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 To: usery@test.ex
 Subject: auto freeze message
-In-Reply-To: <E10HmbA-0005vi-00@the.local.host.name>
-References: <E10HmbA-0005vi-00@the.local.host.name>
+In-Reply-To: <E10HmbA-000000005vi-0000@the.local.host.name>
+References: <E10HmbA-000000005vi-0000@the.local.host.name>
 Auto-Submitted: auto-replied
-Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbB-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -32,15 +32,15 @@ freezing userx@test.ex
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	id 10HmbD-0005vi-00
+	id 10HmbD-000000005vi-0000
 	for usery@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 To: usery@test.ex
 Subject: An auto reply: qualify_domain=test.ex
-In-Reply-To: <E10HmbC-0005vi-00@the.local.host.name>
-References: <E10HmbC-0005vi-00@the.local.host.name>
+In-Reply-To: <E10HmbC-000000005vi-0000@the.local.host.name>
+References: <E10HmbC-000000005vi-0000@the.local.host.name>
 Auto-Submitted: auto-replied
-Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbD-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -48,15 +48,15 @@ This is a text line
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	id 10HmbF-0005vi-00
+	id 10HmbF-000000005vi-0000
 	for usery@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 To: usery@test.ex
 Subject: auto freeze message
-In-Reply-To: <E10HmbE-0005vi-00@the.local.host.name>
-References: <E10HmbE-0005vi-00@the.local.host.name>
+In-Reply-To: <E10HmbE-000000005vi-0000@the.local.host.name>
+References: <E10HmbE-000000005vi-0000@the.local.host.name>
 Auto-Submitted: auto-replied
-Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbF-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -64,15 +64,15 @@ freezing userx@test.ex
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	id 10HmbH-0005vi-00
+	id 10HmbH-000000005vi-0000
 	for usery@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 To: usery@test.ex
 Subject: auto freeze message
-In-Reply-To: <E10HmbG-0005vi-00@the.local.host.name>
-References: <E10HmbG-0005vi-00@the.local.host.name>
+In-Reply-To: <E10HmbG-000000005vi-0000@the.local.host.name>
+References: <E10HmbG-000000005vi-0000@the.local.host.name>
 Auto-Submitted: auto-replied
-Message-Id: <E10HmbH-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbH-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 

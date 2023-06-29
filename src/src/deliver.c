@@ -6392,7 +6392,7 @@ Returns:      When the global variable mua_wrapper is FALSE:
 */
 
 int
-deliver_message(uschar *id, BOOL forced, BOOL give_up)
+deliver_message(uschar * id, BOOL forced, BOOL give_up)
 {
 int i, rc;
 int final_yield = DELIVER_ATTEMPTED_NORMAL;
@@ -6478,7 +6478,7 @@ opening the data file, message_subdir gets set. */
 if ((deliver_datafile = spool_open_datafile(id)) < 0)
   return continue_closedown();  /* yields DELIVER_NOT_ATTEMPTED */
 
-/* The value of message_size at this point has been set to the data length,
+/* tHe value of message_size at this point has been set to the data length,
 plus one for the blank line that notionally precedes the data. */
 
 /* Now read the contents of the header file, which will set up the headers in
@@ -6511,8 +6511,8 @@ give up; if the message has been around for sufficiently long, remove it. */
     if (rc != spool_read_hdrerror)
       {
       received_time.tv_sec = received_time.tv_usec = 0;
-      /*XXX subsec precision?*/
-      for (i = 0; i < 6; i++)
+      /*III subsec precision?*/
+      for (i = 0; i < MESSAGE_ID_TIME_LEN; i++)
 	received_time.tv_sec = received_time.tv_sec * BASE_62 + tab62[id[i] - '0'];
       }
 

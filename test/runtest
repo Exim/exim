@@ -254,9 +254,11 @@ die "** runtest error: $_[1]\n";
 sub new_value {
 my($oldid, $base, $sequence) = @_;
 my($newid) = $cache{$oldid};
+print ">> replace  $oldid -> $newid\n" if ($debug && defined $newid);
 if (! defined $newid)
   {
   $newid = sprintf($base, $$sequence++);
+  print ">> new      $oldid -> $newid\n" if $debug;
   $cache{$oldid} = $newid;
   }
 return $newid;
@@ -421,9 +423,12 @@ RESET_AFTER_EXTRA_LINE_READ:
   # patchexim should have fixed this for us
   #s/Exim \K\d+[._]\d+[\w_-]*/x.yz/i;
 
-  # Replace Exim message ids by a unique series
+  # Replace Exim message ids by a unique series.
+  # Both old and new formats, with separate replace series, for now.
   s/(\d[^\W_]{5}-[^\W_]{6}-[^\W_]{2})
-    /new_value($1, "10Hm%s-0005vi-00", \$next_msgid)/egx;
+    /new_value($1, "10Hm%s-0005vi-00", \$next_msgid_old)/egx;
+  s/(\d[^\W_]{5}-[^\W_]{11}-[^\W_]{4})
+    /new_value($1, "10Hm%s-000000005vi-0000", \$next_msgid)/egx;
 
   # The names of lock files appear in some error and debug messages
   s/\.lock(\.[-\w]+)+(\.[\da-f]+){2}/.lock.test.ex.dddddddd.pppppppp/;
@@ -1062,6 +1067,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # gsasl library version may not support some methods
     s/250-AUTH ANONYMOUS PLAIN SCRAM-SHA-1\K SCRAM-SHA-256//;
+
+    # mailq times change with when the run is done, vs. static-source spoolfiles
+    #s/\s*\d*[hd](?=   317 [0-9A-Za-z\-]{23} <nobody@test.ex>)/DDd/;
+    s/^\s*\d*[hd](?=   317 [0-9A-Za-z\-]{23} <nobody@test.)/DDd/;
     }
 
   # ======== stderr ========
@@ -2193,9 +2202,15 @@ if (! $msglog_skip)
     foreach $msglog (@msglogs)
       {
       next if ($msglog eq "." || $msglog eq ".." || $msglog eq "CVS");
+
       ($munged_msglog = $msglog) =~
         s/((?:[^\W_]{6}-){2}[^\W_]{2})
-          /new_value($1, "10Hm%s-0005vi-00", \$next_msgid)/egx;
+          /new_value($1, "10Hm%s-0005vi-00", \$next_msgid_old)/egx;
+
+      $munged_msglog =~
+        s/([^\W_]{6}-[^\W_]{11}-[^\W_]{4})
+          /new_value($1, "10Hm%s-000000005vi-0000", \$next_msgid)/egx;
+
       $yield = max($yield,  check_file("spool/msglog/$msglog", undef,
         "test-msglog-munged", "msglog/$testno.$munged_msglog", 0,
         $munge->{msglog}));
@@ -2511,6 +2526,17 @@ if (/^eximstats\s+(.*)/)
   }
 
 
+# The "exim_id_update" command runs exim_id_update on the current spool
+
+if (/^exim_id_update(\s+.*)?$/)
+  {
+  run_system("(sudo ./eximdir/exim_id_update" . ($1 || '') . " $parm_cwd/spool/input;" .
+    "echo exim_id_update exit code = \$?)" .
+    ">>test-stdout 2>>test-stderr");
+  return 1;
+  }
+
+
 # The "gnutls" command makes a copy of saved GnuTLS parameter data in the
 # spool directory, to save Exim from re-creating it each time.
 
@@ -2602,7 +2628,7 @@ if (/^sleep\s+(.*)$/)
 # Various Unix management commands are recognized
 
 if (/^(ln|ls|du|mkdir|mkfifo|touch|cp|cat)\s/ ||
-    /^sudo\s(rmdir|rm|mv|chown|chmod)\s/)
+    /^sudo\s(mkdir|rmdir|rm|mv|cp|chown|chmod)\s/)
   {
   run_system("$_ >>test-stdout 2>>test-stderr");
   return 1;
@@ -3915,7 +3941,7 @@ if (defined $parm_lookups{dbm} && not cp("$parm_exim_dir/exim_dbmbuild", "eximdi
   $dbm_build_deleted = 1;
   }
 
-foreach my $tool (qw(exim_dumpdb exim_lock exinext exigrep eximstats exiqgrep exim_msgdate)) {
+foreach my $tool (qw(exim_dumpdb exim_lock exinext exigrep eximstats exiqgrep exim_msgdate exim_id_update)) {
   cp("$parm_exim_dir/$tool" => "eximdir/$tool")
     or tests_exit(-1, "Failed to make a copy of $tool: $!");
 }
@@ -4373,6 +4399,7 @@ foreach $test (@test_list)
   # set up the initial sequence strings.
 
   undef %cache;
+  $next_msgid_old = "aX";
   $next_msgid = "aX";
   $next_pid = 1234;
   $next_port = 1111;

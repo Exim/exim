@@ -1,0 +1,27 @@
+1qDO9M-0003B3-2p-H
+nobody 9999 9999
+<nobody@test.ex>
+1687693404 0
+-received_time_usec .878082
+-received_time_complete 1687693420.718687
+-received_protocol local
+-body_linecount 1
+-max_received_linelength 13
+-allow_unqualified_recipient
+-allow_unqualified_sender
+-deliver_firsttime
+-local
+-tls_resumption A
+XX
+1
+nulldeliver@test.ex
+
+170P Received: from nnn by lap-p1.dom.ain with local (Exim x.yz)
+	(envelope-from <nnn@nnnnnnnnnnnnnn>)
+	id 1qDO9M-0003B3-2p
+	for old@test.ex;
+	Sun, 25 Jun 2023 12:43:40 +0100
+014  Subject: test
+047I Message-Id: <E1qDO9M-0003B3-2p@xxxxxxxtest.ex>
+034F From: tester <nnn@nnnnnnnnnnnnnn>
+038  Date: Sun, 25 Jun 2023 12:43:38 +0100

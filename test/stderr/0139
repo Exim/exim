@@ -143,7 +143,7 @@
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
-LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
+LOG: 10HmaY-000000005vi-0000 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)

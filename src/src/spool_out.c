@@ -143,7 +143,7 @@ be open and locked, thus preventing any other exim process from working on this
 message.
 
 Argument:
-  id      the message id
+  id      the message id (used for the eventual filename; the *content* uses the global. Unclear why.)
   where   SW_RECEIVING, SW_DELIVERING, or SW_MODIFYING
   errmsg  where to put an error message; if NULL, panic-die on error
 
@@ -152,16 +152,13 @@ Returns:  the size of the header texts on success;
 */
 
 int
-spool_write_header(uschar *id, int where, uschar **errmsg)
+spool_write_header(uschar * id, int where, uschar ** errmsg)
 {
-int fd;
-int size_correction;
+int fd, size_correction;
 FILE * fp;
 struct stat statbuf;
-uschar * tname;
 uschar * fname;
-
-tname = spool_fname(US"input", message_subdir, US"hdr.", message_id);
+uschar * tname = spool_fname(US"input", message_subdir, US"hdr.", message_id);
 
 if ((fd = spool_open_temp(tname)) < 0)
   return spool_write_error(where, errmsg, US"open", NULL, NULL);
@@ -460,8 +457,8 @@ Returns:     TRUE if all went well
 */
 
 static BOOL
-make_link(uschar *dir, uschar * dq, uschar *subdir, uschar *id, uschar *suffix,
-  uschar *from, uschar *to, BOOL noentok)
+make_link(uschar * dir, uschar * dq, uschar * subdir, uschar * id, uschar * suffix,
+  uschar * from, uschar * to, BOOL noentok)
 {
 uschar * fname = spool_fname(string_sprintf("%s%s", from, dir), subdir, id, suffix);
 uschar * tname = spool_q_fname(string_sprintf("%s%s", to,   dir), dq, subdir, id, suffix);
@@ -497,7 +494,7 @@ Returns:     TRUE if all went well
 */
 
 static BOOL
-break_link(uschar *dir, uschar *subdir, uschar *id, uschar *suffix, uschar *from,
+break_link(uschar * dir, uschar * subdir, uschar * id, uschar * suffix, uschar * from,
   BOOL noentok)
 {
 uschar * fname = spool_fname(string_sprintf("%s%s", from, dir), subdir, id, suffix);
@@ -531,7 +528,7 @@ Returns:      TRUE if all is well
 */
 
 BOOL
-spool_move_message(uschar *id, uschar *subdir, uschar *from, uschar *to)
+spool_move_message(uschar * id, uschar * subdir, uschar * from, uschar * to)
 {
 uschar * dest_qname = queue_name_dest ? queue_name_dest : queue_name;
 

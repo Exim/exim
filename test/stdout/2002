@@ -42,7 +42,7 @@ Succeeded in starting TLS
 >>> This is a test encrypted message.
 >>> .
 ??? 250
-<<< 250 OK id=10HmaX-0005vi-00
+<<< 250 OK id=10HmaX-000000005vi-0000
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -83,7 +83,7 @@ Succeeded in starting TLS
 >>> This is a test encrypted message.
 >>> .
 ??? 250
-<<< 250 OK id=10HmaY-0005vi-00
+<<< 250 OK id=10HmaY-000000005vi-0000
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -152,7 +152,7 @@ Succeeded in starting TLS
 >>> This is a test encrypted message from a verified host.
 >>> .
 ??? 250
-<<< 250 OK id=10HmaZ-0005vi-00
+<<< 250 OK id=10HmaZ-000000005vi-0000
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -194,7 +194,7 @@ Succeeded in starting TLS
 >>> It should be sent under the RSA server cert and with an RSA cipher.
 >>> .
 ??? 250
-<<< 250 OK id=10HmbA-0005vi-00
+<<< 250 OK id=10HmbA-000000005vi-0000
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -236,7 +236,7 @@ Succeeded in starting TLS
 >>> It should be sent under the EC server cert and with an ECDSA cipher.
 >>> .
 ??? 250
-<<< 250 OK id=10HmbB-0005vi-00
+<<< 250 OK id=10HmbB-000000005vi-0000
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection

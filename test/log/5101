@@ -1,4 +1,4 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 220 Welcome to this LMTP simulation
 LHLO
 <<< LHLO myhost.test.ex
@@ -22,10 +22,10 @@ DATA
 .
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
-<<< 	id 10HmaX-0005vi-00;
+<<< 	id 10HmaX-000000005vi-0000;
 <<< 	Tue, 2 Mar 1999 09:44:33 +0000
 <<< mailbox: copied
-<<< Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+<<< Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>
 <<< Date: Tue, 2 Mar 1999 09:44:33 +0000
 <<< 
@@ -38,14 +38,14 @@ DATA
 QUIT
 <<< QUIT
 250 OK
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery C="250 Number 1 is OK"
-1999-03-02 09:44:33 10HmaX-0005vi-00 ** jack@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 2 fails
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery C="250 Number 3 is OK"
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=local_delivery
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => userx <userx@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery C="250 Number 1 is OK"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** jack@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 2 fails
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery C="250 Number 3 is OK"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => CALLER <CALLER@myhost.test.ex> R=bounces T=local_delivery
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 220 Welcome to this LMTP simulation
 LHLO
 <<< LHLO myhost.test.ex
@@ -69,9 +69,9 @@ DATA
 .
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
-<<< 	id 10HmaZ-0005vi-00;
+<<< 	id 10HmaZ-000000005vi-0000;
 <<< 	Tue, 2 Mar 1999 09:44:33 +0000
-<<< Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+<<< Message-Id: <E10HmaZ-000000005vi-0000@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>
 <<< Date: Tue, 2 Mar 1999 09:44:33 +0000
 <<< 
@@ -84,10 +84,10 @@ DATA
 QUIT
 <<< QUIT
 250 OK
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ not a regular file or too many links) C="250 Number 1 is OK"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 ** jack@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 2 fails
-1999-03-02 09:44:33 10HmaZ-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ not a regular file or too many links) C="250 Number 3 is OK"
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbA-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=local_delivery
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => userx <userx@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ not a regular file or too many links) C="250 Number 1 is OK"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** jack@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 2 fails
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ not a regular file or too many links) C="250 Number 3 is OK"
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> R=10HmaZ-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => CALLER <CALLER@myhost.test.ex> R=bounces T=local_delivery
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed

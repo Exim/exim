@@ -1,2 +1,2 @@
-1999-03-02 09:44:33 Received from <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 Received from <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 CALLER@the.local.host.name R=passall T=pass_on defer (-54): retry time not reached for any host for 'the.local.host.name'

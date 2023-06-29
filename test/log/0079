@@ -1,19 +1,19 @@
 1999-03-02 09:44:33 H=(exim.test.ex) [V4NET.11.12.13] U=CALLER Warning: V4NET.11.12.13 is in rbl.test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.13] U=CALLER P=esmtp S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@exim.test.ex> R=localuser T=local_delivery
-1999-03-02 09:44:33 10HmaX-0005vi-00 => TESTSUITE/test-mail/rbl <system-filter> T=file
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.13] U=CALLER P=esmtp S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => userx <userx@exim.test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => TESTSUITE/test-mail/rbl <system-filter> T=file
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 H=(exim.test.ex) [V4NET.11.12.14] I=[14.12.11.10]:ppppp U=CALLER Warning: V4NET.11.12.14 is in rbl.test.ex
 1999-03-02 09:44:33 H=(exim.test.ex) [V4NET.11.12.14] I=[14.12.11.10]:ppppp U=CALLER Warning: accepting postmaster from host in rbl2.test.ex
 1999-03-02 09:44:33 H=(exim.test.ex) [V4NET.11.12.14] I=[14.12.11.10]:ppppp U=CALLER F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.test.ex>: host is listed in rbl2.test.ex
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.14] I=[14.12.11.10]:ppppp U=CALLER P=esmtp S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <postmaster@exim.test.ex> R=localuser T=local_delivery
-1999-03-02 09:44:33 10HmaY-0005vi-00 => TESTSUITE/test-mail/rbl <system-filter> T=file
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= postmaster@exim.test.ex U=CALLER P=local-smtp S=sss
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@exim.test.ex> R=localuser T=local_delivery
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@exim.test.ex> R=localuser T=local_delivery
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => >userx@exim.test.ex <system-filter> T=reply
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.14] I=[14.12.11.10]:ppppp U=CALLER P=esmtp S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => userx <postmaster@exim.test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => TESTSUITE/test-mail/rbl <system-filter> T=file
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= postmaster@exim.test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => userx <userx@exim.test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> R=10HmaZ-000000005vi-0000 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => userx <userx@exim.test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => >userx@exim.test.ex <system-filter> T=reply
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed

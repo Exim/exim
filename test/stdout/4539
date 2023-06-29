@@ -42,7 +42,7 @@ Succeeded in starting TLS
 >>> last line: 4
 >>> .
 ??? 250
-<<< 250 OK id=10HmaZ-0005vi-00
+<<< 250 OK id=10HmaZ-000000005vi-0000
 >>> QUIT
 ??? 221
 <<< 221 testhost.test.ex closing connection
@@ -90,7 +90,7 @@ Succeeded in starting TLS
 ??? 250-
 <<< 250- 161 byte chunk, total 161
 ??? 250
-<<< 250 OK id=10HmbA-0005vi-00
+<<< 250 OK id=10HmbA-000000005vi-0000
 >>> QUIT
 ??? 221
 <<< 221 testhost.test.ex closing connection

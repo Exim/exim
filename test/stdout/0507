@@ -3,7 +3,7 @@
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbA-0005vi-00
+250 OK id=10HmbA-000000005vi-0000
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 myhost.test.ex Hello CALLER at test
@@ -25,7 +25,7 @@
 250 Accepted
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbB-0005vi-00
+250 OK id=10HmbB-000000005vi-0000
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 myhost.test.ex Hello CALLER at test
@@ -42,5 +42,5 @@
 250 Accepted
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbC-0005vi-00
+250 OK id=10HmbC-000000005vi-0000
 221 myhost.test.ex closing connection
