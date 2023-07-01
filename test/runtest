@@ -389,9 +389,11 @@ LINE: while(<IN>)
 RESET_AFTER_EXTRA_LINE_READ:
   if ($munge_skip)
     {
-    # Munging is a no-op.
+    # Munging is a no-op, except for exim_msgdate specials.
     # Useful when testing exim_msgdate so that
     # we compare unmunged dates and message-ids.
+    s%^localhost \d+ from message-id != given number \d+ at \K/.+(?=/test/eximdir/exim_msgdate line 387.$)%DIR%;
+
     print MUNGED;
     next;
     }
