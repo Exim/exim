@@ -127,11 +127,11 @@
 250 myhost.test.ex Hello test [V4NET.9.8.7]
 250 OK
 550 forcibly dropped
- 0m   304 10HmaX-000000005vi-0000 <CALLER@test.ex> *** frozen ***
+TTT   sss 10HmaX-000000005vi-0000 <CALLER@test.ex> *** frozen ***
           accept@y
           freeze@y
 
- 0m   306 10HmaZ-000000005vi-0000 <CALLER@test.ex>
+TTT   sss 10HmaZ-000000005vi-0000 <CALLER@test.ex>
           queue_only@y
           accept@y
 
@@ -213,26 +213,26 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
- 0m   304 10HmaX-000000005vi-0000 <CALLER@test.ex> *** frozen ***
+TTT   sss 10HmaX-000000005vi-0000 <CALLER@test.ex> *** frozen ***
           accept@y
           freeze@y
 
- 0m   306 10HmaZ-000000005vi-0000 <CALLER@test.ex>
+TTT   sss 10HmaZ-000000005vi-0000 <CALLER@test.ex>
           queue_only@y
           accept@y
 
- 0m   174 10HmbB-000000005vi-0000 <x@y> *** frozen ***
+TTT   sss 10HmbB-000000005vi-0000 <x@y> *** frozen ***
           accept@y
           freeze@y
 
- 0m   190 10HmbC-000000005vi-0000 <x@y>
+TTT   sss 10HmbC-000000005vi-0000 <x@y>
           accept@y
 
- 0m   176 10HmbD-000000005vi-0000 <x@y>
+TTT   sss 10HmbD-000000005vi-0000 <x@y>
           queue_only@y
           accept@y
 
- 0m   190 10HmbE-000000005vi-0000 <x@y>
+TTT   sss 10HmbE-000000005vi-0000 <x@y>
           accept@y
 
 Connecting to 127.0.0.1 port 1225 ... connected

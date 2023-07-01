@@ -1,4 +1,4 @@
- 0m   396 10HmaX-000000005vi-0000 <CALLER@the.local.host.name>
+TTT   sss 10HmaX-000000005vi-0000 <CALLER@the.local.host.name>
           nulldeliver@test.ex
 
 exim_id_update exit code = 0
@@ -6,6 +6,6 @@ exim_id_update exit code = 0
           nulldeliver@test.ex
 
 exim_id_update exit code = 0
-DDd   317 10HmaY-000000005vi-0000 <nobody@test.ex>
+TTT   sss 10HmaY-000000005vi-0000 <nobody@test.ex>
           nulldeliver@test.ex
 

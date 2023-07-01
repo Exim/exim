@@ -17,9 +17,9 @@
 354 Enter message, ending with "." on a line by itself
 550 Administrative prohibition
 221 myhost.test.ex closing connection
- 0m   265 10HmaY-000000005vi-0000 <>
+TTT   sss 10HmaY-000000005vi-0000 <>
           abc@domain
 
- 0m   281 10HmaZ-000000005vi-0000 <abc@somewhere>
+TTT   sss 10HmaZ-000000005vi-0000 <abc@somewhere>
           xxx@yyy
 

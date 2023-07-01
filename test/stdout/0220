@@ -5,12 +5,12 @@
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmbA-000000005vi-0000
 221 myhost.test.ex closing connection
- 0m   280 10HmbC-000000005vi-0000 <> (CALLER)
+TTT   sss 10HmbC-000000005vi-0000 <> (CALLER)
           userx@myhost.test.ex
 
- 0m   337 10HmbD-000000005vi-0000 <foo@bar> (CALLER)
+TTT   sss 10HmbD-000000005vi-0000 <foo@bar> (CALLER)
           userx@myhost.test.ex
 
- 0m   242 10HmbE-000000005vi-0000 <>
+TTT   sss 10HmbE-000000005vi-0000 <>
           userx@myhost.test.ex
 

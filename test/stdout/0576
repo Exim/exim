@@ -11,11 +11,11 @@
 250 OK id=10HmaY-000000005vi-0000
 221 the.local.host.name closing connection
 ### default q
- 0m   sss 10HmaX-000000005vi-0000 <CALLER@the.local.host.name>
+TTT   sss 10HmaX-000000005vi-0000 <CALLER@the.local.host.name>
           normal@test.ex
 
 ### alternate q
- 0m   sss 10HmaY-000000005vi-0000 <CALLER@the.local.host.name>
+TTT   sss 10HmaY-000000005vi-0000 <CALLER@the.local.host.name>
           alternate@test.ex
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -46,11 +46,11 @@
 250 OK id=10HmbC-000000005vi-0000
 221 the.local.host.name closing connection
 ### default q
- 0m   sss 10HmbB-000000005vi-0000 <CALLER@the.local.host.name>
+TTT   sss 10HmbB-000000005vi-0000 <CALLER@the.local.host.name>
           normal@test.ex
 
 ### alternate q
- 0m   sss 10HmbC-000000005vi-0000 <CALLER@the.local.host.name>
+TTT   sss 10HmbC-000000005vi-0000 <CALLER@the.local.host.name>
           alternate@test.ex
 
 ### move msg from default to third q
@@ -58,18 +58,18 @@ Message 10HmbB-000000005vi-0000
 ### move msg from alternate q to third q
 Message 10HmbC-000000005vi-0000 
 ### third q
- 0m   sss 10HmbB-000000005vi-0000 <CALLER@the.local.host.name>
+TTT   sss 10HmbB-000000005vi-0000 <CALLER@the.local.host.name>
           normal@test.ex
 
- 0m   sss 10HmbC-000000005vi-0000 <CALLER@the.local.host.name>
+TTT   sss 10HmbC-000000005vi-0000 <CALLER@the.local.host.name>
           alternate@test.ex
 
 Message 10HmbB-000000005vi-0000 Message 10HmbC-000000005vi-0000 
 ### default q
- 0m   sss 10HmbB-000000005vi-0000 <CALLER@the.local.host.name>
+TTT   sss 10HmbB-000000005vi-0000 <CALLER@the.local.host.name>
           normal@test.ex
 
- 0m   sss 10HmbC-000000005vi-0000 <CALLER@the.local.host.name>
+TTT   sss 10HmbC-000000005vi-0000 <CALLER@the.local.host.name>
           alternate@test.ex
 
 ### alternate q

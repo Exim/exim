@@ -211,7 +211,7 @@ Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-5"
 Testprint: Before fail
 Fail text "This is a forced failure"
 Filtering ended by "fail".
- 0m   sss 10HmbA-000000005vi-0000 <CALLER@test.ex> *** frozen ***
+TTT   sss 10HmbA-000000005vi-0000 <CALLER@test.ex> *** frozen ***
           userx@test.ex
        +D system-filter
        +D userz@test.ex

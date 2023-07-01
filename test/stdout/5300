@@ -3,7 +3,7 @@ x@[V4NET.9.8.7]
   host [V4NET.9.8.7] [V4NET.9.8.7]
 x@[127.0.0.1]
   router = r3, transport = t1
- 0m   282 10HmaX-000000005vi-0000 <y@[10.9.8.7]>
+TTT   sss 10HmaX-000000005vi-0000 <y@[10.9.8.7]>
           zz@test.ex
 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
