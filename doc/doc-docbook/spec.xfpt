@@ -31564,8 +31564,11 @@ the message modifier cannot override the 221 response code.
 
 The text in a &%message%& modifier is literal; any quotes are taken as
 literals, but because the string is expanded, backslash escapes are processed
-anyway. If the message contains newlines, this gives rise to a multi-line SMTP
+anyway.
+If the message contains newlines, this gives rise to a multi-line SMTP
 response.
+A long message line will also be split into multi-line SMTP responses,
+on word boundaries if possible.
 
 .vindex "&$acl_verify_message$&"
 While the text is being expanded, the &$acl_verify_message$& variable
