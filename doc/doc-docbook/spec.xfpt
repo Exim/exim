@@ -31859,6 +31859,7 @@ work with.
 .vitem &*control&~=&~fakedefer/*&<&'message'&>
 .cindex "fake defer"
 .cindex "defer, fake"
+.cindex fakedefer
 This control works in exactly the same way as &%fakereject%& (described below)
 except that it causes an SMTP 450 response after the message data instead of a
 550 response. You must take care when using &%fakedefer%& because it causes the
@@ -31868,6 +31869,7 @@ use &%fakedefer%& if the message is to be delivered normally.
 .vitem &*control&~=&~fakereject/*&<&'message'&>
 .cindex "fake rejection"
 .cindex "rejection, fake"
+.cindex fakereject
 This control is permitted only for the MAIL, RCPT, and DATA ACLs, in other
 words, only when an SMTP message is being received. If Exim accepts the
 message, instead the final 250 response, a 550 rejection message is sent.
