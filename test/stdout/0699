@@ -2,7 +2,7 @@ TTT   sss 10HmaX-000000005vi-0000 <CALLER@the.local.host.name>
           nulldeliver@test.ex
 
 exim_id_update exit code = 0
- 0m   396 10HmaY-0005vi-00-H <CALLER@the.local.host.name>
+TTT   sss 10HmaY-0005vi-00-H <CALLER@the.local.host.name>
           nulldeliver@test.ex
 
 exim_id_update exit code = 0

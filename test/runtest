@@ -891,7 +891,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   s/([\s,])S=\d+\b/$1S=sss/;
   s/:S\d+\b/:Ssss/;
-  s/^(\s*\d+[mhd]\s+)\d+(\s+[a-z0-9-]{23} <)/TTT   sss$2/i if $is_stdout;
+  s/^(\s*\d+[mhd]\s+)\d+(\s+(?:[a-z0-9-]{23}|[a-z0-9-]{18}) <)/TTT   sss$2/i if $is_stdout;
   s/\sSIZE=\d+\b/ SIZE=ssss/;
   s/\ssize=\d+\b/ size=sss/ if $is_stderr;
   s/old size = \d+\b/old size = sssss/;
