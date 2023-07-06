@@ -26,18 +26,18 @@ RCPT TO:<CALLER@myhost.test.ex>
 DATA
 354 go ahead
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
-	id 10HmaY-0005vi-00
+	id 10HmaY-000000005vi-0000
 	for CALLER@myhost.test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: fred@undeliverable.org
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
-References: <E10HmaX-0005vi-00@myhost.test.ex>
+References: <E10HmaX-000000005vi-0000@myhost.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -72,11 +72,11 @@ Content-type: message/rfc822
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaX-000000005vi-0000
 	for fred@undeliverable.org;
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test
-Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
