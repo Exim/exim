@@ -115,7 +115,9 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=qqs closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from root
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S from 1.1.1.1 ... unable to bind outgoing SMTP call to 1.1.1.1: Netwk addr not available
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S from 1.1.1.1 ... LOG: MAIN
+  bind of [1.1.1.1]:1111 failed
+unable to bind outgoing SMTP call to 1.1.1.1: Netwk addr not available
  failed: Netwk addr not available
 LOG: MAIN PANIC
   recipient verify defer (making calloout connection): T=smtp Netwk addr not available

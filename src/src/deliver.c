@@ -3353,8 +3353,8 @@ while (!done)
 
   pipeheader[PIPE_HEADER_SIZE] = '\0';
   DEBUG(D_deliver)
-    debug_printf("got %ld bytes (pipeheader) from transport process %d\n",
-      (long) got, pid);
+    debug_printf("got %ld bytes (pipeheader) '%c' from transport process %d\n",
+      (long) got, *id, pid);
 
   {
   /* If we can't decode the pipeheader, the subprocess seems to have a
@@ -3469,7 +3469,7 @@ while (!done)
 
     /* Put the amount of data written into the parlist block */
 
-    case 'S':
+    case 'S':		/* Size */
       memcpy(&(p->transport_count), ptr, sizeof(transport_count));
       ptr += sizeof(transport_count);
       break;
@@ -3559,7 +3559,7 @@ while (!done)
       if (*subid > '1') setflag(addr, af_tcp_fastopen_data);
       break;
 
-    case 'D':
+    case 'D':		/* DSN */
       if (!addr) goto ADDR_MISMATCH;
       memcpy(&(addr->dsn_aware), ptr, sizeof(addr->dsn_aware));
       ptr += sizeof(addr->dsn_aware);

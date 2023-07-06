@@ -161,7 +161,10 @@ ip_bind(int sock, int af, uschar *address, int port)
 {
 union sockaddr_46 sin;
 int s_len = ip_addr(&sin, af, address, port);
-return bind(sock, (struct sockaddr *)&sin, s_len);
+int rc = bind(sock, (struct sockaddr *)&sin, s_len);
+if (rc < 0)
+  log_write(0, LOG_MAIN, "bind of [%s]:%d failed", address, port);
+return rc;
 }
 
 
