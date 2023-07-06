@@ -2404,7 +2404,7 @@ for (int pos = 0, siz; pos < inlen; pos += siz+1)
   if (pos + 1 + siz > inlen) siz = inlen - pos - 1;
   g = string_append_listele_n(g, ':', in + pos + 1, siz);
   }
-log_write(0, LOG_MAIN, "TLS ALPN (%s) rejected", string_from_gstring(g));
+log_write(0, LOG_MAIN, "TLS ALPN (%Y) rejected", g);
 gstring_release_unused(g);
 return SSL_TLSEXT_ERR_ALERT_FATAL;
 }

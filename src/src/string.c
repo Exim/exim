@@ -1327,6 +1327,11 @@ If the "extend" flag is false, the string passed in may not be NULL,
 will not be grown, and is usable in the original place after return.
 The return value can be NULL to signify overflow.
 
+Field width:		decimal digits, or *
+Precision:		dot, followed by decimal digits or *
+Length modifiers:	h  L  l  ll  z
+Conversion specifiers:	n d o u x X p f e E g G % c s S T Y D M
+
 Returns the possibly-new (if copy for growth or taint-handling was needed)
 string, not nul-terminated.
 */
@@ -1571,6 +1576,14 @@ while (*fp)
       slen = string_datestamp_length;
       goto INSERT_STRING;
 
+    case 'Y':			/* gstring pointer */
+      {
+      gstring * zg = va_arg(ap, gstring *);
+      s = CS zg->s;
+      slen = zg->ptr;
+      goto INSERT_GSTRING;
+      }
+
     case 's':
     case 'S':                   /* Forces *lower* case */
     case 'T':                   /* Forces *upper* case */
@@ -1578,6 +1591,8 @@ while (*fp)
 
       if (!s) s = null;
       slen = Ustrlen(s);
+
+    INSERT_GSTRING:		/* Coome to from %Y above */
 
       if (!(flags & SVFMT_TAINT_NOCHK) && is_incompatible(g->s, s))
 	if (flags & SVFMT_REBUFFER)

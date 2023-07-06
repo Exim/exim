@@ -680,7 +680,6 @@ if (format)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "
       "SMTP");
   va_end(ap);
-  string_from_gstring(&gs);
 
   if (gs.ptr > outblock->buffersize)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "

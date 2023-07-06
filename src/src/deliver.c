@@ -723,7 +723,7 @@ child_done(address_item * addr, const uschar * now)
 {
 while (addr->parent)
   {
-  address_item *aa;
+  address_item * aa;
 
   addr = addr->parent;
   if (--addr->child_count > 0) return;   /* Incomplete parent */
@@ -1278,7 +1278,7 @@ if (LOGGING(deliver_time))
 /* string_cat() always leaves room for the terminator. Release the
 store we used to build the line after writing it. */
 
-log_write(0, flags, "%s", string_from_gstring(g));
+log_write(0, flags, "%Y", g);
 
 #ifndef DISABLE_EVENT
 if (!msg) msg_event_raise(US"msg:delivery", addr);
@@ -1337,25 +1337,21 @@ if (LOGGING(deliver_time))
 if (addr->message)
   g = string_append(g, 2, US": ", addr->message);
 
- {
-  const uschar * s = string_from_gstring(g);
+/* Log the deferment in the message log, but don't clutter it
+up with retry-time defers after the first delivery attempt. */
 
-  /* Log the deferment in the message log, but don't clutter it
-  up with retry-time defers after the first delivery attempt. */
+if (f.deliver_firsttime || addr->basic_errno > ERRNO_RETRY_BASE)
+  deliver_msglog("%s %.*s\n", now, g->ptr, g->s);
 
-  if (f.deliver_firsttime || addr->basic_errno > ERRNO_RETRY_BASE)
-    deliver_msglog("%s %s\n", now, s);
-
-  /* Write the main log and reset the store.
-  For errors of the type "retry time not reached" (also remotes skipped
-  on queue run), logging is controlled by L_retry_defer. Note that this kind
-  of error number is negative, and all the retry ones are less than any
-  others. */
+/* Write the main log and reset the store.
+For errors of the type "retry time not reached" (also remotes skipped
+on queue run), logging is controlled by L_retry_defer. Note that this kind
+of error number is negative, and all the retry ones are less than any
+others. */
 
 
-  log_write(addr->basic_errno <= ERRNO_RETRY_BASE ? L_retry_defer : 0, logflags,
-    "== %s", s);
- }
+log_write(addr->basic_errno <= ERRNO_RETRY_BASE ? L_retry_defer : 0, logflags,
+  "== %Y", g);
 
 store_reset(reset_point);
 return;
@@ -1421,16 +1417,12 @@ if (LOGGING(deliver_time))
 /* Do the logging. For the message log, "routing failed" for those cases,
 just to make it clearer. */
 
- {
-  const uschar * s = string_from_gstring(g);
+if (driver_kind)
+  deliver_msglog("%s %s failed for %.*s\n", now, driver_kind, g->ptr, g->s);
+else
+  deliver_msglog("%s %.*s\n", now, g->ptr, g->s);
 
-  if (driver_kind)
-    deliver_msglog("%s %s failed for %s\n", now, driver_kind, s);
-  else
-    deliver_msglog("%s %s\n", now, s);
-
-  log_write(0, LOG_MAIN, "** %s", s);
- }
+log_write(0, LOG_MAIN, "** %Y", g);
 
 store_reset(reset_point);
 return;
@@ -5989,7 +5981,7 @@ wording. */
 
   if (rc != 0)
     {
-    uschar *s = US"";
+    uschar * s = US"";
     if (now - received_time.tv_sec < retry_maximum_timeout && !addr_defer)
       {
       addr_defer = (address_item *)(+1);

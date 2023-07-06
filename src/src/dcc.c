@@ -237,11 +237,11 @@ for (int i = 0; i < recipients_count; i++)
   }
 /* send a blank line between options and message */
 dcc_headers = string_catn(dcc_headers, US"\n", 1);
+
 /* Now we send the input buffer */
-(void) string_from_gstring(dcc_headers);
 DEBUG(D_acl)
-  debug_printf("DCC: ***********************************\nDCC: Sending options:\n%s"
-	       "DCC: ***********************************\n", dcc_headers->s);
+  debug_printf("DCC: ***********************************\nDCC: Sending options:\n%Y"
+	       "DCC: ***********************************\n", dcc_headers);
 if (flushbuffer(sockfd, dcc_headers) != 0)
   {
   (void)fclose(data_file);
@@ -259,10 +259,9 @@ while((mail_headers=mail_headers->next))
 
 /* a blank line separates header from body */
 sendbuf = string_catn(sendbuf, US"\r\n", 2);
-(void) string_from_gstring(sendbuf);
 gstring_release_unused(sendbuf);
 DEBUG(D_acl)
-  debug_printf("%sDCC: ***********************************\n", sendbuf->s);
+  debug_printf("%YDCC: ***********************************\n", sendbuf);
 if (flushbuffer(sockfd, sendbuf) != 0)
   {
   (void)fclose(data_file);
@@ -449,23 +448,23 @@ dcc_header_str = string_catn(dcc_header_str, US"\n", 1);
 /* Now let's sum up what we've got. */
 DEBUG(D_acl)
   debug_printf("\nDCC: --------------------------\nDCC: Overall result = %d\n"
-	       "DCC: X-DCC header: %sReturn message: %s\nDCC: dcc_result: %s\n",
-		 retval, dcc_header_str->s, dcc_return_text, dcc_result);
+	       "DCC: X-DCC header: %YReturn message: %s\nDCC: dcc_result: %s\n",
+		 retval, dcc_header_str, dcc_return_text, dcc_result);
 
 /* We only add the X-DCC header if it starts with X-DCC */
 if(!(Ustrncmp(dcc_header_str->s, "X-DCC", 5)))
   {
-  dcc_header = dcc_header_str->s;
+  dcc_header = string_from_gstring(dcc_header_str);
   if(dcc_direct_add_header)
     {
-    header_add(' ' , "%s", dcc_header_str->s);
+    header_add(' ' , "%s", dcc_header);
 /* since the MIME ACL already writes the .eml file to disk without DCC Header we've to erase it */
     unspool_mbox();
     }
   }
 else
   DEBUG(D_acl)
-    debug_printf("DCC: Wrong format of the X-DCC header: %.*s\n", dcc_header_str->ptr, dcc_header_str->s);
+    debug_printf("DCC: Wrong format of the X-DCC header: %Y\n", dcc_header_str);
 
 /* check if we should add additional headers passed in acl_m_dcc_add_header */
 if (dcc_direct_add_header)
@@ -477,7 +476,7 @@ if (dcc_direct_add_header)
       dcc_xtra_hdrs = string_catn(dcc_xtra_hdrs, US"\n", 1);
     header_add(' ', "%s", string_from_gstring(dcc_xtra_hdrs));
     DEBUG(D_acl)
-      debug_printf("DCC: adding additional headers in $acl_m_dcc_add_header: %.*s", dcc_xtra_hdrs->ptr, dcc_xtra_hdrs->s);
+      debug_printf("DCC: adding additional headers in $acl_m_dcc_add_header: %Y", dcc_xtra_hdrs);
     }
   }
 

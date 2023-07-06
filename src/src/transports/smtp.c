@@ -626,8 +626,8 @@ if (suffix)
 else
   message = string_fmt_append(message, " %s", exim_errstr(basic_errno));
 
-log_write(0, LOG_MAIN, "%s", string_from_gstring(message));
-deliver_msglog("%s %s\n", tod_stamp(tod_log), message->s);
+log_write(0, LOG_MAIN, "%Y", message);
+deliver_msglog("%s %.*s\n", tod_stamp(tod_log), message->ptr, message->s);
 }
 
 static void

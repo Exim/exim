@@ -565,9 +565,8 @@ do {
   if (!auth_defer_msg)
     auth_defer_msg = string_copy(US status_string.value);
 
-  HDEBUG(D_auth) debug_printf("heimdal %s: %.*s\n",
-      string_from_gstring(g), (int)status_string.length,
-      CS status_string.value);
+  HDEBUG(D_auth) debug_printf("heimdal %Y: %.*s\n",
+      g, (int)status_string.length, CS status_string.value);
   gss_release_buffer(&min_stat, &status_string);
 
   } while (msgcontext != 0);

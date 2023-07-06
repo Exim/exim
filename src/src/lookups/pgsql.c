@@ -293,7 +293,7 @@ switch(PQresultStatus(pg_result))
     result = string_cat(result, US PQcmdTuples(pg_result));
     *do_cache = 0;
     DEBUG(D_lookup) debug_printf_indent("PGSQL: command does not return any data "
-      "but was successful. Rows affected: %s\n", string_from_gstring(result));
+      "but was successful. Rows affected: %Y\n", result);
     break;
 
   case PGRES_TUPLES_OK:

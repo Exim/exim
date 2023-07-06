@@ -306,7 +306,7 @@ DEBUG(D_receive)
 if (host_checking || f.running_in_test_harness)
   {
   DEBUG(D_receive)
-    debug_printf("DMARC history data for debugging:\n%s", string_from_gstring(g));
+    debug_printf("DMARC history data for debugging:\n%Y", g);
   }
 else
   {

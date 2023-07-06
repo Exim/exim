@@ -489,7 +489,7 @@ while ((c = *fname))
     val = string_catn(val, fname++, 1);
 
 val = string_catn(val, US"?=", 2);
-*len = val->ptr;
+*len = gstring_length(val);
 return string_from_gstring(val);
 }
 

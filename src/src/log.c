@@ -958,8 +958,7 @@ DEBUG(D_any|D_v)
     }
   va_end(ap);
 
-  g = string_catn(g, US"\n", 1);
-  debug_printf("%s", string_from_gstring(g));
+  debug_printf("%Y\n", g);
 
   gs.size = LOG_BUFFER_SIZE-2;	/* Having used the buffer for debug output, */
   gs.ptr = 0;			/* reset it for the real use. */

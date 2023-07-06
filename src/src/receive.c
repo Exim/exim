@@ -3915,8 +3915,8 @@ else
     sender_address[0] == 0 ? US"<>" : sender_address);
   g = add_host_info_for_log(g);
 
-  log_write(0, LOG_MAIN|LOG_REJECT, "%s %srejected by local_scan(): %.256s",
-    string_from_gstring(g), istemp, string_printing(errmsg));
+  log_write(0, LOG_MAIN|LOG_REJECT, "%Y %srejected by local_scan(): %.256s",
+    g, istemp, string_printing(errmsg));
 
   if (smtp_input)
     if (!smtp_batched_input)
@@ -4271,7 +4271,7 @@ if (  smtp_input && sender_host_address && !f.sender_host_notsocket
       gstring_reset(g);
       g = string_cat(g, US"SMTP connection lost after final dot");
       g = add_host_info_for_log(g);
-      log_write(0, LOG_MAIN, "%s", string_from_gstring(g));
+      log_write(0, LOG_MAIN, "%Y", g);
 
       /* Delete the files for this aborted message. */
 
@@ -4337,7 +4337,7 @@ if(!smtp_reply)
   log_write(0, LOG_MAIN |
     (LOGGING(received_recipients) ? LOG_RECIPIENTS : 0) |
     (LOGGING(received_sender) ? LOG_SENDER : 0),
-    "%s", g->s);
+    "%Y", g);
 
   /* Log any control actions taken by an ACL or local_scan(). */
 

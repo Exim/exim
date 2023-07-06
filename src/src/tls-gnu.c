@@ -1135,7 +1135,7 @@ switch (tls_id)
     DEBUG(D_tls) debug_printf("\n");
     if (server_seen_alpn > 1)
       {
-      log_write(0, LOG_MAIN, "TLS ALPN (%s) rejected", string_from_gstring(g));
+      log_write(0, LOG_MAIN, "TLS ALPN (%Y) rejected", g);
       DEBUG(D_tls) debug_printf("TLS: too many ALPNs presented in handshake\n");
       return GNUTLS_E_NO_APPLICATION_PROTOCOL;
       }

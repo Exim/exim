@@ -439,7 +439,7 @@ if (fstat(fd, &s) == 0 && (s.st_mode & S_IFMT) == S_IFSOCK)
       : string_fmt_append(g, " proto %d", val);
     }
 #endif
-  debug_printf_indent(" socket: %s\n", string_from_gstring(g));
+  debug_printf_indent(" socket: %Y\n", g);
   }
 else
   debug_printf_indent(" fd st_mode 0%o\n", s.st_mode);

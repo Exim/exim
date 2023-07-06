@@ -2680,13 +2680,13 @@ if (!check_sync())
 /* Now output the banner */
 /*XXX the ehlo-resp code does its own tls/nontls bit.  Maybe subroutine that? */
 
-smtp_printf("%s",
+smtp_printf("%Y",
 #ifndef DISABLE_PIPE_CONNECT
   fl.pipe_connect_acceptable && pipeline_connect_sends(),
 #else
   FALSE,
 #endif
-  string_from_gstring(ss));
+  ss);
 
 /* Attempt to see if we sent the banner before the last ACK of the 3-way
 handshake arrived.  If so we must have managed a TFO. */
@@ -2735,9 +2735,9 @@ if (++synprot_error_count > smtp_max_synprot_errors)
   {
   yield = 1;
   log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
-    "syntax or protocol errors (last command was \"%s\", %s)",
+    "syntax or protocol errors (last command was \"%s\", %Y)",
     host_and_ident(FALSE), string_printing(smtp_cmd_buffer),
-    string_from_gstring(s_connhad_log(NULL))
+    s_connhad_log(NULL)
     );
   }
 
@@ -3195,7 +3195,7 @@ if (code && defaultrespond)
     va_start(ap, defaultrespond);
     g = string_vformat(NULL, SVFMT_EXTEND|SVFMT_REBUFFER, CS defaultrespond, ap);
     va_end(ap);
-    smtp_printf("%s %s\r\n", FALSE, code, string_from_gstring(g));
+    smtp_printf("%s %Y\r\n", FALSE, code, g);
     }
   mac_smtp_fflush();
   }
@@ -3872,9 +3872,9 @@ while (done <= 0)
 	if (++synprot_error_count > smtp_max_synprot_errors)
 	  {
 	  log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
-	    "syntax or protocol errors (last command was \"%s\", %s)",
+	    "syntax or protocol errors (last command was \"%s\", %Y)",
 	    host_and_ident(FALSE), string_printing(smtp_cmd_buffer),
-	    string_from_gstring(s_connhad_log(NULL))
+	    s_connhad_log(NULL)
 	    );
 	  done = 1;
 	  }

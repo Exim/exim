@@ -254,8 +254,6 @@ if (LOGGING(incoming_interface))
   whofrom = string_fmt_append(whofrom, " I=[%s]:%d",
     interface_address, interface_port);
 
-(void) string_from_gstring(whofrom);    /* Terminate the newly-built string */
-
 /* Check maximum number of connections. We do not check for reserved
 connections or unacceptable hosts here. That is done in the subprocess because
 it might take some time. */
@@ -267,8 +265,8 @@ if (smtp_accept_max > 0 && smtp_accept_count >= smtp_accept_max)
   smtp_printf("421 Too many concurrent SMTP connections; "
     "please try again later.\r\n", FALSE);
   log_write(L_connection_reject,
-            LOG_MAIN, "Connection from %s refused: too many connections",
-    whofrom->s);
+            LOG_MAIN, "Connection from %Y refused: too many connections",
+    whofrom);
   goto ERROR_RETURN;
   }
 
@@ -286,8 +284,8 @@ if (smtp_load_reserve >= 0)
       (double)load_average/1000.0);
     smtp_printf("421 Too much load; please try again later.\r\n", FALSE);
     log_write(L_connection_reject,
-              LOG_MAIN, "Connection from %s refused: load average = %.2f",
-      whofrom->s, (double)load_average/1000.0);
+              LOG_MAIN, "Connection from %Y refused: load average = %.2f",
+      whofrom, (double)load_average/1000.0);
     goto ERROR_RETURN;
     }
   }
@@ -307,7 +305,7 @@ if (smtp_accept_max_per_host)
     {
     if (!f.expand_string_forcedfail)
       log_write(0, LOG_MAIN|LOG_PANIC, "expansion of smtp_accept_max_per_host "
-        "failed for %s: %s", whofrom->s, expand_string_message);
+        "failed for %Y: %s", whofrom, expand_string_message);
     }
   /* For speed, interpret a decimal number inline here */
   else
@@ -317,7 +315,7 @@ if (smtp_accept_max_per_host)
       max_for_this_host = max_for_this_host * 10 + *s++ - '0';
     if (*s)
       log_write(0, LOG_MAIN|LOG_PANIC, "expansion of smtp_accept_max_per_host "
-        "for %s contains non-digit: %s", whofrom->s, expanded);
+        "for %Y contains non-digit: %s", whofrom, expanded);
     }
   }
 
@@ -355,8 +353,8 @@ if (max_for_this_host > 0 && smtp_accept_count >= max_for_this_host)
     smtp_printf("421 Too many concurrent SMTP connections "
       "from this IP address; please try again later.\r\n", FALSE);
     log_write(L_connection_reject,
-              LOG_MAIN, "Connection from %s refused: too many connections "
-      "from that IP address", whofrom->s);
+              LOG_MAIN, "Connection from %Y refused: too many connections "
+      "from that IP address", whofrom);
     search_tidyup();
     goto ERROR_RETURN;
     }
@@ -382,8 +380,8 @@ if (LOGGING(smtp_connection))
   if (list && verify_check_host(&list) == OK)
     save_log_selector &= ~L_smtp_connection;
   else
-    log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %s "
-      "(TCP/IP connection count = %d)", whofrom->s, smtp_accept_count + 1);
+    log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %Y "
+      "(TCP/IP connection count = %d)", whofrom, smtp_accept_count + 1);
   }
 
 /* Now we can fork the accepting process; do a lookup tidy, just in case any

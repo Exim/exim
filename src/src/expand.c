@@ -3957,10 +3957,9 @@ if (Ustrlen(key) > 64)
 hash_source = string_catn(NULL, key_num, 1);
 hash_source = string_catn(hash_source, daystamp, 3);
 hash_source = string_cat(hash_source, address);
-(void) string_from_gstring(hash_source);
 
 DEBUG(D_expand)
-  debug_printf_indent("prvs: hash source is '%s'\n", hash_source->s);
+  debug_printf_indent("prvs: hash source is '%Y'\n", hash_source);
 
 memset(innerkey, 0x36, 64);
 memset(outerkey, 0x5c, 64);
@@ -7993,7 +7992,7 @@ NOT_ITEM: ;
 	    goto EXPAND_FAILED;
 	    }
 	  yield = string_cat(yield, s);
-	  DEBUG(D_expand) debug_printf_indent("yield: '%s'\n", string_from_gstring(yield));
+	  DEBUG(D_expand) debug_printf_indent("yield: '%Y'\n", yield);
 	  break;
 	  }
 

@@ -241,7 +241,7 @@ if (!string_vformat(&gs, SVFMT_TAINT_NOCHK, CS format, ap))
   return FALSE;
   }
 va_end(ap);
-DEBUG(D_transport|D_v) debug_printf("  LMTP>> %s", string_from_gstring(&gs));
+DEBUG(D_transport|D_v) debug_printf("  LMTP>> %Y", &gs);
 rc = write(fd, gs.s, gs.ptr);
 gs.ptr -= 2; string_from_gstring(&gs); /* remove \r\n for debug and error message */
 if (rc > 0) return TRUE;

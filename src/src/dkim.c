@@ -289,7 +289,7 @@ else
       break;
     }
 
-log_write(0, LOG_MAIN, "%s", string_from_gstring(logmsg));
+log_write(0, LOG_MAIN, "%Y", logmsg);
 return;
 }
 
