@@ -16,3 +16,6 @@
 > aggregate output vs. json extract
 > [".outlook.com", "outlook.com"]
 > 
+> string with embedded comma
+> Doe, John
+> 

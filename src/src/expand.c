@@ -2384,19 +2384,26 @@ static uschar *
 json_nextinlist(const uschar ** list)
 {
 unsigned array_depth = 0, object_depth = 0;
+BOOL quoted = FALSE;
 const uschar * s = *list, * item;
 
 skip_whitespace(&s);
 
 for (item = s;
-     *s && (*s != ',' || array_depth != 0 || object_depth != 0);
+     *s && (*s != ',' || array_depth != 0 || object_depth != 0 || quoted);
      s++)
-  switch (*s)
+  if (!quoted) switch (*s)
     {
     case '[': array_depth++; break;
     case ']': array_depth--; break;
     case '{': object_depth++; break;
     case '}': object_depth--; break;
+    case '"': quoted = TRUE;
+    }
+  else switch(*s)
+    {
+    case '\\': s++; break;		/* backslash protects one char */
+    case '"':  quoted = FALSE; break;
     }
 *list = *s ? s+1 : s;
 if (item == s) return NULL;

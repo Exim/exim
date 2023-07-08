@@ -19,4 +19,7 @@ ${lookup {policy-aliases : outlook : mxs : 1} json {DIR/aux-fixed/policy.json}}
 aggregate output vs. json extract
 ${extract json {mxs} \
 	{${lookup {policy-aliases:outlook} json {DIR/aux-fixed/policy.json}}}}
+
+string with embedded comma
+${lookup {policy-aliases:key_for_string_with_comma} json {DIR/aux-fixed/policy.json}}
 ****

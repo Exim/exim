@@ -28,7 +28,8 @@
       "mxs": [
         ".yahoodns.net"
       ]
-    }
+    },
+    "key_for_string_with_comma": "Doe, John"
   },
   "policies": {
     "aol.com": {

@@ -158,6 +158,11 @@ JH/29 Change format of the internal ID used for message identification. The old
       back to old (losing time-precision and PID information) and remove any
       wait- hints databases.
 
+JH/30 Bug 3006: Fix handling of JSON strings having embedded commas. Previously
+      we treated them as item separators when parsing for a list item, but they
+      need to be protected by the doublequotes.  While there, add handling for
+      backslashes.
+
 Exim version 4.96
 -----------------
 

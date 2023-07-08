@@ -945,6 +945,13 @@ xyz
 > <>
 > expect: <>
 > 
+> # string value with embedded comma
+> <Doe, John>
+> expect <Doe, John>
+> # string value with embedded doublequote
+> <word1 \" word2>
+> expect <word1 \" word2>
+> 
 > yes
 > yes
 > 

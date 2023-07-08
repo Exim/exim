@@ -982,6 +982,13 @@ expect: <>
 <${extract jsons{nonexistent}{ \{"id": \{"a":101, "b":102\}, "IDs": \{"1":116, "2":943, "3":234\}\} }}>
 expect: <>
 
+# string value with embedded comma
+<${extract jsons{name}{ \{ "id":"1","name":"Doe, John","age":"unknown" \}}}>
+expect <Doe, John>
+# string value with embedded doublequote
+<${extract jsons{name}{ \{ "id":"1","name":"word1 \\\" word2","age":"unknown" \}}}>
+expect <word1 \\\" word2>
+
 ${if forany_json {[1, 2, 3]}{={$item}{1}}{yes}{no}}
 ${if forany_jsons{["A", "B", "C"]}{eq{$item}{B}}{yes}{no}}
 
