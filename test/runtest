@@ -1071,8 +1071,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/250-AUTH ANONYMOUS PLAIN SCRAM-SHA-1\K SCRAM-SHA-256//;
 
     # mailq times change with when the run is done, vs. static-source spoolfiles
-    #s/\s*\d*[hd](?=   317 [0-9A-Za-z\-]{23} <nobody@test.ex>)/DDd/;
-    s/^\s*\d*[hd](?=   317 [0-9A-Za-z\-]{23} <nobody@test.)/DDd/;
+    s/\s*\d*[hd](?=   317 [0-9A-Za-z\-]{23} <nobody\@test.ex>)/DDd/;
     }
 
   # ======== stderr ========
