@@ -469,8 +469,8 @@ typedef struct ip_address_item {
 /* Structure for chaining together arbitrary strings. */
 
 typedef struct string_item {
-  struct string_item *next;
-  uschar *text;
+  struct string_item *	next;
+  uschar *		text;
 } string_item;
 
 /* Information about a soft delivery failure, for use when calculating
