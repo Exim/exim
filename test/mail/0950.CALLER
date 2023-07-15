@@ -1,0 +1,15 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: CALLER@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [127.0.0.1] (helo=tester)
+	by myhost.test.ex with smtp (Exim x.yz)
+	(envelope-from <implcit@test.ex>)
+	id 10HmaX-000000005vi-0000
+	for CALLER@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+From: <good@test.ex>
+Subject: this should be accepted and filed
+
+a single body line
+

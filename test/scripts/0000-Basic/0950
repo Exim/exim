@@ -1,0 +1,67 @@
+# Sieve filter: basic classify reject/deliver
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO tester
+??? 250
+MAIL FROM:<implcit@test.ex>
+??? 250
+RCPT TO:<CALLER@test.ex>
+??? 250
+DATA
+??? 354
+From: <good@test.ex>
+Subject: this should be accepted and filed
+
+a single body line
+.
+??? 250
+RSET
+??? 250
++++ 1
+MAIL FROM:<discard@test.ex>
+??? 250
+RCPT TO:<CALLER@test.ex>
+??? 250
+DATA
+??? 354
+From: <coyote@test.ex>
+Subject: this should be discarded by the filter
+.
+??? 250
+RSET
+??? 250
++++ 1
+MAIL FROM:<identified@test.ex>
+??? 250
+RCPT TO:<CALLER@test.ex>
+??? 250
+DATA
+??? 354
+From: <spot_this@test.ex>
+Subject: this should be delivered to a speicifc place by the filter
+.
+??? 250
+RSET
+??? 250
++++ 1
+MAIL FROM:<redirect@test.ex>
+??? 250
+RCPT TO:<CALLER@test.ex>
+??? 250
+DATA
+??? 354
+From: <redirect@test.ex>
+Subject: this should be redirected by the filter to a different address
+.
+??? 250
+QUIT
+??? 221
+****
+#
+millisleep 500
+killdaemon

@@ -831,23 +831,23 @@ int r=0;
 if ((filter_test != FTEST_NONE && debug_selector != 0) ||
   (debug_selector & D_filter) != 0)
   {
-  debug_printf("String comparison (match ");
+  debug_printf_indent("String comparison (match ");
   switch (mt)
     {
-    case MATCH_IS: debug_printf(":is"); break;
-    case MATCH_CONTAINS: debug_printf(":contains"); break;
-    case MATCH_MATCHES: debug_printf(":matches"); break;
+    case MATCH_IS: debug_printf_indent(":is"); break;
+    case MATCH_CONTAINS: debug_printf_indent(":contains"); break;
+    case MATCH_MATCHES: debug_printf_indent(":matches"); break;
     }
-  debug_printf(", comparison \"");
+  debug_printf_indent(", comparison \"");
   switch (co)
     {
-    case COMP_OCTET: debug_printf("i;octet"); break;
-    case COMP_EN_ASCII_CASEMAP: debug_printf("en;ascii-casemap"); break;
-    case COMP_ASCII_NUMERIC: debug_printf("i;ascii-numeric"); break;
+    case COMP_OCTET: debug_printf_indent("i;octet"); break;
+    case COMP_EN_ASCII_CASEMAP: debug_printf_indent("en;ascii-casemap"); break;
+    case COMP_ASCII_NUMERIC: debug_printf_indent("i;ascii-numeric"); break;
     }
-  debug_printf("\"):\n");
-  debug_printf("  Search = %s (%d chars)\n", needle->character,needle->length);
-  debug_printf("  Inside = %s (%d chars)\n", haystack->character,haystack->length);
+  debug_printf_indent("\"):\n");
+  debug_printf_indent("  Search = %s (%d chars)\n", needle->character,needle->length);
+  debug_printf_indent("  Inside = %s (%d chars)\n", haystack->character,haystack->length);
   }
 switch (mt)
   {
@@ -917,7 +917,7 @@ switch (mt)
   }
 if ((filter_test != FTEST_NONE && debug_selector != 0) ||
   (debug_selector & D_filter) != 0)
-  debug_printf("  Result %s\n",r?"true":"false");
+  debug_printf_indent("  Result %s\n",r?"true":"false");
 return r;
 }
 
@@ -1039,13 +1039,13 @@ for (new_addr = *generated; new_addr; new_addr = new_addr->next)
      )
     {
     if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-      debug_printf("Repeated %s `%s' ignored.\n",file ? "fileinto" : "redirect", addr);
+      debug_printf_indent("Repeated %s `%s' ignored.\n",file ? "fileinto" : "redirect", addr);
 
     return;
     }
 
 if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-  debug_printf("%s `%s'\n",file ? "fileinto" : "redirect", addr);
+  debug_printf_indent("%s `%s'\n",file ? "fileinto" : "redirect", addr);
 
 new_addr = deliver_make_addr(addr,TRUE);
 if (file)
@@ -2653,7 +2653,8 @@ Returns:      2                success by stop
               -1               syntax or execution error
 */
 
-static int parse_block(struct Sieve *filter, int exec,
+static int
+parse_block(struct Sieve *filter, int exec,
   address_item **generated)
 {
 int r;
@@ -2745,7 +2746,7 @@ while (*filter->pc)
     if ((filter_test != FTEST_NONE && debug_selector != 0) ||
         (debug_selector & D_filter) != 0)
       {
-      if (exec) debug_printf("if %s\n",cond?"true":"false");
+      if (exec) debug_printf_indent("if %s\n",cond?"true":"false");
       }
     m=parse_block(filter,exec ? cond : 0, generated);
     if (m==-1 || m==2) return m;
@@ -2771,7 +2772,7 @@ while (*filter->pc)
         if ((filter_test != FTEST_NONE && debug_selector != 0) ||
             (debug_selector & D_filter) != 0)
           {
-          if (exec) debug_printf("elsif %s\n",cond?"true":"false");
+          if (exec) debug_printf_indent("elsif %s\n",cond?"true":"false");
           }
         m=parse_block(filter,exec && unsuccessful ? cond : 0, generated);
         if (m==-1 || m==2) return m;
@@ -3104,16 +3105,16 @@ while (*filter->pc)
               }
             }
           if ((filter_test != FTEST_NONE && debug_selector != 0) || debug_selector & D_filter)
-            debug_printf("Notification to `%s': '%s'.\n",method.character,message.length!=-1 ? message.character : CUS "");
+            debug_printf_indent("Notification to `%s': '%s'.\n",method.character,message.length!=-1 ? message.character : CUS "");
 #endif
           }
         else
           if ((filter_test != FTEST_NONE && debug_selector != 0) || debug_selector & D_filter)
-            debug_printf("Repeated notification to `%s' ignored.\n",method.character);
+            debug_printf_indent("Repeated notification to `%s' ignored.\n",method.character);
         }
       else
         if ((filter_test != FTEST_NONE && debug_selector != 0) || debug_selector & D_filter)
-          debug_printf("Ignoring notification, triggering message contains Auto-submitted: field.\n");
+          debug_printf_indent("Ignoring notification, triggering message contains Auto-submitted: field.\n");
       }
     }
 #endif
@@ -3281,7 +3282,7 @@ while (*filter->pc)
         for (int i = 0; i < 16; i++) sprintf(CS (hexdigest+2*i), "%02X", digest[i]);
 
         if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-          debug_printf("Sieve: mail was personal, vacation file basename: %s\n", hexdigest);
+          debug_printf_indent("Sieve: mail was personal, vacation file basename: %s\n", hexdigest);
 
         if (filter_test == FTEST_NONE)
           {
@@ -3362,7 +3363,7 @@ while (*filter->pc)
           }
         }
         else if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-          debug_printf("Sieve: mail was not personal, vacation would ignore it\n");
+          debug_printf_indent("Sieve: mail was not personal, vacation would ignore it\n");
       }
     }
     else break;
@@ -3554,7 +3555,8 @@ struct Sieve sieve;
 int r;
 uschar * msg;
 
-DEBUG(D_route) debug_printf("Sieve: start of processing\n");
+DEBUG(D_route) debug_printf_indent("Sieve: start of processing\n");
+expand_level++;
 sieve.filter = filter;
 
 if (!vacation_directory)
@@ -3611,9 +3613,10 @@ else
 
 #ifndef COMPILE_SYNTAX_CHECKER
 if (filter_test != FTEST_NONE) printf("%s\n", (const char*) msg);
-  else debug_printf("%s\n", msg);
+  else debug_printf_indent("%s\n", msg);
 #endif
 
-DEBUG(D_route) debug_printf("Sieve: end of processing\n");
+expand_level--;
+DEBUG(D_route) debug_printf_indent("Sieve: end of processing\n");
 return r;
 }

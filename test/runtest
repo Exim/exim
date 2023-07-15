@@ -1864,13 +1864,13 @@ if (-e $sf_current)
 
     for (my $i = 0; $i < @munged; $i++)
       {
-      if ($munged[$i] =~ /^[-\d]{10}\s[:\d]{8}\s[-A-Za-z\d]{16}\s[-=*]>/)
+      if ($munged[$i] =~ /^[-\d]{10}\s[:\d]{8}(\.\d{3})?\s[-A-Za-z\d]{23}\s[-=*]>/)
         {
         my $j;
         for ($j = $i + 1; $j < @munged; $j++)
           {
           last if $munged[$j] !~
-            /^[-\d]{10}\s[:\d]{8}\s[-A-Za-z\d]{16}\s[-=*]>/;
+            /^[-\d]{10}\s[:\d]{8}(\.\d{3})?\s[-A-Za-z\d]{23}\s[-=*]>/;
           }
         @temp = splice(@munged, $i, $j - $i);
         @temp = sort(@temp);
