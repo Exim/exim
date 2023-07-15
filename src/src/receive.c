@@ -3911,8 +3911,7 @@ else
       break;
     }
 
-  g = string_append(NULL, 2, US"F=",
-    sender_address[0] == 0 ? US"<>" : sender_address);
+  g = string_append(NULL, 2, US"F=", *sender_address ? sender_address : US"<>");
   g = add_host_info_for_log(g);
 
   log_write(0, LOG_MAIN|LOG_REJECT, "%Y %srejected by local_scan(): %.256s",
@@ -4056,7 +4055,7 @@ g = string_get(256);
 
 g = string_append(g, 2,
   fake_response == FAIL ? US"(= " : US"<= ",
-  sender_address[0] == 0 ? US"<>" : sender_address);
+  *sender_address ? sender_address : US"<>");
 if (message_reference)
   g = string_append(g, 2, US" R=", message_reference);
 

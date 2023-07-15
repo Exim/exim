@@ -4532,10 +4532,15 @@ switch(error)
 
   /* Handle genuine errors */
   case SSL_ERROR_SSL:
+    {
+    uschar * conn_info = smtp_get_connection_info();
+    if (Ustrncmp(conn_info, US"SMTP ", 5) == 0) conn_info += 5;
+    /* I'd like to get separated H= here, but too hard for now */
     ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
-    log_write(0, LOG_MAIN, "TLS error (SSL_read): %s", ssl_errstring);
+    log_write(0, LOG_MAIN, "TLS error (SSL_read): on %s %s", conn_info, ssl_errstring);
     ssl_xfer_error = TRUE;
     return FALSE;
+    }
 
   default:
     DEBUG(D_tls) debug_printf("Got SSL error %d\n", error);
