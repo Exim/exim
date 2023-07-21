@@ -7378,10 +7378,15 @@ of the following form is provided:
 .code
 ${quote_<lookup-type>:<string>}
 .endd
-For example, the safest way to write the NIS+ query is
+For example, the way to write the NIS+ query is
 .code
 [name="${quote_nisplus:$local_part}"]
 .endd
+.cindex "tainted data" "in lookups"
+.new
+&*All*& tainted data used in a quoery-style lookup must be quoted
+using a mechanism appropriate for the lookup type.
+.wen
 See chapter &<<CHAPexpand>>& for full coverage of string expansions. The quote
 operator can be used for all lookup types, but has no effect for single-key
 lookups, since no quoting is ever needed in their key strings.
