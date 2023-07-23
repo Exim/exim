@@ -163,6 +163,10 @@ JH/30 Bug 3006: Fix handling of JSON strings having embedded commas. Previously
       need to be protected by the doublequotes.  While there, add handling for
       backslashes.
 
+JH/31 Bug 2998: Fix ${utf8clean:...} to disallow UTF-16 surrogate codepoints.
+      Found and fixed by Jasen Betts. No testcase for this as my usual text
+      editor insists on emitting only valid UTF-8.
+
 Exim version 4.96
 -----------------
 

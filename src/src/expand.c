@@ -7862,7 +7862,7 @@ NOT_ITEM: ;
 	case EOP_UTF8CLEAN:
 	  {
 	  int seq_len = 0, index = 0, bytes_left = 0, complete;
-	  long codepoint = -1;
+	  ulong codepoint = (ulong)-1;
 	  uschar seq_buff[4];			/* accumulate utf-8 here */
 
 	  /* Manually track tainting, as we deal in individual chars below */
@@ -7896,6 +7896,15 @@ NOT_ITEM: ;
 		if (--bytes_left == 0)		/* codepoint complete */
 		  if(codepoint > 0x10FFFF)	/* is it too large? */
 		    complete = -1;	/* error (RFC3629 limit) */
+		  else if ( (codepoint & 0x1FF800 ) == 0xD800 ) /* surrogate */
+		    /* A UTF-16 surrogate (which should be one of a pair that
+		    encode a Unicode codepoint that is outside the Basic
+		    Multilingual Plane).  Error, not UTF8.
+		    RFC2279.2 is slightly unclear on this, but 
+		    https://unicodebook.readthedocs.io/issues.html#strict-utf8-decoder
+		    says "Surrogates characters are also invalid in UTF-8:
+		    characters in U+D800—U+DFFF have to be rejected." */
+		    complete = -1;
 		  else
 		    {		/* finished; output utf-8 sequence */
 		    yield = string_catn(yield, seq_buff, seq_len);
@@ -7905,27 +7914,25 @@ NOT_ITEM: ;
 	      }
 	    else	/* no bytes left: new sequence */
 	      {
-	      if(!(c & 0x80))	/* 1-byte sequence, US-ASCII, keep it */
+	      if (!(c & 0x80))	/* 1-byte sequence, US-ASCII, keep it */
 		{
 		yield = string_catn(yield, &c, 1);
 		continue;
 		}
-	      if((c & 0xe0) == 0xc0)		/* 2-byte sequence */
-		{
-		if(c == 0xc0 || c == 0xc1)	/* 0xc0 and 0xc1 are illegal */
+	      if ((c & 0xe0) == 0xc0)		/* 2-byte sequence */
+		if (c == 0xc0 || c == 0xc1)	/* 0xc0 and 0xc1 are illegal */
 		  complete = -1;
 		else
 		  {
-		    bytes_left = 1;
-		    codepoint = c & 0x1f;
+		  bytes_left = 1;
+		  codepoint = c & 0x1f;
 		  }
-		}
-	      else if((c & 0xf0) == 0xe0)		/* 3-byte sequence */
+	      else if ((c & 0xf0) == 0xe0)		/* 3-byte sequence */
 		{
 		bytes_left = 2;
 		codepoint = c & 0x0f;
 		}
-	      else if((c & 0xf8) == 0xf0)		/* 4-byte sequence */
+	      else if ((c & 0xf8) == 0xf0)		/* 4-byte sequence */
 		{
 		bytes_left = 3;
 		codepoint = c & 0x07;
