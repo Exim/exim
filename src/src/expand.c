@@ -7862,7 +7862,7 @@ NOT_ITEM: ;
 	case EOP_UTF8CLEAN:
 	  {
 	  int seq_len = 0, index = 0, bytes_left = 0, complete;
-	  ulong codepoint = (ulong)-1;
+	  u_long codepoint = (u_long)-1;
 	  uschar seq_buff[4];			/* accumulate utf-8 here */
 
 	  /* Manually track tainting, as we deal in individual chars below */
