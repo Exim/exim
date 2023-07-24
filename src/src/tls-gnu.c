@@ -727,7 +727,7 @@ file is never present. If two processes both compute some new parameters, you
 waste a bit of effort, but it doesn't seem worth messing around with locking to
 prevent this.
 
-Returns:     OK/DEFER/FAIL
+Returns:     OK/DEFER (expansion issue)/FAIL (requested none)
 */
 
 static int
@@ -765,7 +765,7 @@ else if (Ustrcmp(exp_tls_dhparam, "historic") == 0)
 else if (Ustrcmp(exp_tls_dhparam, "none") == 0)
   {
   DEBUG(D_tls) debug_printf("Requested no DH parameters\n");
-  return OK;
+  return FAIL;
   }
 else if (exp_tls_dhparam[0] != '/')
   {
@@ -2002,10 +2002,10 @@ Returns:          OK/DEFER/FAIL
 */
 
 static int
-tls_set_remaining_x509(exim_gnutls_state_st *state, uschar ** errstr)
+tls_set_remaining_x509(exim_gnutls_state_st * state, uschar ** errstr)
 {
-int rc;
-const host_item *host = state->host;  /* macro should be reconsidered? */
+int rc = OK;
+const host_item * host = state->host;  /* macro should be reconsidered? */
 
 /* Create D-H parameters, or read them from the cache file. This function does
 its own SMTP error messaging. This only happens for the server, TLS D-H ignores
@@ -2014,11 +2014,13 @@ client-side params. */
 if (!state->host)
   {
   if (!dh_server_params)
-    if ((rc = init_server_dh(errstr)) != OK) return rc;
+    if ((rc = init_server_dh(errstr)) == DEFER) return rc;
 
   /* Unnecessary & discouraged with 3.6.0 or later, according to docs.  But without it,
   no DHE- ciphers are advertised. */
-  gnutls_certificate_set_dh_params(state->lib_state.x509_cred, dh_server_params);
+
+  if (rc == OK)
+    gnutls_certificate_set_dh_params(state->lib_state.x509_cred, dh_server_params);
   }
 
 /* Link the credentials to the session. */

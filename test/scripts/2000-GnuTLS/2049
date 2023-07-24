@@ -40,4 +40,12 @@ exim -odf userb@test.ex
 Test message
 ****
 killdaemon
+#
+# Check we can survive an explicit request for no DH-params
+exim -DSERVER=server -DDATA=none -bd -oX PORT_D
+****
+exim -odf userx@test.ex
+Test message
+****
+killdaemon
 no_message_check

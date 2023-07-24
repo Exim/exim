@@ -13,6 +13,9 @@
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 => userb@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbG-000000005vi-0000"
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbI-000000005vi-0000"
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
@@ -37,3 +40,7 @@
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbF-000000005vi-0000@myhost.test.ex
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 => userb <userb@test.ex> R=server T=local_delivery
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1239, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbH-000000005vi-0000@myhost.test.ex
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 => userx <userx@test.ex> R=server T=local_delivery
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed
