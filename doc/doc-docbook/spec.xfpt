@@ -7384,7 +7384,7 @@ For example, the way to write the NIS+ query is
 .endd
 .cindex "tainted data" "in lookups"
 .new
-&*All*& tainted data used in a quoery-style lookup must be quoted
+&*All*& tainted data used in a query-style lookup must be quoted
 using a mechanism appropriate for the lookup type.
 .wen
 See chapter &<<CHAPexpand>>& for full coverage of string expansions. The quote
@@ -32211,7 +32211,7 @@ If multiple header lines match, all are removed.
 There is no harm in attempting to remove the same header twice nor in removing
 a non-existent header. Further header specifiers for removal may be accumulated
 during the DATA and MIME ACLs, after which matching headers are removed
-if present. In the case of non-SMTP messages, remove speifiers are
+if present. In the case of non-SMTP messages, remove specifiers are
 accumulated during the non-SMTP ACLs, and are acted on after
 all the ACLs have run. If a message is rejected after DATA or by the non-SMTP
 ACL, there really is no effect because there is no logging of what headers
