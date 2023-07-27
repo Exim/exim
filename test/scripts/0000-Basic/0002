@@ -804,6 +804,8 @@ ${if eq{1}{2}{${run{/non/exist}}}{1!=2}}
 rc=$runrc
 ${run,preexpand {DIR/aux-fixed/0002.runfile 0}}
 rc=$runrc
+${run{DIR/aux-fixed/0002.runfile ${quote:1}}{$value}{2}}
+rc=$runrc
 
 # PRVS
 
