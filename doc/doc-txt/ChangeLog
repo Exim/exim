@@ -8,6 +8,16 @@ Exim version 4.96+fixes
 HS/01 Bug 2728: Introduce EDITME option "DMARC_API" to work around incompatible
       API changes in libopendmarc.
 
+HS/02 Backported the essence of 44b6e0 (Fix argument parsing for ${run }
+      expansion
+
+JH/15 Fix argument parsing for ${run } expansion. Previously, when an argument
+      included a close-brace character (eg. it itself used an expansion) an
+      error occurred.
+
+HS/02 Backported the essence of 44b6e0 (Fix argument parsing for ${run }
+      expansion
+
 
 Exim version 4.96
 -----------------

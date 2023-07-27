@@ -5560,8 +5560,16 @@ while (*s)
       s++;
 
       if (late_expand)		/* this is the default case */
-	{
-	int n = Ustrcspn(s, "}");
+	{ /* backported from 44b6e099b7 */
+	int n;
+	const uschar * t;
+	/* Locate the end of the args */
+	/* expand_string_internal(s, ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | ESI_SKIPPING, &t, NULL, NULL);
+	 * honour_dollar ----------------------------------,
+	 * skipping ----------------------------------,    |
+	 * BRACE_ENDS --------------------,           |    |       */
+	(void) expand_string_internal(s, TRUE, &t, skipping, TRUE, NULL);
+	n = t - s;
 	arg = skipping ? NULL : string_copyn(s, n);
 	s += n;
 	}
