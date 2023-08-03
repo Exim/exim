@@ -173,6 +173,9 @@ JH/32 Fix "tls_dhparam = none" under GnuTLS.  At least with 3.7.9 this gave
 JH/33 Fix free for live variable $value created by a ${run ...} expansion.
       Although not seen, this could have resulted in a SIGSEGV.
 
+JH/34 Bug 3013: Fix use of $recipients within arguments for ${run...}.
+      In 4.96 this would expand to empty.
+
 
 Exim version 4.96
 -----------------

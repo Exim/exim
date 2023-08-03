@@ -1153,4 +1153,9 @@ typedef unsigned mcs_flags;
 #define QL_MSGID_ONLY		3
 #define QL_UNSORTED		8
 
+/* Flags for transport_set_up_command() */
+#define TSUC_EXPAND_ARGS	BIT(0)
+#define TSUC_ALLOW_TAINTED_ARGS	BIT(1)
+#define TSUC_ALLOW_RECIPIENTS	BIT(2)
+
 /* End of macros.h */

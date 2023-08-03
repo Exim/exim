@@ -292,9 +292,9 @@ Returns:             TRUE if all went well; otherwise an error will be
 */
 
 static BOOL
-set_up_direct_command(const uschar ***argvptr, uschar *cmd,
-  BOOL expand_arguments, int expand_fail, address_item *addr, uschar *tname,
-  pipe_transport_options_block *ob)
+set_up_direct_command(const uschar *** argvptr, uschar * cmd,
+  BOOL expand_arguments, int expand_fail, address_item * addr, uschar * tname,
+  pipe_transport_options_block * ob)
 {
 BOOL permitted = FALSE;
 const uschar **argv;
@@ -304,8 +304,9 @@ call the common function for creating an argument list and expanding
 the items if necessary. If it fails, this function fails (error information
 is in the addresses). */
 
-if (!transport_set_up_command(argvptr, cmd, expand_arguments, expand_fail,
-      addr, FALSE, string_sprintf("%.50s transport", tname), NULL))
+if (!transport_set_up_command(argvptr, cmd,
+      expand_arguments ? TSUC_EXPAND_ARGS : 0,
+      expand_fail, addr, string_sprintf("%.50s transport", tname), NULL))
   return FALSE;
 
 /* Point to the set-up arguments. */

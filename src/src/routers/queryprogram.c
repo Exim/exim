@@ -289,10 +289,9 @@ if (curr_uid != root_uid && (uid != curr_uid || gid != curr_gid))
 
 if (!transport_set_up_command(&argvptr, /* anchor for arg list */
     ob->command,                        /* raw command */
-    TRUE,                               /* expand the arguments */
+    TSUC_EXPAND_ARGS,                   /* arguments expanded but must not be tainted */
     0,                                  /* not relevant when... */
     NULL,                               /* no transporting address */
-    FALSE,				/* args must be untainted */
     US"queryprogram router",            /* for error messages */
     &addr->message))                    /* where to put error message */
   return DEFER;
