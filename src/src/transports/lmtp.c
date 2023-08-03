@@ -489,8 +489,8 @@ if (ob->cmd)
   {
   DEBUG(D_transport) debug_printf("using command %s\n", ob->cmd);
   sprintf(CS buffer, "%.50s transport", tblock->name);
-  if (!transport_set_up_command(&argv, ob->cmd, TRUE, PANIC, addrlist, FALSE,
-	buffer, NULL))
+  if (!transport_set_up_command(&argv, ob->cmd, TSUC_EXPAND_ARGS, PANIC,
+	addrlist, buffer, NULL))
     return FALSE;
 
   /* If the -N option is set, can't do any more. Presume all has gone well. */

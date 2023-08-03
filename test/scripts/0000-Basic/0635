@@ -1,0 +1,12 @@
+# $recipients used in ${run...}
+exim -bs -odi
+helo test
+mail from:someone@some.domain
+rcpt to:CALLER@HOSTNAME
+data
+This is a test message.
+.
+quit
+****
+exim -q
+****

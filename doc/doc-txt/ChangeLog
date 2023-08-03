@@ -83,6 +83,9 @@ HS/02 Backported the essence of 44b6e0 (Fix argument parsing for ${run }
 JH/13 Bug 2929: Fix using $recipients after ${run...}.  A change made for 4.96
       resulted in the variable appearing empty.  Find and fix by Ruben Jenster.
 
+JH/34 Bug 3013: Fix use of $recipients within arguments for ${run...}.
+      In 4.96 this would expand to empty.
+
 
 Exim version 4.96
 -----------------

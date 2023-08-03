@@ -2084,18 +2084,18 @@ return FALSE;
 
 /* This function is called when a command line is to be parsed and executed
 directly, without the use of /bin/sh. It is called by the pipe transport,
-the queryprogram router, and also from the main delivery code when setting up a
+the queryprogram router, for any ${run } expansion,
+and also from the main delivery code when setting up a
 transport filter process. The code for ETRN also makes use of this; in that
 case, no addresses are passed.
 
 Arguments:
   argvptr            pointer to anchor for argv vector
   cmd                points to the command string (modified IN PLACE)
-  expand_arguments   true if expansion is to occur
+  flags		     bits for expand-args, allow taint, allow $recipients
   expand_failed      error value to set if expansion fails; not relevant if
                      addr == NULL
   addr               chain of addresses, or NULL
-  allow_tainted_args as it says; used for ${run}
   etext              text for use in error messages
   errptr             where to put error message if addr is NULL;
                      otherwise it is put in the first address
@@ -2106,8 +2106,8 @@ Returns:             TRUE if all went well; otherwise an error will be
 
 BOOL
 transport_set_up_command(const uschar *** argvptr, const uschar * cmd,
-  BOOL expand_arguments, int expand_failed, address_item * addr,
-  BOOL allow_tainted_args, const uschar * etext, uschar ** errptr)
+  unsigned flags, int expand_failed, address_item * addr,
+  const uschar * etext, uschar ** errptr)
 {
 const uschar ** argv, * s;
 int address_count = 0, argcount = 0, max_args;
@@ -2182,10 +2182,10 @@ DEBUG(D_transport)
     debug_printf("  argv[%d] = '%s'\n", i, string_printing(argv[i]));
   }
 
-if (expand_arguments)
+if (flags & TSUC_EXPAND_ARGS)
   {
-  BOOL allow_dollar_recipients = addr && addr->parent
-    && Ustrcmp(addr->parent->address, "system-filter") == 0;
+  BOOL allow_dollar_recipients = (flags & TSUC_ALLOW_RECIPIENTS)
+    || (addr && addr->parent && Ustrcmp(addr->parent->address, "system-filter") == 0);	/*XXX could we check this at caller? */
 
   for (int i = 0; argv[i]; i++)
     {
@@ -2370,7 +2370,7 @@ if (expand_arguments)
 	  debug_printf("SPECIFIC TESTSUITE EXEMPTION: tainted arg '%s'\n",
 		      expanded_arg);
 	}
-      else if (  !allow_tainted_args
+      else if (  !(flags & TSUC_ALLOW_TAINTED_ARGS)
 	      && arg_is_tainted(expanded_arg, i, addr, etext, errptr))
 	return FALSE;
       argv[i] = expanded_arg;
