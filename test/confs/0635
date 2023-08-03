@@ -1,0 +1,45 @@
+# Exim test configuration 0635
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = @
+
+acl_smtp_rcpt = accept
+acl_smtp_data = check_data
+trusted_users = CALLER
+
+
+# ----- ACL -----
+
+begin acl
+
+check_data:
+  accept logwrite = \$recipients: "$recipients"
+	 logwrite = run-wrapped \$recipients: "${run{/bin/echo $recipients}}"
+
+# ----- Routers -----
+
+begin routers
+
+fail_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  data = :fail: unrouteable mail domain "$domain"
+
+localuser:
+  driver = accept
+  check_local_user
+  transport = local_delivery
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part_data
+
+# End

@@ -2384,7 +2384,7 @@ if ((pid = exim_fork(US"delivery-local")) == 0)
       {
       ok = transport_set_up_command(&transport_filter_argv,
         tp->filter_command,
-        TRUE, PANIC, addr, FALSE, US"transport filter", NULL);
+        TSUC_EXPAND_ARGS, PANIC, addr, US"transport filter", NULL);
       transport_filter_timeout = tp->filter_timeout;
       }
     else transport_filter_argv = NULL;
