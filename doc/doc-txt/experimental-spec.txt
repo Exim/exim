@@ -631,6 +631,8 @@ being logged.
 Limits ESMTP extension
 ---------------------------------------------------------------
 Per https://datatracker.ietf.org/doc/html/draft-freed-smtp-limits-01
+(as of 2023/08/04, version -05 has been published.  It does not seems
+to be substantively different.)
 
 If compiled with EXPERIMENTAL_ESMTP_LIMITS=yes :-
 
