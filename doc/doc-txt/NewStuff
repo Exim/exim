@@ -33,6 +33,8 @@ Version 4.97
 
  12. The ACL remove_header modifier can take a pattern.
 
+ 13. Variable $recipients_list, a properly-quoted exim list.
+
 Version 4.96
 ------------
 

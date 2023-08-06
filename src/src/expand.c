@@ -475,6 +475,7 @@ typedef struct {
 
 typedef uschar * stringptr_fn_t(void);
 static uschar * fn_recipients(void);
+static uschar * fn_recipients_list(void);
 static uschar * fn_queue_size(void);
 
 /* This table must be kept in alphabetical order. */
@@ -694,6 +695,7 @@ static var_entry var_table[] = {
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
   { "recipients",          vtype_string_func, (void *) &fn_recipients },
   { "recipients_count",    vtype_int,         &recipients_count },
+  { "recipients_list",     vtype_string_func, (void *) &fn_recipients_list },
   { "regex_cachesize",     vtype_int,         &regex_cachesize },/* undocumented; devel observability */
 #ifdef WITH_CONTENT_SCAN
   { "regex_match_string",  vtype_stringptr,   &regex_match_string },
@@ -839,6 +841,7 @@ uschar * fn_arc_domains(void) {return NULL;}
 uschar * fn_hdrs_added(void) {return NULL;}
 uschar * fn_queue_size(void) {return NULL;}
 uschar * fn_recipients(void) {return NULL;}
+uschar * fn_recipients_list(void) {return NULL;}
 uschar * sender_helo_verified_boolstr(void) {return NULL;}
 uschar * smtp_cmd_hist(void) {return NULL;}
 
@@ -1800,7 +1803,9 @@ return g;
 *************************************************/
 /* A recipients list is available only during system message filtering,
 during ACL processing after DATA, and while expanding pipe commands
-generated from a system filter, but not elsewhere. */
+generated from a system filter, but not elsewhere.  Note that this does
+not check for comman in the elements, and uses comma-space as seperator -
+so cannot be used as an exim list as-is. */
 
 static uschar *
 fn_recipients(void)
@@ -1815,6 +1820,23 @@ for (int i = 0; i < recipients_count; i++)
   s = recipients_list[i].address;
   g = string_append2_listele_n(g, US", ", s, Ustrlen(s));
   }
+gstring_release_unused(g);
+return string_from_gstring(g);
+}
+
+/* Similar, but as a properly-quoted exim list */
+
+
+static uschar *
+fn_recipients_list(void)
+{
+gstring * g = NULL;
+
+if (!f.enable_dollar_recipients) return NULL;
+
+for (int i = 0; i < recipients_count; i++)
+  g = string_append_listele(g, ':', recipients_list[i].address);
+gstring_release_unused(g);
 return string_from_gstring(g);
 }
 
@@ -2119,7 +2141,7 @@ switch (vp->type)
   case vtype_string_func:
     {
     stringptr_fn_t * fn = (stringptr_fn_t *) val;
-    uschar* s = fn();
+    uschar * s = fn();
     return s ? s : US"";
     }
 

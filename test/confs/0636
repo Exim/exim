@@ -1,0 +1,23 @@
+# Exim test configuration 0636
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = @
+
+acl_smtp_rcpt = accept
+acl_smtp_data = check_data
+queue_only
+
+
+# ----- ACL -----
+
+begin acl
+
+check_data:
+  accept logwrite = \$recipients: "$recipients"
+	 logwrite = \$recipients_list: "$recipients_list"
+
+# End

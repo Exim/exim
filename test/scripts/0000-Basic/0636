@@ -1,0 +1,12 @@
+# $recipients_list
+exim -bs
+helo test
+mail from:someone@some.domain
+rcpt to:<a@test.ex>
+rcpt to:<b@test.ex>
+data
+.
+quit
+****
+no_msglog_check
+no_stdout_check

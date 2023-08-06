@@ -11802,10 +11802,11 @@ all items in the list, the overall condition is true.
 .endlist
 Note that negation of &*forany*& means that the condition must be false for all
 items for the overall condition to succeed, and negation of &*forall*& means
-that the condition must be false for at least one item. In this example, the
-list separator is changed to a comma:
+that the condition must be false for at least one item.
+
+Example:
 .code
-${if forany{<, $recipients}{match{$item}{^user3@}}{yes}{no}}
+${if forany{$recipients_list}{match{$item}{^user3@}}{yes}{no}}
 .endd
 The value of &$item$& is saved and restored while &%forany%& or &%forall%& is
 being processed, to enable these expansion items to be nested.
@@ -13404,10 +13405,20 @@ The main use of this variable is expected to be to distinguish between
 rejections of MAIL and rejections of RCPT.
 
 .tvar &$recipients$&
-This variable contains a list of envelope recipients for a message. A comma and
-a space separate the addresses in the replacement text. However, the variable
-is not generally available, to prevent exposure of Bcc recipients in
-unprivileged users' filter files. You can use &$recipients$& only in these
+.new
+.tvar &$recipients_list$&
+These variables both contain the envelope recipients for a message.
+
+The first uses a comma and a space separate the addresses in the replacement text.
+&*Note*&: an address can legitimately contain a comma;
+this variable is not intended for further processing.
+
+The second is a proper Exim list; colon-separated.
+.wen
+
+However, the variables
+are not generally available, to prevent exposure of Bcc recipients in
+unprivileged users' filter files. You can use either of them  only in these
 cases:
 
 .olist
