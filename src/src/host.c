@@ -600,35 +600,36 @@ return depends on whether sender_fullhost and sender_ident are set or not:
   ident set, no host  => U=ident
   ident set, host set => H=sender_fullhost U=ident
 
-Use taint-unchecked routines on the assumption we'll never expand the results.
-
 Arguments:
   useflag   TRUE if first item to be flagged (H= or U=); if there are two
               items, the second is always flagged
 
-Returns:    pointer to a string in big_buffer
+Returns:    pointer to an allocated string
 */
 
 uschar *
 host_and_ident(BOOL useflag)
 {
+gstring * g = NULL;
+
 if (!sender_fullhost)
-  string_format_nt(big_buffer, big_buffer_size, "%s%s", useflag ? "U=" : "",
-     sender_ident ? sender_ident : US"unknown");
+  {
+  if (useflag)
+    g = string_catn(g, US"U=", 2);
+  g = string_cat(g, sender_ident ? sender_ident : US"unknown");
+  }
 else
   {
-  uschar * flag = useflag ? US"H=" : US"";
-  uschar * iface = US"";
+  if (useflag)
+    g = string_catn(g, US"H=", 2);
+  g = string_cat(g, sender_fullhost);
   if (LOGGING(incoming_interface) && interface_address)
-    iface = string_sprintf(" I=[%s]:%d", interface_address, interface_port);
+    g = string_fmt_append(g, " I=[%s]:%d", interface_address, interface_port);
   if (sender_ident)
-    string_format_nt(big_buffer, big_buffer_size, "%s%s%s U=%s",
-      flag, sender_fullhost, iface, sender_ident);
-  else
-    string_format_nt(big_buffer, big_buffer_size, "%s%s%s",
-      flag, sender_fullhost, iface);
+    g = string_fmt_append(g, " U=%s", sender_ident);
   }
-return big_buffer;
+gstring_release_unused(g);
+return string_from_gstring(g);
 }
 
 #endif   /* STAND_ALONE */
