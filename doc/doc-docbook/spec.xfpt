@@ -38967,6 +38967,7 @@ the following table:
 .display
 &`A   `&        authenticator name (and optional id and sender)
 &`C   `&        SMTP confirmation on delivery
+&`Ci  `&        connection identifier
 &`    `&        command list for &"no mail in SMTP session"&
 &`CV  `&        certificate verification status
 &`D   `&        duration of &"no mail in SMTP session"&
@@ -39069,6 +39070,7 @@ selection marked by asterisks:
 .irow &`address_rewrite`&		&nbsp; "address rewriting"
 .irow &`all_parents`&			&nbsp; "all parents in => lines"
 .irow &`arguments`&			&nbsp; "command line arguments"
+.irow &`connection_id`&			&nbsp;	"connection identifier"
 .irow &`connection_reject`&		*	"connection rejections"
 .irow &`delay_delivery`&		*	"immediate delivery delayed"
 .irow &`deliver_time`&			&nbsp; "time taken to attempt delivery"
@@ -39163,6 +39165,14 @@ are shown as escape sequences. This facility cannot log unrecognized arguments,
 because the arguments are checked before the configuration file is read. The
 only way to log such cases is to interpose a script such as &_util/logargs.sh_&
 between the caller and Exim.
+.next
+.cindex "log" "connection identifier"
+.new
+&%connection_identifier%&: An identifier for the accepted connection is added to
+connection start and end lines and to message accept lines.
+The identifier is tagged by Ci=.
+The value is PID-based, so will reset on reboot and will wrap.
+.wen
 .next
 .cindex "log" "connection rejections"
 &%connection_reject%&: A log entry is written whenever an incoming SMTP

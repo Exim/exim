@@ -1,37 +1,37 @@
-2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= sender@dom U=root P=local-bsmtp S=sss for a@test.ex
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= sender@dom U=root Ci=p1234 P=local-bsmtp S=sss for a@test.ex
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 => a@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] K C="250 OK bdat"
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= sender@dom U=root P=local-bsmtp S=sss for d@test.ex
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= sender@dom U=root Ci=p1235 P=local-bsmtp S=sss for d@test.ex
 2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 ** d@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after sending data block: 500 oops bdat-nonlast
 2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 d@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= sender@dom U=root P=local-bsmtp S=sss for p@test.ex
+2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= sender@dom U=root Ci=p1236 P=local-bsmtp S=sss for p@test.ex
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 => p@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] K C="250 OK bdat"
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= sender@dom U=root P=local-bsmtp S=sss for s@test.ex
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= sender@dom U=root Ci=p1237 P=local-bsmtp S=sss for s@test.ex
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 ** s@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined sending data block: 550 unacceptable mail-from
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 s@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= sender@dom U=root P=local-bsmtp S=sss for t@test.ex
+2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= sender@dom U=root Ci=p1238 P=local-bsmtp S=sss for t@test.ex
 2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 ** t@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<t@test.ex>: 550 no such recipient
 2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 t@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 <= sender@dom U=root P=local-bsmtp S=sss for t1@test.ex t2@test.ex
+2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 <= sender@dom U=root Ci=p1239 P=local-bsmtp S=sss for t1@test.ex t2@test.ex
 2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 ** t1@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<t1@test.ex>: 550 no such recipient
 2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 => t2@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] K C="250 OK bdat"
 2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 t1@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 <= sender@dom U=root P=local-bsmtp S=sss for u@test.ex
+2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 <= sender@dom U=root Ci=p1240 P=local-bsmtp S=sss for u@test.ex
 2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 ** u@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined sending data block: 500 oops nonlast bdat
 2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 u@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 <= sender@dom U=root P=local-bsmtp S=sss for v@test.ex
+2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 <= sender@dom U=root Ci=p1241 P=local-bsmtp S=sss for v@test.ex
 2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 ** v@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 500 oops bdat
 2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 v@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbF-000000005vi-0000 <= sender@dom U=root P=local-bsmtp S=sss for u@test.ex
+2017-07-30 18:51:05.712 10HmbF-000000005vi-0000 <= sender@dom U=root Ci=p1242 P=local-bsmtp S=sss for u@test.ex
 2017-07-30 18:51:05.712 10HmbF-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined sending data block: 400 oops nonlast bdat
 2017-07-30 18:51:05.712 10HmbF-000000005vi-0000 == u@test.ex R=to_server T=remote_smtp defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined sending data block: 400 oops nonlast bdat
-2017-07-30 18:51:05.712 10HmbG-000000005vi-0000 <= sender@dom U=root P=local-bsmtp S=sss for p@test.ex
+2017-07-30 18:51:05.712 10HmbG-000000005vi-0000 <= sender@dom U=root Ci=p1243 P=local-bsmtp S=sss for p@test.ex
 2017-07-30 18:51:05.712 10HmbG-000000005vi-0000 => p@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] K C="250 OK bdat"
 2017-07-30 18:51:05.712 10HmbG-000000005vi-0000 Completed

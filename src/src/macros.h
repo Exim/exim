@@ -466,6 +466,7 @@ enum logbit {
   Li_8bitmime = BITWORDSIZE,
   Li_acl_warn_skipped,
   Li_arguments,
+  Li_connection_id,
   Li_deliver_time,
   Li_delivery_size,
   Li_dkim,

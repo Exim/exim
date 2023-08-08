@@ -39,9 +39,9 @@ queue_only
 smtp_receive_timeout = 2s
 
 .ifdef _HAVE_DKIM
-log_selector = +received_recipients +millisec +dkim_verbose
+log_selector = +received_recipients +connection_id +millisec +dkim_verbose
 .else
-log_selector = +received_recipients +millisec
+log_selector = +received_recipients +connection_id +millisec
 .endif
 
 .ifdef _HAVE_TLS

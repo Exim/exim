@@ -15,8 +15,8 @@ LOG: MAIN
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 Connection request from 127.0.0.1 port sssss
-LOG: smtp_connection MAIN
-  SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
+p1235 LOG: smtp_connection MAIN
+p1235   SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
 p1235 Process p1235 is handling incoming connection from [127.0.0.1]
 p1235 Process p1235 is ready for new message
 p1235 using ACL "delay4_accept"
@@ -35,8 +35,8 @@ child p1235 ended: status=0x0
 0 SMTP accept processes now running
 Listening...
 Connection request from 127.0.0.1 port sssss
-LOG: smtp_connection MAIN
-  SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
+p1236 LOG: smtp_connection MAIN
+p1236   SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
 p1236 Process p1236 is handling incoming connection from [127.0.0.1]
 p1236 Process p1236 is ready for new message
 p1236 using ACL "delay4_accept"

@@ -737,6 +737,7 @@ uid_t   config_uid             = CONFIGURE_OWNER;
 uid_t   config_uid             = 0;
 #endif
 
+ulong	connection_id	       = 0L;
 int     connection_max_messages= -1;
 uschar *continue_proxy_cipher  = NULL;
 BOOL    continue_proxy_dane    = FALSE;
@@ -1089,6 +1090,7 @@ bit_table log_options[]        = { /* must be in alphabetical order,
   BIT_TABLE(L, all),
   BIT_TABLE(L, all_parents),
   BIT_TABLE(L, arguments),
+  BIT_TABLE(L, connection_id),
   BIT_TABLE(L, connection_reject),
   BIT_TABLE(L, delay_delivery),
   BIT_TABLE(L, deliver_time),

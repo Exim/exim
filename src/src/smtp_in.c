@@ -1342,21 +1342,29 @@ smtp_get_connection_info(void)
 {
 const uschar * hostname = sender_fullhost
   ? sender_fullhost : sender_host_address;
+gstring * g = string_catn(NULL, US"SMTP connection", 15);
+
+if (LOGGING(connection_id))
+  g = string_fmt_append(g, " Ci=%lu", connection_id);
+g = string_catn(g, US" from ", 6);
 
 if (host_checking)
-  return string_sprintf("SMTP connection from %s", hostname);
+  g = string_cat(g, hostname);
 
-if (f.sender_host_unknown || f.sender_host_notsocket)
-  return string_sprintf("SMTP connection from %s", sender_ident);
+else if (f.sender_host_unknown || f.sender_host_notsocket)
+  g = string_cat(g, sender_ident);
 
-if (f.is_inetd)
-  return string_sprintf("SMTP connection from %s (via inetd)", hostname);
+else if (f.is_inetd)
+  g = string_append(g, 2, hostname, US" (via inetd)");
 
-if (LOGGING(incoming_interface) && interface_address)
-  return string_sprintf("SMTP connection from %s I=[%s]:%d", hostname,
-    interface_address, interface_port);
+else if (LOGGING(incoming_interface) && interface_address)
+  g = string_fmt_append(g, "%s I=[%s]:%d", hostname, interface_address, interface_port);
 
-return string_sprintf("SMTP connection from %s", hostname);
+else
+  g = string_cat(g, hostname);
+
+gstring_release_unused(g);
+return string_from_gstring(g);
 }
 
 

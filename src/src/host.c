@@ -628,6 +628,8 @@ else
   if (sender_ident)
     g = string_fmt_append(g, " U=%s", sender_ident);
   }
+if (LOGGING(connection_id))
+  g = string_fmt_append(g, " Ci=%lu", connection_id);
 gstring_release_unused(g);
 return string_from_gstring(g);
 }

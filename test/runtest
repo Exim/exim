@@ -765,6 +765,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/\bgid=\d+/gid=gggg/;
   s/\begid=\d+/egid=gggg/;
   s/\b(?:pid=|pid\s|PID:\s|Process\s|child\s)\K(\d+)/new_value($1, "p%s", \$next_pid)/gxe;
+  s/ Ci=\K(\d+)/new_value($1, "p%s", \$next_pid)/gxe;
   s/\buid=\d+/uid=uuuu/;
   s/\beuid=\d+/euid=uuuu/;
   s/set_process_info:\s+\d+/set_process_info: pppp/;

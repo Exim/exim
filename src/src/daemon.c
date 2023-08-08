@@ -181,7 +181,7 @@ Returns:            nothing
 */
 
 static void
-handle_smtp_call(struct pollfd *fd_polls, int listen_socket_count,
+handle_smtp_call(struct pollfd * fd_polls, int listen_socket_count,
   int accept_socket, struct sockaddr *accepted)
 {
 pid_t pid;
@@ -360,31 +360,8 @@ if (max_for_this_host > 0 && smtp_accept_count >= max_for_this_host)
     }
   }
 
-/* OK, the connection count checks have been passed. Before we can fork the
-accepting process, we must first log the connection if requested. This logging
-used to happen in the subprocess, but doing that means that the value of
-smtp_accept_count can be out of step by the time it is logged. So we have to do
-the logging here and accept the performance cost. Note that smtp_accept_count
-hasn't yet been incremented to take account of this connection.
-
-In order to minimize the cost (because this is going to happen for every
-connection), do a preliminary selector test here. This saves ploughing through
-the generalized logging code each time when the selector is false. If the
-selector is set, check whether the host is on the list for logging. If not,
-arrange to unset the selector in the subprocess. */
-
-if (LOGGING(smtp_connection))
-  {
-  uschar *list = hosts_connection_nolog;
-  memset(sender_host_cache, 0, sizeof(sender_host_cache));
-  if (list && verify_check_host(&list) == OK)
-    save_log_selector &= ~L_smtp_connection;
-  else
-    log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %Y "
-      "(TCP/IP connection count = %d)", whofrom, smtp_accept_count + 1);
-  }
-
-/* Now we can fork the accepting process; do a lookup tidy, just in case any
+/* OK, the connection count checks have been passed.
+Now we can fork the accepting process; do a lookup tidy, just in case any
 expansion above did a lookup. */
 
 search_tidyup();
@@ -404,6 +381,33 @@ if (pid == 0)
 #endif
 
   smtp_accept_count++;    /* So that it includes this process */
+  connection_id = getpid();
+
+  /* Log the connection if requested.
+  In order to minimize the cost (because this is going to happen for every
+  connection), do a preliminary selector test here. This saves ploughing through
+  the generalized logging code each time when the selector is false. If the
+  selector is set, check whether the host is on the list for logging. If not,
+  arrange to unset the selector in the subprocess.
+
+  jgh 2023/08/08 :- moved this logging in from the parent process, just
+  pre-fork.  There was a claim back from 2004 that smtp_accept_count could have
+  become out-of-date by the time the child could log it, and I can't see how
+  that could happen. */
+
+  if (LOGGING(smtp_connection))
+    {
+    uschar * list = hosts_connection_nolog;
+    memset(sender_host_cache, 0, sizeof(sender_host_cache));
+    if (list && verify_check_host(&list) == OK)
+      save_log_selector &= ~L_smtp_connection;
+    else if (LOGGING(connection_id))
+      log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %Y "
+	"Ci=%lu (TCP/IP connection count = %d)", whofrom, connection_id, smtp_accept_count);
+    else
+      log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %Y "
+	"(TCP/IP connection count = %d)", whofrom, smtp_accept_count);
+    }
 
   /* If the listen backlog was over the monitoring level, log it. */
 

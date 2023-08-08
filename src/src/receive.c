@@ -1156,7 +1156,7 @@ Returns:   the SMTP response
 */
 
 static uschar *
-handle_lost_connection(uschar *s)
+handle_lost_connection(uschar * s)
 {
 log_write(L_lost_incoming_connection | L_smtp_connection, LOG_MAIN,
   "%s lost while reading message data%s", smtp_get_connection_info(), s);
@@ -1379,6 +1379,8 @@ if (f.tcp_in_fastopen && !f.tcp_in_fastopen_logged)
   }
 if (sender_ident)
   g = string_append(g, 2, US" U=", sender_ident);
+if (LOGGING(connection_id))
+  g = string_fmt_append(g, " Ci=%lu", connection_id);
 if (received_protocol)
   g = string_append(g, 2, US" P=", received_protocol);
 if (LOGGING(pipelining) && f.smtp_in_pipelining_advertised)

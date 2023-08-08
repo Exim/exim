@@ -35,6 +35,8 @@ Version 4.97
 
  13. Variable $recipients_list, a properly-quoted exim list.
 
+ 14. A log_selector for an incoming connection ID.
+
 Version 4.96
 ------------
 

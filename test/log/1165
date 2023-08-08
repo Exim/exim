@@ -1,19 +1,19 @@
-2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= this-user@testhost.test.ex U=this-user P=local S=sss for other-user@test.ex
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= this-user@testhost.test.ex U=this-user Ci=p1234 P=local S=sss for other-user@test.ex
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 => other-user@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmaY-000000005vi-0000"
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 removed by CALLER
 2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= this-user@testhost.test.ex U=this-user P=local S=sss for first-user@test.ex
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= this-user@testhost.test.ex U=this-user P=local S=sss for second-user@test.ex
-2017-07-30 18:51:05.712 Start queue run: pid=p1234 -qq
+2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= this-user@testhost.test.ex U=this-user Ci=p1235 P=local S=sss for first-user@test.ex
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= this-user@testhost.test.ex U=this-user Ci=p1236 P=local S=sss for second-user@test.ex
+2017-07-30 18:51:05.712 Start queue run: pid=p1237 -qq
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 => first-user@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmbB-000000005vi-0000"
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 => second-user@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmbC-000000005vi-0000"
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 End queue run: pid=p1234 -qq
+2017-07-30 18:51:05.712 End queue run: pid=p1237 -qq
 
 ******** SERVER ********
-2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_S
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaX-000000005vi-0000@testhost.test.ex for other-user@test.ex
-2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaZ-000000005vi-0000@testhost.test.ex for first-user@test.ex
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmbA-000000005vi-0000@testhost.test.ex for second-user@test.ex
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTP on port PORT_S
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] Ci=p1239 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaX-000000005vi-0000@testhost.test.ex for other-user@test.ex
+2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] Ci=p1240 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaZ-000000005vi-0000@testhost.test.ex for first-user@test.ex
+2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] Ci=p1240 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmbA-000000005vi-0000@testhost.test.ex for second-user@test.ex

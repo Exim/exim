@@ -14,6 +14,7 @@ acl_smtp_connect = check_connect
 acl_smtp_rcpt = check_rcpt
 
 queue_only
+log_selector = +connection_id +received_recipients
 
 # ----- ACL -----
 

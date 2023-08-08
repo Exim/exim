@@ -13,7 +13,7 @@ acl_smtp_rcpt = check_recipient
 log_selector =  \
               +incoming_port \
               +incoming_interface \
-              +smtp_connection
+              +smtp_connection +connection_id
 queue_only
 queue_run_in_order
 

@@ -4,6 +4,7 @@
 
 primary_hostname = myhost.test.ex
 queue_only
+log_selector = +received_recipients +connection_id
 
 # ----- Main settings -----
 
