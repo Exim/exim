@@ -270,16 +270,16 @@ g = string_fmt_append(NULL,
   header_from_sender, expand_string(US"$sender_address_domain"));
 
 if (spf_response)
-  g = string_fmt_append(s, "spf %d\n", dmarc_spf_ares_result);
+  g = string_fmt_append(g, "spf %d\n", dmarc_spf_ares_result);
 
 g = string_fmt_append(g, "%spdomain %s\npolicy %d\n",
   dkim_history_buffer, dmarc_used_domain, dmarc_policy);
 
 if ((rua = opendmarc_policy_fetch_rua(dmarc_pctx, NULL, 0, 1)))
   for (tmp_ans = 0; rua[tmp_ans]; tmp_ans++)
-    g = string_fmd_append(g, "rua %s\n", rua[tmp_ans]);
+    g = string_fmt_append(g, "rua %s\n", rua[tmp_ans]);
 else
-  g = string_fmtappend(g, "rua -\n");
+  g = string_fmt_append(g, "rua -\n");
 
 opendmarc_policy_fetch_pct(dmarc_pctx, &tmp_ans);
 g = atring_fmt_append(g, "pct %d\n", tmp_ans);
