@@ -282,21 +282,21 @@ else
   g = string_fmt_append(g, "rua -\n");
 
 opendmarc_policy_fetch_pct(dmarc_pctx, &tmp_ans);
-g = atring_fmt_append(g, "pct %d\n", tmp_ans);
+g = string_fmt_append(g, "pct %d\n", tmp_ans);
 
 opendmarc_policy_fetch_adkim(dmarc_pctx, &tmp_ans);
-g = atring_fmt_append(g, "adkim %d\n", tmp_ans);
+g = string_fmt_append(g, "adkim %d\n", tmp_ans);
 
 opendmarc_policy_fetch_aspf(dmarc_pctx, &tmp_ans);
-g = atring_fmt_append(g, "aspf %d\n", tmp_ans);
+g = string_fmt_append(g, "aspf %d\n", tmp_ans);
 
 opendmarc_policy_fetch_p(dmarc_pctx, &tmp_ans);
-g = atring_fmt_append(g, "p %d\n", tmp_ans);
+g = string_fmt_append(g, "p %d\n", tmp_ans);
 
 opendmarc_policy_fetch_sp(dmarc_pctx, &tmp_ans);
-g = atring_fmt_append(g, "sp %d\n", tmp_ans);
+g = string_fmt_append(g, "sp %d\n", tmp_ans);
 
-g = atring_fmt_append(g, "align_dkim %d\nalign_spf %d\naction %d\n",
+g = string_fmt_append(g, "align_dkim %d\nalign_spf %d\naction %d\n",
   da, sa, action);
 
 /* Write the contents to the history file */
