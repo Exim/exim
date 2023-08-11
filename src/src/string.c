@@ -1579,8 +1579,8 @@ while (*fp)
     case 'Y':			/* gstring pointer */
       {
       gstring * zg = va_arg(ap, gstring *);
-      s = CS zg->s;
-      slen = zg->ptr;
+      if (zg) { s = CS zg->s; slen = zg->ptr;    }
+      else    { s = null;     slen = Ustrlen(s); }
       goto INSERT_GSTRING;
       }
 
