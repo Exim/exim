@@ -176,6 +176,9 @@ JH/33 Fix free for live variable $value created by a ${run ...} expansion.
 JH/34 Bug 3013: Fix use of $recipients within arguments for ${run...}.
       In 4.96 this would expand to empty.
 
+JH/35 Bug 3014: GnuTLS: fix expiry date for an auto-generated server
+      certificate.  Find and fix by Andreas Metzler.
+
 
 Exim version 4.96
 -----------------

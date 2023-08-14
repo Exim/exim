@@ -1016,7 +1016,7 @@ now = 1;
 if (  (rc = gnutls_x509_crt_set_version(cert, 3))
    || (rc = gnutls_x509_crt_set_serial(cert, &now, sizeof(now)))
    || (rc = gnutls_x509_crt_set_activation_time(cert, now = time(NULL)))
-   || (rc = gnutls_x509_crt_set_expiration_time(cert, (long)2 * 60 * 60))	/* 2 hour */
+   || (rc = gnutls_x509_crt_set_expiration_time(cert, now + (long)2 * 60 * 60))	/* 2 hour */
    || (rc = gnutls_x509_crt_set_key(cert, pkey))
 
    || (rc = gnutls_x509_crt_set_dn_by_oid(cert,
