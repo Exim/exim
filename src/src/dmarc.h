@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Experimental DMARC support.
-   Copyright (c) The Exim Maintainers 2021 - 2022
+   Copyright (c) The Exim Maintainers 2021 - 2023
    Copyright (c) Todd Lyons <tlyons@exim.org> 2012 - 2014
    License: GPL */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -20,9 +20,9 @@
 
 /* prototypes */
 gstring * dmarc_version_report(gstring *);
-int dmarc_init();
+int dmarc_init(void);
 int dmarc_store_data(header_line *);
-int dmarc_process();
+int dmarc_process(void);
 uschar *dmarc_exim_expand_query(int);
 uschar *dmarc_exim_expand_defaults(int);
 

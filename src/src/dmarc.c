@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 /* DMARC support.
-   Copyright (c) The Exim Maintainers 2019 - 2022
+   Copyright (c) The Exim Maintainers 2019 - 2023
    Copyright (c) Todd Lyons <tlyons@exim.org> 2012 - 2014
    License: GPL */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -37,7 +37,6 @@ uschar *spf_sender_domain  = NULL;
 uschar *spf_human_readable = NULL;
 u_char *header_from_sender = NULL;
 int history_file_status    = DMARC_HIST_OK;
-uschar *dkim_history_buffer= NULL;
 
 typedef struct dmarc_exim_p {
   uschar *name;
@@ -92,7 +91,7 @@ messages on the same SMTP connection (that come from the
 same host with the same HELO string) */
 
 int
-dmarc_init()
+dmarc_init(void)
 {
 int *netmask   = NULL;   /* Ignored */
 int is_ipv6    = 0;
@@ -124,7 +123,7 @@ if (libdm_status != DMARC_PARSE_OKAY)
   }
 if (!dmarc_tld_file || !*dmarc_tld_file)
   {
-  DEBUG(D_receive) debug_printf("DMARC: no dmarc_tld_file\n");
+  DEBUG(D_receive) debug_printf_indent("DMARC: no dmarc_tld_file\n");
   dmarc_abort = TRUE;
   }
 else if (opendmarc_tld_read_file(CS dmarc_tld_file, NULL, NULL, NULL))
@@ -135,7 +134,7 @@ else if (opendmarc_tld_read_file(CS dmarc_tld_file, NULL, NULL, NULL))
   }
 if (!sender_host_address)
   {
-  DEBUG(D_receive) debug_printf("DMARC: no sender_host_address\n");
+  DEBUG(D_receive) debug_printf_indent("DMARC: no sender_host_address\n");
   dmarc_abort = TRUE;
   }
 /* This catches locally originated email and startup errors above. */
@@ -203,7 +202,7 @@ if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
       /* Move to first character past the colon */
       recipient += 7;
       DEBUG(D_receive)
-	debug_printf("DMARC forensic report to %s%s\n", recipient,
+	debug_printf_indent("DMARC forensic report to %s%s\n", recipient,
 	     (host_checking || f.running_in_test_harness) ? " (not really)" : "");
       if (host_checking || f.running_in_test_harness)
 	continue;
@@ -241,7 +240,7 @@ return NULL;
 
 
 static int
-dmarc_write_history_file()
+dmarc_write_history_file(const gstring * dkim_history_buffer)
 {
 int history_file_fd = 0;
 ssize_t written_len;
@@ -251,14 +250,15 @@ gstring * g;
 
 if (!dmarc_history_file)
   {
-  DEBUG(D_receive) debug_printf("DMARC history file not set\n");
+  DEBUG(D_receive) debug_printf_indent("DMARC history file not set\n");
   return DMARC_HIST_DISABLED;
   }
 if (!host_checking)
   if ((history_file_fd = log_open_as_exim(dmarc_history_file)) < 0)
     {
-    log_write(0, LOG_MAIN|LOG_PANIC, "failure to create DMARC history file: %s",
-			     dmarc_history_file);
+    log_write(0, LOG_MAIN|LOG_PANIC,
+	      "failure to create DMARC history file: %s: %s",
+	      dmarc_history_file, strerror(errno));
     return DMARC_HIST_FILE_ERR;
     }
 
@@ -272,7 +272,7 @@ if (spf_response)
   g = string_fmt_append(g, "spf %d\n", dmarc_spf_ares_result);
 
 if (dkim_history_buffer)
-  g = string_cat(g, dkim_history_buffer);
+  g = string_fmt_append(g, "%Y", dkim_history_buffer);
 
 g = string_fmt_append(g, "pdomain %s\npolicy %d\n",
   dmarc_used_domain, dmarc_policy);
@@ -304,7 +304,7 @@ g = string_fmt_append(g, "align_dkim %d\nalign_spf %d\naction %d\n",
 /* Write the contents to the history file */
 DEBUG(D_receive)
   {
-  debug_printf("DMARC logging history data for opendmarc reporting%s\n",
+  debug_printf_indent("DMARC logging history data for opendmarc reporting%s\n",
 	     host_checking ? " (not really)" : "");
   debug_printf_indent("DMARC history data for debugging:\n");
   expand_level++;
@@ -334,7 +334,7 @@ context (if any), retrieves the result, sets up expansion
 strings and evaluates the condition outcome. */
 
 int
-dmarc_process()
+dmarc_process(void)
 {
 int sr, origin;             /* used in SPF section */
 int dmarc_spf_result  = 0;  /* stores spf into dmarc conn ctx */
@@ -356,7 +356,7 @@ there was a previous error.  */
 
 if (!from_header)
   {
-  DEBUG(D_receive) debug_printf("DMARC: no From: header\n");
+  DEBUG(D_receive) debug_printf_indent("DMARC: no From: header\n");
   dmarc_abort = TRUE;
   }
 else if (!dmarc_abort)
@@ -397,7 +397,7 @@ instead do this in the ACLs.  */
 if (!dmarc_abort && !sender_host_authenticated)
   {
   uschar * dmarc_domain;
-  gstring * g = NULL;
+  gstring * dkim_history_buffer = NULL;
 
   /* Use the envelope sender domain for this part of DMARC */
 
@@ -413,7 +413,7 @@ if (!dmarc_abort && !sender_host_authenticated)
       log_write(0, LOG_MAIN, "DMARC using synthesized SPF sender domain = %s\n",
 			     spf_sender_domain);
       DEBUG(D_receive)
-	debug_printf("DMARC using synthesized SPF sender domain = %s\n",
+	debug_printf_indent("DMARC using synthesized SPF sender domain = %s\n",
 	  spf_sender_domain);
       }
     dmarc_spf_result = DMARC_POLICY_SPF_OUTCOME_NONE;
@@ -440,7 +440,7 @@ if (!dmarc_abort && !sender_host_authenticated)
     origin = DMARC_POLICY_SPF_ORIGIN_MAILFROM;
     spf_human_readable = US spf_response->header_comment;
     DEBUG(D_receive)
-      debug_printf("DMARC using SPF sender domain = %s\n", spf_sender_domain);
+      debug_printf_indent("DMARC using SPF sender domain = %s\n", spf_sender_domain);
     }
   if (strcmp( CCS spf_sender_domain, "") == 0)
     dmarc_abort = TRUE;
@@ -468,14 +468,14 @@ if (!dmarc_abort && !sender_host_authenticated)
 		  DMARC_POLICY_DKIM_OUTCOME_NONE;
     libdm_status = opendmarc_policy_store_dkim(dmarc_pctx, US sig->domain,
 
-/* The opendmarc project broke its API in a way we can't detect * easily.
+/* The opendmarc project broke its API in a way we can't detect easily.
 The EDITME provides a DMARC_API variable */
 #if DMARC_API >= 100400
                                                sig->selector,
 #endif
                                                dkim_result, US"");
     DEBUG(D_receive)
-      debug_printf("DMARC adding DKIM sender domain = %s\n", sig->domain);
+      debug_printf_indent("DMARC adding DKIM sender domain = %s\n", sig->domain);
     if (libdm_status != DMARC_PARSE_OKAY)
       log_write(0, LOG_MAIN|LOG_PANIC,
 		"failure to store dkim (%s) for DMARC: %s",
@@ -493,14 +493,13 @@ The EDITME provides a DMARC_API variable */
        ARES_RESULT_UNKNOWN :
       ARES_RESULT_UNKNOWN;
 #if DMARC_API >= 100400
-    g = string_fmt_append(g,
+    dkim_history_buffer = string_fmt_append(dkim_history_buffer,
       "dkim %s %s %d\n", sig->domain, sig->selector, dkim_ares_result);
 #else
-    g = string_fmt_append(g,
+    dkim_history_buffer = string_fmt_append(dkim_history_buffer,
       "dkim %s %d\n", sig->domain, dkim_ares_result);
 #endif
     }
-  dkim_history_buffer = string_from_gstring(g);
 
   /* Look up DMARC policy record in DNS.  We do this explicitly, rather than
   letting the dmarc library do it with opendmarc_policy_query_dmarc(), so that
@@ -515,23 +514,24 @@ The EDITME provides a DMARC_API variable */
     case DMARC_DNS_ERROR_NXDOMAIN:
     case DMARC_DNS_ERROR_NO_RECORD:
       DEBUG(D_receive)
-	debug_printf("DMARC no record found for %s\n", header_from_sender);
+	debug_printf_indent("DMARC no record found for %s\n", header_from_sender);
       has_dmarc_record = FALSE;
       break;
     case DMARC_PARSE_OKAY:
       DEBUG(D_receive)
-	debug_printf("DMARC record found for %s\n", header_from_sender);
+	debug_printf_indent("DMARC record found for %s\n", header_from_sender);
       break;
     case DMARC_PARSE_ERROR_BAD_VALUE:
       DEBUG(D_receive)
-	debug_printf("DMARC record parse error for %s\n", header_from_sender);
+	debug_printf_indent("DMARC record parse error for %s\n", header_from_sender);
       has_dmarc_record = FALSE;
       break;
     default:
       /* everything else, skip dmarc */
       DEBUG(D_receive)
-	debug_printf("DMARC skipping (%d), unsure what to do with %s",
-		      libdm_status, from_header->text);
+	debug_printf_indent("DMARC skipping (%s), unsure what to do with %s",
+		      opendmarc_policy_status_to_str(libdm_status),
+		      from_header->text);
       has_dmarc_record = FALSE;
       break;
     }
@@ -620,7 +620,7 @@ The EDITME provides a DMARC_API variable */
 			   sa==DMARC_POLICY_SPF_ALIGNMENT_PASS  ?"yes":"no",
 			   da==DMARC_POLICY_DKIM_ALIGNMENT_PASS ?"yes":"no",
 			   dmarc_status_text);
-    history_file_status = dmarc_write_history_file();
+    history_file_status = dmarc_write_history_file(dkim_history_buffer);
     /* Now get the forensic reporting addresses, if any */
     ruf = opendmarc_policy_fetch_ruf(dmarc_pctx, NULL, 0, 1);
     dmarc_send_forensic_report(ruf);
