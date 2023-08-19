@@ -28,7 +28,7 @@ received 1692480217
 ipaddr ip4.ip4.ip4.ip4
 from test.ex
 mfrom test.ex
-spf 7
+spf 6
 pdomain test.ex
 policy 18
 rua -
@@ -40,5 +40,3 @@ sp 0
 align_dkim 5
 align_spf 5
 action 2
-arc -
-arc_policy -

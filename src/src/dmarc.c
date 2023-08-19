@@ -243,7 +243,7 @@ return NULL;
 static int
 dmarc_write_history_file()
 {
-int history_file_fd;
+int history_file_fd = 0;
 ssize_t written_len;
 int tmp_ans;
 u_char ** rua; /* aggregate report addressees */
@@ -254,14 +254,13 @@ if (!dmarc_history_file)
   DEBUG(D_receive) debug_printf("DMARC history file not set\n");
   return DMARC_HIST_DISABLED;
   }
-history_file_fd = log_open_as_exim(dmarc_history_file);
-
-if (history_file_fd < 0)
-  {
-  log_write(0, LOG_MAIN|LOG_PANIC, "failure to create DMARC history file: %s",
-			   dmarc_history_file);
-  return DMARC_HIST_FILE_ERR;
-  }
+if (!host_checking)
+  if ((history_file_fd = log_open_as_exim(dmarc_history_file)) < 0)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC, "failure to create DMARC history file: %s",
+			     dmarc_history_file);
+    return DMARC_HIST_FILE_ERR;
+    }
 
 /* Generate the contents of the history file */
 g = string_fmt_append(NULL,
@@ -272,14 +271,17 @@ g = string_fmt_append(NULL,
 if (spf_response)
   g = string_fmt_append(g, "spf %d\n", dmarc_spf_ares_result);
 
-g = string_fmt_append(g, "%spdomain %s\npolicy %d\n",
-  dkim_history_buffer, dmarc_used_domain, dmarc_policy);
+if (dkim_history_buffer)
+  g = string_fmt_append(g, "%s\n", dkim_history_buffer);
+
+g = string_fmt_append(g, "pdomain %s\npolicy %d\n",
+  dmarc_used_domain, dmarc_policy);
 
 if ((rua = opendmarc_policy_fetch_rua(dmarc_pctx, NULL, 0, 1)))
   for (tmp_ans = 0; rua[tmp_ans]; tmp_ans++)
     g = string_fmt_append(g, "rua %s\n", rua[tmp_ans]);
 else
-  g = string_fmt_append(g, "rua -\n");
+  g = string_catn(g, US"rua -\n", 6);
 
 opendmarc_policy_fetch_pct(dmarc_pctx, &tmp_ans);
 g = string_fmt_append(g, "pct %d\n", tmp_ans);
@@ -301,14 +303,16 @@ g = string_fmt_append(g, "align_dkim %d\nalign_spf %d\naction %d\n",
 
 /* Write the contents to the history file */
 DEBUG(D_receive)
-  debug_printf("DMARC logging history data for opendmarc reporting%s\n",
-	     (host_checking || f.running_in_test_harness) ? " (not really)" : "");
-if (host_checking || f.running_in_test_harness)
   {
-  DEBUG(D_receive)
-    debug_printf("DMARC history data for debugging:\n%Y", g);
+  debug_printf("DMARC logging history data for opendmarc reporting%s\n",
+	     host_checking ? " (not really)" : "");
+  debug_printf_indent("DMARC history data for debugging:\n");
+  expand_level++;
+    debug_printf_indent("%Y", g);
+  expand_level--;
   }
-else
+
+if (!host_checking)
   {
   written_len = write_to_fd_buf(history_file_fd,
 				g->s,
