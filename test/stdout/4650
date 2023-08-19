@@ -74,7 +74,7 @@ ipaddr ip4.ip4.ip4.ip4
 from test.ex
 mfrom bloggs.com
 spf 6
-dkim test.ex 0
+dkim test.ex sel 0
 pdomain test.ex
 policy 15
 rua -

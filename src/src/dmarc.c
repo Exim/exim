@@ -492,7 +492,13 @@ The EDITME provides a DMARC_API variable */
        ves == PDKIM_VERIFY_INVALID_PUBKEY_IMPORT      ? ARES_RESULT_PERMERROR :
        ARES_RESULT_UNKNOWN :
       ARES_RESULT_UNKNOWN;
-    g = string_fmt_append(g, "dkim %s %d\n", sig->domain, dkim_ares_result);
+#if DMARC_API >= 100400
+    g = string_fmt_append(g,
+      "dkim %s %s %d\n", sig->domain, sig->selector, dkim_ares_result);
+#else
+    g = string_fmt_append(g,
+      "dkim %s %d\n", sig->domain, dkim_ares_result);
+#endif
     }
   dkim_history_buffer = string_from_gstring(g);
 
