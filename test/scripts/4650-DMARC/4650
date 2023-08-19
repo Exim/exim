@@ -6,20 +6,23 @@
 # Be careful with envelope-domains used for testcases, as real DNS lookups will be done
 # for names not provided for in fakedns.
 #
+mkdir DIR/tmp
+sudo chmod 777 DIR/tmp
+#
 exim -bd -DSERVER=server -oX PORT_D
 ****
 client HOSTIPV4 PORT_D
 ??? 220
 HELO testclient
 ??? 250
-MAIL FROM:<a@example.com>
+MAIL FROM:<a@test.ex>
 ??? 250
 RCPT TO:<fred@test.ex>
 ??? 250
 DATA
 ??? 3
 Subject: test
-From: z@example.com
+From: <z@test.ex>
 
 body line
 .
@@ -28,4 +31,7 @@ QUIT
 ****
 #
 killdaemon
+cat DIR/tmp/TESTNUM.hist.dmarc
+#
+sudo rm -fr DIR/tmp
 no_msglog_check

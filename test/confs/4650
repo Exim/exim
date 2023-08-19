@@ -18,6 +18,7 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 dmarc_tld_file = DIR/aux-fixed/TESTNUM.tldfile
+dmarc_history_file = DIR/tmp/TESTNUM.hist.dmarc
 
 acl_smtp_rcpt = accept
 acl_smtp_data = check_data

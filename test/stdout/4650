@@ -4,7 +4,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 >>> HELO testclient
 ??? 250
 <<< 250 myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
->>> MAIL FROM:<a@example.com>
+>>> MAIL FROM:<a@test.ex>
 ??? 250
 <<< 250 OK
 >>> RCPT TO:<fred@test.ex>
@@ -14,11 +14,31 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 3
 <<< 354 Enter message, ending with "." on a line by itself
 >>> Subject: test
->>> From: z@example.com
+>>> From: <z@test.ex>
 >>> 
 >>> body line
 >>> .
 ??? 250
-<<< 250 OK id=10HmaX-0005vi-00
+<<< 250 OK id=10HmaX-000000005vi-0000
 >>> QUIT
 End of script
+job 10HmaX-000000005vi-0000
+reporter myhost.test.ex
+received 1692480217
+ipaddr ip4.ip4.ip4.ip4
+from test.ex
+mfrom test.ex
+spf 7
+pdomain test.ex
+policy 18
+rua -
+pct 100
+adkim 114
+aspf 114
+p 110
+sp 0
+align_dkim 5
+align_spf 5
+action 2
+arc -
+arc_policy -

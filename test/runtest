@@ -1056,6 +1056,8 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # DMARC is not always supported by the build
     next if /^dmarc_tld_file =/;
+    # timestamp in dmarc history file
+    s/received \K\d{10}$/1692480217/;
 
     # ARC is not always supported by the build
     next if /^arc_sign =/;

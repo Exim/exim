@@ -1,9 +1,10 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaX-0005vi-00 dmarc_status <norecord>
-1999-03-02 09:44:33 10HmaX-0005vi-00 dmarc_status_text <No DMARC record>
-1999-03-02 09:44:33 10HmaX-0005vi-00 dmarc_used_domain <example.com>
-1999-03-02 09:44:33 10HmaX-0005vi-00 dmarc_domain_policy <>
-1999-03-02 09:44:33 10HmaX-0005vi-00 Authentication-Results: myhost.test.ex;\n	spf=fail smtp.mailfrom=example.com;\n	dmarc=none header.from=example.com
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= a@example.com H=(testclient) [ip4.ip4.ip4.ip4] P=smtp S=sss
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 DMARC results: spf_domain=test.ex dmarc_domain=test.ex spf_align=no dkim_align=no enforcement='None, Accept'
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 dmarc_status <none>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 dmarc_status_text <None, Accept>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 dmarc_used_domain <test.ex>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 dmarc_domain_policy <none>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	spf=none smtp.mailfrom=test.ex;\n	dmarc=none header.from=test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= a@test.ex H=(testclient) [ip4.ip4.ip4.ip4] P=smtp S=sss

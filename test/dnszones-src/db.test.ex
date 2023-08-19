@@ -626,4 +626,8 @@ sed._domainkey TXT "v=DKIM1; k=ed25519; p=sPs07Vu29FpHT/80UXUcYHFOHifD4o2ZlP2+XU
 sedw._domainkey TXT "v=DKIM1; k=ed25519; p=MCowBQYDK2VwAyEAsPs07Vu29FpHT/80UXUcYHFOHifD4o2ZlP2+XUh9g6E="
 
 
+; ------- DMARC ---------
+
+_dmarc TXT v=DMARC1; p=none
+
 ; End
