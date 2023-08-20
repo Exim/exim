@@ -19,6 +19,7 @@ primary_hostname = myhost.test.ex
 
 dmarc_tld_file = DIR/aux-fixed/TESTNUM.tldfile
 dmarc_history_file = DIR/tmp/TESTNUM.hist.dmarc
+dkim_verify_hashes = sha256 : sha512 : sha1
 
 acl_smtp_rcpt = accept
 acl_smtp_data = check_data

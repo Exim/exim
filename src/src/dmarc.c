@@ -272,7 +272,7 @@ if (spf_response)
   g = string_fmt_append(g, "spf %d\n", dmarc_spf_ares_result);
 
 if (dkim_history_buffer)
-  g = string_fmt_append(g, "%s\n", dkim_history_buffer);
+  g = string_cat(g, dkim_history_buffer);
 
 g = string_fmt_append(g, "pdomain %s\npolicy %d\n",
   dmarc_used_domain, dmarc_policy);

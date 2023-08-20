@@ -11,7 +11,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 250
 <<< 250 Accepted
 >>> DATA
-??? 3
+??? 354
 <<< 354 Enter message, ending with "." on a line by itself
 >>> Subject: test
 >>> From: <z@test.ex>
@@ -20,6 +20,33 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 >>> .
 ??? 250
 <<< 250 OK id=10HmaX-000000005vi-0000
+>>> RSET
+??? 250
+<<< 250 Reset OK
+>>> MAIL FROM:<CALLER@bloggs.com>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<a@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> DKIM-Signature: v=1; a=rsa-sha1; c=simple/simple; d=test.ex; h=from:to
+>>> 	:date:message-id:subject; s=sel; bh=OB9dZVu7+5/ufs3TH9leIcEpXSo=; b=
+>>> 	CoaRNB2Z59hSnhTzT8bYbMIN3P57XAVcFeV5oGEl4aKmhm6Mtu2uIc7B2z9k5+A/
+>>> 	+KFIE9HRj7eg9kPzagoPIvI84WE5PN5yRehMjJI6WqhM3V+bQDHkb8ubSmiaYxY5
+>>> 	B2Pd/kEGgHUlMDB0Hug4FMMt7GcFxagKspthOT/Pso0=
+>>> From: mrgus@test.ex
+>>> To: bakawolf@yahoo.com
+>>> Date: Tue, 2 Mar 1999 09:44:33 +0000
+>>> Message-ID: <qwerty1234@disco-zombie.net>
+>>> Subject: simple test
+>>> 
+>>> This is a simple test.
+>>> .
+??? 250
+<<< 250 OK id=10HmaY-000000005vi-0000
 >>> QUIT
 End of script
 job 10HmaX-000000005vi-0000
@@ -38,5 +65,24 @@ aspf 114
 p 110
 sp 0
 align_dkim 5
+align_spf 5
+action 2
+job 10HmaY-000000005vi-0000
+reporter myhost.test.ex
+received 1692480217
+ipaddr ip4.ip4.ip4.ip4
+from test.ex
+mfrom bloggs.com
+spf 6
+dkim test.ex 0
+pdomain test.ex
+policy 15
+rua -
+pct 100
+adkim 114
+aspf 114
+p 110
+sp 0
+align_dkim 4
 align_spf 5
 action 2

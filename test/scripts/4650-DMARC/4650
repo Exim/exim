@@ -11,6 +11,9 @@ sudo chmod 777 DIR/tmp
 #
 exim -bd -DSERVER=server -oX PORT_D
 ****
+#
+#
+# Without a dkim signing, then with (copied from 4500)
 client HOSTIPV4 PORT_D
 ??? 220
 HELO testclient
@@ -20,11 +23,33 @@ MAIL FROM:<a@test.ex>
 RCPT TO:<fred@test.ex>
 ??? 250
 DATA
-??? 3
+??? 354
 Subject: test
 From: <z@test.ex>
 
 body line
+.
+??? 250
+RSET
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<a@test.ex>
+??? 250
+DATA
+??? 354
+DKIM-Signature: v=1; a=rsa-sha1; c=simple/simple; d=test.ex; h=from:to
+	:date:message-id:subject; s=sel; bh=OB9dZVu7+5/ufs3TH9leIcEpXSo=; b=
+	CoaRNB2Z59hSnhTzT8bYbMIN3P57XAVcFeV5oGEl4aKmhm6Mtu2uIc7B2z9k5+A/
+	+KFIE9HRj7eg9kPzagoPIvI84WE5PN5yRehMjJI6WqhM3V+bQDHkb8ubSmiaYxY5
+	B2Pd/kEGgHUlMDB0Hug4FMMt7GcFxagKspthOT/Pso0=
+From: mrgus@test.ex
+To: bakawolf@yahoo.com
+Date: Thu, 19 Nov 2015 17:00:07 -0700
+Message-ID: <qwerty1234@disco-zombie.net>
+Subject: simple test
+
+This is a simple test.
 .
 ??? 250
 QUIT

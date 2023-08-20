@@ -1,1 +1,3 @@
 support DMARC
+support DKIM
+support SPF
