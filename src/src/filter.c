@@ -194,8 +194,7 @@ static int cond_types[] = { cond_BEGINS, cond_BEGINS, cond_CONTAINS,
   cond_above, cond_begins, cond_begins, cond_below, cond_contains,
   cond_contains, cond_ends, cond_ends, cond_is, cond_matches, cond_matches };
 
-/* Command identities: must be kept in step with the list of command words
-and the list of expanded argument counts which follow. */
+/* Command identities */
 
 enum { add_command, defer_command, deliver_command, elif_command, else_command,
        endif_command, finish_command, fail_command, freeze_command,
@@ -203,10 +202,28 @@ enum { add_command, defer_command, deliver_command, elif_command, else_command,
        mail_command, noerror_command, pipe_command, save_command, seen_command,
        testprint_command, unseen_command, vacation_command };
 
-static const char *command_list[] = {
-  "add",     "defer",   "deliver", "elif", "else",      "endif",    "finish",
-  "fail",    "freeze",  "headers", "if",   "logfile",   "logwrite", "mail",
-  "noerror", "pipe",    "save",    "seen", "testprint", "unseen",   "vacation"
+static const char * command_list[] = {
+  [add_command] =	"add",
+  [defer_command] =	"defer",
+  [deliver_command] =	"deliver",
+  [elif_command] =	"elif",
+  [else_command] =	"else",
+  [endif_command] =	"endif",
+  [finish_command] =	"finish",
+  [fail_command] =	"fail",
+  [freeze_command] =	"freeze",
+  [headers_command] =	"headers",
+  [if_command] =	"if",
+  [logfile_command] =	"logfile",
+  [logwrite_command] =	"logwrite",
+  [mail_command] =	"mail",
+  [noerror_command] =	"noerror",
+  [pipe_command] =	"pipe",
+  [save_command] =	"save",
+  [seen_command] =	"seen",
+  [testprint_command] =	"testprint",
+  [unseen_command] =	"unseen",
+  [vacation_command] =	"vacation"
 };
 
 static int command_list_count = nelem(command_list);
@@ -215,27 +232,27 @@ static int command_list_count = nelem(command_list);
 If the top bit is set, it means that the default for the command is "seen". */
 
 static uschar command_exparg_count[] = {
-      2, /* add */
-      1, /* defer */
-  128+2, /* deliver */
-      0, /* elif */
-      0, /* else */
-      0, /* endif */
-      0, /* finish */
-      1, /* fail */
-      1, /* freeze */
-      1, /* headers */
-      0, /* if */
-      1, /* logfile */
-      1, /* logwrite */
-      MAILARGS_STRING_COUNT, /* mail */
-      0, /* noerror */
-  128+0, /* pipe */
-  128+1, /* save */
-      0, /* seen */
-      1, /* testprint */
-      0, /* unseen */
-      MAILARGS_STRING_COUNT /* vacation */
+  [add_command] =	2,
+  [defer_command] =	1,
+  [deliver_command] =	128+2,
+  [elif_command] =	0,
+  [else_command] =	0,
+  [endif_command] =	0,
+  [finish_command] =	0,
+  [fail_command] =	1,
+  [freeze_command] =	1,
+  [headers_command] =	1,
+  [if_command] =	0,
+  [logfile_command] =	1,
+  [logwrite_command] =	1,
+  [mail_command] =	MAILARGS_STRING_COUNT,
+  [noerror_command] =	0,
+  [pipe_command] =	128+0,
+  [save_command] =	128+1,
+  [seen_command] =	0,
+  [testprint_command] =	1,
+  [unseen_command] =	0,
+  [vacation_command] =	MAILARGS_STRING_COUNT
 };
 
 
