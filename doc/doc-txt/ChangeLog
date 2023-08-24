@@ -170,8 +170,8 @@ JH/31 Bug 2998: Fix ${utf8clean:...} to disallow UTF-16 surrogate codepoints.
 JH/32 Fix "tls_dhparam = none" under GnuTLS.  At least with 3.7.9 this gave
       a null-indirection SIGSEGV for the receive process.
 
-JH/33 Fix free for live variable $value created by a ${run ...} expansion.
-      Although not seen, this could have resulted in a SIGSEGV.
+JH/33 Fix free for live variable $value created by a ${run ...} expansion during
+      -bh use.  Internal checking would spot this and take a panic.
 
 JH/34 Bug 3013: Fix use of $recipients within arguments for ${run...}.
       In 4.96 this would expand to empty.

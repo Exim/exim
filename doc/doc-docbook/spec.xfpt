@@ -10694,6 +10694,7 @@ shell must be invoked directly, such as with:
 .code
 ${run{/bin/bash -c "/usr/bin/id >/tmp/id"}{yes}{yes}}
 .endd
+Note that &$value$& will not persist beyond the reception of a single message.
 
 .vindex "&$runrc$&"
 The return code from the command is put in the variable &$runrc$&, and this

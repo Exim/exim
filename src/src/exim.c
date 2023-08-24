@@ -5779,7 +5779,7 @@ for (BOOL more = TRUE; more; )
       int start, end, domain;
       uschar * errmess;
       /* There can be multiple addresses, so EXIM_DISPLAYMAIL_MAX (tuned for 1) is too short.
-       * We'll still want to cap it to something, just in case. */
+      We'll still want to cap it to something, just in case. */
       uschar * s = string_copy_taint(
 	exim_str_fail_toolong(list[i], BIG_BUFFER_SIZE, "address argument"),
 	GET_TAINTED);
@@ -6114,6 +6114,7 @@ MORELOOP:
   deliver_localpart_data = deliver_domain_data =
   recipient_data = sender_data = NULL;
   acl_var_m = NULL;
+  lookup_value = NULL;                            /* Can be set by ACL */
 
   store_reset(reset_point);
   }

@@ -19,6 +19,7 @@ begin acl
 check_data:
   accept logwrite = \$recipients: "$recipients"
 	 logwrite = run-wrapped \$recipients: "${run{/bin/echo $recipients}}"
+	 logwrite = \$value after \${run...}: '$value'
 
 # ----- Routers -----
 
