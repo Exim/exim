@@ -1,14 +1,26 @@
-# Exim test configuration 4560
+# Exim test configuration 4690
 
 SERVER=
-VALUE=
-INSERT=
 
-.include DIR/aux-var/std_conf_prefix
+exim_path = EXIM_PATH
+keep_environment =
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts = *
+tls_advertise_hosts =
+.ifdef _HAVE_PIPE_CONNECT
+pipelining_connect_advertise_hosts =
+.endif
 
 primary_hostname = test.ex
 
 # ----- Main settings -----
+
+dmarc_tld_file = DIR/aux-fixed/TESTNUM.tldfile
+dmarc_history_file = DIR/tmp/TESTNUM.hist.dmarc
 
 acl_smtp_rcpt = accept
 acl_smtp_data = check_data
@@ -21,8 +33,7 @@ queue_run_in_order
 begin acl
 
 check_data:
-  warn	!verify =	arc VALUE
-	INSERT
+  warn	!verify =	arc
 
   warn	logwrite =	arc_state:      <$arc_state>
 	logwrite =	domains:        <$arc_domains>
@@ -30,7 +41,6 @@ check_data:
 	logwrite =	reason:         <$arc_state_reason>
 	logwrite =	lh_A-R:         <$lh_Authentication-Results:>
 	logwrite =	lh-AAR:         <$lh_ARC-Authentication-Results:>
-#	logwrite =	oldest-p-AAR:   <${listextract {$arc_oldest_pass} {$lh_ARC-Authentication-Results:}}>
 	logwrite =	oldest-p-AAR:   <${reduce {$lh_ARC-Authentication-Results:} \
 						{} \
 						{${if = {$arc_oldest_pass} \
@@ -38,11 +48,16 @@ check_data:
 							{$item} {$value}}} \
 					}>
 
-.ifdef OPTION
-  accept
-.else
-  accept add_header =	:at_start:${authresults {$primary_hostname}}
-.endif
+  require	spf =		pass : !pass
+  		dmarc_status =  none : !none
+		logwrite =      dmarc_status <$dmarc_status>
+		logwrite =      dmarc_status_text <$dmarc_status_text>
+		logwrite =      dmarc_used_domain <$dmarc_used_domain>
+		logwrite =      dmarc_domain_policy <$dmarc_domain_policy>
+		set acl_m0 =    ${authresults {$primary_hostname}}
+		logwrite =      $acl_m0
+
+  accept add_header =	:at_start:$acl_m0
   
 # ----- Routers -----
 
@@ -87,13 +102,7 @@ tsmtp:
   hosts =	127.0.0.1
   port =	PORT_D
   allow_localhost
-.ifndef OPTION
-.ifdef BAD
-  arc_sign =	$primary_hostname : sel : MISSING_KEY
-.else
   arc_sign =	$primary_hostname : sel : DIR/aux-fixed/dkim/dkim.private
-.endif
-.endif
 
 tmlist:
   driver =	smtp
@@ -101,8 +110,6 @@ tmlist:
   port =	PORT_D
   allow_localhost
   transport_filter =	/bin/cat - DIR/aux-fixed/TESTNUM.mlistfooter
-.ifndef OPTION
   arc_sign =	$primary_hostname : sel : DIR/aux-fixed/dkim/dkim.private
-.endif
 
 # End

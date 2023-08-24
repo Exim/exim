@@ -1,0 +1,45 @@
+# DMARC history-report of ARC results
+#
+mkdir DIR/tmp
+sudo chmod 777 DIR/tmp
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# We send this one through two forwarding hops.
+# It starts off bare, so the 1st forwarder reception gets an ARC status of "none".
+# The outbound signs it with that, and the 2nd forwarder is happy to pass it.
+# The outbound signs again, and the final receiver is happy.
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@test.ex>
+??? 250
+RCPT TO:<zza@test.ex>
+??? 250
+DATA
+??? 354
+Subject: Test
+From: <CALLER@test.ex>
+
+This is a test body.
+.
+??? 250
+QUIT
+??? 221
+****
+#
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+killdaemon
+cat DIR/tmp/TESTNUM.hist.dmarc
+#
+sudo rm -fr DIR/tmp
+no_msglog_check

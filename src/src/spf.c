@@ -401,20 +401,31 @@ gstring *
 authres_spf(gstring * g)
 {
 uschar * s;
-if (!spf_result) return g;
+if (spf_result)
+  {
+  int start = 0;		/* Compiler quietening */
+  DEBUG(D_acl) start = gstring_length(g);
 
-g = string_append(g, 2, US";\n\tspf=", spf_result);
-if (spf_result_guessed)
-  g = string_cat(g, US" (best guess record for domain)");
+  g = string_append(g, 2, US";\n\tspf=", spf_result);
+  if (spf_result_guessed)
+    g = string_cat(g, US" (best guess record for domain)");
 
-s = expand_string(US"$sender_address_domain");
-if (s && *s)
-  return string_append(g, 2, US" smtp.mailfrom=", s);
-
-s = sender_helo_name;
-return s && *s
-  ? string_append(g, 2, US" smtp.helo=", s)
-  : string_cat(g, US" smtp.mailfrom=<>");
+  s = expand_string(US"$sender_address_domain");
+  if (s && *s)
+    g = string_append(g, 2, US" smtp.mailfrom=", s);
+  else
+    {
+    s = sender_helo_name;
+    g = s && *s
+      ? string_append(g, 2, US" smtp.helo=", s)
+      : string_cat(g, US" smtp.mailfrom=<>");
+    }
+  DEBUG(D_acl) debug_printf("SPF:\tauthres '%.*s'\n",
+		  gstring_length(g) - start - 3, g->s + start + 3);
+  }
+else
+  DEBUG(D_acl) debug_printf("SPF:\tno authres\n");
+return g;
 }
 
 

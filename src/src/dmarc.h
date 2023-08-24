@@ -58,4 +58,8 @@ uschar *dmarc_exim_expand_defaults(int);
 #define ARES_RESULT_UNKNOWN 11
 #define ARES_RESULT_DISCARD 12
 
+#define	DMARC_ARC_POLICY_RESULT_PASS	0
+#define	DMARC_ARC_POLICY_RESULT_UNUSED	1
+#define	DMARC_ARC_POLICY_RESULT_FAIL	2
+
 #endif /* SUPPORT_DMARC */

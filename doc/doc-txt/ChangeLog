@@ -179,6 +179,8 @@ JH/34 Bug 3013: Fix use of $recipients within arguments for ${run...}.
 JH/35 Bug 3014: GnuTLS: fix expiry date for an auto-generated server
       certificate.  Find and fix by Andreas Metzler.
 
+JH/36 Add ARC info to DMARC hostory recordsl
+
 
 Exim version 4.96
 -----------------

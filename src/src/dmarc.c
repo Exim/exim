@@ -97,7 +97,8 @@ int *netmask   = NULL;   /* Ignored */
 int is_ipv6    = 0;
 
 /* Set some sane defaults.  Also clears previous results when
- * multiple messages in one connection. */
+multiple messages in one connection. */
+
 dmarc_pctx         = NULL;
 dmarc_status       = US"none";
 dmarc_abort        = FALSE;
@@ -153,11 +154,12 @@ return OK;
 }
 
 
-/* dmarc_store_data stores the header data so that subsequent
-dmarc_process can access the data */
+/* dmarc_store_data stores the header data so that subsequent dmarc_process can
+access the data.
+Called after the entire message has been received, with the From: header. */
 
 int
-dmarc_store_data(header_line *hdr)
+dmarc_store_data(header_line * hdr)
 {
 /* No debug output because would change every test debug output */
 if (!f.dmarc_disable_verify)
@@ -167,7 +169,7 @@ return OK;
 
 
 static void
-dmarc_send_forensic_report(u_char **ruf)
+dmarc_send_forensic_report(u_char ** ruf)
 {
 uschar *recipient, *save_sender;
 BOOL  send_status = FALSE;
@@ -254,15 +256,19 @@ if (!dmarc_history_file)
   return DMARC_HIST_DISABLED;
   }
 if (!host_checking)
-  if ((history_file_fd = log_open_as_exim(dmarc_history_file)) < 0)
+  {
+  uschar * s = string_copy(dmarc_history_file);		/* need a writeable copy */
+  if ((history_file_fd = log_open_as_exim(s)) < 0)
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
 	      "failure to create DMARC history file: %s: %s",
-	      dmarc_history_file, strerror(errno));
+	      s, strerror(errno));
     return DMARC_HIST_FILE_ERR;
     }
+  }
 
-/* Generate the contents of the history file */
+/* Generate the contents of the history file entry */
+
 g = string_fmt_append(NULL,
   "job %s\nreporter %s\nreceived %ld\nipaddr %s\nfrom %s\nmfrom %s\n",
   message_id, primary_hostname, time(NULL), sender_host_address,
@@ -301,6 +307,15 @@ g = string_fmt_append(g, "sp %d\n", tmp_ans);
 g = string_fmt_append(g, "align_dkim %d\nalign_spf %d\naction %d\n",
   da, sa, action);
 
+#if DMARC_API >= 100400
+# ifdef EXPERIMENTAL_ARC
+g = arc_dmarc_hist_append(g);
+# else
+g = string_fmt_append(g, "arc %d\narc_policy $d json:[]\n",
+		      ARES_RESULT_UNKNOWN, DMARC_ARC_POLICY_RESULT_UNUSED);
+# endif
+#endif
+
 /* Write the contents to the history file */
 DEBUG(D_receive)
   {
@@ -331,7 +346,8 @@ return DMARC_HIST_OK;
 
 /* dmarc_process adds the envelope sender address to the existing
 context (if any), retrieves the result, sets up expansion
-strings and evaluates the condition outcome. */
+strings and evaluates the condition outcome.
+Called for the first ACL dmarc= condition. */
 
 int
 dmarc_process(void)
@@ -536,7 +552,7 @@ The EDITME provides a DMARC_API variable */
       break;
     }
 
-/* Store the policy string in an expandable variable. */
+  /* Store the policy string in an expandable variable. */
 
   libdm_status = opendmarc_policy_fetch_p(dmarc_pctx, &tmp_ans);
   for (c = 0; dmarc_policy_description[c].name; c++)
@@ -661,10 +677,16 @@ authres_dmarc(gstring * g)
 {
 if (f.dmarc_has_been_checked)
   {
+  int start = 0;		/* Compiler quietening */
+  DEBUG(D_acl) start = gstring_length(g);
   g = string_append(g, 2, US";\n\tdmarc=", dmarc_pass_fail);
   if (header_from_sender)
     g = string_append(g, 2, US" header.from=", header_from_sender);
+  DEBUG(D_acl) debug_printf("DMARC:\tauthres '%.*s'\n",
+		  gstring_length(g) - start - 3, g->s + start + 3);
   }
+else
+  DEBUG(D_acl) debug_printf("DMARC:\tno authres\n");
 return g;
 }
 

@@ -1,0 +1,86 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> HELO xxx
+??? 250
+<<< 250 test.ex Hello xxx [127.0.0.1]
+>>> MAIL FROM:<CALLER@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<zza@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: Test
+>>> From: <CALLER@test.ex>
+>>> 
+>>> This is a test body.
+>>> .
+??? 250
+<<< 250 OK id=10HmaX-000000005vi-0000
+>>> QUIT
+??? 221
+<<< 221 test.ex closing connection
+End of script
+job 10HmaX-000000005vi-0000
+reporter test.ex
+received 1692480217
+ipaddr 127.0.0.1
+from test.ex
+mfrom test.ex
+spf 0
+pdomain test.ex
+policy 15
+rua -
+pct 100
+adkim 114
+aspf 114
+p 110
+sp 0
+align_dkim 5
+align_spf 4
+action 2
+arc 11
+arc_policy 1 json[ ]
+job 10HmaY-000000005vi-0000
+reporter test.ex
+received 1692480217
+ipaddr 127.0.0.1
+from test.ex
+mfrom test.ex
+spf 0
+pdomain test.ex
+policy 15
+rua -
+pct 100
+adkim 114
+aspf 114
+p 110
+sp 0
+align_dkim 5
+align_spf 4
+action 2
+arc 0
+arc_policy 0 json[ ("i":1, "d":"test.ex", "s":"sel", "ip":"127.0.0.1") ]
+job 10HmaZ-000000005vi-0000
+reporter test.ex
+received 1692480217
+ipaddr 127.0.0.1
+from test.ex
+mfrom test.ex
+spf 0
+pdomain test.ex
+policy 15
+rua -
+pct 100
+adkim 114
+aspf 114
+p 110
+sp 0
+align_dkim 5
+align_spf 4
+action 2
+arc 0
+arc_policy 0 json[ ("i":1, "d":"test.ex", "s":"sel", "ip":"127.0.0.1"), ("i":2, "d":"test.ex", "s":"sel", "ip":"127.0.0.1") ]

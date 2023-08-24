@@ -67,6 +67,8 @@ sp 0
 align_dkim 5
 align_spf 5
 action 2
+arc 11
+arc_policy $d json:[]
 job 10HmaY-000000005vi-0000
 reporter myhost.test.ex
 received 1692480217
@@ -86,3 +88,5 @@ sp 0
 align_dkim 4
 align_spf 5
 action 2
+arc 11
+arc_policy $d json:[]

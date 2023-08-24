@@ -1,0 +1,67 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Authentication-Results: test.ex;
+	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
+	spf=pass smtp.mailfrom=test.ex;
+	dmarc=pass header.from=test.ex;
+	arc=pass (i=2) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
+	by test.ex with esmtp (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-000000005vi-0000
+	for a@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+ARC-Seal: i=2; cv=pass; a=rsa-sha256; d=test.ex; s=sel;
+	 b=OzDYecPkQoqA16q0dDASO39Eay+pylGCs/4RiR5an1lw1fq7Lu8u6yhnzLySkR777csWnaGebP
+	  HA5SYBIQ0eSWFbMbs5B2dR5APaUIfu4Vvsvrlj9IWyNwI9TdTbrQsePy4dnd8WFNXLiiHTL7GJ
+	  cdm3SxO7jJM0MFe3MEvqCu4=;
+ARC-Authentication-Results: i=2; test.ex; smtp.remote-ip=127.0.0.1;
+	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
+	spf=pass smtp.mailfrom=test.ex;
+	dmarc=pass header.from=test.ex;
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
+	bh=HUzfKKxIjPIa07lkj5uzDQ3q5YTRF/NwAUE7dhrrfvs=;
+	h=From:Subject;
+	b=vvajkPsGZ5v5OVCvDnPGZeCGtjCkLVOICQqFbbeUGPbeULu0YuzvDyEtSae2eWhbCLyJK6eCbN
+	  sRKBMkuZHH+Q5Drlx5xAFcIJqzdj9Vpfx3Wy/Rif1yKGiwzlQ8rtuf6eF7rWseDjjLR2vww2GS
+	  dqUNp6aMd8hfWPpXaJ1RIac=;
+Authentication-Results: test.ex;
+	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
+	spf=pass smtp.mailfrom=test.ex;
+	dmarc=pass header.from=test.ex;
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
+	by test.ex with esmtp (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-000000005vi-0000
+	for za@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+ARC-Seal: i=1; cv=none; a=rsa-sha256; d=test.ex; s=sel;
+	 b=lEmC1Nc2r9oPcx4h0WxPXzfnw6j0o1F1Ok25rtKz4O6A2Kv9TSOqqtytBlbxJ+mCeGK93ZTJyl
+	  8dRzO3iXk1xLW4n12vMe+Y2ufQp7HspPW2xRcyXJJlQnX//8QSRXHoBapPxQd2f2KgXXS2HICx
+	  LiXcuLE9Jbs4mPpb9uPV4RQ=;
+ARC-Authentication-Results: i=1; test.ex; smtp.remote-ip=127.0.0.1;
+	spf=pass smtp.mailfrom=test.ex;
+	dmarc=pass header.from=test.ex;
+	arc=none
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
+	bh=HUzfKKxIjPIa07lkj5uzDQ3q5YTRF/NwAUE7dhrrfvs=;
+	h=From:Subject;
+	b=HnYnwHbI6HGBLhgfnLys5BL7OjZqwyA7xEBRukSPv/mcJHgeNcmmVhxB7hue4/6+bD47uM27Gl
+	  5qmC0zTGx26326+FEfDBAbZutxECSEZEdg8dhI8bZdO0fNvAD2tO6D+lG0XzqXMKg9woCQX1DV
+	  uqlAsrZssxQT8tAc6MnXaP0=;
+Authentication-Results: test.ex;
+	spf=pass smtp.mailfrom=test.ex;
+	dmarc=pass header.from=test.ex;
+	arc=none
+Received: from [127.0.0.1] (helo=xxx)
+	by test.ex with smtp (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-000000005vi-0000
+	for zza@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+Subject: Test
+From: <CALLER@test.ex>
+
+This is a test body.
+

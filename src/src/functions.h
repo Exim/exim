@@ -109,6 +109,9 @@ extern tree_node *acl_var_create(uschar *);
 extern void    acl_var_write(uschar *, uschar *, void *);
 
 #ifdef EXPERIMENTAL_ARC
+# ifdef SUPPORT_DMARC
+extern gstring *arc_dmarc_hist_append(gstring *);
+# endif
 extern void   *arc_ams_setup_sign_bodyhash(void);
 extern const uschar *arc_header_feed(gstring *, BOOL);
 extern gstring *arc_sign(const uschar *, gstring *, uschar **);

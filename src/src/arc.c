@@ -18,6 +18,10 @@
 #  include "pdkim/pdkim.h"
 #  include "pdkim/signing.h"
 
+#  ifdef SUPPORT_DMARC
+#   include "dmarc.h"
+#  endif
+
 extern pdkim_ctx * dkim_verify_ctx;
 extern pdkim_ctx dkim_sign_ctx;
 
@@ -50,6 +54,7 @@ typedef struct arc_line {
   blob		s;
   blob		c;
   blob		l;
+  blob		ip;
 
   /* tag content sub-portions */
   blob		a_algo;
@@ -89,11 +94,42 @@ typedef struct arc_ctx {
 #define HDR_AR		US"Authentication-Results:"
 #define HDRLEN_AR	23
 
+typedef enum line_extract {
+  le_instance_only,
+  le_instance_plus_ip,
+  le_all
+} line_extract_t;
+
 static time_t now;
 static time_t expire;
 static hdr_rlist * headers_rlist;
 static arc_ctx arc_sign_ctx = { NULL };
 static arc_ctx arc_verify_ctx = { NULL };
+
+/* We build a context for either Sign or Verify.
+
+For Verify, it's a fresh new one for ACL verify=arc - there is no connection
+with the single line handling done during reception via the DKIM feed.
+
+For Verify we do it twice; initially during reception (via the DKIM feed)
+and then later for the full verification.
+
+The former only looks at AMS headers, to discover what hash(es) we need done for
+ARC on the message body; we call back to the DKIM code to set up so that it does
+them for us during reception.  That call needs info from many of the AMS tags;
+arc_parse_line() for only the AMS is called asking for all the tag types.
+That context is then discarded.
+
+Later, for Verify, we look at ARC headers again and then grab the hash result
+from the DKIM layer.  arc_parse_line() is called for all 3 line types,
+gathering info for only 'i' and 'ip' tags from AAR headers,
+for all tag types from AMS and AS headers.
+
+
+For Sign, while running through the existing headers (before adding any for
+this signing operation, we "take copies" of the headers, we call
+arc_parse_line() gathering only the 'i' tag (instance) information.
+*/
 
 
 /******************************************************************************/
@@ -188,18 +224,23 @@ return NULL;
 
 
 /* Inspect a header line, noting known tag fields.
-Check for duplicates. */
+Check for duplicate named tags.
+
+See the file block comment for how this is used.
+
+Return: NULL for good, or an error string
+*/
 
 static uschar *
-arc_parse_line(arc_line * al, header_line * h, unsigned off, BOOL instance_only)
+arc_parse_line(arc_line * al, header_line * h, unsigned off, line_extract_t l_ext)
 {
 uschar * s = h->text + off;
-uschar * r = NULL;	/* compiler-quietening */
+uschar * r = NULL;
 uschar c;
 
 al->complete = h;
 
-if (!instance_only)
+if (l_ext == le_all)		/* need to grab rawsig_no_b */
   {
   al->rawsig_no_b_val.data = store_get(h->slen + 1, GET_TAINTED);
   memcpy(al->rawsig_no_b_val.data, h->text, off);	/* copy the header name blind */
@@ -218,75 +259,77 @@ while ((c = *s))
   uschar * bstart = NULL, * bend;
 
   /* tag-spec  =  [FWS] tag-name [FWS] "=" [FWS] tag-value [FWS] */
+  /*X or just a naked FQDN, in a AAR ! */
 
-  s = skip_fws(s);						/* FWS */
+  s = skip_fws(s);						/* leading FWS */
   if (!*s) break;
-/* debug_printf("%s: consider '%s'\n", __FUNCTION__, s); */
   tagchar = *s++;
-  s = skip_fws(s);						/* FWS */
-  if (!*s) break;
+  if (!*(s = skip_fws(s))) break;				/* FWS */
 
-  if (!instance_only || tagchar == 'i') switch (tagchar)
+  switch (tagchar)
     {
     case 'a':				/* a= AMS algorithm */
-      {
-      if (*s != '=') return US"no 'a' value";
-      if (arc_insert_tagvalue(al, offsetof(arc_line, a), &s)) return US"a tag dup";
+      if (l_ext == le_all && *s == '=')
+	{
+	if (arc_insert_tagvalue(al, offsetof(arc_line, a), &s)) return US"a tag dup";
 
-      /* substructure: algo-hash   (eg. rsa-sha256) */
+	/* substructure: algo-hash   (eg. rsa-sha256) */
 
-      t = al->a_algo.data = al->a.data;
-      while (*t != '-')
-	if (!*t++ || ++i > al->a.len) return US"no '-' in 'a' value";
-      al->a_algo.len = i;
-      if (*t++ != '-') return US"no '-' in 'a' value";
-      al->a_hash.data = t;
-      al->a_hash.len = al->a.len - i - 1;
-      }
+	t = al->a_algo.data = al->a.data;
+	while (*t != '-')
+	  if (!*t++ || ++i > al->a.len) return US"no '-' in 'a' value";
+	al->a_algo.len = i;
+	if (*t++ != '-') return US"no '-' in 'a' value";
+	al->a_hash.data = t;
+	al->a_hash.len = al->a.len - i - 1;
+	}
       break;
     case 'b':
-      {
-      gstring * g = NULL;
-
-      switch (*s)
+      if (l_ext == le_all)
 	{
-	case '=':			/* b= AMS signature */
-	  if (al->b.data) return US"already b data";
-	  bstart = s+1;
+	gstring * g = NULL;
 
-	  /* The signature can have FWS inserted in the content;
-	  make a stripped copy */
+	switch (*s)
+	  {
+	  case '=':			/* b= AMS signature */
+	    if (al->b.data) return US"already b data";
+	    bstart = s+1;
 
-	  while ((c = *++s) && c != ';')
-	    if (c != ' ' && c != '\t' && c != '\n' && c != '\r')
-	      g = string_catn(g, s, 1);
-	  if (!g) return US"no b= value";
-	  al->b.len = len_string_from_gstring(g, &al->b.data);
-	  gstring_release_unused(g);
-	  bend = s;
-	  break;
-	case 'h':			/* bh= AMS body hash */
-	  s = skip_fws(++s);					/* FWS */
-	  if (*s != '=') return US"no bh value";
-	  if (al->bh.data) return US"already bh data";
+	    /* The signature can have FWS inserted in the content;
+	    make a stripped copy */
 
-	  /* The bodyhash can have FWS inserted in the content;
-	  make a stripped copy */
+	    while ((c = *++s) && c != ';')
+	      if (c != ' ' && c != '\t' && c != '\n' && c != '\r')
+		g = string_catn(g, s, 1);
+	    if (!g) return US"no b= value";
+	    al->b.len = len_string_from_gstring(g, &al->b.data);
+	    gstring_release_unused(g);
+	    bend = s;
+	    break;
+	  case 'h':			/* bh= AMS body hash */
+	    s = skip_fws(++s);					/* FWS */
+	    if (*s == '=')
+	      {
+	      if (al->bh.data) return US"already bh data";
 
-	  while ((c = *++s) && c != ';')
-	    if (c != ' ' && c != '\t' && c != '\n' && c != '\r')
-	      g = string_catn(g, s, 1);
-	  if (!g) return US"no bh= value";
-	  al->bh.len = len_string_from_gstring(g, &al->bh.data);
-	  gstring_release_unused(g);
-	  break;
-	default:
-	  return US"b? tag";
+	      /* The bodyhash can have FWS inserted in the content;
+	      make a stripped copy */
+
+	      while ((c = *++s) && c != ';')
+		if (c != ' ' && c != '\t' && c != '\n' && c != '\r')
+		  g = string_catn(g, s, 1);
+	      if (!g) return US"no bh= value";
+	      al->bh.len = len_string_from_gstring(g, &al->bh.data);
+	      gstring_release_unused(g);
+	      }
+	    break;
+	  default:
+	    return US"b? tag";
+	  }
 	}
-      }
       break;
     case 'c':
-      switch (*s)
+      if (l_ext == le_all) switch (*s)
 	{
 	case '=':			/* c= AMS canonicalisation */
 	  if (arc_insert_tagvalue(al, offsetof(arc_line, c), &s)) return US"c tag dup";
@@ -309,43 +352,62 @@ while ((c = *s))
 	    }
 	  break;
 	case 'v':			/* cv= AS validity */
-	  if (*++s != '=') return US"cv tag val";
-	  if (arc_insert_tagvalue(al, offsetof(arc_line, cv), &s)) return US"cv tag dup";
+	  s = skip_fws(s);
+	  if (*++s == '=')
+	    if (arc_insert_tagvalue(al, offsetof(arc_line, cv), &s))
+	      return US"cv tag dup";
 	  break;
-	default:
-	  return US"c? tag";
 	}
       break;
     case 'd':				/* d= AMS domain */
-      if (*s != '=') return US"d tag val";
-      if (arc_insert_tagvalue(al, offsetof(arc_line, d), &s)) return US"d tag dup";
+      if (l_ext == le_all && *s == '=')
+	if (arc_insert_tagvalue(al, offsetof(arc_line, d), &s))
+	  return US"d tag dup";
       break;
     case 'h':				/* h= AMS headers */
-      if (*s != '=') return US"h tag val";
-      if (arc_insert_tagvalue(al, offsetof(arc_line, h), &s)) return US"h tag dup";
+      if (*s == '=')
+	if (arc_insert_tagvalue(al, offsetof(arc_line, h), &s))
+	  return US"h tag dup";
       break;
     case 'i':				/* i= ARC set instance */
-      if (*s != '=') return US"i tag val";
-      if (arc_insert_tagvalue(al, offsetof(arc_line, i), &s)) return US"i tag dup";
-      if (instance_only) goto done;
+      if (*s == '=')
+	{
+	if (arc_insert_tagvalue(al, offsetof(arc_line, i), &s))
+	  return US"i tag dup";
+	if (l_ext == le_instance_only)
+	  goto done;			/* early-out */
+	}
       break;
     case 'l':				/* l= bodylength */
-      if (*s != '=') return US"l tag val";
-      if (arc_insert_tagvalue(al, offsetof(arc_line, l), &s)) return US"l tag dup";
+      if (l_ext == le_all && *s == '=')
+	if (arc_insert_tagvalue(al, offsetof(arc_line, l), &s))
+	  return US"l tag dup";
       break;
-    case 's':				/* s= AMS selector */
-      if (*s != '=') return US"s tag val";
-      if (arc_insert_tagvalue(al, offsetof(arc_line, s), &s)) return US"s tag dup";
+    case 's':
+      if (*s == '=' && l_ext == le_all)
+	{
+	if (arc_insert_tagvalue(al, offsetof(arc_line, s), &s))
+	  return US"s tag dup";
+	}
+      else if (  l_ext == le_instance_plus_ip
+	      && Ustrncmp(s, "mtp.remote-ip", 13) == 0)
+	{			/* smtp.remote-ip= AAR reception data */
+	s += 13;
+	s = skip_fws(s);
+	if (*s != '=') return US"smtp.remote_ip tag val";
+	if (arc_insert_tagvalue(al, offsetof(arc_line, ip), &s))
+	  return US"ip tag dup";
+	}
       break;
     }
 
-  while ((c = *s) && c != ';') s++;
+  while ((c = *s) && c != ';') s++;	/* end of this tag=value */
   if (c) s++;				/* ; after tag-spec */
 
   /* for all but the b= tag, copy the field including FWS.  For the b=,
   drop the tag content. */
 
-  if (!instance_only)
+  if (r)
     if (bstart)
       {
       size_t n = bstart - fieldstart;
@@ -366,7 +428,7 @@ while ((c = *s))
       }
   }
 
-if (!instance_only)
+if (r)
   *r = '\0';
 
 done:
@@ -381,7 +443,7 @@ adding instances as needed and checking for duplicate lines.
 
 static uschar *
 arc_insert_hdr(arc_ctx * ctx, header_line * h, unsigned off, unsigned hoff,
-  BOOL instance_only, arc_line ** alp_ret)
+  line_extract_t l_ext, arc_line ** alp_ret)
 {
 unsigned i;
 arc_set * as;
@@ -390,10 +452,10 @@ uschar * e;
 
 memset(al, 0, sizeof(arc_line));
 
-if ((e = arc_parse_line(al, h, off, instance_only)))
+if ((e = arc_parse_line(al, h, off, l_ext)))
   {
   DEBUG(D_acl) if (e) debug_printf("ARC: %s\n", e);
-  return US"line parse";
+  return string_sprintf("line parse: %s", e);
   }
 if (!(i = arc_instance_from_hdr(al)))	return US"instance find";
 if (i > 50)				return US"overlarge instance number";
@@ -407,9 +469,10 @@ return NULL;
 
 
 
+/* Called for both Sign and Verify */
 
 static const uschar *
-arc_try_header(arc_ctx * ctx, header_line * h, BOOL instance_only)
+arc_try_header(arc_ctx * ctx, header_line * h, BOOL is_signing)
 {
 const uschar * e;
 
@@ -425,10 +488,10 @@ if (strncmpic(ARC_HDR_AAR, h->text, ARC_HDRLEN_AAR) == 0)
     debug_printf("ARC: found AAR: %.*s\n", len, h->text);
     }
   if ((e = arc_insert_hdr(ctx, h, ARC_HDRLEN_AAR, offsetof(arc_set, hdr_aar),
-			  TRUE, NULL)))
+	      is_signing ? le_instance_only : le_instance_plus_ip, NULL)))
     {
     DEBUG(D_acl) debug_printf("inserting AAR: %s\n", e);
-    return US"inserting AAR";
+    return string_sprintf("inserting AAR: %s", e);
     }
   }
 else if (strncmpic(ARC_HDR_AMS, h->text, ARC_HDRLEN_AMS) == 0)
@@ -444,10 +507,10 @@ else if (strncmpic(ARC_HDR_AMS, h->text, ARC_HDRLEN_AMS) == 0)
     debug_printf("ARC: found AMS: %.*s\n", len, h->text);
     }
   if ((e = arc_insert_hdr(ctx, h, ARC_HDRLEN_AMS, offsetof(arc_set, hdr_ams),
-			  instance_only, &ams)))
+	      is_signing ? le_instance_only : le_all, &ams)))
     {
     DEBUG(D_acl) debug_printf("inserting AMS: %s\n", e);
-    return US"inserting AMS";
+    return string_sprintf("inserting AMS: %s", e);
     }
 
   /* defaults */
@@ -468,10 +531,10 @@ else if (strncmpic(ARC_HDR_AS, h->text, ARC_HDRLEN_AS) == 0)
     debug_printf("ARC: found AS: %.*s\n", len, h->text);
     }
   if ((e = arc_insert_hdr(ctx, h, ARC_HDRLEN_AS, offsetof(arc_set, hdr_as),
-			  instance_only, NULL)))
+	    is_signing ? le_instance_only : le_all, NULL)))
     {
     DEBUG(D_acl) debug_printf("inserting AS: %s\n", e);
-    return US"inserting AS";
+    return string_sprintf("inserting AS: %s", e);
     }
   }
 return NULL;
@@ -481,7 +544,8 @@ return NULL;
 
 /* Gather the chain of arc sets from the headers.
 Check for duplicates while that is done.  Also build the
-reverse-order headers list;
+reverse-order headers list.
+Called on an ACL verify=arc condition.
 
 Return: ARC state if determined, eg. by lack of any ARC chain.
 */
@@ -1194,7 +1258,8 @@ arc_line * al = (arc_line *)(as+1);
 header_line * h = (header_line *)(al+1);
 
 g = string_catn(g, ARC_HDR_AAR, ARC_HDRLEN_AAR);
-g = string_fmt_append(g, " i=%d; %s;\r\n\t", instance, identity);
+g = string_fmt_append(g, " i=%d; %s; smtp.remote-ip=%s;\r\n\t",
+			 instance, identity, sender_host_address);
 g = string_catn(g, US ar->data, ar->len);
 
 h->slen = g->ptr - aar_off;
@@ -1773,7 +1838,7 @@ DEBUG(D_receive) debug_printf("ARC: spotted AMS header\n");
 memset(&al, 0, sizeof(arc_line));
 h.next = NULL;
 h.slen = len_string_from_gstring(g, &h.text);
-if ((errstr = arc_parse_line(&al, &h, ARC_HDRLEN_AMS, FALSE)))
+if ((errstr = arc_parse_line(&al, &h, ARC_HDRLEN_AMS, le_all)))
   {
   DEBUG(D_acl) if (errstr) debug_printf("ARC: %s\n", errstr);
   goto badline;
@@ -1887,13 +1952,70 @@ if (arc_state)
     }
   else if (arc_state_reason)
     g = string_append(g, 3, US" (", arc_state_reason, US")");
-  DEBUG(D_acl) debug_printf("ARC:  authres '%.*s'\n",
+  DEBUG(D_acl) debug_printf("ARC:\tauthres '%.*s'\n",
 		  gstring_length(g) - start - 3, g->s + start + 3);
   }
 else
-  DEBUG(D_acl) debug_printf("ARC:  no authres\n");
+  DEBUG(D_acl) debug_printf("ARC:\tno authres\n");
 return g;
 }
+
+
+#  ifdef SUPPORT_DMARC
+/* Append a DMARC history record pair for ARC, to the given history set */
+
+gstring *
+arc_dmarc_hist_append(gstring * g)
+{
+if (arc_state)
+  {
+  BOOL first = TRUE;
+  int i = Ustrcmp(arc_state, "pass") == 0 ? ARES_RESULT_PASS
+	  : Ustrcmp(arc_state, "fail") == 0 ? ARES_RESULT_FAIL
+	  : ARES_RESULT_UNKNOWN;
+  g = string_fmt_append(g, "arc %d\n", i);
+  g = string_fmt_append(g, "arc_policy %d json[",
+			  i == ARES_RESULT_PASS ? DMARC_ARC_POLICY_RESULT_PASS
+			  : i == ARES_RESULT_FAIL ? DMARC_ARC_POLICY_RESULT_FAIL
+			  : DMARC_ARC_POLICY_RESULT_UNUSED);
+  /*XXX would we prefer this backwards? */
+  for (arc_set * as = arc_verify_ctx.arcset_chain; as;
+	as = as->next, first = FALSE)
+    {
+    arc_line * line = as->hdr_as;
+    if (line)
+      {
+      blob * d = &line->d;
+      blob * s = &line->s;
+
+      if (!first)
+	g = string_catn(g, US",", 1);
+
+      g = string_fmt_append(g, " (\"i\":%u,"			/*)*/
+				" \"d\":\"%.*s\","
+				" \"s\":\"%.*s\"",
+		  as->instance,
+		  d->data ? (int)d->len : 0, d->data && d->len ? d->data : US"",
+		  s->data ? (int)s->len : 0, s->data && s->len ? s->data : US""
+			   );
+      if ((line = as->hdr_aar))
+	{
+	blob * ip = &line->ip;
+	if (ip->data && ip->len)
+	  g = string_fmt_append(g, ", \"ip\":\"%.*s\"", (int)ip->len, ip->data);
+	}
+
+      g = string_catn(g, US")", 1);
+      }
+    }
+  g = string_catn(g, US" ]\n", 3);
+  }
+else
+  g = string_fmt_append(g, "arc %d\narc_policy $d json:[]\n",
+			ARES_RESULT_UNKNOWN, DMARC_ARC_POLICY_RESULT_UNUSED);
+return g;
+}
+#  endif
 
 
 # endif /* DISABLE_DKIM */

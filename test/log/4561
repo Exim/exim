@@ -6,8 +6,8 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 arc_oldest_pass <0>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 reason:         <(sequence; expected i=1)>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 lh_A-R:         < test.ex;\n     iprev=fail;\n     auth=pass (PLAIN) smtp.auth=fred@test.ex>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 lh-ams:         < i=2; test.ex;\n     iprev=fail;\n     auth=pass (PLAIN) smtp.auth=fred@test.ex>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 oldest-p-ams:   <>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 lh-AAR:         < i=2; test.ex;\n     iprev=fail;\n     auth=pass (PLAIN) smtp.auth=fred@test.ex>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 oldest-p-AAR:   <>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=3885245d-3bae-66a2-7a1e-0dbceae2fb50@test.ex for a@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1235
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 => a <a@test.ex> R=d1 T=tfile
