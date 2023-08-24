@@ -5646,8 +5646,6 @@ while (*s)
       FILE * f;
       const uschar * arg, ** argv;
       unsigned late_expand = TSUC_EXPAND_ARGS | TSUC_ALLOW_TAINTED_ARGS | TSUC_ALLOW_RECIPIENTS;
-      uschar * save_value = lookup_value;
-      int yesno;
 
       if (expand_forbid & RDO_RUN)
         {
@@ -5770,24 +5768,20 @@ while (*s)
             expand_string_message = string_sprintf("command killed by signal %d",
               -runrc);
 
-	  lookup_value = save_value;
           goto EXPAND_FAILED;
           }
         }
 
       /* Process the yes/no strings; $value may be useful in both cases */
 
-      yesno = process_yesno(
+      switch(process_yesno(
                flags,			/* were previously skipping */
                runrc == 0,		/* success/failure indicator */
                lookup_value,		/* value to reset for string2 */
                &s,			/* input pointer */
                &yield,			/* output pointer */
                US"run",			/* condition type */
-	       &resetok);
-      lookup_value = save_value;
-
-      switch(yesno)
+	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
         case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
