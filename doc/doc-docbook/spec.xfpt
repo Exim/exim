@@ -29675,10 +29675,10 @@ A HUP signal is sufficient for this.
 The value &"system"& results in no caching under GnuTLS.
 
 The macro _HAVE_TLS_CA_CACHE will be defined if the suffix for "system"
-is acceptable in configurations for the Exim executavble.
+is acceptable in configurations for the Exim executvble.
 
 Caching of the system Certificate Authorities bundle can
-save siginificant time and processing on every TLS connection
+save significant time and processing on every TLS connection
 accepted by Exim.
 
 
@@ -29848,10 +29848,10 @@ A HUP signal is sufficient for this.
 The value &"system"& results in no caching under GnuTLS.
 
 The macro _HAVE_TLS_CA_CACHE will be defined if the suffix for "system"
-is acceptable in configurations for the Exim executavble.
+is acceptable in configurations for the Exim executable.
 
 Caching of the system Certificate Authorities bundle can
-save siginificant time and processing on every TLS connection
+save significant time and processing on every TLS connection
 initiated by Exim.
 
 
