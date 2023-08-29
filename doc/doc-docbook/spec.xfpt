@@ -972,7 +972,7 @@ User filters are run as part of the routing process, described below.
 .cindex "Darwin"
 .cindex "Cygwin"
 .cindex "exim_msgdate"
-Every message handled by Exim is given a &'message id'& which is sixteen
+Every message handled by Exim is given a &'message id'& which is 23
 characters long. It is divided into three parts, separated by hyphens, for
 example &`16VDhn-000000001bo-D342`&. Each part is a sequence of letters and digits,
 normally encoding numbers in base 62. However, in the Darwin operating
