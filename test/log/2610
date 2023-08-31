@@ -1,5 +1,5 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 tainted search query is not properly quoted (router r1, TESTSUITE/test-config 66): select name from them where id='ph10'
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 tainted search query is not properly quoted (transport t1, TESTSUITE/test-config 79): select id from them where id='ph10'
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 tainted search query is not properly quoted (router r1, TESTSUITE/test-config 66): select name from them where id='ph10' limit 1
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 tainted search query is not properly quoted (transport t1, TESTSUITE/test-config 80): select id from them where id='ph10'
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 => ph10 <ph10@myhost.test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed

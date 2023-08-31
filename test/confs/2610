@@ -65,10 +65,11 @@ begin routers
 
 r1:
   driver = accept
+  # this tests that quoting survived being passed via spoolfile
   debug_print =	acl_m_qtest: <$acl_m_qtest> lkup: <${lookup mysql{select name from them where id='$acl_m_qtest'}}>
 
   # this tests the unquoted case, but will need enhancement when we enforce (vs. just logging), else no transport call
-  address_data = ${lookup mysql{select name from them where id='$local_part'}}
+  address_data = ${lookup mysql{select name from them where id='$local_part' limit 1}}
   transport = t1
 
 

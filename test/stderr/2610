@@ -574,16 +574,16 @@ processing address_data
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id='ph10'" partial=-1 affix=NULL starflags=0 opts=NULL
+   key="select name from them where id='ph10' limit 1" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select name from them where id='ph10'" opts=NULL
- database lookup required for select name from them where id='ph10'
+   type=mysql key="select name from them where id='ph10' limit 1" opts=NULL
+ database lookup required for select name from them where id='ph10' limit 1
                               (tainted)
 LOG: MAIN PANIC
-  tainted search query is not properly quoted (router r1, TESTSUITE/test-config 66): select name from them where id='ph10'
+  tainted search query is not properly quoted (router r1, TESTSUITE/test-config 66): select name from them where id='ph10' limit 1
  search_type NN (mysql) quoting -1 (none)
- MySQL query: "select name from them where id='ph10'" opts 'NULL'
+ MySQL query: "select name from them where id='ph10' limit 1" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
  lookup yielded: Philip Hazel
@@ -630,7 +630,7 @@ appendfile transport entered
  database lookup required for select id from them where id='ph10'
                               (tainted)
 LOG: MAIN
-  tainted search query is not properly quoted (transport t1, TESTSUITE/test-config 79): select id from them where id='ph10'
+  tainted search query is not properly quoted (transport t1, TESTSUITE/test-config 80): select id from them where id='ph10'
  search_type NN (mysql) quoting -1 (none)
  MySQL query: "select id from them where id='ph10'" opts 'NULL'
  MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root
