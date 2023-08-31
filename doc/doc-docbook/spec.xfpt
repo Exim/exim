@@ -7349,6 +7349,11 @@ dot-separated components; a key such as &`*fict.example`&
 in a database file is useless, because the asterisk in a partial matching
 subject key is always followed by a dot.
 
+When the lookup is done from a string-expansion,
+the variables &$1$& and &$2$& contain the wild and non-wild parts of the key
+during the expansion of the replacement text.
+They return to their previous values at the end of the lookup item.
+
 
 
 

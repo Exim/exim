@@ -812,7 +812,7 @@ just in case the original key is too long for the string_sprintf() buffer (it
 else if (partial >= 0)
   {
   int len = Ustrlen(keystring);
-  uschar *keystring2;
+  uschar * keystring2;
 
   /* Try with the affix on the front, except for a zero-length affix */
 
@@ -833,20 +833,20 @@ else if (partial >= 0)
   if (!yield)
     {
     int dotcount = 0;
-    uschar *keystring3 = keystring2 + affixlen;
-    uschar *s = keystring3;
-    while (*s != 0) if (*s++ == '.') dotcount++;
+    uschar * keystring3 = keystring2 + affixlen;
+
+    for(uschar * s = keystring3; *s; ) if (*s++ == '.') dotcount++;
 
     while (dotcount-- >= partial)
       {
-      while (*keystring3 != 0 && *keystring3 != '.') keystring3++;
+      while (*keystring3 && *keystring3 != '.') keystring3++;
 
       /* If we get right to the end of the string (which will be the last time
       through this loop), we've failed if the affix is null. Otherwise do one
       last lookup for the affix itself, but if it is longer than 1 character,
       remove the last character if it is ".". */
 
-      if (*keystring3 == 0)
+      if (!*keystring3)
         {
         if (affixlen < 1) break;
         if (affixlen > 1 && affix[affixlen-1] == '.') affixlen--;
@@ -867,7 +867,8 @@ else if (partial >= 0)
       if (yield)
         {
         /* First variable is the wild part; second is the fixed part. Take care
-        to get it right when keystring3 is just "*". */
+        to get it right when keystring3 is just "*".  Return a de-tainted version
+	of the fixed part, on the grounds it has been validated by the lookup. */
 
         if (expand_setup && *expand_setup >= 0)
           {
@@ -877,8 +878,10 @@ else if (partial >= 0)
           expand_nstring[*expand_setup] = keystring;
           expand_nlength[*expand_setup] = wildlength;
           *expand_setup += 1;
-          expand_nstring[*expand_setup] = keystring + wildlength + 1;
-          expand_nlength[*expand_setup] = (fixedlength < 0)? 0 : fixedlength;
+	  if (fixedlength < 0) fixedlength = 0;
+          expand_nstring[*expand_setup] = string_copyn_taint(
+	    keystring + wildlength + 1, fixedlength, GET_UNTAINTED);
+          expand_nlength[*expand_setup] = fixedlength;
           }
         break;
         }
@@ -896,10 +899,10 @@ is set to the string to the left of the @. */
 if (!yield  &&  starflags & SEARCH_STARAT)
   {
   uschar *atat = Ustrrchr(keystring, '@');
-  if (atat != NULL && atat > keystring)
+  if (atat && atat > keystring)
     {
     int savechar;
-    savechar = *(--atat);
+    savechar = *--atat;
     *atat = '*';
 
     DEBUG(D_lookup) debug_printf_indent("trying default match %s\n", atat);
@@ -943,16 +946,19 @@ complete non-wild domain entry, or we matched a wild-carded entry without
 chopping off any of the domain components, set up the expansion variables
 (if required) so that the first one is empty, and the second one is the
 fixed part of the domain. The set_null_wild flag is set only when yield is not
-NULL. */
+NULL.  Return a de-tainted version of the fixed part, on the grounds it has been
+validated by the lookup. */
 
 if (set_null_wild && expand_setup && *expand_setup >= 0)
   {
+  int fixedlength = Ustrlen(keystring);
   *expand_setup += 1;
   expand_nstring[*expand_setup] = keystring;
   expand_nlength[*expand_setup] = 0;
   *expand_setup += 1;
-  expand_nstring[*expand_setup] = keystring;
-  expand_nlength[*expand_setup] = Ustrlen(keystring);
+  expand_nstring[*expand_setup] = string_copyn_taint(
+	    keystring, fixedlength, GET_UNTAINTED);
+  expand_nlength[*expand_setup] = fixedlength;
   }
 
 /* If we have a result, check the options to see if the key was wanted rather
