@@ -34,10 +34,12 @@ ev_log:
   accept logwrite = event $event_name
 
 rcpt:
-  accept hosts =	HOSTIPV4
+  accept	hosts =	HOSTIPV4
 
-  deny	local_parts =	rmt_reject
-  defer	local_parts =	rmt_defer
+  deny		local_parts =	rmt_reject
+  defer		local_parts =	rmt_defer
+  accept	local_parts =	rmt_fakereject
+		control =	fakereject
   accept
 
 # ----- Routers -----

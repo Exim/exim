@@ -3428,7 +3428,7 @@ for (; cb; cb = cb->next)
 	case CONTROL_FAKEREJECT:
 	  cancel_cutthrough_connection(TRUE, US"fakereject");
 	case CONTROL_FAKEDEFER:
-	  fake_response = (control_type == CONTROL_FAKEDEFER) ? DEFER : FAIL;
+	  fake_response = control_type == CONTROL_FAKEDEFER ? DEFER : FAIL;
 	  if (*p == '/')
 	    {
 	    const uschar *pp = p + 1;

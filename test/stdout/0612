@@ -82,6 +82,35 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 <<< 250-DSN
 ??? 250 HELP
 <<< 250 HELP
+>>> MAIL FROM:<b2@dump.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<rmt_fakereject@test.ex> NOTIFY=success
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> .
+??? 250
+<<< 250 OK id=10HmbB-000000005vi-0000
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO testclient
+??? 250-
+<<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-DSN
+<<< 250-DSN
+??? 250 HELP
+<<< 250 HELP
 >>> MAIL FROM:<c@dump.ex>
 ??? 250
 <<< 250 OK
@@ -94,7 +123,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 >>> Subject: test
 >>> .
 ??? 250
-<<< 250 OK id=10HmbB-000000005vi-0000
+<<< 250 OK id=10HmbD-000000005vi-0000
 >>> QUIT
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -123,13 +152,13 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 >>> Subject: test
 >>> .
 ??? 250
-<<< 250 OK id=10HmbC-000000005vi-0000
+<<< 250 OK id=10HmbE-000000005vi-0000
 >>> QUIT
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
-Message 10HmbB-000000005vi-0000 has been removed
-Message 10HmbC-000000005vi-0000 has been removed
+Message 10HmbD-000000005vi-0000 has been removed
+Message 10HmbE-000000005vi-0000 has been removed
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -154,7 +183,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 >>> Subject: test
 >>> .
 ??? 250
-<<< 250 OK id=10HmbE-000000005vi-0000
+<<< 250 OK id=10HmbG-000000005vi-0000
 >>> QUIT
 ??? 221
 <<< 221 myhost.test.ex closing connection

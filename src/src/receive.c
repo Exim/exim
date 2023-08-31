@@ -514,7 +514,7 @@ Returns:      nothing
 */
 
 void
-receive_add_recipient(uschar *recipient, int pno)
+receive_add_recipient(uschar * recipient, int pno)
 {
 if (recipients_count >= recipients_list_max)
   {
@@ -2669,7 +2669,7 @@ if (extract_recip)
         that this has happened, in order to give a better error if there are
         no recipients left. */
 
-        else if (recipient != NULL)
+        else if (recipient)
           {
           if (tree_search(tree_nonrecipients, recipient) == NULL)
             receive_add_recipient(recipient, -1);
@@ -2679,7 +2679,7 @@ if (extract_recip)
 
         /* Move on past this address */
 
-        s = ss + (*ss? 1:0);
+        s = ss + (*ss ? 1 : 0);
         while (isspace(*s)) s++;
         }    /* Next address */
 
@@ -3861,10 +3861,10 @@ the spool file gets corrupted. Ensure that all recipients are qualified. */
 if (rc == LOCAL_SCAN_ACCEPT)
   {
   if (local_scan_data)
-    for (uschar * s = local_scan_data; *s != 0; s++) if (*s == '\n') *s = ' ';
-  for (int i = 0; i < recipients_count; i++)
+    for (uschar * s = local_scan_data; *s; s++) if (*s == '\n') *s = ' ';
+  for (recipient_item * r = recipients_list;
+       r < recipients_list + recipients_count; r++)
     {
-    recipient_item *r = recipients_list + i;
     r->address = rewrite_address_qualify(r->address, TRUE);
     if (r->errors_to)
       r->errors_to = rewrite_address_qualify(r->errors_to, TRUE);
@@ -3945,6 +3945,19 @@ the message to be abandoned. */
 signal(SIGTERM, SIG_IGN);
 signal(SIGINT, SIG_IGN);
 #endif	/* HAVE_LOCAL_SCAN */
+
+/* If we are faking a reject or defer, avoid sennding a DSN for the
+actually-accepted message */
+
+if (fake_response != OK)
+  for (recipient_item * r = recipients_list;
+       r < recipients_list + recipients_count; r++)
+    {
+    DEBUG(D_receive) if (r->dsn_flags & (rf_notify_success | rf_notify_delay))
+      debug_printf("DSN: clearing flags due to fake-response for message\n");
+    r->dsn_flags = r->dsn_flags & ~(rf_notify_success | rf_notify_delay)
+		    | rf_notify_never;
+    }
 
 
 /* Ensure the first time flag is set in the newly-received message. */

@@ -74,6 +74,41 @@ exim -q
 exim -q
 ****
 #
+# Client requests delivery notification; the MSA & MDA supports DSN
+# but MDA fake-rejects msg.
+# The MDA should not send a delivery notification for this case.
+exim -z fakereject/success
+****
+client HOSTIPV4 PORT_D
+??? 220
+EHLO testclient
+??? 250-
+??? 250-SIZE
+??? 250-DSN
+??? 250 HELP
+MAIL FROM:<b2@dump.ex>
+??? 250
+RCPT TO:<rmt_fakereject@test.ex> NOTIFY=success
+??? 250
+DATA
+??? 354
+Subject: test
+.
+??? 250
+QUIT
+??? 221
+****
+# MSA (try to) send msg to MDA; should see a reject
+exim -q
+****
+# due to fake, should be a msg to deliver at MDA
+# no DSN should be generated
+exim -q
+****
+# should be no notification to deliver from MDA
+exim -q
+****
+#
 # Client requests notification of deferral.  First time of trying, we get
 # a defer but queue-time probably has not hit the 1st retry time yet, so no DSN
 # will be sent and the message remains queued.  Then, claiming time has elapsed,

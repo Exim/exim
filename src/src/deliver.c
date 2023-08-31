@@ -6193,11 +6193,11 @@ return child_close(pid, 0) == 0;
 *************************************************/
 
 static void
-maybe_send_dsn(void)
+maybe_send_dsn(const address_item * const addr_succeed)
 {
 address_item * addr_senddsn = NULL;
 
-for (address_item * a = addr_succeed; a; a = a->next)
+for (const address_item * a = addr_succeed; a; a = a->next)
   {
   /* af_ignore_error not honored here. it's not an error */
   DEBUG(D_deliver) debug_printf("DSN: processing router : %s\n"
@@ -8136,7 +8136,7 @@ else if (!f.dont_deliver)
 
 /* Send DSN for successful messages if requested */
 
-maybe_send_dsn();
+maybe_send_dsn(addr_succeed);
 
 /* If any addresses failed, we must send a message to somebody, unless
 af_ignore_error is set, in which case no action is taken. It is possible for
