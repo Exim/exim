@@ -33,7 +33,7 @@ else
   uschar * clear, * end;
   int len;
 
-  if ((len = b64decode(data, &clear)) < 0) return BAD64;
+  if ((len = b64decode(data, &clear, GET_TAINTED)) < 0) return BAD64;
   DEBUG(D_auth) debug_printf("auth input decode:");
   for (end = clear + len; clear < end && expand_nmax < EXPAND_MAXN; )
     {
@@ -66,6 +66,10 @@ Arguments:
 Returns:      OK on success
               BAD64 if response too large for buffer
               CANCELLED if response is "*"
+
+NOTE: the data came from the wire so should be tainted - but
+big_buffer is not taint-tracked.  EVERY CALLER needs to apply
+tainting.
 */
 
 int
@@ -97,7 +101,7 @@ uschar * resp, * clear, * end;
 
 if ((rc = auth_get_data(&resp, challenge, Ustrlen(challenge))) != OK)
   return rc;
-if ((len = b64decode(resp, &clear)) < 0)
+if ((len = b64decode(resp, &clear, GET_TAINTED)) < 0)
   return BAD64;
 end = clear + len;
 
@@ -228,7 +232,7 @@ if (flags & AUTH_ITEM_LAST)
 /* Now that we know we'll continue, we put the received data into $auth<n>,
 if possible. First, decode it: buffer+4 skips over the SMTP status code. */
 
-clear_len = b64decode(buffer+4, &clear);
+clear_len = b64decode(buffer+4, &clear, buffer+4);
 
 /* If decoding failed, the default is to terminate the authentication, and
 return FAIL, with the SMTP response still in the buffer. However, if client_

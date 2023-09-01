@@ -163,13 +163,13 @@ md5_end(&base, md5secret, 16, digestptr);
 /* For interface, see auths/README */
 
 int
-auth_cram_md5_server(auth_instance *ablock, uschar *data)
+auth_cram_md5_server(auth_instance * ablock, uschar * data)
 {
-auth_cram_md5_options_block *ob =
+auth_cram_md5_options_block * ob =
   (auth_cram_md5_options_block *)(ablock->options_block);
-uschar *challenge = string_sprintf("<%d.%ld@%s>", getpid(),
+uschar * challenge = string_sprintf("<%d.%ld@%s>", getpid(),
     (long int) time(NULL), primary_hostname);
-uschar *clear, *secret;
+uschar * clear, * secret;
 uschar digest[16];
 int i, rc, len;
 
@@ -186,7 +186,7 @@ if (*data) return UNEXPECTED;
 /* Send the challenge, read the return */
 
 if ((rc = auth_get_data(&data, challenge, Ustrlen(challenge))) != OK) return rc;
-if ((len = b64decode(data, &clear)) < 0) return BAD64;
+if ((len = b64decode(data, &clear, GET_TAINTED)) < 0) return BAD64;
 
 /* The return consists of a user name, space-separated from the CRAM-MD5
 digest, expressed in hex. Extract the user name and put it in $auth1 and $1.
@@ -298,7 +298,7 @@ if (smtp_write_command(sx, SCMD_FLUSH, "AUTH %s\r\n", ablock->public_name) < 0)
 if (!smtp_read_response(sx, buffer, buffsize, '3', timeout))
   return FAIL;
 
-if (b64decode(buffer + 4, &challenge) < 0)
+if (b64decode(buffer + 4, &challenge, buffer + 4) < 0)
   {
   string_format(buffer, buffsize, "bad base 64 string in challenge: %s",
     big_buffer + 4);

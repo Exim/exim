@@ -448,7 +448,7 @@ return n;
 void
 pdkim_decode_base64(const uschar * str, blob * b)
 {
-int dlen = b64decode(str, &b->data);
+int dlen = b64decode(str, &b->data, str);
 if (dlen < 0) b->data = NULL;
 b->len = dlen;
 }

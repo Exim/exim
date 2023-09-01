@@ -8135,7 +8135,7 @@ NOT_ITEM: ;
 	case EOP_BASE64D:
 	  {
 	  uschar * s;
-	  int len = b64decode(sub, &s);
+	  int len = b64decode(sub, &s, sub);
 	  if (len < 0)
 	    {
 	    expand_string_message = string_sprintf("string \"%s\" is not "

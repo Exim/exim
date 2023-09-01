@@ -134,9 +134,9 @@ A zero is added on to the end to make it easy in cases where the result is to
 be interpreted as text. This is not included in the count. */
 
 int
-lss_b64decode(uschar *code, uschar **ptr)
+lss_b64decode(uschar * code, uschar ** ptr)
 {
-return b64decode(code, ptr);
+return b64decode(code, ptr, code);
 }
 
 

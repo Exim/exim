@@ -334,7 +334,7 @@ while (step < 4)
       break;
 
     case 1:
-      gbufdesc_in.length = b64decode(from_client, USS &gbufdesc_in.value);
+      gbufdesc_in.length = b64decode(from_client, USS &gbufdesc_in.value, GET_TAINTED);
       if (gclient)
         {
 	maj_stat = gss_release_name(&min_stat, &gclient);
@@ -419,7 +419,7 @@ while (step < 4)
       break;
 
     case 3:
-      gbufdesc_in.length = b64decode(from_client, USS &gbufdesc_in.value);
+      gbufdesc_in.length = b64decode(from_client, USS &gbufdesc_in.value, GET_TAINTED);
       maj_stat = gss_unwrap(&min_stat,
 	  gcontext,
 	  &gbufdesc_in,       /* data from client */

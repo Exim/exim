@@ -152,7 +152,7 @@ static uschar dec64table[] = {
 };
 
 int
-b64decode(const uschar *code, uschar **ptr)
+b64decode(const uschar * code, uschar ** ptr, const void * proto_mem)
 {
 
 int x, y;
@@ -160,7 +160,7 @@ uschar *result;
 
  {
   int l = Ustrlen(code);
-  *ptr = result = store_get(1 + l/4 * 3 + l%4, code);
+  *ptr = result = store_get(1 + l/4 * 3 + l%4, proto_mem);
  }
 
 /* Each cycle of the loop handles a quantum of 4 input bytes. For the last

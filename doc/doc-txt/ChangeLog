@@ -185,6 +185,11 @@ JH/37 Bug 3016: Avoid sending DSN when message was accepted under fakereject
       or fakedefer.  Previously the sender could discover that the message
       had in fact been accepted.
 
+JH/38 Taint-track intermediate values from the peer in multi-stage authentation
+      sequences.  Previously the input was not noted as being tainted; notably
+      this resulted in behaviour of LOGIN vs. PLAIN being inconsistent under
+      bad coding of authenticators.
+
 
 Exim version 4.96
 -----------------

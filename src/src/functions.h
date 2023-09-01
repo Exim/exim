@@ -157,7 +157,7 @@ extern gstring *authres_spf(gstring *);
 
 extern uschar *b64encode(const uschar *, int);
 extern uschar *b64encode_taint(const uschar *, int, const void *);
-extern int     b64decode(const uschar *, uschar **);
+extern int     b64decode(const uschar *, uschar **, const void *);
 extern int     bdat_getc(unsigned);
 extern uschar *bdat_getbuf(unsigned *);
 extern BOOL    bdat_hasc(void);

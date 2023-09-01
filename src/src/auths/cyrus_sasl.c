@@ -204,16 +204,16 @@ sasl_done();
 within a shortlived child */
 
 int
-auth_cyrus_sasl_server(auth_instance *ablock, uschar *data)
+auth_cyrus_sasl_server(auth_instance * ablock, uschar * data)
 {
-auth_cyrus_sasl_options_block *ob =
+auth_cyrus_sasl_options_block * ob =
   (auth_cyrus_sasl_options_block *)(ablock->options_block);
-uschar *output, *out2, *input, *clear, *hname;
-uschar *debug = NULL;   /* Stops compiler complaining */
+uschar * output, * out2, * input, * clear, * hname;
+uschar * debug = NULL;   /* Stops compiler complaining */
 sasl_callback_t cbs[] = {{SASL_CB_LIST_END, NULL, NULL}};
-sasl_conn_t *conn;
+sasl_conn_t * conn;
 char * realm_expanded = NULL;
-int rc, firsttime = 1, clen, *negotiated_ssf_ptr = NULL, negotiated_ssf;
+int rc, firsttime = 1, clen, * negotiated_ssf_ptr = NULL, negotiated_ssf;
 unsigned int inlen, outlen;
 
 input = data;
@@ -232,7 +232,7 @@ if (!hname  ||  !realm_expanded  && ob->server_realm)
 
 if (inlen)
   {
-  if ((clen = b64decode(input, &clear)) < 0)
+  if ((clen = b64decode(input, &clear, input)) < 0)
     return BAD64;
   input = clear;
   inlen = clen;
@@ -345,10 +345,10 @@ for (rc = SASL_CONTINUE; rc == SASL_CONTINUE; )
       }
     inlen = Ustrlen(input);
 
-    HDEBUG(D_auth) debug = string_copy(input);
+    HDEBUG(D_auth) debug = string_copy_taint(input, GET_TAINTED);
     if (inlen)
       {
-      if ((clen = b64decode(input, &clear)) < 0)
+      if ((clen = b64decode(input, &clear, GET_TAINTED)) < 0)
        {
        sasl_dispose(&conn);
        sasl_done();
