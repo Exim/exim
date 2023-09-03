@@ -1453,7 +1453,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       s/ \.\.\. >>> / ... /;
       if (s/ non-TFO mode connection attempt to 224.0.0.0, 0 data\b$//) { chomp; $_ .= <IN>; }
       s/Address family not supported by protocol family/Network Error/;
-      s/Network is unreachable/Network Error/;
+      s/Network(?: is)? unreachable/Network Error/;
       }
     next if /^(ppppp |\d+ )?setsockopt FASTOPEN: Protocol not available$/;
     s/^(Connecting to .* \.\.\. sending) \d+ (nonTFO early-data)$/$1 dd $2/;
