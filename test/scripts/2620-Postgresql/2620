@@ -22,7 +22,7 @@ echo Waiting for DB server
 perl
 system 'DIR/bin.sys/pg_ctl -w -D DIR/pgsql/data status';
 system 'createdb -h localhost -p PORT_N test';
-system 'psql -h localhost -p PORT_N -d test \
+system 'DIR/bin.sys/psql -h localhost -p PORT_N -d test \
  -c "CREATE TABLE them ( name text, id text ); \
      INSERT INTO them VALUES ( \'Philip Hazel\', \'ph10\' ); \
      INSERT INTO them VALUES ( \'Aristotle\',    \'aaaa\' ); \

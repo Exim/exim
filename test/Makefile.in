@@ -28,7 +28,7 @@ all:            binaries sysbinaries
 binaries:	$(BINARIES)
 
 sysbinaries:	FORCE binaries
-		bin/locate initdb postgres pg_ctl mysqld
+		bin/locate initdb postgres pg_ctl psql mysqld mysql
 		ls -la bin.sys
 
 # Compile and link the programs:

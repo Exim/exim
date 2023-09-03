@@ -19,7 +19,7 @@ DIR/bin.sys/mysqld --datadir=DIR/mysql --log-error=DIR/mysql/log --bind-address=
 ### wait for db startup, set password on the root user
 echo Waiting for DB server startup
 sudo perl
-system 'mysql --protocol=socket --socket=`pwd`/mysql/sock --connect_timeout=10 -u root -e "set password = password(\"pass\")"';
+system 'DIR/bin.sys/mysql --protocol=socket --socket=`pwd`/mysql/sock --connect_timeout=10 -u root -e "set password = password(\"pass\")"';
 ****
 #
 ### create testdb and extra users
@@ -27,15 +27,15 @@ echo Create testdb and extra users
 perl
 system 'mysqladmin --protocol=TCP -P PORT_N -u root -ppass create test';
 my $fh;
-open($fh, '-|', 'mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "select 1 from mysql.user where User = \'root\' and Host = \'HOSTIPV4\'"');
+open($fh, '-|', 'DIR/bin.sys/mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "select 1 from mysql.user where User = \'root\' and Host = \'HOSTIPV4\'"');
 my $line = <$fh>;
 if (length($line) == 0) {
-  system 'mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "create user \'root\'@\'HOSTIPV4\'"';
+  system 'DIR/bin.sys/mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "create user \'root\'@\'HOSTIPV4\'"';
 }
-open($fh, '-|', 'mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "select 1 from mysql.user where User = \'CALLER\' and Host = \'HOSTIPV4\'"');
+open($fh, '-|', 'DIR/bin.sys/mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "select 1 from mysql.user where User = \'CALLER\' and Host = \'HOSTIPV4\'"');
 $line = <$fh>;
 if (length($line) == 0) {
-  system 'mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "create user \'CALLER\'@\'HOSTIPV4\'"';
+  system 'DIR/bin.sys/mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "create user \'CALLER\'@\'HOSTIPV4\'"';
 }
 ****
 #
@@ -43,7 +43,7 @@ if (length($line) == 0) {
 # wait for db startup, insert some data
 echo Insert some data
 perl
-system 'mysql --protocol=TCP -P PORT_N -u root -ppass -D test \
+system 'DIR/bin.sys/mysql --protocol=TCP -P PORT_N -u root -ppass -D test \
  -e "CREATE TABLE them ( name text, id text ); \
      INSERT INTO them VALUES ( \'Philip Hazel\', \'ph10\' ); \
      INSERT INTO them VALUES ( \'Aristotle\',    \'aaaa\' ); \
