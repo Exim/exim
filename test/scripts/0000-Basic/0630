@@ -25,6 +25,6 @@ QUIT
 #
 killdaemon
 #
-cp DIR/spool/log/serverdebuglog_router /dev/stderr
+cp DIR/spool/log/serverdebuglog_router /proc/self/fd/2
 #
 no_msglog_check
