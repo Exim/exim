@@ -21,6 +21,6 @@ QUIT
 #
 killdaemon
 #
-cp DIR/spool/log/serverdebuglog_rcpt /proc/self/fd/2
+cp DIR/spool/log/serverdebuglog_rcpt DIR/bin.sys/stderr
 #
 no_msglog_check

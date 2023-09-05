@@ -66,6 +66,6 @@ killdaemon
 1
 cat DIR/spool/log/serverdebuglog_1
 #
-cp DIR/spool/log/serverdebuglog_2 /proc/self/fd/2
+cp DIR/spool/log/serverdebuglog_2 DIR/bin.sys/stderr
 #
 no_msglog_check
