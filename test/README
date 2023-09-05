@@ -681,7 +681,12 @@ script. For example:
   # -bS Use of HELO/RSET
 
 A line consisting just of digits is interpreted as the expected return code
-for the command that follows. The default expectation when no such line exists
+for the command that follows.
+
+A line consisting of a tilde (~) followed by digits indicates a non-expected
+return code for the command that follows.
+
+The default expectation when neither such line exists
 is a zero return code. For example, here is a complete test script, containing
 just one command:
 

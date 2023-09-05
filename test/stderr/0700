@@ -23,8 +23,11 @@ zzzzzzz not parsed
 ### Print date as seconds since the UNIX epoch.
 ### Show the process id too
 ### Override the value of localhost_number set in the exim configuation file
+### hostno too big
 localhost_number > 10
+### hostno negative
 localhost_number must be a number >=0
+### hostno too big
 localhost_number > 16
 ### From here as 701 - 703
 ### Each msg-id type, all zone
@@ -68,6 +71,9 @@ zzzzzz is not base 36
 ### Print date as seconds since the UNIX epoch.
 ### Show the process id too
 ### Override the value of localhost_number set in the exim configuation file
+### hostno too big
+### hostno negative
+### hostno too big
 ### From here as 701 - 703
 ### Each msg-id type, all zone
 ### All msg-id types, all zones,  localhost_number = 3

@@ -2305,6 +2305,7 @@ system($cmd);
 # Arguments: the current test number
 #            reference to the subtest number, holding previous value
 #            reference to the expected return code value
+#            reference to flag for not-expected return value
 #            reference to where to put the command name (for messages)
 #            auxiliary information returned from a previous run
 #
@@ -2320,17 +2321,18 @@ system($cmd);
 sub run_command{
 my($testno) = $_[0];
 my($subtestref) = $_[1];
-my($commandnameref) = $_[3];
-my($aux_info) = $_[4];
+my($commandnameref) = $_[4];
+my($aux_info) = $_[5];
 my($yield) = 1;
 
 our %ENV = map { $_ => $ENV{$_} } grep { /^(?:USER|SHELL|PATH|TERM|EXIM_TEST_.*)$/ } keys %ENV;
 
-if (/^(\d+)\s*(?:([A-Z]+)=(\S+))?$/)                # Handle unusual return code
+if (/^(~)?(\d+)\s*(?:([A-Z]+)=(\S+))?$/)                # Handle unusual return code
   {
-  my($r) = $_[2];
-  $$r = $1 << 8;
-  $ENV{$2} = $3 if (defined $2);
+  my($r, $rn) = ($_[2], $_[3]);
+  $$r = $2 << 8;
+  $$rn = 1 if (defined $1);
+  $ENV{$3} = $4 if (defined $3);
   $_ = <SCRIPT>;
   return 4 if !defined $_;       # Missing command
   $lineno++;
@@ -4195,6 +4197,7 @@ DIR: for (my $i = 0; $i < @test_dirs; $i++)
   # range that was selected.
 
   @testlist = grep { $_ ~~ @wanted } grep { /^\d+(?:\.\d+)?$/ } map { basename $_ } glob "scripts/$testdir/*";
+
   tests_exit(-1, "Failed to read test scripts from `scripts/$testdir/*': $!")
     if not @testlist;
 
@@ -4580,8 +4583,8 @@ foreach $test (@test_list)
     # was run and not waited for (usually a daemon or server startup).
 
     my($commandname) = '';
-    my($expectrc) = 0;
-    my($rc, $run_extra) = run_command($testno, \$subtestno, \$expectrc, \$commandname, $TEST_STATE);
+    my($expectrc, $expect_not) = (0, 0);
+    my($rc, $run_extra) = run_command($testno, \$subtestno, \$expectrc, \$expect_not, \$commandname, $TEST_STATE);
     my($cmdrc) = $?;
 
     if ($debug) {
@@ -4619,12 +4622,15 @@ foreach $test (@test_list)
     # We ran and waited for a command. Check for the expected result unless
     # it died.
 
-    if ($cmdrc != $expectrc && !$sigpipehappened)
+    if (!$sigpipehappened && ($expect_not ? ($cmdrc == $expectrc) : ($cmdrc != $expectrc)))
       {
       printf("** Command $commandno (\"$commandname\", starting at line $subtest_startline)\n");
       if (($cmdrc & 0xff) == 0)
         {
-        printf("** Return code %d (expected %d)", $cmdrc/256, $expectrc/256);
+	if ($expect_not)
+	  { printf("** Return code %d (expected anything but that)", $cmdrc/256); }
+	else
+	  { printf("** Return code %d (expected %d)", $cmdrc/256, $expectrc/256); }
         }
       elsif (($cmdrc & 0xff00) == 0)
         { printf("** Killed by signal %d", $cmdrc & 255); }

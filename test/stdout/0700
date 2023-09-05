@@ -51,7 +51,10 @@
 3002-09-30 12:51:45.995000 GMT
 3002-09-30 12:51:45.995000 GMT
 2038-12-24 05:45:35.360000 GMT
+### hostno too big
 3002-09-30 12:51:45.995000 GMT
+### hostno negative
+### hostno too big
 ### From here as 701 - 703
 ### Each msg-id type, all zone
 0.000000	pid 1319504
@@ -228,6 +231,9 @@
 ### Print date as seconds since the UNIX epoch.
 ### Show the process id too
 ### Override the value of localhost_number set in the exim configuation file
+### hostno too big
+### hostno negative
+### hostno too big
 ### From here as 701 - 703
 ### Each msg-id type, all zone
 ### All msg-id types, all zones,  localhost_number = 3
