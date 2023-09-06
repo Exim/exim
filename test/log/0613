@@ -1,9 +1,9 @@
 1999-03-02 09:44:33 "Network error" here is expected. We must not get an mua_wrapper fault.
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for a b c d
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=ten-2.test.ex [V4NET.0.0.2] Network unreachable
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=ten-3.test.ex [V4NET.0.0.3] Network unreachable
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** a@myhost.test.ex R=smarthost T=remote_smtp: Network unreachable
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** b@myhost.test.ex R=smarthost T=remote_smtp: Network unreachable
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** c@myhost.test.ex R=smarthost T=remote_smtp: Network unreachable
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** d@myhost.test.ex R=smarthost T=remote_smtp: Network unreachable
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=ten-2.test.ex [V4NET.0.0.2] Network Error
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=ten-3.test.ex [V4NET.0.0.3] Network Error
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** a@myhost.test.ex R=smarthost T=remote_smtp: Network Error
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** b@myhost.test.ex R=smarthost T=remote_smtp: Network Error
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** c@myhost.test.ex R=smarthost T=remote_smtp: Network Error
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** d@myhost.test.ex R=smarthost T=remote_smtp: Network Error
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed

@@ -1,7 +1,7 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=V4NET.0.0.0 [V4NET.0.0.0] Network unreachable
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 == x@y R=r1 T=smtp defer (dd): Network unreachable H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == x@y R=r1 T=smtp defer (dd): Network Error H=127.0.0.1 [127.0.0.1]
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** x@y: retry timeout exceeded
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=r0

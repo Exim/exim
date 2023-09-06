@@ -856,7 +856,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/(?:Can(?:no|')t assign requested address|Address not available)/Netwk addr not available/;
   s/Operation timed out/Connection timed out/;
   s/Address family not supported by protocol family/Network Error/;
-  s/Network is unreachable/Network unreachable/;
+  s/Network(?: is)? unreachable/Network Error/;
   s/Invalid argument/Network Error/;
 
   s/\(\d+\): Network/(dd): Network/;

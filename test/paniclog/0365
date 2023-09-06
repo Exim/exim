@@ -1,4 +1,4 @@
-1999-03-02 09:44:33 recipient verify defer (making calloout connection): T=smtp Network unreachable
-1999-03-02 09:44:33 sender verify defer (making calloout connection): T=smtp Network unreachable
-1999-03-02 09:44:33 recipient verify defer (making calloout connection): T=smtp Network unreachable
-1999-03-02 09:44:33 sender verify defer (making calloout connection): T=smtp Network unreachable
+1999-03-02 09:44:33 recipient verify defer (making calloout connection): T=smtp Network Error
+1999-03-02 09:44:33 sender verify defer (making calloout connection): T=smtp Network Error
+1999-03-02 09:44:33 recipient verify defer (making calloout connection): T=smtp Network Error
+1999-03-02 09:44:33 sender verify defer (making calloout connection): T=smtp Network Error
