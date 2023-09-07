@@ -1,4 +1,10 @@
 # domain_data and local_part_data for redirection to file
 exim -N -odi -d userx@test.ex
 ****
+#
+#
+### _data from a multi-step expansion
+exim -N -odi -d charlie@dom1.ain
+****
+#
 no_message_check

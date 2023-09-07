@@ -14,13 +14,23 @@ qualify_domain = test.ex
 begin routers
 
 r1:
-  driver = redirect
-  domains = lsearch;DIR/aux-fixed/TESTNUM.data
-  local_parts = lsearch;DIR/aux-fixed/TESTNUM.data
-  address_data = ADDRESSDATA
-  file_transport = t1
-  data = DIR/test-mail/junk
-  router_home_directory = /usr
+  driver =		redirect
+  domains =		    ${domain:${lookup {$local_part@$domain} lsearch,ret=key {DIR/aux-fixed/TESTNUM.accountfile}}}
+  local_parts =		${local_part:${lookup {$local_part@$domain} lsearch,ret=key {DIR/aux-fixed/TESTNUM.accountfile}}}
+  file_transport =	t1
+  data =		DIR/test-mail/junk
+  debug_print = +++ROUTER:\n\
+                +++domain_data=$domain_data\n\
+                +++local_part_data=$local_part_data
+
+r2:
+  driver =		redirect
+  domains =		lsearch;DIR/aux-fixed/TESTNUM.data
+  local_parts =		lsearch;DIR/aux-fixed/TESTNUM.data
+  address_data =	ADDRESSDATA
+  file_transport =	t1
+  data =		DIR/test-mail/junk
+  router_home_directory =	/usr
   debug_print = +++ROUTER:\n\
                 +++domain_data=$domain_data\n\
                 +++local_part_data=$local_part_data\n\

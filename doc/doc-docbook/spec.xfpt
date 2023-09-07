@@ -19181,11 +19181,24 @@ This applies to all of the SRV, MX, AAAA, A lookup sequence.
 .cindex "router" "restricting to specific domains"
 .vindex "&$domain_data$&"
 If this option is set, the router is skipped unless the current domain matches
-the list. If the match is achieved by means of a file lookup, the data that the
-lookup returned for the domain is placed in &$domain_data$& for use in string
+the list.
+The data returned by the list check
+is placed in &$domain_data$& for use in string
 expansions of the driver's private options and in the transport.
 See section &<<SECTrouprecon>>& for
 a list of the order in which preconditions are evaluated.
+
+A complex example, using a file like:
+.code
+alice@dom1
+bill@dom1
+maggie@dom1
+.endd
+and checking both domain and local_part
+.code
+domains =         ${domain:${lookup {$local_part@$domain} lseach,ret=key {/path/to/accountsfile}}}
+local_parts = ${local_part:${lookup {$local_part@$domain} lseach,ret=key {/path/to/accountsfile}}}
+.endd
 
 
 
@@ -19550,7 +19563,7 @@ example:
 local_parts = dbm;/usr/local/specials/$domain_data
 .endd
 .vindex "&$local_part_data$&"
-If the match is achieved by a lookup, the data that the lookup returned
+the data returned by the list check
 for the local part is placed in the variable &$local_part_data$& for use in
 expansions of the router's private options or in the transport.
 You might use this option, for
