@@ -847,7 +847,7 @@ smarthost_smtp:
   # request with your smarthost provider to get things fixed:
   hosts_require_tls = *
   tls_verify_hosts = *
-  # As long as tls_verify_hosts is enabled, this this will have no effect,
+  # As long as tls_verify_hosts is enabled this will have no effect,
   # but if you have to comment it out then this will at least log whether
   # you succeed or not:
   tls_try_verify_hosts = *
