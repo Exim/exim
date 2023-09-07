@@ -25,7 +25,7 @@ config=
 eximmacdef=
 exim_path=
 
-if test "x$1" = x--version
+if [ "x$1" = x--version -o "x$1" = x-v ]
 then
     echo "`basename $0`: $0"
     echo "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION"

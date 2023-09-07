@@ -25,11 +25,17 @@ my $id;
 
 my $b62 = '[0-9A-Za-z]';
 
-if (  !getopts('hud', \%opt)
+if (  !getopts('hudv', \%opt)
    || $opt{h}
-   || !$opt{u} && !$opt{d}
+   || !$opt{v} && !$opt{u} && !$opt{d}
    ) {
   &help; exit 1;
+}
+if ($opt{v}) {
+    print "exim_id_update:\n",
+          "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
+          "perl(runtime): $]\n";
+    exit 0;
 }
 
 $spool = $ARGV[0] if ($ARGV[0]);
@@ -42,11 +48,12 @@ in spool files.  Only the filenames is first-line ID tag values
 are affected; not message content such as Message-ID fields.
 Only -H, -D and -J files are handled.
 
-Syntax:  exim_id_update [-d | -u | -h] [spooldir]
+Syntax:  exim_id_update [-d | -u | -h | -v] [spooldir]
 
 	-d	Downgrade mode
 	-h	This help message
 	-u	Upgrade mode
+	-v	Version
 
 Exactly one of -d or -u must be given.
 The spool directory defaults to the build-time value,

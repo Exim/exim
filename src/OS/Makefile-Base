@@ -287,6 +287,7 @@ exicyclog: config ../src/exicyclog.src
 	  ../src/exicyclog.src > exicyclog-t
 	@mv exicyclog-t exicyclog
 	@chmod a+x exicyclog
+	@./exicyclog -v 2>&1 >/dev/null
 	@echo ">>> exicyclog script built"
 
 # Target for the exinext utility script
@@ -304,6 +305,7 @@ exinext: config ../src/exinext.src
 	  ../src/exinext.src > exinext-t
 	@mv exinext-t exinext
 	@chmod a+x exinext
+	@./exinext -v 2>&1 >/dev/null
 	@echo ">>> exinext script built"
 
 # Target for the exiwhat utility script
@@ -328,6 +330,7 @@ exiwhat: config ../src/exiwhat.src
 	  ../src/exiwhat.src > exiwhat-t
 	@mv exiwhat-t exiwhat
 	@chmod a+x exiwhat
+	@./exiwhat -v 2>&1 >/dev/null
 	@echo ">>> exiwhat script built"
 
 # Target for the exim_checkaccess utility script
@@ -346,6 +349,7 @@ exim_checkaccess: config ../src/exim_checkaccess.src
 	  ../src/exim_checkaccess.src > exim_checkaccess-t
 	@mv exim_checkaccess-t exim_checkaccess
 	@chmod a+x exim_checkaccess
+	# @./exim_checkaccess -v 2>&1 >/dev/null
 	@echo ">>> exim_checkaccess script built"; echo ""
 
 # Target for the Exim monitor start-up script
@@ -366,6 +370,7 @@ eximon: config ../src/eximon.src ../OS/eximon.conf-Default \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/eximon.src >> eximon
+	@./eximon -v 2>&1 >/dev/null
 	@echo ">>> eximon script built"; echo ""
 
 # Targets for utilities; these are all Perl scripts that have to get the
@@ -385,6 +390,7 @@ exigrep: config ../src/exigrep.src
 	  ../src/exigrep.src > exigrep-t
 	@mv exigrep-t exigrep
 	@chmod a+x exigrep
+	@./exigrep --version 2>&1 >/dev/null
 	@echo ">>> exigrep script built"
 
 exim_msgdate: config ../src/exim_msgdate.src
@@ -402,6 +408,7 @@ exim_msgdate: config ../src/exim_msgdate.src
 	  ../src/exim_msgdate.src > exim_msgdate-t
 	@mv exim_msgdate-t exim_msgdate
 	@chmod a+x exim_msgdate
+	@./exim_msgdate -v 2>&1 >/dev/null
 	@echo ">>> exim_msgdate script built"
 
 eximstats: config ../src/eximstats.src
@@ -413,6 +420,7 @@ eximstats: config ../src/eximstats.src
 	  ../src/eximstats.src > eximstats-t
 	@mv eximstats-t eximstats
 	@chmod a+x eximstats
+	@./eximstats -v 2>&1 >/dev/null
 	@echo ">>> eximstats script built"
 
 exiqgrep: config ../src/exiqgrep.src
@@ -428,6 +436,7 @@ exiqgrep: config ../src/exiqgrep.src
 	  ../src/exiqgrep.src > exiqgrep-t
 	@mv exiqgrep-t exiqgrep
 	@chmod a+x exiqgrep
+	@./exiqgrep -v 2>&1 >/dev/null
 	@echo ">>> exiqgrep script built"
 
 exiqsumm: config ../src/exiqsumm.src
@@ -439,6 +448,7 @@ exiqsumm: config ../src/exiqsumm.src
 	  ../src/exiqsumm.src > exiqsumm-t
 	@mv exiqsumm-t exiqsumm
 	@chmod a+x exiqsumm
+	@./exiqsumm -v 2>&1 >/dev/null
 	@echo ">>> exiqsumm script built"
 
 exipick: config ../src/exipick.src
@@ -452,6 +462,7 @@ exipick: config ../src/exipick.src
 	  ../src/exipick.src > exipick-t
 	@mv exipick-t exipick
 	@chmod a+x exipick
+	@./exipick -v 2>&1 >/dev/null
 	@echo ">>> exipick script built"
 
 exim_id_update: config ../src/exim_id_update.src
@@ -465,6 +476,7 @@ exim_id_update: config ../src/exim_id_update.src
 	  ../src/exim_id_update.src > exim_id_update-t
 	@mv exim_id_update-t exim_id_update
 	@chmod a+x exim_id_update
+	@./exim_id_update -v 2>&1 >/dev/null
 	@echo ">>> exim_id_update script built"
 
 transport-filter.pl: config ../src/transport-filter.src
@@ -487,6 +499,7 @@ convert4r3: config ../src/convert4r3.src
 	  ../src/convert4r3.src > convert4r3-t
 	@mv convert4r3-t convert4r3
 	@chmod a+x convert4r3
+	@./convert4r3 -v 2>&1 >/dev/null
 	@echo ">>> convert4r3 script built"
 
 convert4r4: config ../src/convert4r4.src
@@ -498,6 +511,7 @@ convert4r4: config ../src/convert4r4.src
 	  ../src/convert4r4.src > convert4r4-t
 	@mv convert4r4-t convert4r4
 	@chmod a+x convert4r4
+	@./convert4r4 -v 2>&1 >/dev/null
 	@echo ">>> convert4r4 script built"
 
 

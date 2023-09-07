@@ -72,7 +72,7 @@ while [ $# -gt 0 ] ; do
   -k) keep=$2
       shift
       ;;
-   --version)
+   --version|-v)
       echo "`basename $0`: $0"
       echo "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION"
       exit 0

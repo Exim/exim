@@ -68,11 +68,11 @@ use FileHandle;
 use File::Basename;
 use IPC::Open2;
 
-if ($ARGV[0] eq '--version') {
+if ($ARGV[0] eq '--version' || $ARGV[0] eq '-v') {
     print basename($0) . ": $0\n",
           "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
           "perl(runtime): $]\n";
-          exit 0;
+    exit 0;
 }
 
 if (scalar(@ARGV) < 3)
