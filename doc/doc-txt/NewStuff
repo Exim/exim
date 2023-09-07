@@ -9,7 +9,7 @@ the documentation is updated, this file is reduced to a short list.
 Version 4.97
 ------------
 
- 1. The expansion-test faciility (exim -be) can set variables.
+ 1. The expansion-test facility (exim -be) can set variables.
 
  2. An event on a failing SMTP AUTH, for both client and server operations.
 
