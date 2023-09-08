@@ -2639,6 +2639,12 @@ if (/^(ln|ls|du|mkdir|mkfifo|touch|cp|cat)\s/ ||
   run_system("$_ >>test-stdout 2>>test-stderr");
   return 1;
   }
+if (/^cat2\s/)
+  {
+  s/^cat2/cat/;
+  run_system("$_ 2>&1 >test-stderr");
+  return 1;
+  }
 
 
 

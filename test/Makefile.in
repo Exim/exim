@@ -30,7 +30,6 @@ binaries:	$(BINARIES)
 sysbinaries:	FORCE binaries
 		rm -f bin.sys/*
 		bin/locate initdb postgres pg_ctl psql mysqld mysql
-		if [ -e /dev/stderr ]; then  ln -s /dev/stderr bin.sys/stderr; else ln -s /proc/self/fd/2 bin.sys/stderr; fi
 		ls -la bin.sys
 
 # Compile and link the programs:
