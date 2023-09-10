@@ -1026,8 +1026,14 @@ gstring * g = NULL;
 DEBUG(D_any) {} else g = show_db_version(g);
 
 g = string_cat(g, US"Support for:");
+#ifdef WITH_CONTENT_SCAN
+  g = string_cat(g, US" Content_Scanning");
+#endif
 #ifdef SUPPORT_CRYPTEQ
   g = string_cat(g, US" crypteq");
+#endif
+#ifdef EXPAND_DLFUNC
+  g = string_cat(g, US" Expand_dlfunc");
 #endif
 #if HAVE_ICONV
   g = string_cat(g, US" iconv()");
@@ -1035,26 +1041,26 @@ g = string_cat(g, US"Support for:");
 #if HAVE_IPV6
   g = string_cat(g, US" IPv6");
 #endif
-#ifdef HAVE_SETCLASSRESOURCES
-  g = string_cat(g, US" use_setclassresources");
-#endif
 #ifdef SUPPORT_PAM
   g = string_cat(g, US" PAM");
 #endif
 #ifdef EXIM_PERL
   g = string_cat(g, US" Perl");
 #endif
-#ifdef EXPAND_DLFUNC
-  g = string_cat(g, US" Expand_dlfunc");
-#endif
-#ifdef USE_TCP_WRAPPERS
-  g = string_cat(g, US" TCPwrappers");
-#endif
 #ifdef USE_GNUTLS
   g = string_cat(g, US" GnuTLS");
 #endif
+#ifdef SUPPORT_MOVE_FROZEN_MESSAGES
+  g = string_cat(g, US" move_frozen_messages");
+#endif
 #ifdef USE_OPENSSL
   g = string_cat(g, US" OpenSSL");
+#endif
+#if defined(CYRUS_PWCHECK_SOCKET)
+  g = string_cat(g, US" pwcheck");
+#endif
+#if defined(RADIUS_CONFIG_FILE)
+  g = string_cat(g, US" radius");
 #endif
 #ifndef DISABLE_TLS_RESUME
   g = string_cat(g, US" TLS_resume");
@@ -1062,11 +1068,11 @@ g = string_cat(g, US"Support for:");
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
   g = string_cat(g, US" translate_ip_address");
 #endif
-#ifdef SUPPORT_MOVE_FROZEN_MESSAGES
-  g = string_cat(g, US" move_frozen_messages");
+#ifdef USE_TCP_WRAPPERS
+  g = string_cat(g, US" TCPwrappers");
 #endif
-#ifdef WITH_CONTENT_SCAN
-  g = string_cat(g, US" Content_Scanning");
+#ifdef HAVE_SETCLASSRESOURCES
+  g = string_cat(g, US" use_setclassresources");
 #endif
 #ifdef SUPPORT_DANE
   g = string_cat(g, US" DANE");

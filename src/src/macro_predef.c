@@ -119,6 +119,12 @@ due to conflicts with other common macros. */
 #ifdef SUPPORT_PAM
   builtin_macro_create(US"_HAVE_PAM");
 #endif
+#ifdef RADIUS_CONFIG_FILE
+  builtin_macro_create(US"_HAVE_RADIUS");
+#endif
+#ifdef CYRUS_PWCHECK_SOCKET
+  builtin_macro_create(US"_HAVE_PWCHECK");
+#endif
 #ifdef EXIM_PERL
   builtin_macro_create(US"_HAVE_PERL");
 #endif
