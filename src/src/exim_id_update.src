@@ -44,7 +44,7 @@ $mode_upgrade = $opt{u};
 sub help(){
   print <<'EOF'
 Utility for one-time down/upgrade of Exim message-id formats
-in spool files.  Only the filenames is first-line ID tag values
+in spool files.  Only the filenames and first-line ID tag values
 are affected; not message content such as Message-ID fields.
 Only -H, -D and -J files are handled.
 
