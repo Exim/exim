@@ -5692,16 +5692,15 @@ while (*s)
         case 3: goto EXPAND_FAILED;
         }
 
-      yield = string_cat(yield, sub[0]);
-      o2m = Ustrlen(sub[2]) - 1;
-
-      if (o2m >= 0) for (; oldptr < yield->ptr; oldptr++)
+      if (  (yield = string_cat(yield, sub[0]))
+         && (o2m = Ustrlen(sub[2]) - 1) >= 0)
+	  for (; oldptr < yield->ptr; oldptr++)
         {
         uschar *m = Ustrrchr(sub[1], yield->s[oldptr]);
         if (m)
           {
           int o = m - sub[1];
-          yield->s[oldptr] = sub[2][(o < o2m)? o : o2m];
+          yield->s[oldptr] = sub[2][o < o2m ? o : o2m];
           }
         }
 

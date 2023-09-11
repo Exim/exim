@@ -86,6 +86,9 @@ JH/13 Bug 2929: Fix using $recipients after ${run...}.  A change made for 4.96
 JH/34 Bug 3013: Fix use of $recipients within arguments for ${run...}.
       In 4.96 this would expand to empty.
 
+JH/39 Bug 3023: Fix crash induced by some combinations of zero-length strings
+      and ${tr...}.  Found and diagnosed by Heiko Schlichting.
+
 
 Exim version 4.96
 -----------------
