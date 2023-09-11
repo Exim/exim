@@ -714,6 +714,7 @@ abcdea aaa xyz ${tr{abcdea}{aaa}{xyz}}
 abcdea a   z   ${tr{abcdea}{a}{z}}
 abcdea a       ${tr{abcdea}{a}{}}
 abcdea abc z   ${tr{abcdea}{abc}{z}}
+(null)         '${sg{$header_foobar:${tr{}{}{foobar}}}{}{}}'
 
 # Boolean
 "TrUe"                ${if bool{TrUe}{true}{false}}      EXPECT: true

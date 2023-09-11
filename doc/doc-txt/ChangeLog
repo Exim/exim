@@ -190,6 +190,9 @@ JH/38 Taint-track intermediate values from the peer in multi-stage authentation
       this resulted in behaviour of LOGIN vs. PLAIN being inconsistent under
       bad coding of authenticators.
 
+JH/39 Bug 3023: Fix crash induced by some combinations of zero-length strings
+      and ${tr...}.  Found and diagnosed by Heiko Schlichting.
+
 
 Exim version 4.96
 -----------------
