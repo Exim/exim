@@ -6564,6 +6564,7 @@ while (*s)
 	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
 
+      DEBUG(D_expand) debug_printf_indent("%s: evaluate input list list\n", name);
       if (!(list = expand_string_internal(s,
 	      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL)))
 	goto EXPAND_FAILED;						/*{{*/
@@ -6583,6 +6584,7 @@ while (*s)
 	  expand_string_message = US"missing '{' for second arg of reduce";
 	  goto EXPAND_FAILED_CURLY;					/*}*/
 	  }
+	DEBUG(D_expand) debug_printf_indent("reduce: initial result list\n");
         t = expand_string_internal(s,
 	      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL);
         if (!t) goto EXPAND_FAILED;
@@ -6610,6 +6612,7 @@ while (*s)
       condition for real. For EITEM_MAP and EITEM_REDUCE, do the same, using
       the normal internal expansion function. */
 
+      DEBUG(D_expand) debug_printf_indent("%s: find end of conditionn\n", name);
       if (item_type != EITEM_FILTER)
         temp = expand_string_internal(s,
 	  ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | ESI_SKIPPING, &s, &resetok, NULL);
