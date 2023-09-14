@@ -12088,6 +12088,10 @@ Exim was built with the EXPAND_LISTMATCH_RHS option.
 
 Consult section &<<SECThoslispatip>>& for further details of these patterns.
 
+The variable &$value$& will be set for a successful match and can be
+used in the success clause of an &%if%& expansion item using the condition.
+Any previous &$value$& is restored after the if.
+
 .vitem &*match_local_part&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
 .cindex "domain list" "in expansion condition"
 .cindex "address list" "in expansion condition"
