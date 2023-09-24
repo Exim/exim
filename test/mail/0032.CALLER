@@ -36,6 +36,7 @@ Reporting-MTA: dns; myhost.ex
 Action: failed
 Final-Recipient: rfc822;userx@mxt1.test.ex
 Status: 5.0.0
+X-Exim-Diagnostic: X-str; lowest numbered MX record points to local host
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822

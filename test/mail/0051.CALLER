@@ -92,6 +92,7 @@ Reporting-MTA: dns; myhost.ex
 Action: failed
 Final-Recipient: rfc822;userx@badbad.ex
 Status: 5.0.0
+X-Exim-Diagnostic: X-str; unrouteable mail domain "badbad.ex" (:fail:)
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822
@@ -204,6 +205,7 @@ Reporting-MTA: dns; myhost.ex
 Action: failed
 Final-Recipient: rfc822;userx@domain2.ex
 Status: 5.0.0
+X-Exim-Diagnostic: X-str; unrouteable mail domain "domain2.ex" (:fail:)
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822

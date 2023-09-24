@@ -33,6 +33,8 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;userx@test.ex
 Status: 5.0.0
+X-Exim-Diagnostic: X-str; all hosts for 'test.ex' have been failing for a long
+ time (and retry time not reached)
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822
@@ -139,6 +141,8 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;userx@test.ex
 Status: 5.0.0
+X-Exim-Diagnostic: X-str; all hosts for 'test.ex' have been failing for a long
+ time (and retry time not reached)
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822

@@ -49,6 +49,7 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;x@test.ex
 Status: 5.0.0
+X-Exim-Diagnostic: X-str; no deliveries made locally
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822

@@ -33,6 +33,7 @@ Reporting-MTA: dns; the.local.host.name
 Action: failed
 Final-Recipient: rfc822;userx@non-local.example
 Status: 5.0.0
+X-Exim-Diagnostic: X-str; unrouteable mail domain "non-local.example" (:fail:)
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822

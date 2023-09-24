@@ -38,6 +38,7 @@ Reporting-MTA: dns; the.local.host.name
 Action: failed
 Final-Recipient: rfc822;remote_user@remote.ex
 Status: 5.0.0
+X-Exim-Diagnostic: X-str; account disabled
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822

@@ -4020,7 +4020,7 @@ user.
 This option requests Exim to give up trying to deliver the listed messages,
 including any that are frozen. However, if any of the messages are active,
 their status is not altered. For non-bounce messages, a delivery error message
-is sent to the sender, containing the text &"cancelled by administrator"&.
+is sent to the sender.
 Bounce messages are just discarded. This option can be used only by an admin
 user.
 

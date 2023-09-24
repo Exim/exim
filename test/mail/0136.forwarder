@@ -38,6 +38,7 @@ Reporting-MTA: dns; the.local.host.name
 Action: failed
 Final-Recipient: rfc822;forwarder@test.ex
 Status: 5.0.0
+X-Exim-Diagnostic: X-str; Address unknown (:fail:)
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822
@@ -96,6 +97,7 @@ Reporting-MTA: dns; the.local.host.name
 Action: failed
 Final-Recipient: rfc822;forwarder@test.ex
 Status: 5.0.0
+X-Exim-Diagnostic: X-str; Address unknown (:fail:)
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: text/rfc822-headers

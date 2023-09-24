@@ -5743,7 +5743,7 @@ wording. */
 
     if (addr->return_file >= 0)
       {
-      paddr = &(addr->next);
+      paddr = &addr->next;
       filecount++;
       }
 
@@ -5850,6 +5850,9 @@ wording. */
   for (address_item * addr = handled_addr; addr; addr = addr->next)
     {
     host_item * hu;
+#ifdef EXPERIMENTAL_DSN_INFO
+    const uschar * s;
+#endif
 
     print_dsn_addr_action(fp, addr, US"failed", US"5.0.0");
 
@@ -5857,8 +5860,6 @@ wording. */
       {
       fprintf(fp, "Remote-MTA: dns; %s\n", hu->name);
 #ifdef EXPERIMENTAL_DSN_INFO
-      {
-      const uschar * s;
       if (hu->address)
 	{
 	uschar * p = hu->port == 25
@@ -5869,12 +5870,15 @@ wording. */
 	dsn_put_wrapped(fp, US"X-Remote-MTA-smtp-greeting: X-str; ", s);
       if ((s = addr->helo_response) && *s)
 	dsn_put_wrapped(fp, US"X-Remote-MTA-helo-response: X-str; ", s);
-      if ((s = addr->message) && *s)
+      if (testflag(addr, af_pass_message) && (s = addr->message) && *s)
 	dsn_put_wrapped(fp, US"X-Exim-Diagnostic: X-str; ", s);
-      }
 #endif
       print_dsn_diagnostic_code(addr, fp);
       }
+#ifdef EXPERIMENTAL_DSN_INFO
+      else if (testflag(addr, af_pass_message) && (s = addr->message) && *s)
+	dsn_put_wrapped(fp, US"X-Exim-Diagnostic: X-str; ", s);
+#endif
     fputc('\n', fp);
     }
 
@@ -7009,8 +7013,9 @@ if (process_recipients != RECIP_IGNORE)
   for (i = 0; i < recipients_count; i++)
     if (!tree_search(tree_nonrecipients, recipients_list[i].address))
       {
-      recipient_item *r = recipients_list + i;
-      address_item *new = deliver_make_addr(r->address, FALSE);
+      recipient_item * r = recipients_list + i;
+      address_item * new = deliver_make_addr(r->address, FALSE);
+
       new->prop.errors_address = r->errors_to;
 #ifdef SUPPORT_I18N
       if ((new->prop.utf8_msg = message_smtputf8))
@@ -7070,6 +7075,8 @@ if (process_recipients != RECIP_IGNORE)
 
         case RECIP_FAIL:
 	  new->message  = US"delivery cancelled by administrator";
+	  /* not setting af_pass_message here means that will not
+	  appear in the bounce message */
 	  /* Fall through */
 
         /* Common code for the failure cases above. If this is not a bounce
@@ -7078,7 +7085,7 @@ if (process_recipients != RECIP_IGNORE)
         The incident has already been logged. */
 
         RECIP_QUEUE_FAILED:
-	  if (sender_address[0])
+	  if (*sender_address)
 	    {
 	    new->next = addr_failed;
 	    addr_failed = new;
