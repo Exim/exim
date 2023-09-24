@@ -4478,7 +4478,8 @@ if (!f.admin_user)
      || queue_name_dest && prod_requires_admin
      || debugset && !f.running_in_test_harness
      )
-    exim_fail("exim:%s permission denied\n", debugset ? " debugging" : "");
+    exim_fail("exim:%s permission denied; not admin\n",
+	      debugset ? " debugging" : "");
   }
 
 /* If the real user is not root or the exim uid, the argument for passing
@@ -4494,7 +4495,7 @@ if (  real_uid != root_uid && real_uid != exim_uid
       )  )
    && !f.running_in_test_harness
    )
-  exim_fail("exim: Permission denied\n");
+  exim_fail("exim: Permission denied; not exim user or root\n");
 
 /* If the caller is not trusted, certain arguments are ignored when running for
 real, but are permitted when checking things (-be, -bv, -bt, -bh, -bf, -bF).

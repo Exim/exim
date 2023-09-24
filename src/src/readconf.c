@@ -2915,7 +2915,7 @@ else if (Ustrcmp(type, "macro") == 0)
   for printing.  So we have an admin_users restriction. */
   if (!f.admin_user)
     {
-    fprintf(stderr, "exim: permission denied\n");
+    fprintf(stderr, "exim: permission denied; not admin\n");
     return FALSE;
     }
   for (macro_item * m = macros; m; m = m->next)
