@@ -1075,6 +1075,15 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # mailq times change with when the run is done, vs. static-source spoolfiles
     s/\s*\d*[hd](?=   317 [0-9A-Za-z\-]{23} <nobody\@test.ex>)/DDd/;
+
+    # Not all builds include EXPERIMENTAL_DSN_INFO (1 of 2)
+    if (/^X-Exim-Diagnostic:/)
+      {
+      while (<IN>) {
+	last if (/^$/ || !/^\s/);
+        }
+      goto RESET_AFTER_EXTRA_LINE_READ;
+      }
     }
 
   # ======== stderr ========
@@ -1630,6 +1639,15 @@ RESET_AFTER_EXTRA_LINE_READ:
       s/.*/${indent}t=T; x=T+${t_diff}; b=bbbb;/;
       <IN>;
       <IN>;
+      }
+
+    # Not all builds include EXPERIMENTAL_DSN_INFO (2 of 2)
+    if (/^X-Exim-Diagnostic:/)
+      {
+      while (<IN>) {
+	last if (/^$/ || !/^\s/);
+        }
+      goto RESET_AFTER_EXTRA_LINE_READ;
       }
     }
 

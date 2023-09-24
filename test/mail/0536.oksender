@@ -33,7 +33,6 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;user22@test.ex
 Status: 5.0.0
-X-Exim-Diagnostic: X-str; 590 5.4.3 Main and extended code
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822

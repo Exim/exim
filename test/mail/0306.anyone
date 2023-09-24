@@ -33,7 +33,6 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;list1@lists.test.ex
 Status: 5.0.0
-X-Exim-Diagnostic: X-str; list1@lists.test.ex is a closed mailing list
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822
@@ -86,7 +85,6 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;nonlist@lists.test.ex
 Status: 5.0.0
-X-Exim-Diagnostic: X-str; nonlist@lists.test.ex is a closed mailing list
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822

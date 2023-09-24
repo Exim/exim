@@ -87,7 +87,6 @@ Reporting-MTA: dns; the.local.host.name
 Action: failed
 Final-Recipient: rfc822;":fail: fail message"@special
 Status: 5.0.0
-X-Exim-Diagnostic: X-str; fail message
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822

@@ -33,7 +33,6 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;userx@test.ex
 Status: 5.0.0
-X-Exim-Diagnostic: X-str; forced failure
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822
@@ -88,7 +87,6 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;userx@test.ex
 Status: 5.0.0
-X-Exim-Diagnostic: X-str; forced failure
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822
@@ -146,7 +144,6 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;userx@test.ex
 Status: 5.0.0
-X-Exim-Diagnostic: X-str; forced failure
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822
@@ -232,7 +229,6 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;userx@test.ex
 Status: 5.0.0
-X-Exim-Diagnostic: X-str; forced failure
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: text/rfc822-headers

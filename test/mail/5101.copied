@@ -52,7 +52,6 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;jack@myhost.test.ex
 Status: 5.0.0
-X-Exim-Diagnostic: X-str; LMTP error after end of data: 550 Number 2 fails
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822
@@ -109,7 +108,6 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;jack@myhost.test.ex
 Status: 5.0.0
-X-Exim-Diagnostic: X-str; LMTP error after end of data: 550 Number 2 fails
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822

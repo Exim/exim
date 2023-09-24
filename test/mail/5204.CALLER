@@ -33,7 +33,6 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;"FAIL cannot route this one (FAIL)"@some.host
 Status: 5.0.0
-X-Exim-Diagnostic: X-str; cannot route this one (FAIL)
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822
