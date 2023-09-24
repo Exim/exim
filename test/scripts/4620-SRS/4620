@@ -22,8 +22,8 @@ exim -q
 # Sender with quoted local_part:
 #
 exim -be
-${srs_encode {mysecret} {a_test_user@lap.dom.ain} {test.ex}}
-${srs_encode {mysecret} {"a_test_user"@lap.dom.ain} {test.ex}}
+${srs_encode {mysecret} {a_test_user@HOSTNAME} {test.ex}}
+${srs_encode {mysecret} {"a_test_user"@HOSTNAME} {test.ex}}
 ****
 #
 # Inject a message; will be passed on to remote and queued there
