@@ -3583,53 +3583,50 @@ switch(cond_type = identify_operator(&s, &opname))
     /* If a zero-length secret was given, we're done.  Otherwise carry on
     and validate the given SRS local_part againt our secret. */
 
-    if (!*sub[1])
+    if (*sub[1])
       {
-      boolvalue = TRUE;
-      goto srs_result;
-      }
-
-    /* check the timestamp */
-      {
-      struct timeval now;
-      uschar * ss = sub[0] + ovec[4];	/* substring 2, the timestamp */
-      long d;
-      int n;
-
-      gettimeofday(&now, NULL);
-      now.tv_sec /= 86400;		/* days since epoch */
-
-      /* Decode substring 2 from base32 to a number */
-
-      for (d = 0, n = ovec[5]-ovec[4]; n; n--)
+      /* check the timestamp */
 	{
-	uschar * t = Ustrchr(base32_chars, *ss++);
-	d = d * 32 + (t - base32_chars);
+	struct timeval now;
+	uschar * ss = sub[0] + ovec[4];	/* substring 2, the timestamp */
+	long d;
+	int n;
+
+	gettimeofday(&now, NULL);
+	now.tv_sec /= 86400;			/* days since epoch */
+
+	/* Decode substring 2 from base32 to a number */
+
+	for (d = 0, n = ovec[5]-ovec[4]; n; n--)
+	  {
+	  uschar * t = Ustrchr(base32_chars, *ss++);
+	  d = d * 32 + (t - base32_chars);
+	  }
+
+	if (((now.tv_sec - d) & 0x3ff) > 10)	/* days since SRS generated */
+	  {
+	  DEBUG(D_expand) debug_printf("SRS too old\n");
+	  goto srs_result;
+	  }
 	}
 
-      if (((now.tv_sec - d) & 0x3ff) > 10)	/* days since SRS generated */
+      /* check length of substring 1, the offered checksum */
+
+      if (ovec[3]-ovec[2] != 4)
 	{
-	DEBUG(D_expand) debug_printf("SRS too old\n");
+	DEBUG(D_expand) debug_printf("SRS checksum wrong size\n");
 	goto srs_result;
 	}
-      }
 
-    /* check length of substring 1, the offered checksum */
+      /* Hash the address with our secret, and compare that computed checksum
+      with the one extracted from the arg */
 
-    if (ovec[3]-ovec[2] != 4)
-      {
-      DEBUG(D_expand) debug_printf("SRS checksum wrong size\n");
-      goto srs_result;
-      }
-
-    /* Hash the address with our secret, and compare that computed checksum
-    with the one extracted from the arg */
-
-    hmac_md5(sub[1], srs_recipient, cksum, sizeof(cksum));
-    if (Ustrncmp(cksum, sub[0] + ovec[2], 4) != 0)
-      {
-      DEBUG(D_expand) debug_printf("SRS checksum mismatch\n");
-      goto srs_result;
+      hmac_md5(sub[1], srs_recipient, cksum, sizeof(cksum));
+      if (Ustrncmp(cksum, sub[0] + ovec[2], 4) != 0)
+	{
+	DEBUG(D_expand) debug_printf("SRS checksum mismatch\n");
+	goto srs_result;
+	}
       }
     boolvalue = TRUE;
 

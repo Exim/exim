@@ -42295,18 +42295,30 @@ encoding operation.
 If this value is empty the the expansion result will be empty.
 The third argument should be the recipient domain of the message when
 it arrived at this system.
+All arguments are expanded before use.
+
+The result of the expansion is the replacement envelope-from (return path)
+to be used.
 .endlist
 
 .cindex SRS decoding
 To decode an address use this expansion condition:
 .vlist
 .vitem &*inbound_srs&~{*&<&'local&~part'&>&*}{*&<&'secret'&>&*}*&
-The first argument should be the recipient local prt as is was received.
+The first argument should be the recipient local part as it was received.
 The second argument is the site secret.
+Both arguments are expanded before use.
 
 If the messages is not for an SRS-encoded recipient the condition will
-return false.  If it is, the condition will return true and the variable
+return false.
+If it is, the condition will return true and the variable
 &$srs_recipient$& will be set to the decoded (original) value.
+
+.new
+If the second argument is empty then the condition returns true if
+the first argument is in valid SRS formet, else false.
+The variable &$srs_recipient$& is not set for this case.
+.wen
 .endlist
 
 Example usage:
