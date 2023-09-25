@@ -4,19 +4,23 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 signer: test.ex bits: 253
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 DKIM: d=test.ex s=sed c=relaxed/relaxed a=ed25519-sha256 b=512 [verification succeeded]
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=test.ex header.s=sed header.a=ed25519-sha256
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 dkim_status includes pass
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 signer: test.ex bits: 253
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 DKIM: d=test.ex s=sedw c=relaxed/relaxed a=ed25519-sha256 b=512 [verification succeeded]
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=test.ex header.s=sedw header.a=ed25519-sha256
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 dkim_status includes pass
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 signer: kitterman.org bits: 253
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 DKIM: d=kitterman.org s=ed25519 c=relaxed/simple a=ed25519-sha256 b=512 i=@kitterman.org t=1517847601 [verification succeeded]
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 signer: @kitterman.org bits: 253
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 DKIM: d=kitterman.org s=ed25519 c=relaxed/simple a=ed25519-sha256 b=512 i=@kitterman.org t=1517847601 [verification succeeded]
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=kitterman.org header.i=@kitterman.org header.s=ed25519 header.a=ed25519-sha256
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 dkim_status includes pass
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=kitterman.org id=example@example.com
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 signer: test.ex bits: 253
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 DKIM: d=test.ex s=sed c=relaxed/relaxed a=ed25519-sha256 b=512 [verification failed - signature invalid (key too short)]
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	dkim=fail (public key too short: 253 bits)\n		 header.d=test.ex header.s=sed header.a=ed25519-sha256
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 dkim_state DOES NOT include pass
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex

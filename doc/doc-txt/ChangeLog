@@ -193,6 +193,9 @@ JH/38 Taint-track intermediate values from the peer in multi-stage authentation
 JH/39 Bug 3023: Fix crash induced by some combinations of zero-length strings
       and ${tr...}.  Found and diagnosed by Heiko Schlichting.
 
+JH/40 Support list of dkim results in the dkim_status ACL condition, making
+      it more usable in the data ACL.
+
 
 Exim version 4.96
 -----------------
