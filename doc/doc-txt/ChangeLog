@@ -88,7 +88,7 @@ JH/18 Fix a fencepost error in logging.  Previously (since 4.92) when a log line
 
 JH/19 Bug 2911: Fix a recursion in DNS lookups.  Previously, if the main option
       dns_again_means_nonexist included an element causing a DNS lookup which
-      iteslf returned DNS_AGAIN, unbounded recursion occurred.  Possible results
+      itself returned DNS_AGAIN, unbounded recursion occurred.  Possible results
       included (though probably not limited to) a process crash from stack
       memory limit, or from excessive open files.  Replace this with a paniclog
       whine (as this is likely a configuration error), and returning
