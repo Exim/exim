@@ -42027,7 +42027,7 @@ option.
 
 .endlist
 
-In addition, two ACL conditions are provided:
+In addition, two ACL conditions are provided, usable only in a DKIM ACL:
 
 .vlist
 .vitem &%dkim_signers%&
