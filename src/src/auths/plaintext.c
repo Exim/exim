@@ -8,6 +8,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include "../exim.h"
+
+#ifdef AUTH_PLAINTEXT	/* Remainder of file */
 #include "plaintext.h"
 
 
@@ -176,5 +178,6 @@ while ((s = string_nextinlist(&text, &sep, NULL, 0)))
 return FAIL;
 }
 
-#endif   /*!MACRO_PREDEF*/
+#endif	/*!MACRO_PREDEF*/
+#endif	/*AUTH_PLAINTEST*/
 /* End of plaintext.c */

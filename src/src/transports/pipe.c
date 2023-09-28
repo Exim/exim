@@ -9,6 +9,8 @@
 
 
 #include "../exim.h"
+
+#ifdef TRANSPORT_PIPE	/* Remainder of file */
 #include "pipe.h"
 
 #ifdef HAVE_SETCLASSRESOURCES
@@ -1131,4 +1133,5 @@ return FALSE;
 }
 
 #endif	/*!MACRO_PREDEF*/
+#endif	/*TRASPORT_PIPE*/
 /* End of transport/pipe.c */

@@ -8,6 +8,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include "../exim.h"
+
+#ifdef ROUTER_QUERYPROGRAM	/* Remainder of file */
 #include "rf_functions.h"
 #include "queryprogram.h"
 
@@ -535,5 +537,6 @@ addr->prop = addr_prop;
 return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ? OK : DEFER;
 }
 
-#endif   /*!MACRO_PREDEF*/
+#endif	/*!MACRO_PREDEF*/
+#endif	/*ROUTER_QUERYPROGRAM*/
 /* End of routers/queryprogram.c */

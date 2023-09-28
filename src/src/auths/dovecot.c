@@ -23,6 +23,8 @@ because using C buffered I/O gives problems on some operating systems. PH */
  */
 
 #include "../exim.h"
+
+#ifdef AUTH_DOVECOT	/* Remainder of file */
 #include "dovecot.h"
 
 #define VERSION_MAJOR  1
@@ -533,4 +535,6 @@ return ret;
 }
 
 
-#endif   /*!MACRO_PREDEF*/
+#endif	/*!MACRO_PREDEF*/
+#endif	/*AUTH_DOVECOT*/
+/* end of auths/dovecot.c */

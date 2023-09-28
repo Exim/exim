@@ -9,6 +9,8 @@
 
 
 #include "../exim.h"
+
+#ifdef ROUTER_MANUALROUTE
 #include "rf_functions.h"
 #include "manualroute.h"
 
@@ -488,5 +490,6 @@ addr->transport = transport;
 return OK;
 }
 
-#endif   /*!MACRO_PREDEF*/
+#endif	/*!MACRO_PREDEF*/
+#endif	/*ROUTER_MANUALROUTE*/
 /* End of routers/manualroute.c */

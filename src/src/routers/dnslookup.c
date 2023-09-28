@@ -8,6 +8,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include "../exim.h"
+
+#ifdef ROUTER_DNSLOOKUP		/* Remainder of file */
 #include "rf_functions.h"
 #include "dnslookup.h"
 
@@ -469,7 +471,8 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
   OK : DEFER;
 }
 
-#endif   /*!MACRO_PREDEF*/
+#endif	/*!MACRO_PREDEF*/
+#endif	/*ROUTER_DNSLOOKUP
 /* End of routers/dnslookup.c */
 /* vi: aw ai sw=2
 */

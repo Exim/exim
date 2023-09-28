@@ -34,6 +34,8 @@ References:
 
 
 #include "../exim.h"
+
+#ifdef AUTH_SPA		/* Remainder of file */
 #include "spa.h"
 
 /* #define DEBUG_SPA */
@@ -372,5 +374,6 @@ if (errno != 0 || buffer[0] != '3')
 return FAIL;
 }
 
-#endif   /*!MACRO_PREDEF*/
+#endif	/*!MACRO_PREDEF*/
+#endif	/*AUTH_SPA*/
 /* End of spa.c */

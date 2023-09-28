@@ -9,6 +9,8 @@
 
 
 #include "../exim.h"
+
+#ifdef ROUTER_IPLOOKUP		/* Remainder of file */
 #include "rf_functions.h"
 #include "iplookup.h"
 
@@ -414,5 +416,6 @@ if (rc != OK) return rc;
 return OK;
 }
 
-#endif   /*!MACRO_PREDEF*/
+#endif	/*!MACRO_PREDEF*/
+#endif	/*ROUTER_IPLOOKUP*/
 /* End of routers/iplookup.c */

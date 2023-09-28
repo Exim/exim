@@ -9,6 +9,8 @@
 
 
 #include "../exim.h"
+#ifdef TRANSPORT_LMTP		/* Remainder of file */
+
 #include "lmtp.h"
 
 #define PENDING_OK 256
@@ -807,4 +809,5 @@ MINUS_N:
 }
 
 #endif	/*!MACRO_PREDEF*/
+#endif	/*TRANSPORT_LMTP*/
 /* End of transport/lmtp.c */

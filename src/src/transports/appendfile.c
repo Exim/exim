@@ -9,6 +9,8 @@
 
 
 #include "../exim.h"
+
+#ifdef TRANSPORT_APPENDFILE	/* Remainder of file */
 #include "appendfile.h"
 
 #ifdef SUPPORT_MAILDIR
@@ -3326,4 +3328,5 @@ ret_panic:
 }
 
 #endif	/*!MACRO_PREDEF*/
+#endif	/*TRANSPORT_APPENDFILE*/
 /* End of transport/appendfile.c */

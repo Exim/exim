@@ -9,6 +9,8 @@
 
 
 #include "../exim.h"
+
+#ifdef TRANSPORT_AUTOREPLY	/* Remainder of file */
 #include "autoreply.h"
 
 
@@ -820,4 +822,5 @@ return FALSE;
 }
 
 #endif	/*!MACRO_PREDEF*/
+#endif	/*TRANSPORT_AUTOREPOL*/
 /* End of transport/autoreply.c */

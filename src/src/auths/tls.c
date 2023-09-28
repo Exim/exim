@@ -12,6 +12,8 @@ a server to verify a client SSL certificate
 
 
 #include "../exim.h"
+
+#ifdef AUTH_TLS		/* Remainder of file */
 #include "tls.h"
 
 /* Options specific to the tls authentication mechanism. */
@@ -91,5 +93,6 @@ return auth_check_serv_cond(ablock);
 }
 
 
-#endif   /*!MACRO_PREDEF*/
+#endif	/*!MACRO_PREDEF*/
+#endif	/*AUTH_TLS*/
 /* End of tls.c */

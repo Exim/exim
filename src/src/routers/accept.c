@@ -9,6 +9,8 @@
 
 
 #include "../exim.h"
+
+#ifdef ROUTER_ACCEPT		/* Remainder of file */
 #include "rf_functions.h"
 #include "accept.h"
 
@@ -137,4 +139,5 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)? OK : DEFER;
 }
 
 #endif	/*!MACRO_PREDEF*/
+#endif	/*ROUTER_ACCEPT*/
 /* End of routers/accept.c */

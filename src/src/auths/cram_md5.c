@@ -13,15 +13,17 @@ in the MD5 computation functions, without their own stand-alone main
 program. */
 
 #ifdef STAND_ALONE
-#define CRAM_STAND_ALONE
-#include "md5.c"
+# define CRAM_STAND_ALONE
+# include "md5.c"
 
 
 /* This is the normal, non-stand-alone case */
 
 #else
-#include "../exim.h"
-#include "cram_md5.h"
+# include "../exim.h"
+
+# ifdef AUTH_CRAM_MD5
+#  include "cram_md5.h"
 
 /* Options specific to the cram_md5 authentication mechanism. */
 
@@ -49,7 +51,7 @@ auth_cram_md5_options_block auth_cram_md5_option_defaults = {
 };
 
 
-#ifdef MACRO_PREDEF
+#  ifdef MACRO_PREDEF
 
 /* Dummy values */
 void auth_cram_md5_init(auth_instance *ablock) {}
@@ -57,7 +59,7 @@ int auth_cram_md5_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_cram_md5_client(auth_instance *ablock, void *sx, int timeout,
     uschar *buffer, int buffsize) {return 0;}
 
-#else	/*!MACRO_PREDEF*/
+#  else	/*!MACRO_PREDEF*/
 
 
 /*************************************************
@@ -81,8 +83,9 @@ if (ob->client_secret != NULL)
   }
 }
 
-#endif	/*!MACRO_PREDEF*/
-#endif  /* STAND_ALONE */
+#  endif	/*!MACRO_PREDEF*/
+# endif		/*AUTH_CRAM_MD5*/
+#endif		/*!STAND_ALONE*/
 
 
 
@@ -154,7 +157,8 @@ md5_end(&base, md5secret, 16, digestptr);
 }
 
 
-#ifndef STAND_ALONE
+# ifndef STAND_ALONE
+#  ifdef AUTH_CRAM_MD5
 
 /*************************************************
 *             Server entry point                 *
@@ -329,7 +333,8 @@ if (smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", b64encode(CUS big_buffer,
 return smtp_read_response(sx, US buffer, buffsize, '2', timeout)
   ? OK : FAIL;
 }
-#endif  /* STAND_ALONE */
+#  endif  /*AUTH_CRAM_MD5*/
+# endif  /*!STAND_ALONE*/
 
 
 /*************************************************
@@ -338,7 +343,7 @@ return smtp_read_response(sx, US buffer, buffsize, '2', timeout)
 **************************************************
 *************************************************/
 
-#ifdef STAND_ALONE
+# ifdef STAND_ALONE
 
 int main(int argc, char **argv)
 {
@@ -355,7 +360,7 @@ printf("\n");
 return 0;
 }
 
-#endif
+# endif	/*STAND_ALONE*/
 
 #endif	/*!MACRO_PREDEF*/
 /* End of cram_md5.c */

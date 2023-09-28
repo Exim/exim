@@ -9,6 +9,8 @@
 
 
 #include "../exim.h"
+
+#ifdef ROUTER_IPLITERAL		/* Remainder of file */
 #include "rf_functions.h"
 #include "ipliteral.h"
 
@@ -199,5 +201,6 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
   OK : DEFER;
 }
 
-#endif   /*!MACRO_PREDEF*/
+#endif	/*!MACRO_PREDEF*/
+#endif	/*ROUTER_IPLITERAL*/
 /* End of routers/ipliteral.c */

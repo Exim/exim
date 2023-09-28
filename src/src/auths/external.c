@@ -14,6 +14,8 @@ method defined in RFC 4422 Appendix A.
 
 
 #include "../exim.h"
+
+#ifdef AUTH_EXTERNAL	/* Remainder of file */
 #include "external.h"
 
 /* Options specific to the external authentication mechanism. */
@@ -153,5 +155,6 @@ return OK;
 
 
 
-#endif   /*!MACRO_PREDEF*/
+#endif	/*!MACRO_PREDEF*/
+#endif	/*AUTH_EXTERNAL*/
 /* End of external.c */

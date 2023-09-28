@@ -9,6 +9,8 @@
 
 
 #include "../exim.h"
+
+#ifdef ROUTER_REDIRECT	/* Remainder of file */
 #include "rf_functions.h"
 #include "redirect.h"
 
@@ -807,4 +809,5 @@ return yield;
 }
 
 #endif   /*!MACRO_PREDEF*/
+#endif	/*ROUTER_REDIRECT*/
 /* End of routers/redirect.c */
