@@ -1191,6 +1191,7 @@ Version 4.68
  9. There is a new ACL, specified by acl_smtp_notquit, which is run in most
     cases when an SMTP session ends without sending QUIT. However, when Exim
     itself is in bad trouble, such as being unable to write to its log files,
+    itself is bad trouble, such as being unable to write to its log files,
     this ACL is not run, because it might try to do things (such as write to
     log files) that make the situation even worse.
 
