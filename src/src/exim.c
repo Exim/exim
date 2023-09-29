@@ -3487,7 +3487,7 @@ on the second character (the one after '-'), to save some effort. */
       /* Limits: Is there a real limit we want here?  1024 is very arbitrary. */
 
       case 'X':
-	if (*argrest) badarg = TRUE;
+	if (*argrest || (i+1 >= argc)) badarg = TRUE;
 	else override_local_interfaces = string_copy_taint(
 	  exim_str_fail_toolong(argv[++i], 1024, "-oX"),
 	  GET_TAINTED);
