@@ -75,7 +75,7 @@ The arguments are:
   uschar **errmsg     where to put an error message if there is a problem
 
 The yield of xxx_open() is a void * value representing the open file or
-database. For real files is is normally the FILE or DBM value. For other
+database. For real files it is normally the FILE or DBM value. For other
 kinds of lookup, if there is no natural value to use, (-1) is recommended.
 The value should not be NULL (or 0) as that is taken to indicate failure of
 the xxx_open() function. For single-key lookups, the handle is cached along

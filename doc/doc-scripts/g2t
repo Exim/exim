@@ -294,7 +294,7 @@ my($new_lastwasitem) = 0;
 
 # Chapter directives just require . => @; however, dequoting the
 # line thereafter will remove the first @, so just force it back
-# afterwards. If the chapter is is one describing a driver, set
+# afterwards. If the chapter is one describing a driver, set
 # the driver name.
 
 if (/\.chapter/)

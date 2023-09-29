@@ -8234,7 +8234,7 @@ daemon as in the other SQL databases.
 .oindex &%sqlite_dbfile%&
 There are two ways of
 specifying the file.
-The first is is by using the &%sqlite_dbfile%& main option.
+The first is by using the &%sqlite_dbfile%& main option.
 The second, which allows separate files for each query,
 is to use an option appended, comma-separated, to the &"sqlite"&
 lookup type word.  The option is the word &"file"&, then an equals,
@@ -30341,7 +30341,7 @@ DNSSEC.
 .next
 Add TLSA DNS records.  These say what the server certificate for a TLS connection should be.
 .next
-Offer a server certificate, or certificate chain, in TLS connections which is is anchored by one of the TLSA records.
+Offer a server certificate, or certificate chain, in TLS connections which is anchored by one of the TLSA records.
 .endlist
 
 There are no changes to Exim specific to server-side operation of DANE.

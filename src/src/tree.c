@@ -48,7 +48,7 @@ if (!tree_insertnode(&tree_nonrecipients, node)) store_reset(rpoint);
 
 Argument:
   s       string to add
-  addr    the address is is a duplicate of
+  addr    the address it is a duplicate of
 
 Returns:  nothing
 */
