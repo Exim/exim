@@ -19,6 +19,28 @@ JH/03 Bug 3001: Fix a possible OOB read in the SPA authenticator, which could
       be triggered by externally-controlled input.  Found by Trend Micro.
       CVE-2023-42114
 
+HS/01 Bug 2728: Introduce EDITME option "DMARC_API" to work around incompatible
+      API changes in libopendmarc.
+
+HS/02 Backported the essence of 44b6e0 (Fix argument parsing for ${run }
+      expansion
+
+JH/15 Fix argument parsing for ${run } expansion. Previously, when an argument
+      included a close-brace character (eg. it itself used an expansion) an
+      error occurred.
+
+HS/02 Backported the essence of 44b6e0 (Fix argument parsing for ${run }
+      expansion
+
+JH/13 Bug 2929: Fix using $recipients after ${run...}.  A change made for 4.96
+      resulted in the variable appearing empty.  Find and fix by Ruben Jenster.
+
+JH/34 Bug 3013: Fix use of $recipients within arguments for ${run...}.
+      In 4.96 this would expand to empty.
+
+JH/39 Bug 3023: Fix crash induced by some combinations of zero-length strings
+      and ${tr...}.  Found and diagnosed by Heiko Schlichting.
+
 
 Exim version 4.97
 -----------------
