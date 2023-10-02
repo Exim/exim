@@ -104,7 +104,7 @@ if (expand_nmax == 0) 	/* skip if rxd data */
 if (ob->server_param2)
   {
   uschar * s = expand_string(ob->server_param2);
-  auth_vars[expand_nmax] = s;
+  auth_vars[expand_nmax = 1] = s;
   expand_nstring[++expand_nmax] = s;
   expand_nlength[expand_nmax] = Ustrlen(s);
   if (ob->server_param3)

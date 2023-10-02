@@ -193,6 +193,18 @@ JH/38 Taint-track intermediate values from the peer in multi-stage authentation
 JH/39 Bug 3023: Fix crash induced by some combinations of zero-length strings
       and ${tr...}.  Found and diagnosed by Heiko Schlichting.
 
+JH/40 Bug 2999: Fix a possible OOB write in the external authenticator, which
+      could be triggered by externally-supplied input.  Found by Trend Micro.
+      CVE-2023-42115
+
+JH/41 Bug 3000: Fix a possible OOB write in the SPA authenticator, which could
+      be triggered by externally-controlled input.  Found by Trend Micro.
+      CVE-2023-42116
+
+JH/42 Bug 3001: Fix a possible OOB read in the SPA authenticator, which could
+      be triggered by externally-controlled input.  Found by Trend Micro.
+      CVE-2023-42114
+
 
 Exim version 4.96
 -----------------
