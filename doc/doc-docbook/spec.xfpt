@@ -29246,8 +29246,7 @@ When using OpenSSL, this option is ignored.
 (If an API is found to let OpenSSL be configured in this way,
 let the Exim Maintainers know and we'll likely use it).
 .next
-With GnuTLS, if an explicit list is used for the &%tls_privatekey%& main option
-main option, it must be ordered to match the &%tls_certificate%& list.
+With GnuTLS, if an explicit list is used for the &%tls_privatekey%& main option, it must be ordered to match the &%tls_certificate%& list.
 .next
 Some other recently added features may only be available in one or the other.
 This should be documented with the feature.  If the documentation does not
