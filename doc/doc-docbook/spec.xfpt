@@ -10633,7 +10633,7 @@ expansion items.
 This item inserts &"raw"& header lines. It is described with the &%header%&
 expansion item in section &<<SECTexpansionitems>>& above.
 
-.vitem "&*${run<&'options'&> {*&<&'command&~arg&~list'&>&*}{*&<&'string1'&>&*}&&&
+.vitem "&*${run<&'options'&> {*&<&'command&~string'&>&*}{*&<&'string1'&>&*}&&&
         {*&<&'string2'&>&*}}*&"
 .cindex "expansion" "running a command"
 .cindex "&%run%& expansion item"
@@ -10642,8 +10642,8 @@ One option is supported after the word &'run'&, comma-separated
 and without whitespace.
 
 If the option &'preexpand'& is not used,
-the command string is split into individual arguments by spaces
-and then each argument is expanded.
+the command string before expansion is split into individual arguments by spaces
+and then each argument is separately expanded.
 Then the command is run
 in a separate process, but under the same uid and gid.  As in other command
 executions from Exim, a shell is not used by default. If the command requires
@@ -10655,9 +10655,9 @@ potential attacker;
 a careful assessment for security vulnerabilities should be done.
 
 If the option &'preexpand'& is used,
-the command and its arguments are first expanded as one string. The result is
-split apart into individual arguments by spaces, and then the command is run
-as above.
+the command string is first expanded as a whole.
+The expansion result is split apart into individual arguments by spaces,
+and then the command is run as above.
 Since the arguments are split by spaces, when there is a variable expansion
 which has an empty result, it will cause the situation that the argument will
 simply be omitted when the program is actually executed by Exim. If the
@@ -29246,7 +29246,8 @@ When using OpenSSL, this option is ignored.
 (If an API is found to let OpenSSL be configured in this way,
 let the Exim Maintainers know and we'll likely use it).
 .next
-With GnuTLS, if an explicit list is used for the &%tls_privatekey%& main option, it must be ordered to match the &%tls_certificate%& list.
+With GnuTLS, if an explicit list is used for the &%tls_privatekey%& main option,
+it must be ordered to match the &%tls_certificate%& list.
 .next
 Some other recently added features may only be available in one or the other.
 This should be documented with the feature.  If the documentation does not
