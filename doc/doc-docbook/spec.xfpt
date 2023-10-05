@@ -43016,8 +43016,8 @@ All other message types ignore the result string, and
 no other use is made of it.
 
 For a tcp:connect event, if the connection is being made to a proxy
-then the &$host_address$& and &$port$& variables will be that of the proxy and not
-the target system.
+then the &$host_address$& and &$host_port$& variables
+will be that of the proxy and not the target system.
 
 For tls:cert events, if GnuTLS is in use this will trigger only per
 chain element received on the connection.
