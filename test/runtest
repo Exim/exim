@@ -18,7 +18,6 @@
 #use strict;
 use v5.10.1;
 use warnings;
-use if $^V >= v5.19.11, experimental => 'smartmatch';
 
 use Errno;
 use FileHandle;
@@ -3400,6 +3399,7 @@ GetOptions(
 print "Exim binary is `$parm_exim'\n" if defined $parm_exim;
 
 
+my %wanted;
 my @wanted = sort numerically uniq
   @tests_wanted ? @tests_wanted : (),
   @range_wanted ? $range_wanted[0] .. $range_wanted[1] : (),
@@ -3408,6 +3408,7 @@ my @wanted = sort numerically uniq
           0+$ARGV[0]..0+$ARGV[1]    # add 0 to cope with test numbers starting with zero
         : ();
 @wanted = 1..TEST_TOP if not @wanted;
+map { $wanted{sprintf("%04d",$_)}= $_; } @wanted;
 
 ##################################################
 #        Check for sudo access to root           #
@@ -4220,7 +4221,8 @@ DIR: for (my $i = 0; $i < @test_dirs; $i++)
   # We want the tests from this subdirectory, provided they are in the
   # range that was selected.
 
-  @testlist = grep { $_ ~~ @wanted } grep { /^\d+(?:\.\d+)?$/ } map { basename $_ } glob "scripts/$testdir/*";
+  undef @testlist;
+  map { push @testlist, $_ if exists $wanted{$_} } grep { /^\d+(?:\.\d+)?$/ } map { basename $_ } glob "scripts/$testdir/*";
 
   tests_exit(-1, "Failed to read test scripts from `scripts/$testdir/*': $!")
     if not @testlist;
