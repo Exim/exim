@@ -71,7 +71,6 @@ SPF_dns_rr_t srr = {
   .hook = NULL,				/* misc information */
   .source = spf_dns_server
 };
-int dns_rc;
 
 DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup '%s'\n", domain);
 
@@ -87,19 +86,20 @@ if (rr_type == T_SPF)
   return spfrr;
   }
 
-switch (dns_rc = dns_lookup(dnsa, US domain, rr_type, NULL))
+switch (dns_lookup(dnsa, US domain, rr_type, NULL))
   {
-  case DNS_SUCCEED:	srr.herrno = NETDB_SUCCESS;	break;
   case DNS_AGAIN:	srr.herrno = TRY_AGAIN;		break;
   case DNS_NOMATCH:	srr.herrno = HOST_NOT_FOUND;	break;
   case DNS_NODATA:	srr.herrno = NO_DATA;		break;
   case DNS_FAIL:
   default:		srr.herrno = NO_RECOVERY;	break;
+  case DNS_SUCCEED:
+    srr.herrno = NETDB_SUCCESS;
+    for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+	 rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+      if (rr->type == rr_type) { found++; break; }
+    break;
   }
-
-for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
-     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
-  if (rr->type == rr_type) found++;
 
 if (found == 0)
   {
