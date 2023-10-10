@@ -225,6 +225,9 @@ JH/39 Bug 3023: Fix crash induced by some combinations of zero-length strings
 JH/40 Support list of dkim results in the dkim_status ACL condition, making
       it more usable in the data ACL.
 
+JH/43 Bug 3033: Harden dnsdb lookups against crafted DNS responses.
+      CVE-2023-42219
+
 
 Exim version 4.96
 -----------------
