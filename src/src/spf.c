@@ -97,7 +97,8 @@ switch (dns_lookup(dnsa, US domain, rr_type, NULL))
     srr.herrno = NETDB_SUCCESS;
     for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 	 rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
-      if (rr->type == rr_type) { found++; break; }
+      /* Need to alloc space for all records, so no early-out */
+      if (rr->type == rr_type) found++;
     break;
   }
 
