@@ -120,6 +120,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
     switch(rr_type)
       {
       case T_MX:
+	if (rr->size < 2) continue;
 	s += 2;	/* skip the MX precedence field */
       case T_PTR:
 	{
@@ -135,6 +136,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 	gstring * g = NULL;
 	uschar chunk_len;
 
+	if (rr->size < 1+6) continue;		/* min for version str */
 	if (strncmpic(rr->data+1, US SPF_VER_STR, 6) != 0)
 	  {
 	  HDEBUG(D_host_lookup) debug_printf("not an spf record: %.*s\n",
@@ -142,9 +144,12 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 	  continue;
 	  }
 
-	for (int off = 0; off < rr->size; off += chunk_len)
+	/* require 1 byte for the chunk_len */
+	for (int off = 0; off < rr->size - 1; off += chunk_len)
 	  {
-	  if (!(chunk_len = s[off++])) break;
+	  if (  !(chunk_len = s[off++])
+	     || rr->size < off + chunk_len	/* ignore bogus size chunks */
+	     ) break;
 	  g = string_catn(g, s+off, chunk_len);
 	  }
 	if (!g)
