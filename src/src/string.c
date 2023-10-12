@@ -113,7 +113,7 @@ if (Ustrchr(s, ':') != NULL)
     component. */
 
     if (!isxdigit(*s++)) return 0;
-    if (isxdigit(*s) && isxdigit(*(++s)) && isxdigit(*(++s))) s++;
+    if (isxdigit(*s) && isxdigit(*(++s)) && isxdigit(*(++s)) && isxdigit(*(++s))) return 0;
 
     /* If the component is terminated by colon and there is more to
     follow, skip over the colon. If there is no more to follow the address is
