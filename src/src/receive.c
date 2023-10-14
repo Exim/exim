@@ -570,7 +570,7 @@ smtp_user_msg(uschar *code, uschar *user_msg)
 {
 int len = 3;
 smtp_message_code(&code, &len, &user_msg, NULL, TRUE);
-smtp_respond(code, len, TRUE, user_msg);
+smtp_respond(code, len, SR_FINAL, user_msg);
 }
 #endif
 
@@ -1457,7 +1457,7 @@ if (!(mbox_file = spool_mbox(&mbox_size, NULL, &mbox_filename)))
 #ifdef EXPERIMENTAL_DCC
   dcc_ok = 0;
 #endif
-  smtp_respond(US"451", 3, TRUE, US"temporary local problem");
+  smtp_respond(US"451", 3, SR_FINAL, US"temporary local problem");
   message_id[0] = 0;            /* Indicate no message accepted */
   *smtp_reply_ptr = US"";       /* Indicate reply already sent */
   return FALSE;                 /* Indicate skip to end of receive function */
@@ -2309,7 +2309,7 @@ OVERSIZE:
       sender_address,
       sender_fullhost ? " H=" : "", sender_fullhost ? sender_fullhost : US"",
       sender_ident ? " U=" : "",    sender_ident ? sender_ident : US"");
-    smtp_printf("552 Message header not CRLF terminated\r\n", FALSE);
+    smtp_printf("552 Message header not CRLF terminated\r\n", SP_NO_MORE);
     bdat_flush_data();
     smtp_reply = US"";
     goto TIDYUP;                             /* Skip to end of function */
@@ -3597,7 +3597,7 @@ else
       int all_pass = OK;
       int all_fail = FAIL;
 
-      smtp_printf("353 PRDR content analysis beginning\r\n", TRUE);
+      smtp_printf("353 PRDR content analysis beginning\r\n", SP_MORE);
       /* Loop through recipients, responses must be in same order received */
       for (unsigned int c = 0; recipients_count > c; c++)
         {
@@ -3922,7 +3922,7 @@ else
   if (smtp_input)
     if (!smtp_batched_input)
       {
-      smtp_respond(smtp_code, 3, TRUE, errmsg);
+      smtp_respond(smtp_code, 3, SR_FINAL, errmsg);
       smtp_reply = US"";            /* Indicate reply already sent */
       goto NOT_ACCEPTED;			/* Skip to end of function */
       }
@@ -4434,7 +4434,7 @@ if (smtp_input)
       {
       if (fake_response != OK)
         smtp_respond(fake_response == DEFER ? US"450" : US"550",
-	  3, TRUE, fake_response_text);
+	  3, SR_FINAL, fake_response_text);
 
       /* An OK response is required; use "message" text if present. */
 
@@ -4443,7 +4443,7 @@ if (smtp_input)
         uschar *code = US"250";
         int len = 3;
         smtp_message_code(&code, &len, &user_msg, NULL, TRUE);
-        smtp_respond(code, len, TRUE, user_msg);
+        smtp_respond(code, len, SR_FINAL, user_msg);
         }
 
       /* Default OK response */
@@ -4471,10 +4471,10 @@ if (smtp_input)
 
     else if (smtp_reply[0] != 0)
       if (fake_response != OK && smtp_reply[0] == '2')
-        smtp_respond(fake_response == DEFER ? US"450" : US"550", 3, TRUE,
-          fake_response_text);
+        smtp_respond(fake_response == DEFER ? US"450" : US"550",
+		      3, SR_FINAL, fake_response_text);
       else
-        smtp_printf("%.1024s\r\n", FALSE, smtp_reply);
+        smtp_printf("%.1024s\r\n", SP_NO_MORE, smtp_reply);
 
     switch (cutthrough_done)
       {

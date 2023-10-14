@@ -128,7 +128,7 @@ never_error(uschar *log_msg, uschar *smtp_msg, int was_errno)
 uschar *emsg = was_errno <= 0
   ? US"" : string_sprintf(": %s", strerror(was_errno));
 log_write(0, LOG_MAIN|LOG_PANIC, "%s%s", log_msg, emsg);
-if (smtp_out) smtp_printf("421 %s\r\n", FALSE, smtp_msg);
+if (smtp_out) smtp_printf("421 %s\r\n", SP_NO_MORE, smtp_msg);
 }
 
 
@@ -233,7 +233,7 @@ if (getsockname(accept_socket, (struct sockaddr *)(&interface_sockaddr),
   {
   log_write(0, LOG_MAIN | ((errno == ECONNRESET)? 0 : LOG_PANIC),
     "getsockname() failed: %s", strerror(errno));
-  smtp_printf("421 Local problem: getsockname() failed; please try again later\r\n", FALSE);
+  smtp_printf("421 Local problem: getsockname() failed; please try again later\r\n", SP_NO_MORE);
   goto ERROR_RETURN;
   }
 
@@ -263,7 +263,7 @@ if (smtp_accept_max > 0 && smtp_accept_count >= smtp_accept_max)
   DEBUG(D_any) debug_printf("rejecting SMTP connection: count=%d max=%d\n",
     smtp_accept_count, smtp_accept_max);
   smtp_printf("421 Too many concurrent SMTP connections; "
-    "please try again later.\r\n", FALSE);
+    "please try again later.\r\n", SP_NO_MORE);
   log_write(L_connection_reject,
             LOG_MAIN, "Connection from %Y refused: too many connections",
     whofrom);
@@ -282,7 +282,7 @@ if (smtp_load_reserve >= 0)
     {
     DEBUG(D_any) debug_printf("rejecting SMTP connection: load average = %.2f\n",
       (double)load_average/1000.0);
-    smtp_printf("421 Too much load; please try again later.\r\n", FALSE);
+    smtp_printf("421 Too much load; please try again later.\r\n", SP_NO_MORE);
     log_write(L_connection_reject,
               LOG_MAIN, "Connection from %Y refused: load average = %.2f",
       whofrom, (double)load_average/1000.0);
@@ -351,7 +351,7 @@ if (max_for_this_host > 0 && smtp_accept_count >= max_for_this_host)
       "IP address: count=%d max=%d\n",
       host_accept_count, max_for_this_host);
     smtp_printf("421 Too many concurrent SMTP connections "
-      "from this IP address; please try again later.\r\n", FALSE);
+      "from this IP address; please try again later.\r\n", SP_NO_MORE);
     log_write(L_connection_reject,
               LOG_MAIN, "Connection from %Y refused: too many connections "
       "from that IP address", whofrom);
@@ -445,7 +445,7 @@ if (pid == 0)
           "(smtp_active_hostname): %s", raw_active_hostname,
           expand_string_message);
         smtp_printf("421 Local configuration error; "
-          "please try again later.\r\n", FALSE);
+          "please try again later.\r\n", SP_NO_MORE);
         mac_smtp_fflush();
         search_tidyup();
         exim_underbar_exit(EXIT_FAILURE);

@@ -3504,7 +3504,7 @@ static uschar peerdn[256];
 if (tls_in.active.sock >= 0)
   {
   tls_error(US"STARTTLS received after TLS started", NULL, US"", errstr);
-  smtp_printf("554 Already in TLS\r\n", FALSE);
+  smtp_printf("554 Already in TLS\r\n", SP_NO_MORE);
   return FAIL;
   }
 
@@ -3624,7 +3624,7 @@ mode, the fflush() happens when smtp_getc() is called. */
 SSL_set_session_id_context(ssl, sid_ctx, Ustrlen(sid_ctx));
 if (!tls_in.on_connect)
   {
-  smtp_printf("220 TLS go ahead\r\n", FALSE);
+  smtp_printf("220 TLS go ahead\r\n", SP_NO_MORE);
   fflush(smtp_out);
   }
 

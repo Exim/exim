@@ -1159,4 +1159,12 @@ typedef unsigned mcs_flags;
 #define TSUC_ALLOW_TAINTED_ARGS	BIT(1)
 #define TSUC_ALLOW_RECIPIENTS	BIT(2)
 
+/* Flags for smtp_printf */
+#define SP_MORE		TRUE
+#define SP_NO_MORE	FALSE
+
+/* Flags for smtp_respond */
+#define SR_FINAL	TRUE
+#define SR_NOT_FINAL	FALSE
+
 /* End of macros.h */

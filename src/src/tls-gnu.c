@@ -3000,7 +3000,7 @@ exim_gnutls_state_st * state = NULL;
 if (tls_in.active.sock >= 0)
   {
   tls_error(US"STARTTLS received after TLS started", US "", NULL, errstr);
-  smtp_printf("554 Already in TLS\r\n", FALSE);
+  smtp_printf("554 Already in TLS\r\n", SP_NO_MORE);
   return FAIL;
   }
 
@@ -3079,7 +3079,7 @@ mode, the fflush() happens when smtp_getc() is called. */
 
 if (!state->tlsp->on_connect)
   {
-  smtp_printf("220 TLS go ahead\r\n", FALSE);
+  smtp_printf("220 TLS go ahead\r\n", SP_NO_MORE);
   fflush(smtp_out);
   }
 
