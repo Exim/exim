@@ -39,8 +39,6 @@ Status: 5.0.0
 Remote-MTA: dns; localhost4.test.ex
 Remote-MTA: X-ip; [127.0.0.1]:1111
 X-Remote-MTA-smtp-greeting: X-str; 550 Go away
-X-Exim-Diagnostic: X-str; SMTP error from remote mail server after initial
- connection: 550 Go away
 Diagnostic-Code: smtp; 550 Go away
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -107,8 +105,6 @@ Remote-MTA: dns; localhost4.test.ex
 Remote-MTA: X-ip; [127.0.0.1]:1111
 X-Remote-MTA-smtp-greeting: X-str; 220 Connected OK
 X-Remote-MTA-helo-response: X-str; 550 Go away
-X-Exim-Diagnostic: X-str; SMTP error from remote mail server after HELO
- the.local.host.name: 550 Go away
 Diagnostic-Code: smtp; 550 Go away
 
 Action: failed
@@ -118,8 +114,6 @@ Remote-MTA: dns; localhost4.test.ex
 Remote-MTA: X-ip; [127.0.0.1]:1111
 X-Remote-MTA-smtp-greeting: X-str; 220 Connected OK
 X-Remote-MTA-helo-response: X-str; 550 Go away
-X-Exim-Diagnostic: X-str; SMTP error from remote mail server after HELO
- the.local.host.name: 550 Go away
 Diagnostic-Code: smtp; 550 Go away
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
