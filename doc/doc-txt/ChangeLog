@@ -2,6 +2,17 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Since 4.97
+-----------------
+
+JH/01 Handle error on close of the spool data file during reception.  Previously
+      This was only logged, on the assumption that errors would be seen for
+      a previous fflush().  However, a fuse filesystem has been reported as
+      showing this an error for the fclose().  The spool is now in an uncertain
+      state, and we have logged and responded acceptance.  Change this to
+      respond with a temp-reject, wipe spoolfiles, and log the error detail.
+
+
 Exim version 4.97
 -----------------
 

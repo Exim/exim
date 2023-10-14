@@ -2936,7 +2936,7 @@ Returns:     0 in most cases
 */
 
 int
-smtp_handle_acl_fail(int where, int rc, uschar *user_msg, uschar *log_msg)
+smtp_handle_acl_fail(int where, int rc, uschar * user_msg, uschar * log_msg)
 {
 BOOL drop = rc == FAIL_DROP;
 int codelen = 3;
