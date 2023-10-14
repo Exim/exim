@@ -29,123 +29,133 @@ Arguments:
   maskptr   NULL if no mask is permitted to follow
             otherwise, points to an int where the offset of '/' is placed
             if there is no / followed by trailing digits, *maskptr is set 0
+  errp      NULL if no diagnostic information is required, and if the netmask
+            length should not be checked. Otherwise it is set pointing to a short
+            descriptive text.
 
 Returns:    0 if the string is not a textual representation of an IP address
             4 if it is an IPv4 address
             6 if it is an IPv6 address
+
+The legacy string_is_ip_address() function follows below.
 */
+int
+string_is_ip_addressX(const uschar *ip_addr, int *maskptr, const uschar **errp) {
+  struct addrinfo hints;
+  struct addrinfo *res;
+
+  uschar *slash, *percent;
+
+  uschar *endp = 0;
+  long int mask = 0;
+  const uschar *addr = 0;
+
+  /* If there is a slash, but we didn't request a (optional) netmask,
+  we return failure, as we do if the mask isn't a pure numerical value,
+  or if it is negative. The actual length is checked later, once we know
+  the address family. */
+  if (slash = Ustrchr(ip_addr, '/'))
+  {
+    if (!maskptr)
+    {
+      if (errp) *errp = "netmask found, but not requested";
+      return 0;
+    }
+
+    uschar *rest;
+    mask = Ustrtol(slash+1, &rest, 10);
+    if (*rest || mask < 0)
+    {
+      if (errp) *errp = "netmask not numeric or <0";
+      return 0;
+    }
+
+    *maskptr = slash - ip_addr;     /* offset of the slash */
+    endp = slash;
+  } else if (maskptr) *maskptr = 0; /* no slash found */
+
+  /* The interface-ID suffix (%<id>) is optional (for IPv6). If it
+  exists, we check it syntactically. Later, if we know the address
+  family is IPv4, we might reject it.
+  The interface-ID is mutually exclusive with the netmask, to the
+  best of my knowledge. */
+  if (percent = Ustrchr(ip_addr, '%'))
+  {
+    if (slash)
+    {
+      if (errp) *errp = "interface-ID and netmask are mutually exclusive";
+      return 0;
+    }
+    for (uschar *p = percent+1; *p; p++)
+        if (!isalnum(*p) && !ispunct(*p))
+        {
+          if (errp) *errp = "interface-ID must match [[:alnum:][:punct:]]";
+          return 0;
+        }
+    endp = percent;
+  }
+
+  /* inet_pton() can't parse netmasks and interface IDs, so work on a shortened copy
+  allocated on the current stack */
+  if (endp) {
+    ptrdiff_t l = endp - ip_addr;
+    if (l > 255)
+    {
+      if (errp) *errp = "rudiculous long ip address string";
+      return 0;
+    }
+    addr = alloca(l+1); /* *BSD does not have strndupa() */
+    Ustrncpy((uschar *)addr, ip_addr, l);
+    ((uschar*)addr)[l] = '\0';
+  } else addr = ip_addr;
+
+  int af;
+  union { /* we do not need this, but inet_pton() needs a place for storage */
+    struct in_addr sa4;
+    struct in6_addr sa6;
+  } sa;
+
+  af = Ustrchr(addr, ':') ? AF_INET6 : AF_INET;
+  if (!inet_pton(af, addr, &sa))
+  {
+    if (errp) *errp = af == AF_INET6 ? "IP address string not parsable as IPv6"
+                                     : "IP address string not parsable IPv4";
+    return 0;
+  }
+  /* we do not check the values of the mask here, as
+  this is done on the callers side (but I don't understand why), so
+  actually I'd like to do it here, but it breaks at least 0002 */
+  switch (af)
+  {
+    case AF_INET6:
+        if (errp && mask > 128)
+        {
+          *errp = "IPv6 netmask value must not be >128";
+          return 0;
+        }
+        return 6;
+    case AF_INET:
+        if (percent)
+        {
+          if (errp) *errp = "IPv4 address string must not have an interface-ID";
+          return 0;
+        }
+        if (errp && mask > 32) {
+          *errp = "IPv4 netmask value must not be >32";
+          return 0;
+        }
+        return 4;
+    default:
+        if (errp) *errp = "unknown address family (should not happen)";
+        return 0;
+ }
+}
 
 int
-string_is_ip_address(const uschar *s, int *maskptr)
-{
-int yield = 4;
-
-/* If an optional mask is permitted, check for it. If found, pass back the
-offset. */
-
-if (maskptr)
-  {
-  const uschar *ss = s + Ustrlen(s);
-  *maskptr = 0;
-  if (s != ss && isdigit(*(--ss)))
-    {
-    while (ss > s && isdigit(ss[-1])) ss--;
-    if (ss > s && *(--ss) == '/') *maskptr = ss - s;
-    }
-  }
-
-/* A colon anywhere in the string => IPv6 address */
-
-if (Ustrchr(s, ':') != NULL)
-  {
-  BOOL had_double_colon = FALSE;
-  BOOL v4end = FALSE;
-
-  yield = 6;
-
-  /* An IPv6 address must start with hex digit or double colon. A single
-  colon is invalid. */
-
-  if (*s == ':' && *(++s) != ':') return 0;
-
-  /* Now read up to 8 components consisting of up to 4 hex digits each. There
-  may be one and only one appearance of double colon, which implies any number
-  of binary zero bits. The number of preceding components is held in count. */
-
-  for (int count = 0; count < 8; count++)
-    {
-    /* If the end of the string is reached before reading 8 components, the
-    address is valid provided a double colon has been read. This also applies
-    if we hit the / that introduces a mask or the % that introduces the
-    interface specifier (scope id) of a link-local address. */
-
-    if (*s == 0 || *s == '%' || *s == '/') return had_double_colon ? yield : 0;
-
-    /* If a component starts with an additional colon, we have hit a double
-    colon. This is permitted to appear once only, and counts as at least
-    one component. The final component may be of this form. */
-
-    if (*s == ':')
-      {
-      if (had_double_colon) return 0;
-      had_double_colon = TRUE;
-      s++;
-      continue;
-      }
-
-    /* If the remainder of the string contains a dot but no colons, we
-    can expect a trailing IPv4 address. This is valid if either there has
-    been no double-colon and this is the 7th component (with the IPv4 address
-    being the 7th & 8th components), OR if there has been a double-colon
-    and fewer than 6 components. */
-
-    if (Ustrchr(s, ':') == NULL && Ustrchr(s, '.') != NULL)
-      {
-      if ((!had_double_colon && count != 6) ||
-          (had_double_colon && count > 6)) return 0;
-      v4end = TRUE;
-      yield = 6;
-      break;
-      }
-
-    /* Check for at least one and not more than 4 hex digits for this
-    component. */
-
-    if (!isxdigit(*s++)) return 0;
-    if (isxdigit(*s) && isxdigit(*(++s)) && isxdigit(*(++s))) s++;
-
-    /* If the component is terminated by colon and there is more to
-    follow, skip over the colon. If there is no more to follow the address is
-    invalid. */
-
-    if (*s == ':' && *(++s) == 0) return 0;
-    }
-
-  /* If about to handle a trailing IPv4 address, drop through. Otherwise
-  all is well if we are at the end of the string or at the mask or at a percent
-  sign, which introduces the interface specifier (scope id) of a link local
-  address. */
-
-  if (!v4end)
-    return (*s == 0 || *s == '%' ||
-           (*s == '/' && maskptr != NULL && *maskptr != 0))? yield : 0;
-  }
-
-/* Test for IPv4 address, which may be the tail-end of an IPv6 address. */
-
-for (int i = 0; i < 4; i++)
-  {
-  long n;
-  uschar * end;
-
-  if (i != 0 && *s++ != '.') return 0;
-  n = strtol(CCS s, CSS &end, 10);
-  if (n > 255 || n < 0 || end <= s || end > s+3) return 0;
-  s = end;
-  }
-
-return !*s || (*s == '/' && maskptr && *maskptr != 0) ? yield : 0;
+string_is_ip_address(const uschar *ip_addr, int *maskptr) {
+  return string_is_ip_addressX(ip_addr, maskptr, 0);
 }
+
 #endif  /* COMPILE_UTILITY */
 
 
