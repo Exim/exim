@@ -4052,7 +4052,15 @@ else
 
 receive_messagecount++;
 
-if (fflush(spool_data_file))
+if (  fflush(spool_data_file)
+#if _POSIX_C_SOURCE >= 199309L || _XOPEN_SOURCE >= 500
+# ifdef ENABLE_DISABLE_FSYNC
+   || !disable_fsync && fdatasync(data_fd)
+# else
+   || fdatasync(data_fd)
+# endif
+#endif
+   )
   {
   errmsg = string_sprintf("Spool write error: %s", strerror(errno));
   log_write(0, LOG_MAIN, "%s\n", errmsg);

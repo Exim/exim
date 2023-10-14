@@ -569,7 +569,7 @@ requires various things that are set therein. */
 #endif
 
 #ifdef ENABLE_DISABLE_FSYNC
-# define EXIMfsync(f) (disable_fsync? 0 : fsync(f))
+# define EXIMfsync(f) (disable_fsync ? 0 : fsync(f))
 #else
 # define EXIMfsync(f) fsync(f)
 #endif

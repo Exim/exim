@@ -63,6 +63,10 @@ JH/12 Refuse to accept a line "dot, LF" as end-of-DATA unless operating in
       accept that in (normal) CRLF mode; this has been raised as a possible
       attack scenario (under the name "smtp smuggling").
 
+JH/13 Add an fdatasync call for the received message data file in spool, before
+      loggging reception and sending the SMTP ack.  Previously we only flushed
+      the stdio buffer so there was still the possibility of a disk error.
+
 
 
 Exim version 4.97
