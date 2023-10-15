@@ -2,8 +2,11 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
-Exim version 4.96.2
--------------------
+Exim version 4.96.2+fixes
+-------------------------
+
+This is the security release 4.96.2 and all the additional fixes that
+where applied on top of 4.96.
 
 JH/01 Bug 3033: Harden dnsdb lookups against crafted DNS responses.
       CVE-2023-42219
