@@ -2763,9 +2763,17 @@ switch(cond_type = identify_operator(&s, &opname))
     case ECOND_ISIP:
     case ECOND_ISIP4:
     case ECOND_ISIP6:
-    rc = string_is_ip_address(sub[0], NULL);
-    *yield = ((cond_type == ECOND_ISIP)? (rc != 0) :
-             (cond_type == ECOND_ISIP4)? (rc == 4) : (rc == 6)) == testfor;
+    {
+      const uschar *errp;
+      const uschar **errpp;
+      DEBUG(D_expand) errpp = &errp; else errpp = 0;
+      if (0 == (rc = string_is_ip_addressX(sub[0], NULL, errpp)))
+        DEBUG(D_expand) debug_printf("failed: %s\n", errp);
+
+      *yield = ( cond_type == ECOND_ISIP  ? rc != 0 :
+                 cond_type == ECOND_ISIP4 ? rc == 4 : rc == 6) == testfor;
+    }
+
     break;
 
     /* Various authentication tests - all optionally compiled */

@@ -205,6 +205,14 @@ JH/42 Bug 3001: Fix a possible OOB read in the SPA authenticator, which could
       be triggered by externally-controlled input.  Found by Trend Micro.
       CVE-2023-42114
 
+JH/43 Bug 2903: avoid exit on an attempt to rewrite a malformed address.
+      Make the rewrite never match and keep the logging.  Trust the
+      admin to be using verify=header-syntax (to actually reject the message).
+
+JH/44 Bug 3033: Harden dnsdb lookups against crafted DNS responses.
+      CVE-2023-42219
+
+HS/02 Fix string_is_ip_address() CVE-2023-42117 (Bug 3031)
 
 Exim version 4.96
 -----------------

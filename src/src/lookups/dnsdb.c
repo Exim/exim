@@ -394,38 +394,55 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
       if (type == T_TXT || type == T_SPF)
         {
         if (!outsep2)			/* output only the first item of data */
-          yield = string_catn(yield, US (rr->data+1), (rr->data)[0]);
+	  {
+	  uschar n = (rr->data)[0];
+	  /* size byte + data bytes must not excced the RRs length */
+	  if (n + 1 <= rr->size)
+	    yield = string_catn(yield, US (rr->data+1), n);
+	  }
         else
           for (unsigned data_offset = 0; data_offset < rr->size; )
             {
             uschar chunk_len = (rr->data)[data_offset];
+	    int remain = rr->size - data_offset;
+
+	    /* Apparently there are resolvers that do not check RRs before passing
+	    them on, and glibc fails to do so.  So every application must...
+	    Check for chunk len exceeding RR */
+
+	    if (chunk_len > remain)
+	      chunk_len = remain;
+
             if (*outsep2  && data_offset != 0)
               yield = string_catn(yield, outsep2, 1);
-            yield = string_catn(yield, US ((rr->data) + ++data_offset), chunk_len);
+            yield = string_catn(yield, US ((rr->data) + ++data_offset), --chunk_len);
             data_offset += chunk_len;
             }
         }
       else if (type == T_TLSA)
-        {
-        uint8_t usage, selector, matching_type;
-        uint16_t payload_length;
-        uschar s[MAX_TLSA_EXPANDED_SIZE];
-	uschar * sp = s;
-        uschar * p = US rr->data;
+	if (rr->size < 3)
+	  continue;
+	else
+	  {
+	  uint8_t usage, selector, matching_type;
+	  uint16_t payload_length;
+	  uschar s[MAX_TLSA_EXPANDED_SIZE];
+	  uschar * sp = s;
+	  uschar * p = US rr->data;
 
-        usage = *p++;
-        selector = *p++;
-        matching_type = *p++;
-        /* What's left after removing the first 3 bytes above */
-        payload_length = rr->size - 3;
-        sp += sprintf(CS s, "%d%c%d%c%d%c", usage, *outsep2,
-		selector, *outsep2, matching_type, *outsep2);
-        /* Now append the cert/identifier, one hex char at a time */
-	while (payload_length-- > 0 && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4))
-          sp += sprintf(CS sp, "%02x", *p++);
+	  usage = *p++;
+	  selector = *p++;
+	  matching_type = *p++;
+	  /* What's left after removing the first 3 bytes above */
+	  payload_length = rr->size - 3;
+	  sp += sprintf(CS s, "%d%c%d%c%d%c", usage, *outsep2,
+		  selector, *outsep2, matching_type, *outsep2);
+	  /* Now append the cert/identifier, one hex char at a time */
+	  while (payload_length-- > 0 && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4))
+	    sp += sprintf(CS sp, "%02x", *p++);
 
-        yield = string_cat(yield, s);
-        }
+	  yield = string_cat(yield, s);
+	  }
       else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SOA, T_SRV */
         {
         int priority, weight, port;
@@ -435,17 +452,20 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	switch (type)
 	  {
 	  case T_MXH:
+	    if (rr->size < sizeof(u_int16_t)) continue;
 	    /* mxh ignores the priority number and includes only the hostnames */
 	    GETSHORT(priority, p);
 	    break;
 
 	  case T_MX:
+	    if (rr->size < sizeof(u_int16_t)) continue;
 	    GETSHORT(priority, p);
 	    sprintf(CS s, "%d%c", priority, *outsep2);
 	    yield = string_cat(yield, s);
 	    break;
 
 	  case T_SRV:
+	    if (rr->size < 3*sizeof(u_int16_t)) continue;
 	    GETSHORT(priority, p);
 	    GETSHORT(weight, p);
 	    GETSHORT(port, p);
@@ -455,6 +475,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	    break;
 
 	  case T_CSA:
+	    if (rr->size < 3*sizeof(u_int16_t)) continue;
 	    /* See acl_verify_csa() for more comments about CSA. */
 	    GETSHORT(priority, p);
 	    GETSHORT(weight, p);
@@ -505,7 +526,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
 	if (type == T_SOA && outsep2 != NULL)
 	  {
-	  unsigned long serial, refresh, retry, expire, minimum;
+	  unsigned long serial = 0, refresh = 0, retry = 0, expire = 0, minimum = 0;
 
 	  p += rc;
 	  yield = string_catn(yield, outsep2, 1);
@@ -521,8 +542,11 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	  else yield = string_cat(yield, s);
 
 	  p += rc;
-	  GETLONG(serial, p); GETLONG(refresh, p);
-	  GETLONG(retry,  p); GETLONG(expire,  p); GETLONG(minimum, p);
+	  if (rr->size >= p - rr->data - 5*sizeof(u_int32_t))
+	    {
+	    GETLONG(serial, p); GETLONG(refresh, p);
+	    GETLONG(retry,  p); GETLONG(expire,  p); GETLONG(minimum, p);
+	    }
 	  sprintf(CS s, "%c%lu%c%lu%c%lu%c%lu%c%lu",
 	    *outsep2, serial, *outsep2, refresh,
 	    *outsep2, retry,  *outsep2, expire,  *outsep2, minimum);

@@ -452,6 +452,7 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > gei:    y
 > 
 > isip:   y  1.2.3.4
+> isip:   n  1.2.3
 > isip4:  y  1.2.3.4
 > isip6:  n  1.2.3.4
 > isip:   n  ::1.2.3.256
@@ -469,6 +470,9 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > isip:   n  rhubarb
 > isip4:  n  rhubarb
 > isip6:  n  rhubarb
+> isip6:  n  ::/100
+> isip6:  n  ::/foo
+> isip6:  n  ::/f o
 > 
 > match:  cdab
 > match:  cdab
