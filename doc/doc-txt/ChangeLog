@@ -11,6 +11,37 @@ JH/01 Bug 3033: Harden dnsdb lookups against crafted DNS responses.
 HS/01 Fix string_is_ip_address() CVE-2023-42117 (Bug 3031)
 
 
+Exim version 4.96.1+fixes
+-------------------------
+
+HS/01 Bug 2728: Introduce EDITME option "DMARC_API" to work around incompatible
+      API changes in libopendmarc.
+
+HS/02 Backported the essence of 44b6e0 (Fix argument parsing for ${run }
+      expansion
+
+JH/15 Fix argument parsing for ${run } expansion. Previously, when an argument
+      included a close-brace character (eg. it itself used an expansion) an
+      error occurred.
+
+HS/02 Backported the essence of 44b6e0 (Fix argument parsing for ${run }
+      expansion
+
+JH/13 Bug 2929: Fix using $recipients after ${run...}.  A change made for 4.96
+      resulted in the variable appearing empty.  Find and fix by Ruben Jenster.
+
+JH/34 Bug 3013: Fix use of $recipients within arguments for ${run...}.
+      In 4.96 this would expand to empty.
+
+JH/39 Bug 3023: Fix crash induced by some combinations of zero-length strings
+      and ${tr...}.  Found and diagnosed by Heiko Schlichting.
+
+JH/18 Fix a fencepost error in logging.  Previously (since 4.92) when a log line
+      was exactly sized compared to the log buffer, a crash occurred with the
+      misleading message "bad memory reference; pool not found".
+      Found and traced by Jasen Betts.
+
+
 Exim version 4.96.1
 -------------------
 
@@ -27,6 +58,11 @@ JH/02 Bug 3000: Fix a possible OOB write in the SPA authenticator, which could
 JH/03 Bug 3001: Fix a possible OOB read in the SPA authenticator, which could
       be triggered by externally-controlled input.  Found by Trend Micro.
       CVE-2023-42114
+
+JH/04 Bug 2903: avoid exit on an attempt to rewrite a malformed address.
+      Make the rewrite never match and keep the logging.  Trust the
+      admin to be using verify=header-syntax (to actually reject the message).
+
 
 JH/04 Bug 2903: avoid exit on an attempt to rewrite a malformed address.
       Make the rewrite never match and keep the logging.  Trust the

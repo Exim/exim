@@ -1,0 +1,9 @@
+# Log buffer fill
+#
+exim -bh V4NET.0.0.0
+helo test
+mail from:<>
+rcpt to:<some@body>
+data
+.
+****

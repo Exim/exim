@@ -1114,4 +1114,9 @@ should not be one active. */
 #define NOTIFY_MSG_QRUN		1	/* Notify message types */
 #define NOTIFY_QUEUE_SIZE_REQ	2
 
+/* Flags for transport_set_up_command() */
+#define TSUC_EXPAND_ARGS	BIT(0)
+#define TSUC_ALLOW_TAINTED_ARGS	BIT(1)
+#define TSUC_ALLOW_RECIPIENTS	BIT(2)
+
 /* End of macros.h */

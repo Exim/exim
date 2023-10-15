@@ -664,6 +664,7 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > abcdea a   z   zbcdez
 > abcdea a       abcdea
 > abcdea abc z   zzzdez
+> (null)         ''
 > 
 > # Boolean
 > "TrUe"                true      EXPECT: true
@@ -783,6 +784,8 @@ xyz
 1234
 
 > rc=0
+> 2
+> rc=1
 > 
 > # PRVS
 > 
