@@ -1434,6 +1434,7 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
 
   /* Extract the numerical SRV fields (p is incremented) */
 
+  if (rr_bad_size(rr, 3 * sizeof(uint16_t))) continue;
   GETSHORT(priority, p);
   GETSHORT(weight, p);
   GETSHORT(port, p);

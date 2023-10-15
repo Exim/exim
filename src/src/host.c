@@ -2725,6 +2725,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   const uschar * s = rr->data;	/* MUST be unsigned for GETSHORT */
   uschar data[256];
 
+  if (rr_bad_size(rr, sizeof(uint16_t))) continue;
   GETSHORT(precedence, s);      /* Pointer s is advanced */
 
   /* For MX records, we use a random "weight" which causes multiple records of
@@ -2737,6 +2738,8 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
     /* SRV records are specified with a port and a weight. The weight is used
     in a special algorithm. However, to start with, we just use it to order the
     records of equal priority (precedence). */
+
+    if (rr_bad_increment(rr, s, 2 * sizeof(uint16_t))) continue;
     GETSHORT(weight, s);
     GETSHORT(port, s);
     }

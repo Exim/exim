@@ -299,13 +299,23 @@ return string_from_gstring(g);
 
 
 
+/* Check a pointer for being past the end of a dns answer.
+Exactly one past the end is defined as ok.
+Return TRUE iff bad.
+*/
+static BOOL
+dnsa_bad_ptr(const dns_answer * dnsa, const uschar * ptr)
+{
+return ptr > dnsa->answer + dnsa->answerlen;
+}
+
 /* Increment the aptr in dnss, checking against dnsa length.
 Return: TRUE for a bad result
 */
 static BOOL
 dnss_inc_aptr(const dns_answer * dnsa, dns_scan * dnss, unsigned delta)
 {
-return (dnss->aptr += delta) > dnsa->answer + dnsa->answerlen;
+return dnsa_bad_ptr(dnsa, dnss->aptr += delta);
 }
 
 /*************************************************
@@ -385,10 +395,14 @@ if (reset != RESET_NEXT)
       namelen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
         dnss->aptr, (DN_EXPAND_ARG4_TYPE) &dnss->srr.name, DNS_MAXNAME);
       if (namelen < 0) goto null_return;
+
       /* skip name, type, class & TTL */
       TRACE trace = "A-hdr";
       if (dnss_inc_aptr(dnsa, dnss, namelen+8)) goto null_return;
+
+      if (dnsa_bad_ptr(dnsa, dnss->aptr + sizeof(uint16_t))) goto null_return;
       GETSHORT(dnss->srr.size, dnss->aptr); /* size of data portion */
+
       /* skip over it, checking for a bogus size */
       TRACE trace = "A-skip";
       if (dnss_inc_aptr(dnsa, dnss, dnss->srr.size)) goto null_return;
@@ -422,12 +436,18 @@ from the following bytes. */
 TRACE trace = "R-name";
 if (dnss_inc_aptr(dnsa, dnss, namelen)) goto null_return;
 
-GETSHORT(dnss->srr.type, dnss->aptr);		/* Record type */
+/* Check space for type, class, TTL & data-size-word */
+if (dnsa_bad_ptr(dnsa, dnss->aptr + 3 * sizeof(uint16_t) + sizeof(uint32_t)))
+  goto null_return;
+
+GETSHORT(dnss->srr.type, dnss->aptr);			/* Record type */
+
 TRACE trace = "R-class";
-if (dnss_inc_aptr(dnsa, dnss, 2)) goto null_return;	/* Don't want class */
-GETLONG(dnss->srr.ttl, dnss->aptr);		/* TTL */
-GETSHORT(dnss->srr.size, dnss->aptr);		/* Size of data portion */
-dnss->srr.data = dnss->aptr;			/* The record's data follows */
+(void) dnss_inc_aptr(dnsa, dnss, sizeof(uint16_t));	/* skip class */
+
+GETLONG(dnss->srr.ttl, dnss->aptr);			/* TTL */
+GETSHORT(dnss->srr.size, dnss->aptr);			/* Size of data portion */
+dnss->srr.data = dnss->aptr;				/* The record's data follows */
 
 /* skip over it, checking for a bogus size */
 if (dnss_inc_aptr(dnsa, dnss, dnss->srr.size))
@@ -743,17 +763,17 @@ if (fake_dnsa_len_for_fail(dnsa, type))
     /* Skip the mname & rname strings */
 
     if ((len = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-	p, (DN_EXPAND_ARG4_TYPE)discard_buf, 256)) < 0)
+	p, (DN_EXPAND_ARG4_TYPE)discard_buf, sizeof(discard_buf))) < 0)
       break;
     p += len;
     if ((len = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-	p, (DN_EXPAND_ARG4_TYPE)discard_buf, 256)) < 0)
+	p, (DN_EXPAND_ARG4_TYPE)discard_buf, sizeof(discard_buf))) < 0)
       break;
     p += len;
 
     /* Skip the SOA serial, refresh, retry & expire.  Grab the TTL */
 
-    if (p > dnsa->answer + dnsa->answerlen - 5 * INT32SZ)
+    if (dnsa_bad_ptr(dnsa, p + 5 * INT32SZ))
       break;
     p += 4 * INT32SZ;
     GETLONG(ttl, p);
@@ -1257,6 +1277,7 @@ switch (type)
 	const uschar * p = rr->data;
 
 	/* Extract the numerical SRV fields (p is incremented) */
+	if (rr_bad_size(rr, 3 * sizeof(uint16_t))) continue;
 	GETSHORT(priority, p);
 	GETSHORT(dummy_weight, p);
 	GETSHORT(port, p);

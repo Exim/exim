@@ -1110,6 +1110,22 @@ store_free_dns_answer_trc(dns_answer * dnsa, const uschar * func, unsigned line)
 store_free_3(dnsa, CCS func, line);
 }
 
+
+/* Check for an RR being large enough.  Return TRUE iff bad. */
+static inline BOOL
+rr_bad_size(const dns_record * rr, size_t minbytes)
+{
+return rr->size < minbytes;
+}
+
+/* Check for an RR having further data beyond a given pointer.
+Return TRUE iff bad. */
+static inline BOOL
+rr_bad_increment(const dns_record * rr, const uschar * ptr, size_t minbytes)
+{
+return rr_bad_size(rr, ptr - rr->data + minbytes);
+}
+
 /******************************************************************************/
 /* Routines with knowledge of spool layout */
 
