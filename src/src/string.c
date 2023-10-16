@@ -105,9 +105,7 @@ string_is_ip_addressX(const uschar *ip_addr, int *maskptr, const uschar **errp) 
       if (errp) *errp = "rudiculous long ip address string";
       return 0;
     }
-    addr = alloca(l+1); /* *BSD does not have strndupa() */
-    Ustrncpy((uschar *)addr, ip_addr, l);
-    ((uschar*)addr)[l] = '\0';
+    addr = string_copyn(ip_addr, l);
   } else addr = ip_addr;
 
   int af;
