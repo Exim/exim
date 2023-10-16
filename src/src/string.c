@@ -40,119 +40,128 @@ Returns:    0 if the string is not a textual representation of an IP address
 
 The legacy string_is_ip_address() function follows below.
 */
+
 int
-string_is_ip_addressX(const uschar *ip_addr, int *maskptr, const uschar **errp) {
-  struct addrinfo hints;
-  struct addrinfo *res;
+string_is_ip_addressX(const uschar * ip_addr, int * maskptr, const uschar ** errp)
+{
+struct addrinfo hints, * res;
+uschar * slash, * percent, * endp = NULL;
+long int mask = 0;
+const uschar * addr = NULL;
+int af;
+union { /* we do not need this, but inet_pton() needs a place for storage */
+  struct in_addr sa4;
+  struct in6_addr sa6;
+} sa;
 
-  uschar *slash, *percent;
-
-  uschar *endp = 0;
-  long int mask = 0;
-  const uschar *addr = 0;
-
-  /* If there is a slash, but we didn't request a (optional) netmask,
-  we return failure, as we do if the mask isn't a pure numerical value,
-  or if it is negative. The actual length is checked later, once we know
-  the address family. */
-  if (slash = Ustrchr(ip_addr, '/'))
+/* If there is a slash, but we didn't request a (optional) netmask,
+we return failure, as we do if the mask isn't a pure numerical value,
+or if it is negative. The actual length is checked later, once we know
+the address family. */
+if (slash = Ustrchr(ip_addr, '/'))
   {
-    if (!maskptr)
+  uschar * rest;
+
+  if (!maskptr)
     {
-      if (errp) *errp = "netmask found, but not requested";
-      return 0;
-    }
-
-    uschar *rest;
-    mask = Ustrtol(slash+1, &rest, 10);
-    if (*rest || mask < 0)
-    {
-      if (errp) *errp = "netmask not numeric or <0";
-      return 0;
-    }
-
-    *maskptr = slash - ip_addr;     /* offset of the slash */
-    endp = slash;
-  } else if (maskptr) *maskptr = 0; /* no slash found */
-
-  /* The interface-ID suffix (%<id>) is optional (for IPv6). If it
-  exists, we check it syntactically. Later, if we know the address
-  family is IPv4, we might reject it.
-  The interface-ID is mutually exclusive with the netmask, to the
-  best of my knowledge. */
-  if (percent = Ustrchr(ip_addr, '%'))
-  {
-    if (slash)
-    {
-      if (errp) *errp = "interface-ID and netmask are mutually exclusive";
-      return 0;
-    }
-    for (uschar *p = percent+1; *p; p++)
-        if (!isalnum(*p) && !ispunct(*p))
-        {
-          if (errp) *errp = "interface-ID must match [[:alnum:][:punct:]]";
-          return 0;
-        }
-    endp = percent;
-  }
-
-  /* inet_pton() can't parse netmasks and interface IDs, so work on a shortened copy
-  allocated on the current stack */
-  if (endp) {
-    ptrdiff_t l = endp - ip_addr;
-    if (l > 255)
-    {
-      if (errp) *errp = "rudiculous long ip address string";
-      return 0;
-    }
-    addr = string_copyn(ip_addr, l);
-  } else addr = ip_addr;
-
-  int af;
-  union { /* we do not need this, but inet_pton() needs a place for storage */
-    struct in_addr sa4;
-    struct in6_addr sa6;
-  } sa;
-
-  af = Ustrchr(addr, ':') ? AF_INET6 : AF_INET;
-  if (!inet_pton(af, addr, &sa))
-  {
-    if (errp) *errp = af == AF_INET6 ? "IP address string not parsable as IPv6"
-                                     : "IP address string not parsable IPv4";
+    if (errp) *errp = US"netmask found, but not requested";
     return 0;
+    }
+
+  mask = Ustrtol(slash+1, &rest, 10);
+  if (*rest || mask < 0)
+    {
+    if (errp) *errp = US"netmask not numeric or <0";
+    return 0;
+    }
+
+  *maskptr = slash - ip_addr;     /* offset of the slash */
+  endp = slash;
   }
-  /* we do not check the values of the mask here, as
-  this is done on the callers side (but I don't understand why), so
-  actually I'd like to do it here, but it breaks at least 0002 */
-  switch (af)
+else if (maskptr) *maskptr = 0; /* no slash found */
+
+/* The interface-ID suffix (%<id>) is optional (for IPv6). If it
+exists, we check it syntactically. Later, if we know the address
+family is IPv4, we might reject it.
+The interface-ID is mutually exclusive with the netmask, to the
+best of my knowledge. */
+
+if (percent = Ustrchr(ip_addr, '%'))
   {
-    case AF_INET6:
-        if (errp && mask > 128)
-        {
-          *errp = "IPv6 netmask value must not be >128";
-          return 0;
-        }
-        return 6;
-    case AF_INET:
-        if (percent)
-        {
-          if (errp) *errp = "IPv4 address string must not have an interface-ID";
-          return 0;
-        }
-        if (errp && mask > 32) {
-          *errp = "IPv4 netmask value must not be >32";
-          return 0;
-        }
-        return 4;
-    default:
-        if (errp) *errp = "unknown address family (should not happen)";
-        return 0;
- }
+  if (slash)
+    {
+    if (errp) *errp = US"interface-ID and netmask are mutually exclusive";
+    return 0;
+    }
+  for (uschar *p = percent+1; *p; p++)
+    if (!isalnum(*p) && !ispunct(*p))
+      {
+      if (errp) *errp = US"interface-ID must match [[:alnum:][:punct:]]";
+      return 0;
+      }
+  endp = percent;
+  }
+
+/* inet_pton() can't parse netmasks and interface IDs, so work on a shortened copy
+allocated on the current stack */
+
+if (endp)
+  {
+  ptrdiff_t l = endp - ip_addr;
+  if (l > 255)
+    {
+    if (errp) *errp = US"rudiculous long ip address string";
+    return 0;
+    }
+  addr = string_copyn(ip_addr, l);
+  }
+else
+  addr = ip_addr;
+
+af = Ustrchr(addr, ':') ? AF_INET6 : AF_INET;
+if (!inet_pton(af, CCS addr, &sa))
+  {
+  if (errp) *errp = af == AF_INET6 ? US"IP address string not parsable as IPv6"
+				   : US"IP address string not parsable IPv4";
+  return 0;
+  }
+
+/* we do not check the values of the mask here, as
+this is done on the callers side (but I don't understand why), so
+actually I'd like to do it here, but it breaks at least testcase 0002 */
+
+switch (af)
+  {
+  case AF_INET6:
+      if (errp && mask > 128)
+	{
+	*errp = US"IPv6 netmask value must not be >128";
+	return 0;
+	}
+      return 6;
+  case AF_INET:
+      if (percent)
+	{
+	if (errp) *errp = US"IPv4 address string must not have an interface-ID";
+	return 0;
+	}
+      if (errp && mask > 32)
+	{
+	*errp = US"IPv4 netmask value must not be >32";
+	return 0;
+	}
+      return 4;
+  default:
+      if (errp) *errp = US"unknown address family (should not happen)";
+      return 0;
+  }
 }
 
+
 int
-string_is_ip_address(const uschar *ip_addr, int *maskptr) {
-  return string_is_ip_addressX(ip_addr, maskptr, 0);
+string_is_ip_address(const uschar * ip_addr, int * maskptr)
+{
+return string_is_ip_addressX(ip_addr, maskptr, 0);
 }
 
 #endif  /* COMPILE_UTILITY */
