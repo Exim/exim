@@ -44,7 +44,6 @@ The legacy string_is_ip_address() function follows below.
 int
 string_is_ip_addressX(const uschar * ip_addr, int * maskptr, const uschar ** errp)
 {
-struct addrinfo hints, * res;
 uschar * slash, * percent, * endp = NULL;
 long int mask = 0;
 const uschar * addr = NULL;
