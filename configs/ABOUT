@@ -1,7 +1,7 @@
 Exim repository: configs/
 -------------------------
 
-This directory contains sample configurations and and files for
+This directory contains sample configurations and files for
 integrating Exim with the system. These have been submitted by Exim
 users and may or may not fit your your environment.
 
