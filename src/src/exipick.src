@@ -434,10 +434,10 @@ sub get_all_msgs {
     if ($e =~ /^[a-zA-Z0-9]$/) {
       opendir(DD, "$d/$e") || next;
       foreach my $f (grep !/^\./, readdir(DD)) {
-        push(@m, { message => $1, path => "$d/$e" }) if ($f =~ /^(.{16})-H$/);
+        push(@m, { message => $1, path => "$d/$e" }) if ($f =~ /^(.{23}|.{16})-H$/);
       }
       closedir(DD);
-    } elsif ($e =~ /^(.{16})-H$/) {
+    } elsif ($e =~ /^(.{23}|.{16})-H$/) {
       push(@m, { message => $1, path => $d });
     }
   }
