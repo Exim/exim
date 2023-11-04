@@ -46,7 +46,7 @@
 . Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.96"
+.set previousversion "4.97"
 .include ./local_params
 
 .set ACL "access control lists (ACLs)"
@@ -996,12 +996,9 @@ contains the number of seconds since the start of the epoch (the normal Unix
 way of representing the date and time of day).
 .next
 After the first hyphen, the next
-.new
 eleven
-.wen
 characters are the id of the process that received the message.
 .next
-.new
 There are two different possibilities for the final four characters:
 .olist
 .oindex "&%localhost_number%&"
@@ -1017,7 +1014,6 @@ If &%localhost_number%& is set, it is multiplied by
 500000 (250000) and added to
 the fractional part of the time, which in this case is in units of 2 us (4 us).
 .endlist
-.wen
 .endlist
 
 After a message has been received, Exim waits for the clock to tick at the
@@ -2846,13 +2842,11 @@ of Exim is installed. It is not necessary to do this when other files that are
 referenced from the configuration (for example, alias files) are changed,
 because these are reread each time they are used.
 
-.new
 Either a SIGTERM or a SIGINT signal should be used to cause the daemon
 to cleanly shut down.
 Subprocesses handling recceiving or delivering messages,
 or for scanning the queue,
 will not be affected by the termination of the daemon process.
-.wen
 
 .cmdopt -bdf
 This option has the same effect as &%-bd%& except that it never disconnects
@@ -2890,11 +2884,9 @@ defined and macros will be expanded.
 Because macros in the config file are often used for secrets, those are only
 available to admin users.
 
-.new
 The word &"set"& at the start of a line, followed by a single space,
 is recognised specially as defining a value for a variable.
 The syntax is otherwise the same as the ACL modifier &"set ="&.
-.wen
 
 .cmdopt -bem <&'filename'&>
 .cindex "testing" "string expansion"
@@ -4450,7 +4442,6 @@ It is only relevant when the &%-bd%& (start listening daemon) option is also
 given.
 Normally the daemon creates this socket, unless a &%-oX%& and &*no*& &%-oP%&
 option is also present.
-.new
 If this option is given then the socket will not be created.  This is required
 if the system is running multiple daemons, in which case it should
 be used on all.
@@ -4464,7 +4455,6 @@ caching compiled regexes
 .next
 obtaining a current queue size
 .endlist
-.wen
 
 .cmdopt -pd
 .cindex "Perl" "starting the interpreter"
@@ -4569,12 +4559,10 @@ delivered down a single SMTP
 .cindex "multiple SMTP deliveries"
 connection because of the hints that were set up during the first queue scan.
 
-.new
 Two-phase queue runs should be used on systems which, even intermittently,
 have a large queue (such as mailing-list operators).
 They may also be useful for hosts that are connected to the Internet
 intermittently.
-.wen
 
 .vitem &%-q[q]i...%&
 .oindex "&%-qi%&"
@@ -4660,14 +4648,12 @@ combined daemon at system boot time is to use a command such as
 Such a daemon listens for incoming SMTP calls, and also starts a queue runner
 process every 30 minutes.
 
-.new
 .cindex "named queues" "queue runners"
 It is possible to set up runners for multiple named queues within one daemon,
 For example:
 .code
 exim -qGhipri/2m -q10m -qqGmailinglist/1h
 .endd
-.wen
 
 When a daemon is started by &%-q%& with a time value, but without &%-bd%&, no
 pid file is written unless one is explicitly requested by the &%-oP%& option.
@@ -7409,10 +7395,8 @@ For example, the way to write the NIS+ query is
 [name="${quote_nisplus:$local_part}"]
 .endd
 .cindex "tainted data" "in lookups"
-.new
 &*All*& tainted data used in a query-style lookup must be quoted
 using a mechanism appropriate for the lookup type.
-.wen
 See chapter &<<CHAPexpand>>& for full coverage of string expansions. The quote
 operator can be used for all lookup types, but has no effect for single-key
 lookups, since no quoting is ever needed in their key strings.
@@ -9622,7 +9606,6 @@ value. Nevertheless the &%-be%& option can be useful for checking out file and
 database lookups, and the use of expansion operators such as &%sg%&, &%substr%&
 and &%nhash%&.
 
-.new
 When reading lines from the standard input,
 macros can be defined and ACL variables can be set.
 For example:
@@ -9631,7 +9614,6 @@ MY_MACRO = foo
 set acl_m_myvar = bar
 .endd
 Such macros and variables can then be used in later input lines.
-.wen
 
 Exim gives up its root privilege when it is called with the &%-be%& option, and
 instead runs under the uid and gid it was called with, to prevent users from
@@ -9748,9 +9730,7 @@ Example use (as an ACL modifier):
       add_header = :at_start:${authresults {$primary_hostname}}
 .endd
 This is safe even if no authentication results are available
-.new
 and would generally be placed in the DATA ACL.
-.wen
 
 
 .vitem "&*${certextract{*&<&'field'&>&*}{*&<&'certificate'&>&*}&&&
@@ -10010,9 +9990,7 @@ default, but the separator can be changed in the usual way (&<<SECTlistsepchange
 For each item
 in this list, its value is placed in &$item$&, and then the condition is
 evaluated.
-.new
 Any modification of &$value$& by this evaluation is discarded.
-.wen
 If the condition is true, &$item$& is added to the output as an
 item in a new list; if the condition is false, the item is discarded. The
 separator used for the output list is the same as the one used for the
@@ -11122,7 +11100,6 @@ abbreviation &%h%& can be used when &%hash%& is used as an operator.
 
 
 
-.new
 .vitem &*${headerwrap_*&<&'cols'&>&*_*&<&'limit'&>&*:*&<&'string'&>&*}*&
 .cindex header "wrapping operator"
 .cindex expansion "header wrapping"
@@ -11136,7 +11113,6 @@ column number is reached.
 Whitespace at a chosen wrap point is removed.
 A line-wrap consists of a newline followed by a tab,
 and the tab is counted as 8 columns.
-.wen
 
 
 
@@ -13436,7 +13412,6 @@ The main use of this variable is expected to be to distinguish between
 rejections of MAIL and rejections of RCPT.
 
 .tvar &$recipients$&
-.new
 .tvar &$recipients_list$&
 These variables both contain the envelope recipients for a message.
 
@@ -13445,7 +13420,6 @@ The first uses a comma and a space separate the addresses in the replacement tex
 this variable is not intended for further processing.
 
 The second is a proper Exim list; colon-separated.
-.wen
 
 However, the variables
 are not generally available, to prevent exposure of Bcc recipients in
@@ -15754,10 +15728,8 @@ by a setting such as this:
 dns_again_means_nonexist = *.in-addr.arpa
 .endd
 This option applies to all DNS lookups that Exim does,
-.new
 except for TLSA lookups (where knowing about such failures
 is security-relevant).
-.wen
 It also applies when the
 &[gethostbyname()]& or &[getipnodebyname()]& functions give temporary errors,
 since these are most likely to be caused by DNS lookup problems. The
@@ -16337,10 +16309,8 @@ This option is obsolete, and retained only for backward compatibility, because
 nowadays the ACL specified by &%acl_smtp_connect%& can also reject incoming
 connections immediately.
 
-.new
 If the connection is on a TLS-on-connect port then the TCP connection is
 just dropped.  Otherwise, an SMTP error is sent first.
-.wen
 
 The ability to give an immediate rejection (either by this option or using an
 ACL) is provided for use in unusual cases. Many hosts will just try again,
@@ -16361,10 +16331,8 @@ local processes, you must create a host list with an empty item. For example:
 .code
 hosts_connection_nolog = :
 .endd
-.new
 The hosts affected by this option also do not log "no MAIL in SMTP connection"
 lines, as may commonly be produced by a monitoring system.
-.wen
 
 
 .option hosts_require_alpn main "host list&!!" unset
@@ -17036,7 +17004,6 @@ to be used in conjunction with &(oracle)& lookups (see section &<<SECID72>>&).
 The option is available only if Exim has been built with Oracle support.
 
 
-.new
 .option panic_coredump main boolean false
 This option is rarely needed but can help for some debugging investigations.
 If set, when an internal error is detected by Exim which is sufficient
@@ -17047,7 +17014,6 @@ then a coredump is requested.
 Note that most systems require additional administrative configuration
 to permit write a core file for a setuid program, which is Exim's
 common installed configuration.
-.wen
 
 .option percent_hack_domains main "domain list&!!" unset
 .cindex "&""percent hack""&"
@@ -17830,10 +17796,8 @@ positive response to an SMTP connection. The default setting is:
 smtp_banner = $smtp_active_hostname ESMTP Exim \
   $version_number $tod_full
 .endd
-.new
 Failure to expand the string causes a panic error;
 a forced fail just closes the connection.
-.wen
 If you want to create a
 multiline response to the initial SMTP connection, use &"\n"& in the string at
 appropriate points, but not at the end. Note that the 220 code is not included
@@ -18579,9 +18543,7 @@ It has no effect when Exim is used with GnuTLS
 &%tls_require_ciphers%& option).
 
 After expansion it must contain
-.new
 one or (only for OpenSSL versiona 1.1.1 onwards) more
-.wen
 EC curve names, such as &`prime256v1`&, &`secp384r1`&, or &`P-521`&.
 Consult your OpenSSL manual for valid curve names.
 
@@ -18589,9 +18551,7 @@ For OpenSSL versions before (and not including) 1.0.2, the string
 &`auto`& selects &`prime256v1`&. For more recent OpenSSL versions
 &`auto`& tells the library to choose.
 
-.new
 If the option expands to an empty string, the effect is undefined.
-.wen
 
 
 .option tls_ocsp_file main string&!! unset
@@ -25783,11 +25743,9 @@ Exim will request a Certificate Status on a
 TLS session for any host that matches this list.
 &%tls_verify_certificates%& should also be set for the transport.
 
-.new
 The default is &"**"& if DANE is not in use for the connection,
 or if DANE-TA us used.
 It is empty if DANE-EE is used.
-.wen
 
 .option hosts_require_alpn smtp "host list&!!" unset
 .cindex ALPN "require negotiation in client"
@@ -25933,16 +25891,12 @@ has advertised support for IGNOREQUOTA in its response to the LHLO command.
 .option max_rcpt smtp integer&!! 100
 .cindex "RCPT" "maximum number of outgoing"
 This option,
-.new
 after expansion,
-.wen
 limits the number of RCPT commands that are sent in a single
 SMTP message transaction.
 A value setting of zero disables the limit.
 
-.new
 If a constant is given,
-.wen
 each set of addresses is treated independently, and
 so can cause parallel connections to the same host if &%remote_max_parallel%&
 permits this.
@@ -27753,7 +27707,6 @@ no successful authentication.
 Successful authentication sets up information used by the
 &%authresults%& expansion item.
 
-.new
 .cindex authentication "failure event, server"
 If an authenticator is run and does not succeed,
 an event (see &<<CHAPevents>>&) of type "auth:fail" is raised.
@@ -27764,7 +27717,6 @@ will be valid.
 If the event is serviced and a string is returned then the string will be logged
 instead of the default log line.
 See <<CHAPevents>> for details on events.
-.wen
 
 
 .section "Testing server authentication" "SECID169"
@@ -27843,7 +27795,6 @@ Exim abandons trying to send the message to the host for the moment. It will
 try again later. If there are any backup hosts available, they are tried in the
 usual way.
 
-.new
 .next
 .cindex authentication "failure event, client"
 If the response to authentication is a permanent error (5&'xx'& code),
@@ -27853,7 +27804,6 @@ While the event is being processed the variable
 will be valid.
 If the event is serviced and a string is returned then the string will be logged.
 See <<CHAPevents>> for details on events.
-.wen
 
 .next
 If the response to authentication is a permanent error (5&'xx'& code), Exim
@@ -28433,11 +28383,9 @@ dovecot_ntlm:
   server_set_id = $auth1
 .endd
 
-.new
 &*Note*&: plaintext authentication methods such as PLAIN and LOGIN
 should not be advertised on cleartext SMTP connections.
 See the discussion in section &<<SECTplain_TLS>>&.
-.wen
 
 If the SMTP connection is encrypted, or if &$sender_host_address$& is equal to
 &$received_ip_address$& (that is, the connection is local), the &"secured"&
@@ -30670,11 +30618,9 @@ accepted by an &%accept%& verb that has a &%message%& modifier, the contents of
 the message override the banner message that is otherwise specified by the
 &%smtp_banner%& option.
 
-.new
 For tls-on-connect connections, the ACL is run before the TLS connection
 is accepted; if the ACL does not accept then the TCP connection is dropped without
 any TLS startup attempt and without any SMTP response being transmitted.
-.wen
 
 
 .subsection "The EHLO/HELO ACL" SECID192
@@ -32211,7 +32157,6 @@ DATA, MIME or DKIM ACLs for a message delivered by cutthrough routing.
 
 More than one header can be removed at the same time by using a colon separated
 list of header specifiers.
-.new
 If a specifier does not start with a circumflex (^)
 then it is treated as a header name.
 The header name matching is case insensitive.
@@ -32225,7 +32170,6 @@ Example:
 .code
 remove_header = \N^(?i)Authentication-Results\s*::\s*example.org;\N
 .endd
-.wen
 
 List expansion is not performed, so you cannot use hostlists to
 create a list of headers, however both connection and message variable expansion
@@ -39187,12 +39131,10 @@ only way to log such cases is to interpose a script such as &_util/logargs.sh_&
 between the caller and Exim.
 .next
 .cindex "log" "connection identifier"
-.new
 &%connection_identifier%&: An identifier for the accepted connection is added to
 connection start and end lines and to message accept lines.
 The identifier is tagged by Ci=.
 The value is PID-based, so will reset on reboot and will wrap.
-.wen
 .next
 .cindex "log" "connection rejections"
 &%connection_reject%&: A log entry is written whenever an incoming SMTP
@@ -42314,11 +42256,9 @@ return false.
 If it is, the condition will return true and the variable
 &$srs_recipient$& will be set to the decoded (original) value.
 
-.new
 If the second argument is empty then the condition returns true if
 the first argument is in valid SRS formet, else false.
 The variable &$srs_recipient$& is not set for this case.
-.wen
 .endlist
 
 Example usage:
