@@ -1,7 +1,9 @@
 #!PERL_COMMAND
 
+# Copyright (c) The Exim Maintainers 2023
 # Copyright (c) 2001-2017 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 # Perl script to generate statistics from one or more Exim log files.
 

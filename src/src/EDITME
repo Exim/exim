@@ -1,7 +1,7 @@
 ##################################################
 #          The Exim mail transport agent         #
 ##################################################
-# Copyright (c) The Exim Maintainers 2022
+# Copyright (c) The Exim Maintainers 2022 - 2023
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 # This is the template for Exim's main build-time configuration file. It

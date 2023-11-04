@@ -1,9 +1,9 @@
 /*
  *  PDKIM - a RFC4871 (DKIM) implementation
  *
- *  Copyright (c) The Exim Maintainers 2021 - 2022
- *  Copyright (C) 2009 - 2016  Tom Kistner <tom@duncanthrax.net>
+ *  Copyright (c) The Exim Maintainers 2021 - 2023
  *  Copyright (C) 2016 - 2020  Jeremy Harris <jgh@exim.org>
+ *  Copyright (C) 2009 - 2016  Tom Kistner <tom@duncanthrax.net>
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *
  *  http://duncanthrax.net/pdkim/

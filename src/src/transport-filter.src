@@ -1,5 +1,10 @@
 #! PERL_COMMAND
 
+# Copyright (c) The Exim Maintainers 2023
+# See the file NOTICE for conditions of use and distribution.
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+
 # This is a Perl script to demonstrate the possibilities of on-the-fly
 # delivery filtering in Exim. It is presented with a message on its standard
 # input, and must copy it to the standard output, transforming it as it

@@ -2,9 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Heiko Schlittermann 2016
+/*
+ * Copyright (c) The Exim Maintainers 2022 - 2023
+ * Copyright (c) Heiko Schlittermann 2016
  * hs@schlittermann.de
- * Copyright (c) The Exim Maintainers 2022
  * See the file NOTICE for conditions of use and distribution.
  * SPDX-License-Identifier: GPL-2.0-or-later
  */

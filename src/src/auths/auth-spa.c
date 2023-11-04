@@ -9,7 +9,7 @@
  * All the original code used here was torn by Marc Prud'hommeaux out of the
  * Samba project (by Andrew Tridgell, Jeremy Allison, and others).
  *
- * Copyright (c) The Exim Maintainers 2021
+ * Copyright (c) The Exim Maintainers 2021 - 2023
  * SPDX-License-Identifier: GPL-2.0-or-later
 
  * Tom Kistner provided additional code, adding spa_build_auth_challenge() to

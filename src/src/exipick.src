@@ -1,4 +1,6 @@
 #!PERL_COMMAND
+
+# Copyright (c) The Exim Maintainers 2023
 # Copyright (c) 1995 - 2018 University of Cambridge.
 # SPDX-License-Identifier: GPL-2.0-or-later
 # See the file NOTICE for conditions of use and distribution.

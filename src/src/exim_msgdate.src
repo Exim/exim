@@ -1,12 +1,12 @@
 #!PERL_COMMAND -T
 #
+# Copyright (c) The Exim Maintainers 2023
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
 # Utility to convert an exim message-id to a human readable form
 #
 # https://bugs.exim.org/show_bug.cgi?id=2956
 # Written by Andrew C Aitchison
-#
-# Copyright (c) 2023 The Exim Maintainers 2023
-# SPDX-License-Identifier: GPL-2.0-or-later
 #
 # Portions taken from exicyclog.src, which is
 #   Copyright (c) University of Cambridge, 1995 - 2015

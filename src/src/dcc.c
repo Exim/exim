@@ -2,12 +2,13 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Wolfgang Breyha 2005 - 2019
+/*
+ * Copyright (c) The Exim Maintainers 2015 - 2023
+ * Copyright (c) Wolfgang Breyha 2005 - 2019
  * Vienna University Computer Center
  * wbreyha@gmx.net
  * See the file NOTICE for conditions of use and distribution.
  *
- * Copyright (c) The Exim Maintainers 2015 - 2022
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) The Exim Maintainers 2006 - 2022
+ * Copyright (c) The Exim Maintainers 2006 - 2023
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
  * SPDX-License-Identifier: GPL-2.0-or-later
  *

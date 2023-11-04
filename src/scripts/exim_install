@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) The Exim Maintainters 2022
+# Copyright (c) The Exim Maintainters 2022 - 2023
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 # Script to install Exim binaries in BIN_DIRECTORY, which is defined in
