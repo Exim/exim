@@ -7,12 +7,12 @@
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= some_ne@some.domain H=(tester) [127.0.0.1] Ci=p1239 P=esmtp K S=sss for CALLER@test.ex
 2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= someone@some.domain H=(tester) [127.0.0.1] Ci=p1239 P=esmtp K S=sss for CALLER@test.ex
 2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 SMTP data timeout (message abandoned) on connection from (tester) [127.0.0.1] F=<someone@some.domain> D=q.qqqs
-2017-07-30 18:51:05.712 SMTP connection Ci=p1240 from (tester) [127.0.0.1] lost while reading message data
-2017-07-30 18:51:05.712 SMTP connection Ci=p1241 from (tester) [127.0.0.1] lost while reading message data
-2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 <= someone@some.domain H=(tester) [127.0.0.1] Ci=p1242 P=esmtp K S=sss for CALLER@test.ex
+2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 SMTP connection Ci=p1240 from (tester) [127.0.0.1] lost while reading message data
+2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 SMTP connection Ci=p1241 from (tester) [127.0.0.1] lost while reading message data
+2017-07-30 18:51:05.712 10HmbF-000000005vi-0000 <= someone@some.domain H=(tester) [127.0.0.1] Ci=p1242 P=esmtp K S=sss for CALLER@test.ex
 2017-07-30 18:51:05.712 H=(tester) [127.0.0.1] Ci=p1234 F=<someone@some.domain> rejected RCPT <dummy@reject.ex>: relay not permitted
 2017-07-30 18:51:05.712 H=(tester) [127.0.0.1] Ci=p1235 F=<some3ne@some.domain> rejected RCPT <dummy@reject.ex>: relay not permitted
 2017-07-30 18:51:05.712 H=(tester) [127.0.0.1] Ci=p1235 F=<some4ne@some.domain> rejected RCPT <dummy@reject.ex>: relay not permitted
-2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 <= some6ne@some.domain H=(tester) [127.0.0.1] Ci=p1243 P=esmtp K S=sss for CALLER@test.ex
+2017-07-30 18:51:05.712 10HmbG-000000005vi-0000 <= some6ne@some.domain H=(tester) [127.0.0.1] Ci=p1243 P=esmtp K S=sss for CALLER@test.ex
 2017-07-30 18:51:05.712 rejected from <someone@some.domain> H=(tester) [127.0.0.1]: Non-CRLF-terminated header, under CHUNKING: message abandoned
-2017-07-30 18:51:05.712 10HmbF-000000005vi-0000 <= someone@some.domain H=(tester) [127.0.0.1] Ci=p1244 P=esmtp K S=sss for CALLER@test.ex
+2017-07-30 18:51:05.712 10HmbH-000000005vi-0000 <= someone@some.domain H=(tester) [127.0.0.1] Ci=p1244 P=esmtp K S=sss for CALLER@test.ex

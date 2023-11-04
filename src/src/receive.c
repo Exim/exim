@@ -570,7 +570,7 @@ smtp_user_msg(uschar *code, uschar *user_msg)
 {
 int len = 3;
 smtp_message_code(&code, &len, &user_msg, NULL, TRUE);
-smtp_respond(code, len, TRUE, user_msg);
+smtp_respond(code, len, SR_FINAL, user_msg);
 }
 #endif
 
@@ -1457,7 +1457,7 @@ if (!(mbox_file = spool_mbox(&mbox_size, NULL, &mbox_filename)))
 #ifdef EXPERIMENTAL_DCC
   dcc_ok = 0;
 #endif
-  smtp_respond(US"451", 3, TRUE, US"temporary local problem");
+  smtp_respond(US"451", 3, SR_FINAL, US"temporary local problem");
   message_id[0] = 0;            /* Indicate no message accepted */
   *smtp_reply_ptr = US"";       /* Indicate reply already sent */
   return FALSE;                 /* Indicate skip to end of receive function */
@@ -2309,7 +2309,7 @@ OVERSIZE:
       sender_address,
       sender_fullhost ? " H=" : "", sender_fullhost ? sender_fullhost : US"",
       sender_ident ? " U=" : "",    sender_ident ? sender_ident : US"");
-    smtp_printf("552 Message header not CRLF terminated\r\n", FALSE);
+    smtp_printf("552 Message header not CRLF terminated\r\n", SP_NO_MORE);
     bdat_flush_data();
     smtp_reply = US"";
     goto TIDYUP;                             /* Skip to end of function */
@@ -3251,10 +3251,9 @@ if (!ferror(spool_data_file) && !(receive_feof)() && message_ended != END_DOT)
 	{
 	Uunlink(spool_name);		/* Lose data file when closed */
 	cancel_cutthrough_connection(TRUE, US"sender closed connection");
-	message_id[0] = 0;		/* Indicate no message_accepted */
 	smtp_reply = handle_lost_connection(US"");
 	smtp_yield = FALSE;
-	goto TIDYUP;				/* Skip to end of function */
+	goto NOT_ACCEPTED;				/* Skip to end of function */
 	}
       break;
 
@@ -3597,7 +3596,7 @@ else
       int all_pass = OK;
       int all_fail = FAIL;
 
-      smtp_printf("353 PRDR content analysis beginning\r\n", TRUE);
+      smtp_printf("353 PRDR content analysis beginning\r\n", SP_MORE);
       /* Loop through recipients, responses must be in same order received */
       for (unsigned int c = 0; recipients_count > c; c++)
         {
@@ -3661,7 +3660,7 @@ else
     /* Check the recipients count again, as the MIME ACL might have changed
     them. */
 
-    if (acl_smtp_data != NULL && recipients_count > 0)
+    if (acl_smtp_data && recipients_count > 0)
       {
       rc = acl_check(ACL_WHERE_DATA, NULL, acl_smtp_data, &user_msg, &log_msg);
       add_acl_headers(ACL_WHERE_DATA, US"DATA");
@@ -3922,7 +3921,7 @@ else
   if (smtp_input)
     if (!smtp_batched_input)
       {
-      smtp_respond(smtp_code, 3, TRUE, errmsg);
+      smtp_respond(smtp_code, 3, SR_FINAL, errmsg);
       smtp_reply = US"";            /* Indicate reply already sent */
       goto NOT_ACCEPTED;			/* Skip to end of function */
       }
@@ -4030,11 +4029,6 @@ else
 
 receive_messagecount++;
 
-/* Add data size to written header size. We do not count the initial file name
-that is in the file, but we do add one extra for the notional blank line that
-precedes the data. This total differs from message_size in that it include the
-added Received: header and any other headers that got created locally. */
-
 if (fflush(spool_data_file))
   {
   errmsg = string_sprintf("Spool write error: %s", strerror(errno));
@@ -4054,8 +4048,13 @@ if (fflush(spool_data_file))
     /* Does not return */
     }
   }
-fstat(data_fd, &statbuf);
 
+/* Add data size to written header size. We do not count the initial file name
+that is in the file, but we do add one extra for the notional blank line that
+precedes the data. This total differs from message_size in that it include the
+added Received: header and any other headers that got created locally. */
+
+fstat(data_fd, &statbuf);
 msg_size += statbuf.st_size - spool_data_start_offset(message_id) + 1;
 
 /* Generate a "message received" log entry. We do this by building up a dynamic
@@ -4349,9 +4348,9 @@ if(!smtp_reply)
 #endif
   {
   log_write(0, LOG_MAIN |
-    (LOGGING(received_recipients) ? LOG_RECIPIENTS : 0) |
-    (LOGGING(received_sender) ? LOG_SENDER : 0),
-    "%Y", g);
+		(LOGGING(received_recipients) ? LOG_RECIPIENTS : 0) |
+		(LOGGING(received_sender) ? LOG_SENDER : 0),
+	    "%Y", g);
 
   /* Log any control actions taken by an ACL or local_scan(). */
 
@@ -4389,9 +4388,16 @@ a queue-runner could grab it in the window.
 
 A fflush() was done earlier in the expectation that any write errors on the
 data file will be flushed(!) out thereby. Nevertheless, it is theoretically
-possible for fclose() to fail - but what to do? What has happened to the lock
-if this happens?  We can at least log it; if it is observed on some platform
-then we can think about properly declaring the message not-received. */
+possible for fclose() to fail - and this has been seen on obscure filesystems
+(probably one that delayed the actual media write as long as possible)
+but what to do? What has happened to the lock if this happens?
+It's a mes because we already logged the acceptance.
+We can at least log the issue, try to remove spoolfiles and respond with
+a temp-reject.  We do not want to close before logging acceptance because
+we want to hold the lock until we know that logging worked.
+Could we make this less likely by doing an fdatasync() just after the fflush()?
+That seems like a good thing on data-security grounds, but how much will it hit
+performance? */
 
 
 goto TIDYUP;
@@ -4404,8 +4410,27 @@ process_info[process_info_len] = 0;			/* Remove message id */
 if (spool_data_file && cutthrough_done == NOT_TRIED)
   {
   if (fclose(spool_data_file))				/* Frees the lock */
-    log_write(0, LOG_MAIN|LOG_PANIC,
-      "spoolfile error on close: %s", strerror(errno));
+    {
+    log_msg = string_sprintf("spoolfile error on close: %s", strerror(errno));
+    log_write(0, LOG_MAIN|LOG_PANIC |
+		  (LOGGING(received_recipients) ? LOG_RECIPIENTS : 0) |
+		  (LOGGING(received_sender) ? LOG_SENDER : 0),
+	      "%s", log_msg);
+    log_write(0, LOG_MAIN |
+		  (LOGGING(received_recipients) ? LOG_RECIPIENTS : 0) |
+		  (LOGGING(received_sender) ? LOG_SENDER : 0),
+	      "rescind the above message-accept");
+
+    Uunlink(spool_name);
+    Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
+    Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
+
+    /* Claim a data ACL temp-reject, just to get reject logging and resposponse */
+    smtp_handle_acl_fail(ACL_WHERE_DATA, rc, NULL, log_msg);
+    smtp_reply = US"";		/* Indicate reply already sent */
+
+    message_id[0] = 0;		/* no message accepted */
+    }
   spool_data_file = NULL;
   }
 
@@ -4434,7 +4459,7 @@ if (smtp_input)
       {
       if (fake_response != OK)
         smtp_respond(fake_response == DEFER ? US"450" : US"550",
-	  3, TRUE, fake_response_text);
+	  3, SR_FINAL, fake_response_text);
 
       /* An OK response is required; use "message" text if present. */
 
@@ -4443,7 +4468,7 @@ if (smtp_input)
         uschar *code = US"250";
         int len = 3;
         smtp_message_code(&code, &len, &user_msg, NULL, TRUE);
-        smtp_respond(code, len, TRUE, user_msg);
+        smtp_respond(code, len, SR_FINAL, user_msg);
         }
 
       /* Default OK response */
@@ -4471,10 +4496,10 @@ if (smtp_input)
 
     else if (smtp_reply[0] != 0)
       if (fake_response != OK && smtp_reply[0] == '2')
-        smtp_respond(fake_response == DEFER ? US"450" : US"550", 3, TRUE,
-          fake_response_text);
+        smtp_respond(fake_response == DEFER ? US"450" : US"550",
+		      3, SR_FINAL, fake_response_text);
       else
-        smtp_printf("%.1024s\r\n", FALSE, smtp_reply);
+        smtp_printf("%.1024s\r\n", SP_NO_MORE, smtp_reply);
 
     switch (cutthrough_done)
       {

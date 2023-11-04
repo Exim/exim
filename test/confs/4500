@@ -42,6 +42,9 @@ check_dkim:
 .endif
 
 check_data:
-  accept logwrite = ${authresults {$primary_hostname}}
+  warn		logwrite =	${authresults {$primary_hostname}}
+  accept	dkim_status =	pass
+  		logwrite =	dkim_status includes pass
+  accept	logwrite =	dkim_state DOES NOT include pass
 
 # End

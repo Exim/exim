@@ -203,7 +203,14 @@ static condition_def conditions[] = {
   [ACLC_DELAY] =		{ US"delay",		TRUE, TRUE, ACL_BIT_NOTQUIT },
 #ifndef DISABLE_DKIM
   [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DKIM },
-  [ACLC_DKIM_STATUS] =		{ US"dkim_status",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DKIM },
+  [ACLC_DKIM_STATUS] =		{ US"dkim_status",	TRUE, FALSE,
+				  (unsigned int)
+				  ~(ACL_BIT_DKIM | ACL_BIT_DATA | ACL_BIT_MIME
+# ifndef DISABLE_PRDR
+				  | ACL_BIT_PRDR
+# endif
+      ),
+  },
 #endif
 #ifdef SUPPORT_DMARC
   [ACLC_DMARC_STATUS] =		{ US"dmarc_status",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DATA },
@@ -3764,8 +3771,14 @@ for (; cb; cb = cb->next)
       break;
 
     case ACLC_DKIM_STATUS:
-      rc = match_isinlist(dkim_verify_status,
-			  &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
+      {		/* return good for any match */
+      const uschar * s = dkim_verify_status ? dkim_verify_status : US"none";
+      int sep = 0;
+      for (uschar * ss; ss = string_nextinlist(&s, &sep, NULL, 0); )
+	if (   (rc = match_isinlist(ss, &arg,
+				    0, NULL, NULL, MCL_STRING, TRUE, NULL))
+	    == OK) break;
+      }
       break;
 #endif
 

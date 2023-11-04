@@ -41733,8 +41733,9 @@ RFC 6376 lists these tags as RECOMMENDED.
 
 Verification of DKIM signatures in SMTP incoming email is done for all
 messages for which an ACL control &%dkim_disable_verify%& has not been set.
+
 .cindex DKIM "selecting signature algorithms"
-Individual classes of signature algorithm can be ignored by changing
+Individual classes of DKIM signature algorithm can be ignored by changing
 the main options &%dkim_verify_hashes%& or &%dkim_verify_keytypes%&.
 The &%dkim_verify_minimal%& option can be set to cease verification
 processing for a message once the first passing signature is found.
@@ -41747,7 +41748,7 @@ For most purposes the default option settings suffice and the remainder
 of this section can be ignored.
 
 The results of verification are made available to the
-&%acl_smtp_dkim%& ACL, which can examine and modify them.
+&%acl_smtp_dkim%& ACL, which (for complex needs) can examine and modify them.
 A missing ACL definition defaults to accept.
 By default, the ACL is called once for each
 syntactically(!) correct signature in the incoming message.
@@ -41812,6 +41813,12 @@ an identity. This is one of the list items from the expanded main option
 &%dkim_verify_signers%& (see above).
 
 .vitem &%$dkim_verify_status%&
+So long as a DKIM ACL is defined
+(it need do no more than accept, which is the default),
+after all the DKIM ACL runs have completed, the value becomes a
+colon-separated list of the values after each run.
+The value is maintained for the MIME, PRDR and DATA ACLs.
+
 Within the DKIM ACL,
 a string describing the general status of the signature. One of
 .ilist
@@ -41839,11 +41846,6 @@ hash-method or key-size:
        set dkim_verify_status = fail
        set dkim_verify_reason = hash too weak or key too short
 .endd
-
-So long as a DKIM ACL is defined (it need do no more than accept),
-after all the DKIM ACL runs have completed, the value becomes a
-colon-separated list of the values after each run.
-This is maintained for the mime, prdr and data ACLs.
 
 .vitem &%$dkim_verify_reason%&
 A string giving a little bit more detail when &%$dkim_verify_status%& is either
@@ -41969,13 +41971,15 @@ option.
 
 .endlist
 
-In addition, two ACL conditions are provided, usable only in a DKIM ACL:
+In addition, two ACL conditions are provided:
 
 .vlist
 .vitem &%dkim_signers%&
 ACL condition that checks a colon-separated list of domains or identities
 for a match against the domain or identity that the ACL is currently verifying
-(reflected by &%$dkim_cur_signer%&). This is typically used to restrict an ACL
+(reflected by &%$dkim_cur_signer%&).
+This condition is only usable in a DKIM ACL.
+This is typically used to restrict an ACL
 verb to a group of domains or identities. For example:
 
 .code
@@ -41991,7 +41995,18 @@ for that check for empty &$h_DKIM-Signature:$& in the data ACL.
 
 .vitem &%dkim_status%&
 ACL condition that checks a colon-separated list of possible DKIM verification
-results against the actual result of verification. This is typically used
+results against the actual result of verification,
+given by &$dkim_verify_status$& if that is non-empty or "none" if empty.
+.new
+This condition may be used in DKIM, MIME, PRDR and DATA ACLs.
+.wen
+
+A basic verification might be:
+.code
+deny !dkim_status = pass:none:invalid
+.endd
+
+A more complex use could be
 to restrict an ACL verb to a list of verification outcomes, for example:
 
 .code
@@ -42004,6 +42019,12 @@ deny sender_domains = paypal.com:paypal.de
 The possible status keywords are: 'none','invalid','fail' and 'pass'. Please
 see the documentation of the &%$dkim_verify_status%& expansion variable above
 for more information of what they mean.
+
+The condition is true if the status
+.new
+(or any of the list of status values)
+.wen
+is any one of the supplied list.
 .endlist
 
 
