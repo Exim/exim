@@ -1,0 +1,71 @@
+# Exim test configuration 5801
+# DANE common
+
+SERVER=
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept verify = recipient/callout
+
+log_selector =  +received_recipients +tls_certificate_verified +tls_sni
+
+queue_run_in_order
+
+tls_advertise_hosts = *
+.ifdef _HAVE_GNUTLS
+# needed to force generation
+tls_dhparam = historic
+.endif
+
+CDIR1 = DIR/aux-fixed/exim-ca/example.net/server1.example.net
+CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
+
+
+tls_certificate = CDIR2/fullchain.pem
+tls_privatekey =  CDIR2/server1.example.com.unlocked.key
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver =	dnslookup
+  condition =	${if eq {SERVER}{}}
+  dnssec_request_domains = *
+  self =	send
+  transport =	send_to_server
+  errors_to =	""
+
+server:
+  driver =	redirect
+  data =	:blackhole:
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver =		smtp
+  allow_localhost
+  port =		PORT_D
+  hosts_try_fastopen =	:
+
+  hosts_try_dane =	*
+  tls_verify_certificates =
+
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

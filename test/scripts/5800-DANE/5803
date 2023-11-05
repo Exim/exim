@@ -1,0 +1,8 @@
+# DANE Rverify, TLSA SERVFAIL
+#
+exim -odf -bs
+HELO test
+MAIL FROM:<CALLER@test.ex>
+RCPT TO:<t@daneservfail.test.ex>
+QUIT
+****

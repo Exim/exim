@@ -677,7 +677,7 @@ coding means skipping this whole loop and doing the append separately.  */
     sx->conn_args.interface = interface;
     sx->helo_data = tf->helo_data;
     sx->conn_args.tblock = addr->transport;
-    sx->conn_args.sock = -1;
+    sx->cctx.sock = sx->conn_args.sock = -1;
     sx->verify = TRUE;
 
 tls_retry_connection:
@@ -1152,7 +1152,7 @@ no_conn:
       /* Ensure no cutthrough on multiple verifies that were incompatible */
       if (options & vopt_callout_recipsender)
         cancel_cutthrough_connection(TRUE, US"not usable for cutthrough");
-      if (sx->send_quit)
+      if (sx->send_quit && sx->cctx.sock >= 0)
 	if (smtp_write_command(sx, SCMD_FLUSH, "QUIT\r\n") != -1)
 	  /* Wait a short time for response, and discard it */
 	  smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2', 1);

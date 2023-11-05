@@ -8,12 +8,17 @@ Exim version 4.98
 JH/01 Support list of dkim results in the dkim_status ACL condition, making
       it more usable in the data ACL.
 
-JH/02 Handle error on close of the spool data file during reception.  Previously
-      This was only logged, on the assumption that errors would be seen for
-      a previous fflush().  However, a fuse filesystem has been reported as
-      showing this an error for the fclose().  The spool is now in an uncertain
-      state, and we have logged and responded acceptance.  Change this to
-      respond with a temp-reject, wipe spoolfiles, and log the error detail.
+JH/02 Bug 3040: Handle error on close of the spool data file during reception. 
+      Previously This was only logged, on the assumption that errors would be
+      seen for a previous fflush().  However, a fuse filesystem has been
+      reported as showing this an error for the fclose().  The spool is now in
+      an uncertain state, and we have logged and responded acceptance.  Change
+      this to respond with a temp-reject, wipe spoolfiles, and log the error
+      detail.
+
+JH/03 Bug 3030: fix handling of DNS servfail respons for DANE TLSA.  When hit
+      during a recipient verify callout, a QUIT command was attempted on the
+      now-closed callout channel, causing a paniclog entry.
 
 
 Exim version 4.97

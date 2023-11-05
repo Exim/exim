@@ -583,6 +583,11 @@ DNSSEC danemixed            A      127.0.0.1
 DNSSEC _1225._tcp.danemixed TLSA  2 0 1 0d643c1ebcdf2cb83634e0c2f5102c1e268983401c9f4d8711d60b44d7fb7a3e
 DNSSEC                      TLSA  3 1 1 8276000000000000000000000000000000000000000000000000000000000000
 
+; have the TLSA lookup, only, return SERVFAIL
+;
+DNSSEC daneservfail         A      127.0.0.1
+DNSSEC _1225._tcp.daneservfail CNAME test.again.dns.
+
 ; ------- Testing delays ------------
 
 DELAY=500 delay500   A HOSTIPV4
