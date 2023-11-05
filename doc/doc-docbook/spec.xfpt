@@ -22792,8 +22792,11 @@ If unset, or expanding to an empty string, no filtering is done.
 When the message is about to be written out, the command specified by
 &%transport_filter%& is started up in a separate, parallel process, and
 the entire message, including the header lines, is passed to it on its standard
-input (this in fact is done from a third process, to avoid deadlock). The
-command must be specified as an absolute path.
+input (this in fact is done from a third process, to avoid deadlock).
+The command must be specified as an absolute path.
+
+The process run by the command must use its standard input as the message
+data to be transformed, and write the results on its standard output.
 
 The lines of the message that are written to the transport filter are
 terminated by newline (&"\n"&). The message is passed to the filter before any
