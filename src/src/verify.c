@@ -565,6 +565,7 @@ if (cached_callout_lookup(addr, address_key, from_address,
     recipient_verify_cache = TRUE;
   else
     sender_verify_cache = TRUE;
+
   goto END_CALLOUT;
   }
 if (options & vopt_is_recipient)
