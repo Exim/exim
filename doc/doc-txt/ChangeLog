@@ -16,9 +16,14 @@ JH/02 Bug 3040: Handle error on close of the spool data file during reception.
       this to respond with a temp-reject, wipe spoolfiles, and log the error
       detail.
 
-JH/03 Bug 3030: fix handling of DNS servfail respons for DANE TLSA.  When hit
+JH/03 Bug 3030: Fix handling of DNS servfail respons for DANE TLSA.  When hit
       during a recipient verify callout, a QUIT command was attempted on the
       now-closed callout channel, causing a paniclog entry.
+
+JH/04 Bug 3039: Fix handling of of an empty log_reject_target, with
+      a connection_reject log_selector, under tls_on_connect.  Previously
+      with this combination, when the connect ACL rejected, a spurious
+      paniclog entry was made.
 
 
 Exim version 4.97

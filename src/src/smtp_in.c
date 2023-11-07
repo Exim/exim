@@ -2051,16 +2051,19 @@ else DEBUG(D_receive)
 static void
 log_connect_tls_drop(const uschar * what, const uschar * log_msg)
 {
-gstring * g = s_tlslog(NULL);
-uschar * tls = string_from_gstring(g);
+if (log_reject_target)
+  {
+  gstring * g = s_tlslog(NULL);
+  uschar * tls = string_from_gstring(g);
 
-log_write(L_connection_reject,
-  log_reject_target, "%s%s%s dropped by %s%s%s",
-  LOGGING(dnssec) && sender_host_dnssec ? US" DS" : US"",
-  host_and_ident(TRUE),
-  tls ? tls : US"",
-  what,
-  log_msg ? US": " : US"", log_msg);
+  log_write(L_connection_reject,
+    log_reject_target, "%s%s%s dropped by %s%s%s",
+    LOGGING(dnssec) && sender_host_dnssec ? US" DS" : US"",
+    host_and_ident(TRUE),
+    tls ? tls : US"",
+    what,
+    log_msg ? US": " : US"", log_msg);
+  }
 }
 
 
@@ -3085,7 +3088,7 @@ else
 the connection is not forcibly to be dropped, return 0. Otherwise, log why it
 is closing if required and return 2.  */
 
-if (log_reject_target != 0)
+if (log_reject_target)
   {
 #ifndef DISABLE_TLS
   gstring * g = s_tlslog(NULL);

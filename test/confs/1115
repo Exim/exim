@@ -1,0 +1,24 @@
+# Exim test configuration 1115
+
+SERVER=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+tls_on_connect_ports = PORT_D2
+
+acl_smtp_connect = check_conn
+
+log_selector = +connection_reject
+
+# ----- ACLs -----
+
+begin acl
+
+check_conn:
+  deny	log_reject_target =
+
+# End

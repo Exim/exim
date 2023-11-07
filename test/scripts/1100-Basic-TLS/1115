@@ -1,0 +1,7 @@
+# server: tls_on_connect and log_reject_target empty
+exim -bd -DSERVER=server -oX PORT_D2
+****
+client-anytls -tls-on-connect 127.0.0.1 PORT_D2
+???*
+****
+killdaemon
