@@ -2605,7 +2605,7 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
     asking for certificate-status under DANE, so this callback won't run for
     that combination. It still will for non-DANE. */
 
-#ifdef EXIM_HAVE_OPENSSL_OCSP_RESP_GET0_SIGNER
+#if defined(EXIM_HAVE_OPENSSL_OCSP_RESP_GET0_SIGNER) && defined(SUPPORT_DANE)
     X509 * signer;
 
     if (  tls_out.dane_verified
