@@ -47,7 +47,7 @@
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 => x <x@y> R=accept T=appendfile
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 10HmaX-000000005vi-0000 no recipients found in headers
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 no recipients found in headers
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 => CALLER <CALLER@test.ex> R=accept T=appendfile
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 Completed

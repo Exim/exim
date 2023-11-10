@@ -3380,8 +3380,8 @@ if (extract_recip && (bad_addresses || recipients_count == 0))
       }
     }
 
-  log_write(0, LOG_MAIN|LOG_PANIC, "%s %s found in headers",
-    message_id, bad_addresses ? "bad addresses" : "no recipients");
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s found in headers",
+    bad_addresses ? "bad addresses" : "no recipients");
 
   fseek(spool_data_file, (long int)spool_data_start_offset(message_id), SEEK_SET);
 
