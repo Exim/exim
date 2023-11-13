@@ -1,4 +1,5 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for getticket@test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 tls_out_resumption client requested new ticket, server provided
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -6,9 +7,10 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 => getticket@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => getticket@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmaY-000000005vi-0000"
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for resume@test.ex hostnotresume@test.ex xyz@test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 tls_out_resumption session resumed
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -16,8 +18,9 @@
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbA-000000005vi-0000"
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 -> xyz@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbA-000000005vi-0000"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbA-000000005vi-0000"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 -> xyz@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbA-000000005vi-0000"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 tls_out_resumption not requested or offered
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -25,9 +28,10 @@
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => hostnotresume@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbB-000000005vi-0000"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => hostnotresume@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbB-000000005vi-0000"
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for renewal@test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 tls_out_resumption session resumed
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -35,9 +39,10 @@
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 => renewal@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbD-000000005vi-0000"
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 => renewal@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbD-000000005vi-0000"
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for postrenewal@test.ex
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 tls_out_resumption session resumed
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -45,9 +50,10 @@
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 => postrenewal@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbF-000000005vi-0000"
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 => postrenewal@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbF-000000005vi-0000"
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for aftertimeout@test.ex
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 tls_out_resumption client requested new ticket, server provided
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -55,9 +61,10 @@
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmbG-000000005vi-0000 => aftertimeout@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbH-000000005vi-0000"
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 => aftertimeout@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbH-000000005vi-0000"
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for notreq@test.ex
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 tls_out_resumption not requested or offered
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -65,10 +72,11 @@
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmbI-000000005vi-0000 => notreq@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbJ-000000005vi-0000"
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 => notreq@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbJ-000000005vi-0000"
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for noverify_getticket@test.ex
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 [127.0.0.1] SSL verify error: certificate name mismatch: DN="/CN=server1.example.com" H="127.0.0.1"
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 tls_out_resumption client requested new ticket, server provided
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -76,9 +84,10 @@
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmbK-000000005vi-0000 => noverify_getticket@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbL-000000005vi-0000"
+1999-03-02 09:44:33 10HmbK-000000005vi-0000 => noverify_getticket@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbL-000000005vi-0000"
 1999-03-02 09:44:33 10HmbK-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for noverify_resume@test.ex
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 tls_out_resumption session resumed
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -86,9 +95,10 @@
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmbM-000000005vi-0000 => noverify_resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbN-000000005vi-0000"
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 => noverify_resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbN-000000005vi-0000"
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for getticket@test.ex
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 tls_out_resumption client requested new ticket, server provided
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -96,9 +106,10 @@
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmbO-000000005vi-0000 => getticket@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbP-000000005vi-0000"
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 => getticket@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbP-000000005vi-0000"
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for noresume@test.ex
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 tls_out_resumption client requested new ticket, server provided
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -106,9 +117,10 @@
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmbQ-000000005vi-0000 => noresume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbR-000000005vi-0000"
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 => noresume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbR-000000005vi-0000"
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for resume@test.ex
+1999-03-02 09:44:33 10HmbS-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 tls_out_resumption session resumed
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -116,9 +128,10 @@
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmbS-000000005vi-0000 => resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbT-000000005vi-0000"
+1999-03-02 09:44:33 10HmbS-000000005vi-0000 => resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbT-000000005vi-0000"
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for resume@test.ex
+1999-03-02 09:44:33 10HmbU-000000005vi-0000 tls_out_ver	TLS1.2
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 tls_out_resumption session resumed
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 our cert subject	
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 peer cert subject	CN=server1.example.com
@@ -126,11 +139,34 @@
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmbU-000000005vi-0000 => resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbV-000000005vi-0000"
+1999-03-02 09:44:33 10HmbU-000000005vi-0000 => resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbV-000000005vi-0000"
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for getticket@test.ex
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 tls_out_ver	TLS1.2
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 tls_out_resumption client requested new ticket, server provided
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 our cert subject	
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 peer cert subject	CN=server1.example.com
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 peer cert verified	1
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 peer dn	/CN=server1.example.com
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 bits	256
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 => getticket@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D2 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbX-000000005vi-0000"
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for resume@test.ex
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 tls_out_ver	TLS1.2
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 tls_out_resumption session resumed
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 our cert subject	
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 peer cert subject	CN=server1.example.com
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 peer cert verified	1
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 peer dn	/CN=server1.example.com
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 bits	256
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 => resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D2 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbZ-000000005vi-0000"
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 Completed
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D and for SMTPS on port PORT_D2
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	client requested new ticket, server provided
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -141,6 +177,7 @@
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for getticket@test.ex
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <getticket@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	session resumed
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -152,6 +189,7 @@
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <xyz@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <resume@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	not requested or offered
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -162,6 +200,7 @@
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for hostnotresume@test.ex
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 => :blackhole: <hostnotresume@test.ex> R=server
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	session resumed, also new ticket
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -172,6 +211,7 @@
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbC-000000005vi-0000@myhost.test.ex for renewal@test.ex
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 => :blackhole: <renewal@test.ex> R=server
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	session resumed, also new ticket
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -182,6 +222,7 @@
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbE-000000005vi-0000@myhost.test.ex for postrenewal@test.ex
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 => :blackhole: <postrenewal@test.ex> R=server
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	client requested new ticket, server provided
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -192,6 +233,7 @@
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbG-000000005vi-0000@myhost.test.ex for aftertimeout@test.ex
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 => :blackhole: <aftertimeout@test.ex> R=server
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	no client request
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -202,6 +244,7 @@
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbI-000000005vi-0000@myhost.test.ex for notreq@test.ex
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 => :blackhole: <notreq@test.ex> R=server
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	client requested new ticket, server provided
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -212,6 +255,7 @@
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbK-000000005vi-0000@myhost.test.ex for noverify_getticket@test.ex
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 => :blackhole: <noverify_getticket@test.ex> R=server
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	session resumed
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -222,6 +266,7 @@
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbM-000000005vi-0000@myhost.test.ex for noverify_resume@test.ex
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 => :blackhole: <noverify_resume@test.ex> R=server
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	client requested new ticket, server provided
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -232,6 +277,7 @@
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbO-000000005vi-0000@myhost.test.ex for getticket@test.ex
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 => :blackhole: <getticket@test.ex> R=server
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	client requested new ticket, server provided
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -242,6 +288,7 @@
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbQ-000000005vi-0000@myhost.test.ex for noresume@test.ex
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 => :blackhole: <noresume@test.ex> R=server
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	session resumed
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -252,6 +299,7 @@
 1999-03-02 09:44:33 10HmbT-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbS-000000005vi-0000@myhost.test.ex for resume@test.ex
 1999-03-02 09:44:33 10HmbT-000000005vi-0000 => :blackhole: <resume@test.ex> R=server
 1999-03-02 09:44:33 10HmbT-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
 1999-03-02 09:44:33 tls_in_resumption	session resumed
 1999-03-02 09:44:33 our cert subject	CN=server1.example.com
 1999-03-02 09:44:33 peer cert subject	
@@ -262,3 +310,25 @@
 1999-03-02 09:44:33 10HmbV-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbU-000000005vi-0000@myhost.test.ex for resume@test.ex
 1999-03-02 09:44:33 10HmbV-000000005vi-0000 => :blackhole: <resume@test.ex> R=server
 1999-03-02 09:44:33 10HmbV-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
+1999-03-02 09:44:33 tls_in_resumption	client requested new ticket, server provided
+1999-03-02 09:44:33 our cert subject	CN=server1.example.com
+1999-03-02 09:44:33 peer cert subject	
+1999-03-02 09:44:33 peer cert verified	0
+1999-03-02 09:44:33 peer dn	
+1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
+1999-03-02 09:44:33 bits	256
+1999-03-02 09:44:33 10HmbX-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] TFO* P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbW-000000005vi-0000@myhost.test.ex for getticket@test.ex
+1999-03-02 09:44:33 10HmbX-000000005vi-0000 => :blackhole: <getticket@test.ex> R=server
+1999-03-02 09:44:33 10HmbX-000000005vi-0000 Completed
+1999-03-02 09:44:33 tls_in_ver	TLS1.2
+1999-03-02 09:44:33 tls_in_resumption	session resumed
+1999-03-02 09:44:33 our cert subject	CN=server1.example.com
+1999-03-02 09:44:33 peer cert subject	
+1999-03-02 09:44:33 peer cert verified	0
+1999-03-02 09:44:33 peer dn	
+1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
+1999-03-02 09:44:33 bits	256
+1999-03-02 09:44:33 10HmbZ-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] TFO* P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbY-000000005vi-0000@myhost.test.ex for resume@test.ex
+1999-03-02 09:44:33 10HmbZ-000000005vi-0000 => :blackhole: <resume@test.ex> R=server
+1999-03-02 09:44:33 10HmbZ-000000005vi-0000 Completed

@@ -1,7 +1,7 @@
 # TLSv1.2 session resumption
 #
 ### TLS1.2
-exim -DSERVER=server -DOPTION=+no_tlsv1_3 -bd -oX PORT_D
+exim -DSERVER=server -DOPTION=+no_tlsv1_3 -bd -oX PORT_D:PORT_D2
 ****
 exim -DVALUE=resume -odf getticket@test.ex
 Test message.
@@ -44,6 +44,12 @@ exim -DVALUE=resume -DHELO_MSG=differenthost -odf noresume@test.ex
 exim -DVALUE=resume -DHELO_MSG=differenthost -odf resume@test.ex
 ****
 exim -DVALUE=resume -odf resume@test.ex
+****
+#
+# Test TLS-on-connect
+exim -DVALUE=resume -DSELECTOR=smtps -odf getticket@test.ex
+****
+exim -DVALUE=resume -DSELECTOR=smtps -odf resume@test.ex
 ****
 #
 # Check the -k (key only) option on dumpdb

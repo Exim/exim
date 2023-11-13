@@ -109,6 +109,7 @@ typedef struct {
   uschar	*tls_privatekey;
   uschar	*tls_require_ciphers;
 # ifndef DISABLE_TLS_RESUME
+#  define HNE_DEFAULT US"${if and {{match{$host}{.outlook.com\\$}} {match{$item}{\\N^250-([\\w.]+)\\s\\N}}} {$1}}"
   uschar	*host_name_extract;
   uschar	*tls_resumption_hosts;
 # endif

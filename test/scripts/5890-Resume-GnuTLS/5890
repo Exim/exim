@@ -6,12 +6,12 @@ gnutls
 # SSLKEYLOGFILE=/home/jgh/git/exim/test/foo sudo exim -DSERVER=server -bd -oX PORT_D
 #
 ### TLS1.2
-exim -DSERVER=server -DOPTION=NORMAL:!VERS-TLS1.3 -bd -oX PORT_D
+exim -DSERVER=server -DOPTION=NORMAL:!VERS-TLS1.3 -bd -oX PORT_D:PORT_D2
 ****
 exim -DVALUE=resume -odf getticket@test.ex
 Test message. Contains FF: ÿ
 ****
-exim -DVALUE=resume -odf resume@test.ex abcd@test.ex xyz@test.ex
+exim -DVALUE=resume -odf resume@test.ex hostnotresume@test.ex xyz@test.ex
 Test message to two different hosts, one does not support resume
 ****
 # allow time for ticket to hit renewal time
@@ -36,18 +36,25 @@ Dest on this means the server cert will not verify (but try_verify will permit i
 exim -odf -DVALUE=resume noverify_resume@test.ex
 Dest on this means the server cert will not verify (but try_verify will permit it)
 ****
+# Test TLS-on-connect
+exim -DVALUE=resume -odf resume@test.ex
+****
+exim -DVALUE=resume -DSELECTOR=smtps -odf getticket@test.ex
+****
+exim -DVALUE=resume -DSELECTOR=smtps -odf resume@test.ex
+****
 killdaemon
 sleep 1
 sudo rm -f DIR/spool/db/tls
 #
 #
 ### TLS1.3
-exim -DSERVER=server -DOPTION=NORMAL -bd -oX PORT_D
+exim -DSERVER=server -DOPTION=NORMAL -bd -oX PORT_D:PORT_D2
 ****
 exim -DVALUE=resume -odf getticket@test.ex
 Test message. Contains FF: ÿ
 ****
-exim -DVALUE=resume -odf resume@test.ex abcd@test.ex xyz@test.ex
+exim -DVALUE=resume -odf resume@test.ex hostnotresume@test.ex xyz@test.ex
 Test message to two different hosts, one does not support resume
 ****
 # allow time for ticket to hit renewal time
@@ -77,6 +84,11 @@ exim -DVALUE=resume -DHELO_MSG=differenthost -odf noresume@test.ex
 exim -DVALUE=resume -DHELO_MSG=differenthost -odf resume@test.ex
 ****
 exim -DVALUE=resume -odf resume@test.ex
+****
+# Test TLS-on-connect
+exim -DVALUE=resume -DSELECTOR=smtps -odf getticket@test.ex
+****
+exim -DVALUE=resume -DSELECTOR=smtps -odf resume@test.ex
 ****
 #
 killdaemon

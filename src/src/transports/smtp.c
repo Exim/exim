@@ -203,9 +203,6 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .tls_tempfail_tryclear =	TRUE,
   .tls_try_verify_hosts =	US"*",
   .tls_verify_cert_hostnames =	US"*",
-# ifndef DISABLE_TLS_RESUME
-  .host_name_extract =		US"${if and {{match{$host}{.outlook.com\\$}} {match{$item}{\\N^250-([\\w.]+)\\s\\N}}} {$1}}",
-# endif
 #endif
 #ifdef SUPPORT_I18N
   .utf8_downconvert =		US"-1",
@@ -352,7 +349,7 @@ Returns:    nothing
 void
 smtp_transport_init(transport_instance *tblock)
 {
-smtp_transport_options_block *ob = SOB tblock->options_block;
+smtp_transport_options_block * ob = SOB tblock->options_block;
 int old_pool = store_pool;
 
 /* Retry_use_local_part defaults FALSE if unset */
@@ -769,7 +766,7 @@ return TRUE;
 resumption when such servers do not share a session-cache */
 
 static void
-ehlo_response_lbserver(smtp_context * sx, smtp_transport_options_block * ob)
+ehlo_response_lbserver(smtp_context * sx, const uschar * name_extract)
 {
 #if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
 const uschar * s;
@@ -778,7 +775,7 @@ uschar * save_item = iterate_item;
 if (sx->conn_args.have_lbserver)
   return;
 iterate_item = sx->buffer;
-s = expand_cstring(ob->host_name_extract);
+s = expand_cstring(name_extract);
 iterate_item = save_item;
 sx->conn_args.host_lbserver = s && !*s ? NULL : s;
 sx->conn_args.have_lbserver = TRUE;
@@ -1067,6 +1064,8 @@ sx->pending_EHLO = FALSE;
 
 if (pending_BANNER)
   {
+  const uschar * s;
+
   DEBUG(D_transport) debug_printf("%s expect banner\n", __FUNCTION__);
   (*countp)--;
   if (!smtp_reap_banner(sx))
@@ -1076,7 +1075,10 @@ if (pending_BANNER)
     goto fail;
     }
   /*XXX EXPERIMENTAL_ESMTP_LIMITS ? */
-  ehlo_response_lbserver(sx, sx->conn_args.ob);
+
+  s = ((smtp_transport_options_block *)sx->conn_args.ob)->host_name_extract;
+  if (!s) s = HNE_DEFAULT;
+  ehlo_response_lbserver(sx, s);
   }
 
 if (pending_EHLO)
@@ -2474,10 +2476,20 @@ goto SEND_QUIT;
 #ifndef DISABLE_TLS
   if (sx->smtps)
     {
+    const uschar * s;
+
     smtp_peer_options |= OPTION_TLS;
     suppress_tls = FALSE;
     ob->tls_tempfail_tryclear = FALSE;
     smtp_command = US"SSL-on-connect";
+
+    /* Having no EHLO response yet, cannot peek there for a servername to detect
+    an LB.  Call this anyway, so that a dummy host_name_extract option value can
+    force resumption attempts. */
+
+    if (!(s = ob->host_name_extract)) s = US"never-LB";
+    ehlo_response_lbserver(sx, s);
+
     goto TLS_NEGOTIATE;
     }
 #endif
@@ -2565,6 +2577,8 @@ goto SEND_QUIT;
     if (!sx->early_pipe_active)
 #endif
       {
+      const uschar * s;
+
       sx->peer_offered = ehlo_response(sx->buffer,
 	OPTION_TLS	/* others checked later */
 #ifndef DISABLE_PIPE_CONNECT
@@ -2600,7 +2614,8 @@ goto SEND_QUIT;
 	  }
 	}
 #endif
-      ehlo_response_lbserver(sx, ob);
+      if (!(s = ob->host_name_extract)) s = HNE_DEFAULT;
+      ehlo_response_lbserver(sx, s);
       }
 
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */

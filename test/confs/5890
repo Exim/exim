@@ -13,9 +13,10 @@ domainlist local_domains = test.ex : *.test.ex
 
 acl_smtp_helo = check_helo
 acl_smtp_rcpt = check_recipient
-log_selector = +received_recipients +tls_resumption +tls_peerdn
+log_selector = +received_recipients +tls_resumption +tls_peerdn +outgoing_port
 
 tls_advertise_hosts = *
+tls_on_connect_ports =	PORT_D2
 
 # Set certificate only if server
 
@@ -33,30 +34,32 @@ tls_resumption_hosts = 127.0.0.1
 begin acl
 
 check_helo:
-  accept  condition =	${if def:tls_in_cipher}
-	  logwrite =	tls_in_resumption\t${listextract {$tls_in_resumption} {_RESUME_DECODE}}
-	  logwrite =	our cert subject\t${certextract {subject}{$tls_in_ourcert}}
-	  logwrite =	peer cert subject\t${certextract {subject}{$tls_in_peercert}}
-	  logwrite =	peer cert verified\t${tls_in_certificate_verified}
-	  logwrite =	peer dn\t${tls_in_peerdn}
-	  logwrite =	cipher\t${tls_in_cipher}
-	  logwrite =	bits\t${tls_in_bits}
+  accept condition =	${if def:tls_in_cipher}
+	 logwrite =	tls_in_ver\t$tls_in_ver
+	 logwrite =	tls_in_resumption\t${listextract {$tls_in_resumption} {_RESUME_DECODE}}
+	 logwrite =	our cert subject\t${certextract {subject}{$tls_in_ourcert}}
+	 logwrite =	peer cert subject\t${certextract {subject}{$tls_in_peercert}}
+	 logwrite =	peer cert verified\t${tls_in_certificate_verified}
+	 logwrite =	peer dn\t${tls_in_peerdn}
+	 logwrite =	cipher\t${tls_in_cipher}
+	 logwrite =	bits\t${tls_in_bits}
   accept
 
 check_recipient:
-  accept  domains =	+local_domains
-  deny    message =	relay not permitted
+  accept domains =	+local_domains
+  deny   message =	relay not permitted
 
 log_resumption:
   accept condition =	${if def:tls_out_cipher}
 	 condition =	${if eq {$event_name}{tcp:close}}
+	 logwrite =	tls_out_ver\t$tls_out_ver
 	 logwrite =	tls_out_resumption ${listextract {$tls_out_resumption} {_RESUME_DECODE}}
-	  logwrite =	our cert subject\t${certextract {subject}{$tls_out_ourcert}}
-	  logwrite =	peer cert subject\t${certextract {subject}{$tls_out_peercert}}
-	  logwrite =	peer cert verified\t${tls_out_certificate_verified}
-	  logwrite =	peer dn\t${tls_out_peerdn}
-	  logwrite =	cipher\t${tls_out_cipher}
-	  logwrite =	bits\t${tls_out_bits}
+	 logwrite =	our cert subject\t${certextract {subject}{$tls_out_ourcert}}
+	 logwrite =	peer cert subject\t${certextract {subject}{$tls_out_peercert}}
+	 logwrite =	peer cert verified\t${tls_out_certificate_verified}
+	 logwrite =	peer dn\t${tls_out_peerdn}
+	 logwrite =	cipher\t${tls_out_cipher}
+	 logwrite =	bits\t${tls_out_bits}
 
 
 # ----- Routers -----
@@ -66,7 +69,7 @@ begin routers
 client:
   driver =	accept
   condition =	${if eq {SERVER}{server}{no}{yes}}
-  transport =	send_to_server${if eq{$local_part}{abcd}{2}{1}}
+  transport =	send_to_server${if eq{$local_part}{hostnotresume}{2}{1}}
 
 server:
   driver = redirect
@@ -80,7 +83,14 @@ send_to_server1:
   driver =			smtp
   allow_localhost
   hosts =			127.0.0.1
+.ifdef SELECTOR
+  port =			PORT_D2
+  protocol =			smtps
+  # Use HELO purely to get a P= different on the server <= line
+  hosts_avoid_esmtp =		*
+.else
   port =			PORT_D
+.endif
   helo_data =			helo.data.changed
 .ifdef HELO_MSG
   host_name_extract =		HELO_MSG
@@ -96,11 +106,11 @@ send_to_server1:
   event_action =		${acl {log_resumption}}
 
 send_to_server2:
-  driver = smtp
+  driver =			smtp
   allow_localhost
-  hosts = HOSTIPV4
-  port = PORT_D
-  hosts_try_fastopen =	:
+  hosts =			HOSTIPV4
+  port =			PORT_D
+  hosts_try_fastopen =		:
   tls_verify_certificates =	CDIR/CA/CA.pem
   tls_verify_cert_hostnames =	:
   event_action =		${acl {log_resumption}}

@@ -1,12 +1,12 @@
 # TLSv1.3 session resumption
 #
 ### TLS1.3
-exim -DSERVER=server -bd -oX PORT_D
+exim -DSERVER=server -DOPTION=+no_tlsv1_3 -bd -oX PORT_D:PORT_D2
 ****
 exim -DVALUE=resume -odf getticket@test.ex
 Test message. Contains FF: ÿ
 ****
-exim -DVALUE=resume -odf resume@test.ex abcd@test.ex xyz@test.ex
+exim -DVALUE=resume -odf resume@test.ex hostnotresume@test.ex xyz@test.ex
 Test message to two different hosts, one does not support resume
 ****
 # allow time for ticket to hit renewal time
@@ -24,5 +24,12 @@ Test message.
 exim -odf notreq@test.ex
 Test message, not requesting resumption.
 ****
+#
+# Test TLS-on-connect
+exim -DVALUE=resume -DSELECTOR=smtps -odf getticket@test.ex
+****
+exim -DVALUE=resume -DSELECTOR=smtps -odf resume@test.ex
+****
+#
 killdaemon
 no_msglog_check

@@ -25549,15 +25549,24 @@ load-balancer, matching the session stored in the client's cache.
 
 Exim can pull out a server name, if there is one, from the response to the
 client's SMTP EHLO command.
-The default value of this option:
+For normal STARTTLS use, the default value of this option:
 .code
     ${if and { {match {$host} {.outlook.com\$}} \
                {match {$item} {\N^250-([\w.]+)\s\N}} \
 	     } {$1}}
 .endd
 suffices for one known case.
+
 During the expansion of this option the &$item$& variable will have the
 server's EHLO response.
+
+.new
+For TLS-on-connect connections we do not have an EHLO
+response to use. Because of this the default value of this option is
+set to a static string for those cases, meaning that resumption will
+always be attempted if permitted by the &%tls_resumption_hosts%& option.
+.wen
+
 The result of the option expansion is included in the key used to store and
 retrieve the TLS session, for session resumption.
 

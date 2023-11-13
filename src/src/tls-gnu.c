@@ -2851,7 +2851,7 @@ static int
 tls_server_ticket_cb(gnutls_session_t sess, u_int htype, unsigned when,
   unsigned incoming, const gnutls_datum_t * msg)
 {
-DEBUG(D_tls) debug_printf("newticket cb\n");
+DEBUG(D_tls) debug_printf("newticket cb (on server)\n");
 tls_in.resumption |= RESUME_CLIENT_REQUESTED;
 return 0;
 }
@@ -2888,9 +2888,12 @@ tls_server_resume_posthandshake(exim_gnutls_state_st * state)
 {
 if (gnutls_session_resumption_requested(state->session))
   {
-  /* This tells us the client sent a full ticket.  We use a
+  /* This tells us the client sent a full (?) ticket.  We use a
   callback on session-ticket request, elsewhere, to tell
-  if a client asked for a ticket. */
+  if a client asked for a ticket.
+  XXX As of GnuTLS 3.0.1 it seems to be returning true even for
+  a pure ticket-req (a zero-length Session Ticket extension
+  in the Client Hello, for 1.2) which mucks up our logic. */
 
   tls_in.resumption |= RESUME_CLIENT_SUGGESTED;
   DEBUG(D_tls) debug_printf("client requested resumption\n");
@@ -3319,7 +3322,8 @@ tls_retrieve_session(tls_support * tlsp, gnutls_session_t session,
 tlsp->resumption = RESUME_SUPPORTED;
 
 if (!conn_args->have_lbserver)
-  { DEBUG(D_tls) debug_printf("resumption not supported on continued-connection\n"); }
+  { DEBUG(D_tls) debug_printf(
+      "resumption not supported: no LB detection done (continued-conn?)\n"); }
 else if (verify_check_given_host(CUSS &ob->tls_resumption_hosts, conn_args->host) == OK)
   {
   dbdata_tls_session * dt;
@@ -3347,6 +3351,7 @@ else if (verify_check_given_host(CUSS &ob->tls_resumption_hosts, conn_args->host
     dbfn_close(dbm_file);
     }
   }
+else DEBUG(D_tls) debug_printf("no resumption for this host\n");
 }
 
 
@@ -3374,7 +3379,7 @@ if (gnutls_session_get_flags(session) & GNUTLS_SFLAGS_SESSION_TICKET)
       int dlen = sizeof(dbdata_tls_session) + tkt.size;
       dbdata_tls_session * dt = store_get(dlen, GET_TAINTED);
 
-      DEBUG(D_tls) debug_printf("session data size %u\n", (unsigned)tkt.size);
+      DEBUG(D_tls) debug_printf(" session data size %u\n", (unsigned)tkt.size);
       memcpy(dt->session, tkt.data, tkt.size);
       gnutls_free(tkt.data);
 
@@ -3385,11 +3390,15 @@ if (gnutls_session_get_flags(session) & GNUTLS_SFLAGS_SESSION_TICKET)
 	dbfn_close(dbm_file);
 
 	DEBUG(D_tls)
-	  debug_printf("wrote session db (len %u)\n", (unsigned)dlen);
+	  debug_printf(" wrote session db (len %u)\n", (unsigned)dlen);
 	}
       }
-    else DEBUG(D_tls)
-      debug_printf("extract session data: %s\n", US gnutls_strerror(rc));
+    else
+      { DEBUG(D_tls)
+      debug_printf(" extract session data: %s\n", US gnutls_strerror(rc));
+      }
+  else DEBUG(D_tls)
+      debug_printf(" host not resmable; not saving ticket\n");
   }
 }
 
@@ -3406,7 +3415,7 @@ tls_client_ticket_cb(gnutls_session_t sess, u_int htype, unsigned when,
 exim_gnutls_state_st * state = gnutls_session_get_ptr(sess);
 tls_support * tlsp = state->tlsp;
 
-DEBUG(D_tls) debug_printf("newticket cb\n");
+DEBUG(D_tls) debug_printf("newticket cb (on client)\n");
 
 if (!tlsp->ticket_received)
   tls_save_session(tlsp, sess, state->host);
