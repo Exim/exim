@@ -831,6 +831,7 @@ tls_retry_connection:
 	    goto no_conn;
 	  case FAIL:		/* rejected: the preferred result */
 	    new_domain_record.random_result = ccache_reject;
+	  case DEFER:		/* 4xx response to random */
 	    sx->avoid_option = 0;
 
 	    /* Between each check, issue RSET, because some servers accept only
@@ -862,7 +863,6 @@ tls_retry_connection:
 	    sx->send_rset = TRUE;
 	    sx->completed_addr = FALSE;
 	    goto tls_retry_connection;
-	  case DEFER:		/* 4xx response to random */
 	    break;		/* Just to be clear. ccache_unknown, !done. */
 	  }
 
