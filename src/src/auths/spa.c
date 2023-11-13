@@ -284,14 +284,13 @@ SPAAuthRequest   request;
 SPAAuthChallenge challenge;
 SPAAuthResponse  response;
 char msgbuf[2048];
-char *domain = NULL;
-char *username, *password;
+uschar * domain = NULL, * username, * password;
 
 /* Code added by PH to expand the options */
 
 *buffer = 0;    /* Default no message when cancelled */
 
-if (!(username = CS expand_string(ob->spa_username)))
+if (!(username = expand_string(ob->spa_username)))
   {
   if (f.expand_string_forcedfail) return CANCELLED;
   string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
@@ -300,7 +299,7 @@ if (!(username = CS expand_string(ob->spa_username)))
   return ERROR;
   }
 
-if (!(password = CS expand_string(ob->spa_password)))
+if (!(password = expand_string(ob->spa_password)))
   {
   if (f.expand_string_forcedfail) return CANCELLED;
   string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
@@ -310,7 +309,7 @@ if (!(password = CS expand_string(ob->spa_password)))
   }
 
 if (ob->spa_domain)
-  if (!(domain = CS expand_string(ob->spa_domain)))
+  if (!(domain = expand_string(ob->spa_domain)))
     {
     if (f.expand_string_forcedfail) return CANCELLED;
     string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
@@ -330,7 +329,7 @@ if (!smtp_read_response(sx, US buffer, buffsize, '3', timeout))
 
 DSPA("\n\n%s authenticator: using domain %s\n\n", ablock->name, domain);
 
-spa_build_auth_request(&request, CS username, domain);
+spa_build_auth_request(&request, username, domain);
 spa_bits_to_base64(US msgbuf, US &request, spa_request_length(&request));
 
 DSPA("\n\n%s authenticator: sending request (%s)\n\n", ablock->name, msgbuf);
@@ -347,7 +346,7 @@ if (!smtp_read_response(sx, US buffer, buffsize, '3', timeout))
 DSPA("\n\n%s authenticator: challenge (%s)\n\n", ablock->name, buffer + 4);
 spa_base64_to_bits(CS (&challenge), sizeof(challenge), CCS (buffer + 4));
 
-spa_build_auth_response(&challenge, &response, CS username, CS password);
+spa_build_auth_response(&challenge, &response, username, password);
 spa_bits_to_base64(US msgbuf, US &response, spa_request_length(&response));
 DSPA("\n\n%s authenticator: challenge response (%s)\n\n", ablock->name, msgbuf);
 
