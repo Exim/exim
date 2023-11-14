@@ -726,7 +726,7 @@ gid_t   config_gid             = CONFIGURE_GROUP;
 #else
 gid_t   config_gid             = 0;
 #endif
-uschar *config_main_filelist   = US CONFIGURE_FILE
+const uschar * config_main_filelist = US CONFIGURE_FILE
                          "\0<-----------Space to patch configure_filename->";
 uschar *config_main_filename   = NULL;
 uschar *config_main_directory  = NULL;
@@ -939,8 +939,8 @@ uschar *fake_response_text     = US"Your message has been rejected but is "
 int     filter_n[FILTER_VARIABLE_COUNT];
 int     filter_sn[FILTER_VARIABLE_COUNT];
 int     filter_test            = FTEST_NONE;
-uschar *filter_test_sfile      = NULL;
-uschar *filter_test_ufile      = NULL;
+const uschar * filter_test_sfile = NULL;
+const uschar * filter_test_ufile = NULL;
 uschar *filter_thisaddress     = NULL;
 int     finduser_retries       = 0;
 uid_t   fixed_never_users[]    = { FIXED_NEVER_USERS };
@@ -1185,7 +1185,7 @@ uschar *message_size_limit     = US"50M";
 int     message_utf8_downconvert = 0;	/* -1 ifneeded; 0 never; 1 always */
 #endif
 uschar  message_subdir[2]      = { 0, 0 };
-uschar *message_reference      = NULL;
+const uschar *message_reference= NULL;
 
 /* MIME ACL expandables */
 #ifdef WITH_CONTENT_SCAN
@@ -1219,7 +1219,7 @@ uschar *originator_login       = NULL;
 uschar *originator_name        = NULL;
 uid_t   originator_uid;
 uschar *override_local_interfaces = NULL;
-uschar *override_pid_file_path = NULL;
+const uschar *override_pid_file_path = NULL;
 
 BOOL    panic_coredump	       = FALSE;
 pcre2_general_context * pcre_gen_ctx = NULL;
@@ -1229,7 +1229,7 @@ pcre2_general_context * pcre_mlc_ctx = NULL;
 pcre2_compile_context * pcre_mlc_cmp_ctx = NULL;
 
 uschar *percent_hack_domains   = NULL;
-uschar *pid_file_path          = US PID_FILE_PATH
+const uschar *pid_file_path    = US PID_FILE_PATH
                            "\0<--------------Space to patch pid_file_path->";
 #ifndef DISABLE_PIPE_CONNECT
 uschar *pipe_connect_advertise_hosts = US"*";
@@ -1485,7 +1485,7 @@ uschar *sending_ip_address     = NULL;
 int     sending_port           = -1;
 SIGNAL_BOOL sigalrm_seen       = FALSE;
 const uschar *sigalarm_setter  = NULL;
-uschar **sighup_argv           = NULL;
+const uschar **sighup_argv     = NULL;
 int     slow_lookup_log        = 0;	/* millisecs, zero disables */
 int     smtp_accept_count      = 0;
 int     smtp_accept_max        = 20;
@@ -1572,7 +1572,7 @@ int     string_datestamp_type  = -1;
 const uschar *submission_domain = NULL;
 const uschar *submission_name  = NULL;
 int     syslog_facility        = LOG_MAIL;
-uschar *syslog_processname     = US"exim";
+const uschar *syslog_processname= US"exim";
 uschar *system_filter          = NULL;
 
 uschar *system_filter_directory_transport = NULL;

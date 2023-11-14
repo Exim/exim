@@ -152,7 +152,7 @@ Returns:  the size of the header texts on success;
 */
 
 int
-spool_write_header(uschar * id, int where, uschar ** errmsg)
+spool_write_header(const uschar * id, int where, uschar ** errmsg)
 {
 int fd, size_correction;
 FILE * fp;
@@ -444,7 +444,7 @@ start-up time.
 
 Arguments:
   dir        base directory name
-  dq	     destiinationqueue name
+  dq	     destination queue name
   subdir     subdirectory name
   id         message id
   suffix     suffix to add to id
@@ -457,8 +457,8 @@ Returns:     TRUE if all went well
 */
 
 static BOOL
-make_link(uschar * dir, uschar * dq, uschar * subdir, uschar * id, uschar * suffix,
-  uschar * from, uschar * to, BOOL noentok)
+make_link(const uschar * dir, const uschar * dq, const uschar * subdir, const uschar * id,
+  const uschar * suffix, const uschar * from, const uschar * to, BOOL noentok)
 {
 uschar * fname = spool_fname(string_sprintf("%s%s", from, dir), subdir, id, suffix);
 uschar * tname = spool_q_fname(string_sprintf("%s%s", to,   dir), dq, subdir, id, suffix);
@@ -494,8 +494,8 @@ Returns:     TRUE if all went well
 */
 
 static BOOL
-break_link(uschar * dir, uschar * subdir, uschar * id, uschar * suffix, uschar * from,
-  BOOL noentok)
+break_link(const uschar * dir, const uschar * subdir, const uschar * id,
+  const uschar * suffix, const uschar * from, BOOL noentok)
 {
 uschar * fname = spool_fname(string_sprintf("%s%s", from, dir), subdir, id, suffix);
 if (Uunlink(fname) < 0 && (!noentok || errno != ENOENT))
@@ -528,7 +528,8 @@ Returns:      TRUE if all is well
 */
 
 BOOL
-spool_move_message(uschar * id, uschar * subdir, uschar * from, uschar * to)
+spool_move_message(const uschar * id, const uschar * subdir,
+  const uschar * from, const uschar * to)
 {
 uschar * dest_qname = queue_name_dest ? queue_name_dest : queue_name;
 

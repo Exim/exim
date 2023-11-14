@@ -6388,7 +6388,7 @@ Returns:      When the global variable mua_wrapper is FALSE:
 */
 
 int
-deliver_message(uschar * id, BOOL forced, BOOL give_up)
+deliver_message(const uschar * id, BOOL forced, BOOL give_up)
 {
 int i, rc;
 int final_yield = DELIVER_ATTEMPTED_NORMAL;

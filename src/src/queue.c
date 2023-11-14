@@ -354,7 +354,7 @@ Returns:     nothing
 */
 
 void
-queue_run(qrunner * q, uschar * start_id, uschar * stop_id, BOOL recurse)
+queue_run(qrunner * q, const uschar * start_id, const uschar * stop_id, BOOL recurse)
 {
 BOOL force_delivery = q->queue_run_force
   || deliver_selectstring || deliver_selectstring_sender;
@@ -813,7 +813,7 @@ if (!recurse)
 
 
 void
-single_queue_run(qrunner * q, uschar * start_id, uschar * stop_id)
+single_queue_run(qrunner * q, const uschar * start_id, const uschar * stop_id)
 {
 DEBUG(D_queue_run) debug_printf("Single queue run%s%s%s%s\n",
   start_id ? US" starting at " : US"",
@@ -919,7 +919,7 @@ Returns:      nothing
 */
 
 void
-queue_list(int option, uschar ** list, int count)
+queue_list(int option, const uschar ** list, int count)
 {
 int subcount;
 int now = (int)time(NULL);
@@ -1093,7 +1093,7 @@ Returns:          FALSE if there was any problem
 */
 
 BOOL
-queue_action(uschar * id, int action, uschar ** argv, int argc,
+queue_action(const uschar * id, int action, const uschar ** argv, int argc,
   int recipients_arg)
 {
 BOOL yield = TRUE;

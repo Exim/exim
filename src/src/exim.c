@@ -1537,7 +1537,7 @@ Returns:        DOES NOT RETURN
 */
 
 static void
-exim_usage(uschar *progname)
+exim_usage(const uschar * progname)
 {
 
 /* Handle specific program invocation variants */
@@ -1744,9 +1744,9 @@ Returns:    EXIT_SUCCESS if terminated successfully
 */
 
 int
-main(int argc, char **cargv)
+main(int argc, char ** cargv)
 {
-uschar **argv = USS cargv;
+const uschar ** argv = CUSS cargv;
 int  arg_receive_timeout = -1;
 int  arg_smtp_receive_timeout = -1;
 int  arg_error_handling = error_handling;
@@ -1795,18 +1795,18 @@ BOOL verify_address_mode = FALSE;
 BOOL verify_as_sender = FALSE;
 BOOL rcpt_verify_quota = FALSE;
 BOOL version_printed = FALSE;
-uschar *alias_arg = NULL;
-uschar *called_as = US"";
-uschar *cmdline_syslog_name = NULL;
-uschar *start_queue_run_id = NULL;
-uschar *stop_queue_run_id = NULL;
-uschar *expansion_test_message = NULL;
+const uschar *alias_arg = NULL;
+const uschar *called_as = US"";
+const uschar *cmdline_syslog_name = NULL;
+const uschar *start_queue_run_id = NULL;
+const uschar *stop_queue_run_id = NULL;
+const uschar *expansion_test_message = NULL;
 const uschar *ftest_domain = NULL;
 const uschar *ftest_localpart = NULL;
 const uschar *ftest_prefix = NULL;
 const uschar *ftest_suffix = NULL;
 uschar *log_oneline = NULL;
-uschar *malware_test_file = NULL;
+const uschar *malware_test_file = NULL;
 uschar *real_sender_address;
 uschar *originator_home = US"/";
 size_t sz;
@@ -2152,8 +2152,8 @@ on the second character (the one after '-'), to save some effort. */
  for (i = 1; i < argc; i++)
   {
   BOOL badarg = FALSE;
-  uschar * arg = argv[i];
-  uschar * argrest;
+  const uschar * arg = argv[i];
+  const uschar * argrest;
   uschar switchchar;
 
   /* An argument not starting with '-' is the start of a recipients list;
@@ -2347,7 +2347,7 @@ on the second character (the one after '-'), to save some effort. */
 	case 'I':
 	  if (Ustrlen(argrest) >= 1 && *argrest == ':')
 	    {
-	    uschar *p = argrest+1;
+	    const uschar * p = argrest+1;
 	    info_flag = CMDINFO_HELP;
 	    if (Ustrlen(p))
 	      if (strcmpic(p, CUS"sieve") == 0)
@@ -2674,9 +2674,9 @@ on the second character (the one after '-'), to save some effort. */
 #else
       {
       int ptr = 0;
-      macro_item *m;
+      macro_item * m;
       uschar name[24];
-      uschar *s = argrest;
+      const uschar * s = argrest;
 
       opt_D_used = TRUE;
       while (isspace(*s)) s++;
@@ -2833,7 +2833,7 @@ on the second character (the one after '-'), to save some effort. */
         *(sender_address = store_get(1, GET_UNTAINTED)) = '\0';  /* Ensure writeable memory */
       else
         {
-        uschar * temp = argrest + Ustrlen(argrest) - 1;
+        const uschar * temp = argrest + Ustrlen(argrest) - 1;
         while (temp >= argrest && isspace(*temp)) temp--;
         if (temp >= argrest && *temp == '.') f_end_dot = TRUE;
         allow_domain_literals = TRUE;
@@ -3272,7 +3272,7 @@ on the second character (the one after '-'), to save some effort. */
       /* -oB: Set a connection message max value for remote deliveries */
       case 'B':
 	{
-	uschar * p = argrest;
+	const uschar * p = argrest;
 	if (!*p)
 	  if (i+1 < argc && isdigit((argv[i+1][0])))
 	    p = argv[++i];
@@ -4432,7 +4432,7 @@ if (bi_option)
   if (bi_command && *bi_command)
     {
     int i = 0;
-    uschar *argv[3];
+    const uschar * argv[3];
     argv[i++] = bi_command;	/* nonexpanded option so assume untainted */
     if (alias_arg) argv[i++] = alias_arg;
     argv[i++] = NULL;
@@ -4761,7 +4761,7 @@ if (rcpt_verify_quota)
     exim_fail("exim: missing recipient for quota check\n");
   else
     {
-    verify_quota(argv[recipients_arg]);
+    verify_quota(US argv[recipients_arg]);	/*XXX we lose track of const here */
     exim_exit(EXIT_SUCCESS);
     }
 
@@ -5768,7 +5768,7 @@ for (BOOL more = TRUE; more; )
     {
     int rcount = 0;
     int count = argc - recipients_arg;
-    uschar **list = argv + recipients_arg;
+    const uschar ** list = argv + recipients_arg;
 
     /* These options cannot be changed dynamically for non-SMTP messages */
 

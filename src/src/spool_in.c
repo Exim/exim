@@ -36,7 +36,7 @@ Side effect: message_subdir is set for the (possibly split) spool directory
 */
 
 int
-spool_open_datafile(uschar * id)
+spool_open_datafile(const uschar * id)
 {
 struct stat statbuf;
 flock_t lock_data;

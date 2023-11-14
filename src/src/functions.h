@@ -218,7 +218,7 @@ extern void    delete_pid_file(void);
 extern void    deliver_local(address_item *, BOOL);
 extern address_item *deliver_make_addr(uschar *, BOOL);
 extern void    delivery_log(int, address_item *, int, uschar *);
-extern int     deliver_message(uschar *, BOOL, BOOL);
+extern int     deliver_message(const uschar *, BOOL, BOOL);
 extern void    deliver_msglog(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    deliver_set_expansions(address_item *);
 extern int     deliver_split_address(address_item *);
@@ -284,7 +284,7 @@ extern BOOL    fd_ready(int, time_t);
 
 extern int     filter_interpret(const uschar *, int, address_item **, uschar **);
 extern BOOL    filter_personal(string_item *, BOOL);
-extern BOOL    filter_runtest(int, uschar *, BOOL, BOOL);
+extern BOOL    filter_runtest(int, const uschar *, BOOL, BOOL);
 extern BOOL    filter_system_interpret(address_item **, uschar **);
 
 extern uschar * fn_hdrs_added(void);
@@ -345,7 +345,7 @@ extern uschar *macros_expand(int, int *, BOOL *);
 extern void    mainlog_close(void);
 #ifdef WITH_CONTENT_SCAN
 extern int     malware(const uschar *, BOOL, int);
-extern int     malware_in_file(uschar *);
+extern int     malware_in_file(const uschar *);
 extern void    malware_init(void);
 extern gstring * malware_show_supported(gstring *);
 #endif
@@ -408,15 +408,15 @@ extern BOOL	proxy_protocol_host(void);
 extern void	proxy_protocol_setup(void);
 #endif
 
-extern BOOL    queue_action(uschar *, int, uschar **, int, int);
+extern BOOL    queue_action(const uschar *, int, const uschar **, int, int);
 extern void    queue_check_only(void);
 extern unsigned queue_count(void);
 extern unsigned queue_count_cached(void);
-extern void    queue_list(int, uschar **, int);
+extern void    queue_list(int, const uschar **, int);
 #ifndef DISABLE_QUEUE_RAMP
 extern void    queue_notify_daemon(const uschar * hostname);
 #endif
-extern void    queue_run(qrunner *, uschar *, uschar *, BOOL);
+extern void    queue_run(qrunner *, const uschar *, const uschar *, BOOL);
 
 extern int     random_number(int);
 extern const uschar *rc_to_string(int);
@@ -430,7 +430,7 @@ extern void    readconf_driver_init(uschar *, driver_instance **,
 extern uschar *readconf_find_option(void *);
 extern void    readconf_main(BOOL);
 extern void    readconf_options_from_list(optionlist *, unsigned, const uschar *, uschar *);
-extern BOOL    readconf_print(const uschar *, uschar *, BOOL);
+extern BOOL    readconf_print(const uschar *, const uschar *, BOOL);
 extern uschar *readconf_printtime(int);
 extern const uschar *readconf_readname(uschar *, int, const uschar *);
 extern int     readconf_readtime(const uschar *, int, BOOL);
@@ -503,7 +503,7 @@ extern int     sieve_interpret(const uschar *, int, const uschar *,
 		 const uschar *, const uschar *, const uschar *,
 		 address_item **, uschar **);
 extern void    sigalrm_handler(int);
-extern void    single_queue_run(qrunner *, uschar *, uschar *);
+extern void    single_queue_run(qrunner *, const uschar *, const uschar *);
 extern int     smtp_boundsock(smtp_connect_args *);
 extern void    smtp_closedown(uschar *);
 extern void    smtp_command_timeout_exit(void) NORETURN;
@@ -544,12 +544,12 @@ extern int     spam(const uschar **);
 extern FILE   *spool_mbox(unsigned long *, const uschar *, uschar **);
 #endif
 extern void    spool_clear_header_globals(void);
-extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
-extern int     spool_open_datafile(uschar *);
+extern BOOL    spool_move_message(const uschar *, const uschar *, const uschar *, const uschar *);
+extern int     spool_open_datafile(const uschar *);
 extern int     spool_open_temp(uschar *);
 extern int     spool_read_header(uschar *, BOOL, BOOL);
 extern uschar *spool_sender_from_msgid(const uschar *);
-extern int     spool_write_header(uschar *, int, uschar **);
+extern int     spool_write_header(const uschar *, int, uschar **);
 extern int     stdin_getc(unsigned);
 extern int     stdin_feof(void);
 extern int     stdin_ferror(void);
@@ -1144,7 +1144,7 @@ return string_sprintf("%s/%s/%s/%s",
 # endif
 
 static inline uschar *
-spool_q_sname(const uschar * purpose, const uschar * q, uschar * subdir)
+spool_q_sname(const uschar * purpose, const uschar * q, const uschar * subdir)
 {
 return string_sprintf("%s%s%s%s%s",
 		    q, *q ? "/" : "",
@@ -1153,7 +1153,7 @@ return string_sprintf("%s%s%s%s%s",
 }
 
 static inline uschar *
-spool_sname(const uschar * purpose, uschar * subdir)
+spool_sname(const uschar * purpose, const uschar * subdir)
 {
 return spool_q_sname(purpose, queue_name, subdir);
 }

@@ -164,7 +164,7 @@ Returns:      TRUE if no errors
 */
 
 BOOL
-filter_runtest(int fd, uschar *filename, BOOL is_system, BOOL dot_ended)
+filter_runtest(int fd, const uschar * filename, BOOL is_system, BOOL dot_ended)
 {
 int rc, filter_type;
 BOOL yield;

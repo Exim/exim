@@ -2741,7 +2741,7 @@ Returns:      Boolean success
 */
 
 BOOL
-readconf_print(const uschar *name, uschar *type, BOOL no_labels)
+readconf_print(const uschar * name, const uschar * type, BOOL no_labels)
 {
 BOOL names_only = FALSE;
 optionlist *ol2 = NULL;
@@ -3121,8 +3121,8 @@ readconf_main(BOOL nowarn)
 {
 int sep = 0;
 struct stat statbuf;
-uschar *s, *filename;
-const uschar *list = config_main_filelist;
+uschar * s, * filename;
+const uschar * list = config_main_filelist;
 
 /* Loop through the possible file names */
 
@@ -3459,7 +3459,7 @@ leading "log_". */
 if (syslog_facility_str)
   {
   int i;
-  uschar *s = syslog_facility_str;
+  uschar * s = syslog_facility_str;
 
   if ((Ustrlen(syslog_facility_str) >= 4) &&
         (strncmpic(syslog_facility_str, US"log_", 4) == 0))
@@ -3481,10 +3481,11 @@ if (syslog_facility_str)
 
 if (*pid_file_path)
   {
-  if (!(s = expand_string(pid_file_path)))
+  const uschar * t = expand_cstring(pid_file_path);
+  if (!t)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand pid_file_path "
       "\"%s\": %s", pid_file_path, expand_string_message);
-  pid_file_path = s;
+  pid_file_path = t;
   }
 
 /* Set default value of process_log_path */

@@ -438,7 +438,7 @@ extern FILE   *config_file;            /* Configuration file */
 extern const uschar *config_filename;  /* Configuration file name */
 extern gid_t   config_gid;             /* Additional group owner */
 extern int     config_lineno;          /* Line number */
-extern uschar *config_main_filelist;   /* List of possible config files */
+extern const uschar *config_main_filelist; /* List of possible config files */
 extern uschar *config_main_filename;   /* File name actually used */
 extern uschar *config_main_directory;  /* Directory where the main config file was found */
 extern uid_t   config_uid;             /* Additional owner */
@@ -625,8 +625,8 @@ extern uschar *fake_response_text;     /* User defined message for the above. De
 extern int     filter_n[FILTER_VARIABLE_COUNT]; /* filter variables */
 extern int     filter_sn[FILTER_VARIABLE_COUNT]; /* variables set by system filter */
 extern int     filter_test;            /* Filter test type */
-extern uschar *filter_test_sfile;      /* System filter test file */
-extern uschar *filter_test_ufile;      /* User filter test file */
+extern const uschar *filter_test_sfile;/* System filter test file */
+extern const uschar *filter_test_ufile;/* User filter test file */
 extern uschar *filter_thisaddress;     /* For address looping */
 extern int     finduser_retries;       /* Retry count for getpwnam() */
 extern uid_t   fixed_never_users[];    /* Can't be overridden */
@@ -755,7 +755,7 @@ extern int     message_utf8_downconvert; /* convert from utf8 */
 const extern pcre2_code *regex_UTF8;         /* For recognizing SMTPUTF8 settings */
 #endif
 extern uschar  message_subdir[];       /* Subdirectory for messages */
-extern uschar *message_reference;      /* Reference for error messages */
+extern const uschar *message_reference;/* Reference for error messages */
 
 /* MIME ACL expandables */
 #ifdef WITH_CONTENT_SCAN
@@ -798,7 +798,7 @@ extern uschar *originator_login;       /* Login of same */
 extern uschar *originator_name;        /* Full name of same */
 extern uid_t   originator_uid;         /* Uid of ditto */
 extern uschar *override_local_interfaces; /* Value of -oX argument */
-extern uschar *override_pid_file_path; /* Value of -oP argument */
+extern const uschar *override_pid_file_path; /* Value of -oP argument */
 
 extern BOOL    panic_coredump;	       /* SEGV rather than exit, on LOG_PANIC_DIE */
 extern pcre2_general_context * pcre_gen_ctx;	/* pcre memory management */
@@ -808,7 +808,7 @@ extern pcre2_general_context * pcre_mlc_ctx;
 extern pcre2_compile_context * pcre_mlc_cmp_ctx;
 
 extern uschar *percent_hack_domains;   /* Local domains for which '% operates */
-extern uschar *pid_file_path;          /* For writing daemon pids */
+extern const uschar *pid_file_path;    /* For writing daemon pids */
 #ifndef DISABLE_PIPE_CONNECT
 extern uschar *pipe_connect_advertise_hosts; /* for banner/EHLO pipelining */
 #endif
@@ -970,7 +970,7 @@ extern uschar *sending_ip_address;     /* Address of outgoing (SMTP) interface *
 extern int     sending_port;           /* Port of outgoing interface */
 extern SIGNAL_BOOL sigalrm_seen;       /* Flag for sigalrm_handler */
 extern const uschar *sigalarm_setter;  /* For debug, set to callpoint of alarm() */
-extern uschar **sighup_argv;           /* Args for re-execing after SIGHUP */
+extern const uschar **sighup_argv;     /* Args for re-execing after SIGHUP */
 extern int     slow_lookup_log;        /* Log DNS lookups taking longer than N millisecs */
 extern int     smtp_accept_count;      /* Count of connections */
 extern BOOL    smtp_accept_keepalive;  /* Set keepalive on incoming */
@@ -1065,7 +1065,7 @@ extern const uschar *submission_name;  /* User name set from ACL */
 extern BOOL    syslog_duplication;     /* FALSE => no duplicate logging */
 extern int     syslog_facility;        /* As defined by Syslog.h */
 extern BOOL    syslog_pid;             /* TRUE if PID on syslogs */
-extern uschar *syslog_processname;     /* 'ident' param to openlog() */
+extern const uschar *syslog_processname; /* 'ident' param to openlog() */
 extern BOOL    syslog_timestamp;       /* TRUE if time on syslogs */
 extern uschar *system_filter;          /* Name of system filter file */
 
