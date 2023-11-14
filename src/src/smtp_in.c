@@ -10,6 +10,7 @@
 
 
 #include "exim.h"
+#include "local_scan.h"
 #include <assert.h>
 
 
@@ -1770,7 +1771,7 @@ int
 xclient_xtextdecode(uschar *code, uschar *end, uschar **ptr)
 {
 register int x;
-uschar *result = store_get(end - code + 1);
+uschar *result = store_get(end - code + 1, FALSE);
 *ptr = result;
 
 while (code < end)
