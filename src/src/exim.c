@@ -847,7 +847,7 @@ exit(EXIT_FAILURE);
 
 /* fail if a length is too long */
 static inline void
-exim_len_fail_toolong(int itemlen, int maxlen, const char *description)
+exim_len_fail_toolong(int itemlen, int maxlen, const char * description)
 {
 if (itemlen <= maxlen)
   return;
@@ -858,8 +858,10 @@ exit(EXIT_FAILURE);
 
 /* only pass through the string item back to the caller if it's short enough */
 static inline const uschar *
-exim_str_fail_toolong(const uschar *item, int maxlen, const char *description)
+exim_str_fail_toolong(const uschar * item, int maxlen, const char * description)
 {
+if (!item)
+  exim_fail("exim: bad item for: %s\n", description);
 exim_len_fail_toolong(Ustrlen(item), maxlen, description);
 return item;
 }
@@ -884,15 +886,27 @@ log_write(0, LOG_MAIN|LOG_PANIC,
 struct stat buf;
 
 if (0 == (fd < 0 ? stat(name, &buf) : fstat(fd, &buf)))
-{
+  {
   if (buf.st_uid == owner && buf.st_gid == group) return 0;
   log_write(0, LOG_MAIN|LOG_PANIC, "Wrong ownership on %s", name);
-}
+  }
 else log_write(0, LOG_MAIN|LOG_PANIC, "Stat failed on %s: %s", name, strerror(errno));
 
 #endif
 errno = saved_errno;
 return -1;
+}
+
+
+/* Bump the index for argv, checking for overflow,
+and return the argument. */
+
+static const uschar *
+next_argv(const uschar ** argv, int * pi, int argc, const uschar * where)
+{
+int i = *pi;
+if (++i >= argc) exim_fail("exim: bad item for: %s\n", where);
+return argv[*pi = i];
 }
 
 
@@ -3151,7 +3165,8 @@ on the second character (the one after '-'), to save some effort. */
       {
       msg_action = MSG_SETQUEUE;
       queue_name_dest = string_copy_taint(
-	exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-MG"),
+	exim_str_fail_toolong(next_argv(argv, &i, argc, arg),
+			      EXIM_DRIVERNAME_MAX, "-MG"),
 	GET_TAINTED);
       }
     else if (Ustrcmp(argrest, "mad") == 0) msg_action = MSG_MARK_ALL_DELIVERED;
@@ -3363,36 +3378,36 @@ on the second character (the one after '-'), to save some effort. */
 
 	if (Ustrcmp(argrest, "a") == 0)
 	  sender_host_address = string_copy_taint(
-	    exim_str_fail_toolong(argv[++i], EXIM_IPADDR_MAX, "-oMa"),
-	    GET_TAINTED);
+	    exim_str_fail_toolong(next_argv(argv, &i, argc, arg),
+				  EXIM_IPADDR_MAX, "-oMa"), GET_TAINTED);
 
 	/* -oMaa: Set authenticator name */
 
 	else if (Ustrcmp(argrest, "aa") == 0)
 	  sender_host_authenticated = string_copy_taint(
-	    exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-oMaa"),
-	    GET_TAINTED);
+	    exim_str_fail_toolong(next_argv(argv, &i, argc, arg),
+				  EXIM_DRIVERNAME_MAX, "-oMaa"), GET_TAINTED);
 
 	/* -oMas: setting authenticated sender */
 
 	else if (Ustrcmp(argrest, "as") == 0)
 	  authenticated_sender = string_copy_taint(
-	    exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMas"),
-	    GET_TAINTED);
+	    exim_str_fail_toolong(next_argv(argv, &i, argc, arg),
+				  EXIM_EMAILADDR_MAX, "-oMas"), GET_TAINTED);
 
 	/* -oMai: setting authenticated id */
 
 	else if (Ustrcmp(argrest, "ai") == 0)
 	  authenticated_id = string_copy_taint(
-	    exim_str_fail_toolong(argv[++i], EXIM_EMAILADDR_MAX, "-oMai"),
-	    GET_TAINTED);
+	    exim_str_fail_toolong(next_argv(argv, &i, argc, arg),
+				  EXIM_EMAILADDR_MAX, "-oMai"), GET_TAINTED);
 
 	/* -oMi: Set incoming interface address */
 
 	else if (Ustrcmp(argrest, "i") == 0)
 	  interface_address = string_copy_taint(
-	    exim_str_fail_toolong(argv[++i], EXIM_IPADDR_MAX, "-oMi"),
-	    GET_TAINTED);
+	    exim_str_fail_toolong(next_argv(argv, &i, argc, arg),
+				  EXIM_IPADDR_MAX, "-oMi"), GET_TAINTED);
 
 	/* -oMm: Message reference */
 
@@ -3402,7 +3417,7 @@ on the second character (the one after '-'), to save some effort. */
 	      exim_fail("-oMm must be a valid message ID\n");
 	  if (!f.trusted_config)
 	      exim_fail("-oMm must be called by a trusted user/config\n");
-	    message_reference = argv[++i];
+	    message_reference = next_argv(argv, &i, argc, arg);
 	  }
 
 	/* -oMr: Received protocol */
@@ -3412,26 +3427,32 @@ on the second character (the one after '-'), to save some effort. */
 	  if (received_protocol)
 	    exim_fail("received_protocol is set already\n");
 	  else
-	    received_protocol = string_copy_taint(
-	      exim_str_fail_toolong(argv[++i], EXIM_DRIVERNAME_MAX, "-oMr"),
-	      GET_TAINTED);
+	    if (++i >= argc) badarg = TRUE;
+	    else
+	      received_protocol = string_copy_taint(
+		exim_str_fail_toolong(argv[i], EXIM_DRIVERNAME_MAX, "-oMr"),
+		GET_TAINTED);
 
 	/* -oMs: Set sender host name */
 
 	else if (Ustrcmp(argrest, "s") == 0)
-	  sender_host_name = string_copy_taint(
-	    exim_str_fail_toolong(argv[++i], EXIM_HOSTNAME_MAX, "-oMs"),
-	    GET_TAINTED);
+	  if (++i >= argc) badarg = TRUE;
+	  else
+	    sender_host_name = string_copy_taint(
+	      exim_str_fail_toolong(argv[i], EXIM_HOSTNAME_MAX, "-oMs"),
+	      GET_TAINTED);
 
 	/* -oMt: Set sender ident */
 
 	else if (Ustrcmp(argrest, "t") == 0)
-	  {
-	  sender_ident_set = TRUE;
-	  sender_ident = string_copy_taint(
-	    exim_str_fail_toolong(argv[++i], EXIM_IDENTUSER_MAX, "-oMt"),
-	    GET_TAINTED);
-	  }
+	  if (++i >= argc) badarg = TRUE;
+	  else
+	    {
+	    sender_ident_set = TRUE;
+	    sender_ident = string_copy_taint(
+	      exim_str_fail_toolong(argv[i], EXIM_IDENTUSER_MAX, "-oMt"),
+	      GET_TAINTED);
+	    }
 
 	/* Else a bad argument */
 
@@ -3459,7 +3480,9 @@ on the second character (the one after '-'), to save some effort. */
 	  exim_fail("exim: only uid=%d or uid=%d can use -oP and -oPX "
                     "(uid=%d euid=%d | %d)\n",
                     root_uid, exim_uid, getuid(), geteuid(), real_uid);
-	if (!*argrest) override_pid_file_path = argv[++i];
+	if (!*argrest)
+	  if (++i < argc) override_pid_file_path = argv[i];
+	  else badarg = TRUE;
 	else if (Ustrcmp(argrest, "X") == 0) delete_pid_file();
 	else badarg = TRUE;
 	break;
@@ -3487,10 +3510,9 @@ on the second character (the one after '-'), to save some effort. */
       /* Limits: Is there a real limit we want here?  1024 is very arbitrary. */
 
       case 'X':
-	if (*argrest) badarg = TRUE;
+	if (*argrest || ++i >= argc) badarg = TRUE;
 	else override_local_interfaces = string_copy_taint(
-	  exim_str_fail_toolong(argv[++i], 1024, "-oX"),
-	  GET_TAINTED);
+	  exim_str_fail_toolong(argv[i], 1024, "-oX"), GET_TAINTED);
 	break;
 
       /* -oY: Override creation of daemon notifier socket */
@@ -3528,7 +3550,7 @@ on the second character (the one after '-'), to save some effort. */
     which sets the host protocol and host name */
 
     if (!*argrest)
-      if (i+1 < argc) argrest = argv[++i]; else { badarg = TRUE; break; }
+      argrest = next_argv(argv, &i, argc, arg);
 
     if (*argrest)
       {
@@ -3614,8 +3636,14 @@ on the second character (the one after '-'), to save some effort. */
 
 	else
 	  {
-	  int intvl = readconf_readtime(*argrest ? argrest : argv[++i], 0, FALSE);
-	  if (intvl <= 0)
+	  int intvl;
+	  const uschar * s;
+
+	  if (*argrest) s = argrest;
+	  else if (++i < argc) { badarg = TRUE; break; }
+	  else s = argv[i];
+
+	  if ((intvl = readconf_readtime(s, 0, FALSE)) <= 0)
 	    exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
 
 	  for (qrunner * qq = qrunners; qq; qq = qq->next)
@@ -3706,8 +3734,8 @@ on the second character (the one after '-'), to save some effort. */
     tested. Otherwise variability of clock ticks etc. cause problems. */
 
     case 'T':
-    if (f.running_in_test_harness && Ustrcmp(argrest, "qt") == 0)
-      fudged_queue_times = string_copy_taint(argv[++i], GET_TAINTED);
+    if (f.running_in_test_harness && Ustrcmp(argrest, "qt") == 0 && ++i < argc)
+      fudged_queue_times = string_copy_taint(argv[i], GET_TAINTED);
     else badarg = TRUE;
     break;
 
