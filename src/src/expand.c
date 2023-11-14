@@ -1968,7 +1968,7 @@ switch (vp->type)
     if (!(s = *((uschar **)(val)))) return US"";
     if (!(domain = Ustrrchr(s, '@'))) return s;
     if (domain - s > sizeof(var_buffer) - 1)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "local part longer than " SIZE_T_FMT
+      log_write(0, LOG_MAIN, "local part longer than " SIZE_T_FMT
 	  " in string expansion", sizeof(var_buffer));
     return string_copyn(s, domain - s);
 
