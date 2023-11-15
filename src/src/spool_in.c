@@ -456,9 +456,12 @@ n = Ustrlen(big_buffer);
 if (n < 3 || big_buffer[0] != '<' || big_buffer[n-2] != '>')
   goto SPOOL_FORMAT_ERROR;
 
-sender_address = store_get(n-2, GET_TAINTED);
-Ustrncpy(sender_address, big_buffer+1, n-3);
-sender_address[n-3] = 0;
+ {
+  uschar * s = store_get(n-2, GET_TAINTED);
+  Ustrncpy(s, big_buffer+1, n-3);
+  s[n-3] = '\0';
+  sender_address = s;
+ }
 
 where = US"time";
 if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;

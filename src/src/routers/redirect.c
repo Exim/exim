@@ -306,9 +306,8 @@ redirect_router_options_block *ob =
 
 while (generated)
   {
-  address_item *parent;
-  address_item *next = generated;
-  uschar *errors_address = next->prop.errors_address;
+  address_item * next = generated, * parent;
+  const uschar * errors_address = next->prop.errors_address;
 
   generated = next->next;
   next->parent = addr;

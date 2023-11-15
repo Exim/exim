@@ -656,8 +656,7 @@ static void
 deferred_event_raise(address_item * addr, host_item * host, uschar * evstr)
 {
 uschar * action = addr->transport->event_action;
-const uschar * save_domain;
-uschar * save_local;
+const uschar * save_domain, * save_local;
 
 if (!action)
   return;
@@ -1793,7 +1792,7 @@ return FALSE;
 
 typedef struct smtp_compare_s
 {
-    uschar *			current_sender_address;
+    const uschar *		current_sender_address;
     struct transport_instance *	tblock;
 } smtp_compare_t;
 
@@ -1803,7 +1802,7 @@ sender_address, helo_data and tls_certificate if enabled.
 */
 
 static uschar *
-smtp_local_identity(uschar * sender, struct transport_instance * tblock)
+smtp_local_identity(const uschar * sender, struct transport_instance * tblock)
 {
 address_item * addr1;
 uschar * if1 = US"";
@@ -1811,7 +1810,7 @@ uschar * helo1 = US"";
 #ifndef DISABLE_TLS
 uschar * tlsc1 = US"";
 #endif
-uschar * save_sender_address = sender_address;
+const uschar * save_sender_address = sender_address;
 uschar * local_identity = NULL;
 smtp_transport_options_block * ob = SOB tblock->options_block;
 
@@ -3434,7 +3433,7 @@ buffer. */
 sx->pending_MAIL = TRUE;     /* The block starts with MAIL */
 
   {
-  uschar * s = sx->from_addr;
+  const uschar * s = sx->from_addr;
 #ifdef SUPPORT_I18N
   uschar * errstr = NULL;
 
@@ -3505,7 +3504,7 @@ for (addr = sx->first_addr, address_count = 0, pipe_limit = 100;
   {
   int cmds_sent;
   BOOL no_flush;
-  uschar * rcpt_addr;
+  const uschar * rcpt_addr;
 
 #ifdef EXPERIMENTAL_ESMTP_LIMITS
   if (  sx->single_rcpt_domain					/* restriction on domains */

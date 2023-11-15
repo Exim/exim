@@ -105,8 +105,8 @@ Return: TRUE if result found
 */
 
 static BOOL
-cached_callout_lookup(address_item * addr, uschar * address_key,
-  uschar * from_address, int * opt_ptr, uschar ** pm_ptr,
+cached_callout_lookup(address_item * addr, const uschar * address_key,
+  const uschar * from_address, int * opt_ptr, uschar ** pm_ptr,
   int * yield, uschar ** failure_ptr,
   dbdata_callout_cache * new_domain_record, int * old_domain_res)
 {
@@ -278,10 +278,10 @@ return FALSE;
 */
 static void
 cache_callout_write(dbdata_callout_cache * dom_rec, const uschar * domain,
-  int done, dbdata_callout_cache_address * addr_rec, uschar * address_key)
+  int done, dbdata_callout_cache_address * addr_rec, const uschar * address_key)
 {
 open_db dbblock;
-open_db *dbm_file = NULL;
+open_db * dbm_file = NULL;
 
 /* If we get here with done == TRUE, a successful callout happened, and yield
 will be set OK or FAIL according to the response to the RCPT command.
@@ -502,11 +502,11 @@ do_callout(address_item *addr, host_item *host_list, transport_feedback *tf,
 int yield = OK;
 int old_domain_cache_result = ccache_accept;
 BOOL done = FALSE;
-uschar *address_key;
-uschar *from_address;
-uschar *random_local_part = NULL;
-const uschar *save_deliver_domain = deliver_domain;
-uschar **failure_ptr = options & vopt_is_recipient
+const uschar * address_key;
+const uschar * from_address;
+uschar * random_local_part = NULL;
+const uschar * save_deliver_domain = deliver_domain;
+uschar ** failure_ptr = options & vopt_is_recipient
   ? &recipient_verify_failure : &sender_verify_failure;
 dbdata_callout_cache new_domain_record;
 dbdata_callout_cache_address new_address_record;
@@ -771,7 +771,7 @@ tls_retry_connection:
 
     if (random_local_part)
       {
-      uschar * main_address = addr->address;
+      const uschar * main_address = addr->address;
       const uschar * rcpt_domain = addr->domain;
 
 #ifdef SUPPORT_I18N
@@ -942,7 +942,7 @@ tls_retry_connection:
 
       if (done)
 	{
-	uschar * main_address = addr->address;
+	const uschar * main_address = addr->address;
 
 	/*XXX oops, affixes */
 	addr->address = string_sprintf("postmaster@%.1000s", addr->domain);
@@ -1286,7 +1286,7 @@ return FALSE;
 
 
 static BOOL
-_cutthrough_puts(uschar * cp, int n)
+_cutthrough_puts(const uschar * cp, int n)
 {
 while(n--)
  {
@@ -1301,7 +1301,7 @@ return TRUE;
 
 /* Buffered output of counted data block.   Return boolean success */
 static BOOL
-cutthrough_puts(uschar * cp, int n)
+cutthrough_puts(const uschar * cp, int n)
 {
 if (cutthrough.cctx.sock < 0) return TRUE;
 if (_cutthrough_puts(cp, n))  return TRUE;
@@ -1407,9 +1407,9 @@ return cutthrough_response(&cutthrough.cctx, '3', NULL, CUTTHROUGH_DATA_TIMEOUT)
 
 /* tctx arg only to match write_chunk() */
 static BOOL
-cutthrough_write_chunk(transport_ctx * tctx, uschar * s, int len)
+cutthrough_write_chunk(transport_ctx * tctx, const uschar * s, int len)
 {
-uschar * s2;
+const uschar * s2;
 while(s && (s2 = Ustrchr(s, '\n')))
  {
  if(!cutthrough_puts(s, s2-s) || !cutthrough_put_nl())
@@ -1697,16 +1697,16 @@ int yield = OK;
 int verify_type = expn ? v_expn :
    f.address_test_mode ? v_none :
           options & vopt_is_recipient ? v_recipient : v_sender;
-address_item *addr_list;
-address_item *addr_new = NULL;
-address_item *addr_remote = NULL;
-address_item *addr_local = NULL;
-address_item *addr_succeed = NULL;
-uschar **failure_ptr = options & vopt_is_recipient
+address_item * addr_list;
+address_item * addr_new = NULL;
+address_item * addr_remote = NULL;
+address_item * addr_local = NULL;
+address_item * addr_succeed = NULL;
+uschar ** failure_ptr = options & vopt_is_recipient
   ? &recipient_verify_failure : &sender_verify_failure;
-uschar *ko_prefix, *cr;
-uschar *address = vaddr->address;
-uschar *save_sender;
+uschar * ko_prefix, * cr;
+const uschar * address = vaddr->address;
+const uschar * save_sender;
 uschar null_sender[] = { 0 };             /* Ensure writeable memory */
 
 /* Clear, just in case */
@@ -1751,9 +1751,8 @@ may have been set by domains and local part tests during an ACL. */
 
 if (global_rewrite_rules)
   {
-  uschar *old = address;
-  /* deconst ok as address was not const */
-  address = US rewrite_address(address, options & vopt_is_recipient, FALSE,
+  const uschar * old = address;
+  address = rewrite_address(address, options & vopt_is_recipient, FALSE,
     global_rewrite_rules, rewrite_existflags);
   if (address != old)
     {
@@ -1919,8 +1918,8 @@ while (addr_new)
 	  if (tf.hosts && (!host_list || tf.hosts_override))
 	    {
 	    uschar *s;
-	    const uschar *save_deliver_domain = deliver_domain;
-	    uschar *save_deliver_localpart = deliver_localpart;
+	    const uschar * save_deliver_domain = deliver_domain;
+	    const uschar * save_deliver_localpart = deliver_localpart;
 
 	    host_list = NULL;    /* Ignore the router's hosts */
 
@@ -2455,11 +2454,11 @@ verify_check_notblind(BOOL case_sensitive)
 for (int i = 0; i < recipients_count; i++)
   {
   BOOL found = FALSE;
-  uschar *address = recipients_list[i].address;
+  const uschar * address = recipients_list[i].address;
 
   for (header_line * h = header_list; !found && h; h = h->next)
     {
-    uschar *colon, *s;
+    uschar * colon, * s;
 
     if (h->type != htype_to && h->type != htype_cc) continue;
 
@@ -2533,7 +2532,7 @@ Returns:     pointer to an address item, or NULL
 */
 
 address_item *
-verify_checked_sender(uschar *sender)
+verify_checked_sender(const uschar * sender)
 {
 for (address_item * addr = sender_verified_list; addr; addr = addr->next)
   if (Ustrcmp(sender, addr->address) == 0) return addr;

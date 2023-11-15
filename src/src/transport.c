@@ -434,10 +434,10 @@ Returns:     TRUE on success, FALSE on failure (with errno preserved)
 */
 
 BOOL
-write_chunk(transport_ctx * tctx, uschar *chunk, int len)
+write_chunk(transport_ctx * tctx, const uschar * chunk, int len)
 {
-uschar *start = chunk;
-uschar *end = chunk + len;
+const uschar * start = chunk;
+const uschar * end = chunk + len;
 int mlen = DELIVER_OUT_BUFFER_SIZE - nl_escape_length - 2;
 
 /* The assumption is made that the check string will never stretch over move
@@ -474,7 +474,7 @@ if (nl_partial_match >= 0)
 for possible escaping. The code for the non-NL route should be as fast as
 possible. */
 
-for (uschar * ptr = start; ptr < end; ptr++)
+for (const uschar * ptr = start; ptr < end; ptr++)
   {
   int ch, len;
 
@@ -580,7 +580,7 @@ Arguments:
 Returns:            a string
 */
 
-uschar *
+const uschar *
 transport_rcpt_address(address_item *addr, BOOL include_affixes)
 {
 uschar *at;
@@ -704,7 +704,7 @@ Returns:                TRUE on success; FALSE on failure.
 */
 BOOL
 transport_headers_send(transport_ctx * tctx,
-  BOOL (*sendfn)(transport_ctx * tctx, uschar * s, int len))
+  BOOL (*sendfn)(transport_ctx * tctx, const uschar * s, int len))
 {
 const uschar * list;
 transport_instance * tblock = tctx ? tctx->tblock : NULL;
@@ -2302,7 +2302,7 @@ if (flags & TSUC_EXPAND_ARGS)
       address_pipe_argv = store_get((address_pipe_max_args+1)*sizeof(uschar *), GET_UNTAINTED);
 
       /* +1 because addr->local_part[0] == '|' since af_force_command is set */
-      s = expand_string(addr->local_part + 1);
+      s = expand_cstring(addr->local_part + 1);
 
       if (!s || !*s)
         {

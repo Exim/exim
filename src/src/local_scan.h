@@ -153,9 +153,9 @@ field is always NULL except for one_time aliases that had errors_to on the
 routers that generated them. */
 
 typedef struct recipient_item {
-  uschar *address;              /* the recipient address */
+  const uschar *address;        /* the recipient address */
   int     pno;                  /* parent number for "one_time" alias, or -1 */
-  uschar *errors_to;            /* the errors_to address or NULL */
+  const uschar *errors_to;      /* the errors_to address or NULL */
   uschar *orcpt;                /* DSN orcpt */
   int     dsn_flags;            /* DSN flags */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -181,7 +181,7 @@ extern uschar *message_id;             /* Internal id of message being handled *
 extern uschar *received_protocol;      /* Name of incoming protocol */
 extern int     recipients_count;       /* Number of recipients */
 extern recipient_item *recipients_list;/* List of recipient addresses */
-extern unsigned char *sender_address;  /* Sender address */
+extern const unsigned char *sender_address;	/* Sender address */
 extern uschar *sender_host_address;    /* IP address of sender, as chars */
 extern uschar *sender_host_authenticated; /* Name of authentication mechanism */
 extern uschar *sender_host_name;       /* Host name from lookup */
@@ -207,8 +207,8 @@ extern int     lss_match_domain(uschar *, uschar *);
 extern int     lss_match_local_part(uschar *, uschar *, BOOL);
 extern int     lss_match_address(uschar *, uschar *, BOOL);
 extern int     lss_match_host(uschar *, uschar *, uschar *);
-extern void    receive_add_recipient(uschar *, int);
-extern BOOL    receive_remove_recipient(uschar *);
+extern void    receive_add_recipient(const uschar *, int);
+extern BOOL    receive_remove_recipient(const uschar *);
 extern uschar *rfc2047_decode(uschar *, BOOL, const uschar *, int, int *,
 			      uschar **);
 extern int     smtp_fflush(void);

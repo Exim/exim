@@ -859,12 +859,12 @@ Returns:       OK if all the tests succeed
 */
 
 static BOOL
-check_router_conditions(router_instance *r, address_item *addr, int verify,
-  struct passwd **pw, uschar **perror)
+check_router_conditions(router_instance * r, address_item * addr, int verify,
+  struct passwd ** pw, uschar ** perror)
 {
 int rc;
-uschar *check_local_part;
-unsigned int *localpart_cache;
+uschar * check_local_part;
+unsigned int * localpart_cache;
 
 /* Reset variables to hold a home directory and data from lookup of a domain or
 local part, and ensure search_find_defer is unset, in case there aren't any
@@ -928,15 +928,12 @@ because that doesn't have the prefix or suffix stripped. A bit of massaging is
 required. Also, we only use the match cache for local parts that have not had
 a prefix or suffix stripped. */
 
+check_local_part = string_copy(addr->cc_local_part);
 if (!addr->prefix && !addr->suffix)
-  {
   localpart_cache = addr->localpart_cache;
-  check_local_part = addr->cc_local_part;
-  }
 else
   {
   localpart_cache = NULL;
-  check_local_part = string_copy(addr->cc_local_part);
   if (addr->prefix)
     check_local_part += Ustrlen(addr->prefix);
   if (addr->suffix)

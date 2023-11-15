@@ -1379,17 +1379,15 @@ Argument:    the local part
 Returns:     the local part, quoted if necessary
 */
 
-uschar *
-local_part_quote(uschar *lpart)
+const uschar *
+local_part_quote(const uschar * lpart)
 {
 BOOL needs_quote = FALSE;
 gstring * g;
 
-for (uschar * t = lpart; !needs_quote && *t != 0; t++)
-  {
+for (const uschar * t = lpart; !needs_quote && *t; t++)
   needs_quote = !isalnum(*t) && strchr("!#$%&'*+-/=?^_`{|}~", *t) == NULL &&
     (*t != '.' || t == lpart || t[1] == 0);
-  }
 
 if (!needs_quote) return lpart;
 
@@ -1397,8 +1395,8 @@ g = string_catn(NULL, US"\"", 1);
 
 for (;;)
   {
-  uschar *nq = US Ustrpbrk(lpart, "\\\"");
-  if (nq == NULL)
+  uschar * nq = US Ustrpbrk(lpart, "\\\"");
+  if (!nq)
     {
     g = string_cat(g, lpart);
     break;
@@ -1809,20 +1807,20 @@ BOOL verify_address_mode = FALSE;
 BOOL verify_as_sender = FALSE;
 BOOL rcpt_verify_quota = FALSE;
 BOOL version_printed = FALSE;
-const uschar *alias_arg = NULL;
-const uschar *called_as = US"";
-const uschar *cmdline_syslog_name = NULL;
-const uschar *start_queue_run_id = NULL;
-const uschar *stop_queue_run_id = NULL;
-const uschar *expansion_test_message = NULL;
-const uschar *ftest_domain = NULL;
-const uschar *ftest_localpart = NULL;
-const uschar *ftest_prefix = NULL;
-const uschar *ftest_suffix = NULL;
-uschar *log_oneline = NULL;
-const uschar *malware_test_file = NULL;
-uschar *real_sender_address;
-uschar *originator_home = US"/";
+const uschar * alias_arg = NULL;
+const uschar * called_as = US"";
+const uschar * cmdline_syslog_name = NULL;
+const uschar * start_queue_run_id = NULL;
+const uschar * stop_queue_run_id = NULL;
+const uschar * expansion_test_message = NULL;
+const uschar * ftest_domain = NULL;
+const uschar * ftest_localpart = NULL;
+const uschar * ftest_prefix = NULL;
+const uschar * ftest_suffix = NULL;
+uschar * log_oneline = NULL;
+const uschar * malware_test_file = NULL;
+const uschar * real_sender_address;
+uschar * originator_home = US"/";
 size_t sz;
 
 struct passwd *pw;
@@ -2844,7 +2842,11 @@ on the second character (the one after '-'), to save some effort. */
         if (i+1 < argc) argrest = argv[++i]; else { badarg = TRUE; break; }
       (void) exim_str_fail_toolong(argrest, EXIM_DISPLAYMAIL_MAX, "-f");
       if (!*argrest)
-        *(sender_address = store_get(1, GET_UNTAINTED)) = '\0';  /* Ensure writeable memory */
+	{
+        uschar * s = store_get(1, GET_UNTAINTED);	/* Ensure writeable memory */
+        *s = '\0';
+        sender_address = s;
+	}
       else
         {
         const uschar * temp = argrest + Ustrlen(argrest) - 1;

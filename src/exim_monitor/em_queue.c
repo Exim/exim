@@ -66,18 +66,16 @@ address is lowercased to start with, unless it begins with
 "*", which it does for error messages. */
 
 dest_item *
-find_dest(queue_item *q, uschar *name, int action, BOOL caseless)
+find_dest(queue_item * q, const uschar * name, int action, BOOL caseless)
 {
-dest_item *dd;
-dest_item **d = &(q->destinations);
+dest_item * dd;
+dest_item ** d = &q->destinations;
 
-while (*d != NULL)
+while (*d)
   {
   if ((caseless? strcmpic(name,(*d)->address) : Ustrcmp(name,(*d)->address))
         == 0)
     {
-    dest_item *ddd;
-
     if (action != dest_remove) return *d;
     dd = *d;
     *d = dd->next;
@@ -85,14 +83,12 @@ while (*d != NULL)
 
     /* Unset any parent pointers that were to this address */
 
-    for (ddd = q->destinations; ddd != NULL; ddd = ddd->next)
-      {
+    for (dest_item * ddd = q->destinations; ddd; ddd = ddd->next)
       if (ddd->parent == dd) ddd->parent = NULL;
-      }
 
     return NULL;
     }
-  d = &((*d)->next);
+  d = &(*d)->next;
   }
 
 if (action != dest_add) return NULL;
@@ -207,8 +203,9 @@ if it's there. */
 else
   {
   q->update_time = q->input_time = received_time.tv_sec;
-  if ((p = strstric(sender_address+1, qualify_domain, FALSE)) != NULL &&
-    *(--p) == '@') *p = 0;
+  /* deconst ok; strstric is actually safe */
+  if ((p = strstric(US sender_address+1, qualify_domain, FALSE)) != NULL &&
+    *--p == '@') *p = 0;
   }
 
 /* If we didn't read the whole header successfully, generate an error
@@ -279,10 +276,11 @@ been delivered, and removing visible names. */
 if (recipients_list)
   for (i = 0; i < recipients_count; i++)
     {
-    uschar * r = recipients_list[i].address;
+    const uschar * r = recipients_list[i].address;
     if (tree_search(tree_nonrecipients, r) == NULL)
       {
-      if ((p = strstric(r+1, qualify_domain, FALSE)) != NULL &&
+      /* deconst ok; strstric is actually safe */
+      if ((p = strstric(US r+1, qualify_domain, FALSE)) != NULL &&
         *(--p) == '@') *p = 0;
       (void)find_dest(q, r, dest_add, FALSE);
       }
@@ -663,13 +661,14 @@ if (recipients_list)
   for (i = 0; i < recipients_count; i++)
     {
     uschar * pp;
-    uschar * r = recipients_list[i].address;
+    const uschar * r = recipients_list[i].address;
     tree_node * node;
 
     if (!(node = tree_search(tree_nonrecipients, r)))
       node = tree_search(tree_nonrecipients, string_copylc(r));
 
-    if ((pp = strstric(r+1, qualify_domain, FALSE)) && *(--pp) == '@')
+    /* deconst ok; strstric is actually safe */
+    if ((pp = strstric(US r+1, qualify_domain, FALSE)) && *(--pp) == '@')
        *pp = 0;
     if (!node)
       (void)find_dest(p, r, dest_add, FALSE);

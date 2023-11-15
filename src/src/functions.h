@@ -100,7 +100,7 @@ extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL);
 /* Everything else... */
 
 extern acl_block *acl_read(uschar *(*)(void), uschar **);
-extern int     acl_check(int, uschar *, uschar *, uschar **, uschar **);
+extern int     acl_check(int, const uschar *, uschar *, uschar **, uschar **);
 extern uschar *acl_current_verb(void);
 extern int     acl_eval(int, uschar *, uschar **, uschar **);
 extern uschar *acl_standalone_setvar(const uschar *);
@@ -216,7 +216,7 @@ extern void    decode_bits(unsigned int *, size_t, int *,
 	           const uschar *, bit_table *, int, uschar *, int);
 extern void    delete_pid_file(void);
 extern void    deliver_local(address_item *, BOOL);
-extern address_item *deliver_make_addr(uschar *, BOOL);
+extern address_item *deliver_make_addr(const uschar *, BOOL);
 extern void    delivery_log(int, address_item *, int, uschar *);
 extern int     deliver_message(const uschar *, BOOL, BOOL);
 extern void    deliver_msglog(const char *, ...) PRINTF_FUNCTION(1,2);
@@ -335,7 +335,7 @@ extern int     ip_streamsocket(const uschar *, uschar **, int, host_item *);
 
 extern int     ipv6_nmtoa(int *, uschar *);
 
-extern uschar *local_part_quote(uschar *);
+extern const uschar *local_part_quote(const uschar *);
 extern int     log_open_as_exim(const uschar * const);
 extern void    log_close_all(void);
 
@@ -375,11 +375,11 @@ extern ssize_t mime_decode_base64(FILE *, FILE *, uschar *);
 extern int     mime_regex(const uschar **, BOOL);
 extern void    mime_set_anomaly(int);
 #endif
-extern uschar *moan_check_errorcopy(uschar *);
+extern uschar *moan_check_errorcopy(const uschar *);
 extern BOOL    moan_skipped_syntax_errors(uschar *, error_block *, uschar *,
                  BOOL, uschar *);
 extern void    moan_smtp_batch(uschar *, const char *, ...) PRINTF_FUNCTION(2,3);
-extern BOOL    moan_send_message(uschar *, int, error_block *eblock,
+extern BOOL    moan_send_message(const uschar *, int, error_block *eblock,
 		 header_line *, FILE *, uschar *);
 extern void    moan_tell_someone(uschar *, address_item *,
                  const uschar *, const char *, ...) PRINTF_FUNCTION(4,5);
@@ -440,7 +440,7 @@ extern void    readconf_save_config(const uschar *);
 extern void    read_message_body(BOOL);
 extern void    receive_bomb_out(uschar *, uschar *) NORETURN;
 extern BOOL    receive_check_fs(int);
-extern BOOL    receive_check_set_sender(uschar *);
+extern BOOL    receive_check_set_sender(const uschar *);
 extern BOOL    receive_msg(BOOL);
 extern int_eximarith_t receive_statvfs(BOOL, int *);
 extern void    receive_swallow_smtp(void);
@@ -636,7 +636,7 @@ extern BOOL    transport_pass_socket(const uschar *, const uschar *, const uscha
 			, unsigned, unsigned, unsigned
 #endif
 			);
-extern uschar *transport_rcpt_address(address_item *, BOOL);
+extern const uschar *transport_rcpt_address(address_item *, BOOL);
 extern BOOL    transport_set_up_command(const uschar ***, const uschar *,
 		 unsigned, int, address_item *, const uschar *, uschar **);
 extern void    transport_update_waiting(host_item *, uschar *);
@@ -644,7 +644,7 @@ extern BOOL    transport_write_block(transport_ctx *, uschar *, int, BOOL);
 extern void    transport_write_reset(int);
 extern BOOL    transport_write_string(int, const char *, ...);
 extern BOOL    transport_headers_send(transport_ctx *,
-                 BOOL (*)(transport_ctx *, uschar *, int));
+                 BOOL (*)(transport_ctx *, const uschar *, int));
 extern gstring * transport_show_supported(gstring *);
 extern BOOL    transport_write_message(transport_ctx *, int);
 extern void    tree_add_duplicate(const uschar *, address_item *);
@@ -679,7 +679,7 @@ extern int     verify_check_notblind(BOOL);
 extern int     verify_check_given_host(const uschar **, const host_item *);
 extern int     verify_check_this_host(const uschar **, unsigned int *,
 	         const uschar*, const uschar *, const uschar **);
-extern address_item *verify_checked_sender(uschar *);
+extern address_item *verify_checked_sender(const uschar *);
 extern void    verify_get_ident(int);
 extern void    verify_quota(uschar *);
 extern int     verify_quota_call(const uschar *, int, int, uschar **);
@@ -687,7 +687,7 @@ extern BOOL    verify_sender(int *, uschar **);
 extern BOOL    verify_sender_preliminary(int *, uschar **);
 extern void    version_init(void);
 
-extern BOOL    write_chunk(transport_ctx *, uschar *, int);
+extern BOOL    write_chunk(transport_ctx *, const uschar *, int);
 extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
 extern uschar *wrap_header(const uschar *, unsigned, unsigned, const uschar *, unsigned);
 

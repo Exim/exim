@@ -341,7 +341,8 @@ else for (int i = 0; i < SPF_response_messages(spf_response); i++)
 Return: OK/FAIL  */
 
 int
-spf_process(const uschar **listptr, uschar *spf_envelope_sender, int action)
+spf_process(const uschar ** listptr, const uschar * spf_envelope_sender,
+  int action)
 {
 int sep = 0;
 const uschar *list = *listptr;

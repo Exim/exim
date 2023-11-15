@@ -466,7 +466,7 @@ Returns:     FALSE if data missing
 */
 
 static BOOL
-rda_read_string(int fd, uschar **sp)
+rda_read_string(int fd, uschar ** sp)
 {
 int len;
 
@@ -866,9 +866,9 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
   for (;;)
     {
     int i, reply_options;
-    address_item *addr;
-    uschar *recipient;
-    uschar *expandn[EXPAND_MAXN + 2];
+    address_item * addr;
+    uschar * recipient, * s;
+    uschar * expandn[EXPAND_MAXN + 2];
 
     /* First string is the address; NULL => end of addresses */
 
@@ -885,10 +885,11 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
 
     if (  read(fd, &addr->mode, sizeof(addr->mode)) != sizeof(addr->mode)
        || read(fd, &addr->flags, sizeof(addr->flags)) != sizeof(addr->flags)
-       || !rda_read_string(fd, &addr->prop.errors_address)
+       || !rda_read_string(fd, &s)
        || read(fd, &i, sizeof(i)) != sizeof(i)
        )
       goto DISASTER;
+    addr->prop.errors_address = s;
     addr->prop.ignore_error = (i != 0);
 
     /* Next comes a possible setting for $thisaddress and any numerical

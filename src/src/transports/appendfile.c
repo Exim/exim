@@ -502,7 +502,7 @@ Returns:     nothing
 */
 
 static void
-notify_comsat(uschar *user, off_t offset)
+notify_comsat(const uschar * user, off_t offset)
 {
 struct servent *sp;
 host_item host;

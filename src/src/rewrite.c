@@ -119,9 +119,9 @@ for (rewrite_rule * rule = rewrite_rules;
   {
   int start, end, pdomain;
   int count = 0;
-  uschar *save_localpart;
-  const uschar *save_domain;
-  uschar *error, *new;
+  const uschar * save_localpart;
+  const uschar * save_domain;
+  uschar * error, * new;
   const uschar * newparsed;
 
   /* Come back here for a repeat after a successful rewrite. We do this

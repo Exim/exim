@@ -1804,20 +1804,19 @@ return g;
 /* A recipients list is available only during system message filtering,
 during ACL processing after DATA, and while expanding pipe commands
 generated from a system filter, but not elsewhere.  Note that this does
-not check for comman in the elements, and uses comma-space as seperator -
+not check for commas in the elements, and uses comma-space as seperator -
 so cannot be used as an exim list as-is. */
 
 static uschar *
 fn_recipients(void)
 {
-uschar * s;
 gstring * g = NULL;
 
 if (!f.enable_dollar_recipients) return NULL;
 
 for (int i = 0; i < recipients_count; i++)
   {
-  s = recipients_list[i].address;
+  const uschar * s = recipients_list[i].address;
   g = string_append2_listele_n(g, US", ", s, Ustrlen(s));
   }
 gstring_release_unused(g);

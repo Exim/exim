@@ -29,7 +29,7 @@ typedef struct spf_result_id {
 gstring * spf_lib_version_report(gstring *);
 BOOL spf_init(void);
 BOOL spf_conn_init(uschar *, uschar *);
-int  spf_process(const uschar **, uschar *, int);
+int  spf_process(const uschar **, const uschar *, int);
 void spf_response_debug(SPF_response_t *);
 
 #define SPF_PROCESS_NORMAL  0

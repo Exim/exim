@@ -137,9 +137,9 @@ Returns:    TRUE for a trusted caller
 */
 
 BOOL
-receive_check_set_sender(uschar *newsender)
+receive_check_set_sender(const uschar * newsender)
 {
-uschar *qnewsender;
+const uschar * qnewsender;
 if (f.trusted_caller) return TRUE;
 if (!newsender || !untrusted_set_sender) return FALSE;
 qnewsender = Ustrchr(newsender, '@')
@@ -514,7 +514,7 @@ Returns:      nothing
 */
 
 void
-receive_add_recipient(uschar * recipient, int pno)
+receive_add_recipient(const uschar * recipient, int pno)
 {
 if (recipients_count >= recipients_list_max)
   {
@@ -591,7 +591,7 @@ Returns:      TRUE if it did remove something; FALSE otherwise
 */
 
 BOOL
-receive_remove_recipient(uschar *recipient)
+receive_remove_recipient(const uschar * recipient)
 {
 DEBUG(D_receive) debug_printf("receive_remove_recipient(\"%s\") called\n",
   recipient);
@@ -3600,7 +3600,7 @@ else
       /* Loop through recipients, responses must be in same order received */
       for (unsigned int c = 0; recipients_count > c; c++)
         {
-	uschar * addr= recipients_list[c].address;
+	const uschar * addr = recipients_list[c].address;
 	uschar * msg= US"PRDR R=<%s> %s";
 	uschar * code;
         DEBUG(D_receive)

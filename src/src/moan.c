@@ -158,8 +158,8 @@ Returns:         TRUE if message successfully sent
 */
 
 BOOL
-moan_send_message(uschar *recipient, int ident, error_block *eblock,
-  header_line *headers, FILE *message_file, uschar *firstline)
+moan_send_message(const uschar * recipient, int ident, error_block * eblock,
+  header_line * headers, FILE * message_file, uschar * firstline)
 {
 int written = 0;
 int fd;
@@ -631,7 +631,7 @@ if (addr)
   fprintf(f, "\nThe following address(es) have yet to be delivered:\n");
   for (; addr; addr = addr->next)
     {
-    uschar * parent = addr->parent ? addr->parent->address : NULL;
+    const uschar * parent = addr->parent ? addr->parent->address : NULL;
     fprintf(f, "  %s", addr->address);
     if (parent) fprintf(f, " <%s>", parent);
     if (addr->basic_errno > 0) fprintf(f, ": %s", strerror(addr->basic_errno));
@@ -734,22 +734,23 @@ Returns:    additional recipient list or NULL
 */
 
 uschar *
-moan_check_errorcopy(uschar *recipient)
+moan_check_errorcopy(const uschar * recipient)
 {
-uschar *item, *localpart, *domain;
-const uschar *listptr = errors_copy;
+uschar * item;
+const uschar * localpart, * domain;
+const uschar * listptr = errors_copy;
 uschar *yield = NULL;
 int sep = 0;
 int llen;
 
-if (errors_copy == NULL) return NULL;
+if (!errors_copy) return NULL;
 
 /* Set up pointer to the local part and domain, and compute the
 length of the local part. */
 
 localpart = recipient;
 domain = Ustrrchr(recipient, '@');
-if (domain == NULL) return NULL;  /* should not occur, but avoid crash */
+if (!domain) return NULL;	/* should not occur, but avoid crash */
 llen = domain++ - recipient;
 
 /* Scan through the configured items */

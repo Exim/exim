@@ -204,7 +204,7 @@ recipient_item *recipients_list = NULL;
 int     recipients_list_max    = 0;
 BOOL    running_in_test_harness=FALSE;
 
-uschar *sender_address         = NULL;
+const uschar *sender_address    = NULL;
 uschar *sender_fullhost        = NULL;
 uschar *sender_helo_name       = NULL;
 uschar *sender_host_address    = NULL;

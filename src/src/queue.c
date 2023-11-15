@@ -585,7 +585,7 @@ for (int i = queue_run_in_order ? -1 : 0;
       else if (  deliver_selectstring_sender
 	      && !(f.deliver_selectstring_sender_regex
 		  ? regex_match(selectstring_regex_sender, sender_address, -1, NULL)
-		  : (strstric(sender_address, deliver_selectstring_sender, FALSE)
+		  : (strstric_c(sender_address, deliver_selectstring_sender, FALSE)
 		      != NULL)
 	      )   )
         {
@@ -601,10 +601,10 @@ for (int i = queue_run_in_order ? -1 : 0;
         int i;
         for (i = 0; i < recipients_count; i++)
           {
-          uschar *address = recipients_list[i].address;
+          const uschar * address = recipients_list[i].address;
           if (  (f.deliver_selectstring_regex
 		? regex_match(selectstring_regex, address, -1, NULL)
-                : (strstric(address, deliver_selectstring, FALSE) != NULL)
+                : (strstric_c(address, deliver_selectstring, FALSE) != NULL)
 		)
              && tree_search(tree_nonrecipients, address) == NULL
 	     )
@@ -1369,9 +1369,10 @@ switch(action)
 	  tree_search(tree_nonrecipients, recipients_list[i].address);
 	if (!delivered)
 	  {
-	  uschar * save_local = deliver_localpart;
+	  const uschar * save_local = deliver_localpart;
 	  const uschar * save_domain = deliver_domain;
-	  uschar * addr = recipients_list[i].address, * errmsg = NULL;
+	  const uschar * addr = recipients_list[i].address;
+	  uschar * errmsg = NULL;
 	  int start, end, dom;
 
 	  if (!parse_extract_address(addr, &errmsg, &start, &end, &dom, TRUE))

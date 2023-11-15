@@ -1032,11 +1032,10 @@ if (  flags & LOG_RECIPIENTS
    && g->ptr < LOG_BUFFER_SIZE - 6
    && raw_recipients_count > 0)
   {
-  int i;
   g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, " for", NULL);
-  for (i = 0; i < raw_recipients_count; i++)
+  for (int i = 0; i < raw_recipients_count; i++)
     {
-    uschar * s = raw_recipients[i];
+    const uschar * s = raw_recipients[i];
     if (LOG_BUFFER_SIZE - g->ptr < Ustrlen(s) + 3) break;
     g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, " %s", s);
     }

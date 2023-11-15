@@ -350,8 +350,8 @@ extern uschar *acl_wherecodes[];       /* Response codes for ACL fails */
 extern uschar *acl_wherenames[];       /* Names for messages */
 extern address_item *addr_duplicate;   /* Duplicate address list */
 extern address_item address_defaults;  /* Default data for address item */
-extern uschar *address_file;           /* Name of file when delivering to one */
-extern uschar *address_pipe;           /* Pipe command when delivering to one */
+extern const uschar *address_file;           /* Name of file when delivering to one */
+extern const uschar *address_pipe;           /* Pipe command when delivering to one */
 extern tree_node *addresslist_anchor;  /* Tree of defined address lists */
 extern int     addresslist_count;      /* Number defined */
 extern gid_t  *admin_groups;           /* List of admin groups */
@@ -400,7 +400,7 @@ extern int     bsmtp_transaction_linecount; /* Start of last transaction */
 extern int     body_8bitmime;          /* sender declared BODY= ; 7=7BIT, 8=8BITMIME */
 extern uschar *bounce_message_file;    /* Template file */
 extern uschar *bounce_message_text;    /* One-liner */
-extern uschar *bounce_recipient;       /* When writing an errmsg */
+extern const uschar *bounce_recipient; /* When writing an errmsg */
 extern BOOL    bounce_return_body;     /* Include body in returned message */
 extern int     bounce_return_linesize_limit; /* Max line length in return */
 extern BOOL    bounce_return_message;  /* Include message in bounce */
@@ -517,14 +517,14 @@ extern const uschar *deliver_host_address; /* Address for remote delivery filter
 extern int     deliver_host_port;      /* Address for remote delivery filter */
 extern uschar *deliver_in_buffer;      /* Buffer for copying file */
 extern ino_t   deliver_inode;          /* Inode for appendfile */
-extern uschar *deliver_localpart;      /* The local part for delivery */
+extern const uschar *deliver_localpart;/* The local part for delivery */
 extern uschar *deliver_localpart_data; /* From local part lookup (de-tainted) */
-extern uschar *deliver_localpart_orig; /* The original local part for delivery */
-extern uschar *deliver_localpart_parent; /* The parent local part for delivery */
-extern uschar *deliver_localpart_prefix; /* The stripped prefix, if any */
-extern uschar *deliver_localpart_prefix_v; /* The stripped-prefix variable portion, if any */
-extern uschar *deliver_localpart_suffix; /* The stripped suffix, if any */
-extern uschar *deliver_localpart_suffix_v; /* The stripped-suffix variable portion, if any */
+extern const uschar *deliver_localpart_orig;		/* The original local part for delivery */
+extern const uschar *deliver_localpart_parent;		/* The parent local part for delivery */
+extern const uschar *deliver_localpart_prefix;		/* The stripped prefix, if any */
+extern const uschar *deliver_localpart_prefix_v;	/* The stripped-prefix variable portion, if any */
+extern const uschar *deliver_localpart_suffix;		/* The stripped suffix, if any */
+extern const uschar *deliver_localpart_suffix_v;	/* The stripped-suffix variable portion, if any */
 extern uschar *deliver_out_buffer;     /* Buffer for copying file */
 extern int     deliver_queue_load_max; /* Different value for queue running */
 extern address_item *deliver_recipients; /* Current set of addresses */
@@ -872,8 +872,8 @@ extern tree_node *ratelimiters_cmd;    /* Results of command ratelimit checks */
 extern tree_node *ratelimiters_conn;   /* Results of connection ratelimit checks */
 extern tree_node *ratelimiters_mail;   /* Results of per-mail ratelimit checks */
 extern uschar *raw_active_hostname;    /* Pre-expansion */
-extern uschar *raw_sender;             /* Before rewriting */
-extern uschar **raw_recipients;        /* Before rewriting */
+extern const uschar *raw_sender;       /* Before rewriting */
+extern const uschar **raw_recipients;  /* Before rewriting */
 extern int     raw_recipients_count;
 extern const uschar * rc_names[];      /* Mostly for debug output */
 extern int     rcpt_count;             /* Count of RCPT commands in a message */
@@ -885,7 +885,7 @@ extern int     receive_linecount;      /* Mainly for BSMTP errors */
 extern int     receive_messagecount;   /* Mainly for BSMTP errors */
 extern int     receive_timeout;        /* For non-SMTP acceptance */
 extern int     received_count;         /* Count of Received: headers */
-extern uschar *received_for;           /* For "for" field */
+extern const uschar *received_for;     /* For "for" field */
 extern uschar *received_header_text;   /* Definition of Received: header */
 extern int     received_headers_max;   /* Max count of Received: headers */
 extern struct timeval received_time;   /* Time the message started to be received */
@@ -926,7 +926,7 @@ extern retry_config *retries;          /* Chain of retry config information */
 extern int     retry_data_expire;      /* When to expire retry data */
 extern int     retry_interval_max;     /* Absolute maximum */
 extern int     retry_maximum_timeout;  /* The maximum timeout */
-extern uschar *return_path;            /* Return path for a message */
+extern const uschar *return_path;            /* Return path for a message */
 extern BOOL    return_path_remove;     /* Remove return-path headers */
 extern int     rewrite_existflags;     /* Indicate which headers have rewrites */
 extern uschar *rfc1413_hosts;          /* RFC hosts */
@@ -947,7 +947,7 @@ extern uschar *search_error_message;   /* Details of lookup problem */
 extern uschar *self_hostname;          /* Self host after routing->directors */
 extern unsigned int sender_address_cache[(MAX_NAMED_LIST * 2)/32]; /* Cache bits for sender */
 extern uschar *sender_address_data;    /* address_data from sender verify */
-extern uschar *sender_address_unrewritten; /* Set if rewritten by verify */
+extern const uschar *sender_address_unrewritten; /* Set if rewritten by verify */
 extern uschar *sender_data;            /* lookup result for senders */
 extern unsigned int sender_domain_cache[(MAX_NAMED_LIST * 2)/32]; /* Cache bits for sender domain */
 extern uschar *sender_fullhost;        /* Sender host name + address */

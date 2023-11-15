@@ -292,7 +292,7 @@ Returns:             TRUE if all went well; otherwise an error will be
 */
 
 static BOOL
-set_up_direct_command(const uschar *** argvptr, uschar * cmd,
+set_up_direct_command(const uschar *** argvptr, const uschar * cmd,
   BOOL expand_arguments, int expand_fail, address_item * addr, uschar * tname,
   pipe_transport_options_block * ob)
 {
@@ -414,8 +414,8 @@ Returns:             TRUE if all went well; otherwise an error will be
 */
 
 static BOOL
-set_up_shell_command(const uschar ***argvptr, uschar *cmd,
-  BOOL expand_arguments, int expand_fail, address_item *addr, uschar *tname)
+set_up_shell_command(const uschar *** argvptr, const uschar * cmd,
+  BOOL expand_arguments, int expand_fail, address_item * addr, uschar * tname)
 {
 const uschar **argv;
 
@@ -462,10 +462,10 @@ if (expand_arguments)
       }
 
     g = string_cat(g, q);
-    argv[2] = (cmd = string_from_gstring(g)) ? expand_string(cmd) : NULL;
+    argv[2] = (cmd = string_from_gstring(g)) ? expand_cstring(cmd) : NULL;
     }
   else
-    argv[2] = expand_string(cmd);
+    argv[2] = expand_cstring(cmd);
 
   f.enable_dollar_recipients = FALSE;
 
@@ -518,11 +518,12 @@ pipe_transport_options_block *ob =
 int timeout = ob->timeout;
 BOOL written_ok = FALSE;
 BOOL expand_arguments;
-const uschar **argv;
-uschar *envp[50];
-const uschar *envlist = ob->environment;
-uschar *cmd, *ss;
-uschar *eol = ob->use_crlf ? US"\r\n" : US"\n";
+const uschar ** argv;
+uschar * envp[50];
+const uschar * envlist = ob->environment;
+const uschar * cmd;
+uschar * ss;
+uschar * eol = ob->use_crlf ? US"\r\n" : US"\n";
 transport_ctx tctx = {
   .tblock = tblock,
   .addr = addr,

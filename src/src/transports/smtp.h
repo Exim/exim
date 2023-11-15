@@ -140,7 +140,7 @@ typedef struct {
 
 /* smtp connect context */
 typedef struct {
-  uschar *		from_addr;
+  const uschar *	from_addr;
   address_item *	addrlist;
 
   smtp_connect_args	conn_args;

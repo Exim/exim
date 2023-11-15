@@ -35,13 +35,13 @@ Returns:       OK if no problem
 */
 
 int
-rf_get_errors_address(address_item *addr, router_instance *rblock,
-  int verify, uschar **errors_to)
+rf_get_errors_address(address_item * addr, router_instance * rblock,
+  int verify, const uschar ** errors_to)
 {
 uschar *s;
 
 *errors_to = addr->prop.errors_address;
-if (rblock->errors_to == NULL) return OK;
+if (!rblock->errors_to) return OK;
 
 s = expand_string(rblock->errors_to);
 
@@ -84,17 +84,14 @@ if (verify != v_none)
 else
   {
   BOOL save_address_test_mode = f.address_test_mode;
-  int save1 = 0;
+  const uschar * save_sender = sender_address;
   int i;
   const uschar ***p;
   const uschar *address_expansions_save[ADDRESS_EXPANSIONS_COUNT];
   address_item *snew = deliver_make_addr(s, FALSE);
 
   if (sender_address)
-    {
-    save1 = sender_address[0];
-    sender_address[0] = 0;
-    }
+    sender_address = US"";
 
   for (i = 0, p = address_expansions; *p;)
     address_expansions_save[i++] = **p++;
@@ -124,7 +121,7 @@ else
   for (i = 0, p = address_expansions; *p; )
     **p++ = address_expansions_save[i++];
 
-  if (sender_address) sender_address[0] = save1;
+  sender_address = save_sender;
   }
 
 return OK;

@@ -104,9 +104,9 @@ accept_router_options_block *ob =
   (accept_router_options_block *)(rblock->options_block);
 */
 int rc;
-uschar *errors_to;
-uschar *remove_headers;
-header_line *extra_headers;
+const uschar * errors_to;
+uschar * remove_headers;
+header_line * extra_headers;
 
 DEBUG(D_route) debug_printf("%s router called for %s\n  domain = %s\n",
   rblock->name, addr->address, addr->domain);

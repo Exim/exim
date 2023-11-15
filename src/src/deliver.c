@@ -27,7 +27,7 @@ typedef struct pardata {
   int transport_count;         /* returned transport count value */
   BOOL done;                   /* no more data needed */
   uschar *msg;                 /* error message */
-  uschar *return_path;         /* return_path for these addresses */
+  const uschar *return_path;   /* return_path for these addresses */
 } pardata;
 
 /* Values for the process_recipients variable */
@@ -77,7 +77,7 @@ static pardata *parlist = NULL;
 static struct pollfd *parpoll;
 static int  return_count;
 static uschar *frozen_info = US"";
-static uschar *used_return_path = NULL;
+static const uschar * used_return_path = NULL;
 
 
 
@@ -144,7 +144,7 @@ Returns:      a pointer to an initialized address_item
 */
 
 address_item *
-deliver_make_addr(uschar *address, BOOL copy)
+deliver_make_addr(const uschar * address, BOOL copy)
 {
 address_item * addr = store_get(sizeof(address_item), GET_UNTAINTED);
 *addr = address_defaults;
@@ -575,7 +575,7 @@ Returns:    TRUE or FALSE
 */
 
 static BOOL
-same_strings(uschar *one, uschar *two)
+same_strings(const uschar * one, const uschar * two)
 {
 if (one == two) return TRUE;   /* Includes the case where both NULL */
 if (!one || !two) return FALSE;
@@ -898,7 +898,7 @@ void
 msg_event_raise(const uschar * event, const address_item * addr)
 {
 const uschar * save_domain = deliver_domain;
-uschar * save_local =  deliver_localpart;
+const uschar * save_local =  deliver_localpart;
 const uschar * save_host = deliver_host;
 const uschar * save_address = deliver_host_address;
 const int      save_port =   deliver_host_port;
@@ -950,13 +950,13 @@ router_name = transport_name = NULL;
 *        Generate local part for logging         *
 *************************************************/
 
-static uschar *
-string_get_lpart_sub(const address_item * addr, uschar * s)
+static const uschar *
+string_get_lpart_sub(const address_item * addr, const uschar * s)
 {
 #ifdef SUPPORT_I18N
 if (testflag(addr, af_utf8_downcvt))
   {
-  uschar * t = string_localpart_utf8_to_alabel(s, NULL);
+  const uschar * t = string_localpart_utf8_to_alabel(s, NULL);
   return t ? t : s;	/* t is NULL on a failed conversion */
   }
 #endif
@@ -975,7 +975,7 @@ Returns:      the new value of the buffer pointer
 static gstring *
 string_get_localpart(address_item * addr, gstring * yield)
 {
-uschar * s;
+const uschar * s;
 
 if (testflag(addr, af_include_affixes) && (s = addr->prefix))
   yield = string_cat(yield, string_get_lpart_sub(addr, s));
@@ -5086,7 +5086,7 @@ Returns:    OK
 int
 deliver_split_address(address_item * addr)
 {
-uschar * address = addr->address;
+const uschar * address = addr->address;
 uschar * domain;
 uschar * t;
 int len;
@@ -5103,7 +5103,7 @@ where they are locally interpreted. [The new draft "821" is more explicit on
 this, Jan 1999.] We know the syntax is valid, so this can be done by simply
 removing quoting backslashes and any unquoted doublequotes. */
 
-t = addr->cc_local_part = store_get(len+1, address);
+addr->cc_local_part = t = store_get(len+1, address);
 while(len-- > 0)
   {
   int c = *address++;
@@ -5115,7 +5115,7 @@ while(len-- > 0)
     }
   else *t++ = c;
   }
-*t = 0;
+*t = '\0';
 
 /* We do the percent hack only for those domains that are listed in
 percent_hack_domains. A loop is required, to copy with multiple %-hacks. */
@@ -5123,8 +5123,8 @@ percent_hack_domains. A loop is required, to copy with multiple %-hacks. */
 if (percent_hack_domains)
   {
   int rc;
-  uschar *new_address = NULL;
-  uschar *local_part = addr->cc_local_part;
+  uschar * new_address = NULL;
+  const uschar * local_part = addr->cc_local_part;
 
   deliver_domain = addr->domain;  /* set $domain */
 
@@ -5261,12 +5261,12 @@ Returns:       TRUE if the address is not hidden
 */
 
 static BOOL
-print_address_information(address_item *addr, FILE *f, uschar *si, uschar *sc,
-  uschar *se)
+print_address_information(address_item * addr, FILE * f, uschar * si,
+  uschar * sc, uschar * se)
 {
 BOOL yield = TRUE;
-uschar *printed = US"";
-address_item *ancestor = addr;
+const uschar * printed = US"";
+address_item * ancestor = addr;
 while (ancestor->parent) ancestor = ancestor->parent;
 
 fprintf(f, "%s", CS si);
@@ -5281,8 +5281,8 @@ else if (!testflag(addr, af_pfr) || !addr->parent)
 
 else
   {
-  uschar *s = addr->address;
-  uschar *ss;
+  const uschar * s = addr->address;
+  const uschar * ss;
 
   if (addr->address[0] == '>') { ss = US"mail"; s++; }
   else if (addr->address[0] == '|') ss = US"pipe";
@@ -5296,7 +5296,7 @@ fprintf(f, "%s", CS string_printing(printed));
 
 if (ancestor != addr)
   {
-  uschar *original = ancestor->onetime_parent;
+  const uschar * original = ancestor->onetime_parent;
   if (!original) original= ancestor->address;
   if (strcmpic(original, printed) != 0)
     fprintf(f, "%s(%sgenerated from %s)", sc,
@@ -6973,7 +6973,7 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
 
         if (!p->transport)
           {
-          address_item *badp = p;
+          address_item * badp = p;
           p = p->next;
           if (!addr_last) addr_new = p; else addr_last->next = p;
           badp->local_part = badp->address;   /* Needed for log line */
@@ -7114,9 +7114,10 @@ if (process_recipients != RECIP_IGNORE)
 #ifndef DISABLE_EVENT
       if (process_recipients != RECIP_ACCEPT && event_action)
 	{
-	uschar * save_local =  deliver_localpart;
+	const uschar * save_local =  deliver_localpart;
 	const uschar * save_domain = deliver_domain;
-	uschar * addr = new->address, * errmsg = NULL;
+	const uschar * addr = new->address;
+	uschar * errmsg = NULL;
 	int start, end, dom;
 
 	if (!parse_extract_address(addr, &errmsg, &start, &end, &dom, TRUE))
@@ -8365,7 +8366,7 @@ else if (addr_defer != (address_item *)(+1))
 
       for (i = 0; i < recipients_count; i++)
         {
-        uschar *r = recipients_list[i].address;
+        const uschar * r = recipients_list[i].address;
         if (Ustrcmp(otaddr->onetime_parent, r) == 0) t = i;
         if (Ustrcmp(otaddr->address, r) == 0) break;
         }
@@ -8393,7 +8394,7 @@ else if (addr_defer != (address_item *)(+1))
 
     if (sender_address[0])
       {
-      uschar * s = addr->prop.errors_address;
+      const uschar * s = addr->prop.errors_address;
       if (!s) s = sender_address;
       if (Ustrstr(recipients, s) == NULL)
 	recipients = string_sprintf("%s%s%s", recipients,

@@ -309,7 +309,7 @@ extern uschar *copystring(uschar *);
 extern void    create_dialog(uschar *, uschar *);
 extern void    create_stripchart(Widget, uschar *);
 extern void    debug(char *, ...);
-extern dest_item *find_dest(queue_item *, uschar *, int, BOOL);
+extern dest_item *find_dest(queue_item *, const uschar *, int, BOOL);
 extern queue_item *find_queue(uschar *, int, int);
 extern void    init(int, uschar **);
 extern void    menu_create(Widget, XEvent *, String *, Cardinal *);

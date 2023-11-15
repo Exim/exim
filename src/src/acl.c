@@ -1711,10 +1711,10 @@ BOOL no_details = FALSE;
 BOOL success_on_redirect = FALSE;
 BOOL quota = FALSE;
 int quota_pos_cache = QUOTA_POS_DEFAULT, quota_neg_cache = QUOTA_NEG_DEFAULT;
-address_item *sender_vaddr = NULL;
-uschar *verify_sender_address = NULL;
-uschar *pm_mailfrom = NULL;
-uschar *se_mailfrom = NULL;
+address_item * sender_vaddr = NULL;
+const uschar * verify_sender_address = NULL;
+uschar * pm_mailfrom = NULL;
+uschar * se_mailfrom = NULL;
 
 /* Some of the verify items have slash-separated options; some do not. Diagnose
 an error if options are given for items that don't expect them.
@@ -4713,8 +4713,8 @@ Returns:       OK         access is granted by an ACCEPT verb
 int acl_where = ACL_WHERE_UNKNOWN;
 
 int
-acl_check(int where, uschar *recipient, uschar *s, uschar **user_msgptr,
-  uschar **log_msgptr)
+acl_check(int where, const uschar * recipient, uschar * s,
+  uschar ** user_msgptr, uschar ** log_msgptr)
 {
 int rc;
 address_item adb;

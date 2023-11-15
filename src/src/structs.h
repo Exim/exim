@@ -526,7 +526,7 @@ typedef struct address_item_propagated {
   uschar *address_data;           /* arbitrary data to keep with the address */
   uschar *domain_data;            /* from "domains" lookup */
   uschar *localpart_data;         /* from "local_parts" lookup */
-  uschar *errors_address;         /* where to send errors (NULL => sender) */
+  const uschar *errors_address;         /* where to send errors (NULL => sender) */
   header_line *extra_headers;     /* additional headers */
   uschar *remove_headers;         /* list of those to remove */
   void   *variables;		  /* router-vasriables */
@@ -561,15 +561,15 @@ typedef struct address_item {
   reply_item *reply;              /* data for autoreply */
   retry_item *retries;            /* chain of retry information */
 
-  uschar *address;                /* address being delivered or routed */
+  const uschar *address;                /* address being delivered or routed */
   uschar *unique;                 /* used for disambiguating */
-  uschar *cc_local_part;          /* caseful local part */
-  uschar *lc_local_part;          /* lowercased local part */
-  uschar *local_part;             /* points to cc or lc version */
-  uschar *prefix;                 /* stripped prefix of local part */
-  uschar *prefix_v;		  /*  variable part of above */
-  uschar *suffix;                 /* stripped suffix of local part */
-  uschar *suffix_v;		  /*  variable part of above */
+  const uschar *cc_local_part;    /* caseful local part */
+  const uschar *lc_local_part;    /* lowercased local part */
+  const uschar *local_part;       /* points to cc or lc version */
+  const uschar *prefix;           /* stripped prefix of local part */
+  const uschar *prefix_v;	  /*  variable part of above */
+  const uschar *suffix;           /* stripped suffix of local part */
+  const uschar *suffix_v;	  /*  variable part of above */
   const uschar *domain;           /* working domain (lower cased) */
 
   uschar *address_retry_key;      /* retry key including full address */
@@ -580,7 +580,7 @@ typedef struct address_item {
   uschar *message;                /* error message */
   uschar *user_message;           /* error message that can be sent over SMTP
                                      or quoted in bounce message */
-  uschar *onetime_parent;         /* saved original parent for onetime */
+  const uschar *onetime_parent;         /* saved original parent for onetime */
   uschar **pipe_expandn;          /* numeric expansions for pipe from filter */
   uschar *return_filename;        /* name of return file */
   uschar *self_hostname;          /* after self=pass */
