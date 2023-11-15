@@ -10,7 +10,6 @@
 
 
 #include "exim.h"
-#include "local_scan.h"
 #include <assert.h>
 
 
