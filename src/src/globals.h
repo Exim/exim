@@ -323,7 +323,7 @@ extern uschar *acl_smtp_connect;       /* ACL run on SMTP connection */
 extern uschar *acl_smtp_data;          /* ACL run after DATA received */
 #ifndef DISABLE_PRDR
 extern uschar *acl_smtp_data_prdr;     /* ACL run after DATA received if in PRDR mode*/
-const extern pcre2_code *regex_PRDR;         /* For recognizing PRDR settings */
+extern const pcre2_code *regex_PRDR;         /* For recognizing PRDR settings */
 #endif
 #ifndef DISABLE_DKIM
 extern uschar *acl_smtp_dkim;          /* ACL run for DKIM signatures / domains */
@@ -752,7 +752,7 @@ extern uschar *message_size_limit;     /* As it says */
 #ifdef SUPPORT_I18N
 extern BOOL    message_smtputf8;       /* Internationalized mail handling */
 extern int     message_utf8_downconvert; /* convert from utf8 */
-const extern pcre2_code *regex_UTF8;         /* For recognizing SMTPUTF8 settings */
+extern const   pcre2_code *regex_UTF8;         /* For recognizing SMTPUTF8 settings */
 #endif
 extern uschar  message_subdir[];       /* Subdirectory for messages */
 extern const uschar *message_reference;/* Reference for error messages */
