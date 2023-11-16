@@ -24831,7 +24831,7 @@ Exim, and each argument is separately expanded, as described in section
 No part of the resulting command may be tainted.
 
 
-.option environment pipe string&!! unset
+.option environment pipe "string list&!!" unset
 .cindex "&(pipe)& transport" "environment for command"
 .cindex "environment" "&(pipe)& transport"
 This option is used to add additional variables to the environment in which the
@@ -35335,9 +35335,10 @@ The arguments are as follows:
 (the -D file). The file is open for reading and writing, but updating it is not
 recommended. &*Warning*&: You must &'not'& close this file descriptor.
 
-The descriptor is positioned at character 19 of the file, which is the first
-character of the body itself, because the first 19 characters are the message
-id followed by &`-D`& and a newline. If you rewind the file, you should use the
+The descriptor is positioned at character 26 of the file, which is the first
+character of the body itself, because the first 26 characters (19 characters
+before Exim  4.97) are the message id followed by &`-D`& and a newline.
+If you rewind the file, you should use the
 macro SPOOL_DATA_START_OFFSET to reset to the start of the data, just in
 case this changes in some future version.
 .next
