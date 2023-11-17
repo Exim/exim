@@ -431,7 +431,9 @@ namelen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, dnss->aptr,
 if (namelen < 0) goto null_return;
 
 /* Move the pointer past the name and fill in the rest of the data structure
-from the following bytes. */
+from the following bytes.  We seem to be assuming here that the RR blob passed
+to us by the resolver library is the same as that defined for an RR by RFC 1035
+section 3.2.1 */
 
 TRACE trace = "R-name";
 if (dnss_inc_aptr(dnsa, dnss, namelen)) goto null_return;

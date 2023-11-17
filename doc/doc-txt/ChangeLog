@@ -24,12 +24,16 @@ JH/04 Bug 3039: Fix handling of of an empty log_reject_target, with
       a connection_reject log_selector, under tls_on_connect.  Previously
       with this combination, when the connect ACL rejected, a spurious
       paniclog entry was made.
-JH/04 Fix TLS resumption for TLS-on-connect.  This was broken by the advent
+
+JH/05 Fix TLS resumption for TLS-on-connect.  This was broken by the advent
       of loadbalancer-detection for resumption, in 4.96 - which tries to
       use the EHLO response. SMTPS does not have one at the time it is starting
       TLS.  Change the default for the smtp transport host_name_extract option
       to be a static string, for TLS-on-connect cases; meaning that resumption
       will always be attempted (unless deliberately overriden).
+
+JH/06 Bug 3054: Fix dnsdb lookup for a TXT record with multiple chunks.  This
+      was broken by hardening introduced for Bug 3033.
 
 
 

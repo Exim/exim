@@ -541,6 +541,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
       while (*p != 0 && *p != '"') *pk++ = *p++;
       *pp = pk - pp - 1;
       break;
+      /*XXX need a way of doing multi-chunk TXT RRs */
 
     case ns_t_tlsa:
       pk = bytefield(&p, pk);   /* usage */
