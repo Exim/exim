@@ -32,8 +32,9 @@ JH/05 Fix TLS resumption for TLS-on-connect.  This was broken by the advent
       to be a static string, for TLS-on-connect cases; meaning that resumption
       will always be attempted (unless deliberately overriden).
 
-JH/06 Bug 3054: Fix dnsdb lookup for a TXT record with multiple chunks.  This
-      was broken by hardening introduced for Bug 3033.
+JH/06 Bug 3054: Fix dnsdb lookup for a TXT record with multiple chunks, with a
+      chunk-separator specification.  This was broken by hardening introduced
+      for Bug 3031.
 
 
 

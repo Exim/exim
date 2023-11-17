@@ -329,7 +329,7 @@ int domainlen = Ustrlen(domain);
 BOOL pass_on_not_found = FALSE;
 tlist *typeptr;
 uschar *pk = *pkptr;
-uschar buffer[256];
+uschar buffer[512];
 uschar rrdomain[256];
 uschar RRdomain[256];
 
@@ -536,12 +536,16 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
       break;
 
     case ns_t_txt:
-      pp = pk++;
-      if (*p == '"') p++;   /* Should always be the case */
-      while (*p != 0 && *p != '"') *pk++ = *p++;
-      *pp = pk - pp - 1;
+      while (*p)
+        {
+        pp = pk++;            /* Skip the size byte in output */
+        if (*p == '"') p++;   /* Should always be the case */
+        while (*p && *p != '"') *pk++ = *p++;
+        *pp = pk - pp - 1;    /* fill in the size */
+        p++;                  /* skip the closing doublequote */
+        while (isspace(*p)) p++; /* next chunk start */
+        }
       break;
-      /*XXX need a way of doing multi-chunk TXT RRs */
 
     case ns_t_tlsa:
       pk = bytefield(&p, pk);   /* usage */

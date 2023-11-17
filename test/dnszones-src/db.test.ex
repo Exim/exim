@@ -25,6 +25,7 @@ test.ex.     SOA     exim.test.ex. hostmaster.exim.test.ex 1430683638 1200 120 6
 test.ex.     TXT     "A TXT record for test.ex."
 s/lash       TXT     "A TXT record for s/lash.test.ex."
 long         TXT     "This is a max-length chunk 789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234" "A short chunk" "A final chunk"
+long         TXT     "Second RR"
 
 cname        CNAME   test.ex.
 
