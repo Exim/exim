@@ -5403,6 +5403,9 @@ Returns:       nothing
 static void
 print_dsn_diagnostic_code(const address_item *addr, FILE *f)
 {
+
+if (addr == NULL) return;
+
 uschar * s;
 unsigned cnt;
 DEBUG(D_deliver)
