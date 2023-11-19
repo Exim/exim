@@ -961,7 +961,9 @@ each time. */
 
 if (option == QL_MSGID_ONLY)	/* Print only the message IDs from the chain */
   for (; qf; qf = qf->next)
-    fprintf(stdout, "%.*s\n", MESSAGE_ID_LENGTH, qf->text);
+    fprintf(stdout, "%.*s\n",
+      is_old_message_id(qf->text) ? MESSAGE_ID_LENGTH_OLD : MESSAGE_ID_LENGTH,
+      qf->text);
 
 else for (;
 	  qf && (reset_point = store_mark());
@@ -1021,7 +1023,9 @@ else for (;
     }
 
   fprintf(stdout, "%s %.*s",
-    string_format_size(size, big_buffer), MESSAGE_ID_LENGTH, qf->text);
+    string_format_size(size, big_buffer),
+    is_old_message_id(qf->text) ? MESSAGE_ID_LENGTH_OLD : MESSAGE_ID_LENGTH,
+    qf->text);
 
   if (env_read && sender_address)
     {

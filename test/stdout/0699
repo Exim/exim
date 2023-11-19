@@ -1,4 +1,7 @@
 ### Check that delivery of old-format spoolfiles works
+TTT   sss 10HmaX-0005vi-00-H <nobody@test.ex>
+          nulldeliver@test.ex
+
 ### Check that the format-mangler utility can downgrade spoolfiles
 TTT   sss 10HmaX-000000005vi-0000 <CALLER@the.local.host.name>
           nulldeliver@test.ex

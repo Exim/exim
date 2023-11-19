@@ -36,6 +36,9 @@ JH/06 Bug 3054: Fix dnsdb lookup for a TXT record with multiple chunks, with a
       chunk-separator specification.  This was broken by hardening introduced
       for Bug 3031.
 
+JH/07 Bug 3050: Fix -bp for old message_id format spoolfiles.  Previously it
+      included the -H with the id; this also messed up exiqgrep.
+
 
 
 Exim version 4.97

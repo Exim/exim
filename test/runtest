@@ -1073,7 +1073,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/250-AUTH ANONYMOUS PLAIN SCRAM-SHA-1\K SCRAM-SHA-256//;
 
     # mailq times change with when the run is done, vs. static-source spoolfiles
-    s/\s*\d*[hd](?=   317 [0-9A-Za-z\-]{23} <nobody\@test.ex>)/DDd/;
+    s/\s*\d*[hd](?=   317 (?:[-0-9A-Za-z]{23}|[-0-9A-Za-z]{16}) <nobody\@test.ex>)/DDd/;
+    # mailq sizes change with caller running the test
+    s/\s[01]m   [34]\d\d(?= (?:[-0-9A-Za-z]{23}|[-0-9A-Za-z]{16}) <CALLER\@the.local.host.name>)/ 1m    396/;
 
     # Not all builds include EXPERIMENTAL_DSN_INFO (1 of 2)
     if (/^X-Exim-Diagnostic:/)

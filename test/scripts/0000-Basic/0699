@@ -1,6 +1,6 @@
 # message ID format manipulation
 # This testcase is for the 4.97 message-id format changeover
-# should can be dropped after a few further releases.
+# should be dropped after a few further releases.
 #
 # Ensure spooldir exists
 sudo mkdir -p DIR/spool/input
@@ -9,6 +9,8 @@ sudo mkdir -p DIR/spool/input
 sudo cp DIR/aux-fixed/TESTNUM/* DIR/spool/input/
 sudo chown -R EXIMUSER:EXIMGROUP DIR/spool/input/
 sudo chmod -R 640 DIR/spool/input/*
+exim -bp
+****
 exim -q
 ****
 #
@@ -39,3 +41,4 @@ exim -q
 #
 ### done
 no_msglog_check
+no_stderr_check
