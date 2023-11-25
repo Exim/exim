@@ -2011,7 +2011,7 @@ if (arc_state)
   g = string_catn(g, US" ]\n", 3);
   }
 else
-  g = string_fmt_append(g, "arc %d\narc_policy $d json:[]\n",
+  g = string_fmt_append(g, "arc %d\narc_policy %d json:[]\n",
 			ARES_RESULT_UNKNOWN, DMARC_ARC_POLICY_RESULT_UNUSED);
 return g;
 }
