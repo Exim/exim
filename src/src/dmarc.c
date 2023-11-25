@@ -311,7 +311,7 @@ g = string_fmt_append(g, "align_dkim %d\nalign_spf %d\naction %d\n",
 # ifdef EXPERIMENTAL_ARC
 g = arc_dmarc_hist_append(g);
 # else
-g = string_fmt_append(g, "arc %d\narc_policy $d json:[]\n",
+g = string_fmt_append(g, "arc %d\narc_policy %d json:[]\n",
 		      ARES_RESULT_UNKNOWN, DMARC_ARC_POLICY_RESULT_UNUSED);
 # endif
 #endif
