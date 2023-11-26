@@ -761,13 +761,14 @@ return TRUE;
 }
 
 
+#if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
+
 /* Grab a string differentiating server behind a loadbalancer, for TLS
 resumption when such servers do not share a session-cache */
 
 static void
 ehlo_response_lbserver(smtp_context * sx, const uschar * name_extract)
 {
-#if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
 const uschar * s;
 uschar * save_item = iterate_item;
 
@@ -778,8 +779,8 @@ s = expand_cstring(name_extract);
 iterate_item = save_item;
 sx->conn_args.host_lbserver = s && !*s ? NULL : s;
 sx->conn_args.have_lbserver = TRUE;
-#endif
 }
+#endif
 
 
 
@@ -1075,9 +1076,11 @@ if (pending_BANNER)
     }
   /*XXX EXPERIMENTAL_ESMTP_LIMITS ? */
 
+# ifndef DISABLE_TLS_RESUME
   s = ((smtp_transport_options_block *)sx->conn_args.ob)->host_name_extract;
   if (!s) s = HNE_DEFAULT;
   ehlo_response_lbserver(sx, s);
+# endif
   }
 
 if (pending_EHLO)
@@ -2482,13 +2485,14 @@ goto SEND_QUIT;
     ob->tls_tempfail_tryclear = FALSE;
     smtp_command = US"SSL-on-connect";
 
+# ifndef DISABLE_TLS_RESUME
     /* Having no EHLO response yet, cannot peek there for a servername to detect
     an LB.  Call this anyway, so that a dummy host_name_extract option value can
     force resumption attempts. */
 
     if (!(s = ob->host_name_extract)) s = US"never-LB";
     ehlo_response_lbserver(sx, s);
-
+# endif
     goto TLS_NEGOTIATE;
     }
 #endif
@@ -2613,8 +2617,10 @@ goto SEND_QUIT;
 	  }
 	}
 #endif
+#ifndef DISABLE_TLS_RESUME
       if (!(s = ob->host_name_extract)) s = HNE_DEFAULT;
       ehlo_response_lbserver(sx, s);
+#endif
       }
 
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
