@@ -445,20 +445,20 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	switch (type)
 	  {
 	  case T_MXH:
-	    if (rr_bad_size(rr, sizeof(u_int16_t))) continue;
+	    if (rr_bad_size(rr, sizeof(uint16_t))) continue;
 	    /* mxh ignores the priority number and includes only the hostnames */
 	    GETSHORT(priority, p);
 	    break;
 
 	  case T_MX:
-	    if (rr_bad_size(rr, sizeof(u_int16_t))) continue;
+	    if (rr_bad_size(rr, sizeof(uint16_t))) continue;
 	    GETSHORT(priority, p);
 	    sprintf(CS s, "%d%c", priority, *outsep2);
 	    yield = string_cat(yield, s);
 	    break;
 
 	  case T_SRV:
-	    if (rr_bad_size(rr, 3*sizeof(u_int16_t))) continue;
+	    if (rr_bad_size(rr, 3*sizeof(uint16_t))) continue;
 	    GETSHORT(priority, p);
 	    GETSHORT(weight, p);
 	    GETSHORT(port, p);
@@ -468,7 +468,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	    break;
 
 	  case T_CSA:
-	    if (rr_bad_size(rr, 3*sizeof(u_int16_t))) continue;
+	    if (rr_bad_size(rr, 3*sizeof(uint16_t))) continue;
 	    /* See acl_verify_csa() for more comments about CSA. */
 	    GETSHORT(priority, p);
 	    GETSHORT(weight, p);
