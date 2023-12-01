@@ -4425,8 +4425,8 @@ if (spool_data_file && cutthrough_done == NOT_TRIED)
     Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
     Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
 
-    /* Claim a data ACL temp-reject, just to get reject logging and resposponse */
-    smtp_handle_acl_fail(ACL_WHERE_DATA, rc, NULL, log_msg);
+    /* Claim a data ACL temp-reject, just to get reject logging and response */
+    if (smtp_input) smtp_handle_acl_fail(ACL_WHERE_DATA, rc, NULL, log_msg);
     smtp_reply = US"";		/* Indicate reply already sent */
 
     message_id[0] = 0;		/* no message accepted */
