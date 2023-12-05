@@ -3005,6 +3005,8 @@ if ((semicolon = Ustrchr(ss, ';')))
     endname = semicolon;
     opts = NULL;
     }
+else
+  opts = NULL;
 
 /* If we are doing an IP address only match, then all lookups must be IP
 address lookups, even if there is no "net-". */
