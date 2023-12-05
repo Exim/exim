@@ -512,10 +512,6 @@ for (uschar * p = raw_hdr; ; p++)
     }
 
   if (where == PDKIM_HDR_TAG)
-    {
-    if (c >= 'a' && c <= 'z')
-      cur_tag = string_catn(cur_tag, p, 1);
-
     if (c == '=')
       {
       if (Ustrcmp(string_from_gstring(cur_tag), "b") == 0)
@@ -526,7 +522,8 @@ for (uschar * p = raw_hdr; ; p++)
       where = PDKIM_HDR_VALUE;
       goto NEXT_CHAR;
       }
-    }
+    else if (!isspace(c))
+      cur_tag = string_catn(cur_tag, p, 1);
 
   if (where == PDKIM_HDR_VALUE)
     {
@@ -553,17 +550,17 @@ for (uschar * p = raw_hdr; ; p++)
 	    switch (cur_tag->s[1])
 	      {
 	      case '\0': pdkim_decode_base64(cur_val->s, &sig->sighash); break;
-	      case 'h':  if (cur_tag->ptr == 2)
-			   pdkim_decode_base64(cur_val->s, &sig->bodyhash);
+	      case 'h':  if (cur_tag->ptr != 2) goto bad_tag;
+			 pdkim_decode_base64(cur_val->s, &sig->bodyhash);
 			 break;
-	      default:   break;
+	      default:   goto bad_tag;
 	      }
 	    break;
 	  case 'v':					/* version */
 	      /* We only support version 1, and that is currently the
 		 only version there is. */
 	    sig->version =
-	      Ustrcmp(cur_val->s, PDKIM_SIGNATURE_VERSION) == 0 ? 1 : -1;
+		Ustrcmp(cur_val->s, PDKIM_SIGNATURE_VERSION) == 0 ? 1 : -1;
 	    break;
 	  case 'a':					/* algorithm */
 	    {
@@ -578,6 +575,7 @@ for (uschar * p = raw_hdr; ; p++)
 		if (Ustrcmp(elem, pdkim_hashes[i].dkim_hashname) == 0)
 		  { sig->hashtype = i; break; }
 	    }
+	    break;
 
 	  case 'c':					/* canonicalization */
 	    pdkim_cstring_to_canons(cur_val->s, 0,
@@ -586,15 +584,15 @@ for (uschar * p = raw_hdr; ; p++)
 	  case 'q':				/* Query method (for pubkey)*/
 	    for (int i = 0; pdkim_querymethods[i]; i++)
 	      if (Ustrcmp(cur_val->s, pdkim_querymethods[i]) == 0)
-	        {
+		{
 		sig->querymethod = i;	/* we never actually use this */
 		break;
 		}
 	    break;
 	  case 's':					/* Selector */
-	    sig->selector = string_copyn(cur_val->s, cur_val->ptr); break;
+	    sig->selector = string_copy_from_gstring(cur_val); break;
 	  case 'd':					/* SDID */
-	    sig->domain = string_copyn(cur_val->s, cur_val->ptr); break;
+	    sig->domain = string_copy_from_gstring(cur_val); break;
 	  case 'i':					/* AUID */
 	    sig->identity = pdkim_decode_qp(cur_val->s); break;
 	  case 't':					/* Timestamp */
@@ -604,16 +602,18 @@ for (uschar * p = raw_hdr; ; p++)
 	  case 'l':					/* Body length count */
 	    sig->bodylength = strtol(CS cur_val->s, NULL, 10); break;
 	  case 'h':					/* signed header fields */
-	    sig->headernames = string_copyn(cur_val->s, cur_val->ptr); break;
+	    sig->headernames = string_copy_from_gstring(cur_val); break;
 	  case 'z':					/* Copied headfields */
 	    sig->copiedheaders = pdkim_decode_qp(cur_val->s); break;
 /*XXX draft-ietf-dcrup-dkim-crypto-05 would need 'p' tag support
 for rsafp signatures.  But later discussion is dropping those. */
 	  default:
-	    DEBUG(D_acl) debug_printf(" Unknown tag encountered\n");
-	    break;
+	    goto bad_tag;
 	  }
 	}
+	else
+bad_tag:  DEBUG(D_acl) debug_printf(" Unknown tag encountered: %Y\n", cur_tag);
+
       cur_tag = cur_val = NULL;
       in_b_val = FALSE;
       where = PDKIM_HDR_LIMBO;
@@ -659,25 +659,37 @@ return sig;
 /* -------------------------------------------------------------------------- */
 
 pdkim_pubkey *
-pdkim_parse_pubkey_record(const uschar *raw_record)
+pdkim_parse_pubkey_record(const uschar * raw_record)
 {
-const uschar * ele;
-int sep = ';';
-pdkim_pubkey * pub;
+pdkim_pubkey * pub = store_get(sizeof(pdkim_pubkey), GET_TAINTED);
 
-pub = store_get(sizeof(pdkim_pubkey), GET_TAINTED);
 memset(pub, 0, sizeof(pdkim_pubkey));
 
-while ((ele = string_nextinlist(&raw_record, &sep, NULL, 0)))
+for (const uschar * ele = raw_record, * tspec, * end, * val; *ele; ele = end)
   {
-  const uschar * val;
+  Uskip_whitespace(&ele);
+  end = US strchrnul(CS ele, ';');
+  tspec = string_copyn(ele, end - ele);
+  if (*end) end++;			/* skip the ; */
 
-  if ((val = Ustrchr(ele, '=')))
+  if ((val = Ustrchr(tspec, '=')))
     {
-    int taglen = val++ - ele;
+    int taglen = val++ - tspec;
 
-    DEBUG(D_acl) debug_printf(" %.*s=%s\n", taglen, ele, val);
-    switch (ele[0])
+    DEBUG(D_acl) debug_printf(" %.*s=%s\n", taglen, tspec, val);
+    while (taglen > 1 && isspace(tspec[taglen-1]))
+      taglen--;			/* Ignore whitespace before = */
+    while (isspace(*val))
+      val++;			/* Ignore whitespace after = */
+    if (isspace(val[ Ustrlen(val)-1 ]))
+      {				/* Ignore whitespace after value */
+      gstring * g = string_cat(NULL, val);
+      while (isspace(gstring_last_char(g)))
+	gstring_trim(g, 1);
+      val = string_from_gstring(g);
+      }
+
+    if (taglen == 1) switch (tspec[0])
       {
       case 'v': pub->version = val;			break;
       case 'h': pub->hashes = val;			break;
@@ -689,8 +701,11 @@ while ((ele = string_nextinlist(&raw_record, &sep, NULL, 0)))
       case 't': if (Ustrchr(val, 'y')) pub->testing = 1;
 		if (Ustrchr(val, 's')) pub->no_subdomaining = 1;
 		break;
-      default:  DEBUG(D_acl) debug_printf(" Unknown tag encountered\n"); break;
+      default:  goto bad_tag;
       }
+    else
+bad_tag:
+       DEBUG(D_acl) debug_printf(" Unknown tag encountered\n");
     }
   }
 

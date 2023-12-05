@@ -760,7 +760,7 @@ return US strncpy(CS dst, CCS src, n);
 
 
 /* Advance the string pointer given over any whitespace.
-Return the next char as there's enought places using it to be useful. */
+Return the next char as there's enough places using it to be useful. */
 
 #define Uskip_whitespace(sp) skip_whitespace(CUSS sp)
 

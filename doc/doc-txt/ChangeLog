@@ -39,6 +39,11 @@ JH/06 Bug 3054: Fix dnsdb lookup for a TXT record with multiple chunks, with a
 JH/07 Bug 3050: Fix -bp for old message_id format spoolfiles.  Previously it
       included the -H with the id; this also messed up exiqgrep.
 
+JH/08 Bug 3056: Tighten up parsing of DKIM DNS records.  Previously, whitespace
+      was not properly skipped and empty elements would cause mis-parsing.
+      Tighten parsing of DKIM header records.  Previously, all but lowercase
+      alpha chars would be ignored in potential tag names.
+
 
 
 Exim version 4.97
