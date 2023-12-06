@@ -78,5 +78,7 @@ extern ssize_t os_sendfile(int, int, off_t *, size_t);
 /*******************/
 
 #define EXIM_HAVE_KEVENT
+#define EXIM_HAVE_STRCHRNUL
+
 
 /* End */

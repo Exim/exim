@@ -102,4 +102,6 @@ then change the 0 to 1 in the next block. */
 # define NS_MAXMSG 65535
 #endif
 
+#define EXIM_HAVE_STRCHRNUL
+
 /* End */
