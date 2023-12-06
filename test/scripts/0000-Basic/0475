@@ -4,5 +4,7 @@ helo test
 mail from:<>
 rcpt to:<a1@b>
 rcpt to:<a2@b>
+rcpt to:<a3@b>
+rcpt to:<a4@b>
 quit
 ****

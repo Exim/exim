@@ -7,6 +7,7 @@
 
 acl_smtp_rcpt = $local_part
 
+log_selector = +unknown_in_list
 
 # ----- ACL -----
 
@@ -17,5 +18,11 @@ a1:
 
 a2:
   deny hosts = 1.2.3/24
+
+a3:
+  deny hosts = <; fe80::1
+
+a4:
+  deny hosts = <; fe80:1
 
 # End

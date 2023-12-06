@@ -39097,7 +39097,7 @@ selection marked by asterisks:
 .irow &`tls_peerdn`&			&nbsp; "TLS peer DN on <= and => lines"
 .irow &`tls_resumption`&		&nbsp; "append * to cipher field"
 .irow &`tls_sni`&			&nbsp; "TLS SNI on <= lines"
-.irow &`unknown_in_list`&		&nbsp; "DNS lookup failed in list match"
+.irow &`unknown_in_list`&		&nbsp; "lookup failed in list match"
 .irow &`all`&				&nbsp; "&*all of the above*&"
 .endtable
 See also the &%slow_lookup_log%& main configuration option,
@@ -39516,7 +39516,8 @@ added to the log line, preceded by SNI=.
 .next
 .cindex "log" "DNS failure in list"
 &%unknown_in_list%&: This setting causes a log entry to be written when the
-result of a list match is failure because a DNS lookup failed.
+result of a list match is failure because a DNS lookup failed, or because
+a bad IP address was in the list.
 .endlist
 
 

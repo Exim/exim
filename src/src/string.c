@@ -57,6 +57,7 @@ union { /* we do not need this, but inet_pton() needs a place for storage */
 we return failure, as we do if the mask isn't a pure numerical value,
 or if it is negative. The actual length is checked later, once we know
 the address family. */
+
 if (slash = Ustrchr(ip_addr, '/'))
   {
   uschar * rest;
@@ -74,10 +75,11 @@ if (slash = Ustrchr(ip_addr, '/'))
     return 0;
     }
 
-  *maskptr = slash - ip_addr;     /* offset of the slash */
+  *maskptr = slash - ip_addr;	/* offset of the slash */
   endp = slash;
   }
-else if (maskptr) *maskptr = 0; /* no slash found */
+else if (maskptr)
+  *maskptr = 0;			/* no slash found */
 
 /* The interface-ID suffix (%<id>) is optional (for IPv6). If it
 exists, we check it syntactically. Later, if we know the address
@@ -160,7 +162,7 @@ switch (af)
 int
 string_is_ip_address(const uschar * ip_addr, int * maskptr)
 {
-return string_is_ip_addressX(ip_addr, maskptr, 0);
+return string_is_ip_addressX(ip_addr, maskptr, NULL);
 }
 
 #endif  /* COMPILE_UTILITY */

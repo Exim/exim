@@ -746,5 +746,8 @@ sender address = CALLER@myhost.test.ex
   1.2.3.4 in "1.2.3.4/abc"?
    list element: 1.2.3.4/abc
    1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask: 1.2.3.4)
-  search_tidyup called
+   ::1 in "<; aaaa:bbbb"?
+   ╎list element: aaaa:bbbb
+   ╎::1 in "<; aaaa:bbbb"? no (malformed IPv6 address or address mask: aaaa:bbbb)
+   search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

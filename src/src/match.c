@@ -886,14 +886,19 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 	  log_write(0, LOG_MAIN, "%s: accepted by +include_defer", error);
 	  goto OK_RETURN;
 
-        case ERROR:		/* host name lookup failed - this can only */
-	  if (ignore_unknown)	/* be for an incoming host (not outgoing) */
+        /* The ERROR return occurs when checking hosts, when either a forward
+        or reverse lookup has failed. It can also occur in a match_ip list if a
+        non-IP address item is encountered. The error string gives details of
+        which it was. */
+
+        case ERROR:
+	  if (ignore_unknown)
 	    {
 	    HDEBUG(D_lists) debug_printf_indent("%s: item ignored by +ignore_unknown\n",
 	      error);
 	    }
 	  else
-	   {
+	    {
 	    HDEBUG(D_lists) debug_printf_indent("%s %s (%s)\n", ot,
 	      include_unknown? "yes":"no", error);
 	    (void)fclose(f);

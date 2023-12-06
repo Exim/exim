@@ -44,6 +44,11 @@ JH/08 Bug 3056: Tighten up parsing of DKIM DNS records.  Previously, whitespace
       Tighten parsing of DKIM header records.  Previously, all but lowercase
       alpha chars would be ignored in potential tag names.
 
+JH/09 Bug 3057: Add heuristic for spotting mistyped IPv6 addresses in lists
+      being searched.  Previously we only had one for IPv4 addresses. Per the
+      documentation, the error results by default in a no-match result for the
+      list.  It is logged if the unknown_in_list log_selector is used.
+
 
 
 Exim version 4.97

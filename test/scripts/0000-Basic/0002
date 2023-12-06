@@ -418,7 +418,7 @@ mask:   ${if eq {1}{2}{${mask:invalid}}{NO}}
 5>3m:   ${if >{5 } {3m }{y}{n}}
 5>3z:   ${if >{5 } {3z }{y}{n}}
 5>a:    ${if >{ 5 } {a}{y}{n}}
-5>bad:  ${if >{5 } {${lookup{trick}lsearch{DIR/aux-fixed/0002.lsearch}}} {y}{n}}
+5>bad:  ${if >{5 } {${lookup{trick}lsearch{DIR/aux-fixed/TESTNUM.lsearch}}} {y}{n}}
 
 >0:     ${if > {}{0}{y}{n}}
 =:      ${if = {}{}{y}{n}}
@@ -472,6 +472,7 @@ isip6:  ${if isip6{::1}{y}{n}}      ::1
 isip:   ${if isip {fe80::a00:20ff:fe86:a061}{y}{n}}  fe80::a00:20ff:fe86:a061
 isip4:  ${if isip4{fe80::a00:20ff:fe86:a061}{y}{n}}  fe80::a00:20ff:fe86:a061
 isip6:  ${if isip6{fe80::a00:20ff:fe86:a061}{y}{n}}  fe80::a00:20ff:fe86:a061
+isip6:  ${if isip6{fe80:a00:20ff:fe86:a061}{y}{n}}   fe80:a00:20ff:fe86:a061
 isip:   ${if isip {fe80::1.2.3.4}{y}{n}}  fe80::1.2.3.4
 isip:   ${if isip {rhubarb}{y}{n}}  rhubarb
 isip4:  ${if isip4{rhubarb}{y}{n}}  rhubarb
@@ -527,10 +528,10 @@ match_ip:        08 ${if match_ip{V4NET.11.12.13}{+hlist}}
 match_ip:        09 ${if match_ip{V4NET.11.12.14}{+hlist}}
 match_ip:        10 ${if match_ip{192.168.3.4}{+hlist}}
 match_ip:        11 ${if match_ip{somename}{+hlist}}
-match_ip:        12 ${if match_ip{1.2.3.4}{lsearch;DIR/aux-fixed/0002.matchip}}
-match_ip:        13 ${if match_ip{1.2.3.4}{net-lsearch;DIR/aux-fixed/0002.matchip}}
-match_ip:        14 ${if match_ip{5.6.7.8}{net24-lsearch;DIR/aux-fixed/0002.matchip}}
-match_ip:        15 ${if match_ip{abcd::dcba}{net-iplsearch;DIR/aux-fixed/0002.matchip}}
+match_ip:        12 ${if match_ip{1.2.3.4}{lsearch;DIR/aux-fixed/TESTNUM.matchip}}
+match_ip:        13 ${if match_ip{1.2.3.4}{net-lsearch;DIR/aux-fixed/TESTNUM.matchip}}
+match_ip:        14 ${if match_ip{5.6.7.8}{net24-lsearch;DIR/aux-fixed/TESTNUM.matchip}}
+match_ip:        15 ${if match_ip{abcd::dcba}{net-iplsearch;DIR/aux-fixed/TESTNUM.matchip}}
 
 queue_running:  ${if queue_running{y}{n}}
 first_delivery: ${if first_delivery{y}{n}}
@@ -552,126 +553,126 @@ acl if: ${if acl {{a_defer}{argN}{arg2}} {Y:$value}{N:$value}}
 # Lookups: DIR is the testing directory. In this test we can only use the
 # lookups that are required in all cases.
 
-${lookup{postmaster}lsearch         {DIR/aux-fixed/0002.aliases}{$value}fail}
-${lookup{postmaster}lsearch,ret=full{DIR/aux-fixed/0002.aliases}{$value}fail}
+${lookup{postmaster}lsearch         {DIR/aux-fixed/TESTNUM.aliases}{$value}fail}
+${lookup{postmaster}lsearch,ret=full{DIR/aux-fixed/TESTNUM.aliases}{$value}fail}
 
-${lookup{x@y}lsearch*@{DIR/aux-fixed/0002.starat}{$value}fail}
-${lookup{x@z}lsearch* {DIR/aux-fixed/0002.starat}{$value}fail}
-${lookup{x@z}lsearch*@{DIR/aux-fixed/0002.starat}{$value}fail}
-${lookup{x@w}lsearch*@{DIR/aux-fixed/0002.starat}{$value}fail}
+${lookup{x@y}lsearch*@{DIR/aux-fixed/TESTNUM.starat}{$value}fail}
+${lookup{x@z}lsearch* {DIR/aux-fixed/TESTNUM.starat}{$value}fail}
+${lookup{x@z}lsearch*@{DIR/aux-fixed/TESTNUM.starat}{$value}fail}
+${lookup{x@w}lsearch*@{DIR/aux-fixed/TESTNUM.starat}{$value}fail}
 
-${lookup{x@y}lsearch*@,ret=full {DIR/aux-fixed/0002.starat}{$value}fail}
-${lookup{x@z}lsearch*,ret=full  {DIR/aux-fixed/0002.starat}{$value}fail}
-${lookup{x@z}lsearch*@,ret=full {DIR/aux-fixed/0002.starat}{$value}fail}
-${lookup{x@w}lsearch*@,ret=full {DIR/aux-fixed/0002.starat}{$value}fail}
+${lookup{x@y}lsearch*@,ret=full {DIR/aux-fixed/TESTNUM.starat}{$value}fail}
+${lookup{x@z}lsearch*,ret=full  {DIR/aux-fixed/TESTNUM.starat}{$value}fail}
+${lookup{x@z}lsearch*@,ret=full {DIR/aux-fixed/TESTNUM.starat}{$value}fail}
+${lookup{x@w}lsearch*@,ret=full {DIR/aux-fixed/TESTNUM.starat}{$value}fail}
 
-${lookup{a.b.c.d}  partial-lsearch {DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{x.y.z}    partial-lsearch {DIR/aux-fixed/0002.domains}{$value}{failed x.y.z}}
-${lookup{p.q}      partial-lsearch {DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{o.p.q}    partial-lsearch {DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{m.n.o.p.q}partial-lsearch {DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{x.y.z}    partial1-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{x.y.z}    partial0-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{a.b.c.d}  partial-lsearch {DIR/aux-fixed/TESTNUM.domains}{$value}fail}
+${lookup{x.y.z}    partial-lsearch {DIR/aux-fixed/TESTNUM.domains}{$value}{failed x.y.z}}
+${lookup{p.q}      partial-lsearch {DIR/aux-fixed/TESTNUM.domains}{$value}fail}
+${lookup{o.p.q}    partial-lsearch {DIR/aux-fixed/TESTNUM.domains}{$value}fail}
+${lookup{m.n.o.p.q}partial-lsearch {DIR/aux-fixed/TESTNUM.domains}{$value}fail}
+${lookup{x.y.z}    partial1-lsearch{DIR/aux-fixed/TESTNUM.domains}{$value}fail}
+${lookup{x.y.z}    partial0-lsearch{DIR/aux-fixed/TESTNUM.domains}{$value}fail}
 
-${lookup{a.b.c.d}  partial-lsearch,ret=full {DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{x.y.z}    partial-lsearch,ret=full {DIR/aux-fixed/0002.domains}{$value}{failed x.y.z}}
-${lookup{p.q}      partial-lsearch,ret=full {DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{o.p.q}    partial-lsearch,ret=full {DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{m.n.o.p.q}partial-lsearch,ret=full {DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{x.y.z}    partial1-lsearch,ret=full{DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{x.y.z}    partial0-lsearch,ret=full{DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{a.b.c.d}  partial-lsearch,ret=full {DIR/aux-fixed/TESTNUM.domains}{$value}fail}
+${lookup{x.y.z}    partial-lsearch,ret=full {DIR/aux-fixed/TESTNUM.domains}{$value}{failed x.y.z}}
+${lookup{p.q}      partial-lsearch,ret=full {DIR/aux-fixed/TESTNUM.domains}{$value}fail}
+${lookup{o.p.q}    partial-lsearch,ret=full {DIR/aux-fixed/TESTNUM.domains}{$value}fail}
+${lookup{m.n.o.p.q}partial-lsearch,ret=full {DIR/aux-fixed/TESTNUM.domains}{$value}fail}
+${lookup{x.y.z}    partial1-lsearch,ret=full{DIR/aux-fixed/TESTNUM.domains}{$value}fail}
+${lookup{x.y.z}    partial0-lsearch,ret=full{DIR/aux-fixed/TESTNUM.domains}{$value}fail}
 
-q1:  ${lookup{abc}        lsearch{DIR/aux-fixed/0002.quoted}}
-q2:  ${lookup{xyz}        lsearch{DIR/aux-fixed/0002.quoted}}
-q3:  ${lookup{pqr}        lsearch{DIR/aux-fixed/0002.quoted}}
-q4:  ${lookup{a:b}        lsearch{DIR/aux-fixed/0002.quoted}}
-q5:  ${lookup{"quoted"}   lsearch{DIR/aux-fixed/0002.quoted}}
-q6:  ${lookup{white space}lsearch{DIR/aux-fixed/0002.quoted}}
-q7:  ${lookup{b\\s}       lsearch{DIR/aux-fixed/0002.quoted}}
+q1:  ${lookup{abc}        lsearch{DIR/aux-fixed/TESTNUM.quoted}}
+q2:  ${lookup{xyz}        lsearch{DIR/aux-fixed/TESTNUM.quoted}}
+q3:  ${lookup{pqr}        lsearch{DIR/aux-fixed/TESTNUM.quoted}}
+q4:  ${lookup{a:b}        lsearch{DIR/aux-fixed/TESTNUM.quoted}}
+q5:  ${lookup{"quoted"}   lsearch{DIR/aux-fixed/TESTNUM.quoted}}
+q6:  ${lookup{white space}lsearch{DIR/aux-fixed/TESTNUM.quoted}}
+q7:  ${lookup{b\\s}       lsearch{DIR/aux-fixed/TESTNUM.quoted}}
 
-q1f: ${lookup{abc}        lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
-q2f: ${lookup{xyz}        lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
-q3f: ${lookup{pqr}        lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
-q4f: ${lookup{a:b}        lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
-q5f: ${lookup{"quoted"}   lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
-q6f: ${lookup{white space}lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
-q7f: ${lookup{b\\s}       lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
+q1f: ${lookup{abc}        lsearch,ret=full{DIR/aux-fixed/TESTNUM.quoted}}
+q2f: ${lookup{xyz}        lsearch,ret=full{DIR/aux-fixed/TESTNUM.quoted}}
+q3f: ${lookup{pqr}        lsearch,ret=full{DIR/aux-fixed/TESTNUM.quoted}}
+q4f: ${lookup{a:b}        lsearch,ret=full{DIR/aux-fixed/TESTNUM.quoted}}
+q5f: ${lookup{"quoted"}   lsearch,ret=full{DIR/aux-fixed/TESTNUM.quoted}}
+q6f: ${lookup{white space}lsearch,ret=full{DIR/aux-fixed/TESTNUM.quoted}}
+q7f: ${lookup{b\\s}       lsearch,ret=full{DIR/aux-fixed/TESTNUM.quoted}}
 
-abc:   ${lookup{abc}wildlsearch{DIR/aux-var/0002.wild}}
-a.b.c: ${lookup{a.b.c}wildlsearch{DIR/aux-var/0002.wild}}
-ab.c:  ${lookup{ab.c}wildlsearch{DIR/aux-var/0002.wild}}
-xyz:   ${lookup{xyz}wildlsearch{DIR/aux-var/0002.wild}}
-.Xyz:   ${lookup{Xyz}wildlsearch{DIR/aux-var/0002.wild}}
-.Zyz:   ${lookup{Zyz}wildlsearch{DIR/aux-var/0002.wild}}
-a b:   ${lookup{a b}wildlsearch{DIR/aux-var/0002.wild}}
-a  b:  ${lookup{a  b}wildlsearch{DIR/aux-var/0002.wild}}
-a:b:   ${lookup{a:b}wildlsearch{DIR/aux-var/0002.wild}}
-a.b:   ${lookup{a.b}wildlsearch{DIR/aux-var/0002.wild}}
-a..b:  ${lookup{a..b}wildlsearch{DIR/aux-var/0002.wild}}
-a9b:   ${lookup{a9b}wildlsearch{DIR/aux-var/0002.wild}}
-a99b:  ${lookup{a99b}wildlsearch{DIR/aux-var/0002.wild}}
+abc:   ${lookup{abc}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+a.b.c: ${lookup{a.b.c}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+ab.c:  ${lookup{ab.c}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+xyz:   ${lookup{xyz}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+.Xyz:   ${lookup{Xyz}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+.Zyz:   ${lookup{Zyz}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+a b:   ${lookup{a b}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+a  b:  ${lookup{a  b}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+a:b:   ${lookup{a:b}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+a.b:   ${lookup{a.b}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+a..b:  ${lookup{a..b}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+a9b:   ${lookup{a9b}wildlsearch{DIR/aux-var/TESTNUM.wild}}
+a99b:  ${lookup{a99b}wildlsearch{DIR/aux-var/TESTNUM.wild}}
 
 # Should give the same results as above because expansion does nothing
 
-abc:   ${lookup{abc}nwildlsearch{DIR/aux-var/0002.wild}}
-a.b.c: ${lookup{a.b.c}nwildlsearch{DIR/aux-var/0002.wild}}
-ab.c:  ${lookup{ab.c}nwildlsearch{DIR/aux-var/0002.wild}}
-xyz:   ${lookup{xyz}nwildlsearch{DIR/aux-var/0002.wild}}
-.Xyz:   ${lookup{Xyz}nwildlsearch{DIR/aux-var/0002.wild}}
-.Zyz:   ${lookup{Zyz}nwildlsearch{DIR/aux-var/0002.wild}}
-a b:   ${lookup{a b}nwildlsearch{DIR/aux-var/0002.wild}}
-a  b:  ${lookup{a  b}nwildlsearch{DIR/aux-var/0002.wild}}
-a:b:   ${lookup{a:b}nwildlsearch{DIR/aux-var/0002.wild}}
+abc:   ${lookup{abc}nwildlsearch{DIR/aux-var/TESTNUM.wild}}
+a.b.c: ${lookup{a.b.c}nwildlsearch{DIR/aux-var/TESTNUM.wild}}
+ab.c:  ${lookup{ab.c}nwildlsearch{DIR/aux-var/TESTNUM.wild}}
+xyz:   ${lookup{xyz}nwildlsearch{DIR/aux-var/TESTNUM.wild}}
+.Xyz:   ${lookup{Xyz}nwildlsearch{DIR/aux-var/TESTNUM.wild}}
+.Zyz:   ${lookup{Zyz}nwildlsearch{DIR/aux-var/TESTNUM.wild}}
+a b:   ${lookup{a b}nwildlsearch{DIR/aux-var/TESTNUM.wild}}
+a  b:  ${lookup{a  b}nwildlsearch{DIR/aux-var/TESTNUM.wild}}
+a:b:   ${lookup{a:b}nwildlsearch{DIR/aux-var/TESTNUM.wild}}
 
 # Should fail because of no expansion
 
-a.b:   ${lookup{a.b}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NO}}
-a..b:  ${lookup{a..b}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NO}}
-a9b:   ${lookup{a9b}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NO}}
-a99b:  ${lookup{a99b}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NO}}
+a.b:   ${lookup{a.b}nwildlsearch{DIR/aux-var/TESTNUM.wild}{$value}{NO}}
+a..b:  ${lookup{a..b}nwildlsearch{DIR/aux-var/TESTNUM.wild}{$value}{NO}}
+a9b:   ${lookup{a9b}nwildlsearch{DIR/aux-var/TESTNUM.wild}{$value}{NO}}
+a99b:  ${lookup{a99b}nwildlsearch{DIR/aux-var/TESTNUM.wild}{$value}{NO}}
 
 # But these should succeed
 
-a\\:b:  ${lookup{a\\:b}nwildlsearch{DIR/aux-var/0002.wild}}
-a\\:Xb: ${lookup{a\\:Xb}nwildlsearch{DIR/aux-var/0002.wild}}
+a\\:b:  ${lookup{a\\:b}nwildlsearch{DIR/aux-var/TESTNUM.wild}}
+a\\:Xb: ${lookup{a\\:Xb}nwildlsearch{DIR/aux-var/TESTNUM.wild}}
 
 # Some tests of case-(in)dependence
 
-.MiXeD-CD:  ${lookup{MiXeD-CD}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
-.MixeD-CD:  ${lookup{MixeD-CD}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
-.MiXeD-Ncd: ${lookup{MiXeD-Ncd}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
-.MixeD-Ncd: ${lookup{MixeD-Ncd}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
+.MiXeD-CD:  ${lookup{MiXeD-CD}nwildlsearch{DIR/aux-var/TESTNUM.wild}{$value}{NOT FOUND}}
+.MixeD-CD:  ${lookup{MixeD-CD}nwildlsearch{DIR/aux-var/TESTNUM.wild}{$value}{NOT FOUND}}
+.MiXeD-Ncd: ${lookup{MiXeD-Ncd}nwildlsearch{DIR/aux-var/TESTNUM.wild}{$value}{NOT FOUND}}
+.MixeD-Ncd: ${lookup{MixeD-Ncd}nwildlsearch{DIR/aux-var/TESTNUM.wild}{$value}{NOT FOUND}}
 
 # IP address (CIDR) lookups
 
-1.2.3.4:      ${lookup{1.2.3.4}iplsearch{DIR/aux-fixed/0002.iplsearch}}
-1.2.3.5:      ${lookup{1.2.3.5}iplsearch{DIR/aux-fixed/0002.iplsearch}}
-1.2.3.5:      ${lookup{1.2.3.5}iplsearch*{DIR/aux-fixed/0002.iplsearch}}
-abcd::cdab:   ${lookup{abcd::cdab}iplsearch{DIR/aux-fixed/0002.iplsearch}}
-192.168.1.2:  ${lookup{192.168.1.2}iplsearch{DIR/aux-fixed/0002.iplsearch}}
-192.168.5.6:  ${lookup{192.168.5.6}iplsearch{DIR/aux-fixed/0002.iplsearch}}
-abcd:abcd::   ${lookup{abcd:abcd::}iplsearch{DIR/aux-fixed/0002.iplsearch}}
-abcd:abcd:1:: ${lookup{abcd:abcd:1::}iplsearch{DIR/aux-fixed/0002.iplsearch}}
-abcd:abcd::3  ${lookup{abcd:abcd::3}iplsearch{DIR/aux-fixed/0002.iplsearch}}
-rhubarb       ${lookup{rhubarb}iplsearch{DIR/aux-fixed/0002.iplsearch}}
+1.2.3.4:      ${lookup{1.2.3.4}iplsearch{DIR/aux-fixed/TESTNUM.iplsearch}}
+1.2.3.5:      ${lookup{1.2.3.5}iplsearch{DIR/aux-fixed/TESTNUM.iplsearch}}
+1.2.3.5:      ${lookup{1.2.3.5}iplsearch*{DIR/aux-fixed/TESTNUM.iplsearch}}
+abcd::cdab:   ${lookup{abcd::cdab}iplsearch{DIR/aux-fixed/TESTNUM.iplsearch}}
+192.168.1.2:  ${lookup{192.168.1.2}iplsearch{DIR/aux-fixed/TESTNUM.iplsearch}}
+192.168.5.6:  ${lookup{192.168.5.6}iplsearch{DIR/aux-fixed/TESTNUM.iplsearch}}
+abcd:abcd::   ${lookup{abcd:abcd::}iplsearch{DIR/aux-fixed/TESTNUM.iplsearch}}
+abcd:abcd:1:: ${lookup{abcd:abcd:1::}iplsearch{DIR/aux-fixed/TESTNUM.iplsearch}}
+abcd:abcd::3  ${lookup{abcd:abcd::3}iplsearch{DIR/aux-fixed/TESTNUM.iplsearch}}
+rhubarb       ${lookup{rhubarb}iplsearch{DIR/aux-fixed/TESTNUM.iplsearch}}
 
 
 # Nested Lookups - style 1
 
-${lookup{${lookup{key1}lsearch{DIR/aux-fixed/0002.rec}{$value}{key1f}}}lsearch{DIR/aux-fixed/0002.rec}{$value}fail}
-${lookup{${lookup{key3}lsearch{DIR/aux-fixed/0002.rec}{$value}{key1f}}}lsearch{DIR/aux-fixed/0002.rec}{$value}fail}
+${lookup{${lookup{key1}lsearch{DIR/aux-fixed/TESTNUM.rec}{$value}{key1f}}}lsearch{DIR/aux-fixed/TESTNUM.rec}{$value}fail}
+${lookup{${lookup{key3}lsearch{DIR/aux-fixed/TESTNUM.rec}{$value}{key1f}}}lsearch{DIR/aux-fixed/TESTNUM.rec}{$value}fail}
 
 # Nested Lookups - style 2
 
-${lookup{key1}lsearch{DIR/aux-fixed/0002.rec}{${lookup{$value}lsearch{DIR/aux-fixed/0002.rec}{$value}{failed for $value}}}{failed for key1}}
-${lookup{key3}lsearch{DIR/aux-fixed/0002.rec}{${lookup{$value}lsearch{DIR/aux-fixed/0002.rec}{$value}{failed for $value}}}{failed for key1}}
+${lookup{key1}lsearch{DIR/aux-fixed/TESTNUM.rec}{${lookup{$value}lsearch{DIR/aux-fixed/TESTNUM.rec}{$value}{failed for $value}}}{failed for key1}}
+${lookup{key3}lsearch{DIR/aux-fixed/TESTNUM.rec}{${lookup{$value}lsearch{DIR/aux-fixed/TESTNUM.rec}{$value}{failed for $value}}}{failed for key1}}
 
 # Other nesting tests
 
-${lookup{one}lsearch{DIR/aux-fixed/0002.alias1}{$value${lookup{one}lsearch{DIR/aux-fixed/0002.alias2}{,$value}}}{${lookup{one}lsearch{DIR/aux-fixed/0002.alias2}{$value}fail}}}
-${lookup{two}lsearch{DIR/aux-fixed/0002.alias1}{$value${lookup{two}lsearch{DIR/aux-fixed/0002.alias2}{,$value}}}{${lookup{two}lsearch{DIR/aux-fixed/0002.alias2}{$value}fail}}}
-${lookup{both}lsearch{DIR/aux-fixed/0002.alias1}{$value${lookup{both}lsearch{DIR/aux-fixed/0002.alias2}{,$value}}}{${lookup{both}lsearch{DIR/aux-fixed/0002.alias2}{$value}fail}}}
-${lookup{neither}lsearch{DIR/aux-fixed/0002.alias1}{$value${lookup{neither}lsearch{DIR/aux-fixed/0002.alias2}{,$value}}}{${lookup{neither}lsearch{DIR/aux-fixed/0002.alias2}{$value}fail}}}
+${lookup{one}lsearch{DIR/aux-fixed/TESTNUM.alias1}{$value${lookup{one}lsearch{DIR/aux-fixed/TESTNUM.alias2}{,$value}}}{${lookup{one}lsearch{DIR/aux-fixed/TESTNUM.alias2}{$value}fail}}}
+${lookup{two}lsearch{DIR/aux-fixed/TESTNUM.alias1}{$value${lookup{two}lsearch{DIR/aux-fixed/TESTNUM.alias2}{,$value}}}{${lookup{two}lsearch{DIR/aux-fixed/TESTNUM.alias2}{$value}fail}}}
+${lookup{both}lsearch{DIR/aux-fixed/TESTNUM.alias1}{$value${lookup{both}lsearch{DIR/aux-fixed/TESTNUM.alias2}{,$value}}}{${lookup{both}lsearch{DIR/aux-fixed/TESTNUM.alias2}{$value}fail}}}
+${lookup{neither}lsearch{DIR/aux-fixed/TESTNUM.alias1}{$value${lookup{neither}lsearch{DIR/aux-fixed/TESTNUM.alias2}{,$value}}}{${lookup{neither}lsearch{DIR/aux-fixed/TESTNUM.alias2}{$value}fail}}}
 
 # Lookup quotes for standardly expected lookups
 
@@ -798,26 +799,26 @@ toobig    ${from_utf8:aĀd}
 # File insertion
 
 ${readfile}
-${readfile{DIR/aux-fixed/0002.readfile}}
-${readfile{DIR/aux-fixed/0002.readfile}{}}
-${readfile{DIR/aux-fixed/0002.readfile}{:}}
-${readfile{DIR/aux-fixed/0002.readfile}{ - }}
+${readfile{DIR/aux-fixed/TESTNUM.readfile}}
+${readfile{DIR/aux-fixed/TESTNUM.readfile}{}}
+${readfile{DIR/aux-fixed/TESTNUM.readfile}{:}}
+${readfile{DIR/aux-fixed/TESTNUM.readfile}{ - }}
 ${readfile{/non/exist/file}}
 ${if exists{/non/exist/file}{${readfile{/non/exist/file}}}{non-exist}}
->${readfile{DIR/aux-fixed/0002.readfile}{!}}\
+>${readfile{DIR/aux-fixed/TESTNUM.readfile}{!}}\
     <
 
 # Calling a command
 
-${run{DIR/aux-fixed/0002.runfile 0}}
+${run{DIR/aux-fixed/TESTNUM.runfile 0}}
 rc=$runrc
-${run{DIR/aux-fixed/0002.runfile 0}{1}{2}}
+${run{DIR/aux-fixed/TESTNUM.runfile 0}{1}{2}}
 rc=$runrc
-${run{DIR/aux-fixed/0002.runfile 0}{$value}{2}}
+${run{DIR/aux-fixed/TESTNUM.runfile 0}{$value}{2}}
 rc=$runrc
-${run{DIR/aux-fixed/0002.runfile 1}{$value}{2}}
+${run{DIR/aux-fixed/TESTNUM.runfile 1}{$value}{2}}
 rc=$runrc
-${run{DIR/aux-fixed/0002.runfile 1}{$value}{$value}}
+${run{DIR/aux-fixed/TESTNUM.runfile 1}{$value}{$value}}
 rc=$runrc
 ${run{DIR/test-nonexist}{Y}{N}}
 rc=$runrc
@@ -825,9 +826,9 @@ rc=$runrc
 rc=$runrc
 ${if eq{1}{2}{${run{/non/exist}}}{1!=2}}
 rc=$runrc
-${run,preexpand {DIR/aux-fixed/0002.runfile 0}}
+${run,preexpand {DIR/aux-fixed/TESTNUM.runfile 0}}
 rc=$runrc
-${run{DIR/aux-fixed/0002.runfile ${quote:1}}{$value}{2}}
+${run{DIR/aux-fixed/TESTNUM.runfile ${quote:1}}{$value}{2}}
 rc=$runrc
 
 # PRVS
@@ -1138,10 +1139,11 @@ Subject: =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_i
 .
 quit
 ****
-# Certain kind of error
+# Bad IP addresses
 exim -d -be
 match_ip:        15 ${if match_ip{1.2.3.4}{1.2.3}}
 match_ip:        16 ${if match_ip{1.2.3.4}{1.2.3.4/abc}}
+match_ip:        17 ${if match_ip{::1}{<; aaaa:bbbb}}
 ****
 # Operation of inlist and negated inlist
 exim -be

@@ -2971,7 +2971,7 @@ if (*ss == '@')
 a (possibly masked) comparison with the current IP address. */
 
 if (string_is_ip_address(ss, &maskoffset) != 0)
-  return (host_is_in_net(cb->host_address, ss, maskoffset)? OK : FAIL);
+  return host_is_in_net(cb->host_address, ss, maskoffset) ? OK : FAIL;
 
 /* The pattern is not an IP address. A common error that people make is to omit
 one component of an IPv4 address, either by accident, or believing that, for
@@ -2982,13 +2982,25 @@ ancient specification.) To aid in debugging these cases, we give a specific
 error if the pattern contains only digits and dots or contains a slash preceded
 only by digits and dots (a slash at the start indicates a file name and of
 course slashes may be present in lookups, but not preceded only by digits and
-dots). */
+dots).  Then the equivalent for IPv6 (roughly). */
 
-for (t = ss; isdigit(*t) || *t == '.'; ) t++;
-if (!*t  || (*t == '/' && t != ss))
+if (Ustrchr(ss, ':'))
   {
-  *error = string_sprintf("malformed IPv4 address or address mask: %.*s", (int)(t - ss), ss);
-  return ERROR;
+  for (t = ss; isxdigit(*t) || *t == ':' || *t == '.'; ) t++;
+  if (!*t  ||  (*t == '/' || *t == '%') && t != ss)
+    {
+    *error = string_sprintf("malformed IPv6 address or address mask: %.*s", (int)(t - ss), ss);
+    return ERROR;
+    }
+  }
+else
+  {
+  for (t = ss; isdigit(*t) || *t == '.'; ) t++;
+  if (!*t  || (*t == '/' && t != ss))
+    {
+    *error = string_sprintf("malformed IPv4 address or address mask: %.*s", (int)(t - ss), ss);
+    return ERROR;
+    }
   }
 
 /* See if there is a semicolon in the pattern, separating a searchtype
