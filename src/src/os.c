@@ -901,7 +901,7 @@ return buffer ? buffer : realloc(b, strlen(b) + 1);
 char *
 strchrnul(const char * s, int c)
 {
-while (*s != c && *s) s++
+while (*s != c && *s) s++;
 return CS s;
 }
 #endif
