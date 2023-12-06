@@ -41711,7 +41711,7 @@ variables here.
 .option dkim_sign_headers smtp string&!! "see below"
 If set, this option must expand to a colon-separated
 list of header names.
-Headers with these names, or the absence or such a header, will be included
+Headers with these names, or the absence of such a header, will be included
 in the message signature.
 When unspecified, the header names listed in RFC4871 will be used,
 whether or not each header is present in the message.
