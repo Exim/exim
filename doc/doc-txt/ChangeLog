@@ -49,6 +49,10 @@ JH/09 Bug 3057: Add heuristic for spotting mistyped IPv6 addresses in lists
       documentation, the error results by default in a no-match result for the
       list.  It is logged if the unknown_in_list log_selector is used.
 
+JH/10 Bug 3058: Ensure that a failing expansion in a router "set" option defers
+      the routing operation.  Previously it would silently stop routing the
+      message.
+
 
 
 Exim version 4.97

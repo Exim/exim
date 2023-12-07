@@ -25918,6 +25918,7 @@ permits this.
 .cindex "line length" limit
 This option sets the maximum line length, in bytes, that the transport
 will send.  Any messages with lines exceeding the given value
+(before a transport filter, if any)
 will fail and a failure-DSN ("bounce") message will if possible be returned
 to the sender.
 The default value is that defined by the SMTP standards.

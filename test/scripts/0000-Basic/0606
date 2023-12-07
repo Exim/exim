@@ -1,5 +1,5 @@
 # router variables
-exim -odi a
+exim -odi a bad
 Subject: foo
 
 body

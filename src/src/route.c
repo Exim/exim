@@ -1492,7 +1492,11 @@ for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
       {
       addr->message = string_sprintf("expansion of \"%s\" failed "
 	"in %s router: %s", ele, r->name, expand_string_message);
-      return DEFER;
+      /* Caller will replace that for logging, if a DB lookup, to avoid exposing
+      passwords */
+      DEBUG(D_route) debug_printf("%s\n", addr->message);
+      if (!f.search_find_defer)
+      return f.search_find_defer ? DEFER : FAIL;
       }
 
   if (!(node = tree_search(*root, name)))
@@ -1546,8 +1550,8 @@ route_address(address_item *addr, address_item **paddr_local,
 {
 int yield = OK;
 BOOL unseen;
-router_instance *r, *nextr;
-const uschar *old_domain = addr->domain;
+router_instance * r, * nextr;
+const uschar * old_domain = addr->domain;
 
 HDEBUG(D_route)
   {
@@ -1561,8 +1565,8 @@ instead of at the first router. */
 
 for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   {
-  uschar *error;
-  struct passwd *pw = NULL;
+  uschar * error;
+  struct passwd * pw = NULL;
   struct passwd pwcopy;
   BOOL loop_detected = FALSE;
   BOOL more;
@@ -1736,11 +1740,11 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   router traversal.  On the addr string they are held as a variable tree, so
   as to maintain the post-expansion taints separate. */
 
-  switch (set_router_vars(addr, r))
+  switch (rc = set_router_vars(addr, r))
     {
     case OK:	break;
     case PASS:	continue;		/* with next router */
-    default:	 goto ROUTE_EXIT;
+    default: 	yield = rc; goto ROUTE_EXIT;
     }
 
   /* Finally, expand the address_data field in the router. Forced failure

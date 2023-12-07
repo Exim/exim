@@ -19,9 +19,20 @@ not_smtp:
 
 begin routers
 
+dump_bounce:
+  driver =	redirect
+  senders =	:
+  data =	:blackhole:
+
 hide_verifies:
   driver =	accept
   verify_only
+
+bad:
+  driver =	accept
+  local_parts =	bad
+  set =		r_srs_domain = ${lookup mysql{wrong things
+  transport =	local_delivery
 
 alias:
   driver =	redirect
@@ -65,5 +76,9 @@ local_delivery:
   user = CALLER
   headers_add =	X-r1: <$r_r1>\nX-r2: <$r_r2>\nX-r3: <$r_r3>
 
+
+# ----- Retry -----
+begin retry
+* * F,5d,10s
 
 # End
