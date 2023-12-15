@@ -964,7 +964,7 @@ typedef struct qrunner {
   struct qrunner * next;	/* list sorted by next tick */
 
   uschar *	name;		/* NULL for the default queue */
-  unsigned	interval;	/* tick rate, seconds */
+  unsigned	interval;	/* tick rate, seconds. Zero for a one-time run */
   time_t	next_tick;	/* next run should, or should have, start(ed) */
   unsigned	run_max;	/* concurrent queue runner limit */
   unsigned	run_count;	/* current runners */

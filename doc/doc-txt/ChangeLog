@@ -53,6 +53,11 @@ JH/10 Bug 3058: Ensure that a failing expansion in a router "set" option defers
       the routing operation.  Previously it would silently stop routing the
       message.
 
+JH/11 Bug 3046: Fix queue-runs.  Previously, the arrivel of a notification or
+      info-request event close in time to a scheduled run timer could result in
+      the latter being missed, and no further queue scheduled runs being
+      initiated.  This ouwld be more likely on high-load systems.
+
 
 
 Exim version 4.97
