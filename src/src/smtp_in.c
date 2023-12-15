@@ -69,7 +69,7 @@ enum {
   /* These commands are required to be synchronized, i.e. to be the last in a
   block of commands when pipelining. */
 
-  HELO_CMD, EHLO_CMD, XCLIENT_CMD, DATA_CMD, /* These are listed in the pipelining */
+  HELO_CMD, EHLO_CMD, DATA_CMD, /* These are listed in the pipelining */
   VRFY_CMD, EXPN_CMD, NOOP_CMD, /* RFC as requiring synchronization */
   ETRN_CMD,                     /* This by analogy with TURN from the RFC */
   STARTTLS_CMD,                 /* Required by the STARTTLS RFC */
@@ -194,7 +194,6 @@ static smtp_cmd_list cmd_list[] = {
   { "rset",       sizeof("rset")-1,       RSET_CMD, FALSE, FALSE },  /* First */
   { "helo",       sizeof("helo")-1,       HELO_CMD, TRUE,  FALSE },
   { "ehlo",       sizeof("ehlo")-1,       EHLO_CMD, TRUE,  FALSE },
-  { "xclient",    sizeof("xclient")-1,    XCLIENT_CMD, TRUE, FALSE },
   { "auth",       sizeof("auth")-1,       AUTH_CMD, TRUE,  TRUE  },
 #ifndef DISABLE_TLS
   { "starttls",   sizeof("starttls")-1,   STARTTLS_CMD, FALSE, FALSE },
@@ -231,7 +230,7 @@ It must be kept in step with the SCH_xxx enumerations. */
 static uschar *smtp_names[] =
   {
   US"NONE", US"AUTH", US"DATA", US"BDAT", US"EHLO", US"ETRN", US"EXPN",
-  US"HELO", US"XCLIENT", US"HELP", US"MAIL", US"NOOP", US"QUIT", US"RCPT", US"RSET",
+  US"HELO", US"HELP", US"MAIL", US"NOOP", US"QUIT", US"RCPT", US"RSET",
   US"STARTTLS", US"VRFY" };
 
 static uschar *protocols_local[] = {
@@ -1746,254 +1745,6 @@ if (  smtp_inptr < smtp_inend		/* Outstanding input */
 return OTHER_CMD;
 }
 
-/*************************************************
-*          Decode byte-string in xtext           *
-*************************************************/
-
-/* This function decodes a string in xtextformat as defined in RFC 1891 and
-required by the SMTP XCLIENT extension. We put the result in a piece of
-store of equal length - it cannot be longer than this. Although in general the
-result of decoding an xtext may be binary, in the context in which it is used
-by Exim (for decoding the value of XCLIENT command), the result is
-expected to be an addr-spec. We therefore add on a terminating zero, for
-convenience.
-Arguments:
-  code        points to the coded string
-  end         points to the end of coded string
-  ptr         where to put the pointer to the result, which is in
-              dynamic store
-Returns:      the number of bytes in the result, excluding the final zero;
-              -1 if the input is malformed
-*/
-
-int
-xclient_xtextdecode(uschar *code, uschar *end, uschar **ptr)
-{
-register int x;
-uschar *result = store_get(end - code + 1, FALSE);
-*ptr = result;
-
-while (code < end)
-  {
-  x = (*code++);
-  if (x < 33 || x > 127 || x == '=') return -1;
-  if (x == '+')
-    {
-    register int y;
-    if (!isxdigit((x = (*code++)))) return -1;
-    y = ((isdigit(x))? x - '0' : (tolower(x) - 'a' + 10)) << 4;
-    if (!isxdigit((x = (*code++)))) return -1;
-    *result++ = y | ((isdigit(x))? x - '0' : (tolower(x) - 'a' + 10));
-    }
-  else *result++ = x;
-  }
-
-*result = 0;
-return result - *ptr;
-}
-
-/*************************************************
-*   Check XCLIENT line and set sender_address    *
-*************************************************/
-
-
-/* Check the format of a XCLIENT line.
- * XCLIENT Command syntax
- *
- * An example client-server conversation is given at the end of this document.
- *
- * In SMTP server EHLO replies, the keyword associated with this extension is XCLIENT. It is followed by the names of the attributes that the XCLIENT implementation supports.
- *
- * The XCLIENT command may be sent at any time, except in the middle of a mail delivery transaction (i.e. between MAIL and DOT, or MAIL and RSET).
- * The XCLIENT command may be pipelined when the server supports ESMTP command pipelining.
- * To avoid triggering spamware detectors, the command should be sent at the end of a command group.
- *
- * The syntax of XCLIENT requests is described below.
- * Upper case and quoted strings specify terminals, lowercase strings specify meta terminals, and SP is whitespace.
- * Although command and attribute names are shown in upper case, they are in fact case insensitive.
- *
- *   xclient-command = XCLIENT 1*( SP attribute-name"="attribute-value )
- *
- *   attribute-name = ( NAME | ADDR | PORT | HELO | PROTO | LOGIN)
- *
- *   attribute-value = xtext
- *
- * Attribute values are xtext encoded as per RFC 1891.
- * The NAME attribute specifies an SMTP client hostname (not an SMTP client address), [UNAVAILABLE] when client hostname lookup failed due to a permanent error, or [TEMPUNAVAIL] when the lookup error condition was transient.
- *
- * The ADDR attribute specifies an SMTP client numerical IPv4 network address, an IPv6 address prefixed with IPV6:, or [UNAVAILABLE] when the address information is unavailable. Address information is not enclosed with [].
- *
- * The PORT attribute specifies the SMTP client TCP port number as a decimal number, or [UNAVAILABLE] when the information is unavailable.
- * The HELO attribute specifies an SMTP HELO parameter value, or the value [UNAVAILABLE] when the information is unavailable.
- * The PROTO attribute specifies either SMTP or ESMTP.
- *
- * Note 1: syntactically valid NAME and HELO attribute-value elements can be up to 255 characters long.
- * The client must not send XCLIENT commands that exceed the 512 character limit for SMTP commands.
- * To avoid exceeding the limit the client should send the information in multiple XCLIENT commands; for example, send NAME and ADDR first, then HELO and PROTO.
- *
- * Note 2: [UNAVAILABLE], [TEMPUNAVAIL] and IPV6: may be specified in upper case, lower case or mixed case.
-Argument:
-  s       the data portion of the line (already past any white space)
-Returns: TRUE
-         FALSE
-*/
-
-/* XCLIENT MACROS */
-#define XCLIENT_UNAVAIL US"[UNAVAILABLE]"
-#define XCLIENT_TEMPUNAVAIL US"[TEMPUNAVAIL]"
-
-static BOOL
-smtp_handle_xclient(uschar *s)
-{
-  uschar *p, *c, *end, *decoded_buf;
-  int len;
-  enum {
-    XCLIENT_READ_COMMAND = 0,
-    XCLIENT_READ_VALUE,
-    XCLIENT_SKIP_SPACES
-  } state = XCLIENT_SKIP_SPACES;
-  enum {
-    XCLIENT_CMD_ADDR = 0,
-    XCLIENT_CMD_NAME,
-    XCLIENT_CMD_PORT,
-    XCLIENT_CMD_PROTO,
-    XCLIENT_CMD_LOGIN,
-    XCLIENT_CMD_HELO,
-    XCLIENT_CMD_UNKNOWN
-  } xclient_cmd = XCLIENT_CMD_UNKNOWN;
-
-  p = s;
-  end = s + Ustrlen(s);
-
-  while (p < end) {
-    switch (state) {
-    case XCLIENT_READ_COMMAND:
-      if (*p != '=') {
-        p ++;
-      }
-      else {
-        if (c == p) {
-          return FALSE;
-        }
-        if (p - c == 4) {
-          if (strncmpic(c, US"ADDR", 4) == 0) {
-            xclient_cmd = XCLIENT_CMD_ADDR;
-          }
-          else if (strncmpic(c, US"NAME", 4) == 0) {
-            xclient_cmd = XCLIENT_CMD_NAME;
-          }
-          else if (strncmpic(c, US"PORT", 4) == 0) {
-            xclient_cmd = XCLIENT_CMD_PORT;
-          }
-          else if (strncmpic(c, US"HELO", 4) == 0) {
-            xclient_cmd = XCLIENT_CMD_HELO;
-          }
-        }
-        else if (p - c == 5) {
-          if (strncmpic(c, US"PROTO", 5) == 0) {
-            xclient_cmd = XCLIENT_CMD_PROTO;
-          }
-          else if (strncmpic(c, US"LOGIN", 5) == 0) {
-            xclient_cmd = XCLIENT_CMD_LOGIN;
-          }
-        }
-        else {
-          return FALSE;
-        }
-        p ++;
-        c = p;
-        state = XCLIENT_READ_VALUE;
-      }
-      break;
-    case XCLIENT_READ_VALUE:
-      if (isspace (*p) || p == end - 1) {
-        len = p - c;
-        if (p == end - 1) {
-          len ++;
-          p ++;
-        }
-        if (len == 0) {
-          return FALSE;
-        }
-        if ((len == 13 && (strncmpic(c, XCLIENT_UNAVAIL, 13) == 0) ||
-            strncmpic(c, XCLIENT_TEMPUNAVAIL, 13) == 0)) {
-          decoded_buf = NULL;
-        }
-        else if ((len = xclient_xtextdecode(c, p, &decoded_buf)) == -1) {
-          return FALSE;
-        }
-        switch (xclient_cmd) {
-        case XCLIENT_CMD_ADDR:
-          sender_host_address = decoded_buf ? string_copy_malloc(decoded_buf) : NULL;
-          break;
-        case XCLIENT_CMD_NAME:
-          sender_host_name = decoded_buf ? string_copy_malloc(decoded_buf) : NULL;
-          break;
-        case XCLIENT_CMD_HELO:
-          sender_helo_name = decoded_buf ? string_copy_malloc(decoded_buf) : NULL;
-          break;
-        case XCLIENT_CMD_PORT:
-          sender_host_port = decoded_buf ? Uatoi(decoded_buf) : 0;
-          break;
-        case XCLIENT_CMD_LOGIN:
-          if (decoded_buf != NULL) {
-            authenticated_id = string_copy_malloc(decoded_buf);
-            sender_host_authenticated = "xclient";
-            authentication_failed = FALSE;
-          }
-          else {
-            authenticated_id = NULL;
-            sender_host_authenticated = NULL;
-          }
-          break;
-        case XCLIENT_CMD_PROTO:
-          if (decoded_buf != NULL) {
-            if (len == 4 && strncmpic(decoded_buf, US"SMTP", 4) == 0) {
-              fl.esmtp = FALSE;
-            }
-            else if (len == 5 && strncmpic(decoded_buf, US"ESMTP", 5) == 0) {
-              fl.esmtp = TRUE;
-            }
-            else {
-              return FALSE;
-            }
-          }
-          else {
-            return FALSE;
-          }
-          break;
-        }
-        p ++;
-        state = XCLIENT_SKIP_SPACES;
-      }
-      else {
-        p ++;
-      }
-      break;
-    case XCLIENT_SKIP_SPACES:
-      if (isspace (*p)) {
-        p ++;
-      }
-      else {
-        c = p;
-        state = XCLIENT_READ_COMMAND;
-      }
-      break;
-    default:
-      return FALSE;
-    }
-  }
-
-  if (state == XCLIENT_SKIP_SPACES) {
-    host_build_sender_fullhost();
-    return TRUE;
-  }
-
-  return FALSE;
-}
-
-#undef XCLIENT_UNAVAIL
-#undef XCLIENT_TEMPUNAVAIL
 
 
 /*************************************************
@@ -2516,11 +2267,6 @@ while (done <= 0)
       cancel_cutthrough_connection(TRUE, US"RSET received");
       reset_point = smtp_reset(reset_point);
       bsmtp_transaction_linecount = receive_linecount;
-      break;
-
-    /* Handle XCLIENT command */
-    case XCLIENT_CMD:
-      smtp_handle_xclient(smtp_cmd_data);
       break;
 
 
@@ -4817,12 +4563,6 @@ while (done <= 0)
 	  }
 #endif
 
-    if (verify_check_host(&xclient_allow_hosts) != FAIL)
-      {
-      g = string_catn(g, smtp_code, 3);
-      g = string_catn(g, US"-XCLIENT\r\n", 10);
-      }
-
 #ifndef DISABLE_PRDR
 	/* Per Recipient Data Response, draft by Eric A. Hall extending RFC */
 	if (prdr_enable)
@@ -4889,42 +4629,6 @@ while (done <= 0)
       toomany = FALSE;
       break;   /* HELO/EHLO */
 
-    case XCLIENT_CMD:
-      HAD(SCH_XCLIENT);
-      smtp_mailcmd_count++;
-      if (fl.helo_required && !fl.helo_seen)
-        {
-        smtp_printf("503 HELO or EHLO required\r\n", FALSE);
-        log_write(0, LOG_MAIN|LOG_REJECT, "rejected XCLIENT from %s: no "
-          "HELO/EHLO given", host_and_ident(FALSE));
-        break;
-        }
-
-      /* Check for an operand */
-      if (smtp_cmd_data[0] == 0)
-        {
-        done = synprot_error(L_smtp_syntax_error, 501, NULL,
-          US"XCLIENT must have at least one operand");
-        break;
-        }
-
-      if(verify_check_host(&xclient_allow_hosts) == FAIL)
-        {
-        done = synprot_error(L_smtp_syntax_error, 550, NULL,
-          US"XCLIENT is not allowed");
-        break;
-        }
-      if(smtp_handle_xclient(smtp_cmd_data) == FALSE)
-        {
-        done = synprot_error(L_smtp_syntax_error, 501, NULL,
-          US"bad command parameter syntax");
-        break;
-        }
-      smtp_code = US"220";   /* Default status code */
-
-      smtp_printf("%s XCLIENT success\r\n", smtp_code);
-
-      break; /* XCLIENT */
 
     /* The MAIL command requires an address as an operand. All we do
     here is to parse it for syntactic correctness. The form "<>" is
@@ -6029,8 +5733,6 @@ while (done <= 0)
 	    verify_check_host(&tls_advertise_hosts) != FAIL)
 	  Ustrcat(buffer, US" STARTTLS");
 	#endif
-  if (verify_check_host(&xclient_allow_hosts) != FAIL)
-	  Ustrcat(buffer, " XCLIENT");
 	Ustrcat(buffer, US" HELO EHLO MAIL RCPT DATA BDAT");
 	Ustrcat(buffer, US" NOOP QUIT RSET HELP");
 	if (acl_smtp_etrn) Ustrcat(buffer, US" ETRN");

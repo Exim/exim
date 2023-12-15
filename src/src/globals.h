@@ -621,7 +621,6 @@ extern uschar *helo_accept_junk_hosts; /* Allowed to use junk arg */
 extern uschar *helo_allow_chars;       /* Rogue chars to allow in HELO/EHLO */
 extern uschar *helo_lookup_domains;    /* If these given, lookup host name */
 extern uschar *helo_try_verify_hosts;  /* Soft check HELO argument for these */
-extern uschar *xclient_allow_hosts; /* Allow XCLIENT command for specified hosts */
 extern uschar *helo_verify_hosts;      /* Hard check HELO argument for these */
 extern const uschar *hex_digits;             /* Used in several places */
 extern uschar *hold_domains;           /* Hold up deliveries to these */
