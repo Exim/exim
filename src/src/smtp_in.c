@@ -4902,6 +4902,7 @@ while (done <= 0)
       /* Check for an operand */
       if (smtp_cmd_data[0] == 0)
         {
+        done = synprot_error(L_smtp_syntax_error, 501, NULL,
           US"XCLIENT must have at least one operand");
         break;
         }
