@@ -52,6 +52,7 @@
 # they are correctly installed, via their compatibility interfaces. However,
 # Exim can also be configured to use the native calls for Berkeley DB (obsolete
 # versions 1.85, 2.x, 3.x, or the current 4.x version) and also for gdbm.
+# See definitions for DBMLIB below.
 
 # For some operating systems, a default DBM library (other than ndbm) is
 # selected by a setting in the OS-specific Makefile. Most modern OS now have

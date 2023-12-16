@@ -4391,7 +4391,7 @@ data file will be flushed(!) out thereby. Nevertheless, it is theoretically
 possible for fclose() to fail - and this has been seen on obscure filesystems
 (probably one that delayed the actual media write as long as possible)
 but what to do? What has happened to the lock if this happens?
-It's a mes because we already logged the acceptance.
+It's a mess because we already logged the acceptance.
 We can at least log the issue, try to remove spoolfiles and respond with
 a temp-reject.  We do not want to close before logging acceptance because
 we want to hold the lock until we know that logging worked.

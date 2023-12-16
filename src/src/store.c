@@ -1145,11 +1145,11 @@ Returns:      pointer to gotten store (panic on failure)
 */
 
 static void *
-internal_store_malloc(size_t size, const char *func, int line)
+internal_store_malloc(size_t size, const char * func, int line)
 {
 void * yield;
 
-/* Check specifically for a possibly result of conversion from
+/* Check specifically for a possible result of conversion from
 a negative int, to the (unsigned, wider) size_t */
 
 if (size >= INT_MAX/2)

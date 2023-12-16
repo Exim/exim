@@ -6742,11 +6742,11 @@ Exim variables you need to construct the database query.
 
 For the string-expansion kind of lookups, the query is given in the first
 bracketed argument of the &${lookup ...}$& expansion.
-For the list-argument kind of lookup the quury is given by the remainder of the
+For the list-argument kind of lookup the query is given by the remainder of the
 list item after the first semicolon.
 
 .cindex "tainted data" "quoting for lookups"
-If tainted data is used in the query then it should be quuted by
+If tainted data is used in the query then it should be quoted by
 using the &*${quote_*&<&'lookup-type'&>&*:*&<&'string'&>&*}*& expansion operator
 appropriate for the lookup.
 .endlist
