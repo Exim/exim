@@ -16640,15 +16640,21 @@ See also the ACL modifier &`control = suppress_local_fixups`&. Section
 .option localhost_number main string&!! unset
 .cindex "host" "locally unique number for"
 .cindex "message ids" "with multiple hosts"
+.cindex multiple "systems sharing a spool"
+.cindex "multiple hosts" "sharing a spool"
+.cindex "shared spool directory"
+.cindex "spool directory" sharing
 .vindex "&$localhost_number$&"
 Exim's message ids are normally unique only within the local host. If
-uniqueness among a set of hosts is required, each host must set a different
+uniqueness among a set of hosts is required
+(eg. because they share a spool directory),
+each host must set a different
 value for the &%localhost_number%& option. The string is expanded immediately
 after reading the configuration file (so that a number can be computed from the
 host name, for example) and the result of the expansion must be a number in the
 range 0&--16 (or 0&--10 on operating systems with case-insensitive file
 systems). This is available in subsequent string expansions via the variable
-&$localhost_number$&. When &%localhost_number is set%&, the final two
+&$localhost_number$&. When &%localhost_number%& is set, the final four
 characters of the message id, instead of just being a fractional part of the
 time, are computed from the time and the local host number as described in
 section &<<SECTmessiden>>&.
