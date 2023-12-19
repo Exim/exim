@@ -825,7 +825,7 @@ is "empty". */
 enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_BDAT,
        SCH_EHLO, SCH_ETRN, SCH_EXPN, SCH_HELO,
        SCH_HELP, SCH_MAIL, SCH_NOOP, SCH_QUIT, SCH_RCPT, SCH_RSET, SCH_STARTTLS,
-       SCH_VRFY };
+       SCH_VRFY, SCH_XCLIENT };
 
 /* Returns from host_find_by{name,dns}() */
 
@@ -884,7 +884,7 @@ enum {
 
 /* Options for smtp_write_command */
 
-enum {	
+enum {
   SCMD_FLUSH = 0,	/* write to kernel */
   SCMD_MORE,		/* write to kernel, but likely more soon */
   SCMD_BUFFER		/* stash in application cmd output buffer */
