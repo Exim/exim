@@ -1400,6 +1400,11 @@ HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP%c> %s\n",
     client_cmd_log = string_catn(client_cmd_log, US"|", 1); 
     (void) string_from_gstring(client_cmd_log);
     }
+  else if (mode == SCMD_MORE)
+    {
+    client_cmd_log = string_catn(client_cmd_log, US"+", 1);
+    (void) string_from_gstring(client_cmd_log);
+    }
   store_pool = old_pool;
   }
 #  endif

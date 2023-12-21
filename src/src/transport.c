@@ -1658,6 +1658,10 @@ another message waiting for the same host. However, it doesn't do this if the
 current continue sequence is greater than the maximum supplied as an argument,
 or greater than the global connection_max_messages, which, if set, overrides.
 
+It is also called if conditions are otherwise right for pipelining a QUIT after
+the message data, since if there is another message waiting we do not want to
+send that QUIT.
+
 Arguments:
   transport_name     name of the transport
   hostname           name of the host

@@ -17,7 +17,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP(shutdown)>>
   SMTP<< 200 OK
   SMTP(close)>>
-cmdlog: '220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:500:QUIT:200'
+cmdlog: '220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:500:QUIT+:200'
 LOG: MAIN
   ** userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 500 NO
 LOG: MAIN
@@ -54,7 +54,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
   SMTP(shutdown)>>
   SMTP<< 200 OK
   SMTP(close)>>
-cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:DATA:500:QUIT:200'
+cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:DATA:500:QUIT+:200'
 LOG: MAIN
   ** usery@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after DATA: 500 NO
 LOG: MAIN

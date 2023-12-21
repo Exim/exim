@@ -33,7 +33,7 @@ After routing:
   Deferred addresses:
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-smtp.lockfile
-cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:DATA:354:.:250:QUIT:250'
+cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:DATA:354:.:250:QUIT+:250'
 LOG: MAIN
   => userx@domain1 R=smarthost T=smtp H=thisloop.test.ex [127.0.0.1] C="250 OK"
 LOG: MAIN

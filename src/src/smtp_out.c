@@ -649,7 +649,7 @@ Arguments:
   sx	     SMTP connection, contains buffer for pipelining, and socket
   mode       buffer, write-with-more-likely, write
   format     a format, starting with one of
-             of HELO, MAIL FROM, RCPT TO, DATA, ".", or QUIT.
+             of HELO, MAIL FROM, RCPT TO, DATA, BDAT, ".", or QUIT.
 	     If NULL, flush pipeline buffer only.
   ...        data for the format
 

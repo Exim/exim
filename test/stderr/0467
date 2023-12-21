@@ -34,7 +34,7 @@ Connecting to localhost.test.ex [127.0.0.1]:PORT_S ...  connected
   SMTP(shutdown)>>
   SMTP<< 250 OK
   SMTP(close)>>
-cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:DATA:354:.:250:QUIT:250'
+cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:DATA:354:.:250:QUIT+:250'
 LOG: MAIN
   => x@srv27.test.ex R=r1 T=t1 H=localhost.test.ex [127.0.0.1]:PORT_S C="250 OK"
 LOG: MAIN

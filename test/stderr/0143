@@ -55,7 +55,7 @@ cmd buf flush ddd bytes (more expected)
   SMTP(shutdown)>>
   SMTP<< 250 OK
   SMTP(close)>>
-cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:DATA:354:.:250:QUIT:250'
+cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:DATA:354:.:250:QUIT+:250'
 Leaving my_smtp transport
 LOG: MAIN
   => userx@domain.com R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
