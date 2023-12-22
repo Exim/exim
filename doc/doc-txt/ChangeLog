@@ -2,6 +2,72 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Exim version 4.98
+-----------------
+
+JH/01 Support list of dkim results in the dkim_status ACL condition, making
+      it more usable in the data ACL.
+
+JH/02 Bug 3040: Handle error on close of the spool data file during reception. 
+      Previously This was only logged, on the assumption that errors would be
+      seen for a previous fflush().  However, a fuse filesystem has been
+      reported as showing this an error for the fclose().  The spool is now in
+      an uncertain state, and we have logged and responded acceptance.  Change
+      this to respond with a temp-reject, wipe spoolfiles, and log the error
+      detail.
+
+JH/03 Bug 3030: Fix handling of DNS servfail respons for DANE TLSA.  When hit
+      during a recipient verify callout, a QUIT command was attempted on the
+      now-closed callout channel, causing a paniclog entry.
+
+JH/04 Bug 3039: Fix handling of of an empty log_reject_target, with
+      a connection_reject log_selector, under tls_on_connect.  Previously
+      with this combination, when the connect ACL rejected, a spurious
+      paniclog entry was made.
+
+JH/05 Fix TLS resumption for TLS-on-connect.  This was broken by the advent
+      of loadbalancer-detection for resumption, in 4.96 - which tries to
+      use the EHLO response. SMTPS does not have one at the time it is starting
+      TLS.  Change the default for the smtp transport host_name_extract option
+      to be a static string, for TLS-on-connect cases; meaning that resumption
+      will always be attempted (unless deliberately overriden).
+
+JH/06 Bug 3054: Fix dnsdb lookup for a TXT record with multiple chunks, with a
+      chunk-separator specification.  This was broken by hardening introduced
+      for Bug 3031.
+
+JH/07 Bug 3050: Fix -bp for old message_id format spoolfiles.  Previously it
+      included the -H with the id; this also messed up exiqgrep.
+
+JH/08 Bug 3056: Tighten up parsing of DKIM DNS records.  Previously, whitespace
+      was not properly skipped and empty elements would cause mis-parsing.
+      Tighten parsing of DKIM header records.  Previously, all but lowercase
+      alpha chars would be ignored in potential tag names.
+
+JH/09 Bug 3057: Add heuristic for spotting mistyped IPv6 addresses in lists
+      being searched.  Previously we only had one for IPv4 addresses. Per the
+      documentation, the error results by default in a no-match result for the
+      list.  It is logged if the unknown_in_list log_selector is used.
+
+JH/10 Bug 3058: Ensure that a failing expansion in a router "set" option defers
+      the routing operation.  Previously it would silently stop routing the
+      message.
+
+JH/11 Bug 3046: Fix queue-runs.  Previously, the arrivel of a notification or
+      info-request event close in time to a scheduled run timer could result in
+      the latter being missed, and no further queue scheduled runs being
+      initiated.  This ouwld be more likely on high-load systems.
+
+JH/12 Enforce a data synch check before emitting the 354 "go ahead".  Previously
+      this was only done if a pre-data ACL was configured.
+
+JH/13 Refuse to accept a line "dot, LF" as end-of-DATA unless operating in
+      LF-only mode (as detected from the first header line).  Previously we did
+      accept that in (normal) CRLF mode; this has been raised as a possible
+      attack scenario (under the name "smtp smuggling").
+
+
+
 Exim version 4.97
 -----------------
 
