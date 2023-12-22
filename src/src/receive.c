@@ -1960,8 +1960,10 @@ for (;;)
 
   if (ch == '\n')
     {
-    if (first_line_ended_crlf == TRUE_UNSET) first_line_ended_crlf = FALSE;
-      else if (first_line_ended_crlf) receive_ungetc(' ');
+    if (first_line_ended_crlf == TRUE_UNSET)
+      first_line_ended_crlf = FALSE;
+    else if (first_line_ended_crlf)
+      receive_ungetc(' ');
     goto EOL;
     }
 
@@ -1970,6 +1972,7 @@ for (;;)
   This implements the dot-doubling rule, though header lines starting with
   dots aren't exactly common. They are legal in RFC 822, though. If the
   following is CRLF or LF, this is the line that that terminates the
+
   entire message. We set message_ended to indicate this has happened (to
   prevent further reading), and break out of the loop, having freed the
   empty header, and set next = NULL to indicate no data line. */
@@ -1977,7 +1980,11 @@ for (;;)
   if (f.dot_ends && ptr == 0 && ch == '.')
     {
     ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
-    if (ch == '\r')
+    if (ch == '\n' && first_line_ended_crlf == TRUE /* and not TRUE_UNSET */ )
+    		/* dot, LF  but we are in CRLF mode.  Attack? */
+      ch = ' ';	/* replace the LF with a space */
+
+    else if (ch == '\r')
       {
       ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
       if (ch != '\n')
@@ -2013,7 +2020,8 @@ for (;;)
     ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (ch == '\n')
       {
-      if (first_line_ended_crlf == TRUE_UNSET) first_line_ended_crlf = TRUE;
+      if (first_line_ended_crlf == TRUE_UNSET)
+	first_line_ended_crlf = TRUE;
       goto EOL;
       }
 
