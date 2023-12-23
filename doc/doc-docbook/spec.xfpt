@@ -36497,8 +36497,6 @@ other MTAs, the way Exim handles line endings for all messages is now as
 follows:
 
 .ilist
-LF not preceded by CR is treated as a line ending.
-.next
 CR is treated as a line ending; if it is immediately followed by LF, the LF
 is ignored.
 .next
@@ -36513,7 +36511,10 @@ people trying to play silly games.
 .next
 If the first header line received in a message ends with CRLF, a subsequent
 bare LF in a header line is treated in the same way as a bare CR in a header
-line.
+line and a bare LF in a body line is replaced with a space.
+.next
+If the first header line received in a message does not end with CRLF, a subsequent
+LF not preceded by CR is treated as a line ending.
 .endlist
 
 
