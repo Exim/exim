@@ -1493,7 +1493,7 @@ if (is_multiple_qrun())				/* we are managing periodic runs */
       }
     else
 #endif
-      /* Normal periodic runL in order of run priority, find the first queue
+      /* Normal periodic run: in order of run priority, find the first queue
       for which we can start a runner */
 
       for (q = qrunners; q; q = q->next)

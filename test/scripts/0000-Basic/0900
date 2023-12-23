@@ -399,7 +399,7 @@ rcpt to:<CALLER@test.ex>
 bdat 86 last
 Subject: send me all your money!
 
-All your bases are belong to us.  Send Bitcoins.
+All your base are belong to us.  Send Bitcoins.
 QUIT
 .
 ??? 250
