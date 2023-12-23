@@ -836,93 +836,95 @@ Returns:    One of the END_xxx values indicating why it stopped reading
 */
 
 static int
-read_message_data_smtp(FILE *fout)
+read_message_data_smtp(FILE * fout)
 {
-int ch_state = 0;
-int ch;
-int linelength = 0;
+enum { s_linestart, s_normal, s_had_cr, s_had_nl_dot, s_had_dot_cr } ch_state =
+	      s_linestart;
+int linelength = 0, ch;
 
 while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
   {
   if (ch == 0) body_zerocount++;
   switch (ch_state)
     {
-    case 0:                             /* After LF or CRLF */
-    if (ch == '.')
-      {
-      ch_state = 3;
-      continue;                         /* Don't ever write . after LF */
-      }
-    ch_state = 1;
+    case s_linestart:			/* After LF or CRLF */
+      if (ch == '.')
+	{
+	ch_state = s_had_nl_dot;
+	continue;			/* Don't ever write . after LF */
+	}
+      ch_state = s_normal;
 
-    /* Else fall through to handle as normal uschar. */
+      /* Else fall through to handle as normal uschar. */
 
-    case 1:                             /* Normal state */
-    if (ch == '\n')
-      {
-      ch_state = 0;
-      body_linecount++;
+    case s_normal:			/* Normal state */
+      if (ch == '\r')
+	{
+	ch_state = s_had_cr;
+	continue;			/* Don't write the CR */
+	}
+      if (ch == '\n')			/* Bare NL ends line */
+	{
+	ch_state = s_linestart;
+	body_linecount++;
+	if (linelength > max_received_linelength)
+	  max_received_linelength = linelength;
+	linelength = -1;
+	}
+      break;
+
+    case s_had_cr:			/* After (unwritten) CR */
+      body_linecount++;			/* Any char ends line */
       if (linelength > max_received_linelength)
-        max_received_linelength = linelength;
+	max_received_linelength = linelength;
       linelength = -1;
-      }
-    else if (ch == '\r')
-      {
-      ch_state = 2;
-      continue;
-      }
-    break;
+      if (ch == '\n')			/* proper CRLF */
+	ch_state = s_linestart;
+      else
+	{
+	message_size++;		/* convert the dropped CR to a stored NL */
+	if (fout && fputc('\n', fout) == EOF) return END_WERROR;
+	cutthrough_data_put_nl();
+	if (ch == '\r')			/* CR; do not write */
+	  continue;
+	ch_state = s_normal;		/* not LF or CR; process as standard */
+	}
+      break;
 
-    case 2:                             /* After (unwritten) CR */
-    body_linecount++;
-    if (linelength > max_received_linelength)
-      max_received_linelength = linelength;
-    linelength = -1;
-    if (ch == '\n')
-      {
-      ch_state = 0;
-      }
-    else
-      {
-      message_size++;
-      if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
+    case s_had_nl_dot:			/* After [CR] LF . */
+      if (ch == '\n')			/* [CR] LF . LF */
+	return END_DOT;
+      if (ch == '\r')			/* [CR] LF . CR */
+	{
+	ch_state = s_had_dot_cr;
+	continue;			/* Don't write the CR */
+	}
+      /* The dot was removed on reaching s_had_nl_dot. For a doubled dot, here,
+      reinstate it to cutthrough. The current ch, dot or not, is passed both to
+      cutthrough and to file below. */
+      if (ch == '.')
+	{
+	uschar c = ch;
+	cutthrough_data_puts(&c, 1);
+	}
+      ch_state = s_normal;
+      break;
+
+    case s_had_dot_cr:			/* After [CR] LF . CR */
+      if (ch == '\n')
+	return END_DOT;			/* Preferred termination */
+
+      message_size++;		/* convert the dropped CR to a stored NL */
+      body_linecount++;
+      if (fout && fputc('\n', fout) == EOF) return END_WERROR;
       cutthrough_data_put_nl();
-      if (ch != '\r') ch_state = 1; else continue;
-      }
-    break;
-
-    case 3:                             /* After [CR] LF . */
-    if (ch == '\n')
-      return END_DOT;
-    if (ch == '\r')
-      {
-      ch_state = 4;
-      continue;
-      }
-    /* The dot was removed at state 3. For a doubled dot, here, reinstate
-    it to cutthrough. The current ch, dot or not, is passed both to cutthrough
-    and to file below. */
-    if (ch == '.')
-      {
-      uschar c= ch;
-      cutthrough_data_puts(&c, 1);
-      }
-    ch_state = 1;
-    break;
-
-    case 4:                             /* After [CR] LF . CR */
-    if (ch == '\n') return END_DOT;
-    message_size++;
-    body_linecount++;
-    if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
-    cutthrough_data_put_nl();
-    if (ch == '\r')
-      {
-      ch_state = 2;
-      continue;
-      }
-    ch_state = 1;
-    break;
+      if (ch == '\r')
+	{
+	ch_state = s_had_cr;
+	continue;			/* CR; do not write */
+	}
+      ch_state = s_normal;
+      break;
     }
 
   /* Add the character to the spool file, unless skipping; then loop for the
@@ -1979,6 +1981,7 @@ for (;;)
 
   if (f.dot_ends && ptr == 0 && ch == '.')
     {
+    /* leading dot while in headers-read mode */
     ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (ch == '\n' && first_line_ended_crlf == TRUE /* and not TRUE_UNSET */ )
     		/* dot, LF  but we are in CRLF mode.  Attack? */
@@ -3169,7 +3172,7 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.delivery)
 
 
 /* Open a new spool file for the data portion of the message. We need
-to access it both via a file descriptor and a stream. Try to make the
+to access it both via a file descriptor and a stdio stream. Try to make the
 directory if it isn't there. */
 
 spool_name = spool_fname(US"input", message_subdir, message_id, US"-D");
