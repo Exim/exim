@@ -58,10 +58,7 @@ JH/11 Bug 3046: Fix queue-runs.  Previously, the arrivel of a notification or
       the latter being missed, and no further queue scheduled runs being
       initiated.  This ouwld be more likely on high-load systems.
 
-JH/12 Enforce a data synch check before emitting the 354 "go ahead".  Previously
-      this was only done if a pre-data ACL was configured.
-
-JH/13 Refuse to accept a line "dot, LF" as end-of-DATA unless operating in
+JH/12 Refuse to accept a line "dot, LF" as end-of-DATA unless operating in
       LF-only mode (as detected from the first header line).  Previously we did
       accept that in (normal) CRLF mode; this has been raised as a possible
       attack scenario (under the name "smtp smuggling").
