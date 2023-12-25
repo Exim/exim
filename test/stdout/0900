@@ -528,3 +528,47 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 221
 <<< 221 testhost.test.ex closing connection
 End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 testhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo smuggler
+??? 250-
+<<< 250-testhost.test.ex Hello smuggler [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-CHUNKING
+<<< 250-CHUNKING
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<legit@some.domain>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<CALLER@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test of smuggled smtp
+>>> 
+>>> This is body for initial message
+>>> The next line is a bogus end-of-data attempt, followed by a try at a smuggled message:
+>>> .\n
+>>> mail from:<smuggler@y>
+>>> rcpt to:<CALLER@test.ex>
+>>> bdat 86 last
+>>> Subject: send me all your money!
+>>> 
+>>> All your bases are belong to us.  Send Bitcoins.
+>>> QUIT
+>>> .
+??? 250
+<<< 250 OK id=10HmbG-000000005vi-0000
+>>> QUIT
+??? 221
+<<< 221 testhost.test.ex closing connection
+End of script

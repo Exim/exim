@@ -5110,10 +5110,7 @@ while (done <= 0)
 	dummy call to get the DATA command sent. */
 
 	if (!acl_smtp_predata && cutthrough.cctx.sock < 0)
-	  {
-	  if (!check_sync()) goto SYNC_FAILURE;
 	  rc = OK;
-	  }
 	else
 	  {
 	  uschar * acl = acl_smtp_predata ? acl_smtp_predata : US"accept";
