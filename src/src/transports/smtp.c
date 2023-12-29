@@ -235,6 +235,17 @@ static BOOL    pipelining_active;	/* current transaction is in pipe mode */
 
 static unsigned ehlo_response(uschar * buf, unsigned checks);
 
+/* sync_responses() return codes */
+
+#define RESP_BIT_HAD_5XX	BIT(1)
+#define RESP_BIT_HAD_2XX	BIT(0)
+#define RESP_HAD_2_AND_5	(RESP_BIT_HAD_2XX | RESP_BIT_HAD_5XX)
+#define RESP_NOERROR		0
+#define RESP_RCPT_TIMEO		-1
+#define RESP_RCPT_ERROR		-2
+#define RESP_MAIL_OR_DATA_ERROR	-3
+#define RESP_EPIPE_EHLO_ERR	-4
+#define RESP_EHLO_ERR_TLS	-5
 
 /******************************************************************************/
 
@@ -1225,7 +1236,7 @@ int yield = 0;
 #ifndef DISABLE_PIPE_CONNECT
 int rc;
 if ((rc = smtp_reap_early_pipe(sx, &count)) != OK)
-  return rc == FAIL ? -4 : -5;
+  return rc == FAIL ? RESP_EPIPE_EHLO_ERR : RESP_EHLO_ERR_TLS;
 #endif
 
 /* Handle the response for a MAIL command. On error, reinstate the original
@@ -1243,7 +1254,7 @@ if (sx->pending_MAIL)
     DEBUG(D_transport) debug_printf("bad response for MAIL\n");
     Ustrcpy(big_buffer, mail_command);  /* Fits, because it came from there! */
     if (errno == ERRNO_TLSFAILURE)
-      return -5;
+      return RESP_EHLO_ERR_TLS;
     if (errno == 0 && sx->buffer[0] != 0)
       {
       int save_errno = 0;
@@ -1263,7 +1274,7 @@ if (sx->pending_MAIL)
       addr->host_used = sx->conn_args.host;
       addr = addr->next;
       }
-    return -3;
+    return RESP_MAIL_OR_DATA_ERROR;
     }
   }
 
@@ -1277,7 +1288,7 @@ while (count-- > 0)
   {
   while (addr->transport_return != PENDING_DEFER)
     if (!(addr = addr->next))
-      return -2;
+      return RESP_RCPT_ERROR;
 
   /* The address was accepted */
   addr->host_used = sx->conn_args.host;
@@ -1286,7 +1297,7 @@ while (count-- > 0)
   if (smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
 			  '2', ob->command_timeout))
     {
-    yield |= 1;
+    yield |= RESP_BIT_HAD_2XX;
     addr->transport_return = PENDING_OK;
 
     /* If af_dr_retry_exists is set, there was a routing delay on this address;
@@ -1305,7 +1316,7 @@ while (count-- > 0)
   /* Error on first TLS read */
 
   else if (errno == ERRNO_TLSFAILURE)
-    return -5;
+    return RESP_EHLO_ERR_TLS;
 
   /* Timeout while reading the response */
 
@@ -1316,7 +1327,7 @@ while (count-- > 0)
     set_errno_nohost(sx->first_addr, ETIMEDOUT, message, DEFER, FALSE, &sx->delivery_start);
     retry_add_item(addr, addr->address_retry_key, 0);
     update_waiting = FALSE;
-    return -1;
+    return RESP_RCPT_TIMEO;
     }
 
   /* Handle other errors in obtaining an SMTP response by returning -1. This
@@ -1334,7 +1345,7 @@ while (count-- > 0)
     g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, "RCPT TO:<%s>",
       transport_rcpt_address(addr, sx->conn_args.tblock->rcpt_include_affixes));
     string_from_gstring(g);
-    return -2;
+    return RESP_RCPT_ERROR;
     }
 
   /* Handle SMTP permanent and temporary response codes. */
@@ -1354,7 +1365,7 @@ while (count-- > 0)
     if (sx->buffer[0] == '5')
       {
       addr->transport_return = FAIL;
-      yield |= 2;
+      yield |= RESP_BIT_HAD_5XX;
       }
 
     /* The response was 4xx */
@@ -1374,7 +1385,7 @@ while (count-- > 0)
 	/* If a 452 and we've had at least one 2xx or 5xx, set next_addr to the
 	start point for another MAIL command. */
 
-	if (addr->more_errno >> 8 == 52  &&  yield & 3)
+	if (addr->more_errno >> 8 == 52  &&  yield > 0)
 	  {
 	  if (!sx->RCPT_452)		/* initialised at MAIL-ack above */
 	    {
@@ -1424,7 +1435,7 @@ while (count-- > 0)
       }
     }
   if (count && !(addr = addr->next))
-    return -2;
+    return RESP_RCPT_ERROR;
   }       /* Loop for next RCPT response */
 
 /* Update where to start at for the next block of responses, unless we
@@ -1446,16 +1457,16 @@ if (pending_DATA != 0)
     BOOL pass_message;
 
     if (errno == ERRNO_TLSFAILURE)	/* Error on first TLS read */
-      return -5;
+      return RESP_EHLO_ERR_TLS;
 
-    if (pending_DATA > 0 || (yield & 1) != 0)
+    if (pending_DATA > 0 || yield & RESP_BIT_HAD_2XX)
       {
       if (errno == 0 && sx->buffer[0] == '4')
 	{
 	errno = ERRNO_DATA4XX;
 	sx->first_addr->more_errno |= ((sx->buffer[1] - '0')*10 + sx->buffer[2] - '0') << 8;
 	}
-      return -3;
+      return RESP_MAIL_OR_DATA_ERROR;
       }
     (void)check_response(sx->conn_args.host, &errno, 0, sx->buffer, &code, &msg, &pass_message);
     DEBUG(D_transport) debug_printf("%s\nerror for DATA ignored: pipelining "
@@ -2008,18 +2019,18 @@ if (flags & tc_reap_prev  &&  prev_cmd_count > 0)
 
   switch(sync_responses(sx, prev_cmd_count, 0))
     {
-    case 1:				/* 2xx (only) => OK */
-    case 3: sx->good_RCPT = TRUE;	/* 2xx & 5xx => OK & progress made */
-    case 2: sx->completed_addr = TRUE;	/* 5xx (only) => progress made */
-    case 0: break;			/* No 2xx or 5xx, but no probs */
+    case RESP_BIT_HAD_2XX:				/* OK */
+    case RESP_HAD_2_AND_5: sx->good_RCPT = TRUE;	/* OK & progress made */
+    case RESP_BIT_HAD_5XX: sx->completed_addr = TRUE;	/* progress made */
+    case RESP_NOERROR:	   break;	/* No 2xx or 5xx, but no probs */
 
-    case -5: errno = ERRNO_TLSFAILURE;
-	     return DEFER;
+    case RESP_EHLO_ERR_TLS:errno = ERRNO_TLSFAILURE;
+			   return DEFER;
 #ifndef DISABLE_PIPE_CONNECT
-    case -4:				/* non-2xx for pipelined banner or EHLO */
+    case RESP_EPIPE_EHLO_ERR:		/* non-2xx for pipelined banner or EHLO */
 #endif
-    case -1:				/* Timeout on RCPT */
-    default: return ERROR;		/* I/O error, or any MAIL/DATA error */
+    case RESP_RCPT_TIMEO:		/* Timeout on RCPT */
+    default:		   return ERROR;/* I/O error, or any MAIL/DATA error */
     }
   cmd_count = 1;
   if (!sx->pending_BDAT)
@@ -2523,7 +2534,7 @@ goto SEND_QUIT;
 	DEBUG(D_transport) debug_printf("may need to auth, so pipeline no further\n");
 	if (smtp_write_command(sx, SCMD_FLUSH, NULL) < 0)
 	  goto SEND_FAILED;
-	if (sync_responses(sx, 2, 0) != 0)
+	if (sync_responses(sx, 2, 0) != RESP_NOERROR)
 	  {
 	  HDEBUG(D_transport)
 	    debug_printf("failed reaping pipelined cmd responses\n");
@@ -2714,7 +2725,7 @@ if (  smtp_peer_options & OPTION_TLS
 
   if (sx->early_pipe_active)
     {
-    if (sync_responses(sx, 2, 0) != 0)
+    if (sync_responses(sx, 2, 0) != RESP_NOERROR)
       {
       HDEBUG(D_transport)
 	debug_printf("failed reaping pipelined cmd responses\n");
@@ -3568,14 +3579,14 @@ for (addr = sx->first_addr, address_count = 0, pipe_limit = 100;
     {
     switch(sync_responses(sx, cmds_sent, 0))
       {
-      case 3: sx->ok = TRUE;			/* 2xx & 5xx => OK & progress made */
-      case 2: sx->completed_addr = TRUE;	/* 5xx (only) => progress made */
+      case RESP_HAD_2_AND_5: sx->ok = TRUE;	/* OK & progress made */
+      case RESP_BIT_HAD_5XX: sx->completed_addr = TRUE;	/* progress made */
 	      break;
 
-      case 1: sx->ok = TRUE;			/* 2xx (only) => OK, but if LMTP, */
+      case RESP_BIT_HAD_2XX: sx->ok = TRUE;	/* OK, but if LMTP, */
 	      if (!sx->lmtp)			/*  can't tell about progress yet */
 		sx->completed_addr = TRUE;
-      case 0:					/* No 2xx or 5xx, but no probs */
+      case RESP_NOERROR:			/* No 2xx or 5xx, but no probs */
 	      /* If any RCPT got a 452 response then next_addr has been updated
 	      for restarting with a new MAIL on the same connection.  Send no more
 	      RCPTs for this MAIL. */
@@ -3589,13 +3600,13 @@ for (addr = sx->first_addr, address_count = 0, pipe_limit = 100;
 		}
 	      break;
 
-      case -1: return -3;			/* Timeout on RCPT */
-      case -2: return -2;			/* non-MAIL read i/o error */
-      default: return -1;			/* any MAIL error */
+      case RESP_RCPT_TIMEO:	    return -3;	/* Timeout on RCPT */
+      case RESP_RCPT_ERROR:	    return -2;	/* non-MAIL read i/o error */
+      default:			    return -1;	/* any MAIL error */
 
 #ifndef DISABLE_PIPE_CONNECT
-      case -4: return -1;			/* non-2xx for pipelined banner or EHLO */
-      case -5: return -1;			/* TLS first-read error */
+      case RESP_EPIPE_EHLO_ERR:	    return -1;	/* non-2xx for pipelined banner or EHLO */
+      case RESP_EHLO_ERR_TLS:	    return -1;	/* TLS first-read error */
 #endif
       }
     }
@@ -3956,17 +3967,19 @@ if (  !(smtp_peer_options & OPTION_CHUNKING)
   int count = smtp_write_command(sx, SCMD_FLUSH, "DATA\r\n");
 
   if (count < 0) goto SEND_FAILED;
+
   switch(sync_responses(sx, count, sx->ok ? +1 : -1))
     {
-    case 3: sx->ok = TRUE;            /* 2xx & 5xx => OK & progress made */
-    case 2: sx->completed_addr = TRUE;    /* 5xx (only) => progress made */
-    break;
+    case RESP_HAD_2_AND_5: sx->ok = TRUE;	/* OK & progress made */
+    case RESP_BIT_HAD_5XX: sx->completed_addr = TRUE; /* progress made */
+			   break;
 
-    case 1: sx->ok = TRUE;            /* 2xx (only) => OK, but if LMTP, */
-    if (!sx->lmtp) sx->completed_addr = TRUE; /* can't tell about progress yet */
-    case 0: break;			/* No 2xx or 5xx, but no probs */
+    case RESP_BIT_HAD_2XX: sx->ok = TRUE;	/* OK, but if LMTP, */
+			   if (!sx->lmtp)	/* can't tell about progress yet */
+			    sx->completed_addr = TRUE;
+    case RESP_NOERROR:	   break;		/* No 2xx or 5xx, but no probs */
 
-    case -1: goto END_OFF;		/* Timeout on RCPT */
+    case RESP_RCPT_TIMEO:  goto END_OFF;
 
 #ifndef DISABLE_PIPE_CONNECT
     case -5:				/* TLS first-read error */
@@ -4196,22 +4209,23 @@ else
     /* Reap any outstanding MAIL & RCPT commands, but not a DATA-go-ahead */
     switch(sync_responses(sx, sx->cmd_count-1, 0))
       {
-      case 3: sx->ok = TRUE;            /* 2xx & 5xx => OK & progress made */
-      case 2: sx->completed_addr = TRUE;    /* 5xx (only) => progress made */
-	      break;
+      case RESP_HAD_2_AND_5: sx->ok = TRUE;		/* OK & progress made */
+      case RESP_BIT_HAD_5XX: sx->completed_addr = TRUE;	/* progress made */
+			     break;
 
-      case 1: sx->ok = TRUE;		/* 2xx (only) => OK, but if LMTP, */
-      if (!sx->lmtp) sx->completed_addr = TRUE; /* can't tell about progress yet */
-      case 0: break;			/* No 2xx or 5xx, but no probs */
+      case RESP_BIT_HAD_2XX: sx->ok = TRUE;		/*  OK, but if LMTP, */
+			     if (!sx->lmtp)		/* can't tell about progress yet */
+			       sx->completed_addr = TRUE;
+      case RESP_NOERROR:     break;			/* No 2xx or 5xx, but no probs */
 
-      case -1: goto END_OFF;		/* Timeout on RCPT */
+      case RESP_RCPT_TIMEO: goto END_OFF;		/* Timeout on RCPT */
 
 #ifndef DISABLE_PIPE_CONNECT
-      case -5:				/* TLS first-read error */
-      case -4:  HDEBUG(D_transport)
+      case RESP_EHLO_ERR_TLS:				/* TLS first-read error */
+      case RESP_EPIPE_EHLO_ERR:  HDEBUG(D_transport)
 		  debug_printf("failed reaping pipelined cmd responses\n");
 #endif
-      default: goto RESPONSE_FAILED;	/* I/O error, or any MAIL/DATA error */
+      default:		     goto RESPONSE_FAILED;	/* I/O error, or any MAIL/DATA error */
       }
     }
 
