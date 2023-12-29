@@ -56,7 +56,7 @@ cmd buf flush ddd bytes (more expected)
   SMTP(close)>>
 cmdlog: '220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:354:.:QUIT+:250:221'
 LOG: MAIN
-  => d@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbL-000000005vi-0000"
+  => d@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] DKIM=test.ex:sel_bad C="250 OK id=10HmbL-000000005vi-0000"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>

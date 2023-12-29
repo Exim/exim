@@ -1245,6 +1245,14 @@ else
     g = string_catn(g, US" K", 2);
   }
 
+#ifndef DISABLE_DKIM
+  if (addr->dkim_used && LOGGING(dkim_verbose))
+    {
+    g = string_catn(g, US" DKIM=", 6);
+    g = string_cat(g, addr->dkim_used);
+    }
+#endif
+
 /* confirmation message (SMTP (host_used) and LMTP (driver_name)) */
 
 if (  LOGGING(smtp_confirmation)
@@ -3571,7 +3579,14 @@ while (!done)
 
       switch (*subid)
 	{
-	case 3:		/* explicit notification of continued-connection (non)use;
+#ifndef DISABLE_DKIM
+	case '4':	/* DKIM information */
+	  addr->dkim_used = string_copy(ptr);
+	  while(*ptr++);
+	  break;
+#endif
+
+	case '3':	/* explicit notification of continued-connection (non)use;
 			overrides caller's knowlege. */
 	  if (*ptr & BIT(1))      setflag(addr, af_new_conn);
 	  else if (*ptr & BIT(2)) setflag(addr, af_cont_conn);
@@ -4885,6 +4900,15 @@ all pipes, so I do not see a reason to use non-blocking IO here
           }
         rmt_dlv_checked_write(fd, 'R', '0', big_buffer, ptr - big_buffer);
         }
+
+#ifndef DISABLE_DKIM
+      if (addr->dkim_used && LOGGING(dkim_verbose))
+	{
+	DEBUG(D_deliver) debug_printf("dkim used: %s\n", addr->dkim_used);
+	ptr = big_buffer + sprintf(CS big_buffer, "%.128s", addr->dkim_used) + 1;
+        rmt_dlv_checked_write(fd, 'A', '4', big_buffer, ptr - big_buffer);
+	}
+#endif
 
       if (testflag(addr, af_new_conn) || testflag(addr, af_cont_conn))
 	{

@@ -10,6 +10,8 @@ Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs
 
+ 2. The dkim_verbose logging control also enables logging of signing
+
 Version 4.97
 ------------
 

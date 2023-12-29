@@ -1,8 +1,8 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for a@test.ex
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 => a@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => a@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] DKIM=test.ex:sel:test.ex:sed C="250 OK id=10HmaY-000000005vi-0000"
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for b@test.ex
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => b@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbA-000000005vi-0000"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => b@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] DKIM=test.ex:sel:test.ex:sed C="250 OK id=10HmbA-000000005vi-0000"
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
 
 ******** SERVER ********

@@ -541,6 +541,7 @@ extern uschar *dkim_cur_signer;        /* Expansion variable, holds the current 
 extern int     dkim_key_length;        /* Expansion variable, length of signing key in bits */
 extern void   *dkim_signatures;	       /* Actually a (pdkim_signature *) but most files do not need to know */
 extern uschar *dkim_signers;           /* Expansion variable, holds colon-separated list of domains and identities that have signed a message */
+extern gstring *dkim_signing_record;   /* domains+selectors used */
 extern uschar *dkim_signing_domain;    /* Expansion variable, domain used for signing a message. */
 extern uschar *dkim_signing_selector;  /* Expansion variable, selector used for signing a message. */
 extern uschar *dkim_verify_hashes;     /* Preference order for signatures */

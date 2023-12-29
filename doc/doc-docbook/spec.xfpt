@@ -39061,7 +39061,7 @@ selection marked by asterisks:
 .irow &`deliver_time`&			&nbsp; "time taken to attempt delivery"
 .irow &`delivery_size`&			&nbsp; "add &`S=`&&'nnn'& to => lines"
 .irow &`dkim`&				*	"DKIM verified domain on <= lines"
-.irow &`dkim_verbose`&			&nbsp; "separate full DKIM verification result line, per signature"
+.irow &`dkim_verbose`&			&nbsp; "separate full DKIM verification result line, per signature; DKIM signing"
 .irow &`dnslist_defer`&			*	"defers of DNS list (aka RBL) lookups"
 .irow &`dnssec`&			&nbsp; "DNSSEC secured lookups"
 .irow &`etrn`&				*	"ETRN commands"
@@ -39187,6 +39187,10 @@ verifies successfully a tag of DKIM is added, with one of the verified domains.
 .cindex log "DKIM verification"
 .cindex DKIM "verification logging"
 &%dkim_verbose%&: A log entry is written for each attempted DKIM verification.
+.new
+Also, on message delivery lines signing information (domain and selector)
+is added, tagged with DKIM=.
+.wen
 .next
 .cindex "log" "dnslist defer"
 .cindex "DNS list" "logging defer"

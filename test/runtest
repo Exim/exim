@@ -1565,7 +1565,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if / Berkeley DB error: /;
 
     # CHUNKING: exact sizes depend on hostnames in headers
-    s/(=>.* K C="250- \d)\d+ (byte chunk, total \d)\d+/$1nn $2nn/;
+    s/(=>.* K (?:DKIM=\S+ )?C="250- \d)\d+ (byte chunk, total \d)\d+/$1nn $2nn/;
 
     # OpenSSL version variances
     s/(TLS error on connection [^:]*: error:)[0-9A-F]{8}(:system library):(?:fopen|func\(4095\)|):(No such file or directory)$/$1xxxxxxxx$2:fopen:$3/;

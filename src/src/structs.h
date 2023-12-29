@@ -586,6 +586,9 @@ typedef struct address_item {
   uschar *self_hostname;          /* after self=pass */
   uschar *shadow_message;         /* info about shadow transporting */
 
+  uid_t   uid;                    /* uid for transporting */
+  gid_t   gid;                    /* gid for transporting */
+
 #ifndef DISABLE_TLS
   const uschar *tlsver;           /* version used for transport */
   uschar *cipher;                 /* Cipher used for transport */
@@ -608,9 +611,9 @@ typedef struct address_item {
   int     dsn_flags;              /* DSN flags */
   int     dsn_aware;              /* DSN aware flag */
 
-  uid_t   uid;                    /* uid for transporting */
-  gid_t   gid;                    /* gid for transporting */
-
+#ifndef DISABLE_DKIM
+  const uschar * dkim_used;	  /* DKIM info, or NULL */
+#endif
   				  /* flags */
   struct {
     BOOL af_allow_file:1;		/* allow file in generated address */

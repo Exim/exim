@@ -384,6 +384,8 @@ BOOL
 dkim_transport_write_message(transport_ctx * tctx,
   struct ob_dkim * dkim, const uschar ** err)
 {
+BOOL yield;
+
 /* If we can't sign, just call the original function. */
 
 if (  !(dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector)
@@ -398,12 +400,16 @@ if (  !transport_filter_argv
    || !*transport_filter_argv
    || !**transport_filter_argv
    )
-  return dkt_direct(tctx, dkim, err);
+  yield = dkt_direct(tctx, dkim, err);
 
-/* Use the transport path to write a file, calculate a dkim signature,
-send the signature and then send the file. */
+else
+  /* Use the transport path to write a file, calculate a dkim signature,
+  send the signature and then send the file. */
 
-return dkt_via_kfile(tctx, dkim, err);
+  yield = dkt_via_kfile(tctx, dkim, err);
+
+tctx->addr->dkim_used = string_from_gstring(dkim_signing_record);
+return yield;
 }
 
 #endif	/* whole file */

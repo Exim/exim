@@ -741,6 +741,9 @@ if (dkim_domain)
     if (!pdkim_set_sig_bodyhash(&dkim_sign_ctx, sig))
       goto bad;
 
+    dkim_signing_record = string_append_listele(dkim_signing_record, ':', dkim_signing_domain);
+    dkim_signing_record = string_append_listele(dkim_signing_record, ':', dkim_signing_selector);
+
     if (!dkim_sign_ctx.sig)		/* link sig to context chain */
       dkim_sign_ctx.sig = sig;
     else

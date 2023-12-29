@@ -864,6 +864,7 @@ void   *dkim_signatures		 = NULL;
 uschar *dkim_signers             = NULL;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
+gstring *dkim_signing_record	 = NULL;
 uschar *dkim_verify_hashes       = US"sha256:sha512";
 uschar *dkim_verify_keytypes     = US"ed25519:rsa";
 uschar *dkim_verify_min_keysizes = US"rsa=1024 ed25519=250";
