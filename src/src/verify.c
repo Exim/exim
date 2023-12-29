@@ -823,7 +823,7 @@ tls_retry_connection:
       /* Remember when we last did a random test */
       new_domain_record.random_stamp = time(NULL);
 
-      if (smtp_write_mail_and_rcpt_cmds(sx, &yield) == 0)
+      if (smtp_write_mail_and_rcpt_cmds(sx, &yield) == sw_mrc_ok)
 	switch(addr->transport_return)
 	  {
 	  case PENDING_OK:	/* random was accepted, unfortunately */
@@ -891,33 +891,34 @@ tls_retry_connection:
       done = FALSE;
       switch(smtp_write_mail_and_rcpt_cmds(sx, &yield))
 	{
-	case 0:  switch(addr->transport_return)	/* ok so far */
-		    {
-		    case PENDING_OK:  done = TRUE;
-				      new_address_record.result = ccache_accept;
-				      break;
-		    case FAIL:	      done = TRUE;
-				      yield = FAIL;
-				      *failure_ptr = US"recipient";
-				      new_address_record.result = ccache_reject;
-				      break;
-		    default:	      break;
-		    }
-		  break;
+	case sw_mrc_ok:
+	  switch(addr->transport_return)	/* ok so far */
+	    {
+	    case PENDING_OK:  done = TRUE;
+			      new_address_record.result = ccache_accept;
+			      break;
+	    case FAIL:	      done = TRUE;
+			      yield = FAIL;
+			      *failure_ptr = US"recipient";
+			      new_address_record.result = ccache_reject;
+			      break;
+	    default:	      break;
+	    }
+	  break;
 
-	case -1:				/* MAIL response error */
-		  *failure_ptr = US"mail";
-		  if (errno == 0 && sx->buffer[0] == '5')
-		    {
-		    setflag(addr, af_verify_nsfail);
-		    if (from_address[0] == 0)
-		      new_domain_record.result = ccache_reject_mfnull;
-		    }
-		  break;
-						/* non-MAIL read i/o error */
-						/* non-MAIL response timeout */
-						/* internal error; channel still usable */
-	default:  break;			/* transmit failed */
+	case sw_mrc_bad_mail:			/* MAIL response error */
+	  *failure_ptr = US"mail";
+	  if (errno == 0 && sx->buffer[0] == '5')
+	    {
+	    setflag(addr, af_verify_nsfail);
+	    if (from_address[0] == 0)
+	      new_domain_record.result = ccache_reject_mfnull;
+	    }
+	  break;
+					/* non-MAIL read i/o error */
+					/* non-MAIL response timeout */
+					/* internal error; channel still usable */
+	default:  break;		/* transmit failed */
 	}
       }
 
@@ -955,7 +956,7 @@ tls_retry_connection:
 	sx->completed_addr = FALSE;
 	sx->avoid_option = OPTION_SIZE;
 
-	if(  smtp_write_mail_and_rcpt_cmds(sx, &yield) == 0
+	if(  smtp_write_mail_and_rcpt_cmds(sx, &yield) == sw_mrc_ok
 	  && addr->transport_return == PENDING_OK
 	  )
 	  done = TRUE;

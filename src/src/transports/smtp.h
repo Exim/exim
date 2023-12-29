@@ -225,7 +225,7 @@ typedef struct {
 } smtp_context;
 
 extern int smtp_setup_conn(smtp_context *, BOOL);
-extern int smtp_write_mail_and_rcpt_cmds(smtp_context *, int *);
+extern sw_mrc_t smtp_write_mail_and_rcpt_cmds(smtp_context *, int *);
 extern int smtp_reap_early_pipe(smtp_context *, int *);
 
 

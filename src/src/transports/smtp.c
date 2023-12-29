@@ -3415,17 +3415,11 @@ if (sx->peer_offered & OPTION_DSN && !(addr->dsn_flags & rf_dsnlasthop))
 
 
 
-/*
-Return:
- 0	good, rcpt results in addr->transport_return (PENDING_OK, DEFER, FAIL)
- -1	MAIL response error
- -2	any non-MAIL read i/o error
- -3	non-MAIL response timeout
- -4	internal error; channel still usable
- -5	transmit failed
+/* Send MAIL FROM and RCPT TO commands.
+See sw_mrc_t definition for return codes.
  */
 
-int
+sw_mrc_t
 smtp_write_mail_and_rcpt_cmds(smtp_context * sx, int * yield)
 {
 address_item * addr;
@@ -3438,7 +3432,7 @@ int rc;
 if (build_mailcmd_options(sx, sx->first_addr) != OK)
   {
   *yield = ERROR;
-  return -4;
+  return sw_mrc_bad_internal;
   }
 
 /* From here until we send the DATA command, we can make use of PIPELINING
@@ -3466,7 +3460,7 @@ sx->pending_MAIL = TRUE;     /* The block starts with MAIL */
       {
       set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE, &sx->delivery_start);
       *yield = ERROR;
-      return -4;
+      return sw_mrc_bad_internal;
       }
     setflag(sx->addrlist, af_utf8_downcvt);
     }
@@ -3481,7 +3475,7 @@ mail_command = string_copy(big_buffer);  /* Save for later error message */
 switch(rc)
   {
   case -1:                /* Transmission error */
-    return -5;
+    return sw_mrc_bad_mail;
 
   case +1:                /* Cmd was sent */
     if (!smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2',
@@ -3492,7 +3486,7 @@ switch(rc)
 	errno = ERRNO_MAIL4XX;
 	sx->addrlist->more_errno |= ((sx->buffer[1] - '0')*10 + sx->buffer[2] - '0') << 8;
 	}
-      return -1;
+      return sw_mrc_bad_mail;
       }
     sx->pending_MAIL = FALSE;
     break;
@@ -3567,14 +3561,14 @@ for (addr = sx->first_addr, address_count = 0, pipe_limit = 100;
     {
     /*XXX could we use a per-address errstr here? Not fail the whole send? */
     errno = ERRNO_EXPANDFAIL;
-    return -5;		/*XXX too harsh? */
+    return sw_mrc_tx_fail;		/*XXX too harsh? */
     }
 #endif
 
   cmds_sent = smtp_write_command(sx, no_flush ? SCMD_BUFFER : SCMD_FLUSH,
     "RCPT TO:<%s>%s%s\r\n", rcpt_addr, sx->igquotstr, sx->buffer);
 
-  if (cmds_sent < 0) return -5;
+  if (cmds_sent < 0) return sw_mrc_tx_fail;
   if (cmds_sent > 0)
     {
     switch(sync_responses(sx, cmds_sent, 0))
@@ -3596,17 +3590,17 @@ for (addr = sx->first_addr, address_count = 0, pipe_limit = 100;
 		DEBUG(D_transport) debug_printf("seen 452 too-many-rcpts\n");
 		sx->RCPT_452 = FALSE;
 		/* sx->next_addr has been reset for fast_retry */
-		return 0;
+		return sw_mrc_ok;
 		}
 	      break;
 
-      case RESP_RCPT_TIMEO:	    return -3;	/* Timeout on RCPT */
-      case RESP_RCPT_ERROR:	    return -2;	/* non-MAIL read i/o error */
-      default:			    return -1;	/* any MAIL error */
+      case RESP_RCPT_TIMEO:	    return sw_mrc_nonmail_read_timeo;
+      case RESP_RCPT_ERROR:	    return sw_mrc_bad_read;
+      default:			    return sw_mrc_bad_mail;	/* any MAIL error */
 
 #ifndef DISABLE_PIPE_CONNECT
-      case RESP_EPIPE_EHLO_ERR:	    return -1;	/* non-2xx for pipelined banner or EHLO */
-      case RESP_EHLO_ERR_TLS:	    return -1;	/* TLS first-read error */
+      case RESP_EPIPE_EHLO_ERR:	    return sw_mrc_bad_mail;	/* non-2xx for pipelined banner or EHLO */
+      case RESP_EHLO_ERR_TLS:	    return sw_mrc_bad_mail;	/* TLS first-read error */
 #endif
       }
     }
@@ -3617,7 +3611,7 @@ sx->next_addr = restart_addr ? restart_addr : addr;
 #else
 sx->next_addr = addr;
 #endif
-return 0;
+return sw_mrc_ok;
 }
 
 
@@ -3925,11 +3919,12 @@ else
 
   switch(smtp_write_mail_and_rcpt_cmds(sx, &yield))
     {
-    case 0:		break;
-    case -1: case -2:	goto RESPONSE_FAILED;
-    case -3:		goto END_OFF;
-    case -4:		goto SEND_QUIT;
-    default:		goto SEND_FAILED;
+    case sw_mrc_ok:			break;
+    case sw_mrc_bad_mail:		goto RESPONSE_FAILED;
+    case sw_mrc_bad_read:		goto RESPONSE_FAILED;
+    case sw_mrc_nonmail_read_timeo:	goto END_OFF;
+    case sw_mrc_bad_internal:		goto SEND_QUIT;
+    default:				goto SEND_FAILED;
     }
 
   /* If we are an MUA wrapper, abort if any RCPTs were rejected, either

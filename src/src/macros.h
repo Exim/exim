@@ -1175,4 +1175,14 @@ typedef unsigned mcs_flags;
 #define SR_FINAL	TRUE
 #define SR_NOT_FINAL	FALSE
 
+/* Return codes for smtp_write_mail_and_rcpt_cmds() */
+typedef enum {
+  sw_mrc_ok,	/* good, rcpt results in addr->transport_return (PENDING_OK, DEFER, FAIL) */
+  sw_mrc_bad_mail,		/* MAIL response error */
+  sw_mrc_bad_read,		/* any non-MAIL read i/o error */
+  sw_mrc_nonmail_read_timeo,	/* non-MAIL response timeout */
+  sw_mrc_bad_internal,		/* internal error; channel still usable */
+  sw_mrc_tx_fail,		/* transmit failed */
+} sw_mrc_t;
+
 /* End of macros.h */
