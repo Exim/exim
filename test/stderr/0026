@@ -14,6 +14,7 @@
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmbI-000000005vi-0000 qualify/rewrite: domain missing or malformed
 >>> using ACL "acl_data"
 >>> processing "deny" (TESTSUITE/test-config 21)
 >>> l_message: body contains trigger

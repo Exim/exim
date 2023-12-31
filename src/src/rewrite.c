@@ -510,8 +510,8 @@ while (*s)
     address, "To: undisclosed recpients:;" being the classic case. Ignore
     this one and carry on. */
 
-    if ((rewrite_rules || routed_old) && Ustrcmp(errmess, "empty address") != 0)
-      log_write(0, LOG_MAIN, "rewrite: %s", errmess);
+    if (Ustrcmp(errmess, "empty address") != 0)
+      log_write(0, LOG_MAIN, "qualify/rewrite: %s", errmess);
 
     loop_reset_point = store_reset(loop_reset_point);
     continue;

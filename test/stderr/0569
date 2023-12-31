@@ -26,6 +26,7 @@
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmaX-000000005vi-0000 qualify/rewrite: '>' missing at end of address
 >>> using ACL "check_message"
 >>> processing "require" (TESTSUITE/test-config 25)
 >>>   message: ${if def:acl_m_message {$acl_m_message}}

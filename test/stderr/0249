@@ -76,5 +76,5 @@ LOG: address_rewrite MAIN
 >>>   list element: c.domain
 >>>  some.domain in "c.domain"? no (end of list)
 >>> someone@some.domain in "*@c.domain"? no (end of list)
-LOG: 10HmaX-000000005vi-0000 rewrite: malformed address: @c may not follow a@b
+LOG: 10HmaX-000000005vi-0000 qualify/rewrite: malformed address: @c may not follow a@b
 LOG: 10HmaX-000000005vi-0000 <= a@b H=(tester) [127.0.0.1] P=smtp S=sss

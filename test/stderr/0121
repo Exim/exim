@@ -163,6 +163,7 @@ LOG: 10HmaX-000000005vi-0000 H=(test) [127.0.0.1] F=<userx@test.ex> rejected aft
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmaY-000000005vi-0000 qualify/rewrite: missing or malformed local part
 >>> using ACL "check_message"
 >>> processing "require" (TESTSUITE/test-config 27)
 >>> check verify = header_sender

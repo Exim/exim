@@ -72,6 +72,9 @@ JH/14 Bug 3061: Avoid a split log line when trtying to rewrite a malformed
       there is only one) the terminating newline was part of the logged
       information.
 
+JH/15 Bug 3061: Ensure a log line is written for a malformed address in a
+      header, when parsing for address-qualification.  Previously one was only
+      written if there were rewrite rules.
 
 
 Exim version 4.97

@@ -27373,7 +27373,7 @@ qualify and rewrite headers
  rewrite_one_header: type=T:
    To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
 LOG: MAIN
-  rewrite: address is ridiculously long: localpart_with_256_chars_567890123456789012345678901234567890123...
+  qualify/rewrite: address is ridiculously long: localpart_with_256_chars_567890123456789012345678901234567890123...
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
  CALLER@myhost.test.ex in "^.{40,}@*"?
@@ -27704,7 +27704,7 @@ qualify and rewrite headers
  rewrite_one_header: type=T:
    To: fred@
 LOG: MAIN
-  rewrite: domain missing or malformed
+  qualify/rewrite: domain missing or malformed
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@myhost.test.ex>
  CALLER@myhost.test.ex in "^.{40,}@*"?

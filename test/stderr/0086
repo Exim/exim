@@ -16,6 +16,7 @@
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmaY-000000005vi-0000 qualify/rewrite: '>' missing at end of address
 >>> using ACL "check_message"
 >>> processing "deny" (TESTSUITE/test-config 19)
 >>> check !verify = header_syntax
@@ -43,6 +44,8 @@ LOG: 10HmaY-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> re
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmaZ-000000005vi-0000 qualify/rewrite: '>' missing at end of address
+LOG: 10HmaZ-000000005vi-0000 qualify/rewrite: '>' missing at end of address
 >>> using ACL "check_message"
 >>> processing "deny" (TESTSUITE/test-config 19)
 >>> check !verify = header_syntax
@@ -70,6 +73,7 @@ LOG: 10HmaZ-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> re
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmbA-000000005vi-0000 qualify/rewrite: '>' missing at end of address
 >>> using ACL "check_message"
 >>> processing "deny" (TESTSUITE/test-config 19)
 >>> check !verify = header_syntax
@@ -97,6 +101,7 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> re
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmbB-000000005vi-0000 qualify/rewrite: unmatched doublequote in local part
 >>> using ACL "check_message"
 >>> processing "deny" (TESTSUITE/test-config 19)
 >>> check !verify = header_syntax

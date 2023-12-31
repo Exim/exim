@@ -96,6 +96,7 @@ LOG: 10HmaX-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmaY-000000005vi-0000 qualify/rewrite: '>' missing at end of address
 >>> using ACL "check_message"
 >>> processing "require" (TESTSUITE/test-config 26)
 >>> check verify = header_sender
