@@ -6,6 +6,7 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
+acl_smtp_rcpt = accept
 
 # ----- Rewrite -----
 
@@ -14,5 +15,6 @@ begin rewrite
 
 *@a.domain  $1@b.domain
 *@c.domain  $local_part@d.domain
+a@b	y@z	T
 
 # End

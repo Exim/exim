@@ -131,7 +131,7 @@ qualify & rewrite recipients list
     in TESTSUITE/aux-fixed/0471.rw
   creating new cache entry
   lookup failed
-global rewrite rules
+rewrite rules on sender address
  CALLER@myhost.test.ex in "^.{40,}@*"?
   list element: ^.{40,}@*
   address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
@@ -171,7 +171,7 @@ global rewrite rules
     in TESTSUITE/aux-fixed/0471.rw
   lookup failed
 rewritten sender = CALLER@myhost.test.ex
-rewrite headers
+qualify and rewrite headers
  rewrite_one_header: type=T:
    To: random@test.example,
     random@test.example,
@@ -26701,7 +26701,8 @@ remainder:
   lookup failed
 search_tidyup called
 >>Headers after rewriting and local additions:
-* To: random@test.example,
+ * To: random@test.example,
+     random@test.example,
     random@test.example,
     random@test.example,
     random@test.example,
@@ -26779,10 +26780,11 @@ search_tidyup called
     random@test.example,
     random@test.example,
     random@test.example,
-    random@test.example,
-    random@test.example,
+    random@test.example
 **** debug string too long - truncated ****
-T To: random@rwtest.example,
+ T To: random@rwtest.example,
+     random@rwtest.example,
+     random@rwtest.example,
     random@rwtest.example,
     random@rwtest.example,
     random@rwtest.example,
@@ -26854,13 +26856,10 @@ T To: random@rwtest.example,
     random@rwtest.example,
     random@rwtest.example,
     random@rwtest.example,
-    random@rwtest.example,
-    random@rwtest.example,
- 
 **** debug string too long - truncated ****
-I Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
-F From: CALLER_NAME <CALLER@myhost.test.ex>
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
+ I Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
+ F From: CALLER_NAME <CALLER@myhost.test.ex>
+   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file name: TESTSUITE/spool//input//10HmaX-000000005vi-0000-D
 Data file written for message 10HmaX-000000005vi-0000
@@ -26938,7 +26937,7 @@ qualify & rewrite recipients list
     in TESTSUITE/aux-fixed/0471.rw
   creating new cache entry
   lookup failed
-global rewrite rules
+rewrite rules on sender address
  CALLER@myhost.test.ex in "^.{40,}@*"?
   list element: ^.{40,}@*
   address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
@@ -26978,7 +26977,7 @@ global rewrite rules
     in TESTSUITE/aux-fixed/0471.rw
   lookup failed
 rewritten sender = CALLER@myhost.test.ex
-rewrite headers
+qualify and rewrite headers
  rewrite_one_header: type=T:
    To: localpart_with_056_chars_56789012345678901234567890123456@test.example
  localpart_with_056_chars_56789012345678901234567890123456@test.example in "^.{40,}@*"?
@@ -27053,11 +27052,11 @@ remainder:
   lookup failed
 search_tidyup called
 >>Headers after rewriting and local additions:
-* To: localpart_with_056_chars_56789012345678901234567890123456@test.example
-T To: deny_me@rwtest.example
-I Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
-F From: CALLER_NAME <CALLER@myhost.test.ex>
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
+ * To: localpart_with_056_chars_56789012345678901234567890123456@test.example
+ T To: deny_me@rwtest.example
+ I Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
+ F From: CALLER_NAME <CALLER@myhost.test.ex>
+   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file name: TESTSUITE/spool//input//10HmaY-000000005vi-0000-D
 Data file written for message 10HmaY-000000005vi-0000
@@ -27134,7 +27133,7 @@ qualify & rewrite recipients list
     in TESTSUITE/aux-fixed/0471.rw
   creating new cache entry
   lookup failed
-global rewrite rules
+rewrite rules on sender address
  CALLER@myhost.test.ex in "^.{40,}@*"?
   list element: ^.{40,}@*
   address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
@@ -27174,7 +27173,7 @@ global rewrite rules
     in TESTSUITE/aux-fixed/0471.rw
   lookup failed
 rewritten sender = CALLER@myhost.test.ex
-rewrite headers
+qualify and rewrite headers
  rewrite_one_header: type=T:
    To: localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
  localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example in "^.{40,}@*"?
@@ -27249,11 +27248,11 @@ remainder:
   lookup failed
 search_tidyup called
 >>Headers after rewriting and local additions:
-* To: localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
-T To: deny_me@rwtest.example
-I Message-Id: <E10HmaZ-000000005vi-0000@myhost.test.ex>
-F From: CALLER_NAME <CALLER@myhost.test.ex>
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
+ * To: localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+ T To: deny_me@rwtest.example
+ I Message-Id: <E10HmaZ-000000005vi-0000@myhost.test.ex>
+ F From: CALLER_NAME <CALLER@myhost.test.ex>
+   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file name: TESTSUITE/spool//input//10HmaZ-000000005vi-0000-D
 Data file written for message 10HmaZ-000000005vi-0000
@@ -27330,7 +27329,7 @@ qualify & rewrite recipients list
     in TESTSUITE/aux-fixed/0471.rw
   creating new cache entry
   lookup failed
-global rewrite rules
+rewrite rules on sender address
  CALLER@myhost.test.ex in "^.{40,}@*"?
   list element: ^.{40,}@*
   address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
@@ -27370,7 +27369,7 @@ global rewrite rules
     in TESTSUITE/aux-fixed/0471.rw
   lookup failed
 rewritten sender = CALLER@myhost.test.ex
-rewrite headers
+qualify and rewrite headers
  rewrite_one_header: type=T:
    To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
 LOG: MAIN
@@ -27415,10 +27414,10 @@ LOG: MAIN
   lookup failed
 search_tidyup called
 >>Headers after rewriting and local additions:
-T To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
-I Message-Id: <E10HmbA-000000005vi-0000@myhost.test.ex>
-F From: CALLER_NAME <CALLER@myhost.test.ex>
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
+ T To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+ I Message-Id: <E10HmbA-000000005vi-0000@myhost.test.ex>
+ F From: CALLER_NAME <CALLER@myhost.test.ex>
+   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file name: TESTSUITE/spool//input//10HmbA-000000005vi-0000-D
 Data file written for message 10HmbA-000000005vi-0000
@@ -27498,7 +27497,7 @@ qualify & rewrite recipients list
     in TESTSUITE/aux-fixed/0471.rw
   creating new cache entry
   lookup failed
-global rewrite rules
+rewrite rules on sender address
  CALLER@myhost.test.ex in "^.{40,}@*"?
   list element: ^.{40,}@*
   address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
@@ -27538,7 +27537,7 @@ global rewrite rules
     in TESTSUITE/aux-fixed/0471.rw
   lookup failed
 rewritten sender = CALLER@myhost.test.ex
-rewrite headers
+qualify and rewrite headers
  rewrite_one_header: type=T:
    To: undisclosed recpients:;
  rewrite_one_header: type=F:
@@ -27581,10 +27580,10 @@ rewrite headers
   lookup failed
 search_tidyup called
 >>Headers after rewriting and local additions:
-T To: undisclosed recpients:;
-I Message-Id: <E10HmbB-000000005vi-0000@myhost.test.ex>
-F From: CALLER_NAME <CALLER@myhost.test.ex>
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
+ T To: undisclosed recpients:;
+ I Message-Id: <E10HmbB-000000005vi-0000@myhost.test.ex>
+ F From: CALLER_NAME <CALLER@myhost.test.ex>
+   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file name: TESTSUITE/spool//input//10HmbB-000000005vi-0000-D
 Data file written for message 10HmbB-000000005vi-0000
@@ -27661,7 +27660,7 @@ qualify & rewrite recipients list
     in TESTSUITE/aux-fixed/0471.rw
   creating new cache entry
   lookup failed
-global rewrite rules
+rewrite rules on sender address
  CALLER@myhost.test.ex in "^.{40,}@*"?
   list element: ^.{40,}@*
   address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
@@ -27701,7 +27700,7 @@ global rewrite rules
     in TESTSUITE/aux-fixed/0471.rw
   lookup failed
 rewritten sender = CALLER@myhost.test.ex
-rewrite headers
+qualify and rewrite headers
  rewrite_one_header: type=T:
    To: fred@
 LOG: MAIN
@@ -27746,10 +27745,10 @@ LOG: MAIN
   lookup failed
 search_tidyup called
 >>Headers after rewriting and local additions:
-T To: fred@
-I Message-Id: <E10HmbC-000000005vi-0000@myhost.test.ex>
-F From: CALLER_NAME <CALLER@myhost.test.ex>
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
+ T To: fred@
+ I Message-Id: <E10HmbC-000000005vi-0000@myhost.test.ex>
+ F From: CALLER_NAME <CALLER@myhost.test.ex>
+   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file name: TESTSUITE/spool//input//10HmbC-000000005vi-0000-D
 Data file written for message 10HmbC-000000005vi-0000

@@ -3,3 +3,21 @@ exim -brw User@a.domain
 ****
 exim -d-all+rewrite -brw User@c.domain
 ****
+#
+#
+#
+# Check logging for a malformed address being rewritten
+exim -bh 127.0.0.1
+HELO tester
+MAIL FROM:<a@b>
+RCPT TO:<a@text.ex>
+DATA
+Subject: test
+From: someone@some.domain
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Reply-To: a@b@c
+
+body
+.
+QUIT
+****

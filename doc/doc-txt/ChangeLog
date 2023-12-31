@@ -67,6 +67,11 @@ JH/13 Add an fdatasync call for the received message data file in spool, before
       loggging reception and sending the SMTP ack.  Previously we only flushed
       the stdio buffer so there was still the possibility of a disk error.
 
+JH/14 Bug 3061: Avoid a split log line when trtying to rewrite a malformed
+      address.  Previously, for the last address in a header line (commonly
+      there is only one) the terminating newline was part of the logged
+      information.
+
 
 
 Exim version 4.97

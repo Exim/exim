@@ -19,15 +19,15 @@ search_tidyup called
 >>Headers received:
 
 qualify & rewrite recipients list
-global rewrite rules
-rewrite headers
+rewrite rules on sender address
+qualify and rewrite headers
  rewrite_one_header: type=F:
    From: CALLER_NAME <CALLER@test.ex>
 search_tidyup called
 >>Headers after rewriting and local additions:
-I Message-Id: <E10HmaX-000000005vi-0000@mail.test.ex>
-F From: CALLER_NAME <CALLER@test.ex>
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
+ I Message-Id: <E10HmaX-000000005vi-0000@mail.test.ex>
+ F From: CALLER_NAME <CALLER@test.ex>
+   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file name: TESTSUITE/spool//input//10HmaX-000000005vi-0000-D
 Data file written for message 10HmaX-000000005vi-0000

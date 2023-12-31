@@ -18,3 +18,63 @@ LOG: address_rewrite MAIN
 LOG: address_rewrite MAIN
   "User@c.domain" from env-to rewritten as "User@d.domain" by rule 2
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> tester in helo_lookup_domains?
+>>>  list element: @
+>>>  list element: @[]
+>>> tester in helo_lookup_domains? no (end of list)
+>>> processing "accept" (TESTSUITE/test-config 20)
+>>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> a@text.ex in "*@a.domain"?
+>>>  list element: *@a.domain
+>>>  text.ex in "a.domain"?
+>>>   list element: a.domain
+>>>  text.ex in "a.domain"? no (end of list)
+>>> a@text.ex in "*@a.domain"? no (end of list)
+>>> a@text.ex in "*@c.domain"?
+>>>  list element: *@c.domain
+>>>  text.ex in "c.domain"?
+>>>   list element: c.domain
+>>>  text.ex in "c.domain"? no (end of list)
+>>> a@text.ex in "*@c.domain"? no (end of list)
+>>> a@text.ex in "a@b"?
+>>>  list element: a@b
+>>>  text.ex in "b"?
+>>>   list element: b
+>>>  text.ex in "b"? no (end of list)
+>>> a@text.ex in "a@b"? no (end of list)
+>>> a@b in "*@a.domain"?
+>>>  list element: *@a.domain
+>>>  b in "a.domain"?
+>>>   list element: a.domain
+>>>  b in "a.domain"? no (end of list)
+>>> a@b in "*@a.domain"? no (end of list)
+>>> a@b in "*@c.domain"?
+>>>  list element: *@c.domain
+>>>  b in "c.domain"?
+>>>   list element: c.domain
+>>>  b in "c.domain"? no (end of list)
+>>> a@b in "*@c.domain"? no (end of list)
+>>> someone@some.domain in "*@a.domain"?
+>>>  list element: *@a.domain
+>>>  some.domain in "a.domain"?
+>>>   list element: a.domain
+>>>  some.domain in "a.domain"? no (end of list)
+>>> someone@some.domain in "*@a.domain"? no (end of list)
+>>> someone@some.domain in "*@c.domain"?
+>>>  list element: *@c.domain
+>>>  some.domain in "c.domain"?
+>>>   list element: c.domain
+>>>  some.domain in "c.domain"? no (end of list)
+>>> someone@some.domain in "*@c.domain"? no (end of list)
+LOG: 10HmaX-000000005vi-0000 rewrite: malformed address: @c may not follow a@b
+LOG: 10HmaX-000000005vi-0000 <= a@b H=(tester) [127.0.0.1] P=smtp S=sss

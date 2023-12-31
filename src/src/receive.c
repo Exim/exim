@@ -3069,7 +3069,7 @@ if (  from_header
 it has already been rewritten as part of verification for SMTP input. */
 
 DEBUG(D_rewrite)
-  { debug_printf("global rewrite rules\n"); acl_level++; }
+  { debug_printf("rewrite rules on sender address\n"); acl_level++; }
 if (global_rewrite_rules && !sender_address_unrewritten && *sender_address)
   {
   /* deconst ok as src was not const */
@@ -3096,7 +3096,7 @@ documented as happening *after* recipient addresses are taken from the headers
 by the -t command line option. An added Sender: gets rewritten here. */
 
 DEBUG(D_rewrite)
-  { debug_printf("rewrite headers\n"); acl_level++; }
+  { debug_printf("qualify and rewrite headers\n"); acl_level++; }
 for (header_line * h = header_list->next, * newh; h; h = h->next)
   if ((newh = rewrite_header(h, NULL, NULL, global_rewrite_rules,
 			      rewrite_existflags, TRUE)))
@@ -3135,9 +3135,11 @@ new Received:) has not yet been set. */
 DEBUG(D_receive)
   {
   debug_printf(">>Headers after rewriting and local additions:\n");
+  acl_level++;
   for (header_line * h = header_list->next; h; h = h->next)
-    debug_printf("%c %s", h->type, h->text);
+    debug_printf_indent("%c %s", h->type, h->text);
   debug_printf("\n");
+  acl_level--;
   }
 
 /* The headers are now complete in store. If we are running in filter

@@ -450,13 +450,13 @@ rewrite_one_header(header_line *h, int flag,
   rewrite_rule *rewrite_rules, int existflags, BOOL replace)
 {
 int lastnewline = 0;
-header_line *newh = NULL;
+header_line * newh = NULL;
 rmark function_reset_point = store_mark();
-uschar *s = Ustrchr(h->text, ':') + 1;
+uschar * s = Ustrchr(h->text, ':') + 1;
 
 while (isspace(*s)) s++;
 
-DEBUG(D_rewrite)
+DEBUG(D_rewrite)	/* The header text includes the trailing newline */
   debug_printf_indent("rewrite_one_header: type=%c:\n  %s", h->type, h->text);
 
 f.parse_allow_group = TRUE;     /* Allow group syntax */
@@ -470,24 +470,31 @@ We want to avoid keeping store for any intermediate versions. */
 
 while (*s)
   {
-  uschar *sprev;
-  uschar *ss = parse_find_address_end(s, FALSE);
-  uschar *recipient, *new;
+  uschar * sprev = s;
+  uschar * ss = parse_find_address_end(s, FALSE), * ss1 = ss;
+  uschar * recipient, * new;
   rmark loop_reset_point = store_mark();
-  uschar *errmess = NULL;
+  uschar * errmess = NULL;
   BOOL changed = FALSE;
-  int terminator = *ss;
+  uschar terminator = *ss;
   int start, end, domain;
+
+  /* If we hit the end of the header, trim trailing newline and whitespace */
+
+  if (!terminator)
+    {
+    while (ss1 > s && isspace(ss1[-1])) ss1--;
+    terminator = *ss1;
+    }
 
   /* Temporarily terminate the string at this point, and extract the
   operative address within. Then put back the terminator and prepare for
   the next address, saving the start of the old one. */
 
-  *ss = 0;
+  *ss1 = '\0';
   recipient = parse_extract_address(s, &errmess, &start, &end, &domain, FALSE);
-  *ss = terminator;
-  sprev = s;
-  s = ss + (terminator ? 1 : 0);
+  *ss1 = terminator;
+  s = ss + (*ss ? 1 : 0);
   while (isspace(*s)) s++;
 
   /* There isn't much we can do for syntactic disasters at this stage.
@@ -587,7 +594,8 @@ while (*s)
   point, because we may have a rewritten line from a previous time round the
   loop. */
 
-  if (!changed) loop_reset_point = store_reset(loop_reset_point);
+  if (!changed)
+    loop_reset_point = store_reset(loop_reset_point);
 
   /* If the address has changed, create a new header containing the
   rewritten address. We do not need to set the chain pointers at this

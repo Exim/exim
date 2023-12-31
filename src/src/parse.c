@@ -69,30 +69,31 @@ Returns:   pointer past the end of the address
 */
 
 uschar *
-parse_find_address_end(const uschar *s, BOOL nl_ends)
+parse_find_address_end(const uschar * s, BOOL nl_ends)
 {
 BOOL source_routing = *s == '@';
-int no_term = source_routing? 1 : 0;
+int no_term = source_routing ? 1 : 0;
 
-while (*s != 0 && (*s != ',' || no_term > 0) && (*s != '\n' || !nl_ends))
+while (*s && (*s != ',' || no_term > 0) && (*s != '\n' || !nl_ends))
   {
   /* Skip single quoted characters. Strictly these should not occur outside
   quoted strings in RFC 822 addresses, but they can in RFC 821 addresses. Pity
   about the lack of consistency, isn't it? */
 
-  if (*s == '\\' && s[1] != 0) s += 2;
+  if (*s == '\\' && s[1])
+    s += 2;
 
   /* Skip quoted items that are not inside brackets. Note that
   quoted pairs are allowed inside quoted strings. */
 
   else if (*s == '\"')
-    {
-    while (*(++s) != 0 && (*s != '\n' || !nl_ends))
+    while (*++s && (*s != '\n' || !nl_ends))
       {
-      if (*s == '\\' && s[1] != 0) s++;
-        else if (*s == '\"') { s++; break; }
+      if (*s == '\\' && s[1])
+	s++;
+      else if (*s == '\"')
+	{ s++; break; }
       }
-    }
 
   /* Skip comments, which may include nested brackets, but quotes
   are not recognized inside comments, though quoted pairs are. */
@@ -100,12 +101,13 @@ while (*s != 0 && (*s != ',' || no_term > 0) && (*s != '\n' || !nl_ends))
   else if (*s == '(')
     {
     int level = 1;
-    while (*(++s) != 0 && (*s != '\n' || !nl_ends))
-      {
-      if (*s == '\\' && s[1] != 0) s++;
-        else if (*s == '(') level++;
-          else if (*s == ')' && --level <= 0) { s++; break; }
-      }
+    while (*++s && (*s != '\n' || !nl_ends))
+      if (*s == '\\' && s[1])
+	s++;
+      else if (*s == '(')
+	level++;
+      else if (*s == ')' && --level <= 0)
+	{ s++; break; }
     }
 
   /* Non-special character; just advance. Passing the colon in a source
@@ -117,10 +119,12 @@ while (*s != 0 && (*s != ',' || no_term > 0) && (*s != '\n' || !nl_ends))
     if (*s == '<')
       {
       source_routing = s[1] == '@';
-      no_term = source_routing? 2 : 1;
+      no_term = source_routing ? 2 : 1;
       }
-    else if (*s == '>') no_term--;
-    else if (source_routing && *s == ':') no_term--;
+    else if (*s == '>')
+      no_term--;
+    else if (source_routing && *s == ':')
+      no_term--;
     s++;
     }
   }

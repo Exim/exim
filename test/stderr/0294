@@ -33,9 +33,9 @@ SMTP>> 354 Enter message, ending with "." on a line by itself
 >>Headers received:
 
 >>Headers after rewriting and local additions:
-I Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
-F From: x@y
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
+ I Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
+ F From: x@y
+   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file name: TESTSUITE/spool//input//10HmaX-000000005vi-0000-D
 Data file written for message 10HmaX-000000005vi-0000
@@ -65,9 +65,9 @@ SMTP>> 354 Enter message, ending with "." on a line by itself
 >>Headers received:
 
 >>Headers after rewriting and local additions:
-I Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
-F From: x@y
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
+ I Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
+ F From: x@y
+   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file name: TESTSUITE/spool//input//10HmaY-000000005vi-0000-D
 Data file written for message 10HmaY-000000005vi-0000

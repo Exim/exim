@@ -12,12 +12,12 @@ Cc: a@b.c
 Bcc: p@q.r
 
 >>Headers after rewriting and local additions:
-T To: x@y.z
-C Cc: a@b.c
-* Bcc: p@q.r
-I Message-Id: <E10HmaX-000000005vi-0000@mail.test.ex>
-F From: CALLER_NAME <CALLER@test.ex>
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
+ T To: x@y.z
+ C Cc: a@b.c
+ * Bcc: p@q.r
+ I Message-Id: <E10HmaX-000000005vi-0000@mail.test.ex>
+ F From: CALLER_NAME <CALLER@test.ex>
+   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file name: TESTSUITE/spool//input//10HmaX-000000005vi-0000-D
 Data file written for message 10HmaX-000000005vi-0000
@@ -50,15 +50,15 @@ Resent-cc: pp@qq.rr
 Resent-bcc: xx@yy.zz
 
 >>Headers after rewriting and local additions:
-  Resent-Date: Tue, 2 Mar 1999 09:44:33 +0000
-I Resent-Message-Id: <E10HmaY-000000005vi-0000@mail.test.ex>
-T To: x@y.z
-C Cc: a@b.c
-B Bcc: p@q.r
-T Resent-to: aa@bb.cc
-C Resent-cc: pp@qq.rr
-* Resent-bcc: xx@yy.zz
-F Resent-From: CALLER_NAME <CALLER@test.ex>
+   Resent-Date: Tue, 2 Mar 1999 09:44:33 +0000
+ I Resent-Message-Id: <E10HmaY-000000005vi-0000@mail.test.ex>
+ T To: x@y.z
+ C Cc: a@b.c
+ B Bcc: p@q.r
+ T Resent-to: aa@bb.cc
+ C Resent-cc: pp@qq.rr
+ * Resent-bcc: xx@yy.zz
+ F Resent-From: CALLER_NAME <CALLER@test.ex>
 
 Data file name: TESTSUITE/spool//input//10HmaY-000000005vi-0000-D
 Data file written for message 10HmaY-000000005vi-0000

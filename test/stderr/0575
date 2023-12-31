@@ -46,8 +46,8 @@ search_tidyup called
 >>Headers received:
 
 qualify & rewrite recipients list
-global rewrite rules
-rewrite headers
+rewrite rules on sender address
+qualify and rewrite headers
 search_tidyup called
 >>Headers after rewriting and local additions:
 

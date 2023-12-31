@@ -218,24 +218,24 @@ MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 
 qualify & rewrite recipients list
-global rewrite rules
-rewrite headers
+rewrite rules on sender address
+qualify and rewrite headers
  rewrite_one_header: type=F:
    From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
  rewrite_one_header: type=T:
    To: CALLER@myhost.test.ex
 search_tidyup called
 >>Headers after rewriting and local additions:
-  X-Failed-Recipients: x@y
-  Auto-Submitted: auto-replied
-F From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
-T To: CALLER@myhost.test.ex
-  References: <E10HmaX-000000005vi-0000@myhost.test.ex>
-  Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
-  MIME-Version: 1.0
-  Subject: Mail delivery failed: returning message to sender
-I Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
+   X-Failed-Recipients: x@y
+   Auto-Submitted: auto-replied
+ F From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+ T To: CALLER@myhost.test.ex
+   References: <E10HmaX-000000005vi-0000@myhost.test.ex>
+   Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+   MIME-Version: 1.0
+   Subject: Mail delivery failed: returning message to sender
+ I Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
+   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file name: TESTSUITE/spool//input//10HmaY-000000005vi-0000-D
 Data file written for message 10HmaY-000000005vi-0000
