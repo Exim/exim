@@ -42247,10 +42247,16 @@ The lookup will return the same result strings as can appear in
 
 .subsection "SRS (Sender Rewriting Scheme)" SECTSRS
 .cindex SRS "sender rewriting scheme"
+.cindex VERP "variable envelope return path"
 
 SRS can be used to modify sender addresses when forwarding so that
 SPF verification does not object to them.
-It operates by encoding the original envelope sender in a new
+It can also be used to identify a received bounce message as
+likely (or not) having been trigged by a message from the
+local system, and for identifying dead addresses in mailing lists.
+It is one implementation of a VERP (Variable Envelope Return Path) method.
+
+SRS operates by encoding the original envelope sender in a new
 sender local part and using a domain run by the forwarding site
 as the new domain for the sender.  Any DSN message should be returned
 to this new sender at the forwarding site, which can extract the
