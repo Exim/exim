@@ -11,7 +11,9 @@ primary_hostname = myhost.test.ex
 
 acl_smtp_rcpt = accept
 acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_length h=$dkim_headernames
+.ifdef _HAVE_PRDR
 acl_smtp_data_prdr = accept local_parts = okuser
+.endif
 
 prdr_enable
 log_selector = +dkim_verbose

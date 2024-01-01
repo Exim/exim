@@ -29,7 +29,9 @@ primary_hostname = testhost.test.ex
 domainlist local_domains = @ : test.ex
 
 acl_smtp_rcpt = check_recipient
+.ifdef _HAVE_PRDR
 acl_smtp_data_prdr = check_prdr
+.endif
 acl_smtp_data = check_data
 trusted_users = CALLER
 queue_only
