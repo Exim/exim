@@ -1654,7 +1654,7 @@ return 0;
 
 
 
-const uschar *
+static const uschar *
 describe_queue_runners(void)
 {
 gstring * g = NULL;
@@ -1664,6 +1664,7 @@ if (!is_multiple_qrun()) return US"no queue runs";
 for (qrunner * q = qrunners; q; q = q->next)
   {
   g = string_catn(g, US"-q", 2);
+  if (q->queue_2stage) g = string_catn(g, US"q", 1);
   if (q->name) g = string_append(g, 3, US"G", q->name, US"/");
   g = string_cat(g, readconf_printtime(q->interval));
   g = string_catn(g, US" ", 1);
