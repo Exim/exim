@@ -217,8 +217,8 @@
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 => a <a@test.ex> R=d1 T=tfile
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1252
-1999-03-02 09:44:33 10HmbP-000000005vi-0000 DKIM: d=dmarc.org s=clochette c=simple/simple a=rsa-sha256 b=1024 t=1517535263 [verification succeeded]
-1999-03-02 09:44:33 10HmbP-000000005vi-0000 DKIM: d=convivian.com s=default c=simple/simple a=rsa-sha256 b=1024 t=1517535248 [verification failed - body hash mismatch (body probably modified in transit)]
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 DKIM: d=dmarc.org s=clochette c=simple/simple a=rsa-sha256 b=1024 t=T [verification succeeded]
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 DKIM: d=convivian.com s=default c=simple/simple a=rsa-sha256 b=1024 t=T [verification failed - body hash mismatch (body probably modified in transit)]
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 arc_state:      <fail>
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 domains:        <convivian.com>
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 arc_oldest_pass <0>
@@ -228,8 +228,8 @@
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 oldest-p-AAR:   <>
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=dmarc.org id=1426665656.110316.1517535248039.JavaMail.zimbra@convivian.com for za@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1253
-1999-03-02 09:44:33 10HmbQ-000000005vi-0000 DKIM: d=dmarc.org s=clochette c=simple/simple a=rsa-sha256 b=1024 t=1517535263 [verification succeeded]
-1999-03-02 09:44:33 10HmbQ-000000005vi-0000 DKIM: d=convivian.com s=default c=simple/simple a=rsa-sha256 b=1024 t=1517535248 [verification failed - body hash mismatch (body probably modified in transit)]
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 DKIM: d=dmarc.org s=clochette c=simple/simple a=rsa-sha256 b=1024 t=T [verification succeeded]
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 DKIM: d=convivian.com s=default c=simple/simple a=rsa-sha256 b=1024 t=T [verification failed - body hash mismatch (body probably modified in transit)]
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 arc_state:      <fail>
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 domains:        <convivian.com:test.ex>
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 arc_oldest_pass <0>

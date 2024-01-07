@@ -720,8 +720,12 @@ if (dkim_domain)
       if (!(dkim_timestamps_expanded = expand_string(dkim->dkim_timestamps)))
 	{ errwhen = US"dkim_timestamps"; goto expand_bad; }
       else
-	xval = (tval = (unsigned long) time(NULL))
-	      + strtoul(CCS dkim_timestamps_expanded, NULL, 10);
+        {
+        tval = (unsigned long) time(NULL);
+        xval = strtoul(CCS dkim_timestamps_expanded, NULL, 10);
+        if (xval > 0)
+          xval += tval;
+        }
 
     if (!(sig = pdkim_init_sign(&dkim_sign_ctx, dkim_signing_domain,
 			  dkim_signing_selector,

@@ -17,6 +17,12 @@ From: nobody@example.com
 
 content
 ****
+# single header, oversigned, with only t= timestamp; no expiry x=
+exim -DOPT=From:From -DTIMES=0 -odf b02@test.ex
+From: nobody@example.com
+
+content
+****
 #
 # no header, multi-sign
 exim -DOPT=From:=X-Mine -odf b10@test.ex

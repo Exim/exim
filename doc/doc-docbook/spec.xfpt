@@ -15706,9 +15706,9 @@ the ACL once for each signature in the message.
 See section &<<SECDKIMVFY>>&.
 
 
-.option dmarc_forensic_sender main string&!! unset
-.option dmarc_history_file main string unset
-.option dmarc_tld_file main string unset
+.option dmarc_forensic_sender main string&!! unset &&&
+        dmarc_history_file main string unset &&&
+        dmarc_tld_file main string unset
 .cindex DMARC "main section options"
 These options control DMARC processing.
 See section &<<SECDMARC>>& for details.
@@ -41746,10 +41746,11 @@ name will be appended.
 .option dkim_timestamps smtp integer&!! unset
 This option controls the inclusion of timestamp information in the signature.
 If not set, no such information will be included.
-Otherwise, must be an unsigned number giving an offset in seconds from the current time
-for the expiry tag
-(eg. 1209600 for two weeks);
-both creation (t=) and expiry (x=) tags will be included.
+.new
+Otherwise, must be an unsigned number giving an offset in seconds from the
+current time for the expiry tag (e.g. 1209600 for two weeks); both creation
+(t=) and expiry (x=) tags will be included unless the offset is 0 (no expiry).
+.wen
 
 RFC 6376 lists these tags as RECOMMENDED.
 
