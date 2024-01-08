@@ -3688,7 +3688,7 @@ on the second character (the one after '-'), to save some effort. */
     in all cases provided there are no further characters in this
     argument. */
 
-      alloc_onetime_qrunner();
+      if (!qrunners) alloc_onetime_qrunner();
       qrunners->queue_2stage = f.queue_2stage;
       if (*argrest)
 	for (int i = 0; i < nelem(rsopts); i++)

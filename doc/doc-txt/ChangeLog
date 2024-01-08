@@ -79,6 +79,10 @@ JH/15 Bug 3061: Ensure a log line is written for a malformed address in a
 JH/16 Two-phase queue runs are now reported in the daemon startup log line and
       in exiwhat output.
 
+JH/17 Bug 3064: Fix combination of "-q<period> -R <recipients>". Introduction of
+      the multiple-queue-runners facility for 4.97 broking this, giving only
+      a one-time run of the queue.
+
 
 Exim version 4.97
 -----------------
