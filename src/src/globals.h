@@ -847,7 +847,6 @@ extern uschar *recipient_unqualified_hosts; /* Permitted unqualified recipients 
 extern BOOL    recipient_verify_cache; /* If callout cache was found */
 extern uschar *recipient_verify_failure; /* What went wrong */
 extern uschar *recipient_verify_message; /* Remote message */
-extern BOOL    recipients_discarded;   /* By an ACL */
 extern int     recipients_list_max;    /* Maximum number fitting in list */
 extern int     recipients_max;         /* Max permitted */
 extern BOOL    recipients_max_reject;  /* If TRUE, reject whole message */
@@ -916,7 +915,7 @@ extern uschar *sender_rcvhost;         /* Host data for Received: */
 extern uschar *sender_unqualified_hosts; /* Permitted unqualified senders */
 extern BOOL    sender_verify_cache;    /* If callout cache was found */
 extern uschar *sender_verify_failure;  /* What went wrong */
-extern uschar *sender_verify_message; /* Remote message */
+extern uschar *sender_verify_message;  /* Remote message */
 extern address_item *sender_verified_list; /* Saved chain of sender verifies */
 extern address_item *sender_verified_failed; /* The one that caused denial */
 extern uschar *sending_ip_address;     /* Address of outgoing (SMTP) interface */

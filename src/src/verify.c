@@ -636,14 +636,14 @@ coding means skipping this whole loop and doing the append separately.  */
      )
     done = cutthrough_multi(addr, host_list, tf, &yield);
 
-    if (options & vopt_is_recipient)
-    {
-      recipient_verify_message = addr->user_message;
-    }
-    else
-    {
-      sender_verify_message = addr->user_message;
-    }
+  if (options & vopt_is_recipient)
+  {
+    recipient_verify_message = addr->user_message;
+  }
+  else
+  {
+    sender_verify_message = addr->user_message;
+  }
 
   /* If we did not use a cached connection, make connections to the hosts
   and do real callouts. The list of hosts is passed in as an argument. */
