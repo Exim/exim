@@ -1047,11 +1047,11 @@ no_conn:
 
     if (options & vopt_is_recipient)
     {
-      recipient_verify_message = string_sprintf("%s", sx.buffer);
+      recipient_verify_message = string_sprintf("%s", sx->buffer);
     }
     else
     {
-      sender_verify_message = string_sprintf("%s", sx.buffer);
+      sender_verify_message = string_sprintf("%s", sx->buffer);
     }
 	/* Hard rejection ends the process */
 
