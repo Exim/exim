@@ -521,6 +521,9 @@ new_domain_record.result = ccache_unknown;
 new_domain_record.postmaster_result = ccache_unknown;
 new_domain_record.random_result = ccache_unknown;
 
+recipient_verify_message = "";
+sender_verify_message = "";
+
 memset(&new_address_record, 0, sizeof(new_address_record));
 
 /* For a recipient callout, the key used for the address cache record must
@@ -632,16 +635,6 @@ coding means skipping this whole loop and doing the append separately.  */
      && !pm_mailfrom
      )
     done = cutthrough_multi(addr, host_list, tf, &yield);
-
-  if (options & vopt_is_recipient)
-  {
-    recipient_verify_message = addr->user_message;
-  }
-  else
-  {
-    sender_verify_message = addr->user_message;
-  }
-
   /* If we did not use a cached connection, make connections to the hosts
   and do real callouts. The list of hosts is passed in as an argument. */
 
@@ -1052,6 +1045,14 @@ no_conn:
 	  : string_sprintf("Called:   %s\nSent:     %s\nResponse: %s",
 	    host->address, big_buffer, sx->buffer);
 
+    if (options & vopt_is_recipient)
+    {
+      recipient_verify_message = string_sprintf("%s", sx->buffer);
+    }
+    else
+    {
+      sender_verify_message = string_sprintf("%s", sx->buffer);
+    }
 	/* Hard rejection ends the process */
 
 	if (sx->buffer[0] == '5')   /* Address rejected */
