@@ -108,7 +108,9 @@ length = Ustrlen(buffer);
 #ifdef ANONYMIZE
   {
   uschar *p = buffer + 9;
-  if (p[6] == '-' && p[13] == '-') p += 17;
+  if (  p[MESSAGE_ID_TIME_LEN] == '-'
+     && p[MESSAGE_ID_TIME_LEN + MESSAGE_ID_PID_LEN + 1] == '-')
+      p += MESSAGE_ID_LENGTH + 1;
 
   while (p < buffer + length)
     {

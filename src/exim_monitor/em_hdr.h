@@ -190,7 +190,7 @@ typedef struct queue_item {
   int  update_time;
   int  size;
   uschar *sender;
-  uschar name[17];
+  uschar name[MESSAGE_ID_LENGTH + 1];
   uschar seen;
   uschar frozen;
   uschar dir_char;
