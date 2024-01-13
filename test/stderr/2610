@@ -135,6 +135,10 @@ dropping to exim gid; retaining priv uid
    type=mysql key="servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';
  MySQL query: "servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 87 of TESTSUITE/test-config:
+  WARNING: obslete syntax used for lookup
+
  lookup deferred: MySQL server "x" not found in mysql_servers
  search_open: mysql "NULL"
    cached open
@@ -145,6 +149,10 @@ dropping to exim gid; retaining priv uid
    type=mysql key="servers=127.0.0.1::PORT_N:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=127.0.0.1::PORT_N:x; select name from them where id='ph10';
  MySQL query: "servers=127.0.0.1::PORT_N:x; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 87 of TESTSUITE/test-config:
+  WARNING: obslete syntax used for lookup
+
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
  lookup yielded: Philip Hazel
@@ -157,6 +165,10 @@ dropping to exim gid; retaining priv uid
    type=mysql key="servers=127.0.0.1::PORT_N/test/root/:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=127.0.0.1::PORT_N/test/root/:x; select name from them where id='ph10';
  MySQL query: "servers=127.0.0.1::PORT_N/test/root/:x; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 87 of TESTSUITE/test-config:
+  WARNING: obslete syntax used for lookup
+
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
  lookup yielded: Philip Hazel
@@ -169,6 +181,10 @@ dropping to exim gid; retaining priv uid
    type=mysql key="servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';
  MySQL query: "servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 87 of TESTSUITE/test-config:
+  WARNING: obslete syntax used for lookup
+
  MYSQL new connection: host=ip4.ip4.ip4.ip4 port=PORT_N socket=NULL database=test user=root
  creating new cache entry
  lookup yielded: Philip Hazel
@@ -181,6 +197,10 @@ dropping to exim gid; retaining priv uid
    type=mysql key="servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';
  MySQL query: "servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 87 of TESTSUITE/test-config:
+  WARNING: obslete syntax used for lookup
+
  MYSQL new connection: host=localhost port=0 socket=TESTSUITE/mysql/sock database=test user=root
  creating new cache entry
  lookup yielded: Philip Hazel
@@ -348,6 +368,10 @@ check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::PORT_N    {select nam
  database lookup required for servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = 'c'
                               (tainted, quoted:mysql)
  MySQL query: "servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = 'c'" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 87 of TESTSUITE/test-config:
+  WARNING: obslete syntax used for lookup
+
  lookup deferred: MySQL server "127.0.0.1:PORT_N/test/root/pass" is tainted
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
@@ -388,6 +412,10 @@ host in "<& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from th
  database lookup required for servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'
                               (tainted, quoted:mysql)
  MySQL query: "servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 87 of TESTSUITE/test-config:
+  WARNING: obslete syntax used for lookup
+
  lookup deferred: MySQL server "127.0.0.1:PORT_N/test/root/pass" is tainted
 host in "<& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"

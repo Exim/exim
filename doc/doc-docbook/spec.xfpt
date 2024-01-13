@@ -8156,13 +8156,20 @@ option, you can still update it by a query of this form:
 ${lookup pgsql,servers=master/db/name/pw {UPDATE ...} }
 .endd
 
-An older syntax places the servers specification before the query,
+.new
+A now-deprecated syntax places the servers specification before the query,
 semicolon separated:
 .code
 ${lookup mysql{servers=master; UPDATE ...} }
 .endd
-The new version avoids potential issues with tainted
-arguments in the query, for explicit expansion.
+The new version avoids issues with tainted
+arguments explicitly expanded as part of the query.
+The entire string within the braces becomes tainted,
+including the server sepcification - which is not permissible.
+If the older sytax is used, a warning message will be logged.
+This syntax will be removed in a future release.
+.wen
+
 &*Note*&: server specifications in list-style lookups are still problematic.
 
 
@@ -8339,6 +8346,9 @@ type of match and is given below as the &*value*& information.
 .section "Expansion of lists" "SECTlistexpand"
 .cindex "expansion" "of lists"
 Each list is expanded as a single string before it is used.
+.cindex "tainted data" tracking
+&*Note*&: As a result, if any componend was tainted then the
+entire result string becomes tainted.
 
 &'Exception: the router headers_remove option, where list-item
 splitting is done before string-expansion.'&
@@ -9533,6 +9543,9 @@ when a dollar or backslash character is encountered. A dollar specifies the
 start of a portion of the string that is interpreted and replaced as described
 below in section &<<SECTexpansionitems>>& onwards. Backslash is used as an
 escape character, as described in the following section.
+
+.cindex "tainted data" tracking
+If any porttion of the result string is tainted, the entire result is.
 
 Whether a string is expanded depends upon the context.  Usually this is solely
 dependent upon the option for which a value is sought; in this documentation,

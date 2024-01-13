@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2022 */
+/* Copyright (c) The Exim Maintainers 2020 - 2024 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -55,6 +55,8 @@ if (Ustrncmp(query, "servers", 7) == 0)
   const uschar *s, *ss;
   const uschar *qserverlist;
   uschar *qserver;
+
+  log_write(0, LOG_MAIN|LOG_CONFIG_IN, "WARNING: obslete syntax used for lookup\n");
 
   s = query + 7;
   skip_whitespace(&s);

@@ -83,6 +83,9 @@ JH/17 Bug 3064: Fix combination of "-q<period> -R <recipients>". Introduction of
       the multiple-queue-runners facility for 4.97 broking this, giving only
       a one-time run of the queue.
 
+JH/18 Bug 3068: Log a warning for use of deprecated syntax in query-style
+      lookups.
+
 
 Exim version 4.97
 -----------------
