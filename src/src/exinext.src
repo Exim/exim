@@ -163,6 +163,7 @@ perl - $exim_path "$eximmacdef" $argone $spool_directory $qualify_domain $config
 
   if (scalar(@list) == 0)
     {
+    push(@list, $subject) if $subject =~ /^\w{6}-\w{11}-\w{4}$/;
     push(@list, $subject) if $subject =~ /^\w{6}-\w{6}-\w{2}$/;
 
     if ($subject !~ /\@/ && $subject !~ /\./)
