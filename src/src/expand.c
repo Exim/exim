@@ -8558,13 +8558,12 @@ Returns:  the expanded string, or NULL if expansion failed; if failure was
 const uschar *
 expand_string_2(const uschar * string, BOOL * textonly_p)
 {
+f.expand_string_forcedfail = f.search_find_defer = malformed_header = FALSE;
 if (Ustrpbrk(string, "$\\") != NULL)
   {
   int old_pool = store_pool;
   uschar * s;
 
-  f.search_find_defer = FALSE;
-  malformed_header = FALSE;
   store_pool = POOL_MAIN;
     s = expand_string_internal(string, ESI_HONOR_DOLLAR, NULL, NULL, textonly_p);
   store_pool = old_pool;

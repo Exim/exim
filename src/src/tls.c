@@ -105,7 +105,10 @@ expand_check(const uschar * s, const uschar * name,
   uschar ** result, uschar ** errstr)
 {
 if (!s)
+  {
+  f.expand_string_forcedfail = FALSE;
   *result = NULL;
+  }
 else if (  !(*result = expand_string(US s)) /* need to clean up const more */
 	&& !f.expand_string_forcedfail
 	)

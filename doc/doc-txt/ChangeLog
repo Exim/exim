@@ -86,6 +86,13 @@ JH/17 Bug 3064: Fix combination of "-q<period> -R <recipients>". Introduction of
 JH/18 Bug 3068: Log a warning for use of deprecated syntax in query-style
       lookups.
 
+JH/19 Fix TLS startup. When the last expansion done before the initiation of a
+      TLS session resulted in a forced-fail, a misleading error was logged for
+      the expansino of tls_certificates.  This would affect the common case of
+      that option being set (main-section options) but not having any vriable
+      parts.  It could also potentially affect tls_privatekeys.  The underlyding
+      coding errors go back to 4.90 but were only exposed in 4.97.
+
 
 Exim version 4.97
 -----------------
