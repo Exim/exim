@@ -93,6 +93,13 @@ JH/19 Fix TLS startup. When the last expansion done before the initiation of a
       parts.  It could also potentially affect tls_privatekeys.  The underlyding
       coding errors go back to 4.90 but were only exposed in 4.97.
 
+JH/20 Bug 3047: A recent (somewhere between 10.34 and 10.42) version of the
+      pcre2 library starting allocating 20kB rather than 112 bytes per match
+      call, which broke the 2GB total limitation on Exim's memory management
+      when a user had over 104207 messages stored and the appendfile
+      maildir_quota_directory_regex option is in use.  Release the allocated
+      memory every thosand files to avoid this.
+
 
 Exim version 4.97
 -----------------

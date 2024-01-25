@@ -49,6 +49,8 @@ optimize out the tail recursion and so not make them too expensive. */
 static void *
 function_store_malloc(PCRE2_SIZE size, void * tag)
 {
+if (size > INT_MAX)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "excessive memory alloc request");
 return store_malloc((int)size);
 }
 
@@ -63,12 +65,15 @@ if (block) store_free(block);
 static void *
 function_store_get(PCRE2_SIZE size, void * tag)
 {
+if (size > INT_MAX)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "excessive memory alloc request");
 return store_get((int)size, GET_UNTAINTED);	/* loses track of taint */
 }
 
 static void
 function_store_nullfree(void * block, void * tag)
 {
+/* We cannot free memory allocated using store_get() */
 }
 
 
