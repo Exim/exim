@@ -3955,11 +3955,11 @@ for (; cb; cb = cb->next)
 	CUSS &recipient_data);
       break;
 
-    #ifdef WITH_CONTENT_SCAN
+#ifdef WITH_CONTENT_SCAN
     case ACLC_REGEX:
       rc = regex(&arg, textonly);
       break;
-    #endif
+#endif
 
     case ACLC_REMOVE_HEADER:
       setup_remove_header(arg);

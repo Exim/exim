@@ -99,6 +99,8 @@ JH/20 Bug 3047: A recent (somewhere between 10.34 and 10.42) version of the
       when a user had over 104207 messages stored and the appendfile
       maildir_quota_directory_regex option is in use.  Release the allocated
       memory every thosand files to avoid this.
+      The same issue arises with the ACL regex condition, which is applied
+      to every line of a received message.
 
 
 Exim version 4.97

@@ -31,12 +31,11 @@ extern uschar *mime_current_boundary;
 
 
 static pcre_list *
-compile(const uschar * list, BOOL cacheable)
+compile(const uschar * list, BOOL cacheable, int * cntp)
 {
-int sep = 0;
+int sep = 0, cnt = 0;
 uschar * regex_string;
-pcre_list * re_list_head = NULL;
-pcre_list * ri;
+pcre_list * re_list_head = NULL, * ri;
 
 /* precompile our regexes */
 while ((regex_string = string_nextinlist(&list, &sep, NULL, 0)))
@@ -58,7 +57,9 @@ while ((regex_string = string_nextinlist(&list, &sep, NULL, 0)))
     ri->pcre_text = regex_string;
     ri->next = re_list_head;
     re_list_head = ri;
+    cnt++;
     }
+if (cntp) *cntp = cnt;
 return re_list_head;
 }
 
@@ -112,7 +113,8 @@ FILE * mbox_file;
 pcre_list * re_list_head;
 uschar * linebuffer;
 long f_pos = 0;
-int ret = FAIL;
+int ret = FAIL, cnt, lcount = REGEX_LOOPCOUNT_STORE_RESET;
+rmark reset_point;
 
 regex_vars_clear();
 
@@ -136,26 +138,34 @@ else
   mbox_file = mime_stream;
   }
 
-/* precompile our regexes */
-if (!(re_list_head = compile(*listptr, cacheable)))
-  return FAIL;			/* no regexes -> nothing to do */
-
-/* match each line against all regexes */
-linebuffer = store_get(32767, GET_TAINTED);
-while (fgets(CS linebuffer, 32767, mbox_file))
+reset_point = store_mark();
   {
-  if (  mime_stream && mime_current_boundary		/* check boundary */
-     && Ustrncmp(linebuffer, "--", 2) == 0
-     && Ustrncmp((linebuffer+2), mime_current_boundary,
-		  Ustrlen(mime_current_boundary)) == 0)
-      break;						/* found boundary */
+  /* precompile our regexes */
+  if ((re_list_head = compile(*listptr, cacheable, &cnt)))
+    {
+    /* match each line against all regexes */
+    linebuffer = store_get(32767, GET_TAINTED);
+    while (fgets(CS linebuffer, 32767, mbox_file))
+      {
+      if (  mime_stream && mime_current_boundary		/* check boundary */
+	 && Ustrncmp(linebuffer, "--", 2) == 0
+	 && Ustrncmp((linebuffer+2), mime_current_boundary,
+		      Ustrlen(mime_current_boundary)) == 0)
+	break;						/* found boundary */
 
-  if ((ret = matcher(re_list_head, linebuffer, (int)Ustrlen(linebuffer))) == OK)
-    goto done;
+      if ((ret = matcher(re_list_head, linebuffer, (int)Ustrlen(linebuffer))) == OK)
+	break;
+
+      if ((lcount -= cnt) <= 0)
+	{
+	store_reset(reset_point); reset_point = store_mark();
+	lcount = REGEX_LOOPCOUNT_STORE_RESET;
+	}
+      }
+    }
   }
-/* no matches ... */
+store_reset(reset_point);
 
-done:
 if (!mime_stream)
   (void)fclose(mbox_file);
 else
@@ -180,13 +190,10 @@ pcre_list * re_list_head = NULL;
 FILE * f;
 uschar * mime_subject = NULL;
 int mime_subject_len = 0;
-int ret;
+int ret = FAIL;
+rmark reset_point;
 
 regex_vars_clear();
-
-/* precompile our regexes */
-if (!(re_list_head = compile(*listptr, cacheable)))
-  return FAIL;			/* no regexes -> nothing to do */
 
 /* check if the file is already decoded */
 if (!mime_decoded_filename)
@@ -210,12 +217,20 @@ if (!(f = fopen(CS mime_decoded_filename, "rb")))
   return DEFER;
   }
 
-/* get 32k memory, tainted */
-mime_subject = store_get(32767, GET_TAINTED);
+reset_point = store_mark();
+  {
+  /* precompile our regexes */
+  if ((re_list_head = compile(*listptr, cacheable, NULL)))
+    {
+    /* get 32k memory, tainted */
+    mime_subject = store_get(32767, GET_TAINTED);
 
-mime_subject_len = fread(mime_subject, 1, 32766, f);
+    mime_subject_len = fread(mime_subject, 1, 32766, f);
 
-ret = matcher(re_list_head, mime_subject, mime_subject_len);
+    ret = matcher(re_list_head, mime_subject, mime_subject_len);
+    }
+  }
+store_reset(reset_point);
 (void)fclose(f);
 return ret;
 }

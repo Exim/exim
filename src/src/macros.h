@@ -1185,4 +1185,9 @@ typedef enum {
   sw_mrc_tx_fail,		/* transmit failed */
 } sw_mrc_t;
 
+/* Recent versions of PCRE2 are allocating 20kB per match, rather than the previous 112 B.
+When doing en extended loop of matching, release store periodically. */
+
+#define	REGEX_LOOPCOUNT_STORE_RESET	1000
+
 /* End of macros.h */

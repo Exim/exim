@@ -153,11 +153,6 @@ static const char *mailbox_formats[] = {
   (!ob->quota_warn_threshold_is_percent || ob->quota_value > 0))
 
 
-/* Free memory allocated by PCRE2 every so often, because a recent version
-is now using 20kB for every match call */
-
-#define RESET_STORE_FILECNT	1000
-
 /*************************************************
 *              Setup entry point                 *
 *************************************************/
@@ -667,7 +662,7 @@ check_dir_size(const uschar * dirname, int * countptr, const pcre2_code * re)
 {
 DIR * dir;
 off_t sum = 0;
-int count = *countptr, lcount = RESET_STORE_FILECNT;
+int count = *countptr, lcount = REGEX_LOOPCOUNT_STORE_RESET;
 rmark reset_point = store_mark();
 
 if (!(dir = exim_opendir(dirname))) return 0;
@@ -683,7 +678,7 @@ for (struct dirent * ent; ent = readdir(dir); )
   if (--lcount == 0)
     {
     store_reset(reset_point); reset_point = store_mark();
-    lcount = RESET_STORE_FILECNT;
+    lcount = REGEX_LOOPCOUNT_STORE_RESET;
     }
 
   /* If there's a regex, try to find the size using it */
