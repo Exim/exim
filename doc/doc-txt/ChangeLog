@@ -102,6 +102,18 @@ JH/20 Bug 3047: A recent (somewhere between 10.34 and 10.42) version of the
       The same issue arises with the ACL regex condition, which is applied
       to every line of a received message.
 
+JH/21 Bug 3059: Fix crash in smtp transport. When running for a message for
+      which all recipients had been handled (itself an issue) a null-pointer
+      deref was done on trying to write a retry record. Fix that by counting
+      the outstanding recipients before trying to transmit the message.
+      The situation arose for a second MX try within a transport run, when the
+      first had perm-rejected a recipient (the only one for the connection, in
+      the case seen) during pipelining, and then closed the TCP connection.
+      The transport classified that as an I/O error, leaving the message
+      outstanding but having marked up the recipient as dealt-with. It then
+      tried another MX because of the I/O error. Fix this by converting the
+      message-level status to ok if there was a close but all recipients were
+      dealt with.  Thanks to Wolfgand Breyha for debug runs.
 
 Exim version 4.97
 -----------------

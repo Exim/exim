@@ -4518,7 +4518,26 @@ if (!sx->ok)
 	break;
 
       case ERRNO_SMTPCLOSED:
-	message_error = Ustrncmp(smtp_command,"end ",4) == 0;
+	/* If the peer closed the TCP connection after end-of-data, but before
+	we could send QUIT, do TLS close, etc - call it a message error.
+	Otherwise, if all the recipients have been dealt with, call a close no
+	error at all; each address_item should have a suitable result already
+	(2xx: PENDING_OK, 4xx: DEFER, 5xx: FAIL) */
+
+	if (!(message_error = Ustrncmp(smtp_command,"end ",4) == 0))
+	  {
+	  address_item * addr;
+	  for (addr = sx->addrlist; addr; addr = addr->next)
+	    if (addr->transport_return == PENDING_DEFER)
+	      break;
+	  if (!addr)	/* all rcpts fates determined */
+	    {
+	    log_write(0, LOG_MAIN, "peer close after all rcpt responses;"
+	      " converting i/o-error to no-error");
+	    sx->ok = TRUE;
+	    goto happy;
+	    }
+	  }
 	break;
 
 #ifndef DISABLE_DKIM
@@ -4542,7 +4561,8 @@ if (!sx->ok)
 	break;
       }
 
-    /* Handle the cases that are treated as message errors. These are:
+    /* Handle the cases that are treated as message errors (as opposed to
+    host-errors). These are:
 
       (a) negative response or timeout after MAIL
       (b) negative response after DATA
@@ -4645,6 +4665,8 @@ If we have started a TLS session, we have to end it before passing the
 connection to a new process. However, not all servers can handle this (Exim
 can), so we do not pass such a connection on if the host matches
 hosts_nopass_tls. */
+
+happy:
 
 DEBUG(D_transport)
   debug_printf("ok=%d send_quit=%d send_rset=%d continue_more=%d "
@@ -5063,16 +5085,16 @@ Returns:       the first address for this delivery
 */
 
 static address_item *
-prepare_addresses(address_item *addrlist, host_item *host)
+prepare_addresses(address_item * addrlist, host_item * host)
 {
-address_item *first_addr = NULL;
+address_item * first_addr = NULL;
 for (address_item * addr = addrlist; addr; addr = addr->next)
   if (addr->transport_return == DEFER)
     {
     if (!first_addr) first_addr = addr;
     addr->transport_return = PENDING_DEFER;
     addr->basic_errno = 0;
-    addr->more_errno = (host->mx >= 0)? 'M' : 'A';
+    addr->more_errno = host->mx >= 0 ? 'M' : 'A';
     addr->message = NULL;
 #ifndef DISABLE_TLS
     addr->cipher = NULL;
@@ -5104,24 +5126,17 @@ FALSE. */
 
 BOOL
 smtp_transport_entry(
-  transport_instance *tblock,      /* data for this instantiation */
-  address_item *addrlist)          /* addresses we are working on */
+  transport_instance * tblock,      /* data for this instantiation */
+  address_item * addrlist)          /* addresses we are working on */
 {
 int defport;
-int hosts_defer = 0;
-int hosts_fail  = 0;
-int hosts_looked_up = 0;
-int hosts_retry = 0;
-int hosts_serial = 0;
-int hosts_total = 0;
-int total_hosts_tried = 0;
+int hosts_defer = 0, hosts_fail  = 0, hosts_looked_up = 0;
+int hosts_retry = 0, hosts_serial = 0, hosts_total = 0, total_hosts_tried = 0;
 BOOL expired = TRUE;
-uschar *expanded_hosts = NULL;
-uschar *pistring;
-uschar *tid = string_sprintf("%s transport", tblock->name);
-smtp_transport_options_block *ob = SOB tblock->options_block;
-host_item *hostlist = addrlist->host_list;
-host_item *host = NULL;
+uschar * expanded_hosts = NULL, * pistring;
+uschar * tid = string_sprintf("%s transport", tblock->name);
+smtp_transport_options_block * ob = SOB tblock->options_block;
+host_item * hostlist = addrlist->host_list, * host = NULL;
 
 DEBUG(D_transport)
   {
@@ -5161,7 +5176,7 @@ database if the delivery fails temporarily or if we are running with
 queue_smtp or a 2-stage queue run. This gets unset for certain
 kinds of error, typically those that are specific to the message. */
 
-update_waiting =  TRUE;
+update_waiting = TRUE;
 
 /* If a host list is not defined for the addresses - they must all have the
 same one in order to be passed to a single transport - or if the transport has
@@ -5349,16 +5364,12 @@ retry_non_continued:
        && total_hosts_tried < ob->hosts_max_try_hardlimit;
        host = nexthost)
     {
-    int rc;
-    int host_af;
-    BOOL host_is_expired = FALSE;
-    BOOL message_defer = FALSE;
-    BOOL some_deferred = FALSE;
-    address_item *first_addr = NULL;
-    uschar *interface = NULL;
-    uschar *retry_host_key = NULL;
-    uschar *retry_message_key = NULL;
-    uschar *serialize_key = NULL;
+    int rc, host_af;
+    BOOL host_is_expired = FALSE, message_defer = FALSE, some_deferred = FALSE;
+    address_item * first_addr = NULL;
+    uschar * interface = NULL;
+    uschar * retry_host_key = NULL, * retry_message_key = NULL;
+    uschar * serialize_key = NULL;
 
     /* Deal slightly better with a possible Linux kernel bug that results
     in intermittent TFO-conn fails deep into the TCP flow.  Bug 2907 tracks.
@@ -5665,7 +5676,14 @@ retry_non_continued:
     out the result of previous attempts, and finding the first address that
     is still to be delivered. */
 
-    first_addr = prepare_addresses(addrlist, host);
+    if (!(first_addr = prepare_addresses(addrlist, host)))
+      {
+      /* Obscure situation; at least one case (bug 3059, fixed) where
+      a previous host try returned DEFER, but having moved all
+      recipients away from DEFER (the waiting-to-be-done state). */
+      DEBUG(D_transport) debug_printf("no pending recipients\n");
+      goto END_TRANSPORT;
+      }
 
     DEBUG(D_transport) debug_printf("delivering %s to %s [%s] (%s%s)\n",
       message_id, host->name, host->address, addrlist->address,
@@ -5717,7 +5735,7 @@ retry_non_continued:
       {
       host_item * thost;
       /* Make a copy of the host if it is local to this invocation
-       of the transport. */
+      of the transport. */
 
       if (expanded_hosts)
 	{
@@ -5911,20 +5929,14 @@ retry_non_continued:
     if (rc == OK)
       for (address_item * addr = addrlist; addr; addr = addr->next)
         if (addr->transport_return == DEFER)
-          {
-          some_deferred = TRUE;
-          break;
-          }
+          { some_deferred = TRUE; break; }
 
     /* If no addresses deferred or the result was ERROR, return. We do this for
     ERROR because a failing filter set-up or add_headers expansion is likely to
     fail for any host we try. */
 
     if (rc == ERROR || (rc == OK && !some_deferred))
-      {
-      DEBUG(D_transport) debug_printf("Leaving %s transport\n", tblock->name);
-      return TRUE;    /* Each address has its status */
-      }
+      goto END_TRANSPORT;
 
     /* If the result was DEFER or some individual addresses deferred, let
     the loop run to try other hosts with the deferred addresses, except for the
@@ -5944,7 +5956,7 @@ retry_non_continued:
     if ((rc == DEFER || some_deferred) && nexthost)
       {
       BOOL timedout;
-      retry_config *retry = retry_find_config(host->name, NULL, 0, 0);
+      retry_config * retry = retry_find_config(host->name, NULL, 0, 0);
 
       if (retry && retry->rules)
         {

@@ -8,7 +8,7 @@ EHLO testhost.test.ex
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
-RCPT TO:<p@test.ex>
+RCPT TO:<a@test.ex>
 BDAT 345 LAST
 250 OK mail
 250 OK rcpt
@@ -25,7 +25,7 @@ EHLO testhost.test.ex
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
-RCPT TO:<r@test.ex>
+RCPT TO:<c@test.ex>
 BDAT 345 LAST
 250 OK mail
 250 OK rcpt
@@ -41,7 +41,7 @@ EHLO testhost.test.ex
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
-RCPT TO:<s@test.ex>
+RCPT TO:<d@test.ex>
 BDAT 345 LAST
 550 unacceptable mail-from
 550 rcpt ungood lacking mail-from
@@ -57,7 +57,7 @@ EHLO testhost.test.ex
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
-RCPT TO:<s1@test.ex>
+RCPT TO:<c1@test.ex>
 BDAT 346 LAST
 450 greylisted mail-from
 550 rcpt ungood lacking mail-from
@@ -73,7 +73,7 @@ EHLO testhost.test.ex
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
-RCPT TO:<t@test.ex>
+RCPT TO:<e@test.ex>
 BDAT 345 LAST
 250 OK mail
 550 no such recipient
@@ -89,7 +89,7 @@ EHLO testhost.test.ex
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
-RCPT TO:<u@test.ex>
+RCPT TO:<g@test.ex>
 BDAT 345 LAST
 250 OK mail
 250 OK rcpt
@@ -105,7 +105,7 @@ EHLO testhost.test.ex
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
-RCPT TO:<v@test.ex>
+RCPT TO:<h@test.ex>
 BDAT 345 LAST
 250 OK mail
 250 OK rcpt

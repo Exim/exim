@@ -1155,7 +1155,7 @@ are of the following kinds:
     before proceeding.
 
 (3) A line containing "*data" and a number specifies that the client is
-    expected to send that many byte; the server discards them
+    expected to send that many bytes; the server discards them
 
 (4) A line containing "*eof" specifies that the client is expected to close
     the connection at this point.
