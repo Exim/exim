@@ -1105,6 +1105,9 @@ g = string_cat(g, US"Support for:");
 #ifndef DISABLE_DNSSEC
   g = string_cat(g, US" DNSSEC");
 #endif
+#ifndef DISABLE_ESMTP_LIMITS
+  g = string_cat(g, US" ESMTP_Limits");
+#endif
 #ifndef DISABLE_EVENT
   g = string_cat(g, US" Event");
 #endif
@@ -1150,9 +1153,6 @@ g = string_cat(g, US"Support for:");
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
   g = string_cat(g, US" Experimental_DSN_info");
-#endif
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
-  g = string_cat(g, US" Experimental_ESMTP_Limits");
 #endif
 #ifdef EXPERIMENTAL_QUEUEFILE
   g = string_cat(g, US" Experimental_QUEUEFILE");
@@ -3019,7 +3019,7 @@ on the second character (the one after '-'), to save some effort. */
 
 	case 'K': smtp_peer_options |= OPTION_CHUNKING; break;
 
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
     /* -MCL: peer used LIMITS RCPTMAX and/or RCPTDOMAINMAX */
 	case 'L': if (++i < argc) continue_limit_mail = Uatoi(argv[i]);
 		  else badarg = TRUE;

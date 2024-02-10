@@ -449,7 +449,7 @@ extern uschar *continue_hostname;      /* Host for continued delivery */
 extern uschar *continue_host_address;  /* IP address for ditto */
 extern int     continue_sequence;      /* Sequence num for continued delivery */
 extern uschar *continue_transport;     /* Transport for continued delivery */
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 extern unsigned continue_limit_mail;   /* Peer advertised limit */
 extern unsigned continue_limit_rcpt;
 extern unsigned continue_limit_rcptdom;
@@ -688,7 +688,7 @@ extern int     keep_malformed;         /* Time to keep malformed messages */
 
 extern uschar *eldap_dn;               /* Where LDAP DNs are left */
 extern const uschar *letter_digit_hyphen_dot; /* Legitimate DNS host name chars */
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 extern uschar *limits_advertise_hosts; /* for banner/EHLO pipelining */
 #endif
 extern int     load_average;           /* Most recently read load average */
@@ -902,7 +902,7 @@ extern const pcre2_code  *regex_check_dns_names; /* For DNS name checking */
 extern const pcre2_code  *regex_From;        /* For recognizing "From_" lines */
 extern const pcre2_code  *regex_CHUNKING;    /* For recognizing CHUNKING (RFC 3030) */
 extern const pcre2_code  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 extern const pcre2_code  *regex_LIMITS; /* For recognizing LIMITS */
 #endif
 extern const pcre2_code  *regex_PIPELINING;  /* For recognizing PIPELINING */

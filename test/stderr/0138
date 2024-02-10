@@ -10,6 +10,8 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> exim.test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -73,6 +75,8 @@ LOG: 10HmaX-000000005vi-0000 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.
 >>>  list element: @
 >>>  list element: @[]
 >>> exim.test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *

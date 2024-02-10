@@ -632,7 +632,7 @@ extern void    transport_do_pass_socket(const uschar *, const uschar *,
 		 const uschar *, uschar *, int);
 extern void    transport_init(void);
 extern BOOL    transport_pass_socket(const uschar *, const uschar *, const uschar *, uschar *, int
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 			, unsigned, unsigned, unsigned
 #endif
 			);

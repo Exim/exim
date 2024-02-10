@@ -706,7 +706,7 @@ unsigned chunking_data_left    = 0;
 chunking_state_t chunking_state= CHUNKING_NOT_OFFERED;
 const pcre2_code *regex_CHUNKING     = NULL;
 
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 const pcre2_code *regex_LIMITS        = NULL;
 #endif
 
@@ -746,7 +746,7 @@ uschar *continue_hostname      = NULL;
 uschar *continue_host_address  = NULL;
 int     continue_sequence      = 1;
 uschar *continue_transport     = NULL;
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 unsigned continue_limit_mail   = 0;
 unsigned continue_limit_rcpt   = 0;
 unsigned continue_limit_rcptdom= 0;
@@ -1029,7 +1029,7 @@ const uschar *letter_digit_hyphen_dot =
     US"abcdefghijklmnopqrstuvwxyz"
       ".-0123456789"
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 uschar *limits_advertise_hosts = US"*";
 #endif
 int     load_average           = -2;

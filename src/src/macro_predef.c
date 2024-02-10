@@ -160,6 +160,9 @@ due to conflicts with other common macros. */
 #ifndef DISABLE_DNSSEC
   builtin_macro_create(US"_HAVE_DNSSEC");
 #endif
+#ifndef DISABLE_ESMTP_LIMITS
+  builtin_macro_create(US"_HAVE_ESMTP_LIMITS");
+#endif
 #ifndef DISABLE_EVENT
   builtin_macro_create(US"_HAVE_EVENT");
 #endif
@@ -308,9 +311,6 @@ exp_features(void)
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
   builtin_macro_create(US"_EXP_DSNI");
-#endif
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
-  builtin_macro_create(US"_EXP_LIMITS");
 #endif
 #ifdef EXPERIMENTAL_QUEUEFILE
   builtin_macro_create(US"_EXP_QUEUEFILE");

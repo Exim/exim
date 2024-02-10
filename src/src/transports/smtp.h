@@ -176,7 +176,7 @@ typedef struct {
   BOOL pending_BDAT:1;
   BOOL RCPT_452:1;
   BOOL good_RCPT:1;
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
   BOOL single_rcpt_domain:1;
 #endif
   BOOL completed_addr:1;
@@ -185,7 +185,7 @@ typedef struct {
   BOOL send_tlsclose:1;
 
   unsigned	peer_offered;
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
   unsigned	peer_limit_mail;
   unsigned	peer_limit_rcpt;
   unsigned	peer_limit_rcptdom;

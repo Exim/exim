@@ -163,7 +163,7 @@ typedef struct {
   unsigned short cleartext_auths;
   unsigned short crypted_auths;
 
-# ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifndef DISABLE_ESMTP_LIMITS
   unsigned int limit_mail;
   unsigned int limit_rcpt;
   unsigned int limit_rcptdom;

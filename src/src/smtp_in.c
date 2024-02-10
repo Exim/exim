@@ -4054,7 +4054,7 @@ while (done <= 0)
 	  g = string_catn(g, US"-SIZE\r\n", 7);
 	  }
 
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 	if (  (smtp_mailcmd_max > 0 || recipients_max)
 	   && verify_check_host(&limits_advertise_hosts) == OK)
 	  {

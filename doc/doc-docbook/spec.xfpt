@@ -14972,6 +14972,7 @@ See also the &'Policy controls'& section above.
 .row &%dsn_advertise_hosts%&         "advertise DSN extensions to these hosts"
 .row &%ignore_fromline_hosts%&       "allow &""From ""& from these hosts"
 .row &%ignore_fromline_local%&       "allow &""From ""& from local SMTP"
+.row &%limits_advertise_hosts%&      "advertise LIMITS to these hosts"
 .row &%pipelining_advertise_hosts%&  "advertise pipelining to these hosts"
 .row &%pipelining_connect_advertise_hosts%& "advertise pipelining to these hosts"
 .row &%prdr_enable%&                 "advertise PRDR to all hosts"
@@ -16555,6 +16556,18 @@ the LDAP headers; otherwise it is 2. This option is available only when Exim
 has been built with LDAP support.
 
 
+
+.new
+.option limits_advertise_hosts main "host list&!!" *
+.cindex LIMITS "suppressing advertising"
+.cindex "ESMTP extensions" LIMITS
+This option can be used to suppress the advertisement of the SMTP
+LIMITS extension (RFC 9422) to specific hosts.
+If permitted, Exim as a servier will advertise in the EHLO response
+the limit for RCPT commands set by the &%recipients_max%& option (if it is set)
+and the limit for MAIL commands set by the &%smtp_accept_max_per_connection%&
+option.
+,wen
 
 .option local_from_check main boolean true
 .cindex "&'Sender:'& header line" "disabling addition of"
@@ -25356,6 +25369,13 @@ over a single TCP/IP connection. If the value is zero, there is no limit.
 For testing purposes, this value can be overridden by the &%-oB%& command line
 option.
 
+.new
+.cindex "ESMTP extensions" LIMITS
+If the peer advertises a LIMITS extension with a MAILMAX value,
+and either TLSS is in use or was not advertised,
+that value also constrains the result of this option.
+.wen
+
 
 .option dane_require_tls_ciphers smtp string&!! unset
 .cindex "TLS" "requiring specific ciphers for DANE"
@@ -25932,6 +25952,14 @@ each set of addresses is treated independently, and
 so can cause parallel connections to the same host if &%remote_max_parallel%&
 permits this.
 
+.new
+.cindex "ESMTP extensions" LIMITS
+If the peer advertises a LIMITS extension with a RCPTMAX value,
+and either TLSS is in use or was not advertised,
+that value also constrains the result of this option
+and no parallel connections will be caused on meeting the RCPTMAX limit.
+.wen
+
 
 .option message_linelength_limit smtp integer 998
 .cindex "line length" limit
@@ -25962,6 +25990,14 @@ It is expanded per-address and can depend on any of
 If the connection is DANE-enabled then this option is ignored;
 only messages having the domain used for the DANE TLSA lookup are
 sent on the connection.
+
+.new
+.cindex "ESMTP extensions" LIMITS
+If the peer advertises a LIMITS extension with a RCPTDOMAINMAX value,
+and either TLSS is in use or was not advertised,
+this option is regarded as being false.
+.wen
+
 
 .option port smtp string&!! "see below"
 .cindex "port" "sending TCP/IP"

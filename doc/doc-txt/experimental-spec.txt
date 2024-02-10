@@ -616,7 +616,7 @@ and a whitespace-separated port number must be given.
 Logging protocol unusual states
 ---------------------------------------------------------------
 An extra log_selector, "protocol_detail" has been added in the default build.
-The name may change in future, hence the Experimenal status.
+The name may change in future, hence the Experimental status.
 
 Currrently the only effect is to enable logging, under TLS,
 of a TCP RST received directly after a QUIT (in server mode).
@@ -625,43 +625,6 @@ Outlook is consistently doing this; not waiting for the SMTP response
 to its QUIT, not properly closing the TLS session and not properly closing
 the TCP connection.  Previously this resulted is an error from SSL_write
 being logged.
-
-
-
-Limits ESMTP extension
----------------------------------------------------------------
-Per https://datatracker.ietf.org/doc/html/draft-freed-smtp-limits-01
-(as of 2023/08/04, version -05 has been published.  It does not seems
-to be substantively different.)
-
-If compiled with EXPERIMENTAL_ESMTP_LIMITS=yes :-
-
-As a server, Exim will advertise, in the EHLO response, the limit for RCPT
-commands set by the recipients_max main-section config option (if it is set),
-and the limit for MAIL commands set by the smtp_accept_max_per_connection
-option.
-
-Note that as of writing, smtp_accept_max_per_connection is expanded but
-recipients_max is not.
-
-A new main-section option "limits_advertise_hosts" controls whether
-the limits are advertised; the default for the option is "*".
-
-As a client, Exim will:
-
- - note an advertised MAILMAX; the lower of the value given and the
- value from the transport connection_max_messages option is used.
-
- - note an advertised RCPTMAX; the lower of the
- value given and the value from the transport max_rcpt option is used.
- Parallisation of transactions is not done if due to a RCPTMAX, unlike
- max_rcpt.
-
- - note an advertised RCPTDOMAINMAX, and behave as if the transport
- multi_domains option was set to false.  The value advertised is ignored.
-
-Values advertised are only noted for TLS connections and ones for which
-the server does not advertise TLS support.
 
 
 

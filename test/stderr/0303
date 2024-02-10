@@ -29,6 +29,8 @@
 >>> IP address lookup yielded "ten-1.test.ex"
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -82,6 +84,8 @@ SMTP<< EHLO [V4NET.2.3.4]
 sender_fullhost = ([V4NET.2.3.4]) [V4NET.2.3.4]
 sender_rcvhost = [V4NET.2.3.4]
 set_process_info: pppp handling incoming connection from ([V4NET.2.3.4]) [V4NET.2.3.4]
+ list element: *
+  host in limits_advertise_hosts? yes (matched "*")
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts?
  list element: *
@@ -90,6 +94,7 @@ host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-myhost.test.ex Hello [V4NET.2.3.4] [V4NET.2.3.4]
        250-SIZE 52428800
+       250-LIMITS MAILMAX=1000 RCPTMAX=50000
        250-8BITMIME
        250-PIPELINING
        250 HELP
@@ -162,6 +167,8 @@ SMTP<< EHLO [V4NET.2.3.4]
 sender_fullhost = host.name.tld [V4NET.2.3.4]
 sender_rcvhost = host.name.tld ([V4NET.2.3.4])
 set_process_info: pppp handling incoming connection from host.name.tld [V4NET.2.3.4]
+ list element: *
+  host in limits_advertise_hosts? yes (matched "*")
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts?
  list element: *
@@ -170,6 +177,7 @@ host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-myhost.test.ex Hello host.name.tld [V4NET.2.3.4]
        250-SIZE 52428800
+       250-LIMITS MAILMAX=1000 RCPTMAX=50000
        250-8BITMIME
        250-PIPELINING
        250 HELP

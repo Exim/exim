@@ -10,6 +10,8 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> test1 in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -35,6 +37,8 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> test2 in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -60,6 +64,8 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> test3 in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *

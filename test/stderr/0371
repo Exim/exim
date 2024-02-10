@@ -38,6 +38,8 @@ something in helo_lookup_domains? no (end of list)
 sender_fullhost = (something) [V4NET.0.0.0]
 sender_rcvhost = [V4NET.0.0.0] (helo=something)
 set_process_info: pppp handling incoming connection from (something) [V4NET.0.0.0]
+ list element: *
+  host in limits_advertise_hosts? yes (matched "*")
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts?
  list element: *
@@ -46,6 +48,7 @@ host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-mail.test.ex Hello something [V4NET.0.0.0]
        250-SIZE 52428800
+       250-LIMITS MAILMAX=1000 RCPTMAX=50000
        250-8BITMIME
        250-VRFY
        250-PIPELINING

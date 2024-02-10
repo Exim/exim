@@ -1941,7 +1941,7 @@ const uschar **argv;
 #ifndef DISABLE_TLS
 if (smtp_peer_options & OPTION_TLS) i += 6;
 #endif
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 if (continue_limit_mail || continue_limit_rcpt || continue_limit_rcptdom)
 				    i += 4;
 #endif
@@ -1983,7 +1983,7 @@ if (smtp_peer_options & OPTION_TLS)
     argv[i++] = US"-MCT";
 #endif
 
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 if (continue_limit_rcpt || continue_limit_rcptdom)
   {
   argv[i++] = US"-MCL";
@@ -2055,7 +2055,7 @@ Returns:          FALSE if fork fails; TRUE otherwise
 BOOL
 transport_pass_socket(const uschar *transport_name, const uschar *hostname,
   const uschar *hostaddress, uschar *id, int socket_fd
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
   , unsigned peer_limit_mail, unsigned peer_limit_rcpt, unsigned peer_limit_rcptdom
 #endif
   )
@@ -2065,7 +2065,7 @@ int status;
 
 DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
 
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 continue_limit_mail = peer_limit_mail;
 continue_limit_rcpt = peer_limit_rcpt;
 continue_limit_rcptdom = peer_limit_rcptdom;

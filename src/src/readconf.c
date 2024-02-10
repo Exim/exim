@@ -209,7 +209,7 @@ static optionlist optionlist_config[] = {
   { "ldap_start_tls",           opt_bool,        {&eldap_start_tls} },
   { "ldap_version",             opt_int,         {&eldap_version} },
 #endif
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
   { "limits_advertise_hosts", opt_stringptr, {&limits_advertise_hosts} },
 #endif
   { "local_from_check",         opt_bool,        {&local_from_check} },

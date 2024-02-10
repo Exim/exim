@@ -10,6 +10,8 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> csa1.test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -29,6 +31,8 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> csa2.test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -54,6 +58,8 @@ LOG: H=(csa2.test.ex) [V4NET.9.8.7] rejected MAIL <>: client SMTP authorization 
 >>>  list element: @
 >>>  list element: @[]
 >>> csa1.test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -74,6 +80,8 @@ LOG: H=(csa1.test.ex) [V4NET.9.8.8] rejected MAIL <>: client SMTP authorization 
 >>>  list element: @
 >>>  list element: @[]
 >>> csa2.test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *

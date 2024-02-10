@@ -10,6 +10,8 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> test.host in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -39,6 +41,8 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> test.host in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -115,6 +119,8 @@ LOG: 10HmaY-000000005vi-0000 <= userx@some.domain H=(test.host) [10.0.0.1] P=esm
 >>>  list element: @
 >>>  list element: @[]
 >>> test.host in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *

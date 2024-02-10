@@ -9,6 +9,8 @@ Key file = aux-fixed/cert2
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
@@ -46,6 +48,8 @@ Key file = aux-fixed/cert2
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
@@ -70,6 +74,8 @@ Key file = aux-fixed/cert2
 <<< 250-server1.example.com Hello rhu3.barb [ip4.ip4.ip4.ip4]
 ??? 250-
 <<< 250-SIZE 52428800
+??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-
 <<< 250-8BITMIME
 ??? 250-
@@ -96,6 +102,8 @@ Key file = aux-fixed/cert2
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
@@ -113,6 +121,8 @@ Succeeded in starting TLS
 <<< 250-server1.example.com Hello rhu5.barb.tls [ip4.ip4.ip4.ip4]
 ??? 250-
 <<< 250-SIZE 52428800
+??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-
 <<< 250-8BITMIME
 ??? 250-

@@ -51,6 +51,7 @@ Do not put spaces between # and the 'define'.
 #define DISABLE_D_OPTION
 #define DISABLE_DNSSEC
 #define DISABLE_DKIM
+#define DISABLE_ESMTP_LIMITS
 #define DISABLE_EVENT
 #define DISABLE_OCSP
 #define DISABLE_PIPE_CONNECT
@@ -209,7 +210,6 @@ Do not put spaces between # and the 'define'.
 #define EXPERIMENTAL_BRIGHTMAIL
 #define EXPERIMENTAL_DCC
 #define EXPERIMENTAL_DSN_INFO
-#define EXPERIMENTAL_ESMTP_LIMITS
 #define EXPERIMENTAL_QUEUEFILE
 #define EXPERIMENTAL_XCLIENT
 

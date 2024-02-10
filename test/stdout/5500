@@ -7,6 +7,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
@@ -54,6 +56,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
@@ -96,6 +100,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
@@ -128,6 +134,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
 ??? 250-
 <<< 250-SIZE 52428800
+??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-
 <<< 250-8BITMIME
 ??? 250-
@@ -171,6 +179,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
@@ -212,6 +222,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
 ??? 250-
 <<< 250-SIZE 52428800
+??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-
 <<< 250-8BITMIME
 ??? 250-

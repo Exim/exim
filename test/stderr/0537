@@ -86,6 +86,8 @@ LOG: sender_ident=ident
 >>>  end of ACL "log": ACCEPT
 >>> accept: condition test succeeded in ACL "connect"
 >>> end of ACL "connect": ACCEPT
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *

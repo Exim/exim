@@ -9,6 +9,8 @@ Key file = aux-fixed/cert2
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
@@ -46,30 +48,7 @@ Key file = aux-fixed/cert2
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
-<<< 250-8BITMIME
-??? 250-
-<<< 250-PIPELINING
-??? 250-
-<<< 250-STARTTLS
-??? 250
-<<< 250 HELP
->>> starttls
-??? 220
-<<< 220 TLS go ahead
-Attempting to start TLS
-no OCSP response received
-Succeeded in starting TLS (with OCSP)
-End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
-Certificate file = aux-fixed/cert2
-Key file = aux-fixed/cert2
-??? 220
-<<< 220 server1.example.com ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
->>> ehlo rhu.barb
-??? 250-
-<<< 250-server1.example.com Hello rhu.barb [ip4.ip4.ip4.ip4]
-??? 250-
-<<< 250-SIZE 52428800
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-
 <<< 250-8BITMIME
 ??? 250-
@@ -95,6 +74,35 @@ Key file = aux-fixed/cert2
 <<< 250-server1.example.com Hello rhu.barb [ip4.ip4.ip4.ip4]
 ??? 250-
 <<< 250-SIZE 52428800
+??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-
+<<< 250-8BITMIME
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+no OCSP response received
+Succeeded in starting TLS (with OCSP)
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Certificate file = aux-fixed/cert2
+Key file = aux-fixed/cert2
+??? 220
+<<< 220 server1.example.com ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-server1.example.com Hello rhu.barb [ip4.ip4.ip4.ip4]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-
 <<< 250-8BITMIME
 ??? 250-
@@ -113,6 +121,8 @@ Succeeded in starting TLS
 <<< 250-server1.example.com Hello rhu.barb.tls [ip4.ip4.ip4.ip4]
 ??? 250-
 <<< 250-SIZE 52428800
+??? 250-
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
 ??? 250-
 <<< 250-8BITMIME
 ??? 250-

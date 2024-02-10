@@ -343,6 +343,7 @@ keep_malformed                       time            4d            main
 keepalive                            boolean         true          smtp              2.05
 ldap_default_servers                 string list     unset         main              3.02
 ldap_version                         int             2 or 3        main              4.14
+limits_advertise_hosts		     host list	     *		   main		     4.98
 local_from_check                     boolean         true          main              3.14
 local_from_prefix                    string          unset         main              3.14
 local_from_suffix                    string          unset         main              3.14

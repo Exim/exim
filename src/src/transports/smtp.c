@@ -277,7 +277,7 @@ struct list
 #ifndef DISABLE_PIPE_CONNECT
     { &regex_EARLY_PIPE,  	US"\\n250[\\s\\-]" EARLY_PIPE_FEATURE_NAME "(\\s|\\n|$)" },
 #endif
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
     { &regex_LIMITS,		US"\\n250[\\s\\-]LIMITS\\s" },
 #endif
   };
@@ -797,7 +797,7 @@ sx->conn_args.have_lbserver = TRUE;
 
 /******************************************************************************/
 
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 /* If TLS, or TLS not offered, called with the EHLO response in the buffer.
 Check it for a LIMITS keyword and parse values into the smtp context structure.
 
@@ -900,7 +900,7 @@ write_ehlo_cache_entry(smtp_context * sx)
 {
 open_db dbblock, * dbm_file;
 
-# ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifndef DISABLE_ESMTP_LIMITS
 sx->ehlo_resp.limit_mail = sx->peer_limit_mail;
 sx->ehlo_resp.limit_rcpt = sx->peer_limit_rcpt;
 sx->ehlo_resp.limit_rcptdom = sx->peer_limit_rcptdom;
@@ -912,7 +912,7 @@ if ((dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
   dbdata_ehlo_resp er = { .data = sx->ehlo_resp };
 
   HDEBUG(D_transport)
-# ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifndef DISABLE_ESMTP_LIMITS
     if (sx->ehlo_resp.limit_mail || sx->ehlo_resp.limit_rcpt || sx->ehlo_resp.limit_rcptdom)
       debug_printf("writing clr %04x/%04x cry %04x/%04x lim %05d/%05d/%05d\n",
 	sx->ehlo_resp.cleartext_features, sx->ehlo_resp.cleartext_auths,
@@ -979,7 +979,7 @@ else
   else
     {
     DEBUG(D_transport)
-# ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifndef DISABLE_ESMTP_LIMITS
       if (er->data.limit_mail || er->data.limit_rcpt || er->data.limit_rcptdom)
 	debug_printf("EHLO response bits from cache:"
 	  " cleartext 0x%04x/0x%04x crypted 0x%04x/0x%04x lim %05d/%05d/%05d\n",
@@ -994,7 +994,7 @@ else
 	  er->data.crypted_features, er->data.crypted_auths);
 
     sx->ehlo_resp = er->data;
-# ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifndef DISABLE_ESMTP_LIMITS
     ehlo_cache_limits_apply(sx);
 # endif
     dbfn_close(dbm_file);
@@ -1120,7 +1120,7 @@ if (pending_EHLO)
 	| OPTION_CHUNKING | OPTION_PRDR | OPTION_DSN | OPTION_PIPE | OPTION_SIZE
 	| OPTION_UTF8 | OPTION_EARLY_PIPE
 	);
-# ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifndef DISABLE_ESMTP_LIMITS
   if (tls_out.active.sock >= 0 || !(peer_offered & OPTION_TLS))
     ehlo_response_limits_read(sx);
 # endif
@@ -1147,7 +1147,7 @@ if (pending_EHLO)
 
     return OK;		/* just carry on */
     }
-# ifdef EXPERIMENTAL_ESMTP_LIMITS
+# ifndef DISABLE_ESMTP_LIMITS
     /* If we are handling LIMITS, compare the actual EHLO LIMITS values with the
     cached values and invalidate cache if different.  OK to carry on with
     connect since values are advisory. */
@@ -2305,7 +2305,7 @@ if (!continue_hostname)
 
   sx->cctx.tls_ctx = NULL;
   sx->inblock.cctx = sx->outblock.cctx = &sx->cctx;
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
   sx->peer_limit_mail = sx->peer_limit_rcpt = sx->peer_limit_rcptdom =
 #endif
   sx->avoid_option = sx->peer_offered = smtp_peer_options = 0;
@@ -2607,7 +2607,7 @@ goto SEND_QUIT;
 	  )
 #endif
 	);
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
       if (tls_out.active.sock >= 0 || !(sx->peer_offered & OPTION_TLS))
 	{
 	ehlo_response_limits_read(sx);
@@ -2672,7 +2672,7 @@ else
   sx->inblock.cctx = sx->outblock.cctx = &sx->cctx;
   smtp_command = big_buffer;
   sx->peer_offered = smtp_peer_options;
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
   /* Limits passed by cmdline over exec. */
   ehlo_limits_apply(sx,
 		    sx->peer_limit_mail = continue_limit_mail,
@@ -3000,7 +3000,7 @@ if (   !continue_hostname
       sx->ehlo_resp.crypted_features = sx->peer_offered;
 #endif
 
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
     if (tls_out.active.sock >= 0 || !(sx->peer_offered & OPTION_TLS))
       {
       ehlo_response_limits_read(sx);
@@ -3423,7 +3423,7 @@ sw_mrc_t
 smtp_write_mail_and_rcpt_cmds(smtp_context * sx, int * yield)
 {
 address_item * addr;
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 address_item * restart_addr = NULL;
 #endif
 int address_count, pipe_limit;
@@ -3517,7 +3517,7 @@ for (addr = sx->first_addr, address_count = 0, pipe_limit = 100;
   BOOL no_flush;
   const uschar * rcpt_addr;
 
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
   if (  sx->single_rcpt_domain					/* restriction on domains */
      && address_count > 0					/* not first being sent */
      && Ustrcmp(addr->domain, sx->first_addr->domain) != 0	/* dom diff from first */
@@ -3606,7 +3606,7 @@ for (addr = sx->first_addr, address_count = 0, pipe_limit = 100;
     }
   }      /* Loop for next address */
 
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 sx->next_addr = restart_addr ? restart_addr : addr;
 #else
 sx->next_addr = addr;
@@ -3790,7 +3790,7 @@ uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 smtp_context * sx = store_get(sizeof(*sx), GET_TAINTED);	/* tainted, for the data buffers */
 BOOL pass_message = FALSE;
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 BOOL mail_limit = FALSE;
 #endif
 #ifdef SUPPORT_DANE
@@ -4674,7 +4674,7 @@ DEBUG(D_transport)
     sx->send_rset, f.continue_more, yield, sx->first_addr ? "not " : "");
 
 if (sx->completed_addr && sx->ok && sx->send_quit)
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
   if (mail_limit = continue_sequence >= sx->max_mail)
     {
     DEBUG(D_transport)
@@ -4735,7 +4735,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 
 	if (sx->first_addr)		/* More addresses still to be sent */
 	  {				/*   for this message              */
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 	  /* Any that we marked as skipped, reset to do now */
 	  for (address_item * a = sx->first_addr; a; a = a->next)
 	    if (a->transport_return == SKIP)
@@ -4810,7 +4810,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
   */
 	if (sx->ok && transport_pass_socket(tblock->name, host->name,
 	      host->address, new_message_id, socket_fd
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 	      , sx->peer_limit_mail, sx->peer_limit_rcpt, sx->peer_limit_rcptdom
 #endif
 	      ))
@@ -4987,7 +4987,7 @@ if (dane_held)
   }
 #endif
 
-#ifdef EXPERIMENTAL_ESMTP_LIMITS
+#ifndef DISABLE_ESMTP_LIMITS
 if (mail_limit && sx->first_addr)
   {
   /* Reset the sequence count since we closed the connection.  This is flagged

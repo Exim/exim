@@ -10,6 +10,8 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -55,6 +57,8 @@ LOG: 10HmaX-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -99,6 +103,8 @@ LOG: 10HmaY-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -144,6 +150,8 @@ LOG: 10HmaZ-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -188,6 +196,8 @@ LOG: 10HmbA-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
@@ -261,6 +271,8 @@ LOG: 10HmbB-000000005vi-0000 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>>  list element: @
 >>>  list element: @[]
 >>> test.ex in helo_lookup_domains? no (end of list)
+>>>  list element: *
+>>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts?
 >>>  list element: *
