@@ -24,8 +24,6 @@ typedef struct pcre_list {
   struct pcre_list *	next;
 } pcre_list;
 
-uschar regex_match_string_buffer[1024];
-
 extern FILE *mime_stream;
 extern uschar *mime_current_boundary;
 
@@ -85,9 +83,7 @@ for (pcre_list * ri = re_list_head; ri; ri = ri->next)
     int save_pool = store_pool;
     store_pool = POOL_PERM;
 
-    Ustrncpy(regex_match_string_buffer, ri->pcre_text,
-	      sizeof(regex_match_string_buffer)-1);
-    regex_match_string = regex_match_string_buffer;
+    regex_match_string = string_copy(ri->pcre_text);
 
     for (int nn = 1; nn < n; nn++)
       {
