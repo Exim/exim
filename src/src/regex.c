@@ -63,6 +63,13 @@ if (cntp) *cntp = cnt;
 return re_list_head;
 }
 
+
+/* Check list of REs against buffer, returning OK for (first) match,
+else FAIL.  On match return allocated result strings in regex_vars[]. 
+
+We use the perm-pool for that, so that our caller can release
+other allocations.
+*/
 static int
 matcher(pcre_list * re_list_head, uschar * linebuffer, int len)
 {
@@ -75,6 +82,9 @@ for (pcre_list * ri = re_list_head; ri; ri = ri->next)
   /* try matcher on the line */
   if ((n = pcre2_match(ri->re, (PCRE2_SPTR)linebuffer, len, 0, 0, md, pcre_gen_mtc_ctx)) > 0)
     {
+    int save_pool = store_pool;
+    store_pool = POOL_PERM;
+
     Ustrncpy(regex_match_string_buffer, ri->pcre_text,
 	      sizeof(regex_match_string_buffer)-1);
     regex_match_string = regex_match_string_buffer;
@@ -87,6 +97,7 @@ for (pcre_list * ri = re_list_head; ri; ri = ri->next)
       regex_vars[nn-1] = string_copyn(linebuffer + ovec[off], len);
       }
 
+    store_pool = save_pool;
     return OK;
     }
   }
