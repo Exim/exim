@@ -16,6 +16,8 @@ Version 4.98
     timestamp but no extiry timestamp.  Code by Simon Arlott; testsuite
     additions by jgh.
 
+ 4. The recipients_max main option is now expanded.
+
 Version 4.97
 ------------
 

@@ -84,3 +84,26 @@ EHLO tester
 ??? 250
 ****
 killdaemon
+# recipients_max is expanded (at least for smtp)
+exim -DSERVER=server -DRCPT_MSG='${if eq {$sender_host_address}{HOSTIPV4}{4}{100}}' -bd -oX PORT_D
+****
+client HOSTIPV4 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-LIMITS MAILMAX=1000 RCPTMAX=4
+??? 250
+****
+killdaemon
+exim -DSERVER=server -DRCPT_MSG='${if eq {$sender_host_address}{HOSTIPV4}{4}{100}}' -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-LIMITS MAILMAX=1000 RCPTMAX=100
+??? 250
+****
+killdaemon

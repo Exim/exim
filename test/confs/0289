@@ -8,7 +8,11 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 acl_smtp_rcpt = accept
+.ifdef DYNAMIC_OPTION
+recipients_max = ${if def:sender_host_address {1}{2}}
+.else
 recipients_max = 1
+.endif
 
 
 # ------ Routers ------

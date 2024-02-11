@@ -895,7 +895,8 @@ extern uschar *recipient_data;         /* lookup data for recipients */
 extern uschar *recipient_unqualified_hosts; /* Permitted unqualified recipients */
 extern uschar *recipient_verify_failure; /* What went wrong */
 extern int     recipients_list_max;    /* Maximum number fitting in list */
-extern int     recipients_max;         /* Max permitted */
+extern uschar *recipients_max;         /* Max permitted */
+extern int     recipients_max_expanded;
 extern BOOL    recipients_max_reject;  /* If TRUE, reject whole message */
 extern const pcre2_code *regex_AUTH;         /* For recognizing AUTH settings */
 extern const pcre2_code  *regex_check_dns_names; /* For DNS name checking */

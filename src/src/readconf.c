@@ -293,7 +293,7 @@ static optionlist optionlist_config[] = {
   { "received_header_text",     opt_stringptr,   {&received_header_text} },
   { "received_headers_max",     opt_int,         {&received_headers_max} },
   { "recipient_unqualified_hosts", opt_stringptr, {&recipient_unqualified_hosts} },
-  { "recipients_max",           opt_int,         {&recipients_max} },
+  { "recipients_max",           opt_stringptr,   {&recipients_max} },
   { "recipients_max_reject",    opt_bool,        {&recipients_max_reject} },
 #ifdef LOOKUP_REDIS
   { "redis_servers",            opt_stringptr,   {&redis_servers} },

@@ -1204,6 +1204,8 @@ static void
 give_local_error(int errcode, uschar *text1, uschar *text2, int error_rc,
   FILE *f, header_line *hptr)
 {
+DEBUG(D_all) debug_printf("%s%s\n", text2, text1);
+
 if (error_handling == ERRORS_SENDER)
   {
   error_block eblock;
@@ -2622,12 +2624,12 @@ if (extract_recip)
     if ((h->type == htype_to || h->type == htype_cc || h->type == htype_bcc) &&
         (!contains_resent_headers || strncmpic(h->text, US"resent-", 7) == 0))
       {
-      uschar *s = Ustrchr(h->text, ':') + 1;
+      uschar * s = Ustrchr(h->text, ':') + 1;
       while (isspace(*s)) s++;
 
       f.parse_allow_group = TRUE;          /* Allow address group syntax */
 
-      while (*s != 0)
+      while (*s)
         {
         uschar *ss = parse_find_address_end(s, FALSE);
         uschar *recipient, *errmess, *pp;
@@ -2635,7 +2637,7 @@ if (extract_recip)
 
         /* Check on maximum */
 
-        if (recipients_max > 0 && ++rcount > recipients_max)
+        if (recipients_max_expanded > 0 && ++rcount > recipients_max_expanded)
           give_local_error(ERRMESS_TOOMANYRECIP, US"too many recipients",
             US"message rejected: ", error_rc, stdin, NULL);
           /* Does not return */

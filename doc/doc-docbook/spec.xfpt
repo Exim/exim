@@ -17472,15 +17472,25 @@ or if the message was submitted locally (not using TCP/IP), and the &%-bnq%&
 option was not set.
 
 
-.option recipients_max main integer 50000
+.option recipients_max main integer&!! 50000
 .cindex "limit" "number of recipients"
 .cindex "recipient" "maximum number"
-If this option is set greater than zero, it specifies the maximum number of
+If the value resulting from expanding this option
+is set greater than zero, it specifies the maximum number of
 original recipients for any message. Additional recipients that are generated
 by aliasing or forwarding do not count. SMTP messages get a 452 response for
 all recipients over the limit; earlier recipients are delivered as normal.
 Non-SMTP messages with too many recipients are failed, and no deliveries are
 done.
+
+.new
+For SMTP message the expansion is done after the connection is
+accepted (but before any SMTP conversation) and may depend on
+the IP addresses and port numbers of the connection.
+&*Note*&: If an expansion is used for the option,
+care should be taken that a resonable value results for
+non-SMTP messages.
+.wen
 
 .cindex "RCPT" "maximum number of incoming"
 &*Note*&: The RFCs specify that an SMTP server should accept at least 100

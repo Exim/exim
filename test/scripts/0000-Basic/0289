@@ -13,3 +13,14 @@ From: me
 Body
 .
 ****
+#
+# recipients_max should be expanded (here, for non-SMTP)
+exim -DDYNAMIC_OPTION -odi userx usery
+From: me
+.
+****
+1
+exim -odi -DDYNAMIC_OPTION userx usery userz
+From: me
+.
+****

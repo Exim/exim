@@ -561,7 +561,7 @@ switch(ident)
 
   case ERRMESS_TOOMANYRECIP:
   log_write(0, LOG_MAIN, "%s: too many recipients (max set to %d)", msg,
-    recipients_max);
+    recipients_max_expanded);
   break;
 
   case ERRMESS_LOCAL_SCAN:

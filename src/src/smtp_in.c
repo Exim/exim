@@ -1879,7 +1879,7 @@ while (done <= 0)
       if (recipients_max > 0 && recipients_count + 1 > recipients_max)
 	/* The function moan_smtp_batch() does not return. */
 	moan_smtp_batch(smtp_cmd_buffer, "%s too many recipients",
-	  recipients_max_reject? "552": "452");
+	  recipients_max_reject ? "552": "452");
 
       /* Apply SMTP rewrite, then extract address. Don't allow "<>" as a
       recipient address */
@@ -2540,6 +2540,11 @@ if (!f.sender_host_unknown)
   fl.helo_accept_junk = verify_check_host(&helo_accept_junk_hosts) == OK;
   }
 
+/* Expand recipients_max, if needed */
+ {
+  uschar * rme = expand_string(recipients_max);
+  recipients_max_expanded = atoi(CCS rme);
+ }
 /* For batch SMTP input we are now done. */
 
 if (smtp_batched_input) return TRUE;
@@ -4055,14 +4060,14 @@ while (done <= 0)
 	  }
 
 #ifndef DISABLE_ESMTP_LIMITS
-	if (  (smtp_mailcmd_max > 0 || recipients_max)
+	if (  (smtp_mailcmd_max > 0 || recipients_max_expanded > 0)
 	   && verify_check_host(&limits_advertise_hosts) == OK)
 	  {
 	  g = string_fmt_append(g, "%.3s-LIMITS", smtp_code);
 	  if (smtp_mailcmd_max > 0)
 	    g = string_fmt_append(g, " MAILMAX=%d", smtp_mailcmd_max);
-	  if (recipients_max)
-	    g = string_fmt_append(g, " RCPTMAX=%d", recipients_max);
+	  if (recipients_max > 9)
+	    g = string_fmt_append(g, " RCPTMAX=%d", recipients_max_expanded);
 	  g = string_catn(g, US"\r\n", 2);
 	  }
 #endif
@@ -4900,7 +4905,8 @@ while (done <= 0)
 
       /* Check maximum allowed */
 
-      if (rcpt_count+1 < 0 || rcpt_count > recipients_max && recipients_max > 0)
+      if (  rcpt_count+1 < 0
+         || rcpt_count > recipients_max_expanded && recipients_max_expanded > 0)
 	{
 	if (recipients_max_reject)
 	  {

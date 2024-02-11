@@ -5339,6 +5339,7 @@ if (expansion_test)
 
   else if (expansion_test_message)
     {
+    uschar * rme = expand_string(recipients_max);
     int save_stdin = dup(0);
     int fd = Uopen(expansion_test_message, O_RDONLY, 0);
     if (fd < 0)
@@ -5347,6 +5348,7 @@ if (expansion_test)
     (void) dup2(fd, 0);
     filter_test = FTEST_USER;      /* Fudge to make it look like filter test */
     message_ended = END_NOTENDED;
+    recipients_max_expanded = atoi(CCS rme);
     read_message_body(receive_msg(extract_recipients));
     message_linecount += body_linecount;
     (void)dup2(save_stdin, 0);
@@ -5753,8 +5755,8 @@ for (BOOL more = TRUE; more; )
     int rc;
     if ((rc = smtp_setup_msg()) > 0)
       {
-      if (real_sender_address != NULL &&
-          !receive_check_set_sender(sender_address))
+      if (   real_sender_address
+	  && !receive_check_set_sender(sender_address))
         {
         sender_address = raw_sender = real_sender_address;
         sender_address_unrewritten = NULL;
@@ -5801,9 +5803,11 @@ for (BOOL more = TRUE; more; )
 
   else
     {
-    int rcount = 0;
-    int count = argc - recipients_arg;
+    uschar * rme = expand_string(recipients_max);
+    int rcount = 0, count = argc - recipients_arg;
     const uschar ** list = argv + recipients_arg;
+
+    recipients_max_expanded = atoi(CCS rme);
 
     /* These options cannot be changed dynamically for non-SMTP messages */
 
@@ -5831,15 +5835,19 @@ for (BOOL more = TRUE; more; )
       while (*s)
         {
         BOOL finished = FALSE;
-        uschar *recipient;
-        uschar *ss = parse_find_address_end(s, FALSE);
+        uschar * recipient;
+        uschar * ss = parse_find_address_end(s, FALSE);
 
         if (*ss == ',') *ss = 0; else finished = TRUE;
 
         /* Check max recipients - if -t was used, these aren't recipients */
 
-        if (recipients_max > 0 && ++rcount > recipients_max &&
-            !extract_recipients)
+        if (  recipients_max_expanded > 0 && ++rcount > recipients_max_expanded
+	   && !extract_recipients)
+	  {
+	  DEBUG(D_all) debug_printf("excess reipients (max %d)\n",
+	    recipients_max_expanded);
+
           if (error_handling == ERRORS_STDERR)
             {
             fprintf(stderr, "exim: too many recipients\n");
@@ -5849,6 +5857,7 @@ for (BOOL more = TRUE; more; )
             return
               moan_to_sender(ERRMESS_TOOMANYRECIP, NULL, NULL, stdin, TRUE)?
                 errors_sender_rc : EXIT_FAILURE;
+	  }
 
 #ifdef SUPPORT_I18N
 	{
@@ -5873,6 +5882,10 @@ for (BOOL more = TRUE; more; )
           }
 
         if (!recipient)
+	  {
+	  DEBUG(D_all) debug_printf("bad recipient address \"%s\": %s\n",
+	    string_printing(list[i]), errmess);
+
           if (error_handling == ERRORS_STDERR)
             {
             fprintf(stderr, "exim: bad recipient address \"%s\": %s\n",
@@ -5889,6 +5902,7 @@ for (BOOL more = TRUE; more; )
               moan_to_sender(ERRMESS_BADARGADDRESS, &eblock, NULL, stdin, TRUE)?
                 errors_sender_rc : EXIT_FAILURE;
             }
+	  }
 
         receive_add_recipient(string_copy_taint(recipient, GET_TAINTED), -1);
         s = ss;

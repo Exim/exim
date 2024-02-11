@@ -85,3 +85,29 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250
 <<< 250-8BITMIME
 End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO tester
+??? 250-
+<<< 250-myhost.test.ex Hello tester [ip4.ip4.ip4.ip4]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-LIMITS MAILMAX=1000 RCPTMAX=4
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=4
+??? 250
+<<< 250-8BITMIME
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO tester
+??? 250-
+<<< 250-myhost.test.ex Hello tester [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-LIMITS MAILMAX=1000 RCPTMAX=100
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=100
+??? 250
+<<< 250-8BITMIME
+End of script
