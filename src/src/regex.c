@@ -118,7 +118,6 @@ regex(const uschar ** listptr, BOOL cacheable)
 unsigned long mbox_size;
 FILE * mbox_file;
 pcre_list * re_list_head;
-uschar * linebuffer;
 long f_pos = 0;
 int ret = FAIL, cnt, lcount = REGEX_LOOPCOUNT_STORE_RESET;
 rmark reset_point;
@@ -151,16 +150,15 @@ reset_point = store_mark();
   if ((re_list_head = compile(*listptr, cacheable, &cnt)))
     {
     /* match each line against all regexes */
-    linebuffer = store_get(32767, GET_TAINTED);
-    while (fgets(CS linebuffer, 32767, mbox_file))
+    while (fgets(CS big_buffer, big_buffer_size, mbox_file))
       {
       if (  mime_stream && mime_current_boundary		/* check boundary */
-	 && Ustrncmp(linebuffer, "--", 2) == 0
-	 && Ustrncmp((linebuffer+2), mime_current_boundary,
+	 && Ustrncmp(big_buffer, "--", 2) == 0
+	 && Ustrncmp((big_buffer+2), mime_current_boundary,
 		      Ustrlen(mime_current_boundary)) == 0)
 	break;						/* found boundary */
 
-      if ((ret = matcher(re_list_head, linebuffer, (int)Ustrlen(linebuffer))) == OK)
+      if ((ret = matcher(re_list_head, big_buffer, (int)Ustrlen(big_buffer))) == OK)
 	break;
 
       if ((lcount -= cnt) <= 0)
