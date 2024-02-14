@@ -1876,7 +1876,8 @@ while (done <= 0)
 
       /* Check maximum number allowed */
 
-      if (recipients_max > 0 && recipients_count + 1 > recipients_max)
+      if (  recipients_max_expanded > 0
+	 && recipients_count + 1 > recipients_max_expanded)
 	/* The function moan_smtp_batch() does not return. */
 	moan_smtp_batch(smtp_cmd_buffer, "%s too many recipients",
 	  recipients_max_reject ? "552": "452");
@@ -4066,7 +4067,7 @@ while (done <= 0)
 	  g = string_fmt_append(g, "%.3s-LIMITS", smtp_code);
 	  if (smtp_mailcmd_max > 0)
 	    g = string_fmt_append(g, " MAILMAX=%d", smtp_mailcmd_max);
-	  if (recipients_max > 9)
+	  if (recipients_max_expanded > 0)
 	    g = string_fmt_append(g, " RCPTMAX=%d", recipients_max_expanded);
 	  g = string_catn(g, US"\r\n", 2);
 	  }
