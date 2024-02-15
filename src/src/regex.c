@@ -120,7 +120,6 @@ FILE * mbox_file;
 pcre_list * re_list_head;
 long f_pos = 0;
 int ret = FAIL, cnt, lcount = REGEX_LOOPCOUNT_STORE_RESET;
-rmark reset_point;
 
 regex_vars_clear();
 
@@ -144,11 +143,11 @@ else
   mbox_file = mime_stream;
   }
 
-reset_point = store_mark();
-  {
   /* precompile our regexes */
   if ((re_list_head = compile(*listptr, cacheable, &cnt)))
     {
+    rmark reset_point = store_mark();
+
     /* match each line against all regexes */
     while (fgets(CS big_buffer, big_buffer_size, mbox_file))
       {
@@ -167,9 +166,9 @@ reset_point = store_mark();
 	lcount = REGEX_LOOPCOUNT_STORE_RESET;
 	}
       }
+
+    store_reset(reset_point);
     }
-  }
-store_reset(reset_point);
 
 if (!mime_stream)
   (void)fclose(mbox_file);
