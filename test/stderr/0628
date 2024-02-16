@@ -20,6 +20,7 @@
 01:01:01 p1237  Process p1237 is ready for new message
 01:01:01 p1237  smtp_setup_msg entered
 01:01:01 p1237  SMTP<< QUIT
+01:01:01 p1237  try option acl_smtp_quit
 01:01:01 p1237  SMTP>> 221 myhost.test.ex closing connection
 01:01:01 p1237  LOG: smtp_connection MAIN
 01:01:01 p1237    SMTP connection from (test.ex) [127.0.0.1] D=qqs closed by QUIT
@@ -67,7 +68,10 @@
 01:01:01 p1239  routing dest@test.ex
 01:01:01 p1239  --------> r1 router <--------
 01:01:01 p1239  local_part=dest domain=test.ex
+01:01:01 p1239  try option router_home_directory
+01:01:01 p1239  try option set
 01:01:01 p1239  calling r1 router
+01:01:01 p1239  try option qualify_domain
 01:01:01 p1239  rda_interpret (string): ':blackhole:'
 01:01:01 p1239  expanded: ':blackhole:'
 01:01:01 p1239  file is not a filter file
@@ -134,6 +138,7 @@
 01:01:01 p1240  Process p1240 is ready for new message
 01:01:01 p1240  smtp_setup_msg entered
 01:01:01 p1240  SMTP<< QUIT
+01:01:01 p1240  try option acl_smtp_quit
 01:01:01 p1240  SMTP>> 221 myhost.test.ex closing connection
 01:01:01 p1240  LOG: smtp_connection MAIN
 01:01:01 p1240    SMTP connection from (test.ex) [127.0.0.1] D=qqs closed by QUIT
@@ -169,7 +174,10 @@
 01:01:01 p1241  routing dest2@test.ex
 01:01:01 p1241  --------> r1 router <--------
 01:01:01 p1241  local_part=dest2 domain=test.ex
+01:01:01 p1241  try option router_home_directory
+01:01:01 p1241  try option set
 01:01:01 p1241  calling r1 router
+01:01:01 p1241  try option qualify_domain
 01:01:01 p1241  rda_interpret (string): ':blackhole:'
 01:01:01 p1241  expanded: ':blackhole:'
 01:01:01 p1241  file is not a filter file

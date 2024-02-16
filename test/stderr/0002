@@ -4,6 +4,9 @@ environment after trimming:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
  ╭considering: primary_hostname: $primary_hostname
  ├───────text: primary_hostname: 
  ├considering: $primary_hostname
@@ -146,6 +149,9 @@ environment after trimming:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
  /considering: primary_hostname: $primary_hostname
  |-------text: primary_hostname: 
  |considering: $primary_hostname
@@ -280,6 +286,9 @@ environment after trimming:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
  ╭considering: -oMa  sender_host_address = $sender_host_address
  ├───────text: -oMa  sender_host_address = 
  ├considering: $sender_host_address
@@ -356,6 +365,9 @@ environment after trimming:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
  ╭considering: -oMa  sender_host_address = $sender_host_address
  ├───────text: -oMa  sender_host_address = 
  ├considering: $sender_host_address

@@ -6,6 +6,9 @@ adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
  ╭considering: ${perl{foo}{arg1}}
   ╭considering: foo}{arg1}}
   ├───────text: foo

@@ -47,6 +47,7 @@ rf_get_transport(uschar *tpname, transport_instance **tpptr, address_item *addr,
 uschar *ss;
 BOOL expandable;
 
+GET_OPTION("transport");
 if (!tpname)
   {
   if (!require_name) return TRUE;

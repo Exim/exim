@@ -1574,6 +1574,7 @@ uschar * timestamp = expand_string(US"${tod_full}");
 header_line * received_header= header_list;
 
 if (recipients_count == 1) received_for = recipients_list[0].address;
+GET_OPTION("received_header_text");
 received = expand_string(received_header_text);
 received_for = NULL;
 
@@ -2201,8 +2202,9 @@ OVERSIZE:
     {
     if (!f.sender_address_forced)
       {
-      uschar *uucp_sender = expand_string(uucp_from_sender);
-      if (!uucp_sender)
+      uschar * uucp_sender;
+      GET_OPTION("uucp_from_sender");
+      if (!(uucp_sender = expand_string(uucp_from_sender)))
         log_write(0, LOG_MAIN|LOG_PANIC,
           "expansion of \"%s\" failed after matching "
           "\"From \" line: %s", uucp_from_sender, expand_string_message);
@@ -2821,6 +2823,7 @@ if (  !msgid_header
 
   /* Permit only letters, digits, dots, and hyphens in the domain */
 
+  GET_OPTION("message_id_header_domain");
   if (message_id_domain)
     {
     uschar *new_id_domain = expand_string(message_id_domain);
@@ -2842,6 +2845,7 @@ if (  !msgid_header
   /* Permit all characters except controls and RFC 2822 specials in the
   additional text part. */
 
+  GET_OPTION("message_id_header_text");
   if (message_id_text)
     {
     uschar *new_id_text = expand_string(message_id_text);
@@ -3517,6 +3521,7 @@ else
       dkim_exim_verify_finish();
 
       /* Check if we must run the DKIM ACL */
+      GET_OPTION("acl_smtp_dkim");
       if (acl_smtp_dkim && dkim_verify_signers && *dkim_verify_signers)
         {
         uschar * dkim_verify_signers_expanded =
@@ -3606,11 +3611,14 @@ else
 #endif /* DISABLE_DKIM */
 
 #ifdef WITH_CONTENT_SCAN
-    if (  recipients_count > 0
-       && acl_smtp_mime
-       && !run_mime_acl(acl_smtp_mime, &smtp_yield, &smtp_reply, &blackholed_by)
-       )
-      goto TIDYUP;
+    if (recipients_count > 0)
+      {
+      GET_OPTION("acl_smtp_mime");
+      if (acl_smtp_mime
+	 && !run_mime_acl(acl_smtp_mime, &smtp_yield, &smtp_reply, &blackholed_by)
+	 )
+	goto TIDYUP;
+      }
 #endif /* WITH_CONTENT_SCAN */
 
 #ifdef SUPPORT_DMARC
@@ -3618,67 +3626,73 @@ else
 #endif
 
 #ifndef DISABLE_PRDR
-    if (prdr_requested && recipients_count > 1 && acl_smtp_data_prdr)
+    if (prdr_requested && recipients_count > 1)
       {
-      int all_pass = OK;
-      int all_fail = FAIL;
+      GET_OPTION("acl_smtp_data_prdr");
+      if (acl_smtp_data_prdr)
+	{
+	int all_pass = OK;
+	int all_fail = FAIL;
 
-      smtp_printf("353 PRDR content analysis beginning\r\n", SP_MORE);
-      /* Loop through recipients, responses must be in same order received */
-      for (unsigned int c = 0; recipients_count > c; c++)
-        {
-	const uschar * addr = recipients_list[c].address;
-	uschar * msg= US"PRDR R=<%s> %s";
-	uschar * code;
-        DEBUG(D_receive)
-          debug_printf("PRDR processing recipient %s (%d of %d)\n",
-                       addr, c+1, recipients_count);
-        rc = acl_check(ACL_WHERE_PRDR, addr,
-                       acl_smtp_data_prdr, &user_msg, &log_msg);
-
-        /* If any recipient rejected content, indicate it in final message */
-        all_pass |= rc;
-        /* If all recipients rejected, indicate in final message */
-        all_fail &= rc;
-
-        switch (rc)
-          {
-          case OK: case DISCARD: code = US"250"; break;
-          case DEFER:            code = US"450"; break;
-          default:               code = US"550"; break;
-          }
-	if (user_msg != NULL)
-	  smtp_user_msg(code, user_msg);
-	else
+	smtp_printf("353 PRDR content analysis beginning\r\n", SP_MORE);
+	/* Loop through recipients, responses must be in same order received */
+	for (unsigned int c = 0; recipients_count > c; c++)
 	  {
-	  switch (rc)
-            {
-            case OK: case DISCARD:
-              msg = string_sprintf(CS msg, addr, "acceptance");        break;
-            case DEFER:
-              msg = string_sprintf(CS msg, addr, "temporary refusal"); break;
-            default:
-              msg = string_sprintf(CS msg, addr, "refusal");           break;
-            }
-          smtp_user_msg(code, msg);
-	  }
-	if (log_msg)       log_write(0, LOG_MAIN, "PRDR %s %s", addr, log_msg);
-	else if (user_msg) log_write(0, LOG_MAIN, "PRDR %s %s", addr, user_msg);
-	else               log_write(0, LOG_MAIN, "%s", CS msg);
+	  const uschar * addr = recipients_list[c].address;
+	  uschar * msg= US"PRDR R=<%s> %s";
+	  uschar * code;
+	  DEBUG(D_receive)
+	    debug_printf("PRDR processing recipient %s (%d of %d)\n",
+			 addr, c+1, recipients_count);
+	  rc = acl_check(ACL_WHERE_PRDR, addr,
+			 acl_smtp_data_prdr, &user_msg, &log_msg);
 
-	if (rc != OK) { receive_remove_recipient(addr); c--; }
-        }
-      /* Set up final message, used if data acl gives OK */
-      smtp_reply = string_sprintf("%s id=%s message %s",
-		       all_fail == FAIL ? US"550" : US"250",
-		       message_id,
-                       all_fail == FAIL
-		         ? US"rejected for all recipients"
-			 : all_pass == OK
-			   ? US"accepted"
-			   : US"accepted for some recipients");
-      if (recipients_count == 0)
-	goto NOT_ACCEPTED;
+	  /* If any recipient rejected content, indicate it in final message */
+	  all_pass |= rc;
+	  /* If all recipients rejected, indicate in final message */
+	  all_fail &= rc;
+
+	  switch (rc)
+	    {
+	    case OK: case DISCARD: code = US"250"; break;
+	    case DEFER:            code = US"450"; break;
+	    default:               code = US"550"; break;
+	    }
+	  if (user_msg != NULL)
+	    smtp_user_msg(code, user_msg);
+	  else
+	    {
+	    switch (rc)
+	      {
+	      case OK: case DISCARD:
+		msg = string_sprintf(CS msg, addr, "acceptance");        break;
+	      case DEFER:
+		msg = string_sprintf(CS msg, addr, "temporary refusal"); break;
+	      default:
+		msg = string_sprintf(CS msg, addr, "refusal");           break;
+	      }
+	    smtp_user_msg(code, msg);
+	    }
+	  if (log_msg)       log_write(0, LOG_MAIN, "PRDR %s %s", addr, log_msg);
+	  else if (user_msg) log_write(0, LOG_MAIN, "PRDR %s %s", addr, user_msg);
+	  else               log_write(0, LOG_MAIN, "%s", CS msg);
+
+	  if (rc != OK) { receive_remove_recipient(addr); c--; }
+	  }
+	/* Set up final message, used if data acl gives OK */
+	smtp_reply = string_sprintf("%s id=%s message %s",
+			 all_fail == FAIL ? US"550" : US"250",
+			 message_id,
+			 all_fail == FAIL
+			   ? US"rejected for all recipients"
+			   : all_pass == OK
+			     ? US"accepted"
+			     : US"accepted for some recipients");
+	if (recipients_count == 0)
+	  goto NOT_ACCEPTED;
+	}
+      else
+	prdr_requested = FALSE;
       }
     else
       prdr_requested = FALSE;
@@ -3687,6 +3701,7 @@ else
     /* Check the recipients count again, as the MIME ACL might have changed
     them. */
 
+    GET_OPTION("acl_smtp_data");
     if (acl_smtp_data && recipients_count > 0)
       {
       rc = acl_check(ACL_WHERE_DATA, NULL, acl_smtp_data, &user_msg, &log_msg);
@@ -3724,6 +3739,7 @@ else
     {
 
 #ifdef WITH_CONTENT_SCAN
+    GET_OPTION("acl_not_smtp_mime");
     if (  acl_not_smtp_mime
        && !run_mime_acl(acl_not_smtp_mime, &smtp_yield, &smtp_reply,
           &blackholed_by)
@@ -3731,9 +3747,10 @@ else
       goto TIDYUP;
 #endif /* WITH_CONTENT_SCAN */
 
+    GET_OPTION("acl_not_smtp");
     if (acl_not_smtp)
       {
-      uschar *user_msg, *log_msg;
+      uschar * user_msg, * log_msg;
       f.authentication_local = TRUE;
       rc = acl_check(ACL_WHERE_NOTSMTP, NULL, acl_not_smtp, &user_msg, &log_msg);
       if (rc == DISCARD)

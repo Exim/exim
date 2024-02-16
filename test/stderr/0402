@@ -14,11 +14,16 @@ seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
+try option smtp_active_hostname
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@test.ex>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
+try option message_size_limit
 Sender: CALLER@test.ex
 Recipients:
   CALLER@test.ex
@@ -26,9 +31,12 @@ Recipients:
   userz
   rd+CALLER
   rd+usery
+try option acl_not_smtp_start
 search_tidyup called
 >>Headers received:
 
+try option message_id_header_domain
+try option message_id_header_text
 qualify & rewrite recipients list
 rewrite rules on sender address
 qualify and rewrite headers
@@ -45,6 +53,7 @@ Data file written for message 10HmaX-000000005vi-0000
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+try option received_header_text
  ╭considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -380,6 +389,8 @@ P Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
+try option acl_not_smtp_mime
+try option acl_not_smtp
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -513,6 +524,7 @@ checking local_parts
 usery in "usery"?
  list element: usery
  usery in "usery"? yes (matched "usery")
+try option router_home_directory
  ╭considering: /non-exist/$domain
  ├───────text: /non-exist/
  ├considering: $domain
@@ -521,17 +533,23 @@ usery in "usery"?
  ├──expanding: /non-exist/$domain
  ╰─────result: /non-exist/test.ex
             ╰──(tainted)
+try option set
 calling r5 router
+try option qualify_domain
 rda_interpret (string): 'TESTSUITE/test-mail/junk'
 expanded: 'TESTSUITE/test-mail/junk'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail/junk
 extract item: TESTSUITE/test-mail/junk
+try option file_transport
+try option transport
 set transport ft1
 r5 router generated TESTSUITE/test-mail/junk
   pipe, file, or autoreply
   errors_to=NULL transport=ft1
   uid=unset gid=unset home=/non-exist/$local_part
+try option unseen
+try option unseen
 routed by r5 router
   envelope to: rd+usery@test.ex
   transport: <none>
@@ -565,6 +583,7 @@ checking local_parts
 CALLER in "CALLER"?
  list element: CALLER
  CALLER in "CALLER"? yes (matched "CALLER")
+try option router_home_directory
  ╭considering: /non-exist/$local_part
  ├───────text: /non-exist/
  ├considering: $local_part
@@ -573,17 +592,23 @@ CALLER in "CALLER"?
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/CALLER
             ╰──(tainted)
+try option set
 calling r4 router
+try option qualify_domain
 rda_interpret (string): 'TESTSUITE/test-mail/junk'
 expanded: 'TESTSUITE/test-mail/junk'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail/junk
 extract item: TESTSUITE/test-mail/junk
+try option file_transport
+try option transport
 set transport ft1
 r4 router generated TESTSUITE/test-mail/junk
   pipe, file, or autoreply
   errors_to=NULL transport=ft1
   uid=unset gid=unset home=/non-exist/CALLER
+try option unseen
+try option unseen
 routed by r4 router
   envelope to: rd+CALLER@test.ex
   transport: <none>
@@ -609,6 +634,7 @@ checking local_parts
 userz in "userz"?
  list element: userz
  userz in "userz"? yes (matched "userz")
+try option router_home_directory
  ╭considering: /non-exist/$domain
  ├───────text: /non-exist/
  ├considering: $domain
@@ -617,14 +643,18 @@ userz in "userz"?
  ├──expanding: /non-exist/$domain
  ╰─────result: /non-exist/test.ex
             ╰──(tainted)
+try option set
 calling r3 router
 r3 router called for userz@test.ex
   domain = test.ex
+try option transport
 set transport t2
 queued for t2 transport: local_part = userz
 domain = test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=userz
+try option unseen
+try option unseen
 routed by r3 router
   envelope to: userz@test.ex
   transport: t2
@@ -643,6 +673,7 @@ checking local_parts
 usery in "usery"?
  list element: usery
  usery in "usery"? yes (matched "usery")
+try option router_home_directory
  ╭considering: /non-exist/$domain
  ├───────text: /non-exist/
  ├considering: $domain
@@ -651,14 +682,18 @@ usery in "usery"?
  ├──expanding: /non-exist/$domain
  ╰─────result: /non-exist/test.ex
             ╰──(tainted)
+try option set
 calling r2 router
 r2 router called for usery@test.ex
   domain = test.ex
+try option transport
 set transport t1
 queued for t1 transport: local_part = usery
 domain = test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=usery
+try option unseen
+try option unseen
 routed by r2 router
   envelope to: usery@test.ex
   transport: t1
@@ -670,6 +705,7 @@ checking local_parts
 CALLER in "CALLER"?
  list element: CALLER
  CALLER in "CALLER"? yes (matched "CALLER")
+try option router_home_directory
  ╭considering: /non-exist/$local_part
  ├───────text: /non-exist/
  ├considering: $local_part
@@ -678,14 +714,18 @@ CALLER in "CALLER"?
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/CALLER
             ╰──(tainted)
+try option set
 calling r1 router
 r1 router called for CALLER@test.ex
   domain = test.ex
+try option transport
 set transport t1
 queued for t1 transport: local_part = CALLER
 domain = test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=CALLER
+try option unseen
+try option unseen
 routed by r1 router
   envelope to: CALLER@test.ex
   transport: t1
@@ -723,6 +763,9 @@ search_tidyup called
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
+try option max_parallel
+try option return_path
+try option home_directory
  ╭considering: /non-exist/$local_part
  ├───────text: /non-exist/
  ├considering: $local_part
@@ -731,7 +774,13 @@ no retry data available
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/usery
             ╰──(tainted)
+try option current_directory
 search_tidyup called
+try option quota
+try option quota_filecount
+try option quota_warn_threshold
+try option mailbox_size
+try option mailbox_filecount
 changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail/junk> transport=ft1
   uid=CALLER_UID gid=CALLER_GID pid=p1236
   home=/non-exist/usery current=/
@@ -752,6 +801,7 @@ hitch name: TESTSUITE/test-mail/junk.lock.test.ex.dddddddd.pppppppp
 lock file created
 mailbox TESTSUITE/test-mail/junk is locked
 writing to file TESTSUITE/test-mail/junk
+try option message_prefix
  ╭considering: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
  
  ├───────text: From 
@@ -795,6 +845,7 @@ writing to file TESTSUITE/test-mail/junk
 writing data block fd=dddd size=sss timeout=0
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
+try option message_suffix
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
@@ -812,7 +863,16 @@ LOG: MAIN
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
+try option max_parallel
+try option return_path
+try option home_directory
+try option current_directory
 search_tidyup called
+try option quota
+try option quota_filecount
+try option quota_warn_threshold
+try option mailbox_size
+try option mailbox_filecount
 changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail/junk> transport=ft1
   uid=CALLER_UID gid=CALLER_GID pid=p1237
   home=/non-exist/CALLER current=/
@@ -833,6 +893,7 @@ hitch name: TESTSUITE/test-mail/junk.lock.test.ex.dddddddd.pppppppp
 lock file created
 mailbox TESTSUITE/test-mail/junk is locked
 writing to file TESTSUITE/test-mail/junk
+try option message_prefix
  ╭considering: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
  
  ├───────text: From 
@@ -876,6 +937,7 @@ writing to file TESTSUITE/test-mail/junk
 writing data block fd=dddd size=sss timeout=0
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
+try option message_suffix
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
@@ -893,7 +955,16 @@ LOG: MAIN
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
+try option max_parallel
+try option return_path
+try option home_directory
+try option current_directory
 search_tidyup called
+try option quota
+try option quota_filecount
+try option quota_warn_threshold
+try option mailbox_size
+try option mailbox_filecount
 changed uid/gid: local delivery to CALLER <CALLER@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=p1238
   home=/non-exist/CALLER current=/
@@ -919,6 +990,9 @@ LOG: MAIN
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
+try option max_parallel
+try option return_path
+try option home_directory
  ╭considering: /non-exist/$local_part
  ├───────text: /non-exist/
  ├considering: $local_part
@@ -927,7 +1001,13 @@ no retry data available
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/usery
             ╰──(tainted)
+try option current_directory
 search_tidyup called
+try option quota
+try option quota_filecount
+try option quota_warn_threshold
+try option mailbox_size
+try option mailbox_filecount
 changed uid/gid: local delivery to usery <usery@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=p1239
   home=/non-exist/usery current=/
@@ -953,6 +1033,9 @@ LOG: MAIN
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
+try option max_parallel
+try option return_path
+try option home_directory
  ╭considering: /$local_part
  ├───────text: /
  ├considering: $local_part
@@ -961,7 +1044,13 @@ no retry data available
  ├──expanding: /$local_part
  ╰─────result: /userz
             ╰──(tainted)
+try option current_directory
 search_tidyup called
+try option quota
+try option quota_filecount
+try option quota_warn_threshold
+try option mailbox_size
+try option mailbox_filecount
 changed uid/gid: local delivery to userz <userz@test.ex> transport=t2
   uid=CALLER_UID gid=CALLER_GID pid=p1240
   home=/userz current=/

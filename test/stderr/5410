@@ -4,9 +4,16 @@ environment after trimming:
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
+try option smtp_active_hostname
  in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
+try option message_size_limit
+try option acl_smtp_connect
+try option smtp_banner
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ├──────value: myhost.test.ex
  ├considering:  ESMTP Exim $version_number $tod_full
@@ -21,7 +28,12 @@ LOG: smtp_connection MAIN
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  list element: *
   in limits_advertise_hosts? yes (matched "*")
+try option spf_smtp_comment_template
+try option acl_smtp_helo
  in dsn_advertise_hosts? no (option unset)
+try option acl_smtp_etrn
+try option acl_smtp_vrfy
+try option acl_smtp_expn
  in pipelining_advertise_hosts?
  list element: *
   in pipelining_advertise_hosts? yes (matched "*")
@@ -29,6 +41,8 @@ LOG: smtp_connection MAIN
  in chunking_advertise_hosts? no (end of list)
  list element: *
   in tls_advertise_hosts? yes (matched "*")
+try option acl_smtp_mail
+try option acl_smtp_rcpt
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
   ╭considering: SERVER}{server}{queue}{cutthrough}}
   ├───────text: SERVER
@@ -77,6 +91,7 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
@@ -99,9 +114,13 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... 127.0.0.1 in hosts_try_fastopen?
+try option unseen
+try option interface
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... try option dscp
+127.0.0.1 in hosts_try_fastopen?
  list element: 
  connected
+try option helo_data
  ╭considering: $primary_hostname
  ├──────value: myhost.test.ex
  ├──expanding: $primary_hostname
@@ -117,6 +136,7 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
+try option host_name_extract
  ╭considering: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ╭considering: $host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──────value: 127.0.0.1
@@ -236,6 +256,7 @@ cmd buf flush ddd bytes
 using PIPELINING
 not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
+try option authenticated_sender
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP>> RCPT TO:<userx@domain.com>
 cmd buf flush ddd bytes
@@ -245,14 +266,18 @@ sync_responses expect rcpt for userx@domain.com
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
+try option acl_smtp_predata
 processing "accept" (TESTSUITE/test-config 57)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
+try option message_id_header_domain
+try option message_id_header_text
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+try option received_header_text
  ╭considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -602,6 +627,9 @@ end of inline ACL: ACCEPT
             ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
+try option acl_smtp_dkim
+try option acl_smtp_mime
+try option acl_smtp_data
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -618,6 +646,7 @@ LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
 LOG: MAIN
   Completed
+try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -627,9 +656,16 @@ environment after trimming:
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
+try option smtp_active_hostname
  in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
+try option message_size_limit
+try option acl_smtp_connect
+try option smtp_banner
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ├──────value: myhost.test.ex
  ├considering:  ESMTP Exim $version_number $tod_full
@@ -644,7 +680,12 @@ LOG: smtp_connection MAIN
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  list element: *
   in limits_advertise_hosts? yes (matched "*")
+try option spf_smtp_comment_template
+try option acl_smtp_helo
  in dsn_advertise_hosts? no (option unset)
+try option acl_smtp_etrn
+try option acl_smtp_vrfy
+try option acl_smtp_expn
  in pipelining_advertise_hosts?
  list element: *
   in pipelining_advertise_hosts? yes (matched "*")
@@ -652,6 +693,8 @@ LOG: smtp_connection MAIN
  in chunking_advertise_hosts? no (end of list)
  list element: *
   in tls_advertise_hosts? yes (matched "*")
+try option acl_smtp_mail
+try option acl_smtp_rcpt
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
   ╭considering: SERVER}{server}{queue}{cutthrough}}
   ├───────text: SERVER
@@ -700,6 +743,7 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
@@ -722,9 +766,13 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... 127.0.0.1 in hosts_try_fastopen?
+try option unseen
+try option interface
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... try option dscp
+127.0.0.1 in hosts_try_fastopen?
  list element: 
  connected
+try option helo_data
  ╭considering: $primary_hostname
  ├──────value: myhost.test.ex
  ├──expanding: $primary_hostname
@@ -740,6 +788,7 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
+try option host_name_extract
  ╭considering: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ╭considering: $host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──────value: 127.0.0.1
@@ -809,6 +858,7 @@ cmd buf flush ddd bytes
 using PIPELINING
 not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
+try option authenticated_sender
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP>> RCPT TO:<usery@domain.com>
 cmd buf flush ddd bytes
@@ -818,14 +868,18 @@ sync_responses expect rcpt for usery@domain.com
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
+try option acl_smtp_predata
 processing "accept" (TESTSUITE/test-config 57)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
+try option message_id_header_domain
+try option message_id_header_text
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+try option received_header_text
  ╭considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -1175,6 +1229,9 @@ end of inline ACL: ACCEPT
             ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
+try option acl_smtp_dkim
+try option acl_smtp_mime
+try option acl_smtp_data
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -1191,6 +1248,7 @@ LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
 LOG: MAIN
   Completed
+try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -1200,9 +1258,16 @@ environment after trimming:
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
+try option smtp_active_hostname
  in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
+try option message_size_limit
+try option acl_smtp_connect
+try option smtp_banner
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ├──────value: myhost.test.ex
  ├considering:  ESMTP Exim $version_number $tod_full
@@ -1217,7 +1282,12 @@ LOG: smtp_connection MAIN
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  list element: *
   in limits_advertise_hosts? yes (matched "*")
+try option spf_smtp_comment_template
+try option acl_smtp_helo
  in dsn_advertise_hosts? no (option unset)
+try option acl_smtp_etrn
+try option acl_smtp_vrfy
+try option acl_smtp_expn
  in pipelining_advertise_hosts?
  list element: *
   in pipelining_advertise_hosts? yes (matched "*")
@@ -1225,6 +1295,8 @@ LOG: smtp_connection MAIN
  in chunking_advertise_hosts? no (end of list)
  list element: *
   in tls_advertise_hosts? yes (matched "*")
+try option acl_smtp_mail
+try option acl_smtp_rcpt
  ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
   ╭considering: SERVER}{server}{queue}{cutthrough}}
   ├───────text: SERVER
@@ -1273,6 +1345,7 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
@@ -1295,9 +1368,13 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... 127.0.0.1 in hosts_try_fastopen?
+try option unseen
+try option interface
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... try option dscp
+127.0.0.1 in hosts_try_fastopen?
  list element: 
  connected
+try option helo_data
  ╭considering: $primary_hostname
  ├──────value: myhost.test.ex
  ├──expanding: $primary_hostname
@@ -1313,6 +1390,7 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
+try option host_name_extract
  ╭considering: ${if and {{match{$host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ╭considering: $host}{.outlook.com\$}} {match{$item}{\N^250-([\w.]+)\s\N}}} {$1}}
   ├──────value: 127.0.0.1
@@ -1382,6 +1460,7 @@ cmd buf flush ddd bytes
 using PIPELINING
 not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
+try option authenticated_sender
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP>> RCPT TO:<usery@domain.com>
 cmd buf flush ddd bytes
@@ -1391,14 +1470,18 @@ sync_responses expect rcpt for usery@domain.com
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
+try option acl_smtp_predata
 processing "accept" (TESTSUITE/test-config 57)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
+try option message_id_header_domain
+try option message_id_header_text
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+try option received_header_text
  ╭considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -1748,6 +1831,9 @@ end of inline ACL: ACCEPT
             ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
+try option acl_smtp_dkim
+try option acl_smtp_mime
+try option acl_smtp_data
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -1764,6 +1850,7 @@ LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
 LOG: MAIN
   Completed
+try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -18,6 +18,7 @@
 static BOOL
 dkt_sign_fail(struct ob_dkim * dkim, int * errp)
 {
+GET_OPTION("dkim_strict");
 if (dkim->dkim_strict)
   {
   uschar * dkim_strict_result = expand_string(dkim->dkim_strict);

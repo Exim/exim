@@ -368,6 +368,7 @@ if (addr->transport == cutthrough.addr.transport)
 
       host_af = Ustrchr(host->address, ':') ? AF_INET6 : AF_INET;
 
+      GET_OPTION("interface");
       if (  !smtp_get_interface(tf->interface, host_af, addr, &interface,
 	      US"callout")
 	 || !smtp_get_port(tf->port, addr, &port, US"callout")
@@ -579,10 +580,14 @@ else
   with a random local part, ensure that such a local part is available. If not,
   log the fact, but carry on without randomising. */
 
-  if (options & vopt_callout_random  &&  callout_random_local_part)
-    if (!(random_local_part = expand_string(callout_random_local_part)))
+  if (options & vopt_callout_random)
+    {
+    GET_OPTION("callout_random_local_part");
+    if (  callout_random_local_part
+       && !(random_local_part = expand_string(callout_random_local_part)))
       log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
         "callout_random_local_part: %s", expand_string_message);
+    }
 
   /* Compile regex' used by client-side smtp */
 
@@ -660,6 +665,7 @@ coding means skipping this whole loop and doing the append separately.  */
     deliver_domain = addr->domain;
     transport_name = addr->transport->name;
 
+    GET_OPTION("interface");
     if (  !smtp_get_interface(tf->interface, host_af, addr, &interface,
             US"callout")
        || !smtp_get_port(tf->port, addr, &port, US"callout")

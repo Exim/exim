@@ -1088,6 +1088,7 @@ if (pending_BANNER)
   /*XXX EXPERIMENTAL_ESMTP_LIMITS ? */
 
 # ifndef DISABLE_TLS_RESUME
+  GET_OPTION("host_name_extract");
   s = ((smtp_transport_options_block *)sx->conn_args.ob)->host_name_extract;
   if (!s) s = HNE_DEFAULT;
   ehlo_response_lbserver(sx, s);
@@ -1769,6 +1770,7 @@ uschar * local_authenticated_sender = authenticated_sender;
     authenticated_sender, ob->authenticated_sender, f.smtp_authenticated?"Y":"N");
 #endif
 
+GET_OPTION("authenticated_sender");
 if (ob->authenticated_sender)
   {
   uschar * new = expand_string(ob->authenticated_sender);
@@ -2374,6 +2376,7 @@ PIPE_CONNECT_RETRY:
   For early-pipe, we are ok if binding to a local interface; otherwise (if
   $sending_ip_address is seen in helo_data) we disabled early-pipe above. */
 
+  GET_OPTION("helo_data");
   if (sx->helo_data)
     if (!(sx->helo_data = expand_string(sx->helo_data)))
       if (sx->verify)
@@ -2501,6 +2504,7 @@ goto SEND_QUIT;
     an LB.  Call this anyway, so that a dummy host_name_extract option value can
     force resumption attempts. */
 
+    GET_OPTION("host_name_extract");
     if (!(s = ob->host_name_extract)) s = US"never-LB";
     ehlo_response_lbserver(sx, s);
 # endif
@@ -2629,6 +2633,7 @@ goto SEND_QUIT;
 	}
 #endif
 #ifndef DISABLE_TLS_RESUME
+      GET_OPTION("host_name_extract");
       if (!(s = ob->host_name_extract)) s = HNE_DEFAULT;
       ehlo_response_lbserver(sx, s);
 #endif
@@ -2837,13 +2842,17 @@ if (tls_out.active.sock >= 0)
   {
   uschar * greeting_cmd;
 
-  if (!sx->helo_data && !(sx->helo_data = expand_string(ob->helo_data)))
+  if (!sx->helo_data)
     {
-    uschar *message = string_sprintf("failed to expand helo_data: %s",
-      expand_string_message);
-    set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, &sx->delivery_start);
-    yield = DEFER;
-    goto SEND_QUIT;
+    GET_OPTION("helo_data");
+    if (!(sx->helo_data = expand_string(ob->helo_data)))
+      {
+      uschar *message = string_sprintf("failed to expand helo_data: %s",
+	expand_string_message);
+      set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, &sx->delivery_start);
+      yield = DEFER;
+      goto SEND_QUIT;
+      }
     }
 
 #ifndef DISABLE_PIPE_CONNECT
@@ -3094,6 +3103,7 @@ if (sx->addrlist->prop.utf8_msg)
   /* If the transport sets a downconversion mode it overrides any set by ACL
   for the message. */
 
+  GET_OPTION("utf8_downconvert");
   if ((s = ob->utf8_downconvert))
     {
     if (!(s = expand_string(s)))
@@ -5565,8 +5575,9 @@ retry_non_continued:
 
     host_af = Ustrchr(host->address, ':') ? AF_INET6 : AF_INET;
       {
-      uschar * s = ob->interface;
-      if (s && *s)
+      uschar * s;
+      GET_OPTION("interface");
+      if ((s = ob->interface) && *s)
 	{
 	if (!smtp_get_interface(s, host_af, addrlist, &interface, tid))
 	  return FALSE;

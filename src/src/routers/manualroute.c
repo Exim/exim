@@ -118,8 +118,8 @@ if (ob->hai_code < 0)
 
 /* One of route_list or route_data must be specified */
 
-if ((ob->route_list == NULL && ob->route_data == NULL) ||
-    (ob->route_list != NULL && ob->route_data != NULL))
+if (  !ob->route_list && !ob->route_data
+   || ob->route_list && ob->route_data)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
     "route_list or route_data (but not both) must be specified",
     rblock->name);
@@ -291,6 +291,7 @@ string, decline. */
 
 else
   {
+  GET_OPTION("route_data");
   if (!(route_item = rf_expand_data(addr, ob->route_data, &rc)))
     return rc;
   (void) parse_route_item(route_item, NULL, &hostlist, &options);

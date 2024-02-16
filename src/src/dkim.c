@@ -624,6 +624,7 @@ if (dkim->dot_stuffed)
 
 store_pool = POOL_MAIN;
 
+GET_OPTION("dkim_domain");
 if ((s = dkim->dkim_domain) && !(dkim_domain = expand_cstring(s)))
   /* expansion error, do not send message. */
   { errwhen = US"dkim_domain"; goto expand_bad; }
@@ -652,6 +653,7 @@ if (dkim_domain)
   /* Set $dkim_selector expansion variable to each selector in list,
   for this domain. */
 
+  GET_OPTION("dkim_selector");
   if (!(dkim_sel = expand_string(dkim->dkim_selector)))
     { errwhen = US"dkim_selector"; goto expand_bad; }
 
@@ -669,6 +671,7 @@ if (dkim_domain)
 
     /* Get canonicalization to use */
 
+    GET_OPTION("dkim_canon");
     dkim_canon_expanded = dkim->dkim_canon
       ? expand_string(dkim->dkim_canon) : US"relaxed";
     if (!dkim_canon_expanded)	/* expansion error, do not send message. */
@@ -686,6 +689,7 @@ if (dkim_domain)
       pdkim_canon = PDKIM_CANON_RELAXED;
       }
 
+    GET_OPTION("dkim_sign_headers");
     if (  dkim->dkim_sign_headers
        && !(dkim_sign_headers_expanded = expand_string(dkim->dkim_sign_headers)))
       { errwhen = US"dkim_sign_header"; goto expand_bad; }
@@ -693,6 +697,7 @@ if (dkim_domain)
 
     /* Get private key to use. */
 
+    GET_OPTION("dkim_private_key");
     if (!(dkim_private_key_expanded = expand_string(dkim->dkim_private_key)))
       { errwhen = US"dkim_private_key"; goto expand_bad; }
 
@@ -707,15 +712,18 @@ if (dkim_domain)
 	     expand_file_big_buffer(dkim_private_key_expanded)))
       goto bad;
 
+    GET_OPTION("dkim_hash");
     if (!(dkim_hash_expanded = expand_string(dkim->dkim_hash)))
       { errwhen = US"dkim_hash"; goto expand_bad; }
 
+    GET_OPTION("dkim_identity");
     if (dkim->dkim_identity)
       if (!(dkim_identity_expanded = expand_string(dkim->dkim_identity)))
 	{ errwhen = US"dkim_identity"; goto expand_bad; }
       else if (!*dkim_identity_expanded)
 	dkim_identity_expanded = NULL;
 
+    GET_OPTION("dkim_timestamps");
     if (dkim->dkim_timestamps)
       if (!(dkim_timestamps_expanded = expand_string(dkim->dkim_timestamps)))
 	{ errwhen = US"dkim_timestamps"; goto expand_bad; }

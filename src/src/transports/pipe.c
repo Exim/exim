@@ -315,6 +315,7 @@ argv = *argvptr;
 
 /* If allow_commands is set, see if the command is in the permitted list. */
 
+GET_OPTION("allow_commands");
 if (ob->allow_commands)
   {
   int sep = 0;
@@ -368,10 +369,11 @@ for it. */
 if (argv[0][0] != '/')
   {
   int sep = 0;
-  uschar *p;
-  const uschar *listptr = expand_string(ob->path);
+  uschar * p;
 
-  while ((p = string_nextinlist(&listptr, &sep, NULL, 0)))
+  GET_OPTION("path");
+  for (const uschar * listptr = expand_string(ob->path);
+      p = string_nextinlist(&listptr, &sep, NULL, 0); )
     {
     struct stat statbuf;
     sprintf(CS big_buffer, "%.256s/%.256s", p, argv[0]);
@@ -550,6 +552,7 @@ if (testflag(addr, af_pfr) && addr->local_part[0] == '|')
     {
     /* Enables expansion of $address_pipe into separate arguments */
     setflag(addr, af_force_command);
+    GET_OPTION("commsnd");
     cmd = ob->cmd;
     expand_arguments = TRUE;
     expand_fail = PANIC;
@@ -563,6 +566,7 @@ if (testflag(addr, af_pfr) && addr->local_part[0] == '|')
     }
 else
   {
+  GET_OPTION("commsnd");
   cmd = ob->cmd;
   expand_arguments = TRUE;
   expand_fail = PANIC;
@@ -650,6 +654,7 @@ else if (timezone_string && timezone_string[0])
 
 /* Add any requested items */
 
+GET_OPTION("environment");
 if (envlist)
   if (!(envlist = expand_cstring(envlist)))
     {
@@ -796,9 +801,10 @@ transport_count = 0;
 
 /* First write any configured prefix information */
 
+GET_OPTION("message_prefix");
 if (ob->message_prefix)
   {
-  uschar *prefix = expand_string(ob->message_prefix);
+  uschar * prefix = expand_string(ob->message_prefix);
   if (!prefix)
     {
     addr->transport_return = f.search_find_defer? DEFER : PANIC;
@@ -838,9 +844,10 @@ if (!transport_write_message(&tctx, 0))
 
 /* Now any configured suffix */
 
+GET_OPTION("message_suffix");
 if (ob->message_suffix)
   {
-  uschar *suffix = expand_string(ob->message_suffix);
+  uschar * suffix = expand_string(ob->message_suffix);
   if (!suffix)
     {
     addr->transport_return = f.search_find_defer? DEFER : PANIC;

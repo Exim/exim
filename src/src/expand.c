@@ -8737,12 +8737,14 @@ Returns:     OK     value placed in rvalue
 */
 
 int
-exp_bool(address_item *addr,
-  uschar *mtype, uschar *mname, unsigned dbg_opt,
-  uschar *oname, BOOL bvalue,
-  uschar *svalue, BOOL *rvalue)
+exp_bool(address_item * addr,
+  uschar * mtype, uschar * mname, unsigned dbg_opt,
+  uschar * oname, BOOL bvalue,
+  uschar * svalue, BOOL * rvalue)
 {
-uschar *expanded;
+uschar * expanded;
+
+DEBUG(D_expand) debug_printf("try option %s\n", oname);
 if (!svalue) { *rvalue = bvalue; return OK; }
 
 if (!(expanded = expand_string(svalue)))

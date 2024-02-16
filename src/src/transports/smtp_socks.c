@@ -229,6 +229,7 @@ blob early_data;
 if (!timeout) timeout = 24*60*60;	/* use 1 day for "indefinite" */
 tmo = time(NULL) + timeout;
 
+GET_OPTION("socks_proxy");
 if (!(proxy_list = expand_string(ob->socks_proxy)))
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "Bad expansion for socks_proxy in %s",

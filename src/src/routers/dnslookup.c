@@ -151,14 +151,11 @@ host_item h;
 int rc;
 int widen_sep = 0;
 int whichrrs = HOST_FIND_BY_MX | HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
-dnslookup_router_options_block *ob =
+dnslookup_router_options_block * ob =
   (dnslookup_router_options_block *)(rblock->options_block);
-uschar *srv_service = NULL;
-uschar *widen = NULL;
-const uschar *pre_widen = addr->domain;
-const uschar *post_widen = NULL;
-const uschar *fully_qualified_name;
-const uschar *listptr;
+uschar * srv_service = NULL, * widen = NULL;
+const uschar * pre_widen = addr->domain, * post_widen = NULL;
+const uschar * fully_qualified_name, * listptr;
 uschar widen_buffer[256];
 
 DEBUG(D_route)
@@ -167,8 +164,8 @@ DEBUG(D_route)
 
 /* If an SRV check is required, expand the service name */
 
+GET_OPTION("check_srv");
 if (ob->check_srv)
-  {
   if (  !(srv_service = expand_string(ob->check_srv))
      && !f.expand_string_forcedfail)
     {
@@ -176,8 +173,8 @@ if (ob->check_srv)
       rblock->name, ob->check_srv, expand_string_message);
     return DEFER;
     }
-  else whichrrs |= HOST_FIND_BY_SRV;
-  }
+  else
+    whichrrs |= HOST_FIND_BY_SRV;
 
 /* Set up the first of any widening domains. The code further down copes with
 either pre- or post-widening, but at present there is no way to turn on

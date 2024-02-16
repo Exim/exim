@@ -5063,6 +5063,8 @@ for (i = 0;;)
         /* If a pattern for matching the gecos field was supplied, apply
         it and then expand the name string. */
 
+	GET_OPTION("gecos_pattern");
+	GET_OPTION("gecos_name");
         if (gecos_pattern && gecos_name)
           {
           const pcre2_code *re;
@@ -5108,6 +5110,7 @@ any setting of unknown_login overrides the actual name. */
 
 if (!originator_login || f.running_in_test_harness)
   {
+  GET_OPTION("unknown_login");
   if (unknown_login)
     {
     originator_login = expand_string(unknown_login);
@@ -5407,17 +5410,18 @@ for hosts that want to play several parts at once. We need to ensure that it is
 set for host checking, and for receiving messages. */
 
 smtp_active_hostname = primary_hostname;
-if (raw_active_hostname != NULL)
+GET_OPTION("smtp_active_hostname");
+if (raw_active_hostname)
   {
-  uschar *nah = expand_string(raw_active_hostname);
-  if (nah == NULL)
+  uschar * nah = expand_string(raw_active_hostname);
+  if (!nah)
     {
     if (!f.expand_string_forcedfail)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand \"%s\" "
         "(smtp_active_hostname): %s", raw_active_hostname,
         expand_string_message);
     }
-  else if (nah[0] != 0) smtp_active_hostname = nah;
+  else if (nah[0]) smtp_active_hostname = nah;
   }
 
 /* Handle host checking: this facility mocks up an incoming SMTP call from a
@@ -5675,6 +5679,7 @@ if (smtp_input)
 
 else
   {
+  GET_OPTION("message_size_limit");
   thismessage_size_limit = expand_string_integer(message_size_limit, TRUE);
   if (expand_string_message)
     if (thismessage_size_limit == -1)
@@ -5767,14 +5772,18 @@ for (BOOL more = TRUE; more; )
       the very end. The result of the ACL is ignored (as for other non-SMTP
       messages). It is run for its potential side effects. */
 
-      if (smtp_batched_input && acl_not_smtp_start != NULL)
-        {
-        uschar *user_msg, *log_msg;
-        f.enable_dollar_recipients = TRUE;
-        (void)acl_check(ACL_WHERE_NOTSMTP_START, NULL, acl_not_smtp_start,
-          &user_msg, &log_msg);
-        f.enable_dollar_recipients = FALSE;
-        }
+      if (smtp_batched_input)
+	{
+	GET_OPTION("acl_not_smtp_start");
+	if (acl_not_smtp_start)
+	  {
+	  uschar * user_msg, * log_msg;
+	  f.enable_dollar_recipients = TRUE;
+	  (void)acl_check(ACL_WHERE_NOTSMTP_START, NULL, acl_not_smtp_start,
+	    &user_msg, &log_msg);
+	  f.enable_dollar_recipients = FALSE;
+	  }
+	}
 
       /* Now get the data for the message */
 
@@ -5928,9 +5937,10 @@ for (BOOL more = TRUE; more; )
     ignored; rejecting here would just add complication, and it can just as
     well be done later. Allow $recipients to be visible in the ACL. */
 
+    GET_OPTION("acl_not_smtp_start");
     if (acl_not_smtp_start)
       {
-      uschar *user_msg, *log_msg;
+      uschar * user_msg, * log_msg;
       f.enable_dollar_recipients = TRUE;
       (void)acl_check(ACL_WHERE_NOTSMTP_START, NULL, acl_not_smtp_start,
         &user_msg, &log_msg);

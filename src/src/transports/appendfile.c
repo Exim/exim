@@ -178,18 +178,24 @@ static int
 appendfile_transport_setup(transport_instance *tblock, address_item *addrlist,
   transport_feedback *dummy, uid_t uid, gid_t gid, uschar **errmsg)
 {
-appendfile_transport_options_block *ob =
+appendfile_transport_options_block * ob =
   (appendfile_transport_options_block *)(tblock->options_block);
-uschar *q = ob->quota;
+uschar * q;
 double default_value = 0.0;
 
 if (ob->expand_maildir_use_size_file)
-	ob->maildir_use_size_file = expand_check_condition(ob->expand_maildir_use_size_file,
+  {
+  GET_OPTION("maildir_use_size_file");
+  ob->maildir_use_size_file =
+    expand_check_condition(ob->expand_maildir_use_size_file,
 		US"`maildir_use_size_file` in transport", tblock->name);
+  }
 
 /* Loop for quota, quota_filecount, quota_warn_threshold, mailbox_size,
 mailbox_filecount */
 
+GET_OPTION("quota");
+q = ob->quota;
 for (int i = 0; i < 5; i++)
   {
   double d = default_value;
@@ -258,6 +264,7 @@ for (int i = 0; i < 5; i++)
 	which = US"quota";
       ob->quota_value = (off_t)d;
       ob->quota_no_check = no_check;
+      GET_OPTION("quota_filecount");
       q = ob->quota_filecount;
       break;
 
@@ -266,6 +273,7 @@ for (int i = 0; i < 5; i++)
 	which = US"quota_filecount";
       ob->quota_filecount_value = (int)d;
       ob->quota_filecount_no_check = no_check;
+      GET_OPTION("quota_warn_threshold");
       q = ob->quota_warn_threshold;
       break;
 
@@ -273,6 +281,7 @@ for (int i = 0; i < 5; i++)
       if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4)
 	  which = US"quota_warn_threshold";
       ob->quota_warn_threshold_value = (off_t)d;
+      GET_OPTION("mailbox_size");
       q = ob->mailbox_size_string;
       default_value = -1.0;
       break;
@@ -281,6 +290,7 @@ for (int i = 0; i < 5; i++)
       if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4)
 	which = US"mailbox_size";;
       ob->mailbox_size_value = (off_t)d;
+      GET_OPTION("mailbox_filecount");
       q = ob->mailbox_filecount_string;
       break;
 
@@ -399,10 +409,10 @@ if (ob->dirname)
   if (ob->maildir_format && ob->mailstore_format)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s transport:\n  "
       "only one of maildir and mailstore may be specified", tblock->name);
-  if (ob->quota_filecount != NULL && ob->quota == NULL)
+  if (ob->quota_filecount != NULL && !ob->quota)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s transport:\n  "
       "quota must be set if quota_filecount is set", tblock->name);
-  if (ob->quota_directory != NULL && ob->quota == NULL)
+  if (ob->quota_directory != NULL && !ob->quota)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s transport:\n  "
       "quota must be set if quota_directory is set", tblock->name);
   }
@@ -1221,6 +1231,7 @@ if (!fdname)
   {
   if (!(fdname = ob->filename))
     {
+    GET_OPTION("directory");
     fdname = ob->dirname;
     isdirectory = TRUE;
     }
@@ -2234,6 +2245,7 @@ else
 
     /* Use an explicitly configured directory if set */
 
+    GET_OPTION("quota_directory");
     if (ob->quota_directory)
       {
       if (!(check_path = expand_string(ob->quota_directory)))
@@ -2431,6 +2443,7 @@ else
     DEBUG(D_transport)
       debug_printf("delivering in maildir format in %s\n", path);
 
+    GET_OPTION("maildir_tag");
     nametag = ob->maildir_tag;
 
     /* Check that nametag expands successfully; a hard failure causes a panic
@@ -2567,9 +2580,10 @@ else
 
     /* Write the envelope file, then close it. */
 
+    GET_OPTION("mailstore_prefix");
     if (ob->mailstore_prefix)
       {
-      uschar *s = expand_string(ob->mailstore_prefix);
+      uschar * s = expand_string(ob->mailstore_prefix);
       if (!s)
         {
         if (!f.expand_string_forcedfail)
@@ -2595,9 +2609,10 @@ else
     for (address_item * taddr = addr; taddr; taddr = taddr->next)
       fprintf(env_file, "%s@%s\n", taddr->local_part, taddr->domain);
 
+    GET_OPTION("mailstore_suffix");
     if (ob->mailstore_suffix)
       {
-      uschar *s = expand_string(ob->mailstore_suffix);
+      uschar * s = expand_string(ob->mailstore_suffix);
       if (!s)
         {
         if (!f.expand_string_forcedfail)
@@ -2757,18 +2772,21 @@ transport_newlines = 0;
 
 /* Write any configured prefix text first */
 
-if (yield == OK && ob->message_prefix && *ob->message_prefix)
+if (yield == OK)
   {
-  uschar *prefix = expand_string(ob->message_prefix);
-  if (!prefix)
-    {
-    errno = ERRNO_EXPANDFAIL;
-    addr->transport_return = PANIC;
-    addr->message = string_sprintf("Expansion of \"%s\" (prefix for %s "
-      "transport) failed", ob->message_prefix, tblock->name);
-    yield = DEFER;
-    }
-  else if (!transport_write_string(fd, "%s", prefix)) yield = DEFER;
+  uschar * prefix = ob->message_prefix;
+  GET_OPTION("message_prefix");
+  if (prefix && *prefix)
+    if (!(prefix = expand_string(prefix)))
+      {
+      errno = ERRNO_EXPANDFAIL;
+      addr->transport_return = PANIC;
+      addr->message = string_sprintf("Expansion of \"%s\" (prefix for %s "
+	"transport) failed", ob->message_prefix, tblock->name);
+      yield = DEFER;
+      }
+    else if (!transport_write_string(fd, "%s", prefix))
+      yield = DEFER;
   }
 
 /* If the use_bsmtp option is on, we need to write SMTP prefix information. The
@@ -2820,18 +2838,21 @@ if (yield == OK)
 
 /* Now a configured suffix. */
 
-if (yield == OK && ob->message_suffix && *ob->message_suffix)
+if (yield == OK)
   {
-  uschar *suffix = expand_string(ob->message_suffix);
-  if (!suffix)
-    {
-    errno = ERRNO_EXPANDFAIL;
-    addr->transport_return = PANIC;
-    addr->message = string_sprintf("Expansion of \"%s\" (suffix for %s "
-      "transport) failed", ob->message_suffix, tblock->name);
-    yield = DEFER;
-    }
-  else if (!transport_write_string(fd, "%s", suffix)) yield = DEFER;
+  uschar * suffix = ob->message_suffix;
+  GET_OPTION("message_suffix");
+  if (suffix && *suffix)
+    if (!(suffix = expand_string(suffix)))
+      {
+      errno = ERRNO_EXPANDFAIL;
+      addr->transport_return = PANIC;
+      addr->message = string_sprintf("Expansion of \"%s\" (suffix for %s "
+	"transport) failed", ob->message_suffix, tblock->name);
+      yield = DEFER;
+      }
+    else if (!transport_write_string(fd, "%s", suffix))
+      yield = DEFER;
   }
 
 /* If batch smtp, write the terminating dot. */

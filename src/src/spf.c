@@ -253,10 +253,13 @@ if (!(spf_server = SPF_server_new_dns(dc, debug)))
   DEBUG(D_receive) debug_printf("spf: SPF_server_new() failed.\n");
   return FALSE;
   }
-  /* Override the outdated explanation URL.
-  See https://www.mail-archive.com/mailop@mailop.org/msg08019.html
-  Used to work as "Please%_see%_http://www.open-spf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}",
-  but is broken now (May 18th, 2020) */
+
+/* Override the outdated explanation URL.
+See https://www.mail-archive.com/mailop@mailop.org/msg08019.html
+Used to work as "Please%_see%_http://www.open-spf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}",
+but is broken now (May 18th, 2020) */
+
+GET_OPTION("spf_smtp_comment_template");
 if (!(s = expand_string(spf_smtp_comment_template)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "expansion of spf_smtp_comment_template failed");
 

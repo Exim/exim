@@ -178,19 +178,17 @@ reply = store_get(256, GET_TAINTED);
 /* Build the query string to send. If not explicitly given, a default of
 "user@domain user@domain" is used. */
 
-if (ob->query == NULL)
+GET_OPTION("query");
+if (!ob->query)
   query = string_sprintf("%s@%s %s@%s", addr->local_part, addr->domain,
     addr->local_part, addr->domain);
 else
-  {
-  query = expand_string(ob->query);
-  if (query == NULL)
+  if (!(query = expand_string(ob->query)))
     {
     addr->message = string_sprintf("%s router: failed to expand %s: %s",
       rblock->name, ob->query, expand_string_message);
     return DEFER;
     }
-  }
 
 query_len = Ustrlen(query);
 DEBUG(D_route) debug_printf("%s router query is \"%s\"\n", rblock->name,
@@ -362,23 +360,24 @@ else
 /* If an explicit rerouting string is specified, expand it. Otherwise, use
 what was sent back verbatim. */
 
-if (ob->reroute != NULL)
+GET_OPTION("reroute");
+if (ob->reroute)
   {
   reroute = expand_string(ob->reroute);
   expand_nmax = -1;
-  if (reroute == NULL)
+  if (!reroute)
     {
     addr->message = string_sprintf("%s router: failed to expand %s: %s",
       rblock->name, ob->reroute, expand_string_message);
     return DEFER;
     }
   }
-else reroute = reply;
+else
+  reroute = reply;
 
 /* We should now have a new address in the form user@domain. */
 
-domain = Ustrchr(reroute, '@');
-if (domain == NULL)
+if (!(domain = Ustrchr(reroute, '@')))
   {
   log_write(0, LOG_MAIN, "%s router: reroute string %s is not of the form "
     "user@domain", rblock->name, reroute);

@@ -370,12 +370,11 @@ while (generated)
     in \N...\N to avoid expansion later. In Cygwin, home directories can
     contain $ characters. */
 
-    if (rblock->home_directory != NULL)
+    if (rblock->home_directory)
       next->home_dir = rblock->home_directory;
     else if (rblock->check_local_user)
       next->home_dir = string_sprintf("\\N%s\\N", pw->pw_dir);
-    else if (rblock->router_home_directory != NULL &&
-             testflag(addr, af_home_expanded))
+    else if (rblock->router_home_directory && testflag(addr, af_home_expanded))
       {
       next->home_dir = deliver_home;
       setflag(next, af_home_expanded);
@@ -395,6 +394,7 @@ while (generated)
     if (next->address[0] == '|')
       {
       address_pipe = next->address;
+      GET_OPTION("pipe_transport");
       if (rf_get_transport(ob->pipe_transport_name, &ob->pipe_transport,
           next, rblock->name, US"pipe_transport"))
         next->transport = ob->pipe_transport;
@@ -402,6 +402,7 @@ while (generated)
       }
     else if (next->address[0] == '>')
       {
+      GET_OPTION("reply_transport");
       if (rf_get_transport(ob->reply_transport_name, &ob->reply_transport,
           next, rblock->name, US"reply_transport"))
         next->transport = ob->reply_transport;
@@ -412,15 +413,19 @@ while (generated)
       address_file = next->address;
       if (next->address[len-1] == '/')
         {
+	GET_OPTION("directory_transport");
         if (rf_get_transport(ob->directory_transport_name,
             &(ob->directory_transport), next, rblock->name,
             US"directory_transport"))
           next->transport = ob->directory_transport;
         }
       else
+	{
+	GET_OPTION("file_transport");
         if (rf_get_transport(ob->file_transport_name, &ob->file_transport,
             next, rblock->name, US"file_transport"))
           next->transport = ob->file_transport;
+	}
 
       address_file = NULL;
       }
@@ -566,11 +571,15 @@ address. Otherwise, if a local qualify_domain is provided, set that up. */
 
 if (ob->qualify_preserve_domain)
   qualify_domain_recipient = addr->domain;
-else if (ob->qualify_domain)
+else
   {
-  uschar *new_qdr = rf_expand_data(addr, ob->qualify_domain, &xrc);
-  if (!new_qdr) return xrc;
-  qualify_domain_recipient = new_qdr;
+  GET_OPTION("qualify_domain");
+  if (ob->qualify_domain)
+    {
+    uschar *new_qdr = rf_expand_data(addr, ob->qualify_domain, &xrc);
+    if (!new_qdr) return xrc;
+    qualify_domain_recipient = new_qdr;
+    }
   }
 
 redirect.owners = ob->owners;

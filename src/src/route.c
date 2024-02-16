@@ -616,7 +616,7 @@ uschar *check;
 
 if (!s) return OK;
 
-DEBUG(D_route) debug_printf("checking require_files\n");
+DEBUG(D_route|D_expand) debug_printf("checking require_files\n");
 
 listptr = s;
 while ((check = string_nextinlist(&listptr, &sep, NULL, 0)))
@@ -637,7 +637,7 @@ while ((check = string_nextinlist(&listptr, &sep, NULL, 0)))
 
   /* Empty items are just skipped */
 
-  if (*ss == 0) continue;
+  if (!*ss) continue;
 
   /* If there are no slashes in the string, we have a user name or uid, with
   optional group/gid. */
@@ -651,9 +651,9 @@ while ((check = string_nextinlist(&listptr, &sep, NULL, 0)))
     /* If there's a comma, temporarily terminate the user name/number
     at that point. Then set the uid. */
 
-    if (comma != NULL) *comma = 0;
+    if (comma) *comma = 0;
     ok = route_finduser(ss, &pw, &uid);
-    if (comma != NULL) *comma = ',';
+    if (comma) *comma = ',';
 
     if (!ok)
       {
@@ -663,24 +663,22 @@ while ((check = string_nextinlist(&listptr, &sep, NULL, 0)))
 
     /* If there was no comma, the gid is that associated with the user. */
 
-    if (comma == NULL)
-      {
-      if (pw != NULL) gid = pw->pw_gid; else
+    if (!comma)
+      if (pw)
+	gid = pw->pw_gid;
+      else
         {
         *perror = string_sprintf("group missing after numerical uid %d for "
           "require_files", (int)uid);
         goto RETURN_DEFER;
         }
-      }
     else
-      {
       if (!route_findgroup(comma + 1, &gid))
         {
         *perror = string_sprintf("group \"%s\" for require_files not found\n",
           comma + 1);
         goto RETURN_DEFER;
         }
-      }
 
     /* Note that we have values set, and proceed to next item */
 
@@ -974,6 +972,7 @@ check_local_user before any subsequent expansions are done. Otherwise, $home
 could mean different things for different options, which would be extremely
 confusing. */
 
+GET_OPTION("router_home_directory");
 if (r->router_home_directory)
   {
   uschar * router_home = expand_string(r->router_home_directory);
@@ -1018,7 +1017,8 @@ if ((rc = check_files(r->require_files, perror)) != OK)
 
 if (r->condition)
   {
-  DEBUG(D_route) debug_printf("checking \"condition\" \"%.80s\"...\n", r->condition);
+  DEBUG(D_route|D_expand)
+    debug_printf("checking \"condition\" \"%.80s\"...\n", r->condition);
   if (!expand_check_condition(r->condition, r->name, US"router"))
     {
     if (f.search_find_defer)
@@ -1440,6 +1440,7 @@ const uschar * varlist = r->set;
 tree_node ** root = (tree_node **) &addr->prop.variables;
 int sep = ';';
 
+GET_OPTION("set");
 if (!varlist) return OK;
 
 /* Walk the varlist, creating variables */
@@ -1474,6 +1475,7 @@ for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
 
       /* Expand "more" if necessary; DEFER => an expansion failed */
 
+      GET_OPTION("more");
       yield = exp_bool(addr, US"router", r->name, D_route,
 		      US"more", r->more, r->expand_more, &more);
       if (yield != OK) return yield;
@@ -1754,7 +1756,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
   if (r->address_data)
     {
-    DEBUG(D_route) debug_printf("processing address_data\n");
+    DEBUG(D_route|D_expand) debug_printf("processing address_data\n");
     if (!(deliver_address_data = expand_string(r->address_data)))
       {
       if (f.expand_string_forcedfail)
@@ -1764,6 +1766,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
         /* Expand "more" if necessary; DEFER => an expansion failed */
 
+	GET_OPTION("more");
         yield = exp_bool(addr, US"router", r->name, D_route,
 			US"more", r->more, r->expand_more, &more);
         if (yield != OK) goto ROUTE_EXIT;
@@ -1872,6 +1875,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
     {
     /* Expand "more" if necessary */
 
+    GET_OPTION("more");
     yield = exp_bool(addr, US"router", r->name, D_route,
 		       	US"more", r->more, r->expand_more, &more);
     if (yield != OK) goto ROUTE_EXIT;
@@ -1897,18 +1901,21 @@ if (!r)
   HDEBUG(D_route) debug_printf("no more routers\n");
   if (!addr->message)
     {
-    uschar *message = US"Unrouteable address";
-    if (addr->router && addr->router->cannot_route_message)
+    uschar * message = US"Unrouteable address";
+    if (addr->router)
       {
-      uschar *expmessage = expand_string(addr->router->cannot_route_message);
-      if (!expmessage)
-        {
-        if (!f.expand_string_forcedfail)
-          log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
-            "cannot_route_message in %s router: %s", addr->router->name,
-            expand_string_message);
-        }
-      else message = expmessage;
+      uschar * s = addr->router->cannot_route_message;
+      GET_OPTION("cannot_route_message");
+      if (s)
+	{
+	if ((s = expand_string(s)))
+	  message = s;
+	else
+	  if (!f.expand_string_forcedfail)
+	    log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
+	      "cannot_route_message in %s router: %s", addr->router->name,
+	      expand_string_message);
+	}
       }
     addr->user_message = addr->message = message;
     }
@@ -1950,6 +1957,7 @@ networking, so it is included in the binary only if requested. */
 
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
 
+GET_OPTION("translate_ip_address");
 if (r->translate_ip_address)
   {
   int rc;
@@ -2008,6 +2016,7 @@ if (r->translate_ip_address)
 /* See if this is an unseen routing; first expand the option if necessary.
 DEFER can be given if the expansion fails */
 
+GET_OPTION("unseen");
 yield = exp_bool(addr, US"router", r->name, D_route,
 	       	US"unseen", r->unseen, r->expand_unseen, &unseen);
 if (yield != OK) goto ROUTE_EXIT;

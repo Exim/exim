@@ -287,6 +287,7 @@ if (curr_uid != root_uid && (uid != curr_uid || gid != curr_gid))
 
 /* Set up the command to run */
 
+GET_OPTION("command");
 if (!transport_set_up_command(&argvptr, /* anchor for arg list */
     ob->command,                        /* raw command */
     TSUC_EXPAND_ARGS,                   /* arguments expanded but must not be tainted */

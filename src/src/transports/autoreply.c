@@ -314,20 +314,21 @@ if (addr->reply)
   }
 else
   {
-  uschar *oncerepeat = ob->once_repeat;
+  uschar * oncerepeat;
 
   DEBUG(D_transport) debug_printf("taking data from transport\n");
-  from = ob->from;
-  reply_to = ob->reply_to;
-  to = ob->to;
-  cc = ob->cc;
-  bcc = ob->bcc;
-  subject = ob->subject;
-  headers = ob->headers;
-  text = ob->text;
-  file = ob->file;
-  logfile = ob->logfile;
-  oncelog = ob->oncelog;
+  GET_OPTION("once_repeat");	oncerepeat = ob->once_repeat;
+  GET_OPTION("from"); 		from = ob->from;
+  GET_OPTION("reply_to");	reply_to = ob->reply_to;
+  GET_OPTION("to");		to = ob->to;
+  GET_OPTION("cc");		cc = ob->cc;
+  GET_OPTION("bcc");		bcc = ob->bcc;
+  GET_OPTION("subject");	subject = ob->subject;
+  GET_OPTION("headers"); 	headers = ob->headers;
+  GET_OPTION("text");		text = ob->text;
+  GET_OPTION("file");		file = ob->file;
+  GET_OPTION("log");		logfile = ob->logfile;
+  GET_OPTION("once");		oncelog = ob->oncelog;
   file_expand = ob->file_expand;
   return_message = ob->return_message;
 

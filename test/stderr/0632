@@ -7,9 +7,13 @@ adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
 daemon_smtp_port overridden by -oX:
   <: 1225
 creating notifier socket
+try option notifier_socket
  ╭considering: $spool_directory/exim_daemon_notify
  ├──────value: TESTSUITE/spool
  ├considering: /exim_daemon_notify
@@ -22,11 +26,17 @@ listening on all interfaces (IPv4) port PORT_D
 pid written to TESTSUITE/spool/exim-daemon.pid
 LOG: MAIN
   exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
+try option spf_smtp_comment_template
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 Connection request from 127.0.0.1 port sssss
+try option smtp_accept_max_per_host
 search_tidyup called
+p1235 try option smtp_active_hostname
 p1235 Process p1235 is handling incoming connection from [127.0.0.1]
+p1235 try option message_size_limit
+p1235 try option acl_smtp_connect
+p1235 try option smtp_banner
 p1235  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
 p1235  ├──────value: myhost.test.ex
 p1235  ├considering:  ESMTP Exim $version_number $tod_full
@@ -40,9 +50,13 @@ p1235  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
 p1235  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
 p1235  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 p1235 Process p1235 is ready for new message
+p1235 try option acl_smtp_helo
+p1235 try option acl_smtp_mail
+p1235 try option acl_smtp_rcpt
 p1235 compiled caseless RE '^nomatch_list' not found in local cache
 p1235 compiled RE '^nomatch_list' saved in local cache
 p1235 sending RE '^nomatch_list' to daemon
+p1235 try option notifier_socket
 p1235  ╭considering: $spool_directory/exim_daemon_notify
 p1235  ├──────value: TESTSUITE/spool
 p1235  ├considering: /exim_daemon_notify
@@ -64,6 +78,7 @@ p1235  compiled RE 'static_RE' not found in local cache
 p1235  compiling RE 'static_RE'
 p1235  compiled RE 'static_RE' saved in local cache
 p1235  sending RE 'static_RE' to daemon
+p1235 try option notifier_socket
 p1235   ╭considering: $spool_directory/exim_daemon_notify
 p1235   ├──────value: TESTSUITE/spool
 p1235   ├considering: /exim_daemon_notify
@@ -91,6 +106,7 @@ p1235  compiled RE 'tricky_static_RE$' not found in local cache
 p1235  compiling RE 'tricky_static_RE$'
 p1235  compiled RE 'tricky_static_RE$' saved in local cache
 p1235  sending RE 'tricky_static_RE$' to daemon
+p1235 try option notifier_socket
 p1235   ╭considering: $spool_directory/exim_daemon_notify
 p1235   ├──────value: TESTSUITE/spool
 p1235   ├considering: /exim_daemon_notify
@@ -120,11 +136,13 @@ p1235  ├──condition: match {a_random_string} {pid=${pid} uncacheable_RE}
 p1235  ├─────result: false
 p1235  ├──expanding: ${if match {a_random_string} {pid=${pid} uncacheable_RE}}
 p1235  ╰─────result: 
+p1235 try option acl_smtp_predata
 p1235 search_tidyup called
 p1235 search_tidyup called
 p1235  ╭considering: ${tod_full}
 p1235  ├──expanding: ${tod_full}
 p1235  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+p1235 try option received_header_text
 p1235  ╭considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
 p1235  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 p1235  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -472,6 +490,9 @@ p1235  	(envelope-from <CALLER@test.ex>)
 p1235  	id 10HmaX-000000005vi-0000
 p1235  	for dest_1@test.ex
 p1235             ╰──(tainted)
+p1235 try option acl_smtp_dkim
+p1235 try option acl_smtp_mime
+p1235 try option acl_smtp_data
 p1235  ╭considering: ${tod_full}
 p1235  ├──expanding: ${tod_full}
 p1235  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -479,6 +500,7 @@ LOG: MAIN
   <= CALLER@test.ex H=(test.ex) [127.0.0.1] Ci=p1235 P=smtp S=sss
 search_tidyup called
 Process p1235 is ready for new message
+try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection Ci=p1235 from (test.ex) [127.0.0.1] D=qqs closed by QUIT
 p1234 1 SMTP accept process running
@@ -505,8 +527,13 @@ p1234   normal exit, 0
 p1234 0 SMTP accept processes now running
 p1234 Listening...
 p1234 Connection request from 127.0.0.1 port sssss
+p1234 try option smtp_accept_max_per_host
 p1234 search_tidyup called
+p1236 try option smtp_active_hostname
 p1236 Process p1236 is handling incoming connection from [127.0.0.1]
+p1236 try option message_size_limit
+p1236 try option acl_smtp_connect
+p1236 try option smtp_banner
 p1236  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
 p1236  ├──────value: myhost.test.ex
 p1236  ├considering:  ESMTP Exim $version_number $tod_full
@@ -520,6 +547,9 @@ p1236  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
 p1236  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
 p1236  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 p1236 Process p1236 is ready for new message
+p1236 try option acl_smtp_helo
+p1236 try option acl_smtp_mail
+p1236 try option acl_smtp_rcpt
 p1236 compiled caseless RE '^nomatch_list' found in local cache
 p1236  ╭considering: ${if match {a_random_string} {static_RE}}
 p1236   ╭considering: a_random_string} {static_RE}}
@@ -574,11 +604,13 @@ p1236  ├──condition: match {a_random_string} {pid=${pid} uncacheable_RE}
 p1236  ├─────result: false
 p1236  ├──expanding: ${if match {a_random_string} {pid=${pid} uncacheable_RE}}
 p1236  ╰─────result: 
+p1236 try option acl_smtp_predata
 p1236 search_tidyup called
 p1236 search_tidyup called
 p1236  ╭considering: ${tod_full}
 p1236  ├──expanding: ${tod_full}
 p1236  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+p1236 try option received_header_text
 p1236  ╭considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
 p1236  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 p1236  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -926,6 +958,9 @@ p1236  	(envelope-from <CALLER@test.ex>)
 p1236  	id 10HmaY-000000005vi-0000
 p1236  	for dest_2@test.ex
 p1236             ╰──(tainted)
+p1236 try option acl_smtp_dkim
+p1236 try option acl_smtp_mime
+p1236 try option acl_smtp_data
 p1236  ╭considering: ${tod_full}
 p1236  ├──expanding: ${tod_full}
 p1236  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -933,6 +968,7 @@ LOG: MAIN
   <= CALLER@test.ex H=(test.ex) [127.0.0.1] Ci=p1236 P=smtp S=sss
 search_tidyup called
 Process p1236 is ready for new message
+try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection Ci=p1236 from (test.ex) [127.0.0.1] D=qqs closed by QUIT
 p1234 1 SMTP accept process running

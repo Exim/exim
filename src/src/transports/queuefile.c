@@ -195,6 +195,7 @@ DEBUG(D_transport)
 # define O_NOFOLLOW 0
 #endif
 
+GET_OPTION("directory");
 if (!(dstdir = expand_string(ob->dirname)))
   {
   addr->message = string_sprintf("%s transport: failed to expand dirname option",

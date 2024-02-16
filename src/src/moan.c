@@ -30,8 +30,9 @@ Returns:    nothing
 void
 moan_write_from(FILE *f)
 {
-uschar * s = expand_string(dsn_from);
-if (!s)
+uschar * s;
+GET_OPTION("dsn_from");
+if (!(s = expand_string(dsn_from)))
   {
   log_write(0, LOG_MAIN|LOG_PANIC,
     "Failed to expand dsn_from (using default): %s", expand_string_message);
@@ -175,6 +176,7 @@ uschar * s, * s2;
 /* For DMARC if there is a specific sender set, expand the variable for the
 header From: and grab the address from that for the envelope FROM. */
 
+GET_OPTION("dmarc_forensic_sender");
 if (  ident == ERRMESS_DMARC_FORENSIC
    && dmarc_forensic_sender
    && (s = expand_string(dmarc_forensic_sender))
@@ -513,9 +515,12 @@ if (check_sender && message_file && f.trusted_caller &&
   {
   uschar *new_sender = NULL;
   if (regex_match_and_setup(regex_From, big_buffer, 0, -1))
+    {
+    GET_OPTION("uucp_from_sender");
     new_sender = expand_string(uucp_from_sender);
+    }
   if (new_sender) sender_address = new_sender;
-    else firstline = big_buffer;
+  else firstline = big_buffer;
   }
 
 /* If viable sender address, send a message */

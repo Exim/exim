@@ -2172,6 +2172,7 @@ lwr_receive_ungetc = NULL;
 
 /* Set up the message size limit; this may be host-specific */
 
+GET_OPTION("message_size_limit");
 thismessage_size_limit = expand_string_integer(message_size_limit, TRUE);
 if (expand_string_message)
   {
@@ -2569,6 +2570,7 @@ if (proxy_protocol_host())
 /* Run the connect ACL if it exists */
 
 user_msg = NULL;
+GET_OPTION("acl_smtp_connect");
 if (acl_smtp_connect)
   {
   int rc;
@@ -2615,16 +2617,20 @@ if (user_msg)
     esclen = codelen - 4;
     }
   }
-else if (!(s = expand_string(smtp_banner)))
+else
   {
-  log_write(0, f.expand_string_forcedfail ? LOG_MAIN : LOG_MAIN|LOG_PANIC_DIE,
-    "Expansion of \"%s\" (smtp_banner) failed: %s",
-    smtp_banner, expand_string_message);
-  /* for force-fail */
-#ifndef DISABLE_TLS
-  if (tls_in.on_connect) tls_close(NULL, TLS_SHUTDOWN_WAIT);
-#endif
-  return FALSE;
+  GET_OPTION("smtp_banner");
+  if (!(s = expand_string(smtp_banner)))
+    {
+    log_write(0, f.expand_string_forcedfail ? LOG_MAIN : LOG_MAIN|LOG_PANIC_DIE,
+      "Expansion of \"%s\" (smtp_banner) failed: %s",
+      smtp_banner, expand_string_message);
+    /* for force-fail */
+  #ifndef DISABLE_TLS
+    if (tls_in.on_connect) tls_close(NULL, TLS_SHUTDOWN_WAIT);
+  #endif
+    return FALSE;
+    }
   }
 
 /* Remove any terminating newlines; might as well remove trailing space too */
@@ -3185,6 +3191,7 @@ fl.smtp_exit_function_called = TRUE;
 
 /* Call the not-QUIT ACL, if there is one, unless no reason is given. */
 
+GET_OPTION("acl_smtp_notquit");
 if (acl_smtp_notquit && reason)
   {
   smtp_notquit_reason = reason;
@@ -3521,6 +3528,7 @@ smtp_quit_handler(uschar ** user_msgp, uschar ** log_msgp)
 HAD(SCH_QUIT);
 f.smtp_in_quit = TRUE;
 incomplete_transaction_log(US"QUIT");
+GET_OPTION("acl_smtp_quit");
 if (  acl_smtp_quit
    && acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, user_msgp, log_msgp)
 	== ERROR)
@@ -3694,6 +3702,7 @@ while (done <= 0)
     for (auth_instance * au = auths; au; au = au->next)
       if (strcmpic(US"tls", au->driver_name) == 0)
 	{
+	GET_OPTION("acl_smtp_auth");
 	if (  acl_smtp_auth
 	   && (rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth,
 		      &user_msg, &log_msg)) != OK
@@ -3772,6 +3781,7 @@ while (done <= 0)
 
       /* Check the ACL */
 
+      GET_OPTION("acl_smtp_auth");
       if (  acl_smtp_auth
 	 && (rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth,
 		    &user_msg, &log_msg)) != OK
@@ -3966,6 +3976,7 @@ while (done <= 0)
       /* Apply an ACL check if one is defined; afterwards, recheck
       synchronization in case the client started sending in a delay. */
 
+      GET_OPTION("acl_smtp_helo");
       if (acl_smtp_helo)
 	if ((rc = acl_check(ACL_WHERE_HELO, NULL, acl_smtp_helo,
 		  &user_msg, &log_msg)) != OK)
@@ -4097,16 +4108,19 @@ while (done <= 0)
 	/* Advertise ETRN/VRFY/EXPN if there's are ACL checking whether a host is
 	permitted to issue them; a check is made when any host actually tries. */
 
+	GET_OPTION("acl_smtp_etrn");
 	if (acl_smtp_etrn)
 	  {
 	  g = string_catn(g, smtp_code, 3);
 	  g = string_catn(g, US"-ETRN\r\n", 7);
 	  }
+	GET_OPTION("acl_smtp_vrfy");
 	if (acl_smtp_vrfy)
 	  {
 	  g = string_catn(g, smtp_code, 3);
 	  g = string_catn(g, US"-VRFY\r\n", 7);
 	  }
+	GET_OPTION("acl_smtp_expn");
 	if (acl_smtp_expn)
 	  {
 	  g = string_catn(g, smtp_code, 3);
@@ -4502,6 +4516,7 @@ while (done <= 0)
 		  US"invalid data for AUTH");
 		goto COMMAND_LOOP;
 		}
+	      GET_OPTION("acl_smtp_mailauth");
 	      if (!acl_smtp_mailauth)
 		{
 		ignore_msg = US"client not authenticated";
@@ -4698,6 +4713,7 @@ while (done <= 0)
       when pipelining is not advertised, do another sync check in case the ACL
       delayed and the client started sending in the meantime. */
 
+      GET_OPTION("acl_smtp_mail");
       if (acl_smtp_mail)
 	{
 	rc = acl_check(ACL_WHERE_MAIL, NULL, acl_smtp_mail, &user_msg, &log_msg);
@@ -4953,10 +4969,13 @@ while (done <= 0)
       if (f.recipients_discarded)
 	rc = DISCARD;
       else
+	{
+	GET_OPTION("acl_smtp_rcpt");
 	if (  (rc = acl_check(ACL_WHERE_RCPT, recipient, acl_smtp_rcpt, &user_msg,
 		      &log_msg)) == OK
 	   && !f.smtp_in_pipelining_advertised && !check_sync())
 	  goto SYNC_FAILURE;
+	}
 
       /* The ACL was happy */
 
@@ -5119,6 +5138,7 @@ while (done <= 0)
 	since the ACL may have delayed.  To handle cutthrough delivery enforce a
 	dummy call to get the DATA command sent. */
 
+	GET_OPTION("acl_smtp_predata");
 	if (!acl_smtp_predata && cutthrough.cctx.sock < 0)
 	  rc = OK;
 	else
@@ -5177,6 +5197,7 @@ while (done <= 0)
 				    US"verify")))
 	  break;
 
+      GET_OPTION("acl_smtp_vrfy");
       if ((rc = acl_check(ACL_WHERE_VRFY, address, acl_smtp_vrfy,
 		    &user_msg, &log_msg)) != OK)
 	done = smtp_handle_acl_fail(ACL_WHERE_VRFY, rc, user_msg, log_msg);
@@ -5215,6 +5236,7 @@ while (done <= 0)
 
     case EXPN_CMD:
       HAD(SCH_EXPN);
+      GET_OPTION("acl_smtp_expn");
       rc = acl_check(ACL_WHERE_EXPN, NULL, acl_smtp_expn, &user_msg, &log_msg);
       if (rc != OK)
 	done = smtp_handle_acl_fail(ACL_WHERE_EXPN, rc, user_msg, log_msg);
@@ -5244,6 +5266,7 @@ while (done <= 0)
 
       /* Apply an ACL check if one is defined */
 
+      GET_OPTION("acl_smtp_starttls");
       if (  acl_smtp_starttls
 	 && (rc = acl_check(ACL_WHERE_STARTTLS, NULL, acl_smtp_starttls,
 		    &user_msg, &log_msg)) != OK
@@ -5362,6 +5385,7 @@ while (done <= 0)
 	case QUIT_CMD:
 	  f.smtp_in_quit = TRUE;
 	  user_msg = NULL;
+	  GET_OPTION("acl_smtp_quit");
 	  if (  acl_smtp_quit
 	     && ((rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, &user_msg,
 				&log_msg)) == ERROR))
@@ -5481,6 +5505,7 @@ while (done <= 0)
       log_write(L_etrn, LOG_MAIN, "ETRN %s received from %s", smtp_cmd_argument,
 	host_and_ident(FALSE));
 
+      GET_OPTION("acl_smtp_etrn");
       if ((rc = acl_check(ACL_WHERE_ETRN, NULL, acl_smtp_etrn,
 		  &user_msg, &log_msg)) != OK)
 	{
@@ -5497,6 +5522,7 @@ while (done <= 0)
       since that is strictly the only kind of ETRN that can be implemented
       according to the RFC. */
 
+      GET_OPTION("smtp_etrn_command");
       if (smtp_etrn_command)
 	{
 	uschar *error;

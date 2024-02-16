@@ -38,14 +38,13 @@ int
 rf_get_errors_address(address_item * addr, router_instance * rblock,
   int verify, const uschar ** errors_to)
 {
-uschar *s;
+uschar * s;
 
 *errors_to = addr->prop.errors_address;
 if (!rblock->errors_to) return OK;
 
-s = expand_string(rblock->errors_to);
-
-if (s == NULL)
+GET_OPTION("errors_to");
+if (!(s = expand_string(rblock->errors_to)))
   {
   if (f.expand_string_forcedfail)
     {
@@ -60,7 +59,7 @@ if (s == NULL)
 
 /* If the errors_to address is empty, it means "ignore errors" */
 
-if (*s == 0)
+if (!*s)
   {
   addr->prop.ignore_error = TRUE;   /* For locally detected errors */
   *errors_to = US"";                   /* Return path for SMTP */

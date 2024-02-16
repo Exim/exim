@@ -1858,8 +1858,9 @@ if (tp->gid_set)
   }
 else if (tp->expand_gid)
   {
+  GET_OPTION("group");
   if (!route_find_expanded_group(tp->expand_gid, tp->name, US"transport", gidp,
-    &(addr->message)))
+    &addr->message))
     {
     common_error(FALSE, addr, ERRNO_GIDFAIL, NULL);
     return FALSE;
@@ -1885,6 +1886,7 @@ it does not provide a passwd value from which a gid can be taken. */
 else if (tp->expand_uid)
   {
   struct passwd *pw;
+  GET_OPTION("user");
   if (!route_find_expanded_user(tp->expand_uid, tp->name, US"transport", &pw,
        uidp, &(addr->message)))
     {
@@ -1988,6 +1990,7 @@ check_message_size(transport_instance *tp, address_item *addr)
 int rc = OK;
 int size_limit;
 
+GET_OPTION("message_size_limit");
 deliver_set_expansions(addr);
 size_limit = expand_string_integer(tp->message_size_limit, TRUE);
 deliver_set_expansions(NULL);
@@ -2150,6 +2153,7 @@ if(addr->prop.errors_address)
 else
   return_path = sender_address;
 
+GET_OPTION("return_path");
 if (tp->return_path)
   {
   uschar * new_return_path = expand_string(tp->return_path);
@@ -2179,6 +2183,7 @@ if (!findugid(addr, tp, &uid, &gid, &use_initgroups)) return;
 home directory set in the address may already be expanded; a flag is set to
 indicate that. In other cases we must expand it. */
 
+GET_OPTION("home_directory");
 if (  (deliver_home = tp->home_dir)		/* Set in transport, or */
    || (  (deliver_home = addr->home_dir)	/* Set in address and */
       && !testflag(addr, af_home_expanded)	/*   not expanded */
@@ -2208,6 +2213,7 @@ all users have access. It is necessary to be in a visible directory for some
 operating systems when running pipes, as some commands (e.g. "rm" under Solaris
 2.5) require this. */
 
+GET_OPTION("current_directory");
 working_directory = tp->current_dir ? tp->current_dir : addr->current_dir;
 if (working_directory)
   {
@@ -2605,36 +2611,40 @@ if ((status & 0xffff) != 0)
 
 /* If SPECIAL_WARN is set in the top address, send a warning message. */
 
-if (addr->special_action == SPECIAL_WARN && addr->transport->warn_message)
+if (addr->special_action == SPECIAL_WARN)
   {
-  int fd;
-  uschar *warn_message;
-  pid_t pid;
-
-  DEBUG(D_deliver) debug_printf("Warning message requested by transport\n");
-
-  if (!(warn_message = expand_string(addr->transport->warn_message)))
-    log_write(0, LOG_MAIN|LOG_PANIC, "Failed to expand \"%s\" (warning "
-      "message for %s transport): %s", addr->transport->warn_message,
-      addr->transport->name, expand_string_message);
-
-  else if ((pid = child_open_exim(&fd, US"tpt-warning-message")) > 0)
+  uschar * warn_message = addr->transport->warn_message;
+  GET_OPTION("quota_warn_message");
+  if (warn_message)
     {
-    FILE *f = fdopen(fd, "wb");
-    if (errors_reply_to && !contains_header(US"Reply-To", warn_message))
-      fprintf(f, "Reply-To: %s\n", errors_reply_to);
-    fprintf(f, "Auto-Submitted: auto-replied\n");
-    if (!contains_header(US"From", warn_message))
-      moan_write_from(f);
-    fprintf(f, "%s", CS warn_message);
+    int fd;
+    pid_t pid;
 
-    /* Close and wait for child process to complete, without a timeout. */
+    DEBUG(D_deliver) debug_printf("Warning message requested by transport\n");
 
-    (void)fclose(f);
-    (void)child_close(pid, 0);
+    if (!(warn_message = expand_string(warn_message)))
+      log_write(0, LOG_MAIN|LOG_PANIC, "Failed to expand \"%s\" (warning "
+	"message for %s transport): %s", addr->transport->warn_message,
+	addr->transport->name, expand_string_message);
+
+    else if ((pid = child_open_exim(&fd, US"tpt-warning-message")) > 0)
+      {
+      FILE * f = fdopen(fd, "wb");
+      if (errors_reply_to && !contains_header(US"Reply-To", warn_message))
+	fprintf(f, "Reply-To: %s\n", errors_reply_to);
+      fprintf(f, "Auto-Submitted: auto-replied\n");
+      if (!contains_header(US"From", warn_message))
+	moan_write_from(f);
+      fprintf(f, "%s", CS warn_message);
+
+      /* Close and wait for child process to complete, without a timeout. */
+
+      (void)fclose(f);
+      (void)child_close(pid, 0);
+      }
+
+    addr->special_action = SPECIAL_NONE;
     }
-
-  addr->special_action = SPECIAL_NONE;
   }
 }
 
@@ -2650,6 +2660,7 @@ tpt_parallel_check(transport_instance * tp, address_item * addr, uschar ** key)
 {
 unsigned max_parallel;
 
+GET_OPTION("max_parallel");
 if (!tp->max_parallel) return FALSE;
 
 max_parallel = (unsigned) expand_string_integer(tp->max_parallel, TRUE);
@@ -2773,6 +2784,7 @@ while (addr_local)
     /* Expand the batch_id string for comparison with other addresses.
     Expansion failure suppresses batching. */
 
+    GET_OPTION("batch_id");
     if (tp->batch_id)
       {
       deliver_set_expansions(addr);
@@ -2827,11 +2839,12 @@ while (addr_local)
 
       if (ok && batch_id)
         {
-        uschar *bid;
-        address_item *save_nextnext = next->next;
+        uschar * bid;
+        address_item * save_nextnext = next->next;
         next->next = NULL;            /* Expansion for a single address */
         deliver_set_expansions(next);
         next->next = save_nextnext;
+	GET_OPTION("batch_id");
         bid = expand_string(tp->batch_id);
         deliver_set_expansions(NULL);
         if (!bid)
@@ -4454,9 +4467,10 @@ nonmatch domains
   else
     return_path = sender_address;
 
+  GET_OPTION("return_path");
   if (tp->return_path)
     {
-    uschar *new_return_path = expand_string(tp->return_path);
+    uschar * new_return_path = expand_string(tp->return_path);
     if (new_return_path)
       return_path = new_return_path;
     else if (!f.expand_string_forcedfail)
@@ -5557,18 +5571,18 @@ return actual_time;
 
 static FILE *
 expand_open(const uschar * filename,
-  const uschar * varname, const uschar * reason)
+  const uschar * optname, const uschar * reason)
 {
 const uschar * s = expand_cstring(filename);
 FILE * fp = NULL;
 
 if (!s || !*s)
   log_write(0, LOG_MAIN|LOG_PANIC,
-    "Failed to expand %s: '%s'\n", varname, filename);
+    "Failed to expand %s: '%s'\n", optname, filename);
 else if (*s != '/' || is_tainted(s))
   log_write(0, LOG_MAIN|LOG_PANIC,
     "%s is not %s after expansion: '%s'\n",
-    varname, *s == '/' ? "untainted" : "absolute", s);
+    optname, *s == '/' ? "untainted" : "absolute", s);
 else if (!(fp = Ufopen(s, "rb")))
   log_write(0, LOG_MAIN|LOG_PANIC, "Failed to open %s for %s "
     "message texts: %s", s, reason, strerror(errno));
@@ -5699,6 +5713,7 @@ else
   /* Open a template file if one is provided. Log failure to open, but
   carry on - default texts will be used. */
 
+  GET_OPTION("bounce_message_file");
   if (bounce_message_file)
     emf = expand_open(bounce_message_file,
 	    US"bounce_message_file", US"error");
@@ -6058,6 +6073,7 @@ transport_ctx tctx = {{0}};
 
 if (pid <= 0) return FALSE;
 
+GET_OPTION("warn_message_file");
 if (warn_message_file)
   wmf = expand_open(warn_message_file,
 	  US"warn_message_file", US"warning");
@@ -6757,6 +6773,7 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
 
   /* Any error in the filter file causes a delivery to be abandoned. */
 
+  GET_OPTION("system_filter");
   redirect.string = system_filter;
   redirect.isfile = TRUE;
   redirect.check_owner = redirect.check_group = FALSE;
@@ -6936,12 +6953,14 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
         if (p->address[0] == '|')
           {
           type = US"pipe";
+	  GET_OPTION("system_filter_pipe_transport");
           tpname = system_filter_pipe_transport;
           address_pipe = p->address;
           }
         else if (p->address[0] == '>')
           {
           type = US"reply";
+	  GET_OPTION("system_filter_reply_transport");
           tpname = system_filter_reply_transport;
           }
         else
@@ -6949,11 +6968,13 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
           if (p->address[Ustrlen(p->address)-1] == '/')
             {
             type = US"directory";
+	    GET_OPTION("system_filter_directory_transport");
             tpname = system_filter_directory_transport;
             }
           else
             {
             type = US"file";
+	    GET_OPTION("system_filter_file_transport");
             tpname = system_filter_file_transport;
             }
           address_file = p->address;
@@ -8437,54 +8458,57 @@ else if (addr_defer != (address_item *)(+1))
         || addr_defer->dsn_flags & rf_notify_delay
 	)
      && delay_warning[1] > 0
-     && sender_address[0] != 0
-     && (  !delay_warning_condition
-        || expand_check_condition(delay_warning_condition,
-            US"delay_warning", US"option")
-	)
-     )
+     && sender_address[0] != 0)
     {
-    int count;
-    int show_time;
-    int queue_time = time(NULL) - received_time.tv_sec;
-
-    queue_time = test_harness_fudged_queue_time(queue_time);
-
-    /* See how many warnings we should have sent by now */
-
-    for (count = 0; count < delay_warning[1]; count++)
-      if (queue_time < delay_warning[count+2]) break;
-
-    show_time = delay_warning[count+1];
-
-    if (count >= delay_warning[1])
+    GET_OPTION("delay_warning_condition");
+    if ( (  !delay_warning_condition
+	    || expand_check_condition(delay_warning_condition,
+		US"delay_warning", US"option")
+	  )
+       )
       {
-      int extra;
-      int last_gap = show_time;
-      if (count > 1) last_gap -= delay_warning[count];
-      extra = (queue_time - delay_warning[count+1])/last_gap;
-      show_time += last_gap * extra;
-      count += extra;
-      }
+      int count;
+      int show_time;
+      int queue_time = time(NULL) - received_time.tv_sec;
 
-    DEBUG(D_deliver)
-      {
-      debug_printf("time on queue = %s  id %s  addr %s\n",
-	readconf_printtime(queue_time), message_id, addr_defer->address);
-      debug_printf("warning counts: required %d done %d\n", count,
-        warning_count);
-      }
+      queue_time = test_harness_fudged_queue_time(queue_time);
 
-    /* We have computed the number of warnings there should have been by now.
-    If there haven't been enough, send one, and up the count to what it should
-    have been. */
+      /* See how many warnings we should have sent by now */
 
-    if (warning_count < count)
-      if (send_warning_message(recipients, queue_time, show_time))
+      for (count = 0; count < delay_warning[1]; count++)
+	if (queue_time < delay_warning[count+2]) break;
+
+      show_time = delay_warning[count+1];
+
+      if (count >= delay_warning[1])
 	{
-	warning_count = count;
-	update_spool = TRUE;    /* Ensure spool rewritten */
+	int extra;
+	int last_gap = show_time;
+	if (count > 1) last_gap -= delay_warning[count];
+	extra = (queue_time - delay_warning[count+1])/last_gap;
+	show_time += last_gap * extra;
+	count += extra;
 	}
+
+      DEBUG(D_deliver)
+	{
+	debug_printf("time on queue = %s  id %s  addr %s\n",
+	  readconf_printtime(queue_time), message_id, addr_defer->address);
+	debug_printf("warning counts: required %d done %d\n", count,
+	  warning_count);
+	}
+
+      /* We have computed the number of warnings there should have been by now.
+      If there haven't been enough, send one, and up the count to what it should
+      have been. */
+
+      if (warning_count < count)
+	if (send_warning_message(recipients, queue_time, show_time))
+	  {
+	  warning_count = count;
+	  update_spool = TRUE;    /* Ensure spool rewritten */
+	  }
+      }
     }
 
   /* Clear deliver_domain */

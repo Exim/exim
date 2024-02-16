@@ -298,9 +298,10 @@ to provide host-specific limits according to $sender_host address, but because
 this is in the daemon mainline, only fast expansions (such as inline address
 checks) should be used. The documentation is full of warnings. */
 
+GET_OPTION("smtp_accept_max_per_host");
 if (smtp_accept_max_per_host)
   {
-  uschar *expanded = expand_string(smtp_accept_max_per_host);
+  uschar * expanded = expand_string(smtp_accept_max_per_host);
   if (!expanded)
     {
     if (!f.expand_string_forcedfail)
@@ -434,6 +435,7 @@ if (pid == 0)
   likely what it depends on.) */
 
   smtp_active_hostname = primary_hostname;
+  GET_OPTION("smtp_active_hostname");
   if (raw_active_hostname)
     {
     uschar * nah = expand_string(raw_active_hostname);
@@ -1165,6 +1167,7 @@ return offsetof(struct sockaddr_un, sun_path)
 ssize_t
 daemon_notifier_sockname(struct sockaddr_un * sup)
 {
+GET_OPTION("notifier_socket");
 #ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
 sup->sun_path[0] = 0;  /* Abstract local socket addr - Linux-specific? */
 return offsetof(struct sockaddr_un, sun_path) + 1
@@ -1709,12 +1712,13 @@ time_t last_connection_time = (time_t)0;
 int local_queue_run_max = 0;
 
 if (is_multiple_qrun())
-
+  {
   /* Nuber of runner-tracking structs needed:  If the option queue_run_max has
   no expandable elements then it is the overall maximum; else we assume it
   depends on the queue name, and add them up to get the maximum.
   Evaluate both that and the individual limits. */
 
+  GET_OPTION("queue_run_max");
   if (Ustrchr(queue_run_max, '$') != NULL)
     {
     for (qrunner * q = qrunners; q; q = q->next)
@@ -1731,6 +1735,7 @@ if (is_multiple_qrun())
     for (qrunner * q = qrunners; q; q = q->next)
       q->run_max = local_queue_run_max;
     }
+  }
 
 process_purpose = US"daemon";
 

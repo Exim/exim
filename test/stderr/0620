@@ -4,8 +4,15 @@ environment after trimming:
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
+try option smtp_active_hostname
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
+try option message_size_limit
+try option acl_smtp_connect
+try option smtp_banner
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ├──────value: primaryhostname.ex
  ├considering:  ESMTP Exim $version_number $tod_full
@@ -18,6 +25,10 @@ LOG: smtp_connection MAIN
  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: primaryhostname.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+try option spf_smtp_comment_template
+try option acl_smtp_helo
+try option acl_smtp_mail
+try option acl_smtp_rcpt
  ╭considering: domain $domain
  ├───────text: domain 
  ├considering: $domain
@@ -58,6 +69,7 @@ LOG: MAIN
             ╰──(tainted)
 LOG: MAIN
   $0 'trythiskey.ex'  $1 ''
+try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -67,8 +79,15 @@ environment after trimming:
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
+try option smtp_active_hostname
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
+try option message_size_limit
+try option acl_smtp_connect
+try option smtp_banner
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ├──────value: primaryhostname.ex
  ├considering:  ESMTP Exim $version_number $tod_full
@@ -81,6 +100,10 @@ LOG: smtp_connection MAIN
  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: primaryhostname.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+try option spf_smtp_comment_template
+try option acl_smtp_helo
+try option acl_smtp_mail
+try option acl_smtp_rcpt
  ╭considering: domain $domain
  ├───────text: domain 
  ├considering: $domain
@@ -120,6 +143,7 @@ LOG: MAIN
             ╰──(tainted)
 LOG: MAIN
   $0 'trythiskey.ex'  $1 ''
+try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

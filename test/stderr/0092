@@ -54,13 +54,18 @@ configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=p1234
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
+try option smtp_active_hostname
 sender_fullhost = [V4NET.0.0.1]
 sender_rcvhost = [V4NET.0.0.1]
 host in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from [V4NET.0.0.1]
+try option message_size_limit
 host in host_lookup? no (option unset)
 set_process_info: pppp handling incoming connection from [V4NET.0.0.1]
  ╭considering: ${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s
@@ -98,6 +103,8 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+try option acl_smtp_connect
+try option smtp_banner
  ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ├──────value: myhost.test.ex
  ├considering:  ESMTP Exim $version_number $tod_full
@@ -120,12 +127,16 @@ test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.0.0.1]
 sender_rcvhost = [V4NET.0.0.1] (helo=test)
 set_process_info: pppp handling incoming connection from (test) [V4NET.0.0.1]
+try option spf_smtp_comment_template
+try option acl_smtp_helo
 SMTP>> 250 myhost.test.ex Hello test [V4NET.0.0.1]
 SMTP<< mail from:userx@test.ex
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
+try option acl_smtp_mail
 SMTP>> 250 OK
 SMTP<< rcpt to:userx@test.ex
+try option acl_smtp_rcpt
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 27)
 check hosts = :
@@ -156,10 +167,12 @@ accept: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
+try option acl_smtp_predata
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
 LOG: lost_incoming_connection MAIN
   SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex> D=qqs
+try option acl_smtp_notquit
 SMTP>> 421 myhost.test.ex SMTP incoming data timeout - closing connection.
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>

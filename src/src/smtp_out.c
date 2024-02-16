@@ -278,6 +278,7 @@ if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, US &on, sizeof(on)))
 /* Set DSCP value, if we can. For now, if we fail to set the value, we don't
 bomb out, just log it and continue in default traffic class. */
 
+GET_OPTION("dscp");
 if (dscp && dscp_lookup(dscp, sc->host_af, &dscp_level, &dscp_option, &dscp_value))
   {
   HDEBUG(D_transport|D_acl|D_v)
