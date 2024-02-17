@@ -26,10 +26,9 @@ try option smtp_banner
  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+try option acl_smtp_helo
  list element: *
   in limits_advertise_hosts? yes (matched "*")
-try option spf_smtp_comment_template
-try option acl_smtp_helo
  in dsn_advertise_hosts? no (option unset)
 try option acl_smtp_etrn
 try option acl_smtp_vrfy
@@ -688,10 +687,9 @@ try option smtp_banner
  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+try option acl_smtp_helo
  list element: *
   in limits_advertise_hosts? yes (matched "*")
-try option spf_smtp_comment_template
-try option acl_smtp_helo
  in dsn_advertise_hosts? no (option unset)
 try option acl_smtp_etrn
 try option acl_smtp_vrfy
@@ -1300,10 +1298,9 @@ try option smtp_banner
  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+try option acl_smtp_helo
  list element: *
   in limits_advertise_hosts? yes (matched "*")
-try option spf_smtp_comment_template
-try option acl_smtp_helo
  in dsn_advertise_hosts? no (option unset)
 try option acl_smtp_etrn
 try option acl_smtp_vrfy

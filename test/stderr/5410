@@ -26,10 +26,9 @@ try option smtp_banner
  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+try option acl_smtp_helo
  list element: *
   in limits_advertise_hosts? yes (matched "*")
-try option spf_smtp_comment_template
-try option acl_smtp_helo
  in dsn_advertise_hosts? no (option unset)
 try option acl_smtp_etrn
 try option acl_smtp_vrfy
@@ -82,6 +81,9 @@ domain.com in "! +local_domains"?
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
+try option router_home_directory
+try option set
+processing address_data
  ╭considering: $local_part
  ├──────value: userx
             ╰──(tainted)
@@ -91,6 +93,8 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option transport
+try option unseen
 try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
@@ -105,6 +109,9 @@ domain.com in "! +local_domains"?
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
+try option router_home_directory
+try option set
+processing address_data
  ╭considering: $local_part
  ├──────value: userx
             ╰──(tainted)
@@ -114,6 +121,8 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option transport
+try option unseen
 try option unseen
 try option interface
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... try option dscp
@@ -678,10 +687,9 @@ try option smtp_banner
  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+try option acl_smtp_helo
  list element: *
   in limits_advertise_hosts? yes (matched "*")
-try option spf_smtp_comment_template
-try option acl_smtp_helo
  in dsn_advertise_hosts? no (option unset)
 try option acl_smtp_etrn
 try option acl_smtp_vrfy
@@ -734,6 +742,9 @@ domain.com in "! +local_domains"?
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
+try option router_home_directory
+try option set
+processing address_data
  ╭considering: $local_part
  ├──────value: usery
             ╰──(tainted)
@@ -743,6 +754,8 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option transport
+try option unseen
 try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
@@ -757,6 +770,9 @@ domain.com in "! +local_domains"?
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
+try option router_home_directory
+try option set
+processing address_data
  ╭considering: $local_part
  ├──────value: usery
             ╰──(tainted)
@@ -766,6 +782,8 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option transport
+try option unseen
 try option unseen
 try option interface
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... try option dscp
@@ -1280,10 +1298,9 @@ try option smtp_banner
  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+try option acl_smtp_helo
  list element: *
   in limits_advertise_hosts? yes (matched "*")
-try option spf_smtp_comment_template
-try option acl_smtp_helo
  in dsn_advertise_hosts? no (option unset)
 try option acl_smtp_etrn
 try option acl_smtp_vrfy
@@ -1336,6 +1353,9 @@ domain.com in "! +local_domains"?
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
+try option router_home_directory
+try option set
+processing address_data
  ╭considering: $local_part
  ├──────value: usery
             ╰──(tainted)
@@ -1345,6 +1365,8 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option transport
+try option unseen
 try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
@@ -1359,6 +1381,9 @@ domain.com in "! +local_domains"?
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
 domain.com in "! +local_domains"? yes (end of list)
+try option router_home_directory
+try option set
+processing address_data
  ╭considering: $local_part
  ├──────value: usery
             ╰──(tainted)
@@ -1368,6 +1393,8 @@ domain.com in "! +local_domains"? yes (end of list)
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option transport
+try option unseen
 try option unseen
 try option interface
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... try option dscp

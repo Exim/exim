@@ -1064,6 +1064,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # LIMITS is not always supported by the build
     next if /^limits_advertise_hosts =/;
 
+    # PRDR
+    next if /^hosts_try_prdr = *$/;
+
     # TLS resumption is not always supported by the build
     next if /^tls_resumption_hosts =/;
     next if /^-tls_resumption/;
@@ -1380,6 +1383,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # so convert them all to "0"
     s%(?<!lsearch)[^ ](?=TESTSUITE/aux-fixed/(?:0414.list[12]|0464.domains)$)%0%;
 
+    # CONTENT_SCAN
+    next if /try option acl_not_smtp_mime$/;
+
     # DISABLE_OCSP
     next if /in hosts_requ(est|ire)_ocsp\? (no|yes)/;
 
@@ -1447,6 +1453,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Not all platforms build with SPF enabled
     next if /^(spf_conn_init|SPF_dns_exim_new|spf_compile\.c)/;
+    next if /try option spf_smtp_comment_template$/;
 
     # Not all platforms have sendfile support
     next if /^cannot use sendfile for body: no support$/;
@@ -4893,4 +4900,5 @@ Start Exim wrapped by I<valgrind>. (default: don't use valgrind)
 =cut
 
 
+# vi: aw ai sw=2
 # End of runtest script

@@ -25,7 +25,6 @@ try option smtp_banner
  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: primaryhostname.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-try option spf_smtp_comment_template
 try option acl_smtp_helo
 try option acl_smtp_mail
 try option acl_smtp_rcpt
@@ -100,7 +99,6 @@ try option smtp_banner
  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: primaryhostname.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-try option spf_smtp_comment_template
 try option acl_smtp_helo
 try option acl_smtp_mail
 try option acl_smtp_rcpt

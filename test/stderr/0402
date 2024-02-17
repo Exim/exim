@@ -389,7 +389,6 @@ P Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
-try option acl_not_smtp_mime
 try option acl_not_smtp
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}

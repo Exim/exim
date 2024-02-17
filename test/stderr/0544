@@ -346,7 +346,6 @@ try option received_header_text
  ╰─────result: Received: from CALLER by the.local.host.name with local (Exim x.yz)
  	(envelope-from <CALLER@test.ex>)
  	id 10HmaX-000000005vi-0000
-try option acl_not_smtp_mime
 try option acl_not_smtp
  ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
@@ -465,7 +464,6 @@ try option smtp_banner
  ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ╰─────result: the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-try option spf_smtp_comment_template
 try option acl_smtp_helo
  ╭considering: ${if match_domain {$sender_helo_name}{+dlist}}
   ╭considering: $sender_helo_name}{+dlist}}

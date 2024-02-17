@@ -127,7 +127,6 @@ test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [V4NET.0.0.1]
 sender_rcvhost = [V4NET.0.0.1] (helo=test)
 set_process_info: pppp handling incoming connection from (test) [V4NET.0.0.1]
-try option spf_smtp_comment_template
 try option acl_smtp_helo
 SMTP>> 250 myhost.test.ex Hello test [V4NET.0.0.1]
 SMTP<< mail from:userx@test.ex
