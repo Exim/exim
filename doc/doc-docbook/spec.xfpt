@@ -30765,6 +30765,10 @@ and the &%acl_smtp_mime%& ACLs.
 The &%acl_smtp_dkim%& ACL is available only when Exim is compiled with DKIM support
 enabled (which is the default).
 
+If, for a specific message, an ACL control
+&*dkim_disable_verify*&
+has been set, this &%acl_smtp_dkim%& ACL is not called.
+
 The ACL test specified by &%acl_smtp_dkim%& happens after a message has been
 received, and is executed for each DKIM signature found in a message.  If not
 otherwise specified, the default action is to accept.
