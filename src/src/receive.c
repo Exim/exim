@@ -290,12 +290,11 @@ Returns:       FALSE if there isn't enough space, or if the information cannot
 BOOL
 receive_check_fs(int msg_size)
 {
-int_eximarith_t space;
 int inodes;
 
 if (check_spool_space > 0 || msg_size > 0 || check_spool_inodes > 0)
   {
-  space = receive_statvfs(TRUE, &inodes);
+  int_eximarith_t space = receive_statvfs(TRUE, &inodes);
 
   DEBUG(D_receive)
     debug_printf("spool directory space = " PR_EXIM_ARITH "K inodes = %d "
@@ -313,7 +312,7 @@ if (check_spool_space > 0 || msg_size > 0 || check_spool_inodes > 0)
 
 if (check_log_space > 0 || check_log_inodes > 0)
   {
-  space = receive_statvfs(FALSE, &inodes);
+  int_eximarith_t space = receive_statvfs(FALSE, &inodes);
 
   DEBUG(D_receive)
     debug_printf("log directory space = " PR_EXIM_ARITH "K inodes = %d "

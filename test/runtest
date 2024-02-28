@@ -1260,7 +1260,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # drop pdkim debugging header
     next if /^DKIM( <<<<<<<<<<<<<<<<<<<<<<<<<<<<<+|: no signatures)$/;
 
-    # Some platforms have TIOCOUTome do not
+    # Some platforms have TIOCOUT, some do not
     next if /\d+ bytes remain in socket output buffer$/;
     # Various other IPv6 lines must be omitted too
 
@@ -1434,7 +1434,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/^cmd buf flush \d+ bytes/cmd buf flush ddd bytes/;
 
     # Spool filesystem free space changes on different systems.
-    s/^((?:spool|log) directory space =) -?\d+K (inodes =)\s*-?\d+/$1 nnnnnK $2 nnnnn/;
+    s/((?:spool|log) directory space =) -?\d+K (inodes =)\s*-?\d+/$1 nnnnnK $2 nnnnn/;
 
     # Non-TLS builds have different expansions for received_header_text
     if (s/(with \$received_protocol)\}\} \$\{if def:tls_cipher \{\(\$tls_cipher\)\n$/$1/)

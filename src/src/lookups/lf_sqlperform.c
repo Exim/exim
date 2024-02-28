@@ -13,6 +13,15 @@
 
 
 
+static int
+server_len_for_logging(const uschar * server)
+{
+const uschar * s = Ustrchr(server, '/');
+if (!s) return 64;
+if (!(s = Ustrchr(s+1, '/'))) return 64;
+return (int) (s - server);
+}
+
 /*************************************************
 *    Call SQL server(s) to run an actual query   *
 *************************************************/
@@ -30,6 +39,7 @@ Arguments:
   result         where to pass back the result
   errmsg         where to pass back an error message
   do_cache       to be set zero if data is changed
+  opts		 options (which suffixed the lookup name, minus cache-control ones) or NULL
   func           the lookup function to call
 
 Returns:         the return from the lookup function, or DEFER
@@ -42,21 +52,19 @@ lf_sqlperform(const uschar *name, const uschar *optionname,
   int(*fn)(const uschar *, uschar *, uschar **, uschar **, BOOL *, uint *, const uschar *))
 {
 int rc;
-uschar *server;
+uschar * server;
 BOOL defer_break = FALSE;
 
 DEBUG(D_lookup) debug_printf_indent("%s query: \"%s\" opts '%s'\n", name, query, opts);
 
-/* Handle queries that do have server information at the start. */
+/* Handle queries that do have server information at the start (old style). */
 
 if (Ustrncmp(query, "servers", 7) == 0)
   {
   int qsep = 0;
-  const uschar *s, *ss;
-  const uschar *qserverlist;
-  uschar *qserver;
+  const uschar * s, * ss, * qserverlist;
 
-  log_write(0, LOG_MAIN|LOG_CONFIG_IN, "WARNING: obslete syntax used for lookup\n");
+  log_write(0, LOG_MAIN|LOG_CONFIG_IN, "WARNING: obsolete syntax used for lookup");
 
   s = query + 7;
   skip_whitespace(&s);
@@ -83,35 +91,37 @@ if (Ustrncmp(query, "servers", 7) == 0)
     }
 
   qserverlist = string_sprintf("%.*s", (int)(ss - s), s);
+  query = ss + 1;
 
-  while ((qserver = string_nextinlist(&qserverlist, &qsep, NULL, 0)))
+  for (uschar * qsrv; qsrv = string_nextinlist(&qserverlist, &qsep, NULL, 0); )
     {
-    if (Ustrchr(qserver, '/'))
-      server = qserver;
+    if (Ustrchr(qsrv, '/'))
+      server = qsrv;			/* full server spec */
     else
-      {
-      int len = Ustrlen(qserver);
+      {					/* only name; search in option list */
+      int len = Ustrlen(qsrv);
       const uschar * serverlist = optserverlist;
 
       for (int sep = 0; server = string_nextinlist(&serverlist, &sep, NULL, 0);)
-        if (Ustrncmp(server, qserver, len) == 0 && server[len] == '/')
+        if (Ustrncmp(server, qsrv, len) == 0 && server[len] == '/')
           break;
 
       if (!server)
         {
-        *errmsg = string_sprintf("%s server \"%s\" not found in %s", name,
-          qserver, optionname);
+        *errmsg = string_sprintf("%s server \"%.*s\" not found in %s",
+	  name, server_len_for_logging(qsrv), qsrv, optionname);
         return DEFER;
         }
       }
 
     if (is_tainted(server))
       {
-      *errmsg = string_sprintf("%s server \"%s\" is tainted", name, server);
+      *errmsg = string_sprintf("%s server \"%.*s\" is tainted",
+	name, server_len_for_logging(server), server);
       return DEFER;
       }
 
-    rc = (*fn)(ss+1, server, result, errmsg, &defer_break, do_cache, opts);
+    rc = (*fn)(query, server, result, errmsg, &defer_break, do_cache, opts);
     if (rc != DEFER || defer_break) return rc;
     }
   }
@@ -139,7 +149,7 @@ else
     *errmsg = string_sprintf("no %s servers defined (%s option)", name,
       optionname);
   else
-    for (int d = 0; (server = string_nextinlist(&serverlist, &d, NULL, 0)); )
+    for (int d = 0; server = string_nextinlist(&serverlist, &d, NULL, 0); )
       {
       /* If not a full spec assume from options; scan main list for matching
       hostname */
@@ -163,7 +173,8 @@ else
 
       if (is_tainted(server))
         {
-        *errmsg = string_sprintf("%s server \"%s\" is tainted", name, server);
+        *errmsg = string_sprintf("%s server \"%.*s\" is tainted",
+	  name, server_len_for_logging(server), server);
         return DEFER;
         }
 
@@ -176,3 +187,5 @@ return DEFER;
 }
 
 /* End of lf_sqlperform.c */
+/* vi: aw ai sw=2
+*/

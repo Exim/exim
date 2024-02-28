@@ -116,7 +116,9 @@ JH/21 Bug 3059: Fix crash in smtp transport. When running for a message for
       dealt with.  Thanks to Wolfgand Breyha for debug runs.
 
 JH/22 The ESMTP_LIMITS facility (RFC 9422) is promoted from experimental status
-      and is now controlled by the build-time option DISABLE_ESMTP_LIMITS..
+      and is now controlled by the build-time option DISABLE_ESMTP_LIMITS.
+
+JH/23 Bug 3066: Avoid leaking lookup database credentials to log.
 
 
 Exim version 4.97

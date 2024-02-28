@@ -1146,9 +1146,9 @@ Returns:         nothing
 */
 
 static void
-acl_warn(int where, uschar *user_message, uschar *log_message)
+acl_warn(int where, uschar * user_message, uschar * log_message)
 {
-if (log_message != NULL && log_message != user_message)
+if (log_message && log_message != user_message)
   {
   uschar *text;
   string_item *logged;
@@ -1159,9 +1159,9 @@ if (log_message != NULL && log_message != user_message)
   /* If a sender verification has failed, and the log message is "sender verify
   failed", add the failure message. */
 
-  if (sender_verified_failed != NULL &&
-      sender_verified_failed->message != NULL &&
-      strcmpic(log_message, US"sender verify failed") == 0)
+  if (  sender_verified_failed
+     && sender_verified_failed->message
+     && strcmpic(log_message, US"sender verify failed") == 0)
     text = string_sprintf("%s: %s", text, sender_verified_failed->message);
 
   /* Search previously logged warnings. They are kept in malloc

@@ -1,7 +1,6 @@
 
 WARNING: enabling "trust" authentication for local connections
-You can change this by editing pg_hba.conf or using the option -A, or
---auth-local and --auth-host, the next time you run initdb.
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -134,6 +133,9 @@ dropping to exim gid; retaining priv uid
    type=pgsql key="servers=x:localhost; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=x:localhost; select name from them where id='ph10';
  PostgreSQL query: "servers=x:localhost; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 78 of TESTSUITE/test-config:
+  WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "x" not found in pgsql_servers
  search_open: pgsql "NULL"
    cached open
@@ -144,6 +146,9 @@ dropping to exim gid; retaining priv uid
    type=pgsql key="servers=localhost::PORT_N:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=localhost::PORT_N:x; select name from them where id='ph10';
  PostgreSQL query: "servers=localhost::PORT_N:x; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 78 of TESTSUITE/test-config:
+  WARNING: obsolete syntax used for lookup
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
  lookup yielded: Philip Hazel
@@ -156,6 +161,9 @@ dropping to exim gid; retaining priv uid
    type=pgsql key="servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: "servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 78 of TESTSUITE/test-config:
+  WARNING: obsolete syntax used for lookup
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
  lookup yielded: Philip Hazel
@@ -168,6 +176,9 @@ dropping to exim gid; retaining priv uid
    type=pgsql key="servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: "servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 78 of TESTSUITE/test-config:
+  WARNING: obsolete syntax used for lookup
  PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER
  creating new cache entry
  lookup yielded: Philip Hazel
@@ -334,10 +345,13 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N    {select nam
  database lookup required for servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'
                               (tainted, quoted:pgsql)
  PostgreSQL query: "servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'" opts 'NULL'
- lookup deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+LOG: MAIN
+  Exim configuration error in line 78 of TESTSUITE/test-config:
+  WARNING: obsolete syntax used for lookup
+ lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 processing "warn" (TESTSUITE/test-config 41)
 check set acl_m0 = ok:   hostlist
 check hosts = net-pgsql;select * from them where id='${quote_pgsql:$local_part}'
@@ -374,11 +388,14 @@ host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them
  database lookup required for servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'
                               (tainted, quoted:pgsql)
  PostgreSQL query: "servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'" opts 'NULL'
- lookup deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+LOG: MAIN
+  Exim configuration error in line 78 of TESTSUITE/test-config:
+  WARNING: obsolete syntax used for lookup
+ lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 processing "warn" (TESTSUITE/test-config 49)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
@@ -394,11 +411,11 @@ host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them
  database lookup required for  select * from them where id='c'
                               (tainted, quoted:pgsql)
  PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::PORT_N/test/CALLER/'
- lookup deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+ lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 processing "accept" (TESTSUITE/test-config 52)
 check domains = +local_domains
 d in "+local_domains"?
@@ -523,10 +540,13 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N    {select nam
  database lookup required for servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'
                               (tainted, quoted:pgsql)
  PostgreSQL query: "servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'" opts 'NULL'
- lookup deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+LOG: MAIN
+  Exim configuration error in line 78 of TESTSUITE/test-config:
+  WARNING: obsolete syntax used for lookup
+ lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 processing "warn" (TESTSUITE/test-config 41)
 check set acl_m0 = ok:   hostlist
 check hosts = net-pgsql;select * from them where id='${quote_pgsql:$local_part}'
@@ -558,11 +578,14 @@ host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them
  database lookup required for servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'
                               (tainted, quoted:pgsql)
  PostgreSQL query: "servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'" opts 'NULL'
- lookup deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+LOG: MAIN
+  Exim configuration error in line 78 of TESTSUITE/test-config:
+  WARNING: obsolete syntax used for lookup
+ lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 processing "warn" (TESTSUITE/test-config 49)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
@@ -578,11 +601,11 @@ host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them
  database lookup required for  select * from them where id='c'
                               (tainted, quoted:pgsql)
  PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::PORT_N/test/CALLER/'
- lookup deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+ lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test/CALLER/" is tainted
+  H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 processing "accept" (TESTSUITE/test-config 52)
 check domains = +local_domains
 d in "+local_domains"?

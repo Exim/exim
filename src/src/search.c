@@ -590,35 +590,48 @@ else
   is either untainted or properly quoted for the lookup type.
 
   XXX Should we this move into lf_sqlperform() ?  The server-taint check is there.
+  Also it already knows about looking for a "servers" spec in the query string.
+  Passing search_type down that far is an issue.
   */
 
   if (  !filename && lookup_list[search_type]->quote
      && is_tainted(keystring) && !is_quoted_like(keystring, search_type))
     {
-    uschar * s = acl_current_verb();
-    if (!s) s = authenticator_current_name();	/* must be before transport */
-    if (!s) s = transport_current_name();	/* must be before router */
-    if (!s) s = router_current_name();	/* GCC ?: would be good, but not in clang */
-    if (!s) s = US"";
+    const uschar * ks = keystring;
+    uschar * loc = acl_current_verb();
+    if (!loc) loc = authenticator_current_name();	/* must be before transport */
+    if (!loc) loc = transport_current_name();		/* must be before router */
+    if (!loc) loc = router_current_name();		/* GCC ?: would be good, but not in clang */
+    if (!loc) loc = US"";
+
+    if (Ustrncmp(ks, "servers", 7) == 0)	/* Avoid logging server/password */
+      if ((ks = Ustrchr(keystring, ';')))
+	while (isspace(*++ks))
+	  ;
+      else
+	ks = US"";
+
 #ifdef enforce_quote_protection_notyet
     search_error_message = string_sprintf(
       "tainted search query is not properly quoted%s: %s%s",
-      s, keystring);
+      loc, ks);
     f.search_find_defer = TRUE;
+    goto out;
 #else
-     {
-      int q = quoter_for_address(keystring);
-      /* If we're called from a transport, no privs to open the paniclog;
-      the logging punts to using stderr - and that seems to stop the debug
-      stream. */
-      log_write(0,
-	transport_name ? LOG_MAIN : LOG_MAIN|LOG_PANIC,
-	"tainted search query is not properly quoted%s: %s", s, keystring);
+    /* If we're called from a transport, no privs to open the paniclog;
+    the logging punts to using stderr - and that seems to stop the debug
+    stream. */
+    log_write(0,
+      transport_name ? LOG_MAIN : LOG_MAIN|LOG_PANIC,
+      "tainted search query is not properly quoted%s: %s", loc, ks);
 
-      DEBUG(D_lookup) debug_printf_indent("search_type %d (%s) quoting %d (%s)\n",
+    DEBUG(D_lookup)
+      {
+      int q = quoter_for_address(ks);
+      debug_printf_indent("search_type %d (%s) quoting %d (%s)\n",
 	search_type, lookup_list[search_type]->name,
 	q, is_real_quoter(q) ? lookup_list[q]->name : US"none");
-     }
+      }
 #endif
     }
 
@@ -669,6 +682,7 @@ pointer to NULL here, because we cannot release the store at this stage. */
     }
   }
 
+out:
 DEBUG(D_lookup)
   {
   if (data)
