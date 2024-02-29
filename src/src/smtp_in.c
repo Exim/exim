@@ -1352,7 +1352,7 @@ if (host_checking)
   g = string_cat(g, hostname);
 
 else if (f.sender_host_unknown || f.sender_host_notsocket)
-  g = string_cat(g, sender_ident);
+  g = string_cat(g, sender_ident ? sender_ident : US"NULL");
 
 else if (f.is_inetd)
   g = string_append(g, 2, hostname, US" (via inetd)");
