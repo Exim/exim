@@ -970,12 +970,14 @@ xyz
 > Failed: "if" failed and "fail" requested
 > yes
 > match_address:   no
+> protected:  
 > 
 > primary_hostname: myhost.test.ex
 > match:  cdab
 > Failed: "if" failed and "fail" requested
 > yes
 > match_address:   no
+> protected:  
 > 
 > -be Sender host name and address etc, all unset
 > -oMa  sender_host_address = 

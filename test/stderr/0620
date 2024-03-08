@@ -13,58 +13,58 @@ LOG: smtp_connection MAIN
 try option message_size_limit
 try option acl_smtp_connect
 try option smtp_banner
- ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ╭considering: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
  ├──────value: primaryhostname.ex
- ├considering:  ESMTP Exim $version_number $tod_full
- ├───────text:  ESMTP Exim 
- ├considering: $version_number $tod_full
+ ├considering: ░ESMTP░Exim░$version_number░$tod_full
+ ├───────text: ░ESMTP░Exim░
+ ├considering: $version_number░$tod_full
  ├──────value: x.yz
- ├considering:  $tod_full
- ├───────text:  
+ ├considering: ░$tod_full
+ ├───────text: ░
  ├considering: $tod_full
- ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
- ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
- ╰─────result: primaryhostname.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ ├──────value: Tue,░2░Mar░1999░09:44:33░+0000
+ ├───expanded: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
+ ╰─────result: primaryhostname.ex░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 try option acl_smtp_helo
 try option acl_smtp_mail
 try option acl_smtp_rcpt
- ╭considering: domain $domain
- ├───────text: domain 
+ ╭considering: domain░$domain
+ ├───────text: domain░
  ├considering: $domain
  ├──────value: trythiskey.ex
             ╰──(tainted)
- ├──expanding: domain $domain
- ╰─────result: domain trythiskey.ex
+ ├───expanded: domain░$domain
+ ╰─────result: domain░trythiskey.ex
             ╰──(tainted)
 LOG: MAIN
   domain trythiskey.ex
 created log directory TESTSUITE/spool/log
- ╭considering: value  $domain_data
- ├───────text: value  
+ ╭considering: value░░$domain_data
+ ├───────text: value░░
  ├considering: $domain_data
- ├──────value: has this data
- ├──expanding: value  $domain_data
- ╰─────result: value  has this data
+ ├──────value: has░this░data
+ ├───expanded: value░░$domain_data
+ ╰─────result: value░░has░this░data
 LOG: MAIN
   value  has this data
- ╭considering: \$0 '$0'  \$1 '$1'
+ ╭considering: \$0░'$0'░░\$1░'$1'
  ├backslashed: '\$'
- ├considering: 0 '$0'  \$1 '$1'
- ├───────text: 0 '
- ├considering: $0'  \$1 '$1'
+ ├considering: 0░'$0'░░\$1░'$1'
+ ├───────text: 0░'
+ ├considering: $0'░░\$1░'$1'
  ├──────value: trythiskey.ex
             ╰──(tainted)
- ├considering: '  \$1 '$1'
- ├───────text: '  
- ├considering: \$1 '$1'
+ ├considering: '░░\$1░'$1'
+ ├───────text: '░░
+ ├considering: \$1░'$1'
  ├backslashed: '\$'
- ├considering: 1 '$1'
- ├───────text: 1 '
+ ├considering: 1░'$1'
+ ├───────text: 1░'
  ├considering: $1'
  ├considering: '
  ├───────text: '
- ├──expanding: \$0 '$0'  \$1 '$1'
- ╰─────result: $0 'trythiskey.ex'  $1 ''
+ ├───expanded: \$0░'$0'░░\$1░'$1'
+ ╰─────result: $0░'trythiskey.ex'░░$1░''
             ╰──(tainted)
 LOG: MAIN
   $0 'trythiskey.ex'  $1 ''
@@ -87,57 +87,57 @@ LOG: smtp_connection MAIN
 try option message_size_limit
 try option acl_smtp_connect
 try option smtp_banner
- ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ╭considering: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
  ├──────value: primaryhostname.ex
- ├considering:  ESMTP Exim $version_number $tod_full
- ├───────text:  ESMTP Exim 
- ├considering: $version_number $tod_full
+ ├considering: ░ESMTP░Exim░$version_number░$tod_full
+ ├───────text: ░ESMTP░Exim░
+ ├considering: $version_number░$tod_full
  ├──────value: x.yz
- ├considering:  $tod_full
- ├───────text:  
+ ├considering: ░$tod_full
+ ├───────text: ░
  ├considering: $tod_full
- ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
- ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
- ╰─────result: primaryhostname.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ ├──────value: Tue,░2░Mar░1999░09:44:33░+0000
+ ├───expanded: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
+ ╰─────result: primaryhostname.ex░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 try option acl_smtp_helo
 try option acl_smtp_mail
 try option acl_smtp_rcpt
- ╭considering: domain $domain
- ├───────text: domain 
+ ╭considering: domain░$domain
+ ├───────text: domain░
  ├considering: $domain
  ├──────value: trythiskey.ex
             ╰──(tainted)
- ├──expanding: domain $domain
- ╰─────result: domain trythiskey.ex
+ ├───expanded: domain░$domain
+ ╰─────result: domain░trythiskey.ex
             ╰──(tainted)
 LOG: MAIN
   domain trythiskey.ex
- ╭considering: value  $domain_data
- ├───────text: value  
+ ╭considering: value░░$domain_data
+ ├───────text: value░░
  ├considering: $domain_data
  ├──────value: trythiskey.ex
- ├──expanding: value  $domain_data
- ╰─────result: value  trythiskey.ex
+ ├───expanded: value░░$domain_data
+ ╰─────result: value░░trythiskey.ex
 LOG: MAIN
   value  trythiskey.ex
- ╭considering: \$0 '$0'  \$1 '$1'
+ ╭considering: \$0░'$0'░░\$1░'$1'
  ├backslashed: '\$'
- ├considering: 0 '$0'  \$1 '$1'
- ├───────text: 0 '
- ├considering: $0'  \$1 '$1'
+ ├considering: 0░'$0'░░\$1░'$1'
+ ├───────text: 0░'
+ ├considering: $0'░░\$1░'$1'
  ├──────value: trythiskey.ex
             ╰──(tainted)
- ├considering: '  \$1 '$1'
- ├───────text: '  
- ├considering: \$1 '$1'
+ ├considering: '░░\$1░'$1'
+ ├───────text: '░░
+ ├considering: \$1░'$1'
  ├backslashed: '\$'
- ├considering: 1 '$1'
- ├───────text: 1 '
+ ├considering: 1░'$1'
+ ├───────text: 1░'
  ├considering: $1'
  ├considering: '
  ├───────text: '
- ├──expanding: \$0 '$0'  \$1 '$1'
- ╰─────result: $0 'trythiskey.ex'  $1 ''
+ ├───expanded: \$0░'$0'░░\$1░'$1'
+ ╰─────result: $0░'trythiskey.ex'░░$1░''
             ╰──(tainted)
 LOG: MAIN
   $0 'trythiskey.ex'  $1 ''

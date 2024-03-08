@@ -515,8 +515,18 @@ RESET_AFTER_EXTRA_LINE_READ:
   # time used was fixed when I first started running automatic Exim tests.
 
   # Date/time in header lines and SMTP responses
-  s/[A-Z][a-z]{2},\s\d\d?\s[A-Z][a-z]{2}\s\d{4}\s\d\d\:\d\d:\d\d\s[-+]\d{4}
-    /Tue, 2 Mar 1999 09:44:33 +0000/gx;
+  s/[A-Z][a-z]{2},
+      (\s|\xE2\x96\x91)
+      \d\d?
+      (\s|\xE2\x96\x91)
+      [A-Z][a-z]{2}
+      (\s|\xE2\x96\x91)
+      \d{4}
+      (\s|\xE2\x96\x91)
+      \d\d\:\d\d:\d\d
+      (\s|\xE2\x96\x91)
+      [-+]\d{4}
+    /Tue,${1}2${2}Mar${3}1999${4}09:44:33${5}+0000/gx;
   # and in a French locale
   s/\S{4},\s\d\d?\s[^,]+\s\d{4}\s\d\d\:\d\d:\d\d\s[-+]\d{4}
     /dim., 10 f\xE9vr 2019 20:05:49 +0000/gx;
@@ -535,8 +545,14 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/((D|[RQD]T)=)\d\.\d{3}s/$1q.qqqs/g;
 
   # Date/time in message separators
-  s/(?:[A-Z][a-z]{2}\s){2}\d\d\s\d\d:\d\d:\d\d\s\d\d\d\d
-    /Tue Mar 02 09:44:33 1999/gx;
+  s/(?:[A-Z][a-z]{2}
+      (\s|\xE2\x96\x91)
+    ){2}\d\d
+      (\s|\xE2\x96\x91)
+      \d\d:\d\d:\d\d
+      (\s|\xE2\x96\x91)
+      \d\d\d\d
+    /Tue${1}Mar${1}02${2}09:44:33${3}1999/gx;
 
   # Date of message arrival in spool file as shown by -Mvh
   s/^\d{9,10}\s0$/ddddddddd 0/;
@@ -1206,7 +1222,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^TLS: not preloading (CA bundle|cipher list) for server$/;
     next if /^TLS: not preloading server certs$/;
 
-    # some plaatforms are missing the standard CA bundle file
+    # some platforms are missing the standard CA bundle file
     next if /^tls_set_watch\(\) fail on '\/usr\/lib\/ssl\/cert.pem': No such file or directory$/;
 
     # drop lookups
@@ -1378,7 +1394,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
 
     # Different builds will have different lookup types included
-    s/^\s*search_type \K\d+ \((\w+)\) quoting -1 \(none\)$/NN ($1) quoting -1 (none)/;
+    s/search_type \K\d+ \((\w+)\) quoting -1 \(none\)$/NN ($1) quoting -1 (none)/;
     # and different numbers of lookup types result in different type-code letters,
     # so convert them all to "0"
     s%(?<!lsearch)[^ ](?=TESTSUITE/aux-fixed/(?:0414.list[12]|0464.domains)$)%0%;

@@ -4496,30 +4496,17 @@ return yield;
 /************************************************/
 static void
 debug_expansion_interim(const uschar * what, const uschar * value, int nchar,
-  BOOL skipping)
+  esi_flags flags)
 {
-DEBUG(D_noutf8)
-  debug_printf_indent("|");
-else
-  debug_printf_indent(UTF8_VERT_RIGHT);
+debug_printf_indent("%V", "K");
 
 for (int fill = 11 - Ustrlen(what); fill > 0; fill--)
-  DEBUG(D_noutf8)
-    debug_printf("-");
-  else
-    debug_printf(UTF8_HORIZ);
+  debug_printf("%V", "-");
 
-debug_printf("%s: %.*s\n", what, nchar, value);
+debug_printf("%s: %.*W\n", what, nchar, value);
 if (is_tainted(value))
-  {
-  DEBUG(D_noutf8)
-    debug_printf_indent("%s     \\__", skipping ? "|     " : "      ");
-  else
-    debug_printf_indent("%s",
-      skipping
-      ? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
-  debug_printf("(tainted)\n");
-  }
+  debug_printf_indent("%V          %V(tainted)\n",
+    flags & ESI_SKIPPING ? "|" : " ", "\\__");
 }
 
 
@@ -4618,17 +4605,10 @@ while (*s)
 
   DEBUG(D_expand)
     {
-    DEBUG(D_noutf8)
-      debug_printf_indent("%c%s: %s\n",
-	first ? '/' : '|',
-	flags & ESI_SKIPPING ? "---scanning" : "considering", s);
-    else
-      debug_printf_indent("%s%s: %s\n",
-	first ? UTF8_DOWN_RIGHT : UTF8_VERT_RIGHT,
-	flags & ESI_SKIPPING
-	? UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ "scanning"
-	: "considering",
-	s);
+    debug_printf_indent("%V%V%s: %W\n",
+      first ? "/" : "K",
+      flags & ESI_SKIPPING ? "---" : "",
+      flags & ESI_SKIPPING ? "scanning" : "considering", s);
     first = FALSE;
     }
 
@@ -4651,21 +4631,20 @@ while (*s)
       for (s = t; *s ; s++) if (*s == '\\' && s[1] == 'N') break;
 
       DEBUG(D_expand)
-	debug_expansion_interim(US"protected", t, (int)(s - t), !!(flags & ESI_SKIPPING));
-      yield = string_catn(yield, t, s - t);
+	debug_expansion_interim(US"protected", t, (int)(s - t), flags);
+      if (!(flags & ESI_SKIPPING))
+	yield = string_catn(yield, t, s - t);
       if (*s) s += 2;
       }
     else
       {
       uschar ch[1];
       DEBUG(D_expand)
-	DEBUG(D_noutf8)
-	  debug_printf_indent("|backslashed: '\\%c'\n", s[1]);
-	else
-	  debug_printf_indent(UTF8_VERT_RIGHT "backslashed: '\\%c'\n", s[1]);
+	debug_printf_indent("%Vbackslashed: '\\%c'\n", "K", s[1]);
       ch[0] = string_interpret_escape(&s);
+      if (!(flags & ESI_SKIPPING))
+	yield = string_catn(yield, ch, 1);
       s++;
-      yield = string_catn(yield, ch, 1);
       }
     continue;
     }
@@ -4682,9 +4661,10 @@ while (*s)
     for (const uschar * t = s+1;
 	*t && *t != '$' && *t != '}' && *t != '\\'; t++) i++;
 
-    DEBUG(D_expand) debug_expansion_interim(US"text", s, i, !!(flags & ESI_SKIPPING));
+    DEBUG(D_expand) debug_expansion_interim(US"text", s, i, flags);
 
-    yield = string_catn(yield, s, i);
+    if (!(flags & ESI_SKIPPING))
+      yield = string_catn(yield, s, i);
     s += i;
     continue;
     }
@@ -4710,15 +4690,16 @@ while (*s)
     /* If this is the first thing to be expanded, release the pre-allocated
     buffer. */
 
-    if (!yield)
-      g = store_get(sizeof(gstring), GET_UNTAINTED);
-    else if (yield->ptr == 0)
-      {
-      if (resetok) reset_point = store_reset(reset_point);
-      yield = NULL;
-      reset_point = store_mark();
-      g = store_get(sizeof(gstring), GET_UNTAINTED);	/* alloc _before_ calling find_variable() */
-      }
+    if (!(flags & ESI_SKIPPING))
+      if (!yield)
+	g = store_get(sizeof(gstring), GET_UNTAINTED);
+      else if (yield->ptr == 0)
+	{
+	if (resetok) reset_point = store_reset(reset_point);
+	yield = NULL;
+	reset_point = store_mark();
+	g = store_get(sizeof(gstring), GET_UNTAINTED);	/* alloc _before_ calling find_variable() */
+	}
 
     /* Header */
 
@@ -4767,16 +4748,17 @@ while (*s)
     reset in the middle of the buffer will make it inaccessible. */
 
     len = Ustrlen(value);
-    DEBUG(D_expand) debug_expansion_interim(US"value", value, len, !!(flags & ESI_SKIPPING));
-    if (!yield && newsize != 0)
-      {
-      yield = g;
-      yield->size = newsize;
-      yield->ptr = len;
-      yield->s = US value; /* known to be in new store i.e. a copy, so deconst safe */
-      }
-    else
-      yield = string_catn(yield, value, len);
+    DEBUG(D_expand) debug_expansion_interim(US"value", value, len, flags);
+    if (!(flags & ESI_SKIPPING))
+      if (!yield && newsize != 0)
+	{
+	yield = g;
+	yield->size = newsize;
+	yield->ptr = len;
+	yield->s = US value; /* known to be in new store i.e. a copy, so deconst safe */
+	}
+      else
+	yield = string_catn(yield, value, len);
 
     continue;
     }
@@ -4787,8 +4769,9 @@ while (*s)
     s = read_cnumber(&n, s);
     if (n >= 0 && n <= expand_nmax)
       {
-      DEBUG(D_expand) debug_expansion_interim(US"value", expand_nstring[n], expand_nlength[n], !!(flags & ESI_SKIPPING));
-      yield = string_catn(yield, expand_nstring[n], expand_nlength[n]);
+      DEBUG(D_expand) debug_expansion_interim(US"value", expand_nstring[n], expand_nlength[n], flags);
+      if (!(flags & ESI_SKIPPING))
+	yield = string_catn(yield, expand_nstring[n], expand_nlength[n]);
       }
     continue;
     }
@@ -4815,8 +4798,9 @@ while (*s)
       }
     if (n >= 0 && n <= expand_nmax)
       {
-      DEBUG(D_expand) debug_expansion_interim(US"value", expand_nstring[n], expand_nlength[n], !!(flags & ESI_SKIPPING));
-      yield = string_catn(yield, expand_nstring[n], expand_nlength[n]);
+      DEBUG(D_expand) debug_expansion_interim(US"value", expand_nstring[n], expand_nlength[n], flags);
+      if (!(flags & ESI_SKIPPING))
+	yield = string_catn(yield, expand_nstring[n], expand_nlength[n]);
       }
     continue;
     }
@@ -4941,9 +4925,9 @@ while (*s)
 
       DEBUG(D_expand)
 	{
-	debug_expansion_interim(US"condition", s, (int)(next_s - s), !!(flags & ESI_SKIPPING));
+	debug_expansion_interim(US"condition", s, (int)(next_s - s), flags);
 	debug_expansion_interim(US"result",
-	  cond ? US"true" : US"false", cond ? 4 : 5, !!(flags & ESI_SKIPPING));
+	  cond ? US"true" : US"false", cond ? 4 : 5, flags);
 	}
 
       s = next_s;
@@ -7162,7 +7146,7 @@ while (*s)
     if (yield && (expansion_start > 0 || *s))
       debug_expansion_interim(US"item-res",
 	  yield->s + expansion_start, yield->ptr - expansion_start,
-	  !!(flags & ESI_SKIPPING));
+	  flags);
   continue;
 
 NOT_ITEM: ;
@@ -8347,27 +8331,13 @@ NOT_ITEM: ;
 	int i = gstring_length(yield) - expansion_start;
 	BOOL tainted = is_tainted(s);
 
-	DEBUG(D_noutf8)
+	debug_printf_indent("%Vop-res: %.*s\n", "K-----", i, s);
+	if (tainted)
 	  {
-	  debug_printf_indent("|-----op-res: %.*s\n", i, s);
-	  if (tainted)
-	    {
-	    debug_printf_indent("%s     \\__", flags & ESI_SKIPPING ? "|     " : "      ");
-	    debug_print_taint(res);
-	    }
-	  }
-	else
-	  {
-	  debug_printf_indent(UTF8_VERT_RIGHT
-	    UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-	    "op-res: %.*s\n", i, s);
-	  if (tainted)
-	    {
-	    debug_printf_indent("%s",
-	      flags & ESI_SKIPPING
-	      ? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
-	    debug_print_taint(res);
-	    }
+	  debug_printf_indent("%V          %V",
+	    flags & ESI_SKIPPING ? "|" : " ",
+	    "\\__");
+	  debug_print_taint(res);
 	  }
 	}
        continue;
@@ -8459,39 +8429,25 @@ left != NULL, return a pointer to the terminator. */
   DEBUG(D_expand)
     {
     BOOL tainted = is_tainted(res);
-    DEBUG(D_noutf8)
-      {
-      debug_printf_indent("|--expanding: %.*s\n", (int)(s - string), string);
-      debug_printf_indent("%sresult: %s\n",
-	flags & ESI_SKIPPING ? "|-----" : "\\_____", res);
-      if (tainted)
-	{
-	debug_printf_indent("%s     \\__", flags & ESI_SKIPPING ? "|     " : "      ");
-	debug_print_taint(res);
-	}
-      if (flags & ESI_SKIPPING)
-	debug_printf_indent("\\___skipping: result is not used\n");
-      }
+    debug_printf_indent("%Vexpanded: %.*W\n",
+      "K---",
+      (int)(s - string), string);
+    debug_printf_indent("%Vresult: ",
+      flags & ESI_SKIPPING ? "K-----" : "\\_____");
+    if (*res || !(flags & ESI_SKIPPING))
+      debug_printf("%W\n", res);
     else
+      debug_printf(" %Vskipped%V\n", "<", ">");
+    if (tainted)
       {
-      debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
-	"expanding: %.*s\n",
-	(int)(s - string), string);
-      debug_printf_indent("%s" UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-	"result: %s\n",
-	flags & ESI_SKIPPING ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
-	res);
-      if (tainted)
-	{
-	debug_printf_indent("%s",
-	  flags & ESI_SKIPPING
-	  ? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
-	debug_print_taint(res);
-	}
-      if (flags & ESI_SKIPPING)
-	debug_printf_indent(UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-	  "skipping: result is not used\n");
+      debug_printf_indent("%V          %V",
+	flags & ESI_SKIPPING ? "|" : " ",
+	"\\__"
+	);
+      debug_print_taint(res);
       }
+    if (flags & ESI_SKIPPING)
+      debug_printf_indent("%Vskipping: result is not used\n", "\\___");
     }
   if (textonly_p) *textonly_p = textonly;
   expand_level--;
@@ -8517,25 +8473,11 @@ EXPAND_FAILED:
 if (left) *left = s;
 DEBUG(D_expand)
   {
-  DEBUG(D_noutf8)
-    {
-    debug_printf_indent("|failed to expand: %s\n", string);
-    debug_printf_indent("%serror message: %s\n",
-      f.expand_string_forcedfail ? "|---" : "\\___", expand_string_message);
-    if (f.expand_string_forcedfail)
-      debug_printf_indent("\\failure was forced\n");
-    }
-  else
-    {
-    debug_printf_indent(UTF8_VERT_RIGHT "failed to expand: %s\n",
-      string);
-    debug_printf_indent("%s" UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-      "error message: %s\n",
-      f.expand_string_forcedfail ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
-      expand_string_message);
-    if (f.expand_string_forcedfail)
-      debug_printf_indent(UTF8_UP_RIGHT "failure was forced\n");
-    }
+  debug_printf_indent("%Vfailed to expand: %s\n", "K", string);
+  debug_printf_indent("%Verror message: %s\n",
+    f.expand_string_forcedfail ? "K---" : "\\___", expand_string_message);
+  if (f.expand_string_forcedfail)
+    debug_printf_indent("%Vfailure was forced\n", "\\");
   }
 if (resetok_p && !resetok) *resetok_p = FALSE;
 expand_level--;

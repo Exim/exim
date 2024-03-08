@@ -1011,6 +1011,7 @@ match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
 match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
 ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
 match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
+protected: ${expand:\N \N}
 ****
 exim -d-all+expand+noutf8 -be
 primary_hostname: $primary_hostname
@@ -1018,6 +1019,7 @@ match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
 match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
 ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
 match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
+protected: ${expand:\N \N}
 ****
 # Sender host name and address etc, all unset
 exim -be

@@ -1348,7 +1348,7 @@ The return value can be NULL to signify overflow.
 Field width:		decimal digits, or *
 Precision:		dot, followed by decimal digits or *
 Length modifiers:	h  L  l  ll  z
-Conversion specifiers:	n d o u x X p f e E g G % c s S T Y D M
+Conversion specifiers:	n d o u x X p f e E g G % c s S T W V Y D M
 
 Returns the possibly-new (if copy for growth or taint-handling was needed)
 string, not nul-terminated.
@@ -1597,11 +1597,77 @@ while (*fp)
     case 'Y':			/* gstring pointer */
       {
       gstring * zg = va_arg(ap, gstring *);
-      if (zg) { s = CS zg->s; slen = zg->ptr;    }
+      if (zg) { s = CS zg->s; slen = gstring_length(zg); }
       else    { s = null;     slen = Ustrlen(s); }
       goto INSERT_GSTRING;
       }
+#ifndef COMPILE_UTILITY
+    case 'V':			/* Maybe convert ascii-art to UTF-8 chars */
+      {
+      gstring * zg = NULL;
+      s = va_arg(ap, char *);
+      if (IS_DEBUG(D_noutf8))
+	for ( ; *s; s++)
+	  zg = string_catn(zg, CUS (*s == 'K' ? "|" : s), 1);
+      else
+	for ( ; *s; s++) switch (*s)
+	  {
+	  case '\\': zg = string_catn(zg, US UTF8_UP_RIGHT,	  3); break;
+	  case '/':  zg = string_catn(zg, US UTF8_DOWN_RIGHT,	  3); break;
+	  case '-':
+	  case '_':  zg = string_catn(zg, US UTF8_HORIZ,	  3); break;
+	  case '|':  zg = string_catn(zg, US UTF8_VERT,		  3); break;
+	  case 'K':  zg = string_catn(zg, US UTF8_VERT_RIGHT,	  3); break;
+	  case '<':  zg = string_catn(zg, US UTF8_LEFT_TRIANGLE,  3); break;
+	  case '>':  zg = string_catn(zg, US UTF8_RIGHT_TRIANGLE, 3); break;
+	  default:   zg = string_catn(zg, CUS s, 1);		      break;
+	  }
 
+      if (!zg)
+	break;
+      s = CS zg->s;
+      slen = gstring_length(zg);
+      goto INSERT_GSTRING;
+      }
+
+    case 'W':			/* Maybe mark up spaces & newlines */
+      s = va_arg(ap, char *);
+      if (Ustrpbrk(s, " \n") && !IS_DEBUG(D_noutf8))
+	{
+	gstring * zg = NULL;
+	int p = precision;
+	for ( ; *s; s++)
+	  {
+	  /* Take a given precision as applying to the input; expand
+	  it for the transformed result */
+
+	  if (p >= 0 && --p < 0) break;
+	  switch (*s)
+	    {
+	    case ' ':
+	      zg = string_catn(zg, CUS UTF8_LIGHT_SHADE, 3);
+	      if (precision >= 0) precision += 2;
+	      break;
+	    case '\n':
+	      zg = string_catn(zg, CUS UTF8_L_ARROW_HOOK "\n", 4);
+	      if (precision >= 0) precision += 3;
+	      break;
+	    default:
+	      zg = string_catn(zg, CUS s, 1);
+	      break;
+	    }
+	  }
+	if (zg) { s = CS zg->s; slen = gstring_length(zg); }
+	else    { s = null;     slen = Ustrlen(s); }
+	}
+      else
+	{
+	if (!s) s = null;
+	slen = Ustrlen(s);
+	}
+      goto INSERT_GSTRING;
+
+#endif
     case 's':
     case 'S':                   /* Forces *lower* case */
     case 'T':                   /* Forces *upper* case */
@@ -1610,7 +1676,7 @@ while (*fp)
       if (!s) s = null;
       slen = Ustrlen(s);
 
-    INSERT_GSTRING:		/* Coome to from %Y above */
+    INSERT_GSTRING:		/* Come to from %Y above */
 
       if (!(flags & SVFMT_TAINT_NOCHK) && is_incompatible(g->s, s))
 	if (flags & SVFMT_REBUFFER)
@@ -1909,3 +1975,5 @@ return 0;
 #endif
 
 /* End of string.c */
+/* vi: aw ai sw=2
+*/

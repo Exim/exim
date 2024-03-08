@@ -107,8 +107,9 @@ don't make the file descriptors two-way. */
 /* Debugging control */
 
 #define LOG_NAME_SIZE 256
-#define DEBUG(x)      if (debug_selector & (x))
-#define HDEBUG(x)     if (host_checking || debug_selector & (x))
+#define IS_DEBUG(x)	(debug_selector & (x))
+#define DEBUG(x)	if (IS_DEBUG(x))
+#define HDEBUG(x)	if (host_checking || IS_DEBUG(x))
 
 /* The default From: text for DSNs */
 
@@ -1057,6 +1058,10 @@ enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 #define UTF8_VERT_RIGHT		"\xE2\x94\x9C"
 #define UTF8_UP_RIGHT		"\xE2\x95\xB0"
 #define UTF8_VERT_2DASH		"\xE2\x95\x8E"
+#define UTF8_LEFT_TRIANGLE	"\xE2\x97\x80"
+#define UTF8_RIGHT_TRIANGLE	"\xE2\x96\xB6"
+#define UTF8_LIGHT_SHADE	"\xE2\x96\x91"
+#define UTF8_L_ARROW_HOOK	"\xE2\x86\xA9"
 
 
 /* Options on tls_close */

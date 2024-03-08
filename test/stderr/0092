@@ -68,34 +68,34 @@ LOG: smtp_connection MAIN
 try option message_size_limit
 host in host_lookup? no (option unset)
 set_process_info: pppp handling incoming connection from [V4NET.0.0.1]
- ╭considering: ${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s
-  ╭considering: V4NET.0.0.1} {$sender_host_address} {2} {30}}s
+ ╭considering: ${if░eq░{V4NET.0.0.1}░{$sender_host_address}░{2}░{30}}s
+  ╭considering: V4NET.0.0.1}░{$sender_host_address}░{2}░{30}}s
   ├───────text: V4NET.0.0.1
-  ├considering: } {$sender_host_address} {2} {30}}s
-  ├──expanding: V4NET.0.0.1
+  ├considering: }░{$sender_host_address}░{2}░{30}}s
+  ├───expanded: V4NET.0.0.1
   ╰─────result: V4NET.0.0.1
-  ╭considering: $sender_host_address} {2} {30}}s
+  ╭considering: $sender_host_address}░{2}░{30}}s
   ├──────value: V4NET.0.0.1
-  ├considering: } {2} {30}}s
-  ├──expanding: $sender_host_address
+  ├considering: }░{2}░{30}}s
+  ├───expanded: $sender_host_address
   ╰─────result: V4NET.0.0.1
- ├──condition: eq {V4NET.0.0.1} {$sender_host_address}
+ ├──condition: eq░{V4NET.0.0.1}░{$sender_host_address}
  ├─────result: true
-  ╭considering: 2} {30}}s
+  ╭considering: 2}░{30}}s
   ├───────text: 2
-  ├considering: } {30}}s
-  ├──expanding: 2
+  ├considering: }░{30}}s
+  ├───expanded: 2
   ╰─────result: 2
   ╭───scanning: 30}}s
   ├───────text: 30
   ├───scanning: }}s
-  ├──expanding: 30
-  ├─────result: 30
+  ├───expanded: 30
+  ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
  ├───item-res: 2
  ├considering: s
  ├───────text: s
- ├──expanding: ${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s
+ ├───expanded: ${if░eq░{V4NET.0.0.1}░{$sender_host_address}░{2}░{30}}s
  ╰─────result: 2s
 host in host_reject_connection? no (option unset)
 host in sender_unqualified_hosts? no (option unset)
@@ -105,18 +105,18 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 try option acl_smtp_connect
 try option smtp_banner
- ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ╭considering: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
  ├──────value: myhost.test.ex
- ├considering:  ESMTP Exim $version_number $tod_full
- ├───────text:  ESMTP Exim 
- ├considering: $version_number $tod_full
+ ├considering: ░ESMTP░Exim░$version_number░$tod_full
+ ├───────text: ░ESMTP░Exim░
+ ├considering: $version_number░$tod_full
  ├──────value: x.yz
- ├considering:  $tod_full
- ├───────text:  
+ ├considering: ░$tod_full
+ ├───────text: ░
  ├considering: $tod_full
- ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
- ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
- ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ ├──────value: Tue,░2░Mar░1999░09:44:33░+0000
+ ├───expanded: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
+ ╰─────result: myhost.test.ex░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< helo test

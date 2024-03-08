@@ -1,4 +1,3 @@
-01:01:01 p1235  no   domain  retry record
 01:01:01 p1235  no   address retry record
 01:01:01 p1235  dest3@test.ex: queued for routing
 01:01:01 p1235  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -11,7 +10,7 @@
 01:01:01 p1235   ├considering: $local_part
 01:01:01 p1235   ├──────value: dest3
 01:01:01 p1235              ╰──(tainted)
-01:01:01 p1235   ├──expanding: /$local_part
+01:01:01 p1235   ├───expanded: /$local_part
 01:01:01 p1235   ╰─────result: /dest3
 01:01:01 p1235              ╰──(tainted)
 01:01:01 p1235  dest3 in "/dest3"?

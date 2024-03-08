@@ -278,18 +278,18 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  host in helo_accept_junk_hosts? no (option unset)
 01:01:01 p1235  try option acl_smtp_connect
 01:01:01 p1235  try option smtp_banner
-01:01:01 p1235   ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+01:01:01 p1235   ╭considering: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
 01:01:01 p1235   ├──────value: myhost.test.ex
-01:01:01 p1235   ├considering:  ESMTP Exim $version_number $tod_full
-01:01:01 p1235   ├───────text:  ESMTP Exim 
-01:01:01 p1235   ├considering: $version_number $tod_full
+01:01:01 p1235   ├considering: ░ESMTP░Exim░$version_number░$tod_full
+01:01:01 p1235   ├───────text: ░ESMTP░Exim░
+01:01:01 p1235   ├considering: $version_number░$tod_full
 01:01:01 p1235   ├──────value: x.yz
-01:01:01 p1235   ├considering:  $tod_full
-01:01:01 p1235   ├───────text:  
+01:01:01 p1235   ├considering: ░$tod_full
+01:01:01 p1235   ├───────text: ░
 01:01:01 p1235   ├considering: $tod_full
-01:01:01 p1235   ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
-01:01:01 p1235   ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
-01:01:01 p1235   ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+01:01:01 p1235   ├──────value: Tue,░2░Mar░1999░09:44:33░+0000
+01:01:01 p1235   ├───expanded: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
+01:01:01 p1235   ╰─────result: myhost.test.ex░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 01:01:01 p1235  host in pipelining_connect_advertise_hosts?
 01:01:01 p1235   list element: 
 01:01:01 p1235  SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -315,17 +315,17 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  try option acl_smtp_rcpt
 01:01:01 p1235  using ACL "check_recipient"
 01:01:01 p1235  processing "warn" (TESTSUITE/test-config 26)
-01:01:01 p1235   ╭considering: ok:    ${lookup mysql                    {select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235   ├───────text: ok:    
-01:01:01 p1235   ├considering: ${lookup mysql                    {select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235    ╭considering: select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235    ├───────text: select name from them where id = '
+01:01:01 p1235   ╭considering: ok:░░░░${lookup░mysql░░░░░░░░░░░░░░░░░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235   ├───────text: ok:░░░░
+01:01:01 p1235   ├considering: ${lookup░mysql░░░░░░░░░░░░░░░░░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235    ╭considering: select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235    ├───────text: select░name░from░them░where░id░=░'
 01:01:01 p1235    ├considering: ${quote_mysql:$local_part}'}}
 01:01:01 p1235     ╭considering: $local_part}'}}
 01:01:01 p1235     ├──────value: c
 01:01:01 p1235                ╰──(tainted)
 01:01:01 p1235     ├considering: }'}}
-01:01:01 p1235     ├──expanding: $local_part
+01:01:01 p1235     ├───expanded: $local_part
 01:01:01 p1235     ╰─────result: c
 01:01:01 p1235                ╰──(tainted)
 01:01:01 p1235    ├─────op-res: c
@@ -333,8 +333,8 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    ├considering: '}}
 01:01:01 p1235    ├───────text: '
 01:01:01 p1235    ├considering: }}
-01:01:01 p1235    ├──expanding: select name from them where id = '${quote_mysql:$local_part}'
-01:01:01 p1235    ╰─────result: select name from them where id = 'c'
+01:01:01 p1235    ├───expanded: select░name░from░them░where░id░=░'${quote_mysql:$local_part}'
+01:01:01 p1235    ╰─────result: select░name░from░them░where░id░=░'c'
 01:01:01 p1235               ╰──(tainted, quoted:mysql)
 01:01:01 p1235   search_open: mysql "NULL"
 01:01:01 p1235   search_find: file="NULL"
@@ -350,23 +350,23 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   creating new cache entry
 01:01:01 p1235   lookup failed
 01:01:01 p1235   ├───item-res: 
-01:01:01 p1235   ├──expanding: ok:    ${lookup mysql                    {select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235   ╰─────result: ok:    
+01:01:01 p1235   ├───expanded: ok:░░░░${lookup░mysql░░░░░░░░░░░░░░░░░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235   ╰─────result: ok:░░░░
 01:01:01 p1235  check set acl_m0 = ok:    ${lookup mysql                    {select name from them where id = '${quote_mysql:$local_part}'}}
 01:01:01 p1235                   = ok:    
-01:01:01 p1235   ╭considering: FAIL1: ${lookup mysql,no_rd              {select name from them where id = '$local_part'}}
-01:01:01 p1235   ├───────text: FAIL1: 
-01:01:01 p1235   ├considering: ${lookup mysql,no_rd              {select name from them where id = '$local_part'}}
-01:01:01 p1235    ╭considering: select name from them where id = '$local_part'}}
-01:01:01 p1235    ├───────text: select name from them where id = '
+01:01:01 p1235   ╭considering: FAIL1:░${lookup░mysql,no_rd░░░░░░░░░░░░░░{select░name░from░them░where░id░=░'$local_part'}}
+01:01:01 p1235   ├───────text: FAIL1:░
+01:01:01 p1235   ├considering: ${lookup░mysql,no_rd░░░░░░░░░░░░░░{select░name░from░them░where░id░=░'$local_part'}}
+01:01:01 p1235    ╭considering: select░name░from░them░where░id░=░'$local_part'}}
+01:01:01 p1235    ├───────text: select░name░from░them░where░id░=░'
 01:01:01 p1235    ├considering: $local_part'}}
 01:01:01 p1235    ├──────value: c
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235    ├considering: '}}
 01:01:01 p1235    ├───────text: '
 01:01:01 p1235    ├considering: }}
-01:01:01 p1235    ├──expanding: select name from them where id = '$local_part'
-01:01:01 p1235    ╰─────result: select name from them where id = 'c'
+01:01:01 p1235    ├───expanded: select░name░from░them░where░id░=░'$local_part'
+01:01:01 p1235    ╰─────result: select░name░from░them░where░id░=░'c'
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235   search_open: mysql "NULL"
 01:01:01 p1235     cached open
@@ -379,30 +379,30 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235                                (tainted)
 01:01:01 p1235  LOG: MAIN PANIC
 01:01:01 p1235    tainted search query is not properly quoted (ACL warn, TESTSUITE/test-config 26): select name from them where id = 'c'
-01:01:01 p1235   search_type 13 (mysql) quoting -1 (none)
+01:01:01 p1235   search_type NN (mysql) quoting -1 (none)
 01:01:01 p1235   MySQL query: "select name from them where id = 'c'" opts 'no_rd'
 01:01:01 p1235   MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   MYSQL: no data found
 01:01:01 p1235   replacing old cache entry
 01:01:01 p1235   lookup failed
 01:01:01 p1235   ├───item-res: 
-01:01:01 p1235   ├──expanding: FAIL1: ${lookup mysql,no_rd              {select name from them where id = '$local_part'}}
-01:01:01 p1235   ╰─────result: FAIL1: 
+01:01:01 p1235   ├───expanded: FAIL1:░${lookup░mysql,no_rd░░░░░░░░░░░░░░{select░name░from░them░where░id░=░'$local_part'}}
+01:01:01 p1235   ╰─────result: FAIL1:░
 01:01:01 p1235  check set acl_m0 = FAIL1: ${lookup mysql,no_rd              {select name from them where id = '$local_part'}}
 01:01:01 p1235                   = FAIL1: 
 01:01:01 p1235  warn: condition test succeeded in ACL "check_recipient"
 01:01:01 p1235  processing "warn" (TESTSUITE/test-config 31)
-01:01:01 p1235   ╭considering: ok:    ${lookup mysql,servers=127.0.0.1::PORT_N/test/root/pass      {select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235   ├───────text: ok:    
-01:01:01 p1235   ├considering: ${lookup mysql,servers=127.0.0.1::PORT_N/test/root/pass      {select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235    ╭considering: select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235    ├───────text: select name from them where id = '
+01:01:01 p1235   ╭considering: ok:░░░░${lookup░mysql,servers=127.0.0.1::PORT_N/test/root/pass░░░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235   ├───────text: ok:░░░░
+01:01:01 p1235   ├considering: ${lookup░mysql,servers=127.0.0.1::PORT_N/test/root/pass░░░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235    ╭considering: select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235    ├───────text: select░name░from░them░where░id░=░'
 01:01:01 p1235    ├considering: ${quote_mysql:$local_part}'}}
 01:01:01 p1235     ╭considering: $local_part}'}}
 01:01:01 p1235     ├──────value: c
 01:01:01 p1235                ╰──(tainted)
 01:01:01 p1235     ├considering: }'}}
-01:01:01 p1235     ├──expanding: $local_part
+01:01:01 p1235     ├───expanded: $local_part
 01:01:01 p1235     ╰─────result: c
 01:01:01 p1235                ╰──(tainted)
 01:01:01 p1235    ├─────op-res: c
@@ -410,8 +410,8 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    ├considering: '}}
 01:01:01 p1235    ├───────text: '
 01:01:01 p1235    ├considering: }}
-01:01:01 p1235    ├──expanding: select name from them where id = '${quote_mysql:$local_part}'
-01:01:01 p1235    ╰─────result: select name from them where id = 'c'
+01:01:01 p1235    ├───expanded: select░name░from░them░where░id░=░'${quote_mysql:$local_part}'
+01:01:01 p1235    ╰─────result: select░name░from░them░where░id░=░'c'
 01:01:01 p1235               ╰──(tainted, quoted:mysql)
 01:01:01 p1235   search_open: mysql "NULL"
 01:01:01 p1235     cached open
@@ -428,21 +428,21 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   replacing old cache entry
 01:01:01 p1235   lookup failed
 01:01:01 p1235   ├───item-res: 
-01:01:01 p1235   ├──expanding: ok:    ${lookup mysql,servers=127.0.0.1::PORT_N/test/root/pass      {select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235   ╰─────result: ok:    
+01:01:01 p1235   ├───expanded: ok:░░░░${lookup░mysql,servers=127.0.0.1::PORT_N/test/root/pass░░░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235   ╰─────result: ok:░░░░
 01:01:01 p1235  check set acl_m0 = ok:    ${lookup mysql,servers=127.0.0.1::PORT_N/test/root/pass      {select name from them where id = '${quote_mysql:$local_part}'}}
 01:01:01 p1235                   = ok:    
-01:01:01 p1235   ╭considering: ok:    ${lookup mysql,servers=127.0.0.1::PORT_N    {select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235   ├───────text: ok:    
-01:01:01 p1235   ├considering: ${lookup mysql,servers=127.0.0.1::PORT_N    {select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235    ╭considering: select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235    ├───────text: select name from them where id = '
+01:01:01 p1235   ╭considering: ok:░░░░${lookup░mysql,servers=127.0.0.1::PORT_N░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235   ├───────text: ok:░░░░
+01:01:01 p1235   ├considering: ${lookup░mysql,servers=127.0.0.1::PORT_N░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235    ╭considering: select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235    ├───────text: select░name░from░them░where░id░=░'
 01:01:01 p1235    ├considering: ${quote_mysql:$local_part}'}}
 01:01:01 p1235     ╭considering: $local_part}'}}
 01:01:01 p1235     ├──────value: c
 01:01:01 p1235                ╰──(tainted)
 01:01:01 p1235     ├considering: }'}}
-01:01:01 p1235     ├──expanding: $local_part
+01:01:01 p1235     ├───expanded: $local_part
 01:01:01 p1235     ╰─────result: c
 01:01:01 p1235                ╰──(tainted)
 01:01:01 p1235    ├─────op-res: c
@@ -450,8 +450,8 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    ├considering: '}}
 01:01:01 p1235    ├───────text: '
 01:01:01 p1235    ├considering: }}
-01:01:01 p1235    ├──expanding: select name from them where id = '${quote_mysql:$local_part}'
-01:01:01 p1235    ╰─────result: select name from them where id = 'c'
+01:01:01 p1235    ├───expanded: select░name░from░them░where░id░=░'${quote_mysql:$local_part}'
+01:01:01 p1235    ╰─────result: select░name░from░them░where░id░=░'c'
 01:01:01 p1235               ╰──(tainted, quoted:mysql)
 01:01:01 p1235   search_open: mysql "NULL"
 01:01:01 p1235     cached open
@@ -468,21 +468,21 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   replacing old cache entry
 01:01:01 p1235   lookup failed
 01:01:01 p1235   ├───item-res: 
-01:01:01 p1235   ├──expanding: ok:    ${lookup mysql,servers=127.0.0.1::PORT_N    {select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235   ╰─────result: ok:    
+01:01:01 p1235   ├───expanded: ok:░░░░${lookup░mysql,servers=127.0.0.1::PORT_N░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235   ╰─────result: ok:░░░░
 01:01:01 p1235  check set acl_m0 = ok:    ${lookup mysql,servers=127.0.0.1::PORT_N    {select name from them where id = '${quote_mysql:$local_part}'}}
 01:01:01 p1235                   = ok:    
-01:01:01 p1235   ╭considering: FAIL2: ${lookup mysql     {servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235   ├───────text: FAIL2: 
-01:01:01 p1235   ├considering: ${lookup mysql     {servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235    ╭considering: servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = '${quote_mysql:$local_part}'}}
-01:01:01 p1235    ├───────text: servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = '
+01:01:01 p1235   ╭considering: FAIL2:░${lookup░mysql░░░░░{servers=127.0.0.1::PORT_N/test/root/pass;░select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235   ├───────text: FAIL2:░
+01:01:01 p1235   ├considering: ${lookup░mysql░░░░░{servers=127.0.0.1::PORT_N/test/root/pass;░select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235    ╭considering: servers=127.0.0.1::PORT_N/test/root/pass;░select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
+01:01:01 p1235    ├───────text: servers=127.0.0.1::PORT_N/test/root/pass;░select░name░from░them░where░id░=░'
 01:01:01 p1235    ├considering: ${quote_mysql:$local_part}'}}
 01:01:01 p1235     ╭considering: $local_part}'}}
 01:01:01 p1235     ├──────value: c
 01:01:01 p1235                ╰──(tainted)
 01:01:01 p1235     ├considering: }'}}
-01:01:01 p1235     ├──expanding: $local_part
+01:01:01 p1235     ├───expanded: $local_part
 01:01:01 p1235     ╰─────result: c
 01:01:01 p1235                ╰──(tainted)
 01:01:01 p1235    ├─────op-res: c
@@ -490,8 +490,8 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    ├considering: '}}
 01:01:01 p1235    ├───────text: '
 01:01:01 p1235    ├considering: }}
-01:01:01 p1235    ├──expanding: servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = '${quote_mysql:$local_part}'
-01:01:01 p1235    ╰─────result: servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = 'c'
+01:01:01 p1235    ├───expanded: servers=127.0.0.1::PORT_N/test/root/pass;░select░name░from░them░where░id░=░'${quote_mysql:$local_part}'
+01:01:01 p1235    ╰─────result: servers=127.0.0.1::PORT_N/test/root/pass;░select░name░from░them░where░id░=░'c'
 01:01:01 p1235               ╰──(tainted, quoted:mysql)
 01:01:01 p1235   search_open: mysql "NULL"
 01:01:01 p1235     cached open
@@ -513,19 +513,19 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  LOG: MAIN
 01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
 01:01:01 p1235  processing "warn" (TESTSUITE/test-config 39)
-01:01:01 p1235   ╭considering: FAIL3: ${lookup mysql     {servers=127.0.0.1::PORT_N; select name from them where id = '$local_part'}}
-01:01:01 p1235   ├───────text: FAIL3: 
-01:01:01 p1235   ├considering: ${lookup mysql     {servers=127.0.0.1::PORT_N; select name from them where id = '$local_part'}}
-01:01:01 p1235    ╭considering: servers=127.0.0.1::PORT_N; select name from them where id = '$local_part'}}
-01:01:01 p1235    ├───────text: servers=127.0.0.1::PORT_N; select name from them where id = '
+01:01:01 p1235   ╭considering: FAIL3:░${lookup░mysql░░░░░{servers=127.0.0.1::PORT_N;░select░name░from░them░where░id░=░'$local_part'}}
+01:01:01 p1235   ├───────text: FAIL3:░
+01:01:01 p1235   ├considering: ${lookup░mysql░░░░░{servers=127.0.0.1::PORT_N;░select░name░from░them░where░id░=░'$local_part'}}
+01:01:01 p1235    ╭considering: servers=127.0.0.1::PORT_N;░select░name░from░them░where░id░=░'$local_part'}}
+01:01:01 p1235    ├───────text: servers=127.0.0.1::PORT_N;░select░name░from░them░where░id░=░'
 01:01:01 p1235    ├considering: $local_part'}}
 01:01:01 p1235    ├──────value: c
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235    ├considering: '}}
 01:01:01 p1235    ├───────text: '
 01:01:01 p1235    ├considering: }}
-01:01:01 p1235    ├──expanding: servers=127.0.0.1::PORT_N; select name from them where id = '$local_part'
-01:01:01 p1235    ╰─────result: servers=127.0.0.1::PORT_N; select name from them where id = 'c'
+01:01:01 p1235    ├───expanded: servers=127.0.0.1::PORT_N;░select░name░from░them░where░id░=░'$local_part'
+01:01:01 p1235    ╰─────result: servers=127.0.0.1::PORT_N;░select░name░from░them░where░id░=░'c'
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235   search_open: mysql "NULL"
 01:01:01 p1235     cached open
@@ -538,7 +538,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235                                (tainted)
 01:01:01 p1235  LOG: MAIN PANIC
 01:01:01 p1235    tainted search query is not properly quoted (ACL warn, TESTSUITE/test-config 39): select name from them where id = 'c'
-01:01:01 p1235   search_type 13 (mysql) quoting -1 (none)
+01:01:01 p1235   search_type NN (mysql) quoting -1 (none)
 01:01:01 p1235   MySQL query: "servers=127.0.0.1::PORT_N; select name from them where id = 'c'" opts 'NULL'
 01:01:01 p1235  LOG: MAIN
 01:01:01 p1235    Exim configuration error in line 89 of TESTSUITE/test-config:
@@ -548,30 +548,30 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   creating new cache entry
 01:01:01 p1235   lookup failed
 01:01:01 p1235   ├───item-res: 
-01:01:01 p1235   ├──expanding: FAIL3: ${lookup mysql     {servers=127.0.0.1::PORT_N; select name from them where id = '$local_part'}}
-01:01:01 p1235   ╰─────result: FAIL3: 
+01:01:01 p1235   ├───expanded: FAIL3:░${lookup░mysql░░░░░{servers=127.0.0.1::PORT_N;░select░name░from░them░where░id░=░'$local_part'}}
+01:01:01 p1235   ╰─────result: FAIL3:░
 01:01:01 p1235  check set acl_m0 = FAIL3: ${lookup mysql     {servers=127.0.0.1::PORT_N; select name from them where id = '$local_part'}}
 01:01:01 p1235                   = FAIL3: 
 01:01:01 p1235  warn: condition test succeeded in ACL "check_recipient"
 01:01:01 p1235  processing "warn" (TESTSUITE/test-config 42)
 01:01:01 p1235  check set acl_m0 = ok:    hostlist
 01:01:01 p1235  check hosts = net-mysql;select * from them where id='${quote_mysql:$local_part}'
-01:01:01 p1235   ╭considering: net-mysql;select * from them where id='${quote_mysql:$local_part}'
-01:01:01 p1235   ├───────text: net-mysql;select * from them where id='
+01:01:01 p1235   ╭considering: net-mysql;select░*░from░them░where░id='${quote_mysql:$local_part}'
+01:01:01 p1235   ├───────text: net-mysql;select░*░from░them░where░id='
 01:01:01 p1235   ├considering: ${quote_mysql:$local_part}'
 01:01:01 p1235    ╭considering: $local_part}'
 01:01:01 p1235    ├──────value: c
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235    ├considering: }'
-01:01:01 p1235    ├──expanding: $local_part
+01:01:01 p1235    ├───expanded: $local_part
 01:01:01 p1235    ╰─────result: c
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235   ├─────op-res: c
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
 01:01:01 p1235   ├considering: '
 01:01:01 p1235   ├───────text: '
-01:01:01 p1235   ├──expanding: net-mysql;select * from them where id='${quote_mysql:$local_part}'
-01:01:01 p1235   ╰─────result: net-mysql;select * from them where id='c'
+01:01:01 p1235   ├───expanded: net-mysql;select░*░from░them░where░id='${quote_mysql:$local_part}'
+01:01:01 p1235   ╰─────result: net-mysql;select░*░from░them░where░id='c'
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
 01:01:01 p1235  host in "net-mysql;select * from them where id='c'"?
 01:01:01 p1235   list element: net-mysql;select * from them where id='c'
@@ -594,22 +594,22 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  processing "warn" (TESTSUITE/test-config 45)
 01:01:01 p1235  check set acl_m0 = FAIL4: hostlist
 01:01:01 p1235  check hosts = <& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
-01:01:01 p1235   ╭considering: <& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
-01:01:01 p1235   ├───────text: <& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='
+01:01:01 p1235   ╭considering: <&░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
+01:01:01 p1235   ├───────text: <&░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='
 01:01:01 p1235   ├considering: ${quote_mysql:$local_part}'
 01:01:01 p1235    ╭considering: $local_part}'
 01:01:01 p1235    ├──────value: c
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235    ├considering: }'
-01:01:01 p1235    ├──expanding: $local_part
+01:01:01 p1235    ├───expanded: $local_part
 01:01:01 p1235    ╰─────result: c
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235   ├─────op-res: c
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
 01:01:01 p1235   ├considering: '
 01:01:01 p1235   ├───────text: '
-01:01:01 p1235   ├──expanding: <& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
-01:01:01 p1235   ╰─────result: <& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'
+01:01:01 p1235   ├───expanded: <&░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
+01:01:01 p1235   ╰─────result: <&░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
 01:01:01 p1235  host in "<& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"?
 01:01:01 p1235   list element: net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'
@@ -634,22 +634,22 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  processing "warn" (TESTSUITE/test-config 50)
 01:01:01 p1235  check set acl_m0 = FAIL5: hostlist
 01:01:01 p1235  check hosts = <& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
-01:01:01 p1235   ╭considering: <& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
-01:01:01 p1235   ├───────text: <& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='
+01:01:01 p1235   ╭considering: <&░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
+01:01:01 p1235   ├───────text: <&░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='
 01:01:01 p1235   ├considering: ${quote_mysql:$local_part}'
 01:01:01 p1235    ╭considering: $local_part}'
 01:01:01 p1235    ├──────value: c
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235    ├considering: }'
-01:01:01 p1235    ├──expanding: $local_part
+01:01:01 p1235    ├───expanded: $local_part
 01:01:01 p1235    ╰─────result: c
 01:01:01 p1235               ╰──(tainted)
 01:01:01 p1235   ├─────op-res: c
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
 01:01:01 p1235   ├considering: '
 01:01:01 p1235   ├───────text: '
-01:01:01 p1235   ├──expanding: <& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
-01:01:01 p1235   ╰─────result: <& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'
+01:01:01 p1235   ├───expanded: <&░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
+01:01:01 p1235   ╰─────result: <&░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
 01:01:01 p1235  host in "<& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"?
 01:01:01 p1235   list element: net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'
@@ -684,14 +684,14 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  host in "+relay_hosts"?
 01:01:01 p1235   list element: +relay_hosts
 01:01:01 p1235    start sublist relay_hosts
-01:01:01 p1235     ╎╭considering: net-mysql;select * from them where id='$sender_host_address'
-01:01:01 p1235     ╎├───────text: net-mysql;select * from them where id='
+01:01:01 p1235     ╎╭considering: net-mysql;select░*░from░them░where░id='$sender_host_address'
+01:01:01 p1235     ╎├───────text: net-mysql;select░*░from░them░where░id='
 01:01:01 p1235     ╎├considering: $sender_host_address'
 01:01:01 p1235     ╎├──────value: 10.0.0.0
 01:01:01 p1235     ╎├considering: '
 01:01:01 p1235     ╎├───────text: '
-01:01:01 p1235     ╎├──expanding: net-mysql;select * from them where id='$sender_host_address'
-01:01:01 p1235     ╎╰─────result: net-mysql;select * from them where id='10.0.0.0'
+01:01:01 p1235     ╎├───expanded: net-mysql;select░*░from░them░where░id='$sender_host_address'
+01:01:01 p1235     ╎╰─────result: net-mysql;select░*░from░them░where░id='10.0.0.0'
 01:01:01 p1235     host in "net-mysql;select * from them where id='10.0.0.0'"?
 01:01:01 p1235     ╎list element: net-mysql;select * from them where id='10.0.0.0'
 01:01:01 p1235     ╎search_open: mysql "NULL"

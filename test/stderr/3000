@@ -13,57 +13,57 @@ try option unknown_login
   ╭considering: foo}{arg1}}
   ├───────text: foo
   ├considering: }{arg1}}
-  ├──expanding: foo
+  ├───expanded: foo
   ╰─────result: foo
   ╭considering: arg1}}
   ├───────text: arg1
   ├considering: }}
-  ├──expanding: arg1
+  ├───expanded: arg1
   ╰─────result: arg1
 Starting Perl interpreter
- ├──expanding: ${perl{foo}{arg1}}
- ╰─────result: Subroutine foo called with args: arg1
+ ├───expanded: ${perl{foo}{arg1}}
+ ╰─────result: Subroutine░foo░called░with░args:░arg1
  ╭considering: ${perl{foo_undef}}
   ╭considering: foo_undef}}
   ├───────text: foo_undef
   ├considering: }}
-  ├──expanding: foo_undef
+  ├───expanded: foo_undef
   ╰─────result: foo_undef
  ├failed to expand: ${perl{foo_undef}}
  ├───error message: Perl subroutine "foo_undef" returned undef to force failure
  ╰failure was forced
- ╭considering: ${perl{debug_write}{debug from Perl\n}}
-  ╭considering: debug_write}{debug from Perl\n}}
+ ╭considering: ${perl{debug_write}{debug░from░Perl\n}}
+  ╭considering: debug_write}{debug░from░Perl\n}}
   ├───────text: debug_write
-  ├considering: }{debug from Perl\n}}
-  ├──expanding: debug_write
+  ├considering: }{debug░from░Perl\n}}
+  ├───expanded: debug_write
   ╰─────result: debug_write
-  ╭considering: debug from Perl\n}}
-  ├───────text: debug from Perl
+  ╭considering: debug░from░Perl\n}}
+  ├───────text: debug░from░Perl
   ├considering: \n}}
   ├backslashed: '\n'
   ├considering: }}
-  ├──expanding: debug from Perl\n
-  ╰─────result: debug from Perl
+  ├───expanded: debug░from░Perl\n
+  ╰─────result: debug░from░Perl↩
   
 debug from Perl
- ├──expanding: ${perl{debug_write}{debug from Perl\n}}
- ╰─────result: Wrote debug
- ╭considering: ${perl{log_write}{log from Perl}}
-  ╭considering: log_write}{log from Perl}}
+ ├───expanded: ${perl{debug_write}{debug░from░Perl\n}}
+ ╰─────result: Wrote░debug
+ ╭considering: ${perl{log_write}{log░from░Perl}}
+  ╭considering: log_write}{log░from░Perl}}
   ├───────text: log_write
-  ├considering: }{log from Perl}}
-  ├──expanding: log_write
+  ├considering: }{log░from░Perl}}
+  ├───expanded: log_write
   ╰─────result: log_write
-  ╭considering: log from Perl}}
-  ├───────text: log from Perl
+  ╭considering: log░from░Perl}}
+  ├───────text: log░from░Perl
   ├considering: }}
-  ├──expanding: log from Perl
-  ╰─────result: log from Perl
+  ├───expanded: log░from░Perl
+  ╰─────result: log░from░Perl
 LOG: MAIN
   log from Perl
- ├──expanding: ${perl{log_write}{log from Perl}}
- ╰─────result: Wrote log
+ ├───expanded: ${perl{log_write}{log░from░Perl}}
+ ╰─────result: Wrote░log
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
   SMTP connection from CALLER

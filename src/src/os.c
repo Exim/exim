@@ -12,7 +12,8 @@
 # include <stdio.h>
 # include <time.h>
 #else
-# define DEBUG(x) if (debug_selector & (x))
+# define IS_DEBUG(x) (debug_selector & (x))
+# define DEBUG(x) if (IS_DEBUG(x))
 #endif
 
 #ifndef CS

@@ -13,343 +13,339 @@ try option acl_not_smtp_start
 try option message_id_header_domain
 try option message_id_header_text
  ╭considering: ${tod_full}
- ├──expanding: ${tod_full}
- ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+ ├───expanded: ${tod_full}
+ ╰─────result: Tue,░2░Mar░1999░09:44:33░+0000
 try option received_header_text
- ╭considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
- 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
- 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
- 	}}(Exim $version_number)
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
- ├───────text: Received: 
- ├considering: ${if def:sender_rcvhost {from $sender_rcvhost
- 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
- 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
- 	}}(Exim $version_number)
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
+ ╭considering: Received:░${if░def:sender_rcvhost░{from░$sender_rcvhost↩
+ 	}{${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+ 	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+ 	}}(Exim░$version_number)↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
+ ├───────text: Received:░
+ ├considering: ${if░def:sender_rcvhost░{from░$sender_rcvhost↩
+ 	}{${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+ 	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+ 	}}(Exim░$version_number)↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
  ├──condition: def:sender_rcvhost
  ├─────result: false
-  ╭───scanning: from $sender_rcvhost
-  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├───────text: from 
-  ├───scanning: $sender_rcvhost
-  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
+  ╭───scanning: from░$sender_rcvhost↩
+  	}{${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+  	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───────text: from░
+  ├───scanning: $sender_rcvhost↩
+  	}{${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+  	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
   ├──────value: 
-  ├───scanning: 
-  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├───────text: 
+  ├───scanning: ↩
+  	}{${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+  	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───────text: ↩
   	
-  ├───scanning: }{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding: from $sender_rcvhost
+  ├───scanning: }{${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+  	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───expanded: from░$sender_rcvhost↩
   	
-  ├─────result: from 
-  	
+  ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
-  ╭considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
+  ╭considering: ${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+  	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
   ├──condition: def:sender_ident
   ├─────result: true
-   ╭considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-   	}}(Exim $version_number)
-   	${if def:sender_address {(envelope-from <$sender_address>)
-   	}}id $message_exim_id${if def:received_for {
-   	for $received_for}}
-   ├───────text: from 
-   ├considering: ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-   	}}(Exim $version_number)
-   	${if def:sender_address {(envelope-from <$sender_address>)
-   	}}id $message_exim_id${if def:received_for {
-   	for $received_for}}
-   ╎╭considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-   ╎	}}(Exim $version_number)
-   ╎	${if def:sender_address {(envelope-from <$sender_address>)
-   ╎	}}id $message_exim_id${if def:received_for {
-   ╎	for $received_for}}
+   ╭considering: from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+   	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+   	}}(Exim░$version_number)↩
+   	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+   	}}id░$message_exim_id${if░def:received_for░{↩
+   	for░$received_for}}
+   ├───────text: from░
+   ├considering: ${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+   	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+   	}}(Exim░$version_number)↩
+   	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+   	}}id░$message_exim_id${if░def:received_for░{↩
+   	for░$received_for}}
+   ╎╭considering: $sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+   ╎	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+   ╎	}}(Exim░$version_number)↩
+   ╎	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+   ╎	}}id░$message_exim_id${if░def:received_for░{↩
+   ╎	for░$received_for}}
    ╎├──────value: CALLER
-   ╎├considering: } }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-   ╎	}}(Exim $version_number)
-   ╎	${if def:sender_address {(envelope-from <$sender_address>)
-   ╎	}}id $message_exim_id${if def:received_for {
-   ╎	for $received_for}}
-   ╎├──expanding: $sender_ident
+   ╎├considering: }░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+   ╎	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+   ╎	}}(Exim░$version_number)↩
+   ╎	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+   ╎	}}id░$message_exim_id${if░def:received_for░{↩
+   ╎	for░$received_for}}
+   ╎├───expanded: $sender_ident
    ╎╰─────result: CALLER
    ├─────op-res: CALLER
-   ├considering:  }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-   	}}(Exim $version_number)
-   	${if def:sender_address {(envelope-from <$sender_address>)
-   	}}id $message_exim_id${if def:received_for {
-   	for $received_for}}
-   ├───────text:  
-   ├considering: }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-   	}}(Exim $version_number)
-   	${if def:sender_address {(envelope-from <$sender_address>)
-   	}}id $message_exim_id${if def:received_for {
-   	for $received_for}}
-   ├──expanding: from ${quote_local_part:$sender_ident} 
-   ╰─────result: from CALLER 
-  ├───item-res: from CALLER 
-  ├considering: ${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
+   ├considering: ░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+   	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+   	}}(Exim░$version_number)↩
+   	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+   	}}id░$message_exim_id${if░def:received_for░{↩
+   	for░$received_for}}
+   ├───────text: ░
+   ├considering: }}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+   	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+   	}}(Exim░$version_number)↩
+   	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+   	}}id░$message_exim_id${if░def:received_for░{↩
+   	for░$received_for}}
+   ├───expanded: from░${quote_local_part:$sender_ident}░
+   ╰─────result: from░CALLER░
+  ├───item-res: from░CALLER░
+  ├considering: ${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+  	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
   ├──condition: def:sender_helo_name
   ├─────result: false
-   ╭───scanning: (helo=$sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-   	}}(Exim $version_number)
-   	${if def:sender_address {(envelope-from <$sender_address>)
-   	}}id $message_exim_id${if def:received_for {
-   	for $received_for}}
+   ╭───scanning: (helo=$sender_helo_name)↩
+   	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+   	}}(Exim░$version_number)↩
+   	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+   	}}id░$message_exim_id${if░def:received_for░{↩
+   	for░$received_for}}
    ├───────text: (helo=
-   ├───scanning: $sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-   	}}(Exim $version_number)
-   	${if def:sender_address {(envelope-from <$sender_address>)
-   	}}id $message_exim_id${if def:received_for {
-   	for $received_for}}
+   ├───scanning: $sender_helo_name)↩
+   	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+   	}}(Exim░$version_number)↩
+   	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+   	}}id░$message_exim_id${if░def:received_for░{↩
+   	for░$received_for}}
    ├──────value: 
-   ├───scanning: )
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-   	}}(Exim $version_number)
-   	${if def:sender_address {(envelope-from <$sender_address>)
-   	}}id $message_exim_id${if def:received_for {
-   	for $received_for}}
-   ├───────text: )
+   ├───scanning: )↩
+   	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+   	}}(Exim░$version_number)↩
+   	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+   	}}id░$message_exim_id${if░def:received_for░{↩
+   	for░$received_for}}
+   ├───────text: )↩
    	
-   ├───scanning: }}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-   	}}(Exim $version_number)
-   	${if def:sender_address {(envelope-from <$sender_address>)
-   	}}id $message_exim_id${if def:received_for {
-   	for $received_for}}
-   ├──expanding: (helo=$sender_helo_name)
+   ├───scanning: }}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+   	}}(Exim░$version_number)↩
+   	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+   	}}id░$message_exim_id${if░def:received_for░{↩
+   	for░$received_for}}
+   ├───expanded: (helo=$sender_helo_name)↩
    	
-   ├─────result: (helo=)
-   	
+   ├─────result:  ◀skipped▶
    ╰───skipping: result is not used
   ├───item-res: 
-  ├considering: }}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+  ├considering: }}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───expanded: ${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
   	}}
-  ╰─────result: from CALLER 
- ├───item-res: from CALLER 
- ├considering: by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
- 	}}(Exim $version_number)
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
- ├───────text: by 
- ├considering: $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
- 	}}(Exim $version_number)
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
+  ╰─────result: from░CALLER░
+ ├───item-res: from░CALLER░
+ ├considering: by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+ 	}}(Exim░$version_number)↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
+ ├───────text: by░
+ ├considering: $primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+ 	}}(Exim░$version_number)↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
  ├──────value: the.local.host.name
- ├considering:  ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
- 	}}(Exim $version_number)
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
- ├───────text:  
- ├considering: ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
- 	}}(Exim $version_number)
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
+ ├considering: ░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+ 	}}(Exim░$version_number)↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
+ ├───────text: ░
+ ├considering: ${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+ 	}}(Exim░$version_number)↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
  ├──condition: def:received_protocol
  ├─────result: true
-  ╭considering: with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├───────text: with 
-  ├considering: $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
+  ╭considering: with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───────text: with░
+  ├considering: $received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
   ├──────value: local
-  ├considering:  }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├───────text:  
-  ├considering: }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding: with $received_protocol 
-  ╰─────result: with local 
- ├───item-res: with local 
- ├considering: ${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
- 	}}(Exim $version_number)
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding:  ($tls_in_ver)
-  ├─────result:  ()
+  ├considering: ░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───────text: ░
+  ├considering: }}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───expanded: with░$received_protocol░
+  ╰─────result: with░local░
+ ├───item-res: with░local░
+ ├considering: ${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+ 	}}(Exim░$version_number)↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───expanded: ░($tls_in_ver)
+  ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
  ├───item-res: 
- ├considering: ${if def:tls_in_cipher_std { tls $tls_in_cipher_std
- 	}}(Exim $version_number)
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
+ ├considering: ${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+ 	}}(Exim░$version_number)↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
  ├──condition: def:tls_in_cipher_std
  ├─────result: false
-  ╭───scanning:  tls $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├───────text:  tls 
-  ├───scanning: $tls_in_cipher_std
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
+  ╭───scanning: ░tls░$tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───────text: ░tls░
+  ├───scanning: $tls_in_cipher_std↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
   ├──────value: 
-  ├───scanning: 
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├───────text: 
+  ├───scanning: ↩
+  	}}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───────text: ↩
   	
-  ├───scanning: }}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding:  tls $tls_in_cipher_std
+  ├───scanning: }}(Exim░$version_number)↩
+  	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───expanded: ░tls░$tls_in_cipher_std↩
   	
-  ├─────result:  tls 
-  	
+  ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
  ├───item-res: 
- ├considering: (Exim $version_number)
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
- ├───────text: (Exim 
- ├considering: $version_number)
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
+ ├considering: (Exim░$version_number)↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
+ ├───────text: (Exim░
+ ├considering: $version_number)↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
  ├──────value: x.yz
- ├considering: )
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
- ├───────text: )
+ ├considering: )↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
+ ├───────text: )↩
  	
- ├considering: ${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
+ ├considering: ${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
  ├──condition: def:sender_address
  ├─────result: true
-  ╭considering: (envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├───────text: (envelope-from <
-  ├considering: $sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
+  ╭considering: (envelope-from░<$sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───────text: (envelope-from░<
+  ├considering: $sender_address>)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
   ├──────value: CALLER@test.ex
-  ├considering: >)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├───────text: >)
+  ├considering: >)↩
+  	}}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───────text: >)↩
   	
-  ├considering: }}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding: (envelope-from <$sender_address>)
+  ├considering: }}id░$message_exim_id${if░def:received_for░{↩
+  	for░$received_for}}
+  ├───expanded: (envelope-from░<$sender_address>)↩
   	
-  ╰─────result: (envelope-from <CALLER@test.ex>)
+  ╰─────result: (envelope-from░<CALLER@test.ex>)↩
   	
- ├───item-res: (envelope-from <CALLER@test.ex>)
+ ├───item-res: (envelope-from░<CALLER@test.ex>)↩
  	
- ├considering: id $message_exim_id${if def:received_for {
- 	for $received_for}}
- ├───────text: id 
- ├considering: $message_exim_id${if def:received_for {
- 	for $received_for}}
+ ├considering: id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
+ ├───────text: id░
+ ├considering: $message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
  ├──────value: 10HmaX-000000005vi-0000
- ├considering: ${if def:received_for {
- 	for $received_for}}
+ ├considering: ${if░def:received_for░{↩
+ 	for░$received_for}}
  ├──condition: def:received_for
  ├─────result: false
-  ╭───scanning: 
-  	for $received_for}}
-  ├───────text: 
-  	for 
+  ╭───scanning: ↩
+  	for░$received_for}}
+  ├───────text: ↩
+  	for░
   ├───scanning: $received_for}}
   ├──────value: 
   ├───scanning: }}
-  ├──expanding: 
-  	for $received_for
-  ├─────result: 
-  	for 
+  ├───expanded: ↩
+  	for░$received_for
+  ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
  ├───item-res: 
- ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
- 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
- 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_ver        { ($tls_in_ver)}}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
- 	}}(Exim $version_number)
- 	${if def:sender_address {(envelope-from <$sender_address>)
- 	}}id $message_exim_id${if def:received_for {
- 	for $received_for}}
- ╰─────result: Received: from CALLER by the.local.host.name with local (Exim x.yz)
- 	(envelope-from <CALLER@test.ex>)
- 	id 10HmaX-000000005vi-0000
+ ├───expanded: Received:░${if░def:sender_rcvhost░{from░$sender_rcvhost↩
+ 	}{${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
+ 	}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
+ 	}}(Exim░$version_number)↩
+ 	${if░def:sender_address░{(envelope-from░<$sender_address>)↩
+ 	}}id░$message_exim_id${if░def:received_for░{↩
+ 	for░$received_for}}
+ ╰─────result: Received:░from░CALLER░by░the.local.host.name░with░local░(Exim░x.yz)↩
+ 	(envelope-from░<CALLER@test.ex>)↩
+ 	id░10HmaX-000000005vi-0000
 try option acl_not_smtp
  ╭considering: ${tod_full}
- ├──expanding: ${tod_full}
- ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+ ├───expanded: ${tod_full}
+ ╰─────result: Tue,░2░Mar░1999░09:44:33░+0000
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
@@ -378,7 +374,7 @@ try option return_path
  ╭considering: $domain
  ├──────value: domain1.ex
             ╰──(tainted)
- ├──expanding: $domain
+ ├───expanded: $domain
  ╰─────result: domain1.ex
             ╰──(tainted)
 LOG: MAIN
@@ -386,54 +382,54 @@ LOG: MAIN
 LOG: MAIN
   == userx@domain2.ex R=smarthost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 try option delay_warning_condition
- ╭considering: ${if or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
-  ╭considering: $h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
-  ├considering: $h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
-  ├considering: $h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
-  ├considering: }{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
-  ├──expanding: $h_list-id:$h_list-post:$h_list-subscribe:
+ ╭considering: ${if░or░{{░!eq{$h_list-id:$h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+  ╭considering: $h_list-id:$h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+  ├considering: $h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+  ├considering: $h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+  ├considering: }{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+  ├───expanded: $h_list-id:$h_list-post:$h_list-subscribe:
   ╰─────result: 
-  ╭considering: } }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
-  ├──expanding: 
+  ╭considering: }░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+  ├───expanded: 
   ╰─────result: 
-  ╭considering: $h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
-  ├considering: }{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
-  ├──expanding: $h_precedence:
+  ╭considering: $h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+  ├considering: }{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+  ├───expanded: $h_precedence:
   ╰─────result: 
-  ╭considering: (?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
+  ╭considering: (?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
   ├───────text: (?i)bulk|list|junk
-  ├considering: } }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
-  ├──expanding: (?i)bulk|list|junk
+  ├considering: }░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+  ├───expanded: (?i)bulk|list|junk
   ╰─────result: (?i)bulk|list|junk
  compiled RE '(?i)bulk|list|junk' not found in local cache
  compiling RE '(?i)bulk|list|junk'
  compiled RE '(?i)bulk|list|junk' saved in local cache
-  ╭considering: $h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
-  ├considering: }{(?i)auto-generated|auto-replied} }} {no}{yes}}
-  ├──expanding: $h_auto-submitted:
+  ╭considering: $h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+  ├considering: }{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+  ├───expanded: $h_auto-submitted:
   ╰─────result: 
-  ╭considering: (?i)auto-generated|auto-replied} }} {no}{yes}}
+  ╭considering: (?i)auto-generated|auto-replied}░}}░{no}{yes}}
   ├───────text: (?i)auto-generated|auto-replied
-  ├considering: } }} {no}{yes}}
-  ├──expanding: (?i)auto-generated|auto-replied
+  ├considering: }░}}░{no}{yes}}
+  ├───expanded: (?i)auto-generated|auto-replied
   ╰─────result: (?i)auto-generated|auto-replied
  compiled RE '(?i)auto-generated|auto-replied' not found in local cache
  compiling RE '(?i)auto-generated|auto-replied'
  compiled RE '(?i)auto-generated|auto-replied' saved in local cache
- ├──condition: or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }}
+ ├──condition: or░{{░!eq{$h_list-id:$h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}
  ├─────result: false
   ╭───scanning: no}{yes}}
   ├───────text: no
   ├───scanning: }{yes}}
-  ├──expanding: no
-  ├─────result: no
+  ├───expanded: no
+  ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
   ╭considering: yes}}
   ├───────text: yes
   ├considering: }}
-  ├──expanding: yes
+  ├───expanded: yes
   ╰─────result: yes
- ├──expanding: ${if or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
+ ├───expanded: ${if░or░{{░!eq{$h_list-id:$h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
  ╰─────result: yes
 >>>>>>>>>>>>>>>> Exim pid=p1235 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -452,41 +448,41 @@ LOG: smtp_connection MAIN
 try option message_size_limit
 try option acl_smtp_connect
 try option smtp_banner
- ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ╭considering: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
  ├──────value: the.local.host.name
- ├considering:  ESMTP Exim $version_number $tod_full
- ├───────text:  ESMTP Exim 
- ├considering: $version_number $tod_full
+ ├considering: ░ESMTP░Exim░$version_number░$tod_full
+ ├───────text: ░ESMTP░Exim░
+ ├considering: $version_number░$tod_full
  ├──────value: x.yz
- ├considering:  $tod_full
- ├───────text:  
+ ├considering: ░$tod_full
+ ├───────text: ░
  ├considering: $tod_full
- ├──────value: Tue, 2 Mar 1999 09:44:33 +0000
- ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
- ╰─────result: the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ ├──────value: Tue,░2░Mar░1999░09:44:33░+0000
+ ├───expanded: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
+ ╰─────result: the.local.host.name░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 try option acl_smtp_helo
- ╭considering: ${if match_domain {$sender_helo_name}{+dlist}}
+ ╭considering: ${if░match_domain░{$sender_helo_name}{+dlist}}
   ╭considering: $sender_helo_name}{+dlist}}
   ├──────value: ehlo.domain
              ╰──(tainted)
   ├considering: }{+dlist}}
-  ├──expanding: $sender_helo_name
+  ├───expanded: $sender_helo_name
   ╰─────result: ehlo.domain
              ╰──(tainted)
   ╭considering: +dlist}}
   ├───────text: +dlist
   ├considering: }}
-  ├──expanding: +dlist
+  ├───expanded: +dlist
   ╰─────result: +dlist
   ╭considering: $domain
   ├──────value: ehlo.domain
              ╰──(tainted)
-  ├──expanding: $domain
+  ├───expanded: $domain
   ╰─────result: ehlo.domain
              ╰──(tainted)
- ├──condition: match_domain {$sender_helo_name}{+dlist}
+ ├──condition: match_domain░{$sender_helo_name}{+dlist}
  ├─────result: true
- ├──expanding: ${if match_domain {$sender_helo_name}{+dlist}}
+ ├───expanded: ${if░match_domain░{$sender_helo_name}{+dlist}}
  ╰─────result: true
 try option acl_smtp_etrn
 try option acl_smtp_vrfy
@@ -501,7 +497,7 @@ try option acl_smtp_mail
  ├considering: $sender_address_domain
  ├──────value: sender.domain
             ╰──(tainted)
- ├──expanding: domain=$domain/sender_domain=$sender_address_domain
+ ├───expanded: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=/sender_domain=sender.domain
             ╰──(tainted)
 try option acl_smtp_rcpt
@@ -515,7 +511,7 @@ try option acl_smtp_rcpt
  ├considering: $sender_address_domain
  ├──────value: sender.domain
             ╰──(tainted)
- ├──expanding: domain=$domain/sender_domain=$sender_address_domain
+ ├───expanded: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=recipient.domain/sender_domain=sender.domain
             ╰──(tainted)
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
@@ -528,7 +524,7 @@ try option acl_smtp_rcpt
  ├considering: $sender_address_domain
  ├──────value: sender.domain
             ╰──(tainted)
- ├──expanding: domain=$domain/sender_domain=$sender_address_domain
+ ├───expanded: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=recipient.domain/sender_domain=sender.domain
             ╰──(tainted)
 try option acl_smtp_quit
