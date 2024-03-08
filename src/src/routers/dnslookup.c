@@ -472,7 +472,7 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
 }
 
 #endif	/*!MACRO_PREDEF*/
-#endif	/*ROUTER_DNSLOOKUP
+#endif	/*ROUTER_DNSLOOKUP*/
 /* End of routers/dnslookup.c */
 /* vi: aw ai sw=2
 */

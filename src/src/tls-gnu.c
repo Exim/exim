@@ -1185,6 +1185,8 @@ tls_server_servercerts_cb(gnutls_session_t session, unsigned int htype,
 # ifdef notdef_crashes
 				/*XXX crashes */
 return gnutls_ext_raw_parse(NULL, tls_server_servercerts_ext, msg, 0);
+# else
+return GNUTLS_E_SUCCESS;
 # endif
 }
 #endif /*SUPPORT_GNUTLS_EXT_RAW_PARSE*/
@@ -1233,7 +1235,7 @@ switch (htype)
     return tls_server_ticket_cb(sess, htype, when, incoming, msg);
 # endif
   default:
-    return 0;
+    return GNUTLS_E_SUCCESS;
   }
 }
 #endif
