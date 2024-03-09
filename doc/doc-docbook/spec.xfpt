@@ -41600,8 +41600,11 @@ Exim's DKIM implementation allows for
 .olist
 Signing outgoing messages: This function is implemented in the SMTP transport.
 It can co-exist with all other Exim features
-(including transport filters)
-except cutthrough delivery.
+(including transport filters) except cutthrough delivery.
+.new
+However, signing options may not depend on headers modified by
+routers, the transport or a transport filter.
+.wen
 .next
 Verifying signatures in incoming messages: This is implemented by an additional
 ACL (acl_smtp_dkim), which can be called several times per message, with
