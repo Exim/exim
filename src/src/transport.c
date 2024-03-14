@@ -1506,7 +1506,7 @@ open_db *dbm_file;
 if (!is_new_message_id(message_id))
   {
   DEBUG(D_transport) debug_printf("message_id %s is not new format; "
-    "skipping wait-%s database update\n", tpname);
+    "skipping wait-%s database update\n", message_id, tpname);
   return;
   }
 
