@@ -104,7 +104,7 @@ rewrite_one(const uschar *s, int flag, BOOL *whole, BOOL add_header, uschar *nam
 {
 const uschar *yield = s;
 const uschar *subject = s;
-uschar *domain = NULL;
+const uschar *domain = NULL;
 BOOL done = FALSE;
 int rule_number = 1;
 int yield_start = 0, yield_end = 0;
@@ -158,7 +158,7 @@ for (rewrite_rule * rule = rewrite_rules;
 
   else
     {
-    if (!domain) domain = Ustrrchr(subject, '@') + 1;
+    if (!domain) domain = CUstrrchr(subject, '@') + 1;
 
     /* Use the general function for matching an address against a list (here
     just one item, so use the "impossible value" separator UCHAR_MAX+1). */
@@ -182,16 +182,14 @@ for (rewrite_rule * rule = rewrite_rules;
     save_domain = deliver_domain;
 
     /* We have subject pointing to "localpart@domain" and domain pointing to
-    the domain. Temporarily terminate the local part so that it can be
-    set up as an expansion variable */
+    the domain. Split into local part and domain so that it can be set up as 
+    an expansion variable */
 
-    domain[-1] = 0;
-    deliver_localpart = US subject;
+    deliver_localpart = US string_copyn(subject, domain-subject-1);
     deliver_domain = domain;
 
     new = expand_string(rule->replacement);
 
-    domain[-1] = '@';
     deliver_localpart = save_localpart;
     deliver_domain = save_domain;
     }

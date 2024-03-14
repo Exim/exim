@@ -120,6 +120,11 @@ JH/22 The ESMTP_LIMITS facility (RFC 9422) is promoted from experimental status
 
 JH/23 Bug 3066: Avoid leaking lookup database credentials to log.
 
+JH/24 Bug 3081: Fix a delivery process crash.  When the router "errors_to"
+      option specified a fixed address, later rewriting on that address would
+      trip on the configuration data being readonly.  Instead of modifying
+      in-place, copy data.  Found and fixed by Peter Benie.
+
 
 Exim version 4.97
 -----------------
@@ -695,7 +700,7 @@ JH/44 Bug 2701: Fix list-expansion of dns_ipv4_lookup.  Previously, it did
       mx_fail_domains.
 
 JH/45 Use a (new) separate store pool-pair for DKIM verify working data.
-      Previously the permanent pool was used, so the sore could not be freed.
+      Previously the permanent pool was used, so the store could not be freed.
       This meant a connection with many messages would use continually-growing
       memory.
 
