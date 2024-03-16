@@ -496,19 +496,7 @@ if (oncelog && *oncelog && to)
     exim_datum_size_set(&key_datum, Ustrlen(to) + 1);
 
     if (exim_dbget(dbm_file, &key_datum, &result_datum))
-      {
-      /* If the datum size is that of a binary time, we are in the new world
-      where messages are sent periodically. Otherwise the file is an old one,
-      where the datum was filled with a tod_log time, which is assumed to be
-      different in size. For that, only one message is ever sent. This change
-      introduced at Exim 3.00. In a couple of years' time the test on the size
-      can be abolished. */
-
-      if (exim_datum_size_get(&result_datum) == sizeof(time_t))
-        memcpy(&then, exim_datum_data_get(&result_datum), sizeof(time_t));
-      else
-        then = now;
-      }
+      memcpy(&then, exim_datum_data_get(&result_datum), sizeof(time_t));
     }
 
   /* Either "then" is set zero, if no message has yet been sent, or it
