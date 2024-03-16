@@ -125,6 +125,9 @@ JH/24 Bug 3081: Fix a delivery process crash.  When the router "errors_to"
       trip on the configuration data being readonly.  Instead of modifying
       in-place, copy data.  Found and fixed by Peter Benie.
 
+JH/25 Bug 3079: Fix crash in dbmnz.  When a key was present for zero-length
+      data a null pointer was followed.  Find and testcase by Sebastian Bugge.
+
 
 Exim version 4.97
 -----------------

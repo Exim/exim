@@ -407,12 +407,13 @@ Returns: a pointer to the retrieved record, or
 */
 
 void *
-dbfn_read_with_length(open_db *dbblock, const uschar *key, int *length)
+dbfn_read_with_length(open_db * dbblock, const uschar * key, int * length)
 {
-void *yield;
+void * yield;
 EXIM_DATUM key_datum, result_datum;
 int klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen, key);
+unsigned dlen;
 
 memcpy(key_copy, key, klen);
 
@@ -426,9 +427,10 @@ if (!exim_dbget(dbblock->dbptr, &key_datum, &result_datum)) return NULL;
 /* Assume for now that anything stored could have been tainted. Properly
 we should store the taint status along with the data. */
 
-yield = store_get(exim_datum_size_get(&result_datum), GET_TAINTED);
-memcpy(yield, exim_datum_data_get(&result_datum), exim_datum_size_get(&result_datum));
-if (length) *length = exim_datum_size_get(&result_datum);
+dlen = exim_datum_size_get(&result_datum);
+yield = store_get(dlen, GET_TAINTED);
+memcpy(yield, exim_datum_data_get(&result_datum), dlen);
+if (length) *length = dlen;
 
 exim_datum_free(&result_datum);    /* Some DBM libs require freeing */
 return yield;

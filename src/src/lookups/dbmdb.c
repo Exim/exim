@@ -102,7 +102,8 @@ exim_datum_size_set(&key, length);
 
 if (exim_dbget(d, &key, &data))
   {
-  *result = string_copyn(exim_datum_data_get(&data), exim_datum_size_get(&data));
+  unsigned len = exim_datum_size_get(&data);
+  *result = len > 0 ? string_copyn(exim_datum_data_get(&data), len) : US"";
   exim_datum_free(&data);            /* Some DBM libraries need a free() call */
   return OK;
   }
@@ -283,3 +284,5 @@ static lookup_info *_lookup_list[] = { &dbm_lookup_info, &dbmz_lookup_info, &dbm
 lookup_module_info dbmdb_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 3 };
 
 /* End of lookups/dbmdb.c */
+/* vi: aw ai sw=2
+*/

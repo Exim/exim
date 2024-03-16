@@ -1,0 +1,4 @@
+# lookup dbmnz
+#
+exim -be '[${lookup{test}dbmnz{DIR/aux-fixed/TESTNUM.emptydbmnzlookup}}]'
+****
