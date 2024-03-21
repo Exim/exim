@@ -103,7 +103,7 @@ extern acl_block *acl_read(uschar *(*)(void), uschar **);
 extern int     acl_check(int, const uschar *, uschar *, uschar **, uschar **);
 extern uschar *acl_current_verb(void);
 extern int     acl_eval(int, uschar *, uschar **, uschar **);
-extern uschar *acl_standalone_setvar(const uschar *);
+extern uschar *acl_standalone_setvar(const uschar *, BOOL);
 
 extern tree_node *acl_var_create(uschar *);
 extern void    acl_var_write(uschar *, uschar *, void *);

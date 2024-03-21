@@ -800,7 +800,7 @@ return TRUE;
 
 static BOOL
 acl_data_to_cond(const uschar * s, acl_condition_block * cond,
-  const uschar * name, uschar ** error)
+  const uschar * name, BOOL taint, uschar ** error)
 {
 if (*s++ != '=')
   {
@@ -809,7 +809,7 @@ if (*s++ != '=')
   return FALSE;;
   }
 Uskip_whitespace(&s);
-cond->arg = string_copy(s);
+cond->arg = taint ? string_copy_taint(s, GET_TAINTED) : string_copy(s);
 return TRUE;
 }
 
@@ -959,7 +959,7 @@ while ((s = (*func)()))
   "endpass" has no data */
 
   if (c != ACLC_ENDPASS)
-    if (!acl_data_to_cond(s, cond, name, error)) return NULL;
+    if (!acl_data_to_cond(s, cond, name, FALSE, error)) return NULL;
   }
 
 return yield;
@@ -4941,7 +4941,7 @@ fprintf(f, "acl%c %s %d\n%s\n", name[0], name+1, Ustrlen(value), value);
 
 
 uschar *
-acl_standalone_setvar(const uschar * s)
+acl_standalone_setvar(const uschar * s, BOOL taint)
 {
 acl_condition_block * cond = store_get(sizeof(acl_condition_block), GET_UNTAINTED);
 uschar * errstr = NULL, * log_msg = NULL;
@@ -4951,7 +4951,7 @@ int e;
 cond->next = NULL;
 cond->type = ACLC_SET;
 if (!acl_varname_to_cond(&s, cond, &errstr)) return errstr;
-if (!acl_data_to_cond(s, cond, US"'-be'", &errstr)) return errstr;
+if (!acl_data_to_cond(s, cond, US"'-be'", taint, &errstr)) return errstr;
 
 if (acl_check_condition(ACL_WARN, cond, ACL_WHERE_UNKNOWN,
 			    NULL, 0, &endpass_seen, &errstr, &log_msg, &e) != OK)

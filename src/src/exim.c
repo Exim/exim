@@ -1704,8 +1704,10 @@ if (isupper(big_buffer[0]))
   if (macro_read_assignment(big_buffer))
     printf("Defined macro '%s'\n", mlast->name);
   }
+else if (Ustrncmp(big_buffer, "set,t ", 6) == 0)
+  printf("%s\n", acl_standalone_setvar(big_buffer+6, TRUE));
 else if (Ustrncmp(big_buffer, "set ", 4) == 0)
-  printf("%s\n", acl_standalone_setvar(big_buffer+4));
+  printf("%s\n", acl_standalone_setvar(big_buffer+4, FALSE));
 else
   if ((s = expand_string(big_buffer))) printf("%s\n", CS s);
   else printf("Failed: %s\n", expand_string_message);

@@ -2886,6 +2886,11 @@ available to admin users.
 
 The word &"set"& at the start of a line, followed by a single space,
 is recognised specially as defining a value for a variable.
+.new
+.cindex "tainted data" "expansion testing"
+If the sequence &",t"& is inserted before the space,
+the value is marked as tainted.
+.wen
 The syntax is otherwise the same as the ACL modifier &"set ="&.
 
 .cmdopt -bem <&'filename'&>

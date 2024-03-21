@@ -18,6 +18,8 @@ Version 4.98
 
  4. The recipients_max main option is now expanded.
 
+ 5. Setting variables for "exim -be" can set a tainted value.
+
 Version 4.97
 ------------
 
