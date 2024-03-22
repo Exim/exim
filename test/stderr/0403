@@ -340,6 +340,7 @@ checking domains
     in TESTSUITE/aux-fixed/0403.accountfile
   creating new cache entry
   lookup yielded: 
+  lookup yield replace by key: charlie@dom1.ain
 dom1.ain in "dom1.ain"?
  list element: dom1.ain
  dom1.ain in "dom1.ain"? yes (matched "dom1.ain")
@@ -356,6 +357,7 @@ checking local_parts
   cached data used for lookup of charlie@dom1.ain
     in TESTSUITE/aux-fixed/0403.accountfile
   lookup yielded: 
+  lookup yield replace by key: charlie@dom1.ain
 charlie in "charlie"?
  list element: charlie
  charlie in "charlie"? yes (matched "charlie")

@@ -980,9 +980,15 @@ than the result.  Return a de-tainted version of the key on the grounds that
 it have been validated by the lookup. */
 
 if (yield && ret_key)
+  {
   yield = string_copy_taint(keystring, GET_UNTAINTED);
+  DEBUG(D_lookup)
+    debug_printf_indent("lookup yield replace by key: %s\n", yield);
+  }
 
 return yield;
 }
 
 /* End of search.c */
+/* vi: aw ai sw=2
+*/
