@@ -432,7 +432,7 @@ as follows:
 (a) No sender_host_name or sender_helo_name: "[ip address]"
 (b) Just sender_host_name: "host_name [ip address]"
 (c) Just sender_helo_name: "(helo_name) [ip address]" unless helo is IP
-            in which case: "[ip address}"
+            in which case: "[ip address]"
 (d) The two are identical: "host_name [ip address]" includes helo = IP
 (e) The two are different: "host_name (helo_name) [ip address]"
 
