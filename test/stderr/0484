@@ -17,7 +17,7 @@ sender address = CALLER@myhost.test.ex
  file lookup required for list
    in TESTSUITE/aux-fixed/0484.aliases
  creating new cache entry
- lookup yielded: userx, usery
+ lookup yielded: userx,░usery
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases"
@@ -29,7 +29,7 @@ sender address = CALLER@myhost.test.ex
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
    in TESTSUITE/aux-fixed/0484.aliases
- lookup yielded: userx, usery
+ lookup yielded: userx,░usery
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases"
@@ -66,7 +66,7 @@ sender address = CALLER@myhost.test.ex
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
    in TESTSUITE/aux-fixed/0484.aliases
- lookup yielded: userx, usery
+ lookup yielded: userx,░usery
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases2"
  search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL
@@ -79,7 +79,7 @@ sender address = CALLER@myhost.test.ex
  file lookup required for list
    in TESTSUITE/aux-fixed/0484.aliases2
  creating new cache entry
- lookup yielded: userx2, usery2
+ lookup yielded: userx2,░usery2
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases2"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
@@ -106,7 +106,7 @@ sender address = CALLER@myhost.test.ex
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
    in TESTSUITE/aux-fixed/0484.aliases2
- lookup yielded: userx2, usery2
+ lookup yielded: userx2,░usery2
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases"
@@ -119,7 +119,7 @@ sender address = CALLER@myhost.test.ex
    type=lsearch key="list" opts=NULL
  cached data used for lookup of list
    in TESTSUITE/aux-fixed/0484.aliases
- lookup yielded: userx, usery
+ lookup yielded: userx,░usery
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases"

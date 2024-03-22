@@ -11,7 +11,7 @@ dropping to exim gid; retaining priv uid
  file lookup required for select name from them where id='userx';
    in TESTSUITE/aux-fixed/sqlitedb
  creating new cache entry
- lookup yielded: Ayen Other
+ lookup yielded: Ayen░Other
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -22,7 +22,7 @@ dropping to exim gid; retaining priv uid
  cached data found but wrong opts;  file lookup required for select name from them where id='userx';
  c  in TESTSUITE/aux-fixed/sqlitedb
  replacing old cache entry
- lookup yielded: Ayen Other
+ lookup yielded: Ayen░Other
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -33,7 +33,7 @@ dropping to exim gid; retaining priv uid
  cached data found but wrong opts;  file lookup required for select name from them where id='userx';
  c  in TESTSUITE/aux-fixed/sqlitedb
  replacing old cache entry
- lookup yielded: Ayen Other
+ lookup yielded: Ayen░Other
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -43,7 +43,7 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select name from them where id='userx';" opts="file=TESTSUITE/aux-fixed/sqlitedb"
  cached data used for lookup of select name from them where id='userx';
    in TESTSUITE/aux-fixed/sqlitedb
- lookup yielded: Ayen Other
+ lookup yielded: Ayen░Other
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -76,7 +76,7 @@ dropping to exim gid; retaining priv uid
  file lookup required for select id,name from them where id='nothing';
    in TESTSUITE/aux-fixed/sqlitedb
  creating new cache entry
- lookup yielded: id=nothing name="" 
+ lookup yielded: id=nothing░name=""░
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -87,7 +87,7 @@ dropping to exim gid; retaining priv uid
  file lookup required for select * from them where id='quote2';
    in TESTSUITE/aux-fixed/sqlitedb
  creating new cache entry
- lookup yielded: name="\"stquot" id=quote2 
+ lookup yielded: name="\"stquot"░id=quote2░
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -98,8 +98,8 @@ dropping to exim gid; retaining priv uid
  file lookup required for select * from them where id='newline';
    in TESTSUITE/aux-fixed/sqlitedb
  creating new cache entry
- lookup yielded: name="before
- after" id=newline 
+ lookup yielded: name="before↩
+ after"░id=newline░
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -110,7 +110,7 @@ dropping to exim gid; retaining priv uid
  file lookup required for select * from them where id='tab';
    in TESTSUITE/aux-fixed/sqlitedb
  creating new cache entry
- lookup yielded: name="x	x" id=tab 
+ lookup yielded: name="x	x"░id=tab░
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -121,7 +121,7 @@ dropping to exim gid; retaining priv uid
  file lookup required for select * from them where id='its';
    in TESTSUITE/aux-fixed/sqlitedb
  creating new cache entry
- lookup yielded: name=it's id=its 
+ lookup yielded: name=it's░id=its░
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -132,7 +132,7 @@ dropping to exim gid; retaining priv uid
  file lookup required for select * from them where name='it''s';
    in TESTSUITE/aux-fixed/sqlitedb
  creating new cache entry
- lookup yielded: name=it's id=its 
+ lookup yielded: name=it's░id=its░
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -459,7 +459,7 @@ host in "+relay_hosts"?
    ╎file lookup required for select * from them where id='10.10.10.10'
    ╎  in TESTSUITE/aux-fixed/sqlitedb
    ╎creating new cache entry
-   ╎lookup yielded: name=ok id=10.10.10.10 
+   ╎lookup yielded: name=ok░id=10.10.10.10░
    ╎host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
   end sublist relay_hosts
   host in "+relay_hosts"? yes (matched "+relay_hosts")
@@ -495,7 +495,7 @@ host in "+relay_hosts"?
    ╎  type=sqlite key="select * from them where id='10.10.10.10'" opts=NULL
    ╎cached data used for lookup of select * from them where id='10.10.10.10'
    ╎  in TESTSUITE/aux-fixed/sqlitedb
-   ╎lookup yielded: name=ok id=10.10.10.10 
+   ╎lookup yielded: name=ok░id=10.10.10.10░
    ╎host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
   end sublist relay_hosts
   host in "+relay_hosts"? yes (matched "+relay_hosts")
@@ -606,7 +606,7 @@ processing address_data
  file lookup required for select name from them where id='userx'
    in TESTSUITE/aux-fixed/sqlitedb
  creating new cache entry
- lookup yielded: Ayen Other
+ lookup yielded: Ayen░Other
 calling r1 router
 r1 router called for userx@myhost.test.ex
   domain = myhost.test.ex
@@ -712,7 +712,7 @@ dropping to exim gid; retaining priv uid
  file lookup required for select name from them where id='userx';
    in TESTSUITE/aux-fixed/sqlitedb
  creating new cache entry
- lookup yielded: Ayen Other
+ lookup yielded: Ayen░Other
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -728,7 +728,7 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select name from them where id='userx';" opts=NULL
  database lookup required for select name from them where id='userx';
  creating new cache entry
- lookup yielded: Ayen Other
+ lookup yielded: Ayen░Other
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1242 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....

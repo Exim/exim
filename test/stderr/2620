@@ -15,7 +15,7 @@ dropping to exim gid; retaining priv uid
  PostgreSQL query: "select name from them where id='ph10';" opts 'NULL'
  PGSQL new connection: host=localhost port=PORT_N database=test user=CALLER
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -24,7 +24,7 @@ dropping to exim gid; retaining priv uid
  internal_search_find: file="NULL"
    type=pgsql key="select name from them where id='ph10';" opts=NULL
  cached data used for lookup of select name from them where id='ph10';
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -61,7 +61,7 @@ dropping to exim gid; retaining priv uid
  PostgreSQL query: "select id,name from them where id='nothing';" opts 'NULL'
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
- lookup yielded: id=nothing name="" 
+ lookup yielded: id=nothing░name=""░
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -86,7 +86,7 @@ dropping to exim gid; retaining priv uid
  PostgreSQL query: "select * from them where id='quote2';" opts 'NULL'
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
- lookup yielded: name="\"stquot" id=quote2 
+ lookup yielded: name="\"stquot"░id=quote2░
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -98,8 +98,8 @@ dropping to exim gid; retaining priv uid
  PostgreSQL query: "select * from them where id='newline';" opts 'NULL'
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
- lookup yielded: name="before
- after" id=newline 
+ lookup yielded: name="before↩
+ after"░id=newline░
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -111,7 +111,7 @@ dropping to exim gid; retaining priv uid
  PostgreSQL query: "select * from them where id='tab';" opts 'NULL'
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
- lookup yielded: name="x	x" id=tab 
+ lookup yielded: name="x	x"░id=tab░
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -123,7 +123,7 @@ dropping to exim gid; retaining priv uid
  PostgreSQL query: "select * from them where name='''stquot';" opts 'NULL'
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
- lookup yielded: name='stquot id=quote1 
+ lookup yielded: name='stquot░id=quote1░
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -151,7 +151,7 @@ LOG: MAIN
   WARNING: obsolete syntax used for lookup
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -166,7 +166,7 @@ LOG: MAIN
   WARNING: obsolete syntax used for lookup
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -181,7 +181,7 @@ LOG: MAIN
   WARNING: obsolete syntax used for lookup
  PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -193,7 +193,7 @@ LOG: MAIN
  PostgreSQL query: "SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel↩
  Aristotle
  search_open: pgsql "NULL"
    cached open
@@ -206,8 +206,8 @@ LOG: MAIN
  PostgreSQL query: "SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
- lookup yielded: name="Philip Hazel" id=ph10 
- name=Aristotle id=aaaa 
+ lookup yielded: name="Philip░Hazel"░id=ph10░↩
+ name=Aristotle░id=aaaa░
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -750,7 +750,7 @@ processing address_data
  PostgreSQL query: "select name from them where id='ph10'" opts 'NULL'
  PGSQL new connection: host=localhost port=PORT_N database=test user=CALLER
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
 calling r1 router
 r1 router called for CALLER@myhost.test.ex
   domain = myhost.test.ex
@@ -860,7 +860,7 @@ dropping to exim gid; retaining priv uid
  PostgreSQL query: "select name from them where id='ph10';" opts 'NULL'
  PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
 search_tidyup called
 close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

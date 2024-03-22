@@ -686,7 +686,7 @@ out:
 DEBUG(D_lookup)
   {
   if (data)
-    debug_printf_indent("lookup yielded: %s\n", data);
+    debug_printf_indent("lookup yielded: %W\n", data);
   else if (f.search_find_defer)
     debug_printf_indent("lookup deferred: %s\n", search_error_message);
   else debug_printf_indent("lookup failed\n");

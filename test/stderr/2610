@@ -15,7 +15,7 @@ dropping to exim gid; retaining priv uid
  MySQL query: "select name from them where id='ph10';" opts 'NULL'
  MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
@@ -24,7 +24,7 @@ dropping to exim gid; retaining priv uid
  internal_search_find: file="NULL"
    type=mysql key="select name from them where id='ph10';" opts=NULL
  cached data used for lookup of select name from them where id='ph10';
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
@@ -61,7 +61,7 @@ dropping to exim gid; retaining priv uid
  MySQL query: "select id,name from them where id='nothing';" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
- lookup yielded: id=nothing name="" 
+ lookup yielded: id=nothing░name=""░
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
@@ -112,7 +112,7 @@ dropping to exim gid; retaining priv uid
  MySQL query: "select * from them where id='quote2';" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
- lookup yielded: name="\"stquot" id=quote2 
+ lookup yielded: name="\"stquot"░id=quote2░
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
@@ -153,7 +153,7 @@ LOG: MAIN
   WARNING: obsolete syntax used for lookup
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
@@ -168,7 +168,7 @@ LOG: MAIN
   WARNING: obsolete syntax used for lookup
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
@@ -183,7 +183,7 @@ LOG: MAIN
   WARNING: obsolete syntax used for lookup
  MYSQL new connection: host=ip4.ip4.ip4.ip4 port=PORT_N socket=NULL database=test user=root
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
@@ -198,7 +198,7 @@ LOG: MAIN
   WARNING: obsolete syntax used for lookup
  MYSQL new connection: host=localhost port=0 socket=TESTSUITE/mysql/sock database=test user=root
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
@@ -210,7 +210,7 @@ LOG: MAIN
  MySQL query: "SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel↩
  Aristotle
  search_open: mysql "NULL"
    cached open
@@ -223,8 +223,8 @@ LOG: MAIN
  MySQL query: "SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
- lookup yielded: name="Philip Hazel" id=ph10 
- name=Aristotle id=aaaa 
+ lookup yielded: name="Philip░Hazel"░id=ph10░↩
+ name=Aristotle░id=aaaa░
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
@@ -850,7 +850,7 @@ LOG: MAIN PANIC
  MySQL query: "select name from them where id='ph10' limit 1" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
- lookup yielded: Philip Hazel
+ lookup yielded: Philip░Hazel
 calling r1 router
 r1 router called for ph10@myhost.test.ex
   domain = myhost.test.ex

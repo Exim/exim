@@ -43,7 +43,7 @@ test.ex in "dnsdb;test.ex"?
 DNS lookup of test.ex (TXT) using fakens
 DNS lookup of test.ex (TXT) succeeded
  creating new cache entry
- lookup yielded: A TXT record for test.ex.
+ lookup yielded: A░TXT░record░for░test.ex.
  test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
 checking local_parts
 test.ex in "dnsdb;test.ex"?
@@ -56,7 +56,7 @@ test.ex in "dnsdb;test.ex"?
  internal_search_find: file="NULL"
    type=dnsdb key="test.ex" opts=NULL
  cached data used for lookup of test.ex
- lookup yielded: A TXT record for test.ex.
+ lookup yielded: A░TXT░record░for░test.ex.
  test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
 calling r1 router
 r1 router called for test.ex@test.ex
@@ -96,7 +96,7 @@ test.ex in "dnsdb;test.ex"?
  internal_search_find: file="NULL"
    type=dnsdb key="test.ex" opts=NULL
  cached data used for lookup of test.ex
- lookup yielded: A TXT record for test.ex.
+ lookup yielded: A░TXT░record░for░test.ex.
  test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
 checking local_parts
 unknown in "dnsdb;unknown"?
@@ -133,7 +133,7 @@ test.ex in "dnsdb;test.ex"?
  internal_search_find: file="NULL"
    type=dnsdb key="test.ex" opts=NULL
  cached data used for lookup of test.ex
- lookup yielded: A TXT record for test.ex.
+ lookup yielded: A░TXT░record░for░test.ex.
  test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
 checking senders
 CALLER@myhost.test.ex in "dnsdb;A=myhost.test.ex"?

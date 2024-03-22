@@ -66,7 +66,7 @@ checking local_parts
  file lookup required for smart.domain
    in TESTSUITE/aux-fixed/0085.data
  creating new cache entry
- lookup yielded: x : y : abc@d.e.f
+ lookup yielded: x░:░y░:░abc@d.e.f
 x in "x : y : abc@d.e.f"?
  list element: x
  x in "x : y : abc@d.e.f"? yes (matched "x")
@@ -82,7 +82,7 @@ checking senders
    type=lsearch key="smart.domain" opts=NULL
  cached data used for lookup of smart.domain
    in TESTSUITE/aux-fixed/0085.data
- lookup yielded: x : y : abc@d.e.f
+ lookup yielded: x░:░y░:░abc@d.e.f
 abc@d.e.f in "x : y : abc@d.e.f"?
  list element: x
  address match test: subject=abc@d.e.f pattern=x
@@ -161,7 +161,7 @@ checking local_parts
  file lookup required for test.ex
    in TESTSUITE/aux-fixed/0085.data
  creating new cache entry
- lookup yielded: x : y : abc@d.e.f
+ lookup yielded: x░:░y░:░abc@d.e.f
 x in "x : y : abc@d.e.f"?
  list element: x
  x in "x : y : abc@d.e.f"? yes (matched "x")
@@ -177,7 +177,7 @@ checking senders
    type=lsearch key="test.ex" opts=NULL
  cached data used for lookup of test.ex
    in TESTSUITE/aux-fixed/0085.data
- lookup yielded: x : y : abc@d.e.f
+ lookup yielded: x░:░y░:░abc@d.e.f
 abc@d.e.f in "x : y : abc@d.e.f"?
  list element: x
  address match test: subject=abc@d.e.f pattern=x
@@ -328,7 +328,7 @@ checking local_parts
  file lookup required for smart.domain
    in TESTSUITE/aux-fixed/0085.data
  creating new cache entry
- lookup yielded: x : y : abc@d.e.f
+ lookup yielded: x░:░y░:░abc@d.e.f
 x in "x : y : abc@d.e.f"?
  list element: x
  x in "x : y : abc@d.e.f"? yes (matched "x")
@@ -344,7 +344,7 @@ checking senders
    type=lsearch key="smart.domain" opts=NULL
  cached data used for lookup of smart.domain
    in TESTSUITE/aux-fixed/0085.data
- lookup yielded: x : y : abc@d.e.f
+ lookup yielded: x░:░y░:░abc@d.e.f
 CALLER@myhost.test.ex in "x : y : abc@d.e.f"?
  list element: x
  address match test: subject=CALLER@myhost.test.ex pattern=x
@@ -424,7 +424,7 @@ checking local_parts
  file lookup required for test.ex
    in TESTSUITE/aux-fixed/0085.data
  creating new cache entry
- lookup yielded: x : y : abc@d.e.f
+ lookup yielded: x░:░y░:░abc@d.e.f
 x in "x : y : abc@d.e.f"?
  list element: x
  x in "x : y : abc@d.e.f"? yes (matched "x")
@@ -440,7 +440,7 @@ checking senders
    type=lsearch key="test.ex" opts=NULL
  cached data used for lookup of test.ex
    in TESTSUITE/aux-fixed/0085.data
- lookup yielded: x : y : abc@d.e.f
+ lookup yielded: x░:░y░:░abc@d.e.f
 CALLER@myhost.test.ex in "x : y : abc@d.e.f"?
  list element: x
  address match test: subject=CALLER@myhost.test.ex pattern=x
