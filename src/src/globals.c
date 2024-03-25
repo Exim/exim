@@ -467,6 +467,9 @@ uschar *acl_smtp_quit          = NULL;
 uschar *acl_smtp_rcpt          = NULL;
 uschar *acl_smtp_starttls      = NULL;
 uschar *acl_smtp_vrfy          = NULL;
+#ifdef EXPERIMENTAL_WELLKNOWN
+uschar *acl_smtp_wellknown     = NULL;
+#endif
 
 tree_node *acl_var_c           = NULL;
 tree_node *acl_var_m           = NULL;
@@ -474,56 +477,49 @@ uschar *acl_verify_message     = NULL;
 string_item *acl_warn_logged   = NULL;
 
 /* Names of SMTP places for use in ACL error messages, and corresponding SMTP
-error codes - keep in step with definitions of ACL_WHERE_xxxx in macros.h. */
+error codes (only those used) */
 
-uschar *acl_wherenames[]       = { US"RCPT",
-                                   US"MAIL",
-                                   US"PREDATA",
-                                   US"MIME",
-                                   US"DKIM",
-                                   US"DATA",
+uschar *acl_wherenames[]       = { [ACL_WHERE_RCPT] =		US"RCPT",
+                                   [ACL_WHERE_MAIL] =		US"MAIL",
+                                   [ACL_WHERE_PREDATA] =	US"PREDATA",
+                                   [ACL_WHERE_MIME] =		US"MIME",
+                                   [ACL_WHERE_DKIM] =		US"DKIM",
+                                   [ACL_WHERE_DATA] =		US"DATA",
 #ifndef DISABLE_PRDR
-                                   US"PRDR",
+                                   [ACL_WHERE_PRDR] =		US"PRDR",
 #endif
-                                   US"non-SMTP",
-                                   US"AUTH",
-                                   US"connection",
-                                   US"ETRN",
-                                   US"EXPN",
-                                   US"EHLO or HELO",
-                                   US"MAILAUTH",
-                                   US"non-SMTP-start",
-                                   US"NOTQUIT",
-                                   US"QUIT",
-                                   US"STARTTLS",
-                                   US"VRFY",
-				   US"delivery",
-				   US"unknown"
+                                   [ACL_WHERE_NOTSMTP] =	US"non-SMTP",
+                                   [ACL_WHERE_AUTH] =		US"AUTH",
+                                   [ACL_WHERE_CONNECT] =	US"connection",
+                                   [ACL_WHERE_ETRN] =		US"ETRN",
+                                   [ACL_WHERE_EXPN] =		US"EXPN",
+                                   [ACL_WHERE_HELO] =		US"EHLO or HELO",
+                                   [ACL_WHERE_MAILAUTH] =	US"MAILAUTH",
+                                   [ACL_WHERE_NOTSMTP_START] =	US"non-SMTP-start",
+                                   [ACL_WHERE_NOTQUIT] =	US"NOTQUIT",
+                                   [ACL_WHERE_QUIT] =		US"QUIT",
+                                   [ACL_WHERE_STARTTLS] =	US"STARTTLS",
+                                   [ACL_WHERE_VRFY] =		US"VRFY",
+				   [ACL_WHERE_DELIVERY] =	US"delivery",
+				   [ACL_WHERE_UNKNOWN] =	US"unknown"
                                  };
 
-uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
-                                   US"550",     /* MAIL */
-                                   US"550",     /* PREDATA */
-                                   US"550",     /* MIME */
-                                   US"550",     /* DKIM */
-                                   US"550",     /* DATA */
+uschar *acl_wherecodes[]       = { [ACL_WHERE_RCPT] =	US"550",
+                                   [ACL_WHERE_MAIL] =	US"550",
+                                   [ACL_WHERE_PREDATA] = US"550",
+                                   [ACL_WHERE_MIME] =	US"550",
+                                   [ACL_WHERE_DKIM] =	US"550",
+                                   [ACL_WHERE_DATA] =	US"550",
 #ifndef DISABLE_PRDR
-                                   US"550",    /* RCPT PRDR */
+                                   [ACL_WHERE_PRDR] =	US"550",
 #endif
-                                   US"0",       /* not SMTP; not relevant */
-                                   US"503",     /* AUTH */
-                                   US"550",     /* connect */
-                                   US"458",     /* ETRN */
-                                   US"550",     /* EXPN */
-                                   US"550",     /* HELO/EHLO */
-                                   US"0",       /* MAILAUTH; not relevant */
-                                   US"0",       /* not SMTP; not relevant */
-                                   US"0",       /* NOTQUIT; not relevant */
-                                   US"0",       /* QUIT; not relevant */
-                                   US"550",     /* STARTTLS */
-                                   US"252",     /* VRFY */
-				   US"0",       /* delivery; not relevant */
-				   US"0"        /* unknown; not relevant */
+                                   [ACL_WHERE_AUTH] =	US"503",
+                                   [ACL_WHERE_CONNECT] = US"550",
+                                   [ACL_WHERE_ETRN] =	US"458",
+                                   [ACL_WHERE_EXPN] =	US"550",
+                                   [ACL_WHERE_HELO] =	US"550",
+                                   [ACL_WHERE_STARTTLS] = US"550",
+                                   [ACL_WHERE_VRFY] =	US"252",
                                  };
 
 uschar *add_environment        = NULL;
@@ -1003,6 +999,9 @@ uschar *hosts_proxy            = NULL;
 #endif
 uschar *hosts_treat_as_local   = NULL;
 uschar *hosts_require_helo     = US"*";
+#ifdef EXPERIMENTAL_WELLKNOWN
+uschar *hosts_wellknown	       = NULL;
+#endif
 #ifdef EXPERIMENTAL_XCLIENT
 uschar *hosts_xclient	       = NULL;
 #endif
@@ -1671,3 +1670,5 @@ const uschar *warnmsg_delay    = NULL;
 const uschar *warnmsg_recipients = NULL;
 
 /*  End of globals.c */
+/* vi: aw ai sw=2
+*/
