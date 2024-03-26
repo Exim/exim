@@ -3081,7 +3081,7 @@ if (iplookup)
     {
     filename = semicolon + 1;
     key = filename;
-    while (*key != 0 && !isspace(*key)) key++;
+    Uskip_nonwhite(&key);
     filename = string_copyn(filename, key - filename);
     Uskip_whitespace(&key);
     }

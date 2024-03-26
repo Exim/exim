@@ -172,7 +172,7 @@ for (state = XCLIENT_SKIP_SPACES; *s; )
       uschar * val;
 
       word = ++s;			/* skip the = */
-      while (*s && !isspace(*s)) s++;
+      Uskip_nonwhite(&s);
       len = s - word;
 
       DEBUG(D_transport) debug_printf(" XCLIENT: \tvalue %.*s\n", len, word);

@@ -335,7 +335,7 @@ while (*options)
   unsigned n;
   const uschar * s = options;
 
-  while (*options && !isspace(*options)) options++;
+  Uskip_nonwhite(&options);
   n = options-s;
 
   if (Ustrncmp(s, "randomize", n) == 0) randomize = TRUE;
@@ -369,7 +369,7 @@ while (*options)
   if (*options)
     {
     options++;
-    while (*options && isspace(*options)) options++;
+    Uskip_whitespace(&options);
     }
   }
 

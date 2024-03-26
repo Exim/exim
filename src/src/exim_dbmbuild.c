@@ -379,7 +379,7 @@ while (Ufgets(line, max_insize, f) != NULL)
     else
       {
       keystart = s;
-      while (*s != 0 && *s != ':' && !isspace(*s)) s++;
+      while (*s && *s != ':' && !isspace(*s)) s++;
       exim_datum_size_set(&key, s - keystart + add_zero);
       }
 
@@ -401,11 +401,11 @@ while (Ufgets(line, max_insize, f) != NULL)
     keybuffer[i] = 0;
     started = 1;
 
-    while (isspace(*s))s++;
+    while (isspace(*s)) s++;
     if (*s == ':')
       {
       s++;
-      while (isspace(*s))s++;
+      while (isspace(*s)) s++;
       }
     if (*s != 0)
       {

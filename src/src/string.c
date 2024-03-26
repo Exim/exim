@@ -649,7 +649,7 @@ uschar * t, * yield;
 /* First find the end of the string */
 
 if (*s != '\"')
-  while (*s && !isspace(*s)) s++;
+  Uskip_nonwhite(&s);
 else
   {
   s++;

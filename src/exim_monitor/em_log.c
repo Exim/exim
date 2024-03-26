@@ -294,7 +294,7 @@ if (LOG != NULL)
 
     if ((p = Ustrstr(buffer, "==")) != NULL)
       {
-      queue_item *qq = find_queue(id, queue_noop, 0);
+      queue_item * qq = find_queue(id, queue_noop, 0);
       if (qq)
         {
         dest_item *d;
@@ -302,14 +302,12 @@ if (LOG != NULL)
         p += 2;
         while (isspace(*p)) p++;
         q = p;
-        while (*p != 0 && !isspace(*p))
+        while (*p && !isspace(*p))
           {
           if (*p++ != '\"') continue;
-          while (*p != 0)
-            {
+          while (*p)
             if (*p == '\\') p += 2;
-              else if (*p++ == '\"') break;
-            }
+            else if (*p++ == '\"') break;
           }
         *p++ = 0;
         if ((r = strstric(q, qualify_domain, FALSE)) != NULL &&

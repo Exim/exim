@@ -5179,7 +5179,8 @@ for (uschar * s = exp; *s; /**/)
     return FALSE;
     }
   adding = *s++ == '+';
-  for (end = s; *end && !isspace(*end); ) end++;
+  end = s;
+  Uskip_nonwhite(&end);
   item_parsed = tls_openssl_one_option_parse(string_copyn(s, end-s), &item);
   if (!item_parsed)
     {

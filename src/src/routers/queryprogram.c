@@ -365,7 +365,7 @@ DEBUG(D_route) debug_printf("command wrote: %s\n", buffer);
 rword = buffer;
 Uskip_whitespace(&rword);
 rdata = rword;
-while (*rdata && !isspace(*rdata)) rdata++;
+Uskip_nonwhite(&rdata);
 if (*rdata) *rdata++ = '\0';
 
 /* The word must be a known yield name. If it is "REDIRECT", the rest of the

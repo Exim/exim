@@ -709,7 +709,7 @@ if (format)
       {
       p += 5;
       Uskip_whitespace(&p);
-      while (!isspace(*p)) p++;
+      Uskip_nonwhite(&p);
       Uskip_whitespace(&p);
       }
     while (*p) *p++ = '*';

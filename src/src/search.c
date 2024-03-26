@@ -247,7 +247,7 @@ if (mac_islookup(search_type, lookup_absfilequery))
   if (*query == '/')
     {
     uschar * s = query;
-    while (*query && !isspace(*query)) query++;
+    Uskip_nonwhite(&query);
     *fnamep = string_copyn(s, query - s);
     Uskip_whitespace(&query);
     }

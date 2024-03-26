@@ -544,8 +544,8 @@ while (Ufgets(buffer, 256, stdin) != NULL)
 
     Uskip_whitespace(&key);
     data = key;
-    while (*data && !isspace((uschar)*data)) data++;
-    *data++ = 0;
+    Uskip_nonwhite(&data);
+    *data++ = '\0';
     Uskip_whitespace(&data);
 
     dbwait = (dbdata_wait *)(&structbuffer);

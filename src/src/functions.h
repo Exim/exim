@@ -767,6 +767,12 @@ Return the next char as there's enough places using it to be useful. */
 static inline uschar skip_whitespace(const uschar ** sp)
 { while (isspace(**sp)) (*sp)++; return **sp; }
 
+/* Ditto, non-whitespace */
+
+#define Uskip_nonwhite(sp) skip_nonwhite(CUSS sp)
+static inline uschar skip_nonwhite(const uschar ** sp)
+{ while (**sp && !isspace(**sp)) (*sp)++; return **sp; }
+
 
 /******************************************************************************/
 

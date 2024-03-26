@@ -198,7 +198,7 @@ The former is now the preferred variable; the latter is the original one. Then
 check that the remaining length is 32. */
 
 auth_vars[0] = expand_nstring[1] = clear;
-while (*clear && !isspace(*clear)) clear++;
+Uskip_nonwhite(&clear);
 if (!isspace(*clear)) return FAIL;
 *clear++ = 0;
 

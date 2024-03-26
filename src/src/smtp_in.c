@@ -1946,6 +1946,9 @@ while (done <= 0)
     case HELP_CMD:
     case NOOP_CMD:
     case ETRN_CMD:
+#ifdef EXPERIMENTAL_WELLKNOWN
+    case WELLKNOWN_CMD:
+#endif
       bsmtp_transaction_linecount = receive_linecount;
       break;
 
@@ -2991,8 +2994,8 @@ switch (where)
 
     if (where == ACL_WHERE_AUTH)	/* avoid logging auth creds */
       {
-      uschar * s;
-      for (s = smtp_cmd_data; *s && !isspace(*s); ) s++;
+      uschar * s = smtp_cmd_data;
+      Uskip_nonwhite(&s);
       lim = s - smtp_cmd_data;	/* atop after method */
       }
     what = string_sprintf("%s %.*s", acl_wherenames[where], lim, place);
@@ -5694,7 +5697,7 @@ while (done <= 0)
 
     case TOO_MANY_NONMAIL_CMD:
       s = smtp_cmd_buffer;
-      while (*s && !isspace(*s)) s++;
+      Uskip_nonwhite(&s);
       incomplete_transaction_log(US"too many non-mail commands");
       log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
 	"nonmail commands (last was \"%.*s\")",  host_and_ident(FALSE),
