@@ -533,7 +533,7 @@ switch(*errno_value)
 
   case ERRNO_SMTPFORMAT:	/* Handle malformed SMTP response */
     s = string_printing(buffer);
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     *message = *s == 0
       ? string_sprintf("Malformed SMTP reply (an empty line) "
 	  "in response to %s%s", pl, smtp_command)
@@ -815,8 +815,7 @@ uschar * match;
 if (regex_match(regex_LIMITS, sx->buffer, -1, &match))
   for (const uschar * s = sx->buffer + Ustrlen(match); *s; )
     {
-    while (isspace(*s)) s++;
-    if (*s == '\n') break;
+    if (Uskip_whitespace(&s) == '\n') break;
 
     if (strncmpic(s, US"MAILMAX=", 8) == 0)
       {
@@ -1694,8 +1693,8 @@ if (  sx->esmtp
 	{
 	DEBUG(D_transport) debug_printf("skipping %s authenticator: %s\n",
 	  au->name,
-	  (au->client)? "client_condition is false" :
-			"not configured as a client");
+	  au->client ? "client_condition is false"
+		    : "not configured as a client");
 	continue;
 	}
 
@@ -1703,15 +1702,14 @@ if (  sx->esmtp
 
       while (*p)
 	{
-	int len = Ustrlen(au->public_name);
-	int rc;
+	int len = Ustrlen(au->public_name), rc;
 
-	while (isspace(*p)) p++;
+	Uskip_whitespace(&p);
 
 	if (strncmpic(au->public_name, p, len) != 0 ||
-	    (p[len] != 0 && !isspace(p[len])))
+	    (p[len] && !isspace(p[len])))
 	  {
-	  while (*p != 0 && !isspace(*p)) p++;
+	  while (*p && !isspace(*p)) p++;
 	  continue;
 	  }
 

@@ -599,7 +599,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
   if (*ss == '!')
     {
     yield = FAIL;
-    while (isspace((*(++ss))));
+    while (isspace(*++ss)) ;
     }
   else
     yield = OK;
@@ -825,15 +825,14 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 
     while (Ufgets(filebuffer, sizeof(filebuffer), f) != NULL)
       {
-      uschar *error;
-      uschar *sss = filebuffer;
+      uschar * error, * sss = filebuffer;
 
       while ((ss = Ustrchr(sss, '#')) != NULL)
         {
         if ((type != MCL_ADDRESS && type != MCL_LOCALPART) ||
               ss == filebuffer || isspace(ss[-1]))
           {
-          *ss = 0;
+          *ss = '\0';
           break;
           }
         sss = ss + 1;
@@ -841,20 +840,19 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 
       ss = filebuffer + Ustrlen(filebuffer);		/* trailing space */
       while (ss > filebuffer && isspace(ss[-1])) ss--;
-      *ss = 0;
+      *ss = '\0';
 
       ss = filebuffer;
-      while (isspace(*ss)) ss++;			/* leading space */
-
-      if (!*ss) continue;				/* ignore empty */
+      if (!Uskip_whitespace(&ss))			/* leading space */
+	continue;					/* ignore empty */
 
       file_yield = yield;				/* positive yield */
       sss = ss;						/* for debugging */
 
       if (*ss == '!')					/* negation */
         {
-        file_yield = (file_yield == OK)? FAIL : OK;
-        while (isspace((*(++ss))));
+        file_yield = file_yield == OK ? FAIL : OK;
+        while (isspace(*++ss)) ;
         }
 
       switch ((func)(arg, ss, valueptr, &error))
@@ -1157,7 +1155,7 @@ if (pattern[0] == '@' && pattern[1] == '@')
       if (*ss == '!')
         {
         local_yield = FAIL;
-        while (isspace((*(++ss))));
+        while (isspace(*++ss)) ;
         }
       else local_yield = OK;
 

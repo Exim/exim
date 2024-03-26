@@ -396,7 +396,7 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
   /* Step through the string looking for the required fields. Ensure
   strict adherence to required formatting, exit for any error. */
   p += 5;
-  if (!isspace(*(p++)))
+  if (!isspace(*p++))
     {
     DEBUG(D_receive) debug_printf("Missing space after PROXY command\n");
     goto proxyfail;
@@ -417,7 +417,7 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
     }
 
   p += Ustrlen(iptype);
-  if (!isspace(*(p++)))
+  if (!isspace(*p++))
     {
     DEBUG(D_receive) debug_printf("Missing space after TCP4/6 command\n");
     goto proxyfail;

@@ -266,12 +266,12 @@ for (router_instance * r = routers; r; r = r->next)
   else if (Ustrncmp(s, "reroute:", 8) == 0)
     {
     s += 8;
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     if (Ustrncmp(s, "rewrite:", 8) == 0)
       {
       r->self_rewrite = TRUE;
       s += 8;
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       }
     r->self = s;
     r->self_code = self_reroute;
@@ -693,13 +693,13 @@ while ((check = string_nextinlist(&listptr, &sep, NULL, 0)))
   if (*ss == '+')
     {
     eacces_code = 1;
-    while (isspace((*(++ss))));
+    while (isspace(*++ss));
     }
 
   if (*ss == '!')
     {
     invert = TRUE;
-    while (isspace((*(++ss))));
+    while (isspace(*++ss));
     }
 
   if (*ss != '/')
@@ -1463,7 +1463,7 @@ for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
     }
   name += 2;
 
-  while (isspace(*assignment)) assignment++;
+  Uskip_whitespace(&assignment);
 
   if (!(val = expand_string(US assignment)))
     if (f.expand_string_forcedfail)

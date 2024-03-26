@@ -1083,20 +1083,15 @@ control_ldap_search(const uschar *ldap_url, int search_type, uschar **res,
   uschar **errmsg)
 {
 BOOL defer_break = FALSE;
-int timelimit = LDAP_NO_LIMIT;
-int sizelimit = LDAP_NO_LIMIT;
+int timelimit = LDAP_NO_LIMIT, sizelimit = LDAP_NO_LIMIT;
 int tcplimit = 0;
 int sep = 0;
 int dereference = LDAP_DEREF_NEVER;
-void* referrals = LDAP_OPT_ON;
-const uschar *url = ldap_url;
-const uschar *p;
-uschar *user = NULL;
-uschar *password = NULL;
-uschar *local_servers = NULL;
-const uschar *list;
+void * referrals = LDAP_OPT_ON;
+const uschar * url = ldap_url, * p, * list;
+uschar * user = NULL, * password = NULL, * local_servers = NULL;
 
-while (isspace(*url)) url++;
+Uskip_whitespace(&url);
 
 /* Until the string begins "ldap", search for the other parameter settings that
 are recognized. They are of the form NAME=VALUE, with the value being
@@ -1175,7 +1170,7 @@ while (strncmpic(url, US"ldap", 4) != 0)
         DEBUG(D_lookup) debug_printf_indent("LDAP query error: %s\n", *errmsg);
         return DEFER;
         }
-      while (isspace(*url)) url++;
+      Uskip_whitespace(&url);
       continue;
       }
     }

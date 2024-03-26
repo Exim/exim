@@ -2632,14 +2632,11 @@ on the second character (the one after '-'), to save some effort. */
               reset_point = store_mark();
               while (Ufgets(big_buffer, big_buffer_size, trust_list))
                 {
-                uschar *start = big_buffer, *nl;
-                while (*start && isspace(*start))
-                start++;
-                if (*start != '/')
+                uschar * start = big_buffer, * nl;
+                if (Uskip_whitespace(&start) != '/')
                   continue;
-                nl = Ustrchr(start, '\n');
-                if (nl)
-                  *nl = 0;
+                if ((nl = Ustrchr(start, '\n')))
+                  *nl = '\0';
                 trusted_configs[nr_configs++] = string_copy(start);
                 if (nr_configs == nelem(trusted_configs))
                   break;
@@ -2698,7 +2695,7 @@ on the second character (the one after '-'), to save some effort. */
       const uschar * s = argrest;
 
       opt_D_used = TRUE;
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
 
       if (*s < 'A' || *s > 'Z')
         exim_fail("exim: macro name set by -D must start with "
@@ -2711,11 +2708,10 @@ on the second character (the one after '-'), to save some effort. */
         }
       name[ptr] = 0;
       if (ptr == 0) { badarg = TRUE; break; }
-      while (isspace(*s)) s++;
-      if (*s != 0)
+      if (Uskip_whitespace(&s))
         {
         if (*s++ != '=') { badarg = TRUE; break; }
-        while (isspace(*s)) s++;
+        Uskip_whitespace(&s);
         }
 
       for (m = macros_user; m; m = m->next)
@@ -5918,7 +5914,7 @@ for (BOOL more = TRUE; more; )
         receive_add_recipient(string_copy_taint(recipient, GET_TAINTED), -1);
         s = ss;
         if (!finished)
-          while (*(++s) != 0 && (*s == ',' || isspace(*s)));
+          while (*++s && (*s == ',' || isspace(*s)));
         }
       }
 

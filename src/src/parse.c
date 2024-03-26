@@ -1363,7 +1363,7 @@ for (;;)
       *error = string_sprintf("\"%.*s\" is not permitted", len, s);
       return FF_ERROR;
       }
-    while (*ss && isspace(*ss)) ss++;	/* skip leading whitespace */
+    Uskip_whitespace(&ss);		/* skip leading whitespace */
     if ((len = Ustrlen(ss)) > 0)	/* ignore trailing newlines */
       for (const uschar * t = ss + len - 1; t >= ss && *t == '\n'; t--) len--;
     *error = string_copyn(ss, len);	/* becomes the error */

@@ -408,9 +408,9 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
   else for (int i = 0; i < num_fields; i++)
     {
     int slen;
-    uschar *s = US desc[i].buf;
+    uschar * s = US desc[i].buf;
 
-    while (*s != 0 && isspace(*s)) s++;
+    Uskip_whitespace(&s);
     slen = Ustrlen(s);
     while (slen > 0 && isspace(s[slen-1])) slen--;
     result = string_catn(result, s, slen);

@@ -679,8 +679,7 @@ for (const uschar * ele = raw_record, * tspec, * end, * val; *ele; ele = end)
     DEBUG(D_acl) debug_printf(" %.*s=%s\n", taglen, tspec, val);
     while (taglen > 1 && isspace(tspec[taglen-1]))
       taglen--;			/* Ignore whitespace before = */
-    while (isspace(*val))
-      val++;			/* Ignore whitespace after = */
+    Uskip_whitespace(&val);	/* Ignore whitespace after = */
     if (isspace(val[ Ustrlen(val)-1 ]))
       {				/* Ignore whitespace after value */
       gstring * g = string_cat(NULL, val);

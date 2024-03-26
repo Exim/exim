@@ -363,10 +363,10 @@ buffer[len] = 0;
 DEBUG(D_route) debug_printf("command wrote: %s\n", buffer);
 
 rword = buffer;
-while (isspace(*rword)) rword++;
+Uskip_whitespace(&rword);
 rdata = rword;
 while (*rdata && !isspace(*rdata)) rdata++;
-if (*rdata) *rdata++ = 0;
+if (*rdata) *rdata++ = '\0';
 
 /* The word must be a known yield name. If it is "REDIRECT", the rest of the
 line is redirection data, as for a .forward file. It may not contain filter

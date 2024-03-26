@@ -762,13 +762,12 @@ llen = domain++ - recipient;
 
 while ((item = string_nextinlist(&listptr, &sep, NULL, 0)))
   {
-  const uschar *newaddress = item;
-  const uschar *pattern = string_dequote(&newaddress);
+  const uschar * newaddress = item;
+  const uschar * pattern = string_dequote(&newaddress);
 
   /* If no new address found, just skip this item. */
 
-  while (isspace(*newaddress)) newaddress++;
-  if (*newaddress == 0) continue;
+  if (!Uskip_whitespace(&newaddress)) continue;
 
   /* We now have an item to match as an address in item, and the additional
   address in newaddress. If the pattern matches, expand the new address string

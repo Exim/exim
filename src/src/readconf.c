@@ -1050,7 +1050,7 @@ for (;;)
          (Ustrncmp(ss+8, "_if_exists", 10) == 0 && isspace(ss[18]))))
     {
     uschar *t;
-    int include_if_exists = isspace(ss[8])? 0 : 10;
+    int include_if_exists = isspace(ss[8]) ? 0 : 10;
     config_file_item *save;
     struct stat statbuf;
 
@@ -1644,8 +1644,7 @@ uschar name2[EXIM_DRIVERNAME_MAX];
 /* There may be leading spaces; thereafter, we expect an option name starting
 with a letter. */
 
-while (isspace(*s)) s++;
-if (!isalpha(*s))
+if (!isalpha( Uskip_whitespace(&s) ))
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "option setting expected: %s", s);
 
 /* Read the name of the option, and skip any subsequent white space. If
@@ -1660,7 +1659,7 @@ for (int n = 0; n < 2; n++)
     s++;
     }
   name[ptr] = 0;
-  while (isspace(*s)) s++;
+  Uskip_whitespace(&s);
   if (Ustrcmp(name, "hide") != 0) break;
   issecure = opt_secure;
   ptr = 0;
@@ -1720,7 +1719,7 @@ else if (*s && (offset != 0 || *s != '='))
 
 /* Skip white space after = */
 
-if (*s == '=') while (isspace((*(++s))));
+if (*s == '=') while (isspace(*++s));
 
 /* If there is a data block and the opt_public flag is not set, change
 the data block pointer to the private options block. */
@@ -2202,8 +2201,7 @@ switch (type)
 	log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
 	  "absolute value of integer \"%s\" is too large (overflow)", s);
 
-      while (isspace(*endptr)) endptr++;
-      if (*endptr)
+      if (Uskip_whitespace(&endptr))
 	extra_chars_error(endptr, inttype, US"integer value for ", name);
 
       value = (int)lvalue;
@@ -2251,8 +2249,7 @@ switch (type)
     if (errno == ERANGE) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
       "absolute value of integer \"%s\" is too large (overflow)", s);
 
-    while (isspace(*endptr)) endptr++;
-    if (*endptr != 0)
+    if (Uskip_whitespace(&endptr))
       extra_chars_error(endptr, inttype, US"integer value for ", name);
 
     if (data_block)
@@ -2347,7 +2344,7 @@ switch (type)
       list[count+1] = value;
       if (snext == NULL) break;
       s = snext + 1;
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       }
 
     if (count > list[0] - 2)
@@ -3570,8 +3567,7 @@ if (host_number_string)
         "failed to expand localhost_number \"%s\": %s",
         host_number_string, expand_string_message);
   n = Ustrtol(s, &end, 0);
-  while (isspace(*end)) end++;
-  if (*end)
+  if (Uskip_whitespace(&end))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "localhost_number value is not a number: %s", s);
   if (n > LOCALHOST_MAX)
@@ -4019,10 +4015,9 @@ Returns:    time in seconds or fixed point number * 1000
 */
 
 static int
-retry_arg(const uschar **paddr, int type)
+retry_arg(const uschar ** paddr, int type)
 {
-const uschar *p = *paddr;
-const uschar *pp;
+const uschar * p = *paddr, * pp;
 
 if (*p++ != ',') log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "comma expected");
 
@@ -4030,7 +4025,7 @@ Uskip_whitespace(&p);
 pp = p;
 while (isalnum(*p) || (type == 1 && *p == '.')) p++;
 
-if (*p != 0 && !isspace(*p) && *p != ',' && *p != ';')
+if (*p && !isspace(*p) && *p != ',' && *p != ';')
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "comma or semicolon expected");
 
 *paddr = p;
@@ -4433,10 +4428,8 @@ for (const config_line_item * i = config_lines; i; i = i->next)
   r = store_mark();
 
   /* skip over to the first non-space */
-  for (current = string_copy(i->line); *current && isspace(*current); ++current)
-    ;
-
-  if (!*current)
+  current = string_copy(i->line);
+  if (!Uskip_whitespace(&current))
     continue;
 
   /* Collapse runs of spaces. We stop this if we encounter one of the
@@ -4444,11 +4437,10 @@ for (const config_line_item * i = config_lines; i; i = i->next)
 
   for (p = current; *p; p++) if (isspace(*p))
     {
-    uschar *next;
+    uschar * next = p;
     if (*p != ' ') *p = ' ';
 
-    for (next = p; isspace(*next); ++next)
-      ;
+    Uskip_whitespace(&p);
 
     if (next - p > 1)
       memmove(p+1, next, Ustrlen(next)+1);

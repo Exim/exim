@@ -156,17 +156,17 @@ static BOOL
 parse_route_item(const uschar *s, const uschar **domain, const uschar **hostlist,
   const uschar **options)
 {
-while (*s != 0 && isspace(*s)) s++;
+Uskip_whitespace(&s);
 
 if (domain)
   {
   if (!*s) return FALSE;            /* missing data */
   *domain = string_dequote(&s);
-  while (*s && isspace(*s)) s++;
+  Uskip_whitespace(&s);
   }
 
 *hostlist = string_dequote(&s);
-while (*s && isspace(*s)) s++;
+Uskip_whitespace(&s);
 *options = s;
 return TRUE;
 }
@@ -333,8 +333,9 @@ lookup_type = LK_DEFAULT;
 while (*options)
   {
   unsigned n;
-  const uschar *s = options;
-  while (*options != 0 && !isspace(*options)) options++;
+  const uschar * s = options;
+
+  while (*options && !isspace(*options)) options++;
   n = options-s;
 
   if (Ustrncmp(s, "randomize", n) == 0) randomize = TRUE;
@@ -368,7 +369,7 @@ while (*options)
   if (*options)
     {
     options++;
-    while (*options != 0 && isspace(*options)) options++;
+    while (*options && isspace(*options)) options++;
     }
   }
 

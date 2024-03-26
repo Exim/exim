@@ -452,7 +452,7 @@ header_line * newh = NULL;
 rmark function_reset_point = store_mark();
 uschar * s = Ustrchr(h->text, ':') + 1;
 
-while (isspace(*s)) s++;
+Uskip_whitespace(&s);
 
 DEBUG(D_rewrite)	/* The header text includes the trailing newline */
   debug_printf_indent("rewrite_one_header: type=%c:\n  %s", h->type, h->text);
@@ -493,7 +493,7 @@ while (*s)
   recipient = parse_extract_address(s, &errmess, &start, &end, &domain, FALSE);
   *ss1 = terminator;
   s = ss + (*ss ? 1 : 0);
-  while (isspace(*s)) s++;
+  Uskip_whitespace(&s);
 
   /* There isn't much we can do for syntactic disasters at this stage.
   Pro tem (possibly for ever) ignore them.

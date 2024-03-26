@@ -313,8 +313,8 @@ while (mimeword)
   mimeword = decode_mimeword(string, lencheck, &q1, &q2, &endword, &dlen, &dptr);
   if (mimeword)
     {
-    uschar *s = string;
-    while (isspace(*s)) s++;
+    uschar * s = string;
+    Uskip_whitespace(&s);
     if (s == mimeword) string = s;
     }
   }

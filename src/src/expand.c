@@ -1262,7 +1262,8 @@ while (*s)
 
   while (*s && *s != '=' && !isspace(*s)) s++;
   dkeylength = s - dkey;
-  if (Uskip_whitespace(&s) == '=') while (isspace(*++s));
+  if (Uskip_whitespace(&s) == '=')
+    while (isspace(*++s)) ;
 
   data = string_dequote(&s);
   if (length == dkeylength && strncmpic(key, dkey, length) == 0)
@@ -4114,7 +4115,7 @@ if (!*error)
     if (*s != ')')
       *error = US"expecting closing parenthesis";
     else
-      while (isspace(*++s));
+      while (isspace(*++s)) ;
   else if (*s)
     *error = US"expecting operator";
 *sptr = s;

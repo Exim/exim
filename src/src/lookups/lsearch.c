@@ -291,8 +291,8 @@ for (BOOL this_is_eol, last_was_eol = TRUE;
       this_is_comment = (this_is_comment || (buffer[0] == 0 || buffer[0] == '#'));
       if (this_is_comment) continue;
       if (!isspace((uschar)buffer[0])) break;
-      while (isspace((uschar)*s)) s++;
-      *(--s) = ' ';
+      Uskip_whitespace(&s);
+      *--s = ' ';
       }
     if (this_is_comment) continue;
 

@@ -2612,12 +2612,12 @@ for (int i = 0; i < 3 && !done; i++)
 
     f.parse_allow_group = TRUE;
 
-    while (*s != 0)
+    while (*s)
       {
-      address_item *vaddr;
+      address_item * vaddr;
 
       while (isspace(*s) || *s == ',') s++;
-      if (*s == 0) break;        /* End of header */
+      if (!*s) break;			/* End of header */
 
       ss = parse_find_address_end(s, FALSE);
 
@@ -2628,7 +2628,7 @@ for (int i = 0; i < 3 && !done; i++)
 
       while (isspace(ss[-1])) ss--;
       terminator = *ss;
-      *ss = 0;
+      *ss = '\0';
 
       HDEBUG(D_verify) debug_printf("verifying %.*s header address %s\n",
         (int)(endname - h->text), h->text, s);
@@ -2873,17 +2873,17 @@ if (sscanf(CS buffer + qlen, "%d , %d%n", &received_sender_port,
   goto END_OFF;
 
 p = buffer + qlen + n;
-while(isspace(*p)) p++;
+Uskip_whitespace(&p);
 if (*p++ != ':') goto END_OFF;
-while(isspace(*p)) p++;
+Uskip_whitespace(&p);
 if (Ustrncmp(p, "USERID", 6) != 0) goto END_OFF;
 p += 6;
-while(isspace(*p)) p++;
+Uskip_whitespace(&p);
 if (*p++ != ':') goto END_OFF;
-while (*p != 0 && *p != ':') p++;
-if (*p++ == 0) goto END_OFF;
-while(isspace(*p)) p++;
-if (*p == 0) goto END_OFF;
+while (*p && *p != ':') p++;
+if (!*p++) goto END_OFF;
+Uskip_whitespace(&p);
+if (!*p) goto END_OFF;
 
 /* The rest of the line is the data we want. We turn it into printing
 characters when we save it, so that it cannot mess up the format of any logging
@@ -3083,7 +3083,7 @@ if (iplookup)
     key = filename;
     while (*key != 0 && !isspace(*key)) key++;
     filename = string_copyn(filename, key - filename);
-    while (isspace(*key)) key++;
+    Uskip_whitespace(&key);
     }
   else if (mac_islookup(search_type, lookup_querystyle))
     {

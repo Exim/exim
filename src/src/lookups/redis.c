@@ -212,7 +212,7 @@ if(sdata[1])
   int siz, ptr, i;
   uschar c;
 
-  while (isspace(*s)) s++;
+  Uskip_whitespace(&s);
 
   for (i = 0; *s && i < nele(argv); i++)
     {
@@ -224,7 +224,7 @@ if(sdata[1])
     argv[i] = string_from_gstring(g);
 
     DEBUG(D_lookup) debug_printf_indent("REDIS: argv[%d] '%s'\n", i, argv[i]);
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     }
 
   /* Run the command. We use the argv form rather than plain as that parses

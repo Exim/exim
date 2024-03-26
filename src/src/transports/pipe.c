@@ -562,7 +562,7 @@ if (testflag(addr, af_pfr) && addr->local_part[0] == '|')
   else
     {
     cmd = addr->local_part + 1;
-    while (isspace(*cmd)) cmd++;
+    Uskip_whitespace(&cmd);
     expand_arguments = testflag(addr, af_expand_pipe);
     expand_fail = FAIL;
     }

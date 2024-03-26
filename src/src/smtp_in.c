@@ -1227,7 +1227,7 @@ for (smtp_cmd_list * p = cmd_list; p < cmd_list + nelem(cmd_list); p++)
     follow the sender address. */
 
     smtp_cmd_argument = smtp_cmd_buffer + p->len;
-    while (isspace(*smtp_cmd_argument)) smtp_cmd_argument++;
+    Uskip_whitespace(&smtp_cmd_argument);
     Ustrcpy(smtp_data_buffer, smtp_cmd_argument);
     smtp_cmd_data = smtp_data_buffer;
 
@@ -3807,8 +3807,8 @@ while (done <= 0)
 
       if (*smtp_cmd_data)
 	{
-	*smtp_cmd_data++ = 0;
-	while (isspace(*smtp_cmd_data)) smtp_cmd_data++;
+	*smtp_cmd_data++ = '\0';
+	Uskip_whitespace(&smtp_cmd_data);
 	}
 
       /* Search for an authentication mechanism which is configured for use
@@ -3919,10 +3919,10 @@ while (done <= 0)
       if (!f.sender_host_unknown)
 	{
 	BOOL old_helo_verified = f.helo_verified;
-	uschar *p = smtp_cmd_data;
+	uschar * p = smtp_cmd_data;
 
-	while (*p != 0 && !isspace(*p)) { *p = tolower(*p); p++; }
-	*p = 0;
+	while (*p && !isspace(*p)) { *p = tolower(*p); p++; }
+	*p = '\0';
 
 	/* Force a reverse lookup if HELO quoted something in helo_lookup_domains
 	because otherwise the log can be confusing. */

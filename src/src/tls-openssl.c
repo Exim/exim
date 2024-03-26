@@ -5170,8 +5170,7 @@ if (!expand_check(option_spec, US"openssl_options", &exp, &end))
 
 for (uschar * s = exp; *s; /**/)
   {
-  while (isspace(*s)) ++s;
-  if (*s == '\0')
+  if (!Uskip_whitespace(&s))
     break;
   if (*s != '+' && *s != '-')
     {

@@ -276,16 +276,11 @@ nextsigchar(const uschar *ptr, BOOL comment_allowed)
 for (;;)
   {
   while (isspace(*ptr))
-    {
-    if (*ptr == '\n') line_number++;
-    ptr++;
-    }
+    if (*ptr++ == '\n') line_number++;
   if (comment_allowed && *ptr == '#')
-    {
-    while (*(++ptr) != '\n' && *ptr != 0);
-    continue;
-    }
-  else break;
+    while (*++ptr != '\n' && *ptr) ;
+  else
+    break;
   }
 return ptr;
 }
@@ -311,18 +306,19 @@ Returns:    pointer to the next significant character after the word
 static const uschar *
 nextword(const uschar *ptr, uschar *buffer, int size, BOOL bracket)
 {
-uschar *bp = buffer;
-while (*ptr != 0 && !isspace(*ptr) &&
+uschar * bp = buffer;
+while (*ptr && !isspace(*ptr) &&
        (!bracket || (*ptr != '(' && *ptr != ')')))
-  {
-  if (bp - buffer < size - 1) *bp++ = *ptr++; else
+  if (bp - buffer < size - 1)
+    *bp++ = *ptr++;
+  else
     {
     *error_pointer = string_sprintf("word is too long in line %d of "
       "filter file (max = %d chars)", line_number, size);
     break;
     }
-  }
-*bp = 0;
+
+*bp = '\0';
 return nextsigchar(ptr, TRUE);
 }
 
@@ -410,8 +406,8 @@ int value, count;
 if (sscanf(CS s, "%i%n", &value, &count) != 1) return 0;
 if (tolower(s[count]) == 'k') { value *= 1024; count++; }
 if (tolower(s[count]) == 'm') { value *= 1024*1024; count++; }
-while (isspace((s[count]))) count++;
-if (s[count] != 0) return 0;
+while (isspace(s[count])) count++;
+if (s[count]) return 0;
 *ok = TRUE;
 return value;
 }
@@ -2006,8 +2002,7 @@ while (commands)
 
 	if (subtype == TRUE)
 	  {
-	  while (isspace(*s)) s++;
-	  if (*s)
+	  if (Uskip_whitespace(&s))
 	    {
 	    header_add(htype_other, "%s%s", s,
 	      s[Ustrlen(s)-1] == '\n' ? "" : "\n");
@@ -2226,7 +2221,7 @@ while (commands)
 	  gstring * log_addr = NULL;
 
 	  if (!to) to = expand_string(US"$reply_address");
-	  while (isspace(*to)) to++;
+	  Uskip_whitespace(&to);
 
 	  for (tt = to; *tt; tt++)     /* Get rid of newlines */
 	    if (*tt == '\n')
@@ -2298,7 +2293,7 @@ while (commands)
 	    /* Move on past this address */
 
 	    tt = ss + (*ss ? 1 : 0);
-	    while (isspace(*tt)) tt++;
+	    Uskip_whitespace(&tt);
 	    }
 
 	  if (log_addr)
@@ -2612,3 +2607,5 @@ return yield;
 
 
 /* End of filter.c */
+/* vi: aw ai sw=2
+*/

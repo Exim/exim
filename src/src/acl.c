@@ -1366,7 +1366,7 @@ uschar * target = store_get(TARGET_SIZE, GET_TAINTED);
 client's HELO domain. If the client has not said HELO, use its IP address
 instead. If it's a local client (exim -bs), CSA isn't applicable. */
 
-while (isspace(*domain) && *domain != '\0') ++domain;
+while (isspace(*domain) && *domain) ++domain;
 if (*domain == '\0') domain = sender_helo_name;
 if (!domain) domain = sender_host_address;
 if (!sender_host_address) return CSA_UNKNOWN;
@@ -1867,9 +1867,10 @@ switch(vp->value)
       verify_sender_address = sender_address;
     else
       {
-      while (isspace(*s)) s++;
-      if (*s++ != '=') goto BAD_VERIFY;
-      while (isspace(*s)) s++;
+      if (Uskip_whitespace(&s) != '=')
+	goto BAD_VERIFY;
+      s++;
+      Uskip_whitespace(&s);
       verify_sender_address = string_copy(s);
       }
     }
@@ -1911,13 +1912,13 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
     callout = CALLOUT_TIMEOUT_DEFAULT;
     if (*(ss += 7))
       {
-      while (isspace(*ss)) ss++;
+      Uskip_whitespace(&ss);
       if (*ss++ == '=')
         {
 	const uschar * sublist = ss;
         int optsep = ',';
 
-        while (isspace(*sublist)) sublist++;
+	Uskip_whitespace(&sublist);
         for (uschar * opt; opt = string_nextinlist(&sublist, &optsep, NULL, 0); )
           {
 	  callout_opt_t * op;
@@ -1931,14 +1932,14 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
 	  if (op->has_option)
 	    {
 	    opt += Ustrlen(op->name);
-            while (isspace(*opt)) opt++;
+            Uskip_whitespace(&opt);
             if (*opt++ != '=')
               {
               *log_msgptr = string_sprintf("'=' expected after "
                 "\"%s\" in ACL verify condition \"%s\"", op->name, arg);
               return ERROR;
               }
-            while (isspace(*opt)) opt++;
+            Uskip_whitespace(&opt);
 	    }
 	  if (op->timeval && (period = v_period(opt, arg, log_msgptr)) < 0)
 	    return ERROR;
@@ -1981,14 +1982,14 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
     quota = TRUE;
     if (*(ss += 5))
       {
-      while (isspace(*ss)) ss++;
+      Uskip_whitespace(&ss);
       if (*ss++ == '=')
         {
 	const uschar * sublist = ss;
         int optsep = ',';
 	int period;
 
-        while (isspace(*sublist)) sublist++;
+        Uskip_whitespace(&sublist);
         for (uschar * opt; opt = string_nextinlist(&sublist, &optsep, NULL, 0); )
 	  if (Ustrncmp(opt, "cachepos=", 9) == 0)
 	    if ((period = v_period(opt += 9, arg, log_msgptr)) < 0)
@@ -3892,7 +3893,7 @@ for (; cb; cb = cb->next)
           }
         s++;
         }
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
 
       if (logbits == 0) logbits = LOG_MAIN;
       log_write(0, logbits, "%s", string_printing(s));
@@ -4316,19 +4317,17 @@ if (!s)
 /* At top level, we expand the incoming string. At lower levels, it has already
 been expanded as part of condition processing. */
 
-if (acl_level == 0)
+if (acl_level != 0)
+  ss = s;
+else if (!(ss = expand_string(s)))
   {
-  if (!(ss = expand_string(s)))
-    {
-    if (f.expand_string_forcedfail) return OK;
-    *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s", s,
-      expand_string_message);
-    return ERROR;
-    }
+  if (f.expand_string_forcedfail) return OK;
+  *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s", s,
+    expand_string_message);
+  return ERROR;
   }
-else ss = s;
 
-while (isspace(*ss)) ss++;
+Uskip_whitespace(&ss);
 
 /* If we can't find a named ACL, the default is to parse it as an inline one.
 (Unless it begins with a slash; non-existent files give rise to an error.) */
@@ -4617,8 +4616,8 @@ if (!(tmp = string_dequote(&s)) || !(name = expand_string(tmp)))
 
 for (i = 0; i < 9; i++)
   {
-  while (*s && isspace(*s)) s++;
-  if (!*s) break;
+  if (!Uskip_whitespace(&s))
+    break;
   if (!(tmp = string_dequote(&s)) || !(tmp_arg[i] = expand_string(tmp)))
     {
     tmp = name;

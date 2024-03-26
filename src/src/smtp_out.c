@@ -704,13 +704,13 @@ if (format)
 
   if (outblock->authenticating)
     {
-    uschar *p = big_buffer;
+    uschar * p = big_buffer;
     if (Ustrncmp(big_buffer, "AUTH ", 5) == 0)
       {
       p += 5;
-      while (isspace(*p)) p++;
+      Uskip_whitespace(&p);
       while (!isspace(*p)) p++;
-      while (isspace(*p)) p++;
+      Uskip_whitespace(&p);
       }
     while (*p) *p++ = '*';
     }

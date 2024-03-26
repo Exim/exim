@@ -2251,8 +2251,7 @@ OVERSIZE:
 
     if (isspace(*p)) break;
     while (mac_isgraph(*p) && *p != ':') p++;
-    while (isspace(*p)) p++;
-    if (*p != ':')
+    if (Uskip_whitespace(&p) != ':')
       {
       body_zerocount = had_zero;
       break;
@@ -2453,13 +2452,14 @@ for (header_line * h = header_list->next; h; h = h->next)
 	if (!smtp_input)
 	  {
 	  int len;
-	  uschar *s = Ustrchr(h->text, ':') + 1;
-	  while (isspace(*s)) s++;
+	  uschar * s = Ustrchr(h->text, ':') + 1;
+
+	  Uskip_whitespace(&s);
 	  len = h->slen - (s - h->text) - 1;
 	  if (Ustrlen(originator_login) == len &&
 	      strncmpic(s, originator_login, len) == 0)
 	    {
-	    uschar *name = is_resent? US"Resent-From" : US"From";
+	    uschar * name = is_resent ? US"Resent-From" : US"From";
 	    header_add(htype_from, "%s: %s <%s@%s>\n", name, originator_name,
 	      originator_login, qualify_domain_sender);
 	    from_header = header_last;
@@ -2514,15 +2514,13 @@ for (header_line * h = header_list->next; h; h = h->next)
 
       if (filter_test != FTEST_NONE)
 	{
-	uschar *start = h->text + 12;
-	uschar *end = start + Ustrlen(start);
-	while (isspace(*start)) start++;
+	uschar * start = h->text + 12;
+	uschar * end = start + Ustrlen(start);
+
+	Uskip_whitespace(&start);
 	while (end > start && isspace(end[-1])) end--;
 	if (*start == '<' && end[-1] == '>')
-	  {
-	  start++;
-	  end--;
-	  }
+	  { start++; end--; }
 	return_path = string_copyn(start, end - start);
 	printf("Return-path taken from \"Return-path:\" header line\n");
 	}
@@ -2626,7 +2624,7 @@ if (extract_recip)
         (!contains_resent_headers || strncmpic(h->text, US"resent-", 7) == 0))
       {
       uschar * s = Ustrchr(h->text, ':') + 1;
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
 
       f.parse_allow_group = TRUE;          /* Allow address group syntax */
 
@@ -2706,7 +2704,7 @@ if (extract_recip)
         /* Move on past this address */
 
         s = ss + (*ss ? 1 : 0);
-        while (isspace(*s)) s++;
+        Uskip_whitespace(&s);
         }    /* Next address */
 
       f.parse_allow_group = FALSE;      /* Reset group syntax flags */

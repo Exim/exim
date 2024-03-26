@@ -248,7 +248,7 @@ for (state = XCLIENT_SKIP_SPACES; *s; )
       }
 
     case XCLIENT_SKIP_SPACES:
-      while (*s && isspace (*s)) s++;
+      Uskip_whitespace(&s);
       state = XCLIENT_READ_COMMAND;
       break;
 

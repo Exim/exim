@@ -235,13 +235,12 @@ that needs to be removed */
 
 s = newlist + Ustrlen(newlist);
 while (s > newlist && (isspace(s[-1]) || s[-1] == ',')) s--;
-*s = 0;
+*s = '\0';
 
 /* Check to see if there any addresses left; if not, return NULL */
 
 s = newlist;
-while (s && isspace(*s)) s++;
-if (*s)
+if (Uskip_whitespace(&s))
   return newlist;
 
 store_reset(reset_point);
@@ -592,7 +591,7 @@ for (h = header_list; h; h = h->next)
 if (h)
   {
   message_id = Ustrchr(h->text, ':') + 1;
-  while (isspace(*message_id)) message_id++;
+  Uskip_whitespace(&message_id);
   fprintf(fp, "In-Reply-To: %s", message_id);
   }
 

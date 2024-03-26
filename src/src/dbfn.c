@@ -490,7 +490,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
     {
     count = Uatoi(cmd);
     while (isdigit((uschar)*cmd)) cmd++;
-    while (isspace((uschar)*cmd)) cmd++;
+    Uskip_whitespace(&cmd);
     }
 
   if (Ustrncmp(cmd, "open", 4) == 0)
@@ -498,7 +498,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
     int i;
     open_db *odb;
     uschar *s = cmd + 4;
-    while (isspace((uschar)*s)) s++;
+    Uskip_whitespace(&s);
 
     for (i = 0; i < max_db; i++)
       if (dbblock[i].dbptr == NULL) break;
@@ -534,8 +534,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
   else if (Ustrncmp(cmd, "write", 5) == 0)
     {
     int rc = 0;
-    uschar *key = cmd + 5;
-    uschar *data;
+    uschar * key = cmd + 5, * data;
 
     if (current < 0)
       {
@@ -543,11 +542,11 @@ while (Ufgets(buffer, 256, stdin) != NULL)
       continue;
       }
 
-    while (isspace((uschar)*key)) key++;
+    Uskip_whitespace(&key);
     data = key;
-    while (*data != 0 && !isspace((uschar)*data)) data++;
+    while (*data && !isspace((uschar)*data)) data++;
     *data++ = 0;
-    while (isspace((uschar)*data)) data++;
+    Uskip_whitespace(&data);
 
     dbwait = (dbdata_wait *)(&structbuffer);
     Ustrcpy(dbwait->text, data);
@@ -562,13 +561,13 @@ while (Ufgets(buffer, 256, stdin) != NULL)
 
   else if (Ustrncmp(cmd, "read", 4) == 0)
     {
-    uschar *key = cmd + 4;
+    uschar * key = cmd + 4;
     if (current < 0)
       {
       printf("No current database\n");
       continue;
       }
-    while (isspace((uschar)*key)) key++;
+    Uskip_whitespace(&key);
     start = clock();
     while (count-- > 0)
       dbwait = (dbdata_wait *)dbfn_read_with_length(dbblock+ current, key, NULL);
@@ -578,13 +577,13 @@ while (Ufgets(buffer, 256, stdin) != NULL)
 
   else if (Ustrncmp(cmd, "delete", 6) == 0)
     {
-    uschar *key = cmd + 6;
+    uschar * key = cmd + 6;
     if (current < 0)
       {
       printf("No current database\n");
       continue;
       }
-    while (isspace((uschar)*key)) key++;
+    Uskip_whitespace(&key);
     dbfn_delete(dbblock + current, key);
     }
 
@@ -614,8 +613,8 @@ while (Ufgets(buffer, 256, stdin) != NULL)
 
   else if (Ustrncmp(cmd, "close", 5) == 0)
     {
-    uschar *s = cmd + 5;
-    while (isspace((uschar)*s)) s++;
+    uschar * s = cmd + 5;
+    Uskip_whitespace(&s);
     i = Uatoi(s);
     if (i >= max_db || dbblock[i].dbptr == NULL) printf("Not open\n"); else
       {
@@ -629,8 +628,8 @@ while (Ufgets(buffer, 256, stdin) != NULL)
 
   else if (Ustrncmp(cmd, "file", 4) == 0)
     {
-    uschar *s = cmd + 4;
-    while (isspace((uschar)*s)) s++;
+    uschar * s = cmd + 4;
+    Uskip_whitespace(&s);
     i = Uatoi(s);
     if (i >= max_db || dbblock[i].dbptr == NULL) printf("Not open\n");
       else current = i;
@@ -682,3 +681,5 @@ return 0;
 #endif
 
 /* End of dbfn.c */
+/* vi: aw ai sw=2
+*/

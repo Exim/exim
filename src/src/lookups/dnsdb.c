@@ -154,8 +154,7 @@ gstring * yield = string_get(256);
 /* If the string starts with '>' we change the output separator.
 If it's followed by ';' or ',' we set the TXT output separator. */
 
-while (isspace(*keystring)) keystring++;
-if (*keystring == '>')
+if (Uskip_whitespace(&keystring) == '>')
   {
   outsep = keystring + 1;
   keystring += 2;
@@ -169,7 +168,7 @@ if (*keystring == '>')
     outsep2 = US"";
     keystring++;
     }
-  while (isspace(*keystring)) keystring++;
+  Uskip_whitespace(&keystring);
   }
 
 /* Check for a modifier keyword. */
@@ -234,14 +233,14 @@ for (;;)
   else
     break;
 
-  while (isspace(*keystring)) keystring++;
+  Uskip_whitespace(&keystring);
   if (*keystring++ != ',')
     {
     *errmsg = US"dnsdb modifier syntax error";
     rc = DEFER;
     goto out;
     }
-  while (isspace(*keystring)) keystring++;
+  Uskip_whitespace(&keystring);
   }
 
 /* Figure out the "type" value if it is not T_TXT.
@@ -272,7 +271,7 @@ if ((equals = Ustrchr(keystring, '=')) != NULL)
     }
 
   keystring = equals + 1;
-  while (isspace(*keystring)) keystring++;
+  Uskip_whitespace(&keystring);
   }
 
 /* Initialize the resolver in case this is the first time it has been used. */
