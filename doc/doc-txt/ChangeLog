@@ -128,6 +128,10 @@ JH/24 Bug 3081: Fix a delivery process crash.  When the router "errors_to"
 JH/25 Bug 3079: Fix crash in dbmnz.  When a key was present for zero-length
       data a null pointer was followed.  Find and testcase by Sebastian Bugge.
 
+JH/26 Fix encoding for an AUTH parameter on a MAIL FROM command.  Previously
+      decimal 127 chars were not encoded, and lowercase hex was used for
+      encoded values.  Outstanding since at least 1999.
+
 
 Exim version 4.97
 -----------------

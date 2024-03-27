@@ -29,31 +29,14 @@ Returns:      a pointer to the zero-terminated xtext string, which
 uschar *
 auth_xtextencode(uschar *clear, int len)
 {
-uschar *code;
-uschar *p = US clear;
-uschar *pp;
-int c = len;
-int count = 1;
-register int x;
-
-/* We have to do a prepass to find out how many specials there are,
-in order to get the right amount of store. */
-
-while (c -- > 0)
-  count += ((x = *p++) < 33 || x > 127 || x == '+' || x == '=')? 3 : 1;
-
-pp = code = store_get(count, clear);
-
-p = US clear;
-c = len;
-while (c-- > 0)
-  if ((x = *p++) < 33 || x > 127 || x == '+' || x == '=')
-    pp += sprintf(CS pp, "+%.02x", x);   /* There's always room */
-  else
-    *pp++ = x;
-
-*pp = 0;
-return code;
+gstring * g = NULL;
+for(uschar ch; len > 0; len--, clear++)
+  g = (ch = *clear) < 33 || ch > 126 || ch == '+' || ch == '='
+    ? string_fmt_append(g, "+%.02X", ch)
+    : string_catn(g, clear, 1);
+gstring_release_unused(g);
+return string_from_gstring(g);
 }
+
 
 /* End of xtextencode.c */
