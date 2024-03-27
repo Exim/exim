@@ -2554,7 +2554,7 @@ if (!f.sender_host_unknown)
 
 if (smtp_batched_input) return TRUE;
 
-#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS) || defined(EXPERIMETAL_XCLIENT)
+#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS) || defined(EXPERIMENTAL_XCLIENT)
 proxy_session = FALSE;
 #endif
 
