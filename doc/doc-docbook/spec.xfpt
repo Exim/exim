@@ -31071,7 +31071,8 @@ option to do this.)
 .section "Format of an ACL" "SECID199"
 .cindex "&ACL;" "format of"
 .cindex "&ACL;" "verbs, definition of"
-An individual ACL consists of a number of statements. Each statement starts
+An individual ACL definition consists of a number of statements.
+Each statement starts
 with a verb, optionally followed by a number of conditions and &"modifiers"&.
 Modifiers can change the way the verb operates, define error and log messages,
 set variables, insert delays, and vary the processing of accepted messages.
@@ -31089,6 +31090,9 @@ the conditions and modifiers when it reaches a condition that fails. What
 happens then depends on the verb (and in one case, on a special modifier). Not
 all the conditions make sense at every testing point. For example, you cannot
 test a sender address in the ACL that is run for a VRFY command.
+
+The definition of an ACL ends where another starts,
+or a different configuration section starts.
 
 
 .section "ACL verbs" "SECID200"
