@@ -601,6 +601,22 @@ if (type == lt_debug) unlink(CS debuglog_name);
 
 
 
+/* Append to a gstring, in no-extend (or rebuffer) mode
+and without taint-checking.  Thanks to the no-extend, the
+gstring struct never needs reallocation; we ignore the
+infore that the initial space allocation for the string
+was exceeded, and just leave it potentially truncated. */
+
+static void
+string_fmt_append_noextend(gstring * g, char * fmt, ...)
+{
+va_list ap;
+va_start(ap, fmt);
+/* can return NULL if it truncates; just ignore */
+(void) string_vformat(g, SVFMT_TAINT_NOCHK, fmt, ap);
+va_end(ap);
+}
+
 /*************************************************
 *     Add configuration file info to log line    *
 *************************************************/
@@ -609,24 +625,28 @@ if (type == lt_debug) unlink(CS debuglog_name);
 once for real).
 
 Arguments:
-  ptr         pointer to the end of the line we are building
-  flags       log flags
+  g		extensible-string referring to static buffer,
+		usable after return
+  flags		log flags
 
-Returns:      updated pointer
+Returns:      nothing
 */
 
-static gstring *
+static void
 log_config_info(gstring * g, int flags)
 {
-g = string_cat(g, US"Exim configuration error");
+string_fmt_append_noextend(g, "Exim configuration error");
 
 if (flags & (LOG_CONFIG_FOR & ~LOG_CONFIG))
-  return string_cat(g, US" for ");
+  string_fmt_append_noextend(g, " for ");
+else
+  {
+  if (flags & (LOG_CONFIG_IN & ~LOG_CONFIG))
+    string_fmt_append_noextend(g, " in line %d of %s",
+				  config_lineno, config_filename);
 
-if (flags & (LOG_CONFIG_IN & ~LOG_CONFIG))
-  g = string_fmt_append(g, " in line %d of %s", config_lineno, config_filename);
-
-return string_catn(g, US":\n  ", 4);
+  string_fmt_append_noextend(g, ":\n  ");
+  }
 }
 
 
@@ -813,7 +833,7 @@ log_write(unsigned int selector, int flags, const char *format, ...)
 int paniclogfd;
 ssize_t written_len;
 gstring gs = { .size = LOG_BUFFER_SIZE-2, .ptr = 0, .s = log_buffer };
-gstring * g;
+gstring * g = &gs;
 va_list ap;
 
 /* If panic_recurseflag is set, we have failed to open the panic log. This is
@@ -823,7 +843,7 @@ original log line that caused the problem. Afterwards, expire. */
 
 if (panic_recurseflag)
   {
-  uschar *extra = panic_save_buffer ? panic_save_buffer : US"";
+  uschar * extra = panic_save_buffer ? panic_save_buffer : US"";
   if (debug_file) debug_printf("%s%s", extra, log_buffer);
   if (log_stderr && log_stderr != debug_file)
     fprintf(log_stderr, "%s%s", extra, log_buffer);
@@ -924,45 +944,43 @@ in one go so that it doesn't get split when multi-processing. */
 
 DEBUG(D_any|D_v)
   {
-  int i;
-
-  g = string_catn(&gs, US"LOG:", 4);
+  string_fmt_append_noextend(g, "LOG:");
 
   /* Show the selector that was passed into the call. */
 
-  for (i = 0; i < log_options_count; i++)
+  for (int i = 0; i < log_options_count; i++)
     {
     unsigned int bitnum = log_options[i].bit;
     if (bitnum < BITWORDSIZE && selector == BIT(bitnum))
-      g = string_fmt_append(g, " %s", log_options[i].name);
+      string_fmt_append_noextend(g, " %s", log_options[i].name);
     }
 
-  g = string_fmt_append(g, "%s%s%s%s\n  ",
+  string_fmt_append_noextend(g, "%s%s%s%s\n  ",
     flags & LOG_MAIN ?    " MAIN"   : "",
     flags & LOG_PANIC ?   " PANIC"  : "",
     (flags & LOG_PANIC_DIE) == LOG_PANIC_DIE ? " DIE" : "",
     flags & LOG_REJECT ?  " REJECT" : "");
 
-  if (flags & LOG_CONFIG) g = log_config_info(g, flags);
+  if (flags & LOG_CONFIG) log_config_info(g, flags);
 
   /* We want to be able to log tainted info, but log_buffer is directly
   malloc'd.  So use deliberately taint-nonchecking routines to build into
   it, trusting that we will never expand the results. */
 
   va_start(ap, format);
-  i = g->ptr;
   if (!string_vformat(g, SVFMT_TAINT_NOCHK, format, ap))
     {
-    g->ptr = i;
-    g = string_cat(g, US"**** log string overflowed log buffer ****");
+    uschar * s = US"**** log string overflowed log buffer ****";
+    gstring_trim(g, Ustrlen(s));
+    string_fmt_append_noextend(g, "%s", s);
     }
   va_end(ap);
 
   debug_printf("%Y\n", g);
 
-  gs.size = LOG_BUFFER_SIZE-2;	/* Having used the buffer for debug output, */
-  gs.ptr = 0;			/* reset it for the real use. */
-  gs.s = log_buffer;
+  /* Having used the buffer for debug output, reset it for the real use. */
+
+  gstring_reset(g);
   }
 /* If no log file is specified, we are in a mess. */
 
@@ -986,33 +1004,32 @@ if (!write_rejectlog) flags &= ~LOG_REJECT;
 /* Create the main message in the log buffer. Do not include the message id
 when called by a utility. */
 
-g = string_fmt_append(&gs, "%s ", tod_stamp(tod_log));
+string_fmt_append_noextend(&gs, "%s ", tod_stamp(tod_log));
 
 if (LOGGING(pid))
   {
   if (!syslog_pid) pid_position[0] = g->ptr;		/* remember begin … */
-  g = string_fmt_append(g, "[%d] ", (int)getpid());
+  string_fmt_append_noextend(g, "[%ld] ", (long)getpid());
   if (!syslog_pid) pid_position[1] = g->ptr;		/*  … and end+1 of the PID */
   }
 
 if (f.really_exim && message_id[0])
-  g = string_fmt_append(g, "%s ", message_id);
+  string_fmt_append_noextend(g, "%s ", message_id);
 
 if (flags & LOG_CONFIG)
-  g = log_config_info(g, flags);
+  log_config_info(g, flags);
 
 va_start(ap, format);
   {
-  int i = g->ptr;
-
   /* We want to be able to log tainted info, but log_buffer is directly
   malloc'd.  So use deliberately taint-nonchecking routines to build into
   it, trusting that we will never expand the results. */
 
   if (!string_vformat(g, SVFMT_TAINT_NOCHK, format, ap))
     {
-    g->ptr = i;
-    g = string_cat(g, US"**** log string overflowed log buffer ****\n");
+    uschar * s = US"**** log string overflowed log buffer ****\n";
+    gstring_trim(g, Ustrlen(s));
+    string_fmt_append_noextend(g, "%s", s);
     }
   }
 va_end(ap);
@@ -1020,30 +1037,29 @@ va_end(ap);
 /* Add the raw, unrewritten, sender to the message if required. This is done
 this way because it kind of fits with LOG_RECIPIENTS. */
 
-if (   flags & LOG_SENDER
-   && g->ptr < LOG_BUFFER_SIZE - 10 - Ustrlen(raw_sender))
-  g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, " from <%s>", raw_sender);
+if (flags & LOG_SENDER)
+  string_fmt_append_noextend(g, " from <%s>", raw_sender);
 
 /* Add list of recipients to the message if required; the raw list,
 before rewriting, was saved in raw_recipients. There may be none, if an ACL
 discarded them all. */
 
-if (  flags & LOG_RECIPIENTS
-   && g->ptr < LOG_BUFFER_SIZE - 6
-   && raw_recipients_count > 0)
+if (flags & LOG_RECIPIENTS && raw_recipients_count > 0)
   {
-  g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, " for", NULL);
+  string_fmt_append_noextend(g, " for");
   for (int i = 0; i < raw_recipients_count; i++)
-    {
-    const uschar * s = raw_recipients[i];
-    if (LOG_BUFFER_SIZE - g->ptr < Ustrlen(s) + 3) break;
-    g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, " %s", s);
+    if (!string_fmt_append_f(g, SVFMT_TAINT_NOCHK, " %s", raw_recipients[i]))
+      {
+    uschar * s = US"<trunc>";
+    gstring_trim(g, Ustrlen(s));
+    string_fmt_append_noextend(g, "%s", s);
+    break;
     }
   }
 
 /* actual size, now we are placing the newline (and space for NUL) */
 gs.size = LOG_BUFFER_SIZE;
-g = string_catn(g, US"\n", 1);
+string_fmt_append_noextend(g, "\n");
 string_from_gstring(g);
 
 /* Handle loggable errors when running a utility, or when address testing.
@@ -1117,8 +1133,7 @@ if (  flags & LOG_MAIN
 
     /* Failing to write to the log is disastrous */
 
-    written_len = write_gstring_to_fd_buf(mainlogfd, g);
-    if (written_len != g->ptr)
+    if ((written_len = write_gstring_to_fd_buf(mainlogfd, g)) != g->ptr)
       {
       log_write_failed(US"main log", g->ptr, written_len);
       /* That function does not return */
@@ -1135,53 +1150,39 @@ if (flags & LOG_REJECT)
   {
   if (header_list && LOGGING(rejected_header))
     {
-    gstring * g2;
     int i;
 
     if (recipients_count > 0)
       {
       /* List the sender */
 
-      g2 = string_fmt_append_f(g, SVFMT_TAINT_NOCHK,
+      string_fmt_append_noextend(g,
 			"Envelope-from: <%s>\n", sender_address);
-      if (g2) g = g2;
 
       /* List up to 5 recipients */
 
-      g2 = string_fmt_append_f(g, SVFMT_TAINT_NOCHK,
+      string_fmt_append_noextend(g,
 			"Envelope-to: <%s>\n", recipients_list[0].address);
-      if (g2) g = g2;
 
       for (i = 1; i < recipients_count && i < 5; i++)
-        {
-        g2 = string_fmt_append_f(g, SVFMT_TAINT_NOCHK,
+        string_fmt_append_noextend(g,
 			"    <%s>\n", recipients_list[i].address);
-	if (g2) g = g2;
-        }
 
       if (i < recipients_count)
-        {
-        g2 = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, "    ...\n", NULL);
-	if (g2) g = g2;
-        }
+        string_fmt_append_noextend(g, "    ...\n", NULL);
       }
 
-    /* A header with a NULL text is an unfilled in Received: header */
+    /* A header with a NULL text is an unfilled-in Received: header */
 
     for (header_line * h = header_list; h; h = h->next) if (h->text)
-      {
-      g2 = string_fmt_append_f(g, SVFMT_TAINT_NOCHK,
-			"%c %s", h->type, h->text);
-      if (g2)
-	g = g2;
-      else		/* Buffer is full; truncate */
-        {
-	gstring_trim(g, 100);        /* For message and separator */
+      if (!string_fmt_append_f(g, SVFMT_TAINT_NOCHK,
+			"%c %s", h->type, h->text))
+        {				/* Buffer is full; truncate */
+	gstring_trim(g, 100);		/* space for message and separator */
 	gstring_trim_trailing(g, '\n');
-        g = string_cat(g, US"\n*** truncated ***\n");
+        string_fmt_append_noextend(g, "\n*** truncated ***\n");
         break;
         }
-      }
     }
 
   /* Write to syslog or to a log file */
@@ -1232,8 +1233,7 @@ if (flags & LOG_REJECT)
       if (fstat(rejectlogfd, &statbuf) >= 0) rejectlog_inode = statbuf.st_ino;
       }
 
-    written_len = write_gstring_to_fd_buf(rejectlogfd, g);
-    if (written_len != g->ptr)
+    if ((written_len = write_gstring_to_fd_buf(rejectlogfd, g)) != g->ptr)
       {
       log_write_failed(US"reject log", g->ptr, written_len);
       /* That function does not return */
@@ -1267,8 +1267,7 @@ if (flags & LOG_PANIC)
     if (panic_save_buffer)
       (void) write(paniclogfd, panic_save_buffer, Ustrlen(panic_save_buffer));
 
-    written_len = write_gstring_to_fd_buf(paniclogfd, g);
-    if (written_len != g->ptr)
+    if ((written_len = write_gstring_to_fd_buf(paniclogfd, g)) != g->ptr)
       {
       int save_errno = errno;
       write_syslog(LOG_CRIT, log_buffer);
@@ -1562,3 +1561,5 @@ if (kill) unlink_log(lt_debug);
 
 
 /* End of log.c */
+/* vi: sw ai sw=2
+*/

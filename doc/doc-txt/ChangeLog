@@ -132,6 +132,14 @@ JH/26 Fix encoding for an AUTH parameter on a MAIL FROM command.  Previously
       decimal 127 chars were not encoded, and lowercase hex was used for
       encoded values.  Outstanding since at least 1999.
 
+JH/27 Fix crash in logging.  When a message with a large number of recipients
+      had been received, and logging of recipients is enabled, the buffer used
+      for logging could reach limit.  A read using a null pointer would then
+      be done, resulting in a crash of the receiving process before an SMTP
+      ACK for the message was returned to the sending system.  Duplicate
+      messages were created as a result.
+      Find and debug help by Mateusz Krawczyk
+
 
 Exim version 4.97
 -----------------

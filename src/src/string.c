@@ -1333,7 +1333,7 @@ Arguments:
 	ap	variable-args pointer
 
 Flags:
-	SVFMT_EXTEND            buffer can be created or exteded as needed
+	SVFMT_EXTEND            buffer can be created or extended as needed
 	SVFMT_REBUFFER          buffer can be recopied to tainted mem as needed
 	SVFMT_TAINT_NOCHK       do not check inputs for taint
 
