@@ -1234,13 +1234,6 @@ return g;
 }
 
 
-gstring *
-string_cat(gstring * g, const uschar * s)
-{
-return string_catn(g, s, Ustrlen(s));
-}
-
-
 
 /*************************************************
 *        Append strings to another string        *

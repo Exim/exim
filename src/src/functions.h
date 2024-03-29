@@ -567,7 +567,6 @@ extern gstring *string_append_listele_n(gstring *, uschar, const uschar *, unsig
 extern gstring *string_append2_listele_n(gstring *, const uschar *, const uschar *, unsigned) WARN_UNUSED_RESULT;
 extern uschar *string_base62_32(unsigned long int);
 extern uschar *string_base62_64(unsigned long int);
-extern gstring *string_cat (gstring *, const uschar *     ) WARN_UNUSED_RESULT;
 extern gstring *string_catn(gstring *, const uschar *, int) WARN_UNUSED_RESULT;
 extern int     string_compare_by_pointer(const void *, const void *);
 extern uschar *string_copy_dnsdomain(uschar *);
@@ -1050,6 +1049,18 @@ if (g) store_release_above_3(g->s + (g->size = g->ptr + 1), file, line);
 }
 
 
+/* plain string append to a growable-string */
+
+static inline gstring * string_cat(gstring * g, const uschar * s)
+ WARN_UNUSED_RESULT;
+
+static inline gstring *
+string_cat(gstring * g, const uschar * s)
+{
+return string_catn(g, s, Ustrlen(s));
+}
+
+
 /* sprintf-append to a growable-string */
 
 #define string_fmt_append(g, fmt, ...) \
@@ -1085,6 +1096,7 @@ g->s = s;
 }
 
 /* Append one gstring to another */
+
 static inline gstring *
 gstring_append(gstring * dest, gstring * item)
 {
