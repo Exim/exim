@@ -1698,7 +1698,7 @@ while (*fp)
 	}
 
       /* If a width is not specified and the precision is specified, set
-      the width to the precision, or the string length if shorted. */
+      the width to the precision, or the string length if shorter. */
 
       else if (precision >= 0)
 	width = precision < slen ? precision : slen;

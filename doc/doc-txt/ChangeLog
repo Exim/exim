@@ -140,6 +140,11 @@ JH/27 Fix crash in logging.  When a message with a large number of recipients
       messages were created as a result.
       Find and debug help by Mateusz Krawczyk
 
+JH/28 Bug 3086: Fix exinext for ipv6.  Change the format of keys in the retry
+      DB, wrapping transport record bare-ip "host names" and ipv6
+      "host addresses" in square-brackets.  This makes the parsing that
+      exinext does more reliable.
+
 
 Exim version 4.97
 -----------------

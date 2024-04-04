@@ -132,11 +132,11 @@ Connecting to V4NET.0.0.0 [V4NET.0.0.0]:PORT_S ... V4NET.0.0.0 in hosts_try_fast
 LOG: MAIN
   H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
 set_process_info: pppp delivering 10HmaX-000000005vi-0000: just tried V4NET.0.0.0 [V4NET.0.0.0]:PORT_S for x@y: result DEFER
-added retry item for T:V4NET.0.0.0:V4NET.0.0.0:PORT_S: errno=dd more_errno=dd,A flags=2
+added retry item for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S: errno=dd more_errno=dd,A flags=2
 set_process_info: pppp delivering 10HmaX-000000005vi-0000: waiting for a remote delivery subprocess to finish
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 (just run smtp for x@y in subprocess)
 search_tidyup called
-reading retry information for T:V4NET.0.0.0:V4NET.0.0.0:PORT_S from subprocess
+reading retry information for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S from subprocess
   added retry item
 reading retry information for R:x@y from subprocess
   added retry item
@@ -177,14 +177,14 @@ Writing retry data for R:x@y
    list element: *
    V4NET.0.0.0 in "*"? yes (matched "*")
   *@V4NET.0.0.0 in "*"? yes (matched "*")
-retry for T:V4NET.0.0.0:V4NET.0.0.0:PORT_S (y) = * 0 0
- dbfn_read: key=T:V4NET.0.0.0:V4NET.0.0.0:PORT_S
+retry for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S (y) = * 0 0
+ dbfn_read: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
 failing_interval=ttt message_age=ttt
 on queue longer than maximum retry
-Writing retry data for T:V4NET.0.0.0:V4NET.0.0.0:PORT_S
+Writing retry data for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
   first failed=dddd last try=dddd next try=+0 expired=0
   errno=dd more_errno=dd,A Network Error
- dbfn_write: key=T:V4NET.0.0.0:V4NET.0.0.0:PORT_S
+ dbfn_write: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
 timed out: all retries expired
 LOG: MAIN
   ** x@y: retry timeout exceeded

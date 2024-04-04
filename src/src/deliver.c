@@ -2039,7 +2039,7 @@ static BOOL
 previously_transported(address_item *addr, BOOL testing)
 {
 uschar * s = string_sprintf("%s/%s",
-  addr->unique + (testflag(addr, af_homonym)? 3:0), addr->transport->name);
+  addr->unique + (testflag(addr, af_homonym) ? 3:0), addr->transport->name);
 
 if (tree_search(tree_nonrecipients, s) != 0)
   {
@@ -3142,7 +3142,7 @@ while (addr_local)
     if (result == DEFER || testflag(addr2, af_lt_retry_exists))
       {
       int flags = result == DEFER ? 0 : rf_delete;
-      uschar *retry_key = string_copy(tp->retry_use_local_part
+      uschar * retry_key = string_copy(tp->retry_use_local_part
 	? addr2->address_retry_key : addr2->domain_retry_key);
       *retry_key = 'T';
       retry_add_item(addr2, retry_key, flags);
@@ -7292,7 +7292,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 
       addr->unique =
         string_sprintf("%s:%s", addr->address, addr->parent->unique +
-          (testflag(addr->parent, af_homonym)? 3:0));
+          (testflag(addr->parent, af_homonym) ? 3:0));
 
       addr->address_retry_key = addr->domain_retry_key =
         string_sprintf("T:%s", addr->unique);
@@ -7729,7 +7729,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 
     else if (testflag(addr, af_dr_retry_exists))
       {
-      uschar *altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
+      uschar * altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
         sender_address);
       retry_add_item(addr, altkey, rf_delete);
       retry_add_item(addr, addr->address_retry_key, rf_delete);

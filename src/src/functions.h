@@ -454,11 +454,14 @@ extern BOOL    regex_match_and_setup(const pcre2_code *, const uschar *, int, in
 extern const pcre2_code *regex_compile(const uschar *, mcs_flags, uschar **,
 		pcre2_compile_context *);
 extern const pcre2_code *regex_must_compile(const uschar *, mcs_flags, BOOL);
-extern void    retry_add_item(address_item *, uschar *, int);
+
+extern void    retry_add_item(address_item *, const uschar *, int);
 extern BOOL    retry_check_address(const uschar *, host_item *, uschar *, BOOL,
-                 uschar **, uschar **);
+                 const uschar **, const uschar **);
 extern retry_config *retry_find_config(const uschar *, const uschar *, int, int);
-extern BOOL    retry_ultimate_address_timeout(uschar *, const uschar *,
+extern const uschar *retry_host_key_build(const host_item *, BOOL,
+		  const uschar *);
+extern BOOL    retry_ultimate_address_timeout(const uschar *, const uschar *,
                  dbdata_retry *, time_t);
 extern void    retry_update(address_item **, address_item **, address_item **);
 extern const uschar *rewrite_address(const uschar *, BOOL, BOOL, rewrite_rule *, int);

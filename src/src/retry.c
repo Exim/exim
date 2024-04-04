@@ -31,7 +31,7 @@ Returns:        TRUE if the ultimate timeout has been reached
 */
 
 BOOL
-retry_ultimate_address_timeout(uschar *retry_key, const uschar *domain,
+retry_ultimate_address_timeout(const uschar * retry_key, const uschar *domain,
   dbdata_retry *retry_record, time_t now)
 {
 BOOL address_timeout;
@@ -73,6 +73,29 @@ DEBUG(D_retry)
 return address_timeout;
 }
 
+
+
+const uschar *
+retry_host_key_build(const host_item * host, BOOL incl_ip,
+  const uschar * portstring)
+{
+const uschar * s = host->name;
+gstring * g = string_is_ip_address(s, NULL)
+  ? string_fmt_append(NULL, "T:[%s]", s)    /* wrap a name which is a bare ip */
+  : string_fmt_append(NULL, "T:%s",   s);
+
+s = host->address;
+if (incl_ip)
+  g = Ustrchr(s, ':')
+    ? string_fmt_append(g, ":[%s]", s)	    /* wrap an ipv6  */
+    : string_fmt_append(g, ":%s",   s);
+
+if (portstring)
+  g = string_cat(g, portstring);
+
+gstring_release_unused(g);
+return string_from_gstring(g);
+}
 
 
 /*************************************************
@@ -124,11 +147,12 @@ Returns:    TRUE if the host has expired but is usable because
 
 BOOL
 retry_check_address(const uschar *domain, host_item *host, uschar *portstring,
-  BOOL include_ip_address, uschar **retry_host_key, uschar **retry_message_key)
+  BOOL include_ip_address,
+  const uschar **retry_host_key, const uschar **retry_message_key)
 {
 BOOL yield = FALSE;
 time_t now = time(NULL);
-uschar * host_key, * message_key;
+const uschar * host_key, * message_key;
 open_db dbblock, * dbm_file;
 tree_node * node;
 dbdata_retry * host_retry_record, * message_retry_record;
@@ -143,14 +167,11 @@ if (host->status != hstatus_unknown) return FALSE;
 host->status = hstatus_usable;
 
 /* Generate the host key for the unusable tree and the retry database. Ensure
-host names are lower cased (that's what %S does). */
+host names are lower cased (that's what %S does).
+Generate the message-specific key too.
+Be sure to maintain lack-of-spaces in retry keys; exinext depends on it. */
 
-host_key = include_ip_address
-  ? string_sprintf("T:%S:%s%s", host->name, host->address, portstring)
-  : string_sprintf("T:%S%s", host->name, portstring);
-
-/* Generate the message-specific key */
-
+host_key = retry_host_key_build(host, include_ip_address, portstring);
 message_key = string_sprintf("%s:%s", host_key, message_id);
 
 /* Search the tree of unusable IP addresses. This is filled in when deliveries
@@ -290,7 +311,7 @@ Returns:  nothing
 */
 
 void
-retry_add_item(address_item *addr, uschar *key, int flags)
+retry_add_item(address_item * addr, const uschar * key, int flags)
 {
 retry_item * rti = store_get(sizeof(retry_item), GET_UNTAINTED);
 host_item * host = addr->host_used;
@@ -343,11 +364,11 @@ Returns:       pointer to retry rule, or NULL
 */
 
 retry_config *
-retry_find_config(const uschar *key, const uschar *alternate, int basic_errno,
+retry_find_config(const uschar * key, const uschar * alternate, int basic_errno,
   int more_errno)
 {
-const uschar *colon = Ustrchr(key, ':');
-retry_config *yield;
+const uschar * colon = Ustrchr(key, ':');
+retry_config * yield;
 
 /* If there's a colon in the key, there are two possibilities:
 
@@ -355,7 +376,8 @@ retry_config *yield;
 
       hostname:ip+port
 
-    In this case, we copy the host name.
+    In this case, we copy the host name (which could be an [ip], including
+    being an [ipv6], and we drop the []).
 
 (2) This is a key for a pipe, file, or autoreply delivery, in the format
 
@@ -369,6 +391,8 @@ retry_config *yield;
 if (colon)
   key = isalnum(*key)
     ? string_copyn(key, colon-key)	/* the hostname */
+    : *key == '['
+    ? string_copyn(key+1, Ustrchr(key, ']')-1-key)	/* the ip */
     : Ustrrchr(key, ':') + 1;		/* Take from the last colon */
 
 /* Sort out the keys */
@@ -932,3 +956,5 @@ DEBUG(D_retry) debug_printf("end of retry processing\n");
 }
 
 /* End of retry.c */
+/* vi: aw ai sw=2
+*/

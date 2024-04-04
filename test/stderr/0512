@@ -18,7 +18,7 @@ hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
-added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
+added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
 Clearing TFO as not first host for message
 getting address for 127.0.0.1
@@ -30,7 +30,7 @@ hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
-added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
+added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
 Clearing TFO as not first host for message
 getting address for 127.0.0.1
@@ -42,7 +42,7 @@ hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
-added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
+added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
 Clearing TFO as not first host for message
 getting address for 127.0.0.1
@@ -54,7 +54,7 @@ hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
-added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
+added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 reached transport hosts_max_try limit 1
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database
@@ -109,7 +109,7 @@ hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
-added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
+added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
 Clearing TFO as not first host for message
 getting address for 127.0.0.1
@@ -121,7 +121,7 @@ hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
-added retry item for T:127.0.0.1:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
+added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
 reached transport hosts_max_try_hardlimit limit 2
 all IP addresses skipped or deferred at least one address

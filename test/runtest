@@ -500,7 +500,10 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/T:(\S+)\s-22\s(\S+)\s/T:$1 -22 xxxx /;
 
   # port numbers in dumpdb output
-  s/T:([a-z.]+(:[0-9.]+)?):$parm_port_n /T:$1:PORT_N /;
+  s/T:([a-z0-9.]+(:[0-9.]+|:\[[^]]+])?):$parm_port_n /T:$1:PORT_N /;
+  s/T:([a-z0-9.[\]]+(:[0-9.]+|:\[[^]]+])?):$parm_port_s /T:$1:PORT_S /;
+  # and exinext
+  s/Transport: (?:[a-z0-9.]+|\[[^\]]+]) (?:[0-9.]+|\[[^\]]+]):\K$parm_port_s /PORT_S /;
 
   # port numbers in stderr
   s/^set_process_info: .*\]:\K$parm_port_d /PORT_D /;
@@ -821,7 +824,8 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # This handles "connection from" and the like, when the port is given
   if (!/listening for SMTP on/ && !/Connecting to/ && !/=>/ && !/->/
-      && !/\*>/&& !/==/  && !/\*\*/ && !/Connection refused/ && !/in response to/)
+      && !/\*>/&& !/==/  && !/\*\*/ && !/Connection refused/ && !/in response to/
+      && !/T(?:ransport)?:/)
     {
     s/\[([a-z\d:]+|\d+(?:\.\d+){3})\]:(\d+)/"[".$1."]:".new_value($2,"%s",\$next_port)/ie;
     }

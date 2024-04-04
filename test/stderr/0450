@@ -21,7 +21,7 @@ delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
-added retry item for T:127.0.0.1:127.0.0.1:PORT_D: errno=dd more_errno=dd,A flags=2
+added retry item for T:[127.0.0.1]:127.0.0.1:PORT_D: errno=dd more_errno=dd,A flags=2
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database
 added 10HmaX-000000005vi-0000 to queue for 127.0.0.1
@@ -50,7 +50,7 @@ delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D2 ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
-added retry item for T:127.0.0.1:127.0.0.1:PORT_D2: errno=dd more_errno=dd,A flags=2
+added retry item for T:[127.0.0.1]:127.0.0.1:PORT_D2: errno=dd more_errno=dd,A flags=2
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database
 already listed for 127.0.0.1

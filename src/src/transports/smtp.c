@@ -1306,7 +1306,7 @@ while (count-- > 0)
 
     if (testflag(addr, af_dr_retry_exists))
       {
-      uschar *altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
+      uschar * altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
         sender_address);
       retry_add_item(addr, altkey, rf_delete);
       retry_add_item(addr, addr->address_retry_key, rf_delete);
@@ -1322,7 +1322,7 @@ while (count-- > 0)
 
   else if (errno == ETIMEDOUT)
     {
-    uschar *message = string_sprintf("SMTP timeout after RCPT TO:<%s>",
+    uschar * message = string_sprintf("SMTP timeout after RCPT TO:<%s>",
 		transport_rcpt_address(addr, sx->conn_args.tblock->rcpt_include_affixes));
     set_errno_nohost(sx->first_addr, ETIMEDOUT, message, DEFER, FALSE, &sx->delivery_start);
     retry_add_item(addr, addr->address_retry_key, 0);
@@ -5376,7 +5376,7 @@ retry_non_continued:
     BOOL host_is_expired = FALSE, message_defer = FALSE, some_deferred = FALSE;
     address_item * first_addr = NULL;
     uschar * interface = NULL;
-    uschar * retry_host_key = NULL, * retry_message_key = NULL;
+    const uschar * retry_host_key = NULL, * retry_message_key = NULL;
     uschar * serialize_key = NULL;
 
     /* Deal slightly better with a possible Linux kernel bug that results
@@ -5873,9 +5873,7 @@ retry_non_continued:
 		  ob->expand_retry_include_ip_address, &incl_ip) != OK)
 	  incl_ip = TRUE;	/* error; use most-specific retry record */
 
-        retry_host_key = incl_ip
-	  ? string_sprintf("T:%S:%s%s", host->name, host->address, pistring)
-	  : string_sprintf("T:%S%s", host->name, pistring);
+        retry_host_key = retry_host_key_build(host, incl_ip, pistring);
         }
 
       /* If a delivery of another message over an existing SMTP connection
@@ -5921,10 +5919,8 @@ retry_non_continued:
 		  ob->expand_retry_include_ip_address, &incl_ip) != OK)
 	  incl_ip = TRUE;	/* error; use most-specific retry record */
 
-        retry_message_key = incl_ip
-	  ? string_sprintf("T:%S:%s%s:%s", host->name, host->address, pistring,
-	      message_id)
-	  : string_sprintf("T:%S%s:%s", host->name, pistring, message_id);
+        retry_message_key = string_sprintf("%s:%s",
+	  retry_host_key_build(host, incl_ip, pistring), message_id);
         }
       retry_add_item(addrlist, retry_message_key,
         rf_message | rf_host | delete_flag);

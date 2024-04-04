@@ -195,45 +195,18 @@ perl - $exim_path "$eximmacdef" $argone $spool_directory $qualify_domain $config
         $printed = 1;
         if (/^\s*T:[^:\s]*:/)
           {
+	  # We rely on non-space-containing strings, for parsing
+
           ($key,$error,$error2,$text) = /^\s*T:(\S+)\s+(\S+)\s+(\S+)\s*(.*)$/;
 
-          # Parsing the keys is a nightmare because of IPv6. The design of the
-          # format for the keys is a complete shambles. All my fault (PH). But
-          # I don't want to change it just for this purpose. If they key
-          # contains more than 3 colons, we have an IPv6 address, because
-          # an IPv6 address must contain at least two colons.
+	  ($host,$ip,$port,$msgid) = $key =~
+	    /^([^:[]*|\[[^]]*\])	# host (could be an ip)
+	      :([^:[]*|\[[^]]*\])	# ip
+	      (?::(\d{1,5}))?		# maybe port
+	      (?::(\S{23}))?		# maybe msgid
+	      $/x;
 
-          # Deal with IPv4 addresses (3 colons or fewer)
-
-          if ($key !~ /:([^:]*?:){3}/)
-            {
-            ($host,$ip,$port,$msgid) = $key =~
-              /^([^:]*):([^:]*)(?::([^:]*)(?::(\S*)|)|)/;
-            }
-
-          # Deal with IPv6 addresses; sorting out the colons is a complete
-          # mess. We should be able to find the host name and IP address from
-          # further in the message. That seems the easiest escape plan here. We
-          # can use those to match the rest of the key.
-
-          else
-            {
-            ($host,$ip) = $text =~ /host\s(\S+)\s\[([^]]+)\]/;
-            if (defined $host)
-              {
-              ($port,$msgid) = $key =~
-                /^$host:$ip(?::([^:]*)(?::(\S*)|)|)/;
-              }
-
-           # This will probably be wrong...
-
-           else
-             {
-             ($host,$ip) = $key =~ /([^:]*):(.*)/;
-             }
-            }
-
-          printf("Transport: %s [%s]", $host, $ip);
+          printf("Transport: %s %s", $host, $ip);
           print ":$port" if defined $port;
           print " $msgid" if defined $msgid;
           print " error $error: $text\n";

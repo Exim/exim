@@ -4,13 +4,13 @@ Retry rule: *  timeout_connect  F,1d,1m;
 Retry rule: *  timeout_A  F,1d,30s; 
 Retry rule: *  timeout_connect_A  F,1d,29s; 
 +++++++++++++++++++++++++++
-  T:127.0.0.1:127.0.0.1:1224 dd 321 Connection timed out
+  T:[127.0.0.1]:127.0.0.1:PORT_S dd 321 Connection timed out
 first failed = time last try = time2 next try = time2 + 60
 +++++++++++++++++++++++++++
-  T:127.0.0.1:127.0.0.1:1224 dd 321 Connection timed out
+  T:[127.0.0.1]:127.0.0.1:PORT_S dd 321 Connection timed out
 first failed = time last try = time2 next try = time2 + 30
 +++++++++++++++++++++++++++
-  T:127.0.0.1:127.0.0.1:1224 dd 321 Connection timed out
+  T:[127.0.0.1]:127.0.0.1:PORT_S dd 321 Connection timed out
 first failed = time last try = time2 next try = time2 + 30
 +++++++++++++++++++++++++++
   R:xx.test.again.dns -1 0 host lookup did not complete

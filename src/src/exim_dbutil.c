@@ -628,7 +628,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	  print_time(retry->first_failed));
 	printf("%s  ", print_time(retry->last_try));
 	printf("%s %s\n", print_time(retry->next_try),
-	  (retry->expired)? "*" : "");
+	  retry->expired ? "*" : "");
 	break;
 
       case type_wait:

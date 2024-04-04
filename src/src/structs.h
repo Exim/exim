@@ -480,7 +480,7 @@ can be tried. */
 
 typedef struct retry_item {
   struct retry_item *next;        /* for chaining */
-  uschar *key;                    /* string identifying host/address/message */
+  const uschar *key;              /* string identifying host/address/message */
   int     basic_errno;            /* error code for this destination */
   int     more_errno;             /* additional error information */
   uschar *message;                /* local error message */
