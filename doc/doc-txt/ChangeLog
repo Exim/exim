@@ -145,6 +145,9 @@ JH/28 Bug 3086: Fix exinext for ipv6.  Change the format of keys in the retry
       "host addresses" in square-brackets.  This makes the parsing that
       exinext does more reliable.
 
+JH/29 Bug 3087: Fix SRS encode.  A zero-length quoted element in the local-part
+      would cause a crash.
+
 
 Exim version 4.97
 -----------------

@@ -7117,7 +7117,7 @@ while (*s)
 	    gstring_release_unused(h);
 	    s = string_from_gstring(h);
 	    }
-	  g = string_cat(g, s);
+	  if (s) g = string_cat(g, s);
 	  }
 
 	/* Assume that if the original local_part had quotes
