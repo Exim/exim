@@ -1748,7 +1748,7 @@ uschar *user_msg, *log_msg;
 /* Working header pointers */
 
 rmark reset_point;
-header_line *next;
+header_line * next;
 
 /* Flags for noting the existence of certain headers (only one left) */
 
@@ -1756,15 +1756,16 @@ BOOL date_header_exists = FALSE;
 
 /* Pointers to receive the addresses of headers whose contents we need. */
 
-header_line *from_header = NULL;
-header_line *subject_header = NULL;
-header_line *msgid_header = NULL;
-header_line *received_header;
+header_line * from_header = NULL;
+#ifdef SUPPORT_DMARC
+header_line * dmarc_from_header = NULL;
+#endif
+header_line * subject_header = NULL, * msgid_header = NULL, * received_header;
 BOOL msgid_header_newly_created = FALSE;
 
 /* Variables for use when building the Received: header. */
 
-uschar *timestamp;
+uschar * timestamp;
 int tslen;
 
 /* Time of creation of message_id */
@@ -2446,6 +2447,9 @@ for (header_line * h = header_list->next; h; h = h->next)
 
     case htype_from:
       h->type = htype_from;
+#ifdef SUPPORT_DMARC
+      if (!is_resent) dmarc_from_header = h;
+#endif
       if (!resents_exist || is_resent)
 	{
 	from_header = h;
@@ -3619,7 +3623,7 @@ else
 #endif /* WITH_CONTENT_SCAN */
 
 #ifdef SUPPORT_DMARC
-    dmarc_store_data(from_header);
+    dmarc_store_data(dmarc_from_header);
 #endif
 
 #ifndef DISABLE_PRDR
@@ -4622,3 +4626,5 @@ return yield;  /* TRUE if more messages (SMTP only) */
 }
 
 /* End of receive.c */
+/* vi: se aw ai sw=2
+*/

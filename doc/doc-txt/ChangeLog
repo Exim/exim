@@ -148,6 +148,8 @@ JH/28 Bug 3086: Fix exinext for ipv6.  Change the format of keys in the retry
 JH/29 Bug 3087: Fix SRS encode.  A zero-length quoted element in the local-part
       would cause a crash.
 
+JH/30 Bug 3029: Avoid feeding Resent-From: to DMARC.
+
 
 Exim version 4.97
 -----------------
