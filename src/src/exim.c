@@ -2339,9 +2339,9 @@ on the second character (the one after '-'), to save some effort. */
 
 	/* -bh: Host checking - an IP address must follow. */
 	case 'h':
-	  if (!*argrest || Ustrcmp(argrest, "c") == 0)
+	  if (  (!*argrest || Ustrcmp(argrest, "c") == 0)
+	     && ++i < argc)
 	    {
-	    if (++i >= argc) { badarg = TRUE; break; }
 	    sender_host_address = string_copy_taint(
 		  exim_str_fail_toolong(argv[i], EXIM_IPADDR_MAX, "-bh"),
 		  GET_TAINTED);
@@ -2349,7 +2349,8 @@ on the second character (the one after '-'), to save some effort. */
 	    f.host_checking_callout = *argrest == 'c';
 	    message_logs = FALSE;
 	    }
-	  else badarg = TRUE;
+	  else
+	    badarg = TRUE;
 	  break;
 
 	/* -bi: This option is used by sendmail to initialize *the* alias file,
@@ -5443,11 +5444,14 @@ if (host_checking)
     }
 
   /* In case the given address is a non-canonical IPv6 address, canonicalize
-  it. The code works for both IPv4 and IPv6, as it happens. */
+  it. Use the compressed form for IPv6. */
 
   size = host_aton(sender_host_address, x);
   sender_host_address = store_get(48, GET_UNTAINTED);  /* large enough for full IPv6 */
-  (void)host_nmtoa(size, x, -1, sender_host_address, ':');
+  if (size == 1)
+    (void) host_nmtoa(size, x, -1, sender_host_address, ':');
+  else
+    (void) ipv6_nmtoa(x, sender_host_address);
 
   /* Now set up for testing */
 
@@ -6189,3 +6193,5 @@ return 0;                  /* To stop compiler warning */
 
 
 /* End of exim.c */
+/* vi: aw ai sw=2
+*/

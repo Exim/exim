@@ -311,7 +311,7 @@ extern BOOL    host_is_tls_on_connect_port(int);
 extern int     host_item_get_port(host_item *);
 extern void    host_mask(int, int *, int);
 extern int     host_name_lookup(void);
-extern int     host_nmtoa(int, int *, int, uschar *, int);
+extern int     host_nmtoa(int, const int *, int, uschar *, int);
 extern uschar *host_ntoa(int, const void *, uschar *, int *);
 extern int     host_scan_for_local_hosts(host_item *, host_item **, BOOL *);
 
