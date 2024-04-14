@@ -71,35 +71,6 @@ enum { had_neither, had_else, had_elif, had_endif };
 static BOOL read_command_list(const uschar **, filter_cmd ***, BOOL);
 
 
-/* The string arguments for the mail command. The header line ones (that are
-permitted to include \n followed by white space) first, and then the body text
-one (it can have \n anywhere). Then the file names and once_repeat, which may
-not contain \n. */
-
-static const char *mailargs[] = {  /* "to" must be first, and */
-  "to",                            /* "cc" and "bcc" must follow */
-  "cc",
-  "bcc",
-  "from",
-  "reply_to",
-  "subject",
-  "extra_headers",           /* miscellaneous added header lines */
-  "text",
-  "file",
-  "log",
-  "once",
-  "once_repeat"
-};
-
-/* The count of string arguments */
-
-#define MAILARGS_STRING_COUNT (nelem(mailargs))
-
-/* The count of string arguments that are actually passed over as strings
-(once_repeat is converted to an int). */
-
-#define mailargs_string_passed (MAILARGS_STRING_COUNT - 1)
-
 /* This defines the offsets for the arguments; first the string ones, and
 then the non-string ones. The order must be as above. */
 
@@ -120,21 +91,50 @@ enum { mailarg_index_to,
        mailargs_total              /* total number of arguments */
        };
 
+/* The string arguments for the mail command. The header line ones (that are
+permitted to include \n followed by white space) first, and then the body text
+one (it can have \n anywhere). Then the file names and once_repeat, which may
+not contain \n. */
+
+static const char *mailargs[] = {  /* "to" must be first, and */
+  [mailarg_index_to] = "to",       /* "cc" and "bcc" must follow */
+  [mailarg_index_cc] = "cc",
+  [mailarg_index_bcc] = "bcc",
+  [mailarg_index_from] = "from",
+  [mailarg_index_reply_to] = "reply_to",
+  [mailarg_index_subject] = "subject",
+  [mailarg_index_headers] = "extra_headers", /* misc added header lines */
+  [mailarg_index_text] = "text",
+  [mailarg_index_file] = "file",
+  [mailarg_index_log] = "log",
+  [mailarg_index_once] = "once",
+  [mailarg_index_once_repeat] = "once_repeat"
+};
+
+/* The count of string arguments */
+
+#define MAILARGS_STRING_COUNT (nelem(mailargs))
+
+/* The count of string arguments that are actually passed over as strings
+(once_repeat is converted to an int). */
+
+#define mailargs_string_passed (MAILARGS_STRING_COUNT - 1)
+
 /* Offsets in the data structure for the string arguments (note that
 once_repeat isn't a string argument at this point.) */
 
-static int reply_offsets[] = {  /* must be in same order as above */
-  offsetof(reply_item, to),
-  offsetof(reply_item, cc),
-  offsetof(reply_item, bcc),
-  offsetof(reply_item, from),
-  offsetof(reply_item, reply_to),
-  offsetof(reply_item, subject),
-  offsetof(reply_item, headers),
-  offsetof(reply_item, text),
-  offsetof(reply_item, file),
-  offsetof(reply_item, logfile),
-  offsetof(reply_item, oncelog),
+static int reply_offsets[] = {
+  [mailarg_index_to] = offsetof(reply_item, to),
+  [mailarg_index_cc] = offsetof(reply_item, cc),
+  [mailarg_index_bcc] = offsetof(reply_item, bcc),
+  [mailarg_index_from] = offsetof(reply_item, from),
+  [mailarg_index_reply_to] = offsetof(reply_item, reply_to),
+  [mailarg_index_subject] = offsetof(reply_item, subject),
+  [mailarg_index_headers] = offsetof(reply_item, headers),
+  [mailarg_index_text] = offsetof(reply_item, text),
+  [mailarg_index_file] = offsetof(reply_item, file),
+  [mailarg_index_log] = offsetof(reply_item, logfile),
+  [mailarg_index_once] = offsetof(reply_item, oncelog),
 };
 
 /* Condition identities and names, with negated versions for some
@@ -147,20 +147,48 @@ enum { cond_and, cond_or, cond_personal, cond_begins, cond_BEGINS,
        cond_manualthaw, cond_foranyaddress };
 
 static const char *cond_names[] = {
-  "and", "or", "personal",
-  "begins", "BEGINS", "ends", "ENDS",
-  "is", "IS", "matches", "MATCHES", "contains",
-  "CONTAINS", "delivered", "above", "below", "error_message",
-  "first_delivery", "manually_thawed", "foranyaddress" };
+  [cond_and] = "and",
+  [cond_or] = "or",
+  [cond_personal] = "personal",
+  [cond_begins] = "begins",
+  [cond_BEGINS] = "BEGINS",
+  [cond_ends] = "ends",
+  [cond_ENDS] = "ENDS",
+  [cond_is] = "is",
+  [cond_IS] = "IS",
+  [cond_matches] = "matches",
+  [cond_MATCHES] = "MATCHES",
+  [cond_contains] = "contains",
+  [cond_CONTAINS] = "CONTAINS",
+  [cond_delivered] = "delivered",
+  [cond_above] = "above",
+  [cond_below] = "below",
+  [cond_errormsg] = "error_message",
+  [cond_firsttime] = "first_delivery",
+  [cond_manualthaw] = "manually_thawed",
+  [cond_foranyaddress] = "foranyaddress" };
 
 static const char *cond_not_names[] = {
-  "", "", "not personal",
-  "does not begin", "does not BEGIN",
-  "does not end", "does not END",
-  "is not", "IS not", "does not match",
-  "does not MATCH", "does not contain", "does not CONTAIN",
-  "not delivered", "not above", "not below", "not error_message",
-  "not first_delivery", "not manually_thawed", "not foranyaddress" };
+  [cond_and] = "",
+  [cond_or] = "",
+  [cond_personal] = "not personal",
+  [cond_begins] = "does not begin",
+  [cond_BEGINS] = "does not BEGIN",
+  [cond_ends] = "does not end",
+  [cond_ENDS] = "does not END",
+  [cond_is] = "is not",
+  [cond_IS] = "IS not",
+  [cond_matches] = "does not match",
+  [cond_MATCHES] = "does not MATCH",
+  [cond_contains] = "does not contain",
+  [cond_CONTAINS] = "does not CONTAIN",
+  [cond_delivered] = "not delivered",
+  [cond_above] = "not above",
+  [cond_below] = "not below",
+  [cond_errormsg] = "not error_message",
+  [cond_firsttime] = "not first_delivery",
+  [cond_manualthaw] = "not manually_thawed",
+  [cond_foranyaddress] = "not foranyaddress" };
 
 /* Tables of binary condition words and their corresponding types. Not easy
 to amalgamate with the above because of the different variants. */
@@ -196,34 +224,34 @@ static int cond_types[] = { cond_BEGINS, cond_BEGINS, cond_CONTAINS,
 
 /* Command identities */
 
-enum { add_command, defer_command, deliver_command, elif_command, else_command,
-       endif_command, finish_command, fail_command, freeze_command,
-       headers_command, if_command, logfile_command, logwrite_command,
-       mail_command, noerror_command, pipe_command, save_command, seen_command,
-       testprint_command, unseen_command, vacation_command };
+enum { ADD_COMMAND, DEFER_COMMAND, DELIVER_COMMAND, ELIF_COMMAND, ELSE_COMMAND,
+       ENDIF_COMMAND, FINISH_COMMAND, FAIL_COMMAND, FREEZE_COMMAND,
+       HEADERS_COMMAND, IF_COMMAND, LOGFILE_COMMAND, LOGWRITE_COMMAND,
+       MAIL_COMMAND, NOERROR_COMMAND, PIPE_COMMAND, SAVE_COMMAND, SEEN_COMMAND,
+       TESTPRINT_COMMAND, UNSEEN_COMMAND, VACATION_COMMAND };
 
 static const char * command_list[] = {
-  [add_command] =	"add",
-  [defer_command] =	"defer",
-  [deliver_command] =	"deliver",
-  [elif_command] =	"elif",
-  [else_command] =	"else",
-  [endif_command] =	"endif",
-  [finish_command] =	"finish",
-  [fail_command] =	"fail",
-  [freeze_command] =	"freeze",
-  [headers_command] =	"headers",
-  [if_command] =	"if",
-  [logfile_command] =	"logfile",
-  [logwrite_command] =	"logwrite",
-  [mail_command] =	"mail",
-  [noerror_command] =	"noerror",
-  [pipe_command] =	"pipe",
-  [save_command] =	"save",
-  [seen_command] =	"seen",
-  [testprint_command] =	"testprint",
-  [unseen_command] =	"unseen",
-  [vacation_command] =	"vacation"
+  [ADD_COMMAND] =	"add",
+  [DEFER_COMMAND] =	"defer",
+  [DELIVER_COMMAND] =	"deliver",
+  [ELIF_COMMAND] =	"elif",
+  [ELSE_COMMAND] =	"else",
+  [ENDIF_COMMAND] =	"endif",
+  [FINISH_COMMAND] =	"finish",
+  [FAIL_COMMAND] =	"fail",
+  [FREEZE_COMMAND] =	"freeze",
+  [HEADERS_COMMAND] =	"headers",
+  [IF_COMMAND] =	"if",
+  [LOGFILE_COMMAND] =	"logfile",
+  [LOGWRITE_COMMAND] =	"logwrite",
+  [MAIL_COMMAND] =	"mail",
+  [NOERROR_COMMAND] =	"noerror",
+  [PIPE_COMMAND] =	"pipe",
+  [SAVE_COMMAND] =	"save",
+  [SEEN_COMMAND] =	"seen",
+  [TESTPRINT_COMMAND] =	"testprint",
+  [UNSEEN_COMMAND] =	"unseen",
+  [VACATION_COMMAND] =	"vacation"
 };
 
 static int command_list_count = nelem(command_list);
@@ -232,27 +260,27 @@ static int command_list_count = nelem(command_list);
 If the top bit is set, it means that the default for the command is "seen". */
 
 static uschar command_exparg_count[] = {
-  [add_command] =	2,
-  [defer_command] =	1,
-  [deliver_command] =	128+2,
-  [elif_command] =	0,
-  [else_command] =	0,
-  [endif_command] =	0,
-  [finish_command] =	0,
-  [fail_command] =	1,
-  [freeze_command] =	1,
-  [headers_command] =	1,
-  [if_command] =	0,
-  [logfile_command] =	1,
-  [logwrite_command] =	1,
-  [mail_command] =	MAILARGS_STRING_COUNT,
-  [noerror_command] =	0,
-  [pipe_command] =	128+0,
-  [save_command] =	128+1,
-  [seen_command] =	0,
-  [testprint_command] =	1,
-  [unseen_command] =	0,
-  [vacation_command] =	MAILARGS_STRING_COUNT
+  [ADD_COMMAND] =	2,
+  [DEFER_COMMAND] =	1,
+  [DELIVER_COMMAND] =	128+2,
+  [ELIF_COMMAND] =	0,
+  [ELSE_COMMAND] =	0,
+  [ENDIF_COMMAND] =	0,
+  [FINISH_COMMAND] =	0,
+  [FAIL_COMMAND] =	1,
+  [FREEZE_COMMAND] =	1,
+  [HEADERS_COMMAND] =	1,
+  [IF_COMMAND] =	0,
+  [LOGFILE_COMMAND] =	1,
+  [LOGWRITE_COMMAND] =	1,
+  [MAIL_COMMAND] =	MAILARGS_STRING_COUNT,
+  [NOERROR_COMMAND] =	0,
+  [PIPE_COMMAND] =	128+0,
+  [SAVE_COMMAND] =	128+1,
+  [SEEN_COMMAND] =	0,
+  [TESTPRINT_COMMAND] =	1,
+  [UNSEEN_COMMAND] =	0,
+  [VACATION_COMMAND] =	MAILARGS_STRING_COUNT
 };
 
 
@@ -795,8 +823,8 @@ switch(c->type)
   case cond_errormsg:
   case cond_firsttime:
   case cond_manualthaw:
-  debug_printf("%s", name);
-  break;
+    debug_printf("%s", name);
+    break;
 
   case cond_is:
   case cond_IS:
@@ -810,31 +838,31 @@ switch(c->type)
   case cond_ENDS:
   case cond_above:
   case cond_below:
-  debug_printf("%s %s %s", c->left.u, name, c->right.u);
-  break;
+    debug_printf("%s %s %s", c->left.u, name, c->right.u);
+    break;
 
   case cond_and:
-  if (!c->testfor) debug_printf("not (");
-  print_condition(c->left.c, FALSE);
-  debug_printf(" %s ", cond_names[c->type]);
-  print_condition(c->right.c, FALSE);
-  if (!c->testfor) debug_printf(")");
-  break;
+    if (!c->testfor) debug_printf("not (");
+    print_condition(c->left.c, FALSE);
+    debug_printf(" %s ", cond_names[c->type]);
+    print_condition(c->right.c, FALSE);
+    if (!c->testfor) debug_printf(")");
+    break;
 
   case cond_or:
-  if (!c->testfor) debug_printf("not (");
-  else if (!toplevel) debug_printf("(");
-  print_condition(c->left.c, FALSE);
-  debug_printf(" %s ", cond_names[c->type]);
-  print_condition(c->right.c, FALSE);
-  if (!toplevel || !c->testfor) debug_printf(")");
-  break;
+    if (!c->testfor) debug_printf("not (");
+    else if (!toplevel) debug_printf("(");
+    print_condition(c->left.c, FALSE);
+    debug_printf(" %s ", cond_names[c->type]);
+    print_condition(c->right.c, FALSE);
+    if (!toplevel || !c->testfor) debug_printf(")");
+    break;
 
   case cond_foranyaddress:
-  debug_printf("%s %s (", name, c->left.u);
-  print_condition(c->right.c, FALSE);
-  debug_printf(")");
-  break;
+    debug_printf("%s %s (", name, c->left.u);
+    print_condition(c->right.c, FALSE);
+    debug_printf(")");
+    break;
   }
 }
 
@@ -904,15 +932,15 @@ switch (command)
   stored in the second argument slot. Neither may be preceded by seen, unseen
   or noerror. */
 
-  case add_command:
-  case headers_command:
-  if (seen_force || noerror_force)
-    {
-    *error_pointer = string_sprintf("\"seen\", \"unseen\", or \"noerror\" "
-      "found before an \"%s\" command near line %d",
-        command_list[command], line_number);
-    yield = FALSE;
-    }
+  case ADD_COMMAND:
+  case HEADERS_COMMAND:
+    if (seen_force || noerror_force)
+      {
+      *error_pointer = string_sprintf("\"seen\", \"unseen\", or \"noerror\" "
+	"found before an \"%s\" command near line %d",
+	  command_list[command], line_number);
+      yield = FALSE;
+      }
   /* Fall through */
 
   /* Logwrite, logfile, pipe, and testprint all take a single argument, save
@@ -920,303 +948,303 @@ switch (command)
   have "errors_to <address>" in a system filter, or in a user filter if the
   address is the current one. */
 
-  case deliver_command:
-  case logfile_command:
-  case logwrite_command:
-  case pipe_command:
-  case save_command:
-  case testprint_command:
+  case DELIVER_COMMAND:
+  case LOGFILE_COMMAND:
+  case LOGWRITE_COMMAND:
+  case PIPE_COMMAND:
+  case SAVE_COMMAND:
+  case TESTPRINT_COMMAND:
 
-  ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-  if (!*buffer)
-    *error_pointer = string_sprintf("\"%s\" requires an argument "
-      "near line %d of filter file", command_list[command], line_number);
+    ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
+    if (!*buffer)
+      *error_pointer = string_sprintf("\"%s\" requires an argument "
+	"near line %d of filter file", command_list[command], line_number);
 
-  if (*error_pointer) yield = FALSE; else
-    {
-    union argtypes argument, second_argument;
-
-    argument.u = second_argument.u = NULL;
-
-    if (command == add_command)
+    if (*error_pointer) yield = FALSE; else
       {
-      argument.u = string_copy(buffer);
-      ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-      if (!*buffer || Ustrcmp(buffer, "to") != 0)
-        *error_pointer = string_sprintf("\"to\" expected in \"add\" command "
-          "near line %d of filter file", line_number);
+      union argtypes argument, second_argument;
+
+      argument.u = second_argument.u = NULL;
+
+      if (command == ADD_COMMAND)
+	{
+	argument.u = string_copy(buffer);
+	ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
+	if (!*buffer || Ustrcmp(buffer, "to") != 0)
+	  *error_pointer = string_sprintf("\"to\" expected in \"add\" command "
+	    "near line %d of filter file", line_number);
+	else
+	  {
+	  ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
+	  if (!*buffer)
+	    *error_pointer = string_sprintf("value missing after \"to\" "
+	      "near line %d of filter file", line_number);
+	  else second_argument.u = string_copy(buffer);
+	  }
+	}
+
+      else if (command == HEADERS_COMMAND)
+	{
+	if (Ustrcmp(buffer, "add") == 0)
+	  second_argument.b = TRUE;
+	else
+	  if (Ustrcmp(buffer, "remove") == 0) second_argument.b = FALSE;
+	else
+	  if (Ustrcmp(buffer, "charset") == 0)
+	    second_argument.b = TRUE_UNSET;
+	else
+	  {
+	  *error_pointer = string_sprintf("\"add\", \"remove\", or \"charset\" "
+	    "expected after \"headers\" near line %d of filter file",
+	      line_number);
+	  yield = FALSE;
+	  }
+
+	if (!f.system_filtering && second_argument.b != TRUE_UNSET)
+	  {
+	  *error_pointer = string_sprintf("header addition and removal is "
+	    "available only in system filters: near line %d of filter file",
+	    line_number);
+	  yield = FALSE;
+	  break;
+	  }
+
+	if (yield)
+	  {
+	  ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
+	  if (!*buffer)
+	    *error_pointer = string_sprintf("value missing after \"add\", "
+	      "\"remove\", or \"charset\" near line %d of filter file",
+		line_number);
+	  else argument.u = string_copy(buffer);
+	  }
+	}
+
+      /* The argument for the logwrite command must end in a newline, and the save
+      and logfile commands can have an optional mode argument. The deliver
+      command can have an optional "errors_to <address>" for a system filter,
+      or for a user filter if the address is the user's address. Accept the
+      syntax here - the check is later. */
+
       else
-        {
-        ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-        if (!*buffer)
-          *error_pointer = string_sprintf("value missing after \"to\" "
-            "near line %d of filter file", line_number);
-        else second_argument.u = string_copy(buffer);
-        }
-      }
+	{
+	if (command == LOGWRITE_COMMAND)
+	  {
+	  int len = Ustrlen(buffer);
+	  if (len == 0 || buffer[len-1] != '\n') Ustrcat(buffer, US"\n");
+	  }
 
-    else if (command == headers_command)
-      {
-      if (Ustrcmp(buffer, "add") == 0)
-        second_argument.b = TRUE;
+	argument.u = string_copy(buffer);
+
+	if (command == SAVE_COMMAND || command == LOGFILE_COMMAND)
+	  {
+	  if (isdigit(*ptr))
+	    {
+	    ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
+	    second_argument.i = (int)Ustrtol(buffer, NULL, 8);
+	    }
+	  else second_argument.i = -1;
+	  }
+
+	else if (command == DELIVER_COMMAND)
+	  {
+	  const uschar *save_ptr = ptr;
+	  ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
+	  if (Ustrcmp(buffer, "errors_to") == 0)
+	    {
+	    ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
+	    second_argument.u = string_copy(buffer);
+	    }
+	  else ptr = save_ptr;
+	  }
+	}
+
+      /* Set up the command block. Seen defaults TRUE for delivery commands,
+      FALSE for logging commands, and it doesn't matter for testprint, as
+      that doesn't change the "delivered" status. */
+
+      if (*error_pointer) yield = FALSE;
       else
-        if (Ustrcmp(buffer, "remove") == 0) second_argument.b = FALSE;
-      else
-        if (Ustrcmp(buffer, "charset") == 0)
-          second_argument.b = TRUE_UNSET;
-      else
-        {
-        *error_pointer = string_sprintf("\"add\", \"remove\", or \"charset\" "
-          "expected after \"headers\" near line %d of filter file",
-            line_number);
-        yield = FALSE;
-        }
-
-      if (!f.system_filtering && second_argument.b != TRUE_UNSET)
-        {
-        *error_pointer = string_sprintf("header addition and removal is "
-          "available only in system filters: near line %d of filter file",
-          line_number);
-        yield = FALSE;
-        break;
-        }
-
-      if (yield)
-        {
-        ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-        if (!*buffer)
-          *error_pointer = string_sprintf("value missing after \"add\", "
-            "\"remove\", or \"charset\" near line %d of filter file",
-              line_number);
-        else argument.u = string_copy(buffer);
-        }
+	{
+	new = store_get(sizeof(filter_cmd) + sizeof(union argtypes), GET_UNTAINTED);
+	new->next = NULL;
+	**lastcmdptr = new;
+	*lastcmdptr = &(new->next);
+	new->command = command;
+	new->seen = seen_force? seen_value : command_exparg_count[command] >= 128;
+	new->noerror = noerror_force;
+	new->args[0] = argument;
+	new->args[1] = second_argument;
+	}
       }
-
-    /* The argument for the logwrite command must end in a newline, and the save
-    and logfile commands can have an optional mode argument. The deliver
-    command can have an optional "errors_to <address>" for a system filter,
-    or for a user filter if the address is the user's address. Accept the
-    syntax here - the check is later. */
-
-    else
-      {
-      if (command == logwrite_command)
-        {
-        int len = Ustrlen(buffer);
-        if (len == 0 || buffer[len-1] != '\n') Ustrcat(buffer, US"\n");
-        }
-
-      argument.u = string_copy(buffer);
-
-      if (command == save_command || command == logfile_command)
-        {
-        if (isdigit(*ptr))
-          {
-          ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
-          second_argument.i = (int)Ustrtol(buffer, NULL, 8);
-          }
-        else second_argument.i = -1;
-        }
-
-      else if (command == deliver_command)
-        {
-        const uschar *save_ptr = ptr;
-        ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
-        if (Ustrcmp(buffer, "errors_to") == 0)
-          {
-          ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
-          second_argument.u = string_copy(buffer);
-          }
-        else ptr = save_ptr;
-        }
-      }
-
-    /* Set up the command block. Seen defaults TRUE for delivery commands,
-    FALSE for logging commands, and it doesn't matter for testprint, as
-    that doesn't change the "delivered" status. */
-
-    if (*error_pointer) yield = FALSE;
-    else
-      {
-      new = store_get(sizeof(filter_cmd) + sizeof(union argtypes), GET_UNTAINTED);
-      new->next = NULL;
-      **lastcmdptr = new;
-      *lastcmdptr = &(new->next);
-      new->command = command;
-      new->seen = seen_force? seen_value : command_exparg_count[command] >= 128;
-      new->noerror = noerror_force;
-      new->args[0] = argument;
-      new->args[1] = second_argument;
-      }
-    }
-  break;
+    break;
 
 
   /* Elif, else and endif just set a flag if expected. */
 
-  case elif_command:
-  case else_command:
-  case endif_command:
-  if (seen_force || noerror_force)
-    {
-    *error_pointer = string_sprintf("\"seen\", \"unseen\", or \"noerror\" "
-      "near line %d is not followed by a command", line_number);
-    yield = FALSE;
-    }
+  case ELIF_COMMAND:
+  case ELSE_COMMAND:
+  case ENDIF_COMMAND:
+    if (seen_force || noerror_force)
+      {
+      *error_pointer = string_sprintf("\"seen\", \"unseen\", or \"noerror\" "
+	"near line %d is not followed by a command", line_number);
+      yield = FALSE;
+      }
 
-  if (expect_endif > 0)
-    had_else_endif = (command == elif_command)? had_elif :
-                     (command == else_command)? had_else : had_endif;
-  else
-    {
-    *error_pointer = string_sprintf("unexpected \"%s\" command near "
-      "line %d of filter file", buffer, line_number);
-    yield = FALSE;
-    }
-  break;
+    if (expect_endif > 0)
+      had_else_endif = (command == ELIF_COMMAND)? had_elif :
+		       (command == ELSE_COMMAND)? had_else : had_endif;
+    else
+      {
+      *error_pointer = string_sprintf("unexpected \"%s\" command near "
+	"line %d of filter file", buffer, line_number);
+      yield = FALSE;
+      }
+    break;
 
 
   /* Defer, freeze, and fail are available only if permitted. */
 
-  case defer_command:
-  cmd_bit = RDO_DEFER;
-  goto DEFER_FREEZE_FAIL;
+  case DEFER_COMMAND:
+    cmd_bit = RDO_DEFER;
+    goto DEFER_FREEZE_FAIL;
 
-  case fail_command:
-  cmd_bit = RDO_FAIL;
-  goto DEFER_FREEZE_FAIL;
+  case FAIL_COMMAND:
+    cmd_bit = RDO_FAIL;
+    goto DEFER_FREEZE_FAIL;
 
-  case freeze_command:
-  cmd_bit = RDO_FREEZE;
+  case FREEZE_COMMAND:
+    cmd_bit = RDO_FREEZE;
 
   DEFER_FREEZE_FAIL:
-  if ((filter_options & cmd_bit) == 0)
-    {
-    *error_pointer = string_sprintf("filtering command \"%s\" is disabled: "
-      "near line %d of filter file", buffer, line_number);
-    yield = FALSE;
+    if ((filter_options & cmd_bit) == 0)
+      {
+      *error_pointer = string_sprintf("filtering command \"%s\" is disabled: "
+	"near line %d of filter file", buffer, line_number);
+      yield = FALSE;
+      break;
+      }
+
+    /* A text message can be provided after the "text" keyword, or
+    as a string in quotes. */
+
+    saveptr = ptr;
+    ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
+    if (*saveptr != '\"' && (!*buffer || Ustrcmp(buffer, "text") != 0))
+      {
+      ptr = saveptr;
+      fmsg = US"";
+      }
+    else
+      {
+      if (*saveptr != '\"')
+	ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
+      fmsg = string_copy(buffer);
+      }
+
+    /* Drop through and treat as "finish", but never set "seen". */
+
+    seen_value = FALSE;
+
+    /* Finish has no arguments; fmsg defaults to NULL */
+
+    case FINISH_COMMAND:
+    new = store_get(sizeof(filter_cmd), GET_UNTAINTED);
+    new->next = NULL;
+    **lastcmdptr = new;
+    *lastcmdptr = &(new->next);
+    new->command = command;
+    new->seen = seen_force ? seen_value : FALSE;
+    new->args[0].u = fmsg;
     break;
-    }
-
-  /* A text message can be provided after the "text" keyword, or
-  as a string in quotes. */
-
-  saveptr = ptr;
-  ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-  if (*saveptr != '\"' && (!*buffer || Ustrcmp(buffer, "text") != 0))
-    {
-    ptr = saveptr;
-    fmsg = US"";
-    }
-  else
-    {
-    if (*saveptr != '\"')
-      ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-    fmsg = string_copy(buffer);
-    }
-
-  /* Drop through and treat as "finish", but never set "seen". */
-
-  seen_value = FALSE;
-
-  /* Finish has no arguments; fmsg defaults to NULL */
-
-  case finish_command:
-  new = store_get(sizeof(filter_cmd), GET_UNTAINTED);
-  new->next = NULL;
-  **lastcmdptr = new;
-  *lastcmdptr = &(new->next);
-  new->command = command;
-  new->seen = seen_force ? seen_value : FALSE;
-  new->args[0].u = fmsg;
-  break;
 
 
   /* Seen, unseen, and noerror are not allowed before if, which takes a
   condition argument and then and else sub-commands. */
 
-  case if_command:
-  if (seen_force || noerror_force)
-    {
-    *error_pointer = string_sprintf("\"seen\", \"unseen\", or \"noerror\" "
-      "found before an \"if\" command near line %d",
-        line_number);
-    yield = FALSE;
-    }
-
-  /* Set up the command block for if */
-
-  new = store_get(sizeof(filter_cmd) + 4 * sizeof(union argtypes), GET_UNTAINTED);
-  new->next = NULL;
-  **lastcmdptr = new;
-  *lastcmdptr = &new->next;
-  new->command = command;
-  new->seen = FALSE;
-  new->args[0].u = NULL;
-  new->args[1].u = new->args[2].u = NULL;
-  new->args[3].u = ptr;
-
-  /* Read the condition */
-
-  ptr = read_condition(ptr, &new->args[0].c, TRUE);
-  if (*error_pointer) { yield = FALSE; break; }
-
-  /* Read the commands to be obeyed if the condition is true */
-
-  newlastcmdptr = &(new->args[1].f);
-  if (!read_command_list(&ptr, &newlastcmdptr, TRUE)) yield = FALSE;
-
-  /* If commands were successfully read, handle the various possible
-  terminators. There may be a number of successive "elif" sections. */
-
-  else
-    {
-    while (had_else_endif == had_elif)
+  case IF_COMMAND:
+    if (seen_force || noerror_force)
       {
-      filter_cmd *newnew =
-        store_get(sizeof(filter_cmd) + 4 * sizeof(union argtypes), GET_UNTAINTED);
-      new->args[2].f = newnew;
-      new = newnew;
-      new->next = NULL;
-      new->command = command;
-      new->seen = FALSE;
-      new->args[0].u = NULL;
-      new->args[1].u = new->args[2].u = NULL;
-      new->args[3].u = ptr;
-
-      ptr = read_condition(ptr, &new->args[0].c, TRUE);
-      if (*error_pointer) { yield = FALSE; break; }
-      newlastcmdptr = &(new->args[1].f);
-      if (!read_command_list(&ptr, &newlastcmdptr, TRUE))
-        yield = FALSE;
+      *error_pointer = string_sprintf("\"seen\", \"unseen\", or \"noerror\" "
+	"found before an \"if\" command near line %d",
+	  line_number);
+      yield = FALSE;
       }
 
-    if (yield == FALSE) break;
+    /* Set up the command block for if */
 
-    /* Handle termination by "else", possibly following one or more
-    "elsif" sections. */
+    new = store_get(sizeof(filter_cmd) + 4 * sizeof(union argtypes), GET_UNTAINTED);
+    new->next = NULL;
+    **lastcmdptr = new;
+    *lastcmdptr = &new->next;
+    new->command = command;
+    new->seen = FALSE;
+    new->args[0].u = NULL;
+    new->args[1].u = new->args[2].u = NULL;
+    new->args[3].u = ptr;
 
-    if (had_else_endif == had_else)
+    /* Read the condition */
+
+    ptr = read_condition(ptr, &new->args[0].c, TRUE);
+    if (*error_pointer) { yield = FALSE; break; }
+
+    /* Read the commands to be obeyed if the condition is true */
+
+    newlastcmdptr = &(new->args[1].f);
+    if (!read_command_list(&ptr, &newlastcmdptr, TRUE)) yield = FALSE;
+
+    /* If commands were successfully read, handle the various possible
+    terminators. There may be a number of successive "elif" sections. */
+
+    else
       {
-      newlastcmdptr = &(new->args[2].f);
-      if (!read_command_list(&ptr, &newlastcmdptr, TRUE))
-        yield = FALSE;
-      else if (had_else_endif != had_endif)
-        {
-        *error_pointer = string_sprintf("\"endif\" missing near line %d of "
-          "filter file", line_number);
-        yield = FALSE;
-        }
+      while (had_else_endif == had_elif)
+	{
+	filter_cmd *newnew =
+	  store_get(sizeof(filter_cmd) + 4 * sizeof(union argtypes), GET_UNTAINTED);
+	new->args[2].f = newnew;
+	new = newnew;
+	new->next = NULL;
+	new->command = command;
+	new->seen = FALSE;
+	new->args[0].u = NULL;
+	new->args[1].u = new->args[2].u = NULL;
+	new->args[3].u = ptr;
+
+	ptr = read_condition(ptr, &new->args[0].c, TRUE);
+	if (*error_pointer) { yield = FALSE; break; }
+	newlastcmdptr = &(new->args[1].f);
+	if (!read_command_list(&ptr, &newlastcmdptr, TRUE))
+	  yield = FALSE;
+	}
+
+      if (yield == FALSE) break;
+
+      /* Handle termination by "else", possibly following one or more
+      "elsif" sections. */
+
+      if (had_else_endif == had_else)
+	{
+	newlastcmdptr = &(new->args[2].f);
+	if (!read_command_list(&ptr, &newlastcmdptr, TRUE))
+	  yield = FALSE;
+	else if (had_else_endif != had_endif)
+	  {
+	  *error_pointer = string_sprintf("\"endif\" missing near line %d of "
+	    "filter file", line_number);
+	  yield = FALSE;
+	  }
+	}
+
+      /* Otherwise the terminator was "endif" - this is checked by
+      read_command_list(). The pointer is already set to NULL. */
       }
 
-    /* Otherwise the terminator was "endif" - this is checked by
-    read_command_list(). The pointer is already set to NULL. */
-    }
+    /* Reset the terminator flag. */
 
-  /* Reset the terminator flag. */
-
-  had_else_endif = had_neither;
-  break;
+    had_else_endif = had_neither;
+    break;
 
 
   /* The mail & vacation commands have a whole slew of keyworded arguments.
@@ -1225,150 +1253,150 @@ switch (command)
   are logically booleans, because they are stored in a uschar * value, we use
   NULL and not FALSE, to keep 64-bit compilers happy. */
 
-  case mail_command:
-  case vacation_command:
-  new = store_get(sizeof(filter_cmd) + mailargs_total * sizeof(union argtypes), GET_UNTAINTED);
-  new->next = NULL;
-  new->command = command;
-  new->seen = seen_force ? seen_value : FALSE;
-  new->noerror = noerror_force;
-  for (i = 0; i < mailargs_total; i++) new->args[i].u = NULL;
+  case MAIL_COMMAND:
+  case VACATION_COMMAND:
+    new = store_get(sizeof(filter_cmd) + mailargs_total * sizeof(union argtypes), GET_UNTAINTED);
+    new->next = NULL;
+    new->command = command;
+    new->seen = seen_force ? seen_value : FALSE;
+    new->noerror = noerror_force;
+    for (i = 0; i < mailargs_total; i++) new->args[i].u = NULL;
 
-  /* Read keyword/value pairs until we hit one that isn't. The data
-  must contain only printing chars plus tab, though the "text" value
-  can also contain newlines. The "file" keyword can be preceded by the
-  word "expand", and "return message" has no data. */
+    /* Read keyword/value pairs until we hit one that isn't. The data
+    must contain only printing chars plus tab, though the "text" value
+    can also contain newlines. The "file" keyword can be preceded by the
+    word "expand", and "return message" has no data. */
 
-  for (;;)
-    {
-    const uschar *saveptr = ptr;
-    ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
-    if (*error_pointer)
-      { yield = FALSE; break; }
-
-    /* Ensure "return" is followed by "message"; that's a complete option */
-
-    if (Ustrcmp(buffer, "return") == 0)
+    for (;;)
       {
-      new->args[mailarg_index_return].u = US"";  /* not NULL => TRUE */
+      const uschar *saveptr = ptr;
       ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
-      if (Ustrcmp(buffer, "message") != 0)
-        {
-        *error_pointer = string_sprintf("\"return\" not followed by \"message\" "
-          " near line %d of filter file", line_number);
-        yield = FALSE;
-        break;
-        }
-      continue;
+      if (*error_pointer)
+	{ yield = FALSE; break; }
+
+      /* Ensure "return" is followed by "message"; that's a complete option */
+
+      if (Ustrcmp(buffer, "return") == 0)
+	{
+	new->args[mailarg_index_return].u = US"";  /* not NULL => TRUE */
+	ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
+	if (Ustrcmp(buffer, "message") != 0)
+	  {
+	  *error_pointer = string_sprintf("\"return\" not followed by \"message\" "
+	    " near line %d of filter file", line_number);
+	  yield = FALSE;
+	  break;
+	  }
+	continue;
+	}
+
+      /* Ensure "expand" is followed by "file", then fall through to process the
+      file keyword. */
+
+      if (Ustrcmp(buffer, "expand") == 0)
+	{
+	new->args[mailarg_index_expand].u = US"";  /* not NULL => TRUE */
+	ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
+	if (Ustrcmp(buffer, "file") != 0)
+	  {
+	  *error_pointer = string_sprintf("\"expand\" not followed by \"file\" "
+	    " near line %d of filter file", line_number);
+	  yield = FALSE;
+	  break;
+	  }
+	}
+
+      /* Scan for the keyword */
+
+      for (i = 0; i < MAILARGS_STRING_COUNT; i++)
+	if (Ustrcmp(buffer, mailargs[i]) == 0) break;
+
+      /* Not found keyword; assume end of this command */
+
+      if (i >= MAILARGS_STRING_COUNT)
+	{
+	ptr = saveptr;
+	break;
+	}
+
+      /* Found keyword, read the data item */
+
+      ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
+      if (*error_pointer)
+	{ yield = FALSE; break; }
+      else new->args[i].u = string_copy(buffer);
       }
 
-    /* Ensure "expand" is followed by "file", then fall through to process the
-    file keyword. */
+    /* If this is the vacation command, apply some default settings to
+    some of the arguments. */
 
-    if (Ustrcmp(buffer, "expand") == 0)
+    if (command == VACATION_COMMAND)
       {
-      new->args[mailarg_index_expand].u = US"";  /* not NULL => TRUE */
-      ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
-      if (Ustrcmp(buffer, "file") != 0)
-        {
-        *error_pointer = string_sprintf("\"expand\" not followed by \"file\" "
-          " near line %d of filter file", line_number);
-        yield = FALSE;
-        break;
-        }
+      if (!new->args[mailarg_index_file].u)
+	{
+	new->args[mailarg_index_file].u = string_copy(US".vacation.msg");
+	new->args[mailarg_index_expand].u = US"";   /* not NULL => TRUE */
+	}
+      if (!new->args[mailarg_index_log].u)
+	new->args[mailarg_index_log].u = string_copy(US".vacation.log");
+      if (!new->args[mailarg_index_once].u)
+	new->args[mailarg_index_once].u = string_copy(US".vacation");
+      if (!new->args[mailarg_index_once_repeat].u)
+	new->args[mailarg_index_once_repeat].u = string_copy(US"7d");
+      if (!new->args[mailarg_index_subject].u)
+	new->args[mailarg_index_subject].u = string_copy(US"On vacation");
       }
 
-    /* Scan for the keyword */
+    /* Join the address on to the chain of generated addresses */
 
-    for (i = 0; i < MAILARGS_STRING_COUNT; i++)
-      if (Ustrcmp(buffer, mailargs[i]) == 0) break;
-
-    /* Not found keyword; assume end of this command */
-
-    if (i >= MAILARGS_STRING_COUNT)
-      {
-      ptr = saveptr;
-      break;
-      }
-
-    /* Found keyword, read the data item */
-
-    ptr = nextitem(ptr, buffer, sizeof(buffer), FALSE);
-    if (*error_pointer)
-      { yield = FALSE; break; }
-    else new->args[i].u = string_copy(buffer);
-    }
-
-  /* If this is the vacation command, apply some default settings to
-  some of the arguments. */
-
-  if (command == vacation_command)
-    {
-    if (!new->args[mailarg_index_file].u)
-      {
-      new->args[mailarg_index_file].u = string_copy(US".vacation.msg");
-      new->args[mailarg_index_expand].u = US"";   /* not NULL => TRUE */
-      }
-    if (!new->args[mailarg_index_log].u)
-      new->args[mailarg_index_log].u = string_copy(US".vacation.log");
-    if (!new->args[mailarg_index_once].u)
-      new->args[mailarg_index_once].u = string_copy(US".vacation");
-    if (!new->args[mailarg_index_once_repeat].u)
-      new->args[mailarg_index_once_repeat].u = string_copy(US"7d");
-    if (!new->args[mailarg_index_subject].u)
-      new->args[mailarg_index_subject].u = string_copy(US"On vacation");
-    }
-
-  /* Join the address on to the chain of generated addresses */
-
-  **lastcmdptr = new;
-  *lastcmdptr = &(new->next);
-  break;
+    **lastcmdptr = new;
+    *lastcmdptr = &(new->next);
+    break;
 
 
   /* Seen and unseen just set flags */
 
-  case seen_command:
-  case unseen_command:
-  if (!*ptr)
-    {
-    *error_pointer = string_sprintf("\"seen\" or \"unseen\" "
-      "near line %d is not followed by a command", line_number);
-    yield = FALSE;
-    }
-  if (seen_force)
-    {
-    *error_pointer = string_sprintf("\"seen\" or \"unseen\" repeated "
-      "near line %d", line_number);
-    yield = FALSE;
-    }
-  seen_value = (command == seen_command);
-  seen_force = TRUE;
-  was_seen_or_unseen = TRUE;
-  break;
+  case SEEN_COMMAND:
+  case UNSEEN_COMMAND:
+    if (!*ptr)
+      {
+      *error_pointer = string_sprintf("\"seen\" or \"unseen\" "
+	"near line %d is not followed by a command", line_number);
+      yield = FALSE;
+      }
+    if (seen_force)
+      {
+      *error_pointer = string_sprintf("\"seen\" or \"unseen\" repeated "
+	"near line %d", line_number);
+      yield = FALSE;
+      }
+    seen_value = (command == SEEN_COMMAND);
+    seen_force = TRUE;
+    was_seen_or_unseen = TRUE;
+    break;
 
 
   /* So does noerror */
 
-  case noerror_command:
-  if (!*ptr)
-    {
-    *error_pointer = string_sprintf("\"noerror\" "
-      "near line %d is not followed by a command", line_number);
-    yield = FALSE;
-    }
-  noerror_force = TRUE;
-  was_noerror = TRUE;
-  break;
+  case NOERROR_COMMAND:
+    if (!*ptr)
+      {
+      *error_pointer = string_sprintf("\"noerror\" "
+	"near line %d is not followed by a command", line_number);
+      yield = FALSE;
+      }
+    noerror_force = TRUE;
+    was_noerror = TRUE;
+    break;
 
 
   /* Oops */
 
   default:
-  *error_pointer = string_sprintf("unknown filtering command \"%s\" "
-    "near line %d of filter file", buffer, line_number);
-  yield = FALSE;
-  break;
+    *error_pointer = string_sprintf("unknown filtering command \"%s\" "
+      "near line %d of filter file", buffer, line_number);
+    yield = FALSE;
+    break;
   }
 
 if (!was_seen_or_unseen && !was_noerror)
@@ -1712,7 +1740,7 @@ while (commands)
 
   switch(commands->command)
     {
-    case add_command:
+    case ADD_COMMAND:
       for (i = 0; i < 2; i++)
 	{
 	const uschar *ss = expargs[i];
@@ -1744,7 +1772,7 @@ while (commands)
       /* A deliver command's argument must be a valid address. Its optional
       second argument (system filter only) must also be a valid address. */
 
-    case deliver_command:
+    case DELIVER_COMMAND:
       for (i = 0; i < 2; i++)
 	{
 	s = expargs[i];
@@ -1820,7 +1848,7 @@ while (commands)
 	}
       break;
 
-    case save_command:
+    case SAVE_COMMAND:
       s = expargs[0];
       mode = commands->args[1].i;
 
@@ -1863,7 +1891,7 @@ while (commands)
 	}
       break;
 
-    case pipe_command:
+    case PIPE_COMMAND:
       s = string_copy(commands->args[0].u);
       if (filter_test != FTEST_NONE)
 	{
@@ -1913,7 +1941,7 @@ while (commands)
       /* Set up the file name and mode, and close any previously open
       file. */
 
-    case logfile_command:
+    case LOGFILE_COMMAND:
       log_mode = commands->args[1].i;
       if (log_mode == -1) log_mode = 0600;
       if (log_fd >= 0)
@@ -1929,7 +1957,7 @@ while (commands)
 	}
       break;
 
-    case logwrite_command:
+    case LOGWRITE_COMMAND:
       s = expargs[0];
 
       if (filter_test != FTEST_NONE)
@@ -1988,7 +2016,7 @@ while (commands)
       command is rejected at parse time otherwise. However "headers charset" is
       always permitted. */
 
-    case headers_command:
+    case HEADERS_COMMAND:
 	{
 	int subtype = commands->args[1].i;
 	s = expargs[0];
@@ -2032,17 +2060,17 @@ while (commands)
       very long by the inclusion of message headers; truncate if it is, and also
       ensure printing characters so as not to mess up log files. */
 
-    case defer_command:
+    case DEFER_COMMAND:
       ff_name = US"defer";
       ff_ret = FF_DEFER;
       goto DEFERFREEZEFAIL;
 
-    case fail_command:
+    case FAIL_COMMAND:
       ff_name = US"fail";
       ff_ret = FF_FAIL;
       goto DEFERFREEZEFAIL;
 
-    case freeze_command:
+    case FREEZE_COMMAND:
       ff_name = US"freeze";
       ff_ret = FF_FREEZE;
 
@@ -2062,7 +2090,7 @@ while (commands)
         DEBUG(D_filter) debug_printf_indent("Filter: %s \"%s\"\n", ff_name, fmsg);
       return ff_ret;
 
-    case finish_command:
+    case FINISH_COMMAND:
       if (filter_test != FTEST_NONE)
 	{
 	indent();
@@ -2074,7 +2102,7 @@ while (commands)
       finish_obeyed = TRUE;
       return filter_delivered ? FF_DELIVERED : FF_NOTDELIVERED;
 
-    case if_command:
+    case IF_COMMAND:
 	{
 	uschar *save_address = filter_thisaddress;
 	int ok = FF_DELIVERED;
@@ -2099,8 +2127,8 @@ while (commands)
       return path is unset or if a non-trusted user supplied -f <>
       as the return path. */
 
-    case mail_command:
-    case vacation_command:
+    case MAIL_COMMAND:
+    case VACATION_COMMAND:
 	if (!return_path || !*return_path)
 	  {
 	  if (filter_test != FTEST_NONE)
@@ -2196,7 +2224,7 @@ while (commands)
 	  indent();
 	  printf("%sail to: %s%s%s\n", (commands->seen)? "Seen m" : "M",
 	    to ? to : US"<default>",
-	    commands->command == vacation_command ? " (vacation)" : "",
+	    commands->command == VACATION_COMMAND ? " (vacation)" : "",
 	    commands->noerror ? " (noerror)" : "");
 	  for (i = 1; i < MAILARGS_STRING_COUNT; i++)
 	    {
@@ -2238,7 +2266,7 @@ while (commands)
 	    debug_printf_indent("Filter: %smail to: %s%s%s\n",
 	      commands->seen ? "seen " : "",
 	      to,
-	      commands->command == vacation_command ? " (vacation)" : "",
+	      commands->command == VACATION_COMMAND ? " (vacation)" : "",
 	      commands->noerror ? " (noerror)" : "");
 	    for (i = 1; i < MAILARGS_STRING_COUNT; i++)
 	      {
@@ -2344,7 +2372,7 @@ while (commands)
 	  }
 	break;
 
-    case testprint_command:
+    case TESTPRINT_COMMAND:
 	if (filter_test != FTEST_NONE || (debug_selector & D_filter) != 0)
 	  {
 	  const uschar *s = string_printing(expargs[0]);

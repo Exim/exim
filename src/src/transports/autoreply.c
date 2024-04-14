@@ -475,10 +475,9 @@ if (oncelog && *oncelog && to)
   else
     {
     EXIM_DATUM key_datum, result_datum;
-    uschar * dirname, * s;
+    uschar * s = Ustrrchr(oncelog, '/');
+    uschar * dirname = s ? string_copyn(oncelog, s - oncelog) : NULL;
 
-    dirname = (s = Ustrrchr(oncelog, '/'))
-      ? string_copyn(oncelog, s - oncelog) : NULL;
     if (!(dbm_file = exim_dbopen(oncelog, dirname, O_RDWR|O_CREAT, ob->mode)))
       {
       addr->transport_return = DEFER;
@@ -811,3 +810,5 @@ return FALSE;
 #endif	/*!MACRO_PREDEF*/
 #endif	/*TRANSPORT_AUTOREPOL*/
 /* End of transport/autoreply.c */
+/* vi: aw ai sw=2
+*/

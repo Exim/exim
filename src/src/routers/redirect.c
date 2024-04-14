@@ -731,7 +731,7 @@ if (eblock != NULL)
         ob->syntax_errors_text))                 /* Custom message */
     return DEFER;
 
-  if (filtertype != FILTER_FORWARD || generated == NULL)
+  if (filtertype != FILTER_FORWARD || !generated)
     {
     addr->message = US"syntax error in redirection data";
     return DECLINE;
@@ -744,7 +744,7 @@ calling sort_errors_and_headers() in case this router declines - that function
 may modify the errors_address field in the current address, and we don't want
 to do that for a decline. */
 
-if (generated != NULL)
+if (generated)
   {
   if ((xrc = sort_errors_and_headers(rblock, addr, verify, &addr_prop)) != OK)
     return xrc;
