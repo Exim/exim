@@ -6901,8 +6901,8 @@ key is found. The first key that matches is used; there is no attempt to find a
 lookup types support only literal keys.
 
 &*Warning 2*&: In a host list, you must always use &(net-iplsearch)& so that
-the implicit key is the host's IP address rather than its name (see section
-&<<SECThoslispatsikey>>&).
+the implicit key is the host's IP address rather than its name
+(see section &<<SECThoslispatsikey>>&).
 
 &*Warning 3*&: Do not use an IPv4-mapped IPv6 address for a key; use the
 IPv4, in dotted-quad form. (Exim converts IPv4-mapped IPv6 addresses to this
@@ -9235,8 +9235,9 @@ is not used.
 
 &*Reminder*&: With this kind of pattern, you must have host &'names'& as
 keys in the file, not IP addresses. If you want to do lookups based on IP
-addresses, you must precede the search type with &"net-"& (see section
-&<<SECThoslispatsikey>>&). There is, however, no reason why you could not use
+addresses, you must precede the search type with &"net-"&
+(see section &<<SECThoslispatsikey>>&).
+There is, however, no reason why you could not use
 two items in the same list, one doing an address lookup and one doing a name
 lookup, both using the same file.
 
@@ -12056,7 +12057,8 @@ where the first item in the list is the empty string.
 .next
 The item @[] matches any of the local host's interface addresses.
 .next
-Single-key lookups are assumed to be like &"net-"& style lookups in host lists,
+Single-key lookups are assumed to be like &"net-"& style lookups in host lists
+(see section &<<SECThoslispatsikey>>&),
 even if &`net-`& is not specified. There is never any attempt to turn the IP
 address into a host name. The most common type of linear search for
 &*match_ip*& is likely to be &*iplsearch*&, in which the file can contain CIDR
