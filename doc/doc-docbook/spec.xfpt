@@ -30542,12 +30542,17 @@ Section 4.3 of that document.
 .subsection General
 Under GnuTLS, DANE is only supported from version 3.0.0 onwards.
 
-DANE is specified in published RFCs and decouples certificate authority trust
+DANE is specified in RFC 6698. It decouples certificate authority trust
 selection from a "race to the bottom" of "you must trust everything for mail
 to get through".
-There is an alternative technology called MTA-STS, which
-instead publishes MX trust anchor information on an HTTPS website.  At the
-time this text was last updated, MTA-STS was still a draft, not yet an RFC.
+It does retain the need to trust the assurances provided by the DNSSEC tree.
+
+There is an alternative technology called MTA-STS (RFC 8461), which
+instead publishes MX trust anchor information on an HTTPS website.
+The discovery of the address for that website does not (per standard)
+require DNSSEC, and could be regarded as being less secure than DANE
+as a result.
+
 Exim has no support for MTA-STS as a client, but Exim mail server operators
 can choose to publish information describing their TLS configuration using
 MTA-STS to let those clients who do use that protocol derive trust
