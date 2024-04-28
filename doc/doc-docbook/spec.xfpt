@@ -42429,7 +42429,8 @@ Example usage:
     allow_fail
     data =      :fail: Invalid SRS recipient address
 
-  #... further routers here
+  #... further routers here get inbound_srs-redirected recipients
+  # and any that were not SRS'd
 
 
   # transport; should look like the non-forward outbound
