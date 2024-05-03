@@ -859,9 +859,10 @@ Return: string expansion from listener, or NULL
 */
 
 uschar *
-event_raise(uschar * action, const uschar * event, uschar * ev_data, int * errnop)
+event_raise(const uschar * action, const uschar * event, const uschar * ev_data,
+  int * errnop)
 {
-uschar * s;
+const uschar * s;
 if (action)
   {
   DEBUG(D_deliver)
@@ -872,7 +873,7 @@ if (action)
   event_name = event;
   event_data = ev_data;
 
-  if (!(s = expand_string(action)) && *expand_string_message)
+  if (!(s = expand_cstring(action)) && *expand_string_message)
     log_write(0, LOG_MAIN|LOG_PANIC,
       "failed to expand event_action %s in %s: %s\n",
       event, transport_name ? transport_name : US"main", expand_string_message);
@@ -880,7 +881,8 @@ if (action)
   event_name = event_data = NULL;
 
   /* If the expansion returns anything but an empty string, flag for
-  the caller to modify his normal processing
+  the caller to modify his normal processing.  Copy the string to
+  de-const it.
   */
   if (s && *s)
     {
@@ -888,7 +890,7 @@ if (action)
       debug_printf("Event(%s): event_action returned \"%s\"\n", event, s);
     if (errnop)
       *errnop = ERRNO_EVENT;
-    return s;
+    return string_copy(s);
     }
   }
 return NULL;

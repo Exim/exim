@@ -602,7 +602,7 @@ extern int     errors_sender_rc;       /* Return after message to sender*/
 
 #ifndef DISABLE_EVENT
 extern uschar *event_action;           /* expansion for delivery events */
-extern uschar *event_data;	       /* event data */
+extern const uschar *event_data;       /* event data */
 extern int     event_defer_errno;      /* error number set when a remote delivery is deferred with a host error */
 extern const uschar *event_name;       /* event classification */
 #endif
