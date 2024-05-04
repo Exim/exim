@@ -110,7 +110,7 @@ dropping to exim gid; retaining priv uid
  file lookup required for select * from them where id='tab';
    in TESTSUITE/aux-fixed/sqlitedb
  creating new cache entry
- lookup yielded: name="x	x"░id=tab░
+ lookup yielded: name="x␉x"░id=tab░
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"

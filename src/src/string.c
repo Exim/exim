@@ -1623,7 +1623,7 @@ while (*fp)
       goto INSERT_GSTRING;
       }
 
-    case 'W':			/* Maybe mark up spaces & newlines */
+    case 'W':			/* Maybe mark up ctrls, spaces & newlines */
       s = va_arg(ap, char *);
       if (Ustrpbrk(s, " \n") && !IS_DEBUG(D_noutf8))
 	{
@@ -1646,7 +1646,15 @@ while (*fp)
 	      if (precision >= 0) precision += 3;
 	      break;
 	    default:
-	      zg = string_catn(zg, CUS s, 1);
+	      if (*s <= ' ')
+		{	/* base of UTF8 symbols for ASCII control chars */
+		uschar ctrl_symbol[3] = {[0]=0xe2, [1]=0x90, [2]=0x80};
+		ctrl_symbol[2] |= *s;
+		zg = string_catn(zg, ctrl_symbol, 3);
+		if (precision >= 0) precision += 2;
+		}
+	      else
+		zg = string_catn(zg, CUS s, 1);
 	      break;
 	    }
 	  }

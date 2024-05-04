@@ -98,7 +98,7 @@ dropping to exim gid; retaining priv uid
  PostgreSQL query: "select * from them where id='newline';" opts 'NULL'
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
- lookup yielded: name="before↩
+ lookup yielded: name="before␍↩
  after"░id=newline░
  search_open: pgsql "NULL"
    cached open
@@ -111,7 +111,7 @@ dropping to exim gid; retaining priv uid
  PostgreSQL query: "select * from them where id='tab';" opts 'NULL'
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
- lookup yielded: name="x	x"░id=tab░
+ lookup yielded: name="x␉x"░id=tab░
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
