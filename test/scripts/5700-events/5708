@@ -1,0 +1,62 @@
+# event on dns lookup fail
+
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# no A record
+client 127.0.0.1 PORT_D
+??? 220
+HELO nonexistent.test.ex
+??? 250
+MAIL FROM:<a@b>
+??? 250
+RCPT TO:<c@d>
+??? 550
+QUIT
+??? 221
+****
+# CNAME to no-A-record
+client 127.0.0.1 PORT_D
+??? 220
+HELO badcname.test.ex
+??? 250
+MAIL FROM:<a@b>
+??? 250
+RCPT TO:<c@d>
+??? 550
+QUIT
+??? 221
+****
+# defer from dns lookup
+client 127.0.0.1 PORT_D
+??? 220
+HELO test.again.dns
+??? 250
+MAIL FROM:<a@b>
+??? 250
+RCPT TO:<c@d>
+??? 550
+QUIT
+??? 221
+****
+# success in RCPT ACL; no-A in transport
+client 127.0.0.1 PORT_D
+??? 220
+HELO localhost
+??? 250
+MAIL FROM:<a@b>
+??? 250
+RCPT TO:<bad_A@nonexistent.test.ex>
+??? 250 Accepted
+DATA
+??? 354
+Subject: test
+.
+??? 250
+QUIT
+??? 221
+****
+#
+sleep 1
+killdaemon
+no_msglog_check

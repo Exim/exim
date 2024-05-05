@@ -1010,7 +1010,7 @@ won't return any.
 If fully_qualified_name is not NULL, set it to point to the full name
 returned by the resolver, if this is different to what it is given, unless
 the returned name starts with "*" as some nameservers seem to be returning
-wildcards in this form.  In international mode "different" means "alabel
+wildcards in this form.  In international mode "different" means "a-label
 forms are different".
 
 Arguments:
@@ -1028,11 +1028,13 @@ Returns:                DNS_SUCCEED   successful lookup
 */
 
 int
-dns_lookup(dns_answer *dnsa, const uschar *name, int type,
-  const uschar **fully_qualified_name)
+dns_lookup(dns_answer * dnsa, const uschar * name, int type,
+  const uschar ** fully_qualified_name)
 {
-const uschar *orig_name = name;
+const uschar * orig_name = name;
 BOOL secure_so_far = TRUE;
+int rc = DNS_FAIL;
+const uschar * errstr = NULL;
 
 /* By default, assume the resolver follows CNAME chains (and returns NODATA for
 an unterminated one). If it also does that for a CNAME loop, fine; if it returns
@@ -1046,12 +1048,11 @@ for (int i = 0; i <= dns_cname_loops; i++)
   uschar * data;
   dns_record cname_rr, type_rr;
   dns_scan dnss;
-  int rc;
 
   /* DNS lookup failures get passed straight back. */
 
   if ((rc = dns_basic_lookup(dnsa, name, type)) != DNS_SUCCEED)
-    return rc;
+    goto not_good;
 
   /* We should have either records of the required type, or a CNAME record,
   or both. We need to know whether both exist for getting the fully qualified
@@ -1105,13 +1106,19 @@ for (int i = 0; i <= dns_cname_loops; i++)
   its not existing. */
 
   if (!cname_rr.data)
-    return DNS_FAIL;
+    {
+    errstr = US"no_hit_yet_no_cname";
+    goto not_good;
+    }
 
   /* DNS data comes from the outside, hence tainted */
   data = store_get(256, GET_TAINTED);
   if (dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
       cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256) < 0)
-    return DNS_FAIL;
+    {
+    errstr = US"bad_expand";
+    goto not_good;
+    }
   name = data;
 
   if (!dns_is_secure(dnsa))
@@ -1120,11 +1127,48 @@ for (int i = 0; i <= dns_cname_loops; i++)
   DEBUG(D_dns) debug_printf("CNAME found: change to %s\n", name);
   }       /* Loop back to do another lookup */
 
-/*Control reaches here after 10 times round the CNAME loop. Something isn't
+/* Control reaches here after 10 times round the CNAME loop. Something isn't
 right... */
 
 log_write(0, LOG_MAIN, "CNAME loop for %s encountered", orig_name);
-return DNS_FAIL;
+errstr = US"cname_loop";
+
+not_good:
+  {
+  const uschar * s = NULL;
+  BOOL save_flag = f.search_find_defer;
+  uschar * save_serr = search_error_message;
+
+  if (!transport_name)
+    s = event_action;
+  else
+    for(transport_instance * tp = transports; tp; tp = tp->next)
+      if (Ustrcmp(tp->name, transport_name) == 0)
+	{ s = tp->event_action; break; }
+
+  if (s)
+    {
+    if (Ustrchr(name, ':'))	/* unlikely, but may as well bugproof */
+      {
+      gstring * g = NULL;
+      while (*name)
+	{
+	if (*name == ':') g = string_catn(g, name, 1);
+	g = string_catn(g, name++, 1);
+	}
+      name = string_from_gstring(g);
+      }
+    event_raise(s, US"dns:fail",
+      string_sprintf("%s:%s:%s",
+	errstr ? errstr : dns_rc_names[rc], name, dns_text_type(type)),
+      NULL);
+    }
+
+  /*XXX what other state could an expansion in the eventhandler mess up? */
+  search_error_message = save_serr;
+  f.search_find_defer = save_flag;
+  return rc;
+  }
 }
 
 

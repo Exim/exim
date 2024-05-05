@@ -1,0 +1,5 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 H=(nonexistent.test.ex) [127.0.0.1] F=<a@b> rejected RCPT <c@d>
+1999-03-02 09:44:33 H=(badcname.test.ex) [127.0.0.1] F=<a@b> rejected RCPT <c@d>
+1999-03-02 09:44:33 H=(test.again.dns) [127.0.0.1] F=<a@b> rejected RCPT <c@d>

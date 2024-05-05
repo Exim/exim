@@ -4450,7 +4450,7 @@ while ((acl_current = acl))
 	verbs[acl->verb], acl_name);
       if (basic_errno != ERRNO_CALLOUTDEFER)
 	{
-	if (search_error_message != NULL && *search_error_message != 0)
+	if (search_error_message && *search_error_message)
 	  *log_msgptr = search_error_message;
 	if (smtp_return_error_details) f.acl_temp_details = TRUE;
 	}

@@ -13,12 +13,14 @@ Version 4.98
  2. The dkim_verbose logging control also enables logging of signing
 
  3. The dkim_timestamps signing option now accepts zero to include a current
-    timestamp but no extiry timestamp.  Code by Simon Arlott; testsuite
+    timestamp but no expiry timestamp.  Code by Simon Arlott; testsuite
     additions by jgh.
 
  4. The recipients_max main option is now expanded.
 
  5. Setting variables for "exim -be" can set a tainted value.
+
+ 6. A dns:fail event.
 
 Version 4.97
 ------------

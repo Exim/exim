@@ -43020,6 +43020,7 @@ The current list of events is:
 .itable all 0 0 4 25* left 10* center 15* center 50* left
 .row auth:fail		    after    both	"per driver per authentication attempt"
 .row dane:fail              after    transport  "per connection"
+.row dns:fail               after    both       "per lookup"
 .row msg:complete           after    main       "per message"
 .row msg:defer              after    transport  "per message per delivery try"
 .row msg:delivery           after    transport  "per recipient"
@@ -43053,6 +43054,7 @@ with the event type:
 .itable all 0 0 2 20* left 80* left
 .row auth:fail		  "smtp response"
 .row dane:fail            "failure reason"
+.row dns:fail             "failure reason, key and lookup-type"
 .row msg:defer            "error string"
 .row msg:delivery         "smtp confirmation message"
 .row msg:fail:internal    "failure reason"

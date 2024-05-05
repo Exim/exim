@@ -1,0 +1,3 @@
+1999-03-02 09:44:33 <dns:fail> <DNS_NOMATCH:nonexistent.test.ex:A>
+1999-03-02 09:44:33 <dns:fail> <DNS_NOMATCH:rhubarb.test.ex:A>
+1999-03-02 09:44:33 <dns:fail> <DNS_AGAIN:test.again.dns:A>

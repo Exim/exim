@@ -1,0 +1,8 @@
+# event on dnsdb lookup fail
+
+exim -be
+bad_a			${lookup dnsdb{a=nonexistent.test.ex}{$value}{FAIL}}
+badcname		${lookup dnsdb{a=badcname.test.ex}{$value}{FAIL}}
+defer			${lookup dnsdb{a=test.again.dns}{$value}{FAIL}}
+good			${lookup dnsdb{txt=test.ex}{$value}{FAIL}}
+****

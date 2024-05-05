@@ -1,0 +1,5 @@
+> bad_a			FAIL
+> badcname		FAIL
+> Failed: lookup of "a=test.again.dns" gave DEFER: 
+> good			A TXT record for test.ex.
+> 

@@ -1,0 +1,8 @@
+# Exim test configuration 5709
+# Check for event on dnsdb lookup fail
+
+.include DIR/aux-var/std_conf_prefix
+primary_hostname = myhost.test.ex
+event_action = ${acl {accept logwrite = <$event_name> <$event_data>}}
+
+# End
