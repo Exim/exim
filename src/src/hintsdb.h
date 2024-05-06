@@ -24,6 +24,10 @@ utilities as well as the main Exim binary. */
 
 #if defined(USE_TDB)
 
+# if defined(USE_DB) || defined(USE_GDBM)
+#  error USE_TDB conflict with alternate definition
+# endif
+
 /* ************************* tdb interface ************************ */
 /*XXX https://manpages.org/tdb/3 mentions concurrent writes.
 Could we lose the file lock? */
@@ -156,6 +160,10 @@ d->dptr = NULL;
 /********************* Berkeley db native definitions **********************/
 
 #elif defined USE_DB
+
+# if defined(USE_TDB) || defined(USE_GDBM)
+#  error USE_DB conflict with alternate definition
+# endif
 
 # include <db.h>
 
@@ -482,6 +490,10 @@ exim_datum_free(EXIM_DATUM * d)
 #elif defined USE_GDBM
 /*XXX TODO: exim's locfile not needed */
 
+# if defined(USE_TDB) || defined(USE_DB)
+#  error USE_GDBM conflict with alternate definition
+# endif
+
 # include <gdbm.h>
 
 /* Basic DB type */
@@ -609,7 +621,7 @@ static inline void
 exim_datum_free(EXIM_DATUM * d)
 { free(d->dptr); }
 
-/* size limit */
+/* size limit. GDBM is int-max limited, but we want to be less silly */
 
 # define EXIM_DB_RLIMIT	150
 
@@ -621,7 +633,7 @@ exim_datum_free(EXIM_DATUM * d)
 
 
 /* If none of USE_DB, USG_GDBM, or USE_TDB are set, the default is the NDBM
-interface */
+interface (which seems to be a wrapper for GDBM) */
 
 
 /********************* ndbm interface definitions **********************/
@@ -745,7 +757,7 @@ exim_datum_free(EXIM_DATUM * d)
 
 # define EXIM_DB_RLIMIT	150
 
-#endif /* USE_GDBM */
+#endif /* !USE_GDBM */
 
 
 

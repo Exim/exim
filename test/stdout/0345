@@ -1,14 +1,14 @@
 +++++++++++++++++++++++++++
-  T:a@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/a)
+  T:a@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to <elided>)
 first failed = time last try = time2 next try = time2 + 20
 -rw------- 1 CALLER CALLER 0 May 10 2002 TESTSUITE/test-mail/a
 +++++++++++++++++++++++++++
-  T:a@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/a)
+  T:a@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to <elided>)
 first failed = time last try = time2 next try = time2 + 0 *
-  T:CALLER@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/CALLER)
+  T:CALLER@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to <elided>)
 first failed = time last try = time2 next try = time2 + 20
 +++++++++++++++++++++++++++
-  T:a@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/a)
+  T:a@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to <elided>)
 first failed = time last try = time2 next try = time2 + 0 *
-  T:CALLER@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/CALLER)
+  T:CALLER@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to <elided>)
 first failed = time last try = time2 next try = time2 + 20

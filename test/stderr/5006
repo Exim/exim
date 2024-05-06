@@ -124,7 +124,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=50%
   message_prefix=null
   message_suffix=null
   maildir_use_size_file=yes
-de-tainting path 'TESTSUITE/test-mail/userx'
+below-home: de-tainting path 'TESTSUITE/test-mail/userx'
 ensuring maildir directories exist in TESTSUITE/test-mail/userx
 created directory TESTSUITE/test-mail/userx
 created directory TESTSUITE/test-mail/userx/tmp

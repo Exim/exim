@@ -1,10 +1,10 @@
 +++++++++++++++++++++++++++
-  T:userx@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/userx)
+  T:userx@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to <elided>)
 first failed = time last try = time2 next try = time2 + 600
 +++++++++++++++++++++++++++
-  T:test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/notuser)
+  T:test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to <elided>)
 first failed = time last try = time2 next try = time2 + 1200
-  T:userx@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/userx)
+  T:userx@test.ex -22 xxxx mailbox is full (MTA-imposed quota exceeded while writing to <elided>)
 first failed = time last try = time2 next try = time2 + 600
 Message 10HmaX-000000005vi-0000 has been removed
 Message 10HmbA-000000005vi-0000 has been removed

@@ -364,7 +364,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   message_suffix=\n
   maildir_use_size_file=no
   locking by lockfile fcntl 
-de-tainting path 'TESTSUITE/test-mail/2'
+below-home: de-tainting path 'TESTSUITE/test-mail/2'
 lock name: TESTSUITE/test-mail/2.lock
 hitch name: TESTSUITE/test-mail/2.lock.test.ex.dddddddd.pppppppp
 lock file created
@@ -561,7 +561,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   message_suffix=\n
   maildir_use_size_file=no
   locking by lockfile fcntl 
-de-tainting path 'TESTSUITE/test-mail/2'
+below-home: de-tainting path 'TESTSUITE/test-mail/2'
 lock name: TESTSUITE/test-mail/2.lock
 hitch name: TESTSUITE/test-mail/2.lock.test.ex.dddddddd.pppppppp
 lock file created

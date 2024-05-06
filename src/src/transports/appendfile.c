@@ -1368,7 +1368,7 @@ if (!isdirectory)
      && ob->create_file == create_belowhome)
     if (is_tainted(path))
       {
-      DEBUG(D_transport) debug_printf("de-tainting path '%s'\n", path);
+      DEBUG(D_transport) debug_printf("below-home: de-tainting path '%s'\n", path);
       path = string_copy_taint(path, GET_UNTAINTED);
       }
 
@@ -2207,7 +2207,7 @@ else
   if (is_tainted(path))
     if (ob->create_file == create_belowhome)
       {
-      DEBUG(D_transport) debug_printf("de-tainting path '%s'\n", path);
+      DEBUG(D_transport) debug_printf("below-home: de-tainting path '%s'\n", path);
       path = string_copy_taint(path, GET_UNTAINTED);
       }
     else

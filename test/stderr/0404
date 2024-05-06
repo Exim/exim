@@ -18604,7 +18604,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   message_suffix=\n
   maildir_use_size_file=no
   locking by lockfile fcntl 
-de-tainting path 'TESTSUITE/test-mail/sender'
+below-home: de-tainting path 'TESTSUITE/test-mail/sender'
 lock name: TESTSUITE/test-mail/sender.lock
 hitch name: TESTSUITE/test-mail/sender.lock.test.ex.dddddddd.pppppppp
 lock file created

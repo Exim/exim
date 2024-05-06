@@ -678,7 +678,13 @@ for (int i = 0; i < 3; i++)
 	  ? US string_printing(rti->message)
 	  : US"unknown error";
         message_length = Ustrlen(message);
-        if (message_length > EXIM_DB_RLIMIT) message_length = EXIM_DB_RLIMIT;
+        if (message_length > EXIM_DB_RLIMIT)
+	  {
+	  DEBUG(D_retry)
+	    debug_printf_indent("truncating message from %u to %u bytes\n",
+				message_length, EXIM_DB_RLIMIT);
+	  message_length = EXIM_DB_RLIMIT;
+	  }
 
         /* Read a retry record from the database or construct a new one.
         Ignore an old one if it is too old since it was last updated. */

@@ -17,7 +17,7 @@ appendfile: mode=600 notify_comsat=0 quota=1048576 warning=0
   message_prefix=null
   message_suffix=null
   maildir_use_size_file=no
-de-tainting path 'TESTSUITE/test-mail/userx'
+below-home: de-tainting path 'TESTSUITE/test-mail/userx'
 ensuring maildir directories exist in TESTSUITE/test-mail/userx
 created directory TESTSUITE/test-mail/userx
 created directory TESTSUITE/test-mail/userx/tmp
@@ -57,7 +57,7 @@ appendfile: mode=600 notify_comsat=0 quota=1048576 warning=0
   message_prefix=null
   message_suffix=null
   maildir_use_size_file=no
-de-tainting path 'TESTSUITE/test-mail/userx'
+below-home: de-tainting path 'TESTSUITE/test-mail/userx'
 ensuring maildir directories exist in TESTSUITE/test-mail/userx
 quota checks on directory TESTSUITE/test-mail/userx
 MUNGED: the check_dir_size lines have been sorted to ensure consistency

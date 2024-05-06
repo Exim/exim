@@ -1,4 +1,6 @@
 # lookup dbmnz
+# NB: the reference DB file is a Berkeley DB;
+# builds for other hints-DB interface will fail
 #
 exim -be '[${lookup{test}dbmnz{DIR/aux-fixed/TESTNUM.emptydbmnzlookup}}]'
 ****

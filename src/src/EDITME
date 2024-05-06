@@ -60,8 +60,8 @@
 # for you by the OS-specific configuration. If Exim compiles without any
 # problems, you probably do not have to worry about the DBM library. If you
 # do want or need to change it, you should first read the discussion in the
-# file doc/dbm.discuss.txt, which also contains instructions for testing Exim's
-# interface to the DBM library.
+# file doc/doc-txt/dbm.discuss.txt, which also contains instructions for testing
+# Exim's interface to the DBM library.
 
 # In Local/Makefiles blank lines and lines starting with # are ignored. It is
 # also permitted to use the # character to add a comment to a setting, for

@@ -1,4 +1,6 @@
 # lookup dbmjz
+# NB: the reference DB file is a Berkeley DB;
+# builds for other hints-DB interface will fail
 #
 exim -be
 ${lookup{testid:test.example.invalid:userPassword}dbmjz{DIR/aux-fixed/TESTNUM.testsasldb}{$value}fail}
