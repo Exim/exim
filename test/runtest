@@ -1407,7 +1407,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s%(?<!lsearch)[^ ](?=TESTSUITE/aux-fixed/(?:0414.list[12]|0464.domains)$)%0%;
 
     # CONTENT_SCAN
-    next if /try option acl_not_smtp_mime$/;
+    next if /try option acl_(?:not_)?smtp_mime$/;
 
     # DISABLE_OCSP
     next if /in hosts_requ(est|ire)_ocsp\? (no|yes)/;
