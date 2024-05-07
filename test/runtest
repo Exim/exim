@@ -1088,7 +1088,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^limits_advertise_hosts =/;
 
     # PRDR
-    next if /^hosts_try_prdr = *$/;
+    next if /^hosts_try_prdr = \*$/;
 
     # TLS resumption is not always supported by the build
     next if /^tls_resumption_hosts =/;

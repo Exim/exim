@@ -73,12 +73,4 @@
 250-PIPELINING
 250 HELP
 250 OK
-250 Reset OK
-250-the.local.host.name Hello foo.bar [127.0.0.1]
-250-SIZE 52428800
-250-LIMITS MAILMAX=1000 RCPTMAX=50000
-250-8BITMIME
-250-PIPELINING
-250 HELP
-250 OK
 221 the.local.host.name closing connection

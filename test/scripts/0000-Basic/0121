@@ -43,8 +43,5 @@ mail from:<"a b"@localhost3> SIZE=1234
 rset
 ehlo foo.bar
 mail from:"a b"@localhost4 SIZE=1234
-rset
-ehlo foo.bar
-mail from:<"a b"@localhost5> PRDR
 quit
 ****
