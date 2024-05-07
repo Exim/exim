@@ -5,4 +5,6 @@
 primary_hostname = myhost.test.ex
 event_action = ${acl {accept logwrite = <$event_name> <$event_data>}}
 
+acl_smtp_helo = accept continue = ${lookup dnsdb{defer_never,a=$sender_helo_name}{$value}}
+
 # End

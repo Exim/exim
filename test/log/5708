@@ -1,16 +1,12 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 M <dns:fail> <DNS_NOMATCH:nonexistent.test.ex:AAAA>
 1999-03-02 09:44:33 M <dns:fail> <DNS_NOMATCH:nonexistent.test.ex:A>
 1999-03-02 09:44:33 H=(nonexistent.test.ex) [127.0.0.1] F=<a@b> rejected RCPT <c@d>
-1999-03-02 09:44:33 M <dns:fail> <DNS_NOMATCH:rhubarb.test.ex:AAAA>
 1999-03-02 09:44:33 M <dns:fail> <DNS_NOMATCH:rhubarb.test.ex:A>
 1999-03-02 09:44:33 H=(badcname.test.ex) [127.0.0.1] F=<a@b> rejected RCPT <c@d>
-1999-03-02 09:44:33 M <dns:fail> <DNS_AGAIN:test.again.dns:AAAA>
 1999-03-02 09:44:33 M <dns:fail> <DNS_AGAIN:test.again.dns:A>
 1999-03-02 09:44:33 H=(test.again.dns) [127.0.0.1] F=<a@b> rejected RCPT <c@d>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= a@b H=(localhost) [127.0.0.1] P=smtp S=sss
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 T <dns:fail> <DNS_NOMATCH:nonexistent.test.ex:AAAA>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 T <dns:fail> <DNS_NOMATCH:nonexistent.test.ex:A>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 == bad_a@nonexistent.test.ex <bad_A@nonexistent.test.ex> R=all T=all defer (-32): failed to lookup IP address for nonexistent.test.ex

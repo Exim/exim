@@ -1,3 +1,6 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 <dns:fail> <DNS_NOMATCH:nonexistent.test.ex:A>
 1999-03-02 09:44:33 <dns:fail> <DNS_NOMATCH:rhubarb.test.ex:A>
 1999-03-02 09:44:33 <dns:fail> <DNS_AGAIN:test.again.dns:A>
