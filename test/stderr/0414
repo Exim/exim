@@ -18,7 +18,7 @@ routing x@b.domain
 --------> r1 router <--------
 local_part=x domain=b.domain
 checking domains
-b.domain in "!+C"?
+b.domain in domains?
  list element: !+C
   start sublist C
    b.domain in "+A : +B"?
@@ -63,17 +63,17 @@ b.domain in "!+C"?
    ╎b.domain in "+A : +B"? yes (matched "+B")
   end sublist C
  data from lookup saved for cache for +C: key 'b.domain' value 'b.domain-data'
- b.domain in "!+C"? no (matched "!+C")
+ b.domain in domains? no (matched "!+C")
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=x domain=b.domain
 checking domains
-b.domain in "+B"?
+b.domain in domains?
  list element: +B
   start sublist B
  cached yes match for +B
  cached lookup data = b.domain-data
- b.domain in "+B"? yes (matched "+B" - cached)
+ b.domain in domains? yes (matched "+B" - cached)
 domain_data=b.domain-data
 calling r2 router
 r2 router called for x@b.domain
@@ -95,7 +95,7 @@ routing x@a.domain
 --------> r1 router <--------
 local_part=x domain=a.domain
 checking domains
-a.domain in "!+C"?
+a.domain in domains?
  list element: !+C
   start sublist C
    a.domain in "+A : +B"?
@@ -123,12 +123,12 @@ a.domain in "!+C"?
    ╎a.domain in "+A : +B"? yes (matched "+A")
   end sublist C
  data from lookup saved for cache for +C: key 'a.domain' value 'a.domain-data'
- a.domain in "!+C"? no (matched "!+C")
+ a.domain in domains? no (matched "!+C")
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=x domain=a.domain
 checking domains
-a.domain in "+B"?
+a.domain in domains?
  list element: +B
   start sublist B
    a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"?
@@ -149,17 +149,17 @@ a.domain in "+B"?
    ╎lookup failed
    a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"? no (end of list)
   end sublist B
-a.domain in "+B"? no (end of list)
+a.domain in domains? no (end of list)
 r2 router skipped: domains mismatch
 --------> r3 router <--------
 local_part=x domain=a.domain
 checking domains
-a.domain in "+A"?
+a.domain in domains?
  list element: +A
   start sublist A
  cached yes match for +A
  cached lookup data = a.domain-data
- a.domain in "+A"? yes (matched "+A" - cached)
+ a.domain in domains? yes (matched "+A" - cached)
 domain_data=a.domain-data
 calling r3 router
 r3 router called for x@a.domain

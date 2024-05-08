@@ -1496,7 +1496,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       s/Network(?: is)? unreachable/Network Error/;
       }
     next if /^(ppppp |\d+ )?setsockopt FASTOPEN: Protocol not available$/;
-    s/^(Connecting to .* \.\.\. sending) \d+ (nonTFO early-data)$/$1 dd $2/;
+    s/^( sending) \d+ (nonTFO early-data)$/$1 dd $2/;
 
     if (/^([0-9: ]*						# possible timestamp
 	Connecting\ to\ [^ ]+\ [^ ]+(\ from\ [^ ]+)?)\ \.\.\.

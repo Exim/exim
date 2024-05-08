@@ -100,6 +100,7 @@ v0 router skipped: verify_only set
 --------> r1 router <--------
 local_part=unknown domain=recurse.test.ex
 checking domains
+recurse.test.ex in domains? yes (end of list)
 calling r1 router
 r1 router called for unknown@recurse.test.ex
   domain = recurse.test.ex
@@ -121,6 +122,7 @@ v0 router skipped: verify_only set
 --------> r1 router <--------
 local_part=unknown domain=recurse.test.ex.test.ex
 checking domains
+recurse.test.ex.test.ex in domains? yes (end of list)
 calling r1 router
 r1 router called for unknown@recurse.test.ex.test.ex
   domain = recurse.test.ex.test.ex

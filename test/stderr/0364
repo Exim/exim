@@ -70,6 +70,7 @@ routing solik@otherhost.test.ex
 --------> r2 router <--------
 local_part=solik domain=otherhost.test.ex
 checking domains
+otherhost.test.ex in domains? yes (end of list)
 calling r2 router
 r2 router called for solik@otherhost.test.ex
   domain = otherhost.test.ex
@@ -77,6 +78,7 @@ r2 router declined for solik@otherhost.test.ex
 --------> r3 router <--------
 local_part=solik domain=otherhost.test.ex
 checking domains
+otherhost.test.ex in domains? yes (end of list)
 checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
 processing address_data
 calling r3 router
@@ -96,6 +98,7 @@ routing solik@otherhost.sub.test.ex
 --------> r2 router <--------
 local_part=solik domain=otherhost.sub.test.ex
 checking domains
+otherhost.sub.test.ex in domains? yes (end of list)
 calling r2 router
 r2 router called for solik@otherhost.sub.test.ex
   domain = otherhost.sub.test.ex
@@ -103,11 +106,13 @@ r2 router declined for solik@otherhost.sub.test.ex
 --------> r3 router <--------
 local_part=solik domain=otherhost.sub.test.ex
 checking domains
+otherhost.sub.test.ex in domains? yes (end of list)
 checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
 r3 router skipped: condition failure
 --------> r4 router <--------
 local_part=solik domain=otherhost.sub.test.ex
 checking domains
+otherhost.sub.test.ex in domains? yes (end of list)
 calling r4 router
 rda_interpret (string): ':fail:Can't route to $domain'
 expanded: ':fail:Can't route to otherhost.sub.test.ex' (tainted)
@@ -138,6 +143,7 @@ routing xxx@ten-1.test.ex
 --------> r2 router <--------
 local_part=xxx domain=ten-1.test.ex
 checking domains
+ten-1.test.ex in domains? yes (end of list)
 calling r2 router
 r2 router called for xxx@ten-1.test.ex
   domain = ten-1.test.ex
@@ -173,6 +179,7 @@ routing xxx@testsub.test.ex
 --------> r2 router <--------
 local_part=xxx domain=testsub.test.ex
 checking domains
+testsub.test.ex in domains? yes (end of list)
 calling r2 router
 r2 router called for xxx@testsub.test.ex
   domain = testsub.test.ex
@@ -180,6 +187,7 @@ r2 router declined for xxx@testsub.test.ex
 --------> r3 router <--------
 local_part=xxx domain=testsub.test.ex
 checking domains
+testsub.test.ex in domains? yes (end of list)
 checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
 processing address_data
 calling r3 router
@@ -199,6 +207,7 @@ routing xxx@testsub.sub.test.ex
 --------> r2 router <--------
 local_part=xxx domain=testsub.sub.test.ex
 checking domains
+testsub.sub.test.ex in domains? yes (end of list)
 calling r2 router
 r2 router called for xxx@testsub.sub.test.ex
   domain = testsub.sub.test.ex

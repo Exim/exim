@@ -83,6 +83,7 @@ routing y@ten-2.test.ex
 --------> r1 router <--------
 local_part=y domain=ten-2.test.ex
 checking domains
+ten-2.test.ex in domains? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=y domain=ten-2.test.ex
@@ -103,6 +104,7 @@ routing x@ten-2.test.ex
 --------> r1 router <--------
 local_part=x domain=ten-2.test.ex
 checking domains
+ten-2.test.ex in domains? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=x domain=ten-2.test.ex

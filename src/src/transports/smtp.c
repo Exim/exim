@@ -668,12 +668,15 @@ deferred_event_raise(address_item * addr, host_item * host, uschar * evstr)
 {
 uschar * action = addr->transport->event_action;
 const uschar * save_domain, * save_local;
+uschar * save_rn, * save_tn;
 
 if (!action)
   return;
 
 save_domain = deliver_domain;
 save_local = deliver_localpart;
+save_rn = router_name;
+save_tn = transport_name;
 
 /*XXX would ip & port already be set up? */
 deliver_host_address = string_copy(host->address);
@@ -697,7 +700,8 @@ deliver_localpart = addr->local_part;
 
 deliver_localpart = save_local;
 deliver_domain =    save_domain;
-router_name = transport_name = NULL;
+router_name = save_rn;
+router_name = save_tn;
 }
 #endif
 

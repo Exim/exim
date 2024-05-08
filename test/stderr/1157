@@ -7,7 +7,8 @@ LOG: queue_run MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1242 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1243 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1244 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
+ connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
@@ -21,6 +22,7 @@ cmd buf flush ddd bytes
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
   SMTP<< 220 TLS go ahead
+127.0.0.1 in tls_verify_cert_hostnames? no (end of list)
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
@@ -38,6 +40,7 @@ cmd buf flush ddd bytes
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP>> .
   SMTP<< 250 OK id=10HmbA-000000005vi-0000
+127.0.0.1 in hosts_noproxy_tls? no (end of list)
 LOG: MAIN
   => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-000000005vi-0000"
 LOG: MAIN
@@ -103,7 +106,8 @@ LOG: queue_run MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1249 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1250 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1251 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
+ connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
@@ -117,6 +121,7 @@ cmd buf flush ddd bytes
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
   SMTP<< 220 TLS go ahead
+127.0.0.1 in tls_verify_cert_hostnames? no (end of list)
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
@@ -134,6 +139,7 @@ cmd buf flush ddd bytes
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP>> .
   SMTP<< 250 OK id=10HmbG-000000005vi-0000
+127.0.0.1 in hosts_noproxy_tls? no (end of list)
 LOG: MAIN
   => usera@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbG-000000005vi-0000"
 LOG: MAIN
@@ -199,7 +205,8 @@ LOG: queue_run MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1256 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1257 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1258 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
+ connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
@@ -213,6 +220,7 @@ cmd buf flush ddd bytes
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
   SMTP<< 220 TLS go ahead
+127.0.0.1 in tls_verify_cert_hostnames? no (end of list)
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
@@ -254,6 +262,7 @@ dropping to exim gid; retaining priv uid
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
   SMTP<< 220 TLS go ahead
+127.0.0.1 in tls_verify_cert_hostnames? no (end of list)
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
@@ -295,6 +304,7 @@ dropping to exim gid; retaining priv uid
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
   SMTP<< 220 TLS go ahead
+127.0.0.1 in tls_verify_cert_hostnames? no (end of list)
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]

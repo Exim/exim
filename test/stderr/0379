@@ -24,6 +24,7 @@ routing aaaa@myhost.test.ex
 --------> defer router <--------
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
+aaaa in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> aaaa_redirect router <--------
 local_part=aaaa domain=myhost.test.ex
@@ -74,10 +75,12 @@ routing cccc@myhost.test.ex
 --------> defer router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> aaaa_redirect router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 aaaa_redirect router skipped: local_parts mismatch
 --------> bc router <--------
 local_part=cccc domain=myhost.test.ex
@@ -98,10 +101,12 @@ routing bbbb@myhost.test.ex
 --------> defer router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> aaaa_redirect router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 aaaa_redirect router skipped: local_parts mismatch
 --------> bc router <--------
 local_part=bbbb domain=myhost.test.ex

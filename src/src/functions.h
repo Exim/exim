@@ -427,7 +427,7 @@ extern int     rda_is_filter(const uschar *);
 extern BOOL    readconf_depends(driver_instance *, uschar *);
 extern void    readconf_driver_init(uschar *, driver_instance **,
                  driver_info *, int, void *, int, optionlist *, int);
-extern uschar *readconf_find_option(void *);
+extern const uschar *readconf_find_option(void *);
 extern void    readconf_main(BOOL);
 extern void    readconf_options_from_list(optionlist *, unsigned, const uschar *, uschar *);
 extern BOOL    readconf_print(const uschar *, const uschar *, BOOL);

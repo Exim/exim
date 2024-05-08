@@ -7,11 +7,15 @@ routing xx@mxt6.test.ex
 --------> failuphost router <--------
 local_part=xx domain=mxt6.test.ex
 checking domains
+mxt6.test.ex in "test.ex : myhost.test.ex"? no (end of list)
+mxt6.test.ex in domains? yes (end of list)
 checking local_parts
+xx in local_parts? no (end of list)
 failuphost router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=xx domain=mxt6.test.ex
 checking domains
+mxt6.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for xx@mxt6.test.ex
   domain = mxt6.test.ex
@@ -34,11 +38,15 @@ routing myhost.test.ex@mxt1.test.ex
 --------> failuphost router <--------
 local_part=myhost.test.ex domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in "test.ex : myhost.test.ex"? no (end of list)
+mxt1.test.ex in domains? yes (end of list)
 checking local_parts
+myhost.test.ex in local_parts? no (end of list)
 failuphost router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=myhost.test.ex domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for myhost.test.ex@mxt1.test.ex
   domain = mxt1.test.ex
@@ -47,11 +55,14 @@ lookuphost router passed for myhost.test.ex@mxt1.test.ex
 --------> fail router <--------
 local_part=myhost.test.ex domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in domains? yes (end of list)
 checking local_parts
+myhost.test.ex in local_parts? no (end of list)
 fail router skipped: local_parts mismatch
 --------> self router <--------
 local_part=myhost.test.ex domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in domains? yes (end of list)
 self_hostname=eximtesthost.test.ex
 calling self router
 self router called for myhost.test.ex@mxt1.test.ex
@@ -80,11 +91,15 @@ routing xx@mxt1.test.ex
 --------> failuphost router <--------
 local_part=xx domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in "test.ex : myhost.test.ex"? no (end of list)
+mxt1.test.ex in domains? yes (end of list)
 checking local_parts
+xx in local_parts? no (end of list)
 failuphost router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=xx domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for xx@mxt1.test.ex
   domain = mxt1.test.ex
@@ -93,11 +108,14 @@ lookuphost router passed for xx@mxt1.test.ex
 --------> fail router <--------
 local_part=xx domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in domains? yes (end of list)
 checking local_parts
+xx in local_parts? no (end of list)
 fail router skipped: local_parts mismatch
 --------> self router <--------
 local_part=xx domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in domains? yes (end of list)
 self_hostname=eximtesthost.test.ex
 calling self router
 self router called for xx@mxt1.test.ex
@@ -112,6 +130,7 @@ self router passed for xx@mxt1.test.ex
 --------> self2 router <--------
 local_part=xx domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in domains? yes (end of list)
 self_hostname=eximtesthost.test.ex
 calling self2 router
 self2 router called for xx@mxt1.test.ex
@@ -140,11 +159,15 @@ routing xx@not-exist.test.ex
 --------> failuphost router <--------
 local_part=xx domain=not-exist.test.ex
 checking domains
+not-exist.test.ex in "test.ex : myhost.test.ex"? no (end of list)
+not-exist.test.ex in domains? yes (end of list)
 checking local_parts
+xx in local_parts? no (end of list)
 failuphost router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=xx domain=not-exist.test.ex
 checking domains
+not-exist.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for xx@not-exist.test.ex
   domain = not-exist.test.ex
@@ -161,6 +184,8 @@ routing ff@mxt1.test.ex
 --------> failuphost router <--------
 local_part=ff domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in "test.ex : myhost.test.ex"? no (end of list)
+mxt1.test.ex in domains? yes (end of list)
 checking local_parts
 calling failuphost router
 failuphost router called for ff@mxt1.test.ex
@@ -177,11 +202,15 @@ routing fff@mxt1.test.ex
 --------> failuphost router <--------
 local_part=fff domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in "test.ex : myhost.test.ex"? no (end of list)
+mxt1.test.ex in domains? yes (end of list)
 checking local_parts
+fff in local_parts? no (end of list)
 failuphost router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=fff domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for fff@mxt1.test.ex
   domain = mxt1.test.ex
@@ -190,6 +219,7 @@ lookuphost router passed for fff@mxt1.test.ex
 --------> fail router <--------
 local_part=fff domain=mxt1.test.ex
 checking domains
+mxt1.test.ex in domains? yes (end of list)
 checking local_parts
 self_hostname=eximtesthost.test.ex
 calling fail router

@@ -1195,7 +1195,8 @@ When doing en extended loop of matching, release store periodically. */
 
 #define	REGEX_LOOPCOUNT_STORE_RESET	1000
 
-/* Debug an option access. Use for non-list ones about to be expanded. */
+/* Debug an option access. Use for non-list ones about to be expanded
+(lists have their own debugging, under D_list). */
 #define GET_OPTION(name) \
   DEBUG(D_expand) debug_printf("try option " name "\n");
 

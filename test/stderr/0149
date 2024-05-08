@@ -6,6 +6,8 @@ routing x@ten
 --------> domainlist1 router <--------
 local_part=x domain=ten
 checking domains
+ten in "<- test1 - test2-test3--4"? no (end of list)
+ten in domains? yes (end of list)
 calling domainlist1 router
 domainlist1 router called for x@ten
   domain = ten
@@ -30,10 +32,13 @@ routing y@two
 --------> domainlist1 router <--------
 local_part=y domain=two
 checking domains
+two in "<- test1 - test2-test3--4"? no (end of list)
+two in domains? yes (end of list)
 calling domainlist1 router
 domainlist1 router called for y@two
   domain = two
 route_item = ten <+V4NET.0.0.0+V4NET.0.0.1 byname
+two in "ten"? no (end of list)
 route_item = two   V4NET.0.0.2:V4NET.0.0.4 byname
 original list of hosts = 'V4NET.0.0.2:V4NET.0.0.4' options = 'byname'
 expanded list of hosts = 'V4NET.0.0.2:V4NET.0.0.4' options = 'byname'
@@ -122,19 +127,25 @@ routing x@one
 --------> domainlist1 router <--------
 local_part=x domain=one
 checking domains
+one in "<- test1 - test2-test3--4"? no (end of list)
+one in domains? yes (end of list)
 calling domainlist1 router
 domainlist1 router called for x@one
   domain = one
 route_item = ten <+V4NET.0.0.0+V4NET.0.0.1 byname
+one in "ten"? no (end of list)
 route_item = two   V4NET.0.0.2:V4NET.0.0.4 byname
+one in "two"? no (end of list)
 domainlist1 router declined for x@one
 --------> domainlist2 router <--------
 local_part=x domain=one
 checking domains
+one in domains? yes (end of list)
 calling domainlist2 router
 domainlist2 router called for x@one
   domain = one
 route_item = six <+V4NET.0.0.6+V4NET.0.0.7 byname
+one in "six"? no (end of list)
 route_item = one   V4NET.0.0.2:V4NET.0.0.4 byname
 original list of hosts = 'V4NET.0.0.2:V4NET.0.0.4' options = 'byname'
 expanded list of hosts = 'V4NET.0.0.2:V4NET.0.0.4' options = 'byname'
@@ -156,15 +167,20 @@ routing x@six
 --------> domainlist1 router <--------
 local_part=x domain=six
 checking domains
+six in "<- test1 - test2-test3--4"? no (end of list)
+six in domains? yes (end of list)
 calling domainlist1 router
 domainlist1 router called for x@six
   domain = six
 route_item = ten <+V4NET.0.0.0+V4NET.0.0.1 byname
+six in "ten"? no (end of list)
 route_item = two   V4NET.0.0.2:V4NET.0.0.4 byname
+six in "two"? no (end of list)
 domainlist1 router declined for x@six
 --------> domainlist2 router <--------
 local_part=x domain=six
 checking domains
+six in domains? yes (end of list)
 calling domainlist2 router
 domainlist2 router called for x@six
   domain = six

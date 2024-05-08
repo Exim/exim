@@ -8,19 +8,26 @@ LOG: queue_run MAIN
 queue running combined directories
 looking in TESTSUITE/spool//input
 delivering 10HmaX-000000005vi-0000 (queue run pid p1234)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1237 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmaY-000000005vi-0000 (queue run pid p1234)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 queue running combined directories
 looking in TESTSUITE/spool//input
 delivering 10HmaX-000000005vi-0000 (queue run pid p1234)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-OK
@@ -47,6 +54,8 @@ trusted user
 admin user
 dropping to exim gid; retaining priv uid
 delivering 10HmaY-000000005vi-0000 (queue run pid p1234)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
   SMTP|> MAIL FROM:<CALLER@test.ex>
@@ -81,19 +90,26 @@ LOG: queue_run MAIN
 queue running combined directories
 looking in TESTSUITE/spool//input
 delivering 10HmaZ-000000005vi-0000 (queue run pid p1235)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1241 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbA-000000005vi-0000 (queue run pid p1235)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1242 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 queue running combined directories
 looking in TESTSUITE/spool//input
 delivering 10HmaZ-000000005vi-0000 (queue run pid p1235)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-OK
@@ -122,9 +138,12 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1244 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbA-000000005vi-0000 (queue run pid p1235)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  failed: Connection refused
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 LOG: MAIN
@@ -140,6 +159,8 @@ dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1236 -qqf
 delivering 10HmbA-000000005vi-0000 (queue run pid p1236)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1246 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -153,13 +174,18 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1247 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbC-000000005vi-0000 (queue run pid p1236)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1248 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbA-000000005vi-0000 (queue run pid p1236)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-OK
@@ -192,6 +218,8 @@ trusted user
 admin user
 dropping to exim gid; retaining priv uid
 delivering 10HmbC-000000005vi-0000 (queue run pid p1236)
+test.ex in ""? no (end of list)
+CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
   SMTP|> MAIL FROM:<CALLER@test.ex>

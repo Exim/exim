@@ -28,9 +28,11 @@
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
->>>  host in "10.0.0.1"?
->>>   list element: 10.0.0.1
->>>  host in "10.0.0.1"? no (end of list)
+>>>   start sublist auth_hosts
+>>>    host in "10.0.0.1"?
+>>>    ╎list element: 10.0.0.1
+>>>    host in "10.0.0.1"? no (end of list)
+>>>   end sublist auth_hosts
 >>> host in "+auth_hosts"? no (end of list)
 >>> deny: condition test failed in ACL "check_vrfy"
 >>> processing "accept" (TESTSUITE/test-config 70)
@@ -38,15 +40,18 @@
 >>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
->>> test.ex in "! +local_domains"?
->>>  list element: ! +local_domains
->>>  test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>>  test.ex in "! +local_domains"? no (matched "! +local_domains")
->>> userx in "userx"?
+>>> test.ex in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>  test.ex in domains? no (matched "! +local_domains")
+>>> userx in local_parts?
 >>>  list element: userx
->>>  userx in "userx"? yes (matched "userx")
+>>>  userx in local_parts? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> using ACL "check_expn"
@@ -54,6 +59,9 @@
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached no match for +auth_hosts
+>>>  cached lookup data = NULL
 >>> host in "+auth_hosts"? no (end of list)
 >>> deny: condition test failed in ACL "check_expn"
 >>> processing "accept" (TESTSUITE/test-config 64)
@@ -65,15 +73,18 @@
 >>> end of ACL "check_expn": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list@test.ex
->>> test.ex in "! +local_domains"?
->>>  list element: ! +local_domains
->>>  test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>>  test.ex in "! +local_domains"? no (matched "! +local_domains")
->>> list in "userx"?
+>>> test.ex in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>  test.ex in domains? no (matched "! +local_domains")
+>>> list in local_parts?
 >>>  list element: userx
->>> list in "userx"? no (end of list)
+>>> list in local_parts? no (end of list)
 >>> no more routers
 LOG: ETRN #abcd received from (test) [10.0.0.2]
 >>> using ACL "check_etrn"
@@ -81,6 +92,9 @@ LOG: ETRN #abcd received from (test) [10.0.0.2]
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached no match for +auth_hosts
+>>>  cached lookup data = NULL
 >>> host in "+auth_hosts"? no (end of list)
 >>> deny: condition test failed in ACL "check_etrn"
 >>> processing "require" (TESTSUITE/test-config 56)
@@ -128,9 +142,11 @@ LOG: H=(test) [10.0.0.2] Warning: accepted ETRN #abcd
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts?
 >>>  list element: +auth_hosts
->>>  host in "10.0.0.1"?
->>>   list element: 10.0.0.1
->>>   host in "10.0.0.1"? yes (matched "10.0.0.1")
+>>>   start sublist auth_hosts
+>>>    host in "10.0.0.1"?
+>>>    ╎list element: 10.0.0.1
+>>>    ╎host in "10.0.0.1"? yes (matched "10.0.0.1")
+>>>   end sublist auth_hosts
 >>>  host in auth_advertise_hosts? yes (matched "+auth_hosts")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
@@ -142,6 +158,9 @@ LOG: H=(test) [10.0.0.2] Warning: accepted ETRN #abcd
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached yes match for +auth_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
@@ -153,6 +172,9 @@ LOG: H=(test.host) [10.0.0.1] rejected VRFY userx@test.ex: authentication requir
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached yes match for +auth_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
@@ -165,6 +187,9 @@ LOG: ETRN abcd received from (test.host) [10.0.0.1]
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached yes match for +auth_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
@@ -194,6 +219,9 @@ LOG: H=(test.host) [10.0.0.1] rejected ETRN abcd: authentication required
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached yes match for +auth_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
@@ -228,6 +256,9 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached yes match for +auth_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
@@ -239,9 +270,12 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -268,6 +302,9 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached yes match for +auth_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
@@ -279,29 +316,35 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> check domains = +local_domains
 >>> cus.cam.ac.uk in "+local_domains"?
 >>>  list element: +local_domains
->>>  cus.cam.ac.uk in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   list element: *.test.ex
->>>  cus.cam.ac.uk in "test.ex : *.test.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    cus.cam.ac.uk in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: *.test.ex
+>>>    cus.cam.ac.uk in "test.ex : *.test.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> cus.cam.ac.uk in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 45)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "10.0.0.4"?
->>>   list element: 10.0.0.4
->>>  host in "10.0.0.4"? no (end of list)
+>>>   start sublist relay_hosts
+>>>    host in "10.0.0.4"?
+>>>    ╎list element: 10.0.0.4
+>>>    host in "10.0.0.4"? no (end of list)
+>>>   end sublist relay_hosts
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 46)
 >>> check hosts = +auth_relay_hosts
 >>> host in "+auth_relay_hosts"?
 >>>  list element: +auth_relay_hosts
->>>  host in "10.0.0.3 : 10.0.0.4"?
->>>   list element: 10.0.0.3
->>>   list element: 10.0.0.4
->>>  host in "10.0.0.3 : 10.0.0.4"? no (end of list)
+>>>   start sublist auth_relay_hosts
+>>>    host in "10.0.0.3 : 10.0.0.4"?
+>>>    ╎list element: 10.0.0.3
+>>>    ╎list element: 10.0.0.4
+>>>    host in "10.0.0.3 : 10.0.0.4"? no (end of list)
+>>>   end sublist auth_relay_hosts
 >>> host in "+auth_relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 50)
@@ -314,6 +357,9 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached yes match for +auth_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
@@ -326,15 +372,18 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
->>> test.ex in "! +local_domains"?
->>>  list element: ! +local_domains
->>>  test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>>  test.ex in "! +local_domains"? no (matched "! +local_domains")
->>> userx in "userx"?
+>>> test.ex in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>  test.ex in domains? no (matched "! +local_domains")
+>>> userx in local_parts?
 >>>  list element: userx
->>>  userx in "userx"? yes (matched "userx")
+>>>  userx in local_parts? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> using ACL "check_expn"
@@ -342,6 +391,9 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached yes match for +auth_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
@@ -358,15 +410,18 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>> end of ACL "check_expn": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list@test.ex
->>> test.ex in "! +local_domains"?
->>>  list element: ! +local_domains
->>>  test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>>  test.ex in "! +local_domains"? no (matched "! +local_domains")
->>> list in "userx"?
+>>> test.ex in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>  test.ex in domains? no (matched "! +local_domains")
+>>> list in local_parts?
 >>>  list element: userx
->>> list in "userx"? no (end of list)
+>>> list in local_parts? no (end of list)
 >>> no more routers
 LOG: ETRN #abcd received from (test.host) [10.0.0.1]
 >>> using ACL "check_etrn"
@@ -374,6 +429,9 @@ LOG: ETRN #abcd received from (test.host) [10.0.0.1]
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached yes match for +auth_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
@@ -426,17 +484,23 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts?
 >>>  list element: +auth_hosts
->>>  host in "10.0.0.1"?
->>>   list element: 10.0.0.1
->>>  host in "10.0.0.1"? no (end of list)
+>>>   start sublist auth_hosts
+>>>    host in "10.0.0.1"?
+>>>    ╎list element: 10.0.0.1
+>>>    host in "10.0.0.1"? no (end of list)
+>>>   end sublist auth_hosts
 >>>  list element: !+relay_hosts
->>>  host in "10.0.0.4"?
->>>   list element: 10.0.0.4
->>>  host in "10.0.0.4"? no (end of list)
+>>>   start sublist relay_hosts
+>>>    host in "10.0.0.4"?
+>>>    ╎list element: 10.0.0.4
+>>>    host in "10.0.0.4"? no (end of list)
+>>>   end sublist relay_hosts
 >>>  list element: +auth_relay_hosts
->>>  host in "10.0.0.3 : 10.0.0.4"?
->>>   list element: 10.0.0.3
->>>   host in "10.0.0.3 : 10.0.0.4"? yes (matched "10.0.0.3")
+>>>   start sublist auth_relay_hosts
+>>>    host in "10.0.0.3 : 10.0.0.4"?
+>>>    ╎list element: 10.0.0.3
+>>>    ╎host in "10.0.0.3 : 10.0.0.4"? yes (matched "10.0.0.3")
+>>>   end sublist auth_relay_hosts
 >>>  host in auth_advertise_hosts? yes (matched "+auth_relay_hosts")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
@@ -463,28 +527,39 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached no match for +auth_hosts
+>>>  cached lookup data = NULL
 >>> host in "+auth_hosts"? no (end of list)
 >>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 44)
 >>> check domains = +local_domains
 >>> cus.cam.ac.uk in "+local_domains"?
 >>>  list element: +local_domains
->>>  cus.cam.ac.uk in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   list element: *.test.ex
->>>  cus.cam.ac.uk in "test.ex : *.test.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    cus.cam.ac.uk in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: *.test.ex
+>>>    cus.cam.ac.uk in "test.ex : *.test.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> cus.cam.ac.uk in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 45)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
+>>>   start sublist relay_hosts
+>>>  cached no match for +relay_hosts
+>>>  cached lookup data = NULL
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 46)
 >>> check hosts = +auth_relay_hosts
 >>> host in "+auth_relay_hosts"?
 >>>  list element: +auth_relay_hosts
+>>>   start sublist auth_relay_hosts
+>>>  cached yes match for +auth_relay_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_relay_hosts"? yes (matched "+auth_relay_hosts" - cached)
 >>>   message: authentication required
 >>> check authenticated = *
@@ -519,28 +594,39 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached no match for +auth_hosts
+>>>  cached lookup data = NULL
 >>> host in "+auth_hosts"? no (end of list)
 >>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 44)
 >>> check domains = +local_domains
 >>> cus.cam.ac.uk in "+local_domains"?
 >>>  list element: +local_domains
->>>  cus.cam.ac.uk in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   list element: *.test.ex
->>>  cus.cam.ac.uk in "test.ex : *.test.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    cus.cam.ac.uk in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: *.test.ex
+>>>    cus.cam.ac.uk in "test.ex : *.test.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> cus.cam.ac.uk in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 45)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
+>>>   start sublist relay_hosts
+>>>  cached no match for +relay_hosts
+>>>  cached lookup data = NULL
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 46)
 >>> check hosts = +auth_relay_hosts
 >>> host in "+auth_relay_hosts"?
 >>>  list element: +auth_relay_hosts
+>>>   start sublist auth_relay_hosts
+>>>  cached yes match for +auth_relay_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_relay_hosts"? yes (matched "+auth_relay_hosts" - cached)
 >>>   message: authentication required
 >>> check authenticated = *
@@ -579,13 +665,17 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts?
 >>>  list element: +auth_hosts
->>>  host in "10.0.0.1"?
->>>   list element: 10.0.0.1
->>>  host in "10.0.0.1"? no (end of list)
+>>>   start sublist auth_hosts
+>>>    host in "10.0.0.1"?
+>>>    ╎list element: 10.0.0.1
+>>>    host in "10.0.0.1"? no (end of list)
+>>>   end sublist auth_hosts
 >>>  list element: !+relay_hosts
->>>  host in "10.0.0.4"?
->>>   list element: 10.0.0.4
->>>   host in "10.0.0.4"? yes (matched "10.0.0.4")
+>>>   start sublist relay_hosts
+>>>    host in "10.0.0.4"?
+>>>    ╎list element: 10.0.0.4
+>>>    ╎host in "10.0.0.4"? yes (matched "10.0.0.4")
+>>>   end sublist relay_hosts
 >>>  host in auth_advertise_hosts? no (matched "!+relay_hosts")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)

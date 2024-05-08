@@ -80,19 +80,19 @@ routing x@x.test.ex
 --------> r1 router <--------
 local_part=x domain=x.test.ex
 checking domains
-x.test.ex in "+relay_domains"?
+x.test.ex in domains?
  list element: +relay_domains
   start sublist relay_domains
    x.test.ex in "a.b.c"?
    ╎list element: a.b.c
    x.test.ex in "a.b.c"? no (end of list)
   end sublist relay_domains
-x.test.ex in "+relay_domains"? no (end of list)
+x.test.ex in domains? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=x domain=x.test.ex
 checking domains
-x.test.ex in "+local_domains"?
+x.test.ex in domains?
  list element: +local_domains
   start sublist local_domains
    x.test.ex in "*.test.ex"?
@@ -100,7 +100,7 @@ x.test.ex in "+local_domains"?
    ╎x.test.ex in "*.test.ex"? yes (matched "*.test.ex")
   end sublist local_domains
  data from lookup saved for cache for +local_domains: key 'x.test.ex' value '*.test.ex'
- x.test.ex in "+local_domains"? yes (matched "+local_domains")
+ x.test.ex in domains? yes (matched "+local_domains")
 calling r2 router
 r2 router called for x@x.test.ex
   domain = x.test.ex

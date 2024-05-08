@@ -21,12 +21,12 @@
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
->>> userx in "defer"?
+>>> userx in local_parts?
 >>>  list element: defer
->>> userx in "defer"? no (end of list)
->>> userx in "userx"?
+>>> userx in local_parts? no (end of list)
+>>> userx in local_parts?
 >>>  list element: userx
->>>  userx in "userx"? yes (matched "userx")
+>>>  userx in local_parts? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
@@ -35,9 +35,12 @@
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -75,12 +78,12 @@ LOG: 10HmaX-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
->>> userx in "defer"?
+>>> userx in local_parts?
 >>>  list element: defer
->>> userx in "defer"? no (end of list)
->>> userx in "userx"?
+>>> userx in local_parts? no (end of list)
+>>> userx in local_parts?
 >>>  list element: userx
->>>  userx in "userx"? yes (matched "userx")
+>>>  userx in local_parts? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
@@ -89,9 +92,12 @@ LOG: 10HmaX-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -130,12 +136,12 @@ LOG: 10HmaY-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
->>> userx in "defer"?
+>>> userx in local_parts?
 >>>  list element: defer
->>> userx in "defer"? no (end of list)
->>> userx in "userx"?
+>>> userx in local_parts? no (end of list)
+>>> userx in local_parts?
 >>>  list element: userx
->>>  userx in "userx"? yes (matched "userx")
+>>>  userx in local_parts? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
@@ -144,9 +150,12 @@ LOG: 10HmaY-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -157,12 +166,12 @@ LOG: 10HmaY-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> verifying From: header address badbad@test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing badbad@test.ex
->>> badbad in "defer"?
+>>> badbad in local_parts?
 >>>  list element: defer
->>> badbad in "defer"? no (end of list)
->>> badbad in "userx"?
+>>> badbad in local_parts? no (end of list)
+>>> badbad in local_parts?
 >>>  list element: userx
->>> badbad in "userx"? no (end of list)
+>>> badbad in local_parts? no (end of list)
 >>> no more routers
 >>> require: condition test failed in ACL "check_message"
 >>> end of ACL "check_message": not OK
@@ -190,12 +199,12 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejecte
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
->>> userx in "defer"?
+>>> userx in local_parts?
 >>>  list element: defer
->>> userx in "defer"? no (end of list)
->>> userx in "userx"?
+>>> userx in local_parts? no (end of list)
+>>> userx in local_parts?
 >>>  list element: userx
->>>  userx in "userx"? yes (matched "userx")
+>>>  userx in local_parts? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
@@ -204,9 +213,12 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejecte
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -217,12 +229,12 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejecte
 >>> verifying From: header address badbad@test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing badbad@test.ex
->>> badbad in "defer"?
+>>> badbad in local_parts?
 >>>  list element: defer
->>> badbad in "defer"? no (end of list)
->>> badbad in "userx"?
+>>> badbad in local_parts? no (end of list)
+>>> badbad in local_parts?
 >>>  list element: userx
->>> badbad in "userx"? no (end of list)
+>>> badbad in local_parts? no (end of list)
 >>> no more routers
 >>> verifying From: header address userx@test.ex
 >>> previously checked as envelope sender
@@ -254,12 +266,12 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
->>> userx in "defer"?
+>>> userx in local_parts?
 >>>  list element: defer
->>> userx in "defer"? no (end of list)
->>> userx in "userx"?
+>>> userx in local_parts? no (end of list)
+>>> userx in local_parts?
 >>>  list element: userx
->>>  userx in "userx"? yes (matched "userx")
+>>>  userx in local_parts? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
@@ -268,9 +280,12 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -281,9 +296,9 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> verifying From: header address defer@test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing defer@test.ex
->>> defer in "defer"?
+>>> defer in local_parts?
 >>>  list element: defer
->>>  defer in "defer"? yes (matched "defer")
+>>>  defer in local_parts? yes (matched "defer")
 >>> calling defer router
 >>> defer router: defer for defer@test.ex
 >>>   message: this is a forced defer

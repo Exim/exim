@@ -7,6 +7,7 @@ DNS lookup of mx46.test.ex (MX) succeeded
 DNS lookup of 46.test.ex (AAAA) succeeded
 DNS lookup of 46.test.ex (A) using fakens
 DNS lookup of 46.test.ex (A) succeeded
+manualroute in local_parts? no (end of list)
 DNS lookup of 46.test.ex (AAAA) succeeded
 DNS lookup of 46.test.ex (A) using fakens
 DNS lookup of 46.test.ex (A) succeeded
@@ -30,6 +31,7 @@ DNS lookup of mx46.test.ex (MX) using fakens
 DNS lookup of mx46.test.ex (MX) succeeded
 DNS lookup of 46.test.ex (A) using fakens
 DNS lookup of 46.test.ex (A) succeeded
+manualroute in local_parts? no (end of list)
 DNS lookup of 46.test.ex (A) using fakens
 DNS lookup of 46.test.ex (A) succeeded
 DNS lookup of v6.test.ex (MX) using fakens
@@ -42,6 +44,7 @@ DNS lookup of v6.test.ex (A) gave NO_DATA
 returning DNS_NODATA
 faking res_search(A) response length as 65535
  writing neg-cache entry for v6.test.ex-A-xxxx, ttl 3000
+dnslookup in local_parts? no (end of list)
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

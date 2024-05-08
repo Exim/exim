@@ -15,9 +15,11 @@
 >>> check domains = +ok_domains
 >>> ten-1.test.ex in "+ok_domains"?
 >>>  list element: +ok_domains
->>>  ten-1.test.ex in "ten-1.test.ex"?
->>>   list element: ten-1.test.ex
->>>   ten-1.test.ex in "ten-1.test.ex"? yes (matched "ten-1.test.ex")
+>>>   start sublist ok_domains
+>>>    ten-1.test.ex in "ten-1.test.ex"?
+>>>    ╎list element: ten-1.test.ex
+>>>    ╎ten-1.test.ex in "ten-1.test.ex"? yes (matched "ten-1.test.ex")
+>>>   end sublist ok_domains
 >>>  ten-1.test.ex in "+ok_domains"? yes (matched "+ok_domains")
 >>> accept: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": ACCEPT
@@ -26,8 +28,10 @@
 >>> check domains = +ok_domains
 >>> junk.junk in "+ok_domains"?
 >>>  list element: +ok_domains
->>>  junk.junk in ""?
->>>  junk.junk in ""? no (end of list)
+>>>   start sublist ok_domains
+>>>    junk.junk in ""?
+>>>    junk.junk in ""? no (end of list)
+>>>   end sublist ok_domains
 >>> junk.junk in "+ok_domains"? no (end of list)
 >>> accept: condition test failed in ACL "acl1"
 >>> end of ACL "acl1": implicit DENY

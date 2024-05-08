@@ -49,6 +49,7 @@ p1235  ├──────value: Tue,░2░Mar░1999░09:44:33░+0000
 p1235  ├───expanded: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
 p1235  ╰─────result: myhost.test.ex░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 p1235 Process p1235 is ready for new message
+p1235 test.ex in helo_lookup_domains? no (end of list)
 p1235 try option acl_smtp_helo
 p1235 try option acl_smtp_mail
 p1235 try option acl_smtp_rcpt
@@ -62,6 +63,7 @@ p1235  ├considering: /exim_daemon_notify
 p1235  ├───────text: /exim_daemon_notify
 p1235  ├───expanded: $spool_directory/exim_daemon_notify
 p1235  ╰─────result: TESTSUITE/spool/exim_daemon_notify
+p1235 test.ex in "^nomatch_list"? no (end of list)
 p1235  ╭considering: ${if░match░{a_random_string}░{static_RE}}
 p1235   ╭considering: a_random_string}░{static_RE}}
 p1235   ├───────text: a_random_string
@@ -543,10 +545,12 @@ p1236  ├──────value: Tue,░2░Mar░1999░09:44:33░+0000
 p1236  ├───expanded: $smtp_active_hostname░ESMTP░Exim░$version_number░$tod_full
 p1236  ╰─────result: myhost.test.ex░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 p1236 Process p1236 is ready for new message
+p1236 test.ex in helo_lookup_domains? no (end of list)
 p1236 try option acl_smtp_helo
 p1236 try option acl_smtp_mail
 p1236 try option acl_smtp_rcpt
 p1236 compiled caseless RE '^nomatch_list' found in local cache
+p1236 test.ex in "^nomatch_list"? no (end of list)
 p1236  ╭considering: ${if░match░{a_random_string}░{static_RE}}
 p1236   ╭considering: a_random_string}░{static_RE}}
 p1236   ├───────text: a_random_string

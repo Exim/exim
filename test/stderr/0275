@@ -17,7 +17,7 @@ test.ex in percent_hack_domains?
  list element: +hold_domains
   start sublist hold_domains
    test.ex in "! *.ex"?
-   ╎list element: ! *.ex
+   ╎list element: !░*.ex
    ╎test.ex in "! *.ex"? no (matched "! *.ex")
   end sublist hold_domains
  list element: +not_queue_domains
@@ -32,31 +32,31 @@ routing userx@test.ex
 --------> r00 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+nocache"?
+test.ex in domains?
  list element: +nocache
   start sublist nocache
    test.ex in "userx"?
    ╎list element: userx
    test.ex in "userx"? no (end of list)
   end sublist nocache
-test.ex in "+nocache"? no (end of list)
+test.ex in domains? no (end of list)
 r00 router skipped: domains mismatch
 --------> r01 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+nocache"?
+test.ex in domains?
  list element: +nocache
   start sublist nocache
    test.ex in "userx"?
    ╎list element: userx
    test.ex in "userx"? no (end of list)
   end sublist nocache
-test.ex in "+nocache"? no (end of list)
+test.ex in domains? no (end of list)
 r01 router skipped: domains mismatch
 --------> r02 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+nocache2"?
+test.ex in domains?
  list element: +nocache2
   start sublist nocache2
    test.ex in "+nocache"?
@@ -68,12 +68,12 @@ test.ex in "+nocache2"?
    ╎ end sublist nocache
    test.ex in "+nocache"? no (end of list)
   end sublist nocache2
-test.ex in "+nocache2"? no (end of list)
+test.ex in domains? no (end of list)
 r02 router skipped: domains mismatch
 --------> r03 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+nocache2"?
+test.ex in domains?
  list element: +nocache2
   start sublist nocache2
    test.ex in "+nocache"?
@@ -85,34 +85,34 @@ test.ex in "+nocache2"?
    ╎ end sublist nocache
    test.ex in "+nocache"? no (end of list)
   end sublist nocache2
-test.ex in "+nocache2"? no (end of list)
+test.ex in domains? no (end of list)
 r03 router skipped: domains mismatch
 --------> r04 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+forcecache"?
+test.ex in domains?
  list element: +forcecache
   start sublist forcecache
    test.ex in "userx"?
    ╎list element: userx
    test.ex in "userx"? no (end of list)
   end sublist forcecache
-test.ex in "+forcecache"? no (end of list)
+test.ex in domains? no (end of list)
 r04 router skipped: domains mismatch
 --------> r05 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+forcecache"?
+test.ex in domains?
  list element: +forcecache
   start sublist forcecache
  cached no match for +forcecache
  cached lookup data = NULL
-test.ex in "+forcecache"? no (end of list)
+test.ex in domains? no (end of list)
 r05 router skipped: domains mismatch
 --------> r1 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+never_domains : +n1_domains : ! +local_domains"?
+test.ex in domains?
  list element: +never_domains
   start sublist never_domains
    test.ex in "never.ex"?
@@ -125,19 +125,19 @@ test.ex in "+never_domains : +n1_domains : ! +local_domains"?
    ╎list element: never1.ex
    test.ex in "never1.ex"? no (end of list)
   end sublist n1_domains
- list element: ! +local_domains
+ list element: !░+local_domains
   start sublist local_domains
    test.ex in "test.ex"?
    ╎list element: test.ex
    ╎test.ex in "test.ex"? yes (matched "test.ex")
   end sublist local_domains
  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
- test.ex in "+never_domains : +n1_domains : ! +local_domains"? no (matched "! +local_domains")
+ test.ex in domains? no (matched "! +local_domains")
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+never_domains : +n2_domains : !+local_domains"?
+test.ex in domains?
  list element: +never_domains
   start sublist never_domains
  cached no match for +never_domains
@@ -156,21 +156,21 @@ test.ex in "+never_domains : +n2_domains : !+local_domains"?
   start sublist local_domains
  cached yes match for +local_domains
  cached lookup data = test.ex
- test.ex in "+never_domains : +n2_domains : !+local_domains"? no (matched "!+local_domains" - cached)
+ test.ex in domains? no (matched "!+local_domains" - cached)
 r2 router skipped: domains mismatch
 --------> r3 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+local_domains"?
+test.ex in domains?
  list element: +local_domains
   start sublist local_domains
  cached yes match for +local_domains
  cached lookup data = test.ex
- test.ex in "+local_domains"? yes (matched "+local_domains" - cached)
+ test.ex in domains? yes (matched "+local_domains" - cached)
 checking local_parts
-userx in "userx"?
+userx in local_parts?
  list element: userx
- userx in "userx"? yes (matched "userx")
+ userx in local_parts? yes (matched "userx")
 calling r3 router
 r3 router called for userx@test.ex
   domain = test.ex
@@ -268,7 +268,7 @@ test.ex in percent_hack_domains?
  list element: +hold_domains
   start sublist hold_domains
    test.ex in "! *.ex"?
-   ╎list element: ! *.ex
+   ╎list element: !░*.ex
    ╎test.ex in "! *.ex"? no (matched "! *.ex")
   end sublist hold_domains
  list element: +not_queue_domains
@@ -297,31 +297,31 @@ routing userx@test.ex
 --------> r00 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+nocache"?
+test.ex in domains?
  list element: +nocache
   start sublist nocache
    test.ex in "userx"?
    ╎list element: userx
    test.ex in "userx"? no (end of list)
   end sublist nocache
-test.ex in "+nocache"? no (end of list)
+test.ex in domains? no (end of list)
 r00 router skipped: domains mismatch
 --------> r01 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+nocache"?
+test.ex in domains?
  list element: +nocache
   start sublist nocache
    test.ex in "userx"?
    ╎list element: userx
    test.ex in "userx"? no (end of list)
   end sublist nocache
-test.ex in "+nocache"? no (end of list)
+test.ex in domains? no (end of list)
 r01 router skipped: domains mismatch
 --------> r02 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+nocache2"?
+test.ex in domains?
  list element: +nocache2
   start sublist nocache2
    test.ex in "+nocache"?
@@ -333,12 +333,12 @@ test.ex in "+nocache2"?
    ╎ end sublist nocache
    test.ex in "+nocache"? no (end of list)
   end sublist nocache2
-test.ex in "+nocache2"? no (end of list)
+test.ex in domains? no (end of list)
 r02 router skipped: domains mismatch
 --------> r03 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+nocache2"?
+test.ex in domains?
  list element: +nocache2
   start sublist nocache2
    test.ex in "+nocache"?
@@ -350,34 +350,34 @@ test.ex in "+nocache2"?
    ╎ end sublist nocache
    test.ex in "+nocache"? no (end of list)
   end sublist nocache2
-test.ex in "+nocache2"? no (end of list)
+test.ex in domains? no (end of list)
 r03 router skipped: domains mismatch
 --------> r04 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+forcecache"?
+test.ex in domains?
  list element: +forcecache
   start sublist forcecache
    test.ex in "userx"?
    ╎list element: userx
    test.ex in "userx"? no (end of list)
   end sublist forcecache
-test.ex in "+forcecache"? no (end of list)
+test.ex in domains? no (end of list)
 r04 router skipped: domains mismatch
 --------> r05 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+forcecache"?
+test.ex in domains?
  list element: +forcecache
   start sublist forcecache
  cached no match for +forcecache
  cached lookup data = NULL
-test.ex in "+forcecache"? no (end of list)
+test.ex in domains? no (end of list)
 r05 router skipped: domains mismatch
 --------> r1 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+never_domains : +n1_domains : ! +local_domains"?
+test.ex in domains?
  list element: +never_domains
   start sublist never_domains
    test.ex in "never.ex"?
@@ -390,19 +390,19 @@ test.ex in "+never_domains : +n1_domains : ! +local_domains"?
    ╎list element: never1.ex
    test.ex in "never1.ex"? no (end of list)
   end sublist n1_domains
- list element: ! +local_domains
+ list element: !░+local_domains
   start sublist local_domains
    test.ex in "test.ex"?
    ╎list element: test.ex
    ╎test.ex in "test.ex"? yes (matched "test.ex")
   end sublist local_domains
  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
- test.ex in "+never_domains : +n1_domains : ! +local_domains"? no (matched "! +local_domains")
+ test.ex in domains? no (matched "! +local_domains")
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+never_domains : +n2_domains : !+local_domains"?
+test.ex in domains?
  list element: +never_domains
   start sublist never_domains
  cached no match for +never_domains
@@ -421,21 +421,21 @@ test.ex in "+never_domains : +n2_domains : !+local_domains"?
   start sublist local_domains
  cached yes match for +local_domains
  cached lookup data = test.ex
- test.ex in "+never_domains : +n2_domains : !+local_domains"? no (matched "!+local_domains" - cached)
+ test.ex in domains? no (matched "!+local_domains" - cached)
 r2 router skipped: domains mismatch
 --------> r3 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "+local_domains"?
+test.ex in domains?
  list element: +local_domains
   start sublist local_domains
  cached yes match for +local_domains
  cached lookup data = test.ex
- test.ex in "+local_domains"? yes (matched "+local_domains" - cached)
+ test.ex in domains? yes (matched "+local_domains" - cached)
 checking local_parts
-userx in "userx"?
+userx in local_parts?
  list element: userx
- userx in "userx"? yes (matched "userx")
+ userx in local_parts? yes (matched "userx")
 calling r3 router
 r3 router called for userx@test.ex
   domain = test.ex
@@ -552,7 +552,7 @@ test.ex in percent_hack_domains?
  list element: +hold_domains
   start sublist hold_domains
    test.ex in "! *.ex"?
-   ╎list element: ! *.ex
+   ╎list element: !░*.ex
    ╎test.ex in "! *.ex"? no (matched "! *.ex")
   end sublist hold_domains
  list element: +not_queue_domains
@@ -581,12 +581,12 @@ routing error@test.ex
 --------> r0f router <--------
 local_part=error domain=test.ex
 checking domains
-test.ex in "+no_such_list"?
+test.ex in domains?
  list element: +no_such_list
   start sublist no_such_list
 LOG: MAIN PANIC
   unknown named domain list "+no_such_list"
-  test.ex in "+no_such_list"? list match deferred for +no_such_list
+  test.ex in domains? list match deferred for +no_such_list
 domains check lookup or other defer
   ----------- end verify ------------
   accept: condition test deferred in inline ACL

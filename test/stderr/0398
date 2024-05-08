@@ -42,16 +42,16 @@ routing qq@remote
 --------> r1 router <--------
 local_part=qq domain=remote
 checking domains
-remote in "local"?
+remote in domains?
  list element: local
-remote in "local"? no (end of list)
+remote in domains? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=qq domain=remote
 checking domains
-remote in "remote"?
+remote in domains?
  list element: remote
- remote in "remote"? yes (matched "remote")
+ remote in domains? yes (matched "remote")
 calling r2 router
 r2 router called for qq@remote
   domain = remote
@@ -101,16 +101,16 @@ routing qq@remote
 --------> r1 router <--------
 local_part=qq domain=remote
 checking domains
-remote in "local"?
+remote in domains?
  list element: local
-remote in "local"? no (end of list)
+remote in domains? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=qq domain=remote
 checking domains
-remote in "remote"?
+remote in domains?
  list element: remote
- remote in "remote"? yes (matched "remote")
+ remote in domains? yes (matched "remote")
 calling r2 router
 r2 router called for qq@remote
   domain = remote
@@ -150,8 +150,9 @@ Attempting full verification using callout
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
 interface=NULL port=PORT_S
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ... 127.0.0.1 in hosts_try_fastopen?
- list element: 
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ 127.0.0.1 in hosts_try_fastopen?
+  list element: 
  connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
@@ -235,16 +236,16 @@ routing qq@remote
 --------> r1 router <--------
 local_part=qq domain=remote
 checking domains
-remote in "local"?
+remote in domains?
  list element: local
-remote in "local"? no (end of list)
+remote in domains? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=qq domain=remote
 checking domains
-remote in "remote"?
+remote in domains?
  list element: remote
- remote in "remote"? yes (matched "remote")
+ remote in domains? yes (matched "remote")
 calling r2 router
 r2 router called for qq@remote
   domain = remote

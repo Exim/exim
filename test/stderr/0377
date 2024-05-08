@@ -28,22 +28,27 @@ routing cccc@myhost.test.ex
 --------> defer router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 local_part=cccc domain=myhost.test.ex
@@ -74,14 +79,17 @@ routing bbbb@myhost.test.ex
 --------> defer router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=bbbb domain=myhost.test.ex
@@ -108,6 +116,7 @@ routing aaaa@myhost.test.ex
 --------> defer router <--------
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
+aaaa in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=aaaa domain=myhost.test.ex
@@ -172,22 +181,27 @@ routing cccc@myhost.test.ex
 --------> defer router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 local_part=cccc domain=myhost.test.ex
@@ -230,14 +244,17 @@ routing bbbb@myhost.test.ex
 --------> defer router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 bbbb router skipped: previously routed bbbb@myhost.test.ex
@@ -334,22 +351,27 @@ routing cccc@myhost.test.ex
 --------> defer router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 local_part=cccc domain=myhost.test.ex
@@ -372,14 +394,17 @@ routing bbbb@myhost.test.ex
 --------> defer router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=bbbb domain=myhost.test.ex
@@ -405,6 +430,7 @@ routing aaaa@myhost.test.ex
 --------> defer router <--------
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
+aaaa in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=aaaa domain=myhost.test.ex
@@ -435,22 +461,27 @@ routing cccc@myhost.test.ex
 --------> defer router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
@@ -502,22 +533,27 @@ routing cccc@myhost.test.ex
 --------> defer router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
@@ -579,22 +615,27 @@ routing cccc@myhost.test.ex
 --------> defer router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 local_part=cccc domain=myhost.test.ex
@@ -617,14 +658,17 @@ routing bbbb@myhost.test.ex
 --------> defer router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
+bbbb in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=bbbb domain=myhost.test.ex
@@ -650,6 +694,7 @@ routing aaaa@myhost.test.ex
 --------> defer router <--------
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
+aaaa in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=aaaa domain=myhost.test.ex
@@ -680,22 +725,27 @@ routing cccc@myhost.test.ex
 --------> defer router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
@@ -747,22 +797,27 @@ routing cccc@myhost.test.ex
 --------> defer router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 unseen_aaaa router skipped: local_parts mismatch
 --------> seen_aaaa router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb router skipped: local_parts mismatch
 --------> bbbb_0 router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
+cccc in local_parts? no (end of list)
 bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex

@@ -136,6 +136,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> verifying EHLO/HELO argument "ten-1.test.ex"
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
+>>> ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>> ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> matched host name
@@ -163,8 +165,12 @@ MUNGED: ::1 will be omitted in what follows
 >>> looking up host name for V4NET.0.0.3
 >>> IP address lookup yielded "ten-3.test.ex"
 >>>   alias "ten-3-alias.test.ex"
+>>> ten-3.test.ex not in empty list (option unset? cannot trace name)
+>>> ten-3.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-3.test.ex
 >>>   V4NET.0.0.3 OK
+>>> ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
+>>> ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>> matched host name
@@ -201,6 +207,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> verifying EHLO/HELO argument "rhubarb"
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
+>>> ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>> ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> getting IP address for rhubarb

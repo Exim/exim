@@ -33,9 +33,12 @@ LOG: rejected HELO from [V4NET.0.0.0]: syntactically invalid argument(s): @#$%^&
 >>>   check domains = +local_domains
 >>>   test.ex in "+local_domains"?
 >>>    list element: +local_domains
->>>    test.ex in "Test.ex : myhost.test.EX"?
->>>    ╎list element: Test.ex
->>>    ╎test.ex in "Test.ex : myhost.test.EX"? yes (matched "Test.ex")
+>>>     start sublist local_domains
+>>>    ╎ test.ex in "Test.ex : myhost.test.EX"?
+>>>    ╎  list element: Test.ex
+>>>    ╎  test.ex in "Test.ex : myhost.test.EX"? yes (matched "Test.ex")
+>>>     end sublist local_domains
+>>>    data from lookup saved for cache for +local_domains: key 'test.ex' value 'Test.ex'
 >>>    test.ex in "+local_domains"? yes (matched "+local_domains")
 >>>   accept: condition test succeeded in ACL "check_recipient"
 >>>   end of ACL "check_recipient": ACCEPT
@@ -50,20 +53,24 @@ LOG: rejected HELO from [V4NET.0.0.0]: syntactically invalid argument(s): @#$%^&
 >>>   check domains = +local_domains
 >>>   else.where in "+local_domains"?
 >>>    list element: +local_domains
->>>    else.where in "Test.ex : myhost.test.EX"?
->>>    ╎list element: Test.ex
->>>    ╎list element: myhost.test.EX
->>>    else.where in "Test.ex : myhost.test.EX"? no (end of list)
+>>>     start sublist local_domains
+>>>    ╎ else.where in "Test.ex : myhost.test.EX"?
+>>>    ╎  list element: Test.ex
+>>>    ╎  list element: myhost.test.EX
+>>>    ╎ else.where in "Test.ex : myhost.test.EX"? no (end of list)
+>>>     end sublist local_domains
 >>>   else.where in "+local_domains"? no (end of list)
 >>>   accept: condition test failed in ACL "check_recipient"
 >>>   processing "accept" (TESTSUITE/test-config 26)
 >>>   check domains = +relay_domains
 >>>   else.where in "+relay_domains"?
 >>>    list element: +relay_domains
->>>    else.where in "Test.ex : Relay.one.ex"?
->>>    ╎list element: Test.ex
->>>    ╎list element: Relay.one.ex
->>>    else.where in "Test.ex : Relay.one.ex"? no (end of list)
+>>>     start sublist relay_domains
+>>>    ╎ else.where in "Test.ex : Relay.one.ex"?
+>>>    ╎  list element: Test.ex
+>>>    ╎  list element: Relay.one.ex
+>>>    ╎ else.where in "Test.ex : Relay.one.ex"? no (end of list)
+>>>     end sublist relay_domains
 >>>   else.where in "+relay_domains"? no (end of list)
 >>>   accept: condition test failed in ACL "check_recipient"
 >>>   processing "deny" (TESTSUITE/test-config 27)
@@ -79,6 +86,8 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>> sender host name required, to match against *N-99.test.EX
 >>> looking up host name for V4NET.0.0.99
 >>> IP address lookup yielded "ten-99.test.ex"
+>>>  ten-99.test.ex not in empty list (option unset? cannot trace name)
+>>>  ten-99.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-99.test.ex
 >>>   V4NET.0.0.99 OK
 >>>  host in sender_unqualified_hosts? yes (matched "*N-99.test.EX")
@@ -99,20 +108,25 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>> check domains = +local_domains
 >>> relay.one.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  relay.one.ex in "Test.ex : myhost.test.EX"?
->>>   list element: Test.ex
->>>   list element: myhost.test.EX
->>>  relay.one.ex in "Test.ex : myhost.test.EX"? no (end of list)
+>>>   start sublist local_domains
+>>>    relay.one.ex in "Test.ex : myhost.test.EX"?
+>>>    ╎list element: Test.ex
+>>>    ╎list element: myhost.test.EX
+>>>    relay.one.ex in "Test.ex : myhost.test.EX"? no (end of list)
+>>>   end sublist local_domains
 >>> relay.one.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 26)
 >>> check domains = +relay_domains
 >>> relay.one.ex in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  relay.one.ex in "Test.ex : Relay.one.ex"?
->>>   list element: Test.ex
->>>   list element: Relay.one.ex
->>>   relay.one.ex in "Test.ex : Relay.one.ex"? yes (matched "Relay.one.ex")
+>>>   start sublist relay_domains
+>>>    relay.one.ex in "Test.ex : Relay.one.ex"?
+>>>    ╎list element: Test.ex
+>>>    ╎list element: Relay.one.ex
+>>>    ╎relay.one.ex in "Test.ex : Relay.one.ex"? yes (matched "Relay.one.ex")
+>>>   end sublist relay_domains
+>>>  data from lookup saved for cache for +relay_domains: key 'relay.one.ex' value 'Relay.one.ex'
 >>>  relay.one.ex in "+relay_domains"? yes (matched "+relay_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -127,20 +141,24 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>> check domains = +local_domains
 >>> relay.two.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  relay.two.ex in "Test.ex : myhost.test.EX"?
->>>   list element: Test.ex
->>>   list element: myhost.test.EX
->>>  relay.two.ex in "Test.ex : myhost.test.EX"? no (end of list)
+>>>   start sublist local_domains
+>>>    relay.two.ex in "Test.ex : myhost.test.EX"?
+>>>    ╎list element: Test.ex
+>>>    ╎list element: myhost.test.EX
+>>>    relay.two.ex in "Test.ex : myhost.test.EX"? no (end of list)
+>>>   end sublist local_domains
 >>> relay.two.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 26)
 >>> check domains = +relay_domains
 >>> relay.two.ex in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  relay.two.ex in "Test.ex : Relay.one.ex"?
->>>   list element: Test.ex
->>>   list element: Relay.one.ex
->>>  relay.two.ex in "Test.ex : Relay.one.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    relay.two.ex in "Test.ex : Relay.one.ex"?
+>>>    ╎list element: Test.ex
+>>>    ╎list element: Relay.one.ex
+>>>    relay.two.ex in "Test.ex : Relay.one.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> relay.two.ex in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 27)

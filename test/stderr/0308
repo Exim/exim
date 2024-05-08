@@ -47,6 +47,8 @@ LOG: no host name found for IP address V4NET.0.0.97
 >>> sender host name required, to match against *.test.ex
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
+>>>  ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>  ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>>  host in "*.test.ex"? yes (matched "*.test.ex")

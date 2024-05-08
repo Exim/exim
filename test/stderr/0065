@@ -15,9 +15,12 @@
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -26,28 +29,34 @@
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
->>>   list element: 1.2.3.4
->>>   host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "1.2.3.4")
+>>>   start sublist relay_hosts
+>>>    host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
+>>>    ╎list element: 1.2.3.4
+>>>    ╎host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "1.2.3.4")
+>>>   end sublist relay_hosts
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -69,9 +78,12 @@ LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.2.3.4] P=
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -80,29 +92,35 @@ LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.2.3.4] P=
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
->>>   list element: 1.2.3.4
->>>   list element: !1.2.3.0/24
->>>   host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? no (matched "!1.2.3.0/24")
+>>>   start sublist relay_hosts
+>>>    host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
+>>>    ╎list element: 1.2.3.4
+>>>    ╎list element: !1.2.3.0/24
+>>>    ╎host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? no (matched "!1.2.3.0/24")
+>>>   end sublist relay_hosts
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 26)
@@ -128,9 +146,12 @@ LOG: 10HmaY-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.2.3.5] P=
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -139,30 +160,36 @@ LOG: 10HmaY-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.2.3.5] P=
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
->>>   list element: 1.2.3.4
->>>   list element: !1.2.3.0/24
->>>   list element: 1.2.0.0/16
->>>   host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "1.2.0.0/16")
+>>>   start sublist relay_hosts
+>>>    host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
+>>>    ╎list element: 1.2.3.4
+>>>    ╎list element: !1.2.3.0/24
+>>>    ╎list element: 1.2.0.0/16
+>>>    ╎host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "1.2.0.0/16")
+>>>   end sublist relay_hosts
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -184,9 +211,12 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.2.4.5] P=
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -195,33 +225,39 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.2.4.5] P=
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
->>>   list element: 1.2.3.4
->>>   list element: !1.2.3.0/24
->>>   list element: 1.2.0.0/16
->>>   list element: net16-lsearch;TESTSUITE/aux-fixed/0065.nets
->>>   list element: net24-lsearch;TESTSUITE/aux-fixed/0065.nets
->>>   list element: net-lsearch;TESTSUITE/aux-fixed/0065.nets
->>>  host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? no (end of list)
+>>>   start sublist relay_hosts
+>>>    host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
+>>>    ╎list element: 1.2.3.4
+>>>    ╎list element: !1.2.3.0/24
+>>>    ╎list element: 1.2.0.0/16
+>>>    ╎list element: net16-lsearch;TESTSUITE/aux-fixed/0065.nets
+>>>    ╎list element: net24-lsearch;TESTSUITE/aux-fixed/0065.nets
+>>>    ╎list element: net-lsearch;TESTSUITE/aux-fixed/0065.nets
+>>>    host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? no (end of list)
+>>>   end sublist relay_hosts
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 26)
@@ -247,9 +283,12 @@ LOG: 10HmbA-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.3.2.4] P=
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -258,31 +297,38 @@ LOG: 10HmbA-000000005vi-0000 <= userx@somehost.example.com H=(test) [1.3.2.4] P=
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
->>>   list element: 1.2.3.4
->>>   list element: !1.2.3.0/24
->>>   list element: 1.2.0.0/16
->>>   list element: net16-lsearch;TESTSUITE/aux-fixed/0065.nets
->>>   host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "net16-lsearch;TESTSUITE/aux-fixed/0065.nets")
+>>>   start sublist relay_hosts
+>>>    host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
+>>>    ╎list element: 1.2.3.4
+>>>    ╎list element: !1.2.3.0/24
+>>>    ╎list element: 1.2.0.0/16
+>>>    ╎list element: net16-lsearch;TESTSUITE/aux-fixed/0065.nets
+>>>    ╎host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "net16-lsearch;TESTSUITE/aux-fixed/0065.nets")
+>>>   end sublist relay_hosts
+>>>  data from lookup saved for cache for +relay_hosts: key '131.111.8.2' value ''
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -304,9 +350,12 @@ LOG: 10HmbB-000000005vi-0000 <= userx@somehost.example.com H=(test) [131.111.8.2
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -315,32 +364,39 @@ LOG: 10HmbB-000000005vi-0000 <= userx@somehost.example.com H=(test) [131.111.8.2
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
->>>   list element: 1.2.3.4
->>>   list element: !1.2.3.0/24
->>>   list element: 1.2.0.0/16
->>>   list element: net16-lsearch;TESTSUITE/aux-fixed/0065.nets
->>>   list element: net24-lsearch;TESTSUITE/aux-fixed/0065.nets
->>>   host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "net24-lsearch;TESTSUITE/aux-fixed/0065.nets")
+>>>   start sublist relay_hosts
+>>>    host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
+>>>    ╎list element: 1.2.3.4
+>>>    ╎list element: !1.2.3.0/24
+>>>    ╎list element: 1.2.0.0/16
+>>>    ╎list element: net16-lsearch;TESTSUITE/aux-fixed/0065.nets
+>>>    ╎list element: net24-lsearch;TESTSUITE/aux-fixed/0065.nets
+>>>    ╎host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "net24-lsearch;TESTSUITE/aux-fixed/0065.nets")
+>>>   end sublist relay_hosts
+>>>  data from lookup saved for cache for +relay_hosts: key '192.152.98.3' value ''
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -362,9 +418,12 @@ LOG: 10HmbC-000000005vi-0000 <= userx@somehost.example.com H=(test) [192.152.98.
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -373,33 +432,40 @@ LOG: 10HmbC-000000005vi-0000 <= userx@somehost.example.com H=(test) [192.152.98.
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
->>>   list element: 1.2.3.4
->>>   list element: !1.2.3.0/24
->>>   list element: 1.2.0.0/16
->>>   list element: net16-lsearch;TESTSUITE/aux-fixed/0065.nets
->>>   list element: net24-lsearch;TESTSUITE/aux-fixed/0065.nets
->>>   list element: net-lsearch;TESTSUITE/aux-fixed/0065.nets
->>>   host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "net-lsearch;TESTSUITE/aux-fixed/0065.nets")
+>>>   start sublist relay_hosts
+>>>    host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"?
+>>>    ╎list element: 1.2.3.4
+>>>    ╎list element: !1.2.3.0/24
+>>>    ╎list element: 1.2.0.0/16
+>>>    ╎list element: net16-lsearch;TESTSUITE/aux-fixed/0065.nets
+>>>    ╎list element: net24-lsearch;TESTSUITE/aux-fixed/0065.nets
+>>>    ╎list element: net-lsearch;TESTSUITE/aux-fixed/0065.nets
+>>>    ╎host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "net-lsearch;TESTSUITE/aux-fixed/0065.nets")
+>>>   end sublist relay_hosts
+>>>  data from lookup saved for cache for +relay_hosts: key '192.153.98.4' value ''
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT

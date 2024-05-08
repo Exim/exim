@@ -37,22 +37,27 @@ routing rz.b@outside
 --------> r1 router <--------
 local_part=rz.b domain=outside
 checking domains
+outside in domains? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=rz.b domain=outside
 checking domains
+outside in domains? no (end of list)
 r2 router skipped: domains mismatch
 --------> r3 router <--------
 local_part=rz.b domain=outside
 checking local_parts
+rz.b in local_parts? no (end of list)
 r3 router skipped: local_parts mismatch
 --------> r4 router <--------
 local_part=rz.b domain=outside
 checking local_parts
+rz.b in local_parts? no (end of list)
 r4 router skipped: local_parts mismatch
 --------> r5 router <--------
 local_part=rz.b domain=outside
 checking local_parts
+rz.b in local_parts? no (end of list)
 r5 router skipped: local_parts mismatch
 --------> r_remain router <--------
 local_part=rz.b domain=outside
@@ -82,6 +87,10 @@ Failed addresses:
 Deferred addresses:
  rz.b@outside
 locking TESTSUITE/spool/db/retry.lockfile
+*@outside in "^\*@r5domain.ex"? no (end of list)
+*@outside in "userx@test.ex"? no (end of list)
+outside in "test.ex"? no (end of list)
+*@outside in "test.ex"? no (end of list)
 retry for R:outside = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:outside

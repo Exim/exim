@@ -8,7 +8,8 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:PORT_D ...  connected
+Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:PORT_D ...
+ connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes

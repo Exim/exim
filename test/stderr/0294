@@ -15,18 +15,23 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<one@z>
+one in "reject"? no (end of list)
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<one@z>
 rate limit RCPT: delay 0.25 sec
+one in "reject"? no (end of list)
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<one@z>
 rate limit RCPT: delay 0.263 sec
+one in "reject"? no (end of list)
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<one@z>
 rate limit RCPT: delay 0.276 sec
+one in "reject"? no (end of list)
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<one@z>
 rate limit RCPT: delay 0.289 sec
+one in "reject"? no (end of list)
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -59,6 +64,7 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<two@z>
+two in "reject"? no (end of list)
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself

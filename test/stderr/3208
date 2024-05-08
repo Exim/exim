@@ -33,10 +33,13 @@
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
->>>   list element: !*relay.ex
->>>   list element: test.ex
->>>   test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
+>>>    ╎list element: !*relay.ex
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -74,10 +77,13 @@ LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCP
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
->>>   list element: !*relay.ex
->>>   list element: test.ex
->>>   test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
+>>>    ╎list element: !*relay.ex
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -102,21 +108,27 @@ LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCP
 >>> check domains = +local_domains
 >>> yesrelay.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  yesrelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
->>>   list element: !*relay.ex
->>>   yesrelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
+>>>   start sublist local_domains
+>>>    yesrelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
+>>>    ╎list element: !*relay.ex
+>>>    ╎yesrelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'yesrelay.ex' value '*relay.ex'
 >>> yesrelay.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 29)
 >>> check domains = +relay_domains
 >>> yesrelay.ex in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"?
->>>   list element: test.ex
->>>   list element: testhack.ex
->>>   list element: testhack2.ex
->>>   list element: yesrelay.ex
->>>   yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? yes (matched "yesrelay.ex")
+>>>   start sublist relay_domains
+>>>    yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: testhack.ex
+>>>    ╎list element: testhack2.ex
+>>>    ╎list element: yesrelay.ex
+>>>    ╎yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? yes (matched "yesrelay.ex")
+>>>   end sublist relay_domains
+>>>  data from lookup saved for cache for +relay_domains: key 'yesrelay.ex' value 'yesrelay.ex'
 >>>  yesrelay.ex in "+relay_domains"? yes (matched "+relay_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -134,22 +146,27 @@ LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCP
 >>> check domains = +local_domains
 >>> norelay.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  norelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
->>>   list element: !*relay.ex
->>>   norelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
+>>>   start sublist local_domains
+>>>    norelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
+>>>    ╎list element: !*relay.ex
+>>>    ╎norelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'norelay.ex' value '*relay.ex'
 >>> norelay.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 29)
 >>> check domains = +relay_domains
 >>> norelay.ex in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  norelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"?
->>>   list element: test.ex
->>>   list element: testhack.ex
->>>   list element: testhack2.ex
->>>   list element: yesrelay.ex
->>>   list element: testdb;defer
->>>  norelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? list match deferred for testdb;defer
+>>>   start sublist relay_domains
+>>>    norelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: testhack.ex
+>>>    ╎list element: testhack2.ex
+>>>    ╎list element: yesrelay.ex
+>>>    ╎list element: testdb;defer
+>>>    norelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? list match deferred for testdb;defer
+>>>   end sublist relay_domains
 >>> norelay.ex in "+relay_domains"? list match deferred for +relay_domains
 >>> accept: condition test deferred in ACL "check_recipient"
 LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCPT <a@norelay.ex>: testdb lookup forced DEFER
@@ -172,21 +189,27 @@ LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCP
 >>> check domains = +local_domains
 >>> yesrelay.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  yesrelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
->>>   list element: !*relay.ex
->>>   yesrelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
+>>>   start sublist local_domains
+>>>    yesrelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
+>>>    ╎list element: !*relay.ex
+>>>    ╎yesrelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'yesrelay.ex' value '*relay.ex'
 >>> yesrelay.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 29)
 >>> check domains = +relay_domains
 >>> yesrelay.ex in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"?
->>>   list element: test.ex
->>>   list element: testhack.ex
->>>   list element: testhack2.ex
->>>   list element: yesrelay.ex
->>>   yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? yes (matched "yesrelay.ex")
+>>>   start sublist relay_domains
+>>>    yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: testhack.ex
+>>>    ╎list element: testhack2.ex
+>>>    ╎list element: yesrelay.ex
+>>>    ╎yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? yes (matched "yesrelay.ex")
+>>>   end sublist relay_domains
+>>>  data from lookup saved for cache for +relay_domains: key 'yesrelay.ex' value 'yesrelay.ex'
 >>>  yesrelay.ex in "+relay_domains"? yes (matched "+relay_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -209,22 +232,27 @@ LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCP
 >>> check domains = +local_domains
 >>> norelay.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  norelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
->>>   list element: !*relay.ex
->>>   norelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
+>>>   start sublist local_domains
+>>>    norelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"?
+>>>    ╎list element: !*relay.ex
+>>>    ╎norelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'norelay.ex' value '*relay.ex'
 >>> norelay.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 29)
 >>> check domains = +relay_domains
 >>> norelay.ex in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  norelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"?
->>>   list element: test.ex
->>>   list element: testhack.ex
->>>   list element: testhack2.ex
->>>   list element: yesrelay.ex
->>>   list element: testdb;defer
->>>  norelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? list match deferred for testdb;defer
+>>>   start sublist relay_domains
+>>>    norelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: testhack.ex
+>>>    ╎list element: testhack2.ex
+>>>    ╎list element: yesrelay.ex
+>>>    ╎list element: testdb;defer
+>>>    norelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? list match deferred for testdb;defer
+>>>   end sublist relay_domains
 >>> norelay.ex in "+relay_domains"? list match deferred for +relay_domains
 >>> accept: condition test deferred in ACL "check_recipient"
 LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCPT <a%norelay.ex@testhack.ex>: testdb lookup forced DEFER

@@ -15,9 +15,12 @@
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -26,35 +29,41 @@
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
->>>   list element: ! V4NET.255.0.1
->>>   list element: !V4NET.255.0.2
->>>   list element: !TESTSUITE/aux-var/0060.d1
->>>   list element: ! TESTSUITE/aux-var/0060.d2
->>>   list element: ten-1.test.ex
+>>>   start sublist relay_hosts
+>>>    host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
+>>>    ╎list element: !░V4NET.255.0.1
+>>>    ╎list element: !V4NET.255.0.2
+>>>    ╎list element: !TESTSUITE/aux-var/0060.d1
+>>>    ╎list element: !░TESTSUITE/aux-var/0060.d2
+>>>    ╎list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>>   host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? yes (matched "ten-1.test.ex")
+>>>    ╎host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? yes (matched "ten-1.test.ex")
+>>>   end sublist relay_hosts
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -76,9 +85,12 @@ LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.1
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -87,40 +99,46 @@ LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.1
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
->>>   list element: ! V4NET.255.0.1
->>>   list element: !V4NET.255.0.2
->>>   list element: !TESTSUITE/aux-var/0060.d1
->>>   list element: ! TESTSUITE/aux-var/0060.d2
->>>   list element: ten-1.test.ex
+>>>   start sublist relay_hosts
+>>>    host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
+>>>    ╎list element: !░V4NET.255.0.1
+>>>    ╎list element: !V4NET.255.0.2
+>>>    ╎list element: !TESTSUITE/aux-var/0060.d1
+>>>    ╎list element: !░TESTSUITE/aux-var/0060.d2
+>>>    ╎list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>>   list element: ten-5-6.test.ex
+>>>    ╎list element: ten-5-6.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-5-6.test.ex address=V4NET.0.0.5
 >>>   name=ten-5-6.test.ex address=V4NET.0.0.6
->>>  host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? no (end of list)
+>>>    host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? no (end of list)
+>>>   end sublist relay_hosts
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 25)
@@ -146,9 +164,12 @@ LOG: 10HmaY-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.2
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -157,40 +178,46 @@ LOG: 10HmaY-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.2
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
->>>   list element: ! V4NET.255.0.1
->>>   list element: !V4NET.255.0.2
->>>   list element: !TESTSUITE/aux-var/0060.d1
->>>   list element: ! TESTSUITE/aux-var/0060.d2
->>>   list element: ten-1.test.ex
+>>>   start sublist relay_hosts
+>>>    host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
+>>>    ╎list element: !░V4NET.255.0.1
+>>>    ╎list element: !V4NET.255.0.2
+>>>    ╎list element: !TESTSUITE/aux-var/0060.d1
+>>>    ╎list element: !░TESTSUITE/aux-var/0060.d2
+>>>    ╎list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>>   list element: ten-5-6.test.ex
+>>>    ╎list element: ten-5-6.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-5-6.test.ex address=V4NET.0.0.5
 >>>   name=ten-5-6.test.ex address=V4NET.0.0.6
->>>   host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? yes (matched "ten-5-6.test.ex")
+>>>    ╎host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? yes (matched "ten-5-6.test.ex")
+>>>   end sublist relay_hosts
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -212,9 +239,12 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.5
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -223,40 +253,46 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.5
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
->>>   list element: ! V4NET.255.0.1
->>>   list element: !V4NET.255.0.2
->>>   list element: !TESTSUITE/aux-var/0060.d1
->>>   list element: ! TESTSUITE/aux-var/0060.d2
->>>   list element: ten-1.test.ex
+>>>   start sublist relay_hosts
+>>>    host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
+>>>    ╎list element: !░V4NET.255.0.1
+>>>    ╎list element: !V4NET.255.0.2
+>>>    ╎list element: !TESTSUITE/aux-var/0060.d1
+>>>    ╎list element: !░TESTSUITE/aux-var/0060.d2
+>>>    ╎list element: ten-1.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
->>>   list element: ten-5-6.test.ex
+>>>    ╎list element: ten-5-6.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-5-6.test.ex address=V4NET.0.0.5
 >>>   name=ten-5-6.test.ex address=V4NET.0.0.6
->>>   host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? yes (matched "ten-5-6.test.ex")
+>>>    ╎host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? yes (matched "ten-5-6.test.ex")
+>>>   end sublist relay_hosts
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -278,9 +314,12 @@ LOG: 10HmbA-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.6
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -289,28 +328,34 @@ LOG: 10HmbA-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.6
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
->>>   list element: ! V4NET.255.0.1
->>>   host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? no (matched "! V4NET.255.0.1")
+>>>   start sublist relay_hosts
+>>>    host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
+>>>    ╎list element: !░V4NET.255.0.1
+>>>    ╎host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? no (matched "! V4NET.255.0.1")
+>>>   end sublist relay_hosts
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 25)
@@ -336,9 +381,12 @@ LOG: 10HmbB-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.255.0
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -347,29 +395,35 @@ LOG: 10HmbB-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.255.0
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
->>>   list element: ! V4NET.255.0.1
->>>   list element: !V4NET.255.0.2
->>>   host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? no (matched "!V4NET.255.0.2")
+>>>   start sublist relay_hosts
+>>>    host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
+>>>    ╎list element: !░V4NET.255.0.1
+>>>    ╎list element: !V4NET.255.0.2
+>>>    ╎host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? no (matched "!V4NET.255.0.2")
+>>>   end sublist relay_hosts
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 25)
@@ -395,9 +449,12 @@ LOG: 10HmbC-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.255.0
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -406,30 +463,37 @@ LOG: 10HmbC-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.255.0
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
->>>   list element: ! V4NET.255.0.1
->>>   list element: !V4NET.255.0.2
->>>   list element: !TESTSUITE/aux-var/0060.d1
->>>   host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? no (matched "V4NET.255.0.3" in TESTSUITE/aux-var/0060.d1)
+>>>   start sublist relay_hosts
+>>>    host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
+>>>    ╎list element: !░V4NET.255.0.1
+>>>    ╎list element: !V4NET.255.0.2
+>>>    ╎list element: !TESTSUITE/aux-var/0060.d1
+>>>    ╎host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? no (matched "V4NET.255.0.3" in TESTSUITE/aux-var/0060.d1)
+>>>   end sublist relay_hosts
+>>>  data from lookup saved for cache for +relay_hosts: key 'V4NET.255.0.3' value 'V4NET.255.0.3'
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 25)
@@ -455,9 +519,12 @@ LOG: 10HmbD-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.255.0
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -466,31 +533,38 @@ LOG: 10HmbD-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.255.0
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 23)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  anotherhost.example.com in "test.ex"?
->>>   list element: test.ex
->>>  anotherhost.example.com in "test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    anotherhost.example.com in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    anotherhost.example.com in "test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
->>>   list element: ! V4NET.255.0.1
->>>   list element: !V4NET.255.0.2
->>>   list element: !TESTSUITE/aux-var/0060.d1
->>>   list element: ! TESTSUITE/aux-var/0060.d2
->>>   host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? no (matched "V4NET.255.0.4" in TESTSUITE/aux-var/0060.d2)
+>>>   start sublist relay_hosts
+>>>    host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"?
+>>>    ╎list element: !░V4NET.255.0.1
+>>>    ╎list element: !V4NET.255.0.2
+>>>    ╎list element: !TESTSUITE/aux-var/0060.d1
+>>>    ╎list element: !░TESTSUITE/aux-var/0060.d2
+>>>    ╎host in "! V4NET.255.0.1 : !V4NET.255.0.2 : !TESTSUITE/aux-var/0060.d1 : ! TESTSUITE/aux-var/0060.d2 : ten-1.test.ex : ten-5-6.test.ex"? no (matched "V4NET.255.0.4" in TESTSUITE/aux-var/0060.d2)
+>>>   end sublist relay_hosts
+>>>  data from lookup saved for cache for +relay_hosts: key 'V4NET.255.0.4' value 'V4NET.255.0.4'
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 25)

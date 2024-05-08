@@ -36,12 +36,12 @@
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  somehost.example.com in "bb.cc"?
 >>>   list element: bb.cc
 >>>  somehost.example.com in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  somehost.example.com in "bbb.ccc"?
@@ -60,9 +60,12 @@
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -99,9 +102,12 @@
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -222,9 +228,12 @@ LOG: H=(test) [1.2.3.4] F=<quilt@patch.work> rejected RCPT <x@test.ex>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -312,12 +321,12 @@ LOG: H=(test) [1.2.3.4] F=<abc@d.e.f> rejected RCPT <x@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  d.e.f in "bb.cc"?
 >>>   list element: bb.cc
 >>>  d.e.f in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  d.e.f in "bbb.ccc"?
@@ -336,9 +345,12 @@ LOG: H=(test) [1.2.3.4] F=<abc@d.e.f> rejected RCPT <x@test.ex>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -382,9 +394,12 @@ LOG: H=(test) [1.2.3.4] F=<abc@d.e.f> rejected RCPT <x@test.ex>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -444,12 +459,12 @@ LOG: H=(test) [1.2.3.4] F=<abc@z.z> rejected RCPT <x@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  z.z in "bb.cc"?
 >>>   list element: bb.cc
 >>>  z.z in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  z.z in "bbb.ccc"?
@@ -468,9 +483,12 @@ LOG: H=(test) [1.2.3.4] F=<abc@z.z> rejected RCPT <x@test.ex>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -590,12 +608,12 @@ LOG: H=(test) [1.2.3.4] F=<12345678@z.z> rejected RCPT <x@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  p.q.r in "bb.cc"?
 >>>   list element: bb.cc
 >>>  p.q.r in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  p.q.r in "bbb.ccc"?
@@ -617,9 +635,12 @@ LOG: H=(test) [1.2.3.4] F=<12345678@z.z> rejected RCPT <x@test.ex>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -649,12 +670,12 @@ LOG: H=(test) [1.2.3.4] F=<12345678@z.z> rejected RCPT <x@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  m.n.o in "bb.cc"?
 >>>   list element: bb.cc
 >>>  m.n.o in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  m.n.o in "bbb.ccc"?
@@ -733,12 +754,12 @@ LOG: H=(test) [1.2.3.4] F=<1234@m.n.o> rejected RCPT <userx@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  a.b.c in "bb.cc"?
 >>>   list element: bb.cc
 >>>  a.b.c in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  a.b.c in "bbb.ccc"?
@@ -784,12 +805,12 @@ LOG: H=(test) [1.2.3.4] F=<rr01@a.b.c> rejected RCPT <userx@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  a.b.c in "bb.cc"?
 >>>   list element: bb.cc
 >>>  a.b.c in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  a.b.c in "bbb.ccc"?
@@ -808,9 +829,12 @@ LOG: H=(test) [1.2.3.4] F=<rr01@a.b.c> rejected RCPT <userx@test.ex>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -840,12 +864,12 @@ LOG: H=(test) [1.2.3.4] F=<rr01@a.b.c> rejected RCPT <userx@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  a.b.c in "bb.cc"?
 >>>   list element: bb.cc
 >>>  a.b.c in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  a.b.c in "bbb.ccc"?
@@ -888,12 +912,12 @@ LOG: H=(test) [1.2.3.4] F=<qq@a.b.c> rejected RCPT <userx@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  z.z in "bb.cc"?
 >>>   list element: bb.cc
 >>>  z.z in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  z.z in "bbb.ccc"?
@@ -936,12 +960,12 @@ LOG: H=(test) [1.2.3.4] F=<!excl@z.z> rejected RCPT <userx@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  y.p.s in "bb.cc"?
 >>>   list element: bb.cc
 >>>  y.p.s in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  y.p.s in "bbb.ccc"?
@@ -987,12 +1011,12 @@ LOG: H=(test) [1.2.3.4] F=<sh#rp@y.p.s> rejected RCPT <userx@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  xx.yy in "bb.cc"?
 >>>   list element: bb.cc
 >>>  xx.yy in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  xx.yy in "bbb.ccc"?
@@ -1011,9 +1035,12 @@ LOG: H=(test) [1.2.3.4] F=<sh#rp@y.p.s> rejected RCPT <userx@test.ex>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -1106,7 +1133,7 @@ LOG: H=(test) [1.2.3.4] F=<aabc@xx.yy> rejected RCPT <x@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  bb.cc in "bb.cc"?
 >>>   list element: bb.cc
 >>>   bb.cc in "bb.cc"? yes (matched "bb.cc")
@@ -1123,9 +1150,12 @@ LOG: H=(test) [1.2.3.4] F=<aabc@xx.yy> rejected RCPT <x@test.ex>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -1155,7 +1185,7 @@ LOG: H=(test) [1.2.3.4] F=<aabc@xx.yy> rejected RCPT <x@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  bb.cc in "bb.cc"?
 >>>   list element: bb.cc
@@ -1193,7 +1223,7 @@ LOG: H=(test) [1.2.3.4] F=<y@bb.cc> rejected RCPT <x@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  bbb.ccc in "bb.cc"?
 >>>   list element: bb.cc
 >>>  bbb.ccc in "bb.cc"? no (end of list)
@@ -1201,7 +1231,7 @@ LOG: H=(test) [1.2.3.4] F=<y@bb.cc> rejected RCPT <x@test.ex>
 >>>  bbb.ccc in "bb.cc"?
 >>>   list element: bb.cc
 >>>  bbb.ccc in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  bbb.ccc in "bbb.ccc"?
 >>>   list element: bbb.ccc
 >>>   bbb.ccc in "bbb.ccc"? yes (matched "bbb.ccc")
@@ -1218,9 +1248,12 @@ LOG: H=(test) [1.2.3.4] F=<y@bb.cc> rejected RCPT <x@test.ex>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -1250,12 +1283,12 @@ LOG: H=(test) [1.2.3.4] F=<y@bb.cc> rejected RCPT <x@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  bbb.ccc in "bb.cc"?
 >>>   list element: bb.cc
 >>>  bbb.ccc in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  bbb.ccc in "bbb.ccc"?
 >>>   list element: bbb.ccc
@@ -1273,9 +1306,12 @@ LOG: H=(test) [1.2.3.4] F=<y@bb.cc> rejected RCPT <x@test.ex>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -1305,12 +1341,12 @@ LOG: H=(test) [1.2.3.4] F=<y@bb.cc> rejected RCPT <x@test.ex>
 >>>  list element: !yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch
 >>>  list element: @@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain
->>>  list element: ! x@bb.cc
+>>>  list element: !░x@bb.cc
 >>>  list element: *@bb.cc
 >>>  bbb.ccc in "bb.cc"?
 >>>   list element: bb.cc
 >>>  bbb.ccc in "bb.cc"? no (end of list)
->>>  list element: ! TESTSUITE/aux-fixed/0067.not1
+>>>  list element: !░TESTSUITE/aux-fixed/0067.not1
 >>>  list element: !TESTSUITE/aux-fixed/0067.not2
 >>>  list element: bbb.ccc
 >>>  bbb.ccc in "bbb.ccc"?

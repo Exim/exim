@@ -25,14 +25,17 @@ routing filter-userx@test.ex
 --------> check_vars router <--------
 local_part=filter-userx domain=test.ex
 checking local_parts
+filter-userx in local_parts? no (end of list)
 check_vars router skipped: local_parts mismatch
 --------> fail_read_filter router <--------
 local_part=filter-userx domain=test.ex
 checking local_parts
+filter-userx in local_parts? no (end of list)
 fail_read_filter router skipped: local_parts mismatch
 --------> prepend_filter router <--------
 local_part=filter-userx domain=test.ex
 checking local_parts
+filter-userx in local_parts? no (end of list)
 prepend_filter router skipped: local_parts mismatch
 --------> userfilter router <--------
 local_part=filter-userx domain=test.ex
@@ -63,22 +66,27 @@ routing userx@test.ex
 --------> check_vars router <--------
 local_part=userx domain=test.ex
 checking local_parts
+userx in local_parts? no (end of list)
 check_vars router skipped: local_parts mismatch
 --------> fail_read_filter router <--------
 local_part=userx domain=test.ex
 checking local_parts
+userx in local_parts? no (end of list)
 fail_read_filter router skipped: local_parts mismatch
 --------> prepend_filter router <--------
 local_part=userx domain=test.ex
 checking local_parts
+userx in local_parts? no (end of list)
 prepend_filter router skipped: local_parts mismatch
 --------> userfilter router <--------
 local_part=userx domain=test.ex
 checking local_parts
+userx in local_parts? no (end of list)
 userfilter router skipped: local_parts mismatch
 --------> user_accept1 router <--------
 local_part=userx domain=test.ex
 checking local_parts
+userx in local_parts? no (end of list)
 user_accept1 router skipped: local_parts mismatch
 --------> user_accept2 router <--------
 local_part=userx domain=test.ex

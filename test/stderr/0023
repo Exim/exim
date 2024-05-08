@@ -37,9 +37,12 @@
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>>   message: $domain gets refused
 >>> check domains = !refuse.test.ex
@@ -75,25 +78,32 @@
 >>> check domains = +local_domains
 >>> z in "+local_domains"?
 >>>  list element: +local_domains
->>>  z in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   list element: *.test.ex
->>>  z in "test.ex : *.test.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    z in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: *.test.ex
+>>>    z in "test.ex : *.test.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> z in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept" (TESTSUITE/test-config 60)
 >>> check domains = +relay_domains
 >>> z in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  z in "relay.test.ex"?
->>>   list element: relay.test.ex
->>>  z in "relay.test.ex"? no (end of list)
+>>>   start sublist relay_domains
+>>>    z in "relay.test.ex"?
+>>>    ╎list element: relay.test.ex
+>>>    z in "relay.test.ex"? no (end of list)
+>>>   end sublist relay_domains
 >>> z in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept" (TESTSUITE/test-config 61)
 >>> check domains = +relay_domains
 >>> z in "+relay_domains"?
 >>>  list element: +relay_domains
+>>>   start sublist relay_domains
+>>>  cached no match for +relay_domains
+>>>  cached lookup data = NULL
 >>> z in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": implicit DENY
@@ -125,9 +135,12 @@ LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <z@z>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>>   message: $domain gets refused
 >>> check domains = !refuse.test.ex
@@ -163,9 +176,12 @@ LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <z@z>
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>>   message: $domain gets refused
 >>> check domains = !refuse.test.ex
@@ -201,10 +217,13 @@ LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <z@z>
 >>> check domains = +local_domains
 >>> relay.test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  relay.test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   list element: *.test.ex
->>>   relay.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
+>>>   start sublist local_domains
+>>>    relay.test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: *.test.ex
+>>>    ╎relay.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'relay.test.ex' value '*.test.ex'
 >>>  relay.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>>   message: $domain gets refused
 >>> check domains = !refuse.test.ex
@@ -265,10 +284,13 @@ LOG: H=(test) [1.2.3.4] F=<x@y> rejected RCPT <x@deny.test.ex>: DOMAIN EXPLICITL
 >>> check domains = +local_domains
 >>> refuse.test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  refuse.test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   list element: *.test.ex
->>>   refuse.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
+>>>   start sublist local_domains
+>>>    refuse.test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: *.test.ex
+>>>    ╎refuse.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'refuse.test.ex' value '*.test.ex'
 >>>  refuse.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>>   message: $domain gets refused
 >>> check domains = !refuse.test.ex
@@ -380,9 +402,11 @@ LOG: H=(test) [5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> check hosts = +ok9_hosts
 >>> host in "+ok9_hosts"?
 >>>  list element: +ok9_hosts
->>>  host in "9.9.9.9"?
->>>   list element: 9.9.9.9
->>>   host in "9.9.9.9"? yes (matched "9.9.9.9")
+>>>   start sublist ok9_hosts
+>>>    host in "9.9.9.9"?
+>>>    ╎list element: 9.9.9.9
+>>>    ╎host in "9.9.9.9"? yes (matched "9.9.9.9")
+>>>   end sublist ok9_hosts
 >>>  host in "+ok9_hosts"? yes (matched "+ok9_hosts")
 >>> accept: condition test succeeded in ACL "acl_9_9_9"
 >>> end of ACL "acl_9_9_9": ACCEPT
@@ -391,6 +415,9 @@ LOG: H=(test) [5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> check hosts = +ok9_hosts
 >>> host in "+ok9_hosts"?
 >>>  list element: +ok9_hosts
+>>>   start sublist ok9_hosts
+>>>  cached yes match for +ok9_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+ok9_hosts"? yes (matched "+ok9_hosts" - cached)
 >>> accept: condition test succeeded in ACL "acl_9_9_9"
 >>> end of ACL "acl_9_9_9": ACCEPT
@@ -411,9 +438,11 @@ LOG: H=(test) [5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> check hosts = +ok9_hosts
 >>> host in "+ok9_hosts"?
 >>>  list element: +ok9_hosts
->>>  host in "9.9.9.9"?
->>>   list element: 9.9.9.9
->>>  host in "9.9.9.9"? no (end of list)
+>>>   start sublist ok9_hosts
+>>>    host in "9.9.9.9"?
+>>>    ╎list element: 9.9.9.9
+>>>    host in "9.9.9.9"? no (end of list)
+>>>   end sublist ok9_hosts
 >>> host in "+ok9_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny" (TESTSUITE/test-config 92)
@@ -430,6 +459,9 @@ LOG: H=(test) [9.9.9.8] F=<x@y> rejected RCPT <x@y>: don't like this host
 >>> check hosts = +ok9_hosts
 >>> host in "+ok9_hosts"?
 >>>  list element: +ok9_hosts
+>>>   start sublist ok9_hosts
+>>>  cached no match for +ok9_hosts
+>>>  cached lookup data = NULL
 >>> host in "+ok9_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny" (TESTSUITE/test-config 92)
@@ -458,9 +490,11 @@ LOG: H=(test) [9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>> check hosts = +ok9_hosts
 >>> host in "+ok9_hosts"?
 >>>  list element: +ok9_hosts
->>>  host in "9.9.9.9"?
->>>   list element: 9.9.9.9
->>>  host in "9.9.9.9"? no (end of list)
+>>>   start sublist ok9_hosts
+>>>    host in "9.9.9.9"?
+>>>    ╎list element: 9.9.9.9
+>>>    host in "9.9.9.9"? no (end of list)
+>>>   end sublist ok9_hosts
 >>> host in "+ok9_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny" (TESTSUITE/test-config 92)
@@ -482,6 +516,9 @@ LOG: H=(test) [9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>> check hosts = +ok9_hosts
 >>> host in "+ok9_hosts"?
 >>>  list element: +ok9_hosts
+>>>   start sublist ok9_hosts
+>>>  cached no match for +ok9_hosts
+>>>  cached lookup data = NULL
 >>> host in "+ok9_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny" (TESTSUITE/test-config 92)
@@ -520,9 +557,11 @@ LOG: H=(test) [9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>>   list element: domain2
 >>>  y in "domain2"? no (end of list)
 >>>  list element: +ok_senders
->>>  x@y in "ok@ok.ok"?
->>>   list element: ok@ok.ok
->>>  x@y in "ok@ok.ok"? no (end of list)
+>>>   start sublist ok_senders
+>>>    x@y in "ok@ok.ok"?
+>>>    ╎list element: ok@ok.ok
+>>>    x@y in "ok@ok.ok"? no (end of list)
+>>>   end sublist ok_senders
 >>> x@y in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
@@ -537,6 +576,9 @@ LOG: H=(test) [5.6.8.1] F=<x@y> rejected RCPT <x@y>
 >>>   list element: domain2
 >>>  y in "domain2"? no (end of list)
 >>>  list element: +ok_senders
+>>>   start sublist ok_senders
+>>>  cached no match for +ok_senders
+>>>  cached lookup data = NULL
 >>> x@y in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
@@ -565,9 +607,11 @@ LOG: H=(test) [5.6.8.1] F=<x@y> rejected RCPT <y@x>
 >>>   list element: domain2
 >>>  domain1 in "domain2"? no (end of list)
 >>>  list element: +ok_senders
->>>  user2@domain1 in "ok@ok.ok"?
->>>   list element: ok@ok.ok
->>>  user2@domain1 in "ok@ok.ok"? no (end of list)
+>>>   start sublist ok_senders
+>>>    user2@domain1 in "ok@ok.ok"?
+>>>    ╎list element: ok@ok.ok
+>>>    user2@domain1 in "ok@ok.ok"? no (end of list)
+>>>   end sublist ok_senders
 >>> user2@domain1 in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
@@ -597,12 +641,15 @@ LOG: H=(test) [5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
 >>>   list element: domain2
 >>>  ok.ok in "domain2"? no (end of list)
 >>>  list element: +ok_senders
->>>  ok@ok.ok in "ok@ok.ok"?
->>>   list element: ok@ok.ok
->>>   ok.ok in "ok.ok"?
->>>    list element: ok.ok
->>>    ok.ok in "ok.ok"? yes (matched "ok.ok")
->>>   ok@ok.ok in "ok@ok.ok"? yes (matched "ok@ok.ok")
+>>>   start sublist ok_senders
+>>>    ok@ok.ok in "ok@ok.ok"?
+>>>    ╎list element: ok@ok.ok
+>>>    ╎ok.ok in "ok.ok"?
+>>>    ╎ list element: ok.ok
+>>>    ╎ ok.ok in "ok.ok"? yes (matched "ok.ok")
+>>>    ╎ok@ok.ok in "ok@ok.ok"? yes (matched "ok@ok.ok")
+>>>   end sublist ok_senders
+>>>  data from lookup saved for cache for +ok_senders: key 'ok@ok.ok' value 'ok@ok.ok'
 >>>  ok@ok.ok in "user1@domain1 : domain2 : +ok_senders"? yes (matched "+ok_senders")
 >>> accept: condition test succeeded in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": ACCEPT
@@ -616,6 +663,9 @@ LOG: H=(test) [5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
 >>>   list element: domain2
 >>>  ok.ok in "domain2"? no (end of list)
 >>>  list element: +ok_senders
+>>>   start sublist ok_senders
+>>>  cached yes match for +ok_senders
+>>>  cached lookup data = ok@ok.ok
 >>>  ok@ok.ok in "user1@domain1 : domain2 : +ok_senders"? yes (matched "+ok_senders" - cached)
 >>> accept: condition test succeeded in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": ACCEPT
@@ -990,16 +1040,16 @@ LOG: H=(test) [V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.e
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
->>> x in "^ok"?
+>>> x in local_parts?
 >>>  list element: ^ok
->>> x in "^ok"? no (end of list)
->>> x in "^userx : ^cond-"?
+>>> x in local_parts? no (end of list)
+>>> x in local_parts?
 >>>  list element: ^userx
 >>>  list element: ^cond-
->>> x in "^userx : ^cond-"? no (end of list)
->>> x in "fail"?
+>>> x in local_parts? no (end of list)
+>>> x in local_parts?
 >>>  list element: fail
->>> x in "fail"? no (end of list)
+>>> x in local_parts? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_20_20_20"
@@ -1032,12 +1082,12 @@ LOG: H=(test) [20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@y
->>> userx in "^ok"?
+>>> userx in local_parts?
 >>>  list element: ^ok
->>> userx in "^ok"? no (end of list)
->>> userx in "^userx : ^cond-"?
+>>> userx in local_parts? no (end of list)
+>>> userx in local_parts?
 >>>  list element: ^userx
->>>  userx in "^userx : ^cond-"? yes (matched "^userx")
+>>>  userx in local_parts? yes (matched "^userx")
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
@@ -1045,16 +1095,16 @@ LOG: H=(test) [20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x1@y
->>> x1 in "^ok"?
+>>> x1 in local_parts?
 >>>  list element: ^ok
->>> x1 in "^ok"? no (end of list)
->>> x1 in "^userx : ^cond-"?
+>>> x1 in local_parts? no (end of list)
+>>> x1 in local_parts?
 >>>  list element: ^userx
 >>>  list element: ^cond-
->>> x1 in "^userx : ^cond-"? no (end of list)
->>> x1 in "fail"?
+>>> x1 in local_parts? no (end of list)
+>>> x1 in local_parts?
 >>>  list element: fail
->>> x1 in "fail"? no (end of list)
+>>> x1 in local_parts? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_20_20_20"
@@ -1069,12 +1119,12 @@ LOG: H=(test) [20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable addres
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@y
->>> userx in "^ok"?
+>>> userx in local_parts?
 >>>  list element: ^ok
->>> userx in "^ok"? no (end of list)
->>> userx in "^userx : ^cond-"?
+>>> userx in local_parts? no (end of list)
+>>> userx in local_parts?
 >>>  list element: ^userx
->>>  userx in "^userx : ^cond-"? yes (matched "^userx")
+>>>  userx in local_parts? yes (matched "^userx")
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
@@ -1097,28 +1147,28 @@ LOG: H=(test) [20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable addres
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@y
->>> userx in "^ok"?
+>>> userx in local_parts?
 >>>  list element: ^ok
->>> userx in "^ok"? no (end of list)
->>> userx in "^userx : ^cond-"?
+>>> userx in local_parts? no (end of list)
+>>> userx in local_parts?
 >>>  list element: ^userx
->>>  userx in "^userx : ^cond-"? yes (matched "^userx")
+>>>  userx in local_parts? yes (matched "^userx")
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x1@y
->>> x1 in "^ok"?
+>>> x1 in local_parts?
 >>>  list element: ^ok
->>> x1 in "^ok"? no (end of list)
->>> x1 in "^userx : ^cond-"?
+>>> x1 in local_parts? no (end of list)
+>>> x1 in local_parts?
 >>>  list element: ^userx
 >>>  list element: ^cond-
->>> x1 in "^userx : ^cond-"? no (end of list)
->>> x1 in "fail"?
+>>> x1 in local_parts? no (end of list)
+>>> x1 in local_parts?
 >>>  list element: fail
->>> x1 in "fail"? no (end of list)
+>>> x1 in local_parts? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_21_21_21"
@@ -1131,12 +1181,12 @@ LOG: H=(test) [21.21.21.21] F=<userx@y> rejected RCPT <x1@y>: Unrouteable addres
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@y
->>> userx in "^ok"?
+>>> userx in local_parts?
 >>>  list element: ^ok
->>> userx in "^ok"? no (end of list)
->>> userx in "^userx : ^cond-"?
+>>> userx in local_parts? no (end of list)
+>>> userx in local_parts?
 >>>  list element: ^userx
->>>  userx in "^userx : ^cond-"? yes (matched "^userx")
+>>>  userx in local_parts? yes (matched "^userx")
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
@@ -1149,16 +1199,16 @@ LOG: H=(test) [21.21.21.21] F=<userx@y> rejected RCPT <x1@y>: Unrouteable addres
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing fail@y
->>> fail in "^ok"?
+>>> fail in local_parts?
 >>>  list element: ^ok
->>> fail in "^ok"? no (end of list)
->>> fail in "^userx : ^cond-"?
+>>> fail in local_parts? no (end of list)
+>>> fail in local_parts?
 >>>  list element: ^userx
 >>>  list element: ^cond-
->>> fail in "^userx : ^cond-"? no (end of list)
->>> fail in "fail"?
+>>> fail in local_parts? no (end of list)
+>>> fail in local_parts?
 >>>  list element: fail
->>>  fail in "fail"? yes (matched "fail")
+>>>  fail in local_parts? yes (matched "fail")
 >>> calling r2 router
 >>> r2 router forced address failure
 >>> ----------- end verify ------------
@@ -1170,16 +1220,16 @@ LOG: H=(test) [21.21.21.21] F=<userx@y> rejected RCPT <fail@y>: here is a fail m
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
->>> x in "^ok"?
+>>> x in local_parts?
 >>>  list element: ^ok
->>> x in "^ok"? no (end of list)
->>> x in "^userx : ^cond-"?
+>>> x in local_parts? no (end of list)
+>>> x in local_parts?
 >>>  list element: ^userx
 >>>  list element: ^cond-
->>> x in "^userx : ^cond-"? no (end of list)
->>> x in "fail"?
+>>> x in local_parts? no (end of list)
+>>> x in local_parts?
 >>>  list element: fail
->>> x in "fail"? no (end of list)
+>>> x in local_parts? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_21_21_21"
@@ -1201,16 +1251,16 @@ LOG: H=(test) [21.21.21.21] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing fail@y
->>> fail in "^ok"?
+>>> fail in local_parts?
 >>>  list element: ^ok
->>> fail in "^ok"? no (end of list)
->>> fail in "^userx : ^cond-"?
+>>> fail in local_parts? no (end of list)
+>>> fail in local_parts?
 >>>  list element: ^userx
 >>>  list element: ^cond-
->>> fail in "^userx : ^cond-"? no (end of list)
->>> fail in "fail"?
+>>> fail in local_parts? no (end of list)
+>>> fail in local_parts?
 >>>  list element: fail
->>>  fail in "fail"? yes (matched "fail")
+>>>  fail in local_parts? yes (matched "fail")
 >>> calling r2 router
 >>> r2 router forced address failure
 >>> ----------- end verify ------------
@@ -1272,16 +1322,16 @@ LOG: H=(test) [22.22.22.22] F=<userx@y> rejected RCPT <userx@y>
 >>> check !verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
->>> x in "^ok"?
+>>> x in local_parts?
 >>>  list element: ^ok
->>> x in "^ok"? no (end of list)
->>> x in "^userx : ^cond-"?
+>>> x in local_parts? no (end of list)
+>>> x in local_parts?
 >>>  list element: ^userx
 >>>  list element: ^cond-
->>> x in "^userx : ^cond-"? no (end of list)
->>> x in "fail"?
+>>> x in local_parts? no (end of list)
+>>> x in local_parts?
 >>>  list element: fail
->>> x in "fail"? no (end of list)
+>>> x in local_parts? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
 >>> deny: condition test succeeded in ACL "acl_23_23_23"
@@ -1298,12 +1348,12 @@ LOG: H=(test) [23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>> check !verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@y
->>> userx in "^ok"?
+>>> userx in local_parts?
 >>>  list element: ^ok
->>> userx in "^ok"? no (end of list)
->>> userx in "^userx : ^cond-"?
+>>> userx in local_parts? no (end of list)
+>>> userx in local_parts?
 >>>  list element: ^userx
->>>  userx in "^userx : ^cond-"? yes (matched "^userx")
+>>>  userx in local_parts? yes (matched "^userx")
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
@@ -1504,8 +1554,12 @@ LOG: H=(test) [28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> looking up host name for V4NET.0.0.3
 >>> IP address lookup yielded "ten-3.test.ex"
 >>>   alias "ten-3-alias.test.ex"
+>>> ten-3.test.ex not in empty list (option unset? cannot trace name)
+>>> ten-3.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-3.test.ex
 >>>   V4NET.0.0.3 OK
+>>> ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
+>>> ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>> require: condition test succeeded in ACL "acl_V4NET_0_0"
@@ -1557,6 +1611,8 @@ LOG: H=(test) [V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for re
 >>> looking up host name to force name/address consistency check
 >>> looking up host name for V4NET.99.99.96
 >>> IP address lookup yielded "x.test.again.dns"
+>>> x.test.again.dns not in empty list (option unset? cannot trace name)
+>>> x.test.again.dns not in empty list (option unset? cannot trace name)
 >>> x.test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> temporary error for host name lookup
 >>> accept: condition test deferred in ACL "acl_V4NET_99_99"
@@ -1583,6 +1639,8 @@ LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup
 >>> looking up host name to force name/address consistency check
 >>> looking up host name for V4NET.99.99.96
 >>> IP address lookup yielded "x.test.again.dns"
+>>> x.test.again.dns not in empty list (option unset? cannot trace name)
+>>> x.test.again.dns not in empty list (option unset? cannot trace name)
 >>> x.test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> temporary error for host name lookup
 >>> accept: condition test succeeded in ACL "acl_V4NET_99_99"
@@ -1720,16 +1778,16 @@ LOG: dnslist query is too long (ignored): y+extra+extra+extra+extra+extra+extra+
 >>> check verify = sender/no_details
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
->>> x in "^ok"?
+>>> x in local_parts?
 >>>  list element: ^ok
->>> x in "^ok"? no (end of list)
->>> x in "^userx : ^cond-"?
+>>> x in local_parts? no (end of list)
+>>> x in local_parts?
 >>>  list element: ^userx
 >>>  list element: ^cond-
->>> x in "^userx : ^cond-"? no (end of list)
->>> x in "fail"?
+>>> x in local_parts? no (end of list)
+>>> x in local_parts?
 >>>  list element: fail
->>> x in "fail"? no (end of list)
+>>> x in local_parts? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
 >>> accept: condition test failed in ACL "acl_33_33_33"

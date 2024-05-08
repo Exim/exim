@@ -23,16 +23,22 @@ r4: $local_part_data = LOCAL PART DATA
 >>> check domains = +test_domains
 >>> a.b.c in "+test_domains"?
 >>>  list element: +test_domains
->>>  a.b.c in "lsearch; TESTSUITE/aux-fixed/0325.data"?
->>>   list element: lsearch; TESTSUITE/aux-fixed/0325.data
->>>   a.b.c in "lsearch; TESTSUITE/aux-fixed/0325.data"? yes (matched "lsearch; TESTSUITE/aux-fixed/0325.data")
+>>>   start sublist test_domains
+>>>    a.b.c in "lsearch; TESTSUITE/aux-fixed/0325.data"?
+>>>    ╎list element: lsearch;░TESTSUITE/aux-fixed/0325.data
+>>>    ╎a.b.c in "lsearch; TESTSUITE/aux-fixed/0325.data"? yes (matched "lsearch; TESTSUITE/aux-fixed/0325.data")
+>>>   end sublist test_domains
+>>>  data from lookup saved for cache for +test_domains: key 'a.b.c' value 'DOMAIN DATA'
 >>>  a.b.c in "+test_domains"? yes (matched "+test_domains")
 >>> check local_parts = +test_local_parts
 >>> xxx in "+test_local_parts"?
 >>>  list element: +test_local_parts
->>>  xxx in "lsearch;TESTSUITE/aux-fixed/0325.data"?
->>>   list element: lsearch;TESTSUITE/aux-fixed/0325.data
->>>   xxx in "lsearch;TESTSUITE/aux-fixed/0325.data"? yes (matched "lsearch;TESTSUITE/aux-fixed/0325.data")
+>>>   start sublist test_local_parts
+>>>    xxx in "lsearch;TESTSUITE/aux-fixed/0325.data"?
+>>>    ╎list element: lsearch;TESTSUITE/aux-fixed/0325.data
+>>>    ╎xxx in "lsearch;TESTSUITE/aux-fixed/0325.data"? yes (matched "lsearch;TESTSUITE/aux-fixed/0325.data")
+>>>   end sublist test_local_parts
+>>>  data from lookup saved for cache for +test_local_parts: key 'xxx' value 'LOCAL PART DATA'
 >>>  xxx in "+test_local_parts"? yes (matched "+test_local_parts")
 >>> check condition = ${if eq{$domain_data/$local_part_data}{DOMAIN DATA/LOCAL PART DATA}{no}{yes}}
 >>>                 = no
@@ -41,10 +47,16 @@ r4: $local_part_data = LOCAL PART DATA
 >>> check domains = +test_domains
 >>> a.b.c in "+test_domains"?
 >>>  list element: +test_domains
+>>>   start sublist test_domains
+>>>  cached yes match for +test_domains
+>>>  cached lookup data = DOMAIN DATA
 >>>  a.b.c in "+test_domains"? yes (matched "+test_domains" - cached)
 >>> check local_parts = +test_local_parts
 >>> xxx in "+test_local_parts"?
 >>>  list element: +test_local_parts
+>>>   start sublist test_local_parts
+>>>  cached yes match for +test_local_parts
+>>>  cached lookup data = LOCAL PART DATA
 >>>  xxx in "+test_local_parts"? yes (matched "+test_local_parts" - cached)
 >>>   message: \$domain_data=$domain_data \$local_part_data=$local_part_data
 >>> deny: condition test succeeded in ACL "a1"

@@ -21,15 +21,15 @@ routing test.ex@test.ex
 --------> r0 router <--------
 local_part=test.ex domain=test.ex
 checking senders
-CALLER@myhost.test.ex in "a@shorthost.test.ex"?
+CALLER@myhost.test.ex in senders?
  list element: a@shorthost.test.ex
  address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
-CALLER@myhost.test.ex in "a@shorthost.test.ex"? no (end of list)
+CALLER@myhost.test.ex in senders? no (end of list)
 r0 router skipped: senders mismatch
 --------> r1 router <--------
 local_part=test.ex domain=test.ex
 checking domains
-test.ex in "dnsdb;test.ex"?
+test.ex in domains?
  list element: dnsdb;test.ex
  search_open: dnsdb "NULL"
  search_find: file="NULL"
@@ -44,9 +44,9 @@ DNS lookup of test.ex (TXT) using fakens
 DNS lookup of test.ex (TXT) succeeded
  creating new cache entry
  lookup yielded: A░TXT░record░for░test.ex.
- test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+ test.ex in domains? yes (matched "dnsdb;test.ex")
 checking local_parts
-test.ex in "dnsdb;test.ex"?
+test.ex in local_parts?
  list element: dnsdb;test.ex
  search_open: dnsdb "NULL"
    cached open
@@ -57,7 +57,7 @@ test.ex in "dnsdb;test.ex"?
    type=dnsdb key="test.ex" opts=NULL
  cached data used for lookup of test.ex
  lookup yielded: A░TXT░record░for░test.ex.
- test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+ test.ex in local_parts? yes (matched "dnsdb;test.ex")
 calling r1 router
 r1 router called for test.ex@test.ex
   domain = test.ex
@@ -78,15 +78,15 @@ routing unknown@test.ex
 --------> r0 router <--------
 local_part=unknown domain=test.ex
 checking senders
-CALLER@myhost.test.ex in "a@shorthost.test.ex"?
+CALLER@myhost.test.ex in senders?
  list element: a@shorthost.test.ex
  address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
-CALLER@myhost.test.ex in "a@shorthost.test.ex"? no (end of list)
+CALLER@myhost.test.ex in senders? no (end of list)
 r0 router skipped: senders mismatch
 --------> r1 router <--------
 local_part=unknown domain=test.ex
 checking domains
-test.ex in "dnsdb;test.ex"?
+test.ex in domains?
  list element: dnsdb;test.ex
  search_open: dnsdb "NULL"
    cached open
@@ -97,9 +97,9 @@ test.ex in "dnsdb;test.ex"?
    type=dnsdb key="test.ex" opts=NULL
  cached data used for lookup of test.ex
  lookup yielded: A░TXT░record░for░test.ex.
- test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+ test.ex in domains? yes (matched "dnsdb;test.ex")
 checking local_parts
-unknown in "dnsdb;unknown"?
+unknown in local_parts?
  list element: dnsdb;unknown
  search_open: dnsdb "NULL"
    cached open
@@ -118,12 +118,12 @@ faking res_search(TXT) response length as 65535
  writing neg-cache entry for unknown-TXT-xxxx, ttl 3000
  creating new cache entry
  lookup failed
-unknown in "dnsdb;unknown"? no (end of list)
+unknown in local_parts? no (end of list)
 r1 router skipped: local_parts mismatch
 --------> r2 router <--------
 local_part=unknown domain=test.ex
 checking domains
-test.ex in "dnsdb;test.ex"?
+test.ex in domains?
  list element: dnsdb;test.ex
  search_open: dnsdb "NULL"
    cached open
@@ -134,9 +134,9 @@ test.ex in "dnsdb;test.ex"?
    type=dnsdb key="test.ex" opts=NULL
  cached data used for lookup of test.ex
  lookup yielded: A░TXT░record░for░test.ex.
- test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+ test.ex in domains? yes (matched "dnsdb;test.ex")
 checking senders
-CALLER@myhost.test.ex in "dnsdb;A=myhost.test.ex"?
+CALLER@myhost.test.ex in senders?
  list element: dnsdb;A=myhost.test.ex
  address match test: subject=CALLER@myhost.test.ex pattern=dnsdb;A=myhost.test.ex
  search_open: dnsdb "NULL"
@@ -152,7 +152,7 @@ DNS lookup of myhost.test.ex (A) using fakens
 DNS lookup of myhost.test.ex (A) succeeded
  creating new cache entry
  lookup yielded: V4NET.10.10.10
- CALLER@myhost.test.ex in "dnsdb;A=myhost.test.ex"? yes (matched "dnsdb;A=myhost.test.ex")
+ CALLER@myhost.test.ex in senders? yes (matched "dnsdb;A=myhost.test.ex")
 calling r2 router
 r2 router called for unknown@test.ex
   domain = test.ex
@@ -231,6 +231,7 @@ p1238 Process p1238 is handling incoming connection from [127.0.0.1]
 p1238 Process p1238 is ready for new message
 1 SMTP accept process running
 Listening...
+p1238 host in chunking_advertise_hosts? no (end of list)
 p1238 dnslists check: rbl.test.ex/V4NET.11.12.14
 p1238 new DNS lookup for 14.12.11.V4NET.rbl.test.ex
 p1238 dnslists: wrote cache entry, ttl=2

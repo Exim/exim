@@ -27,6 +27,8 @@ LOG: H=[2001:ab8:37f:20::1] rejected connection in "connect" ACL
 >>>  host in host_lookup? yes (matched "*")
 >>> looking up host name for V6NET:1234:5:6:7:8:abc:d
 >>> IP address lookup yielded "test3.ipv6.test.ex"
+>>> test3.ipv6.test.ex not in empty list (option unset? cannot trace name)
+>>> test3.ipv6.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for test3.ipv6.test.ex
 >>>   V6NET:1234:5:6:7:8:abc:d OK
 >>> host in host_reject_connection? no (option unset)

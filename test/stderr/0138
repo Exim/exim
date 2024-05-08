@@ -132,9 +132,9 @@ LOG: 10HmaX-000000005vi-0000 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.
 >>> routing userx@exim.test.ex
 >>> calling system_aliases router
 >>> system_aliases router declined for userx@exim.test.ex
->>> userx in "userx"?
+>>> userx in local_parts?
 >>>  list element: userx
->>>  userx in "userx"? yes (matched "userx")
+>>>  userx in local_parts? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
@@ -146,9 +146,9 @@ LOG: 10HmaX-000000005vi-0000 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.
 >>> routing userx@exim.test.ex
 >>> calling system_aliases router
 >>> system_aliases router declined for userx@exim.test.ex
->>> userx in "userx"?
+>>> userx in local_parts?
 >>>  list element: userx
->>>  userx in "userx"? yes (matched "userx")
+>>>  userx in local_parts? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
@@ -157,9 +157,12 @@ LOG: 10HmaX-000000005vi-0000 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.
 >>> check domains = +local_domains
 >>> exim.test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  exim.test.ex in "exim.test.ex"?
->>>   list element: exim.test.ex
->>>   exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
+>>>   start sublist local_domains
+>>>    exim.test.ex in "exim.test.ex"?
+>>>    ╎list element: exim.test.ex
+>>>    ╎exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'exim.test.ex' value 'exim.test.ex'
 >>>  exim.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT

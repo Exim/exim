@@ -83,9 +83,9 @@ ok@test1 in "ok@test1 : ok@test3"?
   test1 in "test1"? yes (matched "test1")
  ok@test1 in "ok@test1 : ok@test3"? yes (matched "ok@test1")
 check verify = sender
-ok in "!bad"?
+ok in local_parts?
  list element: !bad
-ok in "!bad"? yes (end of list)
+ok in local_parts? yes (end of list)
 ----------- end verify ------------
 sender ok@test1 verified ok
 check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argument"
@@ -222,9 +222,9 @@ ok@test3 in "ok@test1 : ok@test3"?
   test3 in "test3"? yes (matched "test3")
  ok@test3 in "ok@test1 : ok@test3"? yes (matched "ok@test3")
 check verify = sender
-ok in "!bad"?
+ok in local_parts?
  list element: !bad
-ok in "!bad"? yes (end of list)
+ok in local_parts? yes (end of list)
 ----------- end verify ------------
 sender ok@test3 verified ok
 check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argument"
@@ -286,9 +286,9 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-x in "!bad"?
+x in local_parts?
  list element: !bad
-x in "!bad"? yes (end of list)
+x in local_parts? yes (end of list)
 LOG: MAIN
   => x <x@y> R=accept T=appendfile
 LOG: MAIN

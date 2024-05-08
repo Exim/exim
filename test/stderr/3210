@@ -18,8 +18,8 @@ routing userx@test.ex
 --------> r1 router <--------
 local_part=userx domain=test.ex
 checking domains
-test.ex in "! +local_domains"?
- list element: ! +local_domains
+test.ex in domains?
+ list element: !░+local_domains
   start sublist local_domains
    test.ex in "+defer_lookup : test.ex"?
    ╎list element: +defer_lookup
@@ -39,7 +39,7 @@ test.ex in "! +local_domains"?
    ╎ end sublist defer_lookup
    test.ex in "+defer_lookup : test.ex"? list match deferred for +defer_lookup
   end sublist local_domains
-test.ex in "! +local_domains"? list match deferred for ! +local_domains
+test.ex in domains? list match deferred for ! +local_domains
 domains check lookup or other defer
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>

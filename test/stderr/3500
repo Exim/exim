@@ -18,14 +18,18 @@
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts?
 >>>  list element: +auth_hosts
->>>  host in "10.0.0.1 : 10.0.0.5"?
->>>   list element: 10.0.0.1
->>>   list element: 10.0.0.5
->>>  host in "10.0.0.1 : 10.0.0.5"? no (end of list)
+>>>   start sublist auth_hosts
+>>>    host in "10.0.0.1 : 10.0.0.5"?
+>>>    ╎list element: 10.0.0.1
+>>>    ╎list element: 10.0.0.5
+>>>    host in "10.0.0.1 : 10.0.0.5"? no (end of list)
+>>>   end sublist auth_hosts
 >>>  list element: !+relay_hosts
->>>  host in "10.0.0.4"?
->>>   list element: 10.0.0.4
->>>   host in "10.0.0.4"? yes (matched "10.0.0.4")
+>>>   start sublist relay_hosts
+>>>    host in "10.0.0.4"?
+>>>    ╎list element: 10.0.0.4
+>>>    ╎host in "10.0.0.4"? yes (matched "10.0.0.4")
+>>>   end sublist relay_hosts
 >>>  host in auth_advertise_hosts? no (matched "!+relay_hosts")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
@@ -49,9 +53,11 @@
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts?
 >>>  list element: +auth_hosts
->>>  host in "10.0.0.1 : 10.0.0.5"?
->>>   list element: 10.0.0.1
->>>   host in "10.0.0.1 : 10.0.0.5"? yes (matched "10.0.0.1")
+>>>   start sublist auth_hosts
+>>>    host in "10.0.0.1 : 10.0.0.5"?
+>>>    ╎list element: 10.0.0.1
+>>>    ╎host in "10.0.0.1 : 10.0.0.5"? yes (matched "10.0.0.1")
+>>>   end sublist auth_hosts
 >>>  host in auth_advertise_hosts? yes (matched "+auth_hosts")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
@@ -88,6 +94,9 @@
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
+>>>   start sublist auth_hosts
+>>>  cached yes match for +auth_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
@@ -99,9 +108,12 @@
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -127,10 +139,12 @@ LOG: 10HmaY-000000005vi-0000 <= userx@some.domain H=(test.host) [10.0.0.1] P=esm
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts?
 >>>  list element: +auth_hosts
->>>  host in "10.0.0.1 : 10.0.0.5"?
->>>   list element: 10.0.0.1
->>>   list element: 10.0.0.5
->>>   host in "10.0.0.1 : 10.0.0.5"? yes (matched "10.0.0.5")
+>>>   start sublist auth_hosts
+>>>    host in "10.0.0.1 : 10.0.0.5"?
+>>>    ╎list element: 10.0.0.1
+>>>    ╎list element: 10.0.0.5
+>>>    ╎host in "10.0.0.1 : 10.0.0.5"? yes (matched "10.0.0.5")
+>>>   end sublist auth_hosts
 >>>  host in auth_advertise_hosts? yes (matched "+auth_hosts")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)

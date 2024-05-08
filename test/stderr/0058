@@ -15,19 +15,23 @@
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "*"?
->>>   list element: *
->>>   host in "*"? yes (matched "*")
+>>>   start sublist relay_hosts
+>>>    host in "*"?
+>>>    ╎list element: *
+>>>    ╎host in "*"? yes (matched "*")
+>>>   end sublist relay_hosts
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -37,16 +41,21 @@ LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.1
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
->>>  anotherhost.example.com in "test.ex : myhost.ex"?
->>>   list element: test.ex
->>>   list element: myhost.ex
->>>  anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    anotherhost.example.com in "test.ex : myhost.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: myhost.ex
+>>>    anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
+>>>   start sublist relay_hosts
+>>>  cached yes match for +relay_hosts
+>>>  cached lookup data = NULL
 >>>  host in "+relay_hosts"? yes (matched "+relay_hosts" - cached)
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT

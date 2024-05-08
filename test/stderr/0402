@@ -486,39 +486,39 @@ routing rd+usery@test.ex
 --------> r1 router <--------
 local_part=rd+usery domain=test.ex
 checking local_parts
-rd+usery in "CALLER"?
+rd+usery in local_parts?
  list element: CALLER
-rd+usery in "CALLER"? no (end of list)
+rd+usery in local_parts? no (end of list)
 r1 router skipped: local_parts mismatch
 --------> r2 router <--------
 local_part=rd+usery domain=test.ex
 checking local_parts
-rd+usery in "usery"?
+rd+usery in local_parts?
  list element: usery
-rd+usery in "usery"? no (end of list)
+rd+usery in local_parts? no (end of list)
 r2 router skipped: local_parts mismatch
 --------> r3 router <--------
 local_part=rd+usery domain=test.ex
 checking local_parts
-rd+usery in "userz"?
+rd+usery in local_parts?
  list element: userz
-rd+usery in "userz"? no (end of list)
+rd+usery in local_parts? no (end of list)
 r3 router skipped: local_parts mismatch
 --------> r4 router <--------
 local_part=rd+usery domain=test.ex
 stripped prefix rd+
 checking local_parts
-usery in "CALLER"?
+usery in local_parts?
  list element: CALLER
-usery in "CALLER"? no (end of list)
+usery in local_parts? no (end of list)
 r4 router skipped: local_parts mismatch
 --------> r5 router <--------
 local_part=rd+usery domain=test.ex
 stripped prefix rd+
 checking local_parts
-usery in "usery"?
+usery in local_parts?
  list element: usery
- usery in "usery"? yes (matched "usery")
+ usery in local_parts? yes (matched "usery")
 try option router_home_directory
  ╭considering: /non-exist/$domain
  ├───────text: /non-exist/
@@ -553,31 +553,31 @@ routing rd+CALLER@test.ex
 --------> r1 router <--------
 local_part=rd+CALLER domain=test.ex
 checking local_parts
-rd+CALLER in "CALLER"?
+rd+CALLER in local_parts?
  list element: CALLER
-rd+CALLER in "CALLER"? no (end of list)
+rd+CALLER in local_parts? no (end of list)
 r1 router skipped: local_parts mismatch
 --------> r2 router <--------
 local_part=rd+CALLER domain=test.ex
 checking local_parts
-rd+CALLER in "usery"?
+rd+CALLER in local_parts?
  list element: usery
-rd+CALLER in "usery"? no (end of list)
+rd+CALLER in local_parts? no (end of list)
 r2 router skipped: local_parts mismatch
 --------> r3 router <--------
 local_part=rd+CALLER domain=test.ex
 checking local_parts
-rd+CALLER in "userz"?
+rd+CALLER in local_parts?
  list element: userz
-rd+CALLER in "userz"? no (end of list)
+rd+CALLER in local_parts? no (end of list)
 r3 router skipped: local_parts mismatch
 --------> r4 router <--------
 local_part=rd+CALLER domain=test.ex
 stripped prefix rd+
 checking local_parts
-CALLER in "CALLER"?
+CALLER in local_parts?
  list element: CALLER
- CALLER in "CALLER"? yes (matched "CALLER")
+ CALLER in local_parts? yes (matched "CALLER")
 try option router_home_directory
  ╭considering: /non-exist/$local_part
  ├───────text: /non-exist/
@@ -612,23 +612,23 @@ routing userz@test.ex
 --------> r1 router <--------
 local_part=userz domain=test.ex
 checking local_parts
-userz in "CALLER"?
+userz in local_parts?
  list element: CALLER
-userz in "CALLER"? no (end of list)
+userz in local_parts? no (end of list)
 r1 router skipped: local_parts mismatch
 --------> r2 router <--------
 local_part=userz domain=test.ex
 checking local_parts
-userz in "usery"?
+userz in local_parts?
  list element: usery
-userz in "usery"? no (end of list)
+userz in local_parts? no (end of list)
 r2 router skipped: local_parts mismatch
 --------> r3 router <--------
 local_part=userz domain=test.ex
 checking local_parts
-userz in "userz"?
+userz in local_parts?
  list element: userz
- userz in "userz"? yes (matched "userz")
+ userz in local_parts? yes (matched "userz")
 try option router_home_directory
  ╭considering: /non-exist/$domain
  ├───────text: /non-exist/
@@ -658,16 +658,16 @@ routing usery@test.ex
 --------> r1 router <--------
 local_part=usery domain=test.ex
 checking local_parts
-usery in "CALLER"?
+usery in local_parts?
  list element: CALLER
-usery in "CALLER"? no (end of list)
+usery in local_parts? no (end of list)
 r1 router skipped: local_parts mismatch
 --------> r2 router <--------
 local_part=usery domain=test.ex
 checking local_parts
-usery in "usery"?
+usery in local_parts?
  list element: usery
- usery in "usery"? yes (matched "usery")
+ usery in local_parts? yes (matched "usery")
 try option router_home_directory
  ╭considering: /non-exist/$domain
  ├───────text: /non-exist/
@@ -697,9 +697,9 @@ routing CALLER@test.ex
 --------> r1 router <--------
 local_part=CALLER domain=test.ex
 checking local_parts
-CALLER in "CALLER"?
+CALLER in local_parts?
  list element: CALLER
- CALLER in "CALLER"? yes (matched "CALLER")
+ CALLER in local_parts? yes (matched "CALLER")
 try option router_home_directory
  ╭considering: /non-exist/$local_part
  ├───────text: /non-exist/

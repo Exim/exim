@@ -24,16 +24,16 @@
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing faq@nl.demon.net
->>> nl.demon.net in "*.demon.net"?
+>>> nl.demon.net in domains?
 >>>  list element: *.demon.net
->>>  nl.demon.net in "*.demon.net"? yes (matched "*.demon.net")
+>>>  nl.demon.net in domains? yes (matched "*.demon.net")
 >>> calling auto_antwoord router
 >>> routed by auto_antwoord router (unseen)
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing faq@nl.demon.net
->>> nl.demon.net in "nl.demon.net:*.nl.demon.net:fax-gw.demon.nl: www-3.demon.nl : localhost"?
+>>> nl.demon.net in domains?
 >>>  list element: nl.demon.net
->>>  nl.demon.net in "nl.demon.net:*.nl.demon.net:fax-gw.demon.nl: www-3.demon.nl : localhost"? yes (matched "nl.demon.net")
+>>>  nl.demon.net in domains? yes (matched "nl.demon.net")
 >>> calling algemeen_aliases router
 >>> routed by algemeen_aliases router
 >>> ----------- end verify ------------
@@ -42,9 +42,12 @@
 >>> check domains = +local_domains
 >>> nl.demon.net in "+local_domains"?
 >>>  list element: +local_domains
->>>  nl.demon.net in "nl.demon.net"?
->>>   list element: nl.demon.net
->>>   nl.demon.net in "nl.demon.net"? yes (matched "nl.demon.net")
+>>>   start sublist local_domains
+>>>    nl.demon.net in "nl.demon.net"?
+>>>    ╎list element: nl.demon.net
+>>>    ╎nl.demon.net in "nl.demon.net"? yes (matched "nl.demon.net")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'nl.demon.net' value 'nl.demon.net'
 >>>  nl.demon.net in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT

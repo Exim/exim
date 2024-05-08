@@ -68,18 +68,20 @@ LOG: rcpt for verify@domain.com
 >>> check verify = recipient/callout=use_sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing verify@domain.com
->>> domain.com in "localhost.test.ex : localhost4.test.ex : thishost.test.ex"?
+>>> domain.com in domains?
 >>>  list element: localhost.test.ex
 >>>  list element: localhost4.test.ex
 >>>  list element: thishost.test.ex
->>> domain.com in "localhost.test.ex : localhost4.test.ex : thishost.test.ex"? no (end of list)
->>> domain.com in "! +local_domains"?
->>>  list element: ! +local_domains
->>>  domain.com in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   list element: *.test.ex
->>>  domain.com in "test.ex : *.test.ex"? no (end of list)
->>> domain.com in "! +local_domains"? yes (end of list)
+>>> domain.com in domains? no (end of list)
+>>> domain.com in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>    domain.com in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎list element: *.test.ex
+>>>    domain.com in "test.ex : *.test.ex"? no (end of list)
+>>>   end sublist local_domains
+>>> domain.com in domains? yes (end of list)
 >>> calling all router
 >>> domain.com in "special.com"?
 >>>  list element: special.com
@@ -96,9 +98,10 @@ MUNGED: ::1 will be omitted in what follows
 >>> Attempting full verification using callout
 >>> callout cache: disabled by no_cache
 >>> interface=ip4.ip4.ip4.ip4 port=PORT_S
->>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S from ip4.ip4.ip4.ip4 ... 127.0.0.1 in hosts_try_fastopen?
->>>  list element: 
->>> >>>  connected
+>>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S from ip4.ip4.ip4.ip4 ...
+>>>  127.0.0.1 in hosts_try_fastopen?
+>>>   list element: 
+>>>  >>> connected
 >>>   SMTP<< 220 server ready
 >>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
 >>>   SMTP>> EHLO myhost.test.ex

@@ -15,12 +15,14 @@
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@bad.domain
->>> bad.domain in "! +local_domains"?
->>>  list element: ! +local_domains
->>>  bad.domain in "test.ex"?
->>>   list element: test.ex
->>>  bad.domain in "test.ex"? no (end of list)
->>> bad.domain in "! +local_domains"? yes (end of list)
+>>> bad.domain in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>    bad.domain in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    bad.domain in "test.ex"? no (end of list)
+>>>   end sublist local_domains
+>>> bad.domain in domains? yes (end of list)
 >>> calling fail_sender router
 >>> bad.domain in "bad.domain"?
 >>>  list element: bad.domain
@@ -53,20 +55,25 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain> rejected RCPT <userx@test.ex>: S
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@bad.domain2
->>> bad.domain2 in "! +local_domains"?
->>>  list element: ! +local_domains
->>>  bad.domain2 in "test.ex"?
->>>   list element: test.ex
->>>  bad.domain2 in "test.ex"? no (end of list)
->>> bad.domain2 in "! +local_domains"? yes (end of list)
+>>> bad.domain2 in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>    bad.domain2 in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    bad.domain2 in "test.ex"? no (end of list)
+>>>   end sublist local_domains
+>>> bad.domain2 in domains? yes (end of list)
 >>> calling fail_sender router
 >>> bad.domain2 in "bad.domain"?
 >>>  list element: bad.domain
 >>> bad.domain2 in "bad.domain"? no (end of list)
 >>> fail_sender router declined for user@bad.domain2
->>> bad.domain2 in "! +local_domains"?
->>>  list element: ! +local_domains
->>> bad.domain2 in "! +local_domains"? yes (end of list)
+>>> bad.domain2 in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>  cached no match for +local_domains
+>>>  cached lookup data = NULL
+>>> bad.domain2 in domains? yes (end of list)
 >>> calling fail_sender2 router
 >>> bad.domain2 in "bad.domain2"?
 >>>  list element: bad.domain2
@@ -98,32 +105,41 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: 
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@ten-1.test.ex
->>> ten-1.test.ex in "! +local_domains"?
->>>  list element: ! +local_domains
->>>  ten-1.test.ex in "test.ex"?
->>>   list element: test.ex
->>>  ten-1.test.ex in "test.ex"? no (end of list)
->>> ten-1.test.ex in "! +local_domains"? yes (end of list)
+>>> ten-1.test.ex in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>    ten-1.test.ex in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    ten-1.test.ex in "test.ex"? no (end of list)
+>>>   end sublist local_domains
+>>> ten-1.test.ex in domains? yes (end of list)
 >>> calling fail_sender router
 >>> ten-1.test.ex in "bad.domain"?
 >>>  list element: bad.domain
 >>> ten-1.test.ex in "bad.domain"? no (end of list)
 >>> fail_sender router declined for user@ten-1.test.ex
->>> ten-1.test.ex in "! +local_domains"?
->>>  list element: ! +local_domains
->>> ten-1.test.ex in "! +local_domains"? yes (end of list)
+>>> ten-1.test.ex in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>  cached no match for +local_domains
+>>>  cached lookup data = NULL
+>>> ten-1.test.ex in domains? yes (end of list)
 >>> calling fail_sender2 router
 >>> ten-1.test.ex in "bad.domain2"?
 >>>  list element: bad.domain2
 >>> ten-1.test.ex in "bad.domain2"? no (end of list)
 >>> fail_sender2 router declined for user@ten-1.test.ex
->>> ten-1.test.ex in "! +local_domains"?
->>>  list element: ! +local_domains
->>> ten-1.test.ex in "! +local_domains"? yes (end of list)
+>>> ten-1.test.ex in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>  cached no match for +local_domains
+>>>  cached lookup data = NULL
+>>> ten-1.test.ex in domains? yes (end of list)
 >>> calling lookuphost router
->>> ten-1.test.ex in "*"?
+>>> ten-1.test.ex in dnssec_require_domains? no (option unset)
+>>> ten-1.test.ex in dnssec_request_domains?
 >>>  list element: *
->>>  ten-1.test.ex in "*"? yes (matched "*")
+>>>  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
 >>> routed by lookuphost router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
@@ -131,9 +147,12 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: 
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT

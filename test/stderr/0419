@@ -17,21 +17,22 @@ routing k@mxt13.test.ex
 --------> dnslookup router <--------
 local_part=k domain=mxt13.test.ex
 checking domains
-mxt13.test.ex in "! +local_domains"?
- list element: ! +local_domains
+mxt13.test.ex in domains?
+ list element: !░+local_domains
   start sublist local_domains
    mxt13.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"?
    ╎list element: !mxt13.test.ex
    ╎mxt13.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!mxt13.test.ex")
   end sublist local_domains
  data from lookup saved for cache for +local_domains: key 'mxt13.test.ex' value 'mxt13.test.ex'
-mxt13.test.ex in "! +local_domains"? yes (end of list)
+mxt13.test.ex in domains? yes (end of list)
 calling dnslookup router
 dnslookup router called for k@mxt13.test.ex
   domain = mxt13.test.ex
-mxt13.test.ex in "*"?
+mxt13.test.ex in dnssec_require_domains? no (option unset)
+mxt13.test.ex in dnssec_request_domains?
  list element: *
- mxt13.test.ex in "*"? yes (matched "*")
+ mxt13.test.ex in dnssec_request_domains? yes (matched "*")
 DNS lookup of mxt13.test.ex (MX) using fakens
 DNS lookup of mxt13.test.ex (MX) succeeded
 DNS lookup of other1.test.ex (A) using fakens

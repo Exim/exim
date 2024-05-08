@@ -27,6 +27,8 @@ seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
+somebody in local_parts? no (end of list)
+somebody in local_parts? no (end of list)
 changed uid/gid: local delivery to somebody <somebody@myhost.test.ex> transport=t1
   uid=EXIM_UID gid=EXIM_GID pid=p1236
 transport error EPIPE ignored
@@ -63,6 +65,7 @@ seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
+CALLER in local_parts? no (end of list)
 changed uid/gid: local delivery to CALLER <CALLER@myhost.test.ex> transport=t2
   uid=CALLER_UID gid=CALLER_GID pid=p1239
 LOG: MAIN

@@ -379,9 +379,12 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A h
 >>> check hosts = +some_hosts
 >>> host in "+some_hosts"?
 >>>  list element: +some_hosts
->>>  host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"?
->>>   list element: net-lsearch;TESTSUITE/aux-var/0022.hosts
->>>   host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
+>>>   start sublist some_hosts
+>>>    host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"?
+>>>    ╎list element: net-lsearch;TESTSUITE/aux-var/0022.hosts
+>>>    ╎host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
+>>>   end sublist some_hosts
+>>>  data from lookup saved for cache for +some_hosts: key 'V4NET.9.8.7' value 'A host-specific message'
 >>>  host in "+some_hosts"? yes (matched "+some_hosts")
 >>> deny: condition test succeeded in ACL "host_check2"
 >>> end of ACL "host_check2": DENY
@@ -392,6 +395,9 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@y> rejected RCPT <host_check2@y>: host data >A 
 >>> check hosts = +some_hosts
 >>> host in "+some_hosts"?
 >>>  list element: +some_hosts
+>>>   start sublist some_hosts
+>>>  cached yes match for +some_hosts
+>>>  cached lookup data = A host-specific message
 >>>  host in "+some_hosts"? yes (matched "+some_hosts" - cached)
 >>> deny: condition test succeeded in ACL "host_check2"
 >>> end of ACL "host_check2": DENY

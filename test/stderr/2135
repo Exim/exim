@@ -3,7 +3,8 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...  connected
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
+ connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
@@ -17,6 +18,7 @@ cmd buf flush ddd bytes
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
   SMTP<< 220 TLS go ahead
+127.0.0.1 in tls_verify_cert_hostnames? no (end of list)
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]

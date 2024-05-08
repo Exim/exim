@@ -37,9 +37,12 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1] D=qqs
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
->>>  test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -208,12 +211,15 @@ exim: timed out while reading - message abandoned
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing verify@test.ex
->>> test.ex in "! +local_domains"?
->>>  list element: ! +local_domains
->>>  test.ex in "test.ex : *.test.ex"?
->>>   list element: test.ex
->>>   test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
->>>  test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> test.ex in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>    test.ex in "test.ex : *.test.ex"?
+>>>    ╎list element: test.ex
+>>>    ╎test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>>   end sublist local_domains
+>>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
+>>>  test.ex in domains? no (matched "! +local_domains")
 >>> calling forward router
 >>> forward router declined for verify@test.ex
 >>> no more routers

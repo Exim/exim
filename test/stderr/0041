@@ -70,10 +70,10 @@ LOG: H=[1.1.1.1] rejected VRFY hardfail@test.ex: 599 custom reject
 >>> routing ok_with_dom@test.ex
 >>> calling system_aliases router
 >>> system_aliases router declined for ok_with_dom@test.ex
->>> ok_with_dom in "userx : ok_with_dom : acceptable"?
+>>> ok_with_dom in local_parts?
 >>>  list element: userx
 >>>  list element: ok_with_dom
->>>  ok_with_dom in "userx : ok_with_dom : acceptable"? yes (matched "ok_with_dom")
+>>>  ok_with_dom in local_parts? yes (matched "ok_with_dom")
 >>> calling localuser router
 >>> routed by localuser router
 >>> using ACL "check_expn"
@@ -116,11 +116,11 @@ LOG: H=[1.1.1.1] rejected EXPN postmaster
 >>> routing acceptable@test.ex
 >>> calling system_aliases router
 >>> system_aliases router declined for acceptable@test.ex
->>> acceptable in "userx : ok_with_dom : acceptable"?
+>>> acceptable in local_parts?
 >>>  list element: userx
 >>>  list element: ok_with_dom
 >>>  list element: acceptable
->>>  acceptable in "userx : ok_with_dom : acceptable"? yes (matched "acceptable")
+>>>  acceptable in local_parts? yes (matched "acceptable")
 >>> calling localuser router
 >>> routed by localuser router
 >>> host in hosts_connection_nolog? no (option unset)

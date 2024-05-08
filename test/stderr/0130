@@ -16,12 +16,14 @@
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@not.test.ex
->>> not.test.ex in "! +local_domains"?
->>>  list element: ! +local_domains
->>>  not.test.ex in "test.ex"?
->>>   list element: test.ex
->>>  not.test.ex in "test.ex"? no (end of list)
->>> not.test.ex in "! +local_domains"? yes (end of list)
+>>> not.test.ex in domains?
+>>>  list element: !░+local_domains
+>>>   start sublist local_domains
+>>>    not.test.ex in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    not.test.ex in "test.ex"? no (end of list)
+>>>   end sublist local_domains
+>>> not.test.ex in domains? yes (end of list)
 >>> calling islocal router
 >>> not.test.ex in "*"?
 >>>  list element: *

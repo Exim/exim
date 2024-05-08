@@ -903,6 +903,7 @@ const uschar * save_domain = deliver_domain;
 const uschar * save_local =  deliver_localpart;
 const uschar * save_host = deliver_host;
 const uschar * save_address = deliver_host_address;
+uschar * save_rn = router_name, * save_tn = transport_name;
 const int      save_port =   deliver_host_port;
 
 router_name =    addr->router ? addr->router->name : NULL;
@@ -939,7 +940,8 @@ deliver_host_address = save_address;
 deliver_host =      save_host;
 deliver_localpart = save_local;
 deliver_domain =    save_domain;
-router_name = transport_name = NULL;
+router_name = save_rn;
+router_name = save_tn;
 }
 #endif	/*DISABLE_EVENT*/
 

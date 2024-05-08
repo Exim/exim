@@ -72,15 +72,15 @@ using ACL "cutthrough"
 processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
-domain.com in "! +local_domains"?
- list element: ! +local_domains
+domain.com in domains?
+ list element: !░+local_domains
   start sublist local_domains
    domain.com in "test.ex : *.test.ex"?
    ╎list element: test.ex
    ╎list element: *.test.ex
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
-domain.com in "! +local_domains"? yes (end of list)
+domain.com in domains? yes (end of list)
 try option router_home_directory
 try option set
 processing address_data
@@ -100,15 +100,15 @@ try option unseen
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
-domain.com in "! +local_domains"?
- list element: ! +local_domains
+domain.com in domains?
+ list element: !░+local_domains
   start sublist local_domains
    domain.com in "test.ex : *.test.ex"?
    ╎list element: test.ex
    ╎list element: *.test.ex
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
-domain.com in "! +local_domains"? yes (end of list)
+domain.com in domains? yes (end of list)
 try option router_home_directory
 try option set
 processing address_data
@@ -125,9 +125,10 @@ try option transport
 try option unseen
 try option unseen
 try option interface
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... try option dscp
-127.0.0.1 in hosts_try_fastopen?
- list element: 
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
+try option dscp
+ 127.0.0.1 in hosts_try_fastopen?
+  list element: 
  connected
 try option helo_data
  ╭considering: $primary_hostname
@@ -635,7 +636,6 @@ try option received_header_text
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
 try option acl_smtp_dkim
-try option acl_smtp_mime
 try option acl_smtp_data
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}
@@ -731,15 +731,15 @@ using ACL "cutthrough"
 processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
-domain.com in "! +local_domains"?
- list element: ! +local_domains
+domain.com in domains?
+ list element: !░+local_domains
   start sublist local_domains
    domain.com in "test.ex : *.test.ex"?
    ╎list element: test.ex
    ╎list element: *.test.ex
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
-domain.com in "! +local_domains"? yes (end of list)
+domain.com in domains? yes (end of list)
 try option router_home_directory
 try option set
 processing address_data
@@ -759,15 +759,15 @@ try option unseen
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
-domain.com in "! +local_domains"?
- list element: ! +local_domains
+domain.com in domains?
+ list element: !░+local_domains
   start sublist local_domains
    domain.com in "test.ex : *.test.ex"?
    ╎list element: test.ex
    ╎list element: *.test.ex
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
-domain.com in "! +local_domains"? yes (end of list)
+domain.com in domains? yes (end of list)
 try option router_home_directory
 try option set
 processing address_data
@@ -784,9 +784,10 @@ try option transport
 try option unseen
 try option unseen
 try option interface
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... try option dscp
-127.0.0.1 in hosts_try_fastopen?
- list element: 
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
+try option dscp
+ 127.0.0.1 in hosts_try_fastopen?
+  list element: 
  connected
 try option helo_data
  ╭considering: $primary_hostname
@@ -1244,7 +1245,6 @@ try option received_header_text
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
 try option acl_smtp_dkim
-try option acl_smtp_mime
 try option acl_smtp_data
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}
@@ -1340,15 +1340,15 @@ using ACL "cutthrough"
 processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
-domain.com in "! +local_domains"?
- list element: ! +local_domains
+domain.com in domains?
+ list element: !░+local_domains
   start sublist local_domains
    domain.com in "test.ex : *.test.ex"?
    ╎list element: test.ex
    ╎list element: *.test.ex
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
-domain.com in "! +local_domains"? yes (end of list)
+domain.com in domains? yes (end of list)
 try option router_home_directory
 try option set
 processing address_data
@@ -1368,15 +1368,15 @@ try option unseen
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
-domain.com in "! +local_domains"?
- list element: ! +local_domains
+domain.com in domains?
+ list element: !░+local_domains
   start sublist local_domains
    domain.com in "test.ex : *.test.ex"?
    ╎list element: test.ex
    ╎list element: *.test.ex
    domain.com in "test.ex : *.test.ex"? no (end of list)
   end sublist local_domains
-domain.com in "! +local_domains"? yes (end of list)
+domain.com in domains? yes (end of list)
 try option router_home_directory
 try option set
 processing address_data
@@ -1393,9 +1393,10 @@ try option transport
 try option unseen
 try option unseen
 try option interface
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ... try option dscp
-127.0.0.1 in hosts_try_fastopen?
- list element: 
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
+try option dscp
+ 127.0.0.1 in hosts_try_fastopen?
+  list element: 
  connected
 try option helo_data
  ╭considering: $primary_hostname
@@ -1853,7 +1854,6 @@ try option received_header_text
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
 try option acl_smtp_dkim
-try option acl_smtp_mime
 try option acl_smtp_data
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}

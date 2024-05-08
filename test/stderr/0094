@@ -25,19 +25,23 @@ LOG: no host name found for IP address V4NET.11.12.13
 >>> check domains = +local_domains
 >>> cam.ac.uk in "+local_domains"?
 >>>  list element: +local_domains
->>>  cam.ac.uk in "test.ex"?
->>>   list element: test.ex
->>>  cam.ac.uk in "test.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    cam.ac.uk in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    cam.ac.uk in "test.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> cam.ac.uk in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "*.masq.test.ex"?
->>>   list element: *.masq.test.ex
+>>>   start sublist relay_hosts
+>>>    host in "*.masq.test.ex"?
+>>>    ╎list element: *.masq.test.ex
 >>> sender host name required, to match against *.masq.test.ex
->>>   host in "*.masq.test.ex"? no (failed to find host name for V4NET.11.12.13)
+>>>    ╎host in "*.masq.test.ex"? no (failed to find host name for V4NET.11.12.13)
+>>>    end sublist relay_hosts
 >>>  host in "+relay_hosts"? no (end of list)
 >>>  accept: condition test failed in ACL "check_recipient"
 >>>  processing "deny" (TESTSUITE/test-config 26)
@@ -51,6 +55,8 @@ LOG: H=(test) [V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.u
 >>>  host in host_lookup? yes (matched "0.0.0.0/0")
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
+>>> ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>> ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> host in host_reject_connection? no (option unset)
@@ -70,18 +76,22 @@ LOG: H=(test) [V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.u
 >>> check domains = +local_domains
 >>> cam.ac.uk in "+local_domains"?
 >>>  list element: +local_domains
->>>  cam.ac.uk in "test.ex"?
->>>   list element: test.ex
->>>  cam.ac.uk in "test.ex"? no (end of list)
+>>>   start sublist local_domains
+>>>    cam.ac.uk in "test.ex"?
+>>>    ╎list element: test.ex
+>>>    cam.ac.uk in "test.ex"? no (end of list)
+>>>   end sublist local_domains
 >>> cam.ac.uk in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept" (TESTSUITE/test-config 25)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
->>>  host in "*.masq.test.ex"?
->>>   list element: *.masq.test.ex
->>>  host in "*.masq.test.ex"? no (end of list)
+>>>   start sublist relay_hosts
+>>>    host in "*.masq.test.ex"?
+>>>    ╎list element: *.masq.test.ex
+>>>    host in "*.masq.test.ex"? no (end of list)
+>>>   end sublist relay_hosts
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 26)
@@ -113,12 +123,16 @@ DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "oneback.test.ex"
   alias "host1.masq.test.ex"
+oneback.test.ex not in empty list (option unset? cannot trace name)
+oneback.test.ex not in empty list (option unset? cannot trace name)
 DNS lookup of oneback.test.ex (A) using fakens
 DNS lookup of oneback.test.ex (A) succeeded
 oneback.test.ex V4NET.99.99.90 mx=-1 sort=xx 
 checking addresses for oneback.test.ex
 Forward DNS security status: unverified
   V4NET.99.99.90 OK
+host1.masq.test.ex not in empty list (option unset? cannot trace name)
+host1.masq.test.ex not in empty list (option unset? cannot trace name)
 DNS lookup of host1.masq.test.ex (A) using fakens
 DNS lookup of host1.masq.test.ex (A) succeeded
 host1.masq.test.ex V4NET.90.90.90 mx=-1 sort=xx 

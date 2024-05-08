@@ -54,12 +54,12 @@ routing abc@domain1
 --------> r1 router <--------
 local_part=abc domain=domain1
 checking domains
-domain1 in "+special_domains"?
+domain1 in domains?
  list element: +special_domains
   start sublist special_domains
  cached yes match for +special_domains
  cached lookup data = data for domain1
- domain1 in "+special_domains"? yes (matched "+special_domains" - cached)
+ domain1 in domains? yes (matched "+special_domains" - cached)
 calling r1 router
 rda_interpret (string): '$local_part@xxx.$domain'
 expanded: 'abc@xxx.domain1' (tainted)
@@ -79,7 +79,7 @@ routing abc@xxx.domain1
 --------> r1 router <--------
 local_part=abc domain=xxx.domain1
 checking domains
-xxx.domain1 in "+special_domains"?
+xxx.domain1 in domains?
  list element: +special_domains
   start sublist special_domains
    xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"?
@@ -99,7 +99,7 @@ xxx.domain1 in "+special_domains"?
    ╎lookup failed
    xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? no (end of list)
   end sublist special_domains
-xxx.domain1 in "+special_domains"? no (end of list)
+xxx.domain1 in domains? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=abc domain=xxx.domain1
@@ -134,12 +134,12 @@ routing abc@domain1
 --------> r1 router <--------
 local_part=abc domain=domain1
 checking domains
-domain1 in "+special_domains"?
+domain1 in domains?
  list element: +special_domains
   start sublist special_domains
  cached yes match for +special_domains
  cached lookup data = data for domain1
- domain1 in "+special_domains"? yes (matched "+special_domains" - cached)
+ domain1 in domains? yes (matched "+special_domains" - cached)
 calling r1 router
 rda_interpret (string): '$local_part@xxx.$domain'
 expanded: 'abc@xxx.domain1' (tainted)
@@ -159,7 +159,7 @@ routing abc@xxx.domain1
 --------> r1 router <--------
 local_part=abc domain=xxx.domain1
 checking domains
-xxx.domain1 in "+special_domains"?
+xxx.domain1 in domains?
  list element: +special_domains
   start sublist special_domains
    xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"?
@@ -178,7 +178,7 @@ xxx.domain1 in "+special_domains"?
    ╎lookup failed
    xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? no (end of list)
   end sublist special_domains
-xxx.domain1 in "+special_domains"? no (end of list)
+xxx.domain1 in domains? no (end of list)
 r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=abc domain=xxx.domain1

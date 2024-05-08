@@ -16,9 +16,10 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt10.test.ex
 >>> calling domainlist router
->>> mxt10.test.ex in "*"?
+>>> mxt10.test.ex in dnssec_require_domains? no (option unset)
+>>> mxt10.test.ex in dnssec_request_domains?
 >>>  list element: *
->>>  mxt10.test.ex in "*"? yes (matched "*")
+>>>  mxt10.test.ex in dnssec_request_domains? yes (matched "*")
 >>> domainlist router declined for x@mxt10.test.ex
 >>> "more" is false: skipping remaining routers
 >>> no more routers
@@ -45,9 +46,10 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender veri
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1.test.ex
 >>> calling domainlist router
->>> ten-1.test.ex in "*"?
+>>> ten-1.test.ex in dnssec_require_domains? no (option unset)
+>>> ten-1.test.ex in dnssec_request_domains?
 >>>  list element: *
->>>  ten-1.test.ex in "*"? yes (matched "*")
+>>>  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
 >>> routed by domainlist router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
@@ -56,9 +58,10 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender veri
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt10.test.ex
 >>> calling domainlist router
->>> mxt10.test.ex in "*"?
+>>> mxt10.test.ex in dnssec_require_domains? no (option unset)
+>>> mxt10.test.ex in dnssec_request_domains?
 >>>  list element: *
->>>  mxt10.test.ex in "*"? yes (matched "*")
+>>>  mxt10.test.ex in dnssec_request_domains? yes (matched "*")
 >>> domainlist router declined for x@mxt10.test.ex
 >>> "more" is false: skipping remaining routers
 >>> no more routers

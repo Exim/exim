@@ -574,7 +574,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   ╰─────result: net-mysql;select░*░from░them░where░id='c'
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
 01:01:01 p1235  host in "net-mysql;select * from them where id='c'"?
-01:01:01 p1235   list element: net-mysql;select * from them where id='c'
+01:01:01 p1235   list element: net-mysql;select░*░from░them░where░id='c'
 01:01:01 p1235   search_open: mysql "NULL"
 01:01:01 p1235     cached open
 01:01:01 p1235   search_find: file="NULL"
@@ -612,7 +612,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   ╰─────result: <&░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
 01:01:01 p1235  host in "<& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"?
-01:01:01 p1235   list element: net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'
+01:01:01 p1235   list element: net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235   search_open: mysql "NULL"
 01:01:01 p1235     cached open
 01:01:01 p1235   search_find: file="NULL"
@@ -652,7 +652,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   ╰─────result: <&░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
 01:01:01 p1235  host in "<& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"?
-01:01:01 p1235   list element: net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'
+01:01:01 p1235   list element: net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235   search_open: mysql "NULL"
 01:01:01 p1235     cached open
 01:01:01 p1235   search_find: file="NULL"
@@ -693,7 +693,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235     ╎├───expanded: net-mysql;select░*░from░them░where░id='$sender_host_address'
 01:01:01 p1235     ╎╰─────result: net-mysql;select░*░from░them░where░id='10.0.0.0'
 01:01:01 p1235     host in "net-mysql;select * from them where id='10.0.0.0'"?
-01:01:01 p1235     ╎list element: net-mysql;select * from them where id='10.0.0.0'
+01:01:01 p1235     ╎list element: net-mysql;select░*░from░them░where░id='10.0.0.0'
 01:01:01 p1235     ╎search_open: mysql "NULL"
 01:01:01 p1235     ╎  cached open
 01:01:01 p1235     ╎search_find: file="NULL"

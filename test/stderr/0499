@@ -16,7 +16,7 @@ routing ph@mxt1.test.ex
 --------> r1 router <--------
 local_part=ph domain=mxt1.test.ex
 checking domains
-mxt1.test.ex in "+anymx"?
+mxt1.test.ex in domains?
  list element: +anymx
   start sublist anymx
    mxt1.test.ex in "@mx_any"?
@@ -31,7 +31,7 @@ host_find_bydns yield = HOST_FOUND_LOCAL (4); returned hosts:
    ╎mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
   end sublist anymx
  data from lookup saved for cache for +anymx: key 'mxt1.test.ex' value '@mx_any'
- mxt1.test.ex in "+anymx"? yes (matched "+anymx")
+ mxt1.test.ex in domains? yes (matched "+anymx")
 checking "condition" "${if match_domain{$domain}{+anymx}{yes}}"...
  mxt1.test.ex in "+anymx"?
   list element: +anymx

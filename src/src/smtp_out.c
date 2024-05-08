@@ -365,6 +365,7 @@ if (!save_errno)
   {
 #ifdef TCP_FASTOPEN
   /* See if TCP Fast Open usable.  Default is a traditional 3WHS connect */
+  expand_level++;
   if (verify_check_given_host(CUSS &ob->hosts_try_fastopen, sc->host) == OK)
     {
     if (!early_data)
@@ -380,6 +381,7 @@ if (!save_errno)
       }
 # endif
     }
+  expand_level--;
 #endif
 
   if (ip_connect(sock, sc->host_af, sc->host->address, sc->host->port, timeout, fastopen_blob) < 0)
@@ -412,7 +414,7 @@ if (!save_errno)
 
   /* Both bind() and connect() succeeded, and any early-data */
 
-  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent(" connected\n");
+  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("connected\n");
   if (getsockname(sock, (struct sockaddr *)(&interface_sock), &size) == 0)
     sending_ip_address = host_ntoa(-1, &interface_sock, NULL, &sending_port);
   else
@@ -496,7 +498,7 @@ HDEBUG(D_transport|D_acl|D_v)
 #ifdef SUPPORT_SOCKS
   if (ob->socks_proxy) s = string_sprintf("%svia proxy ", s);
 #endif
-  debug_printf_indent("Connecting to %s %s%s... ", sc->host->name, callout_address, s);
+  debug_printf_indent("Connecting to %s %s%s...\n", sc->host->name, callout_address, s);
   }
 
 /* Create and connect the socket */

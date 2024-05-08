@@ -16,7 +16,8 @@ LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 delivering 10HmaZ-000000005vi-0000
 Transport port=25 replaced by host-specific port=PORT_S
-Connecting to localhost.test.ex [127.0.0.1]:PORT_S ...  connected
+Connecting to localhost.test.ex [127.0.0.1]:PORT_S ...
+connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-server id

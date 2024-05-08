@@ -23,6 +23,7 @@ domain = domain2
 routed by r1 router
   envelope to: recip@domain2
   transport: t1
+other@domain2 in "lsearch;TESTSUITE/aux-fixed/0483.list"? no (end of list)
 LOG: MAIN REJECT
   U=CALLER F=<sender@domain1> rejected RCPT <other@domain2>
 LOG: smtp_connection MAIN

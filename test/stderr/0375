@@ -60,26 +60,32 @@ routing g1@myhost.test.ex
 --------> u1 router <--------
 local_part=g1 domain=myhost.test.ex
 checking local_parts
+g1 in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=g1 domain=myhost.test.ex
 checking local_parts
+g1 in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=g1 domain=myhost.test.ex
 checking local_parts
+g1 in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=g1 domain=myhost.test.ex
 checking local_parts
+g1 in local_parts? no (end of list)
 ut4 router skipped: local_parts mismatch
 --------> ut5 router <--------
 local_part=g1 domain=myhost.test.ex
 checking local_parts
+g1 in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=g1 domain=myhost.test.ex
 checking local_parts
+g1 in local_parts? no (end of list)
 ut6 router skipped: local_parts mismatch
 --------> ut7 router <--------
 local_part=g1 domain=myhost.test.ex
@@ -93,22 +99,27 @@ routing f3@myhost.test.ex
 --------> u1 router <--------
 local_part=f3 domain=myhost.test.ex
 checking local_parts
+f3 in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=f3 domain=myhost.test.ex
 checking local_parts
+f3 in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=f3 domain=myhost.test.ex
 checking local_parts
+f3 in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=f3 domain=myhost.test.ex
 checking local_parts
+f3 in local_parts? no (end of list)
 ut4 router skipped: local_parts mismatch
 --------> ut5 router <--------
 local_part=f3 domain=myhost.test.ex
 checking local_parts
+f3 in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=f3 domain=myhost.test.ex
@@ -132,22 +143,27 @@ routing f2@myhost.test.ex
 --------> u1 router <--------
 local_part=f2 domain=myhost.test.ex
 checking local_parts
+f2 in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=f2 domain=myhost.test.ex
 checking local_parts
+f2 in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=f2 domain=myhost.test.ex
 checking local_parts
+f2 in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=f2 domain=myhost.test.ex
 checking local_parts
+f2 in local_parts? no (end of list)
 ut4 router skipped: local_parts mismatch
 --------> ut5 router <--------
 local_part=f2 domain=myhost.test.ex
 checking local_parts
+f2 in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=f2 domain=myhost.test.ex
@@ -170,22 +186,27 @@ routing f1@myhost.test.ex
 --------> u1 router <--------
 local_part=f1 domain=myhost.test.ex
 checking local_parts
+f1 in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=f1 domain=myhost.test.ex
 checking local_parts
+f1 in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=f1 domain=myhost.test.ex
 checking local_parts
+f1 in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=f1 domain=myhost.test.ex
 checking local_parts
+f1 in local_parts? no (end of list)
 ut4 router skipped: local_parts mismatch
 --------> ut5 router <--------
 local_part=f1 domain=myhost.test.ex
 checking local_parts
+f1 in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=f1 domain=myhost.test.ex
@@ -208,18 +229,22 @@ routing e1@myhost.test.ex
 --------> u1 router <--------
 local_part=e1 domain=myhost.test.ex
 checking local_parts
+e1 in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=e1 domain=myhost.test.ex
 checking local_parts
+e1 in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=e1 domain=myhost.test.ex
 checking local_parts
+e1 in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=e1 domain=myhost.test.ex
 checking local_parts
+e1 in local_parts? no (end of list)
 ut4 router skipped: local_parts mismatch
 --------> ut5 router <--------
 local_part=e1 domain=myhost.test.ex
@@ -241,14 +266,17 @@ routing d3@myhost.test.ex
 --------> u1 router <--------
 local_part=d3 domain=myhost.test.ex
 checking local_parts
+d3 in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=d3 domain=myhost.test.ex
 checking local_parts
+d3 in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=d3 domain=myhost.test.ex
 checking local_parts
+d3 in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=d3 domain=myhost.test.ex
@@ -271,14 +299,17 @@ routing d2@myhost.test.ex
 --------> u1 router <--------
 local_part=d2 domain=myhost.test.ex
 checking local_parts
+d2 in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=d2 domain=myhost.test.ex
 checking local_parts
+d2 in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=d2 domain=myhost.test.ex
 checking local_parts
+d2 in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=d2 domain=myhost.test.ex
@@ -300,14 +331,17 @@ routing d1@myhost.test.ex
 --------> u1 router <--------
 local_part=d1 domain=myhost.test.ex
 checking local_parts
+d1 in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=d1 domain=myhost.test.ex
 checking local_parts
+d1 in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=d1 domain=myhost.test.ex
 checking local_parts
+d1 in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=d1 domain=myhost.test.ex
@@ -329,10 +363,12 @@ routing c1@myhost.test.ex
 --------> u1 router <--------
 local_part=c1 domain=myhost.test.ex
 checking local_parts
+c1 in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=c1 domain=myhost.test.ex
 checking local_parts
+c1 in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=c1 domain=myhost.test.ex
@@ -355,6 +391,7 @@ routing b1@myhost.test.ex
 --------> u1 router <--------
 local_part=b1 domain=myhost.test.ex
 checking local_parts
+b1 in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=b1 domain=myhost.test.ex
@@ -437,10 +474,12 @@ routing f3@myhost.test.ex
 --------> ut7 router <--------
 local_part=f3 domain=myhost.test.ex
 checking local_parts
+f3 in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=f3 domain=myhost.test.ex
 checking local_parts
+f3 in local_parts? no (end of list)
 ut8 router skipped: local_parts mismatch
 --------> real router <--------
 local_part=f3 domain=myhost.test.ex
@@ -460,10 +499,12 @@ routing f2@myhost.test.ex
 --------> ut7 router <--------
 local_part=f2 domain=myhost.test.ex
 checking local_parts
+f2 in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=f2 domain=myhost.test.ex
 checking local_parts
+f2 in local_parts? no (end of list)
 ut8 router skipped: local_parts mismatch
 --------> real router <--------
 local_part=f2 domain=myhost.test.ex
@@ -482,10 +523,12 @@ routing f1@myhost.test.ex
 --------> ut7 router <--------
 local_part=f1 domain=myhost.test.ex
 checking local_parts
+f1 in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=f1 domain=myhost.test.ex
 checking local_parts
+f1 in local_parts? no (end of list)
 ut8 router skipped: local_parts mismatch
 --------> real router <--------
 local_part=f1 domain=myhost.test.ex
@@ -504,14 +547,17 @@ routing e1@myhost.test.ex
 --------> ut6 router <--------
 local_part=e1 domain=myhost.test.ex
 checking local_parts
+e1 in local_parts? no (end of list)
 ut6 router skipped: local_parts mismatch
 --------> ut7 router <--------
 local_part=e1 domain=myhost.test.ex
 checking local_parts
+e1 in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=e1 domain=myhost.test.ex
 checking local_parts
+e1 in local_parts? no (end of list)
 ut8 router skipped: local_parts mismatch
 --------> real router <--------
 local_part=e1 domain=myhost.test.ex
@@ -530,18 +576,22 @@ routing d3@myhost.test.ex
 --------> ut5 router <--------
 local_part=d3 domain=myhost.test.ex
 checking local_parts
+d3 in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=d3 domain=myhost.test.ex
 checking local_parts
+d3 in local_parts? no (end of list)
 ut6 router skipped: local_parts mismatch
 --------> ut7 router <--------
 local_part=d3 domain=myhost.test.ex
 checking local_parts
+d3 in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=d3 domain=myhost.test.ex
 checking local_parts
+d3 in local_parts? no (end of list)
 ut8 router skipped: local_parts mismatch
 --------> real router <--------
 local_part=d3 domain=myhost.test.ex
@@ -560,18 +610,22 @@ routing d2@myhost.test.ex
 --------> ut5 router <--------
 local_part=d2 domain=myhost.test.ex
 checking local_parts
+d2 in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=d2 domain=myhost.test.ex
 checking local_parts
+d2 in local_parts? no (end of list)
 ut6 router skipped: local_parts mismatch
 --------> ut7 router <--------
 local_part=d2 domain=myhost.test.ex
 checking local_parts
+d2 in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=d2 domain=myhost.test.ex
 checking local_parts
+d2 in local_parts? no (end of list)
 ut8 router skipped: local_parts mismatch
 --------> real router <--------
 local_part=d2 domain=myhost.test.ex
@@ -590,18 +644,22 @@ routing d1@myhost.test.ex
 --------> ut5 router <--------
 local_part=d1 domain=myhost.test.ex
 checking local_parts
+d1 in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=d1 domain=myhost.test.ex
 checking local_parts
+d1 in local_parts? no (end of list)
 ut6 router skipped: local_parts mismatch
 --------> ut7 router <--------
 local_part=d1 domain=myhost.test.ex
 checking local_parts
+d1 in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=d1 domain=myhost.test.ex
 checking local_parts
+d1 in local_parts? no (end of list)
 ut8 router skipped: local_parts mismatch
 --------> real router <--------
 local_part=d1 domain=myhost.test.ex
@@ -620,22 +678,27 @@ routing c1@myhost.test.ex
 --------> ut4 router <--------
 local_part=c1 domain=myhost.test.ex
 checking local_parts
+c1 in local_parts? no (end of list)
 ut4 router skipped: local_parts mismatch
 --------> ut5 router <--------
 local_part=c1 domain=myhost.test.ex
 checking local_parts
+c1 in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=c1 domain=myhost.test.ex
 checking local_parts
+c1 in local_parts? no (end of list)
 ut6 router skipped: local_parts mismatch
 --------> ut7 router <--------
 local_part=c1 domain=myhost.test.ex
 checking local_parts
+c1 in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=c1 domain=myhost.test.ex
 checking local_parts
+c1 in local_parts? no (end of list)
 ut8 router skipped: local_parts mismatch
 --------> real router <--------
 local_part=c1 domain=myhost.test.ex
@@ -654,26 +717,32 @@ routing b1@myhost.test.ex
 --------> ut3 router <--------
 local_part=b1 domain=myhost.test.ex
 checking local_parts
+b1 in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=b1 domain=myhost.test.ex
 checking local_parts
+b1 in local_parts? no (end of list)
 ut4 router skipped: local_parts mismatch
 --------> ut5 router <--------
 local_part=b1 domain=myhost.test.ex
 checking local_parts
+b1 in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=b1 domain=myhost.test.ex
 checking local_parts
+b1 in local_parts? no (end of list)
 ut6 router skipped: local_parts mismatch
 --------> ut7 router <--------
 local_part=b1 domain=myhost.test.ex
 checking local_parts
+b1 in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=b1 domain=myhost.test.ex
 checking local_parts
+b1 in local_parts? no (end of list)
 ut8 router skipped: local_parts mismatch
 --------> real router <--------
 local_part=b1 domain=myhost.test.ex
@@ -692,30 +761,37 @@ routing a1@myhost.test.ex
 --------> ut2 router <--------
 local_part=a1 domain=myhost.test.ex
 checking local_parts
+a1 in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=a1 domain=myhost.test.ex
 checking local_parts
+a1 in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=a1 domain=myhost.test.ex
 checking local_parts
+a1 in local_parts? no (end of list)
 ut4 router skipped: local_parts mismatch
 --------> ut5 router <--------
 local_part=a1 domain=myhost.test.ex
 checking local_parts
+a1 in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=a1 domain=myhost.test.ex
 checking local_parts
+a1 in local_parts? no (end of list)
 ut6 router skipped: local_parts mismatch
 --------> ut7 router <--------
 local_part=a1 domain=myhost.test.ex
 checking local_parts
+a1 in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=a1 domain=myhost.test.ex
 checking local_parts
+a1 in local_parts? no (end of list)
 ut8 router skipped: local_parts mismatch
 --------> real router <--------
 local_part=a1 domain=myhost.test.ex
@@ -801,41 +877,41 @@ LOG: MAIN
   == c1@myhost.test.ex R=ut3 T=ut3 defer (0): Child process of ut3 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
-locking TESTSUITE/spool/db/wait-ut4.lockfile
+ locking /home/jgh/local_git/exim/test/spool/db/wait-ut4.lockfile
 cmdlog: '220'
 LOG: MAIN
   => d1@myhost.test.ex P=<> R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1] C="250 OK"
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
-cmdlog: '220'
+ cmdlog: '220'
 LOG: MAIN
   == d2@myhost.test.ex R=ut4 T=ut4 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d2@myhost.test.ex>: 450 soft error
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
-locking TESTSUITE/spool/db/wait-ut4.lockfile
+ locking /home/jgh/local_git/exim/test/spool/db/wait-ut4.lockfile
 cmdlog: '220'
 LOG: MAIN
   ** d3@myhost.test.ex P=<> R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: 550 hard error
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
-locking TESTSUITE/spool/db/wait-ut5.lockfile
+ locking /home/jgh/local_git/exim/test/spool/db/wait-ut5.lockfile
 cmdlog: '220'
 LOG: MAIN
   ** e1@myhost.test.ex P=<> R=ut5 T=ut5 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<e1@myhost.test.ex>: 550 hard error
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
-locking TESTSUITE/spool/db/wait-ut6.lockfile
+ locking /home/jgh/local_git/exim/test/spool/db/wait-ut6.lockfile
 cmdlog: '220'
 LOG: MAIN
   => f1@myhost.test.ex P=<CALLER@myhost.test.ex> R=ut6 T=ut6 H=127.0.0.1 [127.0.0.1] C="250 OK"
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
-cmdlog: '220'
+ cmdlog: '220'
 LOG: MAIN
   == f2@myhost.test.ex R=ut6 T=ut6 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<f2@myhost.test.ex>: 450 soft error
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
-locking TESTSUITE/spool/db/wait-ut6.lockfile
+ locking /home/jgh/local_git/exim/test/spool/db/wait-ut6.lockfile
 cmdlog: '220'
 LOG: MAIN
   ** f3@myhost.test.ex P=<CALLER@myhost.test.ex> R=ut6 T=ut6 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<f3@myhost.test.ex>: 550 hard error
@@ -865,34 +941,42 @@ routing CALLER@myhost.test.ex
 --------> u1 router <--------
 local_part=CALLER domain=myhost.test.ex
 checking local_parts
+CALLER in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=CALLER domain=myhost.test.ex
 checking local_parts
+CALLER in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=CALLER domain=myhost.test.ex
 checking local_parts
+CALLER in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=CALLER domain=myhost.test.ex
 checking local_parts
+CALLER in local_parts? no (end of list)
 ut4 router skipped: local_parts mismatch
 --------> ut5 router <--------
 local_part=CALLER domain=myhost.test.ex
 checking local_parts
+CALLER in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=CALLER domain=myhost.test.ex
 checking local_parts
+CALLER in local_parts? no (end of list)
 ut6 router skipped: local_parts mismatch
 --------> ut7 router <--------
 local_part=CALLER domain=myhost.test.ex
 checking local_parts
+CALLER in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=CALLER domain=myhost.test.ex
 checking local_parts
+CALLER in local_parts? no (end of list)
 ut8 router skipped: local_parts mismatch
 --------> real router <--------
 local_part=CALLER domain=myhost.test.ex
@@ -949,30 +1033,37 @@ routing h1@myhost.test.ex
 --------> u1 router <--------
 local_part=h1 domain=myhost.test.ex
 checking local_parts
+h1 in local_parts? no (end of list)
 u1 router skipped: local_parts mismatch
 --------> ut2 router <--------
 local_part=h1 domain=myhost.test.ex
 checking local_parts
+h1 in local_parts? no (end of list)
 ut2 router skipped: local_parts mismatch
 --------> ut3 router <--------
 local_part=h1 domain=myhost.test.ex
 checking local_parts
+h1 in local_parts? no (end of list)
 ut3 router skipped: local_parts mismatch
 --------> ut4 router <--------
 local_part=h1 domain=myhost.test.ex
 checking local_parts
+h1 in local_parts? no (end of list)
 ut4 router skipped: local_parts mismatch
 --------> ut5 router <--------
 local_part=h1 domain=myhost.test.ex
 checking local_parts
+h1 in local_parts? no (end of list)
 ut5 router skipped: local_parts mismatch
 --------> ut6 router <--------
 local_part=h1 domain=myhost.test.ex
 checking local_parts
+h1 in local_parts? no (end of list)
 ut6 router skipped: local_parts mismatch
 --------> ut7 router <--------
 local_part=h1 domain=myhost.test.ex
 checking local_parts
+h1 in local_parts? no (end of list)
 ut7 router skipped: local_parts mismatch
 --------> ut8 router <--------
 local_part=h1 domain=myhost.test.ex

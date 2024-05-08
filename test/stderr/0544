@@ -487,6 +487,7 @@ try option acl_smtp_helo
 try option acl_smtp_etrn
 try option acl_smtp_vrfy
 try option acl_smtp_expn
+ in chunking_advertise_hosts? no (end of list)
 try option acl_smtp_mail
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
  ├───────text: domain=
@@ -500,6 +501,7 @@ try option acl_smtp_mail
  ├───expanded: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=/sender_domain=sender.domain
             ╰──(tainted)
+ in "domain=/sender_domain=sender.domain"? no (end of list)
 try option acl_smtp_rcpt
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
  ├───────text: domain=
@@ -514,6 +516,7 @@ try option acl_smtp_rcpt
  ├───expanded: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=recipient.domain/sender_domain=sender.domain
             ╰──(tainted)
+recipient.domain in "domain=recipient.domain/sender_domain=sender.domain"? no (end of list)
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
  ├───────text: domain=
  ├considering: $domain/sender_domain=$sender_address_domain
@@ -527,6 +530,7 @@ try option acl_smtp_rcpt
  ├───expanded: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=recipient.domain/sender_domain=sender.domain
             ╰──(tainted)
+sender.domain in "domain=recipient.domain/sender_domain=sender.domain"? no (end of list)
 try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT

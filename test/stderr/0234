@@ -15,9 +15,11 @@
 >>> check domains = +relay_domains
 >>> d in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  d in "@mx_any"?
->>>   list element: @mx_any
->>>  d in "@mx_any"? no (end of list)
+>>>   start sublist relay_domains
+>>>    d in "@mx_any"?
+>>>    ╎list element: @mx_any
+>>>    d in "@mx_any"? no (end of list)
+>>>   end sublist relay_domains
 >>> d in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny" (TESTSUITE/test-config 20)
@@ -30,10 +32,13 @@ LOG: H=(test) [V4NET.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 >>> check domains = +relay_domains
 >>> mxt1.test.ex in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  mxt1.test.ex in "@mx_any"?
->>>   list element: @mx_any
+>>>   start sublist relay_domains
+>>>    mxt1.test.ex in "@mx_any"?
+>>>    ╎list element: @mx_any
 >>> local host has lowest MX
->>>   mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
+>>>    ╎mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
+>>>   end sublist relay_domains
+>>>  data from lookup saved for cache for +relay_domains: key 'mxt1.test.ex' value '@mx_any'
 >>>  mxt1.test.ex in "+relay_domains"? yes (matched "+relay_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
@@ -42,12 +47,15 @@ LOG: H=(test) [V4NET.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 >>> check domains = +relay_domains
 >>> mxt6.test.ex in "+relay_domains"?
 >>>  list element: +relay_domains
->>>  mxt6.test.ex in "@mx_any"?
->>>   list element: @mx_any
+>>>   start sublist relay_domains
+>>>    mxt6.test.ex in "@mx_any"?
+>>>    ╎list element: @mx_any
 >>> local host in host list - removed hosts:
 >>>   ten-2.test.ex V4NET.0.0.2 6
 >>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
->>>   mxt6.test.ex in "@mx_any"? yes (matched "@mx_any")
+>>>    ╎mxt6.test.ex in "@mx_any"? yes (matched "@mx_any")
+>>>   end sublist relay_domains
+>>>  data from lookup saved for cache for +relay_domains: key 'mxt6.test.ex' value '@mx_any'
 >>>  mxt6.test.ex in "+relay_domains"? yes (matched "+relay_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT

@@ -126,6 +126,7 @@ try option unknown_login
   ╰─────result: a.b.c
 LOG: MAIN PANIC
   no @ found in the subject of an address list match: subject="a.b.c" pattern="a.b.c"
+ a.b.c in "a.b.c"? no (end of list)
  ├──condition: match_address{a.b.c}{a.b.c}
  ├─────result: false
   ╭───scanning: yes}{no}}
@@ -278,6 +279,7 @@ try option unknown_login
   \_____result: a.b.c
 LOG: MAIN PANIC
   no @ found in the subject of an address list match: subject="a.b.c" pattern="a.b.c"
+ a.b.c in "a.b.c"? no (end of list)
  |--condition: match_address{a.b.c}{a.b.c}
  |-----result: false
   /---scanning: yes}{no}}
@@ -545,6 +547,8 @@ looking up host name for V4NET.0.0.1
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "ten-1.test.ex"
+ ten-1.test.ex not in empty list (option unset? cannot trace name)
+ ten-1.test.ex not in empty list (option unset? cannot trace name)
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 

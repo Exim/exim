@@ -193,7 +193,7 @@ host in "+relay_hosts"?
  list element: +relay_hosts
   start sublist relay_hosts
   host in "sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'"?
-   ╎list element: sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'
+   ╎list element: sqlite,file=TESTSUITE/aux-fixed/sqlitedb;░select░*░from░them░where░id='10.0.0.0'
    ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"
    ╎  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts="file=TESTSUITE/aux-fixed/sqlitedb"
@@ -234,7 +234,7 @@ host in "+relay_hosts"?
  list element: +relay_hosts
   start sublist relay_hosts
   host in "sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'"?
-   ╎list element: sqlite,file=TESTSUITE/aux-fixed/sqlitedb; select * from them where id='10.0.0.0'
+   ╎list element: sqlite,file=TESTSUITE/aux-fixed/sqlitedb;░select░*░from░them░where░id='10.0.0.0'
    ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    ╎  cached open
    ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -321,7 +321,7 @@ host in "+relay_hosts"?
  list element: +relay_hosts
   start sublist relay_hosts
   host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"?
-   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'
+   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb░select░*░from░them░where░id='10.0.0.0'
    ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"
    ╎  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
@@ -362,7 +362,7 @@ host in "+relay_hosts"?
  list element: +relay_hosts
   start sublist relay_hosts
   host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"?
-   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'
+   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb░select░*░from░them░where░id='10.0.0.0'
    ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    ╎  cached open
    ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -449,7 +449,7 @@ host in "+relay_hosts"?
  list element: +relay_hosts
   start sublist relay_hosts
   host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"?
-   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'
+   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb░select░*░from░them░where░id='10.10.10.10'
    ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"
    ╎  key="select * from them where id='10.10.10.10'" partial=-1 affix=NULL starflags=0 opts=NULL
@@ -485,7 +485,7 @@ host in "+relay_hosts"?
  list element: +relay_hosts
   start sublist relay_hosts
   host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"?
-   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'
+   ╎list element: sqlite;TESTSUITE/aux-fixed/sqlitedb░select░*░from░them░where░id='10.10.10.10'
    ╎search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    ╎  cached open
    ╎search_find: file="TESTSUITE/aux-fixed/sqlitedb"

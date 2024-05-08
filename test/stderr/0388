@@ -23,9 +23,9 @@ routing x@y
 --------> r0 router <--------
 local_part=x domain=y
 checking local_parts
-x in "CALLER"?
+x in local_parts?
  list element: CALLER
-x in "CALLER"? no (end of list)
+x in local_parts? no (end of list)
 r0 router skipped: local_parts mismatch
 --------> r1 router <--------
 local_part=x domain=y
@@ -85,8 +85,9 @@ checking retry status of 127.0.0.1
 no retry data available
 127.0.0.1 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1]:PORT_S (x@y)
-Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ... 127.0.0.1 in hosts_try_fastopen?
- list element: 
+Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
+ 127.0.0.1 in hosts_try_fastopen?
+  list element: 
  connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
@@ -127,8 +128,9 @@ checking retry status of V4NET.0.0.0
 no retry data available
 V4NET.0.0.0 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 to V4NET.0.0.0 [V4NET.0.0.0]:PORT_S (x@y)
-Connecting to V4NET.0.0.0 [V4NET.0.0.0]:PORT_S ... V4NET.0.0.0 in hosts_try_fastopen?
- failed: Network Error
+Connecting to V4NET.0.0.0 [V4NET.0.0.0]:PORT_S ...
+ V4NET.0.0.0 in hosts_try_fastopen?
+  failed: Network Error
 LOG: MAIN
   H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
 set_process_info: pppp delivering 10HmaX-000000005vi-0000: just tried V4NET.0.0.0 [V4NET.0.0.0]:PORT_S for x@y: result DEFER
@@ -281,14 +283,14 @@ routing CALLER@myhost.test.ex
 --------> r0 router <--------
 local_part=CALLER domain=myhost.test.ex
 checking local_parts
-CALLER in "CALLER"?
+CALLER in local_parts?
  list element: CALLER
- CALLER in "CALLER"? yes (matched "CALLER")
+ CALLER in local_parts? yes (matched "CALLER")
 checking senders
- in ":"?
+ in senders?
  list element: 
  address match test: subject= pattern=
-  in ":"? yes (matched "")
+  in senders? yes (matched "")
 calling r0 router
 rda_interpret (string): ':blackhole:'
 expanded: ':blackhole:'
