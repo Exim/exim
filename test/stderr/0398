@@ -153,7 +153,7 @@ interface=NULL port=PORT_S
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  127.0.0.1 in hosts_try_fastopen?
   list element: 
- connected
+connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO mail.test.ex

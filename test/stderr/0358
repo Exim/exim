@@ -30,7 +30,7 @@ After routing:
 checking retry status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
- added retry item for R:userx@test.ex:<jgh@test.ex>: errno=-44 more_errno=51,A flags=0
+added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 added retry item for R:usery@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:RCPT:451:QUIT+:250'
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
@@ -94,7 +94,7 @@ checking retry status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
 no message retry record
- added retry item for R:userx@test.ex:<jgh@test.ex>: errno=-44 more_errno=51,A flags=0
+added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 added retry item for R:usery@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:RCPT:451:QUIT+:250'
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess

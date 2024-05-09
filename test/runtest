@@ -1486,17 +1486,19 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^DKIM \[[^[]+\] (Header hash|b) computed:/;
 
     # Not all platforms support TCP Fast Open, and the compile omits the check
-    if (s/\S+ in hosts_try_fastopen\? (no \(option unset\)|no \(end of list\)|yes \(matched "\*"\))\n$//)
-      {
-      chomp;
-      $_ .= <IN>;
-      s/ \.\.\. >>> / ... /;
+    next if /\S+ in hosts_try_fastopen\? (no \(option unset\)|no \(end of list\)|yes \(matched "\*"\))\n$/ ;
+
+#    if (s/\S+ in hosts_try_fastopen\? (no \(option unset\)|no \(end of list\)|yes \(matched "\*"\))\n$//)
+#      {
+#      chomp;
+#      $_ .= <IN>;
+#      s/ \.\.\. >>> / ... /;
       if (s/ non-TFO mode connection attempt to 224.0.0.0, 0 data\b$//) { chomp; $_ .= <IN>; }
       s/Address family not supported by protocol family/Network Error/;
       s/Network(?: is)? unreachable/Network Error/;
-      }
+#      }
     next if /^(ppppp |\d+ )?setsockopt FASTOPEN: Protocol not available$/;
-    s/^( sending) \d+ (nonTFO early-data)$/$1 dd $2/;
+    s/^(sending) \d+ (nonTFO early-data)$/$1 dd $2/;
 
     if (/^([0-9: ]*						# possible timestamp
 	Connecting\ to\ [^ ]+\ [^ ]+(\ from\ [^ ]+)?)\ \.\.\.

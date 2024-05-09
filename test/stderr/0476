@@ -19,7 +19,7 @@ checking retry status of 127.0.0.1
 delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1]:PORT_S (userx@test.ex)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- connected
+connected
   SMTP<< 220 Server ready
   SMTP>> EHLO the.local.host.name
 cmd buf flush ddd bytes
@@ -87,7 +87,7 @@ checking retry status of 127.0.0.1
 delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.host.name)
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1]:PORT_S (CALLER@the.local.host.name)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
-  failed: Connection refused
+ failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000: just tried 127.0.0.1 [127.0.0.1]:PORT_S for CALLER@the.local.host.name: result DEFER

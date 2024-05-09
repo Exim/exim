@@ -14,7 +14,7 @@ callout cache: no domain record found for localhost
 callout cache: no address record found for Ok@localhost
 interface=NULL port=PORT_S
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- connected
+connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -68,7 +68,7 @@ callout cache: no domain record found for elsewhere
 callout cache: no address record found for NOTok@elsewhere
 interface=NULL port=PORT_S
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- connected
+connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -106,7 +106,7 @@ callout cache: found domain record for elsewhere
 callout cache: no address record found for NOTok2@elsewhere
 interface=NULL port=PORT_S
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- connected
+connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK

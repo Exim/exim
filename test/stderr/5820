@@ -18,9 +18,12 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing rcptuser@dane256ee.test.ex
 >>> calling client router
->>> dane256ee.test.ex in "*"?
->>>  list element: *
->>>  dane256ee.test.ex in "*"? yes (matched "*")
+>>> check dnssec require list
+>>>  dane256ee.test.ex in dnssec_require_domains? no (option unset)
+>>> check dnssec request list
+>>>  dane256ee.test.ex in dnssec_request_domains?
+>>>   list element: *
+>>>   dane256ee.test.ex in dnssec_request_domains? yes (matched "*")
 >>> local host found for non-MX address
 >>> routed by client router
 >>> Attempting full verification using callout
@@ -30,9 +33,10 @@
 >>>  list element: ip4.ip4.ip4.ip4
 >>>  ip4.ip4.ip4.ip4 in hosts_require_dane? yes (matched "ip4.ip4.ip4.ip4")
 >>> interface=NULL port=PORT_D
->>> Connecting to dane256ee.test.ex [ip4.ip4.ip4.ip4]:PORT_D ... ip4.ip4.ip4.ip4 in hosts_try_fastopen?
->>>  list element: 
->>> >>>  connected
+>>> Connecting to dane256ee.test.ex [ip4.ip4.ip4.ip4]:PORT_D ...
+>>>  ip4.ip4.ip4.ip4 in hosts_try_fastopen?
+>>>   list element: 
+>>> connected
 >>>   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ip4.ip4.ip4.ip4 in hosts_avoid_esmtp? no (option unset)
 >>>   SMTP>> EHLO myhost.test.ex
