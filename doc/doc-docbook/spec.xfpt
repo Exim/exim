@@ -16196,11 +16196,13 @@ set.
 .cindex "EHLO" "underscores in"
 .cindex "underscore in EHLO/HELO"
 This option can be set to a string of rogue characters that are permitted in
-all EHLO and HELO names in addition to the standard letters, digits,
-hyphens, and dots. If you really must allow underscores, you can set
+non-ip-literal EHLO and HELO names in addition to the standard letters, digits,
+hyphens, and dots. For examplem if you really must allow underscores,
+you can set
 .code
 helo_allow_chars = _
 .endd
+This option does not apply to names that look like ip-literals.
 Note that the value is one string, not a list.
 
 
