@@ -28,6 +28,8 @@
 >>> check domains = <+ @mx_any/ignore=<;127.0.0.1;::1
 >>> mxt11a.test.ex in "<+ @mx_any/ignore=<;127.0.0.1;::1"?
 >>>  list element: @mx_any/ignore=<;127.0.0.1;::1
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  ::1 in "<;127.0.0.1;::1"?
 >>>   list element: 127.0.0.1
 >>>   list element: ::1

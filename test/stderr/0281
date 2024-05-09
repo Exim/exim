@@ -50,6 +50,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't
 >>> check domains = @mx_any
 >>> mxt13.test.ex in "@mx_any"?
 >>>  list element: @mx_any
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  other1.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>   other1.test.ex in hosts_treat_as_local? yes (matched "other1.test.ex")
@@ -65,6 +67,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't
 >>> check domains = @mx_any
 >>> mxt1.test.ex in "@mx_any"?
 >>>  list element: @mx_any
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  eximtesthost.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
@@ -80,6 +84,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't
 >>> check domains = @mx_any
 >>> mxt6.test.ex in "@mx_any"?
 >>>  list element: @mx_any
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  ten-1.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  ten-1.test.ex in hosts_treat_as_local? no (end of list)
@@ -100,6 +106,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't
 >>> check domains = @mx_any
 >>> mxt9.test.ex in "@mx_any"?
 >>>  list element: @mx_any
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  ten-1.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  ten-1.test.ex in hosts_treat_as_local? no (end of list)
@@ -119,6 +127,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <2@mxt9.test.ex>: domain doesn
 >>> check domains = @mx_any
 >>> mxnone.test.ex in "@mx_any"?
 >>>  list element: @mx_any
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>> mxnone.test.ex in "@mx_any"? no (end of list)
 >>> require: condition test failed in ACL "acl_rcpt_2"
 >>> end of ACL "acl_rcpt_2": not OK
@@ -129,6 +139,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <2@mxnone.test.ex>: domain doe
 >>> check domains = @mx_primary
 >>> mxt5.test.ex in "@mx_primary"?
 >>>  list element: @mx_primary
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  ten-1.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  ten-1.test.ex in hosts_treat_as_local? no (end of list)
@@ -147,6 +159,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <2@mxnone.test.ex>: domain doe
 >>> check domains = @mx_primary
 >>> mxt6.test.ex in "@mx_primary"?
 >>>  list element: @mx_primary
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  ten-1.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  ten-1.test.ex in hosts_treat_as_local? no (end of list)
@@ -169,6 +183,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxt6.test.ex>: domain doesn
 >>> check domains = @mx_primary
 >>> mxt9.test.ex in "@mx_primary"?
 >>>  list element: @mx_primary
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  ten-1.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  ten-1.test.ex in hosts_treat_as_local? no (end of list)
@@ -188,6 +204,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxt9.test.ex>: domain doesn
 >>> check domains = @mx_primary
 >>> mxnone.test.ex in "@mx_primary"?
 >>>  list element: @mx_primary
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>> mxnone.test.ex in "@mx_primary"? no (end of list)
 >>> require: condition test failed in ACL "acl_rcpt_3"
 >>> end of ACL "acl_rcpt_3": not OK
@@ -198,6 +216,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxnone.test.ex>: domain doe
 >>> check domains = @mx_secondary
 >>> mxt5.test.ex in "@mx_secondary"?
 >>>  list element: @mx_secondary
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  eximtesthost.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
@@ -212,6 +232,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <4@mxt5.test.ex>: domain doesn
 >>> check domains = @mx_secondary
 >>> mxt6.test.ex in "@mx_secondary"?
 >>>  list element: @mx_secondary
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  ten-1.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  ten-1.test.ex in hosts_treat_as_local? no (end of list)
@@ -235,6 +257,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <4@mxt5.test.ex>: domain doesn
 >>> check domains = @mx_secondary
 >>> mxt9.test.ex in "@mx_secondary"?
 >>>  list element: @mx_secondary
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  ten-1.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  ten-1.test.ex in hosts_treat_as_local? no (end of list)
@@ -254,6 +278,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <4@mxt9.test.ex>: domain doesn
 >>> check domains = @mx_secondary
 >>> mxnone.test.ex in "@mx_secondary"?
 >>>  list element: @mx_secondary
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>> mxnone.test.ex in "@mx_secondary"? no (end of list)
 >>> require: condition test failed in ACL "acl_rcpt_4"
 >>> end of ACL "acl_rcpt_4": not OK
@@ -343,6 +369,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> check domains = @mx_any
 >>> mxt3.test.ex in "@mx_any"?
 >>>  list element: @mx_any
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  not-exist.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  not-exist.test.ex in hosts_treat_as_local? no (end of list)
@@ -362,6 +390,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> check domains = @mx_primary
 >>> mxt3.test.ex in "@mx_primary"?
 >>>  list element: @mx_primary
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  not-exist.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  not-exist.test.ex in hosts_treat_as_local? no (end of list)
@@ -380,6 +410,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxt3.test.ex>: domain doesn
 >>> check domains = @mx_secondary
 >>> mxt3.test.ex in "@mx_secondary"?
 >>>  list element: @mx_secondary
+>>>  check dnssec require list
+>>>  check dnssec request list
 >>>  not-exist.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  not-exist.test.ex in hosts_treat_as_local? no (end of list)

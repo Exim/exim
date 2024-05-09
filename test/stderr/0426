@@ -28,6 +28,8 @@ local_part=x domain=uppercase.test.ex
 calling r1 router
 r1 router called for x@uppercase.test.ex
   domain = uppercase.test.ex
+check dnssec require list
+check dnssec request list
 uppercase.test.ex (MX resp) DNSSEC
 local host found for non-MX address
 fully qualified name = UpperCase.test.ex

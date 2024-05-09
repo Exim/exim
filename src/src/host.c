@@ -1298,30 +1298,30 @@ host_item *last = *lastptr;
 host_item *prev = NULL;
 host_item *h;
 
-if (removed != NULL) *removed = FALSE;
+if (removed) *removed = FALSE;
 
-if (local_interface_data == NULL) local_interface_data = host_find_interfaces();
+if (!local_interface_data) local_interface_data = host_find_interfaces();
 
 for (h = host; h != last->next; h = h->next)
   {
-  #ifndef STAND_ALONE
-  if (hosts_treat_as_local != NULL)
+#ifndef STAND_ALONE
+  if (hosts_treat_as_local)
     {
     int rc;
-    const uschar *save = deliver_domain;
+    const uschar * save = deliver_domain;
     deliver_domain = h->name;   /* set $domain */
     rc = match_isinlist(string_copylc(h->name), CUSS &hosts_treat_as_local, 0,
       &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL);
     deliver_domain = save;
     if (rc == OK) goto FOUND_LOCAL;
     }
-  #endif
+#endif
 
   /* It seems that on many operating systems, 0.0.0.0 is treated as a synonym
   for 127.0.0.1 and refers to the local host. We therefore force it always to
   be treated as local. */
 
-  if (h->address != NULL)
+  if (h->address)
     {
     if (Ustrcmp(h->address, "0.0.0.0") == 0) goto FOUND_LOCAL;
     for (ip_address_item * ip = local_interface_data; ip; ip = ip->next)
@@ -1332,7 +1332,8 @@ for (h = host; h != last->next; h = h->next)
   /* Update prev to point to the last host item before any that have
   the same MX value as the one we have just considered. */
 
-  if (h->next == NULL || h->next->mx != h->mx) prev = h;
+  if (!h->next || h->next->mx != h->mx)
+    prev = h;
   }
 
 return yield;  /* No local hosts found: return HOST_FOUND or HOST_FIND_FAILED */
@@ -1342,7 +1343,7 @@ something in hosts_treat_as_local has been found. */
 
 FOUND_LOCAL:
 
-if (prev == NULL)
+if (!prev)
   {
   HDEBUG(D_host_lookup) debug_printf((h->mx >= 0)?
     "local host has lowest MX\n" :
@@ -1357,7 +1358,7 @@ HDEBUG(D_host_lookup)
     debug_printf("  %s %s %d\n", h->name, h->address, h->mx);
   }
 
-if (removed != NULL) *removed = TRUE;
+if (removed) *removed = TRUE;
 prev->next = last->next;
 *lastptr = prev;
 return yield;
@@ -1568,8 +1569,7 @@ connection. */
 int
 host_name_lookup(void)
 {
-int old_pool, rc;
-int sep = 0;
+int sep = 0, old_pool, rc, yield;
 uschar *save_hostname;
 uschar **aliases;
 uschar *ordername;
@@ -1581,6 +1581,7 @@ sender_host_dnssec = host_lookup_deferred = host_lookup_failed = FALSE;
 
 HDEBUG(D_host_lookup)
   debug_printf("looking up host name for %s\n", sender_host_address);
+expand_level++;
 
 /* For testing the case when a lookup does not complete, we have a special
 reserved IP address. */
@@ -1591,7 +1592,8 @@ if (f.running_in_test_harness &&
   HDEBUG(D_host_lookup)
     debug_printf("Test harness: host name lookup returns DEFER\n");
   host_lookup_deferred = TRUE;
-  return DEFER;
+  yield = DEFER;
+  goto out;
   }
 
 /* Do lookups directly in the DNS or via gethostbyaddr() (or equivalent), in
@@ -1649,7 +1651,7 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
         truncated and dn_expand may fail. */
 
         if (dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-             US (rr->data), (DN_EXPAND_ARG4_TYPE)(s), ssize) < 0)
+             US rr->data, (DN_EXPAND_ARG4_TYPE)(s), ssize) < 0)
           {
           log_write(0, LOG_MAIN, "host name alias list truncated for %s",
             sender_host_address);
@@ -1689,7 +1691,8 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
       HDEBUG(D_host_lookup)
         debug_printf("IP address PTR lookup gave temporary error\n");
       host_lookup_deferred = TRUE;
-      return DEFER;
+      yield = DEFER;
+      goto out;
       }
     }
 
@@ -1703,7 +1706,8 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
     if (rc == DEFER)
       {
       host_lookup_deferred = TRUE;
-      return rc;                       /* Can't carry on */
+      yield = rc;                       /* Can't carry on */
+      goto out;
       }
     if (rc == OK) break;               /* Found a name */
     }
@@ -1719,7 +1723,8 @@ if (!sender_host_name)
       "address %s", sender_host_address);
   host_lookup_msg = US" (failed to find host name from IP address)";
   host_lookup_failed = TRUE;
-  return FAIL;
+  yield = FAIL;
+  goto out;
   }
 
 HDEBUG(D_host_lookup)
@@ -1784,7 +1789,8 @@ for (uschar * hname = sender_host_name; hname; hname = *aliases++)
     HDEBUG(D_host_lookup) debug_printf("temporary error for host name lookup\n");
     host_lookup_deferred = TRUE;
     sender_host_name = NULL;
-    return DEFER;
+    yield = DEFER;
+    goto out;
     }
   else
     HDEBUG(D_host_lookup) debug_printf("no IP addresses found for %s\n", hname);
@@ -1806,12 +1812,12 @@ for (uschar * hname = sender_host_name; hname; hname = *aliases++)
 /* If sender_host_name == NULL, it means we didn't like the name. Replace
 it with the first alias, if there is one. */
 
-if (sender_host_name == NULL && *sender_host_aliases != NULL)
+if (!sender_host_name && *sender_host_aliases)
   sender_host_name = *sender_host_aliases++;
 
 /* If we now have a main name, all is well. */
 
-if (sender_host_name != NULL) return OK;
+if (sender_host_name) { yield = OK; goto out; }
 
 /* We have failed to find an address that matches. */
 
@@ -1827,7 +1833,11 @@ host_lookup_msg = string_sprintf(" (%s does not match any IP address for %s)",
   sender_host_address, save_hostname);
 store_pool = old_pool;
 host_lookup_failed = TRUE;
-return FAIL;
+yield = FAIL;
+
+out:
+  expand_level--;
+  return yield;
 }
 
 
@@ -2489,31 +2499,46 @@ Returns:                HOST_FIND_FAILED  Failed to find the host or domain;
 */
 
 int
-host_find_bydns(host_item *host, const uschar *ignore_target_hosts, int whichrrs,
-  uschar *srv_service, uschar *srv_fail_domains, uschar *mx_fail_domains,
-  const dnssec_domains *dnssec_d,
-  const uschar **fully_qualified_name, BOOL *removed)
+host_find_bydns(host_item * host, const uschar * ignore_target_hosts,
+  int whichrrs,
+  uschar * srv_service, uschar * srv_fail_domains, uschar * mx_fail_domains,
+  const dnssec_domains * dnssec_d,
+  const uschar ** fully_qualified_name, BOOL * removed)
 {
-host_item *h, *last;
-int rc = DNS_FAIL;
-int ind_type = 0;
-int yield;
+host_item * h, * last;
+int rc = DNS_FAIL, ind_type = 0, yield;
 dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
-BOOL dnssec_require = dnssec_d
+BOOL dnssec_require, dnssec_request;
+dnssec_status_t dnssec;
+
+HDEBUG(D_host_lookup)
+  {
+  debug_printf_indent("check dnssec require list\n");
+  expand_level++;
+  }
+dnssec_require = dnssec_d
   && match_isinlist(host->name, CUSS &dnssec_d->require,
 		  0, &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
-BOOL dnssec_request = dnssec_require
+
+HDEBUG(D_host_lookup)
+  {
+  expand_level--;
+  debug_printf_indent("check dnssec request list\n");
+  expand_level++;
+  }
+dnssec_request = dnssec_require
     || (  dnssec_d
        && match_isinlist(host->name, CUSS &dnssec_d->request,
 		    0, &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK);
-dnssec_status_t dnssec;
+HDEBUG(D_host_lookup)
+  expand_level--;
 
 /* Set the default fully qualified name to the incoming name, initialize the
 resolver if necessary, set up the relevant options, and initialize the flag
 that gets set for DNS syntax check errors. */
 
-if (fully_qualified_name != NULL) *fully_qualified_name = host->name;
+if (fully_qualified_name) *fully_qualified_name = host->name;
 dns_init((whichrrs & HOST_FIND_QUALIFY_SINGLE) != 0,
          (whichrrs & HOST_FIND_SEARCH_PARENTS) != 0,
 	 dnssec_request);
@@ -2525,13 +2550,12 @@ characters, so the code below should be safe. */
 
 if (whichrrs & HOST_FIND_BY_SRV)
   {
-  gstring * g;
-  uschar * temp_fully_qualified_name;
+  uschar * s, * temp_fully_qualified_name;
   int prefix_length;
 
-  g = string_fmt_append(NULL, "_%s._tcp.%n%.256s",
+  s = string_sprintf("_%s._tcp.%n%.256s",
 	srv_service, &prefix_length, host->name);
-  temp_fully_qualified_name = string_from_gstring(g);
+  temp_fully_qualified_name = s;
   ind_type = T_SRV;
 
   /* Search for SRV records. If the fully qualified name is different to
@@ -2547,7 +2571,7 @@ if (whichrrs & HOST_FIND_BY_SRV)
     if ((dnssec_request || dnssec_require)
 	&& !dns_is_secure(dnsa)
 	&& dns_is_aa(dnsa))
-      debug_printf("DNS lookup of %.256s (SRV) requested AD, but got AA\n", host->name);
+      debug_printf_indent("DNS lookup of %.256s (SRV) requested AD, but got AA\n", host->name);
 
   if (dnssec_request)
     {
@@ -2557,7 +2581,7 @@ if (whichrrs & HOST_FIND_BY_SRV)
       { dnssec = DS_NO; lookup_dnssec_authenticated = US"no"; }
     }
 
-  if (temp_fully_qualified_name != g->s && fully_qualified_name != NULL)
+  if (temp_fully_qualified_name != s && fully_qualified_name)
     *fully_qualified_name = temp_fully_qualified_name + prefix_length;
 
   /* On DNS failures, we give the "try again" error unless the domain is
@@ -2576,7 +2600,7 @@ if (whichrrs & HOST_FIND_BY_SRV)
 	&domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) != OK)
 #endif
       { yield = HOST_FIND_AGAIN; goto out; }
-    DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "
+    DEBUG(D_host_lookup) debug_printf_indent("DNS_%s treated as DNS_NODATA "
       "(domain in srv_fail_domains)\n", rc == DNS_FAIL ? "FAIL":"AGAIN");
     }
   }
@@ -2599,12 +2623,12 @@ if (rc != DNS_SUCCEED  &&  whichrrs & HOST_FIND_BY_MX)
     if (  (dnssec_request || dnssec_require)
        && !dns_is_secure(dnsa)
        && dns_is_aa(dnsa))
-      debug_printf("DNS lookup of %.256s (MX) requested AD, but got AA\n", host->name);
+      debug_printf_indent("DNS lookup of %.256s (MX) requested AD, but got AA\n", host->name);
 
   if (dnssec_request)
     if (dns_is_secure(dnsa))
       {
-      DEBUG(D_host_lookup) debug_printf("%s (MX resp) DNSSEC\n", host->name);
+      DEBUG(D_host_lookup) debug_printf_indent("%s (MX resp) DNSSEC\n", host->name);
       dnssec = DS_YES; lookup_dnssec_authenticated = US"yes";
       }
     else
@@ -2615,13 +2639,14 @@ if (rc != DNS_SUCCEED  &&  whichrrs & HOST_FIND_BY_MX)
   switch (rc)
     {
     case DNS_NOMATCH:
-      yield = HOST_FIND_FAILED; goto out;
+      yield = HOST_FIND_FAILED;
+      goto out;
 
     case DNS_SUCCEED:
       if (!dnssec_require || dns_is_secure(dnsa))
 	break;
       DEBUG(D_host_lookup)
-	debug_printf("dnssec fail on MX for %.256s", host->name);
+	debug_printf_indent("dnssec fail on MX for %.256s\n", host->name);
 #ifndef STAND_ALONE
       if (match_isinlist(host->name, CUSS &mx_fail_domains, 0,
 	  &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) != OK)
@@ -2637,7 +2662,7 @@ if (rc != DNS_SUCCEED  &&  whichrrs & HOST_FIND_BY_MX)
 	  &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) != OK)
 #endif
 	{ yield = HOST_FIND_AGAIN; goto out; }
-      DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "
+      DEBUG(D_host_lookup) debug_printf_indent("DNS_%s treated as DNS_NODATA "
 	"(domain in mx_fail_domains)\n", (rc == DNS_FAIL)? "FAIL":"AGAIN");
       break;
     }
@@ -2651,7 +2676,7 @@ if (rc != DNS_SUCCEED)
   {
   if (!(whichrrs & (HOST_FIND_BY_A | HOST_FIND_BY_AAAA)))
     {
-    DEBUG(D_host_lookup) debug_printf("Address records are not being sought\n");
+    DEBUG(D_host_lookup) debug_printf_indent("Address records are not being sought\n");
     yield = HOST_FIND_FAILED;
     goto out;
     }
@@ -2672,16 +2697,16 @@ if (rc != DNS_SUCCEED)
 
   if (rc == HOST_FOUND)
     rc = host_scan_for_local_hosts(host, &last, removed);
-  else
-    if (rc == HOST_IGNORED) rc = HOST_FIND_FAILED;  /* No special action */
+  else if (rc == HOST_IGNORED)
+    rc = HOST_FIND_FAILED;  			/* No special action */
 
   DEBUG(D_host_lookup)
     if (host->address)
       {
       if (fully_qualified_name)
-        debug_printf("fully qualified name = %s\n", *fully_qualified_name);
+        debug_printf_indent("fully qualified name = %s\n", *fully_qualified_name);
       for (host_item * h = host; h != last->next; h = h->next)
-        debug_printf("%s %s mx=%d sort=%d %s\n", h->name,
+        debug_printf_indent("%s %s mx=%d sort=%d %s\n", h->name,
           h->address ? h->address : US"<null>", h->mx, h->sort_key,
           h->status >= hstatus_unusable ? US"*" : US"");
       }
@@ -2758,7 +2783,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
       if (strcmpic(h->name, data) == 0)
         {
         DEBUG(D_host_lookup)
-          debug_printf("discarded duplicate host %s (MX=%d)\n", data,
+          debug_printf_indent("discarded duplicate host %s (MX=%d)\n", data,
             precedence > h->mx ? precedence : h->mx);
         if (precedence >= h->mx) goto NEXT_MX_RR; /* Skip greater precedence */
         if (h == host)                            /* Override first item */
@@ -2868,16 +2893,16 @@ if (ind_type == T_SRV)
 
   if (host == last && host->name[0] == 0)
     {
-    DEBUG(D_host_lookup) debug_printf("the single SRV record is \".\"\n");
+    DEBUG(D_host_lookup) debug_printf_indent("the single SRV record is \".\"\n");
     yield = HOST_FIND_FAILED;
     goto out;
     }
 
   DEBUG(D_host_lookup)
     {
-    debug_printf("original ordering of hosts from SRV records:\n");
+    debug_printf_indent("original ordering of hosts from SRV records:\n");
     for (h = host; h != last->next; h = h->next)
-      debug_printf("  %s P=%d W=%d\n", h->name, h->mx, h->sort_key % 1000);
+      debug_printf_indent("  %s P=%d W=%d\n", h->name, h->mx, h->sort_key % 1000);
     }
 
   for (pptr = &host, h = host; h != last; pptr = &h->next, h = h->next)
@@ -3070,7 +3095,7 @@ if (h != last && !disable_ipv6) for (h = host; h != last; h = h->next)
   h->next = next;
   *next = temp;
   }
-#endif
+#endif	/*HAVE_IPV6*/
 
 /* Remove any duplicate IP addresses and then scan the list of hosts for any
 whose IP addresses are on the local host. If any are found, all hosts with the
@@ -3088,8 +3113,8 @@ if (rc != HOST_FIND_FAILED) yield = rc;
 DEBUG(D_host_lookup)
   {
   if (fully_qualified_name)
-    debug_printf("fully qualified name = %s\n", *fully_qualified_name);
-  debug_printf("host_find_bydns yield = %s (%d); returned hosts:\n",
+    debug_printf_indent("fully qualified name = %s\n", *fully_qualified_name);
+  debug_printf_indent("host_find_bydns yield = %s (%d); returned hosts:\n",
     yield == HOST_FOUND		? "HOST_FOUND" :
     yield == HOST_FOUND_LOCAL	? "HOST_FOUND_LOCAL" :
     yield == HOST_FIND_SECURITY	? "HOST_FIND_SECURITY" :
@@ -3098,7 +3123,7 @@ DEBUG(D_host_lookup)
     yield);
   for (h = host; h != last->next; h = h->next)
     {
-    debug_printf("  %s %s MX=%d %s", h->name,
+    debug_printf_indent("  %s %s MX=%d %s", h->name,
       !h->address ? US"<null>" : h->address, h->mx,
       h->dnssec == DS_YES ? US"DNSSEC " : US"");
     if (h->port != PORT_NONE) debug_printf("port=%d ", h->port);

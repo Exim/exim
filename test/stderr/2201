@@ -40,8 +40,8 @@ test.ex in domains?
  database lookup required for test.ex
                               (tainted)
  dnsdb key: test.ex
-DNS lookup of test.ex (TXT) using fakens
-DNS lookup of test.ex (TXT) succeeded
+ DNS lookup of test.ex (TXT) using fakens
+ DNS lookup of test.ex (TXT) succeeded
  creating new cache entry
  lookup yielded: A░TXT░record░for░test.ex.
  test.ex in domains? yes (matched "dnsdb;test.ex")
@@ -111,11 +111,11 @@ unknown in local_parts?
  database lookup required for unknown
                               (tainted)
  dnsdb key: unknown
-DNS lookup of unknown (TXT) using fakens
-DNS lookup of unknown (TXT) gave HOST_NOT_FOUND
-returning DNS_NOMATCH
-faking res_search(TXT) response length as 65535
- writing neg-cache entry for unknown-TXT-xxxx, ttl 3000
+ DNS lookup of unknown (TXT) using fakens
+ DNS lookup of unknown (TXT) gave HOST_NOT_FOUND
+ returning DNS_NOMATCH
+ faking res_search(TXT) response length as 65535
+  writing neg-cache entry for unknown-TXT-4900041, ttl 3000
  creating new cache entry
  lookup failed
 unknown in local_parts? no (end of list)
@@ -148,8 +148,8 @@ CALLER@myhost.test.ex in senders?
    type=dnsdb key="A=myhost.test.ex" opts=NULL
  database lookup required for A=myhost.test.ex
  dnsdb key: myhost.test.ex
-DNS lookup of myhost.test.ex (A) using fakens
-DNS lookup of myhost.test.ex (A) succeeded
+ DNS lookup of myhost.test.ex (A) using fakens
+ DNS lookup of myhost.test.ex (A) succeeded
  creating new cache entry
  lookup yielded: V4NET.10.10.10
  CALLER@myhost.test.ex in senders? yes (matched "dnsdb;A=myhost.test.ex")

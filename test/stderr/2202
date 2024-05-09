@@ -48,15 +48,15 @@ check hosts = +ignore_unknown : *.$sender_address_domain : $sender_address_domai
  database lookup required for >:defer_never,mxh=cioce.test.again.dns
                               (tainted)
  dnsdb key: cioce.test.again.dns
-DNS lookup of cioce.test.again.dns (MX) using fakens
-DNS lookup of cioce.test.again.dns (MX) gave TRY_AGAIN
+ DNS lookup of cioce.test.again.dns (MX) using fakens
+ DNS lookup of cioce.test.again.dns (MX) gave TRY_AGAIN
  cioce.test.again.dns in dns_again_means_nonexist?
   list element: *
   cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
-cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
-DNS: couldn't fake dnsa len
-DNS: no SOA record found for neg-TTL
- writing neg-cache entry for cioce.test.again.dns-MX-xxxx, ttl -1
+ cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
+ DNS: couldn't fake dnsa len
+ DNS: no SOA record found for neg-TTL
+  writing neg-cache entry for cioce.test.again.dns-MX-4900041, ttl -1
  creating new cache entry
  lookup failed
 host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "?
@@ -64,15 +64,17 @@ host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "?
  list element: *.cioce.test.again.dns
 sender host name required, to match against *.cioce.test.again.dns
 looking up host name for ip4.ip4.ip4.ip4
-DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens
-DNS lookup of ip4-reverse.in-addr.arpa (PTR) succeeded
+  DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens
+  DNS lookup of ip4-reverse.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "the.local.host.name"
- the.local.host.name not in empty list (option unset? cannot trace name)
- the.local.host.name not in empty list (option unset? cannot trace name)
-DNS lookup of the.local.host.name (A) using fakens
-DNS lookup of the.local.host.name (A) succeeded
+  check dnssec require list
+   the.local.host.name not in empty list (option unset? cannot trace name)
+  check dnssec request list
+   the.local.host.name not in empty list (option unset? cannot trace name)
+  DNS lookup of the.local.host.name (A) using fakens
+  DNS lookup of the.local.host.name (A) succeeded
 local host found for non-MX address
-the.local.host.name ip4.ip4.ip4.ip4 mx=-1 sort=xx 
+  the.local.host.name ip4.ip4.ip4.ip4 mx=-1 sort=xx 
 checking addresses for the.local.host.name
 Forward DNS security status: unverified
   ip4.ip4.ip4.ip4 OK
@@ -80,15 +82,15 @@ sender_fullhost = the.local.host.name (test) [ip4.ip4.ip4.ip4]
 sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4] helo=test)
  list element: cioce.test.again.dns
 using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
-DNS lookup of cioce.test.again.dns (A) using fakens
-DNS lookup of cioce.test.again.dns (A) gave TRY_AGAIN
+ DNS lookup of cioce.test.again.dns (A) using fakens
+ DNS lookup of cioce.test.again.dns (A) gave TRY_AGAIN
  cioce.test.again.dns in dns_again_means_nonexist?
   list element: *
   cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
-cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
-DNS: couldn't fake dnsa len
-DNS: no SOA record found for neg-TTL
- writing neg-cache entry for cioce.test.again.dns-A-xxxx, ttl -1
+ cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
+ DNS: couldn't fake dnsa len
+ DNS: no SOA record found for neg-TTL
+  writing neg-cache entry for cioce.test.again.dns-A-49000c1, ttl -1
 host_fake_gethostbyname(af=inet) returned 1 (HOST_NOT_FOUND)
 no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
 LOG: host_lookup_failed MAIN
@@ -142,27 +144,31 @@ test.again.dns in "+try_again_dns_list"?
   start sublist try_again_dns_list
    test.again.dns in "@mx_any"?
    ╎list element: @mx_any
-DNS lookup of test.again.dns (MX) using fakens
-DNS lookup of test.again.dns (MX) gave TRY_AGAIN
+   ╎check dnssec require list
+   ╎check dnssec request list
+   ╎DNS lookup of test.again.dns (MX) using fakens
+   ╎DNS lookup of test.again.dns (MX) gave TRY_AGAIN
    ╎test.again.dns in dns_again_means_nonexist?
    ╎ list element: !+try_again_dns_list
    ╎  start sublist try_again_dns_list
    ╎   test.again.dns in "@mx_any"?
    ╎   ╎list element: @mx_any
-DNS lookup of test.again.dns (MX) using fakens
-DNS lookup of test.again.dns (MX) gave TRY_AGAIN
+   ╎   ╎check dnssec require list
+   ╎   ╎check dnssec request list
+   ╎   ╎DNS lookup of test.again.dns (MX) using fakens
+   ╎   ╎DNS lookup of test.again.dns (MX) gave TRY_AGAIN
 LOG: MAIN PANIC
   dns_again_means_nonexist recursion seen for test.again.dns (assuming nonexist)
-DNS: couldn't fake dnsa len
-DNS: no SOA record found for neg-TTL
- writing neg-cache entry for test.again.dns-MX-xxxx, ttl -1
+   ╎   ╎DNS: couldn't fake dnsa len
+   ╎   ╎DNS: no SOA record found for neg-TTL
+   ╎   ╎ writing neg-cache entry for test.again.dns-MX-4100041, ttl -1
    ╎   test.again.dns in "@mx_any"? no (end of list)
    ╎  end sublist try_again_dns_list
    ╎test.again.dns in dns_again_means_nonexist? yes (end of list)
-test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
-DNS: couldn't fake dnsa len
-DNS: no SOA record found for neg-TTL
- update neg-cache entry for test.again.dns-MX-xxxx, ttl -1
+   ╎test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
+   ╎DNS: couldn't fake dnsa len
+   ╎DNS: no SOA record found for neg-TTL
+   ╎ update neg-cache entry for test.again.dns-MX-4100041, ttl -1
    test.again.dns in "@mx_any"? no (end of list)
   end sublist try_again_dns_list
 test.again.dns in "+try_again_dns_list"? no (end of list)

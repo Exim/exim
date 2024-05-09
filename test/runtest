@@ -464,7 +464,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/:[^:]+: while opening named pipe/: Error: while opening named pipe/;
 
   # Debugging output of lists of hosts may have different sort keys
-  s/sort=\S+/sort=xx/ if /^\S+ (?:\d+\.){3}\d+ mx=\S+ sort=\S+/;
+  s/^\s*\S+ (?:\d+\.){3}\d+ mx=\S+ sort=\K\S+/xx/;
 
   # Random local part in callout cache testing
   s/myhost.test.ex-\d+-testing/myhost.test.ex-dddddddd-testing/;

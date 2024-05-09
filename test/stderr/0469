@@ -18,10 +18,12 @@ local_part=x domain=mxt1c.test.ex
 calling r1 router
 r1 router called for x@mxt1c.test.ex
   domain = mxt1c.test.ex
-mxt1c.test.ex in dnssec_require_domains? no (option unset)
-mxt1c.test.ex in dnssec_request_domains?
- list element: *
- mxt1c.test.ex in dnssec_request_domains? yes (matched "*")
+check dnssec require list
+ mxt1c.test.ex in dnssec_require_domains? no (option unset)
+check dnssec request list
+ mxt1c.test.ex in dnssec_request_domains?
+  list element: *
+  mxt1c.test.ex in dnssec_request_domains? yes (matched "*")
 DNS lookup of mxt1c.test.ex (MX) using fakens
 DNS lookup of mxt1c.test.ex (MX) succeeded
 DNS lookup of dontqualify (A) using fakens

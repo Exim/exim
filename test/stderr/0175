@@ -136,10 +136,12 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: 
 >>>  cached lookup data = NULL
 >>> ten-1.test.ex in domains? yes (end of list)
 >>> calling lookuphost router
->>> ten-1.test.ex in dnssec_require_domains? no (option unset)
->>> ten-1.test.ex in dnssec_request_domains?
->>>  list element: *
->>>  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+>>> check dnssec require list
+>>>  ten-1.test.ex in dnssec_require_domains? no (option unset)
+>>> check dnssec request list
+>>>  ten-1.test.ex in dnssec_request_domains?
+>>>   list element: *
+>>>   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
 >>> routed by lookuphost router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"

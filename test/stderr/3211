@@ -19,10 +19,12 @@
 >>> calling skipped router
 >>> skipped router declined for userx@test.again.dns
 >>> calling temp router
->>> test.again.dns in dnssec_require_domains? no (option unset)
->>> test.again.dns in dnssec_request_domains?
->>>  list element: *
->>>  test.again.dns in dnssec_request_domains? yes (matched "*")
+>>> check dnssec require list
+>>>  test.again.dns in dnssec_require_domains? no (option unset)
+>>> check dnssec request list
+>>>  test.again.dns in dnssec_request_domains?
+>>>   list element: *
+>>>   test.again.dns in dnssec_request_domains? yes (matched "*")
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> test.again.dns not in empty list (option unset? cannot trace name)
 >>> temp router: defer for userx@test.again.dns
@@ -51,10 +53,12 @@ LOG: H=(test) [1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <userx@test.
 >>>  list element: !testdb;fail
 >>> test.again.dns in domains? yes (end of list)
 >>> calling r1 router
->>> test.again.dns in dnssec_require_domains? no (option unset)
->>> test.again.dns in dnssec_request_domains?
->>>  list element: *
->>>  test.again.dns in dnssec_request_domains? yes (matched "*")
+>>> check dnssec require list
+>>>  test.again.dns in dnssec_require_domains? no (option unset)
+>>> check dnssec request list
+>>>  test.again.dns in dnssec_request_domains?
+>>>   list element: *
+>>>   test.again.dns in dnssec_request_domains? yes (matched "*")
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> test.again.dns not in empty list (option unset? cannot trace name)
 >>> r1 router: defer for r1-userx@test.again.dns

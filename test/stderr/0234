@@ -18,6 +18,8 @@
 >>>   start sublist relay_domains
 >>>    d in "@mx_any"?
 >>>    ╎list element: @mx_any
+>>>    ╎check dnssec require list
+>>>    ╎check dnssec request list
 >>>    d in "@mx_any"? no (end of list)
 >>>   end sublist relay_domains
 >>> d in "+relay_domains"? no (end of list)
@@ -35,6 +37,8 @@ LOG: H=(test) [V4NET.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 >>>   start sublist relay_domains
 >>>    mxt1.test.ex in "@mx_any"?
 >>>    ╎list element: @mx_any
+>>>    ╎check dnssec require list
+>>>    ╎check dnssec request list
 >>> local host has lowest MX
 >>>    ╎mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
 >>>   end sublist relay_domains
@@ -50,6 +54,8 @@ LOG: H=(test) [V4NET.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 >>>   start sublist relay_domains
 >>>    mxt6.test.ex in "@mx_any"?
 >>>    ╎list element: @mx_any
+>>>    ╎check dnssec require list
+>>>    ╎check dnssec request list
 >>> local host in host list - removed hosts:
 >>>   ten-2.test.ex V4NET.0.0.2 6
 >>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6

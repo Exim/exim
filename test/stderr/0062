@@ -58,8 +58,10 @@
 >>> sender host name required, to match against *-2.test.ex
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
->>>    ╎ten-1.test.ex not in empty list (option unset? cannot trace name)
->>>    ╎ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>    ╎ check dnssec require list
+>>>    ╎  ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>    ╎ check dnssec request list
+>>>    ╎  ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>>    ╎list element: *-3-alias.test.ex
@@ -137,8 +139,10 @@ LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=ten-1.test.ex (test
 >>> sender host name required, to match against *-2.test.ex
 >>> looking up host name for V4NET.0.0.2
 >>> IP address lookup yielded "ten-2.test.ex"
->>>    ╎ten-2.test.ex not in empty list (option unset? cannot trace name)
->>>    ╎ten-2.test.ex not in empty list (option unset? cannot trace name)
+>>>    ╎ check dnssec require list
+>>>    ╎  ten-2.test.ex not in empty list (option unset? cannot trace name)
+>>>    ╎ check dnssec request list
+>>>    ╎  ten-2.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-2.test.ex
 >>>   V4NET.0.0.2 OK
 >>>    ╎host in "*-2.test.ex : *-3-alias.test.ex"? yes (matched "*-2.test.ex")
@@ -213,12 +217,16 @@ LOG: 10HmaY-000000005vi-0000 <= userx@somehost.example.com H=ten-2.test.ex (test
 >>> looking up host name for V4NET.0.0.3
 >>> IP address lookup yielded "ten-3.test.ex"
 >>>   alias "ten-3-alias.test.ex"
->>>    ╎ten-3.test.ex not in empty list (option unset? cannot trace name)
->>>    ╎ten-3.test.ex not in empty list (option unset? cannot trace name)
+>>>    ╎ check dnssec require list
+>>>    ╎  ten-3.test.ex not in empty list (option unset? cannot trace name)
+>>>    ╎ check dnssec request list
+>>>    ╎  ten-3.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-3.test.ex
 >>>   V4NET.0.0.3 OK
->>>    ╎ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
->>>    ╎ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
+>>>    ╎ check dnssec require list
+>>>    ╎  ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
+>>>    ╎ check dnssec request list
+>>>    ╎  ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>>    ╎list element: *-3-alias.test.ex

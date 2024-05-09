@@ -62,7 +62,7 @@ if (stat(CS utilname, &statbuf) >= 0)
   int infd, outfd, rc;
   uschar *argv[5];
 
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) using fakens\n",
+  DEBUG(D_dns) debug_printf_indent("DNS lookup of %s (%s) using fakens\n",
 		name, dns_text_type(type));
 
   argv[0] = utilname;
@@ -105,17 +105,17 @@ if (stat(CS utilname, &statbuf) >= 0)
     case 3: h_errno = NO_RECOVERY; return -1;
     case 4: h_errno = NO_DATA; return -1;
     case 5: /* Pass on to res_search() */
-    DEBUG(D_dns) debug_printf("fakens returned PASS_ON\n");
+    DEBUG(D_dns) debug_printf_indent("fakens returned PASS_ON\n");
     }
   }
 else
   {
-  DEBUG(D_dns) debug_printf("fakens (%s) not found\n", utilname);
+  DEBUG(D_dns) debug_printf_indent("fakens (%s) not found\n", utilname);
   }
 
 /* fakens utility not found, or it returned "pass on" */
 
-DEBUG(D_dns) debug_printf("passing %s on to res_search()\n", domain);
+DEBUG(D_dns) debug_printf_indent("passing %s on to res_search()\n", domain);
 
 return res_search(CS domain, C_IN, type, answerptr, size);
 }
@@ -165,13 +165,13 @@ if (dns_use_edns0 >= 0)
   else
     resp->options &= ~RES_USE_EDNS0;
   DEBUG(D_resolver)
-    debug_printf("Coerced resolver EDNS0 support %s.\n",
+    debug_printf_indent("Coerced resolver EDNS0 support %s.\n",
         dns_use_edns0 ? "on" : "off");
   }
 #else
 if (dns_use_edns0 >= 0)
   DEBUG(D_resolver)
-    debug_printf("Unable to %sset EDNS0 without resolver support.\n",
+    debug_printf_indent("Unable to %sset EDNS0 without resolver support.\n",
         dns_use_edns0 ? "" : "un");
 #endif
 
@@ -187,7 +187,7 @@ if (dns_dnssec_ok >= 0)
   if (dns_use_edns0 == 0 && dns_dnssec_ok != 0)
     {
     DEBUG(D_resolver)
-      debug_printf("CONFLICT: dns_use_edns0 forced false, dns_dnssec_ok forced true, ignoring latter!\n");
+      debug_printf_indent("CONFLICT: dns_use_edns0 forced false, dns_dnssec_ok forced true, ignoring latter!\n");
     }
   else
     {
@@ -195,18 +195,18 @@ if (dns_dnssec_ok >= 0)
       resp->options |= RES_USE_DNSSEC;
     else
       resp->options &= ~RES_USE_DNSSEC;
-    DEBUG(D_resolver) debug_printf("Coerced resolver DNSSEC support %s.\n",
+    DEBUG(D_resolver) debug_printf_indent("Coerced resolver DNSSEC support %s.\n",
         dns_dnssec_ok ? "on" : "off");
     }
   }
 # else
 if (dns_dnssec_ok >= 0)
   DEBUG(D_resolver)
-    debug_printf("Unable to %sset DNSSEC without resolver support.\n",
+    debug_printf_indent("Unable to %sset DNSSEC without resolver support.\n",
         dns_dnssec_ok ? "" : "un");
 if (use_dnssec)
   DEBUG(D_resolver)
-    debug_printf("Unable to set DNSSEC without resolver support.\n");
+    debug_printf_indent("Unable to set DNSSEC without resolver support.\n");
 # endif
 #endif /* DISABLE_DNSSEC */
 
@@ -353,7 +353,7 @@ char * trace = NULL;
 if (reset != RESET_NEXT)
   {
   dnss->rrcount = ntohs(h->qdcount);
-  TRACE debug_printf("%s: reset (Q rrcount %d)\n", __FUNCTION__, dnss->rrcount);
+  TRACE debug_printf_indent("%s: reset (Q rrcount %d)\n", __FUNCTION__, dnss->rrcount);
   dnss->aptr = dnsa->answer + sizeof(HEADER);
 
   /* Skip over questions; failure to expand the name just gives up */
@@ -372,7 +372,7 @@ if (reset != RESET_NEXT)
   /* Get the number of answer records. */
 
   dnss->rrcount = ntohs(h->ancount);
-  TRACE debug_printf("%s: reset (A rrcount %d)\n", __FUNCTION__, dnss->rrcount);
+  TRACE debug_printf_indent("%s: reset (A rrcount %d)\n", __FUNCTION__, dnss->rrcount);
 
   /* Skip over answers if we want to look at the authority section. Also skip
   the NS records (i.e. authority section) if wanting to look at the additional
@@ -380,15 +380,15 @@ if (reset != RESET_NEXT)
 
   if (reset == RESET_ADDITIONAL)
     {
-    TRACE debug_printf("%s: additional\n", __FUNCTION__);
+    TRACE debug_printf_indent("%s: additional\n", __FUNCTION__);
     dnss->rrcount += ntohs(h->nscount);
-    TRACE debug_printf("%s: reset (NS rrcount %d)\n", __FUNCTION__, dnss->rrcount);
+    TRACE debug_printf_indent("%s: reset (NS rrcount %d)\n", __FUNCTION__, dnss->rrcount);
     }
 
   if (reset == RESET_AUTHORITY || reset == RESET_ADDITIONAL)
     {
     TRACE if (reset == RESET_AUTHORITY)
-      debug_printf("%s: authority\n", __FUNCTION__);
+      debug_printf_indent("%s: authority\n", __FUNCTION__);
     while (dnss->rrcount-- > 0)
       {
       TRACE trace = "A-namelen";
@@ -409,13 +409,13 @@ if (reset != RESET_NEXT)
       }
     dnss->rrcount = reset == RESET_AUTHORITY
       ? ntohs(h->nscount) : ntohs(h->arcount);
-    TRACE debug_printf("%s: reset (%s rrcount %d)\n", __FUNCTION__,
+    TRACE debug_printf_indent("%s: reset (%s rrcount %d)\n", __FUNCTION__,
       reset == RESET_AUTHORITY ? "NS" : "AR", dnss->rrcount);
     }
-  TRACE debug_printf("%s: %d RRs to read\n", __FUNCTION__, dnss->rrcount);
+  TRACE debug_printf_indent("%s: %d RRs to read\n", __FUNCTION__, dnss->rrcount);
   }
 else
-  TRACE debug_printf("%s: next (%d left)\n", __FUNCTION__, dnss->rrcount);
+  TRACE debug_printf_indent("%s: next (%d left)\n", __FUNCTION__, dnss->rrcount);
 
 /* The variable dnss->aptr is now pointing at the next RR, and dnss->rrcount
 contains the number of RR records left. */
@@ -458,11 +458,11 @@ if (dnss_inc_aptr(dnsa, dnss, dnss->srr.size))
 /* Return a pointer to the dns_record structure within the dns_answer. This is
 for convenience so that the scans can use nice-looking for loops. */
 
-TRACE debug_printf("%s: return %s\n", __FUNCTION__, dns_text_type(dnss->srr.type));
+TRACE debug_printf_indent("%s: return %s\n", __FUNCTION__, dns_text_type(dnss->srr.type));
 return &dnss->srr;
 
 null_return:
-  TRACE debug_printf("%s: terminate (%d RRs left). Last op: %s; errno %d %s\n",
+  TRACE debug_printf_indent("%s: terminate (%d RRs left). Last op: %s; errno %d %s\n",
     __FUNCTION__, dnss->rrcount, trace, errno, strerror(errno));
   dnss->rrcount = 0;
   return NULL;
@@ -515,7 +515,7 @@ dns_is_secure(const dns_answer * dnsa)
 {
 #ifdef DISABLE_DNSSEC
 DEBUG(D_dns)
-  debug_printf("DNSSEC support disabled at build-time; dns_is_secure() false\n");
+  debug_printf_indent("DNSSEC support disabled at build-time; dns_is_secure() false\n");
 return FALSE;
 #else
 const HEADER * h = (const HEADER *) dnsa->answer;
@@ -542,7 +542,7 @@ if (  !h->aa
    )
   return FALSE;
 
-DEBUG(D_dns) debug_printf("DNS faked the AD bit "
+DEBUG(D_dns) debug_printf_indent("DNS faked the AD bit "
   "(got AA and matched with dns_trust_aa (%s in %s))\n",
   auth_name, dns_trust_aa);
 
@@ -666,7 +666,7 @@ else
   (void)tree_insertnode(&tree_dns_fails, new);
   }
 
-DEBUG(D_dns) debug_printf(" %s neg-cache entry for %s, ttl %d\n",
+DEBUG(D_dns) debug_printf_indent(" %s neg-cache entry for %s, ttl %d\n",
   previous ? "update" : "writing",
   node_name, expiry ? (int)(expiry - time(NULL)) : -1);
 e->expiry = expiry;
@@ -693,7 +693,7 @@ e = previous->data.ptr;
 val = e->data.val;
 rc = e->expiry && e->expiry <= time(NULL) ? -1 : val;
 
-DEBUG(D_dns) debug_printf("DNS lookup of %.255s (%s): %scached value %s%s\n",
+DEBUG(D_dns) debug_printf_indent("DNS lookup of %.255s (%s): %scached value %s%s\n",
   name, dns_text_type(type),
   rc == -1 ? "" : "using ",
   dns_rc_names[val],
@@ -731,12 +731,12 @@ if (  h->qr == 1				/* a response */
    && ntohs(h->ancount) == 0			/* no answer records */
    && ntohs(h->nscount) >= 1)			/* authority records */
   {
-  DEBUG(D_dns) debug_printf("faking res_search(%s) response length as %d\n",
+  DEBUG(D_dns) debug_printf_indent("faking res_search(%s) response length as %d\n",
     dns_text_type(type), (int)sizeof(dnsa->answer));
   dnsa->answerlen = sizeof(dnsa->answer);
   return TRUE;
   }
-DEBUG(D_dns) debug_printf("DNS: couldn't fake dnsa len\n");
+DEBUG(D_dns) debug_printf_indent("DNS: couldn't fake dnsa len\n");
 /* Maybe we should just do a second lookup for an SOA? */
 return FALSE;
 }
@@ -783,7 +783,7 @@ if (fake_dnsa_len_for_fail(dnsa, type))
     return time(NULL) + ttl;
     }
 
-DEBUG(D_dns) debug_printf("DNS: no SOA record found for neg-TTL\n");
+DEBUG(D_dns) debug_printf_indent("DNS: no SOA record found for neg-TTL\n");
 return 0;
 }
 
@@ -844,11 +844,11 @@ if ((rc = dns_fail_cache_hit(name, type)) > 0)
   uschar * alabel;
   uschar * errstr = NULL;
   DEBUG(D_dns) if (string_is_utf8(name))
-    debug_printf("convert utf8 '%s' to alabel for for lookup\n", name);
+    debug_printf_indent("convert utf8 '%s' to alabel for for lookup\n", name);
   if ((alabel = string_domain_utf8_to_alabel(name, &errstr)), errstr)
     {
     DEBUG(D_dns)
-      debug_printf("DNS name '%s' utf8 conversion to alabel failed: %s\n", name,
+      debug_printf_indent("DNS name '%s' utf8 conversion to alabel failed: %s\n", name,
         errstr);
     f.host_find_failed_syntax = TRUE;
     return DNS_NOMATCH;
@@ -877,7 +877,7 @@ if (check_dns_names_pattern[0] != 0 && type != T_PTR && type != T_TXT)
   if (!regex_match(regex_check_dns_names, name, -1, NULL))
     {
     DEBUG(D_dns)
-      debug_printf("DNS name syntax check failed: %s (%s)\n", name,
+      debug_printf_indent("DNS name syntax check failed: %s (%s)\n", name,
         dns_text_type(type));
     f.host_find_failed_syntax = TRUE;
     return DNS_NOMATCH;
@@ -909,7 +909,7 @@ dnsa->answerlen = f.running_in_test_harness
 
 if (dnsa->answerlen > (int) sizeof(dnsa->answer))
   {
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) resulted in overlong packet"
+  DEBUG(D_dns) debug_printf_indent("DNS lookup of %s (%s) resulted in overlong packet"
     " (size %d), truncating to %u.\n",
     name, dns_text_type(type), dnsa->answerlen, (unsigned int) sizeof(dnsa->answer));
   dnsa->answerlen = sizeof(dnsa->answer);
@@ -918,12 +918,12 @@ if (dnsa->answerlen > (int) sizeof(dnsa->answer))
 if (dnsa->answerlen < 0) switch (h_errno)
   {
   case HOST_NOT_FOUND:
-    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave HOST_NOT_FOUND\n"
+    DEBUG(D_dns) debug_printf_indent("DNS lookup of %s (%s) gave HOST_NOT_FOUND\n"
       "returning DNS_NOMATCH\n", name, dns_text_type(type));
     return dns_fail_return(name, type, dns_expire_from_soa(dnsa, type), DNS_NOMATCH);
 
   case TRY_AGAIN:
-    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave TRY_AGAIN\n",
+    DEBUG(D_dns) debug_printf_indent("DNS lookup of %s (%s) gave TRY_AGAIN\n",
       name, dns_text_type(type));
 
     /* Cut this out for various test programs */
@@ -955,10 +955,10 @@ if (dnsa->answerlen < 0) switch (h_errno)
 
     if (rc != OK)
       {
-      DEBUG(D_dns) debug_printf("returning DNS_AGAIN\n");
+      DEBUG(D_dns) debug_printf_indent("returning DNS_AGAIN\n");
       return dns_fail_return(name, type, 0, DNS_AGAIN);
       }
-    DEBUG(D_dns) debug_printf("%s is in dns_again_means_nonexist: returning "
+    DEBUG(D_dns) debug_printf_indent("%s is in dns_again_means_nonexist: returning "
       "DNS_NOMATCH\n", name);
     return dns_fail_return(name, type, dns_expire_from_soa(dnsa, type), DNS_NOMATCH);
 
@@ -967,22 +967,22 @@ if (dnsa->answerlen < 0) switch (h_errno)
 #endif
 
   case NO_RECOVERY:
-    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_RECOVERY\n"
+    DEBUG(D_dns) debug_printf_indent("DNS lookup of %s (%s) gave NO_RECOVERY\n"
       "returning DNS_FAIL\n", name, dns_text_type(type));
     return dns_fail_return(name, type, 0, DNS_FAIL);
 
   case NO_DATA:
-    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_DATA\n"
+    DEBUG(D_dns) debug_printf_indent("DNS lookup of %s (%s) gave NO_DATA\n"
       "returning DNS_NODATA\n", name, dns_text_type(type));
     return dns_fail_return(name, type, dns_expire_from_soa(dnsa, type), DNS_NODATA);
 
   default:
-    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave unknown DNS error %d\n"
+    DEBUG(D_dns) debug_printf_indent("DNS lookup of %s (%s) gave unknown DNS error %d\n"
       "returning DNS_FAIL\n", name, dns_text_type(type), h_errno);
     return dns_fail_return(name, type, 0, DNS_FAIL);
   }
 
-DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) succeeded\n",
+DEBUG(D_dns) debug_printf_indent("DNS lookup of %s (%s) succeeded\n",
   name, dns_text_type(type));
 
 return DNS_SUCCEED;
@@ -1124,7 +1124,7 @@ for (int i = 0; i <= dns_cname_loops; i++)
   if (!dns_is_secure(dnsa))
     secure_so_far = FALSE;
 
-  DEBUG(D_dns) debug_printf("CNAME found: change to %s\n", name);
+  DEBUG(D_dns) debug_printf_indent("CNAME found: change to %s\n", name);
   }       /* Loop back to do another lookup */
 
 /* Control reaches here after 10 times round the CNAME loop. Something isn't
@@ -1216,12 +1216,12 @@ switch (type)
   case T_SOA:
     {
     const uschar *d = name;
-    while (d != 0)
+    while (d)
       {
       int rc = dns_lookup(dnsa, d, type, fully_qualified_name);
       if (rc != DNS_NOMATCH && rc != DNS_NODATA) return rc;
-      while (*d != 0 && *d != '.') d++;
-      if (*d++ == 0) break;
+      while (*d && *d != '.') d++;
+      if (!*d++) break;
       }
     return DNS_NOMATCH;
     }
@@ -1241,7 +1241,7 @@ switch (type)
     dns_record *rr;
     dns_scan dnss;
 
-    DEBUG(D_dns) debug_printf("CSA lookup of %s\n", name);
+    DEBUG(D_dns) debug_printf_indent("CSA lookup of %s\n", name);
 
     srvname = string_sprintf("_client._smtp.%s", name);
     rc = dns_lookup(dnsa, srvname, T_SRV, NULL);
@@ -1279,7 +1279,7 @@ switch (type)
 	limit = 3;
 	}
 
-    DEBUG(D_dns) debug_printf("CSA TLD %s\n", tld);
+    DEBUG(D_dns) debug_printf_indent("CSA TLD %s\n", tld);
 
     /* Do not perform the search if the top level or 2nd level domains do not
     exist. This is quite common, and when it occurs all the search queries would
@@ -1306,7 +1306,7 @@ switch (type)
 	  if (--namesuff <= name) return DNS_NOMATCH;
 	while (*namesuff != '.');
 
-      DEBUG(D_dns) debug_printf("CSA parent search at %s\n", namesuff + 1);
+      DEBUG(D_dns) debug_printf_indent("CSA parent search at %s\n", namesuff + 1);
 
       srvname = string_sprintf("_client._smtp.%s", namesuff + 1);
       rc = dns_lookup(dnsa, srvname, T_SRV, NULL);

@@ -382,10 +382,12 @@ unknown in local_parts? yes (end of list)
 calling r2 router
 r2 router called for unknown@test.ex
   domain = test.ex
-test.ex in dnssec_require_domains? no (option unset)
-test.ex in dnssec_request_domains?
- list element: *
- test.ex in dnssec_request_domains? yes (matched "*")
+check dnssec require list
+ test.ex in dnssec_require_domains? no (option unset)
+check dnssec request list
+ test.ex in dnssec_request_domains?
+  list element: *
+  test.ex in dnssec_request_domains? yes (matched "*")
 DNS lookup of test.ex (MX) using fakens
 DNS lookup of test.ex (MX) gave NO_DATA
 returning DNS_NODATA

@@ -18,10 +18,12 @@ local_part=userx domain=alias-eximtesthost
 calling dns router
 dns router called for userx@alias-eximtesthost
   domain = alias-eximtesthost
-alias-eximtesthost in dnssec_require_domains? no (option unset)
-alias-eximtesthost in dnssec_request_domains?
- list element: *
- alias-eximtesthost in dnssec_request_domains? yes (matched "*")
+check dnssec require list
+ alias-eximtesthost in dnssec_require_domains? no (option unset)
+check dnssec request list
+ alias-eximtesthost in dnssec_request_domains?
+  list element: *
+  alias-eximtesthost in dnssec_request_domains? yes (matched "*")
 DNS lookup of alias-eximtesthost (MX) using fakens
 DNS lookup of alias-eximtesthost (MX) succeeded
 CNAME found: change to eximtesthost.test.ex
@@ -51,10 +53,12 @@ local_part=userx domain=alias-eximtesthost.test.ex
 calling dns router
 dns router called for userx@alias-eximtesthost.test.ex
   domain = alias-eximtesthost.test.ex
-alias-eximtesthost.test.ex in dnssec_require_domains? no (option unset)
-alias-eximtesthost.test.ex in dnssec_request_domains?
- list element: *
- alias-eximtesthost.test.ex in dnssec_request_domains? yes (matched "*")
+check dnssec require list
+ alias-eximtesthost.test.ex in dnssec_require_domains? no (option unset)
+check dnssec request list
+ alias-eximtesthost.test.ex in dnssec_request_domains?
+  list element: *
+  alias-eximtesthost.test.ex in dnssec_request_domains? yes (matched "*")
 DNS lookup of alias-eximtesthost.test.ex (MX) using fakens
 DNS lookup of alias-eximtesthost.test.ex (MX) succeeded
 CNAME found: change to eximtesthost.test.ex
@@ -99,10 +103,12 @@ local_part=userx domain=alias-eximtesthost.test.ex
 calling dns router
 dns router called for userx@alias-eximtesthost.test.ex
   domain = alias-eximtesthost.test.ex
-alias-eximtesthost.test.ex in dnssec_require_domains? no (option unset)
-alias-eximtesthost.test.ex in dnssec_request_domains?
- list element: *
- alias-eximtesthost.test.ex in dnssec_request_domains? yes (matched "*")
+check dnssec require list
+ alias-eximtesthost.test.ex in dnssec_require_domains? no (option unset)
+check dnssec request list
+ alias-eximtesthost.test.ex in dnssec_request_domains?
+  list element: *
+  alias-eximtesthost.test.ex in dnssec_request_domains? yes (matched "*")
 DNS lookup of alias-eximtesthost.test.ex (MX) using fakens
 DNS lookup of alias-eximtesthost.test.ex (MX) succeeded
 CNAME found: change to eximtesthost.test.ex

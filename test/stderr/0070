@@ -136,8 +136,10 @@ MUNGED: ::1 will be omitted in what follows
 >>> verifying EHLO/HELO argument "ten-1.test.ex"
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
->>> ten-1.test.ex not in empty list (option unset? cannot trace name)
->>> ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec require list
+>>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec request list
+>>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> matched host name
@@ -165,12 +167,16 @@ MUNGED: ::1 will be omitted in what follows
 >>> looking up host name for V4NET.0.0.3
 >>> IP address lookup yielded "ten-3.test.ex"
 >>>   alias "ten-3-alias.test.ex"
->>> ten-3.test.ex not in empty list (option unset? cannot trace name)
->>> ten-3.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec require list
+>>>   ten-3.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec request list
+>>>   ten-3.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-3.test.ex
 >>>   V4NET.0.0.3 OK
->>> ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
->>> ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec require list
+>>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec request list
+>>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>> matched host name
@@ -181,11 +187,13 @@ MUNGED: ::1 will be omitted in what follows
 >>> matched alias ten-3-alias.test.ex
 >>> verifying EHLO/HELO argument "ten-3xtra.test.ex"
 >>> getting IP address for ten-3xtra.test.ex
->>> ten-3xtra.test.ex in ""?
->>> ten-3xtra.test.ex in ""? no (end of list)
->>> ten-3xtra.test.ex in "*"?
->>>  list element: *
->>>  ten-3xtra.test.ex in "*"? yes (matched "*")
+>>> check dnssec require list
+>>>  ten-3xtra.test.ex in ""?
+>>>  ten-3xtra.test.ex in ""? no (end of list)
+>>> check dnssec request list
+>>>  ten-3xtra.test.ex in "*"?
+>>>   list element: *
+>>>   ten-3xtra.test.ex in "*"? yes (matched "*")
 >>> IP address for ten-3xtra.test.ex matches calling address
 >>> Forward DNS security status: unverified
 >>> host in hosts_connection_nolog? no (option unset)
@@ -207,16 +215,20 @@ MUNGED: ::1 will be omitted in what follows
 >>> verifying EHLO/HELO argument "rhubarb"
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
->>> ten-1.test.ex not in empty list (option unset? cannot trace name)
->>> ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec require list
+>>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec request list
+>>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> getting IP address for rhubarb
->>> rhubarb in ""?
->>> rhubarb in ""? no (end of list)
->>> rhubarb in "*"?
->>>  list element: *
->>>  rhubarb in "*"? yes (matched "*")
+>>> check dnssec require list
+>>>  rhubarb in ""?
+>>>  rhubarb in ""? no (end of list)
+>>> check dnssec request list
+>>>  rhubarb in "*"?
+>>>   list element: *
+>>>   rhubarb in "*"? yes (matched "*")
 LOG: rejected "EHLO rhubarb" from (rhubarb) [V4NET.0.0.1]
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -243,11 +255,13 @@ MUNGED: ::1 will be omitted in what follows
 >>> looking up host name for 99.99.99.99
 >>> Test harness: host name lookup returns DEFER
 >>> getting IP address for rhubarb
->>> rhubarb in ""?
->>> rhubarb in ""? no (end of list)
->>> rhubarb in "*"?
->>>  list element: *
->>>  rhubarb in "*"? yes (matched "*")
+>>> check dnssec require list
+>>>  rhubarb in ""?
+>>>  rhubarb in ""? no (end of list)
+>>> check dnssec request list
+>>>  rhubarb in "*"?
+>>>   list element: *
+>>>   rhubarb in "*"? yes (matched "*")
 LOG: temporarily rejected "EHLO rhubarb" from (rhubarb) [99.99.99.99]
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -363,11 +377,13 @@ MUNGED: ::1 will be omitted in what follows
 >>> looking up host name for 99.99.99.99
 >>> Test harness: host name lookup returns DEFER
 >>> getting IP address for rhubarb
->>> rhubarb in ""?
->>> rhubarb in ""? no (end of list)
->>> rhubarb in "*"?
->>>  list element: *
->>>  rhubarb in "*"? yes (matched "*")
+>>> check dnssec require list
+>>>  rhubarb in ""?
+>>>  rhubarb in ""? no (end of list)
+>>> check dnssec request list
+>>>  rhubarb in "*"?
+>>>   list element: *
+>>>   rhubarb in "*"? yes (matched "*")
 >>> require: condition test failed in ACL "rcpt"
 >>> end of ACL "rcpt": not OK
 LOG: H=(rhubarb) [99.99.99.99] F=<a@b> rejected RCPT <c@d>: helo not verified

@@ -15,10 +15,12 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing should_log@delay1500.test.ex
 >>> calling all router
->>> delay1500.test.ex in dnssec_require_domains? no (option unset)
->>> delay1500.test.ex in dnssec_request_domains?
->>>  list element: *
->>>  delay1500.test.ex in dnssec_request_domains? yes (matched "*")
+>>> check dnssec require list
+>>>  delay1500.test.ex in dnssec_require_domains? no (option unset)
+>>> check dnssec request list
+>>>  delay1500.test.ex in dnssec_request_domains?
+>>>   list element: *
+>>>   delay1500.test.ex in dnssec_request_domains? yes (matched "*")
 LOG: Long A lookup for 'delay1500.test.ex': ssss msec
 >>> local host found for non-MX address
 >>> routed by all router
@@ -42,10 +44,12 @@ LOG: Long A lookup for 'delay1500.test.ex': ssss msec
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing should_not_log@delay500.test.ex
 >>> calling all router
->>> delay500.test.ex in dnssec_require_domains? no (option unset)
->>> delay500.test.ex in dnssec_request_domains?
->>>  list element: *
->>>  delay500.test.ex in dnssec_request_domains? yes (matched "*")
+>>> check dnssec require list
+>>>  delay500.test.ex in dnssec_require_domains? no (option unset)
+>>> check dnssec request list
+>>>  delay500.test.ex in dnssec_request_domains?
+>>>   list element: *
+>>>   delay500.test.ex in dnssec_request_domains? yes (matched "*")
 >>> local host found for non-MX address
 >>> routed by all router
 >>> ----------- end verify ------------

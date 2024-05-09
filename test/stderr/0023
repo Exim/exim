@@ -1554,12 +1554,16 @@ LOG: H=(test) [28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> looking up host name for V4NET.0.0.3
 >>> IP address lookup yielded "ten-3.test.ex"
 >>>   alias "ten-3-alias.test.ex"
->>> ten-3.test.ex not in empty list (option unset? cannot trace name)
->>> ten-3.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec require list
+>>>   ten-3.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec request list
+>>>   ten-3.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-3.test.ex
 >>>   V4NET.0.0.3 OK
->>> ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
->>> ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec require list
+>>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec request list
+>>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>> require: condition test succeeded in ACL "acl_V4NET_0_0"
@@ -1611,9 +1615,11 @@ LOG: H=(test) [V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for re
 >>> looking up host name to force name/address consistency check
 >>> looking up host name for V4NET.99.99.96
 >>> IP address lookup yielded "x.test.again.dns"
->>> x.test.again.dns not in empty list (option unset? cannot trace name)
->>> x.test.again.dns not in empty list (option unset? cannot trace name)
->>> x.test.again.dns in dns_again_means_nonexist? no (option unset)
+>>>  check dnssec require list
+>>>   x.test.again.dns not in empty list (option unset? cannot trace name)
+>>>  check dnssec request list
+>>>   x.test.again.dns not in empty list (option unset? cannot trace name)
+>>>  x.test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> temporary error for host name lookup
 >>> accept: condition test deferred in ACL "acl_V4NET_99_99"
 LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferred for reverse lookup check
@@ -1639,9 +1645,11 @@ LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup
 >>> looking up host name to force name/address consistency check
 >>> looking up host name for V4NET.99.99.96
 >>> IP address lookup yielded "x.test.again.dns"
->>> x.test.again.dns not in empty list (option unset? cannot trace name)
->>> x.test.again.dns not in empty list (option unset? cannot trace name)
->>> x.test.again.dns in dns_again_means_nonexist? no (option unset)
+>>>  check dnssec require list
+>>>   x.test.again.dns not in empty list (option unset? cannot trace name)
+>>>  check dnssec request list
+>>>   x.test.again.dns not in empty list (option unset? cannot trace name)
+>>>  x.test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> temporary error for host name lookup
 >>> accept: condition test succeeded in ACL "acl_V4NET_99_99"
 >>> end of ACL "acl_V4NET_99_99": ACCEPT

@@ -55,8 +55,10 @@ LOG: H=(test) [V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.u
 >>>  host in host_lookup? yes (matched "0.0.0.0/0")
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
->>> ten-1.test.ex not in empty list (option unset? cannot trace name)
->>> ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec require list
+>>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>  check dnssec request list
+>>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> host in host_reject_connection? no (option unset)
@@ -119,23 +121,29 @@ host in host_lookup?
  list element: 0.0.0.0/0
   host in host_lookup? yes (matched "0.0.0.0/0")
 looking up host name for V4NET.99.99.90
-DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) using fakens
-DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) succeeded
+ DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) using fakens
+ DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "oneback.test.ex"
   alias "host1.masq.test.ex"
-oneback.test.ex not in empty list (option unset? cannot trace name)
-oneback.test.ex not in empty list (option unset? cannot trace name)
-DNS lookup of oneback.test.ex (A) using fakens
-DNS lookup of oneback.test.ex (A) succeeded
-oneback.test.ex V4NET.99.99.90 mx=-1 sort=xx 
+ check dnssec require list
+  oneback.test.ex not in empty list (option unset? cannot trace name)
+ check dnssec request list
+  oneback.test.ex not in empty list (option unset? cannot trace name)
+ faking res_search(AAAA) response length as 65535
+ DNS lookup of oneback.test.ex (A) using fakens
+ DNS lookup of oneback.test.ex (A) succeeded
+ oneback.test.ex V4NET.99.99.90 mx=-1 sort=xx 
 checking addresses for oneback.test.ex
 Forward DNS security status: unverified
   V4NET.99.99.90 OK
-host1.masq.test.ex not in empty list (option unset? cannot trace name)
-host1.masq.test.ex not in empty list (option unset? cannot trace name)
-DNS lookup of host1.masq.test.ex (A) using fakens
-DNS lookup of host1.masq.test.ex (A) succeeded
-host1.masq.test.ex V4NET.90.90.90 mx=-1 sort=xx 
+ check dnssec require list
+  host1.masq.test.ex not in empty list (option unset? cannot trace name)
+ check dnssec request list
+  host1.masq.test.ex not in empty list (option unset? cannot trace name)
+ faking res_search(AAAA) response length as 65535
+ DNS lookup of host1.masq.test.ex (A) using fakens
+ DNS lookup of host1.masq.test.ex (A) succeeded
+ host1.masq.test.ex V4NET.90.90.90 mx=-1 sort=xx 
 checking addresses for host1.masq.test.ex
 Forward DNS security status: unverified
   V4NET.90.90.90

@@ -21,13 +21,15 @@ mxt1.test.ex in domains?
   start sublist anymx
    mxt1.test.ex in "@mx_any"?
    ╎list element: @mx_any
-DNS lookup of mxt1.test.ex (MX) using fakens
-DNS lookup of mxt1.test.ex (MX) succeeded
-DNS lookup of eximtesthost.test.ex (A) using fakens
-DNS lookup of eximtesthost.test.ex (A) succeeded
+   ╎check dnssec require list
+   ╎check dnssec request list
+   ╎DNS lookup of mxt1.test.ex (MX) using fakens
+   ╎DNS lookup of mxt1.test.ex (MX) succeeded
+   ╎DNS lookup of eximtesthost.test.ex (A) using fakens
+   ╎DNS lookup of eximtesthost.test.ex (A) succeeded
 local host has lowest MX
-host_find_bydns yield = HOST_FOUND_LOCAL (4); returned hosts:
-  eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 
+   ╎host_find_bydns yield = HOST_FOUND_LOCAL (4); returned hosts:
+   ╎  eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 
    ╎mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
   end sublist anymx
  data from lookup saved for cache for +anymx: key 'mxt1.test.ex' value '@mx_any'
@@ -38,13 +40,15 @@ checking "condition" "${if match_domain{$domain}{+anymx}{yes}}"...
    start sublist anymx
    ╎mxt1.test.ex in "@mx_any"?
    ╎ list element: @mx_any
-DNS lookup of mxt1.test.ex (MX) using fakens
-DNS lookup of mxt1.test.ex (MX) succeeded
-DNS lookup of eximtesthost.test.ex (A) using fakens
-DNS lookup of eximtesthost.test.ex (A) succeeded
+   ╎ check dnssec require list
+   ╎ check dnssec request list
+   ╎ DNS lookup of mxt1.test.ex (MX) using fakens
+   ╎ DNS lookup of mxt1.test.ex (MX) succeeded
+   ╎ DNS lookup of eximtesthost.test.ex (A) using fakens
+   ╎ DNS lookup of eximtesthost.test.ex (A) succeeded
 local host has lowest MX
-host_find_bydns yield = HOST_FOUND_LOCAL (4); returned hosts:
-  eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 
+   ╎ host_find_bydns yield = HOST_FOUND_LOCAL (4); returned hosts:
+   ╎   eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 
    ╎ mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
    end sublist anymx
   mxt1.test.ex in "+anymx"? yes (matched "+anymx")

@@ -86,8 +86,10 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>> sender host name required, to match against *N-99.test.EX
 >>> looking up host name for V4NET.0.0.99
 >>> IP address lookup yielded "ten-99.test.ex"
->>>  ten-99.test.ex not in empty list (option unset? cannot trace name)
->>>  ten-99.test.ex not in empty list (option unset? cannot trace name)
+>>>   check dnssec require list
+>>>    ten-99.test.ex not in empty list (option unset? cannot trace name)
+>>>   check dnssec request list
+>>>    ten-99.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-99.test.ex
 >>>   V4NET.0.0.99 OK
 >>>  host in sender_unqualified_hosts? yes (matched "*N-99.test.EX")

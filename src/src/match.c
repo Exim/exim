@@ -194,27 +194,23 @@ if (cb->flags & MCS_AT_SPECIAL && pattern[0] == '@')
     {
     int rc;
     host_item h;
-    BOOL prim = FALSE;
-    BOOL secy = FALSE;
-    BOOL removed = FALSE;
+    BOOL prim = FALSE, secy = FALSE, removed = FALSE;
     const uschar *ss = pattern + 4;
     const uschar *ignore_target_hosts = NULL;
 
-    if (strncmpic(ss, US"any", 3) == 0) ss += 3;
+    if (strncmpic(ss, US"any", 3) == 0)
+      ss += 3;
     else if (strncmpic(ss, US"primary", 7) == 0)
-      {
-      ss += 7;
-      prim = TRUE;
-      }
+      { ss += 7; prim = TRUE; }
     else if (strncmpic(ss, US"secondary", 9) == 0)
-      {
-      ss += 9;
-      secy = TRUE;
-      }
-    else goto NOT_AT_SPECIAL;
+      { ss += 9; secy = TRUE; }
+    else
+      goto NOT_AT_SPECIAL;
 
-    if (strncmpic(ss, US"/ignore=", 8) == 0) ignore_target_hosts = ss + 8;
-    else if (*ss) goto NOT_AT_SPECIAL;
+    if (strncmpic(ss, US"/ignore=", 8) == 0)
+      ignore_target_hosts = ss + 8;
+    else if (*ss)
+      goto NOT_AT_SPECIAL;
 
     h.next = NULL;
     h.name = s;

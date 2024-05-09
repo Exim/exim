@@ -7,8 +7,10 @@
 >>> sender host name required, to match against ^ten-1\.test\.ex
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
->>>  ten-1.test.ex not in empty list (option unset? cannot trace name)
->>>  ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>   check dnssec require list
+>>>    ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>   check dnssec request list
+>>>    ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>>  host in sender_unqualified_hosts? yes (matched "^ten-1\.test\.ex")

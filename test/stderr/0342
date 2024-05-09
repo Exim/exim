@@ -17,18 +17,22 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1
 >>> calling dnslookup router
->>> ten-1 in dnssec_require_domains? no (option unset)
->>> ten-1 in dnssec_request_domains?
->>>  list element: *
->>>  ten-1 in dnssec_request_domains? yes (matched "*")
+>>> check dnssec require list
+>>>  ten-1 in dnssec_require_domains? no (option unset)
+>>> check dnssec request list
+>>>  ten-1 in dnssec_request_domains?
+>>>   list element: *
+>>>   ten-1 in dnssec_request_domains? yes (matched "*")
 >>> re-routed to x@ten-1.test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1.test.ex
 >>> calling dnslookup router
->>> ten-1.test.ex in dnssec_require_domains? no (option unset)
->>> ten-1.test.ex in dnssec_request_domains?
->>>  list element: *
->>>  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+>>> check dnssec require list
+>>>  ten-1.test.ex in dnssec_require_domains? no (option unset)
+>>> check dnssec request list
+>>>  ten-1.test.ex in dnssec_request_domains?
+>>>   list element: *
+>>>   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
 >>> routed by dnslookup router
 >>> ----------- end verify ------------
 >>> deny: condition test failed in ACL "check_rcpt"

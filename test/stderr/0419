@@ -29,10 +29,12 @@ mxt13.test.ex in domains? yes (end of list)
 calling dnslookup router
 dnslookup router called for k@mxt13.test.ex
   domain = mxt13.test.ex
-mxt13.test.ex in dnssec_require_domains? no (option unset)
-mxt13.test.ex in dnssec_request_domains?
- list element: *
- mxt13.test.ex in dnssec_request_domains? yes (matched "*")
+check dnssec require list
+ mxt13.test.ex in dnssec_require_domains? no (option unset)
+check dnssec request list
+ mxt13.test.ex in dnssec_request_domains?
+  list element: *
+  mxt13.test.ex in dnssec_request_domains? yes (matched "*")
 DNS lookup of mxt13.test.ex (MX) using fakens
 DNS lookup of mxt13.test.ex (MX) succeeded
 DNS lookup of other1.test.ex (A) using fakens

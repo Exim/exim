@@ -18,20 +18,24 @@ local_part=x domain=ten-1
 checking domains
 ten-1 in domains?
  list element: !@mx_any
-DNS lookup of ten-1 (MX) using fakens
-DNS lookup of ten-1 (MX) gave NO_DATA
-returning DNS_NODATA
-faking res_search(MX) response length as 65535
- writing neg-cache entry for ten-1-MX-xxxx, ttl 3000
-Address records are not being sought
+ check dnssec require list
+ check dnssec request list
+ DNS lookup of ten-1 (MX) using fakens
+ DNS lookup of ten-1 (MX) gave NO_DATA
+ returning DNS_NODATA
+ faking res_search(MX) response length as 65535
+  writing neg-cache entry for ten-1-MX-4100041, ttl 3000
+ Address records are not being sought
 ten-1 in domains? yes (end of list)
 calling all router
 all router called for x@ten-1
   domain = ten-1
-ten-1 in dnssec_require_domains? no (option unset)
-ten-1 in dnssec_request_domains?
- list element: *
- ten-1 in dnssec_request_domains? yes (matched "*")
+check dnssec require list
+ ten-1 in dnssec_require_domains? no (option unset)
+check dnssec request list
+ ten-1 in dnssec_request_domains?
+  list element: *
+  ten-1 in dnssec_request_domains? yes (matched "*")
 DNS lookup of ten-1 (MX) using fakens
 DNS lookup of ten-1 (MX) gave NO_DATA
 returning DNS_NODATA
@@ -54,20 +58,24 @@ local_part=x domain=ten-1.test.ex
 checking domains
 ten-1.test.ex in domains?
  list element: !@mx_any
-DNS lookup of ten-1.test.ex (MX) using fakens
-DNS lookup of ten-1.test.ex (MX) gave NO_DATA
-returning DNS_NODATA
-faking res_search(MX) response length as 65535
- writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
-Address records are not being sought
+ check dnssec require list
+ check dnssec request list
+ DNS lookup of ten-1.test.ex (MX) using fakens
+ DNS lookup of ten-1.test.ex (MX) gave NO_DATA
+ returning DNS_NODATA
+ faking res_search(MX) response length as 65535
+  writing neg-cache entry for ten-1.test.ex-MX-4900041, ttl 3000
+ Address records are not being sought
 ten-1.test.ex in domains? yes (end of list)
 calling all router
 all router called for x@ten-1.test.ex
   domain = ten-1.test.ex
-ten-1.test.ex in dnssec_require_domains? no (option unset)
-ten-1.test.ex in dnssec_request_domains?
- list element: *
- ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+check dnssec require list
+ ten-1.test.ex in dnssec_require_domains? no (option unset)
+check dnssec request list
+ ten-1.test.ex in dnssec_request_domains?
+  list element: *
+  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
