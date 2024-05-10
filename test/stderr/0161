@@ -19,6 +19,7 @@ mxt6.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for xx@mxt6.test.ex
   domain = mxt6.test.ex
+main lookup for domain
 set transport remote_smtp
 queued for remote_smtp transport: local_part = xx
 domain = mxt6.test.ex
@@ -50,6 +51,7 @@ mxt1.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for myhost.test.ex@mxt1.test.ex
   domain = mxt1.test.ex
+main lookup for domain
 lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
 lookuphost router passed for myhost.test.ex@mxt1.test.ex
 --------> fail router <--------
@@ -103,6 +105,7 @@ mxt1.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for xx@mxt1.test.ex
   domain = mxt1.test.ex
+main lookup for domain
 lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
 lookuphost router passed for xx@mxt1.test.ex
 --------> fail router <--------
@@ -171,6 +174,7 @@ not-exist.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for xx@not-exist.test.ex
   domain = not-exist.test.ex
+main lookup for domain
 lookuphost router declined for xx@not-exist.test.ex
 "more" is false: skipping remaining routers
 no more routers
@@ -190,6 +194,7 @@ checking local_parts
 calling failuphost router
 failuphost router called for ff@mxt1.test.ex
   domain = mxt1.test.ex
+main lookup for domain
 lowest numbered MX record points to local host: mxt1.test.ex: address failed (self = fail)
 failuphost router forced address failure
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>
@@ -214,6 +219,7 @@ mxt1.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for fff@mxt1.test.ex
   domain = mxt1.test.ex
+main lookup for domain
 lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
 lookuphost router passed for fff@mxt1.test.ex
 --------> fail router <--------

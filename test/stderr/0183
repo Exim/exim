@@ -39,18 +39,19 @@ userx in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for userx@test.again.dns
   domain = test.again.dns
-check dnssec require list
- test.again.dns in dnssec_require_domains? no (option unset)
-check dnssec request list
- test.again.dns in dnssec_request_domains?
-  list element: *
-  test.again.dns in dnssec_request_domains? yes (matched "*")
-DNS lookup of test.again.dns (MX) using fakens
-DNS lookup of test.again.dns (MX) gave TRY_AGAIN
-test.again.dns in dns_again_means_nonexist? no (option unset)
-returning DNS_AGAIN
- writing neg-cache entry for test.again.dns-MX-xxxx, ttl -1
-test.again.dns not in empty list (option unset? cannot trace name)
+main lookup for domain
+ check dnssec require list
+  test.again.dns in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  test.again.dns in dnssec_request_domains?
+   list element: *
+   test.again.dns in dnssec_request_domains? yes (matched "*")
+ DNS lookup of test.again.dns (MX) using fakens
+ DNS lookup of test.again.dns (MX) gave TRY_AGAIN
+ test.again.dns in dns_again_means_nonexist? no (option unset)
+ returning DNS_AGAIN
+  writing neg-cache entry for test.again.dns-MX-xxxx, ttl -1
+ test.again.dns not in empty list (option unset? cannot trace name)
 lookuphost router: defer for userx@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -84,14 +85,15 @@ abcd in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@test.again.dns
   domain = test.again.dns
-check dnssec require list
- test.again.dns in dnssec_require_domains? no (option unset)
-check dnssec request list
- test.again.dns in dnssec_request_domains?
-  list element: *
-  test.again.dns in dnssec_request_domains? yes (matched "*")
-DNS lookup of test.again.dns (MX): using cached value DNS_AGAIN
-test.again.dns not in empty list (option unset? cannot trace name)
+main lookup for domain
+ check dnssec require list
+  test.again.dns in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  test.again.dns in dnssec_request_domains?
+   list element: *
+   test.again.dns in dnssec_request_domains? yes (matched "*")
+ DNS lookup of test.again.dns (MX): using cached value DNS_AGAIN
+ test.again.dns not in empty list (option unset? cannot trace name)
 lookuphost router: defer for abcd@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -125,23 +127,23 @@ abcd in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@ten-1.test.ex
   domain = ten-1.test.ex
-check dnssec require list
- ten-1.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- ten-1.test.ex in dnssec_request_domains?
-  list element: *
-  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of ten-1.test.ex (MX) using fakens
-DNS lookup of ten-1.test.ex (MX) gave NO_DATA
-returning DNS_NODATA
-faking res_search(MX) response length as 65535
- writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
-ten-1.test.ex (MX resp) DNSSEC
- list element: *
-DNS lookup of ten-1.test.ex (A) using fakens
-DNS lookup of ten-1.test.ex (A) succeeded
-fully qualified name = ten-1.test.ex
-ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+main lookup for domain
+ check dnssec require list
+  ten-1.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  ten-1.test.ex in dnssec_request_domains?
+   list element: *
+   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of ten-1.test.ex (MX) using fakens
+ DNS lookup of ten-1.test.ex (MX) gave NO_DATA
+ returning DNS_NODATA
+ faking res_search(MX) response length as 65535
+  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
+ ten-1.test.ex (MX resp) DNSSEC
+ DNS lookup of ten-1.test.ex (A) using fakens
+ DNS lookup of ten-1.test.ex (A) succeeded
+ fully qualified name = ten-1.test.ex
+ ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 set transport smtp
 queued for smtp transport: local_part = abcd
 domain = ten-1.test.ex
@@ -189,7 +191,6 @@ check dnssec request list
  test.again.dns in dnssec_request_domains?
   list element: *
   test.again.dns in dnssec_request_domains? yes (matched "*")
- list element: *
 DNS lookup of test.again.dns (A) using fakens
 DNS lookup of test.again.dns (A) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
@@ -235,7 +236,6 @@ check dnssec request list
  test.again.dns in dnssec_request_domains?
   list element: *
   test.again.dns in dnssec_request_domains? yes (matched "*")
- list element: *
 DNS lookup of test.again.dns (A): using cached value DNS_AGAIN
 useryz router: defer for userz@test.again.dns
   message: host lookup for test.again.dns did not complete (DNS timeout?)
@@ -270,18 +270,18 @@ xyz in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
-check dnssec require list
- ten-1.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- ten-1.test.ex in dnssec_request_domains?
-  list element: *
-  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
- list element: *
-DNS lookup of ten-1.test.ex (A) using fakens
-DNS lookup of ten-1.test.ex (A) succeeded
-fully qualified name = ten-1.test.ex
-ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+main lookup for domain
+ check dnssec require list
+  ten-1.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  ten-1.test.ex in dnssec_request_domains?
+   list element: *
+   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
+ DNS lookup of ten-1.test.ex (A) using fakens
+ DNS lookup of ten-1.test.ex (A) succeeded
+ fully qualified name = ten-1.test.ex
+ ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 queued for smtp transport: local_part = xyz
 domain = ten-1.test.ex
   errors_to=NULL
@@ -333,17 +333,18 @@ userx in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for userx@test.fail.dns
   domain = test.fail.dns
-check dnssec require list
- test.fail.dns in dnssec_require_domains? no (option unset)
-check dnssec request list
- test.fail.dns in dnssec_request_domains?
-  list element: *
-  test.fail.dns in dnssec_request_domains? yes (matched "*")
-DNS lookup of test.fail.dns (MX) using fakens
-DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
-returning DNS_FAIL
- writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
-test.fail.dns not in empty list (option unset? cannot trace name)
+main lookup for domain
+ check dnssec require list
+  test.fail.dns in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  test.fail.dns in dnssec_request_domains?
+   list element: *
+   test.fail.dns in dnssec_request_domains? yes (matched "*")
+ DNS lookup of test.fail.dns (MX) using fakens
+ DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
+ returning DNS_FAIL
+  writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
+ test.fail.dns not in empty list (option unset? cannot trace name)
 lookuphost router: defer for userx@test.fail.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -377,14 +378,15 @@ abcd in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@test.fail.dns
   domain = test.fail.dns
-check dnssec require list
- test.fail.dns in dnssec_require_domains? no (option unset)
-check dnssec request list
- test.fail.dns in dnssec_request_domains?
-  list element: *
-  test.fail.dns in dnssec_request_domains? yes (matched "*")
-DNS lookup of test.fail.dns (MX): using cached value DNS_FAIL
-test.fail.dns not in empty list (option unset? cannot trace name)
+main lookup for domain
+ check dnssec require list
+  test.fail.dns in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  test.fail.dns in dnssec_request_domains?
+   list element: *
+   test.fail.dns in dnssec_request_domains? yes (matched "*")
+ DNS lookup of test.fail.dns (MX): using cached value DNS_FAIL
+ test.fail.dns not in empty list (option unset? cannot trace name)
 lookuphost router: defer for abcd@test.fail.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -418,23 +420,23 @@ abcd in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@ten-1.test.ex
   domain = ten-1.test.ex
-check dnssec require list
- ten-1.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- ten-1.test.ex in dnssec_request_domains?
-  list element: *
-  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of ten-1.test.ex (MX) using fakens
-DNS lookup of ten-1.test.ex (MX) gave NO_DATA
-returning DNS_NODATA
-faking res_search(MX) response length as 65535
- writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
-ten-1.test.ex (MX resp) DNSSEC
- list element: *
-DNS lookup of ten-1.test.ex (A) using fakens
-DNS lookup of ten-1.test.ex (A) succeeded
-fully qualified name = ten-1.test.ex
-ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+main lookup for domain
+ check dnssec require list
+  ten-1.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  ten-1.test.ex in dnssec_request_domains?
+   list element: *
+   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of ten-1.test.ex (MX) using fakens
+ DNS lookup of ten-1.test.ex (MX) gave NO_DATA
+ returning DNS_NODATA
+ faking res_search(MX) response length as 65535
+  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
+ ten-1.test.ex (MX resp) DNSSEC
+ DNS lookup of ten-1.test.ex (A) using fakens
+ DNS lookup of ten-1.test.ex (A) succeeded
+ fully qualified name = ten-1.test.ex
+ ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 set transport smtp
 queued for smtp transport: local_part = abcd
 domain = ten-1.test.ex
@@ -482,7 +484,6 @@ check dnssec request list
  test.fail.dns in dnssec_request_domains?
   list element: *
   test.fail.dns in dnssec_request_domains? yes (matched "*")
- list element: *
 DNS lookup of test.fail.dns (A) using fakens
 DNS lookup of test.fail.dns (A) gave NO_RECOVERY
 returning DNS_FAIL
@@ -527,7 +528,6 @@ check dnssec request list
  test.fail.dns in dnssec_request_domains?
   list element: *
   test.fail.dns in dnssec_request_domains? yes (matched "*")
- list element: *
 DNS lookup of test.fail.dns (A): using cached value DNS_FAIL
 useryz router: defer for userz@test.fail.dns
   message: host lookup for test.fail.dns did not complete (DNS timeout?)
@@ -562,18 +562,18 @@ xyz in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
-check dnssec require list
- ten-1.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- ten-1.test.ex in dnssec_request_domains?
-  list element: *
-  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
- list element: *
-DNS lookup of ten-1.test.ex (A) using fakens
-DNS lookup of ten-1.test.ex (A) succeeded
-fully qualified name = ten-1.test.ex
-ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+main lookup for domain
+ check dnssec require list
+  ten-1.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  ten-1.test.ex in dnssec_request_domains?
+   list element: *
+   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
+ DNS lookup of ten-1.test.ex (A) using fakens
+ DNS lookup of ten-1.test.ex (A) succeeded
+ fully qualified name = ten-1.test.ex
+ ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 queued for smtp transport: local_part = xyz
 domain = ten-1.test.ex
   errors_to=NULL
@@ -625,17 +625,18 @@ userx in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for userx@nonexist.test.ex
   domain = nonexist.test.ex
-check dnssec require list
- nonexist.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- nonexist.test.ex in dnssec_request_domains?
-  list element: *
-  nonexist.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of nonexist.test.ex (MX) using fakens
-DNS lookup of nonexist.test.ex (MX) gave HOST_NOT_FOUND
-returning DNS_NOMATCH
-faking res_search(MX) response length as 65535
- writing neg-cache entry for nonexist.test.ex-MX-xxxx, ttl 3000
+main lookup for domain
+ check dnssec require list
+  nonexist.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  nonexist.test.ex in dnssec_request_domains?
+   list element: *
+   nonexist.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of nonexist.test.ex (MX) using fakens
+ DNS lookup of nonexist.test.ex (MX) gave HOST_NOT_FOUND
+ returning DNS_NOMATCH
+ faking res_search(MX) response length as 65535
+  writing neg-cache entry for nonexist.test.ex-MX-xxxx, ttl 3000
 lookuphost router declined for userx@nonexist.test.ex
 "more" is false: skipping remaining routers
 no more routers
@@ -670,13 +671,14 @@ abcd in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@nonexist.test.ex
   domain = nonexist.test.ex
-check dnssec require list
- nonexist.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- nonexist.test.ex in dnssec_request_domains?
-  list element: *
-  nonexist.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of nonexist.test.ex (MX): using cached value DNS_NOMATCH
+main lookup for domain
+ check dnssec require list
+  nonexist.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  nonexist.test.ex in dnssec_request_domains?
+   list element: *
+   nonexist.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of nonexist.test.ex (MX): using cached value DNS_NOMATCH
 lookuphost router declined for abcd@nonexist.test.ex
 "more" is false: skipping remaining routers
 no more routers
@@ -711,23 +713,23 @@ abcd in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@ten-1.test.ex
   domain = ten-1.test.ex
-check dnssec require list
- ten-1.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- ten-1.test.ex in dnssec_request_domains?
-  list element: *
-  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of ten-1.test.ex (MX) using fakens
-DNS lookup of ten-1.test.ex (MX) gave NO_DATA
-returning DNS_NODATA
-faking res_search(MX) response length as 65535
- writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
-ten-1.test.ex (MX resp) DNSSEC
- list element: *
-DNS lookup of ten-1.test.ex (A) using fakens
-DNS lookup of ten-1.test.ex (A) succeeded
-fully qualified name = ten-1.test.ex
-ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+main lookup for domain
+ check dnssec require list
+  ten-1.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  ten-1.test.ex in dnssec_request_domains?
+   list element: *
+   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of ten-1.test.ex (MX) using fakens
+ DNS lookup of ten-1.test.ex (MX) gave NO_DATA
+ returning DNS_NODATA
+ faking res_search(MX) response length as 65535
+  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
+ ten-1.test.ex (MX resp) DNSSEC
+ DNS lookup of ten-1.test.ex (A) using fakens
+ DNS lookup of ten-1.test.ex (A) succeeded
+ fully qualified name = ten-1.test.ex
+ ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 set transport smtp
 queued for smtp transport: local_part = abcd
 domain = ten-1.test.ex
@@ -775,7 +777,6 @@ check dnssec request list
  nonexist.test.ex in dnssec_request_domains?
   list element: *
   nonexist.test.ex in dnssec_request_domains? yes (matched "*")
- list element: *
 DNS lookup of nonexist.test.ex (A) using fakens
 DNS lookup of nonexist.test.ex (A) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
@@ -821,7 +822,6 @@ check dnssec request list
  nonexist.test.ex in dnssec_request_domains?
   list element: *
   nonexist.test.ex in dnssec_request_domains? yes (matched "*")
- list element: *
 DNS lookup of nonexist.test.ex (A): using cached value DNS_NOMATCH
 useryz router: defer for userz@nonexist.test.ex
   message: lookup of host "nonexist.test.ex" failed in useryz router
@@ -856,18 +856,18 @@ xyz in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
-check dnssec require list
- ten-1.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- ten-1.test.ex in dnssec_request_domains?
-  list element: *
-  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
- list element: *
-DNS lookup of ten-1.test.ex (A) using fakens
-DNS lookup of ten-1.test.ex (A) succeeded
-fully qualified name = ten-1.test.ex
-ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+main lookup for domain
+ check dnssec require list
+  ten-1.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  ten-1.test.ex in dnssec_request_domains?
+   list element: *
+   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
+ DNS lookup of ten-1.test.ex (A) using fakens
+ DNS lookup of ten-1.test.ex (A) succeeded
+ fully qualified name = ten-1.test.ex
+ ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 queued for smtp transport: local_part = xyz
 domain = ten-1.test.ex
   errors_to=NULL
@@ -904,20 +904,21 @@ srv in local_parts?
 calling srv router
 srv router called for srv@test.again.dns
   domain = test.again.dns
-check dnssec require list
- test.again.dns in dnssec_require_domains? no (option unset)
-check dnssec request list
- test.again.dns in dnssec_request_domains?
-  list element: *
-  test.again.dns in dnssec_request_domains? yes (matched "*")
-DNS lookup of _smtp._tcp.test.again.dns (SRV) using fakens
-DNS lookup of _smtp._tcp.test.again.dns (SRV) gave TRY_AGAIN
-_smtp._tcp.test.again.dns in dns_again_means_nonexist? no (option unset)
-returning DNS_AGAIN
- writing neg-cache entry for _smtp._tcp.test.again.dns-SRV-xxxx, ttl -1
-test.again.dns in srv_fail_domains?
- list element: test.fail.dns
-test.again.dns in srv_fail_domains? no (end of list)
+main lookup for domain
+ check dnssec require list
+  test.again.dns in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  test.again.dns in dnssec_request_domains?
+   list element: *
+   test.again.dns in dnssec_request_domains? yes (matched "*")
+ DNS lookup of _smtp._tcp.test.again.dns (SRV) using fakens
+ DNS lookup of _smtp._tcp.test.again.dns (SRV) gave TRY_AGAIN
+ _smtp._tcp.test.again.dns in dns_again_means_nonexist? no (option unset)
+ returning DNS_AGAIN
+  writing neg-cache entry for _smtp._tcp.test.again.dns-SRV-xxxx, ttl -1
+ test.again.dns in srv_fail_domains?
+  list element: test.fail.dns
+ test.again.dns in srv_fail_domains? no (end of list)
 srv router: defer for srv@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -936,33 +937,33 @@ srv in local_parts?
 calling srv router
 srv router called for srv@test.fail.dns
   domain = test.fail.dns
-check dnssec require list
- test.fail.dns in dnssec_require_domains? no (option unset)
-check dnssec request list
- test.fail.dns in dnssec_request_domains?
-  list element: *
-  test.fail.dns in dnssec_request_domains? yes (matched "*")
-DNS lookup of _smtp._tcp.test.fail.dns (SRV) using fakens
-DNS lookup of _smtp._tcp.test.fail.dns (SRV) gave NO_RECOVERY
-returning DNS_FAIL
- writing neg-cache entry for _smtp._tcp.test.fail.dns-SRV-xxxx, ttl -1
-test.fail.dns in srv_fail_domains?
- list element: test.fail.dns
- test.fail.dns in srv_fail_domains? yes (matched "test.fail.dns")
-DNS_FAIL treated as DNS_NODATA (domain in srv_fail_domains)
-DNS lookup of test.fail.dns (MX) using fakens
-DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
-returning DNS_FAIL
- writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
-test.fail.dns in mx_fail_domains?
- list element: test.fail.dns
- test.fail.dns in mx_fail_domains? yes (matched "test.fail.dns")
-DNS_FAIL treated as DNS_NODATA (domain in mx_fail_domains)
- list element: *
-DNS lookup of test.fail.dns (A) using fakens
-DNS lookup of test.fail.dns (A) gave NO_RECOVERY
-returning DNS_FAIL
- writing neg-cache entry for test.fail.dns-A-xxxx, ttl -1
+main lookup for domain
+ check dnssec require list
+  test.fail.dns in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  test.fail.dns in dnssec_request_domains?
+   list element: *
+   test.fail.dns in dnssec_request_domains? yes (matched "*")
+ DNS lookup of _smtp._tcp.test.fail.dns (SRV) using fakens
+ DNS lookup of _smtp._tcp.test.fail.dns (SRV) gave NO_RECOVERY
+ returning DNS_FAIL
+  writing neg-cache entry for _smtp._tcp.test.fail.dns-SRV-xxxx, ttl -1
+ test.fail.dns in srv_fail_domains?
+  list element: test.fail.dns
+  test.fail.dns in srv_fail_domains? yes (matched "test.fail.dns")
+ DNS_FAIL treated as DNS_NODATA (domain in srv_fail_domains)
+ DNS lookup of test.fail.dns (MX) using fakens
+ DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
+ returning DNS_FAIL
+  writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
+ test.fail.dns in mx_fail_domains?
+  list element: test.fail.dns
+  test.fail.dns in mx_fail_domains? yes (matched "test.fail.dns")
+ DNS_FAIL treated as DNS_NODATA (domain in mx_fail_domains)
+ DNS lookup of test.fail.dns (A) using fakens
+ DNS lookup of test.fail.dns (A) gave NO_RECOVERY
+ returning DNS_FAIL
+  writing neg-cache entry for test.fail.dns-A-xxxx, ttl -1
 srv router: defer for srv@test.fail.dns
   message: host lookup did not complete
 search_tidyup called
@@ -1008,17 +1009,18 @@ userx in local_parts? yes (end of list)
 calling lookuphost router
 lookuphost router called for userx@nonexist.example.com
   domain = nonexist.example.com
-check dnssec require list
- nonexist.example.com in dnssec_require_domains? no (option unset)
-check dnssec request list
- nonexist.example.com in dnssec_request_domains?
-  list element: *
-  nonexist.example.com in dnssec_request_domains? yes (matched "*")
-DNS lookup of nonexist.example.com (MX) using fakens
-DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
-returning DNS_NOMATCH
-faking res_search(MX) response length as 65535
- writing neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
+main lookup for domain
+ check dnssec require list
+  nonexist.example.com in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  nonexist.example.com in dnssec_request_domains?
+   list element: *
+   nonexist.example.com in dnssec_request_domains? yes (matched "*")
+ DNS lookup of nonexist.example.com (MX) using fakens
+ DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
+ returning DNS_NOMATCH
+ faking res_search(MX) response length as 65535
+  writing neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
 lookuphost router declined for userx@nonexist.example.com
 "more" is false: skipping remaining routers
 no more routers
@@ -1064,18 +1066,19 @@ checking "condition" "${acl {delay}}"...
 calling delay router
 delay router called for userd@nonexist.example.com
   domain = nonexist.example.com
-check dnssec require list
- nonexist.example.com in dnssec_require_domains? no (option unset)
-check dnssec request list
- nonexist.example.com in dnssec_request_domains?
-  list element: *
-  nonexist.example.com in dnssec_request_domains? yes (matched "*")
-DNS lookup of nonexist.example.com (MX): cached value DNS_NOMATCH past valid time
-DNS lookup of nonexist.example.com (MX) using fakens
-DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
-returning DNS_NOMATCH
-faking res_search(MX) response length as 65535
- update neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
+main lookup for domain
+ check dnssec require list
+  nonexist.example.com in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  nonexist.example.com in dnssec_request_domains?
+   list element: *
+   nonexist.example.com in dnssec_request_domains? yes (matched "*")
+ DNS lookup of nonexist.example.com (MX): cached value DNS_NOMATCH past valid time
+ DNS lookup of nonexist.example.com (MX) using fakens
+ DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
+ returning DNS_NOMATCH
+ faking res_search(MX) response length as 65535
+  update neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
 delay router declined for userd@nonexist.example.com
 "more" is false: skipping remaining routers
 no more routers

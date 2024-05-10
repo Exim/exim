@@ -56,7 +56,6 @@ IP address lookup yielded "x.gov.uk.test.ex"
    x.gov.uk.test.ex not in empty list (option unset? cannot trace name)
   check dnssec request list
    x.gov.uk.test.ex not in empty list (option unset? cannot trace name)
-  faking res_search(AAAA) response length as 65535
   DNS lookup of x.gov.uk.test.ex (A) using fakens
   DNS lookup of x.gov.uk.test.ex (A) succeeded
   x.gov.uk.test.ex V4NET.99.99.97 mx=-1 sort=xx 
@@ -67,7 +66,6 @@ Forward DNS security status: unverified
    x.co.uk.test.ex not in empty list (option unset? cannot trace name)
   check dnssec request list
    x.co.uk.test.ex not in empty list (option unset? cannot trace name)
-  faking res_search(AAAA) response length as 65535
   DNS lookup of x.co.uk.test.ex (A) using fakens
   DNS lookup of x.co.uk.test.ex (A) succeeded
   x.co.uk.test.ex V4NET.99.99.97 mx=-1 sort=xx 

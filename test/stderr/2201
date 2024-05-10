@@ -115,7 +115,7 @@ unknown in local_parts?
  DNS lookup of unknown (TXT) gave HOST_NOT_FOUND
  returning DNS_NOMATCH
  faking res_search(TXT) response length as 65535
-  writing neg-cache entry for unknown-TXT-4900041, ttl 3000
+  writing neg-cache entry for unknown-TXT-xxxx, ttl 3000
  creating new cache entry
  lookup failed
 unknown in local_parts? no (end of list)

@@ -553,7 +553,6 @@ IP address lookup yielded "ten-1.test.ex"
    ten-1.test.ex not in empty list (option unset? cannot trace name)
   check dnssec request list
    ten-1.test.ex not in empty list (option unset? cannot trace name)
-  faking res_search(AAAA) response length as 65535
   DNS lookup of ten-1.test.ex (A) using fakens
   DNS lookup of ten-1.test.ex (A) succeeded
   ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 

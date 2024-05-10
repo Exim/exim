@@ -24,12 +24,12 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt2.test.ex
 >>> calling r1 router
->>> check dnssec require list
->>>  mxt2.test.ex in dnssec_require_domains? no (option unset)
->>> check dnssec request list
->>>  mxt2.test.ex in dnssec_request_domains?
->>>   list element: *
->>>   mxt2.test.ex in dnssec_request_domains? yes (matched "*")
+>>>  check dnssec require list
+>>>   mxt2.test.ex in dnssec_require_domains? no (option unset)
+>>>  check dnssec request list
+>>>   mxt2.test.ex in dnssec_request_domains?
+>>>    list element: *
+>>>    mxt2.test.ex in dnssec_request_domains? yes (matched "*")
 >>> r1 router declined for x@mxt2.test.ex
 >>> no more routers
 >>> ----------- end verify ------------

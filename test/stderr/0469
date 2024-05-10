@@ -18,23 +18,24 @@ local_part=x domain=mxt1c.test.ex
 calling r1 router
 r1 router called for x@mxt1c.test.ex
   domain = mxt1c.test.ex
-check dnssec require list
- mxt1c.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- mxt1c.test.ex in dnssec_request_domains?
-  list element: *
-  mxt1c.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of mxt1c.test.ex (MX) using fakens
-DNS lookup of mxt1c.test.ex (MX) succeeded
-DNS lookup of dontqualify (A) using fakens
-DNS lookup of dontqualify (A) gave NO_DATA
-returning DNS_NODATA
-DNS: couldn't fake dnsa len
-DNS: no SOA record found for neg-TTL
- writing neg-cache entry for dontqualify-A-xxxx, ttl -1
-fully qualified name = mxt1c.test.ex
-host_find_bydns yield = HOST_FIND_FAILED (0); returned hosts:
-  dontqualify <null> MX=1 *
+main lookup for domain
+ check dnssec require list
+  mxt1c.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  mxt1c.test.ex in dnssec_request_domains?
+   list element: *
+   mxt1c.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of mxt1c.test.ex (MX) using fakens
+ DNS lookup of mxt1c.test.ex (MX) succeeded
+ DNS lookup of dontqualify (A) using fakens
+ DNS lookup of dontqualify (A) gave NO_DATA
+ returning DNS_NODATA
+ DNS: couldn't fake dnsa len
+ DNS: no SOA record found for neg-TTL
+  writing neg-cache entry for dontqualify-A-xxxx, ttl -1
+ fully qualified name = mxt1c.test.ex
+ host_find_bydns yield = HOST_FIND_FAILED (0); returned hosts:
+   dontqualify <null> MX=1 *
 r1 router declined for x@mxt1c.test.ex
 no more routers
 search_tidyup called

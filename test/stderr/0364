@@ -74,6 +74,7 @@ otherhost.test.ex in domains? yes (end of list)
 calling r2 router
 r2 router called for solik@otherhost.test.ex
   domain = otherhost.test.ex
+main lookup for domain
 r2 router declined for solik@otherhost.test.ex
 --------> r3 router <--------
 local_part=solik domain=otherhost.test.ex
@@ -102,6 +103,7 @@ otherhost.sub.test.ex in domains? yes (end of list)
 calling r2 router
 r2 router called for solik@otherhost.sub.test.ex
   domain = otherhost.sub.test.ex
+main lookup for domain
 r2 router declined for solik@otherhost.sub.test.ex
 --------> r3 router <--------
 local_part=solik domain=otherhost.sub.test.ex
@@ -147,6 +149,7 @@ ten-1.test.ex in domains? yes (end of list)
 calling r2 router
 r2 router called for xxx@ten-1.test.ex
   domain = ten-1.test.ex
+main lookup for domain
 set transport t1
 queued for t1 transport: local_part = xxx
 domain = ten-1.test.ex
@@ -183,6 +186,7 @@ testsub.test.ex in domains? yes (end of list)
 calling r2 router
 r2 router called for xxx@testsub.test.ex
   domain = testsub.test.ex
+main lookup for domain
 r2 router declined for xxx@testsub.test.ex
 --------> r3 router <--------
 local_part=xxx domain=testsub.test.ex
@@ -211,6 +215,7 @@ testsub.sub.test.ex in domains? yes (end of list)
 calling r2 router
 r2 router called for xxx@testsub.sub.test.ex
   domain = testsub.sub.test.ex
+main lookup for domain
 queued for t1 transport: local_part = xxx
 domain = testsub.sub.test.ex
   errors_to=NULL

@@ -12,6 +12,7 @@ mxt6.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for xx@mxt6.test.ex
   domain = mxt6.test.ex
+main lookup for domain
 set transport remote_smtp
 queued for remote_smtp transport: local_part = xx
 domain = mxt6.test.ex
@@ -36,6 +37,7 @@ mxt1.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for myhost.test.ex@mxt1.test.ex
   domain = mxt1.test.ex
+main lookup for domain
 lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
 lookuphost router passed for myhost.test.ex@mxt1.test.ex
 --------> self router <--------
@@ -75,6 +77,7 @@ mxt1.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for xx@mxt1.test.ex
   domain = mxt1.test.ex
+main lookup for domain
 lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
 lookuphost router passed for xx@mxt1.test.ex
 --------> self router <--------
@@ -129,6 +132,7 @@ not-exist.test.ex in domains? yes (end of list)
 calling lookuphost router
 lookuphost router called for xx@not-exist.test.ex
   domain = not-exist.test.ex
+main lookup for domain
 lookuphost router declined for xx@not-exist.test.ex
 "more" is false: skipping remaining routers
 no more routers

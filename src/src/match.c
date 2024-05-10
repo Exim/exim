@@ -427,13 +427,12 @@ unsigned int * original_cache_bits = *cache_ptr;
 BOOL include_unknown = FALSE, ignore_unknown = FALSE,
       include_defer = FALSE, ignore_defer = FALSE;
 const uschar * list;
-uschar * sss;
-uschar * ot = NULL;
+uschar * ot = NULL, * sss;
 BOOL textonly_re;
 
 /* Save time by not scanning for the option name when we don't need it. */
 
-HDEBUG(D_any)	/* always give the query.  Give results only for D_lists */
+HDEBUG(D_any)
   {
   const uschar * listname = readconf_find_option(listptr);
   if (*listname) ot = string_sprintf("%s in %s?", name, listname);

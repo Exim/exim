@@ -24,28 +24,29 @@ ten-1 in domains?
  DNS lookup of ten-1 (MX) gave NO_DATA
  returning DNS_NODATA
  faking res_search(MX) response length as 65535
-  writing neg-cache entry for ten-1-MX-4100041, ttl 3000
+  writing neg-cache entry for ten-1-MX-xxxx, ttl 3000
  Address records are not being sought
 ten-1 in domains? yes (end of list)
 calling all router
 all router called for x@ten-1
   domain = ten-1
-check dnssec require list
- ten-1 in dnssec_require_domains? no (option unset)
-check dnssec request list
- ten-1 in dnssec_request_domains?
-  list element: *
-  ten-1 in dnssec_request_domains? yes (matched "*")
-DNS lookup of ten-1 (MX) using fakens
-DNS lookup of ten-1 (MX) gave NO_DATA
-returning DNS_NODATA
-faking res_search(MX) response length as 65535
- writing neg-cache entry for ten-1-MX-xxxx, ttl 3000
-ten-1 (MX resp) DNSSEC
-DNS lookup of ten-1 (A) using fakens
-DNS lookup of ten-1 (A) succeeded
-fully qualified name = ten-1.test.ex
-ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+main lookup for domain
+ check dnssec require list
+  ten-1 in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  ten-1 in dnssec_request_domains?
+   list element: *
+   ten-1 in dnssec_request_domains? yes (matched "*")
+ DNS lookup of ten-1 (MX) using fakens
+ DNS lookup of ten-1 (MX) gave NO_DATA
+ returning DNS_NODATA
+ faking res_search(MX) response length as 65535
+  writing neg-cache entry for ten-1-MX-xxxx, ttl 3000
+ ten-1 (MX resp) DNSSEC
+ DNS lookup of ten-1 (A) using fakens
+ DNS lookup of ten-1 (A) succeeded
+ fully qualified name = ten-1.test.ex
+ ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 domain changed to ten-1.test.ex
 rewriting header lines
 re-routed to x@ten-1.test.ex
@@ -64,28 +65,29 @@ ten-1.test.ex in domains?
  DNS lookup of ten-1.test.ex (MX) gave NO_DATA
  returning DNS_NODATA
  faking res_search(MX) response length as 65535
-  writing neg-cache entry for ten-1.test.ex-MX-4900041, ttl 3000
+  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
  Address records are not being sought
 ten-1.test.ex in domains? yes (end of list)
 calling all router
 all router called for x@ten-1.test.ex
   domain = ten-1.test.ex
-check dnssec require list
- ten-1.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- ten-1.test.ex in dnssec_request_domains?
-  list element: *
-  ten-1.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of ten-1.test.ex (MX) using fakens
-DNS lookup of ten-1.test.ex (MX) gave NO_DATA
-returning DNS_NODATA
-faking res_search(MX) response length as 65535
- writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
-ten-1.test.ex (MX resp) DNSSEC
-DNS lookup of ten-1.test.ex (A) using fakens
-DNS lookup of ten-1.test.ex (A) succeeded
-fully qualified name = ten-1.test.ex
-ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+main lookup for domain
+ check dnssec require list
+  ten-1.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  ten-1.test.ex in dnssec_request_domains?
+   list element: *
+   ten-1.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of ten-1.test.ex (MX) using fakens
+ DNS lookup of ten-1.test.ex (MX) gave NO_DATA
+ returning DNS_NODATA
+ faking res_search(MX) response length as 65535
+  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
+ ten-1.test.ex (MX resp) DNSSEC
+ DNS lookup of ten-1.test.ex (A) using fakens
+ DNS lookup of ten-1.test.ex (A) succeeded
+ fully qualified name = ten-1.test.ex
+ ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 set transport smtp
 queued for smtp transport: local_part = x
 domain = ten-1.test.ex

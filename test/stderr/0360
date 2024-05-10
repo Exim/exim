@@ -104,7 +104,9 @@ recurse.test.ex in domains? yes (end of list)
 calling r1 router
 r1 router called for unknown@recurse.test.ex
   domain = recurse.test.ex
+main lookup for domain
 r1 router widened recurse.test.ex to recurse.test.ex.test.ex
+main lookup for domain
 domain changed to recurse.test.ex.test.ex
 rewriting header lines
 re-routed to unknown@recurse.test.ex.test.ex
@@ -126,6 +128,7 @@ recurse.test.ex.test.ex in domains? yes (end of list)
 calling r1 router
 r1 router called for unknown@recurse.test.ex.test.ex
   domain = recurse.test.ex.test.ex
+main lookup for domain
 set transport t1
 queued for t1 transport: local_part = unknown
 domain = recurse.test.ex.test.ex

@@ -1290,10 +1290,19 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /using host_fake_gethostbyname for \S+ \(IPv6\)/;
     next if /get\[host\|ipnode\]byname\[2\]\(af=inet6\)/;
     next if /DNS lookup of \S+ \(AAAA\) using fakens/;
-    next if / in dns_ipv4_lookup?/;
     next if / writing neg-cache entry for .*AAAA/;
-    next if /^faking res_search\(AAAA\) response length as 65535/;
+    next if /^ *faking res_search\(AAAA\) response length as 65535/;
 
+    if (/ in dns_ipv4_lookup\?$/)
+      {
+      $_= <IN>;
+      if (/ list element: \*$/)
+	{
+	$_= <IN>;
+	next if / in dns_ipv4_lookup\? yes \(matched "\*"\)/;
+	}
+      goto RESET_AFTER_EXTRA_LINE_READ;
+      }
     if (/DNS lookup of \S+ \(AAAA\) gave NO_DATA/)
       {
       $_= <IN>;     # Gets "returning DNS_NODATA"
@@ -1375,7 +1384,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/unexpected disconnection while reading SMTP command from \[127.0.0.1\] \K\(error: Connection reset by peer\) //;
 
     # Platform-dependent resolver option bits
-    s/^ (?:writing|update) neg-cache entry for [^,]+-\K[0-9a-f]+, ttl/xxxx, ttl/;
+    s/^ *(?:writing|update) neg-cache entry for [^,]+-\K[0-9a-f]+, ttl/xxxx, ttl/;
 
     # timing variance, run-to-run
     s/^time on queue = \K1s/0s/;

@@ -286,10 +286,15 @@ for (;;)
     if (ob->search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
     }
 
-  rc = host_find_bydns(&h, CUS rblock->ignore_target_hosts, flags,
-    srv_service, ob->srv_fail_domains, ob->mx_fail_domains,
-    &rblock->dnssec,
-    &fully_qualified_name, &removed);
+  DEBUG(D_route) debug_printf_indent("main lookup for domain\n");
+   {
+    expand_level++;
+    rc = host_find_bydns(&h, CUS rblock->ignore_target_hosts, flags,
+      srv_service, ob->srv_fail_domains, ob->mx_fail_domains,
+      &rblock->dnssec,
+      &fully_qualified_name, &removed);
+    expand_level--;
+   }
 
   if (removed) setflag(addr, af_local_host_removed);
 
@@ -362,7 +367,7 @@ for (;;)
   As a common cause of this problem is MX records with IP addresses on the
   RHS, give a special message in this case. */
 
-  if (h.mx >= 0 && h.address == NULL)
+  if (h.mx >= 0 && !h.address)
     {
     setflag(addr, af_pass_message);   /* This is not a security risk */
     if (h.name[0] == 0)

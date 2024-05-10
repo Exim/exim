@@ -100,34 +100,36 @@ recurse.test.ex in domains? yes (end of list)
 calling r1 router
 r1 router called for kilos@recurse.test.ex
   domain = recurse.test.ex
-check dnssec require list
- recurse.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- recurse.test.ex in dnssec_request_domains?
-  list element: *
-  recurse.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of recurse.test.ex (MX) using fakens
-DNS lookup of recurse.test.ex (MX) gave HOST_NOT_FOUND
-returning DNS_NOMATCH
-faking res_search(MX) response length as 65535
- writing neg-cache entry for recurse.test.ex-MX-xxxx, ttl 3000
+main lookup for domain
+ check dnssec require list
+  recurse.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  recurse.test.ex in dnssec_request_domains?
+   list element: *
+   recurse.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of recurse.test.ex (MX) using fakens
+ DNS lookup of recurse.test.ex (MX) gave HOST_NOT_FOUND
+ returning DNS_NOMATCH
+ faking res_search(MX) response length as 65535
+  writing neg-cache entry for recurse.test.ex-MX-xxxx, ttl 3000
 r1 router widened recurse.test.ex to recurse.test.ex.test.ex
-check dnssec require list
- recurse.test.ex.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- recurse.test.ex.test.ex in dnssec_request_domains?
-  list element: *
-  recurse.test.ex.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of recurse.test.ex.test.ex (MX) using fakens
-DNS lookup of recurse.test.ex.test.ex (MX) gave NO_DATA
-returning DNS_NODATA
-faking res_search(MX) response length as 65535
- writing neg-cache entry for recurse.test.ex.test.ex-MX-xxxx, ttl 3000
-recurse.test.ex.test.ex (MX resp) DNSSEC
-DNS lookup of recurse.test.ex.test.ex (A) using fakens
-DNS lookup of recurse.test.ex.test.ex (A) succeeded
-fully qualified name = recurse.test.ex.test.ex
-recurse.test.ex.test.ex V4NET.99.0.2 mx=-1 sort=xx 
+main lookup for domain
+ check dnssec require list
+  recurse.test.ex.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  recurse.test.ex.test.ex in dnssec_request_domains?
+   list element: *
+   recurse.test.ex.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of recurse.test.ex.test.ex (MX) using fakens
+ DNS lookup of recurse.test.ex.test.ex (MX) gave NO_DATA
+ returning DNS_NODATA
+ faking res_search(MX) response length as 65535
+  writing neg-cache entry for recurse.test.ex.test.ex-MX-xxxx, ttl 3000
+ recurse.test.ex.test.ex (MX resp) DNSSEC
+ DNS lookup of recurse.test.ex.test.ex (A) using fakens
+ DNS lookup of recurse.test.ex.test.ex (A) succeeded
+ fully qualified name = recurse.test.ex.test.ex
+ recurse.test.ex.test.ex V4NET.99.0.2 mx=-1 sort=xx 
 domain changed to recurse.test.ex.test.ex
 rewriting header lines
 rewrite_one_header: type=F:

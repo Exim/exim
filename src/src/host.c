@@ -2204,7 +2204,7 @@ set_address_from_dns(host_item *host, host_item **lastptr,
   const uschar **fully_qualified_name,
   BOOL dnssec_request, BOOL dnssec_require, int whichrrs)
 {
-host_item *thishostlast = NULL;    /* Indicates not yet filled in anything */
+host_item * thishostlast = NULL;    /* Indicates not yet filled in anything */
 BOOL v6_find_again = FALSE;
 BOOL dnssec_fail = FALSE;
 int i;
@@ -2223,12 +2223,12 @@ those sites that feel they have to flaunt the RFC rules. */
 
 if (allow_ip && string_is_ip_address(host->name, NULL) != 0)
   {
-  #ifndef STAND_ALONE
+#ifndef STAND_ALONE
   if (  ignore_target_hosts
      && verify_check_this_host(&ignore_target_hosts, NULL, host->name,
         host->name, NULL) == OK)
     return HOST_IGNORED;
-  #endif
+#endif
 
   host->address = host->name;
   return HOST_FOUND;
@@ -2242,7 +2242,7 @@ testing, we force an IPv4 lookup if the domain matches dns_ipv4_lookup global.
 On an IPv4 system, go round the loop once only, looking only for A records. */
 
 #if HAVE_IPV6
-  #ifndef STAND_ALONE
+# ifndef STAND_ALONE
     if (  disable_ipv6
        || !(whichrrs & HOST_FIND_BY_AAAA)
        ||    dns_ipv4_lookup
@@ -2251,7 +2251,7 @@ On an IPv4 system, go round the loop once only, looking only for A records. */
        )
       i = 0;    /* look up A records only */
     else
-  #endif        /* STAND_ALONE */
+# endif        /* STAND_ALONE */
 
   i = 1;        /* look up AAAA and A records */
 
@@ -2628,7 +2628,8 @@ if (rc != DNS_SUCCEED  &&  whichrrs & HOST_FIND_BY_MX)
   if (dnssec_request)
     if (dns_is_secure(dnsa))
       {
-      DEBUG(D_host_lookup) debug_printf_indent("%s (MX resp) DNSSEC\n", host->name);
+      DEBUG(D_host_lookup)
+	debug_printf_indent("%s (MX resp) DNSSEC\n", host->name);
       dnssec = DS_YES; lookup_dnssec_authenticated = US"yes";
       }
     else

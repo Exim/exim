@@ -129,7 +129,6 @@ IP address lookup yielded "oneback.test.ex"
   oneback.test.ex not in empty list (option unset? cannot trace name)
  check dnssec request list
   oneback.test.ex not in empty list (option unset? cannot trace name)
- faking res_search(AAAA) response length as 65535
  DNS lookup of oneback.test.ex (A) using fakens
  DNS lookup of oneback.test.ex (A) succeeded
  oneback.test.ex V4NET.99.99.90 mx=-1 sort=xx 
@@ -140,7 +139,6 @@ Forward DNS security status: unverified
   host1.masq.test.ex not in empty list (option unset? cannot trace name)
  check dnssec request list
   host1.masq.test.ex not in empty list (option unset? cannot trace name)
- faking res_search(AAAA) response length as 65535
  DNS lookup of host1.masq.test.ex (A) using fakens
  DNS lookup of host1.masq.test.ex (A) succeeded
  host1.masq.test.ex V4NET.90.90.90 mx=-1 sort=xx 

@@ -29,43 +29,44 @@ mxt13.test.ex in domains? yes (end of list)
 calling dnslookup router
 dnslookup router called for k@mxt13.test.ex
   domain = mxt13.test.ex
-check dnssec require list
- mxt13.test.ex in dnssec_require_domains? no (option unset)
-check dnssec request list
- mxt13.test.ex in dnssec_request_domains?
-  list element: *
-  mxt13.test.ex in dnssec_request_domains? yes (matched "*")
-DNS lookup of mxt13.test.ex (MX) using fakens
-DNS lookup of mxt13.test.ex (MX) succeeded
-DNS lookup of other1.test.ex (A) using fakens
-DNS lookup of other1.test.ex (A) succeeded
-DNS lookup of other2.test.ex (A) using fakens
-DNS lookup of other2.test.ex (A) succeeded
-other1.test.ex in hosts_treat_as_local?
- list element: +local_domains
-  start sublist local_domains
-   other1.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"?
-   ╎list element: !mxt13.test.ex
-   ╎list element: !other1.test.ex
-   ╎other1.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!other1.test.ex")
-  end sublist local_domains
-other1.test.ex in hosts_treat_as_local? no (end of list)
-other2.test.ex in hosts_treat_as_local?
- list element: +local_domains
-  start sublist local_domains
-   other2.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"?
-   ╎list element: !mxt13.test.ex
-   ╎list element: !other1.test.ex
-   ╎list element: *.test.ex
-   ╎other2.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? yes (matched "*.test.ex")
-  end sublist local_domains
- other2.test.ex in hosts_treat_as_local? yes (matched "+local_domains")
+main lookup for domain
+ check dnssec require list
+  mxt13.test.ex in dnssec_require_domains? no (option unset)
+ check dnssec request list
+  mxt13.test.ex in dnssec_request_domains?
+   list element: *
+   mxt13.test.ex in dnssec_request_domains? yes (matched "*")
+ DNS lookup of mxt13.test.ex (MX) using fakens
+ DNS lookup of mxt13.test.ex (MX) succeeded
+ DNS lookup of other1.test.ex (A) using fakens
+ DNS lookup of other1.test.ex (A) succeeded
+ DNS lookup of other2.test.ex (A) using fakens
+ DNS lookup of other2.test.ex (A) succeeded
+ other1.test.ex in hosts_treat_as_local?
+  list element: +local_domains
+   start sublist local_domains
+   ╎other1.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"?
+   ╎ list element: !mxt13.test.ex
+   ╎ list element: !other1.test.ex
+   ╎ other1.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!other1.test.ex")
+   end sublist local_domains
+ other1.test.ex in hosts_treat_as_local? no (end of list)
+ other2.test.ex in hosts_treat_as_local?
+  list element: +local_domains
+   start sublist local_domains
+   ╎other2.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"?
+   ╎ list element: !mxt13.test.ex
+   ╎ list element: !other1.test.ex
+   ╎ list element: *.test.ex
+   ╎ other2.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? yes (matched "*.test.ex")
+   end sublist local_domains
+  other2.test.ex in hosts_treat_as_local? yes (matched "+local_domains")
 local host in host list - removed hosts:
   other2.test.ex V4NET.12.3.2 5
   other2.test.ex V4NET.12.3.1 5
-fully qualified name = mxt13.test.ex
-host_find_bydns yield = HOST_FOUND (3); returned hosts:
-  other1.test.ex V4NET.12.4.5 MX=4 
+ fully qualified name = mxt13.test.ex
+ host_find_bydns yield = HOST_FOUND (3); returned hosts:
+   other1.test.ex V4NET.12.4.5 MX=4 
 set transport smtp
 queued for smtp transport: local_part = k
 domain = mxt13.test.ex

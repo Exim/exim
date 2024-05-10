@@ -56,7 +56,7 @@ check hosts = +ignore_unknown : *.$sender_address_domain : $sender_address_domai
  cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
  DNS: couldn't fake dnsa len
  DNS: no SOA record found for neg-TTL
-  writing neg-cache entry for cioce.test.again.dns-MX-4900041, ttl -1
+  writing neg-cache entry for cioce.test.again.dns-MX-xxxx, ttl -1
  creating new cache entry
  lookup failed
 host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "?
@@ -90,7 +90,7 @@ using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
  cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
  DNS: couldn't fake dnsa len
  DNS: no SOA record found for neg-TTL
-  writing neg-cache entry for cioce.test.again.dns-A-49000c1, ttl -1
+  writing neg-cache entry for cioce.test.again.dns-A-xxxx, ttl -1
 host_fake_gethostbyname(af=inet) returned 1 (HOST_NOT_FOUND)
 no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
 LOG: host_lookup_failed MAIN
