@@ -161,14 +161,14 @@ LOG: MAIN PANIC
   dns_again_means_nonexist recursion seen for test.again.dns (assuming nonexist)
    ╎   ╎DNS: couldn't fake dnsa len
    ╎   ╎DNS: no SOA record found for neg-TTL
-   ╎   ╎ writing neg-cache entry for test.again.dns-MX-4100041, ttl -1
+   ╎   ╎ writing neg-cache entry for test.again.dns-MX-xxxx, ttl -1
    ╎   test.again.dns in "@mx_any"? no (end of list)
    ╎  end sublist try_again_dns_list
    ╎test.again.dns in dns_again_means_nonexist? yes (end of list)
    ╎test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
    ╎DNS: couldn't fake dnsa len
    ╎DNS: no SOA record found for neg-TTL
-   ╎ update neg-cache entry for test.again.dns-MX-4100041, ttl -1
+   ╎ update neg-cache entry for test.again.dns-MX-xxxx, ttl -1
    test.again.dns in "@mx_any"? no (end of list)
   end sublist try_again_dns_list
 test.again.dns in "+try_again_dns_list"? no (end of list)

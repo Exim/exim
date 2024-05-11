@@ -1384,7 +1384,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/unexpected disconnection while reading SMTP command from \[127.0.0.1\] \K\(error: Connection reset by peer\) //;
 
     # Platform-dependent resolver option bits
-    s/^ *(?:writing|update) neg-cache entry for [^,]+-\K[0-9a-f]+, ttl/xxxx, ttl/;
+    s/(?:writing|update) neg-cache entry for [^,]+-\K[0-9a-f]+, ttl/xxxx, ttl/;
 
     # timing variance, run-to-run
     s/^time on queue = \K1s/0s/;
