@@ -1484,7 +1484,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^DKIM >> Body data for hash, canonicalized/;
 
     # Not all platforms build with SPF enabled
-    next if /^(spf_conn_init|SPF_dns_exim_new|spf_compile\.c)/;
+    next if /(^spf_conn_init|^SPF_dns_exim_new|spf_compile\.c)/;
     next if /try option spf_smtp_comment_template$/;
 
     # Not all platforms have sendfile support
@@ -1509,25 +1509,21 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^(ppppp |\d+ )?setsockopt FASTOPEN: Protocol not available$/;
     s/^(sending) \d+ (nonTFO early-data)$/$1 dd $2/;
 
-    if (/^([0-9: ]*						# possible timestamp
-	Connecting\ to\ [^ ]+\ [^ ]+(\ from\ [^ ]+)?)\ \.\.\.
+    if (/^[0-9: ]*						# possible timestamp
 	\ .*TFO\ mode\x20
 	(sendto,\ no\ data:\ EINPROGRESS			# Linux
 	|connection\ attempt\ to\ [^,]+,\ 0\ data)		# MacOS & no-support
 	$/x)
       {
-      $_ = $1 . " ... " . <IN>;
-      s/^(.* \.\.\.) [0-9: ]*connected$/$1  connected/;
-
-      if (/^Connecting to .* \.\.\.  connected$/)
+      if (/^connected$/)
 	{
 	$_ .= <IN>;
-	if (/^(Connecting to .* \.\.\.  )connected\n\s+SMTP(\(close\)>>|\(Connection refused\)<<)$/)
+	if (/^connected\n\s+SMTP(\(close\)>>|\(Connection refused\)<<)$/)
 	  {
-	  $_ = $1 . "failed: Connection refused\n" . <IN>;
-	  s/^(Connecting .*)\n\s+SMTP\(close\)>>$/$1/;
+	  $_ = "failed: Connection refused\n" . <IN>;
+	  s/^\n\s+SMTP\(close\)>>$/$1/;
 	  }
-	elsif (/^(Connecting to .* \.\.\.  connected\n)read response data: size=/)
+	elsif (/^(connected\n)read response data: size=/)
 	  { $_ = $1; }
 
 	# Date/time in SMTP banner
@@ -2097,7 +2093,7 @@ $munges =
     'timeout_errno' =>		# actual errno differs Solaris vs. Linux
     { 'mainlog' => 's/((?:host|message) deferral .* errno) <\d+> /$1 <EEE> /' },
 
-    'peer_terminated_conn' =>	# actual error differs FreedBSD vs. Linux
+    'peer_terminated_conn' =>	# actual error differs FreedBS/Solaris vs. Linux
     { 'stderr' => 's/^(  SMTP\()Connection reset by peer(\)<<)$/$1closed$2/' },
 
     'perl_variants' =>		# result of hash-in-scalar-context changed from bucket-fill to keycount

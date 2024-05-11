@@ -1,4 +1,5 @@
 # PIPELINING (client: errors, etc)
+munge peer_terminated_conn
 need_ipv4
 #
 server PORT_S
