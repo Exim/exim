@@ -98,7 +98,8 @@ cd ..
 
 for f in blob.h dbfunctions.h exim.h functions.h globals.h \
   hash.h hintsdb.h hintsdb_structs.h local_scan.h \
-  macros.h mytypes.h osfunctions.h store.h structs.h lookupapi.h sha_ver.h \
+  macros.h mytypes.h osfunctions.h path_max.h store.h \
+  structs.h lookupapi.h sha_ver.h \
   \
   acl.c buildconfig.c base64.c child.c crypt16.c daemon.c dbfn.c debug.c \
   deliver.c directory.c dns.c dnsbl.c drtables.c dummies.c enq.c exim.c \

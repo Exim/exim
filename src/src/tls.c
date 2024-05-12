@@ -40,12 +40,15 @@ functions from the OpenSSL or GNU TLS libraries. */
 static void tls_per_lib_daemon_init(void);
 static void tls_per_lib_daemon_tick(void);
 static unsigned  tls_server_creds_init(void);
-static void tls_server_creds_invalidate(void);
 static void tls_client_creds_init(transport_instance *, BOOL);
-static void tls_client_creds_invalidate(transport_instance *);
 static void tls_daemon_creds_reload(void);
 static BOOL opt_set_and_noexpand(const uschar *);
 static BOOL opt_unset_or_noexpand(const uschar *);
+
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
+static void tls_server_creds_invalidate(void);
+static void tls_client_creds_invalidate(transport_instance *);
+#endif
 
 
 
@@ -324,7 +327,9 @@ tls_client_creds_reload(BOOL watch)
 for(transport_instance * t = transports; t; t = t->next)
   if (Ustrcmp(t->driver_name, "smtp") == 0)
     {
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
     tls_client_creds_invalidate(t);
+#endif
     tls_client_creds_init(t, watch);
     }
 }
@@ -360,7 +365,9 @@ unsigned lifetime;
 tls_watch_invalidate();
 #endif
 
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 tls_server_creds_invalidate();
+#endif
 
 /* _expire is for a time-limited selfsign server cert */
 tls_creds_expire = (lifetime = tls_server_creds_init())

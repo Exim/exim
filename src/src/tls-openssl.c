@@ -1999,16 +1999,6 @@ SSL_CTX_free(ob->tls_preload.lib_ctx);
 ob->tls_preload = null_tls_preload;
 }
 
-#else
-
-static void
-tls_server_creds_invalidate(void)
-{ return; }
-
-static void
-tls_client_creds_invalidate(transport_instance * t)
-{ return; }
-
 #endif	/*EXIM_HAVE_INOTIFY*/
 
 

@@ -127,16 +127,6 @@ making unique names. */
 # define EXIM_ARITH_MIN (-EXIM_ARITH_MAX - 1)
 #endif
 
-/* Some systems have PATH_MAX and some have MAX_PATH_LEN. */
-
-#ifndef PATH_MAX
-# ifdef MAX_PATH_LEN
-#  define PATH_MAX MAX_PATH_LEN
-# else
-#  define PATH_MAX 1024
-# endif
-#endif
-
 /* RFC 5321 specifies that the maximum length of a local-part is 64 octets
 and the maximum length of a domain is 255 octets, but then also defines
 the maximum length of a forward/reverse path as 256 not 64+1+255.
@@ -532,6 +522,7 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 */
 
 #include "local_scan.h"
+#include "path_max.h"
 #include "macros.h"
 #include "hintsdb.h"
 #include "hintsdb_structs.h"

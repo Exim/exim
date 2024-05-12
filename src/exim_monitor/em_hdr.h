@@ -99,6 +99,7 @@ this interface so that this kind of kludge isn't needed. */
 typedef void * hctx;
 
 #include "local_scan.h"
+#include "path_max.h"
 #include "macros.h"
 #include "structs.h"
 #include "blob.h"

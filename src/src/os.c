@@ -878,9 +878,7 @@ os_getcwd(unsigned char * buffer, size_t size)
 return US  getcwd(CS buffer, size);
 }
 #else
-#ifndef PATH_MAX
-# define PATH_MAX 4096
-#endif
+# include "path_max.h"
 unsigned char *
 os_getcwd(unsigned char * buffer, size_t size)
 {

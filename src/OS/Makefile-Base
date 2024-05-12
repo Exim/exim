@@ -108,7 +108,7 @@ config.h: Makefile buildconfig ../src/config.h.defaults $(EDITME)
 
 # Build the builtin-macros data struct
 
-MACRO_HSRC = macro_predef.h os.h globals.h config.h macros.h \
+MACRO_HSRC = macro_predef.h os.h globals.h config.h macros.h path_max.h \
 	routers/accept.h routers/dnslookup.h routers/ipliteral.h \
 	routers/iplookup.h routers/manualroute.h routers/queryprogram.h \
 	routers/redirect.h
@@ -664,7 +664,7 @@ OBJ_MONBIN = util-host_address.o \
 	     $(MONBIN)
 
 eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) ../exim_monitor/em_version.c \
-		mytypes.h store.h macros.h
+		mytypes.h store.h path_max.h macros.h
 	@echo "$(CC) exim_monitor/em_version.c"
 	$(FE)$(CC) -o em_version.o -c \
 	  $(CFLAGS) $(XINCLUDE) -I. ../exim_monitor/em_version.c
@@ -698,6 +698,7 @@ HDRS  =	blob.h \
 	local_scan.h \
 	macros.h \
 	mytypes.h \
+	path_max.h \
 	sha_ver.h \
 	structs.h \
 	os.h
@@ -711,6 +712,7 @@ PHDRS = ../config.h \
 	../local_scan.h \
 	../macros.h \
 	../mytypes.h \
+	../path_max.h \
 	../structs.h \
 	../os.h
 
