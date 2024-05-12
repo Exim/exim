@@ -1,5 +1,5 @@
 ### Check that delivery of old-format spoolfiles works
-TTT   sss 10HmaX-0005vi-00-H <nobody@test.ex>
+TTT   sss 10HmaX-0005vi-00 <nobody@test.ex>
           nulldeliver@test.ex
 
 ### Check that the format-mangler utility can downgrade spoolfiles
@@ -7,7 +7,7 @@ TTT   sss 10HmaX-000000005vi-0000 <CALLER@the.local.host.name>
           nulldeliver@test.ex
 
 exim_id_update exit code = 0
-TTT   sss 10HmaY-0005vi-00-H <CALLER@the.local.host.name>
+TTT   sss 10HmaY-0005vi-00 <CALLER@the.local.host.name>
           nulldeliver@test.ex
 
 ### Check that the format-mangler utility can upgrade spoolfiles
