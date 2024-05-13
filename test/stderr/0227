@@ -385,7 +385,6 @@ LOG: smtp_connection MAIN
 LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
- TFO mode sendto, no data: EINPROGRESS
 connected
   SMTP<< 220 Server ready
   SMTP>> LHLO myhost.test.ex

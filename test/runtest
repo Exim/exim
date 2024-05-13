@@ -1515,6 +1515,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 	|connection\ attempt\ to\ [^,]+,\ 0\ data)		# MacOS & no-support
 	$/x)
       {
+      $_ = <IN>;
       if (/^connected$/)
 	{
 	$_ .= <IN>;
