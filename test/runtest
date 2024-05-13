@@ -1230,7 +1230,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^TLS: not preloading server certs$/;
 
     # some platforms are missing the standard CA bundle file
-    next if /^tls_set_watch\(\) fail on '\/usr\/lib\/ssl\/cert.pem': No such file or directory$/;
+    next if /^tls_set_watch\(\) fail on '\/usr\/(?:lib\/ssl|local\/openssl3\/etc\/pki\/tls)\/cert.pem': No such file or directory$/;
 
     # drop lookups
     next if /^$time_pid?(?: Lookups\ \(built-in\):
