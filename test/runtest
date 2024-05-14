@@ -115,6 +115,14 @@ my ($parm_configure_owner, $parm_configure_group);
 my ($parm_ipv4, $parm_ipv6, $parm_ipv6_stripped);
 my $parm_hostname;
 
+# Convenience for regex'
+# for tighter, see https://metacpan.org/dist/IO-Socket-IP/source/lib/IO/Socket/IP.pm#L37
+my $re_ipv4 = qr/\d{1,3}(?:\.\d{1,3}){3}/;
+my $re_6g = qr/[[:xdigit:]]{1,4}/;
+my $re_6s = qr/${re_6g}:/;
+my $re_ipv6 = qr/${re_6s}{,7}${re_6g}(?:::${re_6s}{,5}${re_6g})?/;
+my $re_ip = qr/(?:${re_ipv4}|${re_ipv6})/;
+
 ###############################################################################
 ###############################################################################
 
@@ -713,7 +721,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/TLS error on connection \(gnutls_handshake\): Error in the pull function\./a TLS session is required but an attempt to start TLS failed/g;
 
   # (replace old with new, hoping that old only happens in one situation)
-  s/TLS error on connection to \d{1,3}(.\d{1,3}){3} \[\d{1,3}(.\d{1,3}){3}\] \(gnutls_handshake\): A TLS packet with unexpected length was received./a TLS session is required for ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4], but an attempt to start TLS failed/g;
+  s/TLS error on connection to ${re_ipv4} \[${re_ipv4}\] \(gnutls_handshake\): A TLS packet with unexpected length was received./a TLS session is required for ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4], but an attempt to start TLS failed/g;
   s/TLS error on connection from \[127.0.0.1\] \(recv\): A TLS packet with unexpected length was received./TLS error on connection from [127.0.0.1] (recv): The TLS connection was non-properly terminated./g;
 
   # signature algorithm names
@@ -823,12 +831,12 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/\(port=(\d+)/"(port=" . new_value($1, "%s", \$next_port)/e;
 
   # This handles "connection from" and the like, when the port is given
-  if (!/listening for SMTP on/ && !/Connecting to/ && !/=>/ && !/->/
-      && !/\*>/&& !/==/  && !/\*\*/ && !/Connection refused/ && !/in response to/
-      && !/T(?:ransport)?:/)
-    {
-    s/\[([a-z\d:]+|\d+(?:\.\d+){3})\]:(\d+)/"[".$1."]:".new_value($2,"%s",\$next_port)/ie;
-    }
+  s/(\[${re_ip}\]:)(\d+)/$1.new_value($2,"%s",\$next_port)/ie
+    unless (  /listening for SMTP on/ || /Connecting to/
+	   || /[=*-]>/ || /==/ || /\*\*/
+	   || /Connection refused/ || /in response to/
+	   || /T(?:ransport)?:/
+	   );
 
   # Port in host address in spool file output from -Mvh
   s/^(--?host_address) (.*[:.])\d+$/$1 ${2}9999/;
