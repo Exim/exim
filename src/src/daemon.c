@@ -311,7 +311,7 @@ if (smtp_accept_max_per_host)
   /* For speed, interpret a decimal number inline here */
   else
     {
-    uschar *s = expanded;
+    uschar * s = expanded;
     while (isdigit(*s))
       max_for_this_host = max_for_this_host * 10 + *s++ - '0';
     if (*s)
@@ -320,9 +320,9 @@ if (smtp_accept_max_per_host)
     }
   }
 
-/* If we have fewer connections than max_for_this_host, we can skip the tedious
-per host_address checks. Note that at this stage smtp_accept_count contains the
-count of *other* connections, not including this one. */
+/* If we have fewer total connections than max_for_this_host, we can skip the
+tedious per host_address checks. Note that at this stage smtp_accept_count
+contains the count of *other* connections, not including this one. */
 
 if (max_for_this_host > 0 && smtp_accept_count >= max_for_this_host)
   {
@@ -920,7 +920,7 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
         smtp_slots[i] = empty_smtp_slot;
         if (--smtp_accept_count < 0) smtp_accept_count = 0;
         DEBUG(D_any) debug_printf("%d SMTP accept process%s now running\n",
-          smtp_accept_count, (smtp_accept_count == 1)? "" : "es");
+          smtp_accept_count, smtp_accept_count == 1 ? "" : "es");
         break;
         }
     if (i < smtp_accept_max) continue;  /* Found an accepting process */
