@@ -941,7 +941,7 @@ deliver_host =      save_host;
 deliver_localpart = save_local;
 deliver_domain =    save_domain;
 router_name = save_rn;
-router_name = save_tn;
+transport_name = save_tn;
 }
 #endif	/*DISABLE_EVENT*/
 
