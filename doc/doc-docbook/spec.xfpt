@@ -8202,6 +8202,11 @@ or delete command), the result of the lookup is the number of rows affected.
 anything (for example, setting a field to the value it already has), the result
 is zero because no rows are affected.
 
+.new
+To get an encryted connection, use a Mysql option file with the required
+parameters for the connection.
+.wen
+
 
 .subsection "Special PostgreSQL features" SECID74
 PostgreSQL lookups can also use Unix domain socket connections to the database.
