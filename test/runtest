@@ -1288,8 +1288,9 @@ RESET_AFTER_EXTRA_LINE_READ:
       if (/looked up these IP addresses/);
     next if /name=localhost address=::1/;
 
-    # drop pdkim debugging header
+    # DKIM: Not all builds include
     next if /^DKIM( <<<<<<<<<<<<<<<<<<<<<<<<<<<<<+|: no signatures)$/;
+    next if /try option acl_smtp_dkim$/;
 
     # Some platforms have TIOCOUT, some do not
     next if /\d+ bytes remain in socket output buffer$/;

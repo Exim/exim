@@ -635,7 +635,6 @@ try option received_header_text
             ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
-try option acl_smtp_dkim
 try option acl_smtp_data
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}
@@ -1244,7 +1243,6 @@ try option received_header_text
             ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
-try option acl_smtp_dkim
 try option acl_smtp_data
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}
@@ -1853,7 +1851,6 @@ try option received_header_text
             ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
-try option acl_smtp_dkim
 try option acl_smtp_data
  ╭considering: ${tod_full}
  ├───expanded: ${tod_full}

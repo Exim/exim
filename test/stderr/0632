@@ -489,7 +489,6 @@ p1235  ␉(envelope-from░<CALLER@test.ex>)↩
 p1235  ␉id░10HmaX-000000005vi-0000↩
 p1235  ␉for░dest_1@test.ex
 p1235             ╰──(tainted)
-p1235 try option acl_smtp_dkim
 p1235 try option acl_smtp_data
 p1235  ╭considering: ${tod_full}
 p1235  ├───expanded: ${tod_full}
@@ -956,7 +955,6 @@ p1236  ␉(envelope-from░<CALLER@test.ex>)↩
 p1236  ␉id░10HmaY-000000005vi-0000↩
 p1236  ␉for░dest_2@test.ex
 p1236             ╰──(tainted)
-p1236 try option acl_smtp_dkim
 p1236 try option acl_smtp_data
 p1236  ╭considering: ${tod_full}
 p1236  ├───expanded: ${tod_full}
