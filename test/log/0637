@@ -1,0 +1,8 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 rejected MAIL from [127.0.0.1]: no HELO/EHLO given
+1999-03-02 09:44:33 rejected MAIL from [127.0.0.1]: no HELO/EHLO given
+1999-03-02 09:44:33 rejected MAIL from [127.0.0.1]: no HELO/EHLO given
+1999-03-02 09:44:33 rejected MAIL from [127.0.0.1]: no HELO/EHLO given
+1999-03-02 09:44:33 SMTP call from [127.0.0.1] dropped: too many syntax or protocol errors (last command was "mail from:<u4@cus.cam.ac.uk>",  C=MAIL,MAIL,MAIL,MAIL)

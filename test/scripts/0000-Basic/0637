@@ -1,0 +1,18 @@
+# mail before ehlo
+exim -bd -DSERVER=server -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+mail from:<u1@cus.cam.ac.uk>
+??? 503 HELO or EHLO required
+mail from:<u2@cus.cam.ac.uk>
+??? 503
+mail from:<u3@cus.cam.ac.uk>
+??? 503
+mail from:<u4@cus.cam.ac.uk>
+??? 503-
+??? 503 Too many
+???*
+****
+killdaemon
+no_stderr_check

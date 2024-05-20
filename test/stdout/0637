@@ -1,0 +1,20 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> mail from:<u1@cus.cam.ac.uk>
+??? 503 HELO or EHLO required
+<<< 503 HELO or EHLO required
+>>> mail from:<u2@cus.cam.ac.uk>
+??? 503
+<<< 503 HELO or EHLO required
+>>> mail from:<u3@cus.cam.ac.uk>
+??? 503
+<<< 503 HELO or EHLO required
+>>> mail from:<u4@cus.cam.ac.uk>
+??? 503-
+<<< 503-HELO or EHLO required
+??? 503 Too many
+<<< 503 Too many syntax or protocol errors
+???*
+Expected EOF read
+End of script

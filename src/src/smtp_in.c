@@ -4352,9 +4352,10 @@ while (done <= 0)
 	if (  fl.helo_verify_required
 	   || verify_check_host(&hosts_require_helo) == OK)
 	  {
-	  smtp_printf("503 HELO or EHLO required\r\n", SP_NO_MORE);
 	  log_write(0, LOG_MAIN|LOG_REJECT, "rejected MAIL from %s: no "
 	    "HELO/EHLO given", host_and_ident(FALSE));
+	  done = synprot_error(L_smtp_protocol_error, 503, NULL,
+		      US"HELO or EHLO required");
 	  break;
 	  }
 	else if (smtp_mailcmd_max < 0)

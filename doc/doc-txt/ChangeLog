@@ -151,9 +151,12 @@ JH/29 Bug 3087: Fix SRS encode.  A zero-length quoted element in the local-part
 JH/30 Bug 3029: Avoid feeding Resent-From: to DMARC.
 
 JH/31 Bug 3027: For -bh / -bhc tests change to using the compressed form of
-      ipv6 addresses for the sender.  Previously the uncompressed form was
-      used, and if used in textual form this would result in behavior difference
+      ipv6 addresses for the sender.  Previously the uncompressed form was used,
+      and if used in textual form this would result in behavior difference
       versus non-bh.
+
+JH/32 Bug 3096: MAIL before HELO/EHLO, where required by hosts_require_helo, is
+      now classed as a protocol error and subject to smtp_max_synprot_errors.
 
 
 Exim version 4.97

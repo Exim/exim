@@ -1,0 +1,13 @@
+# Exim test configuration 0637
+
+HVH=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+# ----- ACL -----
+
+# End
