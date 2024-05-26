@@ -6846,7 +6846,10 @@ by default, but has an option to omit them (see section &<<SECTdbmbuild>>&).
 .cindex "dsearch lookup type"
 The given file must be an absolute directory path; this is searched for an entry
 whose name is the key by calling the &[lstat()]& function.
-The key may not contain any forward slash characters.
+.new
+Unless the options (below) permit a path,
+.wen
+the key may not contain any forward slash characters.
 If &[lstat()]& succeeds then so does the lookup.
 .cindex "tainted data" "dsearch result"
 The result is regarded as untainted.
@@ -6855,7 +6858,7 @@ Options for the lookup can be given by appending them after the word "dsearch",
 separated by a comma.  Options, if present, are a comma-separated list having
 each element starting with a tag name and an equals.
 
-Two options are supported, for the return value and for filtering match
+Three options are supported, for the return value and for filtering match
 candidates.
 The "ret" option requests an alternate result value of
 the entire path for the entry. Example:
@@ -6863,6 +6866,7 @@ the entire path for the entry. Example:
 ${lookup {passwd} dsearch,ret=full {/etc}}
 .endd
 The default result is just the requested entry.
+
 The "filter" option requests that only directory entries of a given type
 are matched. The match value is one of "file", "dir" or "subdir" (the latter
 not matching "." or ".."). Example:
@@ -6871,6 +6875,14 @@ ${lookup {passwd} dsearch,filter=file {/etc}}
 .endd
 The default matching is for any entry type, including directories
 and symlinks.
+
+The "key" option relaxes the restriction that only a simple path component can
+be searched for, to permit a sequence of path components. Example:
+.code
+${lookup {foo/bar} dsearch,key=path {/etc}}
+.endd
+If this option is used, a ".." component in the key is specifically disallowed.
+The default operation is that the key may only be a single path component.
 
 An example of how this
 lookup can be used to support virtual domains is given in section

@@ -70,6 +70,7 @@ return FALSE;
 #define FILTER_FILE	BIT(2)
 #define FILTER_DIR	BIT(3)
 #define FILTER_SUBDIR	BIT(4)
+#define ALLOW_PATH	BIT(5)
 
 /* See local README for interface description. We use lstat() instead of
 scanning the directory, as it is hopefully faster to let the OS do the scanning
@@ -84,13 +85,6 @@ struct stat statbuf;
 int save_errno;
 uschar * filename;
 unsigned flags = 0;
-
-if (Ustrchr(keystring, '/') != 0)
-  {
-  *errmsg = string_sprintf("key for dsearch lookup contains a slash: %s",
-    keystring);
-  return DEFER;
-  }
 
 if (opts)
   {
@@ -110,6 +104,24 @@ if (opts)
       else if (Ustrcmp(ele, "subdir") == 0)
 	flags |= FILTER_TYPE | FILTER_SUBDIR;	/* like dir but not "." or ".." */
       }
+    else if (Ustrcmp(ele, "key=path") == 0)
+      flags |= ALLOW_PATH;
+  }
+
+if (flags & ALLOW_PATH)
+  {
+  if (Ustrstr(keystring, "/../") != NULL || Ustrstr(keystring, "/./"))
+    {
+    *errmsg = string_sprintf(
+      "key for dsearch lookup contains bad component: %s", keystring);
+    return DEFER;
+    }
+  }
+else if (Ustrchr(keystring, '/') != NULL)
+  {
+  *errmsg = string_sprintf("key for dsearch lookup contains a slash: %s",
+    keystring);
+  return DEFER;
   }
 
 filename = string_sprintf("%s/%s", dirname, keystring);
@@ -189,3 +201,5 @@ static lookup_info *_lookup_list[] = { &_lookup_info };
 lookup_module_info dsearch_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 /* End of lookups/dsearch.c */
+/* vi: aw ai sw=2
+*/

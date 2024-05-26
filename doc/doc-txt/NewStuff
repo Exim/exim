@@ -22,6 +22,8 @@ Version 4.98
 
  6. A dns:fail event.
 
+ 7. The dsearch lookup supports search for a sub-path.
+
 Version 4.97
 ------------
 
