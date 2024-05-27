@@ -3101,7 +3101,7 @@ options, as appropriate. The &%-bnq%& option (see below) provides a way of
 suppressing this for special cases.
 
 Policy checks on the contents of local messages can be enforced by means of
-the non-SMTP ACL. See chapter &<<CHAPACL>>& for details.
+the non-SMTP ACL. See section &<<SECnonSMTP>>& for details.
 
 .cindex "return code" "for &%-bm%&"
 The return code is zero if the message is successfully accepted. Otherwise, the
@@ -3377,7 +3377,7 @@ dots doubled), terminated by a line containing just a single dot. An error is
 provoked if the terminating dot is missing. A further message may then follow.
 
 As for other local message submissions, the contents of incoming batch SMTP
-messages can be checked using the non-SMTP ACL (see chapter &<<CHAPACL>>&).
+messages can be checked using the non-SMTP ACL (see section &<<SECnonSMTP>>&).
 Unqualified addresses are automatically qualified using &%qualify_domain%& and
 &%qualify_recipient%&, as appropriate, unless the &%-bnq%& option is used.
 
@@ -4715,7 +4715,7 @@ all selected messages, not just the first; frozen messages are included when
 
 The &%-R%& option makes it straightforward to initiate delivery of all messages
 to a given domain after a host has been down for some time. When the SMTP
-command ETRN is accepted by its ACL (see chapter &<<CHAPACL>>&), its default
+command ETRN is accepted by its ACL (see section &<<SECTETRN>>&), its default
 effect is to run Exim with the &%-R%& option, but it can be configured to run
 an arbitrary command instead.
 
@@ -15125,7 +15125,7 @@ log_selector = +8bitmime
 .cindex "&ACL;" "for non-SMTP messages"
 .cindex "non-SMTP messages" "ACLs for"
 This option defines the ACL that is run when a non-SMTP message has been
-read and is on the point of being accepted. See chapter &<<CHAPACL>>& for
+read and is on the point of being accepted. See section &<<SECnonSMTP>>& for
 further details.
 
 .option acl_not_smtp_mime main string&!! unset
@@ -15137,24 +15137,26 @@ SMTP messages.
 .cindex "&ACL;" "at start of non-SMTP message"
 .cindex "non-SMTP messages" "ACLs for"
 This option defines the ACL that is run before Exim starts reading a
-non-SMTP message. See chapter &<<CHAPACL>>& for further details.
+non-SMTP message. See section &<<SECnonSMTP>>& for further details.
 
 .option acl_smtp_auth main string&!! unset
 .cindex "&ACL;" "setting up for SMTP commands"
 .cindex "AUTH" "ACL for"
 This option defines the ACL that is run when an SMTP AUTH command is
-received. See chapter &<<CHAPACL>>& for further details.
+received.
+See chapter &<<CHAPACL>>& for general information on ACLs, and chapter
+&<<CHAPSMTPAUTH>>& for details of authentication.
 
 .option acl_smtp_connect main string&!! unset
 .cindex "&ACL;" "on SMTP connection"
 This option defines the ACL that is run when an SMTP connection is received.
-See chapter &<<CHAPACL>>& for further details.
+See section &<<SECconnectACL>>& for further details.
 
 .option acl_smtp_data main string&!! unset
 .cindex "DATA" "ACL for"
 This option defines the ACL that is run after an SMTP DATA command has been
 processed and the message itself has been received, but before the final
-acknowledgment is sent. See chapter &<<CHAPACL>>& for further details.
+acknowledgment is sent. See section &<<SECdataACLS>>& for further details.
 
 .option acl_smtp_data_prdr main string&!! accept
 .cindex "PRDR" "ACL for"
@@ -15165,7 +15167,7 @@ This option defines the ACL that,
 if the PRDR feature has been negotiated,
 is run for each recipient after an SMTP DATA command has been
 processed and the message itself has been received, but before the
-acknowledgment is sent. See chapter &<<CHAPACL>>& for further details.
+acknowledgment is sent. See section &<<SECTPRDRACL>>& for further details.
 
 .option acl_smtp_dkim main string&!! unset
 .cindex DKIM "ACL for"
@@ -15188,7 +15190,7 @@ received. See chapter &<<CHAPACL>>& for further details.
 .cindex "EHLO" "ACL for"
 .cindex "HELO" "ACL for"
 This option defines the ACL that is run when an SMTP EHLO or HELO
-command is received. See chapter &<<CHAPACL>>& for further details.
+command is received. See section &<<SECheloACL>>& for further details.
 
 
 .option acl_smtp_mail main string&!! unset
@@ -15199,7 +15201,8 @@ received. See chapter &<<CHAPACL>>& for further details.
 .option acl_smtp_mailauth main string&!! unset
 .cindex "AUTH" "on MAIL command"
 This option defines the ACL that is run when there is an AUTH parameter on
-a MAIL command. See chapter &<<CHAPACL>>& for details of ACLs, and chapter
+a MAIL command.
+See chapter &<<CHAPACL>>& for general information on ACLs, and chapter
 &<<CHAPSMTPAUTH>>& for details of authentication.
 
 .option acl_smtp_mime main string&!! unset
@@ -15212,7 +15215,7 @@ section &<<SECTscanmimepart>>& for details.
 .cindex "not-QUIT, ACL for"
 This option defines the ACL that is run when an SMTP session
 ends without a QUIT command being received.
-See chapter &<<CHAPACL>>& for further details.
+See section &<<SECTNOTQUITACL>>& for further details.
 
 .option acl_smtp_predata main string&!! unset
 This option defines the ACL that is run when an SMTP DATA command is
@@ -15227,7 +15230,7 @@ received. See chapter &<<CHAPACL>>& for further details.
 .option acl_smtp_rcpt main string&!! unset
 .cindex "RCPT" "ACL for"
 This option defines the ACL that is run when an SMTP RCPT command is
-received. See chapter &<<CHAPACL>>& for further details.
+received. See section &<<SECTQUITACL>>& for further details.
 
 .option acl_smtp_starttls main string&!! unset
 .cindex "STARTTLS, ACL for"
@@ -16593,7 +16596,7 @@ If permitted, Exim as a servier will advertise in the EHLO response
 the limit for RCPT commands set by the &%recipients_max%& option (if it is set)
 and the limit for MAIL commands set by the &%smtp_accept_max_per_connection%&
 option.
-,wen
+.wen
 
 .option local_from_check main boolean true
 .cindex "&'Sender:'& header line" "disabling addition of"
@@ -30683,7 +30686,7 @@ trying to deliver the message. It is therefore recommended that you do as much
 testing as possible at RCPT time.
 
 
-.subsection "The non-SMTP ACLs" SECID190
+.subsection "The non-SMTP ACLs" SECnonSMTP
 .cindex "non-SMTP messages" "ACLs for"
 The non-SMTP ACLs apply to all non-interactive incoming messages, that is, they
 apply to batched SMTP as well as to non-SMTP messages. (Batched SMTP is not
@@ -30717,7 +30720,7 @@ kind of rejection is treated as permanent, because there is no way of sending a
 temporary error for these kinds of message.
 
 
-.subsection "The SMTP connect ACL" SECID191
+.subsection "The SMTP connect ACL" SECconnectACL
 .cindex "SMTP" "connection, ACL for"
 .oindex &%smtp_banner%&
 The ACL test specified by &%acl_smtp_connect%& happens at the start of an SMTP
@@ -30732,7 +30735,7 @@ is accepted; if the ACL does not accept then the TCP connection is dropped witho
 any TLS startup attempt and without any SMTP response being transmitted.
 
 
-.subsection "The EHLO/HELO ACL" SECID192
+.subsection "The EHLO/HELO ACL" SECheloACL
 .cindex "EHLO" "ACL for"
 .cindex "HELO" "ACL for"
 The ACL test specified by &%acl_smtp_helo%& happens when the client issues an
@@ -30753,7 +30756,7 @@ affect the EHLO options that are listed on the second and subsequent lines of
 an EHLO response.
 
 
-.subsection "The DATA ACLs" SECID193
+.subsection "The DATA ACLs" SECdataACLS
 .cindex "DATA" "ACLs for"
 Two ACLs are associated with the DATA command, because it is two-stage
 command, with two responses being sent to the client.
