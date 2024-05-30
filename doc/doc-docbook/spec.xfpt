@@ -11585,6 +11585,19 @@ literal question mark).
 .cindex "&%utf8_localpart_from_alabel%& expansion item"
 These convert EAI mail name components between UTF-8 and a-label forms.
 For information on internationalisation support see &<<SECTi18nMTA>>&.
+
+
+.new
+.vitem &*${xtextd:*&<&'string'&>&*}*&
+.cindex "text forcing in strings"
+.cindex "string" "xtext decoding"
+.cindex "xtext"
+.cindex "&%xtextd%& expansion item"
+This performs xtext decoding of the string (per RFC 3461 section 4).
+.wen
+
+
+
 .endlist
 
 
@@ -14836,6 +14849,7 @@ listed in more than one group.
 .row &%acl_smtp_rcpt%&               "ACL for RCPT"
 .row &%acl_smtp_starttls%&           "ACL for STARTTLS"
 .row &%acl_smtp_vrfy%&               "ACL for VRFY"
+.row &%acl_smtp_wellknown%&          "ACL for WELLKNOWN"
 .row &%av_scanner%&                  "specify virus scanner"
 .row &%check_rfc2047_length%&        "check length of RFC 2047 &""encoded &&&
                                       words""&"
@@ -15002,6 +15016,7 @@ See also the &'Policy controls'& section above.
 .row &%prdr_enable%&                 "advertise PRDR to all hosts"
 .row &%smtputf8_advertise_hosts%&    "advertise SMTPUTF8 to these hosts"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
+.row &%wellknown_advertise_hosts%&   "advertise WELLKNOWN to these hosts"
 .endtable
 
 
@@ -15241,6 +15256,13 @@ received. See chapter &<<CHAPACL>>& for further details.
 .cindex "VRFY" "ACL for"
 This option defines the ACL that is run when an SMTP VRFY command is
 received. See chapter &<<CHAPACL>>& for further details.
+
+.new
+.option acl_smtp_wellknown main string&!! unset
+.cindex "WELLKNOWN, ACL for"
+This option defines the ACL that is run when an SMTP WELLKNOWN command is
+received. See section &<<SECTWELLKNOWNACL>>& for further details.
+.wen
 
 .option add_environment main "string list" empty
 .cindex "environment" "set values"
@@ -18912,6 +18934,14 @@ The option is expanded to give the file path, which must be
 absolute and untainted.
 See also &%bounce_message_file%&.
 
+
+.new
+.option wellknown_advertise_hosts main boolean unset
+.cindex WELLKNOWN advertisement
+.cindex "ESMTP extensions" WELLKNOWN
+This option enables the advertising of the SMTP WELLKNOWN extension.
+See also the &%acl_smtp_wellknown%& ACL (&<<SECTWELLKNOWNACL>>&).
+.wen
 
 .option write_rejectlog main boolean true
 .cindex "reject log" "disabling"
@@ -30645,6 +30675,7 @@ options in the main part of the configuration. These options are:
 .cindex "RCPT" "ACL for"
 .cindex "STARTTLS, ACL for"
 .cindex "VRFY" "ACL for"
+.cindex "WELLKNOWN" "ACL for"
 .cindex "SMTP" "connection, ACL for"
 .cindex "non-SMTP messages" "ACLs for"
 .cindex "MIME content scanning" "ACL for"
@@ -30671,6 +30702,7 @@ options in the main part of the configuration. These options are:
 .irow &%acl_smtp_rcpt%&        "ACL for RCPT"
 .irow &%acl_smtp_starttls%&    "ACL for STARTTLS"
 .irow &%acl_smtp_vrfy%&        "ACL for VRFY"
+.irow &%acl_smtp_wellknown%&   "ACL for WELLKNOWN"
 .endtable
 
 For example, if you set
@@ -30853,6 +30885,62 @@ This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
 If the ACL is not defined, processing completes as if
 the feature was not requested by the client.
 
+.new
+.subsection "The SMTP WELLKNOWN ACL" SECTWELLKNOWNACL
+.cindex "WELLKNOWN" "ACL for"
+.oindex "&%acl_smtp_wellknown%&"
+The &%acl_smtp_wellknown%& ACL is available only when Exim is compiled
+with WELLKNOWN support enabled.
+
+The ACL determines the response to an SMTP WELLKNOWN command, using the normal
+accept/defer/deny verbs for the response code,
+and a new &"control=wellknown"& modifier.
+This modifier takes a single option, separated by a '/'
+character, which must be the name of a file containing the response
+cleartext.  The modifier is expanded before use in the usual way before
+it is used.  The configuration is responsible for picking a suitable file
+to return and, most importantly, not returning any unexpected file.
+The argument for the SMTP verb will be available in the &$smtp_command_argument$&
+variable and can be used for building the file path.
+If the file path given in the modifier is empty or inacessible, the control will
+fail.
+
+For example:
+.code
+ check_wellknown:
+  accept control = wellknown/\
+		    ${lookup {${xtextd:$smtp_command_argument}} \
+			dsearch,key=path,filter=file,ret=full \
+			{$spooldir/wellknown.d}}
+.endd
+File content will be encoded in &"xtext"& form, and line-wrapping
+for line-length limitation will be done before transmission.
+A response summary line will be prepended, with the (pre-encoding) file size.
+
+The above example uses the expansion operator ${xtextd:<coded-string>}
+which is needed to decode the xtext-encoded key from the SMTP verb.
+
+Under the util directory there is a "mailtest" utility which can be used
+to test/retrieve WELLKNOWN items. Syntax is
+.code
+  mailtest -h host.example.com -w security.txt
+.endd
+
+WELLKNOWN is a ESMTP extension providing access to extended
+information about the server.  It is modelled on the webserver
+facilities documented in RFC 8615 and can be used for a security.txt
+file and could be used for ACME handshaking (RFC 8555).
+
+Exim will advertise WELLKNOWN support in the EHLO response
+.oindex &%wellknown_advertise_hosts%&
+(conditional on a new option &%wellknown_advertise_hosts%&)
+and service WELLKNOWN smtp verbs having a single parameter
+giving a key for an item of "site-wide metadata".
+The verb and key are separated by whitespace,
+and the key is xtext-encoded (per RFC 3461 section 4).
+.wen
+
+
 .subsection "The QUIT ACL" SECTQUITACL
 .cindex "QUIT, ACL for"
 The ACL for the SMTP QUIT command is anomalous, in that the outcome of the ACL
@@ -31023,12 +31111,15 @@ For &%acl_not_smtp%&, &%acl_smtp_auth%&, &%acl_smtp_connect%&,
 &%acl_smtp_mime%&, &%acl_smtp_predata%&, and &%acl_smtp_starttls%&, the action
 when the ACL is not defined is &"accept"&.
 
-For the others (&%acl_smtp_etrn%&, &%acl_smtp_expn%&, &%acl_smtp_rcpt%&, and
-&%acl_smtp_vrfy%&), the action when the ACL is not defined is &"deny"&.
-This means that &%acl_smtp_rcpt%& must be defined in order to receive any
-messages over an SMTP connection. For an example, see the ACL in the default
-configuration file.
-
+For the others (&%acl_smtp_etrn%&, &%acl_smtp_expn%&, &%acl_smtp_rcpt%&,
+&%acl_smtp_vrfy%&
+.new
+and &%acl_smtp_wellknown%&),
+.wen
+the action when the ACL
+is not defined is &"deny"&.  This means that &%acl_smtp_rcpt%& must be
+defined in order to receive any messages over an SMTP connection.
+For an example, see the ACL in the default configuration file.
 
 
 
@@ -32133,6 +32224,13 @@ that are being submitted at the same time using &%-bs%& or &%-bS%&.
 This control enables conversion of UTF-8 in message envelope addresses
 to a-label form.
 For details see section &<<SECTi18nMTA>>&.
+
+.new
+.vitem &*control&~=&~wellknown*&
+This control sets up a response data file for a WELLKNOWN SMTP command.
+It may only be used in an ACL servicing that command.
+For details see section &<<SECTWELLKNOWNACL>>&.
+.wen
 .endlist vlist
 
 

@@ -40,3 +40,5 @@ return string_from_gstring(g);
 
 
 /* End of xtextencode.c */
+/* vi: aw ai sw=2
+*/

@@ -342,6 +342,9 @@ extern uschar *acl_smtp_quit;          /* ACL run for QUIT */
 extern uschar *acl_smtp_rcpt;          /* ACL run for RCPT */
 extern uschar *acl_smtp_starttls;      /* ACL run for STARTTLS */
 extern uschar *acl_smtp_vrfy;          /* ACL run for VRFY */
+#ifndef DISABLE_WELLKNOWN
+extern uschar *acl_smtp_wellknown;     /* ACL run for WELLKNOWN */
+#endif
 extern tree_node *acl_var_c;           /* ACL connection variables */
 extern tree_node *acl_var_m;           /* ACL message variables */
 extern uschar *acl_verify_message;     /* User message for verify failure */
@@ -1133,5 +1136,10 @@ extern uschar *version_cnumber;        /* Compile number */
 extern uschar *version_string;         /* Version string */
 
 extern int     warning_count;          /* Delay warnings sent for this msg */
+
+#ifndef DISABLE_WELLKNOWN
+extern uschar *wellknown_advertise_hosts;/* Allow WELLKNOWN command for specified hosts */
+extern uschar *wellknown_response;     /* SMTP response for WELLKNOWN verb */
+#endif
 
 /* End of globals.h */

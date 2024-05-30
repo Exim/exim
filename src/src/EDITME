@@ -591,6 +591,9 @@ DISABLE_MAL_MKS=yes
 # using only native facilities.
 # SUPPORT_SRS=yes
 
+# Uncomment the following to remove support for the ESMTP extension "WELLKNOWN"
+# DISABLE_WELLKNOWN=yes
+
 
 #------------------------------------------------------------------------------
 # Compiling Exim with experimental features. These are documented in

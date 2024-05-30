@@ -86,6 +86,9 @@ enum {
   /* These commands need not be synchronized when pipelining */
 
   MAIL_CMD, RCPT_CMD, RSET_CMD,
+#ifndef DISABLE_WELLKNOWN
+  WELLKNOWN_CMD,
+#endif
 
   /* This is a dummy to identify the non-sync commands when not pipelining */
 
@@ -121,7 +124,8 @@ enum {
   /* These are specials that don't correspond to actual commands */
 
   EOF_CMD, OTHER_CMD, BADARG_CMD, BADCHAR_CMD, BADSYN_CMD,
-  TOO_MANY_NONMAIL_CMD };
+  TOO_MANY_NONMAIL_CMD
+};
 
 
 /* This is a convenience macro for adding the identity of an SMTP command
@@ -230,7 +234,10 @@ static smtp_cmd_list cmd_list[] = {
   { "etrn",       sizeof("etrn")-1,       ETRN_CMD, TRUE,  FALSE },
   { "vrfy",       sizeof("vrfy")-1,       VRFY_CMD, TRUE,  FALSE },
   { "expn",       sizeof("expn")-1,       EXPN_CMD, TRUE,  FALSE },
-  { "help",       sizeof("help")-1,       HELP_CMD, TRUE,  FALSE }
+  { "help",       sizeof("help")-1,       HELP_CMD, TRUE,  FALSE },
+#ifndef DISABLE_WELLKNOWN
+  { "wellknown",  sizeof("wellknown")-1,  WELLKNOWN_CMD, TRUE,  FALSE },
+#endif
 };
 
 /* This list of names is used for performing the smtp_no_mail logging action. */
@@ -253,6 +260,9 @@ uschar * smtp_names[] =
   [SCH_RSET] = US"RSET",
   [SCH_STARTTLS] = US"STARTTLS",
   [SCH_VRFY] = US"VRFY",
+#ifndef DISABLE_WELLKNOWN
+  [SCH_WELLKNOWN] = US"WELLKNOWN",
+#endif
 #ifdef EXPERIMENTAL_XCLIENT
   [SCH_XCLIENT] = US"XCLIENT",
 #endif
@@ -1946,7 +1956,7 @@ while (done <= 0)
     case HELP_CMD:
     case NOOP_CMD:
     case ETRN_CMD:
-#ifdef EXPERIMENTAL_WELLKNOWN
+#ifndef DISABLE_WELLKNOWN
     case WELLKNOWN_CMD:
 #endif
       bsmtp_transaction_linecount = receive_linecount;
@@ -2832,10 +2842,8 @@ if (fl.rcpt_in_progress)
 We only handle pipelining these responses as far as nonfinal/final groups,
 not the whole MAIL/RCPT/DATA response set. */
 
-for (;;)
-  {
-  uschar *nl = Ustrchr(msg, '\n');
-  if (!nl)
+for (uschar * nl;;)
+  if (!(nl = Ustrchr(msg, '\n')))
     {
     smtp_printf("%.3s%c%.*s%s\r\n", !final, code, final ? ' ':'-', esclen, esc, msg);
     return;
@@ -2852,7 +2860,6 @@ for (;;)
     msg = nl + 1;
     Uskip_whitespace(&msg);
     }
-  }
 }
 
 
@@ -2971,7 +2978,8 @@ smtp_code = rc == FAIL ? acl_wherecodes[where] : US"451";
 smtp_message_code(&smtp_code, &codelen, &user_msg, &log_msg,
   where != ACL_WHERE_VRFY);
 
-/* We used to have sender_address here; however, there was a bug that was not
+/* Get info for logging.
+We used to have sender_address here; however, there was a bug that was not
 updating sender_address after a rewrite during a verify. When this bug was
 fixed, sender_address at this point became the rewritten address. I'm not sure
 this is what should be logged, so I've changed to logging the unrewritten
@@ -2996,7 +3004,7 @@ switch (where)
       {
       uschar * s = smtp_cmd_data;
       Uskip_nonwhite(&s);
-      lim = s - smtp_cmd_data;	/* atop after method */
+      lim = s - smtp_cmd_data;	/* stop after method */
       }
     what = string_sprintf("%s %.*s", acl_wherenames[where], lim, place);
     }
@@ -3375,7 +3383,7 @@ Returns:       nothing
 */
 
 static void
-smtp_user_msg(uschar *code, uschar *user_msg)
+smtp_user_msg(uschar * code, uschar * user_msg)
 {
 int len = 3;
 smtp_message_code(&code, &len, &user_msg, NULL, TRUE);
@@ -3581,6 +3589,36 @@ if (chunking_state > CHUNKING_OFFERED)
 }
 
 
+#ifndef DISABLE_WELLKNOWN
+static int
+smtp_wellknown_handler(void)
+{
+if (verify_check_host(&wellknown_advertise_hosts) != FAIL)
+  {
+  GET_OPTION("acl_smtp_wellknown");
+  if (acl_smtp_wellknown)
+    {
+    uschar * user_msg = NULL, * log_msg;
+    int rc;
+
+    if ((rc = acl_check(ACL_WHERE_WELLKNOWN, NULL, acl_smtp_wellknown,
+		&user_msg, &log_msg)) != OK)
+      return smtp_handle_acl_fail(ACL_WHERE_WELLKNOWN, rc, user_msg, log_msg);
+    else if (!wellknown_response)
+      return smtp_handle_acl_fail(ACL_WHERE_WELLKNOWN, ERROR, user_msg, log_msg);
+    smtp_user_msg(US"250", wellknown_response);
+    return 0;
+    }
+  }
+
+smtp_printf("554 not permitted\r\n", SP_NO_MORE);
+log_write(0, LOG_MAIN|LOG_REJECT, "rejected \"%s\" from %s",
+	      smtp_cmd_buffer, sender_helo_name, host_and_ident(FALSE));
+return 0;
+}
+#endif
+
+
 static int
 expand_mailmax(const uschar * s)
 {
@@ -3686,9 +3724,8 @@ while (done <= 0)
   void (*oldsignal)(int);
   pid_t pid;
   int start, end, sender_domain, recipient_domain;
-  int rc;
-  int c;
-  uschar *orcpt = NULL;
+  int rc, c;
+  uschar * orcpt = NULL;
   int dsn_flags;
   gstring * g;
 
@@ -4213,12 +4250,12 @@ while (done <= 0)
 	  chunking_state = CHUNKING_OFFERED;
 	  }
 
+#ifndef DISABLE_TLS
 	/* Advertise TLS (Transport Level Security) aka SSL (Secure Socket Layer)
 	if it has been included in the binary, and the host matches
 	tls_advertise_hosts. We must *not* advertise if we are already in a
 	secure connection. */
 
-#ifndef DISABLE_TLS
 	if (tls_in.active.sock < 0 &&
 	    verify_check_host(&tls_advertise_hosts) != FAIL)
 	  {
@@ -4250,6 +4287,13 @@ while (done <= 0)
 	  g = string_catn(g, smtp_code, 3);
 	  g = string_catn(g, US"-SMTPUTF8\r\n", 11);
 	  fl.smtputf8_advertised = TRUE;
+	  }
+#endif
+#ifndef DISABLE_WELLKNOWN
+	if (verify_check_host(&wellknown_advertise_hosts) != FAIL)
+	  {
+	  g = string_catn(g, smtp_code, 3);
+	  g = string_catn(g, US"-WELLKNOWN\r\n", 12);
 	  }
 #endif
 
@@ -4298,6 +4342,14 @@ while (done <= 0)
       reset_point = smtp_reset(reset_point);
       toomany = FALSE;
       break;   /* HELO/EHLO */
+
+#ifndef DISABLE_WELLKNOWN
+    case WELLKNOWN_CMD:
+      HAD(SCH_WELLKNOWN);
+      smtp_mailcmd_count++;
+      smtp_wellknown_handler();
+      break;
+#endif
 
 #ifdef EXPERIMENTAL_XCLIENT
     case XCLIENT_CMD:
@@ -5455,6 +5507,10 @@ while (done <= 0)
       if (acl_smtp_etrn) smtp_printf(" ETRN", SP_MORE);
       if (acl_smtp_expn) smtp_printf(" EXPN", SP_MORE);
       if (acl_smtp_vrfy) smtp_printf(" VRFY", SP_MORE);
+#ifndef DISABLE_WELLKNOWN
+      if (verify_check_host(&wellknown_advertise_hosts) != FAIL)
+	smtp_printf(" WELLKNOWN", SP_MORE);
+#endif
 #ifdef EXPERIMENTAL_XCLIENT
       if (proxy_session || verify_check_host(&hosts_xclient) != FAIL)
 	smtp_printf(" XCLIENT", SP_MORE);

@@ -467,7 +467,7 @@ uschar *acl_smtp_quit          = NULL;
 uschar *acl_smtp_rcpt          = NULL;
 uschar *acl_smtp_starttls      = NULL;
 uschar *acl_smtp_vrfy          = NULL;
-#ifdef EXPERIMENTAL_WELLKNOWN
+#ifndef DISABLE_WELLKNOWN
 uschar *acl_smtp_wellknown     = NULL;
 #endif
 
@@ -500,6 +500,9 @@ uschar *acl_wherenames[]       = { [ACL_WHERE_RCPT] =		US"RCPT",
                                    [ACL_WHERE_QUIT] =		US"QUIT",
                                    [ACL_WHERE_STARTTLS] =	US"STARTTLS",
                                    [ACL_WHERE_VRFY] =		US"VRFY",
+#ifndef DISABLE_WELLKNOWN
+				   [ACL_WHERE_WELLKNOWN] =	US"WELLKNOWN",
+#endif
 				   [ACL_WHERE_DELIVERY] =	US"delivery",
 				   [ACL_WHERE_UNKNOWN] =	US"unknown"
                                  };
@@ -519,6 +522,9 @@ uschar *acl_wherecodes[]       = { [ACL_WHERE_RCPT] =	US"550",
                                    [ACL_WHERE_EXPN] =	US"550",
                                    [ACL_WHERE_HELO] =	US"550",
                                    [ACL_WHERE_STARTTLS] = US"550",
+#ifndef DISABLE_WELLKNOWN
+                                   [ACL_WHERE_WELLKNOWN] =US"550",
+#endif
                                    [ACL_WHERE_VRFY] =	US"252",
                                  };
 
@@ -999,9 +1005,6 @@ uschar *hosts_proxy            = NULL;
 #endif
 uschar *hosts_treat_as_local   = NULL;
 uschar *hosts_require_helo     = US"*";
-#ifdef EXPERIMENTAL_WELLKNOWN
-uschar *hosts_wellknown	       = NULL;
-#endif
 #ifdef EXPERIMENTAL_XCLIENT
 uschar *hosts_xclient	       = NULL;
 #endif
@@ -1668,6 +1671,11 @@ uschar *warn_message_file      = NULL;
 int     warning_count          = 0;
 const uschar *warnmsg_delay    = NULL;
 const uschar *warnmsg_recipients = NULL;
+
+#ifndef DISABLE_WELLKNOWN
+uschar *wellknown_advertise_hosts = NULL;
+uschar *wellknown_response     = NULL;
+#endif
 
 /*  End of globals.c */
 /* vi: aw ai sw=2

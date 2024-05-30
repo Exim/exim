@@ -57,9 +57,7 @@ static int msgcond[] = {
 
 #endif
 
-/* ACL condition and modifier codes - keep in step with the table that
-follows.
-down. */
+/* ACL condition and modifier codes */
 
 enum { ACLC_ACL,
        ACLC_ADD_HEADER,
@@ -119,7 +117,8 @@ enum { ACLC_ACL,
        ACLC_SPF_GUESS,
 #endif
        ACLC_UDPSEND,
-       ACLC_VERIFY };
+       ACLC_VERIFY,
+};
 
 /* ACL conditions/modifiers: "delay", "control", "continue", "endpass",
 "message", "log_message", "log_reject_target", "logwrite", "queue" and "set" are
@@ -149,7 +148,7 @@ static condition_def conditions[] = {
   [ACLC_ACL] =			{ US"acl",		FALSE, FALSE,	0 },
 
   [ACLC_ADD_HEADER] =		{ US"add_header",	TRUE, TRUE,
-				  (unsigned int)
+				  (unsigned)
 				  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
 				    ACL_BIT_PREDATA | ACL_BIT_DATA |
 #ifndef DISABLE_PRDR
@@ -188,7 +187,7 @@ static condition_def conditions[] = {
 
 #ifdef EXPERIMENTAL_DCC
   [ACLC_DCC] =			{ US"dcc",		TRUE, FALSE,
-				  (unsigned int)
+				  (unsigned)
 				  ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
 				  ACL_BIT_PRDR |
@@ -204,7 +203,7 @@ static condition_def conditions[] = {
 #ifndef DISABLE_DKIM
   [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DKIM },
   [ACLC_DKIM_STATUS] =		{ US"dkim_status",	TRUE, FALSE,
-				  (unsigned int)
+				  (unsigned)
 				  ~(ACL_BIT_DKIM | ACL_BIT_DATA | ACL_BIT_MIME
 # ifndef DISABLE_PRDR
 				  | ACL_BIT_PRDR
@@ -221,7 +220,7 @@ static condition_def conditions[] = {
   [ACLC_DNSLISTS] =		{ US"dnslists",	TRUE, FALSE,	0 },
 
   [ACLC_DOMAINS] =		{ US"domains",	FALSE, FALSE,
-				  (unsigned int)
+				  (unsigned)
 				  ~(ACL_BIT_RCPT | ACL_BIT_VRFY
 #ifndef DISABLE_PRDR
 				  |ACL_BIT_PRDR
@@ -239,7 +238,7 @@ static condition_def conditions[] = {
 				  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START,
   },
   [ACLC_LOCAL_PARTS] =		{ US"local_parts",	FALSE, FALSE,
-				  (unsigned int)
+				  (unsigned)
 				  ~(ACL_BIT_RCPT | ACL_BIT_VRFY
 #ifndef DISABLE_PRDR
 				  | ACL_BIT_PRDR
@@ -253,7 +252,7 @@ static condition_def conditions[] = {
 
 #ifdef WITH_CONTENT_SCAN
   [ACLC_MALWARE] =		{ US"malware",	TRUE, FALSE,
-				  (unsigned int)
+				  (unsigned)
 				    ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
 				    ACL_BIT_PRDR |
@@ -280,7 +279,7 @@ static condition_def conditions[] = {
 
 #ifdef WITH_CONTENT_SCAN
   [ACLC_REGEX] =		{ US"regex",		TRUE, FALSE,
-				  (unsigned int)
+				  (unsigned)
 				  ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
 				    ACL_BIT_PRDR |
@@ -291,7 +290,7 @@ static condition_def conditions[] = {
 
 #endif
   [ACLC_REMOVE_HEADER] =	{ US"remove_header",	TRUE, TRUE,
-				  (unsigned int)
+				  (unsigned)
 				  ~(ACL_BIT_MAIL|ACL_BIT_RCPT |
 				    ACL_BIT_PREDATA | ACL_BIT_DATA |
 #ifndef DISABLE_PRDR
@@ -320,7 +319,7 @@ static condition_def conditions[] = {
 
 #ifdef WITH_CONTENT_SCAN
   [ACLC_SPAM] =			{ US"spam",		TRUE, FALSE,
-				  (unsigned int) ~(ACL_BIT_DATA |
+				  (unsigned) ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
 				  ACL_BIT_PRDR |
 # endif
@@ -370,8 +369,7 @@ for (condition_def * c = conditions; c < conditions + nelem(conditions); c++)
 
 #ifndef MACRO_PREDEF
 
-/* Return values from decode_control(); used as index so keep in step
-with the controls_list table that follows! */
+/* Return values from decode_control() */
 
 enum {
   CONTROL_AUTH_UNADVERTISED,
@@ -410,6 +408,9 @@ enum {
   CONTROL_SUPPRESS_LOCAL_FIXUPS,
 #ifdef SUPPORT_I18N
   CONTROL_UTF8_DOWNCONVERT,
+#endif
+#ifndef DISABLE_WELLKNOWN
+  CONTROL_WELLKNOWN,
 #endif
 };
 
@@ -564,7 +565,12 @@ static control_def controls_list[] = {
 #ifdef SUPPORT_I18N
 [CONTROL_UTF8_DOWNCONVERT] =
   { US"utf8_downconvert",        TRUE, (unsigned) ~(ACL_BIT_RCPT | ACL_BIT_VRFY)
-  }
+  },
+#endif
+#ifndef DISABLE_WELLKNOWN
+[CONTROL_WELLKNOWN] =
+  { US"wellknown",               TRUE, (unsigned) ~ACL_BIT_WELLKNOWN
+  },
 #endif
 };
 
@@ -806,7 +812,7 @@ if (*s++ != '=')
   {
   *error = string_sprintf("\"=\" missing after ACL \"%s\" %s", name,
     conditions[cond->type].is_modifier ? US"modifier" : US"condition");
-  return FALSE;;
+  return FALSE;
   }
 Uskip_whitespace(&s);
 cond->arg = taint ? string_copy_taint(s, GET_TAINTED) : string_copy(s);
@@ -3122,6 +3128,80 @@ return DEFER;
 
 
 
+#ifndef DISABLE_WELLKNOWN
+/*************************************************
+*   The "wellknown" ACL modifier                 *
+*************************************************/
+
+/* Called by acl_check_condition() below.
+
+Retrieve the given file and encode content as xtext.
+Prefix with a summary line giving the length of plaintext.
+Leave a global pointer to the whole, for output by
+the smtp verb handler code (smtp_in.c).
+
+Arguments:
+  arg          the option string for wellknown=
+  log_msgptr   for error messages
+
+Returns:       OK/FAIL
+*/
+
+static int
+wellknown_process(const uschar * arg, uschar ** log_msgptr)
+{
+struct stat statbuf;
+FILE * rf;
+gstring * g;
+
+wellknown_response = NULL;
+if (f.no_multiline_responses) return FAIL;
+
+/* Check for file existence */
+
+if (!*arg) return FAIL;
+if (Ustat(arg, &statbuf) != 0)
+  { *log_msgptr = US"stat"; goto fail; }
+
+/*XXX perhaps refuse to serve a group- or world-writeable file? */
+
+if (!(rf = Ufopen(arg, "r")))
+  { *log_msgptr = US"open"; goto fail; }
+
+/* Set up summary line for output */
+
+g = string_fmt_append(NULL, "SIZE=%lu\n", (long) statbuf.st_size);
+
+#define LINE_LIM 75
+for (int n = 0, ch; (ch = fgetc(rf)) != EOF; )
+  {
+  /* Xtext-encode, adding output linebreaks for input linebreaks
+  or when the line gets long enough */
+
+  if (ch == '\n')
+    { g = string_fmt_append(g, "+%02X", ch); n = LINE_LIM; }
+  else if (ch < 33 || ch > 126 || ch == '+' || ch == '=')
+    { g = string_fmt_append(g, "+%02X", ch); n += 3; }
+  else
+    { g = string_fmt_append(g, "%c", ch); n++; }
+
+  if (n >= LINE_LIM)
+    { g = string_catn(g, US"\n", 1); n = 0; }
+  }
+#undef LINE_LIM
+
+gstring_release_unused(g);
+wellknown_response = string_from_gstring(g);
+return OK;
+
+fail:
+  *log_msgptr = string_sprintf("wellknown: failed to %s file \"%s\": %s",
+		  *log_msgptr, arg, strerror(errno));
+  return FAIL;
+}
+#endif
+
+
 /*************************************************
 *   Handle conditions/modifiers on an ACL item   *
 *************************************************/
@@ -3311,7 +3391,7 @@ for (; cb; cb = cb->next)
 
     case ACLC_CONTROL:
       {
-      const uschar *p = NULL;
+      const uschar * p = NULL;
       control_type = decode_control(arg, &p, where, log_msgptr);
 
       /* Check if this control makes sense at this time */
@@ -3323,6 +3403,7 @@ for (; cb; cb = cb->next)
 	return ERROR;
 	}
 
+      /*XXX ought to sort these, just for sanity */
       switch(control_type)
 	{
 	case CONTROL_AUTH_UNADVERTISED:
@@ -3668,8 +3749,13 @@ for (; cb; cb = cb->next)
 	    break;
 	    }
 	  return ERROR;
-#endif
+#endif	/*I18N*/
 
+#ifndef DISABLE_WELLKNOWN
+	case CONTROL_WELLKNOWN:
+	  rc = *p == '/' ? wellknown_process(p+1, log_msgptr) : FAIL;
+	  break;
+#endif
 	}
       break;
       }

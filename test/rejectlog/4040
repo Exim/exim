@@ -1,0 +1,6 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 H=(test) [127.0.0.1] rejected WELLKNOWN acme-response
+1999-03-02 09:44:33 H=(test) [127.0.0.1] rejected WELLKNOWN badfile
+1999-03-02 09:44:33 H=(test) [127.0.0.1] rejected WELLKNOWN sub/badfile
+1999-03-02 09:44:33 H=(test) [127.0.0.1] rejected WELLKNOWN ../badfile

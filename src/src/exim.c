@@ -1108,6 +1108,9 @@ g = string_cat(g, US"Support for:");
 #ifndef DISABLE_ESMTP_LIMITS
   g = string_cat(g, US" ESMTP_Limits");
 #endif
+#ifndef DISABLE_WELLKNOWN
+  g = string_cat(g, US" ESMTP_Wellknown");
+#endif
 #ifndef DISABLE_EVENT
   g = string_cat(g, US" Event");
 #endif

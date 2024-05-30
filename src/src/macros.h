@@ -828,6 +828,9 @@ enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_BDAT,
        SCH_EHLO, SCH_ETRN, SCH_EXPN, SCH_HELO,
        SCH_HELP, SCH_MAIL, SCH_NOOP, SCH_QUIT, SCH_RCPT, SCH_RSET, SCH_STARTTLS,
        SCH_VRFY,
+#ifndef DISABLE_WELLKNOWN
+       SCH_WELLKNOWN,
+#endif
 #ifdef EXPERIMENTAL_XCLIENT
        SCH_XCLIENT,
 #endif
@@ -972,6 +975,9 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_NOTQUIT,
        ACL_WHERE_QUIT,
        ACL_WHERE_STARTTLS,
+#ifndef DISABLE_WELLKNOWN
+       ACL_WHERE_WELLKNOWN,
+#endif
        ACL_WHERE_VRFY,
 
        ACL_WHERE_DELIVERY,
@@ -1001,6 +1007,9 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
 #define ACL_BIT_QUIT		BIT(ACL_WHERE_QUIT)
 #define ACL_BIT_STARTTLS	BIT(ACL_WHERE_STARTTLS)
 #define ACL_BIT_VRFY		BIT(ACL_WHERE_VRFY)
+#ifndef DISABLE_WELLKNOWN
+# define ACL_BIT_WELLKNOWN	BIT(ACL_WHERE_WELLKNOWN)
+#endif
 #define ACL_BIT_DELIVERY	BIT(ACL_WHERE_DELIVERY)
 #define ACL_BIT_UNKNOWN		BIT(ACL_WHERE_UNKNOWN)
 
@@ -1201,3 +1210,5 @@ When doing en extended loop of matching, release store periodically. */
   DEBUG(D_expand) debug_printf("try option " name "\n");
 
 /* End of macros.h */
+/* vi: aw ai sw=2
+*/

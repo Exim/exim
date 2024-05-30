@@ -59,6 +59,7 @@ Do not put spaces between # and the 'define'.
 #define DISABLE_QUEUE_RAMP
 #define DISABLE_TLS
 #define DISABLE_TLS_RESUME
+#define DISABLE_WELLKNOWN
 
 #define ENABLE_DISABLE_FSYNC
 

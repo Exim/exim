@@ -1,0 +1,21 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D port PORT_D2
+1999-03-02 09:44:33 [127.0.0.1] WELLKNOWN acme-response
+1999-03-02 09:44:33 [127.0.0.1] -> 'TESTSUITE/aux-fixed/4040/acme-response'
+1999-03-02 09:44:33 [127.0.0.1] WELLKNOWN acme-response
+1999-03-02 09:44:33 H=(test) [127.0.0.1] rejected WELLKNOWN acme-response
+1999-03-02 09:44:33 [127.0.0.1] WELLKNOWN badfile
+1999-03-02 09:44:33 [127.0.0.1] -> ''
+1999-03-02 09:44:33 H=(test) [127.0.0.1] rejected WELLKNOWN badfile
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D port PORT_D2
+1999-03-02 09:44:33 [127.0.0.1] WELLKNOWN acme-response
+1999-03-02 09:44:33 [127.0.0.1] -> 'TESTSUITE/aux-fixed/4040/acme-response'
+1999-03-02 09:44:33 [127.0.0.1] WELLKNOWN sub/acme-response
+1999-03-02 09:44:33 [127.0.0.1] -> 'TESTSUITE/aux-fixed/4040/sub/acme-response'
+1999-03-02 09:44:33 [127.0.0.1] WELLKNOWN sub/badfile
+1999-03-02 09:44:33 [127.0.0.1] -> ''
+1999-03-02 09:44:33 H=(test) [127.0.0.1] rejected WELLKNOWN sub/badfile
+1999-03-02 09:44:33 [127.0.0.1] WELLKNOWN ../badfile
+1999-03-02 09:44:33 [127.0.0.1] -> ''
+1999-03-02 09:44:33 H=(test) [127.0.0.1] rejected WELLKNOWN ../badfile

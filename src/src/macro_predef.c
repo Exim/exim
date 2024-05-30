@@ -214,6 +214,9 @@ due to conflicts with other common macros. */
 #ifndef DISABLE_TLS_RESUME
   builtin_macro_create(US"_HAVE_TLS_RESUME");
 #endif
+#ifndef DISABLE_WELLKNOWN
+  builtin_macro_create(US"_HAVE_WELLKNOWN");
+#endif
 #ifdef EXPERIMENTAL_XCLIENT
   builtin_macro_create(US"_HAVE_XCLIENT");
 #endif

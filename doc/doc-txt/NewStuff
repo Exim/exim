@@ -24,6 +24,10 @@ Version 4.98
 
  7. The dsearch lookup supports search for a sub-path.
 
+ 8. Include mailtest utility for simple connection checking.
+
+ 9. Add SMTP WELLKNOWN extension.
+
 Version 4.97
 ------------
 

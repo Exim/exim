@@ -1,0 +1,29 @@
+# Exim test configuration 4040
+
+SERVER=
+OPT=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+wellknown_advertise_hosts = 127.0.0.1
+acl_smtp_wellknown = check_wellknown
+
+# ----- ACL -----
+
+begin acl
+
+check_wellknown:
+  accept
+    logwrite =          [$sender_host_address] $smtp_command
+    condition =		${if == {${received_port}}{PORT_D}}
+    set acl_c_wellknown = ${lookup {${xtextd:$smtp_command_argument}} \
+				dsearch,ret=full,filter=fileOPT \
+				{DIR/aux-fixed/TESTNUM}}
+    logwrite =          [$sender_host_address] -> '$acl_c_wellknown'
+    control =           wellknown/$acl_c_wellknown
+
+# End

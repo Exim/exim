@@ -1,0 +1,486 @@
+#!/usr/bin/perl
+#
+###############################################################
+###############################################################
+
+use strict;
+
+use Net::SMTP;
+#use IO::Socket::SSL qw( SSL_ERROR );
+use Net::Domain qw(hostfqdn);
+use Getopt::Long qw(:config default bundling no_ignore_case auto_version);
+use Pod::Usage;
+use Net::Cmd;
+use Data::Dumper;
+
+our @ISA = qw(Net::Cmd);
+
+###############################################################
+###############################################################
+
+my ($smtp,$optsin,$opt,$mess,$rcpt,@headers,$finished_header,$ofh);
+$main::VERSION = '1.2.2';
+
+$optsin = {
+    'body|b'                    => \&optset,
+    'debug|d'                   => \&optset,
+    'ehlo|helo|m=s'             => \&optset,
+    'rcptto|recipient|r=s'      => \&optset,
+    'host|h=s'                  => \&optset,
+    'from822|u=s'               => \&optset,
+    'vrfy|v'                    => \&optset,
+    'expn|e'                    => \&optset,
+    'mailfrom|from821|from|f=s' => \&optset,
+    'port|p=i'                  => \&optset,
+    'wellknown|w=s'             => \&optset,
+    'output|W=s'                => \&optset,
+    'include_options|O'         => \&optset,
+    'include_headers|H'         => \&optset,
+    'bounce|B'                  => \&optset,
+    'tls|S'                     => \&optset,
+    'nostarttls|s'              => \&optset,
+    'stricttls|strict_tls'      => \&optset,
+    'sslargs|tlsargs=s'         => \&optset,
+    'verbose'                   => \&optset,
+    'help'                      => \&optset,
+    'man'                       => \&optset,
+};
+map { my $t = $_; $t =~ s/\|.*//; $opt->{$t} = undef; } keys %$optsin;
+GetOptions( %$optsin ) or pod2usage(2);
+pod2usage(1) if $opt->{'help'};
+pod2usage(-exitval => 0, -verbose => 2) if $opt->{'man'};
+
+print _Dumper($opt, 'Options')
+    if $opt->{'debug'};
+
+###############################################################
+###############################################################
+##
+## parameter checking
+##
+###############################################################
+###############################################################
+
+bail( 1, "Host(--host) must be provided" )
+    if !$opt->{'host'};
+
+$opt->{'port'} = $opt->{'tls'} ? 465 : 25
+    if ! $opt->{'port'};
+
+if (!$opt->{'ehlo'})
+{
+    $opt->{'ehlo'} = hostfqdn();
+    fret( "Machine set to $opt->{'ehlo'}" ) if $opt->{'debug'};
+}
+if (!$opt->{'mailfrom'} && !$opt->{'bounce'})
+{
+    $opt->{'mailfrom'} = $ENV{USER}. "@". $opt->{'ehlo'};
+    fret( "MAIL FROM set to $opt->{'mailfrom'}" ) if $opt->{'debug'};
+}
+if (!$opt->{'from822'})
+{
+    $opt->{'from822'} = $opt->{'mailfrom'};
+    fret( "From: set to $opt->{'from822'}" ) if $opt->{'debug'};
+}
+if ($opt->{'bounce'})
+{
+    $opt->{'mailfrom'} = "";
+    $opt->{'from822'} = 'mailer-daemon@'. hostfqdn();
+    fret( "MAIL FROM set to $opt->{'mailfrom'}", "From: set to $opt->{'from822'}" ) if $opt->{'debug'};
+}
+
+bail( 1, "EXPN or VRFY cannot be used without a recipient" )
+    if ($opt->{'expn'} || $opt->{'vrfy'}) && ! $opt->{'rcptto'};
+
+bail( 1, "Either a recipient or well-known resource must be specified" )
+    if ! $opt->{'wellknown'} && ! $opt->{'rcptto'};
+
+bail( 1, "Only one of recipient or well-known resource can be specified" )
+    if $opt->{'wellknown'} && $opt->{'rcptto'};
+
+if ( $opt->{'sslargs'} )
+{
+    my @p = split /[=,]/, $opt->{'sslargs'};
+    $opt->{'sslparams'} = \@p;
+}
+else
+{
+    $opt->{'sslparams'} = [ 'SSL_verify_mode', $opt->{'stricttls'} ? 1 : 0 ];
+}
+fret( _Dumper( $opt->{'sslparams'}, 'sslparams' ) )
+    if $opt->{'debug'} && ( $opt->{'tls'} || ! $opt->{'nostarttls'} );
+
+###############################################################
+###############################################################
+##
+## parameter checking complete. now onto operations
+##
+##
+###############################################################
+###############################################################
+
+
+
+$smtp= Net::SMTP->new(  $opt->{'host'},
+                        Hello   => $opt->{'ehlo'},
+                        Debug   => $opt->{'debug'},
+                        ( $opt->{'tls'} ? ( 'SSL' => $opt->{'sslargs'} || 1 ) : () ),
+                        Port    => $opt->{'port'},
+                        );
+bail( 1, "Connection Failed: $@" )
+    if !$smtp;
+
+if (!$opt->{'nostarttls'})
+{
+    bail( $smtp, 1, "Failed to STARTTLS - $@" )
+        if ! $smtp->starttls( @{$opt->{'sslparams'}} );
+
+    fret( $smtp->message() )
+        if $opt->{'verbose'};
+}
+
+if ($opt->{'wellknown'})
+{
+    bail( $smtp, 1, "Server does not support WELLKNOWN" )
+        if ! $smtp->supports('WELLKNOWN');
+
+    my $e_wk = encode_xtext( $opt->{'wellknown'} );
+
+    bail( $smtp, 1, "Failed to WELLKNOWN - $e_wk", $smtp->message() )
+        if ! ( $smtp->command( 'WELLKNOWN', $e_wk )->response() == CMD_OK );
+
+    fret( "Protocol violation. Code was OK, but not 250",   $smtp->code. " - ". $smtp->message )
+        if $smtp->code ne '250';
+
+    $mess = $smtp->message;
+    my ($info,$size);
+    ($info,$mess) = split( /\n/, $mess, 2 );
+    $info =~ /size=(\d+)/i;
+    $size = $1 + 0;
+    $mess = decode_xtext( $mess );
+    fret( "Size mismatch on wellknown fetch", "Expected: ". $size, "Received: ". length($mess) )
+        if length($mess) != $size;
+
+    if ( $opt->{'output'} )
+    {
+        # Output to named file
+        #
+        bail( $smtp, 1, "Unable to open file $opt->{'output'} for WELLKNOWN output - $!" )
+            if ! ( $ofh = IO::File->new("> $opt->{'output'}") );
+
+        print $ofh $mess;
+        $ofh->close;
+    }
+    else
+    {
+        # might be hazardous, output via pager
+        print STDERR "$mess\n";
+    }
+}
+
+if ($opt->{'vrfy'})
+{
+    $smtp->verify($opt->{'vrfy'});
+    fret( $smtp->message() );
+}
+
+if ($opt->{'expn'})
+{
+    $smtp->expand($opt->{'expn'});
+    fret( $smtp->message() );
+}
+
+if ($opt->{'rcptto'})
+{
+    bail( $smtp, 1, "MAIL FROM $opt->{'mailfrom'} failed", $@ )
+        if ! $smtp->mail($opt->{'mailfrom'});
+
+    bail( $smtp, 1, "RCPT TO $opt->{'rcptto'} failed", $@ )
+        if ! $smtp->to($opt->{'rcptto'});
+
+    # handle any recipients on command line
+    while( $rcpt = shift @ARGV )
+    {
+        last if $rcpt eq '--';
+        fret( "RCPT TO $rcpt failed", $@ )
+            if ! $smtp->to($rcpt);
+    }
+
+    bail( $smtp, 1, "Unable to set data mode", @_ )
+        if ! $smtp->data();
+
+    if ($opt->{'body'})
+    {
+        push @headers, "Subject: Test Message\n";
+        $smtp->datasend("From: $opt->{'from822'}\n");
+        $smtp->datasend("To: $opt->{'rcptto'}\n");
+        $smtp->datasend("Subject: Test Message\n");
+        $smtp->datasend("\n");
+        $smtp->datasend("This is a test message\n");
+        $smtp->datasend("generated with mailtest\n");
+    }else
+    {
+        while(<>)
+        {
+            if($finished_header==0)
+            {
+                if (length($_)<=1)
+                {
+                    $finished_header = 1;
+                }else
+                {
+                    push @headers,"    ".$_;
+                }
+            }
+            $smtp->datasend("$_");
+        }
+    }
+    if($opt->{'include_headers'} && @headers)
+    {
+        $smtp->datasend("\n Copy of headers follow....\n");
+        foreach(@headers)
+        {
+            $smtp->datasend("$_");
+        }
+        $smtp->datasend("\n");
+    }
+    if($opt->{'include_options'})
+    {
+        $smtp->datasend("\n Copy of options follow....\n");
+        $smtp->datasend("    SMTP HOST $opt->{'host'}\n");
+        $smtp->datasend("    HELO $opt->{'ehlo'}\n");
+        $smtp->datasend("    MAIL FROM: $opt->{'mailfrom'}\n");
+        $smtp->datasend("    RCPT TO: $opt->{'rcptto'}\n\n");
+    }
+    fret( "dataend failed", $@ )
+        if ! $smtp->dataend();
+}
+$smtp->quit();
+
+exit;
+
+##############################################################
+##############################################################
+
+sub
+optset
+{
+    my $n = shift;
+    my $v = shift;
+    #print STDERR "Setting $n to $v\n";
+    $opt->{$n->{'name'}} = $v;
+}
+
+sub
+decode_xtext
+{
+    my $mess = shift;
+    $mess =~ s/[\n\r]//g;
+    $mess =~ s/\+([0-9a-fA-F]{2})/chr(hex($1))/ge;
+    return $mess;
+}
+
+sub
+encode_xtext
+{
+    my $mess = shift;
+    $mess =~ s/([^!-*,-<>-~])/'+'.uc(unpack('H*', $1))/eg;
+    return $mess;
+}
+
+sub
+_Dumper
+{
+    return Data::Dumper->Dump( [$_[0]], [$_[1] || 'VAR1'] );
+}
+
+sub
+fret
+{
+    map { print STDERR $_,"\n"; } @_;
+}
+
+sub
+bail
+{
+    shift->quit
+        if ref($_[0]);
+    my $rc = shift;
+    fret( @_ );
+    exit $rc;
+}
+
+##############################################################
+##############################################################
+
+__END__
+
+=head1 NAME
+
+mailtest - Simple SMTP sending for diagnostics
+
+=head1 SYNOPSIS
+
+mailtest --host host.example.com --rcptto recipient@example.com [ send_options ... ] [ additional recipients ...]
+
+
+Options:
+  --help
+                brief help message
+  --debug
+                enable debugging
+
+  --host host
+                host to connect to
+  --rcptto recipient
+                recipient for message
+
+  --helo machine
+                machine name for EHLO
+
+  --vrfy        request VRFY of recipient
+  --expn        request EXPN of recipient
+
+  --mailfrom from
+                use as MAIL FROM value
+  --from822 from
+                content From:
+
+  --port port
+                port to connect to
+
+  --body            generate body
+  --include_options
+                include Options in body
+  --include_headers
+                include generated headers in body
+
+  --tls         perform TLS on connect
+  --nostarttls  do no attempt STARTTLS
+  --stricttls   Enable strict verification on TLS connection
+
+  --tlsargs arg=value[,arg=value]
+                Explicitly define TLS options.
+
+  --bounce      sending as bounce (<>)
+
+  --wellknown path
+                well-known path
+  --output file
+                Output file to receive well-known data
+
+=head1 OPTIONS
+
+=over 8
+
+
+=item B<--help>
+
+Print a brief help message and exits.
+
+=item B<-d, --debug>
+
+Enables debugging, outpus additional information whilst processing requests.
+
+=item B<-h, --host>=I<host>
+
+Specifies the host to connect to. Must be specified and must be IP-resolvable.
+
+=item B<-m, --ehlo>=I<machine>
+
+Specified the machine name to use as the B<EHLO> value. Defaults to the fully-qualified name of the host running the command.
+
+=item B<-r, --rcptto>=I<recipient>
+
+Specifies the recipient of message. This is used as the B<RCPT TO> value.
+
+=item B<-v, --vrfy>
+
+Uses the I<recipient> parameter for the value in a B<VRFY> request. This disables the sending of an email.
+
+=item B<-e, --expn>
+
+Uses the I<recipient> parameter for the value in an B<EXPN> request. This disables the sending of an email.
+
+=item B<-f, --mailfrom>=I<from_address>
+
+Specified the value to use in the B<MAIL FROM> command. Defaults to the current username at the FQDN of the machine B<-m> unless the B<-B> option is used.
+
+=item B<-u, --from822>=I<from_user>
+
+Specified the value to use in the message headers. Defaults to the B<-f> I<from_address> value unless the B<-B> option is used.
+
+=item B<-B, --bounce>
+
+Replace the B<--mailfrom> I<from_address> with B<\<\>> and the B<--from833> I<from_user> with B<mailer-daemon@host> where the host is the value of B<--ehlo> I<machine>
+
+=item B<-p, --port>=I<port>
+
+Specified the port to connect to on the specified host. Defaults to port 25 unless B<-S> is given in which case it defaults to 465.
+
+=item B<-S, --tls>
+
+Specifies that TLS be used directly on the connection prior to any SMTP commands. Changes the connection port to 465 unless it has been explicitly provided. Disables any attempts at B<STARTTLS>.
+
+=item B<-s, --nostarttls>
+
+Disables attempting STARTTLS if offered. Disabled by use of B<-S>.
+
+=item B<--stricttls>
+
+Enables strict verification of the TLS connection. Sets the underlying SSL option B<SSL_verify_mode> to 1/SSL_VERIFY_PEER rather than 0/SSL_VERIFY_NONE. Since the aim of this tool is to test the SMTP protocol behaviour and not the TLS behaviour the decision was made to default the B<SSL_verify_mode> to 0/SSL_VERIFY_NONE.
+
+=item B<--sslargs>=argname=argvalue[,argname=argvalue...]
+
+Allow full control over underlying SSL options. Overrides B<--stricttls>. See the documentation for B<IO::Socket::SSL> for further details.
+
+    --sslargs SSL_verifycn_name=certname.example.com
+
+=item B<-b, --body>
+
+Generate a body for the message being sent.
+
+=item B<-O, --include-options>
+
+Include details of options used in the message body.
+
+=item B<-H, --include-headers>
+
+Include a copy of the generated headers in the message body.
+
+=item B<-w, --wellknown>=I<well-known-path>
+
+Provides the path value for a B<WELLKNOWN> command.
+
+=item B<-W, --output>=I<output_file>
+
+Provides the output file where the B<WELLKNOWN> data should be stored.
+
+=back
+
+=head1 DESCRIPTION
+
+B<mailtest> is a simple utility for testing SMTP connections.
+It is designed to debug endpoints and not for full email generation.
+
+It support a number of basic operations, SEND, VRFY, EXPN, WELLKNOWN.
+
+=head1 COMPATIBILITY
+
+C<mailtest> only requires modules that should be in all normal distributions.
+
+=head1 AUTHOR
+
+Bernard Quatermass <bernardq@exim.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008,2020,2024 by Bernard Quatermass.
+
+
+=cut
+
+###############################################################
+# vi: sw=4 et
+# End of File
+###############################################################

@@ -1430,6 +1430,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # DISABLE_OCSP
     next if /in hosts_requ(est|ire)_ocsp\? (no|yes)/;
 
+    # WELLKNOWN
+    next if / in wellknown_advertise_hosts\?/;
+
     # SUPPORT_PROXY
     next if /host in hosts_proxy\?/;
 
@@ -1458,7 +1461,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if / in limits_advertise_hosts?\? no \(matched "!\*"\)/;
 
     # Experimental_XCLIENT
-    next if / in hosts_xclient?\? no \(option unset\)/;
+    next if / in hosts_xclient\? no \(option unset\)/;
+
+    # Experimental_WELLKNOWN
+    next if / in hosts_wellknown\? no \(option unset\)/;
 
     # TCP Fast Open
     next if /^(ppppp )?setsockopt FASTOPEN: Network Error/;
@@ -3663,7 +3669,7 @@ while (<EXIMINFO>)
     }
 
   elsif (/^Support for: (.*)/)
-    {
+    {			# Compile-time features - exim -bV
     print;
     @temp = split /(\s+)/, $1;
     push(@temp, ' ');
@@ -4230,7 +4236,7 @@ DIR: for (my $i = 0; $i < @test_dirs; $i++)
         if (!defined $parm_malware{$1}) { $wantthis = 0; last; }
         }
       elsif (/^(not )?feature (.*)$/)
-        {
+        {			#a macro name, or lack thereof - -bP macros
 	# move to a subroutine?
 	my $eximinfo = "$parm_exim -C $parm_cwd/test-config -DDIR=$parm_cwd -bP macro $2";
 

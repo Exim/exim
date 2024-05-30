@@ -66,6 +66,9 @@ static optionlist optionlist_config[] = {
   { "acl_smtp_starttls",        opt_stringptr,   {&acl_smtp_starttls} },
 #endif
   { "acl_smtp_vrfy",            opt_stringptr,   {&acl_smtp_vrfy} },
+#ifndef DISABLE_WELLKNOWN
+  { "acl_smtp_wellknown",       opt_stringptr,   {&acl_smtp_wellknown} },
+#endif
   { "add_environment",          opt_stringptr,   {&add_environment} },
   { "admin_groups",             opt_gidlist,     {&admin_groups} },
   { "allow_domain_literals",    opt_bool,        {&allow_domain_literals} },
@@ -402,6 +405,9 @@ static optionlist optionlist_config[] = {
   { "uucp_from_pattern",        opt_stringptr,   {&uucp_from_pattern} },
   { "uucp_from_sender",         opt_stringptr,   {&uucp_from_sender} },
   { "warn_message_file",        opt_stringptr,   {&warn_message_file} },
+#ifndef DISABLE_WELLKNOWN
+  { "wellknown_advertise_hosts",opt_stringptr,	 {&wellknown_advertise_hosts} },
+#endif
   { "write_rejectlog",          opt_bool,        {&write_rejectlog} },
 };
 

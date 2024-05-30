@@ -1,0 +1,145 @@
+Internet Draft
+
+Stream: Independent Submission
+Category:
+Date:           2024/05/26
+Author:         J.Harris
+Author:         B.Quatermass
+
+--
+
+    Mailmaint Working Group                                      J. Harris
+    Internet Draft                                               Independent
+    Category: Experimental                                       B. Quatermass
+                                                                 Independent
+                                                                  May 2024
+
+The WELLKNOWN SMTP Service Extension
+
+Abstract
+--------
+
+This document defines a WELLKNOWN extension for the Simple Mail Transfer Protocol
+(SMTP).  The extension provides the means for an SMTP server to inform a client
+of information relating to the server which is intended to be public.
+
+Status of this Memo
+-------------------
+
+This document is published for examination, experimental implementation, and
+evaluation.
+
+This document defines an Experimental Protocol for the Internet community.
+
+This is a contribution to the RFC Series, independently of any other RFC
+stream. The RFC Editor has chosen to publish this document at its discretion
+and makes no statement about its value for implementation or deployment.
+
+1. Introduction
+---------------
+
+The Simple Mail Transfer Protocol [SMTP] provides the ability to transfer email
+messages from a sending system to a recieving one.
+
+Senders may on occasion wish to discover additional information, not directly
+related to a specific email message, about the receiving system.  An example
+is a contact point for discussing problems in communications.
+
+The WELLKNOWN extension provides a means for delivering such information, by an
+SMTP server on request from an SMTP client.
+
+2. The WELLKNOW SMTP Extension
+------------------------------
+
+The extension mechanism for SMTP is defined in Section 2.2 of the current SMTP
+specification [RFC5321a].
+
+The name of the extension is WELKNOWN.  Servers implementing this extension
+advertise a WELLKNOWN as a keyword in the response to EHLO.  The keyword has no
+parameters.
+
+A new SMTP verb, "WELLKNOWN" is defined.
+
+3. The WELLNOWN verb
+--------------------
+
+The format for the WELLKNOWN verb is:
+
+        WELLKNOWN <request-key>
+
+The <request-key> parameter identifies the specific type of information being
+requested.  It is separated from the verb by whitespace, and is xtext-encoded
+per RFC 3461 Section 4 [RFC3461].
+
+After the client gives the WELLKNOWN command, the server responds with one of
+the 2xx, 4xx or 5xx response codes.
+
+A success response MUST be a 250 response code, and MUST be multi-line.
+
+The first line of a success response will be a response summary; the following
+lines are the information data requested, xtext-encoded [RFC3461].  The encoded
+information data MAY be split over multiple response lines.
+
+A response summary MAY be empty.  In this case the first line of the response
+will be only "250-".
+
+A response summary MAY contain a size parameter, giving the number of bytes
+of data.  This parameter is expressed as "SIZE=" followed by a decimal number.
+The size value does not include the xtext-encoding overheader, the "250-" or
+"250 " response code prefixing each line, nor the CR,LF bytes between lines.
+
+4. Example
+----------
+
+S: 220 ESMTP spoken here
+
+C: EHLO test
+
+S: 250-Hi there, mate
+S: 250-SIZE
+S: 250-LIMITS
+S: 250-8BITMIME
+S: 250-PIPELINING
+S: 250-WELLKNOWN
+S: 250 HELP
+
+C: WELLKNOWN security.txt
+
+S: 250-SIZE=285
+S: 250-Contact:+20mailto:security@example.com+0A
+S: 250-+0A
+S: 250-Canonical:+20https://www.example.com/.well-known/security.txt+0A
+S: 250-Canonical:+20mailserver://mx1.example.com/WELLKNOWN/security.txt+0A
+S: 250-Canonical:+20mailserver://mx2.example.com/WELLKNOWN/security.txt+0A
+S: 250-+0A
+S: 250-Preferred-Languages:+20en+0A
+S: 250-+0A
+S: 250-Expires:+202025-02-01T00:00:00.000Z+0A
+S: 250 +0A
+
+C: QUIT
+
+S: 221
+
+
+5. Use Cases
+------------
+
+5.1 security.txt
+---
+It is common for a website to provide public-access information via the HTTP
+protocol.  One such item, a "security.txt" file, is descibed in RFC 9116.
+
+The WELLKNOWN extension provides a method for publishing similar information
+for an SMTP host, without the need to operate an HTTP server.
+
+It is RECOMMENDED that the request-key for this usage be "security.txt".
+
+5.2 ACME handshake
+---
+ACME [RFC8555] provides for obtaining a certificate, needed for encrpted
+communications using TLS.  It defines handshake methods using the DNS and using
+HTTP, for verifying ownership of the domain being certified.
+
+The WELLKNOWN extension provides a method for operating a similar handshake,
+without the need to operate an HTTP server or manipulate the DNS.
