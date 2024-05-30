@@ -1,0 +1,213 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO test
+??? 250-
+<<< 250-myhost.test.ex Hello test [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-LIMITS
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-WELLKNOWN
+<<< 250-WELLKNOWN
+??? 250 HELP
+<<< 250 HELP
+>>> WELLKNOWN acme-response
+??? 250-SIZE
+<<< 250-SIZE=24
+??? 250-
+<<< 250-line+201+0A
+??? 250-
+<<< 250-line+202+0A
+??? 250
+<<< 250 last+20line+0A
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO test
+??? 250-
+<<< 250-myhost.test.ex Hello test [ip4.ip4.ip4.ip4]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-LIMITS
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250 HELP
+<<< 250 HELP
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1226 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO test
+??? 250-
+<<< 250-myhost.test.ex Hello test [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-LIMITS
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-WELLKNOWN
+<<< 250-WELLKNOWN
+??? 250 HELP
+<<< 250 HELP
+>>> WELLKNOWN acme-response
+??? 550
+<<< 550 Administrative prohibition
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO test
+??? 250-
+<<< 250-myhost.test.ex Hello test [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-LIMITS
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-WELLKNOWN
+<<< 250-WELLKNOWN
+??? 250 HELP
+<<< 250 HELP
+>>> WELLKNOWN badfile
+??? 550
+<<< 550 Administrative prohibition
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO test
+??? 250-
+<<< 250-myhost.test.ex Hello test [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-LIMITS
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-WELLKNOWN
+<<< 250-WELLKNOWN
+??? 250 HELP
+<<< 250 HELP
+>>> WELLKNOWN acme-response
+??? 250-SIZE
+<<< 250-SIZE=24
+??? 250-
+<<< 250-line+201+0A
+??? 250-
+<<< 250-line+202+0A
+??? 250
+<<< 250 last+20line+0A
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO test
+??? 250-
+<<< 250-myhost.test.ex Hello test [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-LIMITS
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-WELLKNOWN
+<<< 250-WELLKNOWN
+??? 250 HELP
+<<< 250 HELP
+>>> WELLKNOWN sub/acme-response
+??? 250-SIZE
+<<< 250-SIZE=24
+??? 250-
+<<< 250-line+201+0A
+??? 250-
+<<< 250-line+202+0A
+??? 250
+<<< 250 last+20line+0A
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO test
+??? 250-
+<<< 250-myhost.test.ex Hello test [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-LIMITS
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-WELLKNOWN
+<<< 250-WELLKNOWN
+??? 250 HELP
+<<< 250 HELP
+>>> WELLKNOWN sub/badfile
+??? 550
+<<< 550 Administrative prohibition
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO test
+??? 250-
+<<< 250-myhost.test.ex Hello test [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-LIMITS
+<<< 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-WELLKNOWN
+<<< 250-WELLKNOWN
+??? 250 HELP
+<<< 250 HELP
+>>> WELLKNOWN ../badfile
+??? 550
+<<< 550 Administrative prohibition
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
