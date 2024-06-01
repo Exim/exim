@@ -18,6 +18,7 @@ ok,subdir:  ${lookup{TESTNUM.dir} dsearch,filter=subdir {DIR/aux-fixed}{$value}{
 fail,subdir(..):${lookup{..}          dsearch,filter=subdir {DIR/aux-fixed}{$value}{FAIL}}
 fail,subdir(.) :${lookup{.}           dsearch,filter=subdir {DIR/aux-fixed}{$value}{FAIL}}
 fail,subdir(f) :${lookup{TESTNUM.tst} dsearch,filter=subdir {DIR/aux-fixed}{$value}{FAIL}}
+ok,subdir(..d) :${lookup{..subdir}    dsearch,filter=subdir {DIR/aux-fixed/TESTNUM.dir}{$value}{FAIL}}
 fail.path:  ${lookup{TESTNUM.dir/regfile} dsearch          {DIR/aux-fixed}{$value}{FAIL}}
 ok.path:    ${lookup{TESTNUM.dir/regfile} dsearch,key=path {DIR/aux-fixed}{$value}{FAIL}}
 

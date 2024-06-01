@@ -132,7 +132,7 @@ if (  Ulstat(filename, &statbuf) >= 0
        	 && S_ISDIR(statbuf.st_mode)
 	 && (  flags & FILTER_DIR
 	    || keystring[0] != '.'
-	    || keystring[1] && keystring[1] != '.'
+	    || keystring[1] && (keystring[1] != '.' || keystring[2])
    )  )  )  )
   {
   /* Since the filename exists in the filesystem, we can return a
