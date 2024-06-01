@@ -48,13 +48,13 @@ is a contact point for discussing problems in communications.
 The WELLKNOWN extension provides a means for delivering such information, by an
 SMTP server on request from an SMTP client.
 
-2. The WELLKNOW SMTP Extension
+2. The WELLKNOWN SMTP Extension
 ------------------------------
 
 The extension mechanism for SMTP is defined in Section 2.2 of the current SMTP
 specification [RFC5321a].
 
-The name of the extension is WELKNOWN.  Servers implementing this extension
+The name of the extension is WELLKNOWN.  Servers implementing this extension
 advertise a WELLKNOWN as a keyword in the response to EHLO.  The keyword has no
 parameters.
 
