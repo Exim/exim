@@ -1091,7 +1091,7 @@ if (pending_BANNER)
     }
   /*XXX EXPERIMENTAL_ESMTP_LIMITS ? */
 
-# ifndef DISABLE_TLS_RESUME
+# if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
   GET_OPTION("host_name_extract");
   s = ((smtp_transport_options_block *)sx->conn_args.ob)->host_name_extract;
   if (!s) s = HNE_DEFAULT;
@@ -2635,7 +2635,7 @@ goto SEND_QUIT;
 	  }
 	}
 #endif
-#ifndef DISABLE_TLS_RESUME
+#if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
       GET_OPTION("host_name_extract");
       if (!(s = ob->host_name_extract)) s = HNE_DEFAULT;
       ehlo_response_lbserver(sx, s);

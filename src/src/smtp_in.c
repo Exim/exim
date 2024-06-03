@@ -2067,9 +2067,12 @@ log_connect_tls_drop(const uschar * what, const uschar * log_msg)
 {
 if (log_reject_target)
   {
+#ifdef DISABLE_TLS
+  uschar * tls = NULL;
+#else
   gstring * g = s_tlslog(NULL);
   uschar * tls = string_from_gstring(g);
-
+#endif
   log_write(L_connection_reject,
     log_reject_target, "%s%s%s dropped by %s%s%s",
     LOGGING(dnssec) && sender_host_dnssec ? US" DS" : US"",
