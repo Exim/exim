@@ -20,7 +20,7 @@ with database files like $spooldirectory/db/<name> */
 different DBM files. This module does not contain code for reading DBM files
 for (e.g.) alias expansion. That is all contained within the general search
 functions. As Exim now has support for several DBM interfaces, all the relevant
-functions are called as macros.
+functions are called as inlinable functions from an included file.
 
 All the data in Exim's database is in the nature of *hints*. Therefore it
 doesn't matter if it gets destroyed by accident. These functions are not
@@ -35,7 +35,25 @@ means of locking on independent lock files. (Earlier attempts to lock on the
 DBM files themselves were never completely successful.) Since callers may in
 general want to do more than one read or write while holding the lock, there
 are separate open and close functions. However, the calling modules should
-arrange to hold the locks for the bare minimum of time. */
+arrange to hold the locks for the bare minimum of time.
+
+API:
+  dbfn_open
+  dbfn_close
+  dbfn_read_with_length
+  dbfn_read_enforce_length
+  dbfn_write
+  dbfn_delete
+  dbfn_scan				unused; ifdeffout out
+
+Users:
+  ACL ratelimit & seen conditions
+  delivery retry handling
+  delivery serialization
+  TLS session resumption
+  peer capability cache
+  callout & quota cache
+*/
 
 
 

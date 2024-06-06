@@ -16,7 +16,40 @@ from Pierre A. Humblet, so Exim could be made to work with Cygwin.
 
 For convenience, the definitions of the structures used in the various hints
 databases are also kept in this file, which is used by the maintenance
-utilities as well as the main Exim binary. */
+utilities as well as the main Exim binary.
+
+A key/value store is supported (only).  Keys are strings; values arbitrary
+binary blobs.
+
+The API is:
+  Functions:
+    exim_dbopen
+    exim_dbclose
+    exim_dbget
+    exim_dbput
+    exim_dbputb		(non-overwriting put)
+    exim_dbdel
+    exim_dbcreate_cursor
+    exim_dbscan		(get, and bump cursor)
+    exim_dbdelete_cursor
+    exim_datum_init
+    exim_datum_size_get
+    exim_datum_data_get
+    exim_datum_free
+  Defines:
+    EXIM_DB		access handle
+    EXIM_CURSOR		datatype for cursor
+    EXIM_DATUM		datatype for "value"
+    EXIM_DBTYPE		text for logging & debuug
+
+Selection of the shim layer implementation, and backend, is by #defines.
+
+The users of this API are:
+  hintsdb interface	dbfn.c
+  hintsdb utilities	exim_dbutil.c and exim_dbmvuild.c
+  dbmdb lookup		lookups/dbmdb,c
+  autoreply transport	transports/autoreply.c
+*/
 
 #ifndef HINTSDB_H
 #define HINTSDB_H
