@@ -1,6 +1,7 @@
 
 ******** SERVER ********
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid

@@ -28,6 +28,10 @@ Version 4.98
 
  9. Add SMTP WELLKNOWN extension.
 
+ 10. Sqlite3 can be used for the hints databases (vs. DBD, NDB, GBDM, TDB).
+     Add "USE_SQLITE = y" and "DBMLIB = -lsqlite3" in Local/Makefile, to override 
+     the settings done in the OS/Makefile-<platform> file.
+
 Version 4.97
 ------------
 

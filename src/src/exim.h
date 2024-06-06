@@ -524,6 +524,7 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #include "local_scan.h"
 #include "path_max.h"
 #include "macros.h"
+#include "blob.h"
 #include "hintsdb.h"
 #include "hintsdb_structs.h"
 #include "structs.h"

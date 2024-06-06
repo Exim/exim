@@ -34,7 +34,7 @@ if (!filename || *filename != '/')
   *errmsg = US"absolute file name expected for \"sqlite\" lookup";
 else if ((ret = sqlite3_open(CCS filename, &db)) != 0)
   {
-  *errmsg = (void *)sqlite3_errmsg(db);
+  *errmsg = string_copy(US sqlite3_errmsg(db));
   sqlite3_close(db);
   db = NULL;
   DEBUG(D_lookup) debug_printf_indent("Error opening database: %s\n", *errmsg);

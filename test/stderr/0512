@@ -1,4 +1,5 @@
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -71,6 +72,7 @@ LOG: MAIN
 LOG: MAIN
   ** userx@myhost.test.ex: retry timeout exceeded
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -79,6 +81,7 @@ writing data block fd=dddd size=sss timeout=0
 LOG: MAIN
   <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -96,6 +99,7 @@ LOG: queue_run MAIN
   End queue run: pid=p1234 -qf
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -144,6 +148,7 @@ LOG: MAIN
 LOG: MAIN
   ** userx@myhost.test.ex: retry timeout exceeded
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -152,6 +157,7 @@ writing data block fd=dddd size=sss timeout=0
 LOG: MAIN
   <= <> R=10HmaZ-000000005vi-0000 U=EXIMUSER P=local S=sss
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

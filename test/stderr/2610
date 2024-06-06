@@ -2,6 +2,7 @@
 ### wait for db startup, set password on the root user
 ### create testdb and extra users
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -244,6 +245,7 @@ close MYSQL connection: ip4.ip4.ip4.ip4:1223/test/root
 close MYSQL connection: 127.0.0.1:PORT_N/test/root
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 01:01:01 p1235  Exim version x.yz uid=CALLER_UID gid=CALLER_GID pid=p1235 D=fff9ffff
+01:01:01 p1235  Hints DB:
 01:01:01 p1235  macros_trusted overridden to true by whitelisting
 01:01:01 p1235  changed uid/gid: forcing real = effective
 01:01:01 p1235    uid=uuuu gid=CALLER_GID pid=p1235
@@ -727,6 +729,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1236
 configuration file is TESTSUITE/test-config
@@ -781,6 +784,7 @@ created log directory TESTSUITE/spool/log
 search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-000000005vi-0000
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1237
 configuration file is TESTSUITE/test-config

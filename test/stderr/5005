@@ -1,4 +1,5 @@
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
@@ -47,6 +48,7 @@ created log directory TESTSUITE/spool/log
 search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-000000005vi-0000
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1235
 configuration file is TESTSUITE/test-config
@@ -190,6 +192,7 @@ search_tidyup called
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1237
 configuration file is TESTSUITE/test-config
@@ -237,6 +240,7 @@ LOG: MAIN
 search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaY-000000005vi-0000
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1238
 configuration file is TESTSUITE/test-config
@@ -382,6 +386,7 @@ search_tidyup called
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1240
 configuration file is TESTSUITE/test-config
@@ -429,6 +434,7 @@ LOG: MAIN
 search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaZ-000000005vi-0000
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1241
 configuration file is TESTSUITE/test-config
@@ -564,11 +570,12 @@ Deferred addresses:
   userx@test.ex in "*"? yes (matched "*")
 retry for T:userx@test.ex = * 0 0
  dbfn_read: key=T:userx@test.ex
+ dbfn_read: null return
 failing_interval=ttt message_age=ttt
 Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
- dbfn_write: key=T:userx@test.ex
+ dbfn_write: key=T:userx@test.ex datalen NNN
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
 end of retry processing
@@ -584,6 +591,7 @@ search_tidyup called
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1243
 configuration file is TESTSUITE/test-config
@@ -631,6 +639,7 @@ LOG: MAIN
 search_tidyup called
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmbA-000000005vi-0000
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=p1244
 configuration file is TESTSUITE/test-config
@@ -663,8 +672,11 @@ Delivery address list:
 Considering: userx@test.ex
 unique = userx@test.ex
  dbfn_read: key=R:test.ex
+ dbfn_read: null return
  dbfn_read: key=R:userx@test.ex
+ dbfn_read: null return
  dbfn_read: key=R:userx@test.ex:<CALLER@test.ex>
+ dbfn_read: null return
 no   domain  retry record
 no   address retry record
 userx@test.ex: queued for routing
@@ -701,6 +713,7 @@ search_tidyup called
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
  dbfn_read: key=T:userx@test.ex
+ dbfn_read: size 154 return
 retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
  EXIM_DBCLOSE(0xAAAAAAAA)
@@ -761,11 +774,12 @@ Deferred addresses:
   userx@test.ex in "*"? yes (matched "*")
 retry for T:userx@test.ex = * 0 0
  dbfn_read: key=T:userx@test.ex
+ dbfn_read: size 154 return
 failing_interval=ttt message_age=ttt
 Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
- dbfn_write: key=T:userx@test.ex
+ dbfn_write: key=T:userx@test.ex datalen NNN
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
 end of retry processing

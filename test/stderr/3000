@@ -1,5 +1,6 @@
 1999-03-02 09:44:33 this is a warning at TESTSUITE/aux-fixed/3000.pl line 25.
 Exim version x.yz ....
+Hints DB:
 environment after trimming:
  PATH=<munged>
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys

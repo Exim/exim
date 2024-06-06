@@ -1,6 +1,7 @@
 
 ******** SERVER ********
 Exim version x.yz ....
+Hints DB:
 environment after trimming:
  PATH=<munged>
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys

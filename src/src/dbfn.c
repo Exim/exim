@@ -274,7 +274,11 @@ exim_datum_init(&result_datum);      /* to be cleared before use. */
 exim_datum_data_set(&key_datum, key_copy);
 exim_datum_size_set(&key_datum, klen);
 
-if (!exim_dbget(dbblock->dbptr, &key_datum, &result_datum)) return NULL;
+if (!exim_dbget(dbblock->dbptr, &key_datum, &result_datum))
+  {
+  DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: null return\n");
+  return NULL;
+  }
 
 /* Assume the data store could have been tainted.  Properly, we should
 store the taint status with the data. */
@@ -282,6 +286,7 @@ store the taint status with the data. */
 dlen = exim_datum_size_get(&result_datum);
 yield = store_get(dlen, GET_TAINTED);
 memcpy(yield, exim_datum_data_get(&result_datum), dlen);
+DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: size %u return\n", dlen);
 if (length) *length = dlen;
 
 exim_datum_free(&result_datum);    /* Some DBM libs require freeing */
@@ -344,7 +349,8 @@ uschar * key_copy = store_get(klen, key);
 memcpy(key_copy, key, klen);
 gptr->time_stamp = time(NULL);
 
-DEBUG(D_hints_lookup) debug_printf_indent("dbfn_write: key=%s\n", key);
+DEBUG(D_hints_lookup)
+  debug_printf_indent("dbfn_write: key=%s datalen %d\n", key, length);
 
 exim_datum_init(&key_datum);         /* Some DBM libraries require the datum */
 exim_datum_init(&value_datum);       /* to be cleared before use. */
@@ -387,6 +393,11 @@ return exim_dbdel(dbblock->dbptr, &key_datum);
 
 
 
+#ifdef notdef
+/* XXX This appears to be unused.  There's a separate implementation
+in dbutils.c for dumpdb and fixdb, using the same underlying support.
+*/
+
 /*************************************************
 *         Scan the keys of a database file       *
 *************************************************/
@@ -426,6 +437,7 @@ yield = exim_dbscan(dbblock->dbptr, &key_datum, &value_datum, start, *cursor)
 if (!yield) exim_dbdelete_cursor(*cursor);
 return yield;
 }
+#endif
 
 
 

@@ -1,4 +1,5 @@
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
@@ -144,8 +145,10 @@ Attempting full verification using callout
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
  dbfn_read: key=remote
+ dbfn_read: size 40 return
  callout cache: found domain record for remote
  dbfn_read: key=qq@remote
+ dbfn_read: null return
  callout cache: no address record found for qq@remote
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
@@ -179,10 +182,10 @@ cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR|O_CREAT
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
- dbfn_write: key=remote
+ dbfn_write: key=remote datalen NNN
  wrote callout cache domain record for remote:
    result=1 postmaster=0 random=0
- dbfn_write: key=qq@remote
+ dbfn_write: key=qq@remote datalen NNN
  wrote negative callout cache address record for qq@remote
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
@@ -279,8 +282,10 @@ Attempting full verification using callout
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
  dbfn_read: key=remote
+ dbfn_read: size 40 return
  callout cache: found domain record for remote
  dbfn_read: key=qq@remote
+ dbfn_read: size 16 return
  callout cache: found address record for qq@remote
  callout cache: address record is negative
  EXIM_DBCLOSE(0xAAAAAAAA)

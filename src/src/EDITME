@@ -47,7 +47,8 @@
 # compile the Exim monitor utility. Exim itself does not use X11.
 
 # Another area of variability between systems is the type and location of the
-# DBM library package. Exim has support for ndbm, gdbm, tdb, and Berkeley DB.
+# DBM library package. Exim has support for ndbm, gdbm, tdb, Berkeley DB and
+# sqlite3.
 # By default the code assumes ndbm; this often works with gdbm or DB, provided
 # they are correctly installed, via their compatibility interfaces. However,
 # Exim can also be configured to use the native calls for Berkeley DB (obsolete
@@ -675,6 +676,10 @@ DISABLE_MAL_MKS=yes
 # Berkeley DB
 # USE_DB = yes
 # DBMLIB = -ldb
+
+# sqlite
+# USE_SQLITE = yes
+# DBMLIB = -lsqlite3
 
 
 #------------------------------------------------------------------------------

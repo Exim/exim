@@ -48,6 +48,7 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1] D=qqs
 >>> end of ACL "check_recipient": ACCEPT
 LOG: SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex> D=qqs
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
 environment after trimming:

@@ -1,4 +1,5 @@
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -8,6 +9,7 @@ created log directory TESTSUITE/spool/log
 LOG: MAIN
   <= fred@myhost.test.ex U=root P=local-smtp S=sss
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -67,6 +69,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=q.qqqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -75,6 +78,7 @@ LOG: smtp_connection MAIN
 LOG: MAIN
   <= fred@myhost.test.ex U=root P=local-smtp S=sss
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -133,6 +137,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=q.qqqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -141,6 +146,7 @@ LOG: smtp_connection MAIN
 LOG: MAIN
   <= fred@myhost.test.ex U=root P=local-smtp S=sss
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -202,6 +208,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=q.qqqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -210,6 +217,7 @@ LOG: smtp_connection MAIN
 LOG: MAIN
   <= fred@myhost.test.ex U=root P=local-smtp S=sss
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -273,6 +281,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root D=q.qqqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -281,6 +290,7 @@ LOG: smtp_connection MAIN
 LOG: MAIN
   <= fred@myhost.test.ex U=root P=local-smtp S=sss
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

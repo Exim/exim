@@ -1,4 +1,5 @@
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -47,6 +48,7 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1245 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -68,6 +70,7 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1246 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -98,6 +101,7 @@ LOG: queue_run MAIN
   End queue run: pid=p1234 -qqf
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -146,6 +150,7 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1252 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -167,6 +172,7 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1253 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -197,6 +203,7 @@ LOG: queue_run MAIN
   End queue run: pid=p1235 -qqf
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
@@ -255,6 +262,7 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1259 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -297,6 +305,7 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1260 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

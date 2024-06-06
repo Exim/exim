@@ -1,4 +1,5 @@
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1234
 configuration file is TESTSUITE/test-config
@@ -220,6 +221,7 @@ search_tidyup called
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-000000005vi-0000 <= myfriend@there.test.ex H=(exim.test.ex) [V4NET.11.12.13] P=esmtp S=sss
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1235
 configuration file is TESTSUITE/test-config

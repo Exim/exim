@@ -997,32 +997,35 @@ if (s)
 static gstring *
 show_db_version(gstring * g)
 {
+g = string_cat(g, US"Hints DB:\n");
 #ifdef DB_VERSION_STRING
 DEBUG(D_any)
   {
-  g = string_fmt_append(g, "Library version: BDB: Compile: %s\n", DB_VERSION_STRING);
-  g = string_fmt_append(g, "                      Runtime: %s\n",
+  g = string_fmt_append(g, " Library version: BDB: Compile: %s\n", DB_VERSION_STRING);
+  g = string_fmt_append(g, "                       Runtime: %s\n",
     db_version(NULL, NULL, NULL));
   }
 else
-  g = string_fmt_append(g, "Berkeley DB: %s\n", DB_VERSION_STRING);
+  g = string_fmt_append(g, " Berkeley DB: %s\n", DB_VERSION_STRING);
 
 #elif defined(BTREEVERSION) && defined(HASHVERSION)
 # ifdef USE_DB
-  g = string_cat(g, US"Probably Berkeley DB version 1.8x (native mode)\n");
+  g = string_cat(g, US" Probably Berkeley DB version 1.8x (native mode)\n");
 # else
-  g = string_cat(g, US"Probably Berkeley DB version 1.8x (compatibility mode)\n");
+  g = string_cat(g, US" Probably Berkeley DB version 1.8x (compatibility mode)\n");
 # endif
 
 #elif defined(_DBM_RDONLY) || defined(dbm_dirfno)
-g = string_cat(g, US"Probably ndbm\n");
+g = string_cat(g, US" Probably ndbm\n");
+#elif defined(USE_SQLITE)
+g = string_cat(g, US" Using sqlite3\n");
 #elif defined(USE_TDB)
-g = string_cat(g, US"Using tdb\n");
+g = string_cat(g, US" Using tdb\n");
 #else
 # ifdef USE_GDBM
-  g = string_cat(g, US"Probably GDBM (native mode)\n");
+g = string_cat(g, US" Probably GDBM (native mode)\n");
 # else
-  g = string_cat(g, US"Probably GDBM (compatibility mode)\n");
+g = string_cat(g, US" Probably GDBM (compatibility mode)\n");
 # endif
 #endif
 return g;

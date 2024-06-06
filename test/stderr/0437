@@ -1,4 +1,5 @@
 Exim version x.yz ....
+Hints DB:
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
    key="spool" partial=-1 affix=NULL starflags=0 opts=NULL

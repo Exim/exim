@@ -1132,9 +1132,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # because they will be different in different binaries.
 
     next if /^$time_pid?
-		(?: Berkeley\ DB:\s
-		  | Probably\ (?:Berkeley\ DB|ndbm|GDBM)
-		  | Using\ tdb
+		(?: .*\sBerkeley\ DB
+		  | \sProbably\ (?:Berkeley\ DB|ndbm|GDBM)
+		  | \sUsing\ (?:tdb|sqlite3)
 		  | Authenticators:
 		  | Lookups(?:\(built-in\))?:
 		  | Support\ for:
@@ -1280,6 +1280,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # We invoke Exim with -D, so we hit this new message as of Exim 4.73:
     next if /^macros_trusted overridden to true by whitelisting/;
+
+    # Hints-db writes seem to have variable sizes for values
+    s/ dbfn_write: key=.+ datalen \K\d+$/NNN/;
 
     # We have to omit the localhost ::1 address so that all is well in
     # the IPv4-only case.

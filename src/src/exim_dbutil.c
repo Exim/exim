@@ -520,7 +520,7 @@ Arguments:
   cursor   a pointer to a pointer to a cursor anchor, for those dbm libraries
            that use the notion of a cursor
 
-Returns:   the next record from the file, or
+Returns:   the next *key* (nul-terminated) from the file, or
            NULL if there are no more
 */
 

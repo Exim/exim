@@ -1805,6 +1805,11 @@ suited to Exim's usage model.
 Yet another DBM library, called &'tdb'&, is available from
 &url(https://sourceforge.net/projects/tdb/files/). It has its own interface, and also
 operates on a single file.
+.next
+.new
+It is possible to use sqlite3 (&url(https://www.sqlite.org/index.html))
+for the DBM library.
+.wen
 .endlist
 
 .cindex "USE_DB"
@@ -1816,8 +1821,9 @@ USE_DB in an appropriate configuration file (typically
 .code
 USE_DB=yes
 .endd
-Similarly, for gdbm you set USE_GDBM, and for tdb you set USE_TDB. An
-error is diagnosed if you set more than one of these.
+Similarly, for gdbm you set USE_GDBM, for tdb you set USE_TDB,
+and for sqlite3 you set USE_SQLITE.
+An error is diagnosed if you set more than one of these.
 You can set USE_NDBM if needed to override an operating system default.
 
 At the lowest level, the build-time configuration sets none of these options,
@@ -1833,6 +1839,7 @@ in one of these lines:
 .code
 DBMLIB = -ldb
 DBMLIB = -ltdb
+DBMLIB = -lsqlite3
 DBMLIB = -lgdbm -lgdbm_compat
 .endd
 The last of those was for a Linux having GDBM provide emulated NDBM facilities.

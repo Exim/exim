@@ -1,4 +1,5 @@
 Exim version x.yz ....
+Hints DB:
 environment after trimming:
  USER=CALLER
 configuration file is TESTSUITE/test-config
@@ -160,6 +161,7 @@ LOG: MAIN PANIC
  ╰─────result: protected:░░
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 environment after trimming:
  USER=CALLER
 configuration file is TESTSUITE/test-config
@@ -313,6 +315,7 @@ LOG: MAIN PANIC
  \_____result: protected:  
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 environment after trimming:
  USER=CALLER
 configuration file is TESTSUITE/test-config
@@ -392,6 +395,7 @@ try option unknown_login
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 no host name found for IP address V4NET.11.12.13
 Exim version x.yz ....
+Hints DB:
 environment after trimming:
  USER=CALLER
 configuration file is TESTSUITE/test-config
@@ -516,6 +520,7 @@ sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
             ╰──(tainted)
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1238
 configuration file is TESTSUITE/test-config
@@ -584,6 +589,7 @@ LOG: connection_reject MAIN REJECT
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=p1239
 configuration file is TESTSUITE/test-config
@@ -783,6 +789,7 @@ LOG: 10HmbD-000000005vi-0000 Subject is: " here we go: a string that is going to
 >>> end of ACL "check_data": DENY
 LOG: 10HmbD-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 Exim version x.yz ....
+Hints DB:
 changed uid/gid: -C, -D, -be or -bf forces real uid
   uid=CALLER_UID gid=CALLER_GID pid=p1240
 configuration file is TESTSUITE/test-config

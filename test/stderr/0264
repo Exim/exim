@@ -1,4 +1,5 @@
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 admin user
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbJ-000000005vi-0000
@@ -7,6 +8,7 @@ Renaming spool header file: TESTSUITE/spool//input//10HmbJ-000000005vi-0000-H
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 Exim version x.yz ....
+Hints DB:
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

@@ -188,6 +188,7 @@ Do not put spaces between # and the 'define'.
 #define USE_OPENSSL
 #define USE_READLINE
 #define USE_TCP_WRAPPERS
+#define USE_SQLITE
 #define USE_TDB
 
 #define WHITELIST_D_MACROS
