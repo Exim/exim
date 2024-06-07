@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 /* DMARC support.
-   Copyright (c) The Exim Maintainers 2019 - 2023
+   Copyright (c) The Exim Maintainers 2019 - 2024
    Copyright (c) Todd Lyons <tlyons@exim.org> 2012 - 2014
    License: GPL */
 /* SPDX-License-Identifier: GPL-2.0-or-later */

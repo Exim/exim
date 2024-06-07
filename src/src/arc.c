@@ -2,8 +2,8 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 /* Experimental ARC support for Exim
+   Copyright (c) The Exim Maintainers 2021 - 2024
    Copyright (c) Jeremy Harris 2018 - 2020
-   Copyright (c) The Exim Maintainers 2021 - 2023
    License: GPL
    SPDX-License-Identifier: GPL-2.0-or-later
 */

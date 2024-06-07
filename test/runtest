@@ -2,6 +2,9 @@
 # We use env, because in some environments of our build farm
 # the Perl 5.010 interpreter is only reachable via $PATH
 
+# Copyright (c) The Exim Maintainers 2024
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
 # be possible to export this suite for running on a wide variety of hosts, in #
