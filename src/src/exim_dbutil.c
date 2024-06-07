@@ -287,28 +287,23 @@ Returns:   NULL if the open failed, or the locking failed.
 */
 
 open_db *
-dbfn_open(uschar *name, int flags, open_db *dbblock, BOOL lof, BOOL panic)
+dbfn_open(const uschar * name, int flags, open_db * dbblock,
+  BOOL lof, BOOL panic)
 {
 int rc;
 struct flock lock_data;
-BOOL read_only = flags == O_RDONLY;
+BOOL read_only = flags & O_RDONLY;
 uschar * dirname, * filename;
 
 /* The first thing to do is to open a separate file on which to lock. This
 ensures that Exim has exclusive use of the database before it even tries to
 open it. If there is a database, there should be a lock file in existence. */
 
-#ifdef COMPILE_UTILITY
 if (  asprintf(CSS &dirname, "%s/db", spool_directory) < 0
    || asprintf(CSS &filename, "%s/%s.lockfile", dirname, name) < 0)
   return NULL;
-#else
-dirname = string_sprintf("%s/db", spool_directory);
-filename = string_sprintf("%s/%s.lockfile", dirname, name);
-#endif
 
-dbblock->lockfd = Uopen(filename, flags, 0);
-if (dbblock->lockfd < 0)
+if ((dbblock->lockfd = Uopen(filename, O_RDWR|O_CREAT, 0)) < 0)
   {
   printf("** Failed to open database lock file %s: %s\n", filename,
     strerror(errno));
@@ -331,7 +326,7 @@ if (sigalrm_seen) errno = ETIMEDOUT;
 if (rc < 0)
   {
   printf("** Failed to get %s lock for %s: %s",
-    flags & O_WRONLY ? "write" : "read",
+    read_only ? "read" : "write",
     filename,
     errno == ETIMEDOUT ? "timed out" : strerror(errno));
   (void)close(dbblock->lockfd);
@@ -341,14 +336,11 @@ if (rc < 0)
 /* At this point we have an opened and locked separate lock file, that is,
 exclusive access to the database, so we can go ahead and open it. */
 
-#ifdef COMPILE_UTILITY
 if (asprintf(CSS &filename, "%s/%s", dirname, name) < 0) return NULL;
-#else
-filename = string_sprintf("%s/%s", dirname, name);
-#endif
-dbblock->dbptr = exim_dbopen(filename, dirname, flags, 0);
 
-if (!dbblock->dbptr)
+if (flags & O_RDWR) flags |= O_CREAT;
+
+if (!(dbblock->dbptr = exim_dbopen(filename, dirname, flags, 0)))
   {
   printf("** Failed to open DBM file %s for %s:\n   %s%s\n", filename,
     read_only? "reading" : "writing", strerror(errno),
@@ -1427,3 +1419,5 @@ return 0;
 #endif  /* EXIM_TIDYDB */
 
 /* End of exim_dbutil.c */
+/* vi: aw ai sw=2
+*/

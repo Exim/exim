@@ -36,7 +36,7 @@ Returns:    panic on failure if panic is set; otherwise return FALSE;
 */
 
 BOOL
-directory_make(const uschar *parent, const uschar *name,
+directory_make(const uschar * parent, const uschar * name,
                int mode, BOOL panic)
 {
 BOOL use_chown = parent == spool_directory && geteuid() == root_uid;

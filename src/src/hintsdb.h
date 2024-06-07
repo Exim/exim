@@ -23,7 +23,7 @@ binary blobs.
 
 The API is:
   Functions:
-    exim_dbopen
+    exim_dbopen		O_RDONLY/O_RDWR, optionally OR'd with O_CREAT
     exim_dbclose
     exim_dbget
     exim_dbput
@@ -542,8 +542,10 @@ if (db_create(&b, dbp, 0) == 0)
   {
   dbp->app_private = b;
   if (b->open(b, NULL, CS name, NULL,
-	      flags == O_RDONLY ? DB_UNKNOWN : DB_HASH,
-	      flags == O_RDONLY ? DB_RDONLY : DB_CREATE,
+	      flags & O_CREAT ? DB_HASH : DB_UNKNOWN,
+	      flags & O_CREAT ? DB_CREATE
+	      : flags & O_RDONLY ? DB_RDONLY
+	      : 0,		/*XXX is there a writeable if exists option? */
 	      mode) == 0
 	  )
     return dbp;
@@ -676,8 +678,10 @@ EXIM_DB * dbp;
 return db_create(&dbp, NULL, 0) == 0
   && (  dbp->set_errcall(dbp, dbfn_bdb_error_callback),
 	dbp->open(dbp, CS name, NULL,
-	  flags == O_RDONLY ? DB_UNKNOWN : DB_HASH,
-	  flags == O_RDONLY ? DB_RDONLY : DB_CREATE,
+	  flags & O_CREAT ? DB_HASH : DB_UNKNOWN,
+	  flags & O_CREAT ? DB_CREATE
+	  : flags & O_RDONLY ? DB_RDONLY
+	  : 0,		/*XXX*/
 	  mode)
      ) == 0
   ? dbp : NULL;

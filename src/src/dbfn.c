@@ -67,8 +67,6 @@ Arguments:
   name     The single-component name of one of Exim's database files.
   flags    Either O_RDONLY or O_RDWR, indicating the type of open required;
              O_RDWR implies "create if necessary"
-XXX this is a mess.  hintsdb.h has grown lots of code expecting O_CREAT
-XXX with the obvious semantics, and not that described above.
   dbblock  Points to an open_db block to be filled in.
   lof      If TRUE, write to the log for actual open failures (locking failures
            are always logged).
@@ -79,17 +77,14 @@ Returns:   NULL if the open failed, or the locking failed. After locking
 
            On success, dbblock is returned. This contains the dbm pointer and
            the fd of the locked lock file.
-
-There are some calls that use O_RDWR|O_CREAT for the flags. Having discovered
-this in December 2005, I'm not sure if this is correct or not, but for the
-moment I haven't changed them.
 */
 
 open_db *
-dbfn_open(uschar *name, int flags, open_db *dbblock, BOOL lof, BOOL panic)
+dbfn_open(const uschar * name, int flags, open_db * dbblock,
+  BOOL lof, BOOL panic)
 {
 int rc, save_errno;
-BOOL read_only = flags == O_RDONLY;
+BOOL read_only = flags & O_RDONLY;
 flock_t lock_data;
 uschar dirname[PATHLEN], filename[PATHLEN];
 
@@ -165,6 +160,7 @@ databases - often this is caused by non-matching db.h and the library. To make
 it easy to pin this down, there are now debug statements on either side of the
 open call. */
 
+flags &= O_RDONLY | O_RDWR;
 snprintf(CS filename, sizeof(filename), "%s/%s", dirname, name);
 
 priv_drop_temp(exim_uid, exim_gid);
@@ -202,7 +198,6 @@ DEBUG(D_hints_lookup)
   debug_printf_indent("opened hints database %s: flags=%s\n", filename,
     flags == O_RDONLY ? "O_RDONLY"
     : flags == O_RDWR ? "O_RDWR"
-    : flags == (O_RDWR|O_CREAT) ? "O_RDWR|O_CREAT"
     : "??");
 
 /* Pass back the block containing the opened database handle and the open fd
