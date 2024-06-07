@@ -87,7 +87,8 @@ if ((ret = sqlite3_open_v2(CCS name, &dbp, sflags, NULL)) == SQLITE_OK)
   sqlite3_busy_timeout(dbp, 5000);
   if (flags & O_CREAT)
     ret == sqlite3_exec(dbp,
-	    "CREATE TABLE tbl (ky TEXT PRIMARY KEY, dat BLOB);", NULL, NULL, NULL);
+	    "CREATE TABLE IF NOT EXISTS tbl (ky TEXT PRIMARY KEY, dat BLOB);",
+	    NULL, NULL, NULL);
   }
 //else
 //  fprintf(stderr, "sqlite3_open_v2: %s\n", sqlite3_errmsg(dbp));

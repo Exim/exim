@@ -67,6 +67,8 @@ Arguments:
   name     The single-component name of one of Exim's database files.
   flags    Either O_RDONLY or O_RDWR, indicating the type of open required;
              O_RDWR implies "create if necessary"
+XXX this is a mess.  hintsdb.h has grown lots of code expecting O_CREAT
+XXX with the obvious semantics, and not that described above.
   dbblock  Points to an open_db block to be filled in.
   lof      If TRUE, write to the log for actual open failures (locking failures
            are always logged).
