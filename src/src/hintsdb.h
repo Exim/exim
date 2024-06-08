@@ -33,8 +33,8 @@ The API is:
     exim_dbscan		(get, and bump cursor)
     exim_dbdelete_cursor
     exim_datum_init
-    exim_datum_size_get
-    exim_datum_data_get
+    exim_datum_size_get/set
+    exim_datum_data_get/set
     exim_datum_free
   Defines:
     EXIM_DB		access handle
@@ -49,6 +49,17 @@ The users of this API are:
   hintsdb utilities	exim_dbutil.c and exim_dbmvuild.c
   dbmdb lookup		lookups/dbmdb,c
   autoreply transport	transports/autoreply.c
+
+Note that the dbmdb lookup use, bypassing the dbfn.c layer,
+means that no file-locking is done.
+XXX This feels like a layering violation; I don't see it commented on
+anywhere.
+
+Future: consider re-architecting to support caching of the open-handle
+for hintsdb uses (the dbmdb use gets that already).  This would need APIs
+for transaction locks.  Perhaps merge the implementation with the lookups
+layer, in some way, for the open-handle caching (since that manages closes
+required by Exim's process transisitions)?
 */
 
 #ifndef HINTSDB_H
@@ -56,6 +67,9 @@ The users of this API are:
 
 
 #ifdef USE_SQLITE
+# if defined(USE_DB) || defined(USE_GDBM) || defined(USE_TDB)
+#  error USE_SQLITE conflict with alternate definition
+# endif
 
 /* ********************* sqlite3 interface ************************ */
 
@@ -323,7 +337,7 @@ exim_datum_free(EXIM_DATUM * dp)
 
 #elif defined(USE_TDB)
 
-# if defined(USE_DB) || defined(USE_GDBM)
+# if defined(USE_DB) || defined(USE_GDBM) || defined(USE_SQLITE)
 #  error USE_TDB conflict with alternate definition
 # endif
 
@@ -460,7 +474,7 @@ d->dptr = NULL;
 
 #elif defined USE_DB
 
-# if defined(USE_TDB) || defined(USE_GDBM)
+# if defined(USE_TDB) || defined(USE_GDBM) || defined(USE_SQLITE)
 #  error USE_DB conflict with alternate definition
 # endif
 
@@ -791,9 +805,9 @@ exim_datum_free(EXIM_DATUM * d)
 /********************* gdbm interface definitions **********************/
 
 #elif defined USE_GDBM
-/*XXX TODO: exim's locfile not needed */
+/*XXX TODO: exim's lockfile not needed? */
 
-# if defined(USE_TDB) || defined(USE_DB)
+# if defined(USE_TDB) || defined(USE_DB) || defined(USE_SQLITE)
 #  error USE_GDBM conflict with alternate definition
 # endif
 
@@ -935,8 +949,8 @@ exim_datum_free(EXIM_DATUM * d)
 
 
 
-/* If none of USE_DB, USG_GDBM, or USE_TDB are set, the default is the NDBM
-interface (which seems to be a wrapper for GDBM) */
+/* If none of USE_DB, USG_GDBM, USE_SQLITE or USE_TDB are set,
+the default is the NDBM interface (which seems to be a wrapper for GDBM) */
 
 
 /********************* ndbm interface definitions **********************/
