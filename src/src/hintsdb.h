@@ -427,7 +427,7 @@ exim_datum_data_set(EXIM_DATUM * dp, void * s)
 
 static inline unsigned
 exim_datum_size_get(EXIM_DATUM * dp)
-{ return dp->len; }
+{ return dp->dsize; }
 static inline void
 exim_datum_size_set(EXIM_DATUM * dp, unsigned n)
 { dp->dsize = n; }
