@@ -558,8 +558,7 @@ if (db_create(&b, dbp, 0) == 0)
   if (b->open(b, NULL, CS name, NULL,
 	      flags & O_CREAT ? DB_HASH : DB_UNKNOWN,
 	      flags & O_CREAT ? DB_CREATE
-	      : flags & O_RDONLY ? DB_RDONLY
-	      : 0,		/*XXX is there a writeable if exists option? */
+	      : flags & (O_WRONLY|O_RDWR) ? 0 : DB_RDONLY,
 	      mode) == 0
 	  )
     return dbp;
@@ -694,8 +693,7 @@ return db_create(&dbp, NULL, 0) == 0
 	dbp->open(dbp, CS name, NULL,
 	  flags & O_CREAT ? DB_HASH : DB_UNKNOWN,
 	  flags & O_CREAT ? DB_CREATE
-	  : flags & O_RDONLY ? DB_RDONLY
-	  : 0,		/*XXX*/
+	  : flags & (O_WRONLY|O_RDWR) ? 0 : DB_RDONLY,
 	  mode)
      ) == 0
   ? dbp : NULL;
@@ -842,8 +840,7 @@ if (dbp)
   dbp->lkey.dptr = NULL;
   dbp->gdbm = gdbm_open(CS name, 0,
     flags & O_CREAT ? GDBM_WRCREAT
-    : flags & (O_RDWR|O_WRONLY) ? GDBM_WRITER
-    : GDBM_READER,
+    : flags & (O_RDWR|O_WRONLY) ? GDBM_WRITER : GDBM_READER,
     mode, 0);
   if (dbp->gdbm) return dbp;
   free(dbp);

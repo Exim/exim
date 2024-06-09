@@ -292,18 +292,21 @@ dbfn_open(const uschar * name, int flags, open_db * dbblock,
 {
 int rc;
 struct flock lock_data;
-BOOL read_only = flags & O_RDONLY;
+BOOL read_only = (flags & (O_WRONLY|O_RDWR)) == O_RDONLY;
 uschar * dirname, * filename;
 
 /* The first thing to do is to open a separate file on which to lock. This
 ensures that Exim has exclusive use of the database before it even tries to
-open it. If there is a database, there should be a lock file in existence. */
+open it. If there is a database, there should be a lock file in existence;
+if no lockfile we infer there is no database and error out.  We open the
+lockfile using the r/w mode requested for the DB, users lacking permission
+for the DB access mode will error out here. */
 
 if (  asprintf(CSS &dirname, "%s/db", spool_directory) < 0
    || asprintf(CSS &filename, "%s/%s.lockfile", dirname, name) < 0)
   return NULL;
 
-if ((dbblock->lockfd = Uopen(filename, O_RDWR|O_CREAT, 0)) < 0)
+if ((dbblock->lockfd = Uopen(filename, flags, 0)) < 0)
   {
   printf("** Failed to open database lock file %s: %s\n", filename,
     strerror(errno));
