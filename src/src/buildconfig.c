@@ -53,7 +53,7 @@ typedef struct {
   char *data;
 } save_item;
 
-static const char *db_opts[] = { "", "USE_DB", "USE_GDBM", "USE_TDB", "USE_NDBM" };
+static const char *db_opts[] = { "", "USE_DB", "USE_GDBM", "USE_TDB", "USE_NDBM", "USE_SQLITE" };
 
 static int have_ipv6 = 0;
 static int have_iconv = 0;
@@ -266,7 +266,7 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
         {
         if (use_which_db_in_local_makefile)
           {
-          printf("*** Only one of USE_DB, USE_GDBM, or USE_TDB should be "
+          printf("*** Only one of USE_DB, USE_GDBM, USE_SQLITE or USE_TDB should be "
             "defined in Local/Makefile\n");
           exit(1);
           }
