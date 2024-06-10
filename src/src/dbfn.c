@@ -61,6 +61,59 @@ Users:
 *          Open and lock a database file         *
 *************************************************/
 
+/* Lock a file to protect the DB.  Return TRUE for success */
+
+static inline BOOL
+lockfile_take(open_db * dbblock, const uschar * filename, BOOL rdonly, BOOL panic)
+{
+flock_t lock_data;
+int rc;
+
+priv_drop_temp(exim_uid, exim_gid);
+if ((dbblock->lockfd = Uopen(filename, O_RDWR, EXIMDB_LOCKFILE_MODE)) < 0)
+  {
+  (void)directory_make(spool_directory, US"db", EXIMDB_DIRECTORY_MODE, panic);
+  dbblock->lockfd = Uopen(filename, O_RDWR|O_CREAT, EXIMDB_LOCKFILE_MODE);
+  }
+priv_restore();
+
+if (dbblock->lockfd < 0)
+  {
+  log_write(0, LOG_MAIN, "%s",
+    string_open_failed("database lock file %s", filename));
+  errno = 0;      /* Indicates locking failure */
+  return FALSE;
+  }
+
+/* Now we must get a lock on the opened lock file; do this with a blocking
+lock that times out. */
+
+lock_data.l_type = rdonly ? F_RDLCK : F_WRLCK;
+lock_data.l_whence = lock_data.l_start = lock_data.l_len = 0;
+
+DEBUG(D_hints_lookup|D_retry|D_route|D_deliver)
+  debug_printf_indent("locking %s\n", filename);
+
+sigalrm_seen = FALSE;
+ALARM(EXIMDB_LOCK_TIMEOUT);
+rc = fcntl(dbblock->lockfd, F_SETLKW, &lock_data);
+ALARM_CLR(0);
+
+if (sigalrm_seen) errno = ETIMEDOUT;
+if (rc < 0)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "Failed to get %s lock for %s: %s",
+    rdonly ? "read" : "write", filename,
+    errno == ETIMEDOUT ? "timed out" : strerror(errno));
+  (void)close(dbblock->lockfd);
+  errno = 0;       /* Indicates locking failure */
+  return FALSE;
+  }
+
+DEBUG(D_hints_lookup) debug_printf_indent("locked  %s\n", filename);
+return TRUE;
+}
+
 /* Used for accessing Exim's hints databases.
 
 Arguments:
@@ -85,7 +138,6 @@ dbfn_open(const uschar * name, int flags, open_db * dbblock,
 {
 int rc, save_errno;
 BOOL read_only = flags & O_RDONLY;
-flock_t lock_data;
 uschar dirname[PATHLEN], filename[PATHLEN];
 
 DEBUG(D_hints_lookup) acl_level++;
@@ -106,54 +158,16 @@ exists, there is no error. */
 snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
 snprintf(CS filename, sizeof(filename), "%s/%s.lockfile", dirname, name);
 
-priv_drop_temp(exim_uid, exim_gid);
-if ((dbblock->lockfd = Uopen(filename, O_RDWR, EXIMDB_LOCKFILE_MODE)) < 0)
+dbblock->lockfd = -1;
+if (!lockfile_take(dbblock, filename, flags == O_RDONLY, panic))
   {
-  (void)directory_make(spool_directory, US"db", EXIMDB_DIRECTORY_MODE, panic);
-  dbblock->lockfd = Uopen(filename, O_RDWR|O_CREAT, EXIMDB_LOCKFILE_MODE);
-  }
-priv_restore();
-
-if (dbblock->lockfd < 0)
-  {
-  log_write(0, LOG_MAIN, "%s",
-    string_open_failed("database lock file %s", filename));
-  errno = 0;      /* Indicates locking failure */
   DEBUG(D_hints_lookup) acl_level--;
   return NULL;
   }
 
-/* Now we must get a lock on the opened lock file; do this with a blocking
-lock that times out. */
-
-lock_data.l_type = read_only? F_RDLCK : F_WRLCK;
-lock_data.l_whence = lock_data.l_start = lock_data.l_len = 0;
-
-DEBUG(D_hints_lookup|D_retry|D_route|D_deliver)
-  debug_printf_indent("locking %s\n", filename);
-
-sigalrm_seen = FALSE;
-ALARM(EXIMDB_LOCK_TIMEOUT);
-rc = fcntl(dbblock->lockfd, F_SETLKW, &lock_data);
-ALARM_CLR(0);
-
-if (sigalrm_seen) errno = ETIMEDOUT;
-if (rc < 0)
-  {
-  log_write(0, LOG_MAIN|LOG_PANIC, "Failed to get %s lock for %s: %s",
-    read_only ? "read" : "write", filename,
-    errno == ETIMEDOUT ? "timed out" : strerror(errno));
-  (void)close(dbblock->lockfd);
-  errno = 0;       /* Indicates locking failure */
-  DEBUG(D_hints_lookup) acl_level--;
-  return NULL;
-  }
-
-DEBUG(D_hints_lookup) debug_printf_indent("locked  %s\n", filename);
-
-/* At this point we have an opened and locked separate lock file, that is,
-exclusive access to the database, so we can go ahead and open it. If we are
-expected to create it, don't do so at first, again so that we can detect
+/* At this point we have an opened and locked separate lock file,
+that is, exclusive access to the database, so we can go ahead and open it. If we
+are expected to create it, don't do so at first, again so that we can detect
 whether we need to change its ownership (see comments about the lock file
 above.) There have been regular reports of crashes while opening hints
 databases - often this is caused by non-matching db.h and the library. To make
