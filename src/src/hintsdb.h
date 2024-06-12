@@ -23,14 +23,15 @@ binary blobs.
 
 The API is:
   Functions:
-    exim_dbopen		O_RDONLY/O_RDWR, optionally OR'd with O_CREAT
+    exim_lockfile_needed 	API semantics predicate
+    exim_dbopen
     exim_dbclose
     exim_dbget
     exim_dbput
-    exim_dbputb		(non-overwriting put)
+    exim_dbputb			non-overwriting put
     exim_dbdel
     exim_dbcreate_cursor
-    exim_dbscan		(get, and bump cursor)
+    exim_dbscan			get, and bump cursor
     exim_dbdelete_cursor
     exim_datum_init
     exim_datum_size_get/set
@@ -88,6 +89,12 @@ required by Exim's process transisitions)?
 
 # /* Access functions */
 
+static inline BOOL
+exim_lockfile_needed(void)
+{
+return FALSE;	/* We do transaction; no extra locking needed */
+}
+
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 static inline EXIM_DB *
 exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
@@ -99,10 +106,13 @@ if (flags & O_CREAT) sflags |= SQLITE_OPEN_CREATE;
 if ((ret = sqlite3_open_v2(CCS name, &dbp, sflags, NULL)) == SQLITE_OK)
   {
   sqlite3_busy_timeout(dbp, 5000);
-  if (flags & O_CREAT)
-    ret == sqlite3_exec(dbp,
+  ret = sqlite3_exec(dbp, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+  if (ret == SQLITE_OK && flags & O_CREAT)
+    ret = sqlite3_exec(dbp,
 	    "CREATE TABLE IF NOT EXISTS tbl (ky TEXT PRIMARY KEY, dat BLOB);",
 	    NULL, NULL, NULL);
+  if (ret != SQLITE_OK)
+    sqlite3_close(dbp);
   }
 //else
 //  fprintf(stderr, "sqlite3_open_v2: %s\n", sqlite3_errmsg(dbp));
@@ -134,7 +144,11 @@ if (sqlite3_step(statement) != SQLITE_ROW)
   }
 
 res->len = sqlite3_column_bytes(statement, 0);
-res->data = store_get(res->len + 1, GET_TAINTED);
+# ifdef COMPILE_UTILITY
+res->data = malloc(res->len);
+# else
+res->data = store_get(res->len, GET_TAINTED);
+# endif
 memcpy(res->data, sqlite3_column_blob(statement, 0), res->len);
 res->data[res->len] = '\0';
 /* fprintf(stderr, "res %d bytes: '%.*s'\n", (int)res->len, (int)res->len, res->data); */
@@ -173,23 +187,28 @@ return ret;
 static inline int
 exim_s_dbp(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data, const uschar * alt)
 {
+int hlen = data->len * 2, off = 0, res;
 # define FMT "INSERT OR %s INTO tbl (ky,dat) VALUES ('%.*s', X'%.*s');"
-uschar * hex = store_get(data->len * 2, data->data), * qry;
-int res;
+# ifdef COMPILE_UTILITY
+uschar * hex = malloc(hlen+1);
+# else
+uschar * hex = store_get(hlen+1, data->data);
+# endif
+uschar * qry;
 
-for (const uschar * s = data->data, * t = s + data->len; s < t; s++)
-  sprintf(CS hex + 2 * (s - data->data), "%02X", *s);
+for (const uschar * s = data->data, * t = s + data->len; s < t; s++, off += 2)
+  sprintf(CS hex + off, "%02X", *s);
 
 # ifdef COMPILE_UTILITY
-res = snprintf(NULL, 0, FMT,
-		alt, (int) key->len, key->data, (int)data->len * 2, hex);
+res = snprintf(CS hex, 0, FMT, alt, (int) key->len, key->data, hlen, hex);
 qry = malloc(res);
-snprintf(CS qry, res, FMT, alt, (int) key->len, key->data, (int)data->len * 2, hex);
+snprintf(CS qry, res, FMT, alt, (int) key->len, key->data, hlen, hex);
 /* fprintf(stderr, "exim_s_dbp(%s)\n", qry); */
 res = sqlite3_exec(dbp, CS qry, NULL, NULL, NULL);
 free(qry);
+free(hex);
 # else
-qry = string_sprintf(FMT, alt, (int) key->len, key->data, (int)data->len * 2, hex);
+qry = string_sprintf(FMT, alt, (int) key->len, key->data, hlen, hex);
 /* fprintf(stderr, "exim_s_dbp(%s)\n", qry); */
 res = sqlite3_exec(dbp, CS qry, NULL, NULL, NULL);
 /* fprintf(stderr, "exim_s_dbp res %d\n", res); */
@@ -231,7 +250,7 @@ uschar * qry;
 int res;
 
 # ifdef COMPILE_UTILITY
-res = snprintf(NULL, 0, FMT, (int) key->len, key->data);
+res = snprintf(NULL, 0, FMT, (int) key->len, key->data); /* res excludes nul */
 qry = malloc(res);
 snprintf(CS qry, res, FMT, (int) key->len, key->data);
 res = sqlite3_exec(dbp, CS qry, NULL, NULL, NULL);
@@ -252,7 +271,11 @@ return res;
 static inline EXIM_CURSOR *
 exim_dbcreate_cursor(EXIM_DB * dbp)
 {
+# ifdef COMPILE_UTILITY
+EXIM_CURSOR * c = malloc(sizeof(int));
+# else
 EXIM_CURSOR * c = store_malloc(sizeof(int));
+# endif
 *c = 0;
 return c;
 }
@@ -269,8 +292,8 @@ int i;
 BOOL ret;
 
 # ifdef COMPILE_UTILITY
-qry = malloc(i = snprintf(NULL, 0, FMT, *cursor));
-snprintf(CS qry, i, FMT, *cursor);
+qry = malloc((i = snprintf(NULL, 0, FMT, *cursor)));
+snprintf(CS qry, i-1, FMT, *cursor);
 /* fprintf(stderr, "exim_dbscan(%s)\n", qry); */
 ret = exim_dbget__(dbp, qry, key);
 free(qry);
@@ -289,13 +312,22 @@ return ret;
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation. */
 static inline void
 exim_dbdelete_cursor(EXIM_CURSOR * cursor)
-{ store_free(cursor); }
+{
+# ifdef COMPILE_UTILITY
+free(cursor);
+# else
+store_free(cursor);
+# endif
+}
 
 
 /* EXIM_DBCLOSE */
 static void
-exim_dbclose__(EXIM_DB * db)
-{ sqlite3_close(db); }
+exim_dbclose__(EXIM_DB * dbp)
+{
+(void) sqlite3_exec(dbp, "COMMIT TRANSACTION;", NULL, NULL, NULL);
+sqlite3_close(dbp);
+}
 
 
 /* Datum access */
@@ -362,6 +394,12 @@ tdb_traverse to be called) */
 
 /* Access functions */
 
+static inline BOOL
+exim_lockfile_needed(void)
+{
+return TRUE;
+}
+
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 static inline EXIM_DB *
 exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
@@ -402,7 +440,11 @@ exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key)
 static inline EXIM_CURSOR *
 exim_dbcreate_cursor(EXIM_DB * dbp)
 {
+# ifdef COMPILE_UTILITY
+EXIM_CURSOR * c = malloc(sizeof(TDB_DATA));
+# else
 EXIM_CURSOR * c = store_malloc(sizeof(TDB_DATA));
+# endif
 c->dptr = NULL;
 return c;
 }
@@ -533,7 +575,13 @@ log_write(0, LOG_MAIN, "Berkeley DB error: %s", msg);
 
 
 
-/* Access functions */
+/* Access functions (BDB 4.1+) */
+
+static inline BOOL
+exim_lockfile_needed(void)
+{
+return TRUE;
+}
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 /* The API changed for DB 4.1. - and we also starting using the "env" with a
@@ -680,7 +728,13 @@ exim_datum_free(EXIM_DATUM * d)
 /* Some text for messages */
 #   define EXIM_DBTYPE   "db (v3/4)"
 
-/* Access functions */
+/* Access functions (BDB 3/4) */
+
+static inline BOOL
+exim_lockfile_needed(void)
+{
+return TRUE;
+}
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 static inline EXIM_DB *
@@ -827,7 +881,13 @@ typedef struct {
 
 # define EXIM_DBTYPE "gdbm"
 
-/* Access functions */
+/* Access functions (gdbm) */
+
+static inline BOOL
+exim_lockfile_needed(void)
+{
+return TRUE;
+}
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 static inline EXIM_DB *
@@ -967,7 +1027,13 @@ the default is the NDBM interface (which seems to be a wrapper for GDBM) */
 
 # define EXIM_DBTYPE "ndbm"
 
-/* Access functions */
+/* Access functions (ndbm) */
+
+static inline BOOL
+exim_lockfile_needed(void)
+{
+return TRUE;
+}
 
 /* EXIM_DBOPEN - returns a EXIM_DB *, NULL if failed */
 /* Check that the name given is not present. This catches

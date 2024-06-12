@@ -17,7 +17,6 @@ ssss bytes read from TESTSUITE/aux-var/0037.F
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: filter-userx@test.ex
 unique = filter-userx@test.ex
@@ -58,7 +57,6 @@ userfilter router generated userx@test.ex
 routed by userfilter router
   envelope to: filter-userx@test.ex
   transport: <none>
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 unique = userx@test.ex
@@ -111,7 +109,6 @@ After routing:
   Remote deliveries:
   Failed addresses:
   Deferred addresses:
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => userx <filter-userx@test.ex> R=user_accept2 T=appendfile
 LOG: MAIN

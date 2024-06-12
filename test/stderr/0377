@@ -11,7 +11,6 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
@@ -137,7 +136,6 @@ routed by unseen_aaaa router (unseen)
   envelope to: aaaa@myhost.test.ex
   transport: <none>
 "unseen" set: replicated aaaa@myhost.test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
@@ -317,16 +315,12 @@ After routing:
     defer_aaaa@myhost.test.ex
     defer_bbbb@myhost.test.ex
     defer_cccc@myhost.test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => aaaa <aaaa@myhost.test.ex> R=seen_aaaa T=t1
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => bbbb <bbbb@myhost.test.ex> R=bbbb_0 T=t1
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => cccc <cccc@myhost.test.ex> R=cccc_accept T=t1
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=p1237 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -336,7 +330,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1234 -qf
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
 unique = aaaa@myhost.test.ex
@@ -454,7 +447,6 @@ domain = myhost.test.ex
 routed by seen_aaaa router
   envelope to: aaaa@myhost.test.ex
   transport: t1
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: cccc@myhost.test.ex
 unique = \0\cccc@myhost.test.ex
@@ -507,7 +499,6 @@ cccc_redirect router generated cccc@myhost.test.ex
 routed by cccc_redirect router
   envelope to: cccc@myhost.test.ex
   transport: <none>
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: cccc@myhost.test.ex
 unique = \1\cccc@myhost.test.ex
@@ -589,7 +580,6 @@ After routing:
 cccc@myhost.test.ex was previously delivered (t1 transport): discarded
 aaaa@myhost.test.ex was previously delivered (t1 transport): discarded
 bbbb@myhost.test.ex was previously delivered (t1 transport): discarded
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1234 -qf
@@ -601,7 +591,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1235 -qf
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
 unique = aaaa@myhost.test.ex
@@ -719,7 +708,6 @@ domain = myhost.test.ex
 routed by seen_aaaa router
   envelope to: aaaa@myhost.test.ex
   transport: t1
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: cccc@myhost.test.ex
 unique = \0\cccc@myhost.test.ex
@@ -772,7 +760,6 @@ cccc_redirect router generated cccc@myhost.test.ex
 routed by cccc_redirect router
   envelope to: cccc@myhost.test.ex
   transport: <none>
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: cccc@myhost.test.ex
 unique = \1\cccc@myhost.test.ex
@@ -854,7 +841,6 @@ After routing:
 cccc@myhost.test.ex was previously delivered (t1 transport): discarded
 aaaa@myhost.test.ex was previously delivered (t1 transport): discarded
 bbbb@myhost.test.ex was previously delivered (t1 transport): discarded
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=p1239 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1235 -qf

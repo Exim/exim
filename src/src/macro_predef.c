@@ -221,6 +221,18 @@ due to conflicts with other common macros. */
   builtin_macro_create(US"_HAVE_XCLIENT");
 #endif
 
+#ifdef USE_SQLITE
+  builtin_macro_create(US"_HAVE_HINTS_SQLITE");
+#elif defined(USE_TDB)
+  builtin_macro_create(US"_HAVE_HINTS_TDB");
+#elif defined(USE_DB)
+  builtin_macro_create(US"_HAVE_HINTS_BDB");
+#elif defined(USE_GDBM)
+  builtin_macro_create(US"_HAVE_HINTS_GDBM");
+#else
+  builtin_macro_create(US"_HAVE_HINTS_NDBM");
+#endif
+
 #ifdef LOOKUP_LSEARCH
   builtin_macro_create(US"_HAVE_LOOKUP_LSEARCH");
 #endif

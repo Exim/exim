@@ -1,5 +1,5 @@
 +++++++++++++++++++++++++++
-** Failed to open database lock file TESTSUITE/spool/db/wait-smtp.lockfile: No such file or directory
+** Failed to open hintsdb TESTSUITE/spool/db/wait-smtp: No such file or directory
 
 ******** SERVER ********
 Listening on port 1224 ... 

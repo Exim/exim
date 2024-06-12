@@ -447,8 +447,6 @@ Delivery address list:
   userz@test.ex 
   rd+CALLER@test.ex 
   rd+usery@test.ex 
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -726,8 +724,6 @@ try option unseen
 routed by r1 router
   envelope to: CALLER@test.ex
   transport: t1
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -754,8 +750,6 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> TESTSUITE/test-mail/junk <--------
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -854,8 +848,6 @@ rd+usery@test.ex: children all complete
 LOG: MAIN
   => TESTSUITE/test-mail/junk <rd+usery@test.ex> R=r5 T=ft1
 --------> TESTSUITE/test-mail/junk <--------
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -946,8 +938,6 @@ rd+CALLER@test.ex: children all complete
 LOG: MAIN
   => TESTSUITE/test-mail/junk <rd+CALLER@test.ex> R=r4 T=ft1
 --------> CALLER@test.ex <--------
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -981,8 +971,6 @@ CALLER@test.ex delivered
 LOG: MAIN
   => CALLER <CALLER@test.ex> R=r1 T=t1
 --------> usery@test.ex <--------
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -1024,8 +1012,6 @@ usery@test.ex delivered
 LOG: MAIN
   => usery <usery@test.ex> R=r2 T=t1
 --------> userz@test.ex <--------
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory

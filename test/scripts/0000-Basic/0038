@@ -7,7 +7,7 @@ data
 Here is some data.
 .
 quit
-****               
+****
 exim -bh V4NET.9.8.7
 ehlo test.ex
 mail from:<>
@@ -16,7 +16,7 @@ data
 Here is some data.
 .
 quit
-****               
+****
 exim -bh V4NET.9.8.7 -DRRATELIMIT=0/1h/per_conn/strict -DDRATELIMIT=0/1h/per_conn/strict
 ehlo test.ex
 mail from:<>

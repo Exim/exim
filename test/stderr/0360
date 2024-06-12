@@ -12,7 +12,6 @@ trusted user
 admin user
 dropping to exim gid; retaining priv uid
 delivering 10HmaX-000000005vi-0000
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: cms@test.ex
@@ -63,7 +62,6 @@ routed by r2 router
   envelope to: cms@test.ex
   transport: <none>
   errors to postmaster@test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: unknown@recurse.test.ex
@@ -112,7 +110,6 @@ main lookup for domain
 domain changed to recurse.test.ex.test.ex
 rewriting header lines
 re-routed to unknown@recurse.test.ex.test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: unknown@recurse.test.ex.test.ex
@@ -149,7 +146,6 @@ After routing:
   Failed addresses:
   Deferred addresses:
     defer@test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   *> unknown@recurse.test.ex.test.ex <cms@test.ex> R=r1 T=t1 H=recurse.test.ex.test.ex [V4NET.99.0.2] C="delivery bypassed by -N option"
 >>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -161,7 +157,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1234 -qf
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: cms@test.ex
@@ -212,7 +207,6 @@ routed by r2 router
   envelope to: cms@test.ex
   transport: <none>
   errors to postmaster@test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: unknown@recurse.test.ex

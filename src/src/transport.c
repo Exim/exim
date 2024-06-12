@@ -1895,8 +1895,8 @@ while (1)
     }
 
   /* we were not able to find an acceptable message, nor was there a
-   * continuation record.  So bug out, outer logic will clean this up.
-   */
+  continuation record.  So bug out, outer logic will clean this up.
+  */
 
   if (!bContinuation)
     {
@@ -1918,7 +1918,11 @@ if (host_length > 0)
   }
 
 dbfn_close(dbm_file);
-DEBUG(D_transport) {acl_level--; debug_printf("transport_check_waiting: TRUE\n"); }
+DEBUG(D_transport)
+  {
+  acl_level--;
+  debug_printf("transport_check_waiting: TRUE (found %s)\n", new_message_id);
+  }
 return TRUE;
 
 retfalse:

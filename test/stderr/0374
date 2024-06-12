@@ -11,7 +11,6 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: a1@myhost.test.ex
@@ -197,7 +196,6 @@ routed by u1 router (unseen)
   envelope to: a1@myhost.test.ex
   transport: ut1
 "unseen" set: replicated a1@myhost.test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: a1@myhost.test.ex
@@ -356,50 +354,35 @@ After routing:
     d3@myhost.test.ex
   Failed addresses:
   Deferred addresses:
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => a1 <a1@myhost.test.ex> R=real T=real
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => b1 <b1@myhost.test.ex> R=real T=real
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => c1 <c1@myhost.test.ex> R=real T=real
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => d1 <d1@myhost.test.ex> R=real T=real
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => d2 <d2@myhost.test.ex> R=real T=real
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => d3 <d3@myhost.test.ex> R=real T=real
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => a1 <a1@myhost.test.ex> R=u1 T=ut1
-locking TESTSUITE/spool/db/retry.lockfile
 transport error EPIPE ignored
 LOG: MAIN
   ** b1@myhost.test.ex R=ut2 T=ut2: Child process of ut2 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
-locking TESTSUITE/spool/db/retry.lockfile
 transport error EPIPE ignored
 LOG: MAIN
   == c1@myhost.test.ex R=ut3 T=ut3 defer (0): Child process of ut3 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
-locking TESTSUITE/spool/db/retry.lockfile
-locking TESTSUITE/spool/db/wait-ut4.lockfile
 cmdlog: '220'
 LOG: MAIN
   => d1@myhost.test.ex R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1] C="250 OK"
-locking TESTSUITE/spool/db/retry.lockfile
 cmdlog: '220'
 LOG: MAIN
   == d2@myhost.test.ex R=ut4 T=ut4 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d2@myhost.test.ex>: 450 soft error
-locking TESTSUITE/spool/db/retry.lockfile
-locking TESTSUITE/spool/db/wait-ut4.lockfile
 cmdlog: '220'
 LOG: MAIN
   ** d3@myhost.test.ex R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: 550 hard error
-locking TESTSUITE/spool/db/retry.lockfile
 Exim version x.yz ....
 Hints DB:
 configuration file is TESTSUITE/test-config
@@ -413,7 +396,6 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: CALLER@myhost.test.ex
 unique = CALLER@myhost.test.ex
@@ -460,7 +442,6 @@ After routing:
   Remote deliveries:
   Failed addresses:
   Deferred addresses:
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => CALLER <CALLER@myhost.test.ex> R=real T=real
 LOG: MAIN

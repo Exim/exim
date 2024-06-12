@@ -11,13 +11,11 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@test.ex
 no   domain  retry record
 no   address retry record
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail/rmbox
@@ -28,7 +26,6 @@ After routing:
   Remote deliveries:
   Failed addresses:
   Deferred addresses:
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 added retry item for T:TESTSUITE/test-mail/rmbox:x@test.ex: errno=-22 more_errno=dd flags=0
 LOG: MAIN
@@ -39,7 +36,6 @@ Succeeded addresses:
 Failed addresses:
 Deferred addresses:
  TESTSUITE/test-mail/rmbox
-locking TESTSUITE/spool/db/retry.lockfile
 retry for T:TESTSUITE/test-mail/rmbox:x@test.ex = *@test.ex -22 0
 failing_interval=ttt message_age=ttt
 Writing retry data for T:TESTSUITE/test-mail/rmbox:x@test.ex
@@ -56,12 +52,10 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1234
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@test.ex
 no   domain  retry record
 no   address retry record
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail/rmbox
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -71,7 +65,6 @@ After routing:
   Remote deliveries:
   Failed addresses:
   Deferred addresses:
-locking TESTSUITE/spool/db/retry.lockfile
 retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
 retry time not reached: checking ultimate address timeout

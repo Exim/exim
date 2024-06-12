@@ -92,8 +92,6 @@ MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
 Attempting full verification using callout
- locking TESTSUITE/spool/db/callout.lockfile
- locked  TESTSUITE/spool/db/callout.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
@@ -104,7 +102,7 @@ Attempting full verification using callout
  dbfn_read: null return
  callout cache: no address record found for x@y
  EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database and lockfile
+ closed hints database
 interface=NULL port=PORT_S
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  127.0.0.1 in hosts_try_fastopen?
@@ -130,18 +128,16 @@ cmd buf flush ddd bytes
   SMTP<< 220 OK
   SMTP(close)>>
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:220'
- locking TESTSUITE/spool/db/callout.lockfile
- locked  TESTSUITE/spool/db/callout.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
- dbfn_write: key=y datalen NNN
+ dbfn_write: key=y datalen 40
  wrote callout cache domain record for y:
    result=1 postmaster=0 random=0
- dbfn_write: key=x@y datalen NNN
+ dbfn_write: key=x@y datalen 16
  wrote positive callout cache address record for x@y
  EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database and lockfile
+ closed hints database
 ----------- end verify ------------
 sender x@y verified ok
 accept: condition test succeeded in ACL "mail"
@@ -218,8 +214,6 @@ MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
 Attempting full verification using callout
- locking TESTSUITE/spool/db/callout.lockfile
- locked  TESTSUITE/spool/db/callout.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
@@ -231,7 +225,7 @@ Attempting full verification using callout
  callout cache: found address record for x@y
  callout cache: address record is positive
  EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database and lockfile
+ closed hints database
 ----------- end verify ------------
 sender x@y verified ok
 accept: condition test succeeded in ACL "mail"

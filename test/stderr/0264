@@ -27,7 +27,6 @@ body_linecount=0 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   rz.b@outside 
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: rz.b@outside
 unique = rz.b@outside
@@ -88,7 +87,6 @@ Succeeded addresses:
 Failed addresses:
 Deferred addresses:
  rz.b@outside
-locking TESTSUITE/spool/db/retry.lockfile
 *@outside in "^\*@r5domain.ex"? no (end of list)
 *@outside in "userx@test.ex"? no (end of list)
 outside in "test.ex"? no (end of list)

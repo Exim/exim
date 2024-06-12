@@ -173,8 +173,6 @@ body_linecount=0 message_linecount=160
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   userx@test.ex 
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -219,8 +217,6 @@ r2 router generated >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex
 routed by r2 router
   envelope to: userx@test.ex
   transport: <none>
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -239,8 +235,6 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ... <--------
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -2767,8 +2761,6 @@ Delivery address list:
   sender@test.ex 
   sender@test.ex 
   sender@test.ex 
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -18590,8 +18582,6 @@ sender@test.ex is a duplicate address: discarded
 sender@test.ex is a duplicate address: discarded
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> sender@test.ex <--------
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory

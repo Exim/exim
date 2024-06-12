@@ -61,23 +61,32 @@ Users:
 *          Open and lock a database file         *
 *************************************************/
 
+/* Ensure the directory for the DB is present */
+
+static inline void
+db_dir_make(BOOL panic)
+{
+(void) directory_make(spool_directory, US"db", EXIMDB_DIRECTORY_MODE, panic);
+}
+
+
 /* Lock a file to protect the DB.  Return TRUE for success */
 
 static inline BOOL
 lockfile_take(open_db * dbblock, const uschar * filename, BOOL rdonly, BOOL panic)
 {
 flock_t lock_data;
-int rc;
+int rc, * fdp = &dbblock->lockfd;
 
 priv_drop_temp(exim_uid, exim_gid);
-if ((dbblock->lockfd = Uopen(filename, O_RDWR, EXIMDB_LOCKFILE_MODE)) < 0)
+if ((*fdp = Uopen(filename, O_RDWR, EXIMDB_LOCKFILE_MODE)) < 0)
   {
-  (void)directory_make(spool_directory, US"db", EXIMDB_DIRECTORY_MODE, panic);
-  dbblock->lockfd = Uopen(filename, O_RDWR|O_CREAT, EXIMDB_LOCKFILE_MODE);
+  db_dir_make(panic);
+  *fdp = Uopen(filename, O_RDWR|O_CREAT, EXIMDB_LOCKFILE_MODE);
   }
 priv_restore();
 
-if (dbblock->lockfd < 0)
+if (*fdp < 0)
   {
   log_write(0, LOG_MAIN, "%s",
     string_open_failed("database lock file %s", filename));
@@ -96,7 +105,7 @@ DEBUG(D_hints_lookup|D_retry|D_route|D_deliver)
 
 sigalrm_seen = FALSE;
 ALARM(EXIMDB_LOCK_TIMEOUT);
-rc = fcntl(dbblock->lockfd, F_SETLKW, &lock_data);
+rc = fcntl(*fdp, F_SETLKW, &lock_data);
 ALARM_CLR(0);
 
 if (sigalrm_seen) errno = ETIMEDOUT;
@@ -105,7 +114,7 @@ if (rc < 0)
   log_write(0, LOG_MAIN|LOG_PANIC, "Failed to get %s lock for %s: %s",
     rdonly ? "read" : "write", filename,
     errno == ETIMEDOUT ? "timed out" : strerror(errno));
-  (void)close(dbblock->lockfd);
+  (void)close(*fdp); *fdp = -1;
   errno = 0;       /* Indicates locking failure */
   return FALSE;
   }
@@ -137,7 +146,7 @@ dbfn_open(const uschar * name, int flags, open_db * dbblock,
   BOOL lof, BOOL panic)
 {
 int rc, save_errno;
-BOOL read_only = flags & O_RDONLY;
+flock_t lock_data;
 uschar dirname[PATHLEN], filename[PATHLEN];
 
 DEBUG(D_hints_lookup) acl_level++;
@@ -159,15 +168,20 @@ snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
 snprintf(CS filename, sizeof(filename), "%s/%s.lockfile", dirname, name);
 
 dbblock->lockfd = -1;
-if (!lockfile_take(dbblock, filename, flags == O_RDONLY, panic))
+if (!exim_lockfile_needed())
+  db_dir_make(panic);
+else
   {
-  DEBUG(D_hints_lookup) acl_level--;
-  return NULL;
+  if (!lockfile_take(dbblock, filename, flags == O_RDONLY, panic))
+    {
+    DEBUG(D_hints_lookup) acl_level--;
+    return NULL;
+    }
   }
 
-/* At this point we have an opened and locked separate lock file,
-that is, exclusive access to the database, so we can go ahead and open it. If we
-are expected to create it, don't do so at first, again so that we can detect
+/* At this point we have an opened and locked separate lock file, that is,
+exclusive access to the database, so we can go ahead and open it. If we are
+expected to create it, don't do so at first, again so that we can detect
 whether we need to change its ownership (see comments about the lock file
 above.) There have been regular reports of crashes while opening hints
 databases - often this is caused by non-matching db.h and the library. To make
@@ -203,6 +217,7 @@ if (!dbblock->dbptr)
       debug_printf_indent("%s\n", CS string_open_failed("DB file %s",
           filename));
   (void)close(dbblock->lockfd);
+  dbblock->lockfd = -1;
   errno = save_errno;
   DEBUG(D_hints_lookup) acl_level--;
   return NULL;
@@ -228,7 +243,7 @@ return dbblock;
 *************************************************/
 
 /* Closing a file automatically unlocks it, so after closing the database, just
-close the lock file.
+close the lock file if there was one.
 
 Argument: a pointer to an open database block
 Returns:  nothing
@@ -237,10 +252,17 @@ Returns:  nothing
 void
 dbfn_close(open_db *dbblock)
 {
+int * fdp = &dbblock->lockfd;
+
 exim_dbclose(dbblock->dbptr);
-(void)close(dbblock->lockfd);
+if (*fdp >= 0) (void)close(*fdp);
 DEBUG(D_hints_lookup)
-  { debug_printf_indent("closed hints database and lockfile\n"); acl_level--; }
+  {
+  debug_printf_indent("closed hints database%s\n",
+		      *fdp < 0 ? "" : " and lockfile");
+  acl_level--;
+  }
+*fdp = -1;
 }
 
 

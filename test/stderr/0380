@@ -11,7 +11,6 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
@@ -81,9 +80,7 @@ After routing:
   Failed addresses:
   Deferred addresses:
     aaaa@myhost.test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => bbbb <bbbb@myhost.test.ex> R=r3 T=t1
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=p1235 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
