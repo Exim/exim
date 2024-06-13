@@ -96,7 +96,6 @@ domain.com in "*"?
  domain.com in "*"? yes (matched "*")
 try option transport
 try option unseen
-try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
@@ -123,7 +122,6 @@ domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
 try option transport
-try option unseen
 try option unseen
 try option interface
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
@@ -755,7 +753,6 @@ domain.com in "*"?
  domain.com in "*"? yes (matched "*")
 try option transport
 try option unseen
-try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
@@ -782,7 +779,6 @@ domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
 try option transport
-try option unseen
 try option unseen
 try option interface
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
@@ -1364,7 +1360,6 @@ domain.com in "*"?
  domain.com in "*"? yes (matched "*")
 try option transport
 try option unseen
-try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
 end of ACL "cutthrough": ACCEPT
@@ -1391,7 +1386,6 @@ domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
 try option transport
-try option unseen
 try option unseen
 try option interface
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...

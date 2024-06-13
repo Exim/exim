@@ -237,7 +237,7 @@ va_end(ap);
 static void
 term_handler(int sig)
 {
-exit(1);
+exim_exit(EXIT_FAILURE);
 }
 
 
@@ -4692,12 +4692,12 @@ if (malware_test_file)
   if ((result = malware_in_file(malware_test_file)) == FAIL)
     {
     printf("No malware found.\n");
-    exit(EXIT_SUCCESS);
+    exim_exit(EXIT_SUCCESS);
     }
   if (result != OK)
     {
     printf("Malware lookup returned non-okay/fail: %d\n", result);
-    exit(EXIT_FAILURE);
+    exim_exit(EXIT_FAILURE);
     }
   if (malware_name)
     printf("Malware found: %s\n", malware_name);
@@ -4706,7 +4706,7 @@ if (malware_test_file)
 #else
   printf("Malware scanning not enabled at compile time.\n");
 #endif
-  exit(EXIT_FAILURE);
+  exim_exit(EXIT_FAILURE);
   }
 
 /* Handle a request to list the delivery queue */
@@ -4715,7 +4715,7 @@ if (list_queue)
   {
   set_process_info("listing the queue");
   queue_list(list_queue_option, argv + recipients_arg, argc - recipients_arg);
-  exit(EXIT_SUCCESS);
+  exim_exit(EXIT_SUCCESS);
   }
 
 /* Handle a request to count the delivery queue */
@@ -4724,7 +4724,7 @@ if (count_queue)
   {
   set_process_info("counting the queue");
   fprintf(stdout, "%u\n", queue_count());
-  exit(EXIT_SUCCESS);
+  exim_exit(EXIT_SUCCESS);
   }
 
 /* Handle actions on specific messages, except for the force delivery and
@@ -4763,7 +4763,7 @@ if (msg_action_arg > 0 && msg_action != MSG_DELIVER && msg_action != MSG_LOAD)
 
   else if (!queue_action(argv[msg_action_arg], msg_action, argv, argc,
     recipients_arg)) yield = EXIT_FAILURE;
-  exit(yield);
+  exim_exit(yield);
   }
 
 /* We used to set up here to skip reading the ACL section, on
@@ -5166,7 +5166,7 @@ if (f.daemon_listen || f.inetd_wait_mode || is_multiple_qrun())
     (void)gettimeofday(&t0, NULL);
 # endif
     if (!tls_dropprivs_validate_require_cipher(FALSE))
-      exit(1);
+      exim_exit(EXIT_FAILURE);
 # ifdef MEASURE_TIMING
     report_time_since(&t0, US"validate_ciphers (delta)");
 # endif

@@ -308,7 +308,7 @@ makes sure that important subsystems are initialized. */
 if (!gcry_check_version (GCRYPT_VERSION))
   {
   fputs ("libgcrypt version mismatch\n", stderr);
-  exit (2);
+  exim_exit(2);
   }
 
 /* We don't want to see any warnings, e.g. because we have not yet

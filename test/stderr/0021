@@ -292,6 +292,7 @@ dropping to exim gid; retaining priv uid
 x in local_parts?
  list element: !bad
 x in local_parts? yes (end of list)
+>>>>>>>>>>>>>>>> Exim pid=p1237 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => x <x@y> R=accept T=appendfile
 LOG: MAIN

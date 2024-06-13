@@ -45,6 +45,7 @@ mailbox quota exceeded
 maildir: time since "new" directory modified = 10s
 Exim quota exceeded for tmp/dddddddddd.HddddddPddddd.myhost.test.ex
 appendfile yields 1 with errno=-22 more_errno=dd
+>>>>>>>>>>>>>>>> Exim pid=p1236 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 maildir_taggedX_appendfile transport returned DEFER for userx@myhost.test.ex
 added retry item for T:userx@myhost.test.ex: errno=-22 more_errno=dd flags=0
 LOG: MAIN

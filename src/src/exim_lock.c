@@ -103,7 +103,7 @@ usage(void)
 printf("usage: exim_lock [-v] [-q] [-lockfile] [-fcntl] [-flock] [-mbx]\n"
        "       [-retries <n>] [-interval <n>] [-timeout <n>] [-restore-times]\n"
        "       <file name> [command]\n");
-exit(1);
+exit(EXIT_FAILURE);
 }
 
 
@@ -227,7 +227,7 @@ if (use_flock)
   {
   printf("exim_lock: can't use flock() because it was not available in the\n"
          "           operating system when exim_lock was compiled\n");
-  exit(1);
+  exit(EXIT_FAILURE);
   }
 #endif
 
@@ -271,14 +271,14 @@ if (*filename == '~')
   if (pw == NULL)
     {
     printf("exim_lock: unable to expand file name %s\n", argv[i-1]);
-    exit(1);
+    exit(EXIT_FAILURE);
     }
 
   if ((int)strlen(pw->pw_dir) + (int)strlen(filename) + 1 > sizeof(buffer))
     {
     printf("exim_lock: expanded file name %s%s is too long", pw->pw_dir,
       filename);
-    exit(1);
+    exit(EXIT_FAILURE);
     }
 
   strcpy(buffer, pw->pw_dir);
@@ -294,7 +294,7 @@ if (use_lockfile)
   if (uname(&s) < 0)
     {
     printf("exim_lock: failed to find host name using uname()\n");
-    exit(1);
+    exit(EXIT_FAILURE);
     }
   primary_hostname = s.nodename;
 
@@ -331,7 +331,7 @@ for (j = 0; j < lock_retries; j++)
       {
       printf("exim_lock: failed to create hitching post %s: %s\n", hitchname,
         strerror(errno));
-      exit(1);
+      exit(EXIT_FAILURE);
       }
 
     /* Apply hitching post algorithm. */

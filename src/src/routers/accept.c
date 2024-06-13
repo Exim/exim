@@ -115,8 +115,8 @@ DEBUG(D_route) debug_printf("%s router called for %s\n  domain = %s\n",
 
 /* Set up the errors address, if any. */
 
-rc = rf_get_errors_address(addr, rblock, verify, &errors_to);
-if (rc != OK) return rc;
+if ((rc = rf_get_errors_address(addr, rblock, verify, &errors_to)) != OK)
+  return rc;
 
 /* Set up the additional and removable headers for the address. */
 
@@ -135,9 +135,12 @@ addr->prop.errors_address = errors_to;
 addr->prop.extra_headers = extra_headers;
 addr->prop.remove_headers = remove_headers;
 
-return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)? OK : DEFER;
+return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ? OK : DEFER;
 }
 
 #endif	/*!MACRO_PREDEF*/
 #endif	/*ROUTER_ACCEPT*/
+
 /* End of routers/accept.c */
+/* vi: aw ai sw=2
+*/

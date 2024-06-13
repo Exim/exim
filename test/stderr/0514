@@ -17,3 +17,5 @@ Non-recipients:
 recipients_count=1
 **** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=0
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

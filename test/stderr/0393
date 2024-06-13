@@ -43,6 +43,7 @@ writing data block fd=dddd size=sss timeout=0
 end of filtering transport writing: yield=1
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
+>>>>>>>>>>>>>>>> Exim pid=p1237 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 t1 transport returned OK for userx@test.ex
 LOG: MAIN
   => userx <userx@test.ex> R=r1 T=t1
@@ -84,13 +85,14 @@ cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
+>>>>>>>>>>>>>>>> Exim pid=p1240 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 t1 transport returned OK for userx@test.ex
 LOG: MAIN
   => userx <userx@test.ex> R=r1 T=t1
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1238 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
 configuration file is TESTSUITE/test-config
@@ -127,10 +129,11 @@ cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
+>>>>>>>>>>>>>>>> Exim pid=p1243 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 t1 transport returned OK for userx@test.ex
 LOG: MAIN
   => userx <userx@test.ex> R=r1 T=t1
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1240 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1242 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

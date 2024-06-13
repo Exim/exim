@@ -27,6 +27,7 @@ checking retry status of 127.0.0.1
 no retry data available
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:QUIT+:250'
+>>>>>>>>>>>>>>>> Exim pid=p1239 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   added retry item
 LOG: MAIN
@@ -70,6 +71,7 @@ no host retry record
 no message retry record
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:QUIT+:250'
+>>>>>>>>>>>>>>>> Exim pid=p1240 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   existing delete item dropped
   added retry item
@@ -96,7 +98,7 @@ Writing retry data for R:userx@test.ex:<CALLER@test.ex>
   first failed=dddd last try=dddd next try=+2 expired=0
   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
->>>>>>>>>>>>>>>> Exim pid=p1239 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1241 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1234
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -126,6 +128,7 @@ no host retry record
 no message retry record
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:QUIT+:250'
+>>>>>>>>>>>>>>>> Exim pid=p1242 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   existing delete item dropped
   added retry item
@@ -152,7 +155,7 @@ Writing retry data for R:userx@test.ex:<CALLER@test.ex>
   first failed=dddd last try=dddd next try=+4 expired=0
   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
->>>>>>>>>>>>>>>> Exim pid=p1240 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1243 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1235
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -185,7 +188,7 @@ Failed addresses:
 Deferred addresses:
  userx@test.ex: no retry items
 end of retry processing
->>>>>>>>>>>>>>>> Exim pid=p1241 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1244 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1236
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

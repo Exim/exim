@@ -109,6 +109,7 @@ After routing:
   Remote deliveries:
   Failed addresses:
   Deferred addresses:
+>>>>>>>>>>>>>>>> Exim pid=p1241 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => userx <filter-userx@test.ex> R=user_accept2 T=appendfile
 LOG: MAIN

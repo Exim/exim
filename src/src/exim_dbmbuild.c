@@ -199,7 +199,7 @@ while (argc > 1)
 if (argc != 3)
   {
   printf("usage: exim_dbmbuild [-nolc] <source file> <dbm base name>\n");
-  exit(1);
+  exit(EXIT_FAILURE);
   }
 
 if (Ustrcmp(argv[arg], "-") == 0)
@@ -207,7 +207,7 @@ if (Ustrcmp(argv[arg], "-") == 0)
 else if (!(f = fopen(argv[arg], "rb")))
   {
   printf("exim_dbmbuild: unable to open %s: %s\n", argv[arg], strerror(errno));
-  exit(1);
+  exit(EXIT_FAILURE);
   }
 
 /* By default Berkeley db does not put extensions on... which
@@ -217,7 +217,7 @@ can be painful! */
 if (Ustrcmp(argv[arg], argv[arg+1]) == 0)
   {
   printf("exim_dbmbuild: input and output filenames are the same\n");
-  exit(1);
+  exit(EXIT_FAILURE);
   }
 #endif
 
@@ -227,7 +227,7 @@ if (Ustrcmp(argv[arg], argv[arg+1]) == 0)
 if (strlen(argv[arg+1]) > sizeof(temp_dbmname) - 20)
   {
   printf("exim_dbmbuild: output filename is ridiculously long\n");
-  exit(1);
+  exit(EXIT_FAILURE);
   }
 
 Ustrcpy(temp_dbmname, US argv[arg+1]);
@@ -247,7 +247,7 @@ if (!(d = exim_dbopen(temp_dbmname, dirname, O_RDWR|O_CREAT|O_EXCL, 0644)))
   printf("exim_dbmbuild: unable to create %s: %s\n", temp_dbmname,
     strerror(errno));
   (void)fclose(f);
-  exit(1);
+  exit(EXIT_FAILURE);
   }
 
 /* Unless using native db calls, see if we have created <name>.db; if not,

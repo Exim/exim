@@ -1869,7 +1869,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
   if (yield == PASS)
     {
-    if (r->pass_router != NULL) nextr = r->pass_router;
+    if (r->pass_router) nextr = r->pass_router;
     }
   else
     {
@@ -2016,7 +2016,6 @@ if (r->translate_ip_address)
 /* See if this is an unseen routing; first expand the option if necessary.
 DEFER can be given if the expansion fails */
 
-GET_OPTION("unseen");
 yield = exp_bool(addr, US"router", r->name, D_route,
 	       	US"unseen", r->unseen, r->expand_unseen, &unseen);
 if (yield != OK) goto ROUTE_EXIT;

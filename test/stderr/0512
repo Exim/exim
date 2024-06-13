@@ -67,6 +67,7 @@ all IP addresses skipped or deferred at least one address
 updating wait-t1 database
 already listed for 127.0.0.1
 Leaving t1 transport
+>>>>>>>>>>>>>>>> Exim pid=p1236 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   == userx@myhost.test.ex R=r1 T=t1 defer (dd): Connection refused
 LOG: MAIN
@@ -90,11 +91,11 @@ LOG: MAIN
   => :blackhole: <CALLER@myhost.test.ex> R=r0
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1237 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1236 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1234 -qf
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -143,6 +144,7 @@ hosts_max_try_hardlimit reached: behave as if all hosts were tried
 updating wait-t1 database
 already listed for 127.0.0.1
 Leaving t1 transport
+>>>>>>>>>>>>>>>> Exim pid=p1240 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   == userx@myhost.test.ex R=r1 T=t1 defer (dd): Connection refused
 LOG: MAIN
@@ -166,11 +168,11 @@ LOG: MAIN
   => :blackhole: <CALLER@myhost.test.ex> R=r0
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1240 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1239 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1242 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1241 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1241 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1243 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1235 -qf
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
