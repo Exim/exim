@@ -2462,8 +2462,7 @@ if ((pid = exim_fork(US"delivery-local")) == 0)
   and close the pipe we were writing down before exiting. */
 
   (void)close(pfd[pipe_write]);
-  search_tidyup();
-  exit(EXIT_SUCCESS);
+  exim_exit(EXIT_SUCCESS);
   }
 
 /* Back in the main process: panic if the fork did not succeed. This seems
@@ -5026,7 +5025,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
     big_buffer[0] = continue_transport ? '1' : '0';
     rmt_dlv_checked_write(fd, 'Z', '0', big_buffer, 1);
     (void)close(fd);
-    exit(EXIT_SUCCESS);
+    exim_exit(EXIT_SUCCESS);
     }
 
   /* Back in the mainline: close the unwanted half of the pipe. */

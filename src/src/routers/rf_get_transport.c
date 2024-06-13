@@ -58,7 +58,7 @@ if (!tpname)
   }
 
 expandable = Ustrchr(tpname, '$') != NULL;
-if (*tpptr != NULL && !expandable) return TRUE;
+if (*tpptr && !expandable) return TRUE;
 
 if (expandable)
   {

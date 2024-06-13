@@ -27,6 +27,7 @@ After routing:
   Failed addresses:
   Deferred addresses:
 no retry data available
+>>>>>>>>>>>>>>>> Exim pid=p1237 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 added retry item for T:TESTSUITE/test-mail/rmbox:x@test.ex: errno=-22 more_errno=dd flags=0
 LOG: MAIN
   == TESTSUITE/test-mail/rmbox <x@test.ex> R=r1 T=t1 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/rmbox)
@@ -80,7 +81,7 @@ Deferred addresses:
  TESTSUITE/test-mail/rmbox: no retry items
  x@test.ex: no retry items
 end of retry processing
->>>>>>>>>>>>>>>> Exim pid=p1237 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1234
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

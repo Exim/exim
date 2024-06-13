@@ -3271,7 +3271,7 @@ if (config_file)
     if (os_getcwd(buf, PATH_MAX) == NULL)
       {
       perror("exim: getcwd");
-      exit(EXIT_FAILURE);
+      exim_exit(EXIT_FAILURE);
       }
     g = string_cat(NULL, buf);
 
@@ -3301,7 +3301,7 @@ to a safe place. Later we change to $spool_directory. */
 if (Uchdir("/") < 0)
   {
   perror("exim: chdir `/': ");
-  exit(EXIT_FAILURE);
+  exim_exit(EXIT_FAILURE);
   }
 
 /* Check the status of the file we have opened, if we have retained root

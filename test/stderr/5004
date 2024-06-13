@@ -157,6 +157,7 @@ renaming temporary file
 renamed tmp/MAILDIR.mail.test.ex as new/MAILDIR.mail.test.ex
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=p1237 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling TESTSUITE/test-mail:userx@test.ex
 t1 transport returned OK for TESTSUITE/test-mail
 post-process TESTSUITE/test-mail (0)

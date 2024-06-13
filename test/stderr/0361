@@ -250,6 +250,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   locking by lockfile fcntl 
 *** delivery by t2 transport bypassed by -N option
 search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=p1236 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling kilos@recurse.test.ex.test.ex/t2
 t2 transport returned OK for kilos@recurse.test.ex.test.ex
 post-process kilos@recurse.test.ex.test.ex (0)

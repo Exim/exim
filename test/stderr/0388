@@ -133,6 +133,8 @@ added retry item for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S: errno=dd more_errno=dd,
 set_process_info: pppp delivering 10HmaX-000000005vi-0000: waiting for a remote delivery subprocess to finish
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 (just run smtp for x@y in subprocess)
 search_tidyup called
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=p1235 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 reading retry information for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S from subprocess
   added retry item
 reading retry information for R:x@y from subprocess

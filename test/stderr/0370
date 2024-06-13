@@ -29,6 +29,7 @@ writing data block fd=dddd size=sss timeout=3600
 writing error EEE: Broken pipe
 transport error EPIPE ignored
 t1 transport yielded 0
+>>>>>>>>>>>>>>>> Exim pid=p1236 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 t1 transport returned OK for |TESTSUITE/bin/iefbr14
 LOG: MAIN
   => |TESTSUITE/bin/iefbr14 <userx@test.ex> R=r1 T=t1

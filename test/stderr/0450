@@ -29,6 +29,7 @@ all IP addresses skipped or deferred at least one address
 updating wait-t1 database
 added 10HmaX-000000005vi-0000 to queue for 127.0.0.1
 Leaving t1 transport
+>>>>>>>>>>>>>>>> Exim pid=p1237 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (dd): Connection refused
 >>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -60,9 +61,10 @@ all IP addresses skipped or deferred at least one address
 updating wait-t1 database
 already listed for 127.0.0.1
 Leaving t1 transport
+>>>>>>>>>>>>>>>> Exim pid=p1238 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (dd): Connection refused
->>>>>>>>>>>>>>>> Exim pid=p1237 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1234
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

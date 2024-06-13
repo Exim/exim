@@ -54,6 +54,7 @@ cmdlog: '220:EHLO:250-:MAIL|:RCPT|:DATA:250:550:RSET'
 set_process_info: pppp delivering 10HmaX-000000005vi-0000: just tried 127.0.0.1 [127.0.0.1]:PORT_S for userx@test.ex: result OK
 Leaving t1 transport
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 (just run t1 for userx@test.ex in subprocess)
+>>>>>>>>>>>>>>>> Exim pid=p1235 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for 10HmaX-000000005vi-0000 (pppp)
 set_process_info: pppp delivering 10HmaX-000000005vi-0000: waiting for a remote delivery subprocess to finish
 set_process_info: pppp delivering 10HmaX-000000005vi-0000
@@ -100,16 +101,17 @@ updating wait-t1 database
 added 10HmaZ-000000005vi-0000 to queue for 127.0.0.1
 Leaving t1 transport
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000 (just run t1 for CALLER@the.local.host.name in subprocess)
+>>>>>>>>>>>>>>>> Exim pid=p1238 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000: waiting for a remote delivery subprocess to finish
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000
 LOG: MAIN
   == CALLER@the.local.host.name R=r1 T=t1 defer (dd): Connection refused
 set_process_info: pppp tidying up after delivering 10HmaZ-000000005vi-0000
->>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1235 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1237 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1239 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 set_process_info: pppp running queue: 10HmaY-000000005vi-0000
@@ -129,13 +131,14 @@ updating wait-t1 database
 added 10HmaY-000000005vi-0000 to queue for 127.0.0.1
 Leaving t1 transport
 set_process_info: pppp delivering 10HmaY-000000005vi-0000 (just run t1 for usery@test.ex in subprocess)
+>>>>>>>>>>>>>>>> Exim pid=p1240 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for 10HmaY-000000005vi-0000 (pppp)
 set_process_info: pppp delivering 10HmaY-000000005vi-0000: waiting for a remote delivery subprocess to finish
 set_process_info: pppp delivering 10HmaY-000000005vi-0000
 LOG: retry_defer MAIN
   == usery@test.ex R=r1 T=t1 defer (-54): retry time not reached for any host for 'test.ex'
 set_process_info: pppp tidying up after delivering 10HmaY-000000005vi-0000
->>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1241 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 LOG: queue_run MAIN

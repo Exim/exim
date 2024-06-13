@@ -832,62 +832,82 @@ After routing:
   Failed addresses:
   Deferred addresses:
     g1@myhost.test.ex
+>>>>>>>>>>>>>>>> Exim pid=p1237 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => a1 <a1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+>>>>>>>>>>>>>>>> Exim pid=p1238 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => b1 <b1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+>>>>>>>>>>>>>>>> Exim pid=p1239 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => c1 <c1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+>>>>>>>>>>>>>>>> Exim pid=p1240 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => d1 <d1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+>>>>>>>>>>>>>>>> Exim pid=p1241 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => d2 <d2@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+>>>>>>>>>>>>>>>> Exim pid=p1242 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => d3 <d3@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+>>>>>>>>>>>>>>>> Exim pid=p1243 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => e1 <e1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+>>>>>>>>>>>>>>>> Exim pid=p1244 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => f1 <f1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+>>>>>>>>>>>>>>>> Exim pid=p1245 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => f2 <f2@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+>>>>>>>>>>>>>>>> Exim pid=p1246 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => f3 <f3@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+>>>>>>>>>>>>>>>> Exim pid=p1247 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => a1 <a1@myhost.test.ex> P=<> R=u1 T=ut1
 log writing disabled
 transport error EPIPE ignored
+>>>>>>>>>>>>>>>> Exim pid=p1248 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   ** b1@myhost.test.ex P=<> R=ut2 T=ut2: Child process of ut2 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
 log writing disabled
 transport error EPIPE ignored
+>>>>>>>>>>>>>>>> Exim pid=p1249 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   == c1@myhost.test.ex R=ut3 T=ut3 defer (0): Child process of ut3 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
 log writing disabled
 cmdlog: '220'
+>>>>>>>>>>>>>>>> Exim pid=p1250 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => d1@myhost.test.ex P=<> R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1] C="250 OK"
 log writing disabled
 cmdlog: '220'
+>>>>>>>>>>>>>>>> Exim pid=p1251 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   == d2@myhost.test.ex R=ut4 T=ut4 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d2@myhost.test.ex>: 450 soft error
 log writing disabled
 cmdlog: '220'
+>>>>>>>>>>>>>>>> Exim pid=p1252 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   ** d3@myhost.test.ex P=<> R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: 550 hard error
 log writing disabled
 cmdlog: '220'
+>>>>>>>>>>>>>>>> Exim pid=p1253 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   ** e1@myhost.test.ex P=<> R=ut5 T=ut5 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<e1@myhost.test.ex>: 550 hard error
 log writing disabled
 cmdlog: '220'
+>>>>>>>>>>>>>>>> Exim pid=p1254 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => f1@myhost.test.ex P=<CALLER@myhost.test.ex> R=ut6 T=ut6 H=127.0.0.1 [127.0.0.1] C="250 OK"
 log writing disabled
 cmdlog: '220'
+>>>>>>>>>>>>>>>> Exim pid=p1255 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   == f2@myhost.test.ex R=ut6 T=ut6 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<f2@myhost.test.ex>: 450 soft error
 log writing disabled
 cmdlog: '220'
+>>>>>>>>>>>>>>>> Exim pid=p1256 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   ** f3@myhost.test.ex P=<CALLER@myhost.test.ex> R=ut6 T=ut6 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<f3@myhost.test.ex>: 550 hard error
 log writing disabled
@@ -973,12 +993,13 @@ After routing:
   Remote deliveries:
   Failed addresses:
   Deferred addresses:
+>>>>>>>>>>>>>>>> Exim pid=p1259 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => CALLER <CALLER@myhost.test.ex> P=<> R=real T=real
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1238 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1237 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1258 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1257 (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   d3@myhost.test.ex <d3@myhost.test.ex>: error ignored
 log writing disabled
@@ -1083,12 +1104,14 @@ After routing:
   Remote deliveries:
   Failed addresses:
   Deferred addresses:
+>>>>>>>>>>>>>>>> Exim pid=p1262 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => h1 <h1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+>>>>>>>>>>>>>>>> Exim pid=p1263 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => h1 <h1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=ut8 T=ut1
 log writing disabled
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1240 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1261 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1260 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

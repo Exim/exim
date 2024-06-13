@@ -569,7 +569,7 @@ argc -= optind; argv += optind;
 spool_directory = argv[0];
 
 if (!(dbm = dbfn_open(argv[1], O_RDONLY, &dbblock, FALSE, TRUE)))
-  exit(1);
+  exit(EXIT_FAILURE);
 
 /* Scan the file, formatting the information for each entry. Note
 that data is returned in a malloc'ed block, in order that it be
@@ -1210,7 +1210,7 @@ printf("Tidying Exim hints database %s/db/%s\n", argv[1], argv[2]);
 
 spool_directory = argv[1];
 if (!(dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE, TRUE)))
-  exit(1);
+  exit(EXIT_FAILURE);
 
 /* Prepare for building file names */
 

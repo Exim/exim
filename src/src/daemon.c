@@ -2157,7 +2157,7 @@ if (f.background_daemon)
     pid_t pid = exim_fork(US"daemon");
     if (pid < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
       "fork() failed when starting daemon: %s", strerror(errno));
-    if (pid > 0) exit(EXIT_SUCCESS);      /* in parent process, just exit */
+    if (pid > 0) exim_exit(EXIT_SUCCESS); /* in parent process, just exit */
     (void)setsid();                       /* release controlling terminal */
     f.daemon_listen = daemon_listen;
     }

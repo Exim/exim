@@ -1464,7 +1464,7 @@ if (Ustrcmp(which, "debug") == 0)
     return;
     }
   fprintf(stderr, "exim: %s\n", errmsg);
-  exit(EXIT_FAILURE);
+  exim_exit(EXIT_FAILURE);
   }
 else log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "%s", errmsg);
 }
