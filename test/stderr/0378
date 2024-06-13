@@ -11,7 +11,6 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
@@ -72,7 +71,6 @@ aaaa router generated defer_aaaa@myhost.test.ex
 routed by aaaa router
   envelope to: aaaa@myhost.test.ex
   transport: <none>
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: defer_aaaa@myhost.test.ex
@@ -121,7 +119,6 @@ After routing:
   Failed addresses:
   Deferred addresses:
     defer_aaaa@myhost.test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 Exim version x.yz ....
 Hints DB:
 configuration file is TESTSUITE/test-config
@@ -134,7 +131,6 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: CALLER@myhost.test.ex
@@ -166,14 +162,11 @@ LOG: MAIN
 >>>>>>>>>>>>>>>> Exim pid=p1238 (autoreply) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => >CALLER@myhost.test.ex <aaaa@myhost.test.ex> R=aaaa T=t3
-locking TESTSUITE/spool/db/retry.lockfile
 transport error EPIPE ignored
 LOG: MAIN
   => |/bin/sh -c exit <aaaa@myhost.test.ex> R=aaaa T=t2
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => TESTSUITE/test-mail/file <aaaa@myhost.test.ex> R=aaaa T=t1
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -183,7 +176,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1234 -qf
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
 unique = aaaa@myhost.test.ex
@@ -217,7 +209,6 @@ aaaa_2nd_time router generated aaaa@myhost.test.ex
 routed by aaaa_2nd_time router
   envelope to: aaaa@myhost.test.ex
   transport: <none>
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
 unique = \0\aaaa@myhost.test.ex
@@ -274,7 +265,6 @@ aaaa router generated defer_aaaa@myhost.test.ex
 routed by aaaa router
   envelope to: aaaa@myhost.test.ex
   transport: <none>
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: defer_aaaa@myhost.test.ex
 unique = defer_aaaa@myhost.test.ex
@@ -319,7 +309,6 @@ After routing:
   Failed addresses:
   Deferred addresses:
     defer_aaaa@myhost.test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=p1241 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1234 -qf

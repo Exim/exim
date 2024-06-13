@@ -72,8 +72,6 @@ body_linecount=1 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   nofile@test.ex 
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -109,8 +107,6 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> nofile@test.ex <--------
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -264,8 +260,6 @@ body_linecount=1 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   userx@test.ex 
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -301,8 +295,6 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -458,8 +450,6 @@ body_linecount=1 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   userx@test.ex 
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -495,8 +485,6 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
@@ -556,8 +544,6 @@ Succeeded addresses:
 Failed addresses:
 Deferred addresses:
  userx@test.ex
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
@@ -575,9 +561,9 @@ failing_interval=ttt message_age=ttt
 Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
- dbfn_write: key=T:userx@test.ex datalen NNN
+ dbfn_write: key=T:userx@test.ex datalen 154
  EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database and lockfile
+ closed hints database
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaZ-000000005vi-0000
@@ -663,8 +649,6 @@ body_linecount=1 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   userx@test.ex 
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
@@ -681,7 +665,7 @@ no   domain  retry record
 no   address retry record
 userx@test.ex: queued for routing
  EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database and lockfile
+ closed hints database
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
 --------> r1 router <--------
@@ -707,8 +691,6 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
@@ -717,7 +699,7 @@ search_tidyup called
 retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
  EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database and lockfile
+ closed hints database
 search_tidyup called
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=p1245
@@ -760,8 +742,6 @@ Succeeded addresses:
 Failed addresses:
 Deferred addresses:
  userx@test.ex
- locking TESTSUITE/spool/db/retry.lockfile
- locked  TESTSUITE/spool/db/retry.lockfile
  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
@@ -779,9 +759,9 @@ failing_interval=ttt message_age=ttt
 Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
- dbfn_write: key=T:userx@test.ex datalen NNN
+ dbfn_write: key=T:userx@test.ex datalen 154
  EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database and lockfile
+ closed hints database
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbA-000000005vi-0000

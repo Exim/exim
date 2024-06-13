@@ -11,7 +11,6 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -25,7 +24,6 @@ After routing:
   Failed addresses:
   Deferred addresses:
 checking retry status of 127.0.0.1
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:QUIT+:250'
@@ -38,7 +36,6 @@ Succeeded addresses:
 Failed addresses:
 Deferred addresses:
  userx@test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:userx@test.ex:<CALLER@test.ex>
@@ -54,7 +51,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1234
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 no   domain  retry record
@@ -70,7 +66,6 @@ After routing:
   Failed addresses:
   Deferred addresses:
 checking retry status of 127.0.0.1
-locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
 no message retry record
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
@@ -93,7 +88,6 @@ Succeeded addresses:
 Failed addresses:
 Deferred addresses:
  userx@test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 deleted retry information for R:userx@test.ex
 deleted retry information for R:test.ex
 retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
@@ -113,7 +107,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1235
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 no   domain  retry record
@@ -129,7 +122,6 @@ After routing:
   Failed addresses:
   Deferred addresses:
 checking retry status of 127.0.0.1
-locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
 no message retry record
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
@@ -152,7 +144,6 @@ Succeeded addresses:
 Failed addresses:
 Deferred addresses:
  userx@test.ex
-locking TESTSUITE/spool/db/retry.lockfile
 deleted retry information for R:userx@test.ex
 deleted retry information for R:test.ex
 retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
@@ -172,7 +163,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1236
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 no   domain  retry record

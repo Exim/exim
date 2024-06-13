@@ -1135,6 +1135,7 @@ errstr = US"cname_loop";
 
 not_good:
   {
+#ifndef DISABLE_EVENTS
   const uschar * s = NULL;
   BOOL save_flag = f.search_find_defer;
   uschar * save_serr = search_error_message;
@@ -1167,6 +1168,7 @@ not_good:
   /*XXX what other state could an expansion in the eventhandler mess up? */
   search_error_message = save_serr;
   f.search_find_defer = save_flag;
+#endif	/*EVENTS*/
   return rc;
   }
 }

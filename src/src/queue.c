@@ -394,20 +394,19 @@ f.queue_running = TRUE;
 
 if (!recurse)
   {
-  uschar extras[8];
-  uschar *p = extras;
+  uschar extras[8], * p = extras;
 
   if (q->queue_2stage)		*p++ = 'q';
   if (q->queue_run_first_delivery) *p++ = 'i';
   if (q->queue_run_force)	*p++ = 'f';
   if (q->deliver_force_thaw)	*p++ = 'f';
   if (q->queue_run_local)	*p++ = 'l';
-  *p = 0;
+  *p = '\0';
 
   p = big_buffer;
   p += sprintf(CS p, "pid=%d", (int)queue_run_pid);
 
-  if (extras[0] != 0)
+  if (*extras)
     p += sprintf(CS p, " -q%s", extras);
 
   if (deliver_selectstring)
@@ -443,6 +442,15 @@ if (deliver_selectstring && f.deliver_selectstring_regex)
 if (deliver_selectstring_sender && f.deliver_selectstring_sender_regex)
   selectstring_regex_sender =
     regex_must_compile(deliver_selectstring_sender, MCS_CASELESS, FALSE);
+
+#ifndef DISABLE_TLS
+if (!queue_tls_init)
+  {
+  queue_tls_init = TRUE;
+  /* Preload TLS library info for smtp transports. */
+  tls_client_creds_reload(FALSE);
+  }
+#endif
 
 /* If the spool is split into subdirectories, we want to process it one
 directory at a time, so as to spread out the directory scanning and the
@@ -667,16 +675,6 @@ for (int i = queue_run_in_order ? -1 : 0;
     set_process_info("running queue: %s", fq->text);
 #ifdef MEASURE_TIMING
     report_time_since(&timestamp_startup, US"queue msg selected");
-#endif
-
-#ifndef DISABLE_TLS
-    if (!queue_tls_init)
-      {
-      queue_tls_init = TRUE;
-      /* Preload TLS library info for smtp transports.  Once, and only if we
-      have a delivery to do. */
-      tls_client_creds_reload(FALSE);
-      }
 #endif
 
 single_item_retry:
@@ -1619,3 +1617,5 @@ else DEBUG(D_queue_run) debug_printf(" socket: %s\n", strerror(errno));
 #endif /*!COMPILE_UTILITY*/
 
 /* End of queue.c */
+/* vi: aw ai sw=2
+*/

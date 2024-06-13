@@ -49,7 +49,7 @@ dbmdb_check(void *handle, const uschar *filename, int modemask, uid_t *owners,
 {
 int rc;
 
-#if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM)
+#if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM) || defined(USE_SQLITE)
 rc = lf_check_file(-1, filename, S_IFREG, modemask, owners, owngroups,
   "dbm", errmsg);
 #else

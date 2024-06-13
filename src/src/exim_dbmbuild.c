@@ -76,14 +76,6 @@ uschar *		queue_name;
 BOOL			split_spool_directory;
 
 
-/* These introduced by the taintwarn handling */
-rmark
-store_mark_3(const char *func, int linenumber)
-{ return NULL; }
-#ifdef ALLOW_INSECURE_TAINTED_DATA
-BOOL    allow_insecure_tainted_data;
-#endif
-
 /******************************************************************************/
 
 
@@ -177,7 +169,7 @@ BOOL lowercase = TRUE;
 BOOL warn = TRUE;
 BOOL duperr = TRUE;
 BOOL lastdup = FALSE;
-#if !defined (USE_DB) && !defined(USE_TDB) && !defined(USE_GDBM)
+#if !defined (USE_DB) && !defined(USE_TDB) && !defined(USE_GDBM) && !defined(USE_SQLITE)
 int is_db = 0;
 struct stat statbuf;
 #endif
@@ -221,7 +213,7 @@ else if (!(f = fopen(argv[arg], "rb")))
 /* By default Berkeley db does not put extensions on... which
 can be painful! */
 
-#if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM)
+#if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM) && !defined(USE_SQLITE)
 if (Ustrcmp(argv[arg], argv[arg+1]) == 0)
   {
   printf("exim_dbmbuild: input and output filenames are the same\n");
@@ -261,7 +253,7 @@ if (!(d = exim_dbopen(temp_dbmname, dirname, O_RDWR|O_CREAT|O_EXCL, 0644)))
 /* Unless using native db calls, see if we have created <name>.db; if not,
 assume .dir & .pag */
 
-#if !defined(USE_DB) && !defined(USE_TDB) && !defined(USE_GDBM)
+#if !defined(USE_DB) && !defined(USE_TDB) && !defined(USE_GDBM) && !defined(USE_SQLITE)
 sprintf(CS real_dbmname, "%s.db", temp_dbmname);
 is_db = Ustat(real_dbmname, &statbuf) == 0;
 #endif
@@ -333,7 +325,8 @@ while (Ufgets(line, max_insize, f) != NULL)
       exim_datum_data_set(&content, buffer);
       exim_datum_size_set(&content, bptr - buffer + add_zero);
 
-      switch(rc = exim_dbputb(d, &key, &content))
+      rc = exim_dbputb(d, &key, &content);
+      switch(rc)
         {
         case EXIM_DBPUTB_OK:
 	  count++;
@@ -423,7 +416,8 @@ if (started)
   exim_datum_data_set(&content, buffer);
   exim_datum_size_set(&content, bptr - buffer + add_zero);
 
-  switch(rc = exim_dbputb(d, &key, &content))
+  rc = exim_dbputb(d, &key, &content);
+  switch(rc)
     {
     case EXIM_DBPUTB_OK:
     count++;
@@ -462,7 +456,7 @@ if (yield == 0 || yield == 1)
     printf("%d duplicate key%s \n", dupcount, (dupcount > 1)? "s" : "");
     }
 
-  #if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM)
+#if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM) || defined(USE_SQLITE)
   Ustrcpy(real_dbmname, temp_dbmname);
   Ustrcpy(buffer, US argv[arg+1]);
   if (Urename(real_dbmname, buffer) != 0)
@@ -470,7 +464,7 @@ if (yield == 0 || yield == 1)
     printf("Unable to rename %s as %s\n", real_dbmname, buffer);
     return 1;
     }
-  #else
+#else
 
   /* Rename a single .db file */
 
@@ -506,7 +500,7 @@ if (yield == 0 || yield == 1)
       }
     }
 
-  #endif /* USE_DB || USE_TDB || USE_GDBM */
+#endif /* USE_DB || USE_TDB || USE_GDBM || USE_SQLITE */
   }
 
 /* Otherwise unlink the temporary files. */
@@ -514,7 +508,7 @@ if (yield == 0 || yield == 1)
 else
   {
   printf("dbmbuild abandoned\n");
-#if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM)
+#if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM) || defined(USE_SQLITE)
   /* We created it, so safe to delete despite the name coming from outside */
   /* coverity[tainted_string] */
   Uunlink(temp_dbmname);
@@ -531,10 +525,12 @@ else
     sprintf(CS real_dbmname, "%s.pag", temp_dbmname);
     Uunlink(real_dbmname);
     }
-#endif /* USE_DB || USE_TDB */
+#endif /* USE_DB || USE_TDB || USE_GDBM || USE_SQLITE */
   }
 
 return yield;
 }
 
 /* End of exim_dbmbuild.c */
+/* se aw ai sw=2
+*/

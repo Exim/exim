@@ -43,7 +43,7 @@ send_to_server:
   hosts = 127.0.0.1
   port = PORT_D
   hosts_try_fastopen = :
-  # assumes that HOSTIPV4 can sent to 127.0.0.1
+  # assumes that HOSTIPV4 can send to 127.0.0.1
   interface = ${if eq {$sender_address_domain}{dustybelt.tld} {127.0.0.1}{HOSTIPV4}}
 
 # ----- Retry -----

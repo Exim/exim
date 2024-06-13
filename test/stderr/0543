@@ -5,7 +5,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1234
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@domain1
 unique = userx@domain1
@@ -32,15 +31,12 @@ After routing:
     userx@domain1
   Failed addresses:
   Deferred addresses:
-locking TESTSUITE/spool/db/retry.lockfile
-locking TESTSUITE/spool/db/wait-smtp.lockfile
 cmdlog: '220:EHLO:250-:MAIL:250:RCPT:250:DATA:354:.:250:QUIT+:250'
 LOG: MAIN
   => userx@domain1 R=smarthost T=smtp H=thisloop.test.ex [127.0.0.1] C="250 OK"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=p1235 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: usery@domain1
 unique = usery@domain1

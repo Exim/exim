@@ -857,7 +857,7 @@ for (int i = 0; i < 3; i++)
         retry_record->basic_errno = rti->basic_errno;
         retry_record->more_errno = rti->more_errno;
         Ustrncpy(retry_record->text, message, message_length);
-        retry_record->text[message_length] = 0;
+        retry_record->text[message_length] = 0;	/* nul-term string in db */
 
         DEBUG(D_retry)
           {

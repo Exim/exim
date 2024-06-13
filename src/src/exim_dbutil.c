@@ -81,11 +81,6 @@ uschar *		queue_name;
 BOOL			split_spool_directory;
 
 
-/* These introduced by the taintwarn handling */
-#ifdef ALLOW_INSECURE_TAINTED_DATA
-BOOL    allow_insecure_tainted_data;
-#endif
-
 /******************************************************************************/
 
 
@@ -287,78 +282,77 @@ Returns:   NULL if the open failed, or the locking failed.
 */
 
 open_db *
-dbfn_open(uschar *name, int flags, open_db *dbblock, BOOL lof, BOOL panic)
+dbfn_open(const uschar * name, int flags, open_db * dbblock,
+  BOOL lof, BOOL panic)
 {
 int rc;
 struct flock lock_data;
-BOOL read_only = flags == O_RDONLY;
+BOOL read_only = (flags & (O_WRONLY|O_RDWR)) == O_RDONLY;
 uschar * dirname, * filename;
 
 /* The first thing to do is to open a separate file on which to lock. This
 ensures that Exim has exclusive use of the database before it even tries to
-open it. If there is a database, there should be a lock file in existence. */
+open it. If there is a database, there should be a lock file in existence;
+if no lockfile we infer there is no database and error out.  We open the
+lockfile using the r/w mode requested for the DB, users lacking permission
+for the DB access mode will error out here. */
 
-#ifdef COMPILE_UTILITY
 if (  asprintf(CSS &dirname, "%s/db", spool_directory) < 0
    || asprintf(CSS &filename, "%s/%s.lockfile", dirname, name) < 0)
   return NULL;
-#else
-dirname = string_sprintf("%s/db", spool_directory);
-filename = string_sprintf("%s/%s.lockfile", dirname, name);
-#endif
 
-dbblock->lockfd = Uopen(filename, flags, 0);
-if (dbblock->lockfd < 0)
+dbblock->lockfd = -1;
+if (exim_lockfile_needed())
   {
-  printf("** Failed to open database lock file %s: %s\n", filename,
-    strerror(errno));
-  return NULL;
+  if ((dbblock->lockfd = Uopen(filename, flags, 0)) < 0)
+    {
+    printf("** Failed to open database lock file %s: %s\n", filename,
+      strerror(errno));
+    return NULL;
+    }
+
+  /* Now we must get a lock on the opened lock file; do this with a blocking
+  lock that times out. */
+
+  lock_data.l_type = read_only ? F_RDLCK : F_WRLCK;
+  lock_data.l_whence = lock_data.l_start = lock_data.l_len = 0;
+
+  sigalrm_seen = FALSE;
+  os_non_restarting_signal(SIGALRM, sigalrm_handler);
+  ALARM(EXIMDB_LOCK_TIMEOUT);
+  rc = fcntl(dbblock->lockfd, F_SETLKW, &lock_data);
+  ALARM_CLR(0);
+
+  if (sigalrm_seen) errno = ETIMEDOUT;
+  if (rc < 0)
+    {
+    printf("** Failed to get %s lock for %s: %s",
+      read_only ? "read" : "write",
+      filename,
+      errno == ETIMEDOUT ? "timed out" : strerror(errno));
+    (void)close(dbblock->lockfd);
+    return NULL;
+    }
+
+  /* At this point we have an opened and locked separate lock file, that is,
+  exclusive access to the database, so we can go ahead and open it. */
   }
 
-/* Now we must get a lock on the opened lock file; do this with a blocking
-lock that times out. */
-
-lock_data.l_type = read_only ? F_RDLCK : F_WRLCK;
-lock_data.l_whence = lock_data.l_start = lock_data.l_len = 0;
-
-sigalrm_seen = FALSE;
-os_non_restarting_signal(SIGALRM, sigalrm_handler);
-ALARM(EXIMDB_LOCK_TIMEOUT);
-rc = fcntl(dbblock->lockfd, F_SETLKW, &lock_data);
-ALARM_CLR(0);
-
-if (sigalrm_seen) errno = ETIMEDOUT;
-if (rc < 0)
-  {
-  printf("** Failed to get %s lock for %s: %s",
-    flags & O_WRONLY ? "write" : "read",
-    filename,
-    errno == ETIMEDOUT ? "timed out" : strerror(errno));
-  (void)close(dbblock->lockfd);
-  return NULL;
-  }
-
-/* At this point we have an opened and locked separate lock file, that is,
-exclusive access to the database, so we can go ahead and open it. */
-
-#ifdef COMPILE_UTILITY
 if (asprintf(CSS &filename, "%s/%s", dirname, name) < 0) return NULL;
-#else
-filename = string_sprintf("%s/%s", dirname, name);
-#endif
-dbblock->dbptr = exim_dbopen(filename, dirname, flags, 0);
 
-if (!dbblock->dbptr)
+if (flags & O_RDWR) flags |= O_CREAT;
+
+if (!(dbblock->dbptr = exim_dbopen(filename, dirname, flags, 0)))
   {
-  printf("** Failed to open DBM file %s for %s:\n   %s%s\n", filename,
-    read_only? "reading" : "writing", strerror(errno),
-    #ifdef USE_DB
+  printf("** Failed to open DBM file %s for %s: %s%s\n", filename,
+    read_only ? "reading" : "writing", strerror(errno),
+#ifdef USE_DB
     " (or Berkeley DB error while opening)"
-    #else
+#else
     ""
-    #endif
+#endif
     );
-  (void)close(dbblock->lockfd);
+  if (dbblock->lockfd >= 0) (void)close(dbblock->lockfd);
   return NULL;
   }
 
@@ -373,17 +367,17 @@ return dbblock;
 *************************************************/
 
 /* Closing a file automatically unlocks it, so after closing the database, just
-close the lock file.
+close the lock file if there was one.
 
 Argument: a pointer to an open database block
 Returns:  nothing
 */
 
 void
-dbfn_close(open_db *dbblock)
+dbfn_close(open_db * dbp)
 {
-exim_dbclose(dbblock->dbptr);
-(void)close(dbblock->lockfd);
+exim_dbclose(dbp->dbptr);
+if (dbp->lockfd >= 0) (void) close(dbp->lockfd);
 }
 
 
@@ -1427,3 +1421,5 @@ return 0;
 #endif  /* EXIM_TIDYDB */
 
 /* End of exim_dbutil.c */
+/* vi: aw ai sw=2
+*/

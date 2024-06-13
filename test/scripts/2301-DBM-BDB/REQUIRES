@@ -1,0 +1,2 @@
+lookup dbm
+feature _HAVE_HINTS_BDB

@@ -3,7 +3,6 @@ Hints DB:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@y
@@ -17,7 +16,6 @@ After routing:
   Failed addresses:
   Deferred addresses:
 checking retry status of 127.0.0.1
-locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 added retry item for R:x@y:<CALLER@myhost.test.ex>: errno=-44 more_errno=dd,A flags=0
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:QUIT+:250'
@@ -30,7 +28,6 @@ Succeeded addresses:
 Failed addresses:
 Deferred addresses:
  x@y
-locking TESTSUITE/spool/db/retry.lockfile
 retry for R:x@y:<CALLER@myhost.test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:x@y:<CALLER@myhost.test.ex>
@@ -43,7 +40,6 @@ Hints DB:
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
-locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@y
 no   domain  retry record
@@ -59,12 +55,10 @@ After routing:
   Failed addresses:
   Deferred addresses:
 checking retry status of 127.0.0.1
-locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
 no message retry record
 added retry item for R:x@y:<CALLER@myhost.test.ex>: errno=dd more_errno=dd,A flags=1
 added retry item for R:x@y: errno=dd more_errno=dd,A flags=1
-locking TESTSUITE/spool/db/wait-smtp.lockfile
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:DATA:354:.:250:QUIT+:250'
 reading retry information for R:x@y from subprocess
   existing delete item dropped
@@ -86,7 +80,6 @@ LOG: MAIN
 Processing retry items
 Succeeded addresses:
  x@y
-locking TESTSUITE/spool/db/retry.lockfile
 deleted retry information for R:x@y:<CALLER@myhost.test.ex>
 deleted retry information for R:x@y
 deleted retry information for R:y
