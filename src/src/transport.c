@@ -2075,37 +2075,24 @@ continue_limit_rcpt = peer_limit_rcpt;
 continue_limit_rcptdom = peer_limit_rcptdom;
 #endif
 
-if ((pid = exim_fork(US"continued-transport-interproc")) == 0)
+if ((pid = exim_fork(US"continued-transport")) == 0)
   {
-  /* Disconnect entirely from the parent process. If we are running in the
-  test harness, wait for a bit to allow the previous process time to finish,
-  write the log, etc., so that the output is always in the same order for
-  automatic comparison. */
+  /* If we are running in the test harness, wait for a bit to allow the
+  previous process time to finish, write the log, etc., so that the output is
+  always in the same order for automatic comparison. */
 
-  if ((pid = exim_fork(US"continued-transport")) != 0)
-    _exit(EXIT_SUCCESS);
-  testharness_pause_ms(1000);
-
+  testharness_pause_ms(500);
   transport_do_pass_socket(transport_name, hostname, hostaddress,
     id, socket_fd);
+  /*NOTREACHED*/
   }
-
-/* If the process creation succeeded, wait for the first-level child, which
-immediately exits, leaving the second level process entirely disconnected from
-this one. */
 
 if (pid > 0)
-  {
-  int rc;
-  while ((rc = wait(&status)) != pid && (rc >= 0 || errno != ECHILD));
   return TRUE;
-  }
-else
-  {
-  DEBUG(D_transport) debug_printf("transport_pass_socket failed to fork: %s\n",
+
+DEBUG(D_transport) debug_printf("transport_pass_socket failed to fork: %s\n",
     strerror(errno));
-  return FALSE;
-  }
+return FALSE;
 }
 
 
