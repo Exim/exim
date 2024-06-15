@@ -1,5 +1,4 @@
-# Arbitrary expansion after transport
-# (EXPERIMENTAL_EVENT)
+# Events
 #
 need_ipv4
 munge timeout_errno
