@@ -97,7 +97,9 @@ send_to_server1:
   tls_verify_certificates =	CDIR/CA/CA.pem
   tls_verify_cert_hostnames =	${if match {$local_part}{^noverify} {*}{:}}
   tls_try_verify_hosts =	*
+.ifdef _HAVE_EVENT
   event_action =		${acl {log_resumption}}
+.endif
 
 send_to_server2:
   driver = smtp
@@ -107,7 +109,9 @@ send_to_server2:
   hosts_try_fastopen =	:
   tls_verify_certificates =	CDIR/CA/CA.pem
   tls_verify_cert_hostnames =	:
+.ifdef _HAVE_EVENT
   event_action =		${acl {log_resumption}}
+.endif
 
 
 # ----- Retry -----
