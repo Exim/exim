@@ -3800,7 +3800,6 @@ int save_errno;
 int rc;
 
 uschar *message = NULL;
-uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 smtp_context * sx = store_get(sizeof(*sx), GET_TAINTED);	/* tainted, for the data buffers */
 BOOL pass_message = FALSE;
 #ifndef DISABLE_ESMTP_LIMITS
@@ -3809,9 +3808,10 @@ BOOL mail_limit = FALSE;
 #ifdef SUPPORT_DANE
 BOOL dane_held;
 #endif
-BOOL tcw_done = FALSE, tcw = FALSE;
+BOOL tcw_done = FALSE, tcw = FALSE, passback_tcw = FALSE;
 
 *message_defer = FALSE;
+continue_next_id[0] = '\0';
 
 memset(sx, 0, sizeof(*sx));
 sx->addrlist = addrlist;
@@ -4132,7 +4132,7 @@ else
         &&
 #endif
            transport_check_waiting(tblock->name, host->name,
-             tblock->connection_max_messages, new_message_id,
+             tblock->connection_max_messages, continue_next_id,
 	     (oicf)smtp_are_same_identities, (void*)&t_compare);
     if (!tcw)
       {
@@ -4699,9 +4699,9 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
     smtp_compare_t t_compare =
       {.tblock = tblock, .current_sender_address = sender_address};
 
-    if (  sx->first_addr			/* more addrs for this message */
-       || f.continue_more			/* more addrs for continued-host */
-       || tcw_done && tcw			/* more messages for host */
+    if (  sx->first_addr		/* more addrs for this message */
+       || f.continue_more		/* more addrs for continued-host */
+       || tcw_done && tcw		/* more messages for host */
        || (
 #ifndef DISABLE_TLS
 	     (  tls_out.active.sock < 0  &&  !continue_proxy_cipher
@@ -4710,7 +4710,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	  &&
 #endif
 	     transport_check_waiting(tblock->name, host->name,
-	       sx->max_mail, new_message_id,
+	       sx->max_mail, continue_next_id,
 	       (oicf)smtp_are_same_identities, (void*)&t_compare)
        )  )
       {
@@ -4761,6 +4761,20 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	  goto SEND_MESSAGE;
 	  }
 
+	/* If there is a next-message-id from the wait-transport hintsdb,
+	pretend caller said it has further message for us.  Note that we lose
+	the TLS session (below), and that our caller will pass back the id to
+	the delivery process.  If not, remember to later cancel the
+	next-message-id so that the transport-caller code (in deliver.c) does
+	not report it back up the pipe to the delivery process.
+	XXX It would be feasible to also report the other continue_* with the
+	_id - taking out the exec for the first continued-transport. But the
+	actual conn, and it's fd, is a problem. Maybe replace the transport
+	pipe with a unix-domain socket? */
+
+	if (!f.continue_more && continue_hostname && *continue_next_id)
+	  f.continue_more = passback_tcw = TRUE;
+
 	/* Unless caller said it already has more messages listed for this host,
 	pass the connection on to a new Exim process (below, the call to
 	transport_pass_socket).  If the caller has more ready, just return with
@@ -4780,17 +4794,17 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	    been used, which we do under TLSv1.3 for the gsasl SCRAM*PLUS methods.
 	    But we were always doing it anyway. */
 
-	  tls_close(sx->cctx.tls_ctx,
-	    sx->send_tlsclose ? TLS_SHUTDOWN_WAIT : TLS_SHUTDOWN_WONLY);
-	  sx->send_tlsclose = FALSE;
-	  sx->cctx.tls_ctx = NULL;
-	  tls_out.active.sock = -1;
-	  smtp_peer_options = smtp_peer_options_wrap;
-	  sx->ok = !sx->smtps
-	    && smtp_write_command(sx, SCMD_FLUSH, "EHLO %s\r\n", sx->helo_data)
-		>= 0
-	    && smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
-				      '2', ob->command_timeout);
+	    tls_close(sx->cctx.tls_ctx,
+	      sx->send_tlsclose ? TLS_SHUTDOWN_WAIT : TLS_SHUTDOWN_WONLY);
+	    sx->send_tlsclose = FALSE;
+	    sx->cctx.tls_ctx = NULL;
+	    tls_out.active.sock = -1;
+	    smtp_peer_options = smtp_peer_options_wrap;
+	    sx->ok = !sx->smtps
+	      && smtp_write_command(sx, SCMD_FLUSH, "EHLO %s\r\n", sx->helo_data)
+		  >= 0
+	      && smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
+					'2', ob->command_timeout);
 
 	    if (sx->ok && f.continue_more)
 	      goto TIDYUP;		/* More addresses for another run */
@@ -4822,7 +4836,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
   propagate it from the initial
   */
 	if (sx->ok && transport_pass_socket(tblock->name, host->name,
-	      host->address, new_message_id, socket_fd
+	      host->address, continue_next_id, socket_fd
 #ifndef DISABLE_ESMTP_LIMITS
 	      , sx->peer_limit_mail, sx->peer_limit_rcpt, sx->peer_limit_rcptdom
 #endif
@@ -5014,15 +5028,17 @@ if (mail_limit && sx->first_addr)
   }
 #endif
 
-return yield;
+OUT:
+  if (!passback_tcw) continue_next_id[0] = '\0';
+  return yield;
 
 TIDYUP:
 #ifdef SUPPORT_DANE
-if (dane_held) for (address_item * a = sx->addrlist->next; a; a = a->next)
-  if (a->transport_return == DANE)
-    a->transport_return = PENDING_DEFER;
+  if (dane_held) for (address_item * a = sx->addrlist->next; a; a = a->next)
+    if (a->transport_return == DANE)
+      a->transport_return = PENDING_DEFER;
 #endif
-return yield;
+  goto OUT;
 }
 
 

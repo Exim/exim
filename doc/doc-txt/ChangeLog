@@ -2,6 +2,14 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Since version 4.98
+------------------
+
+JH/01 Use fewer forks & execs for sending many messages to a single host.
+      By passing back the next message-id from the transport to the delivery
+      process, we can loop there.  A two-phase queue run will benefit,
+      particularly for mailinglist and smarthost cases.
+
 Exim version 4.98
 -----------------
 

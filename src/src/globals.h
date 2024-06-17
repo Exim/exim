@@ -450,6 +450,7 @@ extern BOOL    continue_proxy_dane;    /* proxied conn is DANE */
 extern uschar *continue_proxy_sni;     /* proxied conn SNI */
 extern uschar *continue_hostname;      /* Host for continued delivery */
 extern uschar *continue_host_address;  /* IP address for ditto */
+extern uschar  continue_next_id[];     /* Next message_id from hintsdb */
 extern int     continue_sequence;      /* Sequence num for continued delivery */
 extern uschar *continue_transport;     /* Transport for continued delivery */
 #ifndef DISABLE_ESMTP_LIMITS

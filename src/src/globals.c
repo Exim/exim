@@ -746,6 +746,7 @@ BOOL    continue_proxy_dane    = FALSE;
 uschar *continue_proxy_sni     = NULL;
 uschar *continue_hostname      = NULL;
 uschar *continue_host_address  = NULL;
+uschar  continue_next_id[MESSAGE_ID_LENGTH +1] = {[0]='\0'};
 int     continue_sequence      = 1;
 uschar *continue_transport     = NULL;
 #ifndef DISABLE_ESMTP_LIMITS

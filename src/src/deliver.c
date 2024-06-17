@@ -3684,20 +3684,34 @@ while (!done)
       while (*ptr++) ;
       break;
 
-    /* Z marks the logical end of the data. It is followed by '0' if
+    /* Z0 marks the logical end of the data. It is followed by '0' if
     continue_transport was NULL at the end of transporting, otherwise '1'.
     We need to know when it becomes NULL during a delivery down a passed SMTP
     channel so that we don't try to pass anything more down it. Of course, for
-    most normal messages it will remain NULL all the time. */
+    most normal messages it will remain NULL all the time.
+
+    Z1 is a suggested message_id to handle next, used during a
+    continued-transport sequence. */
 
     case 'Z':
-      if (*ptr == '0')
+      switch (*subid)
 	{
-	continue_transport = NULL;
-	continue_hostname = NULL;
+	case '0':
+	  if (*ptr == '0')
+	    {
+	    continue_transport = NULL;
+	    continue_hostname = NULL;
+	    }
+	  done = TRUE;
+	  DEBUG(D_deliver) debug_printf("Z0%c item read\n", *ptr);
+	  break;
+	case '1':
+	  if (continue_hostname)
+	    Ustrncpy(continue_next_id, ptr, MESSAGE_ID_LENGTH);
+	  DEBUG(D_deliver) debug_printf("continue_next_id: %s%s\n",
+	    continue_next_id, continue_hostname ? "" : " (ignored)");
+	  break;
 	}
-      done = TRUE;
-      DEBUG(D_deliver) debug_printf("Z0%c item read\n", *ptr);
       break;
 
     /* Anything else is a disaster. */
@@ -4775,7 +4789,11 @@ all pipes, so I do not see a reason to use non-blocking IO here
     is flagged by an identifying byte, and is then in a fixed format (with
     strings terminated by zeros), and there is a final terminator at the
     end. The host information and retry information is all attached to
-    the first address, so that gets sent at the start. */
+    the first address, so that gets sent at the start.
+
+    Result item tags:
+      A C D H I K L P R S T X Z
+    */
 
     /* Host unusability information: for most success cases this will
     be null. */
@@ -4784,7 +4802,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
       {
       if (!h->address || h->status < hstatus_unusable) continue;
       sprintf(CS big_buffer, "%c%c%s", h->status, h->why, h->address);
-      rmt_dlv_checked_write(fd, 'H', '0', big_buffer, Ustrlen(big_buffer+2) + 3);
+      rmt_dlv_checked_write(fd, 'H','0', big_buffer, Ustrlen(big_buffer+2) + 3);
       }
 
     /* The number of bytes written. This is the same for each address. Even
@@ -5017,8 +5035,12 @@ all pipes, so I do not see a reason to use non-blocking IO here
       rmt_dlv_checked_write(fd, 'I', '0', big_buffer, ptr - big_buffer);
       }
 
+    /* Continuation message-id */
+    if (*continue_next_id)
+      rmt_dlv_checked_write(fd, 'Z', '1', continue_next_id, MESSAGE_ID_LENGTH);
+
     /* Add termination flag, close the pipe, and that's it. The character
-    after 'Z' indicates whether continue_transport is now NULL or not.
+    after "Z0" indicates whether continue_transport is now NULL or not.
     A change from non-NULL to NULL indicates a problem with a continuing
     connection. */
 
@@ -5501,16 +5523,14 @@ Returns:      nothing
 */
 
 static void
-do_duplicate_check(address_item **anchor)
+do_duplicate_check(address_item ** anchor)
 {
-address_item *addr;
+address_item * addr;
 while ((addr = *anchor))
   {
-  tree_node *tnode;
+  tree_node * tnode;
   if (testflag(addr, af_pfr))
-    {
-    anchor = &(addr->next);
-    }
+    anchor = &addr->next;
   else if ((tnode = tree_search(tree_duplicates, addr->unique)))
     {
     DEBUG(D_deliver|D_route)
@@ -5523,7 +5543,7 @@ while ((addr = *anchor))
   else
     {
     tree_add_duplicate(addr->unique, addr);
-    anchor = &(addr->next);
+    anchor = &addr->next;
     }
   }
 }
@@ -6433,16 +6453,19 @@ Returns:      When the global variable mua_wrapper is FALSE:
 int
 deliver_message(const uschar * id, BOOL forced, BOOL give_up)
 {
-int i, rc;
-int final_yield = DELIVER_ATTEMPTED_NORMAL;
-time_t now = time(NULL);
-address_item *addr_last = NULL;
-uschar *filter_message = NULL;
-int process_recipients = RECIP_ACCEPT;
-open_db dbblock;
-open_db *dbm_file;
+int i, rc, final_yield, process_recipients;
+time_t now;
+address_item * addr_last;
+uschar * filter_message, * info;
+open_db dbblock, * dbm_file;
 extern int acl_where;
-uschar *info;
+CONTINUED_ID:
+
+final_yield = DELIVER_ATTEMPTED_NORMAL;
+now = time(NULL);
+addr_last = NULL;
+filter_message = NULL;
+process_recipients = RECIP_ACCEPT;
 
 #ifdef MEASURE_TIMING
 report_time_since(&timestamp_startup, US"delivery start");	/* testcase 0022, 2100 */
@@ -8625,6 +8648,16 @@ DEBUG(D_deliver) debug_printf("end delivery of %s\n", id);
 #ifdef MEASURE_TIMING
 report_time_since(&timestamp_startup, US"delivery end"); /* testcase 0005 */
 #endif
+
+/* If the transport suggested another message to deliver, go round again. */
+
+if (final_yield == DELIVER_ATTEMPTED_NORMAL && *continue_next_id)
+  {
+  tree_duplicates = NULL;	/* discard dups info from old message */
+  id = string_copyn(continue_next_id, MESSAGE_ID_LENGTH);
+  continue_next_id[0] = '\0';
+  goto CONTINUED_ID;
+  }
 
 /* It is unlikely that there will be any cached resources, since they are
 released after routing, and in the delivery subprocesses. However, it's
