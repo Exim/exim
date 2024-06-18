@@ -169,6 +169,9 @@ JH/32 Bug 3096: MAIL before HELO/EHLO, where required by hosts_require_helo, is
 JH/33 Bug 2994: A subdir dsearch lookup should permit a directory name that starts
       ".." and has following characters.
 
+JH/34 Fix delivery ordering for 2-phase queue run combined with
+      queue_run_in_order.
+
 
 Exim version 4.97
 -----------------

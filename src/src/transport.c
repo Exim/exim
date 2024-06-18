@@ -1700,7 +1700,7 @@ DEBUG(D_transport)
   acl_level++;
   }
 
-/* Do nothing if we have hit the maximum number that can be send down one
+/* Do nothing if we have hit the maximum number that can be sent down one
 connection. */
 
 if (connection_max_messages >= 0) local_message_max = connection_max_messages;
@@ -1735,7 +1735,7 @@ if (host_record->count > WAIT_NAME_MAX)
   goto dbclose_false;
   }
 
-/* Scan the message ids in the record from the end towards the beginning,
+/* Scan the message ids in the record in order
 until one is found for which a spool file actually exists. If the record gets
 emptied, delete it and continue with any continuation records that may exist.
 */
@@ -1748,17 +1748,14 @@ host_length = host_record->count * MESSAGE_ID_LENGTH;
 
 while (1)
   {
-  msgq_t      *msgq;
-  int         msgq_count = 0;
-  int         msgq_actual = 0;
-  BOOL        bFound = FALSE;
-  BOOL        bContinuation = FALSE;
+  msgq_t * msgq;
+  int msgq_count = 0, msgq_actual = 0;
+  BOOL bFound = FALSE, bContinuation = FALSE;
 
   /* create an array to read entire message queue into memory for processing  */
 
   msgq = store_get(sizeof(msgq_t) * host_record->count, GET_UNTAINTED);
-  msgq_count = host_record->count;
-  msgq_actual = msgq_count;
+  msgq_actual = msgq_count = host_record->count;
 
   for (i = 0; i < host_record->count; ++i)
     {
@@ -1772,9 +1769,9 @@ while (1)
 	debug_printf_indent("NOTE: old or corrupt message-id found in wait=%.200s"
 	  " hints DB; deleting records for %s\n", transport_name, hostname);
       (void) dbfn_delete(dbp, hostname);
-      for (int i = host_record->sequence - 1; i >= 0; i--)
+      for (int j = host_record->sequence - 1; j >= 0; j--)
 	(void) dbfn_delete(dbp,
-		    (sprintf(CS buffer, "%.200s:%d", hostname, i), buffer));
+		    (sprintf(CS buffer, "%.200s:%d", hostname, j), buffer));
       goto dbclose_false;
       }
     msgq[i].bKeep = TRUE;
@@ -1796,7 +1793,7 @@ while (1)
 
   /* now find the next acceptable message_id */
 
-  for (i = msgq_count - 1; i >= 0; --i) if (msgq[i].bKeep)
+  for (i = 0; i < msgq_count; i++) if (msgq[i].bKeep)
     {
     uschar subdir[2];
     uschar * mid = msgq[i].message_id;

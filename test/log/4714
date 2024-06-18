@@ -5,10 +5,10 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 => r1_1.test.ex@the.local.host.name R=send_to_server T=to_server H=127.0.0.1 [127.0.0.1] C="250 message 1 received"
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 => r1_2.test.ex@the.local.host.name R=send_to_server T=to_server H=127.0.0.1 [127.0.0.1]* C="250 message 2 received"
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => r3_1.test.ex@the.local.host.name R=send_to_server T=to_server H=127.0.0.1 [127.0.0.1]* C="250 message 3 received"
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => r3_2.test.ex@the.local.host.name R=send_to_server T=to_server H=127.0.0.1 [127.0.0.1]* C="250 message 4 received"
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 => r2_1.test.ex@the.local.host.name R=send_to_server T=to_server H=127.0.0.1 [127.0.0.1]* C="250 message 5 received"
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 => r2_2.test.ex@the.local.host.name R=send_to_server T=to_server H=127.0.0.1 [127.0.0.1] C="250 message 6 received"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => r2_1.test.ex@the.local.host.name R=send_to_server T=to_server H=127.0.0.1 [127.0.0.1]* C="250 message 3 received"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => r2_2.test.ex@the.local.host.name R=send_to_server T=to_server H=127.0.0.1 [127.0.0.1]* C="250 message 4 received"
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => r3_1.test.ex@the.local.host.name R=send_to_server T=to_server H=127.0.0.1 [127.0.0.1]* C="250 message 5 received"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => r3_2.test.ex@the.local.host.name R=send_to_server T=to_server H=127.0.0.1 [127.0.0.1] C="250 message 6 received"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234 -qq

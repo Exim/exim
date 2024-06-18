@@ -42,40 +42,6 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 250 message 2 received
 MAIL FROM:<CALLER@the.local.host.name>
 250 mail cmd 3 good
-RCPT TO:<r3_1.test.ex@the.local.host.name>
-250 rcpt cmd good
-DATA
-352 go ahead
-Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	(envelope-from <CALLER@the.local.host.name>)
-	id 10HmaZ-000000005vi-0000;
-	Tue, 2 Mar 1999 09:44:33 +0000
-Subject: message 3
-Message-Id: <E10HmaZ-000000005vi-0000@the.local.host.name>
-From: CALLER_NAME <CALLER@the.local.host.name>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-
-.
-250 message 3 received
-MAIL FROM:<CALLER@the.local.host.name>
-250 mail cmd 4 good
-RCPT TO:<r3_2.test.ex@the.local.host.name>
-250 rcpt cmd good
-DATA
-352 go ahead
-Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	(envelope-from <CALLER@the.local.host.name>)
-	id 10HmaZ-000000005vi-0000;
-	Tue, 2 Mar 1999 09:44:33 +0000
-Subject: message 3
-Message-Id: <E10HmaZ-000000005vi-0000@the.local.host.name>
-From: CALLER_NAME <CALLER@the.local.host.name>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-
-.
-250 message 4 received
-MAIL FROM:<CALLER@the.local.host.name>
-250 mail cmd 5 good
 RCPT TO:<r2_1.test.ex@the.local.host.name>
 250 rcpt cmd good
 DATA
@@ -86,6 +52,40 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	Tue, 2 Mar 1999 09:44:33 +0000
 Subject: message 2
 Message-Id: <E10HmaY-000000005vi-0000@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 message 3 received
+MAIL FROM:<CALLER@the.local.host.name>
+250 mail cmd 4 good
+RCPT TO:<r2_2.test.ex@the.local.host.name>
+250 rcpt cmd good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaY-000000005vi-0000;
+	Tue, 2 Mar 1999 09:44:33 +0000
+Subject: message 2
+Message-Id: <E10HmaY-000000005vi-0000@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 message 4 received
+MAIL FROM:<CALLER@the.local.host.name>
+250 mail cmd 5 good
+RCPT TO:<r3_1.test.ex@the.local.host.name>
+250 rcpt cmd good
+DATA
+352 go ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaZ-000000005vi-0000;
+	Tue, 2 Mar 1999 09:44:33 +0000
+Subject: message 3
+Message-Id: <E10HmaZ-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -102,16 +102,16 @@ EHLO the.local.host.name
 250
 MAIL FROM:<CALLER@the.local.host.name>
 250 mail cmd 1 good
-RCPT TO:<r2_2.test.ex@the.local.host.name>
+RCPT TO:<r3_2.test.ex@the.local.host.name>
 250 rcpt cmd good
 DATA
 352 go ahead
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
-	id 10HmaY-000000005vi-0000;
+	id 10HmaZ-000000005vi-0000;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Subject: message 2
-Message-Id: <E10HmaY-000000005vi-0000@the.local.host.name>
+Subject: message 3
+Message-Id: <E10HmaZ-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
