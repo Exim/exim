@@ -1983,7 +1983,7 @@ if (smtp_peer_options & OPTION_TLS)
 #endif
 
 #ifndef DISABLE_ESMTP_LIMITS
-if (continue_limit_rcpt || continue_limit_rcptdom)
+if (continue_limit_mail || continue_limit_rcpt || continue_limit_rcptdom)
   {
   argv[i++] = US"-MCL";
   argv[i++] = string_sprintf("%u", continue_limit_mail);

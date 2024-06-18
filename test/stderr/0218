@@ -14,14 +14,15 @@ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1237 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmaY-000000005vi-0000 (queue run pid p1234)
 test.ex in ""? no (end of list)
 CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1239 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1240 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1240 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+queue_run phase 2 start
 queue running combined directories
 looking in TESTSUITE/spool//input
 delivering 10HmaX-000000005vi-0000 (queue run pid p1234)
@@ -102,14 +103,15 @@ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1245 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1246 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1246 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbA-000000005vi-0000 (queue run pid p1235)
 test.ex in ""? no (end of list)
 CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1247 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1248 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1248 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+queue_run phase 2 start
 queue running combined directories
 looking in TESTSUITE/spool//input
 delivering 10HmaZ-000000005vi-0000 (queue run pid p1235)
@@ -177,7 +179,7 @@ CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1254 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1255 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1255 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbB-000000005vi-0000 (queue run pid p1236)
 R: bounce  (ACL)
 LOG: MAIN
@@ -186,14 +188,14 @@ LOG: MAIN
   CALLER@test.ex: error ignored
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1256 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1256 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbC-000000005vi-0000 (queue run pid p1236)
 test.ex in ""? no (end of list)
 CALLER@test.ex in senders? no (end of list)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=p1257 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1258 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1258 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 delivering 10HmbA-000000005vi-0000 (queue run pid p1236)
 test.ex in ""? no (end of list)
 CALLER@test.ex in senders? no (end of list)

@@ -3430,7 +3430,7 @@ if (sx->peer_offered & OPTION_DSN && !(addr->dsn_flags & rf_dsnlasthop))
 
 /* Send MAIL FROM and RCPT TO commands.
 See sw_mrc_t definition for return codes.
- */
+*/
 
 sw_mrc_t
 smtp_write_mail_and_rcpt_cmds(smtp_context * sx, int * yield)
@@ -4692,6 +4692,11 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
     {
     DEBUG(D_transport)
       debug_printf("reached limit %u for MAILs per conn\n", sx->max_mail);
+    /* We will close the smtp session and connection, and clear
+    continue_hostname.  Then if there are further addrs for the message we will
+    loop to the top of this function and make a fresh connection.  Any further
+    message found in the wait-tpt hintsdb would then do a transport_pass_socket
+    to get the connection fd back to the delivery process. */
     }
   else
 #endif
@@ -4869,8 +4874,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	      sx->cctx.tls_ctx = NULL;
 	      (void)close(sx->cctx.sock);
 	      sx->cctx.sock = -1;
-	      continue_transport = NULL;
-	      continue_hostname = NULL;
+	      continue_transport = continue_hostname = NULL;
 	      goto TIDYUP;
 	      }
 	    log_write(0, LOG_PANIC_DIE, "fork failed");
@@ -4982,7 +4986,6 @@ if (sx->send_quit || tcw_done && !tcw)
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 (void)close(sx->cctx.sock);
 sx->cctx.sock = -1;
-continue_transport = NULL;
 continue_hostname = NULL;
 smtp_debug_cmd_report();
 
@@ -5024,7 +5027,7 @@ if (mail_limit && sx->first_addr)
   continue_sequence = 1;			/* for consistency */
   clearflag(sx->first_addr, af_cont_conn);
   setflag(sx->first_addr, af_new_conn);		/* clear  * from logging */
-  goto REPEAT_CONN;
+  goto REPEAT_CONN;				/* open a fresh connection */
   }
 #endif
 

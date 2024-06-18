@@ -3707,7 +3707,10 @@ while (!done)
 	  break;
 	case '1':
 	  if (continue_hostname)
+	    {
 	    Ustrncpy(continue_next_id, ptr, MESSAGE_ID_LENGTH);
+	    continue_sequence++;
+	    }
 	  DEBUG(D_deliver) debug_printf("continue_next_id: %s%s\n",
 	    continue_next_id, continue_hostname ? "" : " (ignored)");
 	  break;
