@@ -32,14 +32,14 @@ DATA
 354 More...
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmbA-000000005vi-0000
+	id 10HmaY-000000005vi-0000
 	for userx@domain1;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbA-000000005vi-0000@the.local.host.name>
+Message-Id: <E10HmaY-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-Test message 4
+Test message 2
 .
 250 OK
 MAIL FROM:<CALLER@test.ex>
@@ -68,14 +68,14 @@ DATA
 354 More...
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
-	id 10HmaY-000000005vi-0000
+	id 10HmbA-000000005vi-0000
 	for userx@domain1;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaY-000000005vi-0000@the.local.host.name>
+Message-Id: <E10HmbA-000000005vi-0000@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-Test message 2
+Test message 4
 .
 250 OK
 QUIT
