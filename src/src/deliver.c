@@ -6543,7 +6543,7 @@ opening the data file, message_subdir gets set. */
 if ((deliver_datafile = spool_open_datafile(id)) < 0)
   return continue_closedown();  /* yields DELIVER_NOT_ATTEMPTED */
 
-/* tHe value of message_size at this point has been set to the data length,
+/* The value of message_size at this point has been set to the data length,
 plus one for the blank line that notionally precedes the data. */
 
 /* Now read the contents of the header file, which will set up the headers in
@@ -7271,9 +7271,13 @@ while (addr_new)           /* Loop until all addresses dealt with */
   address_item * addr, * parent;
 
   /* Failure to open the retry database is treated the same as if it does
-  not exist. In both cases, dbm_file is NULL. */
+  not exist. In both cases, dbm_file is NULL.  For the first stage of a 2-phase
+  queue run don't bother checking domain- or address-retry info; they will take
+  effect on the second stage. */
 
-  if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
+  if (f.queue_2stage)
+    dbm_file = NULL;
+  else if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
     DEBUG(D_deliver|D_retry|D_route|D_hints_lookup)
       debug_printf("no retry data available\n");
 
