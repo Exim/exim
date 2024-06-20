@@ -83,19 +83,19 @@ After routing:
     rz.b@outside
 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
 Processing retry items
-Succeeded addresses:
-Failed addresses:
-Deferred addresses:
- rz.b@outside
-*@outside in "^\*@r5domain.ex"? no (end of list)
-*@outside in "userx@test.ex"? no (end of list)
-outside in "test.ex"? no (end of list)
-*@outside in "test.ex"? no (end of list)
-retry for R:outside = * 0 0
-failing_interval=ttt message_age=ttt
-Writing retry data for R:outside
-  first failed=dddd last try=dddd next try=+300 expired=0
-  errno=-1 more_errno=dd not just now
+ Succeeded addresses:
+ Failed addresses:
+ Deferred addresses:
+  rz.b@outside
+ *@outside in "^\*@r5domain.ex"? no (end of list)
+ *@outside in "userx@test.ex"? no (end of list)
+ outside in "test.ex"? no (end of list)
+ *@outside in "test.ex"? no (end of list)
+ retry for R:outside = * 0 0
+ failing_interval=ttt message_age=ttt
+ Writing retry data for R:outside
+   first failed=dddd last try=dddd next try=+300 expired=0
+   errno=-1 more_errno=dd not just now
 end of retry processing
 time on queue = 0s  id 10HmbJ-000000005vi-0000  addr rz.b@outside
 warning counts: required 0 done 0

@@ -167,10 +167,10 @@ changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=p1235
 set_process_info: pppp tidying up after delivering 10HmaX-000000005vi-0000
 Processing retry items
-Succeeded addresses:
- nofile@test.ex: no retry items
-Failed addresses:
-Deferred addresses:
+ Succeeded addresses:
+  nofile@test.ex: no retry items
+ Failed addresses:
+ Deferred addresses:
 end of retry processing
 DSN: processing router : r1
 DSN: processing successful delivery address: nofile@test.ex
@@ -358,10 +358,10 @@ changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=p1238
 set_process_info: pppp tidying up after delivering 10HmaY-000000005vi-0000
 Processing retry items
-Succeeded addresses:
- userx@test.ex: no retry items
-Failed addresses:
-Deferred addresses:
+ Succeeded addresses:
+  userx@test.ex: no retry items
+ Failed addresses:
+ Deferred addresses:
 end of retry processing
 DSN: processing router : r1
 DSN: processing successful delivery address: userx@test.ex
@@ -543,30 +543,30 @@ changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=p1241
 set_process_info: pppp tidying up after delivering 10HmaZ-000000005vi-0000
 Processing retry items
-Succeeded addresses:
-Failed addresses:
-Deferred addresses:
- userx@test.ex
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
- returned from EXIM_DBOPEN: 0xAAAAAAAA
- opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
- userx@test.ex in "*"?
-  list element: *
-  address match test: subject=userx@test.ex pattern=*
-  test.ex in "*"?
+ Succeeded addresses:
+ Failed addresses:
+ Deferred addresses:
+  userx@test.ex
+  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
+  returned from EXIM_DBOPEN: 0xAAAAAAAA
+  opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
+  userx@test.ex in "*"?
    list element: *
-   test.ex in "*"? yes (matched "*")
-  userx@test.ex in "*"? yes (matched "*")
-retry for T:userx@test.ex = * 0 0
- dbfn_read: key=T:userx@test.ex
- dbfn_read: null return
-failing_interval=ttt message_age=ttt
-Writing retry data for T:userx@test.ex
-  first failed=dddd last try=dddd next try=+86400 expired=0
-  errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
- dbfn_write: key=T:userx@test.ex datalen 154
- EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database
+   address match test: subject=userx@test.ex pattern=*
+   test.ex in "*"?
+   ╎list element: *
+   ╎test.ex in "*"? yes (matched "*")
+   userx@test.ex in "*"? yes (matched "*")
+  retry for T:userx@test.ex = * 0 0
+  dbfn_read: key=T:userx@test.ex
+  dbfn_read: null return
+  failing_interval=ttt message_age=ttt
+  Writing retry data for T:userx@test.ex
+    first failed=dddd last try=dddd next try=+86400 expired=0
+    errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
+  dbfn_write: key=T:userx@test.ex datalen 154
+  EXIM_DBCLOSE(0xAAAAAAAA)
+  closed hints database
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaZ-000000005vi-0000
@@ -742,30 +742,30 @@ changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=p1244
 set_process_info: pppp tidying up after delivering 10HmbA-000000005vi-0000
 Processing retry items
-Succeeded addresses:
-Failed addresses:
-Deferred addresses:
- userx@test.ex
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
- returned from EXIM_DBOPEN: 0xAAAAAAAA
- opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
- userx@test.ex in "*"?
-  list element: *
-  address match test: subject=userx@test.ex pattern=*
-  test.ex in "*"?
+ Succeeded addresses:
+ Failed addresses:
+ Deferred addresses:
+  userx@test.ex
+  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
+  returned from EXIM_DBOPEN: 0xAAAAAAAA
+  opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
+  userx@test.ex in "*"?
    list element: *
-   test.ex in "*"? yes (matched "*")
-  userx@test.ex in "*"? yes (matched "*")
-retry for T:userx@test.ex = * 0 0
- dbfn_read: key=T:userx@test.ex
- dbfn_read: size 154 return
-failing_interval=ttt message_age=ttt
-Writing retry data for T:userx@test.ex
-  first failed=dddd last try=dddd next try=+86400 expired=0
-  errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
- dbfn_write: key=T:userx@test.ex datalen 154
- EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database
+   address match test: subject=userx@test.ex pattern=*
+   test.ex in "*"?
+   ╎list element: *
+   ╎test.ex in "*"? yes (matched "*")
+   userx@test.ex in "*"? yes (matched "*")
+  retry for T:userx@test.ex = * 0 0
+  dbfn_read: key=T:userx@test.ex
+  dbfn_read: size 154 return
+  failing_interval=ttt message_age=ttt
+  Writing retry data for T:userx@test.ex
+    first failed=dddd last try=dddd next try=+86400 expired=0
+    errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
+  dbfn_write: key=T:userx@test.ex datalen 154
+  EXIM_DBCLOSE(0xAAAAAAAA)
+  closed hints database
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbA-000000005vi-0000

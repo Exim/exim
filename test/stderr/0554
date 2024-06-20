@@ -25,15 +25,15 @@ reading retry information for R:x@y:<CALLER@myhost.test.ex> from subprocess
 LOG: MAIN
   == x@y R=r1 T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
 Processing retry items
-Succeeded addresses:
-Failed addresses:
-Deferred addresses:
- x@y
-retry for R:x@y:<CALLER@myhost.test.ex> = * 0 0
-failing_interval=ttt message_age=ttt
-Writing retry data for R:x@y:<CALLER@myhost.test.ex>
-  first failed=dddd last try=dddd next try=+2 expired=0
-  errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
+ Succeeded addresses:
+ Failed addresses:
+ Deferred addresses:
+  x@y
+ retry for R:x@y:<CALLER@myhost.test.ex> = * 0 0
+ failing_interval=ttt message_age=ttt
+ Writing retry data for R:x@y:<CALLER@myhost.test.ex>
+   first failed=dddd last try=dddd next try=+2 expired=0
+   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
 end of retry processing
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -80,13 +80,13 @@ reading retry information for R:x@y:<CALLER@myhost.test.ex> from subprocess
 LOG: MAIN
   => x@y R=r1 T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 Processing retry items
-Succeeded addresses:
- x@y
-deleted retry information for R:x@y:<CALLER@myhost.test.ex>
-deleted retry information for R:x@y
-deleted retry information for R:y
-Failed addresses:
-Deferred addresses:
+ Succeeded addresses:
+  x@y
+ deleted retry information for R:x@y:<CALLER@myhost.test.ex>
+ deleted retry information for R:x@y
+ deleted retry information for R:y
+ Failed addresses:
+ Deferred addresses:
 end of retry processing
 LOG: MAIN
   Completed
