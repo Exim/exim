@@ -91,10 +91,10 @@
 01:01:01 p1239    uid=EXIM_UID gid=EXIM_GID pid=p1239
 01:01:01 p1239  set_process_info: pppp tidying up after delivering 10HmaX-000000005vi-0000
 01:01:01 p1239  Processing retry items
-01:01:01 p1239  Succeeded addresses:
-01:01:01 p1239   dest@test.ex: no retry items
-01:01:01 p1239  Failed addresses:
-01:01:01 p1239  Deferred addresses:
+01:01:01 p1239   Succeeded addresses:
+01:01:01 p1239    dest@test.ex: no retry items
+01:01:01 p1239   Failed addresses:
+01:01:01 p1239   Deferred addresses:
 01:01:01 p1239  end of retry processing
 01:01:01 p1239  DSN: processing router : r1
 01:01:01 p1239  DSN: processing successful delivery address: dest@test.ex
@@ -195,10 +195,10 @@
 01:01:01 p1241    uid=EXIM_UID gid=EXIM_GID pid=p1241
 01:01:01 p1241  set_process_info: pppp tidying up after delivering 10HmaY-000000005vi-0000
 01:01:01 p1241  Processing retry items
-01:01:01 p1241  Succeeded addresses:
-01:01:01 p1241   dest2@test.ex: no retry items
-01:01:01 p1241  Failed addresses:
-01:01:01 p1241  Deferred addresses:
+01:01:01 p1241   Succeeded addresses:
+01:01:01 p1241    dest2@test.ex: no retry items
+01:01:01 p1241   Failed addresses:
+01:01:01 p1241   Deferred addresses:
 01:01:01 p1241  end of retry processing
 01:01:01 p1241  DSN: processing router : r1
 01:01:01 p1241  DSN: processing successful delivery address: dest2@test.ex
