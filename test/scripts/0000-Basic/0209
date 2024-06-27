@@ -15,7 +15,7 @@ EHLO
 MAIL FROM:
 250 Sender OK
 RCPT TO:
-450 Temporary error
+450 Temporary error 1
 QUIT
 250 OK
 ****
@@ -37,7 +37,7 @@ EHLO
 MAIL FROM:
 250 Sender OK
 RCPT TO:
-450 Temporary error
+450 Temporary error 2
 RCPT TO:
 250 OK
 DATA
@@ -47,7 +47,7 @@ DATA
 MAIL FROM:
 250 Sender OK
 RCPT TO:
-450 Temporary error
+450 Temporary error 3
 QUIT
 250 OK
 ****

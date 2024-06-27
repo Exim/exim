@@ -714,6 +714,8 @@ tls_retry_connection:
 #endif
     if (yield != OK)
       {
+      smtp_debug_cmd_report();	/*XXX we seem to exit without what should
+				be a common call to this.  How? */
       errno = addr->basic_errno;
 
       /* For certain errors we want specifically to log the transport name,

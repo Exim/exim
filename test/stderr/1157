@@ -45,18 +45,13 @@ cmd buf flush ddd bytes
   SMTP>> .
   SMTP<< 250 OK id=10HmbA-000000005vi-0000
 127.0.0.1 in hosts_noproxy_tls? no (end of list)
+cmdlog: '220:EHLO:250-:STARTTLS:220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:354:.:250'
 >>>>>>>>>>>>>>>> Exim pid=p1248 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+qrun-delivery becomes continued-delivery
 LOG: MAIN
   => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-000000005vi-0000"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1249 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-Exim version x.yz ....
-Hints DB:
-configuration file is TESTSUITE/test-config
-trusted user
-admin user
-dropping to exim gid; retaining priv uid
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP|> RCPT TO:<usery@test.ex>
   SMTP>> DATA
@@ -66,9 +61,10 @@ cmd buf flush ddd bytes
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP>> .
   SMTP<< 250 OK id=10HmbB-000000005vi-0000
->>>>>>>>>>>>>>>> Exim pid=p1251 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+cmdlog: 'MAIL|:RCPT|:DATA:250:250:354:.:250'
+>>>>>>>>>>>>>>>> Exim pid=p1249 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
-  => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbB-000000005vi-0000"
+  => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbB-000000005vi-0000"
 LOG: MAIN
   Completed
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
@@ -82,18 +78,18 @@ cmd buf flush ddd bytes
   SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
   SMTP(shutdown)>>
-  SMTP(TLS shutdown)>>
+   SMTP(TLS shutdown)>>
   SMTP<< 250 OK id=10HmbC-000000005vi-0000
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 cmdlog: 'MAIL|:RCPT|:DATA:250:250:354:.:QUIT+:250:221'
->>>>>>>>>>>>>>>> Exim pid=p1252 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1250 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
-  => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbC-000000005vi-0000"
+  => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbC-000000005vi-0000"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1250 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1253 (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1251 (continued-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1252 (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1234 -qqf
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -104,12 +100,12 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1235 -qqf
->>>>>>>>>>>>>>>> Exim pid=p1254 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1255 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1256 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1257 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1258 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1259 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1253 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1254 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1255 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1256 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1257 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1258 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
 connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -144,18 +140,13 @@ cmd buf flush ddd bytes
   SMTP>> .
   SMTP<< 250 OK id=10HmbG-000000005vi-0000
 127.0.0.1 in hosts_noproxy_tls? no (end of list)
->>>>>>>>>>>>>>>> Exim pid=p1260 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+cmdlog: '220:EHLO:250-:STARTTLS:220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:354:.:250'
+>>>>>>>>>>>>>>>> Exim pid=p1259 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+qrun-delivery becomes continued-delivery
 LOG: MAIN
   => usera@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbG-000000005vi-0000"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1261 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-Exim version x.yz ....
-Hints DB:
-configuration file is TESTSUITE/test-config
-trusted user
-admin user
-dropping to exim gid; retaining priv uid
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP|> RCPT TO:<userb@test.ex>
   SMTP>> DATA
@@ -165,9 +156,10 @@ cmd buf flush ddd bytes
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP>> .
   SMTP<< 250 OK id=10HmbH-000000005vi-0000
->>>>>>>>>>>>>>>> Exim pid=p1263 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+cmdlog: 'MAIL|:RCPT|:DATA:250:250:354:.:250'
+>>>>>>>>>>>>>>>> Exim pid=p1260 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
-  => userb@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbH-000000005vi-0000"
+  => userb@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbH-000000005vi-0000"
 LOG: MAIN
   Completed
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
@@ -181,18 +173,18 @@ cmd buf flush ddd bytes
   SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
   SMTP(shutdown)>>
-  SMTP(TLS shutdown)>>
+   SMTP(TLS shutdown)>>
   SMTP<< 250 OK id=10HmbI-000000005vi-0000
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 cmdlog: 'MAIL|:RCPT|:DATA:250:250:354:.:QUIT+:250:221'
->>>>>>>>>>>>>>>> Exim pid=p1264 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1261 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
-  => userc@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbI-000000005vi-0000"
+  => userc@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbI-000000005vi-0000"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1262 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1265 (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1262 (continued-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1263 (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1235 -qqf
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -203,12 +195,12 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=p1236 -qqf
+>>>>>>>>>>>>>>>> Exim pid=p1264 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1265 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1266 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1267 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1268 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1269 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1270 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=p1271 (qrun-p1-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
 connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -251,20 +243,13 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
-  SMTP(close)>>
 cmdlog: '220:EHLO:250-:STARTTLS:220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:354:.:250:EHLO:250-'
->>>>>>>>>>>>>>>> Exim pid=p1272 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1270 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+qrun-delivery becomes continued-delivery
 LOG: MAIN
   => user_p@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbM-000000005vi-0000"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1273 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-Exim version x.yz ....
-Hints DB:
-configuration file is TESTSUITE/test-config
-trusted user
-admin user
-dropping to exim gid; retaining priv uid
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
   SMTP<< 220 TLS go ahead
@@ -295,7 +280,8 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
->>>>>>>>>>>>>>>> Exim pid=p1275 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+cmdlog: 'STARTTLS:220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:354:.:250:EHLO:250-'
+>>>>>>>>>>>>>>>> Exim pid=p1271 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => user_q@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbN-000000005vi-0000"
 LOG: MAIN
@@ -326,12 +312,12 @@ cmd buf flush ddd bytes
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 cmdlog: 'STARTTLS:220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:354:.:QUIT:250:221'
->>>>>>>>>>>>>>>> Exim pid=p1276 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1272 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => user_r@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbO-000000005vi-0000"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1274 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1273 (continued-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1236 -qqf
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

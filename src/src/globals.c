@@ -741,22 +741,24 @@ uid_t   config_uid             = 0;
 
 uint64_t connection_id	       = 0L;
 int     connection_max_messages= -1;
-uschar *continue_proxy_cipher  = NULL;
-BOOL    continue_proxy_dane    = FALSE;
-uschar *continue_proxy_sni     = NULL;
-uschar *continue_hostname      = NULL;
-uschar *continue_host_address  = NULL;
-uschar  continue_next_id[MESSAGE_ID_LENGTH +1] = {[0]='\0'};
-int     continue_sequence      = 1;
-uschar *continue_transport     = NULL;
-#ifndef COMPILE_UTILITY
-open_db *continue_wait_db      = NULL;
-open_db *continue_retry_db     = NULL;
-#endif
+unsigned continue_flags	       = 0;
 #ifndef DISABLE_ESMTP_LIMITS
 unsigned continue_limit_mail   = 0;
 unsigned continue_limit_rcpt   = 0;
 unsigned continue_limit_rcptdom= 0;
+int	continue_fd	       = -1;
+uschar *continue_proxy_cipher  = NULL;
+BOOL    continue_proxy_dane    = FALSE;
+uschar *continue_proxy_sni     = NULL;
+const uschar *continue_hostname      = NULL;
+const uschar *continue_host_address  = NULL;
+uschar  continue_next_id[MESSAGE_ID_LENGTH +1] = {[0]='\0'};
+int     continue_sequence      = 1;
+uschar *continue_transport     = NULL;
+#ifndef COMPILE_UTILITY
+open_db *continue_retry_db     = NULL;
+open_db *continue_wait_db      = NULL;
+#endif
 #endif
 
 uschar *csa_status             = NULL;

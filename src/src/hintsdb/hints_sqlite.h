@@ -137,7 +137,8 @@ return ret;
 # undef FMT
 }
 
-/**/
+/* Note that we return claiming a duplicate record for any error.
+It seem not uncommon to get a "database is locked" error. */
 # define EXIM_DBPUTB_OK  0
 # define EXIM_DBPUTB_DUP (-1)
 
@@ -172,8 +173,10 @@ res = sqlite3_exec(dbp, CS qry, NULL, NULL, NULL);
 /* fprintf(stderr, "exim_s_dbp res %d\n", res); */
 # endif
 
+# ifdef COMPILE_UTILITY
 if (res != SQLITE_OK)
   fprintf(stderr, "sqlite3_exec: %s\n", sqlite3_errmsg(dbp));
+# endif
 
 return res == SQLITE_OK ? EXIM_DBPUTB_OK : EXIM_DBPUTB_DUP;
 # undef FMT

@@ -72,7 +72,7 @@ ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
   SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
   SMTP(shutdown)>>
-  SMTP(TLS shutdown)>>
+   SMTP(TLS shutdown)>>
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 cmdlog: 'DATA:354:.:250:QUIT+:221'

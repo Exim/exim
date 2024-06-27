@@ -126,6 +126,7 @@ set_process_info: pppp delivering 10HmaX-000000005vi-0000 to V4NET.0.0.0 [V4NET.
 Connecting to V4NET.0.0.0 [V4NET.0.0.0]:PORT_S ...
  V4NET.0.0.0 in hosts_try_fastopen?
  failed: Network Error
+cmdlog: (unset)
 LOG: MAIN
   H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
 set_process_info: pppp delivering 10HmaX-000000005vi-0000: just tried V4NET.0.0.0 [V4NET.0.0.0]:PORT_S for x@y: result DEFER

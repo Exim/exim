@@ -444,6 +444,7 @@ extern BOOL    receive_check_set_sender(const uschar *);
 extern BOOL    receive_msg(BOOL);
 extern int_eximarith_t receive_statvfs(BOOL, int *);
 extern void    receive_swallow_smtp(void);
+extern int     recv_fd_from_sock(int);
 #ifdef WITH_CONTENT_SCAN
 extern int     regex(const uschar **, BOOL);
 extern void    regex_vars_clear(void);
@@ -497,6 +498,7 @@ extern int     search_findtype_partial(const uschar *, int *, const uschar **, i
                  int *, const uschar **);
 extern void   *search_open(const uschar *, int, int, uid_t *, gid_t *);
 extern void    search_tidyup(void);
+extern BOOL    send_fd_over_socket(int, int);
 extern uschar *sender_helo_verified_boolstr(void);
 extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    sha1_end(hctx *, const uschar *, int, uschar *);
@@ -633,11 +635,6 @@ extern uschar *transport_current_name(void);
 extern void    transport_do_pass_socket(const uschar *, const uschar *,
 		 const uschar *, uschar *, int);
 extern void    transport_init(void);
-extern BOOL    transport_pass_socket(const uschar *, const uschar *, const uschar *, uschar *, int
-#ifndef DISABLE_ESMTP_LIMITS
-			, unsigned, unsigned, unsigned
-#endif
-			);
 extern const uschar *transport_rcpt_address(address_item *, BOOL);
 extern BOOL    transport_set_up_command(const uschar ***, const uschar *,
 		 unsigned, int, address_item *, const uschar *, uschar **);
@@ -1405,6 +1402,19 @@ return poll(&p, 1, tmo_millisec);
 /* Client-side smtp log string, for debug */
 
 static inline void
+smtp_debug_cmd_log_init(void)
+{
+#  ifndef DISABLE_CLIENT_CMD_LOG
+int old_pool = store_pool;
+store_pool = POOL_PERM;
+client_cmd_log = string_get_tainted(56, GET_TAINTED);
+*client_cmd_log->s = '\0';
+store_pool = old_pool;
+#  endif
+}
+
+
+static inline void
 smtp_debug_cmd(const uschar * buf, int mode)
 {
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP%c> %s\n",
@@ -1412,22 +1422,31 @@ HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP%c> %s\n",
 
 #  ifndef DISABLE_CLIENT_CMD_LOG
   {
-  int len = Ustrcspn(buf, " \n");
-  int old_pool = store_pool;
+  int len = Ustrcspn(buf, " \n"), old_pool = store_pool;
   store_pool = POOL_PERM;	/* Main pool ACL allocations eg. callouts get released */
   client_cmd_log = string_append_listele_n(client_cmd_log, ':', buf, MIN(len, 8));
   if (mode == SCMD_BUFFER) 
-    {
     client_cmd_log = string_catn(client_cmd_log, US"|", 1); 
-    (void) string_from_gstring(client_cmd_log);
-    }
   else if (mode == SCMD_MORE)
-    {
     client_cmd_log = string_catn(client_cmd_log, US"+", 1);
-    (void) string_from_gstring(client_cmd_log);
-    }
   store_pool = old_pool;
   }
+#  endif
+}
+
+
+/* This might be called both due to callout and then from delivery.
+Use memory that will not be released between those phases.
+*/
+static inline void
+smtp_debug_resp(const uschar * buf)
+{
+#  ifndef DISABLE_CLIENT_CMD_LOG
+int old_pool = store_pool;
+store_pool = POOL_PERM;
+client_cmd_log = string_append_listele_n(client_cmd_log, ':', buf,
+  buf[3] == '-' ? 4 : 3);
+store_pool = old_pool;
 #  endif
 }
 
@@ -1436,7 +1455,13 @@ static inline void
 smtp_debug_cmd_report(void)
 {
 #  ifndef DISABLE_CLIENT_CMD_LOG
-debug_printf("cmdlog: '%s'\n", client_cmd_log ? client_cmd_log->s : US"(unset)");
+if (client_cmd_log && *client_cmd_log->s)
+  {
+  debug_printf("cmdlog: '%Y'\n", client_cmd_log);
+  gstring_reset(client_cmd_log);
+  }
+else
+  debug_printf("cmdlog: (unset)\n");
 #  endif
 }
 

@@ -383,15 +383,15 @@ transport error EPIPE ignored
 >>>>>>>>>>>>>>>> Exim pid=p1245 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   == c1@myhost.test.ex R=ut3 T=ut3 defer (0): Child process of ut3 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
-cmdlog: '220'
+cmdlog: '220:EHLO:220:MAIL:250:RCPT:250:DATA:334:.:250:QUIT+:250'
 >>>>>>>>>>>>>>>> Exim pid=p1246 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => d1@myhost.test.ex R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1] C="250 OK"
-cmdlog: '220'
+cmdlog: '220:EHLO:220:MAIL:250:RCPT:450:QUIT+:250'
 >>>>>>>>>>>>>>>> Exim pid=p1247 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   == d2@myhost.test.ex R=ut4 T=ut4 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d2@myhost.test.ex>: 450 soft error
-cmdlog: '220'
+cmdlog: '220:EHLO:220:MAIL:250:RCPT:550:QUIT+:250'
 >>>>>>>>>>>>>>>> Exim pid=p1248 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   ** d3@myhost.test.ex R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: 550 hard error

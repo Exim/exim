@@ -289,7 +289,8 @@ if (US info->si_addr < US 4096)
 else
   log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (maybe attempt to write to immutable memory)");
 if (process_info_len > 0)
-  log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (%.*s)", process_info_len, process_info);
+  log_write(0, LOG_MAIN|LOG_PANIC, "SIGSEGV (%s: %.*s)",
+    process_purpose, process_info_len, process_info);
 stackdump();
 signal(SIGSEGV, SIG_DFL);
 kill(getpid(), sig);
