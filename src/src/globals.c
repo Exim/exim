@@ -749,6 +749,9 @@ uschar *continue_host_address  = NULL;
 uschar  continue_next_id[MESSAGE_ID_LENGTH +1] = {[0]='\0'};
 int     continue_sequence      = 1;
 uschar *continue_transport     = NULL;
+#ifndef COMPILE_UTILITY
+open_db *continue_wait_db      = NULL;
+#endif
 #ifndef DISABLE_ESMTP_LIMITS
 unsigned continue_limit_mail   = 0;
 unsigned continue_limit_rcpt   = 0;

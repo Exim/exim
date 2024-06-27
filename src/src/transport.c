@@ -1511,10 +1511,13 @@ if (!is_new_message_id(message_id))
 
 DEBUG(D_transport) debug_printf("updating wait-%s database\n", tpname);
 
-/* Open the database for this transport */
+/* Open the database (or transaction) for this transport */
 
-if (!(dbp = dbfn_open(string_sprintf("wait-%.200s", tpname),
-		      O_RDWR, &dbblock, TRUE, TRUE)))
+if ( continue_wait_db
+   ? !dbfn_transaction_start(dbp = continue_wait_db)
+   : !(dbp = dbfn_open(string_sprintf("wait-%.200s", tpname),
+		      O_RDWR, &dbblock, TRUE, TRUE))
+   )
   return;
 
 /* Scan the list of hosts for which this message is waiting, and ensure
@@ -1640,7 +1643,10 @@ for (host_item * host = hostlist; host; host = host->next)
 
 /* All now done */
 
-dbfn_close(dbp);
+if (continue_wait_db)
+  dbfn_transaction_commit(dbp);
+else
+  dbfn_close(dbp);
 }
 
 
@@ -1713,8 +1719,11 @@ if (local_message_max > 0 && continue_sequence >= local_message_max)
 
 /* Open the waiting information database. */
 
-if (!(dbp = dbfn_open(string_sprintf("wait-%.200s", transport_name),
-			  O_RDWR, &dbblock, TRUE, TRUE)))
+if ( continue_wait_db
+   ? !dbfn_transaction_start(dbp = continue_wait_db)
+   : !(dbp = dbfn_open(string_sprintf("wait-%.200s", transport_name),
+		      O_RDWR, &dbblock, TRUE, TRUE))
+   )
   goto retfalse;
 
 /* See if there is a record for this host; if not, there's nothing to do. */
@@ -1907,7 +1916,10 @@ if (host_length > 0)
   dbfn_write(dbp, hostname, host_record, (int)sizeof(dbdata_wait) + host_length);
   }
 
-dbfn_close(dbp);
+if (continue_wait_db)
+  dbfn_transaction_commit(dbp);
+else
+  dbfn_close(dbp);
 
 DEBUG(D_transport)
   {
@@ -1917,7 +1929,10 @@ DEBUG(D_transport)
 return TRUE;
 
 dbclose_false:
-  dbfn_close(dbp);
+  if (continue_wait_db)
+    dbfn_transaction_commit(dbp);
+  else
+    dbfn_close(dbp);
 
 retfalse:
   DEBUG(D_transport)
@@ -2064,6 +2079,11 @@ int status;
 
 DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
 
+/*XXX we'd prefer this never happens, by not calling here for this
+case (instead, passing back the next-id.  But in case it does... */
+if (continue_wait_db)
+  { dbfn_close_multi(continue_wait_db); continue_wait_db = NULL; }
+
 #ifndef DISABLE_ESMTP_LIMITS
 continue_limit_mail = peer_limit_mail;
 continue_limit_rcpt = peer_limit_rcpt;
@@ -2075,6 +2095,46 @@ if ((pid = exim_fork(US"continued-transport")) == 0)
   /* If we are running in the test harness, wait for a bit to allow the
   previous process time to finish, write the log, etc., so that the output is
   always in the same order for automatic comparison. */
+  /* The double-fork goes back at least as far as 0.53 (June 1996). As of
+  2024 I'm unclear why it is needed, especially given the following exec.
+  I suppose it means that the parent [caller of transport_pass_socket()]
+  [ that would be the "transport" proc ]
+  has no direct extant child procs, from this operation.  Does it wait
+  for children? Not obviously so far, and a quick test has is working
+  apparently ok with a single fork.  Further: The "transport" proc goes
+  on to only send results back up the pipe to its parent, the "delivery"
+  proc.  It'd be kinda nice to swap the sequence around: send the results back,
+  omit the forking entrely, and exec the new transport.  But the code
+  it all in the wrong place (the pipe-write in deliver.c and here we're
+  down in the transport).  Perhaps we could pass the suggested next
+  msgid back up the pipe?
+
+  How would this interact with the existing TLS proxy process?
+  Probably the way continue_more does at present.  That feature is
+  for the case where a single message has more (recip) addrs than
+  can be handled in a single call to the transport.  The continue-more
+  flag is set; the transport avoids doing a continue-transport fork/exec,
+  closes TLS and passes back to the deliver proc and exits.  The deliver proc 
+  makes a further call to the transport.  An RSET is sent on the conn;
+  and the still-open conn is left for the deliver proc to make another
+  call to the transport with it open.  That only works because it was
+  originally a continued-conn, also, so the deliver proc has the conn.
+  - So if already a continued-conn, could pass back the next-message-id
+  rather than doing a further continued-conn - but we'd have to re-establish
+  TLS.
+  [ Which is a pity, and should also be worked on. ]
+  We do not need to pass the wait-tpt hintsdb handle across an exec-for-
+  continued-conn because the deliver proc can know what tpt will be used,
+  so the name is predictable and it cam open it.  May as well do that for
+  any remote tpt, and skip the open/close code in the tpt.  Perhaps local
+  tpts also for consistency.  But... only for transaction-capable DB providers
+  (and we will be assuming they are sequential-fork-safe).
+
+  Architecture.  The transport is a separate proc so that it can
+  - go badly wrong and die, being monitored from a safer parent
+  - manipulate privs, to deliver to local files.  But here, we're smtp
+    and don't to that!
+   */
 
   testharness_pause_ms(500);
   transport_do_pass_socket(transport_name, hostname, hostaddress,

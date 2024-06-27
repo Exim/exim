@@ -4700,6 +4700,32 @@ all pipes, so I do not see a reason to use non-blocking IO here
 
   search_tidyup();
 
+/*
+A continued-tpt will, in the tpt parent here, call par_reduce for
+the one child. But we are hoping to never do continued-transport...
+SO.... we may have called par_reduce for a single child, above when we'd
+hit the limit on child-count. Possibly multiple times with different
+transports and target hosts.  Does it matter if several return a suggested
+next-id, and we lose all but the last?  Hmm.  Less parallel working would
+happen. Perhaps still do continued-tpt once one has been set? No, that won't
+work for all cases.
+BAH.
+Could take the initial continued-tpt hit, and then do the next-id thing?
+
+do_remote_deliveries par_reduce par_wait par_read_pipe
+*/
+
+if (  continue_transport
+   && !continue_wait_db
+   && !exim_lockfile_needed()
+   )
+  {
+  open_db * dbp = store_get(sizeof(open_db), GET_UNTAINTED);
+  continue_wait_db = dbfn_open_multi(
+		      string_sprintf("wait-%.200s", continue_transport), dbp);
+  continue_next_id[0] = '\0';
+  }
+
   if ((pid = exim_fork(US"transport")) == 0)
     {
     int fd = pfd[pipe_write];
@@ -5038,6 +5064,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
       rmt_dlv_checked_write(fd, 'I', '0', big_buffer, ptr - big_buffer);
       }
 
+/*XXX new code*/
     /* Continuation message-id */
     if (*continue_next_id)
       rmt_dlv_checked_write(fd, 'Z', '1', continue_next_id, MESSAGE_ID_LENGTH);
@@ -5103,14 +5130,20 @@ all pipes, so I do not see a reason to use non-blocking IO here
   (continue_transport gets set to NULL) before we consider any other addresses
   in this message. */
 
-  if (continue_transport) par_reduce(0, fallback);
+  if (continue_transport)
+    {
+    par_reduce(0, fallback);
+    if (continue_wait_db && !continue_next_id)
+      { dbfn_close_multi(continue_wait_db); continue_wait_db = NULL; }
+    }
 
   /* Otherwise, if we are running in the test harness, wait a bit, to let the
   newly created process get going before we create another process. This should
   ensure repeatability in the tests. Wait long enough for most cases to complete
   the transport. */
 
-  else testharness_pause_ms(600);
+  else
+    testharness_pause_ms(600);
 
   continue;
 
@@ -6462,8 +6495,8 @@ address_item * addr_last;
 uschar * filter_message, * info;
 open_db dbblock, * dbm_file;
 extern int acl_where;
-CONTINUED_ID:
 
+CONTINUED_ID:
 final_yield = DELIVER_ATTEMPTED_NORMAL;
 now = time(NULL);
 addr_last = NULL;

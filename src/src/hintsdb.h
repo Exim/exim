@@ -97,7 +97,7 @@ return FALSE;	/* We do transaction; no extra locking needed */
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 static inline EXIM_DB *
-exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
+exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
 EXIM_DB * dbp;
@@ -106,8 +106,7 @@ if (flags & O_CREAT) sflags |= SQLITE_OPEN_CREATE;
 if ((ret = sqlite3_open_v2(CCS name, &dbp, sflags, NULL)) == SQLITE_OK)
   {
   sqlite3_busy_timeout(dbp, 5000);
-  ret = sqlite3_exec(dbp, "BEGIN TRANSACTION;", NULL, NULL, NULL);
-  if (ret == SQLITE_OK && flags & O_CREAT)
+  if (flags & O_CREAT)
     ret = sqlite3_exec(dbp,
 	    "CREATE TABLE IF NOT EXISTS tbl (ky TEXT PRIMARY KEY, dat BLOB);",
 	    NULL, NULL, NULL);
@@ -117,6 +116,23 @@ if ((ret = sqlite3_open_v2(CCS name, &dbp, sflags, NULL)) == SQLITE_OK)
 //else
 //  fprintf(stderr, "sqlite3_open_v2: %s\n", sqlite3_errmsg(dbp));
 return ret == SQLITE_OK ? dbp : NULL;
+}
+
+static inline BOOL
+exim_dbtransaction_start(EXIM_DB * dbp)
+{
+return sqlite3_exec(dbp, "BEGIN TRANSACTION;", NULL, NULL, NULL) == SQLITE_OK;
+}
+
+static inline EXIM_DB *
+exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
+  unsigned mode)
+{
+EXIM_DB * dbp = exim_dbopen_multi(name, dirname, flags, mode);
+if (!dbp || exim_dbtransaction_start(dbp))
+  return dbp;
+sqlite3_close(dbp);
+return NULL;
 }
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
@@ -322,11 +338,21 @@ store_free(cursor);
 
 
 /* EXIM_DBCLOSE */
-static void
-exim_dbclose__(EXIM_DB * dbp)
+static inline void
+exim_dbclose_multi(EXIM_DB * dbp)
+{
+sqlite3_close(dbp);
+}
+static inline void
+exim_dbtransaction_commit(EXIM_DB * dbp)
 {
 (void) sqlite3_exec(dbp, "COMMIT TRANSACTION;", NULL, NULL, NULL);
-sqlite3_close(dbp);
+}
+static inline void
+exim_dbclose__(EXIM_DB * dbp)
+{
+exim_dbtransaction_commit(dbp);
+exim_dbclose_multi(dbp);
 }
 
 
@@ -399,6 +425,13 @@ exim_lockfile_needed(void)
 {
 return TRUE;
 }
+
+static inline EXIM_DB *
+exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
+  unsigned mode) { return NULL; }
+static inline void exim_dbclose_multi(EXIM_DB * dbp) {}
+static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
+static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 static inline EXIM_DB *
@@ -583,6 +616,13 @@ exim_lockfile_needed(void)
 return TRUE;
 }
 
+static inline EXIM_DB *
+exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
+  unsigned mode) { return NULL; }
+static inline void exim_dbclose_multi(EXIM_DB * dbp) {}
+static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
+static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
+
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 /* The API changed for DB 4.1. - and we also starting using the "env" with a
 specified working dir, to avoid the DBCONFIG file trap. */
@@ -735,6 +775,13 @@ exim_lockfile_needed(void)
 {
 return TRUE;
 }
+
+static inline EXIM_DB *
+exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
+  unsigned mode) { return NULL; }
+static inline void exim_dbclose_multi(EXIM_DB * dbp) {}
+static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
+static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 static inline EXIM_DB *
@@ -889,6 +936,13 @@ exim_lockfile_needed(void)
 return TRUE;
 }
 
+static inline EXIM_DB *
+exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
+  unsigned mode) { return NULL; }
+static inline void exim_dbclose_multi(EXIM_DB * dbp) {}
+static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
+static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
+
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 static inline EXIM_DB *
 exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
@@ -1034,6 +1088,13 @@ exim_lockfile_needed(void)
 {
 return TRUE;
 }
+
+static inline EXIM_DB *
+exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
+  unsigned mode) { return NULL; }
+static inline void exim_dbclose_multi(EXIM_DB * dbp) {}
+static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
+static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
 
 /* EXIM_DBOPEN - returns a EXIM_DB *, NULL if failed */
 /* Check that the name given is not present. This catches

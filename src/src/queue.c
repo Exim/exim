@@ -341,8 +341,10 @@ so force the first one. The selecting string can optionally be a regex, or
 refer to the sender instead of recipients.
 
 If queue_2stage is set, the queue is scanned twice. The first time, queue_smtp
-is set so that routing is done for all messages. Thus in the second run those
-that are routed to the same host should go down the same SMTP connection.
+is set so that routing is done for all messages. A call of the transport adds
+each message_id in turn to a list for the resulting host.
+Then in the second run those that are routed to the same host should all go down
+a single SMTP connection.
 
 Arguments:
   q	     queue-runner descriptor
@@ -794,7 +796,7 @@ if (q->queue_2stage)
     else break;
 
 #ifdef MEASURE_TIMING
-  report_time_since(&timestamp_startup, US"queue_run 1st phase done");
+  report_time_since(&timestamp_startup, US"queue_run phase 1 done");
 #endif
   q->queue_2stage = f.queue_2stage = FALSE;
   DEBUG(D_queue_run) debug_printf("queue_run phase 2 start\n");

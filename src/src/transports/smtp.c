@@ -4799,17 +4799,17 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	    been used, which we do under TLSv1.3 for the gsasl SCRAM*PLUS methods.
 	    But we were always doing it anyway. */
 
-	    tls_close(sx->cctx.tls_ctx,
-	      sx->send_tlsclose ? TLS_SHUTDOWN_WAIT : TLS_SHUTDOWN_WONLY);
-	    sx->send_tlsclose = FALSE;
-	    sx->cctx.tls_ctx = NULL;
-	    tls_out.active.sock = -1;
-	    smtp_peer_options = smtp_peer_options_wrap;
-	    sx->ok = !sx->smtps
-	      && smtp_write_command(sx, SCMD_FLUSH, "EHLO %s\r\n", sx->helo_data)
-		  >= 0
-	      && smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
-					'2', ob->command_timeout);
+	  tls_close(sx->cctx.tls_ctx,
+	    sx->send_tlsclose ? TLS_SHUTDOWN_WAIT : TLS_SHUTDOWN_WONLY);
+	  sx->send_tlsclose = FALSE;
+	  sx->cctx.tls_ctx = NULL;
+	  tls_out.active.sock = -1;
+	  smtp_peer_options = smtp_peer_options_wrap;
+	  sx->ok = !sx->smtps
+	    && smtp_write_command(sx, SCMD_FLUSH, "EHLO %s\r\n", sx->helo_data)
+		>= 0
+	    && smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
+				      '2', ob->command_timeout);
 
 	    if (sx->ok && f.continue_more)
 	      goto TIDYUP;		/* More addresses for another run */

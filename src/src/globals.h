@@ -453,6 +453,9 @@ extern uschar *continue_host_address;  /* IP address for ditto */
 extern uschar  continue_next_id[];     /* Next message_id from hintsdb */
 extern int     continue_sequence;      /* Sequence num for continued delivery */
 extern uschar *continue_transport;     /* Transport for continued delivery */
+#ifndef COMPILE_UTILITY
+extern open_db *continue_wait_db;      /* Hintsdb for wait-transport */
+#endif
 #ifndef DISABLE_ESMTP_LIMITS
 extern unsigned continue_limit_mail;   /* Peer advertised limit */
 extern unsigned continue_limit_rcpt;
