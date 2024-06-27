@@ -2083,6 +2083,8 @@ DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
 case (instead, passing back the next-id.  But in case it does... */
 if (continue_wait_db)
   { dbfn_close_multi(continue_wait_db); continue_wait_db = NULL; }
+if (continue_retry_db)
+  { dbfn_close_multi(continue_retry_db); continue_retry_db = NULL; }
 
 #ifndef DISABLE_ESMTP_LIMITS
 continue_limit_mail = peer_limit_mail;

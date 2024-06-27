@@ -192,7 +192,12 @@ if ((node = tree_search(tree_unusable, host_key)))
 /* Open the retry database, giving up if there isn't one. Otherwise, search for
 the retry records, and then close the database again. */
 
-if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
+if (!continue_retry_db)
+  dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE);
+else if ((dbm_file = continue_retry_db) == (open_db *)-1)
+  dbm_file = NULL;
+
+if (!dbm_file)
   {
   DEBUG(D_deliver|D_retry|D_hints_lookup)
     debug_printf("no retry data available\n");
@@ -200,7 +205,8 @@ if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
   }
 host_retry_record = dbfn_read(dbm_file, host_key);
 message_retry_record = dbfn_read(dbm_file, message_key);
-dbfn_close(dbm_file);
+if (!continue_retry_db)
+  dbfn_close(dbm_file);
 
 /* Ignore the data if it is too old - too long since it was written */
 

@@ -16,7 +16,7 @@ void     dbfn_close(open_db *);
 void     dbfn_close_multi(open_db *);
 int      dbfn_delete(open_db *, const uschar *);
 open_db *dbfn_open(const uschar *, int, open_db *, BOOL, BOOL);
-open_db *dbfn_open_multi(const uschar *, open_db *);
+open_db *dbfn_open_multi(const uschar *, int, open_db *);
 void    *dbfn_read_with_length(open_db *, const uschar *, int *);
 void    *dbfn_read_enforce_length(open_db *, const uschar *, size_t);
 uschar  *dbfn_scan(open_db *, BOOL, EXIM_CURSOR **);

@@ -242,7 +242,7 @@ starting a transaction.  "lof" and "panic" always true; read/write mode.
 */
 
 open_db *
-dbfn_open_multi(const uschar * name, open_db * dbblock)
+dbfn_open_multi(const uschar * name, int flags, open_db * dbblock)
 {
 int rc, save_errno;
 flock_t lock_data;
@@ -257,8 +257,8 @@ snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
 snprintf(CS filename, sizeof(filename), "%s/%s", dirname, name);
 
 priv_drop_temp(exim_uid, exim_gid);
-dbblock->dbptr = exim_dbopen_multi(filename, dirname, O_RDWR, EXIMDB_MODE);
-if (!dbblock->dbptr && errno == ENOENT)
+dbblock->dbptr = exim_dbopen_multi(filename, dirname, flags, EXIMDB_MODE);
+if (!dbblock->dbptr && errno == ENOENT && flags == O_RDWR)
   {
   DEBUG(D_hints_lookup)
     debug_printf_indent("%s appears not to exist: trying to create\n", filename);
@@ -305,7 +305,7 @@ void
 dbfn_transaction_commit(open_db * dbp)
 {
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_transaction_commit\n");
-return exim_dbtransaction_commit(dbp->dbptr);
+exim_dbtransaction_commit(dbp->dbptr);
 }
 
 

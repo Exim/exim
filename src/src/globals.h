@@ -455,6 +455,7 @@ extern int     continue_sequence;      /* Sequence num for continued delivery */
 extern uschar *continue_transport;     /* Transport for continued delivery */
 #ifndef COMPILE_UTILITY
 extern open_db *continue_wait_db;      /* Hintsdb for wait-transport */
+extern open_db *continue_retry_db;     /* Hintsdb for retries */
 #endif
 #ifndef DISABLE_ESMTP_LIMITS
 extern unsigned continue_limit_mail;   /* Peer advertised limit */

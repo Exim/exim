@@ -11,10 +11,10 @@ JH/01 Use fewer forks & execs for sending many messages to a single host.
       particularly for mailinglist and smarthost cases.
 
 JH/02 Add transaction support for hintsdbs. The sole initial provider is
-      sqlite, and is used for the wait-trasnprot DB. Transactions imply
-      locking internal to the DB. We no longer need a separate lockfile, can
-      keep the DB handle open for extended periods, and still potentially
-      benefit from concurrency on non-conlicting record uses.
+      sqlite, and is used for the wait-transport and retry DBs. Transactions
+      imply locking internal to the DB. We no longer need a separate lockfile,
+      can keep the DB handle open for extended periods, yet potentially benefit
+      from concurrency on non-conflicting record uses.
 
 Exim version 4.98
 -----------------

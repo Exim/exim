@@ -2717,8 +2717,7 @@ Returns:     Nothing
 static void
 do_local_deliveries(void)
 {
-open_db dbblock;
-open_db *dbm_file = NULL;
+open_db dbblock, * dbm_file = NULL;
 time_t now = time(NULL);
 
 /* Loop until we have exhausted the supply of local deliveries */
@@ -4715,16 +4714,15 @@ Could take the initial continued-tpt hit, and then do the next-id thing?
 do_remote_deliveries par_reduce par_wait par_read_pipe
 */
 
-if (  continue_transport
-   && !continue_wait_db
-   && !exim_lockfile_needed()
-   )
-  {
-  open_db * dbp = store_get(sizeof(open_db), GET_UNTAINTED);
-  continue_wait_db = dbfn_open_multi(
-		      string_sprintf("wait-%.200s", continue_transport), dbp);
-  continue_next_id[0] = '\0';
-  }
+if (continue_transport && !exim_lockfile_needed())
+  if (!continue_wait_db)
+    {
+    continue_wait_db = dbfn_open_multi(
+		  string_sprintf("wait-%.200s", continue_transport),
+		  O_RDWR,
+		  (open_db *) store_get(sizeof(open_db), GET_UNTAINTED));
+    continue_next_id[0] = '\0';
+    }
 
   if ((pid = exim_fork(US"transport")) == 0)
     {
@@ -5133,8 +5131,8 @@ if (  continue_transport
   if (continue_transport)
     {
     par_reduce(0, fallback);
-    if (continue_wait_db && !continue_next_id)
-      { dbfn_close_multi(continue_wait_db); continue_wait_db = NULL; }
+    if (!continue_next_id && continue_wait_db)
+	{ dbfn_close_multi(continue_wait_db); continue_wait_db = NULL; }
     }
 
   /* Otherwise, if we are running in the test harness, wait a bit, to let the
@@ -7310,9 +7308,30 @@ while (addr_new)           /* Loop until all addresses dealt with */
 
   if (f.queue_2stage)
     dbm_file = NULL;
-  else if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
-    DEBUG(D_deliver|D_retry|D_route|D_hints_lookup)
-      debug_printf("no retry data available\n");
+  else
+    {
+    /* If we have transaction-capable hintsdbs, open the retry db without
+    locking, and leave open for the transport process and for subsequent
+    deliveries. If the open fails, tag that explicitly for the transport but
+    retry the open next time around, in case it was created in the interim. */
+
+    if (continue_retry_db == (open_db *)-1)
+      continue_retry_db = NULL;
+
+    if (continue_retry_db)
+      dbm_file = continue_retry_db;
+    else if (!exim_lockfile_needed() && continue_transport)
+      {
+      dbm_file = dbfn_open_multi(US"retry", O_RDONLY, &dbblock);
+      continue_retry_db = dbm_file ? dbm_file : (open_db *)-1;
+      }
+    else
+      dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE);
+
+    if (!dbm_file)
+      DEBUG(D_deliver|D_retry|D_route|D_hints_lookup)
+	debug_printf("no retry data available\n");
+    }
 
   /* Scan the current batch of new addresses, to handle pipes, files and
   autoreplies, and determine which others are ready for routing. */
@@ -7720,7 +7739,8 @@ while (addr_new)           /* Loop until all addresses dealt with */
   /* The database is closed while routing is actually happening. Requests to
   update it are put on a chain and all processed together at the end. */
 
-  if (dbm_file) dbfn_close(dbm_file);
+  if (dbm_file && !continue_retry_db)
+    { dbfn_close(dbm_file); dbm_file = NULL; }
 
   /* If queue_domains is set, we don't even want to try routing addresses in
   those domains. During queue runs, queue_domains is forced to be unset.
@@ -7889,8 +7909,10 @@ while (addr_new)           /* Loop until all addresses dealt with */
       }
     }  /* Continue with routing the next address. */
   }    /* Loop to process any child addresses that the routers created, and
-          any rerouted addresses that got put back on the new chain. */
+       any rerouted addresses that got put back on the new chain. */
 
+if (dbm_file)		/* Can only be continue_retry_db */
+  { dbfn_close_multi(continue_retry_db); continue_retry_db = dbm_file = NULL; }
 
 /* Debugging: show the results of the routing */
 

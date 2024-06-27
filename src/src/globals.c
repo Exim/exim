@@ -751,6 +751,7 @@ int     continue_sequence      = 1;
 uschar *continue_transport     = NULL;
 #ifndef COMPILE_UTILITY
 open_db *continue_wait_db      = NULL;
+open_db *continue_retry_db     = NULL;
 #endif
 #ifndef DISABLE_ESMTP_LIMITS
 unsigned continue_limit_mail   = 0;
