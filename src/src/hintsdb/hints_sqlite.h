@@ -246,8 +246,8 @@ int i;
 BOOL ret;
 
 # ifdef COMPILE_UTILITY
-qry = malloc((i = snprintf(NULL, 0, FMT, *cursor)));
-snprintf(CS qry, i-1, FMT, *cursor);
+if (!(qry = malloc((i = snprintf(NULL, 0, FMT, *cursor))+1))) return FALSE;
+snprintf(CS qry, i, FMT, *cursor);
 /* fprintf(stderr, "exim_dbscan(%s)\n", qry); */
 ret = exim_dbget__(dbp, qry, key);
 free(qry);
