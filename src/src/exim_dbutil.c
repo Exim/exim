@@ -344,7 +344,7 @@ if (flags & O_RDWR) flags |= O_CREAT;
 
 if (!(dbblock->dbptr = exim_dbopen(filename, dirname, flags, 0)))
   {
-  printf("** Failed to open DBM file %s for %s: %s%s\n", filename,
+  printf("** Failed to open hintsdb file %s for %s: %s%s\n", filename,
     read_only ? "reading" : "writing", strerror(errno),
 #ifdef USE_DB
     " (or Berkeley DB error while opening)"

@@ -99,9 +99,10 @@ if (sqlite3_step(statement) != SQLITE_ROW)
 
 res->len = sqlite3_column_bytes(statement, 0);
 # ifdef COMPILE_UTILITY
-res->data = malloc(res->len);
+if (!(res->data = malloc(res->len +1)))
+  { sqlite3_finalize(statement); return FALSE; }
 # else
-res->data = store_get(res->len, GET_TAINTED);
+res->data = store_get(res->len +1, GET_TAINTED);
 # endif
 memcpy(res->data, sqlite3_column_blob(statement, 0), res->len);
 res->data[res->len] = '\0';
@@ -120,7 +121,9 @@ BOOL ret;
 
 # ifdef COMPILE_UTILITY
 /* fprintf(stderr, "exim_dbget(k len %d '%.*s')\n", (int)key->len, (int)key->len, key->data); */
-qry = malloc(i = snprintf(NULL, 0, FMT, (int) key->len, key->data));
+i = snprintf(NULL, 0, FMT, (int) key->len, key->data)+1;
+if (!(qry = malloc(i)))
+  return FALSE;
 snprintf(CS qry, i, FMT, (int) key->len, key->data);
 ret = exim_dbget__(dbp, qry, res);
 free(qry);
@@ -143,19 +146,20 @@ exim_s_dbp(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data, const uschar * al
 {
 int hlen = data->len * 2, off = 0, res;
 # define FMT "INSERT OR %s INTO tbl (ky,dat) VALUES ('%.*s', X'%.*s');"
+uschar * qry;
 # ifdef COMPILE_UTILITY
 uschar * hex = malloc(hlen+1);
+if (!hex) return EXIM_DBPUTB_DUP;	/* best we can do */
 # else
 uschar * hex = store_get(hlen+1, data->data);
 # endif
-uschar * qry;
 
 for (const uschar * s = data->data, * t = s + data->len; s < t; s++, off += 2)
   sprintf(CS hex + off, "%02X", *s);
 
 # ifdef COMPILE_UTILITY
-res = snprintf(CS hex, 0, FMT, alt, (int) key->len, key->data, hlen, hex);
-qry = malloc(res);
+res = snprintf(CS hex, 0, FMT, alt, (int) key->len, key->data, hlen, hex) +1;
+if (!(qry = malloc(res))) return EXIM_DBPUTB_DUP;
 snprintf(CS qry, res, FMT, alt, (int) key->len, key->data, hlen, hex);
 /* fprintf(stderr, "exim_s_dbp(%s)\n", qry); */
 res = sqlite3_exec(dbp, CS qry, NULL, NULL, NULL);
@@ -204,8 +208,8 @@ uschar * qry;
 int res;
 
 # ifdef COMPILE_UTILITY
-res = snprintf(NULL, 0, FMT, (int) key->len, key->data); /* res excludes nul */
-qry = malloc(res);
+res = snprintf(NULL, 0, FMT, (int) key->len, key->data) +1; /* res includes nul */
+if (!(qry = malloc(res))) return SQLITE_NOMEM;
 snprintf(CS qry, res, FMT, (int) key->len, key->data);
 res = sqlite3_exec(dbp, CS qry, NULL, NULL, NULL);
 free(qry);
@@ -227,6 +231,7 @@ exim_dbcreate_cursor(EXIM_DB * dbp)
 {
 # ifdef COMPILE_UTILITY
 EXIM_CURSOR * c = malloc(sizeof(int));
+if (!c) return NULL;
 # else
 EXIM_CURSOR * c = store_malloc(sizeof(int));
 # endif
@@ -246,7 +251,8 @@ int i;
 BOOL ret;
 
 # ifdef COMPILE_UTILITY
-if (!(qry = malloc((i = snprintf(NULL, 0, FMT, *cursor))+1))) return FALSE;
+i = snprintf(NULL, 0, FMT, *cursor)+1;
+if (!(qry = malloc(i))) return FALSE;
 snprintf(CS qry, i, FMT, *cursor);
 /* fprintf(stderr, "exim_dbscan(%s)\n", qry); */
 ret = exim_dbget__(dbp, qry, key);
