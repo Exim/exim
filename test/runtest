@@ -469,7 +469,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/forced fail after \d seconds/forced fail after d seconds/;
 
   # This message may contain a different DBM library name
-  s/Failed to open \S+( \([^\)]+\))? file/Failed to open DBM file/;
+  s/Failed to open \S+( \([^\)]+\))? file/Failed to open hintsdb file/;
 
   # The message for a non-listening FIFO varies
   s/:[^:]+: while opening named pipe/: Error: while opening named pipe/;
@@ -1056,7 +1056,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/^(Connection request from) \[.*:.*:.*\]$/$1 \[ipv6\]/;
 
     # Hints DB use of lockfiles is provider-dependent
-    s/Failed to open \K(?:DBM|database lock) file (.*\/spool\/db\/[^.]*)(?:.lockfile)?(?=(?: for reading)?: No such file or directory$)/hintsdb $1/;
+    s/Failed to open \K(?:hintsdb|database lock) file (.*\/spool\/db\/[^. ]*)(?:.lockfile)?(?: for reading)?(?=: No such file or directory$)/hintsdb $1/;
 
     # openssl version variances
   # Error lines on stdout from SSL contain process id values and file names.
