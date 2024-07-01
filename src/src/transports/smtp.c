@@ -4558,10 +4558,11 @@ if (!sx->ok)
 
       case ERRNO_SMTPCLOSED:
 	/* If the peer closed the TCP connection after end-of-data, but before
-	we could send QUIT, do TLS close, etc - call it a message error.
-	Otherwise, if all the recipients have been dealt with, call a close no
-	error at all; each address_item should have a suitable result already
-	(2xx: PENDING_OK, 4xx: DEFER, 5xx: FAIL) */
+	we could send QUIT, do TLS close, etc - it is a message error.
+	If not, and all the recipients have been dealt with, call such a close
+	no error at all; each address_item should have a suitable result already
+	(2xx: PENDING_OK, 4xx: DEFER, 5xx: FAIL).
+	Otherwise, it is a non-message error. */
 
 	if (!(message_error = Ustrncmp(smtp_command,"end ",4) == 0))
 	  {

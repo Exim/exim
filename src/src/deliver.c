@@ -3660,16 +3660,20 @@ while (!done)
 	    h->dnssec = *ptr == '2' ? DS_YES
 		      : *ptr == '1' ? DS_NO
 		      : DS_UNK;
-	    ptr++;
 	    addr->host_used = h;
 	    }
-	  else ptr++;
+	  ptr++;
 
 	  continue_flags = 0;
+#ifndef DISABLE_TLS
 	  if (testflag(addr, af_cert_verified)) continue_flags |= CTF_CV;
+# ifdef SUPPORT_DANE
 	  if (testflag(addr, af_dane_verified)) continue_flags |= CTF_DV;
+# endif
+# ifndef DISABLE_TLS_RESUME
 	  if (testflag(addr, af_tls_resume))    continue_flags |= CTF_TR;
-
+# endif
+#endif
 	  /* Finished with this address */
 
 	  addr = addr->next;
@@ -4912,17 +4916,17 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
       {
       uschar * ptr;
 
+#ifndef DISABLE_TLS
       /* The certificate verification status goes into the flags, in A0 */
       if (tls_out.certificate_verified) setflag(addr, af_cert_verified);
-#ifdef SUPPORT_DANE
+# ifdef SUPPORT_DANE
       if (tls_out.dane_verified)        setflag(addr, af_dane_verified);
-#endif
-#ifndef DISABLE_TLS_RESUME
+# endif
+# ifndef DISABLE_TLS_RESUME
       if (tls_out.resumption & RESUME_USED) setflag(addr, af_tls_resume);
-#endif
+# endif
 
       /* Use an X item only if there's something to send */
-#ifndef DISABLE_TLS
       if (addr->cipher)
         {
         ptr = big_buffer + sprintf(CS big_buffer, "%.128s", addr->cipher) + 1;
