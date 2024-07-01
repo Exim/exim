@@ -143,7 +143,7 @@ Attempting full verification using callout
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
  dbfn_read: key=remote
- dbfn_read: size 40 return
+ dbfn_read: size nnn return
  callout cache: found domain record for remote
  dbfn_read: key=qq@remote
  dbfn_read: null return
@@ -178,10 +178,10 @@ cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT:250'
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
- dbfn_write: key=remote datalen 40
+ dbfn_write: key=remote datalen nn
  wrote callout cache domain record for remote:
    result=1 postmaster=0 random=0
- dbfn_write: key=qq@remote datalen 16
+ dbfn_write: key=qq@remote datalen nn
  wrote negative callout cache address record for qq@remote
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database
@@ -276,10 +276,10 @@ Attempting full verification using callout
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
  dbfn_read: key=remote
- dbfn_read: size 40 return
+ dbfn_read: size nnn return
  callout cache: found domain record for remote
  dbfn_read: key=qq@remote
- dbfn_read: size 16 return
+ dbfn_read: size nnn return
  callout cache: found address record for qq@remote
  callout cache: address record is negative
  EXIM_DBCLOSE(0xAAAAAAAA)

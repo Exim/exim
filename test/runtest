@@ -1434,6 +1434,19 @@ RESET_AFTER_EXTRA_LINE_READ:
     # so convert them all to "0"
     s%(?<!lsearch)[^ ](?=TESTSUITE/aux-fixed/(?:0414.list[12]|0464.domains)$)%0%;
 
+    # Environment cleaning
+    next if /\w+ in keep_environment\? (yes|no)/;
+
+    # Sizes vary with test hostname
+    s/^cmd buf flush \d+ bytes/cmd buf flush ddd bytes/;
+
+    # Different platforms put different error messages into retry records
+    s/dbfn_write: key=.* datalen \K\d{2,3}$/nn/;
+    s/dbfn_read: size \K\d{2,3}(?= return$)/nnn/;
+
+    # Spool filesystem free space changes on different systems.
+    s/((?:spool|log) directory space =) -?\d+K (inodes =)\s*-?\d+/$1 nnnnnK $2 nnnnn/;
+
     # CONTENT_SCAN
     next if /try option acl_(?:not_)?smtp_mime$/;
 
@@ -1483,15 +1496,6 @@ RESET_AFTER_EXTRA_LINE_READ:
     # TLS resumption is not always supported by the build
     next if /in tls_resumption_hosts\?/;
     next if /RE '.outlook.com/;
-
-    # Environment cleaning
-    next if /\w+ in keep_environment\? (yes|no)/;
-
-    # Sizes vary with test hostname
-    s/^cmd buf flush \d+ bytes/cmd buf flush ddd bytes/;
-
-    # Spool filesystem free space changes on different systems.
-    s/((?:spool|log) directory space =) -?\d+K (inodes =)\s*-?\d+/$1 nnnnnK $2 nnnnn/;
 
     # Non-TLS builds have different expansions for received_header_text
     if (s/(with \$received_protocol)\}\} \$\{if def:tls_cipher \{\(\$tls_cipher\)\n$/$1/)

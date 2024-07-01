@@ -167,7 +167,7 @@ failing_interval=ttt message_age=ttt
 Writing retry data for R:x@y
   first failed=dddd last try=dddd next try=+1 expired=1
   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
- dbfn_write: key=R:x@y datalen 148
+ dbfn_write: key=R:x@y datalen nn
  *@V4NET.0.0.0 in "*"?
   list element: *
   address match test: subject=*@V4NET.0.0.0 pattern=*
@@ -183,7 +183,7 @@ on queue longer than maximum retry
 Writing retry data for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
   first failed=dddd last try=dddd next try=+0 expired=0
   errno=dd more_errno=dd,A Network Error
- dbfn_write: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S datalen 70
+ dbfn_write: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S datalen nn
 timed out: all retries expired
 LOG: MAIN
   ** x@y: retry timeout exceeded
