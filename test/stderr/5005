@@ -564,7 +564,7 @@ Processing retry items
   Writing retry data for T:userx@test.ex
     first failed=dddd last try=dddd next try=+86400 expired=0
     errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
-  dbfn_write: key=T:userx@test.ex datalen 154
+  dbfn_write: key=T:userx@test.ex datalen nn
   EXIM_DBCLOSE(0xAAAAAAAA)
   closed hints database
 end of retry processing
@@ -698,7 +698,7 @@ search_tidyup called
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
  dbfn_read: key=T:userx@test.ex
- dbfn_read: size 154 return
+ dbfn_read: size nnn return
 retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
  EXIM_DBCLOSE(0xAAAAAAAA)
@@ -758,12 +758,12 @@ Processing retry items
    userx@test.ex in "*"? yes (matched "*")
   retry for T:userx@test.ex = * 0 0
   dbfn_read: key=T:userx@test.ex
-  dbfn_read: size 154 return
+  dbfn_read: size nnn return
   failing_interval=ttt message_age=ttt
   Writing retry data for T:userx@test.ex
     first failed=dddd last try=dddd next try=+86400 expired=0
     errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
-  dbfn_write: key=T:userx@test.ex datalen 154
+  dbfn_write: key=T:userx@test.ex datalen nn
   EXIM_DBCLOSE(0xAAAAAAAA)
   closed hints database
 end of retry processing
