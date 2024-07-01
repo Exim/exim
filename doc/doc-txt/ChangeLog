@@ -164,6 +164,9 @@ JH/33 Bug 2994: A subdir dsearch lookup should permit a directory name that star
 JH/34 Fix delivery ordering for 2-phase queue run combined with
       queue_run_in_order.
 
+JH/35 Bug 3099: fix parsing of MIME filenames split over multiple paramemters.
+      Previously the $mime_filename variable would have an incorrect value.
+
 
 Exim version 4.97
 -----------------

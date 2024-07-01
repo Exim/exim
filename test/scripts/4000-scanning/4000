@@ -272,3 +272,34 @@ foobar
 .
 quit
 ****
+#
+#
+# Filename using parameter value continuation (RFC 2231 sec. 3)
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+From: localpart@test.example
+To: localpart@test.example
+Subject: Bug 3099 (2)
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_MIME_BOUNDARY_000_695039"
+
+------=_MIME_BOUNDARY_000_695039
+Content-Type: text/plain
+
+This is a test mailing
+------=_MIME_BOUNDARY_000_695039
+Content-Type: application/octet-stream
+Content-Disposition: attachment;
+    filename*0*="example3";
+    filename*1*=".exe"
+Content-Transfer-Encoding: BASE64
+
+QmVpc3BpZWwK
+
+------=_MIME_BOUNDARY_000_695039--
+.
+quit
+****

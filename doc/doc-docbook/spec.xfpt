@@ -35231,13 +35231,13 @@ If the string does not start with a slash, it is used as the
 filename, and the default path is then used.
 .endlist
 The &%decode%& condition normally succeeds. It is only false for syntax
-errors or unusual circumstances such as memory shortages. You can easily decode
-a file with its original, proposed filename using
-.code
-decode = $mime_filename
-.endd
-However, you should keep in mind that &$mime_filename$& might contain
-anything. If you place files outside of the default path, they are not
+errors or unusual circumstances such as memory shortages.
+.new
+The variable &$mime_filename$& will have the suggested name for the file.
+Note however that this might contain anything, and is very difficult
+to safely use as all or even part of the filename.
+.wen
+If you place files outside of the default path, they are not
 automatically unlinked.
 
 For RFC822 attachments (these are messages attached to messages, with a

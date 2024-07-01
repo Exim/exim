@@ -406,3 +406,73 @@ foobar
 
 --T4sUOijqQbZv57TR--
 
+From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER (helo=test.ex)
+	by myhost.test.ex with local-esmtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbF-000000005vi-0000
+	for userx@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+From: localpart@test.example
+To: localpart@test.example
+Subject: Bug 3099 (2)
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_MIME_BOUNDARY_000_695039"
+Message-Id: <E10HmbF-000000005vi-0000@myhost.test.ex>
+Sender: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-0-content-type: multipart/mixed
+X-0-filename: 
+X-0-charset: 
+X-0-boundary: ----=_MIME_BOUNDARY_000_695039
+X-0-content-disposition: 
+X-0-content-transfer-encoding: 
+X-0-content-id: 
+X-0-content-description: 
+X-0-is-multipart: 1
+X-0-is-coverletter: 1
+X-0-is-rfc822: 0
+X-0-decode-filename: TESTSUITE/spool/scan/10HmbF-000000005vi-0000/10HmbF-000000005vi-0000-00000
+X-0-content-size: 1
+X-1-content-type: text/plain
+X-1-filename: 
+X-1-charset: 
+X-1-boundary: 
+X-1-content-disposition: 
+X-1-content-transfer-encoding: 
+X-1-content-id: 
+X-1-content-description: 
+X-1-is-multipart: 0
+X-1-is-coverletter: 1
+X-1-is-rfc822: 0
+X-1-decode-filename: TESTSUITE/spool/scan/10HmbF-000000005vi-0000/10HmbF-000000005vi-0000-00001
+X-1-content-size: 1
+X-2-content-type: application/octet-stream
+X-2-filename: example3.exe
+X-2-charset: 
+X-2-boundary: 
+X-2-content-disposition: attachment
+X-2-content-transfer-encoding: base64
+X-2-content-id: 
+X-2-content-description: 
+X-2-is-multipart: 0
+X-2-is-coverletter: 0
+X-2-is-rfc822: 0
+X-2-decode-filename: TESTSUITE/spool/scan/10HmbF-000000005vi-0000/10HmbF-000000005vi-0000-00002
+X-2-content-size: 1
+
+------=_MIME_BOUNDARY_000_695039
+Content-Type: text/plain
+
+This is a test mailing
+------=_MIME_BOUNDARY_000_695039
+Content-Type: application/octet-stream
+Content-Disposition: attachment;
+    filename*0*="example3";
+    filename*1*=".exe"
+Content-Transfer-Encoding: BASE64
+
+QmVpc3BpZWwK
+
+------=_MIME_BOUNDARY_000_695039--
+

@@ -1342,6 +1342,7 @@ Field width:		decimal digits, or *
 Precision:		dot, followed by decimal digits or *
 Length modifiers:	h  L  l  ll  z
 Conversion specifiers:	n d o u x X p f e E g G % c s S T W V Y D M
+Alternate-form:		%#s is silent about a null string
 
 Returns the possibly-new (if copy for growth or taint-handling was needed)
 string, not nul-terminated.

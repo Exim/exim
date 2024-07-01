@@ -20,3 +20,6 @@
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 => userx <userx@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 U=CALLER F=<CALLER@myhost.test.ex> rejected during MIME ACL checks: this is a deny from the mime acl
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss T="Bug 3099 (2)"
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
