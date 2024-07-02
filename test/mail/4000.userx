@@ -460,6 +460,19 @@ X-2-is-coverletter: 0
 X-2-is-rfc822: 0
 X-2-decode-filename: TESTSUITE/spool/scan/10HmbF-000000005vi-0000/10HmbF-000000005vi-0000-00002
 X-2-content-size: 1
+X-3-content-type: application/octet-stream
+X-3-filename: example4.txt
+X-3-charset: 
+X-3-boundary: 
+X-3-content-disposition: attachment
+X-3-content-transfer-encoding: base64
+X-3-content-id: 
+X-3-content-description: 
+X-3-is-multipart: 0
+X-3-is-coverletter: 0
+X-3-is-rfc822: 0
+X-3-decode-filename: TESTSUITE/spool/scan/10HmbF-000000005vi-0000/10HmbF-000000005vi-0000-00003
+X-3-content-size: 1
 
 ------=_MIME_BOUNDARY_000_695039
 Content-Type: text/plain
@@ -470,6 +483,15 @@ Content-Type: application/octet-stream
 Content-Disposition: attachment;
     filename*0*="example3";
     filename*1*=".exe"
+Content-Transfer-Encoding: BASE64
+
+QmVpc3BpZWwK
+
+------=_MIME_BOUNDARY_000_695039
+Content-Type: application/octet-stream
+Content-Disposition: attachment;
+    name*0="example4";
+    name*1=".txt"
 Content-Transfer-Encoding: BASE64
 
 QmVpc3BpZWwK
