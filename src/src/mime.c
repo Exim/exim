@@ -696,7 +696,7 @@ while(1)
 
 	  p = mime_next_semicolon(p);
 	  if (*p) p++;
-  param_done:
+  param_done: ;
 	  }					/* param scan on line */
 
 	if (strncmpic(CUS"content-disposition:", header, 20) == 0)
