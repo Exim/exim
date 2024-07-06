@@ -34,7 +34,8 @@ Subject: test 2.3 - Specified, missing delay message file
 exim -odf -DOPT='${if ={0}{0} {DIR/aux-fixed/TESTNUM.bounce.tmpl}{bad}}' delay_s@test.ex
 Subject: test 2.7 - Specified, expansion good
 ****
-sleep 1
+# Wait past the delay_warning interval
+sleep 3
 exim -M $msg1
 ****
 exim -DOPT=DIR/aux-fixed/TESTNUM.bounce.tmpl -M $msg2
@@ -43,7 +44,7 @@ exim -DOPT=DIR/aux-fixed/TESTNUM.nonexist.tmpl -M $msg3
 ****
 exim -DOPT=DIR/aux-fixed/TESTNUM.bounce.tmpl -M $msg4
 ****
-sleep 1
+#sleep 1
 #
 #
 no_msglog_check
