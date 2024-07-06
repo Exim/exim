@@ -495,8 +495,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     my($date1,$date2,$date3,$expired) = ($1,$2,$3,$4);
     $expired = '' if !defined $expired;
 
-    # Round the time-difference up to nearest even value
-    my($increment) = ((date_seconds($date3) - date_seconds($date2) + 1) >> 1) << 1;
+    # Make time-difference minimum 2, and rounded up to even value
+    my($increment) = date_seconds($date3) - date_seconds($date2) + 1;
+    $increment = 2 if ($increment == 0);
+    $increment = ($increment >> 1) << 1;
 
     # We used to use globally unique replacement values, but timing
     # differences make this impossible. Just show the increment on the
