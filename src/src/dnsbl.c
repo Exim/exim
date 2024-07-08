@@ -204,6 +204,8 @@ if (cb->rc == DNS_SUCCEED)
   {
   dns_address * da = NULL;
   uschar *addlist = cb->rhs->address;
+  uschar *orig_dnslist_domain = NULL;
+  int filter_rc = FAIL;
 
   /* For A and AAAA records, there may be multiple addresses from multiple
   records. For A6 records (currently not expected to be used) there may be
@@ -215,6 +217,76 @@ if (cb->rc == DNS_SUCCEED)
   HDEBUG(D_dnsbl) debug_printf("DNS lookup for %s succeeded (yielding %s)\n",
     query, addlist);
 
+  /* Make dnslist_domain available to dnslist_valid_addresses expansion. */
+  orig_dnslist_domain = dnslist_domain;
+  dnslist_domain = domain_txt;
+
+  for (da = cb->rhs; da; da = da->next)
+    {
+    switch (verify_check_this_host(&dnslist_valid_addresses, NULL, US"", da->address, NULL))
+      {
+      case OK:
+        da->dnsbl_invalid = FALSE;
+
+        if (filter_rc != DEFER)
+          filter_rc = OK;
+        break;
+
+      case FAIL:
+        da->dnsbl_invalid = TRUE;
+        addlist = NULL;
+
+        log_write(0, LOG_MAIN,
+          "DNS list lookup for %s at %s returned %s;"
+          " invalid address discarded",
+          keydomain, domain, da->address);
+        break;
+
+      case DEFER:
+        log_write(0, LOG_MAIN,
+          "DNS list lookup for %s at %s returned %s;"
+          " unable to verify, returned DEFER",
+          keydomain, domain, da->address);
+
+        filter_rc = DEFER;
+        break;
+      }
+    }
+
+  dnslist_domain = orig_dnslist_domain;
+
+  if (filter_rc == FAIL)
+    {
+    HDEBUG(D_dnsbl)
+      {
+        debug_printf("=> all addresses are invalid\n");
+        debug_printf("=> that means %s is not listed at %s\n",
+          keydomain, domain);
+      }
+    }
+
+  if (filter_rc != OK) return filter_rc;
+
+  /* Need to recreate addlist without filtered addresses. */
+  if (addlist == NULL)
+    {
+    for (da = cb->rhs; da; da = da->next)
+      {
+      if (da->dnsbl_invalid)
+        continue;
+
+      if (addlist == NULL)
+        addlist = da->address;
+      else
+        addlist = string_sprintf("%s, %s", addlist, da->address);
+      }
+
+    HDEBUG(D_dnsbl)
+      {
+        debug_printf("=> updated address list: %s\n", addlist);
+      }
+    }
+
   /* Address list check; this can be either for equality, or via a bitmask.
   In the latter case, all the bits must match. */
 
@@ -225,6 +297,9 @@ if (cb->rc == DNS_SUCCEED)
       int ipsep = ',';
       const uschar *ptr = iplist;
       uschar *res;
+
+      if (da->dnsbl_invalid)
+        continue;
 
       /* Handle exact matching */
 
@@ -250,14 +325,7 @@ if (cb->rc == DNS_SUCCEED)
         We change this only for IPv4 addresses in the list. */
 
         if (host_aton(da->address, address) == 1)
-	  if ((address[0] & 0xff000000) != 0x7f000000)    /* 127.0.0.0/8 */
-	    log_write(0, LOG_MAIN,
-	      "DNS list lookup for %s at %s returned %s;"
-	      " not in 127.0/8 and discarded",
-	      keydomain, domain, da->address);
-
-	  else
-	    mask = address[0];
+          mask = address[0];
 
         /* Scan the returned addresses, skipping any that are IPv6 */
 
@@ -307,33 +375,6 @@ if (cb->rc == DNS_SUCCEED)
           match_type & MT_ALL ? "=" : "",
           bitmask ? '&' : '=', iplist);
         }
-      yield = FAIL;
-      goto out;
-      }
-    }
-
-  /* No address list check; discard any illegal returns and give up if
-  none remain. */
-
-  else
-    {
-    BOOL ok = FALSE;
-    for (da = cb->rhs; da; da = da->next)
-      {
-      int address[4];
-
-      if (  host_aton(da->address, address) == 1		/* ipv4 */
-	 && (address[0] & 0xff000000) == 0x7f000000	/* 127.0.0.0/8 */
-	 )
-	ok = TRUE;
-      else
-	log_write(0, LOG_MAIN,
-	    "DNS list lookup for %s at %s returned %s;"
-	    " not in 127.0/8 and discarded",
-	    keydomain, domain, da->address);
-      }
-    if (!ok)
-      {
       yield = FAIL;
       goto out;
       }

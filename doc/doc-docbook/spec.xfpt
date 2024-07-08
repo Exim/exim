@@ -15946,6 +15946,20 @@ means that DNSSEC will not work with Exim on that platform either, unless Exim
 is linked against an alternative DNS client library.
 
 
+.new
+.option dnslist_valid_addresses main "host list&!!" &`127.0.0.0/8`&
+.cindex "dnslists ACL condition" "valid addresses"
+This option specifies IP addresses that are acceptable in dnslist responses.
+
+Responses containing address records that do not match this list will be logged
+as an error and ignored. This helps identify list domains that have been taken
+over by a domain-parking registrar.
+
+The variable &$dnslist_domain$& contains the name of the overall domain that
+matched (for example, &`spamhaus.example`&).
+.wen
+
+
 .option drop_cr main boolean false
 This is an obsolete option that is now a no-op. It used to affect the way Exim
 handled CR and LF characters in incoming messages. What happens now is
@@ -32955,6 +32969,12 @@ so a lookup based on the IP address is done at most once for any incoming
 connection (assuming long-enough TTL).
 Exim does not share information between multiple incoming
 connections (but your local name server cache should be active).
+
+.new
+DNS list responses are filtered using the &%dnslist_valid_addresses%& host list
+before use to protect against list domains that have been taken over by a
+domain-parking registrar and no longer return values in the 127.0.0.0/8 range.
+.wen
 
 There are a number of DNS lists to choose from, some commercial, some free,
 or free for small deployments.  An overview can be found at

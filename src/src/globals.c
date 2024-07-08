@@ -901,6 +901,7 @@ int     dns_use_edns0          = -1; /* <0 = not coerced */
 uschar *dnslist_domain         = NULL;
 uschar *dnslist_matched        = NULL;
 uschar *dnslist_text           = NULL;
+const uschar *dnslist_valid_addresses = US"127.0.0.0/8";
 uschar *dnslist_value          = NULL;
 tree_node *domainlist_anchor   = NULL;
 int     domainlist_count       = 0;

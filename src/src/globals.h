@@ -583,6 +583,7 @@ extern int     dns_use_edns0;          /* Coerce EDNS0 support on/off in resolve
 extern uschar *dnslist_domain;         /* DNS (black) list domain */
 extern uschar *dnslist_matched;        /* DNS (black) list matched key */
 extern uschar *dnslist_text;           /* DNS (black) list text message */
+extern const uschar *dnslist_valid_addresses; /* DNS list IP addresses that are considered valid (127.0.0.0/8) */
 extern uschar *dnslist_value;          /* DNS (black) list IP address */
 extern tree_node *domainlist_anchor;   /* Tree of defined domain lists */
 extern int     domainlist_count;       /* Number defined */
