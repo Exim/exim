@@ -2303,6 +2303,8 @@ if (!continue_hostname)
 # endif
       return FAIL;
       }
+      else DEBUG(D_transport)
+	debug_printf("lack of DNSSEC traceability precludes DANE\n");
     }
 #endif	/*DANE*/
 

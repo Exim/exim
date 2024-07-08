@@ -4,6 +4,7 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
+lack of DNSSEC traceability precludes DANE
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D ...
 connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
