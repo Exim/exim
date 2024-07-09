@@ -342,8 +342,8 @@ for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
   if (sig->domain)   g = string_append_listele(g, ':', sig->domain);
   if (sig->identity) g = string_append_listele(g, ':', sig->identity);
   }
-
-if (g) dkim_signers = g->s;
+gstring_release_unused(g);
+dkim_signers = string_from_gstring(g);
 
 out:
 store_pool = dkim_verify_oldpool;
@@ -358,7 +358,8 @@ dkim_acl_call(uschar * id, gstring ** res_ptr,
 {
 int rc;
 DEBUG(D_receive)
-  debug_printf("calling acl_smtp_dkim for dkim_cur_signer='%s'\n", id);
+  debug_printf("calling acl_smtp_dkim for identity '%s' domain '%s' sel '%s'\n",
+	      id, dkim_signing_domain, dkim_signing_selector);
 
 rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim, user_msgptr, log_msgptr);
 dkim_exim_verify_log_sig(dkim_cur_sig);
@@ -369,6 +370,7 @@ return rc;
 
 
 /* For the given identity, run the DKIM ACL once for each matching signature.
+If none match, run it once.
 
 Arguments
  id		Identity to look for in dkim signatures
@@ -425,7 +427,8 @@ for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
     dkim_verify_status = dkim_exim_expand_query(DKIM_VERIFY_STATUS);
     dkim_verify_reason = dkim_exim_expand_query(DKIM_VERIFY_REASON);
 
-    if ((rc = dkim_acl_call(id, res_ptr, user_msgptr, log_msgptr)) != OK)
+    if (  (rc = dkim_acl_call(id, res_ptr, user_msgptr, log_msgptr)) != OK
+       || dkim_verify_minimal && Ustrcmp(dkim_verify_status, "pass") == 0)
       return rc;
     }
 
