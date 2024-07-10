@@ -1367,6 +1367,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /in\s(?:tls_advertise_hosts\?|hosts_require_tls\?)
                 \sno\s\((option\sunset|end\sof\slist)\)/x;
 
+    # non-TLS builds cannot have DANE
+
+    next if /lack of DNSSEC traceability precludes DANE$/;
+
     # Skip auxiliary group lists because they will vary.
 
     next if /auxiliary group list:/;

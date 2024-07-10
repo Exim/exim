@@ -1,0 +1,106 @@
+# Exim test configuration 1166
+SERVER=
+
+exim_path = EXIM_PATH
+keep_environment =
+add_environment = SSLKEYLOGFILE=DIR/spool/sslkeys
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts = *
+tls_advertise_hosts = *
+.ifdef _HAVE_PIPE_CONNECT
+pipelining_connect_advertise_hosts = :
+.endif
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+.ifdef _OPT_MAIN_LIMITS_ADVERTISE_HOSTS
+limits_advertise_hosts = !*
+.endif
+
+# ----- Main settings -----
+
+primary_hostname = testhost.test.ex
+domainlist local_domains = @ : test.ex
+
+acl_smtp_rcpt = check_recipient
+acl_smtp_data = check_data
+trusted_users = CALLER
+queue_only
+smtp_receive_timeout = 2s
+
+log_selector = +received_recipients +connection_id +millisec
+
+tls_certificate = DIR/aux-fixed/cert1
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  drop	 condition = ${if eq {SERVER}{server}}
+	 message = 550 we really do not like you
+  accept hosts = :
+  accept domains = +local_domains
+  deny   message = relay not permitted
+
+check_data:
+  warn   message = X-acl-message-linecount: $message_linecount
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+to_server:
+  driver = accept
+  condition =	${if !eq {SERVER}{server}}
+  transport =	remote_smtp
+  errors_to =	""
+
+#fail_remote_domains:
+#  driver = redirect
+#  domains = ! +local_domains
+#  data = :fail: unrouteable mail domain "$domain"
+#
+#localuser:
+#  driver = accept
+#  check_local_user
+#  transport = local_delivery
+#  headers_add = X-local-user: uid=$local_user_uid gid=$local_user_gid
+
+
+# ----- Transports -----
+
+begin transports
+
+#local_delivery:
+#  driver = appendfile
+#  delivery_date_add
+#  envelope_to_add
+#  file = DIR/test-mail/$local_part
+#  create_file = DIR/test-mail
+#  headers_add = "X-body-linecount: $body_linecount\n\
+#                 X-message-linecount: $message_linecount\n\
+#                 X-received-count: $received_count"
+#  return_path_add
+
+remote_smtp:
+  driver = smtp
+  hosts =	127.0.0.1 : HOSTIPV4
+  port =	PORT_S
+  hosts_try_fastopen = :
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =
+  allow_localhost
+  command_timeout = 2s
+  final_timeout = 2s
+
+# ----- Retry -----
+
+begin retry
+* * F,30m,5m;
+# End

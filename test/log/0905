@@ -1,33 +1,24 @@
-2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= sender@source.dom U=root Ci=p1235 P=local-bsmtp S=sss for a@test.ex
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= sender@source.dom U=root Ci=p1234 P=local-bsmtp S=sss for a@test.ex
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 => a@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] K C="250 OK bdat"
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= sender@source.dom U=root Ci=p1236 P=local-bsmtp S=sss for c@test.ex
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= sender@source.dom U=root Ci=p1235 P=local-bsmtp S=sss for c@test.ex
 2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 => c@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] K C="250 OK bdat"
 2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= sender@source.dom U=root Ci=p1237 P=local-bsmtp S=sss for d@test.ex
+2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= sender@source.dom U=root Ci=p1236 P=local-bsmtp S=sss for d@test.ex
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 ** d@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined end of data: 550 unacceptable mail-from
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 d@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= sender@source.dom U=root Ci=p1238 P=local-bsmtp S=sss for c1@test.ex
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= sender@source.dom U=root Ci=p1237 P=local-bsmtp S=sss for c1@test.ex
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined end of data: 450 greylisted mail-from
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 == c1@test.ex R=to_server T=remote_smtp defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined end of data: 450 greylisted mail-from
-2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= sender@source.dom U=root Ci=p1239 P=local-bsmtp S=sss for e@test.ex
+2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= sender@source.dom U=root Ci=p1238 P=local-bsmtp S=sss for e@test.ex
 2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 ** e@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<e@test.ex>: 550 no such recipient
 2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 e@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 <= sender@source.dom U=root Ci=p1240 P=local-bsmtp S=sss for f1@test.ex
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 peer close after all rcpt responses; converting i/o-error to no-error
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 ** f1@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes: SMTP error from remote mail server after RCPT TO:<f1@test.ex>: 550 we really do not like you
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 f1@test.ex: error ignored
+2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 <= sender@source.dom U=root Ci=p1239 P=local-bsmtp S=sss for g@test.ex
+2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 ** g@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined end of data: 500 oops bdat
+2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 g@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 <= sender@source.dom U=root Ci=p1241 P=local-bsmtp S=sss for g@test.ex
-2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 ** g@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined end of data: 500 oops bdat
-2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 g@test.ex: error ignored
-2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 <= sender@source.dom U=root Ci=p1242 P=local-bsmtp S=sss for h@test.ex
-2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined end of data: 400 not right now bdat
-2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 == h@test.ex R=to_server T=remote_smtp defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined end of data: 400 not right now bdat
-
-******** SERVER ********
-2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1243, no queue runs, listening for SMTP on port PORT_S
-2017-07-30 18:51:05.712 H=localhost (testhost.test.ex) [127.0.0.1] Ci=p1234 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no F=<> rejected RCPT <f1@test.ex>: 550 we really do not like you
+2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 <= sender@source.dom U=root Ci=p1240 P=local-bsmtp S=sss for h@test.ex
+2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined end of data: 400 not right now bdat
+2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 == h@test.ex R=to_server T=remote_smtp defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined end of data: 400 not right now bdat

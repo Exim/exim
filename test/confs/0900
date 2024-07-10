@@ -57,10 +57,6 @@ ALLOW
 begin acl
 
 check_recipient:
-.ifdef RETRY2
-  drop	 condition = ${if eq {SERVER}{server}}
-	 message = 550 we really do not like you
-.endif
   accept hosts = :
   accept domains = +local_domains
   deny   message = relay not permitted
@@ -112,11 +108,7 @@ local_delivery:
 
 remote_smtp:
   driver = smtp
-.ifdef RETRY2
-  hosts =	127.0.0.1 : HOSTIPV4
-.else
   hosts =	127.0.0.1
-.endif
   port =	PORT_S
   hosts_try_fastopen = :
 .ifdef _HAVE_TLS
