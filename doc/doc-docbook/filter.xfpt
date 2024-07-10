@@ -286,10 +286,8 @@ The Exim Sieve implementation offers the core as defined by RFC 3028,
 comparison tests, the subaddress parameter, the &*copy*&, &*envelope*&,
 &*fileinto*&, &*notify*&, and &*vacation*& extensions, but not the &*reject*&
 extension.
-.new
 Exim did not support message delivery notifications (MDNs) when Sieve handling
 was introduced, so &*reject*& (which need them) could not be supported.
-.wen
 
 In order for Sieve to work properly in Exim, the system administrator needs to
 make some adjustments to the Exim configuration. These are described in the

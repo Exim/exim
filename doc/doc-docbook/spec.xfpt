@@ -45,7 +45,7 @@
 . Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.97"
+.set previousversion "4.98"
 .include ./local_params
 
 .set ACL "access control lists (ACLs)"
@@ -1805,10 +1805,8 @@ Yet another DBM library, called &'tdb'&, is available from
 &url(https://sourceforge.net/projects/tdb/files/). It has its own interface, and also
 operates on a single file.
 .next
-.new
 It is possible to use sqlite3 (&url(https://www.sqlite.org/index.html))
 for the DBM library.
-.wen
 .endlist
 
 .cindex "USE_DB"
@@ -2892,11 +2890,9 @@ available to admin users.
 
 The word &"set"& at the start of a line, followed by a single space,
 is recognised specially as defining a value for a variable.
-.new
 .cindex "tainted data" "expansion testing"
 If the sequence &",t"& is inserted before the space,
 the value is marked as tainted.
-.wen
 The syntax is otherwise the same as the ACL modifier &"set ="&.
 
 .cmdopt -bem <&'filename'&>
@@ -6852,9 +6848,7 @@ by default, but has an option to omit them (see section &<<SECTdbmbuild>>&).
 .cindex "dsearch lookup type"
 The given file must be an absolute directory path; this is searched for an entry
 whose name is the key by calling the &[lstat()]& function.
-.new
 Unless the options (below) permit a path,
-.wen
 the key may not contain any forward slash characters.
 If &[lstat()]& succeeds then so does the lookup.
 .cindex "tainted data" "dsearch result"
@@ -8179,7 +8173,6 @@ option, you can still update it by a query of this form:
 ${lookup pgsql,servers=master/db/name/pw {UPDATE ...} }
 .endd
 
-.new
 A now-deprecated syntax places the servers specification before the query,
 semicolon separated:
 .code
@@ -8191,7 +8184,6 @@ The entire string within the braces becomes tainted,
 including the server sepcification - which is not permissible.
 If the older sytax is used, a warning message will be logged.
 This syntax will be removed in a future release.
-.wen
 
 &*Note*&: server specifications in list-style lookups are still problematic.
 
@@ -8220,10 +8212,8 @@ or delete command), the result of the lookup is the number of rows affected.
 anything (for example, setting a field to the value it already has), the result
 is zero because no rows are affected.
 
-.new
 To get an encryted connection, use a Mysql option file with the required
 parameters for the connection.
-.wen
 
 
 .subsection "Special PostgreSQL features" SECID74
@@ -11593,14 +11583,12 @@ These convert EAI mail name components between UTF-8 and a-label forms.
 For information on internationalisation support see &<<SECTi18nMTA>>&.
 
 
-.new
 .vitem &*${xtextd:*&<&'string'&>&*}*&
 .cindex "text forcing in strings"
 .cindex "string" "xtext decoding"
 .cindex "xtext"
 .cindex "&%xtextd%& expansion item"
 This performs xtext decoding of the string (per RFC 3461 section 4).
-.wen
 
 
 
@@ -15263,12 +15251,10 @@ received. See chapter &<<CHAPACL>>& for further details.
 This option defines the ACL that is run when an SMTP VRFY command is
 received. See chapter &<<CHAPACL>>& for further details.
 
-.new
 .option acl_smtp_wellknown main string&!! unset
 .cindex "WELLKNOWN, ACL for"
 This option defines the ACL that is run when an SMTP WELLKNOWN command is
 received. See section &<<SECTWELLKNOWNACL>>& for further details.
-.wen
 
 .option add_environment main "string list" empty
 .cindex "environment" "set values"
@@ -16614,7 +16600,6 @@ has been built with LDAP support.
 
 
 
-.new
 .option limits_advertise_hosts main "host list&!!" *
 .cindex LIMITS "suppressing advertising"
 .cindex "ESMTP extensions" LIMITS
@@ -16624,7 +16609,6 @@ If permitted, Exim as a servier will advertise in the EHLO response
 the limit for RCPT commands set by the &%recipients_max%& option (if it is set)
 and the limit for MAIL commands set by the &%smtp_accept_max_per_connection%&
 option.
-.wen
 
 .option local_from_check main boolean true
 .cindex "&'Sender:'& header line" "disabling addition of"
@@ -17540,14 +17524,12 @@ all recipients over the limit; earlier recipients are delivered as normal.
 Non-SMTP messages with too many recipients are failed, and no deliveries are
 done.
 
-.new
 For SMTP message the expansion is done after the connection is
 accepted (but before any SMTP conversation) and may depend on
 the IP addresses and port numbers of the connection.
 &*Note*&: If an expansion is used for the option,
 care should be taken that a resonable value results for
 non-SMTP messages.
-.wen
 
 .cindex "RCPT" "maximum number of incoming"
 &*Note*&: The RFCs specify that an SMTP server should accept at least 100
@@ -18941,13 +18923,11 @@ absolute and untainted.
 See also &%bounce_message_file%&.
 
 
-.new
 .option wellknown_advertise_hosts main boolean unset
 .cindex WELLKNOWN advertisement
 .cindex "ESMTP extensions" WELLKNOWN
 This option enables the advertising of the SMTP WELLKNOWN extension.
 See also the &%acl_smtp_wellknown%& ACL (&<<SECTWELLKNOWNACL>>&).
-.wen
 
 .option write_rejectlog main boolean true
 .cindex "reject log" "disabling"
@@ -25444,12 +25424,10 @@ over a single TCP/IP connection. If the value is zero, there is no limit.
 For testing purposes, this value can be overridden by the &%-oB%& command line
 option.
 
-.new
 .cindex "ESMTP extensions" LIMITS
 If the peer advertises a LIMITS extension with a MAILMAX value,
 and either TLSS is in use or was not advertised,
 that value also constrains the result of this option.
-.wen
 
 
 .option dane_require_tls_ciphers smtp string&!! unset
@@ -25674,12 +25652,10 @@ suffices for one known case.
 During the expansion of this option the &$item$& variable will have the
 server's EHLO response.
 
-.new
 For TLS-on-connect connections we do not have an EHLO
 response to use. Because of this the default value of this option is
 set to a static string for those cases, meaning that resumption will
 always be attempted if permitted by the &%tls_resumption_hosts%& option.
-.wen
 
 The result of the option expansion is included in the key used to store and
 retrieve the TLS session, for session resumption.
@@ -26027,13 +26003,11 @@ each set of addresses is treated independently, and
 so can cause parallel connections to the same host if &%remote_max_parallel%&
 permits this.
 
-.new
 .cindex "ESMTP extensions" LIMITS
 If the peer advertises a LIMITS extension with a RCPTMAX value,
 and either TLSS is in use or was not advertised,
 that value also constrains the result of this option
 and no parallel connections will be caused on meeting the RCPTMAX limit.
-.wen
 
 
 .option message_linelength_limit smtp integer 998
@@ -26066,12 +26040,10 @@ If the connection is DANE-enabled then this option is ignored;
 only messages having the domain used for the DANE TLSA lookup are
 sent on the connection.
 
-.new
 .cindex "ESMTP extensions" LIMITS
 If the peer advertises a LIMITS extension with a RCPTDOMAINMAX value,
 and either TLSS is in use or was not advertised,
 this option is regarded as being false.
-.wen
 
 
 .option port smtp string&!! "see below"
@@ -26107,10 +26079,8 @@ protocol (RFC 2033) instead of SMTP. This protocol is sometimes used for local
 deliveries into closed message stores. Exim also has support for running LMTP
 over a pipe to a local process &-- see chapter &<<CHAPLMTP>>&.
 
-.new
 &*Note*&: When using LMTP it should be considered whether the default values
 for some other features, such as DANE, are appropriate.
-.wen
 
 If this option is set to &"smtps"&, the default value for the &%port%& option
 changes to &"smtps"&, and the transport initiates TLS immediately after
@@ -30896,7 +30866,6 @@ This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
 If the ACL is not defined, processing completes as if
 the feature was not requested by the client.
 
-.new
 .subsection "The SMTP WELLKNOWN ACL" SECTWELLKNOWNACL
 .cindex "WELLKNOWN" "ACL for"
 .oindex "&%acl_smtp_wellknown%&"
@@ -30949,7 +30918,6 @@ and service WELLKNOWN smtp verbs having a single parameter
 giving a key for an item of "site-wide metadata".
 The verb and key are separated by whitespace,
 and the key is xtext-encoded (per RFC 3461 section 4).
-.wen
 
 
 .subsection "The QUIT ACL" SECTQUITACL
@@ -31124,9 +31092,7 @@ when the ACL is not defined is &"accept"&.
 
 For the others (&%acl_smtp_etrn%&, &%acl_smtp_expn%&, &%acl_smtp_rcpt%&,
 &%acl_smtp_vrfy%&
-.new
 and &%acl_smtp_wellknown%&),
-.wen
 the action when the ACL
 is not defined is &"deny"&.  This means that &%acl_smtp_rcpt%& must be
 defined in order to receive any messages over an SMTP connection.
@@ -32236,12 +32202,10 @@ This control enables conversion of UTF-8 in message envelope addresses
 to a-label form.
 For details see section &<<SECTi18nMTA>>&.
 
-.new
 .vitem &*control&~=&~wellknown*&
 This control sets up a response data file for a WELLKNOWN SMTP command.
 It may only be used in an ACL servicing that command.
 For details see section &<<SECTWELLKNOWNACL>>&.
-.wen
 .endlist vlist
 
 
@@ -35232,11 +35196,9 @@ filename, and the default path is then used.
 .endlist
 The &%decode%& condition normally succeeds. It is only false for syntax
 errors or unusual circumstances such as memory shortages.
-.new
 The variable &$mime_filename$& will have the suggested name for the file.
 Note however that this might contain anything, and is very difficult
 to safely use as all or even part of the filename.
-.wen
 If you place files outside of the default path, they are not
 automatically unlinked.
 
@@ -39397,10 +39359,8 @@ verifies successfully a tag of DKIM is added, with one of the verified domains.
 .cindex log "DKIM verification"
 .cindex DKIM "verification logging"
 &%dkim_verbose%&: A log entry is written for each attempted DKIM verification.
-.new
 Also, on message delivery lines signing information (domain and selector)
 is added, tagged with DKIM=.
-.wen
 .next
 .cindex "log" "dnslist defer"
 .cindex "DNS list" "logging defer"
@@ -41748,10 +41708,8 @@ Exim's DKIM implementation allows for
 Signing outgoing messages: This function is implemented in the SMTP transport.
 It can co-exist with all other Exim features
 (including transport filters) except cutthrough delivery.
-.new
 However, signing options may not depend on headers modified by
 routers, the transport or a transport filter.
-.wen
 .next
 Verifying signatures in incoming messages: This is implemented by an additional
 ACL (acl_smtp_dkim), which can be called several times per message, with
@@ -41959,11 +41917,9 @@ name will be appended.
 .option dkim_timestamps smtp integer&!! unset
 This option controls the inclusion of timestamp information in the signature.
 If not set, no such information will be included.
-.new
 Otherwise, must be an unsigned number giving an offset in seconds from the
 current time for the expiry tag (e.g. 1209600 for two weeks); both creation
 (t=) and expiry (x=) tags will be included unless the offset is 0 (no expiry).
-.wen
 
 RFC 6376 lists these tags as RECOMMENDED.
 
@@ -42237,9 +42193,7 @@ for that check for empty &$h_DKIM-Signature:$& in the data ACL.
 ACL condition that checks a colon-separated list of possible DKIM verification
 results against the actual result of verification,
 given by &$dkim_verify_status$& if that is non-empty or "none" if empty.
-.new
 This condition may be used in DKIM, MIME, PRDR and DATA ACLs.
-.wen
 
 A basic verification might be:
 .code
@@ -42261,9 +42215,7 @@ see the documentation of the &%$dkim_verify_status%& expansion variable above
 for more information of what they mean.
 
 The condition is true if the status
-.new
 (or any of the list of status values)
-.wen
 is any one of the supplied list.
 .endlist
 
@@ -43147,9 +43099,7 @@ Events have names which correspond to the point in process at which they fire.
 The name is placed in the variable &$event_name$& and the event action
 expansion must check this, as it will be called for every possible event type.
 
-.new
 The current list of events is:
-.wen
 .itable all 0 0 4 25* left 10* center 15* center 50* left
 .row auth:fail		    after    both	"per driver per authentication attempt"
 .row dane:fail              after    transport  "per connection"
@@ -43237,10 +43187,8 @@ chain element received on the connection.
 For OpenSSL it will trigger for every chain element including those
 loaded locally.
 
-.new
 For dns:fail events from dnsdb lookups, a &"defer_never"& option does not
 affect the reporting of DNS_AGAIN.
-.wen
 
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
