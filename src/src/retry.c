@@ -192,7 +192,12 @@ if ((node = tree_search(tree_unusable, host_key)))
 /* Open the retry database, giving up if there isn't one. Otherwise, search for
 the retry records, and then close the database again. */
 
-if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
+if (!continue_retry_db)
+  dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE);
+else if ((dbm_file = continue_retry_db) == (open_db *)-1)
+  dbm_file = NULL;
+
+if (!dbm_file)
   {
   DEBUG(D_deliver|D_retry|D_hints_lookup)
     debug_printf("no retry data available\n");
@@ -200,7 +205,8 @@ if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
   }
 host_retry_record = dbfn_read(dbm_file, host_key);
 message_retry_record = dbfn_read(dbm_file, message_key);
-dbfn_close(dbm_file);
+if (!continue_retry_db)
+  dbfn_close(dbm_file);
 
 /* Ignore the data if it is too old - too long since it was written */
 
@@ -545,11 +551,10 @@ void
 retry_update(address_item ** addr_defer, address_item ** addr_failed,
   address_item ** addr_succeed)
 {
-open_db dbblock;
-open_db *dbm_file = NULL;
+open_db dbblock, * dbm_file = NULL;
 time_t now = time(NULL);
 
-DEBUG(D_retry) debug_printf("Processing retry items\n");
+DEBUG(D_retry) { debug_printf("Processing retry items\n"); acl_level++; }
 
 /* Three-times loop to handle succeeded, failed, and deferred addresses.
 Deferred addresses must be handled after failed ones, because some may be moved
@@ -562,7 +567,7 @@ for (int i = 0; i < 3; i++)
   address_item ** paddr = i==0 ? addr_succeed : i==1 ? addr_failed : addr_defer;
   address_item ** saved_paddr = NULL;
 
-  DEBUG(D_retry) debug_printf("%s addresses:\n",
+  DEBUG(D_retry) debug_printf_indent("%s addresses:\n",
     i == 0 ? "Succeeded" : i == 1 ? "Failed" : "Deferred");
 
   /* Loop for each address on the chain. For deferred addresses, the whole
@@ -584,7 +589,7 @@ for (int i = 0; i < 3; i++)
       int update_count = 0;
       int timedout_count = 0;
 
-      DEBUG(D_retry) debug_printf(" %s%s\n", addr->address,
+      DEBUG(D_retry) debug_printf_indent(" %s%s\n", addr->address,
        	addr->retries ? "" : ": no retry items");
 
       /* Loop for each retry item. */
@@ -609,7 +614,7 @@ for (int i = 0; i < 3; i++)
         if (!dbm_file)
           {
           DEBUG(D_deliver|D_retry|D_hints_lookup)
-            debug_printf("retry database not available for updating\n");
+            debug_printf_indent("retry database not available for updating\n");
           return;
           }
 
@@ -631,7 +636,7 @@ for (int i = 0; i < 3; i++)
           {
           (void)dbfn_delete(dbm_file, rti->key);
           DEBUG(D_retry)
-            debug_printf("deleted retry information for %s\n", rti->key);
+            debug_printf_indent("deleted retry information for %s\n", rti->key);
           continue;
           }
 
@@ -651,7 +656,7 @@ for (int i = 0; i < 3; i++)
              rti->flags & rf_host ? addr->domain : NULL,
              rti->basic_errno, rti->more_errno)))
           {
-          DEBUG(D_retry) debug_printf("No configured retry item for %s%s%s\n",
+          DEBUG(D_retry) debug_printf_indent("No configured retry item for %s%s%s\n",
             rti->key,
             rti->flags & rf_host ? US" or " : US"",
             rti->flags & rf_host ? addr->domain : US"");
@@ -661,11 +666,11 @@ for (int i = 0; i < 3; i++)
 
         DEBUG(D_retry)
           if (rti->flags & rf_host)
-            debug_printf("retry for %s (%s) = %s %d %d\n", rti->key,
+            debug_printf_indent("retry for %s (%s) = %s %d %d\n", rti->key,
               addr->domain, retry->pattern, retry->basic_errno,
               retry->more_errno);
           else
-            debug_printf("retry for %s = %s %d %d\n", rti->key, retry->pattern,
+            debug_printf_indent("retry for %s = %s %d %d\n", rti->key, retry->pattern,
               retry->basic_errno, retry->more_errno);
 
         /* Set up the message for the database retry record. Because DBM
@@ -711,7 +716,7 @@ for (int i = 0; i < 3; i++)
         /* Compute how long this destination has been failing */
 
         failing_interval = now - retry_record->first_failed;
-        DEBUG(D_retry) debug_printf("failing_interval=%d message_age=%d\n",
+        DEBUG(D_retry) debug_printf_indent("failing_interval=%d message_age=%d\n",
           failing_interval, message_age);
 
         /* For a non-host error, if the message has been on the queue longer
@@ -793,7 +798,7 @@ for (int i = 0; i < 3; i++)
 	    ;
           if (now - received_time.tv_sec > last_rule->timeout)
             {
-            DEBUG(D_retry) debug_printf("on queue longer than maximum retry\n");
+            DEBUG(D_retry) debug_printf_indent("on queue longer than maximum retry\n");
             timedout_count++;
             rule = NULL;
             }
@@ -862,11 +867,11 @@ for (int i = 0; i < 3; i++)
         DEBUG(D_retry)
           {
           int letter = retry_record->more_errno & 255;
-          debug_printf("Writing retry data for %s\n", rti->key);
-          debug_printf("  first failed=%d last try=%d next try=%d expired=%d\n",
+          debug_printf_indent("Writing retry data for %s\n", rti->key);
+          debug_printf_indent("  first failed=%d last try=%d next try=%d expired=%d\n",
             (int)retry_record->first_failed, (int)retry_record->last_try,
             (int)retry_record->next_try, retry_record->expired);
-          debug_printf("  errno=%d more_errno=", retry_record->basic_errno);
+          debug_printf_indent("  errno=%d more_errno=", retry_record->basic_errno);
           if (letter == 'A' || letter == 'M')
             debug_printf("%d,%c", (retry_record->more_errno >> 8) & 255,
               letter);
@@ -886,12 +891,12 @@ for (int i = 0; i < 3; i++)
       if (update_count > 0 && update_count == timedout_count)
         if (!testflag(endaddr, af_retry_skipped))
           {
-          DEBUG(D_retry) debug_printf("timed out: all retries expired\n");
+          DEBUG(D_retry) debug_printf_indent("timed out: all retries expired\n");
           timed_out = TRUE;
           }
         else
           DEBUG(D_retry)
-            debug_printf("timed out but some hosts were skipped\n");
+            debug_printf_indent("timed out but some hosts were skipped\n");
       }     /* Loop for an address and its parents */
 
     /* If this is a deferred address, and retry processing was requested by
@@ -958,7 +963,7 @@ for (int i = 0; i < 3; i++)
 
 if (dbm_file) dbfn_close(dbm_file);
 
-DEBUG(D_retry) debug_printf("end of retry processing\n");
+DEBUG(D_retry) { acl_level--; debug_printf("end of retry processing\n"); }
 }
 
 /* End of retry.c */

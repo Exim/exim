@@ -26,6 +26,7 @@ LOG: MAIN
 delivering 10HmaY-000000005vi-0000
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  failed: Connection refused
+cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 LOG: MAIN
@@ -65,6 +66,7 @@ LOG: MAIN
 delivering 10HmbA-000000005vi-0000
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  failed: Connection refused
+cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 LOG: MAIN

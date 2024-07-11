@@ -465,6 +465,10 @@ for (address_item * addr = addrlist; addr; addr = addr->next)
     if (host)
       {
       addr->host_used = host;
+      if (continue_sequence > 1)
+	{ clearflag(addr, af_new_conn); setflag(addr, af_cont_conn); }
+      else
+	{ clearflag(addr, af_cont_conn); setflag(addr, af_new_conn); }
 #ifdef EXPERIMENTAL_DSN_INFO
       if (smtp_greeting)
 	{uschar * s = Ustrchr(smtp_greeting, '\n'); if (s) *s = '\0';}
@@ -823,17 +827,17 @@ if (regex_match(regex_LIMITS, sx->buffer, -1, &match))
 
     if (strncmpic(s, US"MAILMAX=", 8) == 0)
       {
-      sx->peer_limit_mail = atoi(CS (s += 8));
+      continue_limit_mail = sx->peer_limit_mail = atoi(CS (s += 8));
       while (isdigit(*s)) s++;
       }
     else if (strncmpic(s, US"RCPTMAX=", 8) == 0)
       {
-      sx->peer_limit_rcpt = atoi(CS (s += 8));
+      continue_limit_rcpt = sx->peer_limit_rcpt = atoi(CS (s += 8));
       while (isdigit(*s)) s++;
       }
     else if (strncmpic(s, US"RCPTDOMAINMAX=", 14) == 0)
       {
-      sx->peer_limit_rcptdom = atoi(CS (s += 14));
+      continue_limit_rcptdom = sx->peer_limit_rcptdom = atoi(CS (s += 14));
       while (isdigit(*s)) s++;
       }
     else
@@ -1277,6 +1281,10 @@ if (sx->pending_MAIL)
       {
       while (addr->transport_return != PENDING_DEFER) addr = addr->next;
       addr->host_used = sx->conn_args.host;
+      if (continue_sequence > 1)
+	{ clearflag(addr, af_new_conn); setflag(addr, af_cont_conn); }
+      else
+	{ clearflag(addr, af_cont_conn); setflag(addr, af_new_conn); }
       addr = addr->next;
       }
     return RESP_MAIL_OR_DATA_ERROR;
@@ -1297,6 +1305,10 @@ while (count-- > 0)
 
   /* The address was accepted */
   addr->host_used = sx->conn_args.host;
+  if (continue_sequence > 1)
+    { clearflag(addr, af_new_conn); setflag(addr, af_cont_conn); }
+  else
+    { clearflag(addr, af_cont_conn); setflag(addr, af_new_conn); }
 
   DEBUG(D_transport) debug_printf("%s expect rcpt for %s\n", __FUNCTION__, addr->address);
   if (smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
@@ -2248,16 +2260,22 @@ if (continue_hostname && continue_proxy_cipher)
   else
     {
     DEBUG(D_transport)
-      debug_printf("Closing proxied-TLS connection due to SNI mismatch\n");
+# ifdef SUPPORT_DANE
+      if (continue_proxy_dane != sx->conn_args.dane)
+	debug_printf(
+	  "Closing proxied-TLS connection due to dane requirement mismatch\n");
+      else
+# endif
+	debug_printf("Closing proxied-TLS connection (SNI '%s') "
+		    "due to SNI mismatch (transport requirement '%s')\n",
+		    continue_proxy_sni, sni);
 
     smtp_debug_cmd(US"QUIT", 0);
     write(0, "QUIT\r\n", 6);
     close(0);
     continue_hostname = continue_proxy_cipher = NULL;
     f.continue_more = FALSE;
-    continue_sequence = 1;	/* Unfortunately, this process cannot affect success log
-    				which is done by delivery proc.  Would have to pass this
-				back through reporting pipe. */
+    continue_sequence = 1;	/* Ensure proper logging of non-cont-conn */
     }
   }
 #endif	/*!DISABLE_TLS*/
@@ -2268,13 +2286,8 @@ specially so they can be identified for retries. */
 
 if (!continue_hostname)
   {
-  if (sx->verify)
-    HDEBUG(D_verify) debug_printf("interface=%s port=%d\n", sx->conn_args.interface, sx->port);
-
-  /* Arrange to report to calling process this is a new connection */
-
-  clearflag(sx->first_addr, af_cont_conn);
-  setflag(sx->first_addr, af_new_conn);
+  if (sx->verify) HDEBUG(D_verify)
+    debug_printf("interface=%s port=%d\n", sx->conn_args.interface, sx->port);
 
   /* Get the actual port the connection will use, into sx->conn_args.host */
 
@@ -2316,9 +2329,7 @@ if (!continue_hostname)
   sx->peer_limit_mail = sx->peer_limit_rcpt = sx->peer_limit_rcptdom =
 #endif
   sx->avoid_option = sx->peer_offered = smtp_peer_options = 0;
-#ifndef DISABLE_CLIENT_CMD_LOG
-  client_cmd_log = NULL;
-#endif
+  smtp_debug_cmd_log_init();
 
 #ifndef DISABLE_PIPE_CONNECT
   if (  verify_check_given_host(CUSS &ob->hosts_pipe_connect,
@@ -2540,7 +2551,8 @@ goto SEND_QUIT;
       if (  (ob->hosts_require_auth || ob->hosts_try_auth)
 	 && f.smtp_in_early_pipe_no_auth)
 	{
-	DEBUG(D_transport) debug_printf("may need to auth, so pipeline no further\n");
+	DEBUG(D_transport)
+	  debug_printf("may need to auth, so pipeline no further\n");
 	if (smtp_write_command(sx, SCMD_FLUSH, NULL) < 0)
 	  goto SEND_FAILED;
 	if (sync_responses(sx, 2, 0) != RESP_NOERROR)
@@ -2631,7 +2643,8 @@ goto SEND_QUIT;
 	if (  (sx->peer_offered & (OPTION_PIPE | OPTION_EARLY_PIPE))
 	   == (OPTION_PIPE | OPTION_EARLY_PIPE))
 	  {
-	  DEBUG(D_transport) debug_printf("PIPECONNECT usable in future for this IP\n");
+	  DEBUG(D_transport)
+	    debug_printf("PIPECONNECT usable in future for this IP\n");
 	  sx->ehlo_resp.cleartext_auths = study_ehlo_auths(sx);
 	  write_ehlo_cache_entry(sx);
 	  }
@@ -2652,17 +2665,15 @@ goto SEND_QUIT;
     }
   }
 
-/* For continuing deliveries down the same channel, having re-exec'd  the socket
+/* For continuing deliveries down the same channel, the socket
 is the standard input; for a socket held open from verify it is recorded
 in the cutthrough context block.  Either way we don't need to redo EHLO here
 (but may need to do so for TLS - see below).
-Set up the pointer to where subsequent commands will be left, for
-error messages. Note that smtp_peer_options will have been
-set from the command line if they were set in the process that passed the
-connection on. */
+Set up the pointer "smtp_command" to where subsequent commands will be left,
+for error messages. Other stuff was set up for us by the delivery process. */
 
 /*XXX continue case needs to propagate DSN_INFO, prob. in deliver.c
-as the continue goes via transport_pass_socket() and doublefork and exec.
+as the continue goes via pass-fd to the delivery process.
 It does not wait.  Unclear how we keep separate host's responses
 separate - we could match up by host ip+port as a bodge. */
 
@@ -2677,10 +2688,10 @@ else
     {
     sx->cctx.sock = 0;				/* stdin */
     sx->cctx.tls_ctx = NULL;
-    smtp_port_for_connect(sx->conn_args.host, sx->port);	/* Record the port that was used */
+    smtp_port_for_connect(sx->conn_args.host, sx->port); /* Record the port that was used */
     }
-  sx->inblock.cctx = sx->outblock.cctx = &sx->cctx;
   smtp_command = big_buffer;
+  sx->inblock.cctx = sx->outblock.cctx = &sx->cctx;
   sx->peer_offered = smtp_peer_options;
 #ifndef DISABLE_ESMTP_LIMITS
   /* Limits passed by cmdline over exec. */
@@ -2702,6 +2713,14 @@ else
     sx->pipelining_used = pipelining_active = !!(smtp_peer_options & OPTION_PIPE);
     HDEBUG(D_transport) debug_printf("continued connection, %s TLS\n",
       continue_proxy_cipher ? "proxied" : "verify conn with");
+
+    tls_out.certificate_verified = !!(continue_flags & CTF_CV);
+#ifdef SUPPORT_DANE
+    tls_out.dane_verified = !!(continue_flags & CTF_DV);
+#endif
+#ifndef DISABLE_TLS_RESUME
+    if (continue_flags & CTF_TR) tls_out.resumption |= RESUME_USED;
+#endif
     return OK;
     }
   HDEBUG(D_transport) debug_printf("continued connection, no TLS\n");
@@ -3285,7 +3304,6 @@ sx->cctx.sock = -1;
 (void) event_raise(sx->conn_args.tblock->event_action, US"tcp:close", NULL, NULL);
 #endif
 
-smtp_debug_cmd_report();
 continue_transport = NULL;
 continue_hostname = NULL;
 return yield;
@@ -3432,7 +3450,7 @@ if (sx->peer_offered & OPTION_DSN && !(addr->dsn_flags & rf_dsnlasthop))
 
 /* Send MAIL FROM and RCPT TO commands.
 See sw_mrc_t definition for return codes.
- */
+*/
 
 sw_mrc_t
 smtp_write_mail_and_rcpt_cmds(smtp_context * sx, int * yield)
@@ -3661,6 +3679,7 @@ struct pollfd p[2] = {{.fd = tls_out.active.sock, .events = POLLIN},
 int rc, i;
 BOOL send_tls_shutdown = TRUE;
 
+acl_level++;
 close(pfd[1]);
 if ((rc = exim_fork(US"tls-proxy")))
   _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
@@ -3711,9 +3730,12 @@ do
       for (int nbytes = 0; rc - nbytes > 0; nbytes += i)
 	if ((i = write(pfd[0], buf + nbytes, rc - nbytes)) < 0) goto done;
 
-  /* Handle outbound data.  We cannot combine payload and the TLS-close
-  due to the limitations of the (pipe) channel feeding us.  Maybe use a unix-domain
-  socket? */
+  /* Handle outbound data.  We cannot yet combine payload and the TLS-close
+  due to the limitations of the (pipe) channel feeding us. Could we use
+  a poll/POLLRDHUP?  Would that need an extra poll call after every read
+  (likely not worth it), or (best case) could we get POLLIN+POLLRDHUP for
+  the final data blob? */
+
   if (p[1].revents & POLLIN)
     if ((rc = read(pfd[0], buf, bsize)) <= 0)
       {
@@ -3802,7 +3824,6 @@ int save_errno;
 int rc;
 
 uschar *message = NULL;
-uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 smtp_context * sx = store_get(sizeof(*sx), GET_TAINTED);	/* tainted, for the data buffers */
 BOOL pass_message = FALSE;
 #ifndef DISABLE_ESMTP_LIMITS
@@ -3811,9 +3832,10 @@ BOOL mail_limit = FALSE;
 #ifdef SUPPORT_DANE
 BOOL dane_held;
 #endif
-BOOL tcw_done = FALSE, tcw = FALSE;
+BOOL tcw_done = FALSE, tcw = FALSE, passback_conn = FALSE;
 
 *message_defer = FALSE;
+continue_next_id[0] = '\0';
 
 memset(sx, 0, sizeof(*sx));
 sx->addrlist = addrlist;
@@ -4134,7 +4156,7 @@ else
         &&
 #endif
            transport_check_waiting(tblock->name, host->name,
-             tblock->connection_max_messages, new_message_id,
+             tblock->connection_max_messages, continue_next_id,
 	     (oicf)smtp_are_same_identities, (void*)&t_compare);
     if (!tcw)
       {
@@ -4374,6 +4396,10 @@ else
       addr->delivery_time = delivery_time;
       addr->special_action = flag;
       addr->message = conf;
+      if (continue_sequence > 1)
+	{ clearflag(addr, af_new_conn); setflag(addr, af_cont_conn); }
+      else
+	{ clearflag(addr, af_cont_conn); setflag(addr, af_new_conn); }
 
       if (tcp_out_fastopen)
 	{
@@ -4534,10 +4560,11 @@ if (!sx->ok)
 
       case ERRNO_SMTPCLOSED:
 	/* If the peer closed the TCP connection after end-of-data, but before
-	we could send QUIT, do TLS close, etc - call it a message error.
-	Otherwise, if all the recipients have been dealt with, call a close no
-	error at all; each address_item should have a suitable result already
-	(2xx: PENDING_OK, 4xx: DEFER, 5xx: FAIL) */
+	we could send QUIT, do TLS close, etc - it is a message error.
+	If not, and all the recipients have been dealt with, call such a close
+	no error at all; each address_item should have a suitable result already
+	(2xx: PENDING_OK, 4xx: DEFER, 5xx: FAIL).
+	Otherwise, it is a non-message error. */
 
 	if (!(message_error = Ustrncmp(smtp_command,"end ",4) == 0))
 	  {
@@ -4659,9 +4686,9 @@ message (indicated by first_addr being non-NULL) we want to carry on with the
 rest of them. Also, it is desirable to send more than one message down the SMTP
 connection if there are several waiting, provided we haven't already sent so
 many as to hit the configured limit. The function transport_check_waiting looks
-for a waiting message and returns its id. Then transport_pass_socket tries to
-set up a continued delivery by passing the socket on to another process. The
-variable send_rset is FALSE if a message has just been successfully transferred.
+for a waiting message and returns its id. We pass it back to the delivery
+process via the reporting pipe. The variable send_rset is FALSE if a message has
+just been successfully transferred.
 
 If we are already sending down a continued channel, there may be further
 addresses not yet delivered that are aimed at the same host, but which have not
@@ -4694,6 +4721,12 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
     {
     DEBUG(D_transport)
       debug_printf("reached limit %u for MAILs per conn\n", sx->max_mail);
+    /* We will close the smtp session and connection, and clear
+    continue_hostname.  Then if there are further addrs for the message we will
+    loop to the top of this function and make a fresh connection.  Any further
+    message found in the wait-tpt hintsdb would then do a pass-fd over the
+    transport reporting pipe to get the connection fd back to the delivery
+    process. */
     }
   else
 #endif
@@ -4701,9 +4734,9 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
     smtp_compare_t t_compare =
       {.tblock = tblock, .current_sender_address = sender_address};
 
-    if (  sx->first_addr			/* more addrs for this message */
-       || f.continue_more			/* more addrs for continued-host */
-       || tcw_done && tcw			/* more messages for host */
+    if (  sx->first_addr		/* more addrs for this message */
+       || f.continue_more		/* more addrs for continued-host */
+       || tcw_done && tcw		/* more messages for host */
        || (
 #ifndef DISABLE_TLS
 	     (  tls_out.active.sock < 0  &&  !continue_proxy_cipher
@@ -4712,7 +4745,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	  &&
 #endif
 	     transport_check_waiting(tblock->name, host->name,
-	       sx->max_mail, new_message_id,
+	       sx->max_mail, continue_next_id,
 	       (oicf)smtp_are_same_identities, (void*)&t_compare)
        )  )
       {
@@ -4746,8 +4779,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 #ifndef DISABLE_TLS
 	int pfd[2];
 #endif
-	int socket_fd = sx->cctx.sock;
-
+	continue_fd = sx->cctx.sock;
 	if (sx->first_addr)		/* More addresses still to be sent */
 	  {				/*   for this message              */
 #ifndef DISABLE_ESMTP_LIMITS
@@ -4757,53 +4789,86 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	      a->transport_return = PENDING_DEFER;
 #endif
 	  continue_sequence++;				/* for consistency */
-	  clearflag(sx->first_addr, af_new_conn);
-	  setflag(sx->first_addr, af_cont_conn);	/* Causes * in logging */
 	  pipelining_active = sx->pipelining_used;	/* was cleared at DATA */
 	  goto SEND_MESSAGE;
 	  }
 
-	/* Unless caller said it already has more messages listed for this host,
-	pass the connection on to a new Exim process (below, the call to
-	transport_pass_socket).  If the caller has more ready, just return with
-	the connection still open. */
+	/* If there is a next-message-id from the wait-transport hintsdb,
+	pretend caller said it has further message for us.  Note that we lose
+	the TLS session (below), and that our caller will pass back the id to
+	the delivery process. */
+
+	if (f.continue_more)
+	  {
+	  passback_conn = TRUE;
+	  continue_next_id[0] = '\0';
+	  }
+	else if (*continue_next_id)
+	  passback_conn = f.continue_more = TRUE;
 
 #ifndef DISABLE_TLS
+	/* If we will be returning with the connection still open and have a TLS
+	endpoint, shut down TLS if we must, or if this is a first-time passback
+	fork a proxy process with the TLS state. */
+
 	if (tls_out.active.sock >= 0)
-	  if (  f.continue_more
-	     || verify_check_given_host(CUSS &ob->hosts_noproxy_tls, host) == OK)
+	  {
+	  if (  (continue_hostname || passback_conn)
+	     && verify_check_given_host(CUSS &ob->hosts_noproxy_tls, host) == OK
+	     )
 	    {
-	    /* Before passing the socket on, or returning to caller with it still
-	    open, we must shut down TLS.  Not all MTAs allow for the continuation
-	    of the SMTP session when TLS is shut down. We test for this by sending
-	    a new EHLO. If we don't get a good response, we don't attempt to pass
-	    the socket on.
+	    /* Not all MTAs allow for the continuation of the SMTP session when
+	    TLS is shut down. We test for this by sending a new EHLO. If we
+	    don't get a good response, we don't attempt to pass the socket on.
 	    NB: TLS close is *required* per RFC 9266 when tls-exporter info has
 	    been used, which we do under TLSv1.3 for the gsasl SCRAM*PLUS methods.
-	    But we were always doing it anyway. */
+	    XXX TODO */
 
-	  tls_close(sx->cctx.tls_ctx,
-	    sx->send_tlsclose ? TLS_SHUTDOWN_WAIT : TLS_SHUTDOWN_WONLY);
-	  sx->send_tlsclose = FALSE;
-	  sx->cctx.tls_ctx = NULL;
-	  tls_out.active.sock = -1;
-	  smtp_peer_options = smtp_peer_options_wrap;
-	  sx->ok = !sx->smtps
-	    && smtp_write_command(sx, SCMD_FLUSH, "EHLO %s\r\n", sx->helo_data)
-		>= 0
-	    && smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
-				      '2', ob->command_timeout);
-
-	    if (sx->ok && f.continue_more)
-	      goto TIDYUP;		/* More addresses for another run */
+	    tls_close(sx->cctx.tls_ctx,
+	      sx->send_tlsclose ? TLS_SHUTDOWN_WAIT : TLS_SHUTDOWN_WONLY);
+	    sx->send_tlsclose = FALSE;
+	    sx->cctx.tls_ctx = NULL;
+	    tls_out.active.sock = -1;
+	    smtp_peer_options = smtp_peer_options_wrap;
+	    sx->ok = !sx->smtps
+	      && smtp_write_command(sx, SCMD_FLUSH, "EHLO %s\r\n",sx->helo_data)
+		  >= 0
+	      && smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
+					'2', ob->command_timeout);
 	    }
-	  else
+	  else if (passback_conn)
 	    {
 	    /* Set up a pipe for proxying TLS for the new transport process */
 
 	    smtp_peer_options |= OPTION_TLS;
 	    if ((sx->ok = socketpair(AF_UNIX, SOCK_STREAM, 0, pfd) == 0))
-	      socket_fd = pfd[1];
+	      {
+	      int pid = exim_fork(US"tls-proxy-interproc");
+	      if (pid == 0)	/* child; fork again to disconnect totally */
+		{
+		/* does not return */
+		smtp_proxy_tls(sx->cctx.tls_ctx, sx->buffer, sizeof(sx->buffer),
+			      pfd, ob->command_timeout, host->name);
+		}
+
+	      if (pid < 0)
+		log_write(0, LOG_PANIC_DIE, "fork failed");
+
+	      close(pfd[0]);
+	      continue_fd = pfd[1];
+	      /* tidy the inter-proc to disconn the proxy proc */
+	      waitpid(pid, NULL, 0);
+	      tls_close(sx->cctx.tls_ctx, TLS_NO_SHUTDOWN);
+	      sx->cctx.tls_ctx = NULL;
+	      (void)close(sx->cctx.sock);
+	      sx->cctx.sock = -1;
+
+	      continue_proxy_cipher = tls_out.cipher;
+	      continue_proxy_sni = tls_out.sni;
+# ifdef SUPPORT_DANE
+	      continue_proxy_dane = tls_out.sni && tls_out.dane_verified;
+# endif
+	      }
 	    else
 	      set_errno(sx->first_addr, errno, US"internal allocation problem",
 		      DEFER, FALSE, host,
@@ -4812,62 +4877,28 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 # endif
 		      &sx->delivery_start);
 	    }
-	else
-#endif
-	  if (f.continue_more)
-	    goto TIDYUP;			/* More addresses for another run */
-
-	/* If the socket is successfully passed, we mustn't send QUIT (or
-	indeed anything!) from here. */
-
-  /*XXX DSN_INFO: assume likely to do new HELO; but for greet we'll want to
-  propagate it from the initial
-  */
-	if (sx->ok && transport_pass_socket(tblock->name, host->name,
-	      host->address, new_message_id, socket_fd
-#ifndef DISABLE_ESMTP_LIMITS
-	      , sx->peer_limit_mail, sx->peer_limit_rcpt, sx->peer_limit_rcptdom
-#endif
-	      ))
-	  {
-	  sx->send_quit = FALSE;
-
-	  /* We have passed the client socket to a fresh transport process.
-	  If TLS is still active, we need to proxy it for the transport we
-	  just passed the baton to.  Fork a child to to do it, and return to
-	  get logging done asap.  Which way to place the work makes assumptions
-	  about post-fork prioritisation which may not hold on all platforms. */
-#ifndef DISABLE_TLS
-	  if (tls_out.active.sock >= 0)
-	    {
-	    int pid = exim_fork(US"tls-proxy-interproc");
-	    if (pid == 0)		/* child; fork again to disconnect totally */
-	      {
-	      /* does not return */
-	      smtp_proxy_tls(sx->cctx.tls_ctx, sx->buffer, sizeof(sx->buffer), pfd,
-			      ob->command_timeout, host->name);
-	      }
-
-	    if (pid > 0)		/* parent */
-	      {
-	      close(pfd[0]);
-	      /* tidy the inter-proc to disconn the proxy proc */
-	      waitpid(pid, NULL, 0);
-	      tls_close(sx->cctx.tls_ctx, TLS_NO_SHUTDOWN);
-	      sx->cctx.tls_ctx = NULL;
-	      (void)close(sx->cctx.sock);
-	      sx->cctx.sock = -1;
-	      continue_transport = NULL;
-	      continue_hostname = NULL;
-	      goto TIDYUP;
-	      }
-	    log_write(0, LOG_PANIC_DIE, "fork failed");
-	    }
-#endif
 	  }
+#endif	/*DISABLE_TLS*/
+
+	/* If a connection re-use is possible, arrange to pass back all the info
+	about it so that further forks of the delivery process see it. */
+
+	if (passback_conn)
+	  {
+	  continue_transport = transport_name;
+	  continue_hostname = host->name;
+	  continue_host_address = host->address;
+	  }
+	else
+	  continue_hostname = NULL;
+
+	if (sx->ok && f.continue_more)	/* More addresses for another run; */
+	  goto TIDYUP;			/* skip the channel closedown */
 	}
 
-      /* If RSET failed and there are addresses left, they get deferred. */
+      /* If RSET failed and there are addresses left, they get deferred.
+      Do not pass back a next-id or conn info. */
+
       else
 	set_errno(sx->first_addr, errno, msg, DEFER, FALSE, host,
 #ifdef EXPERIMENTAL_DSN_INFO
@@ -4970,9 +5001,8 @@ if (sx->send_quit || tcw_done && !tcw)
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 (void)close(sx->cctx.sock);
 sx->cctx.sock = -1;
-continue_transport = NULL;
 continue_hostname = NULL;
-smtp_debug_cmd_report();
+continue_next_id[0] = '\0';
 
 #ifndef DISABLE_EVENT
 (void) event_raise(tblock->event_action, US"tcp:close", NULL, NULL);
@@ -4992,8 +5022,6 @@ if (dane_held)
 	to get the domain string for SNI */
 
 	sx->first_addr = a;
-	clearflag(a, af_cont_conn);
-	setflag(a, af_new_conn);		/* clear * from logging */
 	DEBUG(D_transport) debug_printf("DANE: go-around for %s\n", a->domain);
 	}
       }
@@ -5006,25 +5034,25 @@ if (dane_held)
 if (mail_limit && sx->first_addr)
   {
   /* Reset the sequence count since we closed the connection.  This is flagged
-  on the pipe back to the delivery process so that a non-continued-conn delivery
-  is logged. */
+  on the pipe back to the delivery process so that it can reset it's count.
+  Also set flags on the addr so that a non-continued-conn delivery is logged. */
 
   continue_sequence = 1;			/* for consistency */
-  clearflag(sx->first_addr, af_cont_conn);
-  setflag(sx->first_addr, af_new_conn);		/* clear  * from logging */
-  goto REPEAT_CONN;
+  goto REPEAT_CONN;				/* open a fresh connection */
   }
 #endif
 
-return yield;
+OUT:
+  smtp_debug_cmd_report();
+  return yield;
 
 TIDYUP:
 #ifdef SUPPORT_DANE
-if (dane_held) for (address_item * a = sx->addrlist->next; a; a = a->next)
-  if (a->transport_return == DANE)
-    a->transport_return = PENDING_DEFER;
+  if (dane_held) for (address_item * a = sx->addrlist->next; a; a = a->next)
+    if (a->transport_return == DANE)
+      a->transport_return = PENDING_DEFER;
 #endif
-return yield;
+  goto OUT;
 }
 
 
@@ -5510,7 +5538,7 @@ retry_non_continued:
     result of the lookup. Set expired FALSE, to save the outer loop executing
     twice. */
 
-    if (continue_hostname)
+    if (continue_sequence > 1)
       if (  Ustrcmp(continue_hostname, host->name) != 0
          || Ustrcmp(continue_host_address, host->address) != 0
 	 )
@@ -5955,7 +5983,7 @@ retry_non_continued:
     case when we were trying to deliver down an existing channel and failed.
     Don't try any other hosts in this case. */
 
-    if (continue_hostname) break;
+    if (continue_sequence > 1) break;
 
     /* If the whole delivery, or some individual addresses, were deferred and
     there are more hosts that could be tried, do not count this host towards
@@ -6006,7 +6034,7 @@ retry_non_continued:
   for routing that changes from run to run, or big multi-IP sites with
   round-robin DNS. */
 
-  if (continue_hostname && !continue_host_tried)
+  if (continue_sequence > 1 && !continue_host_tried)
     {
     int fd = cutthrough.cctx.sock >= 0 ? cutthrough.cctx.sock : 0;
 
@@ -6030,6 +6058,7 @@ retry_non_continued:
     (void) close(fd);
     cutthrough.cctx.sock = -1;
     continue_hostname = NULL;
+    continue_sequence = 1;
     goto retry_non_continued;
     }
 

@@ -695,6 +695,11 @@ HDRS  =	blob.h \
 	hash.h \
 	hintsdb.h \
 	hintsdb_structs.h \
+	hintsdb/hints_bdb.h \
+	hintsdb/hints_gdbm.h \
+	hintsdb/hints_ndbm.h \
+	hintsdb/hints_sqlite.h \
+	hintsdb/hints_tdb.h \
 	local_scan.h \
 	macros.h \
 	mytypes.h \
@@ -709,6 +714,11 @@ PHDRS = ../config.h \
 	../globals.h \
 	../hintsdb.h \
 	../hintsdb_structs.h \
+	../hintsdb/hints_bdb.h \
+	../hintsdb/hints_gdbm.h \
+	../hintsdb/hints_ndbm.h \
+	../hintsdb/hints_sqlite.h \
+	../hintsdb/hints_tdb.h \
 	../local_scan.h \
 	../macros.h \
 	../mytypes.h \

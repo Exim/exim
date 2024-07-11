@@ -11,7 +11,7 @@ EHLO the.local.host.name
 MAIL FROM:<CALLER@test.ex>
 250 Sender OK
 RCPT TO:<userz@domain1>
-450 Temporary error
+450 Temporary error 1
 QUIT
 250 OK
 End of script
@@ -24,7 +24,7 @@ EHLO the.local.host.name
 MAIL FROM:<CALLER@test.ex>
 250 Sender OK
 RCPT TO:<userx@domain1>
-450 Temporary error
+450 Temporary error 2
 RCPT TO:<usery@domain1>
 250 OK
 DATA
@@ -43,7 +43,7 @@ Test message 1
 MAIL FROM:<CALLER@test.ex>
 250 Sender OK
 RCPT TO:<usery@domain1>
-450 Temporary error
+450 Temporary error 3
 QUIT
 250 OK
 End of script

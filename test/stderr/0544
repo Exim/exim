@@ -368,6 +368,7 @@ try option set
 try option transport
 try option unseen
 try option multi_domain
+try option max_rcpt
 try option multi_domain
 try option max_parallel
 try option return_path

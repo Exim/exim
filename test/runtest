@@ -577,10 +577,10 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/\d\d-\w\w\w-\d\d\d\d\s\d\d:\d\d:\d\d\s[-+]\d\d\d\d,/06-Sep-1999 15:52:48 +0100,/gx;
 
   # Dates/times in debugging output for writing retry records
-  if (/^  first failed=(\d+) last try=(\d+) next try=(\d+) (.*)$/)
+  if (/^(\s+)first failed=(\d+) last try=(\d+) next try=(\d+) (.*)$/)
     {
-    my($next) = $3 - $2;
-    $_ = "  first failed=dddd last try=dddd next try=+$next $4\n";
+    my($next) = $4 - $3;
+    $_ = "$1first failed=dddd last try=dddd next try=+$next $5\n";
     }
   s/^(\s*)now=\d+ first_failed=\d+ next_try=\d+ expired=(\w)/$1now=tttt first_failed=tttt next_try=tttt expired=$2/;
   s/^(\s*)received_time=\d+ diff=\d+ timeout=(\d+)/$1received_time=tttt diff=tttt timeout=$2/;
@@ -2497,7 +2497,7 @@ if ($debug) { printf ">> $_\n"; }
 ###################
 
 # The "dbmbuild" command runs exim_dbmbuild. This is used both to test the
-# utility and to make DBM files for testing DBM lookups.
+# utility and to make hintsdb files for testing hintsdb lookups.
 
 if (/^dbmbuild\s+(\S+)\s+(\S+)/)
   {
@@ -2510,7 +2510,7 @@ if (/^dbmbuild\s+(\S+)\s+(\S+)/)
 
 # The "dump" command runs exim_dumpdb. On different systems, the output for
 # some types of dump may appear in a different order because it's just hauled
-# out of the DBM file. We can solve this by sorting. Ignore the leading
+# out of the hintsdb file. We can solve this by sorting. Ignore the leading
 # date/time, as it will be flattened later during munging.
 
 if (/^dump\s+(\S+)/)

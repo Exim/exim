@@ -341,8 +341,10 @@ so force the first one. The selecting string can optionally be a regex, or
 refer to the sender instead of recipients.
 
 If queue_2stage is set, the queue is scanned twice. The first time, queue_smtp
-is set so that routing is done for all messages. Thus in the second run those
-that are routed to the same host should go down the same SMTP connection.
+is set so that routing is done for all messages. A call of the transport adds
+each message_id in turn to a list for the resulting host.
+Then in the second run those that are routed to the same host should all go down
+a single SMTP connection.
 
 Arguments:
   q	     queue-runner descriptor
@@ -358,9 +360,9 @@ queue_run(qrunner * q, const uschar * start_id, const uschar * stop_id, BOOL rec
 {
 BOOL force_delivery = q->queue_run_force
   || deliver_selectstring || deliver_selectstring_sender;
-const pcre2_code *selectstring_regex = NULL;
-const pcre2_code *selectstring_regex_sender = NULL;
-uschar *log_detail = NULL;
+const pcre2_code * selectstring_regex = NULL;
+const pcre2_code * selectstring_regex_sender = NULL;
+uschar * log_detail = NULL;
 int subcount = 0;
 uschar subdirs[64];
 pid_t qpid[4] = {0};	/* Parallelism factor for q2stage 1st phase */
@@ -672,13 +674,15 @@ for (int i = queue_run_in_order ? -1 : 0;
     name. The return of the process is zero if a delivery was attempted. */
 
     fq->text[Ustrlen(fq->text)-2] = 0;
-    set_process_info("running queue: %s", fq->text);
+    set_process_info("running queue%s: %s",
+      q->queue_2stage ? "(ph 1)" : "", fq->text);
 #ifdef MEASURE_TIMING
     report_time_since(&timestamp_startup, US"queue msg selected");
 #endif
 
 single_item_retry:
-    if ((pid = exim_fork(US"qrun-delivery")) == 0)
+    if ((pid = exim_fork(
+	q->queue_2stage ? US"qrun-p1-delivery" : US"qrun-delivery")) == 0)
       {
       int rc;
       (void)close(pfd[pipe_read]);
@@ -792,9 +796,10 @@ if (q->queue_2stage)
     else break;
 
 #ifdef MEASURE_TIMING
-  report_time_since(&timestamp_startup, US"queue_run 1st phase done");
+  report_time_since(&timestamp_startup, US"queue_run phase 1 done");
 #endif
   q->queue_2stage = f.queue_2stage = FALSE;
+  DEBUG(D_queue_run) debug_printf("queue_run phase 2 start\n");
   queue_run(q, start_id, stop_id, TRUE);
   }
 

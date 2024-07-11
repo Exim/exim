@@ -1,6 +1,6 @@
 # ESMTP LIMITS extension, client continued-connection
 #
-# queue up 3 messages each with 2 recipients
+# queue up 4 messages each with 2 recipients
 exim -odq r1_1.test.ex r1_2.test.ex
 Subject: message 1
 ****
@@ -11,10 +11,15 @@ exim -odq r3_1.test.ex r3_2.test.ex
 Subject: message 3
 ****
 #
+exim -odq r4_1.test.ex r4_2.test.ex
+Subject: message 4
+****
+#
 # Handed limits of 5 MAIL, 1 RCPT, expect to use 5 transactions in a one connection
-# when the client does a 2-phase queue run, followed by one transaction in one connection
+# when the client does a 2-phase queue run, followed by three transactions in one connection
 # from the same queue run.
-# The second pair and third initial should be from continued-connection trasports, flagged by the log lines.
+# The second pair and third initial, completing the first connecttion, should be from
+# continued-connection trasports, flagged by the log lines.
 server PORT_D 2
 220 Hi there
 EHLO
@@ -66,7 +71,7 @@ QUIT
 220 Hi there
 EHLO
 250-yeah mate
-250
+250 LIMITS MAILMAX=5 RCPTMAX=1
 MAIL FROM
 250 mail cmd 1 good
 RCPT TO
@@ -75,6 +80,22 @@ DATA
 352 go ahead
 .
 250 message 6 received
+MAIL FROM
+250 mail cmd 2 good
+RCPT TO
+250 rcpt cmd good
+DATA
+352 go ahead
+.
+250 message 7 received
+MAIL FROM
+250 mail cmd 3 good
+RCPT TO
+250 rcpt cmd good
+DATA
+352 go ahead
+.
+250 message 8 received
 QUIT
 221 bye
 *eof

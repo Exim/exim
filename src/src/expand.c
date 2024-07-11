@@ -22,6 +22,7 @@ typedef unsigned esi_flags;
 #define ESI_BRACE_ENDS		BIT(0)	/* expansion should stop at } */
 #define ESI_HONOR_DOLLAR	BIT(1)	/* $ is meaningfull */
 #define ESI_SKIPPING		BIT(2)	/* value will not be needed */
+#define ESI_EXISTS_ONLY		BIT(3)	/* actual value not needed */
 
 #ifdef STAND_ALONE
 # ifndef SUPPORT_CRYPTEQ
@@ -1919,8 +1920,9 @@ chop.
 
 Arguments:
   name          the name of the variable being sought
-  exists_only   TRUE if this is a def: test; passed on to find_header()
-  skipping      TRUE => skip any processing evaluation; this is not the same as
+  flags
+    exists_only  TRUE if this is a def: test; passed on to find_header()
+    skipping     TRUE => skip any processing evaluation; this is not the same as
                   exists_only because def: may test for values that are first
                   evaluated here
   newsize       pointer to an int which is initially zero; if the answer is in
@@ -1932,7 +1934,7 @@ Returns:        NULL if the variable does not exist, or
 */
 
 static const uschar *
-find_variable(uschar *name, BOOL exists_only, BOOL skipping, int *newsize)
+find_variable(uschar * name, esi_flags flags, int * newsize)
 {
 var_entry * vp;
 uschar *s, *domain;
@@ -1990,7 +1992,7 @@ if (!(vp = find_var_ent(name)))
 /* Found an existing variable. If in skipping state, the value isn't needed,
 and we want to avoid processing (such as looking up the host name). */
 
-if (skipping)
+if (flags & ESI_SKIPPING)
   return US"";
 
 val = vp->value;
@@ -2051,11 +2053,13 @@ switch (vp->type)
     return domain ? domain + 1 : US"";
 
   case vtype_msgheaders:
-    return find_header(NULL, newsize, exists_only ? FH_EXISTS_ONLY : 0, NULL);
+    return find_header(NULL, newsize,
+	    flags & ESI_EXISTS_ONLY ? FH_EXISTS_ONLY : 0, NULL);
 
   case vtype_msgheaders_raw:
     return find_header(NULL, newsize,
-		exists_only ? FH_EXISTS_ONLY|FH_WANT_RAW : FH_WANT_RAW, NULL);
+	    flags & ESI_EXISTS_ONLY ? FH_EXISTS_ONLY|FH_WANT_RAW : FH_WANT_RAW,
+	    NULL);
 
   case vtype_msgbody:                        /* Pointer to msgbody string */
   case vtype_msgbody_end:                    /* Ditto, the end of the msg */
@@ -2122,15 +2126,15 @@ switch (vp->type)
 
   case vtype_reply:                          /* Get reply address */
     s = find_header(US"reply-to:", newsize,
-		exists_only ? FH_EXISTS_ONLY|FH_WANT_RAW : FH_WANT_RAW,
-		headers_charset);
+	    flags & ESI_EXISTS_ONLY ? FH_EXISTS_ONLY|FH_WANT_RAW : FH_WANT_RAW,
+	    headers_charset);
     if (s) Uskip_whitespace(&s);
     if (!s || !*s)
       {
       *newsize = 0;                            /* For the *s==0 case */
       s = find_header(US"from:", newsize,
-		exists_only ? FH_EXISTS_ONLY|FH_WANT_RAW : FH_WANT_RAW,
-		headers_charset);
+	    flags & ESI_EXISTS_ONLY ? FH_EXISTS_ONLY|FH_WANT_RAW : FH_WANT_RAW,
+	    headers_charset);
       }
     if (s)
       {
@@ -2690,7 +2694,8 @@ switch(cond_type = identify_operator(&s, &opname))
 
     else
       {
-      if (!(t = find_variable(name, TRUE, yield == NULL, NULL)))
+      if (!(t = find_variable(name,
+	yield ? ESI_EXISTS_ONLY : ESI_EXISTS_ONLY | ESI_SKIPPING, NULL)))
 	{
 	expand_string_message = name[0]
 	  ? string_sprintf("unknown variable \"%s\" after \"def:\"", name)
@@ -4736,7 +4741,7 @@ while (*s)
 
     /* Variable */
 
-    else if (!(value = find_variable(name, FALSE, !!(flags & ESI_SKIPPING), &newsize)))
+    else if (!(value = find_variable(name, flags, &newsize)))
       {
       expand_string_message =
 	string_sprintf("unknown variable name \"%s\"", name);
@@ -8380,7 +8385,7 @@ NOT_ITEM: ;
       reset_point = store_mark();
       g = store_get(sizeof(gstring), GET_UNTAINTED);	/* alloc _before_ calling find_variable() */
       }
-    if (!(value = find_variable(name, FALSE, !!(flags & ESI_SKIPPING), &newsize)))
+    if (!(value = find_variable(name, flags, &newsize)))
       {
       expand_string_message =
         string_sprintf("unknown variable in \"${%s}\"", name);

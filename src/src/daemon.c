@@ -324,7 +324,8 @@ if (smtp_accept_max_per_host)
 tedious per host_address checks. Note that at this stage smtp_accept_count
 contains the count of *other* connections, not including this one. */
 
-if (max_for_this_host > 0 && smtp_accept_count >= max_for_this_host)
+if (  smtp_slots
+   && max_for_this_host > 0 && smtp_accept_count >= max_for_this_host)
   {
   int host_accept_count = 0;
   int other_host_count = 0;    /* keep a count of non matches to optimise */
@@ -392,9 +393,9 @@ if (pid == 0)
   arrange to unset the selector in the subprocess.
 
   jgh 2023/08/08 :- moved this logging in from the parent process, just
-  pre-fork.  There was a claim back from 2004 that smtp_accept_count could have
-  become out-of-date by the time the child could log it, and I can't see how
-  that could happen. */
+  pre-fork.  There was a claim back from 4.21 (when it was moved from
+  smtp_start_session()) that smtp_accept_count could have become out-of-date by
+  the time the child could log it, and I can't see how that could happen. */
 
   if (LOGGING(smtp_connection))
     {
@@ -404,7 +405,8 @@ if (pid == 0)
       save_log_selector &= ~L_smtp_connection;
     else if (LOGGING(connection_id))
       log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %Y "
-	"Ci=%lu (TCP/IP connection count = %d)", whofrom, connection_id, smtp_accept_count);
+	"Ci=%lu (TCP/IP connection count = %d)",
+	whofrom, connection_id, smtp_accept_count);
     else
       log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %Y "
 	"(TCP/IP connection count = %d)", whofrom, smtp_accept_count);
@@ -752,7 +754,7 @@ remember the pid for ticking off when the child completes. */
 
 if (pid < 0)
   never_error(US"daemon: accept process fork failed", US"Fork failed", errno);
-else
+else if (smtp_slots)
   {
   for (int i = 0; i < smtp_accept_max; ++i)
     if (smtp_slots[i].pid <= 0)
@@ -912,12 +914,13 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
   if (smtp_slots)
     {
     int i;
-    for (i = 0; i < smtp_accept_max; i++)
-      if (smtp_slots[i].pid == pid)
+    smtp_slot * sp;
+    for (i = 0, sp = smtp_slots; i < smtp_accept_max; i++, sp++)
+      if (sp->pid == pid)
         {
-        if (smtp_slots[i].host_address)
-          store_free(smtp_slots[i].host_address);
-        smtp_slots[i] = empty_smtp_slot;
+        if (sp->host_address)
+          store_free(sp->host_address);
+        *sp = empty_smtp_slot;
         if (--smtp_accept_count < 0) smtp_accept_count = 0;
         DEBUG(D_any) debug_printf("%d SMTP accept process%s now running\n",
           smtp_accept_count, smtp_accept_count == 1 ? "" : "es");

@@ -1499,9 +1499,8 @@ Returns:    nothing
 void
 transport_update_waiting(host_item * hostlist, uschar * tpname)
 {
-const uschar *prevname = US"";
-open_db dbblock;
-open_db *dbm_file;
+const uschar * prevname = US"";
+open_db dbblock, * dbp;
 
 if (!is_new_message_id(message_id))
   {
@@ -1512,10 +1511,13 @@ if (!is_new_message_id(message_id))
 
 DEBUG(D_transport) debug_printf("updating wait-%s database\n", tpname);
 
-/* Open the database for this transport */
+/* Open the database (or transaction) for this transport */
 
-if (!(dbm_file = dbfn_open(string_sprintf("wait-%.200s", tpname),
-		      O_RDWR, &dbblock, TRUE, TRUE)))
+if ( continue_wait_db
+   ? !dbfn_transaction_start(dbp = continue_wait_db)
+   : !(dbp = dbfn_open(string_sprintf("wait-%.200s", tpname),
+		      O_RDWR, &dbblock, TRUE, TRUE))
+   )
   return;
 
 /* Scan the list of hosts for which this message is waiting, and ensure
@@ -1536,7 +1538,7 @@ for (host_item * host = hostlist; host; host = host->next)
 
   /* Look up the host record; if there isn't one, make an empty one. */
 
-  if (!(host_record = dbfn_read(dbm_file, host->name)))
+  if (!(host_record = dbfn_read(dbp, host->name)))
     {
     host_record = store_get(sizeof(dbdata_wait) + MESSAGE_ID_LENGTH, GET_UNTAINTED);
     host_record->count = host_record->sequence = 0;
@@ -1560,9 +1562,9 @@ for (host_item * host = hostlist; host; host = host->next)
 	debug_printf_indent("NOTE: old or corrupt message-id found in wait=%.200s"
 	  " hints DB; deleting records for %s\n", tpname, host->name);
 
-      (void) dbfn_delete(dbm_file, host->name);
+      (void) dbfn_delete(dbp, host->name);
       for (int i = host_record->sequence - 1; i >= 0; i--)
-	(void) dbfn_delete(dbm_file,
+	(void) dbfn_delete(dbp,
 		    (sprintf(CS buffer, "%.200s:%d", host->name, i), buffer));
 
       host_record->count = host_record->sequence = 0;
@@ -1579,7 +1581,7 @@ for (host_item * host = hostlist; host; host = host->next)
     {
     dbdata_wait *cont;
     sprintf(CS buffer, "%.200s:%d", host->name, i);
-    if ((cont = dbfn_read(dbm_file, buffer)))
+    if ((cont = dbfn_read(dbp, buffer)))
       {
       int clen = cont->count * MESSAGE_ID_LENGTH;
       for (uschar * s = cont->text; s < cont->text + clen; s += MESSAGE_ID_LENGTH)
@@ -1605,7 +1607,7 @@ for (host_item * host = hostlist; host; host = host->next)
   if (host_record->count >= WAIT_NAME_MAX)
     {
     sprintf(CS buffer, "%.200s:%d", host->name, host_record->sequence);
-    dbfn_write(dbm_file, buffer, host_record, sizeof(dbdata_wait) + host_length);
+    dbfn_write(dbp, buffer, host_record, sizeof(dbdata_wait) + host_length);
 #ifndef DISABLE_QUEUE_RAMP
     if (f.queue_2stage && queue_fast_ramp && !queue_run_in_order)
       queue_notify_daemon(message_id);
@@ -1634,14 +1636,17 @@ for (host_item * host = hostlist; host; host = host->next)
 
   /* Update the database */
 
-  dbfn_write(dbm_file, host->name, host_record, sizeof(dbdata_wait) + host_length);
+  dbfn_write(dbp, host->name, host_record, sizeof(dbdata_wait) + host_length);
   DEBUG(D_transport) debug_printf("added %.*s to queue for %s\n",
 				  MESSAGE_ID_LENGTH, message_id, host->name);
   }
 
 /* All now done */
 
-dbfn_close(dbm_file);
+if (continue_wait_db)
+  dbfn_transaction_commit(dbp);
+else
+  dbfn_close(dbp);
 }
 
 
@@ -1688,8 +1693,7 @@ transport_check_waiting(const uschar * transport_name, const uschar * hostname,
 {
 dbdata_wait * host_record;
 int host_length;
-open_db dbblock;
-open_db * dbm_file;
+open_db dbblock, * dbp;
 
 int         i;
 struct stat statbuf;
@@ -1715,17 +1719,19 @@ if (local_message_max > 0 && continue_sequence >= local_message_max)
 
 /* Open the waiting information database. */
 
-if (!(dbm_file = dbfn_open(string_sprintf("wait-%.200s", transport_name),
-			  O_RDWR, &dbblock, TRUE, TRUE)))
+if ( continue_wait_db
+   ? !dbfn_transaction_start(dbp = continue_wait_db)
+   : !(dbp = dbfn_open(string_sprintf("wait-%.200s", transport_name),
+		      O_RDWR, &dbblock, TRUE, TRUE))
+   )
   goto retfalse;
 
 /* See if there is a record for this host; if not, there's nothing to do. */
 
-if (!(host_record = dbfn_read(dbm_file, hostname)))
+if (!(host_record = dbfn_read(dbp, hostname)))
   {
-  dbfn_close(dbm_file);
   DEBUG(D_transport) debug_printf_indent("no messages waiting for %s\n", hostname);
-  goto retfalse;
+  goto dbclose_false;
   }
 
 /* If the data in the record looks corrupt, just log something and
@@ -1733,10 +1739,9 @@ don't try to use it. */
 
 if (host_record->count > WAIT_NAME_MAX)
   {
-  dbfn_close(dbm_file);
   log_write(0, LOG_MAIN|LOG_PANIC, "smtp-wait database entry for %s has bad "
     "count=%d (max=%d)", hostname, host_record->count, WAIT_NAME_MAX);
-  goto retfalse;
+  goto dbclose_false;
   }
 
 /* Scan the message ids in the record in order
@@ -1772,11 +1777,11 @@ while (1)
       DEBUG(D_hints_lookup)
 	debug_printf_indent("NOTE: old or corrupt message-id found in wait=%.200s"
 	  " hints DB; deleting records for %s\n", transport_name, hostname);
-      (void) dbfn_delete(dbm_file, hostname);
+      (void) dbfn_delete(dbp, hostname);
       for (int j = host_record->sequence - 1; j >= 0; j--)
-	(void) dbfn_delete(dbm_file,
+	(void) dbfn_delete(dbp,
 		    (sprintf(CS buffer, "%.200s:%d", hostname, j), buffer));
-      goto retfalse;
+      goto dbclose_false;
       }
     msgq[i].bKeep = TRUE;
 
@@ -1856,20 +1861,20 @@ while (1)
     for (int i = host_record->sequence - 1; i >= 0 && !newr; i--)
       {
       sprintf(CS buffer, "%.200s:%d", hostname, i);
-      newr = dbfn_read(dbm_file, buffer);
+      newr = dbfn_read(dbp, buffer);
       }
 
     /* If no continuation, delete the current and break the loop */
 
     if (!newr)
       {
-      dbfn_delete(dbm_file, hostname);
+      dbfn_delete(dbp, hostname);
       break;
       }
 
     /* Else replace the current with the continuation */
 
-    dbfn_delete(dbm_file, buffer);
+    dbfn_delete(dbp, buffer);
     host_record = newr;
     host_length = host_record->count * MESSAGE_ID_LENGTH;
 
@@ -1885,9 +1890,8 @@ while (1)
 
   if (host_length <= 0)
     {
-    dbfn_close(dbm_file);
     DEBUG(D_transport) debug_printf_indent("waiting messages already delivered\n");
-    goto retfalse;
+    goto dbclose_false;
     }
 
   /* we were not able to find an acceptable message, nor was there a
@@ -1897,8 +1901,7 @@ while (1)
   if (!bContinuation)
     {
     Ustrcpy(new_message_id, message_id);
-    dbfn_close(dbm_file);
-    goto retfalse;
+    goto dbclose_false;
     }
   }		/* we need to process a continuation record */
 
@@ -1910,10 +1913,14 @@ record if required, close the database, and return TRUE. */
 if (host_length > 0)
   {
   host_record->count = host_length/MESSAGE_ID_LENGTH;
-  dbfn_write(dbm_file, hostname, host_record, (int)sizeof(dbdata_wait) + host_length);
+  dbfn_write(dbp, hostname, host_record, (int)sizeof(dbdata_wait) + host_length);
   }
 
-dbfn_close(dbm_file);
+if (continue_wait_db)
+  dbfn_transaction_commit(dbp);
+else
+  dbfn_close(dbp);
+
 DEBUG(D_transport)
   {
   acl_level--;
@@ -1921,9 +1928,16 @@ DEBUG(D_transport)
   }
 return TRUE;
 
+dbclose_false:
+  if (continue_wait_db)
+    dbfn_transaction_commit(dbp);
+  else
+    dbfn_close(dbp);
+
 retfalse:
-DEBUG(D_transport) {acl_level--; debug_printf("transport_check_waiting: FALSE\n"); }
-return FALSE;
+  DEBUG(D_transport)
+    {acl_level--; debug_printf("transport_check_waiting: FALSE\n"); }
+  return FALSE;
 }
 
 /*************************************************
@@ -1984,7 +1998,7 @@ if (smtp_peer_options & OPTION_TLS)
 #endif
 
 #ifndef DISABLE_ESMTP_LIMITS
-if (continue_limit_rcpt || continue_limit_rcptdom)
+if (continue_limit_mail || continue_limit_rcpt || continue_limit_rcptdom)
   {
   argv[i++] = US"-MCL";
   argv[i++] = string_sprintf("%u", continue_limit_mail);
@@ -2036,73 +2050,6 @@ DEBUG(D_any) debug_printf("execv failed: %s\n", strerror(errno));
 _exit(errno);         /* Note: must be _exit(), NOT exit() */
 }
 
-
-
-/* Fork a new exim process to deliver the message, and do a re-exec, both to
-get a clean delivery process, and to regain root privilege in cases where it
-has been given away.
-
-Arguments:
-  transport_name  to pass to the new process
-  hostname        ditto
-  hostaddress     ditto
-  id              the new message to process
-  socket_fd       the connected socket
-
-Returns:          FALSE if fork fails; TRUE otherwise
-*/
-
-BOOL
-transport_pass_socket(const uschar *transport_name, const uschar *hostname,
-  const uschar *hostaddress, uschar *id, int socket_fd
-#ifndef DISABLE_ESMTP_LIMITS
-  , unsigned peer_limit_mail, unsigned peer_limit_rcpt, unsigned peer_limit_rcptdom
-#endif
-  )
-{
-pid_t pid;
-int status;
-
-DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
-
-#ifndef DISABLE_ESMTP_LIMITS
-continue_limit_mail = peer_limit_mail;
-continue_limit_rcpt = peer_limit_rcpt;
-continue_limit_rcptdom = peer_limit_rcptdom;
-#endif
-
-if ((pid = exim_fork(US"continued-transport-interproc")) == 0)
-  {
-  /* Disconnect entirely from the parent process. If we are running in the
-  test harness, wait for a bit to allow the previous process time to finish,
-  write the log, etc., so that the output is always in the same order for
-  automatic comparison. */
-
-  if ((pid = exim_fork(US"continued-transport")) != 0)
-    _exit(EXIT_SUCCESS);
-  testharness_pause_ms(1000);
-
-  transport_do_pass_socket(transport_name, hostname, hostaddress,
-    id, socket_fd);
-  }
-
-/* If the process creation succeeded, wait for the first-level child, which
-immediately exits, leaving the second level process entirely disconnected from
-this one. */
-
-if (pid > 0)
-  {
-  int rc;
-  while ((rc = wait(&status)) != pid && (rc >= 0 || errno != ECHILD));
-  return TRUE;
-  }
-else
-  {
-  DEBUG(D_transport) debug_printf("transport_pass_socket failed to fork: %s\n",
-    strerror(errno));
-  return FALSE;
-  }
-}
 
 
 

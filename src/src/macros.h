@@ -1189,6 +1189,11 @@ typedef unsigned mcs_flags;
 #define SR_FINAL	TRUE
 #define SR_NOT_FINAL	FALSE
 
+/* Flags for continued-TLS-connection */
+#define CTF_CV	BIT(0)
+#define CTF_DV	BIT(1)
+#define CTF_TR	BIT(2)
+
 /* Return codes for smtp_write_mail_and_rcpt_cmds() */
 typedef enum {
   sw_mrc_ok,	/* good, rcpt results in addr->transport_return (PENDING_OK, DEFER, FAIL) */

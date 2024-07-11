@@ -92,6 +92,7 @@ delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.ho
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1]:PORT_S (CALLER@the.local.host.name)
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  failed: Connection refused
+cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 set_process_info: pppp delivering 10HmaZ-000000005vi-0000: just tried 127.0.0.1 [127.0.0.1]:PORT_S for CALLER@the.local.host.name: result DEFER

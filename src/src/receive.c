@@ -3518,7 +3518,7 @@ else
 #ifndef DISABLE_DKIM
     if (!f.dkim_disable_verify)
       {
-      /* Finish verification */
+      /* Finish off the body hashes, calculate sigs and do compares */
       dkim_exim_verify_finish();
 
       /* Check if we must run the DKIM ACL */
@@ -3527,12 +3527,10 @@ else
         {
         uschar * dkim_verify_signers_expanded =
           expand_string(dkim_verify_signers);
-	gstring * results = NULL;
-	int signer_sep = 0;
+	gstring * results = NULL, * seen_items = NULL;
+	int signer_sep = 0, old_pool = store_pool;
 	const uschar * ptr;
 	uschar * item;
-	gstring * seen_items = NULL;
-	int old_pool = store_pool;
 
 	store_pool = POOL_PERM;   /* Allow created variables to live to data ACL */
 
@@ -3541,7 +3539,10 @@ else
             "expansion of dkim_verify_signers option failed: %s",
             expand_string_message);
 
-	/* Default to OK when no items are present */
+	/* Loop over signers we want to verify, calling ACL.  Default to OK
+	when no signers are present.  Each call from here expands to a n ACL
+	call per matching sig in the message. */
+
 	rc = OK;
 	while ((item = string_nextinlist(&ptr, &signer_sep, NULL, 0)))
 	  {
@@ -3586,6 +3587,9 @@ else
 	    cancel_cutthrough_connection(TRUE, US"dkim acl not ok");
 	    break;
 	    }
+	  else
+	    if (dkim_verify_minimal && Ustrcmp(dkim_verify_status, "pass") == 0)
+	      break;
 	  }
 	dkim_verify_status = string_from_gstring(results);
 	store_pool = old_pool;
@@ -3606,7 +3610,7 @@ else
 	  goto NOT_ACCEPTED;			/* Skip to end of function */
 	  }
         }
-      else
+      else				/* No acl or no wanted signers */
 	dkim_exim_verify_log_all();
       }
 #endif /* DISABLE_DKIM */

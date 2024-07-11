@@ -126,6 +126,7 @@ set_process_info: pppp delivering 10HmaX-000000005vi-0000 to V4NET.0.0.0 [V4NET.
 Connecting to V4NET.0.0.0 [V4NET.0.0.0]:PORT_S ...
  V4NET.0.0.0 in hosts_try_fastopen?
  failed: Network Error
+cmdlog: (unset)
 LOG: MAIN
   H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
 set_process_info: pppp delivering 10HmaX-000000005vi-0000: just tried V4NET.0.0.0 [V4NET.0.0.0]:PORT_S for x@y: result DEFER
@@ -146,49 +147,49 @@ changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=p1234
 set_process_info: pppp tidying up after delivering 10HmaX-000000005vi-0000
 Processing retry items
-Succeeded addresses:
-Failed addresses:
-Deferred addresses:
- x@y
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
- returned from EXIM_DBOPEN: 0xAAAAAAAA
- opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
- x@y in "*"?
-  list element: *
-  address match test: subject=x@y pattern=*
-  y in "*"?
+ Succeeded addresses:
+ Failed addresses:
+ Deferred addresses:
+  x@y
+  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
+  returned from EXIM_DBOPEN: 0xAAAAAAAA
+  opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
+  x@y in "*"?
    list element: *
-   y in "*"? yes (matched "*")
-  x@y in "*"? yes (matched "*")
-retry for R:x@y = * 0 0
- dbfn_read: key=R:x@y
- dbfn_read: null return
-failing_interval=ttt message_age=ttt
-Writing retry data for R:x@y
-  first failed=dddd last try=dddd next try=+1 expired=1
-  errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
- dbfn_write: key=R:x@y datalen nn
- *@V4NET.0.0.0 in "*"?
-  list element: *
-  address match test: subject=*@V4NET.0.0.0 pattern=*
-  V4NET.0.0.0 in "*"?
+   address match test: subject=x@y pattern=*
+   y in "*"?
+   ╎list element: *
+   ╎y in "*"? yes (matched "*")
+   x@y in "*"? yes (matched "*")
+  retry for R:x@y = * 0 0
+  dbfn_read: key=R:x@y
+  dbfn_read: null return
+  failing_interval=ttt message_age=ttt
+  Writing retry data for R:x@y
+    first failed=dddd last try=dddd next try=+1 expired=1
+    errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
+  dbfn_write: key=R:x@y datalen nn
+  *@V4NET.0.0.0 in "*"?
    list element: *
-   V4NET.0.0.0 in "*"? yes (matched "*")
-  *@V4NET.0.0.0 in "*"? yes (matched "*")
-retry for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S (y) = * 0 0
- dbfn_read: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
- dbfn_read: null return
-failing_interval=ttt message_age=ttt
-on queue longer than maximum retry
-Writing retry data for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
-  first failed=dddd last try=dddd next try=+0 expired=0
-  errno=dd more_errno=dd,A Network Error
- dbfn_write: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S datalen nn
-timed out: all retries expired
+   address match test: subject=*@V4NET.0.0.0 pattern=*
+   V4NET.0.0.0 in "*"?
+   ╎list element: *
+   ╎V4NET.0.0.0 in "*"? yes (matched "*")
+   *@V4NET.0.0.0 in "*"? yes (matched "*")
+  retry for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S (y) = * 0 0
+  dbfn_read: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
+  dbfn_read: null return
+  failing_interval=ttt message_age=ttt
+  on queue longer than maximum retry
+  Writing retry data for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
+    first failed=dddd last try=dddd next try=+0 expired=0
+    errno=dd more_errno=dd,A Network Error
+  dbfn_write: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S datalen nn
+  timed out: all retries expired
 LOG: MAIN
   ** x@y: retry timeout exceeded
- EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database
+  EXIM_DBCLOSE(0xAAAAAAAA)
+  closed hints database
 end of retry processing
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xd7715ced -MCd bounce-message -odi -odi -t -oem -oi -f <> -E10HmaX-000000005vi-0000
 Exim version x.yz ....
@@ -311,10 +312,10 @@ changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=p1237
 set_process_info: pppp tidying up after delivering 10HmaY-000000005vi-0000
 Processing retry items
-Succeeded addresses:
- CALLER@myhost.test.ex: no retry items
-Failed addresses:
-Deferred addresses:
+ Succeeded addresses:
+  CALLER@myhost.test.ex: no retry items
+ Failed addresses:
+ Deferred addresses:
 end of retry processing
 LOG: MAIN
   Completed

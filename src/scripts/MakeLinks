@@ -28,22 +28,24 @@ echo ">>> Creating links to source files..."
 # their own Makefile in their sub-directory.
 
 # Firstly the lookups
-mkdir lookups
-cd lookups
+d="lookups"
+mkdir $d
+cd $d
 # Makefile is generated
 for f in README cdb.c dbmdb.c dnsdb.c dsearch.c ibase.c json.c ldap.h ldap.c \
   lmdb.c lsearch.c mysql.c nis.c nisplus.c oracle.c passwd.c \
   pgsql.c readsock.c redis.c spf.c sqlite.c testdb.c whoson.c \
   lf_functions.h lf_check_file.c lf_quote.c lf_sqlperform.c
 do
-  ln -s ../../src/lookups/$f $f
+  ln -s ../../src/$d/$f $f
 done
 
 cd ..
 
 # Likewise for the code for the routers
-mkdir routers
-cd routers
+d="routers"
+mkdir $d
+cd $d
 for f in README Makefile accept.h accept.c dnslookup.h dnslookup.c \
   ipliteral.h ipliteral.c iplookup.h iplookup.c manualroute.h \
   manualroute.c queryprogram.h queryprogram.c redirect.h redirect.c \
@@ -51,26 +53,28 @@ for f in README Makefile accept.h accept.c dnslookup.h dnslookup.c \
   rf_get_munge_headers.c rf_get_transport.c rf_get_ugid.c rf_queue_add.c \
   rf_lookup_hostlist.c rf_self_action.c rf_set_ugid.c
 do
-  ln -s ../../src/routers/$f $f
+  ln -s ../../src/$d/$f $f
 done
 
 cd ..
 
 # Likewise for the code for the transports
-mkdir transports
-cd transports
+d="transports"
+mkdir $d
+cd $d
 for f in README Makefile appendfile.h appendfile.c autoreply.h \
   autoreply.c lmtp.h lmtp.c pipe.h pipe.c queuefile.c queuefile.h \
   smtp.h smtp.c smtp_socks.c tf_maildir.c tf_maildir.h
 do
-  ln -s ../../src/transports/$f $f
+  ln -s ../../src/$d/$f $f
 done
 
 cd ..
 
 # Likewise for the code for the authentication drivers
-mkdir auths
-cd auths
+d="auths"
+mkdir $d
+cd $d
 for f in README Makefile call_pam.c call_pwcheck.c \
   call_radius.c check_serv_cond.c cyrus_sasl.c cyrus_sasl.h gsasl_exim.c \
   gsasl_exim.h get_data.c get_no64_data.c heimdal_gssapi.c heimdal_gssapi.h \
@@ -78,17 +82,28 @@ for f in README Makefile call_pam.c call_pwcheck.c \
   pwcheck.c pwcheck.h auth-spa.c auth-spa.h dovecot.c dovecot.h sha1.c spa.c \
   spa.h tls.c tls.h external.c external.h
 do
-  ln -s ../../src/auths/$f $f
+  ln -s ../../src/$d/$f $f
+done
+cd ..
+
+# and the hintsdb implementations
+d="hintsdb"
+mkdir $d
+cd $d
+for f in hints_bdb.h hints_gdbm.h hints_ndbm.h hints_sqlite.h hints_tdb.h
+do
+  ln -s ../../src/$d/$f $f
 done
 cd ..
 
 # Likewise for the code for the PDKIM library
-mkdir pdkim
-cd pdkim
+d="pdkim"
+mkdir $d
+cd $d
 for f in README Makefile crypt_ver.h pdkim.c \
   pdkim.h hash.c hash.h signing.c signing.h blob.h
 do
-  ln -s ../../src/pdkim/$f $f
+  ln -s ../../src/$d/$f $f
 done
 cd ..
 

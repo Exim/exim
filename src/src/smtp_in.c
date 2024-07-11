@@ -1688,7 +1688,6 @@ spf_result_guessed = FALSE;
 #ifndef DISABLE_DKIM
 dkim_cur_signer = dkim_signers =
 dkim_signing_domain = dkim_signing_selector = dkim_signatures = NULL;
-dkim_cur_signer = dkim_signers = dkim_signing_domain = dkim_signing_selector = NULL;
 f.dkim_disable_verify = FALSE;
 dkim_collect_input = 0;
 dkim_verify_overall = dkim_verify_status = dkim_verify_reason = NULL;

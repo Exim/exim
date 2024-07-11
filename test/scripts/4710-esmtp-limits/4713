@@ -22,7 +22,7 @@ QUIT
 exim -odi a@a.test.ex b@b.test.ex
 ****
 #
-# RCPTDOMAINMAX Limit advertised, second domain temp-rejected
+# RCPTDOMAINMAX Limit advertised, exim transport treats as 1
 # Client should immediate-retry further MAIL transactions for remaining rcpts
 server PORT_D
 220 Hi there
@@ -31,7 +31,7 @@ EHLO
 250 LIMITS MAILMAX=10 RCPTDOMAINMAX=100
 MAIL FROM
 250 mail cmd good
-RCPT TO:<a@a.test.ex>
+RCPT TO:<a1@a.test.ex>
 250 rcpt cmd 1 good
 RCPT TO:<a2@a.test.ex>
 250 rcpt cmd 2 good
@@ -41,7 +41,7 @@ DATA
 250 message received
 MAIL FROM
 250 second mail cmd good
-RCPT TO:<b@b.test.ex>
+RCPT TO:<b1@b.test.ex>
 250 rcpt cmd 1 good
 RCPT TO
 250 rcpt cmd 2 good
@@ -51,7 +51,7 @@ DATA
 250 second message received
 MAIL FROM
 250 third mail cmd good
-RCPT TO:<c@c.test.ex>
+RCPT TO:<c1@c.test.ex>
 250 rcpt cmd 1 good
 DATA
 352 go ahead
@@ -60,5 +60,5 @@ DATA
 QUIT
 220 bye
 ****
-exim -odi a@a.test.ex b@b.test.ex c@c.test.ex a2@a.test.ex b2@b.test.ex
+exim -odi a1@a.test.ex b1@b.test.ex c1@c.test.ex a2@a.test.ex b2@b.test.ex
 ****

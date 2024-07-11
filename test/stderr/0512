@@ -20,6 +20,7 @@ delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.e
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  failed: Connection refused
+cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
@@ -33,6 +34,7 @@ delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.e
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  failed: Connection refused
+cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
@@ -46,6 +48,7 @@ delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.e
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  failed: Connection refused
+cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
@@ -59,6 +62,7 @@ delivering 10HmaX-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.e
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  failed: Connection refused
+cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
@@ -121,6 +125,7 @@ delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.e
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  failed: Connection refused
+cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2
@@ -134,6 +139,7 @@ delivering 10HmaZ-000000005vi-0000 to 127.0.0.1 [127.0.0.1] (userx@myhost.test.e
 hosts_max_try limit reached with this host
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  failed: Connection refused
+cmdlog: (unset)
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:[127.0.0.1]:127.0.0.1:PORT_S: errno=dd more_errno=dd,A flags=2

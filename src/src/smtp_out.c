@@ -553,10 +553,10 @@ Returns:     TRUE if OK, FALSE on error, with errno set
 static BOOL
 flush_buffer(smtp_outblock * outblock, int mode)
 {
-int rc;
-int n = outblock->ptr - outblock->buffer;
+int n = outblock->ptr - outblock->buffer, rc;
 BOOL more = mode == SCMD_MORE;
 client_conn_ctx * cctx;
+const uschar * where;
 
 HDEBUG(D_transport|D_acl) debug_printf_indent("cmd buf flush %d bytes%s\n", n,
   more ? " (more expected)" : "");
@@ -569,6 +569,7 @@ if (!(cctx = outblock->cctx))
   }
 
 #ifndef DISABLE_TLS
+where = US"tls_write";
 if (cctx->tls_ctx)		/*XXX have seen a null cctx here, rvfy sending QUIT, hence check above */
   rc = tls_write(cctx->tls_ctx, outblock->buffer, n, more);
 else
@@ -584,6 +585,7 @@ else
     requirement: TFO with data can, in rare cases, replay the data to the
     receiver. */
 
+    where = US"smtp_connect";
     if (  (cctx->sock = smtp_connect(outblock->conn_args, &early_data))
        < 0)
       return FALSE;
@@ -592,6 +594,7 @@ else
     }
   else
     {
+    where = US"send";
     rc = send(cctx->sock, outblock->buffer, n,
 #ifdef MSG_MORE
 	      more ? MSG_MORE : 0
@@ -606,6 +609,7 @@ else
     This is despite NODELAY being active.
     https://bugzilla.redhat.com/show_bug.cgi?id=1803806 */
 
+    where = US"cork";
     if (!more)
       setsockopt(cctx->sock, IPPROTO_TCP, TCP_CORK, &off, sizeof(off));
 #endif
@@ -614,7 +618,8 @@ else
 
 if (rc <= 0)
   {
-  HDEBUG(D_transport|D_acl) debug_printf_indent("send failed: %s\n", strerror(errno));
+  HDEBUG(D_transport|D_acl) debug_printf_indent("%s (fd %d) failed: %s\n",
+    where, cctx->sock, strerror(errno));
   return FALSE;
   }
 
@@ -623,22 +628,6 @@ outblock->cmd_count = 0;
 return TRUE;
 }
 
-
-
-/* This might be called both due to callout and then from delivery.
-Use memory that will not be released between those phases.
-*/
-static void
-smtp_debug_resp(const uschar * buf)
-{
-#ifndef DISABLE_CLIENT_CMD_LOG
-int old_pool = store_pool;
-store_pool = POOL_PERM;
-client_cmd_log = string_append_listele_n(client_cmd_log, ':', buf,
-  buf[3] == ' ' ? 3 : 4);
-store_pool = old_pool;
-#endif
-}
 
 
 /*************************************************

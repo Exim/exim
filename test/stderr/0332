@@ -34,17 +34,11 @@ After routing:
   Deferred addresses:
 cmdlog: '220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:354:.:250'
 >>>>>>>>>>>>>>>> Exim pid=p1235 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+qrun-delivery becomes continued-delivery
 LOG: MAIN
   => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=p1236 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-Exim version x.yz ....
-Hints DB:
-configuration file is TESTSUITE/test-config
-trusted user
-admin user
-dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: delay@test.again.dns
 unique = delay@test.again.dns
@@ -62,7 +56,6 @@ checking domains
 calling r1 router
 r1 router called for ok@no.delay
   domain = no.delay
-set transport t1
 queued for t1 transport: local_part = ok
 domain = no.delay
   errors_to=NULL
@@ -79,10 +72,10 @@ After routing:
   Deferred addresses:
     delay@test.again.dns
 cmdlog: 'MAIL|:RCPT|:DATA:250:250:354:.:250:QUIT+:250'
->>>>>>>>>>>>>>>> Exim pid=p1238 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1]* C="250 OK"
->>>>>>>>>>>>>>>> Exim pid=p1237 (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1237 (continued-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: delay@test.again.dns
 unique = delay@test.again.dns
@@ -95,7 +88,7 @@ After routing:
   Failed addresses:
   Deferred addresses:
     delay@test.again.dns
->>>>>>>>>>>>>>>> Exim pid=p1239 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1238 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=p1234
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

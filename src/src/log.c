@@ -308,8 +308,8 @@ Send fd over socketpair.
 Return: true iff good.
 */
 
-static BOOL
-log_send_fd(const int sock, const int fd)
+BOOL
+send_fd_over_socket(const int sock, const int fd)
 {
 struct msghdr msg;
 union {
@@ -343,8 +343,8 @@ return n == 1;
 Return fd passed over socketpair, or -1 on error.
 */
 
-static int
-log_recv_fd(const int sock)
+int
+recv_fd_from_sock(const int sock)
 {
 struct msghdr msg;
 union {
@@ -415,7 +415,7 @@ else if (euid == root_uid)
          || getgid() != exim_gid || getegid() != exim_gid
 
          || (fd = log_open_already_exim(name)) < 0
-         || !log_send_fd(sock[1], fd)
+         || !send_fd_over_socket(sock[1], fd)
 	 ) _exit(EXIT_FAILURE);
       (void)close(sock[1]);
       _exit(EXIT_SUCCESS);
@@ -424,7 +424,7 @@ else if (euid == root_uid)
     (void)close(sock[1]);
     if (pid > 0)
       {
-      fd = log_recv_fd(sock[0]);
+      fd = recv_fd_from_sock(sock[0]);
       while (waitpid(pid, NULL, 0) == -1 && errno == EINTR);
       }
     (void)close(sock[0]);

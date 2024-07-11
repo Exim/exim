@@ -468,15 +468,12 @@ return b64encode(CUS b->data, b->len);
 static pdkim_signature *
 pdkim_parse_sig_header(pdkim_ctx * ctx, uschar * raw_hdr)
 {
-pdkim_signature * sig;
-uschar *q;
-gstring * cur_tag = NULL;
-gstring * cur_val = NULL;
-BOOL past_hname = FALSE;
-BOOL in_b_val = FALSE;
+pdkim_signature * sig = store_get(sizeof(pdkim_signature), GET_UNTAINTED);
+uschar * q;
+gstring * cur_tag = NULL, * cur_val = NULL;
+BOOL past_hname = FALSE, in_b_val = FALSE;
 int where = PDKIM_HDR_LIMBO;
 
-sig = store_get(sizeof(pdkim_signature), GET_UNTAINTED);
 memset(sig, 0, sizeof(pdkim_signature));
 sig->bodylength = -1;
 
@@ -1899,11 +1896,17 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
       {
       sig->verify_status = PDKIM_VERIFY_PASS;
       verify_pass = TRUE;
-      if (dkim_verify_minimal) break;
+      /*XXX We used to "break" here if dkim_verify_minimal, but that didn't
+      stop the ACL being called.  So move that test.  Unfortunately, we
+      need to eval all the sigs here only to possibly ignore some later,
+      because we don't know what verify options might say.
+      Could we change to a later eval of the sig?
+      Both bits are called from receive_msg().
+      Moving the test is also suboptimal for the case of no ACL (or no
+      signers to check!) so keep it for that case, but after debug output */
       }
 
 NEXT_VERIFY:
-
     DEBUG(D_acl)
       {
       debug_printf("DKIM [%s] %s signature status: %s",
@@ -1915,6 +1918,10 @@ NEXT_VERIFY:
       else
 	debug_printf("\n");
       }
+
+    if (  verify_pass && dkim_verify_minimal
+       && !(acl_smtp_dkim && dkim_verify_signers && *dkim_verify_signers))
+      break;
     }
   }
 

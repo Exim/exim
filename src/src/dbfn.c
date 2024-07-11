@@ -237,6 +237,78 @@ return dbblock;
 
 
 
+/* Only for transaction-capable DB types.  Open without locking or
+starting a transaction.  "lof" and "panic" always true; read/write mode.
+*/
+
+open_db *
+dbfn_open_multi(const uschar * name, int flags, open_db * dbblock)
+{
+int rc, save_errno;
+flock_t lock_data;
+uschar dirname[PATHLEN], filename[PATHLEN];
+
+DEBUG(D_hints_lookup) acl_level++;
+
+dbblock->lockfd = -1;
+db_dir_make(TRUE);
+
+snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
+snprintf(CS filename, sizeof(filename), "%s/%s", dirname, name);
+
+priv_drop_temp(exim_uid, exim_gid);
+dbblock->dbptr = exim_dbopen_multi(filename, dirname, flags, EXIMDB_MODE);
+if (!dbblock->dbptr && errno == ENOENT && flags == O_RDWR)
+  {
+  DEBUG(D_hints_lookup)
+    debug_printf_indent("%s appears not to exist: trying to create\n", filename);
+  dbblock->dbptr = exim_dbopen_multi(filename, dirname, O_RDWR|O_CREAT, EXIMDB_MODE);
+  }
+save_errno = errno;
+priv_restore();
+
+/* If the open has failed, return NULL, leaving errno set. If lof is TRUE,
+log the event - also for debugging - but debug only if the file just doesn't
+exist. */
+
+if (!dbblock->dbptr)
+  {
+  errno = save_errno;
+  if (save_errno != ENOENT)
+    log_write(0, LOG_MAIN, "%s", string_open_failed("DB file %s",
+        filename));
+  else
+    DEBUG(D_hints_lookup)
+      debug_printf_indent("%s\n", CS string_open_failed("DB file %s",
+          filename));
+  errno = save_errno;
+  DEBUG(D_hints_lookup) acl_level--;
+  return NULL;
+  }
+
+DEBUG(D_hints_lookup) debug_printf_indent(
+    "opened hints database %s for transactions: NOLOCK flags=O_RDWR\n", filename);
+
+/* Pass back the block containing the opened database handle */
+
+return dbblock;
+}
+
+
+BOOL
+dbfn_transaction_start(open_db * dbp)
+{
+DEBUG(D_hints_lookup) debug_printf_indent("dbfn_transaction_start\n");
+return exim_dbtransaction_start(dbp->dbptr);
+}
+void
+dbfn_transaction_commit(open_db * dbp)
+{
+DEBUG(D_hints_lookup) debug_printf_indent("dbfn_transaction_commit\n");
+exim_dbtransaction_commit(dbp->dbptr);
+}
+
+
 
 /*************************************************
 *         Unlock and close a database file       *
@@ -250,11 +322,11 @@ Returns:  nothing
 */
 
 void
-dbfn_close(open_db *dbblock)
+dbfn_close(open_db * dbp)
 {
-int * fdp = &dbblock->lockfd;
+int * fdp = &dbp->lockfd;
 
-exim_dbclose(dbblock->dbptr);
+exim_dbclose(dbp->dbptr);
 if (*fdp >= 0) (void)close(*fdp);
 DEBUG(D_hints_lookup)
   {
@@ -263,6 +335,18 @@ DEBUG(D_hints_lookup)
   acl_level--;
   }
 *fdp = -1;
+}
+
+
+void
+dbfn_close_multi(open_db * dbp)
+{
+exim_dbclose_multi(dbp->dbptr);
+DEBUG(D_hints_lookup)
+  {
+  debug_printf_indent("closed hints database\n");
+  acl_level--;
+  }
 }
 
 

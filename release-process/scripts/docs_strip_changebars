@@ -1,0 +1,5 @@
+#!/bin/awk -f
+BEGIN {seen = 0}
+/^\.(new|wen)/ && $seen != 0 {next}
+/^\.wen$/ {seen = 1;next}
+{print}
