@@ -145,7 +145,7 @@ open_db *
 dbfn_open(const uschar * name, int flags, open_db * dbblock,
   BOOL lof, BOOL panic)
 {
-int rc, save_errno;
+int rc, save_errno, dlen, flen;
 flock_t lock_data;
 uschar dirname[PATHLEN], filename[PATHLEN];
 
@@ -164,8 +164,11 @@ make the directory as well, just in case. We won't be doing this many times
 unnecessarily, because usually the lock file will be there. If the directory
 exists, there is no error. */
 
-snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
-snprintf(CS filename, sizeof(filename), "%s/%s.lockfile", dirname, name);
+dlen = snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
+flen = Ustrlen(name);
+snprintf(CS filename, sizeof(filename), "%.*s/%.*s.lockfile",
+	  (int)sizeof(filename) - dlen - flen - 11, dirname,
+	  flen, name);
 
 dbblock->lockfd = -1;
 if (!exim_lockfile_needed())
@@ -189,7 +192,7 @@ it easy to pin this down, there are now debug statements on either side of the
 open call. */
 
 flags &= O_RDONLY | O_RDWR;
-snprintf(CS filename, sizeof(filename), "%s/%s", dirname, name);
+snprintf(CS filename, sizeof(filename), "%.*s/%s", dlen, dirname, name);
 
 priv_drop_temp(exim_uid, exim_gid);
 dbblock->dbptr = exim_dbopen(filename, dirname, flags, EXIMDB_MODE);
@@ -244,7 +247,7 @@ starting a transaction.  "lof" and "panic" always true; read/write mode.
 open_db *
 dbfn_open_multi(const uschar * name, int flags, open_db * dbblock)
 {
-int rc, save_errno;
+int rc, save_errno, dlen;
 flock_t lock_data;
 uschar dirname[PATHLEN], filename[PATHLEN];
 
@@ -253,8 +256,8 @@ DEBUG(D_hints_lookup) acl_level++;
 dbblock->lockfd = -1;
 db_dir_make(TRUE);
 
-snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
-snprintf(CS filename, sizeof(filename), "%s/%s", dirname, name);
+dlen = snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
+snprintf(CS filename, sizeof(filename), "%.*s/%s", dlen, dirname, name);
 
 priv_drop_temp(exim_uid, exim_gid);
 dbblock->dbptr = exim_dbopen_multi(filename, dirname, flags, EXIMDB_MODE);

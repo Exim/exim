@@ -30,15 +30,13 @@ local_scan.h includes it and exim.h includes them both (to get this earlier). */
 #endif
 
 
-/* If gcc is being used to compile Exim, we can use its facility for checking
-the arguments of printf-like functions. This is done by a macro.
-OpenBSD has unfortunately taken to objecting to use of %n in printf
-so we have to give up on all of the available parameter checking. */
+/* We gave up on trying to get compilers to check on printf-like functions
+because they are both whiney about value sizes where they cannot do decent
+static analysis, and incapable of handling extensions to printf formats.
+The annotation on functions is still in place but does nothing. */
 
 #if defined(__GNUC__) || defined(__clang__)
-# ifndef __OpenBSD__
-#  define PRINTF_FUNCTION(A,B)	__attribute__((format(printf,A,B)))
-# endif
+/* #  define PRINTF_FUNCTION(A,B)	__attribute__((format(printf,A,B))) */
 # define ARG_UNUSED		__attribute__((__unused__))
 # define FUNC_MAYBE_UNUSED	__attribute__((__unused__))
 # define WARN_UNUSED_RESULT	__attribute__((__warn_unused_result__))

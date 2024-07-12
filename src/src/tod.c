@@ -169,6 +169,7 @@ switch(type)
 	    diff_min += (local.tm_yday > gmt->tm_yday) ? 1440 : -1440;
 	  diff_hour = diff_min/60;
 	  diff_min  = abs(diff_min - diff_hour*60);
+	  diff_min &= 63;			/* compiler quietening */
 	  }
 	else					/* subminute offset, eg. TAI */
 	  {

@@ -1256,12 +1256,13 @@ timediff(diff, then);
 static inline uschar *
 string_timediff(const struct timeval * diff)
 {
-static uschar buf[sizeof("0.000s")];
+static uschar buf[16];
 
 if (diff->tv_sec >= 5 || !LOGGING(millisec))
   return readconf_printtime((int)diff->tv_sec);
 
-snprintf(CS buf, sizeof(buf), "%u.%03us", (uint)diff->tv_sec, (uint)diff->tv_usec/1000);
+snprintf(CS buf, sizeof(buf), "%u.%03us",
+	  (uint)diff->tv_sec, (uint)diff->tv_usec/1000);
 return buf;
 }
 
