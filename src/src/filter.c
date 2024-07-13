@@ -795,7 +795,7 @@ static void
 indent(void)
 {
 int i;
-for (i = 0; i < output_indent; i++) debug_printf(" ");
+DEBUG(D_filter) for (i = 0; i < output_indent; i++) debug_printf(" ");
 }
 
 
@@ -1669,8 +1669,8 @@ if ((filter_test != FTEST_NONE && debug_selector != 0) ||
   {
   indent();
   debug_printf_indent("%sondition is %s: ",
-    toplevel? "C" : "Sub-c",
-    (yield == c->testfor)? "true" : "false");
+    toplevel ? "C" : "Sub-c",
+    yield == c->testfor ? "true" : "false");
   print_condition(c, TRUE);
   debug_printf_indent("\n");
   }
@@ -1818,11 +1818,11 @@ while (commands)
 	{
 	indent();
 	printf("%seliver message to: %s%s%s%s\n",
-	  (commands->seen)? "D" : "Unseen d",
+	  commands->seen ? "D" : "Unseen d",
 	  expargs[0],
 	  commands->noerror? " (noerror)" : "",
-	  (s != NULL)? " errors_to " : "",
-	  (s != NULL)? s : US"");
+	  s ? " errors_to " : "",
+	  s ? s : US"");
 	}
 
       /* Real case. */
@@ -1830,11 +1830,11 @@ while (commands)
       else
 	{
 	DEBUG(D_filter) debug_printf_indent("Filter: %sdeliver message to: %s%s%s%s\n",
-	  (commands->seen)? "" : "unseen ",
+	  commands->seen ? "" : "unseen ",
 	  expargs[0],
-	  commands->noerror? " (noerror)" : "",
-	  (s != NULL)? " errors_to " : "",
-	  (s != NULL)? s : US"");
+	  commands->noerror ? " (noerror)" : "",
+	  s ? " errors_to " : "",
+	  s ? s : US"");
 
 	/* Create the new address and add it to the chain, setting the
 	af_ignore_error flag if necessary, and the errors address, which can be
@@ -1858,11 +1858,13 @@ while (commands)
 	{
 	indent();
 	if (mode < 0)
-	  printf("%save message to: %s%s\n", (commands->seen)?
-	    "S" : "Unseen s", s, commands->noerror? " (noerror)" : "");
+	  printf("%save message to: %s%s\n",
+	    commands->seen ? "S" : "Unseen s",
+	    s, commands->noerror ? " (noerror)" : "");
 	else
-	  printf("%save message to: %s %04o%s\n", (commands->seen)?
-	    "S" : "Unseen s", s, mode, commands->noerror? " (noerror)" : "");
+	  printf("%save message to: %s %04o%s\n",
+	  commands->seen ?  "S" : "Unseen s",
+	  s, mode, commands->noerror ? " (noerror)" : "");
 	}
 
       /* Real case: Ensure save argument starts with / if there is a home
@@ -1874,8 +1876,8 @@ while (commands)
 	    deliver_home != NULL && deliver_home[0] != 0)
 	  s = string_sprintf("%s/%s", deliver_home, s);
 	DEBUG(D_filter) debug_printf_indent("Filter: %ssave message to: %s%s\n",
-	  (commands->seen)? "" : "unseen ", s,
-	  commands->noerror? " (noerror)" : "");
+	  commands->seen ? "" : "unseen ",
+	  s, commands->noerror ? " (noerror)" : "");
 
 	/* Create the new address and add it to the chain, setting the
 	af_pfr and af_file flags, the af_ignore_error flag if necessary, and the
@@ -1896,8 +1898,9 @@ while (commands)
       if (filter_test != FTEST_NONE)
 	{
 	indent();
-	printf("%sipe message to: %s%s\n", (commands->seen)?
-	  "P" : "Unseen p", s, commands->noerror? " (noerror)" : "");
+	printf("%sipe message to: %s%s\n",
+	  commands->seen ? "P" : "Unseen p",
+	  s, commands->noerror? " (noerror)" : "");
 	}
       else /* Ensure pipe command starts with | */
 	{
@@ -1953,7 +1956,7 @@ while (commands)
       if (filter_test != FTEST_NONE)
 	{
 	indent();
-	printf("%sogfile %s\n", (commands->seen)? "Seen l" : "L", log_filename);
+	printf("%sogfile %s\n", commands->seen ? "Seen l" : "L", log_filename);
 	}
       break;
 
@@ -1963,14 +1966,14 @@ while (commands)
       if (filter_test != FTEST_NONE)
 	{
 	indent();
-	printf("%sogwrite \"%s\"\n", (commands->seen)? "Seen l" : "L",
+	printf("%sogwrite \"%s\"\n", commands->seen ? "Seen l" : "L",
 	  string_printing(s));
 	}
 
       /* Attempt to write to a log file only if configured as permissible.
       Logging may be forcibly skipped for verifying or testing. */
 
-      else if ((filter_options & RDO_LOG) != 0)   /* Locked out */
+      else if (filter_options & RDO_LOG)   /* Locked out */
 	{
 	DEBUG(D_filter)
 	  debug_printf_indent("filter log command aborted: euid=%ld\n",
@@ -1978,7 +1981,7 @@ while (commands)
 	*error_pointer = US"logwrite command forbidden";
 	return FF_ERROR;
 	}
-      else if ((filter_options & RDO_REALLOG) != 0)
+      else if (filter_options & RDO_REALLOG)
 	{
 	int len;
 	DEBUG(D_filter) debug_printf_indent("writing filter log as euid %ld\n",
@@ -2094,7 +2097,7 @@ while (commands)
       if (filter_test != FTEST_NONE)
 	{
 	indent();
-	printf("%sinish\n", (commands->seen)? "Seen f" : "F");
+	printf("%sinish\n", commands->seen ? "Seen f" : "F");
 	}
       else
 	DEBUG(D_filter) debug_printf_indent("Filter: %sfinish\n",
@@ -2112,7 +2115,7 @@ while (commands)
 	else
 	  {
 	  output_indent += 2;
-	  ok = interpret_commands(commands->args[condition_value? 1:2].f,
+	  ok = interpret_commands(commands->args[condition_value ? 1:2].f,
 	    generated);
 	  output_indent -= 2;
 	  }
@@ -2134,7 +2137,8 @@ while (commands)
 	  if (filter_test != FTEST_NONE)
 	    printf("%s command ignored because return_path is empty\n",
 	      command_list[commands->command]);
-	  else DEBUG(D_filter) debug_printf_indent("%s command ignored because return_path "
+	  else DEBUG(D_filter)
+	    debug_printf_indent("%s command ignored because return_path "
 	    "is empty\n", command_list[commands->command]);
 	  break;
 	  }
@@ -2228,15 +2232,15 @@ while (commands)
 	    commands->noerror ? " (noerror)" : "");
 	  for (i = 1; i < MAILARGS_STRING_COUNT; i++)
 	    {
-	    const uschar *arg = commands->args[i].u;
+	    const uschar * arg = commands->args[i].u;
 	    if (arg)
 	      {
 	      int len = Ustrlen(mailargs[i]);
-	      int indent = (debug_selector != 0)? output_indent : 0;
+	      int indent = debug_selector != 0 ? output_indent : 0;
 	      while (len++ < 7 + indent) printf(" ");
 	      printf("%s: %s%s\n", mailargs[i], string_printing(arg),
-		(commands->args[mailarg_index_expand].u != NULL &&
-		  Ustrcmp(mailargs[i], "file") == 0)? " (expanded)" : "");
+		(  commands->args[mailarg_index_expand].u
+		&& Ustrcmp(mailargs[i], "file") == 0) ? " (expanded)" : "");
 	      }
 	    }
 	  if (commands->args[mailarg_index_return].u)
