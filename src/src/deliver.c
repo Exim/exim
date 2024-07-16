@@ -7453,7 +7453,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
       }
     else if (!exim_lockfile_needed() && continue_transport)
       {
-      dbm_file = dbfn_open_multi(US"retry", O_RDONLY, &dbblock);
+      dbm_file = dbfn_open_multi(US"retry", O_RDWR, &dbblock);
       continue_retry_db = dbm_file ? dbm_file : (open_db *)-1;
       }
     else

@@ -913,7 +913,7 @@ sx->ehlo_resp.limit_rcpt = sx->peer_limit_rcpt;
 sx->ehlo_resp.limit_rcptdom = sx->peer_limit_rcptdom;
 # endif
 
-if ((dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
+if ((dbm_file = dbfn_open(US"misc", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)))
   {
   uschar * ehlo_resp_key = ehlo_cache_key(sx);
   dbdata_ehlo_resp er = { .data = sx->ehlo_resp };
@@ -943,7 +943,7 @@ invalidate_ehlo_cache_entry(smtp_context * sx)
 open_db dbblock, * dbm_file;
 
 if (  sx->early_pipe_active
-   && (dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
+   && (dbm_file = dbfn_open(US"misc", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)))
   {
   uschar * ehlo_resp_key = ehlo_cache_key(sx);
   HDEBUG(D_transport)
@@ -981,7 +981,7 @@ else
     {
     DEBUG(D_transport) debug_printf("ehlo-resp record too old\n");
     dbfn_close(dbm_file);
-    if ((dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
+    if ((dbm_file = dbfn_open(US"misc", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)))
       dbfn_delete(dbm_file, ehlo_resp_key);
     }
   else

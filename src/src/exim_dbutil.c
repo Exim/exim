@@ -271,7 +271,7 @@ the lock file.
 
 Arguments:
   name     The single-component name of one of Exim's database files.
-  flags    O_RDONLY or O_RDWR
+  flags    O_RDONLY or O_RDWR, O_CREAT
   dbblock  Points to an open_db block to be filled in.
   lof      Unused.
   panic	   Unused
@@ -339,8 +339,6 @@ if (exim_lockfile_needed())
   }
 
 if (asprintf(CSS &filename, "%s/%s", dirname, name) < 0) return NULL;
-
-if (flags & O_RDWR) flags |= O_CREAT;
 
 if (!(dbblock->dbptr = exim_dbopen(filename, dirname, flags, 0)))
   {
@@ -846,7 +844,7 @@ for(; (reset_point = store_mark()); store_reset(reset_point))
     {
     int verify = 1;
 
-    if (!(dbm = dbfn_open(aname, O_RDWR, &dbblock, FALSE, TRUE)))
+    if (!(dbm = dbfn_open(aname, O_RDWR|O_CREAT, &dbblock, FALSE, TRUE)))
       continue;
 
     if (Ustrcmp(field, "d") == 0)
@@ -1209,7 +1207,7 @@ oldest = time(NULL) - maxkeep;
 printf("Tidying Exim hints database %s/db/%s\n", argv[1], argv[2]);
 
 spool_directory = argv[1];
-if (!(dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE, TRUE)))
+if (!(dbm = dbfn_open(argv[2], O_RDWR|O_CREAT, &dbblock, FALSE, TRUE)))
   exit(EXIT_FAILURE);
 
 /* Prepare for building file names */

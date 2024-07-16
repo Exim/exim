@@ -94,7 +94,7 @@ get[host|ipnode]byname[2] looked up these IP addresses:
 Attempting full verification using callout
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
- opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
+ opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
  dbfn_read: key=y
  dbfn_read: null return
  callout cache: no domain record found for y
@@ -130,7 +130,7 @@ cmd buf flush ddd bytes
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:220'
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
- opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
+ opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
  dbfn_write: key=y datalen nn
  wrote callout cache domain record for y:
    result=1 postmaster=0 random=0
@@ -216,7 +216,7 @@ get[host|ipnode]byname[2] looked up these IP addresses:
 Attempting full verification using callout
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
- opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
+ opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
  dbfn_read: key=y
  dbfn_read: size nnn return
  callout cache: found domain record for y

@@ -121,7 +121,7 @@ if (options & vopt_callout_no_cache)
   {
   HDEBUG(D_verify) debug_printf_indent("callout cache: disabled by no_cache\n");
   }
-else if (!(dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE, TRUE)))
+else if (!(dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE, TRUE)))
   {
   HDEBUG(D_verify) debug_printf_indent("callout cache: not available\n");
   }
@@ -294,7 +294,7 @@ implying some kind of I/O error. We don't want to write the cache in that case.
 Otherwise the value is ccache_accept, ccache_reject, or ccache_reject_mfnull. */
 
 if (dom_rec->result != ccache_unknown)
-  if (!(dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE, TRUE)))
+  if (!(dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE, TRUE)))
     {
     HDEBUG(D_verify) debug_printf_indent("callout cache: not available\n");
     }
@@ -316,7 +316,7 @@ is disabled. */
 if (done  &&  addr_rec->result != ccache_unknown)
   {
   if (!dbm_file)
-    dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE, TRUE);
+    dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE, TRUE);
   if (!dbm_file)
     {
     HDEBUG(D_verify) debug_printf_indent("no callout cache available\n");
@@ -3497,7 +3497,7 @@ dbdata_callout_cache_address * cache_address_record;
 
 if (!pos_cache && !neg_cache)
   return FALSE;
-if (!(dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE, TRUE)))
+if (!(dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE, TRUE)))
   {
   HDEBUG(D_verify) debug_printf_indent("quota cache: not available\n");
   return FALSE;
@@ -3525,7 +3525,7 @@ dbdata_callout_cache_address cache_address_record;
 
 if (!pos_cache && !neg_cache)
   return;
-if (!(dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE, TRUE)))
+if (!(dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE, TRUE)))
   {
   HDEBUG(D_verify) debug_printf_indent("quota cache: not available\n");
   return;

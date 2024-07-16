@@ -3933,7 +3933,7 @@ if (tlsp->host_resumable)
   tlsp->resumption |= RESUME_CLIENT_REQUESTED;
   DEBUG(D_tls)
     debug_printf("checking for resumable session for %s\n", tlsp->resume_index);
-  if ((dbm_file = dbfn_open(US"tls", O_RDWR, &dbblock, FALSE, FALSE)))
+  if ((dbm_file = dbfn_open(US"tls", O_RDWR|O_CREAT, &dbblock, FALSE, FALSE)))
     {
     if ((dt = dbfn_read_with_length(dbm_file, tlsp->resume_index, &len)))
       {
@@ -4016,7 +4016,7 @@ if (SSL_SESSION_is_resumable(ss)) 	/* 1.1.1 */
   dt->ocsp = tlsp->ocsp;
   (void) i2d_SSL_SESSION(ss, &s);		/* s gets bumped to end */
 
-  if ((dbm_file = dbfn_open(US"tls", O_RDWR, &dbblock, FALSE, FALSE)))
+  if ((dbm_file = dbfn_open(US"tls", O_RDWR|O_CREAT, &dbblock, FALSE, FALSE)))
     {
     dbfn_write(dbm_file, tlsp->resume_index, dt, dlen);
     dbfn_close(dbm_file);

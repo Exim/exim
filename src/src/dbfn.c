@@ -128,7 +128,7 @@ return TRUE;
 Arguments:
   name     The single-component name of one of Exim's database files.
   flags    Either O_RDONLY or O_RDWR, indicating the type of open required;
-             O_RDWR implies "create if necessary"
+             optionally O_CREAT
   dbblock  Points to an open_db block to be filled in.
   lof      If TRUE, write to the log for actual open failures (locking failures
            are always logged).
@@ -165,16 +165,16 @@ unnecessarily, because usually the lock file will be there. If the directory
 exists, there is no error. */
 
 dlen = snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
-flen = Ustrlen(name);
-snprintf(CS filename, sizeof(filename), "%.*s/%.*s.lockfile",
-	  (int)sizeof(filename) - dlen - flen - 11, dirname,
-	  flen, name);
 
 dbblock->lockfd = -1;
 if (!exim_lockfile_needed())
   db_dir_make(panic);
 else
   {
+  flen = Ustrlen(name);
+  snprintf(CS filename, sizeof(filename), "%.*s/%.*s.lockfile",
+	    (int)sizeof(filename) - dlen - flen - 11, dirname,
+	    flen, name);
   if (!lockfile_take(dbblock, filename, flags == O_RDONLY, panic))
     {
     DEBUG(D_hints_lookup) acl_level--;
@@ -191,16 +191,15 @@ databases - often this is caused by non-matching db.h and the library. To make
 it easy to pin this down, there are now debug statements on either side of the
 open call. */
 
-flags &= O_RDONLY | O_RDWR;
 snprintf(CS filename, sizeof(filename), "%.*s/%s", dlen, dirname, name);
 
 priv_drop_temp(exim_uid, exim_gid);
-dbblock->dbptr = exim_dbopen(filename, dirname, flags, EXIMDB_MODE);
-if (!dbblock->dbptr && errno == ENOENT && flags == O_RDWR)
+dbblock->dbptr = exim_dbopen(filename, dirname, flags & O_ACCMODE, EXIMDB_MODE);
+if (!dbblock->dbptr && errno == ENOENT && flags & O_CREAT)
   {
   DEBUG(D_hints_lookup)
     debug_printf_indent("%s appears not to exist: trying to create\n", filename);
-  dbblock->dbptr = exim_dbopen(filename, dirname, flags|O_CREAT, EXIMDB_MODE);
+  dbblock->dbptr = exim_dbopen(filename, dirname, flags, EXIMDB_MODE);
   }
 save_errno = errno;
 priv_restore();
@@ -227,10 +226,11 @@ if (!dbblock->dbptr)
   }
 
 DEBUG(D_hints_lookup)
-  debug_printf_indent("opened hints database %s: flags=%s\n", filename,
-    flags == O_RDONLY ? "O_RDONLY"
-    : flags == O_RDWR ? "O_RDWR"
-    : "??");
+  debug_printf_indent("opened hints database %s: flags=%s%s\n", filename,
+    (flags & O_ACCMODE) == O_RDONLY ? "O_RDONLY"
+    : (flags & O_ACCMODE) == O_RDWR ? "O_RDWR"
+    : "??",
+    flags & O_CREAT ? "|O_CREAT" : "");
 
 /* Pass back the block containing the opened database handle and the open fd
 for the lock. */
@@ -260,12 +260,12 @@ dlen = snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
 snprintf(CS filename, sizeof(filename), "%.*s/%s", dlen, dirname, name);
 
 priv_drop_temp(exim_uid, exim_gid);
-dbblock->dbptr = exim_dbopen_multi(filename, dirname, flags, EXIMDB_MODE);
-if (!dbblock->dbptr && errno == ENOENT && flags == O_RDWR)
+dbblock->dbptr = exim_dbopen_multi(filename, dirname, flags & O_ACCMODE, EXIMDB_MODE);
+if (!dbblock->dbptr && errno == ENOENT && flags & O_CREAT)
   {
   DEBUG(D_hints_lookup)
     debug_printf_indent("%s appears not to exist: trying to create\n", filename);
-  dbblock->dbptr = exim_dbopen_multi(filename, dirname, O_RDWR|O_CREAT, EXIMDB_MODE);
+  dbblock->dbptr = exim_dbopen_multi(filename, dirname, flags, EXIMDB_MODE);
   }
 save_errno = errno;
 priv_restore();
@@ -289,8 +289,13 @@ if (!dbblock->dbptr)
   return NULL;
   }
 
-DEBUG(D_hints_lookup) debug_printf_indent(
-    "opened hints database %s for transactions: NOLOCK flags=O_RDWR\n", filename);
+DEBUG(D_hints_lookup)
+  debug_printf_indent("opened hints database %s for transactions: NOLOCK flags=%s%s\n",
+    filename,
+    (flags & O_ACCMODE) == O_RDONLY ? "O_RDONLY"
+    : (flags & O_ACCMODE) == O_RDWR ? "O_RDWR"
+    : "??",
+    flags & O_CREAT ? "|O_CREAT" : "");
 
 /* Pass back the block containing the opened database handle */
 
@@ -660,7 +665,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
       }
 
     start = clock();
-    odb = dbfn_open(s, O_RDWR, dbblock + i, TRUE, TRUE);
+    odb = dbfn_open(s, O_RDWR|O_CREAT, dbblock + i, TRUE, TRUE);
     stop = clock();
 
     if (odb)

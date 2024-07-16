@@ -44,12 +44,9 @@ open_db *dbm_file;
 
 DEBUG(D_transport) debug_printf("check serialized: %s\n", key);
 
-/* Open and lock the waiting information database. The absence of O_CREAT is
-deliberate; the dbfn_open() function - which is an Exim function - always tries
-to create if it can't open a read/write file. It expects only O_RDWR or
-O_RDONLY as its argument. */
+/* Open and lock the waiting information database. */
 
-if (!(dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
+if (!(dbm_file = dbfn_open(US"misc", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)))
   return FALSE;
 
 /* See if there is a record for this host or queue run; if there is, we cannot

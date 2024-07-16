@@ -1516,7 +1516,7 @@ DEBUG(D_transport) debug_printf("updating wait-%s database\n", tpname);
 if ( continue_wait_db
    ? !dbfn_transaction_start(dbp = continue_wait_db)
    : !(dbp = dbfn_open(string_sprintf("wait-%.200s", tpname),
-		      O_RDWR, &dbblock, TRUE, TRUE))
+		      O_RDWR|O_CREAT, &dbblock, TRUE, TRUE))
    )
   return;
 

@@ -3385,7 +3385,7 @@ if (gnutls_session_get_flags(session) & GNUTLS_SFLAGS_SESSION_TICKET)
       memcpy(dt->session, tkt.data, tkt.size);
       gnutls_free(tkt.data);
 
-      if ((dbm_file = dbfn_open(US"tls", O_RDWR, &dbblock, FALSE, FALSE)))
+      if ((dbm_file = dbfn_open(US"tls", O_RDWR|O_CREAT, &dbblock, FALSE, FALSE)))
 	{
 	/* key for the db is the IP */
 	dbfn_write(dbm_file, tlsp->resume_index, dt, dlen);

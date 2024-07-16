@@ -154,7 +154,7 @@ Processing retry items
   x@y
    ╎EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
    ╎returned from EXIM_DBOPEN: 0xAAAAAAAA
-   ╎opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
+   ╎opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR|O_CREAT
    ╎x@y in "*"?
    ╎ list element: *
    ╎ address match test: subject=x@y pattern=*

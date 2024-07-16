@@ -617,7 +617,7 @@ for (int i = 0; i < 3; i++)
         reached their retry next try time. */
 
         if (!dbm_file)
-          dbm_file = dbfn_open(US"retry", O_RDWR, &dbblock, TRUE, TRUE);
+          dbm_file = dbfn_open(US"retry", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE);
 
         if (!dbm_file)
           {

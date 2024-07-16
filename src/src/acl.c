@@ -2584,7 +2584,7 @@ if ((t = tree_search(*anchor, key)))
 /* We aren't using a pre-computed rate, so get a previously recorded rate
 from the database, which will be updated and written back if required. */
 
-if (!(dbm = dbfn_open(US"ratelimit", O_RDWR, &dbblock, TRUE, TRUE)))
+if (!(dbm = dbfn_open(US"ratelimit", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)))
   {
   store_pool = old_pool;
   sender_rate = NULL;
@@ -2966,7 +2966,7 @@ while ((ele = string_nextinlist(&list, &slash, NULL, 0)))
   else
     goto badopt;
 
-if (!(dbm = dbfn_open(US"seen", O_RDWR, &dbblock, TRUE, TRUE)))
+if (!(dbm = dbfn_open(US"seen", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)))
   {
   HDEBUG(D_acl) debug_printf_indent("database for 'seen' not available\n");
   *log_msgptr = US"database for 'seen' not available";
