@@ -79,8 +79,9 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: nofile@test.ex
 unique = nofile@test.ex
-no   domain  retry record
-no   address retry record
+checking router retry status
+ no   domain  retry record
+ no   address retry record
 nofile@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing nofile@test.ex
@@ -268,8 +269,9 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 unique = userx@test.ex
-no   domain  retry record
-no   address retry record
+checking router retry status
+ no   domain  retry record
+ no   address retry record
 userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
@@ -459,8 +461,9 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 unique = userx@test.ex
-no   domain  retry record
-no   address retry record
+checking router retry status
+ no   domain  retry record
+ no   address retry record
 userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
@@ -547,24 +550,24 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   userx@test.ex
-  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
-  returned from EXIM_DBOPEN: 0xAAAAAAAA
-  opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
-  userx@test.ex in "*"?
-   list element: *
-   address match test: subject=userx@test.ex pattern=*
-   test.ex in "*"?
-   ╎list element: *
-   ╎test.ex in "*"? yes (matched "*")
-   userx@test.ex in "*"? yes (matched "*")
-  retry for T:userx@test.ex = * 0 0
-  dbfn_read: key=T:userx@test.ex
-  dbfn_read: null return
-  failing_interval=ttt message_age=ttt
-  Writing retry data for T:userx@test.ex
-    first failed=dddd last try=dddd next try=+86400 expired=0
-    errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
-  dbfn_write: key=T:userx@test.ex datalen nn
+   ╎EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
+   ╎returned from EXIM_DBOPEN: 0xAAAAAAAA
+   ╎opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
+   ╎userx@test.ex in "*"?
+   ╎ list element: *
+   ╎ address match test: subject=userx@test.ex pattern=*
+   ╎ test.ex in "*"?
+   ╎  list element: *
+   ╎  test.ex in "*"? yes (matched "*")
+   ╎ userx@test.ex in "*"? yes (matched "*")
+   ╎retry for T:userx@test.ex = * 0 0
+   ╎dbfn_read: key=T:userx@test.ex
+   ╎dbfn_read: null return
+   ╎failing_interval=ttt message_age=ttt
+   ╎Writing retry data for T:userx@test.ex
+   ╎  first failed=dddd last try=dddd next try=+86400 expired=0
+   ╎  errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
+   ╎dbfn_write: key=T:userx@test.ex datalen nn
   EXIM_DBCLOSE(0xAAAAAAAA)
   closed hints database
 end of retry processing
@@ -658,14 +661,15 @@ Delivery address list:
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 unique = userx@test.ex
- dbfn_read: key=R:test.ex
- dbfn_read: null return
- dbfn_read: key=R:userx@test.ex
- dbfn_read: null return
- dbfn_read: key=R:userx@test.ex:<CALLER@test.ex>
- dbfn_read: null return
-no   domain  retry record
-no   address retry record
+ checking router retry status
+  dbfn_read: key=R:test.ex
+  dbfn_read: null return
+  dbfn_read: key=R:userx@test.ex
+  dbfn_read: null return
+  dbfn_read: key=R:userx@test.ex:<CALLER@test.ex>
+  dbfn_read: null return
+  no   domain  retry record
+  no   address retry record
 userx@test.ex: queued for routing
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database
@@ -746,24 +750,24 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   userx@test.ex
-  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
-  returned from EXIM_DBOPEN: 0xAAAAAAAA
-  opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
-  userx@test.ex in "*"?
-   list element: *
-   address match test: subject=userx@test.ex pattern=*
-   test.ex in "*"?
-   ╎list element: *
-   ╎test.ex in "*"? yes (matched "*")
-   userx@test.ex in "*"? yes (matched "*")
-  retry for T:userx@test.ex = * 0 0
-  dbfn_read: key=T:userx@test.ex
-  dbfn_read: size nnn return
-  failing_interval=ttt message_age=ttt
-  Writing retry data for T:userx@test.ex
-    first failed=dddd last try=dddd next try=+86400 expired=0
-    errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
-  dbfn_write: key=T:userx@test.ex datalen nn
+   ╎EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
+   ╎returned from EXIM_DBOPEN: 0xAAAAAAAA
+   ╎opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
+   ╎userx@test.ex in "*"?
+   ╎ list element: *
+   ╎ address match test: subject=userx@test.ex pattern=*
+   ╎ test.ex in "*"?
+   ╎  list element: *
+   ╎  test.ex in "*"? yes (matched "*")
+   ╎ userx@test.ex in "*"? yes (matched "*")
+   ╎retry for T:userx@test.ex = * 0 0
+   ╎dbfn_read: key=T:userx@test.ex
+   ╎dbfn_read: size nnn return
+   ╎failing_interval=ttt message_age=ttt
+   ╎Writing retry data for T:userx@test.ex
+   ╎  first failed=dddd last try=dddd next try=+86400 expired=0
+   ╎  errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
+   ╎dbfn_write: key=T:userx@test.ex datalen nn
   EXIM_DBCLOSE(0xAAAAAAAA)
   closed hints database
 end of retry processing

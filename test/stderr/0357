@@ -14,8 +14,9 @@ dropping to exim gid; retaining priv uid
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
-no   domain  retry record
-no   address retry record
+checking router retry status
+ no   domain  retry record
+ no   address retry record
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:
@@ -37,11 +38,11 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   userx@test.ex
- retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
- failing_interval=ttt message_age=ttt
- Writing retry data for R:userx@test.ex:<CALLER@test.ex>
-   first failed=dddd last try=dddd next try=+2 expired=0
-   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
+   retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
+   failing_interval=ttt message_age=ttt
+   Writing retry data for R:userx@test.ex:<CALLER@test.ex>
+     first failed=dddd last try=dddd next try=+2 expired=0
+     errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
 >>>>>>>>>>>>>>>> Exim pid=p1238 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=p1237 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -54,8 +55,9 @@ LOG: queue_run MAIN
   Start queue run: pid=p1234
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
-no   domain  retry record
-have address retry record; next_try = now+0
+checking router retry status
+ no   domain  retry record
+ have address retry record; next_try = now+0
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-1 more_errno=dd flags=1
 added retry item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
 added retry item for R:test.ex: errno=-1 more_errno=dd flags=1
@@ -90,13 +92,13 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   userx@test.ex
- deleted retry information for R:userx@test.ex
- deleted retry information for R:test.ex
- retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
- failing_interval=ttt message_age=ttt
- Writing retry data for R:userx@test.ex:<CALLER@test.ex>
-   first failed=dddd last try=dddd next try=+2 expired=0
-   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
+   deleted retry information for R:userx@test.ex
+   deleted retry information for R:test.ex
+   retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
+   failing_interval=ttt message_age=ttt
+   Writing retry data for R:userx@test.ex:<CALLER@test.ex>
+     first failed=dddd last try=dddd next try=+2 expired=0
+     errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
 >>>>>>>>>>>>>>>> Exim pid=p1241 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
@@ -111,8 +113,9 @@ LOG: queue_run MAIN
   Start queue run: pid=p1235
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
-no   domain  retry record
-have address retry record; next_try = now+0
+checking router retry status
+ no   domain  retry record
+ have address retry record; next_try = now+0
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-1 more_errno=dd flags=1
 added retry item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
 added retry item for R:test.ex: errno=-1 more_errno=dd flags=1
@@ -147,13 +150,13 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   userx@test.ex
- deleted retry information for R:userx@test.ex
- deleted retry information for R:test.ex
- retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
- failing_interval=ttt message_age=ttt
- Writing retry data for R:userx@test.ex:<CALLER@test.ex>
-   first failed=dddd last try=dddd next try=+4 expired=0
-   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
+   deleted retry information for R:userx@test.ex
+   deleted retry information for R:test.ex
+   retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
+   failing_interval=ttt message_age=ttt
+   Writing retry data for R:userx@test.ex:<CALLER@test.ex>
+     first failed=dddd last try=dddd next try=+4 expired=0
+     errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
 >>>>>>>>>>>>>>>> Exim pid=p1243 (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
@@ -168,8 +171,9 @@ LOG: queue_run MAIN
   Start queue run: pid=p1236
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
-no   domain  retry record
-have address retry record; next_try = now+0
+checking router retry status
+ no   domain  retry record
+ have address retry record; next_try = now+0
 retry time not reached: checking ultimate address timeout
   now=tttt first_failed=tttt next_try=tttt expired=F
   received_time=tttt diff=tttt timeout=3600

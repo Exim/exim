@@ -577,13 +577,13 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/\d\d-\w\w\w-\d\d\d\d\s\d\d:\d\d:\d\d\s[-+]\d\d\d\d,/06-Sep-1999 15:52:48 +0100,/gx;
 
   # Dates/times in debugging output for writing retry records
-  if (/^(\s+)first failed=(\d+) last try=(\d+) next try=(\d+) (.*)$/)
+  if (/^(.+)first failed=(\d+) last try=(\d+) next try=(\d+) (.*)$/)
     {
     my($next) = $4 - $3;
     $_ = "$1first failed=dddd last try=dddd next try=+$next $5\n";
     }
-  s/^(\s*)now=\d+ first_failed=\d+ next_try=\d+ expired=(\w)/$1now=tttt first_failed=tttt next_try=tttt expired=$2/;
-  s/^(\s*)received_time=\d+ diff=\d+ timeout=(\d+)/$1received_time=tttt diff=tttt timeout=$2/;
+  s/^(.*)now=\d+ first_failed=\d+ next_try=\d+ expired=(\w)/$1now=tttt first_failed=tttt next_try=tttt expired=$2/;
+  s/^(.*)received_time=\d+ diff=\d+ timeout=(\d+)/$1received_time=tttt diff=tttt timeout=$2/;
 
   # Time to retry may vary
   s/time to retry = \S+/time to retry = tttt/;
@@ -1586,8 +1586,8 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
 
     # Specific pointer values reported for DB operations change from run to run
-    s/^(\s*returned from EXIM_DBOPEN: )(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;
-    s/^(\s*EXIM_DBCLOSE.)(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;
+    s/(returned from EXIM_DBOPEN: )(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;
+    s/(EXIM_DBCLOSE.)(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;
 
     # Platform-dependent output during MySQL startup
     next if /PerconaFT file system space/;

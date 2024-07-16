@@ -285,8 +285,9 @@ test.ex in hold_domains?
  cached no match for +hold_domains
 test.ex in hold_domains? no (end of list)
 unique = userx@test.ex
-no   domain  retry record
-no   address retry record
+checking router retry status
+ no   domain  retry record
+ no   address retry record
 userx@test.ex: queued for routing
 test.ex in queue_domains?
  list element: !+not_queue_domains

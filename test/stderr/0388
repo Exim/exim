@@ -14,8 +14,9 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@y
 unique = x@y
-no   domain  retry record
-no   address retry record
+checking router retry status
+ no   domain  retry record
+ no   address retry record
 x@y: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@y
@@ -151,41 +152,41 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   x@y
-  EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
-  returned from EXIM_DBOPEN: 0xAAAAAAAA
-  opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
-  x@y in "*"?
-   list element: *
-   address match test: subject=x@y pattern=*
-   y in "*"?
-   ╎list element: *
-   ╎y in "*"? yes (matched "*")
-   x@y in "*"? yes (matched "*")
-  retry for R:x@y = * 0 0
-  dbfn_read: key=R:x@y
-  dbfn_read: null return
-  failing_interval=ttt message_age=ttt
-  Writing retry data for R:x@y
-    first failed=dddd last try=dddd next try=+1 expired=1
-    errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
-  dbfn_write: key=R:x@y datalen nn
-  *@V4NET.0.0.0 in "*"?
-   list element: *
-   address match test: subject=*@V4NET.0.0.0 pattern=*
-   V4NET.0.0.0 in "*"?
-   ╎list element: *
-   ╎V4NET.0.0.0 in "*"? yes (matched "*")
-   *@V4NET.0.0.0 in "*"? yes (matched "*")
-  retry for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S (y) = * 0 0
-  dbfn_read: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
-  dbfn_read: null return
-  failing_interval=ttt message_age=ttt
-  on queue longer than maximum retry
-  Writing retry data for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
-    first failed=dddd last try=dddd next try=+0 expired=0
-    errno=dd more_errno=dd,A Network Error
-  dbfn_write: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S datalen nn
-  timed out: all retries expired
+   ╎EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
+   ╎returned from EXIM_DBOPEN: 0xAAAAAAAA
+   ╎opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
+   ╎x@y in "*"?
+   ╎ list element: *
+   ╎ address match test: subject=x@y pattern=*
+   ╎ y in "*"?
+   ╎  list element: *
+   ╎  y in "*"? yes (matched "*")
+   ╎ x@y in "*"? yes (matched "*")
+   ╎retry for R:x@y = * 0 0
+   ╎dbfn_read: key=R:x@y
+   ╎dbfn_read: null return
+   ╎failing_interval=ttt message_age=ttt
+   ╎Writing retry data for R:x@y
+   ╎  first failed=dddd last try=dddd next try=+1 expired=1
+   ╎  errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
+   ╎dbfn_write: key=R:x@y datalen nn
+   ╎*@V4NET.0.0.0 in "*"?
+   ╎ list element: *
+   ╎ address match test: subject=*@V4NET.0.0.0 pattern=*
+   ╎ V4NET.0.0.0 in "*"?
+   ╎  list element: *
+   ╎  V4NET.0.0.0 in "*"? yes (matched "*")
+   ╎ *@V4NET.0.0.0 in "*"? yes (matched "*")
+   ╎retry for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S (y) = * 0 0
+   ╎dbfn_read: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
+   ╎dbfn_read: null return
+   ╎failing_interval=ttt message_age=ttt
+   ╎on queue longer than maximum retry
+   ╎Writing retry data for T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S
+   ╎  first failed=dddd last try=dddd next try=+0 expired=0
+   ╎  errno=dd more_errno=dd,A Network Error
+   ╎dbfn_write: key=T:[V4NET.0.0.0]:V4NET.0.0.0:PORT_S datalen nn
+   timed out: all retries expired
 LOG: MAIN
   ** x@y: retry timeout exceeded
   EXIM_DBCLOSE(0xAAAAAAAA)
@@ -268,14 +269,15 @@ set_process_info: pppp delivering 10HmaY-000000005vi-0000
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: CALLER@myhost.test.ex
 unique = CALLER@myhost.test.ex
- dbfn_read: key=R:myhost.test.ex
- dbfn_read: null return
- dbfn_read: key=R:CALLER@myhost.test.ex
- dbfn_read: null return
- dbfn_read: key=R:CALLER@myhost.test.ex:<>
- dbfn_read: null return
-no   domain  retry record
-no   address retry record
+ checking router retry status
+  dbfn_read: key=R:myhost.test.ex
+  dbfn_read: null return
+  dbfn_read: key=R:CALLER@myhost.test.ex
+  dbfn_read: null return
+  dbfn_read: key=R:CALLER@myhost.test.ex:<>
+  dbfn_read: null return
+  no   domain  retry record
+  no   address retry record
 CALLER@myhost.test.ex: queued for routing
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database

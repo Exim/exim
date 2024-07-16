@@ -1724,13 +1724,18 @@ if ( continue_wait_db
    : !(dbp = dbfn_open(string_sprintf("wait-%.200s", transport_name),
 		      O_RDWR, &dbblock, TRUE, TRUE))
    )
+  {
+  DEBUG(D_transport)
+    debug_printf_indent("no messages waiting for %s\n", hostname);
   goto retfalse;
+  }
 
 /* See if there is a record for this host; if not, there's nothing to do. */
 
 if (!(host_record = dbfn_read(dbp, hostname)))
   {
-  DEBUG(D_transport) debug_printf_indent("no messages waiting for %s\n", hostname);
+  DEBUG(D_transport)
+    debug_printf_indent("no messages waiting for %s\n", hostname);
   goto dbclose_false;
   }
 

@@ -2921,7 +2921,7 @@ while (addr_local)
 
     if (dbm_file)
       {
-      dbdata_retry *retry_record = dbfn_read(dbm_file, retry_key);
+      dbdata_retry * retry_record = dbfn_read(dbm_file, retry_key);
 
       /* If there is no retry record, delivery happens. If there is,
       remember it exists so it can be deleted after a successful delivery. */
@@ -7447,7 +7447,10 @@ while (addr_new)           /* Loop until all addresses dealt with */
       continue_retry_db = NULL;
 
     if (continue_retry_db)
+      {
+      DEBUG(D_hints_lookup) debug_printf("using cached retry hintsdb handle\n");
       dbm_file = continue_retry_db;
+      }
     else if (!exim_lockfile_needed() && continue_transport)
       {
       dbm_file = dbfn_open_multi(US"retry", O_RDONLY, &dbblock);
@@ -7703,6 +7706,11 @@ while (addr_new)           /* Loop until all addresses dealt with */
     sender attached, because this form is used by the smtp transport after a
     4xx response to RCPT when address_retry_include_sender is true. */
 
+    DEBUG(D_retry)
+      {
+      debug_printf_indent("checking router retry status\n");
+      acl_level++;
+      }
     addr->domain_retry_key = string_sprintf("R:%s", addr->domain);
     addr->address_retry_key = string_sprintf("R:%s@%s", addr->local_part,
       addr->domain);
@@ -7715,7 +7723,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 	 )
 	{
 	DEBUG(D_deliver|D_retry)
-	  debug_printf("domain retry record present but expired\n");
+	  debug_printf_indent("domain retry record present but expired\n");
         domain_retry_record = NULL;    /* Ignore if too old */
 	}
 
@@ -7725,7 +7733,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 	 )
 	{
 	DEBUG(D_deliver|D_retry)
-	  debug_printf("address retry record present but expired\n");
+	  debug_printf_indent("address retry record present but expired\n");
         address_retry_record = NULL;   /* Ignore if too old */
 	}
 
@@ -7738,7 +7746,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 	   && now - address_retry_record->time_stamp > retry_data_expire)
 	  {
 	  DEBUG(D_deliver|D_retry)
-	    debug_printf("address<sender> retry record present but expired\n");
+	    debug_printf_indent("address<sender> retry record present but expired\n");
           address_retry_record = NULL;   /* Ignore if too old */
 	  }
         }
@@ -7749,18 +7757,19 @@ while (addr_new)           /* Loop until all addresses dealt with */
     DEBUG(D_deliver|D_retry)
       {
       if (!domain_retry_record)
-	debug_printf("no   domain  retry record\n");
+	debug_printf_indent("no   domain  retry record\n");
       else
-	debug_printf("have domain  retry record; next_try = now%+d\n",
+	debug_printf_indent("have domain  retry record; next_try = now%+d\n",
 		      f.running_in_test_harness ? 0 :
 		      (int)(domain_retry_record->next_try - now));
 
       if (!address_retry_record)
-	debug_printf("no   address retry record\n");
+	debug_printf_indent("no   address retry record\n");
       else
-	debug_printf("have address retry record; next_try = now%+d\n",
+	debug_printf_indent("have address retry record; next_try = now%+d\n",
 		      f.running_in_test_harness ? 0 :
 		      (int)(address_retry_record->next_try - now));
+      acl_level--;
       }
 
     /* If we are sending a message down an existing SMTP connection, we must

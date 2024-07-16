@@ -14,8 +14,9 @@ dropping to exim gid; retaining priv uid
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@test.ex
-no   domain  retry record
-no   address retry record
+checking router retry status
+ no   domain  retry record
+ no   address retry record
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail/rmbox
@@ -37,11 +38,11 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   TESTSUITE/test-mail/rmbox
- retry for T:TESTSUITE/test-mail/rmbox:x@test.ex = *@test.ex -22 0
- failing_interval=ttt message_age=ttt
- Writing retry data for T:TESTSUITE/test-mail/rmbox:x@test.ex
-   first failed=dddd last try=dddd next try=+900 expired=0
-   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/rmbox)
+   retry for T:TESTSUITE/test-mail/rmbox:x@test.ex = *@test.ex -22 0
+   failing_interval=ttt message_age=ttt
+   Writing retry data for T:TESTSUITE/test-mail/rmbox:x@test.ex
+     first failed=dddd last try=dddd next try=+900 expired=0
+     errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/rmbox)
   x@test.ex: no retry items
 end of retry processing
 >>>>>>>>>>>>>>>> Exim pid=p1236 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -55,8 +56,9 @@ LOG: queue_run MAIN
   Start queue run: pid=p1234
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@test.ex
-no   domain  retry record
-no   address retry record
+checking router retry status
+ no   domain  retry record
+ no   address retry record
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail/rmbox
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

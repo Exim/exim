@@ -60,8 +60,9 @@
 01:01:01 p1239  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 01:01:01 p1239  Considering: dest@test.ex
 01:01:01 p1239  unique = dest@test.ex
-01:01:01 p1239  no   domain  retry record
-01:01:01 p1239  no   address retry record
+01:01:01 p1239  checking router retry status
+01:01:01 p1239   no   domain  retry record
+01:01:01 p1239   no   address retry record
 01:01:01 p1239  dest@test.ex: queued for routing
 01:01:01 p1239  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 01:01:01 p1239  routing dest@test.ex
@@ -164,8 +165,9 @@
 01:01:01 p1241  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 01:01:01 p1241  Considering: dest2@test.ex
 01:01:01 p1241  unique = dest2@test.ex
-01:01:01 p1241  no   domain  retry record
-01:01:01 p1241  no   address retry record
+01:01:01 p1241  checking router retry status
+01:01:01 p1241   no   domain  retry record
+01:01:01 p1241   no   address retry record
 01:01:01 p1241  dest2@test.ex: queued for routing
 01:01:01 p1241  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 01:01:01 p1241  routing dest2@test.ex

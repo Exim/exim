@@ -554,7 +554,7 @@ retry_update(address_item ** addr_defer, address_item ** addr_failed,
 open_db dbblock, * dbm_file = NULL;
 time_t now = time(NULL);
 
-DEBUG(D_retry) { debug_printf("Processing retry items\n"); acl_level++; }
+DEBUG(D_retry) { debug_printf_indent("Processing retry items\n"); acl_level++; }
 
 /* Three-times loop to handle succeeded, failed, and deferred addresses.
 Deferred addresses must be handled after failed ones, because some may be moved
@@ -567,8 +567,12 @@ for (int i = 0; i < 3; i++)
   address_item ** paddr = i==0 ? addr_succeed : i==1 ? addr_failed : addr_defer;
   address_item ** saved_paddr = NULL;
 
-  DEBUG(D_retry) debug_printf_indent("%s addresses:\n",
-    i == 0 ? "Succeeded" : i == 1 ? "Failed" : "Deferred");
+  DEBUG(D_retry)
+    {
+    debug_printf_indent("%s addresses:\n",
+      i == 0 ? "Succeeded" : i == 1 ? "Failed" : "Deferred");
+    acl_level++;
+    }
 
   /* Loop for each address on the chain. For deferred addresses, the whole
   address times out unless one of its retry addresses has a retry rule that
@@ -589,8 +593,12 @@ for (int i = 0; i < 3; i++)
       int update_count = 0;
       int timedout_count = 0;
 
-      DEBUG(D_retry) debug_printf_indent(" %s%s\n", addr->address,
-       	addr->retries ? "" : ": no retry items");
+      DEBUG(D_retry)
+	{
+	debug_printf_indent("%s%s\n", addr->address,
+			    addr->retries ? "" : ": no retry items");
+	acl_level++;
+	}
 
       /* Loop for each retry item. */
 
@@ -883,6 +891,7 @@ for (int i = 0; i < 3; i++)
         (void)dbfn_write(dbm_file, rti->key, retry_record,
           sizeof(dbdata_retry) + message_length);
         }                            /* Loop for each retry item */
+      DEBUG(D_retry) acl_level--;
 
       /* If all the non-delete retry items are timed out, the address is
       timed out, provided that we didn't skip any hosts because their retry
@@ -957,13 +966,14 @@ for (int i = 0; i < 3; i++)
 
     paddr = &(endaddr->next);         /* Advance to next address */
     }                                 /* Loop for all addresses  */
+  DEBUG(D_retry) acl_level--;
   }                                   /* Loop for succeed, fail, defer */
 
 /* Close and unlock the database */
 
 if (dbm_file) dbfn_close(dbm_file);
 
-DEBUG(D_retry) { acl_level--; debug_printf("end of retry processing\n"); }
+DEBUG(D_retry) { acl_level--; debug_printf_indent("end of retry processing\n"); }
 }
 
 /* End of retry.c */
