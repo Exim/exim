@@ -93,16 +93,17 @@ get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
 Attempting full verification using callout
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
+ hintsdb_open(flags 0x2 mode 0640) No such file or directory
+ returned from EXIM_DBOPEN: (nil)
+ TESTSUITE/spool/db/callout appears not to exist: trying to create
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR|O_CREAT
  returned from EXIM_DBOPEN: 0xAAAAAAAA
- opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
- dbfn_read: key=y
- dbfn_read: null return
- callout cache: no domain record found for y
- dbfn_read: key=x@y
- dbfn_read: null return
- callout cache: no address record found for x@y
- EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database
+dbfn_read: key=y
+dbfn_read: null return
+callout cache: no domain record found for y
+dbfn_read: key=x@y
+dbfn_read: null return
+callout cache: no address record found for x@y
 interface=NULL port=PORT_S
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_S ...
  127.0.0.1 in hosts_try_fastopen?
@@ -130,14 +131,11 @@ cmd buf flush ddd bytes
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:250:QUIT:220'
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
- opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
- dbfn_write: key=y datalen nn
- wrote callout cache domain record for y:
-   result=1 postmaster=0 random=0
- dbfn_write: key=x@y datalen nn
- wrote positive callout cache address record for x@y
- EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database
+dbfn_write: key=y datalen nn
+wrote callout cache domain record for y:
+  result=1 postmaster=0 random=0
+dbfn_write: key=x@y datalen nn
+wrote positive callout cache address record for x@y
 ----------- end verify ------------
 sender x@y verified ok
 accept: condition test succeeded in ACL "mail"
@@ -216,16 +214,13 @@ get[host|ipnode]byname[2] looked up these IP addresses:
 Attempting full verification using callout
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
  returned from EXIM_DBOPEN: 0xAAAAAAAA
- opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
- dbfn_read: key=y
- dbfn_read: size nnn return
- callout cache: found domain record for y
- dbfn_read: key=x@y
- dbfn_read: size nnn return
- callout cache: found address record for x@y
- callout cache: address record is positive
- EXIM_DBCLOSE(0xAAAAAAAA)
- closed hints database
+dbfn_read: key=y
+dbfn_read: size nnn return
+callout cache: found domain record for y
+dbfn_read: key=x@y
+dbfn_read: size nnn return
+callout cache: found address record for x@y
+callout cache: address record is positive
 ----------- end verify ------------
 sender x@y verified ok
 accept: condition test succeeded in ACL "mail"

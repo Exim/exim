@@ -31,7 +31,7 @@ After routing:
   Failed addresses:
   Deferred addresses:
 checking retry status of 127.0.0.1
-no retry data available
+ no retry data available
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 added retry item for R:usery@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:RCPT:451:QUIT+:250'
@@ -95,8 +95,8 @@ After routing:
   Failed addresses:
   Deferred addresses:
 checking retry status of 127.0.0.1
-no host retry record
-no message retry record
+ no host retry record
+ no message retry record
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 added retry item for R:usery@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:451:RCPT:451:QUIT+:250'

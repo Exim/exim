@@ -10,11 +10,11 @@ JH/01 Use fewer forks & execs for sending many messages to a single host.
       we can loop there.  A two-phase queue run will benefit, particularly for
       mailinglist and smarthost cases.
 
-JH/02 Add transaction support for hintsdbs. The sole initial provider is
-      sqlite, and is used for the wait-transport and retry DBs. Transactions
-      imply locking internal to the DB. We no longer need a separate lockfile,
-      can keep the DB handle open for extended periods, yet potentially benefit
-      from concurrency on non-conflicting record uses.
+JH/02 Add transaction support for hintsdbs. The providers supported are tdb and
+      sqlite. Transactions are used for the wait-transport and retry DBs.
+      They imply locking internal to the DB.  We no longer need a separate
+      lockfile, can keep the DB handle open for extended periods, yet
+      potentially benefit from concurrency on non-conflicting record uses.
 
 JH/03 With dkim_verify_minimal, avoid calling the DKIM ACL after the first
       good verify.

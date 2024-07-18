@@ -112,6 +112,25 @@ exit(EXIT_FAILURE);
 
 
 
+/*******************
+*   Debug output   *
+*******************/
+
+unsigned int debug_selector = 0;	/* set -1 for debugging */
+
+void
+debug_printf(const char * fmt, ...)
+{
+va_list ap;
+va_start(ap, fmt); vfprintf(stderr, fmt, ap); va_end(ap);
+}
+void
+debug_printf_indent(const char * fmt, ...)
+{
+va_list ap;
+va_start(ap, fmt); vfprintf(stderr, fmt, ap); va_end(ap);
+}
+
 /*************************************************
 *           Sort out the command arguments       *
 *************************************************/
@@ -287,7 +306,6 @@ dbfn_open(const uschar * name, int flags, open_db * dbblock,
 {
 int rc;
 struct flock lock_data;
-BOOL read_only = (flags & (O_WRONLY|O_RDWR)) == O_RDONLY;
 uschar * dirname, * filename;
 
 /* The first thing to do is to open a separate file on which to lock. This
@@ -301,6 +319,7 @@ if (  asprintf(CSS &dirname, "%s/db", spool_directory) < 0
    || asprintf(CSS &filename, "%s/%s.lockfile", dirname, name) < 0)
   return NULL;
 
+dbblock->readonly = (flags & (O_WRONLY|O_RDWR)) == O_RDONLY;
 dbblock->lockfd = -1;
 if (exim_lockfile_needed())
   {
@@ -314,7 +333,7 @@ if (exim_lockfile_needed())
   /* Now we must get a lock on the opened lock file; do this with a blocking
   lock that times out. */
 
-  lock_data.l_type = read_only ? F_RDLCK : F_WRLCK;
+  lock_data.l_type = dbblock->readonly ? F_RDLCK : F_WRLCK;
   lock_data.l_whence = lock_data.l_start = lock_data.l_len = 0;
 
   sigalrm_seen = FALSE;
@@ -327,7 +346,7 @@ if (exim_lockfile_needed())
   if (rc < 0)
     {
     printf("** Failed to get %s lock for %s: %s",
-      read_only ? "read" : "write",
+      dbblock->readonly ? "read" : "write",
       filename,
       errno == ETIMEDOUT ? "timed out" : strerror(errno));
     (void)close(dbblock->lockfd);
@@ -340,10 +359,12 @@ if (exim_lockfile_needed())
 
 if (asprintf(CSS &filename, "%s/%s", dirname, name) < 0) return NULL;
 
-if (!(dbblock->dbptr = exim_dbopen(filename, dirname, flags, 0)))
+if (!(dbblock->dbptr = dbblock->readonly && !exim_lockfile_needed()
+		      ? exim_dbopen_multi(filename, dirname, flags, 0)
+		      : exim_dbopen(filename, dirname, flags, 0)))
   {
   printf("** Failed to open hintsdb file %s for %s: %s%s\n", filename,
-    read_only ? "reading" : "writing", strerror(errno),
+    dbblock->readonly ? "reading" : "writing", strerror(errno),
 #ifdef USE_DB
     " (or Berkeley DB error while opening)"
 #else
@@ -374,8 +395,13 @@ Returns:  nothing
 void
 dbfn_close(open_db * dbp)
 {
-exim_dbclose(dbp->dbptr);
-if (dbp->lockfd >= 0) (void) close(dbp->lockfd);
+if (dbp->readonly && !exim_lockfile_needed())
+  exim_dbclose_multi(dbp->dbptr);
+else
+  exim_dbclose(dbp->dbptr);
+
+if (dbp->lockfd >= 0)
+  (void) close(dbp->lockfd);
 }
 
 
@@ -422,6 +448,7 @@ we should store the taint status along with the data. */
 dlen = exim_datum_size_get(&result_datum);
 yield = store_get(dlen, GET_TAINTED);
 memcpy(yield, exim_datum_data_get(&result_datum), dlen);
+DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: size %u return\n", dlen);
 if (length) *length = dlen;
 
 exim_datum_free(&result_datum);    /* Some DBM libs require freeing */

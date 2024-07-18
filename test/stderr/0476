@@ -125,7 +125,7 @@ t1 transport entered
 hostlist:
   '127.0.0.1' IP 127.0.0.1 port -1
 checking retry status of 127.0.0.1
-no message retry record
+ no message retry record
 127.0.0.1 [127.0.0.1]:1111 retry-status = unusable
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database

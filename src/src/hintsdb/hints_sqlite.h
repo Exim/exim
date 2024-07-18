@@ -35,11 +35,12 @@ return FALSE;	/* We do transaction; no extra locking needed */
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 static inline EXIM_DB *
-exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
+exim_dbopen_multi__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
 EXIM_DB * dbp;
 int ret, sflags = flags & O_RDWR ? SQLITE_OPEN_READWRITE : SQLITE_OPEN_READONLY;
+
 if (flags & O_CREAT) sflags |= SQLITE_OPEN_CREATE;
 if ((ret = sqlite3_open_v2(CCS name, &dbp, sflags, NULL)) == SQLITE_OK)
   {
@@ -51,8 +52,9 @@ if ((ret = sqlite3_open_v2(CCS name, &dbp, sflags, NULL)) == SQLITE_OK)
   if (ret != SQLITE_OK)
     sqlite3_close(dbp);
   }
-//else
-//  fprintf(stderr, "sqlite3_open_v2: %s\n", sqlite3_errmsg(dbp));
+else DEBUG(D_hints_lookup)
+  debug_printf_indent("sqlite_open(flags 0x%x mode %04o) %s\n",
+		      flags, mode, sqlite3_errmsg(dbp));
 return ret == SQLITE_OK ? dbp : NULL;
 }
 
@@ -286,7 +288,7 @@ store_free(cursor);
 
 /* EXIM_DBCLOSE */
 static inline void
-exim_dbclose_multi(EXIM_DB * dbp)
+exim_dbclose_multi__(EXIM_DB * dbp)
 {
 sqlite3_close(dbp);
 }

@@ -88,6 +88,27 @@ if it is made static. */
 const uschar *hex_digits = CUS"0123456789abcdef";
 
 
+/*******************
+*   Debug output   *
+*******************/
+
+unsigned int debug_selector = 0;	/* set -1 for debugging */
+
+void
+debug_printf(const char * fmt, ...)
+{
+va_list ap;
+va_start(ap, fmt); vfprintf(stderr, fmt, ap); va_end(ap);
+}
+void
+debug_printf_indent(const char * fmt, ...)
+{
+va_list ap;
+va_start(ap, fmt); vfprintf(stderr, fmt, ap); va_end(ap);
+}
+
+
+
 #ifdef STRERROR_FROM_ERRLIST
 /* Some old-fashioned systems still around (e.g. SunOS4) don't have strerror()
 in their libraries, but can provide the same facility by this simple

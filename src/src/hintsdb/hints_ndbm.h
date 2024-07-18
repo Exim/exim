@@ -36,9 +36,9 @@ return TRUE;
 }
 
 static inline EXIM_DB *
-exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
+exim_dbopen_multi__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode) { return NULL; }
-static inline void exim_dbclose_multi(EXIM_DB * dbp) {}
+static inline void exim_dbclose_multi__(EXIM_DB * dbp) {}
 static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
 static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
 
@@ -54,9 +54,10 @@ exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
 struct stat st;
 if (!(flags & O_CREAT) || lstat(CCS name, &st) != 0 && errno == ENOENT)
   return dbm_open(CS name, flags, mode);
-#ifndef COMPILE_UTILITY
-debug_printf("%s %d errno %s\n", __FUNCTION__, __LINE__, strerror(errno));
-#endif
+
+DEBUG(D_hints_lookup)
+  debug_printf_indent("ndbm_open(flags 0x%x mode %04o) %s\n",
+	      flags, mode, strerror(errno));
 errno = (st.st_mode & S_IFMT) == S_IFDIR ? EISDIR : EEXIST;
 return NULL;
 }

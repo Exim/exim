@@ -513,23 +513,31 @@ for (int i = queue_run_in_order ? -1 : 0;
           (double)load_average/1000.0,
           (double)deliver_queue_load_max/1000.0);
 
-    /* If initial of a 2-phase run, maintain a set of child procs
-    to get disk parallelism */
+    /* If initial of a 2-phase run (and not under the test-harness)
+    maintain a set of child procs to get disk parallelism */
 
     if (q->queue_2stage && !queue_run_in_order)
       {
       int i;
-      if (qpid[f.running_in_test_harness ? 0 : nelem(qpid) - 1])
-	{
-	DEBUG(D_queue_run) debug_printf("q2stage waiting for child %d\n", (int)qpid[0]);
+      if (qpid[
+#ifndef MEASURE_TIMING
+	      f.running_in_test_harness ? 0 :
+#endif
+	      nelem(qpid) - 1])
+	{		/* The child table is maxed out; wait for the oldest */
+	DEBUG(D_queue_run)
+	  debug_printf("q2stage waiting for child %d\n", (int)qpid[0]);
 	waitpid(qpid[0], NULL, 0);
-	DEBUG(D_queue_run) debug_printf("q2stage reaped child %d\n", (int)qpid[0]);
-	if (f.running_in_test_harness) i = 0;
-	else for (i = 0; i < nelem(qpid) - 1; i++) qpid[i] = qpid[i+1];
+	DEBUG(D_queue_run)
+	  debug_printf("q2stage reaped child %d\n", (int)qpid[0]);
+#ifndef MEASURE_TIMING
+	if (f.running_in_test_harness) i = 0; else
+#endif
+	  for (i = 0; i < nelem(qpid) - 1; i++) qpid[i] = qpid[i+1];
 	qpid[i] = 0;
 	}
       else
-	for (i = 0; qpid[i]; ) i++;
+	for (i = 0; qpid[i]; ) i++;		/* find first spare slot */
       if ((qpid[i] = exim_fork(US"qrun-phase-one")))
 	continue;	/* parent loops around */
       }
@@ -565,7 +573,8 @@ for (int i = queue_run_in_order ? -1 : 0;
       follow. If the message is chosen for delivery, the header is read again
       in the deliver_message() function, in a subprocess. */
 
-      if (spool_read_header(fq->text, FALSE, TRUE) != spool_read_OK) goto go_around;
+      if (spool_read_header(fq->text, FALSE, TRUE) != spool_read_OK)
+	goto go_around;
       f.dont_deliver = orig_dont_deliver;
 
       /* Now decide if we want to deliver this message. As we have read the
@@ -739,6 +748,7 @@ single_item_retry:
     set_process_info("running queue");
 
     /* If initial of a 2-phase run, we are a child - so just exit */
+
     if (q->queue_2stage && !queue_run_in_order)
       exim_exit(EXIT_SUCCESS);
 

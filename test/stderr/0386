@@ -312,9 +312,6 @@ body_linecount=1 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   2@b 
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
- returned from EXIM_DBOPEN: (nil)
- failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: 2@b
@@ -348,9 +345,6 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> 2@b <--------
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
- returned from EXIM_DBOPEN: (nil)
- failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to 2 <2@b> transport=t1
@@ -508,9 +502,6 @@ body_linecount=1 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   2@b 
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
- returned from EXIM_DBOPEN: (nil)
- failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: 2@b
@@ -544,9 +535,6 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> 2@b <--------
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
- returned from EXIM_DBOPEN: (nil)
- failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to 2 <2@b> transport=t1

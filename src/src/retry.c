@@ -153,18 +153,22 @@ retry_check_address(const uschar *domain, host_item *host, uschar *portstring,
 BOOL yield = FALSE;
 time_t now = time(NULL);
 const uschar * host_key, * message_key;
-open_db dbblock, * dbm_file;
+open_db dbblock, * dbm_file = NULL;
 tree_node * node;
 dbdata_retry * host_retry_record, * message_retry_record;
 
 *retry_host_key = *retry_message_key = NULL;
 
-DEBUG(D_transport|D_retry) debug_printf("checking retry status of %s\n", host->name);
-
 /* Do nothing if status already set; otherwise initialize status as usable. */
 
 if (host->status != hstatus_unknown) return FALSE;
 host->status = hstatus_usable;
+
+DEBUG(D_transport|D_retry)
+  {
+  debug_printf_indent("checking retry status of %s\n", host->name);
+  acl_level++;
+  }
 
 /* Generate the host key for the unusable tree and the retry database. Ensure
 host names are lower cased (that's what %S does).
@@ -182,11 +186,12 @@ the retry database when it is updated). */
 
 if ((node = tree_search(tree_unusable, host_key)))
   {
-  DEBUG(D_transport|D_retry) debug_printf("found in tree of unusables\n");
-  host->status = (node->data.val > 255)?
-    hstatus_unusable_expired : hstatus_unusable;
+  DEBUG(D_transport|D_retry)
+    debug_printf_indent("found in tree of unusables\n");
+  host->status = node->data.val > 255
+    ? hstatus_unusable_expired : hstatus_unusable;
   host->why = node->data.val & 255;
-  return FALSE;
+  goto out;
   }
 
 /* Open the retry database, giving up if there isn't one. Otherwise, search for
@@ -194,40 +199,49 @@ the retry records, and then close the database again. */
 
 if (!continue_retry_db)
   dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE);
-else if ((dbm_file = continue_retry_db) == (open_db *)-1)
-  dbm_file = NULL;
+else if (continue_retry_db != (open_db *)-1)
+  {
+  DEBUG(D_hints_lookup)
+    debug_printf_indent(" using cached retry hintsdb handle\n");
+  dbm_file = continue_retry_db;
+  }
+else DEBUG(D_hints_lookup)
+    debug_printf_indent(" using cached retry hintsdb nonpresence\n");
 
 if (!dbm_file)
   {
   DEBUG(D_deliver|D_retry|D_hints_lookup)
-    debug_printf("no retry data available\n");
-  return FALSE;
+    debug_printf_indent("no retry data available\n");
+  goto out;
   }
 host_retry_record = dbfn_read(dbm_file, host_key);
 message_retry_record = dbfn_read(dbm_file, message_key);
 if (!continue_retry_db)
   dbfn_close(dbm_file);
+else
+  DEBUG(D_hints_lookup) debug_printf_indent("retaining retry hintsdb handle\n");
 
 /* Ignore the data if it is too old - too long since it was written */
 
 if (!host_retry_record)
   {
-  DEBUG(D_transport|D_retry) debug_printf("no host retry record\n");
+  DEBUG(D_transport|D_retry) debug_printf_indent("no host retry record\n");
   }
 else if (now - host_retry_record->time_stamp > retry_data_expire)
   {
   host_retry_record = NULL;
-  DEBUG(D_transport|D_retry) debug_printf("host retry record too old\n");
+  DEBUG(D_transport|D_retry) debug_printf_indent("host retry record too old\n");
   }
 
 if (!message_retry_record)
   {
-  DEBUG(D_transport|D_retry) debug_printf("no message retry record\n");
+  DEBUG(D_transport|D_retry) debug_printf_indent("no message retry record\n");
   }
 else if (now - message_retry_record->time_stamp > retry_data_expire)
   {
   message_retry_record = NULL;
-  DEBUG(D_transport|D_retry) debug_printf("message retry record too old\n");
+  DEBUG(D_transport|D_retry)
+    debug_printf_indent("message retry record too old\n");
   }
 
 /* If there's a host-specific retry record, check for reaching the retry
@@ -249,7 +263,7 @@ if (host_retry_record)
     if (!host_retry_record->expired &&
         retry_ultimate_address_timeout(host_key, domain,
           host_retry_record, now))
-      return FALSE;
+      goto out;
 
     /* We have not hit the ultimate address timeout; host is unusable. */
 
@@ -257,7 +271,7 @@ if (host_retry_record)
       hstatus_unusable_expired : hstatus_unusable;
     host->why = hwhy_retry;
     host->last_try = host_retry_record->last_try;
-    return FALSE;
+    goto out;
     }
 
   /* Host is usable; set return TRUE if expired. */
@@ -280,10 +294,12 @@ if (message_retry_record)
       host->status = hstatus_unusable;
       host->why = hwhy_retry;
       }
-    return FALSE;
+    yield = FALSE; goto out;
     }
   }
 
+out:
+DEBUG(D_transport|D_retry) acl_level--;
 return yield;
 }
 
@@ -531,6 +547,7 @@ return yield;
 /* Update the retry data for any directing/routing/transporting that was
 deferred, or delete it for those that succeeded after a previous defer. This is
 done all in one go to minimize opening/closing/locking of the database file.
+Called (only) from deliver_message().
 
 Note that, because SMTP delivery involves a list of destinations to try, there
 may be defer-type retry information for some of them even when the message was
@@ -590,8 +607,7 @@ for (int i = 0; i < 3; i++)
 
     for (addr = endaddr; addr; addr = addr->parent)
       {
-      int update_count = 0;
-      int timedout_count = 0;
+      int update_count = 0, timedout_count = 0;
 
       DEBUG(D_retry)
 	{
@@ -617,14 +633,20 @@ for (int i = 0; i < 3; i++)
         reached their retry next try time. */
 
         if (!dbm_file)
-          dbm_file = dbfn_open(US"retry", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE);
-
-        if (!dbm_file)
-          {
-          DEBUG(D_deliver|D_retry|D_hints_lookup)
-            debug_printf_indent("retry database not available for updating\n");
-          return;
-          }
+	  if (continue_retry_db && continue_retry_db != (open_db *)-1)
+	    {
+	    DEBUG(D_hints_lookup)
+	      debug_printf_indent("using cached retry hintsdb handle\n");
+	    dbm_file = continue_retry_db;
+	    }
+	  else if (!(dbm_file = exim_lockfile_needed()
+		    ? dbfn_open(US"retry", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)
+		    : dbfn_open_multi(US"retry", O_RDWR|O_CREAT, &dbblock)))
+	    {
+	    DEBUG(D_deliver|D_retry|D_hints_lookup)
+	      debug_printf_indent("retry db not available for updating\n");
+	    return;
+	    }
 
         /* If there are no deferred addresses, that is, if this message is
         completing, and the retry item is for a message-specific SMTP error,
@@ -698,6 +720,12 @@ for (int i = 0; i < 3; i++)
 				message_length, EXIM_DB_RLIMIT);
 	  message_length = EXIM_DB_RLIMIT;
 	  }
+
+	/* For a transaction-capable DB, open one for the read,write
+	sequence used for this retry record */
+
+	if (!exim_lockfile_needed())
+	  dbfn_transaction_start(dbm_file);
 
         /* Read a retry record from the database or construct a new one.
         Ignore an old one if it is too old since it was last updated. */
@@ -888,8 +916,12 @@ for (int i = 0; i < 3; i++)
           debug_printf(" %s\n", retry_record->text);
           }
 
-        (void)dbfn_write(dbm_file, rti->key, retry_record,
-          sizeof(dbdata_retry) + message_length);
+        if (dbfn_write(dbm_file, rti->key, retry_record,
+		      sizeof(dbdata_retry) + message_length) != 0)
+	  DEBUG(D_retry) debug_printf_indent("retry record write failed\n");
+
+	if (!exim_lockfile_needed())
+	  dbfn_transaction_commit(dbm_file);
         }                            /* Loop for each retry item */
       DEBUG(D_retry) acl_level--;
 
@@ -971,9 +1003,17 @@ for (int i = 0; i < 3; i++)
 
 /* Close and unlock the database */
 
-if (dbm_file) dbfn_close(dbm_file);
+if (dbm_file)
+  if (dbm_file != continue_retry_db)
+      if (exim_lockfile_needed())
+	dbfn_close(dbm_file);
+      else
+	dbfn_close_multi(dbm_file);
+  else DEBUG(D_hints_lookup)
+    debug_printf_indent("retaining retry hintsdb handle\n");
 
-DEBUG(D_retry) { acl_level--; debug_printf_indent("end of retry processing\n"); }
+DEBUG(D_retry)
+  { acl_level--; debug_printf_indent("end of retry processing\n"); }
 }
 
 /* End of retry.c */

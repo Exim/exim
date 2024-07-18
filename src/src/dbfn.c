@@ -38,8 +38,14 @@ are separate open and close functions. However, the calling modules should
 arrange to hold the locks for the bare minimum of time.
 
 API:
-  dbfn_open
-  dbfn_close
+  exim_lockfile_needed			facilities predicate
+  dbfn_open				takes lockfile or opens transaction
+  dbfn_open_multi			only if transactions supported;
+					no lock or transaction taken
+  dbfn_close				release lockfile or transaction
+  dbfn_close_multi
+  dbfn_transaction_start		only if transactions supported
+  dbfn_transaction_commit
   dbfn_read_with_length
   dbfn_read_enforce_length
   dbfn_write
@@ -166,6 +172,7 @@ exists, there is no error. */
 
 dlen = snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
 
+dbblock->readonly = (flags & O_ACCMODE) == O_RDONLY;
 dbblock->lockfd = -1;
 if (!exim_lockfile_needed())
   db_dir_make(panic);
@@ -194,7 +201,10 @@ open call. */
 snprintf(CS filename, sizeof(filename), "%.*s/%s", dlen, dirname, name);
 
 priv_drop_temp(exim_uid, exim_gid);
-dbblock->dbptr = exim_dbopen(filename, dirname, flags & O_ACCMODE, EXIMDB_MODE);
+dbblock->dbptr = dbblock->readonly && !exim_lockfile_needed()
+  ? exim_dbopen_multi(filename, dirname, flags & O_ACCMODE, EXIMDB_MODE)
+  : exim_dbopen(filename, dirname, flags & O_ACCMODE, EXIMDB_MODE);
+
 if (!dbblock->dbptr && errno == ENOENT && flags & O_CREAT)
   {
   DEBUG(D_hints_lookup)
@@ -220,21 +230,13 @@ if (!dbblock->dbptr)
           filename));
   (void)close(dbblock->lockfd);
   dbblock->lockfd = -1;
-  errno = save_errno;
-  DEBUG(D_hints_lookup) acl_level--;
-  return NULL;
+  dbblock = NULL;
   }
-
-DEBUG(D_hints_lookup)
-  debug_printf_indent("opened hints database %s: flags=%s%s\n", filename,
-    (flags & O_ACCMODE) == O_RDONLY ? "O_RDONLY"
-    : (flags & O_ACCMODE) == O_RDWR ? "O_RDWR"
-    : "??",
-    flags & O_CREAT ? "|O_CREAT" : "");
 
 /* Pass back the block containing the opened database handle and the open fd
 for the lock. */
 
+DEBUG(D_hints_lookup) acl_level--;
 return dbblock;
 }
 
@@ -284,21 +286,11 @@ if (!dbblock->dbptr)
     DEBUG(D_hints_lookup)
       debug_printf_indent("%s\n", CS string_open_failed("DB file %s",
           filename));
-  errno = save_errno;
-  DEBUG(D_hints_lookup) acl_level--;
-  return NULL;
+  dbblock =  NULL;
   }
 
-DEBUG(D_hints_lookup)
-  debug_printf_indent("opened hints database %s for transactions: NOLOCK flags=%s%s\n",
-    filename,
-    (flags & O_ACCMODE) == O_RDONLY ? "O_RDONLY"
-    : (flags & O_ACCMODE) == O_RDWR ? "O_RDWR"
-    : "??",
-    flags & O_CREAT ? "|O_CREAT" : "");
-
 /* Pass back the block containing the opened database handle */
-
+DEBUG(D_hints_lookup) acl_level--;
 return dbblock;
 }
 
@@ -307,13 +299,13 @@ BOOL
 dbfn_transaction_start(open_db * dbp)
 {
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_transaction_start\n");
-return exim_dbtransaction_start(dbp->dbptr);
+if (!dbp->readonly) return exim_dbtransaction_start(dbp->dbptr);
 }
 void
 dbfn_transaction_commit(open_db * dbp)
 {
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_transaction_commit\n");
-exim_dbtransaction_commit(dbp->dbptr);
+if (!dbp->readonly) exim_dbtransaction_commit(dbp->dbptr);
 }
 
 
@@ -334,14 +326,15 @@ dbfn_close(open_db * dbp)
 {
 int * fdp = &dbp->lockfd;
 
-exim_dbclose(dbp->dbptr);
+if (dbp->readonly && !exim_lockfile_needed())
+  exim_dbclose_multi(dbp->dbptr);
+else
+  exim_dbclose(dbp->dbptr);
+
 if (*fdp >= 0) (void)close(*fdp);
 DEBUG(D_hints_lookup)
-  {
   debug_printf_indent("closed hints database%s\n",
 		      *fdp < 0 ? "" : " and lockfile");
-  acl_level--;
-  }
 *fdp = -1;
 }
 
@@ -351,10 +344,7 @@ dbfn_close_multi(open_db * dbp)
 {
 exim_dbclose_multi(dbp->dbptr);
 DEBUG(D_hints_lookup)
-  {
   debug_printf_indent("closed hints database\n");
-  acl_level--;
-  }
 }
 
 

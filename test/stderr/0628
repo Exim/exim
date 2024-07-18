@@ -53,9 +53,6 @@
 01:01:01 p1239  DSN: set orcpt:   flags: 0x0
 01:01:01 p1239  Delivery address list:
 01:01:01 p1239    dest@test.ex 
-01:01:01 p1239   EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-01:01:01 p1239   returned from EXIM_DBOPEN: (nil)
-01:01:01 p1239   failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 01:01:01 p1239  no retry data available
 01:01:01 p1239  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 01:01:01 p1239  Considering: dest@test.ex
@@ -158,9 +155,6 @@
 01:01:01 p1241  DSN: set orcpt:   flags: 0x0
 01:01:01 p1241  Delivery address list:
 01:01:01 p1241    dest2@test.ex 
-01:01:01 p1241   EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-01:01:01 p1241   returned from EXIM_DBOPEN: (nil)
-01:01:01 p1241   failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 01:01:01 p1241  no retry data available
 01:01:01 p1241  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 01:01:01 p1241  Considering: dest2@test.ex

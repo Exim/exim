@@ -41,9 +41,9 @@ return TRUE;
 }
 
 static inline EXIM_DB *
-exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
+exim_dbopen_multi__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode) { return NULL; }
-static inline void exim_dbclose_multi(EXIM_DB * dbp) {}
+static inline void exim_dbclose_multi__(EXIM_DB * dbp) {}
 static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
 static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
 
@@ -60,7 +60,12 @@ if (dbp)
     flags & O_CREAT ? GDBM_WRCREAT
     : flags & (O_RDWR|O_WRONLY) ? GDBM_WRITER : GDBM_READER,
     mode, 0);
-  if (dbp->gdbm) return dbp;
+  if (dbp->gdbm)
+    return dbp;
+
+  DEBUG(D_hints_lookup)
+    debug_printf_indent("gdbm_open(flags 0x%x mode %04o) %s\n",
+	      flags, mode, strerror(errno));
   free(dbp);
   }
 return NULL;

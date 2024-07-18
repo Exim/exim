@@ -21,6 +21,7 @@ that relates to it. */
 typedef struct {
   void *	dbptr;
   int		lockfd;
+  BOOL		readonly;
 } open_db;
 
 

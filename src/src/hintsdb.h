@@ -25,7 +25,11 @@ The API is:
   Functions:
     exim_lockfile_needed 	API semantics predicate
     exim_dbopen
+    exim_dbopen_multi		only for no-lockfile-needed
     exim_dbclose
+    exim_dbclose_multi		only for no-lockfile-needed
+    exim_dbtransaction_start	only for no-lockfile-needed
+    exim_dbtransaction_commit	only for no-lockfile-needed
     exim_dbget
     exim_dbput
     exim_dbputb			non-overwriting put
@@ -66,6 +70,9 @@ required by Exim's process transitions)?
 #ifndef HINTSDB_H
 #define HINTSDB_H
 
+/* Include file ordering problem */
+extern void    debug_printf_indent(const char *, ...) PRINTF_FUNCTION(1,2);
+
 
 #ifdef USE_SQLITE
 # if defined(USE_DB) || defined(USE_GDBM) || defined(USE_TDB)
@@ -103,20 +110,6 @@ the default is the NDBM interface (which seems to be a wrapper for GDBM) */
 
 
 
-#if defined(COMPILE_UTILITY) || defined(MACRO_PREDEF)
-
-static inline EXIM_DB *
-exim_dbopen(const uschar * name, const uschar * dirname, int flags,
-  unsigned mode)
-{
-return exim_dbopen__(name, dirname, flags, mode);
-}
-
-static inline void
-exim_dbclose(EXIM_DB * dbp)
-{ exim_dbclose__(dbp); }
-
-#else	/*  exim mainline code */
 
 /* Wrappers for open/close with debug tracing */
 
@@ -147,14 +140,43 @@ DEBUG(D_hints_lookup) debug_printf_indent("returned from EXIM_DBOPEN: %p\n", dbp
 return dbp;
 }
 
+static inline EXIM_DB *
+exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
+  unsigned mode)
+{
+void * dbp;
+DEBUG(D_hints_lookup)
+  debug_printf_indent("EXIM_DBOPEN_MULTI: file <%s> dir <%s> flags=%s\n",
+    name, dirname,
+    flags == O_RDONLY ? "O_RDONLY"
+    : flags == O_RDWR ? "O_RDWR"
+    : flags == (O_RDWR|O_CREAT) ? "O_RDWR|O_CREAT"
+    : "??");
+if (is_tainted(name) || is_tainted(dirname))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "Tainted name for DB file not permitted");
+  dbp = NULL;
+  }
+else
+  dbp = exim_dbopen_multi__(name, dirname, flags, mode);
+
+DEBUG(D_hints_lookup) debug_printf_indent("returned from EXIM_DBOPEN_MULTI: %p\n", dbp);
+return dbp;
+}
+
 static inline void
 exim_dbclose(EXIM_DB * dbp)
 {
 DEBUG(D_hints_lookup) debug_printf_indent("EXIM_DBCLOSE(%p)\n", dbp);
 exim_dbclose__(dbp);
 }
+static inline void
+exim_dbclose_multi(EXIM_DB * dbp)
+{
+DEBUG(D_hints_lookup) debug_printf_indent("EXIM_DBCLOSE_MULTI(%p)\n", dbp);
+exim_dbclose_multi__(dbp);
+}
 
-#endif		/* defined(COMPILE_UTILITY) || defined(MACRO_PREDEF) */
 
 /********************* End of dbm library definitions **********************/
 

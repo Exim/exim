@@ -1178,6 +1178,30 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /lock(?:ing|ed) .*\/spool\/db\/[^.]+\.lockfile$/;
     s/closed hints database\K and lockfile$//;
 
+    # Hints DBs with transactions are provider-dependent, and flow changes
+    # to take advantage of them need different opens and different flags.
+    # Drop all the debug output for opens and closes.
+    if (/EXIM_DBOPEN(_MULTI)?: file <.*spool\/db\/retry>/)
+      {
+      $_ = <IN>;
+      next if (/returned from EXIM_DBOPEN(_MULTI)?: 0x[[:xdigit:]]+$/);
+      $_ = <IN>;
+      <IN> if (/returned from EXIM_DBOPEN(_MULTI)?: \(nil\)$/);
+      next;
+      }
+    if (/EXIM_DBCLOSE(_MULTI)?/) { <IN>; next; }
+    next if /retaining retry hintsdb handle$/;
+    next if /using cached retry hintsdb (?:handle|nonpresence)$/;
+    if (/final close of cached retry db$/) { <IN>; <IN>; next; }
+    next if /dbfn_transaction_(?:start|commit)$/;
+
+    # Various hintsdb backends
+    s/(?:bdb|tdb|gdbm|ndbm|sqlite)
+      _open\(flags\ 0x(\d)
+      \ mode\ 0640\)
+      (?=\ No\ such\ file\ or\ directory$)
+     /hintsdb_open(flags 0x$1 mode 0640)/x;
+
     # Lines with a leading pid.  Only handle >= 4-digit PIDs to avoid converting SMTP respose codes
     s/^\s*(\d{4,})\s(?!(?:previous message|in\s|bytes remain in|SMTP accept process running))/new_value($1, "p%s", \$next_pid) . ' '/e;
 
@@ -1389,19 +1413,6 @@ RESET_AFTER_EXTRA_LINE_READ:
     # to load, there will be an extra debug line. Omit it.
 
     next if /failed to load readline:/;
-
-    # Some DBM libraries seem to make DBM files on opening with O_RDWR without
-    # O_CREAT; other's don't. In the latter case there is some debugging output
-    # which is not present in the former. Skip the relevant lines (there are
-    # three of them).
-
-    if (/returned from EXIM_DBOPEN: \(nil\)/)
-      {
-      $_ .= <IN>;
-      s?\Q$parm_cwd\E?TESTSUITE?g;
-      if (/TESTSUITE\/spool\/db\/\S+ appears not to exist: trying to create/)
-	{ $_ = <IN>; next; }
-      }
 
     # Some tests turn on +expand debugging to check on expansions.
     # Unfortunately, the Received: expansion varies, depending on whether TLS

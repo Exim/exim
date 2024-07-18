@@ -72,9 +72,6 @@ body_linecount=0 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   userx@test.ex 
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
- returned from EXIM_DBOPEN: (nil)
- failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -160,9 +157,6 @@ r2 router generated TESTSUITE/test-mail/junk
 routed by r2 router
   envelope to: userx@test.ex
   transport: <none>
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
- returned from EXIM_DBOPEN: (nil)
- failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail/junk
@@ -178,9 +172,6 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> TESTSUITE/test-mail/junk <--------
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
- returned from EXIM_DBOPEN: (nil)
- failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail/junk> transport=t1
@@ -311,9 +302,6 @@ body_linecount=0 message_linecount=8
 DSN: set orcpt:   flags: 0x0
 Delivery address list:
   charlie@dom1.ain 
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
- returned from EXIM_DBOPEN: (nil)
- failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: charlie@dom1.ain
@@ -377,9 +365,6 @@ r1 router generated TESTSUITE/test-mail/junk
 routed by r1 router
   envelope to: charlie@dom1.ain
   transport: <none>
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
- returned from EXIM_DBOPEN: (nil)
- failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail/junk
@@ -395,9 +380,6 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> TESTSUITE/test-mail/junk <--------
- EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
- returned from EXIM_DBOPEN: (nil)
- failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail/junk> transport=t1

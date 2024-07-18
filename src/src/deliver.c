@@ -2896,7 +2896,12 @@ while (addr_local)
   of these checks, rather than for all local deliveries, because some local
   deliveries (e.g. to pipes) can take a substantial time. */
 
-  if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
+  if (continue_retry_db && continue_retry_db != (open_db *)-1)
+    {
+    DEBUG(D_hints_lookup) debug_printf("using cached retry hintsdb handle\n");
+    dbm_file = continue_retry_db;
+    }
+  else if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
     DEBUG(D_deliver|D_retry|D_hints_lookup)
       debug_printf("no retry data available\n");
 
@@ -2905,61 +2910,66 @@ while (addr_local)
   while (addr2)
     {
     BOOL ok = TRUE;   /* to deliver this address */
-    uschar *retry_key;
 
-    /* Set up the retry key to include the domain or not, and change its
-    leading character from "R" to "T". Must make a copy before doing this,
-    because the old key may be pointed to from a "delete" retry item after
-    a routing delay. */
-
-    retry_key = string_copy(
-      tp->retry_use_local_part ? addr2->address_retry_key :
-        addr2->domain_retry_key);
-    *retry_key = 'T';
-
-    /* Inspect the retry data. If there is no hints file, delivery happens. */
-
-    if (dbm_file)
+    if (f.queue_2stage)
       {
-      dbdata_retry * retry_record = dbfn_read(dbm_file, retry_key);
+      DEBUG(D_deliver)
+	debug_printf_indent("no router retry check (ph1 qrun)\n");
+      }
+    else
+      {
+      /* Set up the retry key to include the domain or not, and change its
+      leading character from "R" to "T". Must make a copy before doing this,
+      because the old key may be pointed to from a "delete" retry item after
+      a routing delay. */
+      uschar * retry_key = string_copy(tp->retry_use_local_part
+			? addr2->address_retry_key : addr2->domain_retry_key);
+      *retry_key = 'T';
 
-      /* If there is no retry record, delivery happens. If there is,
-      remember it exists so it can be deleted after a successful delivery. */
+      /* Inspect the retry data. If there is no hints file, delivery happens. */
 
-      if (retry_record)
-        {
-        setflag(addr2, af_lt_retry_exists);
+      if (dbm_file)
+	{
+	dbdata_retry * retry_record = dbfn_read(dbm_file, retry_key);
 
-        /* A retry record exists for this address. If queue running and not
-        forcing, inspect its contents. If the record is too old, or if its
-        retry time has come, or if it has passed its cutoff time, delivery
-        will go ahead. */
+	/* If there is no retry record, delivery happens. If there is,
+	remember it exists so it can be deleted after a successful delivery. */
 
-        DEBUG(D_retry)
-          {
-          debug_printf("retry record exists: age=%s ",
-            readconf_printtime(now - retry_record->time_stamp));
-          debug_printf("(max %s)\n", readconf_printtime(retry_data_expire));
-          debug_printf("  time to retry = %s expired = %d\n",
-            readconf_printtime(retry_record->next_try - now),
-            retry_record->expired);
-          }
+	if (retry_record)
+	  {
+	  setflag(addr2, af_lt_retry_exists);
 
-        if (f.queue_running && !f.deliver_force)
-          {
-          ok = (now - retry_record->time_stamp > retry_data_expire)
-	    || (now >= retry_record->next_try)
-	    || retry_record->expired;
+	  /* A retry record exists for this address. If queue running and not
+	  forcing, inspect its contents. If the record is too old, or if its
+	  retry time has come, or if it has passed its cutoff time, delivery
+	  will go ahead. */
 
-          /* If we haven't reached the retry time, there is one more check
-          to do, which is for the ultimate address timeout. */
+	  DEBUG(D_retry)
+	    {
+	    debug_printf("retry record exists: age=%s ",
+	      readconf_printtime(now - retry_record->time_stamp));
+	    debug_printf("(max %s)\n", readconf_printtime(retry_data_expire));
+	    debug_printf("  time to retry = %s expired = %d\n",
+	      readconf_printtime(retry_record->next_try - now),
+	      retry_record->expired);
+	    }
 
-          if (!ok)
-            ok = retry_ultimate_address_timeout(retry_key, addr2->domain,
-                retry_record, now);
-          }
-        }
-      else DEBUG(D_retry) debug_printf("no retry record exists\n");
+	  if (f.queue_running && !f.deliver_force)
+	    {
+	    ok = (now - retry_record->time_stamp > retry_data_expire)
+	      || (now >= retry_record->next_try)
+	      || retry_record->expired;
+
+	    /* If we haven't reached the retry time, there is one more check
+	    to do, which is for the ultimate address timeout. */
+
+	    if (!ok)
+	      ok = retry_ultimate_address_timeout(retry_key, addr2->domain,
+		  retry_record, now);
+	    }
+	  }
+	else DEBUG(D_retry) debug_printf("no retry record exists\n");
+	}
       }
 
     /* This address is to be delivered. Leave it on the chain. */
@@ -2985,7 +2995,11 @@ while (addr_local)
       }
     }
 
-  if (dbm_file) dbfn_close(dbm_file);
+  if (dbm_file)
+    if (dbm_file != continue_retry_db)
+      { dbfn_close(dbm_file); dbm_file = NULL; }
+    else
+      DEBUG(D_hints_lookup) debug_printf("retaining retry hintsdb handle\n");
 
   /* If there are no addresses left on the chain, they all deferred. Loop
   for the next set of addresses. */
@@ -7440,8 +7454,13 @@ while (addr_new)           /* Loop until all addresses dealt with */
     {
     /* If we have transaction-capable hintsdbs, open the retry db without
     locking, and leave open for the transport process and for subsequent
-    deliveries. If the open fails, tag that explicitly for the transport but
-    retry the open next time around, in case it was created in the interim. */
+    deliveries. Use a writeable open as we can keep it open all the way through
+    to writing retry records if needed due to message fails.
+    If the open fails, tag that explicitly for the transport but retry the open
+    next time around, in case it was created in the interim.
+    If non-transaction, we are only reading records at this stage and
+    we close the db before running the transport.
+    Either way we do a non-creating open. */
 
     if (continue_retry_db == (open_db *)-1)
       continue_retry_db = NULL;
@@ -7451,7 +7470,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
       DEBUG(D_hints_lookup) debug_printf("using cached retry hintsdb handle\n");
       dbm_file = continue_retry_db;
       }
-    else if (!exim_lockfile_needed() && continue_transport)
+    else if (!exim_lockfile_needed())
       {
       dbm_file = dbfn_open_multi(US"retry", O_RDWR, &dbblock);
       continue_retry_db = dbm_file ? dbm_file : (open_db *)-1;
@@ -7471,7 +7490,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
     {
     int rc;
     tree_node * tnode;
-    dbdata_retry * domain_retry_record, * address_retry_record;
+    dbdata_retry * domain_retry_record = NULL, * address_retry_record = NULL;
 
     addr = addr_new;
     addr_new = addr->next;
@@ -7700,76 +7719,82 @@ while (addr_new)           /* Loop until all addresses dealt with */
       continue;
       }
 
-    /* Get the routing retry status, saving the two retry keys (with and
-    without the local part) for subsequent use. If there is no retry record for
-    the standard address routing retry key, we look for the same key with the
-    sender attached, because this form is used by the smtp transport after a
-    4xx response to RCPT when address_retry_include_sender is true. */
-
-    DEBUG(D_retry)
+    if (f.queue_2stage)
       {
-      debug_printf_indent("checking router retry status\n");
-      acl_level++;
-      }
-    addr->domain_retry_key = string_sprintf("R:%s", addr->domain);
-    addr->address_retry_key = string_sprintf("R:%s@%s", addr->local_part,
-      addr->domain);
-
-    if (dbm_file)
-      {
-      domain_retry_record = dbfn_read(dbm_file, addr->domain_retry_key);
-      if (  domain_retry_record
-         && now - domain_retry_record->time_stamp > retry_data_expire
-	 )
-	{
-	DEBUG(D_deliver|D_retry)
-	  debug_printf_indent("domain retry record present but expired\n");
-        domain_retry_record = NULL;    /* Ignore if too old */
-	}
-
-      address_retry_record = dbfn_read(dbm_file, addr->address_retry_key);
-      if (  address_retry_record
-         && now - address_retry_record->time_stamp > retry_data_expire
-	 )
-	{
-	DEBUG(D_deliver|D_retry)
-	  debug_printf_indent("address retry record present but expired\n");
-        address_retry_record = NULL;   /* Ignore if too old */
-	}
-
-      if (!address_retry_record)
-        {
-        uschar *altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
-          sender_address);
-        address_retry_record = dbfn_read(dbm_file, altkey);
-        if (  address_retry_record
-	   && now - address_retry_record->time_stamp > retry_data_expire)
-	  {
-	  DEBUG(D_deliver|D_retry)
-	    debug_printf_indent("address<sender> retry record present but expired\n");
-          address_retry_record = NULL;   /* Ignore if too old */
-	  }
-        }
+      DEBUG(D_deliver)
+	debug_printf_indent("no router retry check (ph1 qrun)\n");
       }
     else
-      domain_retry_record = address_retry_record = NULL;
-
-    DEBUG(D_deliver|D_retry)
       {
-      if (!domain_retry_record)
-	debug_printf_indent("no   domain  retry record\n");
-      else
-	debug_printf_indent("have domain  retry record; next_try = now%+d\n",
-		      f.running_in_test_harness ? 0 :
-		      (int)(domain_retry_record->next_try - now));
+      /* Get the routing retry status, saving the two retry keys (with and
+      without the local part) for subsequent use. If there is no retry record
+      for the standard address routing retry key, we look for the same key with
+      the sender attached, because this form is used by the smtp transport after
+      a 4xx response to RCPT when address_retry_include_sender is true. */
 
-      if (!address_retry_record)
-	debug_printf_indent("no   address retry record\n");
-      else
-	debug_printf_indent("have address retry record; next_try = now%+d\n",
-		      f.running_in_test_harness ? 0 :
-		      (int)(address_retry_record->next_try - now));
-      acl_level--;
+      DEBUG(D_deliver|D_retry)
+	{
+	debug_printf_indent("checking router retry status\n");
+	acl_level++;
+	}
+      addr->domain_retry_key = string_sprintf("R:%s", addr->domain);
+      addr->address_retry_key = string_sprintf("R:%s@%s", addr->local_part,
+	addr->domain);
+
+      if (dbm_file)
+	{
+	domain_retry_record = dbfn_read(dbm_file, addr->domain_retry_key);
+	if (  domain_retry_record
+	   && now - domain_retry_record->time_stamp > retry_data_expire
+	   )
+	  {
+	  DEBUG(D_deliver|D_retry)
+	    debug_printf_indent("domain retry record present but expired\n");
+	  domain_retry_record = NULL;    /* Ignore if too old */
+	  }
+
+	address_retry_record = dbfn_read(dbm_file, addr->address_retry_key);
+	if (  address_retry_record
+	   && now - address_retry_record->time_stamp > retry_data_expire
+	   )
+	  {
+	  DEBUG(D_deliver|D_retry)
+	    debug_printf_indent("address retry record present but expired\n");
+	  address_retry_record = NULL;   /* Ignore if too old */
+	  }
+
+	if (!address_retry_record)
+	  {
+	  uschar *altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
+	    sender_address);
+	  address_retry_record = dbfn_read(dbm_file, altkey);
+	  if (  address_retry_record
+	     && now - address_retry_record->time_stamp > retry_data_expire)
+	    {
+	    DEBUG(D_deliver|D_retry)
+	      debug_printf_indent("address<sender> retry record present but expired\n");
+	    address_retry_record = NULL;   /* Ignore if too old */
+	    }
+	  }
+	}
+
+      DEBUG(D_deliver|D_retry)
+	{
+	if (!domain_retry_record)
+	  debug_printf_indent("no   domain  retry record\n");
+	else
+	  debug_printf_indent("have domain  retry record; next_try = now%+d\n",
+			f.running_in_test_harness ? 0 :
+			(int)(domain_retry_record->next_try - now));
+
+	if (!address_retry_record)
+	  debug_printf_indent("no   address retry record\n");
+	else
+	  debug_printf_indent("have address retry record; next_try = now%+d\n",
+			f.running_in_test_harness ? 0 :
+			(int)(address_retry_record->next_try - now));
+	acl_level--;
+	}
       }
 
     /* If we are sending a message down an existing SMTP connection, we must
@@ -7873,11 +7898,15 @@ while (addr_new)           /* Loop until all addresses dealt with */
       }
     }
 
-  /* The database is closed while routing is actually happening. Requests to
-  update it are put on a chain and all processed together at the end. */
+  /* If not transaction-capable, the database is closed while routing is
+  actually happening. Requests to update it are put on a chain and all processed
+  together at the end. */
 
-  if (dbm_file && !continue_retry_db)
-    { dbfn_close(dbm_file); dbm_file = NULL; }
+  if (dbm_file)
+    if (exim_lockfile_needed())
+      { dbfn_close(dbm_file); dbm_file = NULL; }
+    else
+      DEBUG(D_hints_lookup) debug_printf("retaining retry hintsdb handle\n");
 
   /* If queue_domains is set, we don't even want to try routing addresses in
   those domains. During queue runs, queue_domains is forced to be unset.
@@ -8048,9 +8077,6 @@ while (addr_new)           /* Loop until all addresses dealt with */
   }    /* Loop to process any child addresses that the routers created, and
        any rerouted addresses that got put back on the new chain. */
 
-if (dbm_file)		/* Can only be continue_retry_db */
-  { dbfn_close_multi(continue_retry_db); continue_retry_db = dbm_file = NULL; }
-
 /* Debugging: show the results of the routing */
 
 DEBUG(D_deliver|D_retry|D_route)
@@ -8149,12 +8175,7 @@ if (  mua_wrapper
 
 
 /* If this is a run to continue deliveries to an external channel that is
-already set up, defer any local deliveries.
-
-jgh 2020/12/20: I don't see why; locals should be quick.
-The defer goes back to version 1.62 in 1997.  A local being still deliverable
-during a continued run might result from something like a defer during the
-original delivery, eg. in a DB lookup.  Unlikely but possible.
+already set up, defer any local deliveries because we are handling remotes.
 
 To avoid delaying a local when combined with a callout-hold for a remote
 delivery, test continue_sequence rather than continue_transport. */
@@ -8402,9 +8423,10 @@ if (mua_wrapper)
 
 /* In a normal configuration, we now update the retry database. This is done in
 one fell swoop at the end in order not to keep opening and closing (and
-locking) the database. The code for handling retries is hived off into a
-separate module for convenience. We pass it the addresses of the various
-chains, because deferred addresses can get moved onto the failed chain if the
+locking) the database (at least, for non-transaction-capable DBs.
+The code for handling retries is hived off into a separate module for
+convenience. We pass it the addresses of the various chains,
+because deferred addresses can get moved onto the failed chain if the
 retry cutoff time has expired for all alternative destinations. Bypass the
 updating of the database if the -N flag is set, which is a debugging thing that
 prevents actual delivery. */
@@ -8505,6 +8527,13 @@ f.disable_logging = FALSE;  /* In case left set */
 /* Come here from the mua_wrapper case if routing goes wrong */
 
 DELIVERY_TIDYUP:
+
+if (dbm_file)		/* Can only be continue_retry_db */
+  {
+  DEBUG(D_hints_lookup) debug_printf("final close of cached retry db\n");
+  dbfn_close_multi(continue_retry_db);
+  continue_retry_db = dbm_file = NULL;
+  }
 
 /* If there are now no deferred addresses, we are done. Preserve the
 message log if so configured, and we are using them. Otherwise, sling it.

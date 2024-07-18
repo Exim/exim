@@ -11,9 +11,6 @@
 backend provider. */
 
 /* ************************* tdb interface ************************ */
-/*XXX https://manpages.org/tdb/3 mentions concurrent writes.
-Could we lose the file lock? */
-
 # include <tdb.h>
 
 /* Basic DB type */
@@ -34,22 +31,39 @@ tdb_traverse to be called) */
 static inline BOOL
 exim_lockfile_needed(void)
 {
-return TRUE;
+return FALSE;		/* Transactions are supported */
 }
 
-static inline EXIM_DB *
-exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
-  unsigned mode) { return NULL; }
-static inline void exim_dbclose_multi(EXIM_DB * dbp) {}
-static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
-static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 static inline EXIM_DB *
 exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
-return tdb_open(CS name, 0, TDB_DEFAULT, flags, mode);
+EXIM_DB * db = tdb_open(CS name, 0, TDB_DEFAULT, flags, mode);
+int e;
+
+DEBUG(D_hints_lookup) if (!db)
+  debug_printf_indent("tdb_open(flags 0x%x mode %04o) %s\n",
+	      flags, mode, strerror(errno));
+if (!db || tdb_transaction_start(db) == 0) return db;
+e = errno;
+DEBUG(D_hints_lookup) if (db)
+  debug_printf_indent("tdb_transaction_start: %s\n", tdb_errorstr(db));
+tdb_close(db);
+errno = e;
+return NULL;
+}
+
+static inline EXIM_DB *
+exim_dbopen_multi__(const uschar * name, const uschar * dirname, int flags,
+  unsigned mode)
+{
+EXIM_DB * db = tdb_open(CS name, 0, TDB_DEFAULT, flags, mode);
+DEBUG(D_hints_lookup) if (!db)
+  debug_printf_indent("tdb_open(flags 0x%x mode %04o) %s\n",
+	      flags, mode, strerror(errno));
+return db;
 }
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
@@ -60,10 +74,36 @@ exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
 return res->dptr != NULL;
 }
 
+
+static inline BOOL
+exim_dbtransaction_start(EXIM_DB * db)
+{
+BOOL ok = tdb_transaction_start(db) == 0;
+DEBUG(D_hints_lookup) if (!ok)
+  debug_printf_indent("tdb_transaction_start: %s\n", tdb_errorstr(db));
+return ok;
+}
+
+static inline void
+exim_dbtransaction_commit(EXIM_DB * db)
+{
+BOOL ok = tdb_transaction_commit(db) == 0;
+DEBUG(D_hints_lookup) if (!ok)
+  debug_printf_indent("tdb_transaction_commit: %s\n", tdb_errorstr(db));
+return;
+}
+
+
+
 /* EXIM_DBPUT - returns nothing useful, assumes replace mode */
 static inline int
 exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
-{ return tdb_store(dbp, *key, *data, TDB_REPLACE); }
+{
+int rc = tdb_store(dbp, *key, *data, TDB_REPLACE);
+DEBUG(D_hints_lookup) if (rc != 0)
+  debug_printf_indent("tdb_store: %s\n", tdb_errorstr(dbp));
+return rc;
+}
 
 /* EXIM_DBPUTB - non-overwriting for use by dbmbuild */
 static inline int
@@ -109,12 +149,33 @@ return key->dptr != NULL;
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation. */
 static inline void
 exim_dbdelete_cursor(EXIM_CURSOR * cursor)
-{ store_free(cursor); }
+{
+#ifdef COMPILE_UTILITY
+free(cursor);
+#else
+store_free(cursor);
+#endif
+}
 
 /* EXIM_DBCLOSE */
 static inline void
+exim_dbclose_multi__(EXIM_DB * db)
+{
+int rc = tdb_close(db);
+DEBUG(D_hints_lookup) if (rc != 0)
+  debug_printf_indent("tdb_close: %s\n", tdb_errorstr(db));
+}
+
+static inline void
 exim_dbclose__(EXIM_DB * db)
-{ tdb_close(db); }
+{
+int rc = tdb_transaction_commit(db);
+DEBUG(D_hints_lookup) if (rc != 0)
+  debug_printf_indent("tdb_transaction_commit: %s\n", tdb_errorstr(db));
+rc = tdb_close(db);
+DEBUG(D_hints_lookup) if (rc != 0)
+  debug_printf_indent("tdb_close: %s\n", tdb_errorstr(db));
+}
 
 /* Datum access */
 

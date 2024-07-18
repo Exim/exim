@@ -48,6 +48,21 @@ definition of DB_VERSION_STRING, which is present in versions 2.x onwards. */
 #    define DB_FORCESYNC 0
 #   endif
 
+
+
+/* Berkeley DB uses a callback function to pass back error details. Its API
+changed at release 4.3. */
+
+#if defined(DB_VERSION_STRING)
+# if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
+static void     dbfn_bdb_error_callback(const DB_ENV *, const char *, const char *);
+# else
+static void     dbfn_bdb_error_callback(const char *, char *);
+# endif
+#endif
+
+
+
 /* Error callback */
 /* For Berkeley DB >= 2, we can define a function to be called in case of DB
 errors. This should help with debugging strange DB problems, e.g. getting "File
@@ -73,9 +88,9 @@ return TRUE;
 }
 
 static inline EXIM_DB *
-exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
+exim_dbopen_multi__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode) { return NULL; }
-static inline void exim_dbclose_multi(EXIM_DB * dbp) {}
+static inline void exim_dbclose_multi__(EXIM_DB * dbp) {}
 static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
 static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
 
@@ -106,6 +121,9 @@ if (db_create(&b, dbp, 0) == 0)
 	      mode) == 0
 	  )
     return dbp;
+  else DEBUG(D_hints_lookup)
+    debug_printf_indent("bdb_open(flags 0x%x mode %04o) %s\n",
+	      flags, mode, strerror(errno));
 
   b->close(b, 0);
   }
@@ -233,9 +251,9 @@ return TRUE;
 }
 
 static inline EXIM_DB *
-exim_dbopen_multi(const uschar * name, const uschar * dirname, int flags,
+exim_dbopen_multi__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode) { return NULL; }
-static inline void exim_dbclose_multi(EXIM_DB * dbp) {}
+static inline void exim_dbclose_multi__(EXIM_DB * dbp) {}
 static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
 static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
 
