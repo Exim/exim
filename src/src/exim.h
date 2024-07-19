@@ -525,14 +525,18 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #include "path_max.h"
 #include "macros.h"
 #include "blob.h"
-#include "hintsdb.h"
+#ifndef MACRO_PREDEF
+# include "hintsdb.h"
+#endif
 #include "hintsdb_structs.h"
 #include "structs.h"
 #include "blob.h"
 #include "hash.h"
 #include "globals.h"
 #include "functions.h"
-#include "dbfunctions.h"
+#ifndef MACRO_PREDEF
+# include "dbfunctions.h"
+#endif
 #include "osfunctions.h"
 
 #ifdef EXPERIMENTAL_BRIGHTMAIL

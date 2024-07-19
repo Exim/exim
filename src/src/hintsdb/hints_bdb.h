@@ -72,9 +72,7 @@ at DB release 4.3. */
 static inline void
 dbfn_bdb_error_callback(const DB_ENV * dbenv, const char * pfx, const char * msg)
 {
-#ifndef MACRO_PREDEF 
 log_write(0, LOG_MAIN, "Berkeley DB error: %s", msg);
-#endif
 }
 
 
