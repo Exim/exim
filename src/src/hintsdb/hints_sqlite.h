@@ -68,7 +68,7 @@ static inline EXIM_DB *
 exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
-EXIM_DB * dbp = exim_dbopen_multi(name, dirname, flags, mode);
+EXIM_DB * dbp = exim_dbopen_multi__(name, dirname, flags, mode);
 if (!dbp || exim_dbtransaction_start(dbp))
   return dbp;
 sqlite3_close(dbp);
@@ -301,7 +301,7 @@ static inline void
 exim_dbclose__(EXIM_DB * dbp)
 {
 exim_dbtransaction_commit(dbp);
-exim_dbclose_multi(dbp);
+exim_dbclose_multi__(dbp);
 }
 
 
