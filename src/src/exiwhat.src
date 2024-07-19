@@ -42,7 +42,7 @@ rm=RM_COMMAND
 multikill_cmd=EXIWHAT_MULTIKILL_CMD
 multikill_arg=EXIWHAT_MULTIKILL_ARG
 
-# In other operating systems, Exim has to use "ps" and "egrep" to find the
+# In other operating systems, Exim has to use "ps" and "grep" to find the
 # processes itself. In those cases, the next three variables are used:
 
 ps_cmd=EXIWHAT_PS_CMD
@@ -133,7 +133,7 @@ if [ "$multikill_cmd" != "" ] && type "$multikill_cmd" >/dev/null 2>&1; then
 
 else
   $ps_cmd $ps_arg | \
-    egrep "$egrep_arg" | \
+    grep -E "$egrep_arg" | \
     awk "{print \"kill $signal \"\$1}" | \
     uniq | sh
 fi

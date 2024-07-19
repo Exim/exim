@@ -147,15 +147,15 @@ PCRE_LIBS=-lpcre2-8
 # EXIWHAT_MULTIKILL_CMD=
 # EXIWHAT_MULTIKILL_ARG=
 
-# (2) For other operating systems, exiwhat calls the ps command and egreps the
+# (2) For other operating systems, exiwhat calls the ps command and greps the
 # output in order to find all the processes running Exim. The arguments for the
 # various commands needed to do this vary from OS to OS. These defaults work on
 # Solaris 2, HPUX, and IRIX. The OS-specific Makefiles have different versions
 # for other systems, and you can override with your own requirements in your
 # private Makefiles in the Local directory. The most commonly found
 # alternatives are -ax instead of -e for the ps argument, and / instead of a
-# blank before the name exim for the egrep argument on systems whose ps output
-# shows the full path name. The quotes for the egrep argument are specified
+# blank before the name exim for the grep argument on systems whose ps output
+# shows the full path name. The quotes for the grep argument are specified
 # here so that leading white space can be used. This value should always be
 # given in single quotes.
 
