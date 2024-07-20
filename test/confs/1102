@@ -1,4 +1,4 @@
-# Exim test configuration 1102
+# Exim test configuration 1102 & 5680
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -10,7 +10,9 @@ tls_advertise_hosts = *
 
 tls_certificate = DIR/tmp/certs/servercert
 tls_privatekey =  DIR/tmp/certs/serverkey
+.ifdef OPT
 tls_ocsp_file =   DIR/tmp/certs/ocsp_proof
+.endif
 
 #tls_verify_certificates = DIR/aux-fixed/cert2
 tls_verify_certificates = system,cache

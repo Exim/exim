@@ -1,0 +1,5 @@
+
+******** SERVER ********
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
+2017-07-30 18:51:05.712 server cert: CN=server1.example.com
+2017-07-30 18:51:05.712 server cert: CN=server1.example.net
