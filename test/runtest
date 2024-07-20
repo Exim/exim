@@ -1199,8 +1199,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/(?:bdb|tdb|gdbm|ndbm|sqlite)
       _open\(flags\ 0x(\d)
       \ mode\ 0640\)
-      (?=\ No\ such\ file\ or\ directory$)
-     /hintsdb_open(flags 0x$1 mode 0640)/x;
+      \ (?:No\ such\ file\ or\ directory|unable\ to\ open\ database\ file)$
+     /hintsdb_open(flags 0x$1 mode 0640) No such file or directory/x;
 
     # Lines with a leading pid.  Only handle >= 4-digit PIDs to avoid converting SMTP respose codes
     s/^\s*(\d{4,})\s(?!(?:previous message|in\s|bytes remain in|SMTP accept process running))/new_value($1, "p%s", \$next_pid) . ' '/e;

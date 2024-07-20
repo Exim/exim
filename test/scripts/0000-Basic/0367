@@ -1,16 +1,16 @@
 # Multiple messages down one SMTP connection
 need_ipv4
 #
-exim -odq userx@domain1
+exim -odq userx1@domain1
 Test message 1
 ****
-exim -odq userx@domain1
+exim -odq userx2@domain1
 Test message 2
 ****
-exim -odq userx@domain1
+exim -odq userx3@domain1
 Test message 3
 ****
-exim -odq userx@domain1
+exim -odq userx4@domain1
 Test message 4
 ****
 server PORT_S

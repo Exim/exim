@@ -256,6 +256,7 @@ uschar dirname[PATHLEN], filename[PATHLEN];
 DEBUG(D_hints_lookup) acl_level++;
 
 dbblock->lockfd = -1;
+dbblock->readonly = (flags & O_ACCMODE) == O_RDONLY;
 db_dir_make(TRUE);
 
 dlen = snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
@@ -295,11 +296,13 @@ return dbblock;
 }
 
 
+/* Return: boolean success */
 BOOL
 dbfn_transaction_start(open_db * dbp)
 {
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_transaction_start\n");
 if (!dbp->readonly) return exim_dbtransaction_start(dbp->dbptr);
+return FALSE;
 }
 void
 dbfn_transaction_commit(open_db * dbp)

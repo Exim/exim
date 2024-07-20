@@ -4794,6 +4794,10 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
 */
 
   /*XXX what about firsttime? */
+  /*XXX also, ph1? Note tp->name would possibly change per message,
+  so a check/close/open would be needed. Might was to change that var name
+  "continue_wait_db" as we'd be using it for a non-continued-transport
+  context. */
   if (continue_transport && !exim_lockfile_needed())
     if (!continue_wait_db)
       {
@@ -4804,7 +4808,7 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
       continue_next_id[0] = '\0';
       }
 
-  if ((pid = exim_fork(US"transport")) == 0)
+  if ((pid = exim_fork(f.queue_2stage ? US"transport ph1":US"transport")) == 0)
     {
     int fd = pfd[pipe_write];
     host_item *h;
