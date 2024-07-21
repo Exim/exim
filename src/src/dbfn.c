@@ -39,6 +39,7 @@ arrange to hold the locks for the bare minimum of time.
 
 API:
   exim_lockfile_needed			facilities predicate
+  dbfn_open_path			full pathname; no lock taken, readonly
   dbfn_open				takes lockfile or opens transaction
   dbfn_open_multi			only if transactions supported;
 					no lock or transaction taken
@@ -46,6 +47,7 @@ API:
   dbfn_close_multi
   dbfn_transaction_start		only if transactions supported
   dbfn_transaction_commit
+  dbfn_read_klen			explicit key length; embedded NUL ok
   dbfn_read_with_length
   dbfn_read_enforce_length
   dbfn_write
@@ -59,6 +61,7 @@ Users:
   TLS session resumption
   peer capability cache
   callout & quota cache
+  DBM lookup type
 */
 
 
@@ -66,6 +69,22 @@ Users:
 /*************************************************
 *          Open and lock a database file         *
 *************************************************/
+
+/* Used by DBM lookups:
+full pathname for DB file rather than hintsdb name, readonly, no locking. */
+
+open_db *
+dbfn_open_path(const uschar * path, open_db * dbblock)
+{
+uschar * dirname = string_copy(path);
+
+dbblock->readonly = TRUE;
+dbblock->lockfd = -1;
+dbblock->dbptr = !exim_lockfile_needed()
+  ? exim_dbopen_multi(path, dirname, O_RDONLY, 0)
+  : exim_dbopen(path, dirname, O_RDONLY, 0);
+return dbblock->dbptr ? dbblock : NULL;;
+}
 
 /* Ensure the directory for the DB is present */
 
@@ -368,6 +387,7 @@ has two arguments; it calls this function adding NULL as the third.
 Arguments:
   dbblock   a pointer to an open database block
   key       the key of the record to be read
+  klen	    length of key including a terminating NUL (if present)
   length    a pointer to an int into which to return the length, if not NULL
 
 Returns: a pointer to the retrieved record, or
@@ -375,17 +395,16 @@ Returns: a pointer to the retrieved record, or
 */
 
 void *
-dbfn_read_with_length(open_db * dbblock, const uschar * key, int * length)
+dbfn_read_klen(open_db * dbblock, const uschar * key, int klen, int * length)
 {
 void * yield;
 EXIM_DATUM key_datum, result_datum;
-int klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen, key);
 unsigned dlen;
 
 memcpy(key_copy, key, klen);
 
-DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: key=%s\n", key);
+DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: key=%.*s\n", klen, key);
 
 exim_datum_init(&key_datum);         /* Some DBM libraries require the datum */
 exim_datum_init(&result_datum);      /* to be cleared before use. */
@@ -410,6 +429,25 @@ if (length) *length = dlen;
 exim_datum_free(&result_datum);    /* Some DBM libs require freeing */
 return yield;
 }
+
+
+/*
+Arguments:
+  dbblock   a pointer to an open database block
+  key       the key of the record to be read (NUL-terminated)
+  lenp      a pointer to an int into which to return the data length,
+	    if not NULL
+
+Returns: a pointer to the retrieved record, or
+         NULL if the record is not found
+*/
+
+void *
+dbfn_read_with_length(open_db * dbblock, const uschar * key, int * lenp)
+{
+return dbfn_read_klen(dbblock, key, Ustrlen(key)+1, lenp);
+}
+
 
 
 /* Read a record.  If the length is not as expected then delete it, write
@@ -439,7 +477,6 @@ if (yield)
   }
 return NULL;
 }
-
 
 /*************************************************
 *             Write to database file             *

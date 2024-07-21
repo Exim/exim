@@ -7,6 +7,9 @@
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+/* The "dbm" lookup uses whichever provider that is
+compiled in for supporting hintsdbs. */
+
 #include "../exim.h"
 #include "lf_functions.h"
 
@@ -20,12 +23,9 @@
 static void *
 dbmdb_open(const uschar * filename, uschar ** errmsg)
 {
-uschar * dirname = string_copy(filename);
-uschar * s;
-EXIM_DB * yield = NULL;
+open_db * yield = store_get(sizeof(open_db), GET_UNTAINTED);
 
-if ((s = Ustrrchr(dirname, '/'))) *s = '\0';
-if (!(yield = exim_dbopen(filename, dirname, O_RDONLY, 0)))
+if (!(yield = dbfn_open_path(filename, yield)))
   *errmsg = string_open_failed("%s as a %s file", filename, EXIM_DBTYPE);
 return yield;
 }
@@ -90,24 +90,8 @@ dbmdb_find(void * handle, const uschar * filename, const uschar * keystring,
   int length, uschar ** result, uschar ** errmsg, uint * do_cache,
   const uschar * opts)
 {
-EXIM_DB *d = (EXIM_DB *)handle;
-EXIM_DATUM key, data;
-
-exim_datum_init(&key);               /* Some DBM libraries require datums to */
-exim_datum_init(&data);              /* be cleared before use. */
-length++;
-exim_datum_data_set(&key,
-  memcpy(store_get(length, keystring), keystring, length)); /* key can have embedded NUL */
-exim_datum_size_set(&key, length);
-
-if (exim_dbget(d, &key, &data))
-  {
-  unsigned len = exim_datum_size_get(&data);
-  *result = len > 0 ? string_copyn(exim_datum_data_get(&data), len) : US"";
-  exim_datum_free(&data);            /* Some DBM libraries need a free() call */
-  return OK;
-  }
-return FAIL;
+open_db * d = (open_db *)handle;
+return (*result = dbfn_read_klen(d, keystring, length+1, NULL)) ? OK : FAIL;
 }
 
 
@@ -217,7 +201,7 @@ return dbmdb_find(handle, filename, key_buffer, key_item_len - 1,
 void
 static dbmdb_close(void *handle)
 {
-exim_dbclose((EXIM_DB *)handle);
+dbfn_close((open_db *)handle);
 }
 
 
