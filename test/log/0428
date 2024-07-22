@@ -51,3 +51,6 @@
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 => TESTSUITE/test-mail/userx14 <userx14-suffix2@test.ex> R=r2_14 T=t1
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 => TESTSUITE/test-mail/userx-sawsuffix <userx14-suffix@test.ex> R=r2_14 T=t1
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 => TESTSUITE/test-mail/inbox.changed <userx_inbox@test.ex> R=r2_15 T=t1
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 Completed

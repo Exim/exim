@@ -80,6 +80,7 @@ struct Sieve {
   BOOL	require_vacation;
   BOOL	vacation_ran;
 #endif
+  const uschar *inbox;
   const uschar *vacation_directory;
   const uschar *subaddress;
   const uschar *useraddress;
@@ -963,9 +964,10 @@ Returns:      nothing
 */
 
 static void
-add_addr(address_item **generated, uschar *addr, int file, int maxage, int maxmessages, int maxstorage)
+add_addr(address_item ** generated, const uschar * addr, int file, int maxage,
+  int maxmessages, int maxstorage)
 {
-address_item *new_addr;
+address_item * new_addr;
 
 for (new_addr = *generated; new_addr; new_addr = new_addr->next)
   if (  Ustrcmp(new_addr->address, addr) == 0
@@ -975,8 +977,10 @@ for (new_addr = *generated; new_addr; new_addr = new_addr->next)
 	)
      )
     {
-    if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-      debug_printf_indent("Repeated %s `%s' ignored.\n", file ? "fileinto" : "redirect", addr);
+    if (  filter_test != FTEST_NONE && debug_selector != 0
+       || (debug_selector & D_filter) != 0)
+      debug_printf_indent("Repeated %s `%s' ignored.\n",
+			  file ? "fileinto" : "redirect", addr);
 
     return;
     }
@@ -2775,7 +2779,7 @@ while (*filter->pc)
       return -1;
     if (exec)
       {
-      add_addr(generated, US"inbox", 1, 0, 0, 0);
+      add_addr(generated, filter->inbox, 1, 0, 0, 0);
       filter->keep = 0;
       }
     }
@@ -3513,6 +3517,7 @@ Arguments:
     enotify_mailto_owner	owner of mailto notifications
     useraddress			string expression for :user part of address
     subaddress			string expression for :subaddress part of address
+    inbox			string expression for "keep"
   generated   where to hang newly-generated addresses
   error       where to pass back an error text
 
@@ -3536,16 +3541,27 @@ DEBUG(D_route) debug_printf_indent("Sieve: start of processing\n");
 expand_level++;
 sieve.filter = filter;
 
+GET_OPTION("sieve_vacation_directory");
 if (!sb || !sb->vacation_dir)
   sieve.vacation_directory = NULL;
 else if (!(sieve.vacation_directory = expand_cstring(sb->vacation_dir)))
   {
   *error = string_sprintf("failed to expand \"%s\" "
-    "(sieve_vacation_directory): %s", sb->vacation_dir,
-    expand_string_message);
+    "(sieve_vacation_directory): %s", sb->vacation_dir, expand_string_message);
   return FF_ERROR;
   }
 
+GET_OPTION("sieve_vacation_directory");
+if (!sb || !sb->inbox)
+  sieve.inbox = US"inbox";
+else if (!(sieve.inbox = expand_cstring(sb->inbox)))
+  {
+  *error = string_sprintf("failed to expand \"%s\" "
+    "(sieve_inbox): %s", sb->inbox, expand_string_message);
+  return FF_ERROR;
+  }
+
+GET_OPTION("sieve_enotify_mailto_owner");
 if (!sb || !sb->enotify_mailto_owner)
   sieve.enotify_mailto_owner = NULL;
 else if (!(sieve.enotify_mailto_owner = expand_cstring(sb->enotify_mailto_owner)))
@@ -3556,8 +3572,10 @@ else if (!(sieve.enotify_mailto_owner = expand_cstring(sb->enotify_mailto_owner)
   return FF_ERROR;
   }
 
+GET_OPTION("sieve_useraddress");
 sieve.useraddress = sb && sb->useraddress
   ? sb->useraddress : CUS "$local_part_prefix$local_part$local_part_suffix";
+GET_OPTION("sieve_subaddress");
 sieve.subaddress = sb ? sb->subaddress : NULL;
 
 #ifdef COMPILE_SYNTAX_CHECKER
@@ -3567,7 +3585,7 @@ if (parse_start(&sieve, 1, generated) == 1)
 #endif
   if (sieve.keep)
     {
-    add_addr(generated, US"inbox", 1, 0, 0, 0);
+    add_addr(generated, sieve.inbox, 1, 0, 0, 0);
     msg = US"Implicit keep";
     r = FF_DELIVERED;
     }
@@ -3583,7 +3601,7 @@ else
   r = FF_ERROR;
   *error = msg;
 #else
-  add_addr(generated, US"inbox", 1, 0, 0, 0);
+  add_addr(generated, sieve.inbox, 1, 0, 0, 0);
   r = FF_DELIVERED;
 #endif
   }

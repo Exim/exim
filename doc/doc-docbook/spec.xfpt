@@ -22223,6 +22223,12 @@ subject to address rewriting. Otherwise, they are treated like new addresses
 and are rewritten according to the global rewriting rules.
 
 
+.option sieve_inbox redirect string&!! &"inbox"&
+.new
+The value of this option is passed to a Sieve filter to specify the
+name of the mailbox used for "keep" operations (explicit or implicit).
+.wen
+
 .option sieve_subaddress redirect string&!! unset
 The value of this option is passed to a Sieve filter to specify the
 :subaddress part of an address.
@@ -23259,7 +23265,11 @@ fileinto "folder23";
 .endd
 In this situation, the expansion of &%file%& or &%directory%& in the transport
 must transform the relative path into an appropriate absolute filename. In the
-case of Sieve filters, the name &'inbox'& must be handled. It is the name that
+case of Sieve filters, the name &'inbox'& must be handled. It is the
+.new
+default
+.wen
+name that
 is used as a result of a &"keep"& action in the filter. This example shows one
 way of handling this requirement:
 .code
@@ -23275,6 +23285,12 @@ With this setting of &%file%&, &'inbox'& refers to the standard mailbox
 location, absolute paths are used without change, and other folders are in the
 &_mail_& directory within the home directory.
 
+.new
+An alternative for the &"keep"& aspect is to use the &%sieve_inbox%& option
+on the redirect router that calls the Sieve filter,
+to explicitly set the filename used.
+.wen
+
 &*Note 1*&: While processing an Exim filter, a relative path such as
 &_folder23_& is turned into an absolute path if a home directory is known to
 the router. In particular, this is the case if &%check_local_user%& is set. If
@@ -23285,6 +23301,10 @@ path to the transport.
 &*Note 2*&: An absolute path in &$address_file$& is not treated specially;
 the &%file%& or &%directory%& option is still used if it is set.
 
+.new
+&*Note 3*&: Permitting a user to enable writes to an absolute path
+may be a security issue.
+.wen
 
 
 

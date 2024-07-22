@@ -8,29 +8,33 @@ the documentation is updated, this file is reduced to a short list.
 
 Version 4.98
 ------------
+ 1. A sieve_inbox option for redirect routers
+
+Version 4.98
+------------
  1. The dkim_status ACL condition may now be used in data ACLs
 
  2. The dkim_verbose logging control also enables logging of signing
 
  3. The dkim_timestamps signing option now accepts zero to include a current
     timestamp but no expiry timestamp.  Code by Simon Arlott; testsuite
-    additions by jgh.
+    additions by jgh
 
- 4. The recipients_max main option is now expanded.
+ 4. The recipients_max main option is now expanded
 
- 5. Setting variables for "exim -be" can set a tainted value.
+ 5. Setting variables for "exim -be" can set a tainted value
 
- 6. A dns:fail event.
+ 6. A dns:fail event
 
- 7. The dsearch lookup supports search for a sub-path.
+ 7. The dsearch lookup supports search for a sub-path
 
- 8. Include mailtest utility for simple connection checking.
+ 8. Include mailtest utility for simple connection checking
 
- 9. Add SMTP WELLKNOWN extension.
+ 9. Add SMTP WELLKNOWN extension
 
  10. Sqlite3 can be used for the hints databases (vs. DBD, NDB, GBDM, TDB).
-     Add "USE_SQLITE = y" and "DBMLIB = -lsqlite3" in Local/Makefile, to override 
-     the settings done in the OS/Makefile-<platform> file.
+     Add "USE_SQLITE = y" and "DBMLIB = -lsqlite3" in Local/Makefile, to
+     override the settings done in the OS/Makefile-<platform> file
 
 Version 4.97
 ------------

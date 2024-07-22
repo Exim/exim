@@ -355,10 +355,14 @@ contains an additional address besides the one the test checks for.
 
 
 .section "Semantics of keep" "SEC11"
-The &(keep)& command is equivalent to
+.new
+The &(keep)& command is by default equivalent to
 .code
 fileinto "inbox";
 .endd
+but, when called from a redirect router, the destination can be set
+by using the &%sieve_inbox%& option on the router.
+.wen
 It saves the message and resets the implicit keep flag. It does not set the
 implicit keep flag; there is no command to set it once it has been reset.
 

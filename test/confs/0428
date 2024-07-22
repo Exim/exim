@@ -134,6 +134,15 @@ r2_14:
   file_transport = t1
   reply_transport = t3
 
+r2_15:
+  driver = redirect
+  local_parts = userx_inbox
+  allow_filter
+  data = "#Sieve filter\nkeep;\n"
+  user = CALLER
+  sieve_inbox = inbox.changed
+  file_transport = t1
+
 r2:
   driver = redirect
   allow_filter

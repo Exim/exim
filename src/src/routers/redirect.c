@@ -92,6 +92,7 @@ optionlist redirect_router_options[] = {
       LOFF(bit_options) },
 
   { "sieve_enotify_mailto_owner", opt_stringptr, LOFF(sieve_enotify_mailto_owner) },
+  { "sieve_inbox",	  opt_stringptr,	LOFF(sieve_inbox) },
   { "sieve_subaddress",   opt_stringptr,	LOFF(sieve_subaddress) },
   { "sieve_useraddress",  opt_stringptr,	LOFF(sieve_useraddress) },
   { "sieve_vacation_directory", opt_stringptr,	LOFF(sieve_vacation_directory) },
@@ -566,10 +567,11 @@ redirect.pw = pw;
 redirect.string = (redirect.isfile = (ob->file != NULL))
   ? ob->file : ob->data;
 
-sieve.vacation_dir = ob->sieve_vacation_directory;
-sieve.enotify_mailto_owner = ob->sieve_enotify_mailto_owner;
-sieve.useraddress = ob->sieve_useraddress;
+sieve.inbox = ob->sieve_inbox;
 sieve.subaddress = ob->sieve_subaddress;
+sieve.vacation_dir = ob->sieve_vacation_directory;
+sieve.useraddress = ob->sieve_useraddress;
+sieve.enotify_mailto_owner = ob->sieve_enotify_mailto_owner;
 
 frc = rda_interpret(&redirect, options, ob->include_directory, &sieve, &ugid,
   &generated, &addr->message, ob->skip_syntax_errors ? &eblock : NULL,

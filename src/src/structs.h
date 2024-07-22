@@ -896,10 +896,11 @@ typedef struct redirect_block {
 /* Sieve control data */
 
 typedef struct sieve_block {
-  const uschar * vacation_dir;
+  const uschar * inbox;
   const uschar * enotify_mailto_owner;
-  const uschar * useraddress;
   const uschar * subaddress;
+  const uschar * useraddress;
+  const uschar * vacation_dir;
 } sieve_block;
 
 /* Structure for passing arguments to check_host() */

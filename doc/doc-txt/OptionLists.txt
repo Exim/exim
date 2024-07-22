@@ -535,6 +535,11 @@ server_set_id                        string*         unset         authenticator
 set				     string*	     unset	   routers	     4.93
 shadow_condition                     string*         unset         transports
 shadow_transport                     string          unset         transports
+sieve_inbox			     string*	     "inbox"	   redirect	     4.99
+sieve_enotify_mailto_owner	     string*	     "inbox"	   redirect
+sieve_subaddress		     string*	     "inbox"	   redirect
+sieve_useraddress		     string*	     "inbox"	   redirect
+sieve_vacation_directory	     string*	     "inbox"	   redirect
 size_addition                        integer         1024          smtp              1.91
 skip_syntax_errors                   boolean         false         redirect          4.00
 smtp_accept_keepalive                boolean         true          main

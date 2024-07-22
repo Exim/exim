@@ -101,3 +101,6 @@ exim -odi -f someone@test.ex userx14-suffix userx14-suffix2
         }   
 Test 14
 ****
+exim -odi userx_inbox
+Test 15
+****
