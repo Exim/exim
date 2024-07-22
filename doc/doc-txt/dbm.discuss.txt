@@ -153,6 +153,7 @@ Berkeley DB 1.8x
 1.85 was the most widespread DB 1.x release; there is also a 1.86 bug-fix
 release, but the belief is that the bugs it fixes will not affect Exim.
 However, maintenance for 1.x releases has been phased out.
+Exim no loger supports these releases for current builds.
 
 This dbm library can be called by Exim in one of two ways: via the ndbm
 compatibility interface, or via its own native interface. There are two
@@ -206,6 +207,8 @@ the file name handed to it.
 DB 2.x does not do any automatic locking of its own; it does have a set of
 functions for various forms of locking, but Exim does not use them.
 
+Exim no longer supports these releases for current builds.
+
 
 Berkeley DB 3.x
 ---------------
@@ -226,6 +229,20 @@ Berkeley DB 4.x
 
 The 4.x series is a development of the 2.x and 3.x series, and the above
 comments apply.
+
+Berkeley DB 5.x
+---------------
+
+The 5.x versions seem to be current in several Linux disributions
+as of writing (2024). Exim uses them under the assumption that the
+API is the same as the version 4.1 library.
+
+Berkeley DB 6+
+---------------
+
+These versions exist, but documentation does not seem to be available.
+Exim does not support them.
+
 
 
 tdb
@@ -319,3 +336,5 @@ exists, just in case. Proceed as follows:
 
 Philip Hazel
 Last update: June 2002
+
+(+undates July 2024, jgh)

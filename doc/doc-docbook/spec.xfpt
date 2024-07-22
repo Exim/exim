@@ -1764,6 +1764,12 @@ distributors have chosen to bundle different libraries with their packaged
 versions. However, the more recent releases seem to have standardized on the
 Berkeley DB library.
 
+.new
+Ownership of the Berkeley DB library has moved to a major corporation;
+development seems to have stalled and documentation is not freely available.
+This is probably not tenable for the long term use by Exim.
+.wen
+
 Different DBM libraries have different conventions for naming the files they
 use. When a program opens a file called &_dbmfile_&, there are several
 possibilities:
@@ -1851,6 +1857,17 @@ DBMLIB=/usr/local/lib/db-4.1/libdb.a
 .endd
 There is further detailed discussion about the various DBM libraries in the
 file &_doc/dbm.discuss.txt_& in the Exim distribution.
+
+.new
+When moving from one DBM library to another,
+for the hints databases it suffices to just remove all the files in the
+directory named &"db/"& under the spool directory.
+This is because hints are only for optimisation and will be rebuilt
+during normal operations.
+Non-hints DBM databases (used by &"dbm"& lookups in the configuration)
+will need individual rebuilds for the new DBM library.
+This is not done automatically
+.wen
 
 
 
