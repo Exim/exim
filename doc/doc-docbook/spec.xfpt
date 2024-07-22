@@ -15204,8 +15204,11 @@ See section &<<SECDKIMVFY>>& for further details.
 
 .option acl_smtp_etrn main string&!! unset
 .cindex "ETRN" "ACL for"
+.cindex "ETRN" advertisement
 This option defines the ACL that is run when an SMTP ETRN command is
-received. See chapter &<<CHAPACL>>& for further details.
+received.
+If no value is set then the ETRN facility is not advertised.
+See chapter &<<CHAPACL>>& for further details.
 
 .option acl_smtp_expn main string&!! unset
 .cindex "EXPN" "ACL for"
@@ -37660,6 +37663,14 @@ RCPT failures.
 .subsection "The ETRN command" SECTETRN
 .cindex "ETRN" "processing"
 .cindex "ESMTP extensions" ETRN
+Most modern installations never need to use this.
+It is used for managing messages queued for an intermittently-connecting
+destination (eg. one using a dialup connection).
+
+.oindex "&%acl_smtp_etrn%&"
+The command is only available if permitted by an ACL
+specfied by the main-section &%acl_smtp_etrn%& option.
+
 RFC 1985 describes an ESMTP command called ETRN that is designed to
 overcome the security problems of the TURN command (which has fallen into
 disuse). When Exim receives an ETRN command on a TCP/IP connection, it runs
@@ -40272,8 +40283,6 @@ for remote hosts
 The &'misc'& database is used for
 
 .ilist
-Serializing ETRN runs (when &%smtp_etrn_serialize%& is set)
-.next
 Serializing delivery to a specific host (when &%serialize_hosts%& is set in an
 &(smtp)& transport)
 .next
@@ -40281,11 +40290,13 @@ Limiting the concurrency of specific transports (when &%max_parallel%& is set
 in a transport)
 .next
 Recording EHLO-time facilities advertised by hosts
+.next
+Serializing ETRN runs (when &%smtp_etrn_serialize%& is set)
 .endlist
 
 
 
-.section "exim_dumpdb" "SECTdumpdb"
+.subsection "exim_dumpdb" "SECTdumpdb"
 .cindex "&'exim_dumpdb'&"
 The entire contents of a database are written to the standard output by the
 &'exim_dumpdb'& program,
@@ -40327,7 +40338,7 @@ cross-references.
 
 
 
-.section "exim_tidydb" "SECTtidydb"
+.subsection "exim_tidydb" "SECTtidydb"
 .cindex "&'exim_tidydb'&"
 The &'exim_tidydb'& utility program is used to tidy up the contents of a hints
 database. If run with no options, it removes all records that are more than 30
@@ -40376,7 +40387,7 @@ databases is likely to keep on increasing.
 
 
 
-.section "exim_fixdb" "SECTfixdb"
+.subsection "exim_fixdb" "SECTfixdb"
 .cindex "&'exim_fixdb'&"
 The &'exim_fixdb'& program is a utility for interactively modifying databases.
 Its main use is for testing Exim, but it might also be occasionally useful for
