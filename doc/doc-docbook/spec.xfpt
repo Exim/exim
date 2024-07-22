@@ -37320,12 +37320,8 @@ See the next section for more detail about error handling.
 .cindex "SMTP" "batching over TCP/IP"
 When a message is successfully delivered over a TCP/IP SMTP connection, Exim
 looks in the hints database for the transport to see if there are any queued
-messages waiting for the host to which it is connected. If it finds one, it
-creates a new Exim process using the &%-MC%& option (which can only be used by
-a process running as root or the Exim user) and passes the TCP/IP socket to it
-so that it can deliver another message using the same socket. The new process
-does only those deliveries that are routed to the connected host, and may in
-turn pass the socket on to a third process, and so on.
+messages waiting for the host to which it is connected.
+If it finds one, it arranges to attempt that message on the same connection.
 
 The &%connection_max_messages%& option of the &(smtp)& transport can be used to
 limit the number of messages sent down a single TCP/IP connection.
