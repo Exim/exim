@@ -893,6 +893,15 @@ typedef struct redirect_block {
   BOOL    check_group;            /* TRUE, FALSE, or TRUE_UNSET */
 } redirect_block;
 
+/* Sieve control data */
+
+typedef struct sieve_block {
+  const uschar * vacation_dir;
+  const uschar * enotify_mailto_owner;
+  const uschar * useraddress;
+  const uschar * subaddress;
+} sieve_block;
+
 /* Structure for passing arguments to check_host() */
 
 typedef struct check_host_block {

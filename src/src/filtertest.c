@@ -273,7 +273,7 @@ if (is_system)
 else
   {
   yield = filter_type == FILTER_SIEVE
-    ? sieve_interpret(filebuf, RDO_REWRITE, NULL, NULL, NULL, NULL, &generated, &error)
+    ? sieve_interpret(filebuf, RDO_REWRITE, NULL, &generated, &error)
     : filter_interpret(filebuf, RDO_REWRITE, &generated, &error);
   }
 

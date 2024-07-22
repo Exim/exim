@@ -7002,10 +7002,7 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
       RDO_REALLOG |
       RDO_REWRITE,
     NULL,                   /* No :include: restriction (not used in filter) */
-    NULL,                   /* No sieve vacation directory (not sieve!) */
-    NULL,                   /* No sieve enotify mailto owner (not sieve!) */
-    NULL,                   /* No sieve user address (not sieve!) */
-    NULL,                   /* No sieve subaddress (not sieve!) */
+    NULL,                   /* No sieve info (not sieve!) */
     &ugid,                  /* uid/gid data */
     &addr_new,              /* Where to hang generated addresses */
     &filter_message,        /* Where to put error message */

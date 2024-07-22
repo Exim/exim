@@ -25,10 +25,13 @@ typedef struct {
   uschar *include_directory;
   uschar *pipe_transport_name;
   uschar *reply_transport_name;
+
+  uschar *sieve_enotify_mailto_owner;
+  uschar *sieve_inbox;
   uschar *sieve_subaddress;
   uschar *sieve_useraddress;
   uschar *sieve_vacation_directory;
-  uschar *sieve_enotify_mailto_owner;
+
   uschar *syntax_errors_text;
   uschar *syntax_errors_to;
   uschar *qualify_domain;

@@ -388,10 +388,7 @@ if (strcmpic(rword, US"REDIRECT") == 0)
       RDO_INCLUDE |              /* forbid :include: */
       RDO_REWRITE,               /* rewrite generated addresses */
     NULL,                        /* :include: directory not relevant */
-    NULL,                        /* sieve vacation directory not relevant */
-    NULL,                        /* sieve enotify mailto owner not relevant */
-    NULL,                        /* sieve useraddress not relevant */
-    NULL,                        /* sieve subaddress not relevant */
+    NULL,                        /* sieve info not relevant */
     &ugid,                       /* uid/gid (but not set) */
     &generated,                  /* where to hang the results */
     &addr->message,              /* where to put messages */

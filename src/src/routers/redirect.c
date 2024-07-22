@@ -92,8 +92,8 @@ optionlist redirect_router_options[] = {
       LOFF(bit_options) },
 
   { "sieve_enotify_mailto_owner", opt_stringptr, LOFF(sieve_enotify_mailto_owner) },
-  { "sieve_subaddress", opt_stringptr,		LOFF(sieve_subaddress) },
-  { "sieve_useraddress", opt_stringptr,		LOFF(sieve_useraddress) },
+  { "sieve_subaddress",   opt_stringptr,	LOFF(sieve_subaddress) },
+  { "sieve_useraddress",  opt_stringptr,	LOFF(sieve_useraddress) },
   { "sieve_vacation_directory", opt_stringptr,	LOFF(sieve_vacation_directory) },
   { "skip_syntax_errors", opt_bool,		LOFF(skip_syntax_errors) },
   { "syntax_errors_text", opt_stringptr,	LOFF(syntax_errors_text) },
@@ -121,43 +121,14 @@ int redirect_router_entry(router_instance *rblock, address_item *addr,
 
 
 
-/* Default private options block for the redirect router. */
+/* Default private options block for the redirect router.
+Unlisted elements are 0/NULL/FALSE */
 
 redirect_router_options_block redirect_router_option_defaults = {
-  NULL,        /* directory_transport */
-  NULL,        /* file_transport */
-  NULL,        /* pipe_transport */
-  NULL,        /* reply_transport */
-  NULL,        /* data */
-  NULL,        /* directory_transport_name */
-  NULL,        /* file */
-  NULL,        /* file_dir */
-  NULL,        /* file_transport_name */
-  NULL,        /* include_directory */
-  NULL,        /* pipe_transport_name */
-  NULL,        /* reply_transport_name */
-  NULL,        /* sieve_subaddress */
-  NULL,        /* sieve_useraddress */
-  NULL,        /* sieve_vacation_directory */
-  NULL,        /* sieve_enotify_mailto_owner */
-  NULL,        /* syntax_errors_text */
-  NULL,        /* syntax_errors_to */
-  NULL,        /* qualify_domain */
-  NULL,        /* owners */
-  NULL,        /* owngroups */
-  022,         /* modemask */
-  RDO_REWRITE | RDO_PREPEND_HOME, /* bit_options */
-  FALSE,       /* check_ancestor */
-  TRUE_UNSET,  /* check_owner */
-  TRUE_UNSET,  /* check_group */
-  FALSE,       /* forbid_file */
-  FALSE,       /* forbid_filter_reply */
-  FALSE,       /* forbid_pipe */
-  FALSE,       /* forbid_smtp_code */
-  FALSE,       /* hide_child_in_errmsg */
-  FALSE,       /* one_time */
-  FALSE,       /* qualify_preserve_domain */
-  FALSE        /* skip_syntax_errors */
+  .modemask = 022,
+  .bit_options = RDO_REWRITE | RDO_PREPEND_HOME,
+  .check_owner = TRUE_UNSET,
+  .check_group = TRUE_UNSET,
 };
 
 
@@ -515,6 +486,7 @@ address_item_propagated addr_prop;
 error_block *eblock = NULL;
 ugid_block ugid;
 redirect_block redirect;
+sieve_block sieve;
 int filtertype = FILTER_UNSET;
 int yield = OK;
 int options = ob->bit_options;
@@ -594,11 +566,15 @@ redirect.pw = pw;
 redirect.string = (redirect.isfile = (ob->file != NULL))
   ? ob->file : ob->data;
 
-frc = rda_interpret(&redirect, options, ob->include_directory,
-  ob->sieve_vacation_directory, ob->sieve_enotify_mailto_owner,
-  ob->sieve_useraddress, ob->sieve_subaddress, &ugid, &generated,
-  &addr->message, ob->skip_syntax_errors? &eblock : NULL, &filtertype,
-  string_sprintf("%s router (recipient is %s)", rblock->name, addr->address));
+sieve.vacation_dir = ob->sieve_vacation_directory;
+sieve.enotify_mailto_owner = ob->sieve_enotify_mailto_owner;
+sieve.useraddress = ob->sieve_useraddress;
+sieve.subaddress = ob->sieve_subaddress;
+
+frc = rda_interpret(&redirect, options, ob->include_directory, &sieve, &ugid,
+  &generated, &addr->message, ob->skip_syntax_errors ? &eblock : NULL,
+  &filtertype, string_sprintf("%s router (recipient is %s)", rblock->name,
+  addr->address));
 
 qualify_domain_recipient = save_qualify_domain_recipient;
 

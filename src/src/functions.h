@@ -420,9 +420,9 @@ extern void    queue_run(qrunner *, const uschar *, const uschar *, BOOL);
 
 extern int     random_number(int);
 extern const uschar *rc_to_string(int);
-extern int     rda_interpret(redirect_block *, int, const uschar *, const uschar *,
-                 const uschar *, const uschar *, const uschar *, const ugid_block *, address_item **,
-                 uschar **, error_block **, int *, const uschar *);
+extern int     rda_interpret(redirect_block *, int, const uschar *,
+		const sieve_block *, const ugid_block *, address_item **,
+		uschar **, error_block **, int *, const uschar *);
 extern int     rda_is_filter(const uschar *);
 extern BOOL    readconf_depends(driver_instance *, uschar *);
 extern void    readconf_driver_init(uschar *, driver_instance **,
@@ -504,8 +504,7 @@ extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    sha1_end(hctx *, const uschar *, int, uschar *);
 extern void    sha1_mid(hctx *, const uschar *);
 extern void    sha1_start(hctx *);
-extern int     sieve_interpret(const uschar *, int, const uschar *,
-		 const uschar *, const uschar *, const uschar *,
+extern int     sieve_interpret(const uschar *, int, const sieve_block *,
 		 address_item **, uschar **);
 extern void    sigalrm_handler(int);
 extern void    single_queue_run(qrunner *, const uschar *, const uschar *);

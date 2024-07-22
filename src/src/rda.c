@@ -322,10 +322,7 @@ Arguments:
   rdata                     the redirection block
   options                   the options bits
   include_directory         restrain to this directory
-  sieve_vacation_directory  passed to sieve_interpret
-  sieve_enotify_mailto_owner passed to sieve_interpret
-  sieve_useraddress         passed to sieve_interpret
-  sieve_subaddress          passed to sieve_interpret
+  sieve			    passed to sieve_interpret
   generated                 where to hang generated addresses
   error                     for error messages
   eblockp                   for details of skipped syntax errors
@@ -341,9 +338,8 @@ Returns:                    a suitable return for rda_interpret()
 
 static int
 rda_extract(const redirect_block * rdata, int options,
-  const uschar * include_directory, const uschar * sieve_vacation_directory,
-  const uschar * sieve_enotify_mailto_owner, const uschar * sieve_useraddress,
-  const uschar * sieve_subaddress, address_item ** generated, uschar ** error,
+  const uschar * include_directory, const sieve_block * sieve,
+  address_item ** generated, uschar ** error,
   error_block ** eblockp, int * filtertype)
 {
 const uschar * data;
@@ -387,7 +383,7 @@ if (*filtertype != FILTER_FORWARD)
 
   if (*filtertype == FILTER_EXIM)
     {
-    if ((options & RDO_EXIM_FILTER) != 0)
+    if (options & RDO_EXIM_FILTER)
       {
       *error = US"Exim filtering not enabled";
       return FF_ERROR;
@@ -401,9 +397,7 @@ if (*filtertype != FILTER_FORWARD)
       *error = US"Sieve filtering not enabled";
       return FF_ERROR;
       }
-    frc = sieve_interpret(data, options, sieve_vacation_directory,
-      sieve_enotify_mailto_owner, sieve_useraddress, sieve_subaddress,
-      generated, error);
+    frc = sieve_interpret(data, options, sieve, generated, error);
     }
 
   expand_forbid = old_expand_forbid;
@@ -513,10 +507,7 @@ Arguments:
   options                   options to pass to the extraction functions,
                               plus ENOTDIR and EACCES handling bits
   include_directory         restrain :include: to this directory
-  sieve_vacation_directory  directory passed to sieve_interpret
-  sieve_enotify_mailto_owner passed to sieve_interpret
-  sieve_useraddress         passed to sieve_interpret
-  sieve_subaddress          passed to sieve_interpret
+  sieve			    passed to sieve_interpret
   ugid                      uid/gid to run under - if NULL, no change
   generated                 where to hang generated addresses, initially NULL
   error                     pointer for error message
@@ -543,9 +534,8 @@ Returns:        values from extraction function, or FF_NONEXIST:
 
 int
 rda_interpret(redirect_block * rdata, int options,
-  const uschar * include_directory, const uschar * sieve_vacation_directory,
-  const uschar * sieve_enotify_mailto_owner, const uschar * sieve_useraddress,
-  const uschar * sieve_subaddress, const ugid_block * ugid, address_item ** generated,
+  const uschar * include_directory, const sieve_block * sieve,
+  const ugid_block * ugid, address_item ** generated,
   uschar ** error, error_block ** eblockp, int * filtertype, const uschar * rname)
 {
 int fd, rc, pfd[2];
@@ -584,13 +574,13 @@ with #Exim filter or #Sieve filter, and does not contain :include:, do all the
 work in this process. Note that for a system filter, we always have a file, so
 the work is done in this process only if no user is supplied. */
 
-if (!ugid->uid_set ||                         /* Either there's no uid, or */
-    (!rdata->isfile &&                        /* We've got the data, and */
-     rda_is_filter(data) == FILTER_FORWARD && /* It's not a filter script, */
-     Ustrstr(data, ":include:") == NULL))     /* and there's no :include: */
-  return rda_extract(rdata, options, include_directory,
-    sieve_vacation_directory, sieve_enotify_mailto_owner, sieve_useraddress,
-    sieve_subaddress, generated, error, eblockp, filtertype);
+if (  !ugid->uid_set				/* Either there's no uid, or */
+   || (  !rdata->isfile				/* We've got the data, and */
+      && rda_is_filter(data) == FILTER_FORWARD	/* It's not a filter script, */
+      && Ustrstr(data, ":include:") == NULL	/* and there's no :include: */
+   )  )
+  return rda_extract(rdata, options, include_directory, sieve,
+		    generated, error, eblockp, filtertype);
 
 /* We need to run the processing code in a sub-process. However, if we can
 determine the non-existence of a file first, we can decline without having to
@@ -642,9 +632,8 @@ if ((pid = exim_fork(US"router-interpret")) == 0)
 
   /* Now do the business */
 
-  yield = rda_extract(rdata, options, include_directory,
-    sieve_vacation_directory, sieve_enotify_mailto_owner, sieve_useraddress,
-    sieve_subaddress, generated, error, eblockp, filtertype);
+  yield = rda_extract(rdata, options, include_directory, sieve,
+		      generated, error, eblockp, filtertype);
 
   /* Pass back whether it was a filter, and the return code and any overall
   error text via the pipe. */

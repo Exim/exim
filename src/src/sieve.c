@@ -3508,10 +3508,11 @@ Arguments:
   filter      points to the entire file, read into store as a single string
   options     controls whether various special things are allowed, and requests
               special actions (not currently used)
-  vacation_directory    where to store vacation "once" files
-  enotify_mailto_owner  owner of mailto notifications
-  useraddress string expression for :user part of address
-  subaddress  string expression for :subaddress part of address
+  sieve
+    vacation_directory		where to store vacation "once" files
+    enotify_mailto_owner	owner of mailto notifications
+    useraddress			string expression for :user part of address
+    subaddress			string expression for :subaddress part of address
   generated   where to hang newly-generated addresses
   error       where to pass back an error text
 
@@ -3524,9 +3525,7 @@ Returns:      FF_DELIVERED     success, a significant action was taken
 */
 
 int
-sieve_interpret(const uschar * filter, int options,
-  const uschar * vacation_directory, const uschar * enotify_mailto_owner,
-  const uschar * useraddress, const uschar * subaddress,
+sieve_interpret(const uschar * filter, int options, const sieve_block * sb,
   address_item ** generated, uschar ** error)
 {
 struct Sieve sieve;
@@ -3537,29 +3536,29 @@ DEBUG(D_route) debug_printf_indent("Sieve: start of processing\n");
 expand_level++;
 sieve.filter = filter;
 
-if (!vacation_directory)
+if (!sb || !sb->vacation_dir)
   sieve.vacation_directory = NULL;
-else if (!(sieve.vacation_directory = expand_cstring(vacation_directory)))
+else if (!(sieve.vacation_directory = expand_cstring(sb->vacation_dir)))
   {
   *error = string_sprintf("failed to expand \"%s\" "
-    "(sieve_vacation_directory): %s", vacation_directory,
+    "(sieve_vacation_directory): %s", sb->vacation_dir,
     expand_string_message);
   return FF_ERROR;
   }
 
-if (!enotify_mailto_owner)
+if (!sb || !sb->enotify_mailto_owner)
   sieve.enotify_mailto_owner = NULL;
-else if (!(sieve.enotify_mailto_owner = expand_cstring(enotify_mailto_owner)))
+else if (!(sieve.enotify_mailto_owner = expand_cstring(sb->enotify_mailto_owner)))
   {
   *error = string_sprintf("failed to expand \"%s\" "
-    "(sieve_enotify_mailto_owner): %s", enotify_mailto_owner,
+    "(sieve_enotify_mailto_owner): %s", sb->enotify_mailto_owner,
     expand_string_message);
   return FF_ERROR;
   }
 
-sieve.useraddress = useraddress
-  ? useraddress : CUS "$local_part_prefix$local_part$local_part_suffix";
-sieve.subaddress = subaddress;
+sieve.useraddress = sb && sb->useraddress
+  ? sb->useraddress : CUS "$local_part_prefix$local_part$local_part_suffix";
+sieve.subaddress = sb ? sb->subaddress : NULL;
 
 #ifdef COMPILE_SYNTAX_CHECKER
 if (parse_start(&sieve, 0, generated) == 1)
