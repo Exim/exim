@@ -19,6 +19,9 @@ JH/02 Add transaction support for hintsdbs. The providers supported are tdb and
 JH/03 With dkim_verify_minimal, avoid calling the DKIM ACL after the first
       good verify.
 
+JH/04 Remove the docs and support scripts dealing with conversion of Exim
+      version 3 installations.
+
 Exim version 4.98
 -----------------
 

@@ -250,8 +250,7 @@ macro.c: macro_predef
 
 utils: $(EXIM_MONITOR) exicyclog exinext exiwhat \
         exigrep eximstats exipick exiqgrep exiqsumm \
-        transport-filter.pl convert4r3 convert4r4 \
-        exim_checkaccess \
+        transport-filter.pl exim_checkaccess \
         exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb \
 	exim_lock exim_msgdate exim_id_update
 
@@ -489,30 +488,6 @@ transport-filter.pl: config ../src/transport-filter.src
 	@mv transport-filter.pl-t transport-filter.pl
 	@chmod a+x transport-filter.pl
 	@echo ">>> transport-filter.pl script built"
-
-convert4r3: config ../src/convert4r3.src
-	@rm -f convert4r3
-	@. ./version.sh && sed \
-	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
-	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
-	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/convert4r3.src > convert4r3-t
-	@mv convert4r3-t convert4r3
-	@chmod a+x convert4r3
-	@./convert4r3 -v 2>&1 >/dev/null
-	@echo ">>> convert4r3 script built"
-
-convert4r4: config ../src/convert4r4.src
-	@rm -f convert4r4
-	@. ./version.sh && sed \
-	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
-	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
-	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/convert4r4.src > convert4r4-t
-	@mv convert4r4-t convert4r4
-	@chmod a+x convert4r4
-	@./convert4r4 -v 2>&1 >/dev/null
-	@echo ">>> convert4r4 script built"
 
 
 # These are objects of optional features. They are always compiled, but
