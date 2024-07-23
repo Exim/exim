@@ -376,13 +376,12 @@ DEBUG(D_hints_lookup)
 *             Read from database file            *
 *************************************************/
 
-/* Passing back the pointer unchanged is useless, because there is
+/* Read, using a defined-length key (permitting embedded NULs).
+
+Passing back the pointer unchanged is useless, because there is
 no guarantee of alignment. Since all the records used by Exim need
 to be properly aligned to pick out the timestamps, etc., we might as
 well do the copying centrally here.
-
-Most calls don't need the length, so there is a macro called dbfn_read which
-has two arguments; it calls this function adding NULL as the third.
 
 Arguments:
   dbblock   a pointer to an open database block
@@ -421,9 +420,11 @@ if (!exim_dbget(dbblock->dbptr, &key_datum, &result_datum))
 store the taint status with the data. */
 
 dlen = exim_datum_size_get(&result_datum);
-yield = store_get(dlen, GET_TAINTED);
-memcpy(yield, exim_datum_data_get(&result_datum), dlen);
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: size %u return\n", dlen);
+
+yield = store_get(dlen+1, GET_TAINTED);
+memcpy(yield, exim_datum_data_get(&result_datum), dlen);
+((uschar *)yield)[dlen] = '\0';
 if (length) *length = dlen;
 
 exim_datum_free(&result_datum);    /* Some DBM libs require freeing */
@@ -431,7 +432,11 @@ return yield;
 }
 
 
-/*
+/* Read, using a NUL-terminated key.
+
+Most calls don't need the length, so there is a macro called dbfn_read which
+has two arguments; it calls this function adding NULL as the third.
+
 Arguments:
   dbblock   a pointer to an open database block
   key       the key of the record to be read (NUL-terminated)
