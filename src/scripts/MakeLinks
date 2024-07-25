@@ -78,7 +78,7 @@ cd $d
 for f in README Makefile call_pam.c call_pwcheck.c \
   call_radius.c check_serv_cond.c cyrus_sasl.c cyrus_sasl.h gsasl_exim.c \
   gsasl_exim.h get_data.c get_no64_data.c heimdal_gssapi.c heimdal_gssapi.h \
-  xtextencode.c xtextdecode.c cram_md5.c cram_md5.h plaintext.c plaintext.h \
+  cram_md5.c cram_md5.h plaintext.c plaintext.h \
   pwcheck.c pwcheck.h auth-spa.c auth-spa.h dovecot.c dovecot.h sha1.c spa.c \
   spa.h tls.c tls.h external.c external.h
 do
@@ -125,7 +125,7 @@ for f in blob.h dbfunctions.h exim.h functions.h globals.h \
   sieve.c smtp_in.c smtp_out.c spool_in.c spool_out.c std-crypto.c store.c \
   string.c tls.c tlscert-gnu.c tlscert-openssl.c tls-cipher-stdname.c \
   tls-gnu.c tls-openssl.c \
-  tod.c transport.c tree.c verify.c version.c \
+  tod.c transport.c tree.c verify.c version.c xtextencode.c \
   dkim.c dkim.h dkim_transport.c dmarc.c dmarc.h \
   valgrind.h memcheck.h \
   macro_predef.c macro_predef.h

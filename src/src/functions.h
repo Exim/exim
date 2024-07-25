@@ -137,8 +137,6 @@ extern int     auth_get_no64_data(uschar **, uschar *);
 extern int     auth_prompt(const uschar *);
 extern int     auth_read_input(const uschar *);
 extern gstring * auth_show_supported(gstring *);
-extern uschar *auth_xtextencode(uschar *, int);
-extern int     auth_xtextdecode(uschar *, uschar **);
 extern uschar *authenticator_current_name(void);
 
 #ifdef EXPERIMENTAL_ARC
@@ -693,6 +691,8 @@ extern uschar *wrap_header(const uschar *, unsigned, unsigned, const uschar *, u
 extern uschar * xclient_smtp_command(uschar *, int *, BOOL *);
 extern gstring * xclient_smtp_advertise_str(gstring *);
 #endif
+extern uschar *xtextencode(uschar *, int);
+extern int     xtextdecode(uschar *, uschar **);
 
 
 /******************************************************************************/

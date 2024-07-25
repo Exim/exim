@@ -8329,7 +8329,7 @@ NOT_ITEM: ;
       case EOP_XTEXTD:
 	{
 	uschar * s;
-	int len = auth_xtextdecode(sub, &s);
+	int len = xtextdecode(sub, &s);
 	yield = string_catn(yield, s, len);
 	break;
 	}

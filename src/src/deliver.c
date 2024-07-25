@@ -6085,7 +6085,7 @@ wording. */
     {
     /* must be decoded from xtext: see RFC 3461:6.3a */
     uschar * xdec_envid;
-    if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
+    if (xtextdecode(dsn_envid, &xdec_envid) > 0)
       fprintf(fp, "Original-Envelope-ID: %s\n", dsn_envid);
     else
       fprintf(fp, "X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");
@@ -6390,7 +6390,7 @@ if (dsn_envid)
   {
   /* must be decoded from xtext: see RFC 3461:6.3a */
   uschar *xdec_envid;
-  if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
+  if (xtextdecode(dsn_envid, &xdec_envid) > 0)
     fprintf(f,"Original-Envelope-ID: %s\n", dsn_envid);
   else
     fprintf(f,"X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");
@@ -6549,7 +6549,7 @@ if (addr_senddsn)
     if (dsn_envid)
       {			/* must be decoded from xtext: see RFC 3461:6.3a */
       uschar * xdec_envid;
-      if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
+      if (xtextdecode(dsn_envid, &xdec_envid) > 0)
         fprintf(f, "Original-Envelope-ID: %s\n", dsn_envid);
       else
         fprintf(f, "X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");

@@ -66,7 +66,7 @@ Returns:      the number of bytes in the result, excluding the final zero;
 static int
 xclient_xtextdecode(uschar * code, uschar * end, uschar ** ptr)
 {
-return auth_xtextdecode(string_copyn(code, end-code), ptr);
+return xtextdecode(string_copyn(code, end-code), ptr);
 }
 
 /*************************************************

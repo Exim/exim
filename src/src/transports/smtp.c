@@ -1809,7 +1809,7 @@ if (  (f.smtp_authenticated || ob->authenticated_sender_force)
    && local_authenticated_sender)
   {
   string_format_nt(p, sizeof(sx->buffer) - (p-sx->buffer), " AUTH=%s",
-    auth_xtextencode(local_authenticated_sender,
+    xtextencode(local_authenticated_sender,
       Ustrlen(local_authenticated_sender)));
   client_authenticated_sender = string_copy(local_authenticated_sender);
   }

@@ -4565,7 +4565,7 @@ while (done <= 0)
 	      int rc;
 	      uschar *ignore_msg;
 
-	      if (auth_xtextdecode(value, &authenticated_sender) < 0)
+	      if (xtextdecode(value, &authenticated_sender) < 0)
 		{
 		/* Put back terminator overrides for error message */
 		value[-1] = '=';
