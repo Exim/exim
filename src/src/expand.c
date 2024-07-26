@@ -2487,6 +2487,7 @@ if (!name[0])
     "but found \"%.16s\"", s);
   return -1;
   }
+DEBUG(D_expand) debug_printf_indent("cond: %s\n", name);
 if (opname)
   *opname = string_copy(name);
 
@@ -2639,19 +2640,18 @@ Returns:   a pointer to the first character after the condition, or
 static const uschar *
 eval_condition(const uschar * s, BOOL * resetok, BOOL * yield)
 {
-BOOL testfor = TRUE;
-BOOL tempcond, combined_cond;
+BOOL testfor = TRUE, tempcond, combined_cond;
 BOOL * subcondptr;
-BOOL sub2_honour_dollar = TRUE;
-BOOL is_forany, is_json, is_jsons;
+BOOL sub2_honour_dollar = TRUE, is_forany, is_json, is_jsons;
 int rc, cond_type;
 int_eximarith_t num[2];
 struct stat statbuf;
 uschar * opname;
 uschar name[256];
-const uschar * sub[10];
+const uschar * sub[10], * next;
 unsigned sub_textonly = 0;
 
+expand_level++;
 for (;;)
   if (Uskip_whitespace(&s) == '!') { testfor = !testfor; s++; } else break;
 
@@ -2667,7 +2667,7 @@ switch(cond_type = identify_operator(&s, &opname))
     if (*s != ':')
       {
       expand_string_message = US"\":\" expected after \"def\"";
-      return NULL;
+      goto failout;
       }
 
     s = read_name(name, sizeof(name), s+1, US"_");
@@ -2701,12 +2701,12 @@ switch(cond_type = identify_operator(&s, &opname))
 	  ? string_sprintf("unknown variable \"%s\" after \"def:\"", name)
 	  : US"variable name omitted after \"def:\"";
 	check_variable_error_message(name);
-	return NULL;
+	goto failout;
 	}
       if (yield) *yield = (t[0] != 0) == testfor;
       }
 
-    return s;
+    next = s; goto out;
     }
 
 
@@ -2714,14 +2714,14 @@ switch(cond_type = identify_operator(&s, &opname))
 
   case ECOND_FIRST_DELIVERY:
   if (yield) *yield = f.deliver_firsttime == testfor;
-  return s;
+  next = s; goto out;
 
 
   /* queue_running tests for any process started by a queue runner */
 
   case ECOND_QUEUE_RUNNING:
   if (yield) *yield = (queue_run_pid != (pid_t)0) == testfor;
-  return s;
+  next = s; goto out;
 
 
   /* exists:  tests for file existence
@@ -2750,13 +2750,13 @@ switch(cond_type = identify_operator(&s, &opname))
     sub[0] = expand_string_internal(s+1,
       ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | (yield ? ESI_NOFLAGS : ESI_SKIPPING),
       &s, resetok, &textonly);
-    if (!sub[0]) return NULL;
+    if (!sub[0]) goto failout;
     if (textonly) sub_textonly |= BIT(0);
    }
   /* {-for-text-editors */
   if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
-  if (!yield) return s;   /* No need to run the test if skipping */
+  if (!yield) { next = s; goto out; }  /* No need to run the test if skipping */
 
   switch(cond_type)
     {
@@ -2764,7 +2764,7 @@ switch(cond_type = identify_operator(&s, &opname))
     if ((expand_forbid & RDO_EXISTS) != 0)
       {
       expand_string_message = US"File existence tests are not permitted";
-      return NULL;
+      goto failout;
       }
     *yield = (Ustat(sub[0], &statbuf) == 0) == testfor;
     break;
@@ -2830,11 +2830,11 @@ switch(cond_type = identify_operator(&s, &opname))
     #if defined(SUPPORT_PAM) || defined(RADIUS_CONFIG_FILE) || \
         defined(LOOKUP_LDAP) || defined(CYRUS_PWCHECK_SOCKET)
     END_AUTH:
-    if (rc == ERROR || rc == DEFER) return NULL;
+    if (rc == ERROR || rc == DEFER) goto failout;
     *yield = (rc == OK) == testfor;
     #endif
     }
-  return s;
+  next = s; goto out;
 
 
   /* call ACL (in a conditional context).  Accept true, deny false.
@@ -2863,7 +2863,7 @@ switch(cond_type = identify_operator(&s, &opname))
       case 1: expand_string_message = US"too few arguments or bracketing "
         "error for acl";
       case 2:
-      case 3: return NULL;
+      case 3: goto failout;
       }
 
     if (yield)
@@ -2887,10 +2887,10 @@ switch(cond_type = identify_operator(&s, &opname))
 	default:
           expand_string_message = string_sprintf("%s from acl \"%s\"",
 	    rc_names[rc], sub[0]);
-	  return NULL;
+	  goto failout;
 	}
       }
-    return s;
+    next = s; goto out;
     }
 
 
@@ -2915,17 +2915,17 @@ switch(cond_type = identify_operator(&s, &opname))
       case 1: expand_string_message = US"too few arguments or bracketing "
 	"error for saslauthd";
       case 2:
-      case 3: return NULL;
+      case 3: goto failout;
       }
     if (!sub[2]) sub[3] = NULL;  /* realm if no service */
     if (yield)
       {
       int rc = auth_call_saslauthd(sub[0], sub[1], sub[2], sub[3],
 	&expand_string_message);
-      if (rc == ERROR || rc == DEFER) return NULL;
+      if (rc == ERROR || rc == DEFER) goto failout;
       *yield = (rc == OK) == testfor;
       }
-    return s;
+    next = s; goto out;
     }
 #endif /* CYRUS_SASLAUTHD_SOCKET */
 
@@ -2994,10 +2994,10 @@ switch(cond_type = identify_operator(&s, &opname))
       if (i == 0) goto COND_FAILED_CURLY_START;
       expand_string_message = string_sprintf("missing 2nd string in {} "
         "after \"%s\"", opname);
-      return NULL;
+      goto failout;
       }
     if (!(sub[i] = expand_string_internal(s+1, flags, &s, resetok, &textonly)))
-      return NULL;
+      goto failout;
     if (textonly) sub_textonly |= BIT(i);
     DEBUG(D_expand) if (i == 1 && !sub2_honour_dollar && Ustrchr(sub[1], '$'))
       debug_printf_indent("WARNING: the second arg is NOT expanded,"
@@ -3018,13 +3018,13 @@ switch(cond_type = identify_operator(&s, &opname))
       else
         {
         num[i] = expanded_string_integer(sub[i], FALSE);
-        if (expand_string_message) return NULL;
+        if (expand_string_message) goto failout;
         }
     }
 
   /* Result not required */
 
-  if (!yield) return s;
+  if (!yield) { next = s; goto out; }
 
   /* Do an appropriate comparison */
 
@@ -3082,7 +3082,7 @@ switch(cond_type = identify_operator(&s, &opname))
 		  sub_textonly & BIT(1) ? MCS_CACHEABLE : MCS_NOFLAGS,
 		  &expand_string_message, pcre_gen_cmp_ctx);
       if (!re)
-	return NULL;
+	goto failout;
 
       tempcond = regex_match_and_setup(re, sub[0], 0, -1);
       break;
@@ -3103,7 +3103,7 @@ switch(cond_type = identify_operator(&s, &opname))
 	{
 	expand_string_message = string_sprintf("\"%s\" is not an IP address",
 	  sub[0]);
-	return NULL;
+	goto failout;
 	}
       else
 	{
@@ -3147,7 +3147,7 @@ switch(cond_type = identify_operator(&s, &opname))
 	case DEFER:
 	  expand_string_message = string_sprintf("unable to complete match "
 	    "against \"%s\": %s", sub[1], search_error_message);
-	  return NULL;
+	  goto failout;
 	}
 
       break;
@@ -3256,7 +3256,7 @@ switch(cond_type = identify_operator(&s, &opname))
 	  {
 	  expand_string_message = string_sprintf("unknown encryption mechanism "
 	    "in \"%s\"", sub[1]);
-	  return NULL;
+	  goto failout;
 	  }
 
 	switch(which)
@@ -3287,7 +3287,7 @@ switch(cond_type = identify_operator(&s, &opname))
 	  {
 	  expand_string_message = string_sprintf("crypt error: %s\n",
 	    US strerror(errno));
-	  return NULL;
+	  goto failout;
 	  }
 	}
       break;
@@ -3323,7 +3323,7 @@ switch(cond_type = identify_operator(&s, &opname))
     }   /* Switch for comparison conditions */
 
   *yield = tempcond == testfor;
-  return s;    /* End of comparison conditions */
+  next = s; goto out;    /* End of comparison conditions */
 
 
   /* and/or: computes logical and/or of several conditions */
@@ -3344,14 +3344,14 @@ switch(cond_type = identify_operator(&s, &opname))
       {
       expand_string_message = string_sprintf("each subcondition "
         "inside an \"%s{...}\" condition must be in its own {}", opname);
-      return NULL;
+      goto failout;
       }
 
     if (!(s = eval_condition(s+1, resetok, subcondptr)))
       {
       expand_string_message = string_sprintf("%s inside \"%s{...}\" condition",
         expand_string_message, opname);
-      return NULL;
+      goto failout;
       }
     Uskip_whitespace(&s);
 
@@ -3361,7 +3361,7 @@ switch(cond_type = identify_operator(&s, &opname))
       /* {-for-text-editors */
       expand_string_message = string_sprintf("missing } at end of condition "
         "inside \"%s\" group", opname);
-      return NULL;
+      goto failout;
       }
 
     if (yield)
@@ -3378,7 +3378,7 @@ switch(cond_type = identify_operator(&s, &opname))
     }
 
   if (yield) *yield = (combined_cond == testfor);
-  return ++s;
+  next = ++s; goto out;
 
 
   /* forall/forany: iterates a condition with different values */
@@ -3403,7 +3403,7 @@ switch(cond_type = identify_operator(&s, &opname))
     if (!(sub[0] = expand_string_internal(s,
       ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | (yield ? ESI_NOFLAGS : ESI_SKIPPING),
       &s, resetok, NULL)))
-      return NULL;
+      goto failout;
     /* {-for-text-editors */
     if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
@@ -3420,7 +3420,7 @@ switch(cond_type = identify_operator(&s, &opname))
       {
       expand_string_message = string_sprintf("%s inside \"%s\" condition",
         expand_string_message, opname);
-      return NULL;
+      goto failout;
       }
     Uskip_whitespace(&s);
 
@@ -3430,7 +3430,7 @@ switch(cond_type = identify_operator(&s, &opname))
       /* {-for-text-editors */
       expand_string_message = string_sprintf("missing } at end of condition "
         "inside \"%s\"", opname);
-      return NULL;
+      goto failout;
       }
 
     if (yield) *yield = !testfor;
@@ -3446,7 +3446,7 @@ switch(cond_type = identify_operator(&s, &opname))
 	    string_sprintf("%s wrapping string result for extract jsons",
 	      expand_string_message);
 	  iterate_item = save_iterate_item;
-	  return NULL;
+	  goto failout;
 	  }
 
       DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", opname, iterate_item);
@@ -3455,7 +3455,7 @@ switch(cond_type = identify_operator(&s, &opname))
         expand_string_message = string_sprintf("%s inside \"%s\" condition",
           expand_string_message, opname);
         iterate_item = save_iterate_item;
-        return NULL;
+        goto failout;
         }
       DEBUG(D_expand) debug_printf_indent("%s: condition evaluated to %s\n", opname,
         tempcond? "true":"false");
@@ -3465,7 +3465,7 @@ switch(cond_type = identify_operator(&s, &opname))
       }
 
     iterate_item = save_iterate_item;
-    return s;
+    next = s; goto out;
     }
 
 
@@ -3498,7 +3498,7 @@ switch(cond_type = identify_operator(&s, &opname))
                   ourname);
       /*FALLTHROUGH*/
       case 2:
-      case 3: return NULL;
+      case 3: goto failout;
       }
     t = sub_arg[0];
     Uskip_whitespace(&t);
@@ -3539,12 +3539,12 @@ switch(cond_type = identify_operator(&s, &opname))
       {
       expand_string_message = string_sprintf("unrecognised boolean "
        "value \"%s\"", t);
-      return NULL;
+      goto failout;
       }
     DEBUG(D_expand) debug_printf_indent("%s: condition evaluated to %s\n", ourname,
         boolvalue? "true":"false");
     if (yield) *yield = (boolvalue == testfor);
-    return s;
+    next = s; goto out;
     }
 
 #ifdef SUPPORT_SRS
@@ -3565,7 +3565,7 @@ switch(cond_type = identify_operator(&s, &opname))
       case 1: expand_string_message = US"too few arguments or bracketing "
 	"error for inbound_srs";
       case 2:
-      case 3: return NULL;
+      case 3: goto failout;
       }
 
     /* Match the given local_part against the SRS-encoded pattern */
@@ -3650,7 +3650,7 @@ switch(cond_type = identify_operator(&s, &opname))
 srs_result:
     /* pcre2_match_data_free(md);	gen ctx needs no free */
     if (yield) *yield = (boolvalue == testfor);
-    return s;
+    next = s; goto out;
     }
 #endif /*SUPPORT_SRS*/
 
@@ -3659,19 +3659,19 @@ srs_result:
   default:
     if (!expand_string_message || !*expand_string_message)
       expand_string_message = string_sprintf("unknown condition \"%s\"", opname);
-    return NULL;
+    goto failout;
   }   /* End switch on condition type */
 
 /* Missing braces at start and end of data */
 
 COND_FAILED_CURLY_START:
 expand_string_message = string_sprintf("missing { after \"%s\"", opname);
-return NULL;
+goto failout;
 
 COND_FAILED_CURLY_END:
 expand_string_message = string_sprintf("missing } at end of \"%s\" condition",
   opname);
-return NULL;
+goto failout;
 
 /* A condition requires code that is not compiled */
 
@@ -3681,8 +3681,14 @@ return NULL;
 COND_FAILED_NOT_COMPILED:
 expand_string_message = string_sprintf("support for \"%s\" not compiled",
   opname);
-return NULL;
+goto failout;
 #endif
+
+failout:
+  next = NULL;
+out:
+  expand_level--;
+  return next;
 }
 
 

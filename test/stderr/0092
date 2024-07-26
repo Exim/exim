@@ -73,16 +73,17 @@ try option message_size_limit
 host in host_lookup? no (option unset)
 set_process_info: pppp handling incoming connection from [V4NET.0.0.1]
  ╭considering: ${if░eq░{V4NET.0.0.1}░{$sender_host_address}░{2}░{30}}s
-  ╭considering: V4NET.0.0.1}░{$sender_host_address}░{2}░{30}}s
-  ├───────text: V4NET.0.0.1
-  ├considering: }░{$sender_host_address}░{2}░{30}}s
-  ├───expanded: V4NET.0.0.1
-  ╰─────result: V4NET.0.0.1
-  ╭considering: $sender_host_address}░{2}░{30}}s
-  ├──────value: V4NET.0.0.1
-  ├considering: }░{2}░{30}}s
-  ├───expanded: $sender_host_address
-  ╰─────result: V4NET.0.0.1
+  cond: eq
+   ╭considering: V4NET.0.0.1}░{$sender_host_address}░{2}░{30}}s
+   ├───────text: V4NET.0.0.1
+   ├considering: }░{$sender_host_address}░{2}░{30}}s
+   ├───expanded: V4NET.0.0.1
+   ╰─────result: V4NET.0.0.1
+   ╭considering: $sender_host_address}░{2}░{30}}s
+   ├──────value: V4NET.0.0.1
+   ├considering: }░{2}░{30}}s
+   ├───expanded: $sender_host_address
+   ╰─────result: V4NET.0.0.1
  ├──condition: eq░{V4NET.0.0.1}░{$sender_host_address}
  ├─────result: true
   ╭considering: 2}░{30}}s

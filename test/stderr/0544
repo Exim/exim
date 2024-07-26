@@ -32,6 +32,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:sender_rcvhost
  ├─────result: false
   ╭───scanning: from░$sender_rcvhost↩
@@ -75,6 +76,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
+   cond: def
   ├──condition: def:sender_ident
   ├─────result: true
    ╭considering: from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
@@ -128,6 +130,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
+   cond: def
   ├──condition: def:sender_helo_name
   ├─────result: false
    ╭───scanning: (helo=$sender_helo_name)↩
@@ -194,6 +197,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:received_protocol
  ├─────result: true
   ╭considering: with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
@@ -227,6 +231,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
@@ -239,6 +244,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:tls_in_cipher_std
  ├─────result: false
   ╭───scanning: ░tls░$tls_in_cipher_std↩
@@ -288,6 +294,7 @@ try option received_header_text
  ├considering: ${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:sender_address
  ├─────result: true
   ╭considering: (envelope-from░<$sender_address>)↩
@@ -319,6 +326,7 @@ try option received_header_text
  ├──────value: 10HmaX-000000005vi-0000
  ├considering: ${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:received_for
  ├─────result: false
   ╭───scanning: ↩
@@ -385,39 +393,43 @@ LOG: MAIN
   == userx@domain2.ex R=smarthost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 try option delay_warning_condition
  ╭considering: ${if░or░{{░!eq{$h_list-id:$h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ╭considering: $h_list-id:$h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├considering: $h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├considering: $h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├considering: }{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├───expanded: $h_list-id:$h_list-post:$h_list-subscribe:
-  ╰─────result: 
-  ╭considering: }░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├───expanded: 
-  ╰─────result: 
-  ╭considering: $h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├considering: }{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├───expanded: $h_precedence:
-  ╰─────result: 
-  ╭considering: (?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├───────text: (?i)bulk|list|junk
-  ├considering: }░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├───expanded: (?i)bulk|list|junk
-  ╰─────result: (?i)bulk|list|junk
- compiled RE '(?i)bulk|list|junk' not found in local cache
- compiling RE '(?i)bulk|list|junk'
- compiled RE '(?i)bulk|list|junk' saved in local cache
-  ╭considering: $h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├considering: }{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├───expanded: $h_auto-submitted:
-  ╰─────result: 
-  ╭considering: (?i)auto-generated|auto-replied}░}}░{no}{yes}}
-  ├───────text: (?i)auto-generated|auto-replied
-  ├considering: }░}}░{no}{yes}}
-  ├───expanded: (?i)auto-generated|auto-replied
-  ╰─────result: (?i)auto-generated|auto-replied
- compiled RE '(?i)auto-generated|auto-replied' not found in local cache
- compiling RE '(?i)auto-generated|auto-replied'
- compiled RE '(?i)auto-generated|auto-replied' saved in local cache
+  cond: or
+   cond: eq
+   ╎╭considering: $h_list-id:$h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├considering: $h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├considering: $h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├considering: }{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├───expanded: $h_list-id:$h_list-post:$h_list-subscribe:
+   ╎╰─────result: 
+   ╎╭considering: }░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├───expanded: 
+   ╎╰─────result: 
+   cond: match
+   ╎╭considering: $h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├considering: }{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├───expanded: $h_precedence:
+   ╎╰─────result: 
+   ╎╭considering: (?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├───────text: (?i)bulk|list|junk
+   ╎├considering: }░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├───expanded: (?i)bulk|list|junk
+   ╎╰─────result: (?i)bulk|list|junk
+   compiled RE '(?i)bulk|list|junk' not found in local cache
+   compiling RE '(?i)bulk|list|junk'
+   compiled RE '(?i)bulk|list|junk' saved in local cache
+   cond: match
+   ╎╭considering: $h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├considering: }{(?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├───expanded: $h_auto-submitted:
+   ╎╰─────result: 
+   ╎╭considering: (?i)auto-generated|auto-replied}░}}░{no}{yes}}
+   ╎├───────text: (?i)auto-generated|auto-replied
+   ╎├considering: }░}}░{no}{yes}}
+   ╎├───expanded: (?i)auto-generated|auto-replied
+   ╎╰─────result: (?i)auto-generated|auto-replied
+   compiled RE '(?i)auto-generated|auto-replied' not found in local cache
+   compiling RE '(?i)auto-generated|auto-replied'
+   compiled RE '(?i)auto-generated|auto-replied' saved in local cache
  ├──condition: or░{{░!eq{$h_list-id:$h_list-post:$h_list-subscribe:}{}░}{░match{$h_precedence:}{(?i)bulk|list|junk}░}{░match{$h_auto-submitted:}{(?i)auto-generated|auto-replied}░}}
  ├─────result: false
   ╭───scanning: no}{yes}}
@@ -465,24 +477,25 @@ try option smtp_banner
  ╰─────result: the.local.host.name░ESMTP░Exim░x.yz░Tue,░2░Mar░1999░09:44:33░+0000
 try option acl_smtp_helo
  ╭considering: ${if░match_domain░{$sender_helo_name}{+dlist}}
-  ╭considering: $sender_helo_name}{+dlist}}
-  ├──────value: ehlo.domain
-             ╰──(tainted)
-  ├considering: }{+dlist}}
-  ├───expanded: $sender_helo_name
-  ╰─────result: ehlo.domain
-             ╰──(tainted)
-  ╭considering: +dlist}}
-  ├───────text: +dlist
-  ├considering: }}
-  ├───expanded: +dlist
-  ╰─────result: +dlist
-  ╭considering: $domain
-  ├──────value: ehlo.domain
-             ╰──(tainted)
-  ├───expanded: $domain
-  ╰─────result: ehlo.domain
-             ╰──(tainted)
+  cond: match_domain
+   ╭considering: $sender_helo_name}{+dlist}}
+   ├──────value: ehlo.domain
+              ╰──(tainted)
+   ├considering: }{+dlist}}
+   ├───expanded: $sender_helo_name
+   ╰─────result: ehlo.domain
+              ╰──(tainted)
+   ╭considering: +dlist}}
+   ├───────text: +dlist
+   ├considering: }}
+   ├───expanded: +dlist
+   ╰─────result: +dlist
+   ╭considering: $domain
+   ├──────value: ehlo.domain
+              ╰──(tainted)
+   ├───expanded: $domain
+   ╰─────result: ehlo.domain
+              ╰──(tainted)
  ├──condition: match_domain░{$sender_helo_name}{+dlist}
  ├─────result: true
  ├───expanded: ${if░match_domain░{$sender_helo_name}{+dlist}}

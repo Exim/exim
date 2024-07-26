@@ -25,19 +25,20 @@ try option unknown_login
  ╭considering: match:░░${if░match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
  ├───────text: match:░░
  ├considering: ${if░match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  ╭considering: abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  ├───────text: abcd
-  ├considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  ├───expanded: abcd
-  ╰─────result: abcd
-  ╭considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
-  ├──protected: ^([ab]+)(\w+)$
-  ├considering: }{$2$1}fail}
-  ├───expanded: \N^([ab]+)(\w+)$\N
-  ╰─────result: ^([ab]+)(\w+)$
- compiled RE '^([ab]+)(\w+)$' not found in local cache
- compiling RE '^([ab]+)(\w+)$'
- compiled RE '^([ab]+)(\w+)$' saved in local cache
+  cond: match
+   ╭considering: abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+   ├───────text: abcd
+   ├considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+   ├───expanded: abcd
+   ╰─────result: abcd
+   ╭considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+   ├──protected: ^([ab]+)(\w+)$
+   ├considering: }{$2$1}fail}
+   ├───expanded: \N^([ab]+)(\w+)$\N
+   ╰─────result: ^([ab]+)(\w+)$
+  compiled RE '^([ab]+)(\w+)$' not found in local cache
+  compiling RE '^([ab]+)(\w+)$'
+  compiled RE '^([ab]+)(\w+)$' saved in local cache
  ├──condition: match{abcd}{\N^([ab]+)(\w+)$\N}
  ├─────result: true
   ╭considering: $2$1}fail}
@@ -53,17 +54,18 @@ try option unknown_login
  ╭considering: match:░░${if░match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
  ├───────text: match:░░
  ├considering: ${if░match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  ╭considering: wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  ├───────text: wxyz
-  ├considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  ├───expanded: wxyz
-  ╰─────result: wxyz
-  ╭considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
-  ├──protected: ^([ab]+)(\w+)$
-  ├considering: }{$2$1}fail}
-  ├───expanded: \N^([ab]+)(\w+)$\N
-  ╰─────result: ^([ab]+)(\w+)$
- compiled RE '^([ab]+)(\w+)$' found in local cache
+  cond: match
+   ╭considering: wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+   ├───────text: wxyz
+   ├considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+   ├───expanded: wxyz
+   ╰─────result: wxyz
+   ╭considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+   ├──protected: ^([ab]+)(\w+)$
+   ├considering: }{$2$1}fail}
+   ├───expanded: \N^([ab]+)(\w+)$\N
+   ╰─────result: ^([ab]+)(\w+)$
+  compiled RE '^([ab]+)(\w+)$' found in local cache
  ├──condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
  ├─────result: false
   ╭───scanning: $2$1}fail}
@@ -76,16 +78,17 @@ try option unknown_login
  ├───error message: "if" failed and "fail" requested
  ╰failure was forced
  ╭considering: ${if░eq░{1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  ╭considering: 1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  ├───────text: 1
-  ├considering: }{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  ├───expanded: 1
-  ╰─────result: 1
-  ╭considering: 1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  ├───────text: 1
-  ├considering: }{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  ├───expanded: 1
-  ╰─────result: 1
+  cond: eq
+   ╭considering: 1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+   ├───────text: 1
+   ├considering: }{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+   ├───expanded: 1
+   ╰─────result: 1
+   ╭considering: 1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+   ├───────text: 1
+   ├considering: }{yes}{${lookup{xx}lsearch{/non/exist}}}}
+   ├───expanded: 1
+   ╰─────result: 1
  ├──condition: eq░{1}{1}
  ├─────result: true
   ╭considering: yes}{${lookup{xx}lsearch{/non/exist}}}}
@@ -115,19 +118,20 @@ try option unknown_login
  ╭considering: match_address:░░░${if░match_address{a.b.c}{a.b.c}{yes}{no}}
  ├───────text: match_address:░░░
  ├considering: ${if░match_address{a.b.c}{a.b.c}{yes}{no}}
-  ╭considering: a.b.c}{a.b.c}{yes}{no}}
-  ├───────text: a.b.c
-  ├considering: }{a.b.c}{yes}{no}}
-  ├───expanded: a.b.c
-  ╰─────result: a.b.c
-  ╭considering: a.b.c}{yes}{no}}
-  ├───────text: a.b.c
-  ├considering: }{yes}{no}}
-  ├───expanded: a.b.c
-  ╰─────result: a.b.c
+  cond: match_address
+   ╭considering: a.b.c}{a.b.c}{yes}{no}}
+   ├───────text: a.b.c
+   ├considering: }{a.b.c}{yes}{no}}
+   ├───expanded: a.b.c
+   ╰─────result: a.b.c
+   ╭considering: a.b.c}{yes}{no}}
+   ├───────text: a.b.c
+   ├considering: }{yes}{no}}
+   ├───expanded: a.b.c
+   ╰─────result: a.b.c
 LOG: MAIN PANIC
   no @ found in the subject of an address list match: subject="a.b.c" pattern="a.b.c"
- a.b.c in "a.b.c"? no (end of list)
+  a.b.c in "a.b.c"? no (end of list)
  ├──condition: match_address{a.b.c}{a.b.c}
  ├─────result: false
   ╭───scanning: yes}{no}}
@@ -179,19 +183,20 @@ try option unknown_login
  /considering: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
  |-------text: match:  
  |considering: ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  /considering: abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  |-------text: abcd
-  |considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  |---expanded: abcd
-  \_____result: abcd
-  /considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
-  |--protected: ^([ab]+)(\w+)$
-  |considering: }{$2$1}fail}
-  |---expanded: \N^([ab]+)(\w+)$\N
-  \_____result: ^([ab]+)(\w+)$
- compiled RE '^([ab]+)(\w+)$' not found in local cache
- compiling RE '^([ab]+)(\w+)$'
- compiled RE '^([ab]+)(\w+)$' saved in local cache
+  cond: match
+   /considering: abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+   |-------text: abcd
+   |considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+   |---expanded: abcd
+   \_____result: abcd
+   /considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+   |--protected: ^([ab]+)(\w+)$
+   |considering: }{$2$1}fail}
+   |---expanded: \N^([ab]+)(\w+)$\N
+   \_____result: ^([ab]+)(\w+)$
+  compiled RE '^([ab]+)(\w+)$' not found in local cache
+  compiling RE '^([ab]+)(\w+)$'
+  compiled RE '^([ab]+)(\w+)$' saved in local cache
  |--condition: match{abcd}{\N^([ab]+)(\w+)$\N}
  |-----result: true
   /considering: $2$1}fail}
@@ -207,17 +212,18 @@ try option unknown_login
  /considering: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
  |-------text: match:  
  |considering: ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  /considering: wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  |-------text: wxyz
-  |considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  |---expanded: wxyz
-  \_____result: wxyz
-  /considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
-  |--protected: ^([ab]+)(\w+)$
-  |considering: }{$2$1}fail}
-  |---expanded: \N^([ab]+)(\w+)$\N
-  \_____result: ^([ab]+)(\w+)$
- compiled RE '^([ab]+)(\w+)$' found in local cache
+  cond: match
+   /considering: wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+   |-------text: wxyz
+   |considering: }{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+   |---expanded: wxyz
+   \_____result: wxyz
+   /considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+   |--protected: ^([ab]+)(\w+)$
+   |considering: }{$2$1}fail}
+   |---expanded: \N^([ab]+)(\w+)$\N
+   \_____result: ^([ab]+)(\w+)$
+  compiled RE '^([ab]+)(\w+)$' found in local cache
  |--condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
  |-----result: false
   /---scanning: $2$1}fail}
@@ -230,16 +236,17 @@ try option unknown_login
  |---error message: "if" failed and "fail" requested
  \failure was forced
  /considering: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  /considering: 1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  |-------text: 1
-  |considering: }{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  |---expanded: 1
-  \_____result: 1
-  /considering: 1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  |-------text: 1
-  |considering: }{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  |---expanded: 1
-  \_____result: 1
+  cond: eq
+   /considering: 1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+   |-------text: 1
+   |considering: }{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+   |---expanded: 1
+   \_____result: 1
+   /considering: 1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+   |-------text: 1
+   |considering: }{yes}{${lookup{xx}lsearch{/non/exist}}}}
+   |---expanded: 1
+   \_____result: 1
  |--condition: eq {1}{1}
  |-----result: true
   /considering: yes}{${lookup{xx}lsearch{/non/exist}}}}
@@ -269,19 +276,20 @@ try option unknown_login
  /considering: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
  |-------text: match_address:   
  |considering: ${if match_address{a.b.c}{a.b.c}{yes}{no}}
-  /considering: a.b.c}{a.b.c}{yes}{no}}
-  |-------text: a.b.c
-  |considering: }{a.b.c}{yes}{no}}
-  |---expanded: a.b.c
-  \_____result: a.b.c
-  /considering: a.b.c}{yes}{no}}
-  |-------text: a.b.c
-  |considering: }{yes}{no}}
-  |---expanded: a.b.c
-  \_____result: a.b.c
+  cond: match_address
+   /considering: a.b.c}{a.b.c}{yes}{no}}
+   |-------text: a.b.c
+   |considering: }{a.b.c}{yes}{no}}
+   |---expanded: a.b.c
+   \_____result: a.b.c
+   /considering: a.b.c}{yes}{no}}
+   |-------text: a.b.c
+   |considering: }{yes}{no}}
+   |---expanded: a.b.c
+   \_____result: a.b.c
 LOG: MAIN PANIC
   no @ found in the subject of an address list match: subject="a.b.c" pattern="a.b.c"
- a.b.c in "a.b.c"? no (end of list)
+  a.b.c in "a.b.c"? no (end of list)
  |--condition: match_address{a.b.c}{a.b.c}
  |-----result: false
   /---scanning: yes}{no}}
@@ -467,16 +475,17 @@ try option unknown_login
  ╭considering: ---->░No░lookup░yet:░${if░eq{black}{white}{$sender_host_name}{No}}
  ├───────text: ---->░No░lookup░yet:░
  ├considering: ${if░eq{black}{white}{$sender_host_name}{No}}
-  ╭considering: black}{white}{$sender_host_name}{No}}
-  ├───────text: black
-  ├considering: }{white}{$sender_host_name}{No}}
-  ├───expanded: black
-  ╰─────result: black
-  ╭considering: white}{$sender_host_name}{No}}
-  ├───────text: white
-  ├considering: }{$sender_host_name}{No}}
-  ├───expanded: white
-  ╰─────result: white
+  cond: eq
+   ╭considering: black}{white}{$sender_host_name}{No}}
+   ├───────text: black
+   ├considering: }{white}{$sender_host_name}{No}}
+   ├───expanded: black
+   ╰─────result: black
+   ╭considering: white}{$sender_host_name}{No}}
+   ├───────text: white
+   ├considering: }{$sender_host_name}{No}}
+   ├───expanded: white
+   ╰─────result: white
  ├──condition: eq{black}{white}
  ├─────result: false
   ╭───scanning: $sender_host_name}{No}}
@@ -797,14 +806,14 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
- 1.2.3.4 in "1.2.3"?
-  list element: 1.2.3
-  1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask: 1.2.3)
-  1.2.3.4 in "1.2.3.4/abc"?
-   list element: 1.2.3.4/abc
-   1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask: 1.2.3.4)
-   ::1 in "<; aaaa:bbbb"?
-   ╎list element: aaaa:bbbb
-   ╎::1 in "<; aaaa:bbbb"? no (malformed IPv6 address or address mask: aaaa:bbbb)
+  1.2.3.4 in "1.2.3"?
+   list element: 1.2.3
+   1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask: 1.2.3)
+   1.2.3.4 in "1.2.3.4/abc"?
+   ╎list element: 1.2.3.4/abc
+   ╎1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask: 1.2.3.4)
+   ╎::1 in "<; aaaa:bbbb"?
+   ╎ list element: aaaa:bbbb
+   ╎ ::1 in "<; aaaa:bbbb"? no (malformed IPv6 address or address mask: aaaa:bbbb)
    search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

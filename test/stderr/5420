@@ -44,16 +44,17 @@ try option acl_smtp_expn
 try option acl_smtp_mail
 try option acl_smtp_rcpt
  ╭considering: ${if░eq░{SERVER}{server}{queue}{cutthrough}}
-  ╭considering: SERVER}{server}{queue}{cutthrough}}
-  ├───────text: SERVER
-  ├considering: }{server}{queue}{cutthrough}}
-  ├───expanded: SERVER
-  ╰─────result: SERVER
-  ╭considering: server}{queue}{cutthrough}}
-  ├───────text: server
-  ├considering: }{queue}{cutthrough}}
-  ├───expanded: server
-  ╰─────result: server
+  cond: eq
+   ╭considering: SERVER}{server}{queue}{cutthrough}}
+   ├───────text: SERVER
+   ├considering: }{server}{queue}{cutthrough}}
+   ├───expanded: SERVER
+   ╰─────result: SERVER
+   ╭considering: server}{queue}{cutthrough}}
+   ├───────text: server
+   ├considering: }{queue}{cutthrough}}
+   ├───expanded: server
+   ╰─────result: server
  ├──condition: eq░{SERVER}{server}
  ├─────result: false
   ╭───scanning: queue}{cutthrough}}
@@ -147,30 +148,33 @@ cmd buf flush ddd bytes
          250 HELP
 try option host_name_extract
  ╭considering: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ╭considering: $host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├──────value: 127.0.0.1
-  ├considering: }{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───expanded: $host
-  ╰─────result: 127.0.0.1
-  ╭considering: .outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───────text: .outlook.com
-  ├considering: \$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├backslashed: '\$'
-  ├considering: }}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───expanded: .outlook.com\$
-  ╰─────result: .outlook.com$
-  ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├──────value: 
-  ├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───expanded: $item
-  ├─────result:  ◀skipped▶
-  ╰───skipping: result is not used
-  ╭───scanning: \N^250-([\w.]+)\s\N}}}░{$1}}
-  ├──protected: ^250-([\w.]+)\s
-  ├───scanning: }}}░{$1}}
-  ├───expanded: \N^250-([\w.]+)\s\N
-  ├─────result:  ◀skipped▶
-  ╰───skipping: result is not used
+  cond: and
+   cond: match
+   ╎╭considering: $host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├──────value: 127.0.0.1
+   ╎├considering: }{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───expanded: $host
+   ╎╰─────result: 127.0.0.1
+   ╎╭considering: .outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───────text: .outlook.com
+   ╎├considering: \$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├backslashed: '\$'
+   ╎├considering: }}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───expanded: .outlook.com\$
+   ╎╰─────result: .outlook.com$
+   cond: match
+   ╎╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├──────value: 
+   ╎├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───expanded: $item
+   ╎├─────result:  ◀skipped▶
+   ╎╰───skipping: result is not used
+   ╎╭───scanning: \N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├──protected: ^250-([\w.]+)\s
+   ╎├───scanning: }}}░{$1}}
+   ╎├───expanded: \N^250-([\w.]+)\s\N
+   ╎├─────result:  ◀skipped▶
+   ╎╰───skipping: result is not used
  ├──condition: and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}
  ├─────result: false
   ╭───scanning: $1}}
@@ -181,18 +185,19 @@ try option host_name_extract
  ├───expanded: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
  ╰─────result: 
  ╭considering: ${if░eq░{$address_data}{usery}{*}{:}}
-  ╭considering: $address_data}{usery}{*}{:}}
-  ├──────value: userx
-             ╰──(tainted)
-  ├considering: }{usery}{*}{:}}
-  ├───expanded: $address_data
-  ╰─────result: userx
-             ╰──(tainted)
-  ╭considering: usery}{*}{:}}
-  ├───────text: usery
-  ├considering: }{*}{:}}
-  ├───expanded: usery
-  ╰─────result: usery
+  cond: eq
+   ╭considering: $address_data}{usery}{*}{:}}
+   ├──────value: userx
+              ╰──(tainted)
+   ├considering: }{usery}{*}{:}}
+   ├───expanded: $address_data
+   ╰─────result: userx
+              ╰──(tainted)
+   ╭considering: usery}{*}{:}}
+   ├───────text: usery
+   ├considering: }{*}{:}}
+   ├───expanded: usery
+   ╰─────result: usery
  ├──condition: eq░{$address_data}{usery}
  ├─────result: false
   ╭───scanning: *}{:}}
@@ -212,18 +217,19 @@ try option host_name_extract
  list element: 
 127.0.0.1 in hosts_avoid_tls? no (end of list)
  ╭considering: ${if░eq░{$address_data}{userz}{*}{:}}
-  ╭considering: $address_data}{userz}{*}{:}}
-  ├──────value: userx
-             ╰──(tainted)
-  ├considering: }{userz}{*}{:}}
-  ├───expanded: $address_data
-  ╰─────result: userx
-             ╰──(tainted)
-  ╭considering: userz}{*}{:}}
-  ├───────text: userz
-  ├considering: }{*}{:}}
-  ├───expanded: userz
-  ╰─────result: userz
+  cond: eq
+   ╭considering: $address_data}{userz}{*}{:}}
+   ├──────value: userx
+              ╰──(tainted)
+   ├considering: }{userz}{*}{:}}
+   ├───expanded: $address_data
+   ╰─────result: userx
+              ╰──(tainted)
+   ╭considering: userz}{*}{:}}
+   ├───────text: userz
+   ├considering: }{*}{:}}
+   ├───expanded: userz
+   ╰─────result: userz
  ├──condition: eq░{$address_data}{userz}
  ├─────result: false
   ╭───scanning: *}{:}}
@@ -302,6 +308,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:sender_rcvhost
  ├─────result: false
   ╭───scanning: from░$sender_rcvhost↩
@@ -345,6 +352,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
+   cond: def
   ├──condition: def:sender_ident
   ├─────result: true
    ╭considering: from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
@@ -398,6 +406,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
+   cond: def
   ├──condition: def:sender_helo_name
   ├─────result: true
    ╭considering: (helo=$sender_helo_name)↩
@@ -472,6 +481,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:received_protocol
  ├─────result: true
   ╭considering: with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
@@ -506,6 +516,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
@@ -519,6 +530,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:tls_in_cipher_std
  ├─────result: false
   ╭───scanning: ░tls░$tls_in_cipher_std↩
@@ -569,6 +581,7 @@ try option received_header_text
  ├considering: ${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:sender_address
  ├─────result: true
   ╭considering: (envelope-from░<$sender_address>)↩
@@ -601,6 +614,7 @@ try option received_header_text
  ├──────value: 10HmaX-000000005vi-0000
  ├considering: ${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:received_for
  ├─────result: true
   ╭considering: ↩
@@ -701,16 +715,17 @@ try option acl_smtp_expn
 try option acl_smtp_mail
 try option acl_smtp_rcpt
  ╭considering: ${if░eq░{SERVER}{server}{queue}{cutthrough}}
-  ╭considering: SERVER}{server}{queue}{cutthrough}}
-  ├───────text: SERVER
-  ├considering: }{server}{queue}{cutthrough}}
-  ├───expanded: SERVER
-  ╰─────result: SERVER
-  ╭considering: server}{queue}{cutthrough}}
-  ├───────text: server
-  ├considering: }{queue}{cutthrough}}
-  ├───expanded: server
-  ╰─────result: server
+  cond: eq
+   ╭considering: SERVER}{server}{queue}{cutthrough}}
+   ├───────text: SERVER
+   ├considering: }{server}{queue}{cutthrough}}
+   ├───expanded: SERVER
+   ╰─────result: SERVER
+   ╭considering: server}{queue}{cutthrough}}
+   ├───────text: server
+   ├considering: }{queue}{cutthrough}}
+   ├───expanded: server
+   ╰─────result: server
  ├──condition: eq░{SERVER}{server}
  ├─────result: false
   ╭───scanning: queue}{cutthrough}}
@@ -804,30 +819,33 @@ cmd buf flush ddd bytes
          250 HELP
 try option host_name_extract
  ╭considering: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ╭considering: $host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├──────value: 127.0.0.1
-  ├considering: }{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───expanded: $host
-  ╰─────result: 127.0.0.1
-  ╭considering: .outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───────text: .outlook.com
-  ├considering: \$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├backslashed: '\$'
-  ├considering: }}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───expanded: .outlook.com\$
-  ╰─────result: .outlook.com$
-  ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├──────value: 
-  ├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───expanded: $item
-  ├─────result:  ◀skipped▶
-  ╰───skipping: result is not used
-  ╭───scanning: \N^250-([\w.]+)\s\N}}}░{$1}}
-  ├──protected: ^250-([\w.]+)\s
-  ├───scanning: }}}░{$1}}
-  ├───expanded: \N^250-([\w.]+)\s\N
-  ├─────result:  ◀skipped▶
-  ╰───skipping: result is not used
+  cond: and
+   cond: match
+   ╎╭considering: $host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├──────value: 127.0.0.1
+   ╎├considering: }{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───expanded: $host
+   ╎╰─────result: 127.0.0.1
+   ╎╭considering: .outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───────text: .outlook.com
+   ╎├considering: \$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├backslashed: '\$'
+   ╎├considering: }}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───expanded: .outlook.com\$
+   ╎╰─────result: .outlook.com$
+   cond: match
+   ╎╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├──────value: 
+   ╎├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───expanded: $item
+   ╎├─────result:  ◀skipped▶
+   ╎╰───skipping: result is not used
+   ╎╭───scanning: \N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├──protected: ^250-([\w.]+)\s
+   ╎├───scanning: }}}░{$1}}
+   ╎├───expanded: \N^250-([\w.]+)\s\N
+   ╎├─────result:  ◀skipped▶
+   ╎╰───skipping: result is not used
  ├──condition: and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}
  ├─────result: false
   ╭───scanning: $1}}
@@ -838,18 +856,19 @@ try option host_name_extract
  ├───expanded: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
  ╰─────result: 
  ╭considering: ${if░eq░{$address_data}{usery}{*}{:}}
-  ╭considering: $address_data}{usery}{*}{:}}
-  ├──────value: usery
-             ╰──(tainted)
-  ├considering: }{usery}{*}{:}}
-  ├───expanded: $address_data
-  ╰─────result: usery
-             ╰──(tainted)
-  ╭considering: usery}{*}{:}}
-  ├───────text: usery
-  ├considering: }{*}{:}}
-  ├───expanded: usery
-  ╰─────result: usery
+  cond: eq
+   ╭considering: $address_data}{usery}{*}{:}}
+   ├──────value: usery
+              ╰──(tainted)
+   ├considering: }{usery}{*}{:}}
+   ├───expanded: $address_data
+   ╰─────result: usery
+              ╰──(tainted)
+   ╭considering: usery}{*}{:}}
+   ├───────text: usery
+   ├considering: }{*}{:}}
+   ├───expanded: usery
+   ╰─────result: usery
  ├──condition: eq░{$address_data}{usery}
  ├─────result: true
   ╭considering: *}{:}}
@@ -909,6 +928,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:sender_rcvhost
  ├─────result: false
   ╭───scanning: from░$sender_rcvhost↩
@@ -952,6 +972,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
+   cond: def
   ├──condition: def:sender_ident
   ├─────result: true
    ╭considering: from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
@@ -1005,6 +1026,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
+   cond: def
   ├──condition: def:sender_helo_name
   ├─────result: true
    ╭considering: (helo=$sender_helo_name)↩
@@ -1079,6 +1101,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:received_protocol
  ├─────result: true
   ╭considering: with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
@@ -1113,6 +1136,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
@@ -1126,6 +1150,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:tls_in_cipher_std
  ├─────result: false
   ╭───scanning: ░tls░$tls_in_cipher_std↩
@@ -1176,6 +1201,7 @@ try option received_header_text
  ├considering: ${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:sender_address
  ├─────result: true
   ╭considering: (envelope-from░<$sender_address>)↩
@@ -1208,6 +1234,7 @@ try option received_header_text
  ├──────value: 10HmaZ-000000005vi-0000
  ├considering: ${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:received_for
  ├─────result: true
   ╭considering: ↩
@@ -1308,16 +1335,17 @@ try option acl_smtp_expn
 try option acl_smtp_mail
 try option acl_smtp_rcpt
  ╭considering: ${if░eq░{SERVER}{server}{queue}{cutthrough}}
-  ╭considering: SERVER}{server}{queue}{cutthrough}}
-  ├───────text: SERVER
-  ├considering: }{server}{queue}{cutthrough}}
-  ├───expanded: SERVER
-  ╰─────result: SERVER
-  ╭considering: server}{queue}{cutthrough}}
-  ├───────text: server
-  ├considering: }{queue}{cutthrough}}
-  ├───expanded: server
-  ╰─────result: server
+  cond: eq
+   ╭considering: SERVER}{server}{queue}{cutthrough}}
+   ├───────text: SERVER
+   ├considering: }{server}{queue}{cutthrough}}
+   ├───expanded: SERVER
+   ╰─────result: SERVER
+   ╭considering: server}{queue}{cutthrough}}
+   ├───────text: server
+   ├considering: }{queue}{cutthrough}}
+   ├───expanded: server
+   ╰─────result: server
  ├──condition: eq░{SERVER}{server}
  ├─────result: false
   ╭───scanning: queue}{cutthrough}}
@@ -1411,30 +1439,33 @@ cmd buf flush ddd bytes
          250 HELP
 try option host_name_extract
  ╭considering: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ╭considering: $host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├──────value: 127.0.0.1
-  ├considering: }{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───expanded: $host
-  ╰─────result: 127.0.0.1
-  ╭considering: .outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───────text: .outlook.com
-  ├considering: \$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├backslashed: '\$'
-  ├considering: }}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───expanded: .outlook.com\$
-  ╰─────result: .outlook.com$
-  ╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├──────value: 
-  ├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
-  ├───expanded: $item
-  ├─────result:  ◀skipped▶
-  ╰───skipping: result is not used
-  ╭───scanning: \N^250-([\w.]+)\s\N}}}░{$1}}
-  ├──protected: ^250-([\w.]+)\s
-  ├───scanning: }}}░{$1}}
-  ├───expanded: \N^250-([\w.]+)\s\N
-  ├─────result:  ◀skipped▶
-  ╰───skipping: result is not used
+  cond: and
+   cond: match
+   ╎╭considering: $host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├──────value: 127.0.0.1
+   ╎├considering: }{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───expanded: $host
+   ╎╰─────result: 127.0.0.1
+   ╎╭considering: .outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───────text: .outlook.com
+   ╎├considering: \$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├backslashed: '\$'
+   ╎├considering: }}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───expanded: .outlook.com\$
+   ╎╰─────result: .outlook.com$
+   cond: match
+   ╎╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├──────value: 
+   ╎├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├───expanded: $item
+   ╎├─────result:  ◀skipped▶
+   ╎╰───skipping: result is not used
+   ╎╭───scanning: \N^250-([\w.]+)\s\N}}}░{$1}}
+   ╎├──protected: ^250-([\w.]+)\s
+   ╎├───scanning: }}}░{$1}}
+   ╎├───expanded: \N^250-([\w.]+)\s\N
+   ╎├─────result:  ◀skipped▶
+   ╎╰───skipping: result is not used
  ├──condition: and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}
  ├─────result: false
   ╭───scanning: $1}}
@@ -1445,18 +1476,19 @@ try option host_name_extract
  ├───expanded: ${if░and░{{match{$host}{.outlook.com\$}}░{match{$item}{\N^250-([\w.]+)\s\N}}}░{$1}}
  ╰─────result: 
  ╭considering: ${if░eq░{$address_data}{usery}{*}{:}}
-  ╭considering: $address_data}{usery}{*}{:}}
-  ├──────value: usery
-             ╰──(tainted)
-  ├considering: }{usery}{*}{:}}
-  ├───expanded: $address_data
-  ╰─────result: usery
-             ╰──(tainted)
-  ╭considering: usery}{*}{:}}
-  ├───────text: usery
-  ├considering: }{*}{:}}
-  ├───expanded: usery
-  ╰─────result: usery
+  cond: eq
+   ╭considering: $address_data}{usery}{*}{:}}
+   ├──────value: usery
+              ╰──(tainted)
+   ├considering: }{usery}{*}{:}}
+   ├───expanded: $address_data
+   ╰─────result: usery
+              ╰──(tainted)
+   ╭considering: usery}{*}{:}}
+   ├───────text: usery
+   ├considering: }{*}{:}}
+   ├───expanded: usery
+   ╰─────result: usery
  ├──condition: eq░{$address_data}{usery}
  ├─────result: true
   ╭considering: *}{:}}
@@ -1516,6 +1548,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:sender_rcvhost
  ├─────result: false
   ╭───scanning: from░$sender_rcvhost↩
@@ -1559,6 +1592,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
+   cond: def
   ├──condition: def:sender_ident
   ├─────result: true
    ╭considering: from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
@@ -1612,6 +1646,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
+   cond: def
   ├──condition: def:sender_helo_name
   ├─────result: true
    ╭considering: (helo=$sender_helo_name)↩
@@ -1686,6 +1721,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:received_protocol
  ├─────result: true
   ╭considering: with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
@@ -1720,6 +1756,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
@@ -1733,6 +1770,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:tls_in_cipher_std
  ├─────result: false
   ╭───scanning: ░tls░$tls_in_cipher_std↩
@@ -1783,6 +1821,7 @@ try option received_header_text
  ├considering: ${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:sender_address
  ├─────result: true
   ╭considering: (envelope-from░<$sender_address>)↩
@@ -1815,6 +1854,7 @@ try option received_header_text
  ├──────value: 10HmbB-000000005vi-0000
  ├considering: ${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:received_for
  ├─────result: true
   ╭considering: ↩

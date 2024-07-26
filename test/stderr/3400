@@ -782,9 +782,9 @@ mylogin authenticator server_condition:
   $auth1 = userx secret
   $1 = userx secret
 +++MYLOGIN $1="userx secret" $2="" $3=""
- compiled RE '^(\S+)\s+(\S+)$' not found in local cache
- compiling RE '^(\S+)\s+(\S+)$'
- compiled RE '^(\S+)\s+(\S+)$' saved in local cache
+  compiled RE '^(\S+)\s+(\S+)$' not found in local cache
+  compiling RE '^(\S+)\s+(\S+)$'
+  compiled RE '^(\S+)\s+(\S+)$' saved in local cache
 expanded string: yes
 SMTP>> 235 Authentication succeeded
 SMTP<< quit

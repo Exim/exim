@@ -35,7 +35,7 @@ quota = 52428800 threshold = 21495808 old size = sssss message size = sss
 appendfile yields 0 with errno=dd more_errno=dd
 >>>>>>>>>>>>>>>> Exim pid=p1236 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 appendfile transport returned OK for userx@myhost.test.ex
-added retry item for T:userx@myhost.test.ex: errno=dd more_errno=dd flags=1
+added retry delete-item for T:userx@myhost.test.ex: errno=dd more_errno=dd flags=1
 LOG: MAIN
   => userx <userx@myhost.test.ex> R=localuser T=appendfile
 LOG: MAIN

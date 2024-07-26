@@ -538,7 +538,7 @@ Returns: the yield of the underlying dbm or db "delete" function.
 int
 dbfn_delete(open_db *dbblock, const uschar *key)
 {
-int klen = Ustrlen(key) + 1;
+int klen = Ustrlen(key) + 1, rc;
 uschar * key_copy = store_get(klen, key);
 EXIM_DATUM key_datum;
 
@@ -548,7 +548,10 @@ memcpy(key_copy, key, klen);
 exim_datum_init(&key_datum);         /* Some DBM libraries require clearing */
 exim_datum_data_set(&key_datum, key_copy);
 exim_datum_size_set(&key_datum, klen);
-return exim_dbdel(dbblock->dbptr, &key_datum);
+rc = exim_dbdel(dbblock->dbptr, &key_datum);
+DEBUG(D_hints_lookup) if (rc != EXIM_DBPUTB_OK)
+  debug_printf_indent(" exim_dbdel: fail\n");
+return rc;
 }
 
 

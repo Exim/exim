@@ -58,9 +58,9 @@ Considering: userx@test.ex
 checking router retry status
  no   domain  retry record
  have address retry record; next_try = now+0
-added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-1 more_errno=dd flags=1
-added retry item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
-added retry item for R:test.ex: errno=-1 more_errno=dd flags=1
+added retry delete-item for R:userx@test.ex:<CALLER@test.ex>: errno=-1 more_errno=dd flags=1
+added retry delete-item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
+added retry delete-item for R:test.ex: errno=-1 more_errno=dd flags=1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:
@@ -116,9 +116,9 @@ Considering: userx@test.ex
 checking router retry status
  no   domain  retry record
  have address retry record; next_try = now+0
-added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-1 more_errno=dd flags=1
-added retry item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
-added retry item for R:test.ex: errno=-1 more_errno=dd flags=1
+added retry delete-item for R:userx@test.ex:<CALLER@test.ex>: errno=-1 more_errno=dd flags=1
+added retry delete-item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
+added retry delete-item for R:test.ex: errno=-1 more_errno=dd flags=1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

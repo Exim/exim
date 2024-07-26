@@ -70,6 +70,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:sender_rcvhost
  ├─────result: false
   ╭───scanning: from░$sender_rcvhost↩
@@ -113,6 +114,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
+   cond: def
   ├──condition: def:sender_ident
   ├─────result: true
    ╭considering: from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
@@ -166,6 +168,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
+   cond: def
   ├──condition: def:sender_helo_name
   ├─────result: false
    ╭───scanning: (helo=$sender_helo_name)↩
@@ -232,6 +235,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:received_protocol
  ├─────result: true
   ╭considering: with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
@@ -265,6 +269,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
@@ -277,6 +282,7 @@ try option received_header_text
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:tls_in_cipher_std
  ├─────result: false
   ╭───scanning: ░tls░$tls_in_cipher_std↩
@@ -326,6 +332,7 @@ try option received_header_text
  ├considering: ${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:sender_address
  ├─────result: true
   ╭considering: (envelope-from░<$sender_address>)↩
@@ -357,6 +364,7 @@ try option received_header_text
  ├──────value: 10HmaX-000000005vi-0000
  ├considering: ${if░def:received_for░{↩
  ␉for░$received_for}}
+  cond: def
  ├──condition: def:received_for
  ├─────result: false
   ╭───scanning: ↩
@@ -789,6 +797,7 @@ try option message_prefix
  ├───────text: From░
  ├considering: ${if░def:return_path{$return_path}{MAILER-DAEMON}}░${tod_bsdinbox}↩
  
+  cond: def
  ├──condition: def:return_path
  ├─────result: true
   ╭considering: $return_path}{MAILER-DAEMON}}░${tod_bsdinbox}↩
@@ -877,6 +886,7 @@ try option message_prefix
  ├───────text: From░
  ├considering: ${if░def:return_path{$return_path}{MAILER-DAEMON}}░${tod_bsdinbox}↩
  
+  cond: def
  ├──condition: def:return_path
  ├─────result: true
   ╭considering: $return_path}{MAILER-DAEMON}}░${tod_bsdinbox}↩

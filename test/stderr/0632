@@ -66,74 +66,77 @@ p1235  ├───expanded: $spool_directory/exim_daemon_notify
 p1235  ╰─────result: TESTSUITE/spool/exim_daemon_notify
 p1235 test.ex in "^nomatch_list"? no (end of list)
 p1235  ╭considering: ${if░match░{a_random_string}░{static_RE}}
-p1235   ╭considering: a_random_string}░{static_RE}}
-p1235   ├───────text: a_random_string
-p1235   ├considering: }░{static_RE}}
-p1235   ├───expanded: a_random_string
-p1235   ╰─────result: a_random_string
-p1235   ╭considering: static_RE}}
-p1235   ├───────text: static_RE
-p1235   ├considering: }}
-p1235   ├───expanded: static_RE
-p1235   ╰─────result: static_RE
-p1235  compiled RE 'static_RE' not found in local cache
-p1235  compiling RE 'static_RE'
-p1235  compiled RE 'static_RE' saved in local cache
-p1235  sending RE 'static_RE' to daemon
+p1235   cond: match
+p1235    ╭considering: a_random_string}░{static_RE}}
+p1235    ├───────text: a_random_string
+p1235    ├considering: }░{static_RE}}
+p1235    ├───expanded: a_random_string
+p1235    ╰─────result: a_random_string
+p1235    ╭considering: static_RE}}
+p1235    ├───────text: static_RE
+p1235    ├considering: }}
+p1235    ├───expanded: static_RE
+p1235    ╰─────result: static_RE
+p1235   compiled RE 'static_RE' not found in local cache
+p1235   compiling RE 'static_RE'
+p1235   compiled RE 'static_RE' saved in local cache
+p1235   sending RE 'static_RE' to daemon
 p1235 try option notifier_socket
-p1235   ╭considering: $spool_directory/exim_daemon_notify
-p1235   ├──────value: TESTSUITE/spool
-p1235   ├considering: /exim_daemon_notify
-p1235   ├───────text: /exim_daemon_notify
-p1235   ├───expanded: $spool_directory/exim_daemon_notify
-p1235   ╰─────result: TESTSUITE/spool/exim_daemon_notify
+p1235    ╭considering: $spool_directory/exim_daemon_notify
+p1235    ├──────value: TESTSUITE/spool
+p1235    ├considering: /exim_daemon_notify
+p1235    ├───────text: /exim_daemon_notify
+p1235    ├───expanded: $spool_directory/exim_daemon_notify
+p1235    ╰─────result: TESTSUITE/spool/exim_daemon_notify
 p1235  ├──condition: match░{a_random_string}░{static_RE}
 p1235  ├─────result: false
 p1235  ├───expanded: ${if░match░{a_random_string}░{static_RE}}
 p1235  ╰─────result: 
 p1235  ╭considering: ${if░match░{a_random_string}░{tricky_static_RE\$}}
-p1235   ╭considering: a_random_string}░{tricky_static_RE\$}}
-p1235   ├───────text: a_random_string
-p1235   ├considering: }░{tricky_static_RE\$}}
-p1235   ├───expanded: a_random_string
-p1235   ╰─────result: a_random_string
-p1235   ╭considering: tricky_static_RE\$}}
-p1235   ├───────text: tricky_static_RE
-p1235   ├considering: \$}}
-p1235   ├backslashed: '\$'
-p1235   ├considering: }}
-p1235   ├───expanded: tricky_static_RE\$
-p1235   ╰─────result: tricky_static_RE$
-p1235  compiled RE 'tricky_static_RE$' not found in local cache
-p1235  compiling RE 'tricky_static_RE$'
-p1235  compiled RE 'tricky_static_RE$' saved in local cache
-p1235  sending RE 'tricky_static_RE$' to daemon
+p1235   cond: match
+p1235    ╭considering: a_random_string}░{tricky_static_RE\$}}
+p1235    ├───────text: a_random_string
+p1235    ├considering: }░{tricky_static_RE\$}}
+p1235    ├───expanded: a_random_string
+p1235    ╰─────result: a_random_string
+p1235    ╭considering: tricky_static_RE\$}}
+p1235    ├───────text: tricky_static_RE
+p1235    ├considering: \$}}
+p1235    ├backslashed: '\$'
+p1235    ├considering: }}
+p1235    ├───expanded: tricky_static_RE\$
+p1235    ╰─────result: tricky_static_RE$
+p1235   compiled RE 'tricky_static_RE$' not found in local cache
+p1235   compiling RE 'tricky_static_RE$'
+p1235   compiled RE 'tricky_static_RE$' saved in local cache
+p1235   sending RE 'tricky_static_RE$' to daemon
 p1235 try option notifier_socket
-p1235   ╭considering: $spool_directory/exim_daemon_notify
-p1235   ├──────value: TESTSUITE/spool
-p1235   ├considering: /exim_daemon_notify
-p1235   ├───────text: /exim_daemon_notify
-p1235   ├───expanded: $spool_directory/exim_daemon_notify
-p1235   ╰─────result: TESTSUITE/spool/exim_daemon_notify
+p1235    ╭considering: $spool_directory/exim_daemon_notify
+p1235    ├──────value: TESTSUITE/spool
+p1235    ├considering: /exim_daemon_notify
+p1235    ├───────text: /exim_daemon_notify
+p1235    ├───expanded: $spool_directory/exim_daemon_notify
+p1235    ╰─────result: TESTSUITE/spool/exim_daemon_notify
 p1235  ├──condition: match░{a_random_string}░{tricky_static_RE\$}
 p1235  ├─────result: false
 p1235  ├───expanded: ${if░match░{a_random_string}░{tricky_static_RE\$}}
 p1235  ╰─────result: 
 p1235  ╭considering: ${if░match░{a_random_string}░{pid=${pid}░uncacheable_RE}}
-p1235   ╭considering: a_random_string}░{pid=${pid}░uncacheable_RE}}
-p1235   ├───────text: a_random_string
-p1235   ├considering: }░{pid=${pid}░uncacheable_RE}}
-p1235   ├───expanded: a_random_string
-p1235   ╰─────result: a_random_string
-p1235   ╭considering: pid=${pid}░uncacheable_RE}}
-p1235   ├───────text: pid=
-p1235   ├considering: ${pid}░uncacheable_RE}}
-p1235   ├considering: ░uncacheable_RE}}
-p1235   ├───────text: ░uncacheable_RE
-p1235   ├considering: }}
-p1235   ├───expanded: pid=${pid}░uncacheable_RE
-p1235   ╰─────result: pid=p1235░uncacheable_RE
-p1235  compiling RE 'pid=p1235 uncacheable_RE'
+p1235   cond: match
+p1235    ╭considering: a_random_string}░{pid=${pid}░uncacheable_RE}}
+p1235    ├───────text: a_random_string
+p1235    ├considering: }░{pid=${pid}░uncacheable_RE}}
+p1235    ├───expanded: a_random_string
+p1235    ╰─────result: a_random_string
+p1235    ╭considering: pid=${pid}░uncacheable_RE}}
+p1235    ├───────text: pid=
+p1235    ├considering: ${pid}░uncacheable_RE}}
+p1235    ├considering: ░uncacheable_RE}}
+p1235    ├───────text: ░uncacheable_RE
+p1235    ├considering: }}
+p1235    ├───expanded: pid=${pid}░uncacheable_RE
+p1235    ╰─────result: pid=p1235░uncacheable_RE
+p1235   compiling RE 'pid=p1235 uncacheable_RE'
 p1235  ├──condition: match░{a_random_string}░{pid=${pid}░uncacheable_RE}
 p1235  ├─────result: false
 p1235  ├───expanded: ${if░match░{a_random_string}░{pid=${pid}░uncacheable_RE}}
@@ -160,6 +163,7 @@ p1235  ␉}}(Exim░$version_number)↩
 p1235  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235  ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1235  ␉for░$received_for}}
+p1235   cond: def
 p1235  ├──condition: def:sender_rcvhost
 p1235  ├─────result: true
 p1235   ╭considering: from░$sender_rcvhost↩
@@ -205,6 +209,7 @@ p1235   ␉}}(Exim░$version_number)↩
 p1235   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235   ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1235   ␉for░$received_for}}
+p1235    cond: def
 p1235   ├──condition: def:sender_ident
 p1235   ├─────result: false
 p1235    ╭───scanning: from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
@@ -259,6 +264,7 @@ p1235   ␉}}(Exim░$version_number)↩
 p1235   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235   ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1235   ␉for░$received_for}}
+p1235    cond: def
 p1235   ├──condition: def:sender_helo_name
 p1235   ├─────result: false
 p1235    ╭───scanning: (helo=$sender_helo_name)↩
@@ -328,6 +334,7 @@ p1235  ␉}}(Exim░$version_number)↩
 p1235  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235  ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1235  ␉for░$received_for}}
+p1235   cond: def
 p1235  ├──condition: def:received_protocol
 p1235  ├─────result: true
 p1235   ╭considering: with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
@@ -362,6 +369,7 @@ p1235  ␉}}(Exim░$version_number)↩
 p1235  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235  ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1235  ␉for░$received_for}}
+p1235   cond: def
 p1235   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235   ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1235   ␉for░$received_for}}
@@ -375,6 +383,7 @@ p1235  ␉}}(Exim░$version_number)↩
 p1235  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235  ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1235  ␉for░$received_for}}
+p1235   cond: def
 p1235  ├──condition: def:tls_in_cipher_std
 p1235  ├─────result: false
 p1235   ╭───scanning: ░tls░$tls_in_cipher_std↩
@@ -425,6 +434,7 @@ p1235  ␉
 p1235  ├considering: ${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235  ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1235  ␉for░$received_for}}
+p1235   cond: def
 p1235  ├──condition: def:sender_address
 p1235  ├─────result: true
 p1235   ╭considering: (envelope-from░<$sender_address>)↩
@@ -459,6 +469,7 @@ p1235  ␉for░$received_for}}
 p1235  ├──────value: 10HmaX-000000005vi-0000
 p1235  ├considering: ${if░def:received_for░{↩
 p1235  ␉for░$received_for}}
+p1235   cond: def
 p1235  ├──condition: def:received_for
 p1235  ├─────result: true
 p1235   ╭considering: ↩
@@ -552,54 +563,57 @@ p1236 try option acl_smtp_rcpt
 p1236 compiled caseless RE '^nomatch_list' found in local cache
 p1236 test.ex in "^nomatch_list"? no (end of list)
 p1236  ╭considering: ${if░match░{a_random_string}░{static_RE}}
-p1236   ╭considering: a_random_string}░{static_RE}}
-p1236   ├───────text: a_random_string
-p1236   ├considering: }░{static_RE}}
-p1236   ├───expanded: a_random_string
-p1236   ╰─────result: a_random_string
-p1236   ╭considering: static_RE}}
-p1236   ├───────text: static_RE
-p1236   ├considering: }}
-p1236   ├───expanded: static_RE
-p1236   ╰─────result: static_RE
-p1236  compiled RE 'static_RE' found in local cache
+p1236   cond: match
+p1236    ╭considering: a_random_string}░{static_RE}}
+p1236    ├───────text: a_random_string
+p1236    ├considering: }░{static_RE}}
+p1236    ├───expanded: a_random_string
+p1236    ╰─────result: a_random_string
+p1236    ╭considering: static_RE}}
+p1236    ├───────text: static_RE
+p1236    ├considering: }}
+p1236    ├───expanded: static_RE
+p1236    ╰─────result: static_RE
+p1236   compiled RE 'static_RE' found in local cache
 p1236  ├──condition: match░{a_random_string}░{static_RE}
 p1236  ├─────result: false
 p1236  ├───expanded: ${if░match░{a_random_string}░{static_RE}}
 p1236  ╰─────result: 
 p1236  ╭considering: ${if░match░{a_random_string}░{tricky_static_RE\$}}
-p1236   ╭considering: a_random_string}░{tricky_static_RE\$}}
-p1236   ├───────text: a_random_string
-p1236   ├considering: }░{tricky_static_RE\$}}
-p1236   ├───expanded: a_random_string
-p1236   ╰─────result: a_random_string
-p1236   ╭considering: tricky_static_RE\$}}
-p1236   ├───────text: tricky_static_RE
-p1236   ├considering: \$}}
-p1236   ├backslashed: '\$'
-p1236   ├considering: }}
-p1236   ├───expanded: tricky_static_RE\$
-p1236   ╰─────result: tricky_static_RE$
-p1236  compiled RE 'tricky_static_RE$' found in local cache
+p1236   cond: match
+p1236    ╭considering: a_random_string}░{tricky_static_RE\$}}
+p1236    ├───────text: a_random_string
+p1236    ├considering: }░{tricky_static_RE\$}}
+p1236    ├───expanded: a_random_string
+p1236    ╰─────result: a_random_string
+p1236    ╭considering: tricky_static_RE\$}}
+p1236    ├───────text: tricky_static_RE
+p1236    ├considering: \$}}
+p1236    ├backslashed: '\$'
+p1236    ├considering: }}
+p1236    ├───expanded: tricky_static_RE\$
+p1236    ╰─────result: tricky_static_RE$
+p1236   compiled RE 'tricky_static_RE$' found in local cache
 p1236  ├──condition: match░{a_random_string}░{tricky_static_RE\$}
 p1236  ├─────result: false
 p1236  ├───expanded: ${if░match░{a_random_string}░{tricky_static_RE\$}}
 p1236  ╰─────result: 
 p1236  ╭considering: ${if░match░{a_random_string}░{pid=${pid}░uncacheable_RE}}
-p1236   ╭considering: a_random_string}░{pid=${pid}░uncacheable_RE}}
-p1236   ├───────text: a_random_string
-p1236   ├considering: }░{pid=${pid}░uncacheable_RE}}
-p1236   ├───expanded: a_random_string
-p1236   ╰─────result: a_random_string
-p1236   ╭considering: pid=${pid}░uncacheable_RE}}
-p1236   ├───────text: pid=
-p1236   ├considering: ${pid}░uncacheable_RE}}
-p1236   ├considering: ░uncacheable_RE}}
-p1236   ├───────text: ░uncacheable_RE
-p1236   ├considering: }}
-p1236   ├───expanded: pid=${pid}░uncacheable_RE
-p1236   ╰─────result: pid=p1236░uncacheable_RE
-p1236  compiling RE 'pid=p1236 uncacheable_RE'
+p1236   cond: match
+p1236    ╭considering: a_random_string}░{pid=${pid}░uncacheable_RE}}
+p1236    ├───────text: a_random_string
+p1236    ├considering: }░{pid=${pid}░uncacheable_RE}}
+p1236    ├───expanded: a_random_string
+p1236    ╰─────result: a_random_string
+p1236    ╭considering: pid=${pid}░uncacheable_RE}}
+p1236    ├───────text: pid=
+p1236    ├considering: ${pid}░uncacheable_RE}}
+p1236    ├considering: ░uncacheable_RE}}
+p1236    ├───────text: ░uncacheable_RE
+p1236    ├considering: }}
+p1236    ├───expanded: pid=${pid}░uncacheable_RE
+p1236    ╰─────result: pid=p1236░uncacheable_RE
+p1236   compiling RE 'pid=p1236 uncacheable_RE'
 p1236  ├──condition: match░{a_random_string}░{pid=${pid}░uncacheable_RE}
 p1236  ├─────result: false
 p1236  ├───expanded: ${if░match░{a_random_string}░{pid=${pid}░uncacheable_RE}}
@@ -626,6 +640,7 @@ p1236  ␉}}(Exim░$version_number)↩
 p1236  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236  ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1236  ␉for░$received_for}}
+p1236   cond: def
 p1236  ├──condition: def:sender_rcvhost
 p1236  ├─────result: true
 p1236   ╭considering: from░$sender_rcvhost↩
@@ -671,6 +686,7 @@ p1236   ␉}}(Exim░$version_number)↩
 p1236   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236   ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1236   ␉for░$received_for}}
+p1236    cond: def
 p1236   ├──condition: def:sender_ident
 p1236   ├─────result: false
 p1236    ╭───scanning: from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
@@ -725,6 +741,7 @@ p1236   ␉}}(Exim░$version_number)↩
 p1236   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236   ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1236   ␉for░$received_for}}
+p1236    cond: def
 p1236   ├──condition: def:sender_helo_name
 p1236   ├─────result: false
 p1236    ╭───scanning: (helo=$sender_helo_name)↩
@@ -794,6 +811,7 @@ p1236  ␉}}(Exim░$version_number)↩
 p1236  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236  ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1236  ␉for░$received_for}}
+p1236   cond: def
 p1236  ├──condition: def:received_protocol
 p1236  ├─────result: true
 p1236   ╭considering: with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
@@ -828,6 +846,7 @@ p1236  ␉}}(Exim░$version_number)↩
 p1236  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236  ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1236  ␉for░$received_for}}
+p1236   cond: def
 p1236   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236   ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1236   ␉for░$received_for}}
@@ -841,6 +860,7 @@ p1236  ␉}}(Exim░$version_number)↩
 p1236  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236  ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1236  ␉for░$received_for}}
+p1236   cond: def
 p1236  ├──condition: def:tls_in_cipher_std
 p1236  ├─────result: false
 p1236   ╭───scanning: ░tls░$tls_in_cipher_std↩
@@ -891,6 +911,7 @@ p1236  ␉
 p1236  ├considering: ${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236  ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1236  ␉for░$received_for}}
+p1236   cond: def
 p1236  ├──condition: def:sender_address
 p1236  ├─────result: true
 p1236   ╭considering: (envelope-from░<$sender_address>)↩
@@ -925,6 +946,7 @@ p1236  ␉for░$received_for}}
 p1236  ├──────value: 10HmaY-000000005vi-0000
 p1236  ├considering: ${if░def:received_for░{↩
 p1236  ␉for░$received_for}}
+p1236   cond: def
 p1236  ├──condition: def:received_for
 p1236  ├─────result: true
 p1236   ╭considering: ↩

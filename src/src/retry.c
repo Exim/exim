@@ -351,7 +351,9 @@ rti->flags = flags;
 DEBUG(D_transport|D_retry)
   {
   int letter = rti->more_errno & 255;
-  debug_printf("added retry item for %s: errno=%d more_errno=", rti->key,
+  debug_printf("added retry %sitem for %s: errno=%d more_errno=",
+    flags & rf_delete ? "delete-" : "",
+    rti->key,
     rti->basic_errno);
   if (letter == 'A' || letter == 'M')
     debug_printf("%d,%c", (rti->more_errno >> 8) & 255, letter);
