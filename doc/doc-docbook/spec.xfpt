@@ -22223,7 +22223,7 @@ subject to address rewriting. Otherwise, they are treated like new addresses
 and are rewritten according to the global rewriting rules.
 
 
-.option sieve_inbox redirect string&!! &"inbox"&
+.option sieve_inbox redirect string&!! inbox
 .new
 The value of this option is passed to a Sieve filter to specify the
 name of the mailbox used for "keep" operations (explicit or implicit).
