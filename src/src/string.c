@@ -1626,7 +1626,7 @@ while (*fp)
 
     case 'W':			/* Maybe mark up ctrls, spaces & newlines */
       s = va_arg(ap, char *);
-      if (Ustrpbrk(s, " \n") && !IS_DEBUG(D_noutf8))
+      if (s && !IS_DEBUG(D_noutf8))
 	{
 	gstring * zg = NULL;
 	int p = precision;
@@ -1660,7 +1660,7 @@ while (*fp)
 	    }
 	  }
 	if (zg) { s = CS zg->s; slen = gstring_length(zg); }
-	else    { s = null;     slen = Ustrlen(s); }
+	else    { s = "";	slen = 0; }
 	}
       else
 	{

@@ -22,6 +22,11 @@ JH/03 With dkim_verify_minimal, avoid calling the DKIM ACL after the first
 JH/04 Remove the docs and support scripts dealing with conversion of Exim
       version 3 installations.
 
+JH/05 Fix hintsdb support for dbmjz when compiled using sqlite3. Previously
+      the backend support assumed keys would be simple C strings, but dbmjz
+      uses keys with embedded NUL bytes.  The builtin hintsdb use is unaffected,
+      but installations using dbmjz will need to rebuild those DBs.
+
 Exim version 4.98
 -----------------
 

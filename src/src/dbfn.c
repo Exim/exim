@@ -600,7 +600,7 @@ yield = exim_dbscan(dbblock->dbptr, &key_datum, &value_datum, start, *cursor)
 if (!yield) exim_dbdelete_cursor(*cursor);
 return yield;
 }
-#endif
+#endif	/*notdef*/
 
 
 

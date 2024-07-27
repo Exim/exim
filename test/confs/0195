@@ -7,7 +7,7 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 domainlist local_domains = test.ex : *.test.ex
-
+queue_run_in_order
 
 # ----- Routers -----
 

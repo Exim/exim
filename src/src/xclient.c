@@ -10,7 +10,9 @@
 
 #ifdef EXPERIMENTAL_XCLIENT
 
-/* From https://www.postfix.org/XCLIENT_README.html I infer two generations of
+/* This is a proxy protocol.
+
+From https://www.postfix.org/XCLIENT_README.html I infer two generations of
 protocol.  The more recent one obviates the utility of the HELO attribute, since
 it mandates the proxy always sending a HELO/EHLO smtp command following (a
 successful) XCLIENT command, and that will carry a NELO name (which we assume,

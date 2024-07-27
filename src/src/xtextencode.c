@@ -26,8 +26,9 @@ Returns:      a pointer to the zero-terminated xtext string, which
               is in working store
 */
 
+#ifndef COMPILE_UTILITY
 uschar *
-xtextencode(uschar *clear, int len)
+xtextencode(uschar * clear, int len)
 {
 gstring * g = NULL;
 for(uschar ch; len > 0; len--, clear++)
@@ -38,6 +39,31 @@ gstring_release_unused(g);
 return string_from_gstring(g);
 }
 
+#else	/*COMPILE_UTILITY*/
+uschar *
+xtextencode(uschar * clear, int len)
+{
+int enc_len = 1, i = len;	/* enc_len includes space for terminating NUL */
+uschar * yield, * s;
+
+for (s = clear; i; i--, s++)
+  {
+  uschar ch = *s;
+  enc_len += ch < 33 || ch > 126 || ch == '+' || ch == '='
+	      ? 3 : 1;
+  }
+if (!(yield = s = malloc(enc_len)))
+  return NULL;
+for(uschar ch; len > 0; len--, clear++)
+  if ((ch = *clear) < 33 || ch > 126 || ch == '+' || ch == '=')
+    s += sprintf(CS s, "+%.02X", ch);
+  else
+    *s++ = ch;
+*s = '\0';
+return yield;
+}
+
+#endif	/*COMPILE_UTILITY*/
 
 /*************************************************
 *          Decode byte-string in xtext           *
@@ -64,24 +90,29 @@ int
 xtextdecode(uschar * code, uschar ** ptr)
 {
 int x;
+#ifdef COMPILE_UTILITY
+uschar * result = malloc(Ustrlen(code) + 1);
+#else
 uschar * result = store_get(Ustrlen(code) + 1, code);
-*ptr = result;
+#endif
 
-while ((x = (*code++)) != 0)
+*ptr = result;
+while ((x = (*code++)))
   {
   if (x < 33 || x > 127 || x == '=') return -1;
   if (x == '+')
     {
-    register int y;
+    int y;
     if (!isxdigit((x = (*code++)))) return -1;
     y = ((isdigit(x))? x - '0' : (tolower(x) - 'a' + 10)) << 4;
     if (!isxdigit((x = (*code++)))) return -1;
     *result++ = y | ((isdigit(x))? x - '0' : (tolower(x) - 'a' + 10));
     }
-  else *result++ = x;
+  else
+    *result++ = x;
   }
 
-*result = 0;
+*result = '\0';
 return result - *ptr;
 }
 

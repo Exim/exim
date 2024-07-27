@@ -1,21 +1,30 @@
 # retry times on local addresses
+#
+# All three should be deferred
 exim -odi userx usery userz
 This is a test message.
 ****
+# retry records should have been created
 dump retry
 sleep 1
+# retry record should mean no delivery tried
 exim -R usery
 ****
+# should still be all three records
 dump retry
 sleep 1
+# insert another message; should be deferred only on first delivery try
 exim -odi usery
 one-defer: set
 second message
 ****
+# all three records should still be there
 dump retry
 sleep 1
+# msg2 has had it's single-defer so should get delivered
 exim -Mc $msg2
 ****
+# the record for that localpart should have been removed as a result
 dump retry
 sleep 1
 exim -q
