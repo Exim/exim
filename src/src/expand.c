@@ -7346,9 +7346,6 @@ NOT_ITEM: ;
 	yield = string_catn(yield, sub, t-sub);
 	break;
 	}
-	{
-	uschar * s = sub;
-	}
 
       case EOP_UC:
 	{

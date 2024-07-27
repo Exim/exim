@@ -170,8 +170,7 @@ open_db *
 dbfn_open(const uschar * name, int flags, open_db * dbblock,
   BOOL lof, BOOL panic)
 {
-int rc, save_errno, dlen, flen;
-flock_t lock_data;
+int save_errno, dlen, flen;
 uschar dirname[PATHLEN], filename[PATHLEN];
 
 DEBUG(D_hints_lookup) acl_level++;
@@ -268,8 +267,7 @@ starting a transaction.  "lof" and "panic" always true; read/write mode.
 open_db *
 dbfn_open_multi(const uschar * name, int flags, open_db * dbblock)
 {
-int rc, save_errno, dlen;
-flock_t lock_data;
+int save_errno, dlen;
 uschar dirname[PATHLEN], filename[PATHLEN];
 
 DEBUG(D_hints_lookup) acl_level++;

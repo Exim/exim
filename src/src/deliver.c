@@ -5279,7 +5279,7 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
   if (continue_transport)
     {
     par_reduce(0, fallback);
-    if (!continue_next_id && continue_wait_db)
+    if (!*continue_next_id && continue_wait_db)
 	{ dbfn_close_multi(continue_wait_db); continue_wait_db = NULL; }
     }
 
