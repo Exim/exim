@@ -2246,7 +2246,7 @@ if (  !shadowing
 
   addr->return_filename =
     spool_fname(US"msglog", message_subdir, message_id,
-      string_sprintf("-%d-%d", getpid(), return_count++));
+      string_sprintf("-%ld-%d", (long)getpid(), return_count++));
 
   if ((addr->return_file = open_msglog_file(addr->return_filename, 0400, &error)) < 0)
     {
@@ -3347,8 +3347,8 @@ same channel (pipe).
 
 */
 
-DEBUG(D_deliver) debug_printf("reading pipe for subprocess %d (%s)\n",
-  (int)p->pid, eop? "ended" : "not ended yet");
+DEBUG(D_deliver) debug_printf("reading pipe for subprocess %ld (%s)\n",
+  (long)p->pid, eop? "ended" : "not ended yet");
 
 while (!done)
   {
@@ -3360,8 +3360,9 @@ while (!done)
   size_t required = PIPE_HEADER_SIZE; /* first the pipehaeder, later the data */
   ssize_t got;
 
-  DEBUG(D_deliver) debug_printf(
-    "expect %lu bytes (pipeheader) from tpt process %d\n", (u_long)required, pid);
+  DEBUG(D_deliver)
+    debug_printf("expect %lu bytes (pipeheader) from tpt process %ld\n",
+    (u_long)required, (long)pid);
 
   /* We require(!) all the PIPE_HEADER_SIZE bytes here, as we know,
   they're written in a timely manner, so waiting for the write shouldn't hurt a lot.
@@ -3371,16 +3372,16 @@ while (!done)
   if ((got = readn(fd, pipeheader, required)) != required)
     {
     msg = string_sprintf("got " SSIZE_T_FMT " of %d bytes (pipeheader) "
-      "from transport process %d for transport %s",
-      got, PIPE_HEADER_SIZE, pid, addr->transport->driver_name);
+      "from transport process %ld for transport %s",
+      got, PIPE_HEADER_SIZE, (long)pid, addr->transport->driver_name);
     done = TRUE;
     break;
     }
 
   pipeheader[PIPE_HEADER_SIZE] = '\0';
   DEBUG(D_deliver)
-    debug_printf("got %ld bytes (pipeheader) '%c' from transport process %d\n",
-      (long) got, *id, pid);
+    debug_printf("got %ld bytes (pipeheader) '%c' from transport process %ld\n",
+      (long) got, *id, (long)pid);
 
   {
   /* If we can't decode the pipeheader, the subprocess seems to have a
@@ -3390,16 +3391,16 @@ while (!done)
   if (*endc)
     {
     msg = string_sprintf("failed to read pipe "
-      "from transport process %d for transport %s: error decoding size from header",
-      pid, addr->transport->driver_name);
+      "from transport process %ld for transport %s: error decoding size from header",
+      (long)pid, addr ? addr->transport->driver_name : US"?");
     done = TRUE;
     break;
     }
   }
 
   DEBUG(D_deliver)
-    debug_printf("expect %lu bytes (pipedata) from transport process %d\n",
-      (u_long)required, pid);
+    debug_printf("expect %lu bytes (pipedata) from transport process %ld\n",
+      (u_long)required, (long)pid);
 
   /* Same as above, the transport process will write the bytes announced
   in a timely manner, so we can just wait for the bytes, getting less than expected
@@ -3407,8 +3408,8 @@ while (!done)
   if ((got = readn(fd, big_buffer, required)) != required)
     {
     msg = string_sprintf("got only " SSIZE_T_FMT " of " SIZE_T_FMT
-      " bytes (pipedata) from transport process %d for transport %s",
-      got, required, pid, addr->transport->driver_name);
+      " bytes (pipedata) from transport process %ld for transport %s",
+      got, required, (long)pid, addr->transport->driver_name);
     done = TRUE;
     break;
     }
@@ -3597,8 +3598,8 @@ while (!done)
 	{
 	ADDR_MISMATCH:
 	msg = string_sprintf("address count mismatch for data read from pipe "
-	  "for transport process %d for transport %s", pid,
-	    addrlist->transport->driver_name);
+	  "for transport process %ld for transport %s",
+	    (long)pid, addrlist->transport->driver_name);
 	done = TRUE;
 	break;
 	}
@@ -3742,8 +3743,8 @@ while (!done)
 	  close(recvd_fd);
 
 	  DEBUG(D_deliver)
-	    debug_printf("continue: tpt '%s' host '%s' addr '%s' seq %d\n",
-			  continue_transport, continue_hostname,
+	    debug_printf("continue: fd %d tpt %s host '%s' addr '%s' seq %d\n",
+			  recvd_fd, continue_transport, continue_hostname,
 			  continue_host_address, continue_sequence);
 	  break;
 	  }
@@ -3785,8 +3786,8 @@ while (!done)
 
     default:
       msg = string_sprintf("malformed data (%d) read from pipe for transport "
-	"process %d for transport %s", ptr[-1], pid,
-	  addr->transport->driver_name);
+	"process %ld for transport %s", ptr[-1], (long)pid,
+	  addr ? addr->transport->driver_name : US"?");
       done = TRUE;
       break;
     }
@@ -3819,7 +3820,7 @@ something is wrong. */
 
 if (!msg && addr)
   msg = string_sprintf("insufficient address data read from pipe "
-    "for transport process %d for transport %s", pid,
+    "for transport process %ld for transport %s", (long)pid,
       addr->transport->driver_name);
 
 /* If an error message is set, something has gone wrong in getting back
@@ -3831,7 +3832,8 @@ if (msg)
     addr->transport_return = DEFER;
     addr->special_action = SPECIAL_FREEZE;
     addr->message = msg;
-    log_write(0, LOG_MAIN|LOG_PANIC, "Delivery status for %s: %s\n", addr->address, addr->message);
+    log_write(0, LOG_MAIN|LOG_PANIC, "Delivery status for %s: %s\n",
+	      addr->address, addr->message);
     }
 
 /* Return TRUE to indicate we have got all we need from this process, even
@@ -4024,8 +4026,8 @@ for (;;)   /* Normally we do not repeat this loop */
         {
         if ((pid = parlist[poffset].pid) != 0 && kill(pid, 0) == 0)
           {
-          DEBUG(D_deliver) debug_printf("process %d still exists: assume "
-            "stolen by strace\n", (int)pid);
+          DEBUG(D_deliver) debug_printf("process %ld still exists: assume "
+            "stolen by strace\n", (long)pid);
           break;   /* With poffset set */
           }
         }
@@ -4086,8 +4088,8 @@ for (;;)   /* Normally we do not repeat this loop */
             if (endedpid == pid) goto PROCESS_DONE;
             if (endedpid != (pid_t)(-1) || errno != EINTR)
               log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Unexpected error return "
-                "%d (errno = %d) from waitpid() for process %d",
-                (int)endedpid, errno, (int)pid);
+                "%d (errno = %d) from waitpid() for process %ld",
+                (int)endedpid, errno, (long)pid);
             }
         }
       }
@@ -4109,8 +4111,8 @@ for (;;)   /* Normally we do not repeat this loop */
   /* This situation is an error, but it's probably better to carry on looking
   for another process than to give up (as we used to do). */
 
-  log_write(0, LOG_MAIN|LOG_PANIC, "Process %d finished: not found in remote "
-    "transport process list", pid);
+  log_write(0, LOG_MAIN|LOG_PANIC, "Process %ld finished: not found in remote "
+    "transport process list", (long)pid);
   }  /* End of the "for" loop */
 
 /* Come here when all the data was completely read after a poll(), and
@@ -4121,9 +4123,9 @@ PROCESS_DONE:
 DEBUG(D_deliver)
   {
   if (status == 0)
-    debug_printf("remote delivery process %d ended\n", (int)pid);
+    debug_printf("remote delivery process %ld ended\n", (long)pid);
   else
-    debug_printf("remote delivery process %d ended: status=%04x\n", (int)pid,
+    debug_printf("remote delivery process %ld ended: status=%04x\n", (long)pid,
       status);
   }
 
@@ -5837,9 +5839,9 @@ if (!(bounce_recipient = addr_failed->prop.errors_address))
 /* Make a subprocess to send a message, using its stdin */
 
 if ((pid = child_open_exim(&fd, US"bounce-message")) < 0)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
-    "create child process to send failure message: %s", getpid(),
-    getppid(), strerror(errno));
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %ld (parent %ld) failed to "
+    "create child process to send failure message: %s",
+    (long)getpid(), (long)getppid(), strerror(errno));
 
 /* Creation of child succeeded */
 
@@ -6489,13 +6491,13 @@ if (addr_senddsn)
   int fd;
   pid_t pid = child_open_exim(&fd, US"DSN");
 
-  DEBUG(D_deliver) debug_printf("DSN: child_open_exim returns: %d\n", pid);
+  DEBUG(D_deliver) debug_printf("DSN: child_open_exim returns: %ld\n", (long)pid);
 
   if (pid < 0)  /* Creation of child failed */
     {
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
-      "create child process to send success-dsn message: %s", getpid(),
-      getppid(), strerror(errno));
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %ld (parent %ld) failed to "
+      "create child process to send success-dsn message: %s",
+      (long)getpid(), (long)getppid(), strerror(errno));
 
     DEBUG(D_deliver) debug_printf("DSN: child_open_exim failed\n");
     }
@@ -6656,7 +6658,7 @@ report_time_since(&timestamp_startup, US"delivery start");	/* testcase 0022, 210
 
 info = queue_run_pid == (pid_t)0
   ? string_sprintf("delivering %s", id)
-  : string_sprintf("delivering %s (queue run pid %d)", id, queue_run_pid);
+  : string_sprintf("delivering %s (queue run pid %ld)", id, (long)queue_run_pid);
 
 /* If the D_process_info bit is on, set_process_info() will output debugging
 information. If not, we want to show this initial information if D_deliver or

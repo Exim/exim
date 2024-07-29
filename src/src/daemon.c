@@ -898,7 +898,7 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
   {
   DEBUG(D_any)
     {
-    debug_printf("child %d ended: status=0x%x\n", (int)pid, status);
+    debug_printf("child %ld ended: status=0x%x\n", (long)pid, status);
 #ifdef WCOREDUMP
     if (WIFEXITED(status))
       debug_printf("  normal exit, %d\n", WEXITSTATUS(status));
@@ -986,7 +986,7 @@ static BOOL
 operate_on_pid_file(const enum pid_op operation, const pid_t pid)
 {
 char pid_line[sizeof(int) * 3 + 2];
-const int pid_len = snprintf(pid_line, sizeof(pid_line), "%d\n", (int)pid);
+const int pid_len = snprintf(pid_line, sizeof(pid_line), "%ld\n", (long)pid);
 BOOL lines_match = FALSE;
 uschar * path, * base, * dir;
 
@@ -1116,7 +1116,7 @@ since we may require privs for the containing directory */
 static void
 daemon_die(void)
 {
-int pid;
+pid_t pid;
 
 DEBUG(D_any) debug_printf("SIGTERM/SIGINT seen\n");
 #if !defined(DISABLE_TLS) && (defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT))
@@ -1324,8 +1324,8 @@ for (struct cmsghdr * cp = CMSG_FIRSTHDR(&msg);
   struct ucred * cr = (struct ucred *) CMSG_DATA(cp);
   if (cr->uid && cr->uid != exim_uid)
     {
-    DEBUG(D_queue_run) debug_printf("%s: sender creds pid %d uid %d gid %d\n",
-      __FUNCTION__, (int)cr->pid, (int)cr->uid, (int)cr->gid);
+    DEBUG(D_queue_run) debug_printf("%s: sender creds pid %ld uid %d gid %d\n",
+      __FUNCTION__, (long)cr->pid, (int)cr->uid, (int)cr->gid);
     }
 # elif defined(LOCAL_CREDS)				/* BSD-ish */
   struct sockcred * cr = (struct sockcred *) CMSG_DATA(cp);
@@ -2435,7 +2435,7 @@ if (f.inetd_wait_mode)
     sprintf(CS p, "with no wait timeout");
 
   log_write(0, LOG_MAIN,
-    "exim %s daemon started: pid=%d, launched with listening socket, %s",
+    "exim %s daemon started: pid=%ld, launched with listening socket, %s",
     version_string, getpid(), big_buffer);
   set_process_info("daemon(%s): pre-listening socket", version_string);
 
@@ -2541,7 +2541,7 @@ else if (f.daemon_listen)
     }
 
   log_write(0, LOG_MAIN,
-    "exim %s daemon started: pid=%d, %s, listening for %s",
+    "exim %s daemon started: pid=%ld, %s, listening for %s",
     version_string, getpid(), qinfo, big_buffer);
   set_process_info("daemon(%s): %s, listening for %s",
     version_string, qinfo, big_buffer);
@@ -2551,7 +2551,7 @@ else	/* no listening sockets, only queue-runs */
   {
   const uschar * s = describe_queue_runners();
   log_write(0, LOG_MAIN,
-    "exim %s daemon started: pid=%d, %s, not listening for SMTP",
+    "exim %s daemon started: pid=%ld, %s, not listening for SMTP",
     version_string, getpid(), s);
   set_process_info("daemon(%s): %s, not listening", version_string, s);
   }
@@ -2872,7 +2872,7 @@ for (;;)
 
   if (sighup_seen)
     {
-    log_write(0, LOG_MAIN, "pid %d: SIGHUP received: re-exec daemon",
+    log_write(0, LOG_MAIN, "pid %ld: SIGHUP received: re-exec daemon",
       getpid());
     close_daemon_sockets(daemon_notifier_fd, fd_polls, listen_socket_count);
     unlink_notifier_socket();
@@ -2881,7 +2881,7 @@ for (;;)
     sighup_argv[0] = exim_path;
     exim_nullstd();
     execv(CS exim_path, (char *const *)sighup_argv);
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "pid %d: exec of %s failed: %s",
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "pid %ld: exec of %s failed: %s",
       getpid(), exim_path, strerror(errno));
     log_close_all();
     }
