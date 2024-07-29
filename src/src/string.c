@@ -1630,13 +1630,14 @@ while (*fp)
 	{
 	gstring * zg = NULL;
 	int p = precision;
-	for ( ; *s; s++)
-	  {
-	  /* Take a given precision as applying to the input; expand
-	  it for the transformed result */
 
-	  if (p >= 0 && --p < 0) break;
-	  switch (*s)
+	/* If a precision was given, we can handle embedded NULs. Take it as
+	applying to the input and expand it for the transformed result */
+
+	for ( ; precision >= 0 || *s; s++)
+	  if (p >= 0 && --p < 0)
+	    break;
+	  else switch (*s)
 	    {
 	    case ' ':
 	      zg = string_catn(zg, CUS UTF8_LIGHT_SHADE, 3);
@@ -1658,7 +1659,6 @@ while (*fp)
 		zg = string_catn(zg, CUS s, 1);
 	      break;
 	    }
-	  }
 	if (zg) { s = CS zg->s; slen = gstring_length(zg); }
 	else    { s = "";	slen = 0; }
 	}
