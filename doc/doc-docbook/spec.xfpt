@@ -15781,9 +15781,9 @@ the ACL once for each signature in the message.
 See section &<<SECDKIMVFY>>&.
 
 
-.option dmarc_forensic_sender main string&!! unset &&&
-        dmarc_history_file main string unset &&&
-        dmarc_tld_file main string unset
+.options dmarc_forensic_sender main string&!! unset &&&
+         dmarc_history_file main string unset &&&
+         dmarc_tld_file main string unset
 .cindex DMARC "main section options"
 These options control DMARC processing.
 See section &<<SECDMARC>>& for details.
