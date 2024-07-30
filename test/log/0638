@@ -1,0 +1,13 @@
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userx@test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=127.0.0.1 [127.0.0.1] Connection refused
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == userx@test.ex R=my_main_router T=my_smtp defer (dd): Connection refused
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for usery@test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => usery@test.ex R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-000000005vi-0000"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == userx@test.ex R=my_main_router T=my_smtp defer (-54): some host address lookups failed and retry time not reached for other hosts or connection limit reached for 'test.ex'
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex for usery@test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => :blackhole: <usery@test.ex> R=server_blackhole
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed

@@ -5614,6 +5614,31 @@ retry_non_continued:
 	{
 	if (!smtp_get_interface(s, host_af, addrlist, &interface, tid))
 	  return FALSE;
+
+	if (continue_sequence > 1)
+	  {
+	  union sockaddr_46 interface_sock;
+	  EXIM_SOCKLEN_T size = sizeof(interface_sock);
+	  const uschar * local_ip_addr;
+
+	  /* Assume the connection is on fd 0 */
+	  if (getsockname(0, (struct sockaddr *) &interface_sock, &size) < 0)
+	    {
+	    DEBUG(D_transport)
+	      debug_printf_indent("failed getsockname: %s\n", strerror(errno));
+	    return FALSE;
+	    }
+	  local_ip_addr = host_ntoa(-1, &interface_sock, NULL, &sending_port);
+	  if (Ustrcmp(interface, local_ip_addr) != 0)
+	    {
+	    DEBUG(D_transport) debug_printf_indent(
+	      "tpt interface option mismatch with continued-connection\n");
+	    /* Close the conn and recheck retry info */
+	    continue_host_tried = FALSE;
+	    break;
+	    }
+	  }
+
 	pistring = string_sprintf("%s/%s", pistring, interface);
 	}
       }
@@ -6039,6 +6064,7 @@ retry_non_continued:
     int fd = cutthrough.cctx.sock >= 0 ? cutthrough.cctx.sock : 0;
 
     DEBUG(D_transport) debug_printf("no hosts match already-open connection\n");
+    DEBUG(D_transport) debug_printf("  SMTP>>QUIT\n");
 #ifndef DISABLE_TLS
     /* A TLS conn could be open for a cutthrough, but not for a plain continued-
     transport */
@@ -6055,6 +6081,8 @@ retry_non_continued:
 #else
       (void) write(fd, US"QUIT\r\n", 6);
 #endif
+
+    DEBUG(D_transport) debug_printf("  SMTP(close)>>\n");
     (void) close(fd);
     cutthrough.cctx.sock = -1;
     continue_hostname = NULL;

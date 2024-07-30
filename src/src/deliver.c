@@ -5167,7 +5167,7 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
     wait-db ones, but for all continue-more ones (though any after the
     delivery proc has the info are pointless). */
 
-    if (continue_hostname)
+    if (continue_hostname && continue_fd >= 0)
       {
        {
 	uschar * ptr = big_buffer;

@@ -1,0 +1,20 @@
+# transport interface option and queued message
+need_ipv4
+#
+# This one fails to connect; creates a retry record and is queued
+exim -odf -DCONTROL=127.0.0.1 userx@test.ex
+****
+#
+# Now put a server up
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# Send another, using a different local IP
+# That should be received by the server, but the same conn should
+# NOT be used for the first message
+exim -odf -DCONTROL=HOSTIPV4 usery@test.ex
+****
+#
+killdaemon
+no_msglog_check
+no_message_check

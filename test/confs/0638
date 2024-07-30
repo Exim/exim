@@ -1,0 +1,49 @@
+# Exim test configuration 0143
+
+.include DIR/aux-var/std_conf_prefix
+
+SERVER=
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+log_selector = +received_recipients
+domainlist local_domains = test.ex : *.test.ex
+
+acl_not_smtp = accept set acl_m_control = CONTROL
+acl_smtp_rcpt = accept
+
+# ----- Routers -----
+
+begin routers
+
+server_blackhole:
+  driver =	redirect
+  condition =	${if eq {SERVER}{server}}
+  data =	:blackhole:
+
+my_main_router:
+  driver =	manualroute
+  route_list =	* 127.0.0.1
+  self =	send
+  transport =	my_smtp
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+my_smtp:
+  driver =	smtp
+  interface =	$acl_m_control
+  port =	PORT_D
+  hosts_try_fastopen = :
+
+
+# ----- Retry -----
+begin retry
+
+* * F,5d,10s
+
+# End

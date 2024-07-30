@@ -27,6 +27,10 @@ JH/05 Fix hintsdb support for dbmjz when compiled using sqlite3. Previously
       uses keys with embedded NUL bytes.  The builtin hintsdb use is unaffected,
       but installations using dbmjz will need to rebuild those DBs.
 
+JH/06 Bug 1141: When operating a continued-connection transport, verify that
+      the interface option, if specified, evaluates to match the connection.
+      Previously, a queued message for the same host was sent without checking.
+
 Exim version 4.98
 -----------------
 
