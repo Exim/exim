@@ -39367,17 +39367,19 @@ because the arguments are checked before the configuration file is read. The
 only way to log such cases is to interpose a script such as &_util/logargs.sh_&
 between the caller and Exim.
 .next
-.cindex "log" "connection identifier"
-&%connection_identifier%&: An identifier for the accepted connection is added to
+.cindex log "connection identifier"
+.cindec connection "indentifier logging"
+&%connection_id%&: An identifier for the accepted connection is added to
 connection start and end lines and to message accept lines.
 The identifier is tagged by Ci=.
 The value is PID-based, so will reset on reboot and will wrap.
 .next
-.cindex "log" "connection rejections"
+.cindex log "connection rejections"
+.cindex connection "rejection logging"
 &%connection_reject%&: A log entry is written whenever an incoming SMTP
 connection is rejected, for whatever reason.
 .next
-.cindex "log" "delayed delivery"
+.cindex log "delayed delivery"
 .cindex "delayed delivery, logging"
 &%delay_delivery%&: A log entry is written whenever a delivery process is not
 started for an incoming message because the load is too high or too many
