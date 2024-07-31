@@ -1355,7 +1355,7 @@ const uschar * hostname = sender_fullhost
 gstring * g = string_catn(NULL, US"SMTP connection", 15);
 
 if (LOGGING(connection_id))
-  g = string_fmt_append(g, " Ci=%lu", connection_id);
+  g = string_fmt_append(g, " Ci=%s", connection_id);
 g = string_catn(g, US" from ", 6);
 
 if (host_checking)

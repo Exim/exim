@@ -39,7 +39,7 @@ LENCHECK
 begin acl
 
 connect0:
-  accept
+  accept logwrite = connection_id: $connection_id
 
 connect1:
   deny  hosts = <\n partial-lsearch;DIR/aux-fixed/0002.lsearch \n 1.2.3.4

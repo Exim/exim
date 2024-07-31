@@ -10,6 +10,8 @@ Version 4.98
 ------------
  1. A sieve_inbox option for redirect routers
 
+ 2. A "connection_id" variable
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

@@ -383,7 +383,7 @@ if (pid == 0)
 #endif
 
   smtp_accept_count++;    /* So that it includes this process */
-  connection_id = getpid();
+  set_connection_id();
 
   /* Log the connection if requested.
   In order to minimize the cost (because this is going to happen for every
@@ -405,7 +405,7 @@ if (pid == 0)
       save_log_selector &= ~L_smtp_connection;
     else if (LOGGING(connection_id))
       log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %Y "
-	"Ci=%lu (TCP/IP connection count = %d)",
+	"Ci=%s (TCP/IP connection count = %d)",
 	whofrom, connection_id, smtp_accept_count);
     else
       log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %Y "

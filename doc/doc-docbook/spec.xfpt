@@ -12611,6 +12611,11 @@ contain the trailing slash. If &$config_file$& does not contain a slash,
 .vindex "&$config_file$&"
 The name of the main configuration file Exim is using.
 
+.vitem &$connection_id$&
+.vindex "&$connection_id$&"
+.cindex connection "identifier logging"
+An identifier for the accepted connection, for use in custom logging.
+
 .vitem &$dkim_verify_status$&
 Results of DKIM verification.
 For details see section &<<SECDKIMVFY>>&.
@@ -39368,7 +39373,7 @@ only way to log such cases is to interpose a script such as &_util/logargs.sh_&
 between the caller and Exim.
 .next
 .cindex log "connection identifier"
-.cindec connection "indentifier logging"
+.cindex connection "identifier logging"
 &%connection_id%&: An identifier for the accepted connection is added to
 connection start and end lines and to message accept lines.
 The identifier is tagged by Ci=.

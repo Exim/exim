@@ -739,7 +739,7 @@ uid_t   config_uid             = CONFIGURE_OWNER;
 uid_t   config_uid             = 0;
 #endif
 
-uint64_t connection_id	       = 0L;
+const uschar *connection_id    = NULL;
 int     connection_max_messages= -1;
 unsigned continue_flags	       = 0;
 #ifndef DISABLE_ESMTP_LIMITS

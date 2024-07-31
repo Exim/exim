@@ -5475,7 +5475,7 @@ if (host_checking)
     "**** This is not for real!\n\n",
       sender_host_address);
 
-  connection_id = getpid();
+  set_connection_id();
   memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (verify_check_host(&hosts_connection_nolog) == OK)
     {
@@ -5664,7 +5664,7 @@ because a log line has already been written for all its failure exists
 (usually "connection refused: <reason>") and writing another one is
 unnecessary clutter. */
 
-connection_id = getpid();
+set_connection_id();
 if (smtp_input)
   {
   smtp_in = stdin;

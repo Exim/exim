@@ -1352,6 +1352,20 @@ return NULL;
 
 /******************************************************************************/
 # if !defined(COMPILE_UTILITY)
+
+/* We use the PID of the head process for a connection-id.  Note that
+this is only for tracking a received connection and what it directly
+causes; there is no inttent to describe transport-initiated TCP connections.
+The value is intented to be a cookie usable for logging, and we might change
+the generator for it at any time. */
+
+static inline void
+set_connection_id(void)
+{
+connection_id = string_sprintf("%lu", (u_long)getpid());
+}
+
+
 /* Process manipulation */
 
 static inline pid_t

@@ -435,7 +435,7 @@ extern gstring *client_cmd_log;	       /* debug log of client cmds & responses *
 extern int     clmacro_count;          /* Number of command line macros */
 extern uschar *clmacros[];             /* Copy of them, for re-exec */
 extern BOOL    commandline_checks_require_admin; /* belt and braces for insecure setups */
-extern uint64_t connection_id;	       /* connection number */
+extern const uschar *connection_id;    /* connection cookie for log */
 extern int     connection_max_messages;/* Max down one SMTP connection */
 extern FILE   *config_file;            /* Configuration file */
 extern const uschar *config_filename;  /* Configuration file name */

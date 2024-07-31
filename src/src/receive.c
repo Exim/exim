@@ -1395,7 +1395,7 @@ if (f.tcp_in_fastopen && !f.tcp_in_fastopen_logged)
 if (sender_ident)
   g = string_append(g, 2, US" U=", sender_ident);
 if (LOGGING(connection_id))
-  g = string_fmt_append(g, " Ci=%lu", connection_id);
+  g = string_fmt_append(g, " Ci=%s", connection_id);
 if (received_protocol)
   g = string_append(g, 2, US" P=", received_protocol);
 if (LOGGING(pipelining) && f.smtp_in_pipelining_advertised)

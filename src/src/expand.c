@@ -532,6 +532,7 @@ static var_entry var_table[] = {
   { "compile_number",      vtype_stringptr,   &version_cnumber },
   { "config_dir",          vtype_stringptr,   &config_main_directory },
   { "config_file",         vtype_stringptr,   &config_main_filename },
+  { "connection_id",       vtype_stringptr,   &connection_id },
   { "csa_status",          vtype_stringptr,   &csa_status },
 #ifdef EXPERIMENTAL_DCC
   { "dcc_header",          vtype_stringptr,   &dcc_header },

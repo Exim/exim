@@ -655,6 +655,9 @@ search_tidyup called
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect0"
 >>> processing "accept" (TESTSUITE/test-config 42)
+>>> check logwrite = connection_id: $connection_id
+>>>                = connection_id: conn1111
+LOG: connection_id: conn1111
 >>> accept: condition test succeeded in ACL "connect0"
 >>> end of ACL "connect0": ACCEPT
 >>> test in helo_lookup_domains?
@@ -745,6 +748,9 @@ LOG: 10HmbB-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: re
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect0"
 >>> processing "accept" (TESTSUITE/test-config 42)
+>>> check logwrite = connection_id: $connection_id
+>>>                = connection_id: conn1112
+LOG: connection_id: conn1112
 >>> accept: condition test succeeded in ACL "connect0"
 >>> end of ACL "connect0": ACCEPT
 >>> test in helo_lookup_domains?
@@ -776,6 +782,9 @@ LOG: 10HmbC-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: re
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect0"
 >>> processing "accept" (TESTSUITE/test-config 42)
+>>> check logwrite = connection_id: $connection_id
+>>>                = connection_id: conn1113
+LOG: connection_id: conn1113
 >>> accept: condition test succeeded in ACL "connect0"
 >>> end of ACL "connect0": ACCEPT
 >>> test in helo_lookup_domains?

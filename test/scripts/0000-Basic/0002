@@ -1090,7 +1090,7 @@ exim -d -bh V4NET.0.0.1
 ****
 exim -d -bh V4NET.0.0.2
 ****
-# Test $reply_address
+# Test $reply_address, $connection_id
 exim -bh V4NET.0.0.0
 helo test
 mail from:<>

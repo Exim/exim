@@ -1205,6 +1205,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Lines with a leading pid.  Only handle >= 4-digit PIDs to avoid converting SMTP respose codes
     s/^\s*(\d{4,})\s(?!(?:previous message|in\s|bytes remain in|SMTP accept process running))/new_value($1, "p%s", \$next_pid) . ' '/e;
 
+    # Connection IDs
+    s/connection_id: \K(\d+)$/new_value($1, "conn%s", \$next_conn)/e;
+
     # Debugging lines for Exim terminations and process-generation
     next if /(?:postfork: | fork(?:ing|ed) for )/;
 
@@ -4608,6 +4611,7 @@ foreach $test (@test_list)
   $next_msgid = "aX";
   $next_pid = 1234;
   $next_port = 1111;
+  $next_conn = 1111;
   $message_skip = 0;
   $msglog_skip = 0;
   $munge_skip = 0;
