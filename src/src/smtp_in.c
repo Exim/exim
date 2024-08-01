@@ -2765,6 +2765,10 @@ synprot_error(int type, int code, uschar *data, uschar *errmess)
 {
 int yield = -1;
 
+event_raise(event_action,
+  L_smtp_syntax_error ? US"smtp:fail:syntax" : US"smtp:fail:protocol",
+  errmess, NULL);
+
 log_write(type, LOG_MAIN, "SMTP %s error in \"%s\" %s %s",
   type == L_smtp_syntax_error ? "syntax" : "protocol",
   string_printing(smtp_cmd_buffer), host_and_ident(TRUE), errmess);

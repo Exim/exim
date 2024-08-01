@@ -34,7 +34,7 @@ begin acl
 
 .ifdef _HAVE_EVENT
 ev_log:
-  accept logwrite = event $event_name
+  accept logwrite = event $event_name data "$event_data"
 .endif
 
 rcpt:

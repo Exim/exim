@@ -12,6 +12,8 @@ Version 4.98
 
  2. A "connection_id" variable
 
+ 3. Events smtp:fail:protocol and smtp:fail:syntax
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

@@ -43150,6 +43150,7 @@ Events have names which correspond to the point in process at which they fire.
 The name is placed in the variable &$event_name$& and the event action
 expansion must check this, as it will be called for every possible event type.
 
+.new
 The current list of events is:
 .itable all 0 0 4 25* left 10* center 15* center 50* left
 .row auth:fail		    after    both	"per driver per authentication attempt"
@@ -43169,7 +43170,10 @@ The current list of events is:
 .row tls:fail:connect       after    main       "per connection"
 .row smtp:connect           after    transport  "per connection"
 .row smtp:ehlo              after    transport  "per connection"
+.row smtp:fail:protocol     after    main       "per connection"
+.row smtp:fail:syntax       after    main       "per connection"
 .endtable
+.wen
 New event types may be added in future.
 
 The event name is a colon-separated list, defining the type of
@@ -43185,6 +43189,7 @@ should define the event action.
 
 An additional variable, &$event_data$&, is filled with information varying
 with the event type:
+.new
 .itable all 0 0 2 20* left 80* left
 .row auth:fail		  "smtp response"
 .row dane:fail            "failure reason"
@@ -43200,7 +43205,10 @@ with the event type:
 .row tls:fail:connect     "error string"
 .row smtp:connect         "smtp banner"
 .row smtp:ehlo            "smtp ehlo response"
+.row smtp:fail:protocol   "error string"
+.row smtp:fail:syntax     "error string"
 .endtable
+.wen
 
 The :defer events populate one extra variable: &$event_defer_errno$&.
 

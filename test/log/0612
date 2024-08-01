@@ -1,77 +1,77 @@
 1999-03-02 09:44:33 rej/never
 1999-03-02 09:44:33 Start queue run: pid=p1234
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event tcp:connect
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event smtp:connect
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event smtp:ehlo
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event tcp:close
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event tcp:connect data ""
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event smtp:connect data "220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event smtp:ehlo data "250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-LIMITS MAILMAX=1000 RCPTMAX=50000\n250-DSN\n250 HELP"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event tcp:close data ""
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** rmt_reject@test.ex R=r2 T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<rmt_reject@test.ex>: 550 Administrative prohibition
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:fail:delivery
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:fail:delivery data "SMTP error from remote mail server after RCPT TO:<rmt_reject@test.ex>: 550 Administrative prohibition"
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 rmt_reject@test.ex: error ignored: RFC 3461 DSN, failure notify not requested
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:complete data ""
 1999-03-02 09:44:33 End queue run: pid=p1234
 1999-03-02 09:44:33 accept/success
 1999-03-02 09:44:33 Start queue run: pid=p1235
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event tcp:connect
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event smtp:connect
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event smtp:ehlo
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event tcp:close
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 event tcp:connect data ""
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 event smtp:connect data "220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 event smtp:ehlo data "250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-LIMITS MAILMAX=1000 RCPTMAX=50000\n250-DSN\n250 HELP"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 event tcp:close data ""
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => rmt_accept@test.ex R=r2 T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-000000005vi-0000"
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:delivery
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:delivery data "250 OK id=10HmaZ-000000005vi-0000"
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:complete data ""
 1999-03-02 09:44:33 End queue run: pid=p1235
 1999-03-02 09:44:33 Start queue run: pid=p1236
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => rmt_accept <rmt_accept@test.ex> R=r1 T=tofile
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 event msg:delivery
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 event msg:delivery data ""
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> R=10HmaZ-000000005vi-0000 U=EXIMUSER P=local S=sss for b@dump.ex
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 event msg:complete data ""
 1999-03-02 09:44:33 End queue run: pid=p1236
 1999-03-02 09:44:33 Start queue run: pid=p1237
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <b@dump.ex> R=r_dump
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 event msg:complete data ""
 1999-03-02 09:44:33 End queue run: pid=p1237
 1999-03-02 09:44:33 fakereject/success
 1999-03-02 09:44:33 Start queue run: pid=p1238
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 event tcp:connect
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 event smtp:connect
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 event smtp:ehlo
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 event tcp:close
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 event tcp:connect data ""
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 event smtp:connect data "220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000"
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 event smtp:ehlo data "250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-LIMITS MAILMAX=1000 RCPTMAX=50000\n250-DSN\n250 HELP"
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 event tcp:close data ""
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** rmt_fakereject@test.ex R=r2 T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 550-Your message has been rejected but is being kept for evaluation.\n550-If it was a legitimate message, it may still be delivered to the target\n550 recipient(s).
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 event msg:fail:delivery
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 event msg:fail:delivery data "SMTP error from remote mail server after end of data: 550-Your message has been rejected but is being kept for evaluation.\n550-If it was a legitimate message, it may still be delivered to the target\n550 recipient(s)."
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 rmt_fakereject@test.ex: error ignored: RFC 3461 DSN, failure notify not requested
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 event msg:complete data ""
 1999-03-02 09:44:33 End queue run: pid=p1238
 1999-03-02 09:44:33 Start queue run: pid=p1239
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 => rmt_fakereject <rmt_fakereject@test.ex> R=r1 T=tofile
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 event msg:delivery
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 event msg:delivery data ""
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 event msg:complete data ""
 1999-03-02 09:44:33 End queue run: pid=p1239
 1999-03-02 09:44:33 Start queue run: pid=p1240
 1999-03-02 09:44:33 End queue run: pid=p1240
 1999-03-02 09:44:33 defer/delay
 1999-03-02 09:44:33 Start queue run: pid=p1241
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 event tcp:connect
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 event smtp:connect
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 event smtp:ehlo
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 event msg:rcpt:host:defer
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 event msg:rcpt:defer
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 event tcp:close
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 event tcp:connect data ""
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 event smtp:connect data "220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 event smtp:ehlo data "250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-LIMITS MAILMAX=1000 RCPTMAX=50000\n250-DSN\n250 HELP"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 event msg:rcpt:host:defer data "SMTP error from remote mail server after RCPT TO:<rmt_defer@test.ex>: 451 Temporary local problem - please try later"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 event msg:rcpt:defer data "SMTP error from remote mail server after RCPT TO:<rmt_defer@test.ex>: 451 Temporary local problem - please try later"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 event tcp:close data ""
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 == rmt_defer@test.ex R=r2 T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<rmt_defer@test.ex>: 451 Temporary local problem - please try later
 1999-03-02 09:44:33 End queue run: pid=p1241
 1999-03-02 09:44:33 defer/never
 1999-03-02 09:44:33 Start queue run: pid=p1242
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 == rmt_defer@test.ex routing defer (-52): retry time not reached
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 event tcp:connect
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 event smtp:connect
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 event smtp:ehlo
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 event msg:rcpt:host:defer
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 event msg:rcpt:defer
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 event tcp:close
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 event tcp:connect data ""
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 event smtp:connect data "220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000"
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 event smtp:ehlo data "250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-LIMITS MAILMAX=1000 RCPTMAX=50000\n250-DSN\n250 HELP"
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 event msg:rcpt:host:defer data "SMTP error from remote mail server after RCPT TO:<rmt_defer@test.ex>: 451 Temporary local problem - please try later"
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 event msg:rcpt:defer data "SMTP error from remote mail server after RCPT TO:<rmt_defer@test.ex>: 451 Temporary local problem - please try later"
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 event tcp:close data ""
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 == rmt_defer@test.ex R=r2 T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<rmt_defer@test.ex>: 451 Temporary local problem - please try later
 1999-03-02 09:44:33 End queue run: pid=p1242
 1999-03-02 09:44:33 playout
@@ -80,38 +80,39 @@
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= <> R=10HmbD-000000005vi-0000 U=EXIMUSER P=local S=sss for c@dump.ex
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 == rmt_defer@test.ex routing defer (-52): retry time not reached
 1999-03-02 09:44:33 End queue run: pid=p1243
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 event msg:fail:internal
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 event msg:fail:internal data "message removed by CALLER"
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 event msg:complete data ""
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 removed by CALLER
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 event msg:fail:internal
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 event msg:fail:internal data "message removed by CALLER"
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 event msg:complete data ""
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 removed by CALLER
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
 1999-03-02 09:44:33 rej/failure+delay
 1999-03-02 09:44:33 Start queue run: pid=p1244
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 => :blackhole: <c@dump.ex> R=r_dump
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbF-000000005vi-0000 event msg:complete
-1999-03-02 09:44:33 10HmbG-000000005vi-0000 event tcp:connect
-1999-03-02 09:44:33 10HmbG-000000005vi-0000 event smtp:connect
-1999-03-02 09:44:33 10HmbG-000000005vi-0000 event smtp:ehlo
-1999-03-02 09:44:33 10HmbG-000000005vi-0000 event tcp:close
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 event msg:complete data ""
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 event tcp:connect data ""
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 event smtp:connect data "220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000"
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 event smtp:ehlo data "250-myhost.test.ex Hello localhost [127.0.0.1]\n250-SIZE 52428800\n250-LIMITS MAILMAX=1000 RCPTMAX=50000\n250-DSN\n250 HELP"
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 event tcp:close data ""
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 ** rmt_reject@test.ex R=r2 T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<rmt_reject@test.ex>: 550 Administrative prohibition
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= <> R=10HmbG-000000005vi-0000 U=EXIMUSER P=local S=sss for e@dump.ex
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbG-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 event msg:complete data ""
 1999-03-02 09:44:33 End queue run: pid=p1244
 1999-03-02 09:44:33 deliver DSN
 1999-03-02 09:44:33 Start queue run: pid=p1245
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 => :blackhole: <e@dump.ex> R=r_dump
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbH-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 event msg:complete data ""
 1999-03-02 09:44:33 End queue run: pid=p1245
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1246, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1247, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 event smtp:fail:syntax data "Invalid value for NOTIFY parameter"
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= a@dump.ex H=(testclient) [ip4.ip4.ip4.ip4] P=esmtp S=sss for rmt_reject@test.ex
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<a@dump.ex> rejected RCPT <rmt_reject@test.ex>
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= b@dump.ex H=(testclient) [ip4.ip4.ip4.ip4] P=esmtp S=sss for rmt_accept@test.ex
