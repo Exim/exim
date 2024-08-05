@@ -39,6 +39,12 @@ typedef struct
 
 typedef struct
 {
+	uint8x	buffer[1024];
+	uint32x	bufIndex;
+} SPAbuf;
+
+typedef struct
+{
        char         ident[8];
        uint32x         msgType;
        SPAStrHeader    uDomain;
@@ -46,8 +52,7 @@ typedef struct
        uint8x         challengeData[8];
        uint8x         reserved[8];
        SPAStrHeader    emptyString;
-       uint8x         buffer[1024];
-       uint32x         bufIndex;
+       SPAbuf		buf;
 } SPAAuthChallenge;
 
 
@@ -58,8 +63,7 @@ typedef struct
        uint32x         flags;
        SPAStrHeader    user;
        SPAStrHeader    domain;
-       uint8x         buffer[1024];
-       uint32x         bufIndex;
+       SPAbuf		buf;
 } SPAAuthRequest;
 
 typedef struct
@@ -73,11 +77,10 @@ typedef struct
        SPAStrHeader    uWks;
        SPAStrHeader    sessionKey;
        uint32x         flags;
-       uint8x         buffer[1024];
-       uint32x         bufIndex;
+       SPAbuf		buf;
 } SPAAuthResponse;
 
-#define spa_request_length(ptr) (((ptr)->buffer - (uint8x*)(ptr)) + (ptr)->bufIndex)
+#define spa_request_length(ptr) (((uint8x*)&(ptr)->buf - (uint8x*)(ptr)) + (ptr)->buf.bufIndex)
 
 void spa_bits_to_base64 (unsigned char *, const unsigned char *, int);
 int spa_base64_to_bits(char *, int, const char *);

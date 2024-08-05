@@ -31,6 +31,12 @@ JH/06 Bug 1141: When operating a continued-connection transport, verify that
       the interface option, if specified, evaluates to match the connection.
       Previously, a queued message for the same host was sent without checking.
 
+JH/07 Bug 3106: Fix coding in SPA authenticator. A macro argument was not
+      properly parenthesized, resulting in a logic error.  While the simple
+      fix was provided by Andrew Aitchison, the over-large code block resulting
+      from this macro made me want to replace it with a real function so more
+      extensive rework becamse needed.
+
 Exim version 4.98
 -----------------
 

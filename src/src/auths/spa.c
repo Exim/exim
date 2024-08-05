@@ -195,7 +195,7 @@ that causes failure if the size of msgbuf is exceeded. ****/
   int len = SVAL(&responseptr->uUser.len,0)/2;
 
   if (  (off = IVAL(&responseptr->uUser.offset,0)) >= sizeof(SPAAuthResponse)
-     || len >= sizeof(responseptr->buffer)/2
+     || len >= sizeof(responseptr->buf.buffer)/2
      || (p = (CS responseptr) + off) + len*2 >= CS (responseptr+1)
      )
     {
