@@ -14,6 +14,8 @@ Version 4.98
 
  3. Events smtp:fail:protocol and smtp:fail:syntax
 
+ 4. JSON lookup support can now be built as a lodable module
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

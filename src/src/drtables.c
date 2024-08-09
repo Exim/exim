@@ -573,7 +573,7 @@ extern lookup_module_info dsearch_lookup_module_info;
 #if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
 extern lookup_module_info ibase_lookup_module_info;
 #endif
-#if defined(LOOKUP_JSON)
+#if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
 extern lookup_module_info json_lookup_module_info;
 #endif
 #if defined(LOOKUP_LDAP)
@@ -663,7 +663,7 @@ addlookupmodule(NULL, &ibase_lookup_module_info);
 addlookupmodule(NULL, &ldap_lookup_module_info);
 #endif
 
-#ifdef LOOKUP_JSON
+#if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
 addlookupmodule(NULL, &json_lookup_module_info);
 #endif
 
