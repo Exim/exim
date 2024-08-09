@@ -509,7 +509,7 @@ SUPPORT_DANE=yes
 # LOOKUP_INCLUDE +=-I /usr/local/include
 # LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lgds -lsqlite3 -llmdb
 
-LOOKUP_LIBS=-L/usr/local/lib -lldap -llber
+# LOOKUP_LIBS=-L/usr/local/lib -lldap -llber
 # Some platforms may need this for LOOKUP_NIS:
 #LOOKUP_LIBS += -lnsl
 #LOOKUP_LIBS += -ljansson
