@@ -132,6 +132,9 @@ In order to run this test suite, the following requirements must be met:
      assumes the simpler I/O model.
      Exim must *not* be built with HEADERS_CHARSET set to UTF-8.
 
+(11) If building any dynamically-loaded lookups, LOOKUP_MODULE_DIR should
+     be set to .../exim/test/eximdir.
+
 
 
 OPTIONAL EXTRAS

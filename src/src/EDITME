@@ -398,7 +398,11 @@ TRANSPORT_SMTP=yes
 # (where * is the name as given here in this list). That ensures that only
 # the dynamic library and not the exim binary will be linked against the
 # library.
+#
 # NOTE: LDAP cannot be built as a module!
+# JSON cannot (yet).
+# Also, PASSWD, DBM and DNSDB can but there is little point since the accesses
+# are always needed by the Exim core.
 #
 # For Redis you need to have hiredis installed on your system
 # (https://github.com/redis/hiredis).
@@ -407,7 +411,8 @@ TRANSPORT_SMTP=yes
 
 # If your system has pkg-config then the _INCLUDE/_LIBS setting can be
 # handled for you automatically by also defining the _PC variable to reference
-# the name of the pkg-config package, if such is available.
+# the name of the pkg-config package, if such is available. This should not
+# be done for module builds.
 
 LOOKUP_DBM=yes
 LOOKUP_LSEARCH=yes
@@ -440,11 +445,9 @@ LOOKUP_DNSDB=yes
 # LOOKUP_NWILDLSEARCH=yes
 
 
-# Some platforms may need this for LOOKUP_NIS:
-# LIBS += -lnsl
 
 #------------------------------------------------------------------------------
-# If you have set LOOKUP_LDAP=yes, you should set LDAP_LIB_TYPE to indicate
+# If you have set LOOKUP_LDAP, you should set LDAP_LIB_TYPE to indicate
 # which LDAP library you have. Unfortunately, though most of their functions
 # are the same, there are minor differences. Currently Exim knows about four
 # LDAP libraries: the one from the University of Michigan (also known as
@@ -494,10 +497,23 @@ SUPPORT_DANE=yes
 # is for Redis, -ljansson for JSON.
 #
 # You do not need to use this for any lookup information added via pkg-config.
+#
+# Libraries being built as modules should be added to respective
+# LOOKUP_*_INCLUDE and LOOKUP_*_LIBS rather than the the ones for the
+# core exim build.  This gets them linked with the module instead
+#
+# LSEARCH, DSEARCH & CDB have no external library needs.
+# DNSDB needs the resolver library which the core uses anyway.
 
 # LOOKUP_INCLUDE=-I /usr/local/ldap/include -I /usr/local/mysql/include -I /usr/local/pgsql/include
 # LOOKUP_INCLUDE +=-I /usr/local/include
 # LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lgds -lsqlite3 -llmdb
+
+LOOKUP_LIBS=-L/usr/local/lib -lldap -llber
+# Some platforms may need this for LOOKUP_NIS:
+#LOOKUP_LIBS += -lnsl
+#LOOKUP_LIBS += -ljansson
+#LOOKUP_LIBS += -lhiredis
 
 #------------------------------------------------------------------------------
 # If you included LOOKUP_LMDB above you will need the library. Depending

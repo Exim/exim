@@ -37,6 +37,9 @@ JH/07 Bug 3106: Fix coding in SPA authenticator. A macro argument was not
       from this macro made me want to replace it with a real function so more
       extensive rework becamse needed.
 
+JH/08 The output of "exim -bV" now includes lookup types built as dynamic-load
+      modules.
+
 Exim version 4.98
 -----------------
 

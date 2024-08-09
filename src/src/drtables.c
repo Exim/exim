@@ -722,7 +722,7 @@ addlookupmodule(NULL, &whoson_lookup_module_info);
 addlookupmodule(NULL, &readsock_lookup_module_info);
 
 #ifdef LOOKUP_MODULE_DIR
-if (!(dd = exim_opendir(LOOKUP_MODULE_DIR)))
+if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
   {
   DEBUG(D_lookup) debug_printf("Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
   log_write(0, LOG_MAIN, "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);

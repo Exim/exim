@@ -1297,7 +1297,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^tls_set_watch\(\) fail on '\/usr\/(?:lib\/ssl|local\/openssl3\/etc\/pki\/tls)\/cert.pem': No such file or directory$/;
 
     # drop lookups
-    next if /^$time_pid?(?: Lookups\ \(built-in\):
+    next if /^$time_pid?(?: Lookups\ \((?:built-in|dynamic)\):
+					|Loaded\ "[^.]+\.so"\ \(\d+\ lookup\ types\)
 					| Loading\ lookup\ modules\ from
 					| Loaded\ \d+\ lookup\ modules
 					| Total\ \d+\ lookups)/x;
@@ -3727,12 +3728,13 @@ while (<EXIMINFO>)
     %parm_support = @temp;
     }
 
-  elsif (/^Lookups \(built-in\): (.*)/)
+  elsif (/^Lookups \((?:built-in|dynamic)\):  ?(.*)/)
     {
     print;
     @temp = split /(\s+)/, $1;
     push(@temp, ' ');
-    %parm_lookups = @temp;
+    my %temp_lookups = @temp;
+    @parm_lookups{keys %temp_lookups} = values %temp_lookups;
     }
 
   elsif (/^Authenticators: (.*)/)
@@ -4131,14 +4133,23 @@ system("sudo cp eximdir/exim eximdir/exim_exim;" .
        "sudo chgrp $parm_eximgroup eximdir/exim_exim;" .
        "sudo chmod 06755 eximdir/exim_exim");
 
+# Copy any libraries that were built for dynamic load
+# Currently this is only for lookup methods
+
+($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
+
+while (my $file = glob("$parm_exim_dir/lookups/*.so")) {
+  my $base = basename($file);
+  cp("$file", "eximdir/");
+  system("sudo chmod 755 eximdir/$base");
+  }
+
 ##################################################
 #     Make copies of utilities we might need     #
 ##################################################
 
 # Certain of the tests make use of some of Exim's utilities. We do not need
 # to be root to copy these.
-
-($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
 
 $dbm_build_deleted = 0;
 if (defined $parm_lookups{dbm} && not cp("$parm_exim_dir/exim_dbmbuild", "eximdir/exim_dbmbuild"))

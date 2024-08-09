@@ -2077,7 +2077,7 @@ On some platforms, Exim supports not compiling all lookup types directly into
 the main binary, instead putting some into external modules which can be loaded
 on demand.
 This permits packagers to build Exim with support for lookups with extensive
-library dependencies without requiring all users to install all of those
+library dependencies without requiring all systems to install all of those
 dependencies.
 Most, but not all, lookup types can be built this way.
 
@@ -2091,7 +2091,7 @@ see &_src/EDITME_& for details.
 Then, for each module to be loaded dynamically, define the relevant
 &`LOOKUP_`&<&'lookup_type'&> flags to have the value "2" instead of "yes".
 For example, this will build in lsearch but load sqlite and mysql support
-on demand:
+only if each is installed:
 .code
 LOOKUP_LSEARCH=yes
 LOOKUP_SQLITE=2

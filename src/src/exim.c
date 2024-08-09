@@ -1033,6 +1033,147 @@ return g;
 }
 
 
+static gstring *
+lookup_show_supported(gstring * g)
+{
+gstring * b = NULL, * d = NULL;
+
+#if defined(LOOKUP_LSEARCH)
+# if LOOKUP_LSEARCH!=2
+  b = string_cat(b, US" lsearch wildlsearch nwildlsearch iplsearch");
+# else
+  d = string_cat(d, US" lsearch wildlsearch nwildlsearch iplsearch");
+# endif
+#endif
+#if defined(LOOKUP_CDB)
+# if LOOKUP_CDB!=2
+  b = string_cat(b, US" cdb");
+# else
+  d = string_cat(d, US" cdb");
+# endif
+#endif
+#if defined(LOOKUP_DBM)
+# if LOOKUP_DBM!=2
+  b = string_cat(b, US" dbm dbmjz dbmnz");
+# else
+  d = string_cat(d, US" dbm dbmjz dbmnz");
+# endif
+#endif
+#if defined(LOOKUP_DNSDB)
+# if LOOKUP_DNSDB!=2
+  b = string_cat(b, US" dnsdb");
+# else
+  d = string_cat(d, US" dnsdb");
+# endif
+#endif
+#if defined(LOOKUP_DSEARCH)
+# if LOOKUP_DSEARCH!=2
+  b = string_cat(b, US" dsearch");
+# else
+  d = string_cat(d, US" dsearch");
+# endif
+#endif
+#if defined(LOOKUP_IBASE)
+# if LOOKUP_IBASE!=2
+  b = string_cat(b, US" ibase");
+# else
+  d = string_cat(d, US" ibase");
+# endif
+#endif
+#if defined(LOOKUP_JSON)
+# if LOOKUP_JSON!=2
+  b = string_cat(b, US" json");
+# else
+  d = string_cat(d, US" json");
+# endif
+#endif
+#if defined(LOOKUP_LDAP)
+# if LOOKUP_LDAP!=2
+  b = string_cat(b, US" ldap ldapdn ldapm");
+# else
+  d = string_cat(d, US" ldap ldapdn ldapm");
+# endif
+#endif
+#ifdef LOOKUP_LMDB
+  b = string_cat(b, US" lmdb");
+#endif
+#if defined(LOOKUP_MYSQL)
+# if LOOKUP_MYSQL!=2
+  b = string_cat(b, US" mysql");
+# else
+  d = string_cat(d, US" mysql");
+# endif
+#endif
+#if defined(LOOKUP_NIS)
+# if LOOKUP_NIS!=2
+  b = string_cat(b, US" nis nis0");
+# else
+  d = string_cat(d, US" nis nis0");
+# endif
+#endif
+#if defined(LOOKUP_NISPLUS)
+# if LOOKUP_NISPLUS!=2
+  b = string_cat(b, US" nisplus");
+# else
+  d = string_cat(d, US" nisplus");
+# endif
+#endif
+#if defined(LOOKUP_ORACLE)
+# if LOOKUP_ORACLE!=2
+  b = string_cat(b, US" oracle");
+# else
+  d = string_cat(d, US" oracle");
+# endif
+#endif
+#if defined(LOOKUP_PASSWD)
+# if LOOKUP_PASSWD!=2
+  b = string_cat(b, US" passwd");
+# else
+  d = string_cat(d, US" passwd");
+# endif
+#endif
+#if defined(LOOKUP_PGSQL)
+# if LOOKUP_PGSQL!=2
+  b = string_cat(b, US" pgsql");
+# else
+  d = string_cat(d, US" pgsql");
+# endif
+#endif
+#if defined(LOOKUP_REDIS)
+# if LOOKUP_REDIS!=2
+  b = string_cat(b, US" redis");
+# else
+  d = string_cat(d, US" redis");
+# endif
+#endif
+#if defined(LOOKUP_SQLITE)
+# if LOOKUP_SQLITE!=2
+  b = string_cat(b, US" sqlite");
+# else
+  d = string_cat(d, US" sqlite");
+# endif
+#endif
+#if defined(LOOKUP_TESTDB)
+# if LOOKUP_TESTDB!=2
+  b = string_cat(b, US" testdb");
+# else
+  d = string_cat(d, US" testdb");
+# endif
+#endif
+#if defined(LOOKUP_WHOSON)
+# if LOOKUP_WHOSON!=2
+  b = string_cat(b, US" whoson");
+# else
+  d = string_cat(d, US" whoson");
+# endif
+#endif
+
+if (b) g = string_fmt_append(g, "Lookups (built-in):%Y\n", b);
+if (d) g = string_fmt_append(g, "Lookups (dynamic): %Y\n", d);
+return g;
+}
+
+
 /* This function is called for -bV/--version and for -d to output the optional
 features of the current Exim binary.
 
@@ -1169,66 +1310,7 @@ g = string_cat(g, US"Support for:");
 #endif
 g = string_cat(g, US"\n");
 
-g = string_cat(g, US"Lookups (built-in):");
-#if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
-  g = string_cat(g, US" lsearch wildlsearch nwildlsearch iplsearch");
-#endif
-#if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
-  g = string_cat(g, US" cdb");
-#endif
-#if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
-  g = string_cat(g, US" dbm dbmjz dbmnz");
-#endif
-#if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
-  g = string_cat(g, US" dnsdb");
-#endif
-#if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
-  g = string_cat(g, US" dsearch");
-#endif
-#if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
-  g = string_cat(g, US" ibase");
-#endif
-#if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
-  g = string_cat(g, US" json");
-#endif
-#if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
-  g = string_cat(g, US" ldap ldapdn ldapm");
-#endif
-#ifdef LOOKUP_LMDB
-  g = string_cat(g, US" lmdb");
-#endif
-#if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
-  g = string_cat(g, US" mysql");
-#endif
-#if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
-  g = string_cat(g, US" nis nis0");
-#endif
-#if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
-  g = string_cat(g, US" nisplus");
-#endif
-#if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
-  g = string_cat(g, US" oracle");
-#endif
-#if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
-  g = string_cat(g, US" passwd");
-#endif
-#if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
-  g = string_cat(g, US" pgsql");
-#endif
-#if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
-  g = string_cat(g, US" redis");
-#endif
-#if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
-  g = string_cat(g, US" sqlite");
-#endif
-#if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
-  g = string_cat(g, US" testdb");
-#endif
-#if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
-  g = string_cat(g, US" whoson");
-#endif
-g = string_cat(g, US"\n");
-
+g = lookup_show_supported(g);
 g = auth_show_supported(g);
 g = route_show_supported(g);
 g = transport_show_supported(g);
