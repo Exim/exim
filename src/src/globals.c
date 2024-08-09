@@ -1367,88 +1367,28 @@ uid_t   root_gid               = ROOT_GID;
 uid_t   root_uid               = ROOT_UID;
 
 router_instance  *routers  = NULL;
-router_instance  router_defaults = {
-    .next =			NULL,
-    .name =			NULL,
-    .info =			NULL,
-    .options_block =		NULL,
-    .driver_name =		NULL,
 
-    .address_data =		NULL,
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-    .bmi_rule =			NULL,
-#endif
-    .cannot_route_message =	NULL,
-    .condition =		NULL,
-    .current_directory =	NULL,
-    .debug_string =		NULL,
-    .domains =			NULL,
-    .errors_to =		NULL,
-    .expand_gid =		NULL,
-    .expand_uid =		NULL,
-    .expand_more =		NULL,
-    .expand_unseen =		NULL,
-    .extra_headers =		NULL,
-    .fallback_hosts =		NULL,
-    .home_directory =		NULL,
-    .ignore_target_hosts =	NULL,
-    .local_parts =		NULL,
-    .pass_router_name =		NULL,
-    .prefix =			NULL,
-    .redirect_router_name =	NULL,
-    .remove_headers =		NULL,
-    .require_files =		NULL,
-    .router_home_directory =	NULL,
+/* All elements not mentioned will be 0/NULL/FALSE */
+router_instance  router_defaults = {
     .self =			US"freeze",
-    .senders =			NULL,
-    .suffix =			NULL,
-    .translate_ip_address =	NULL,
-    .transport_name =		NULL,
 
     .address_test =		TRUE,
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-    .bmi_deliver_alternate =	FALSE,
-    .bmi_deliver_default =	FALSE,
-    .bmi_dont_deliver =		FALSE,
-#endif
     .expn =			TRUE,
-    .caseful_local_part =	FALSE,
-    .check_local_user =		FALSE,
-    .disable_logging =		FALSE,
-    .fail_verify_recipient =	FALSE,
-    .fail_verify_sender =	FALSE,
-    .gid_set =			FALSE,
-    .initgroups =		FALSE,
     .log_as_local =		TRUE_UNSET,
     .more =			TRUE,
-    .pass_on_timeout =		FALSE,
-    .prefix_optional =		FALSE,
     .repeat_use =		TRUE,
     .retry_use_local_part =	TRUE_UNSET,
-    .same_domain_copy_routing =	FALSE,
-    .self_rewrite =		FALSE,
-    .set =			NULL,
-    .suffix_optional =		FALSE,
-    .verify_only =		FALSE,
     .verify_recipient =		TRUE,
     .verify_sender =		TRUE,
-    .uid_set =			FALSE,
-    .unseen =			FALSE,
-    .dsn_lasthop =		FALSE,
 
     .self_code =		self_freeze,
     .uid =			(uid_t)(-1),
     .gid =			(gid_t)(-1),
 
-    .fallback_hostlist =	NULL,
-    .transport =		NULL,
-    .pass_router =		NULL,
-    .redirect_router =		NULL,
-
     .dnssec =                   { .request= US"*", .require=NULL },
 };
 
-uschar *router_name            = NULL;
+const uschar *router_name      = NULL;
 tree_node *router_var	       = NULL;
 
 ip_address_item *running_interfaces = NULL;

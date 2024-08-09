@@ -45,7 +45,7 @@ int dnslookup_router_options_count =
 
 /* Dummy entries */
 dnslookup_router_options_block dnslookup_router_option_defaults = {0};
-void dnslookup_router_init(router_instance *rblock) {}
+void dnslookup_router_init(driver_instance *rblock) {}
 int dnslookup_router_entry(router_instance *rblock, address_item *addr,
   struct passwd *pw, int verify, address_item **addr_local,
   address_item **addr_remote, address_item **addr_new,
@@ -83,7 +83,7 @@ dnslookup_router_options_block dnslookup_router_option_defaults = {
 consistency checks to be done, or anything else that needs to be set up. */
 
 void
-dnslookup_router_init(router_instance *rblock)
+dnslookup_router_init(driver_instance *rblock)
 {
 /*
 dnslookup_router_options_block *ob =
@@ -154,7 +154,7 @@ int rc;
 int widen_sep = 0;
 int whichrrs = HOST_FIND_BY_MX | HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
 dnslookup_router_options_block * ob =
-  (dnslookup_router_options_block *)(rblock->options_block);
+  (dnslookup_router_options_block *)(rblock->drinst.options_block);
 uschar * srv_service = NULL, * widen = NULL;
 const uschar * pre_widen = addr->domain, * post_widen = NULL;
 const uschar * fully_qualified_name, * listptr;
@@ -162,7 +162,7 @@ uschar widen_buffer[256];
 
 DEBUG(D_route)
   debug_printf("%s router called for %s\n  domain = %s\n",
-    rblock->name, addr->address, addr->domain);
+    rblock->drinst.name, addr->address, addr->domain);
 
 /* If an SRV check is required, expand the service name */
 
@@ -172,7 +172,7 @@ if (ob->check_srv)
      && !f.expand_string_forcedfail)
     {
     addr->message = string_sprintf("%s router: failed to expand \"%s\": %s",
-      rblock->name, ob->check_srv, expand_string_message);
+      rblock->drinst.name, ob->check_srv, expand_string_message);
     return DEFER;
     }
   else
@@ -237,27 +237,27 @@ for (;;)
     /* not expanded so should never be tainted */
     widen = string_nextinlist(&listptr, &widen_sep, widen_buffer,
       sizeof(widen_buffer));
-    DEBUG(D_route) debug_printf("%s router widened %s to %s\n", rblock->name,
-      addr->domain, h.name);
+    DEBUG(D_route) debug_printf("%s router widened %s to %s\n",
+      rblock->drinst.name, addr->domain, h.name);
     }
   else if (post_widen)
     {
     h.name = post_widen;
     post_widen = NULL;
     DEBUG(D_route) debug_printf("%s router trying %s after widening failed\n",
-      rblock->name, h.name);
+      rblock->drinst.name, h.name);
     }
   else return DECLINE;
 
   /* Check if we must request only. or prefer, ipv4 */
 
   if (  ob->ipv4_only
-     && expand_check_condition(ob->ipv4_only, rblock->name, US"router"))
+     && expand_check_condition(ob->ipv4_only, rblock->drinst.name, US"router"))
     flags = flags & ~HOST_FIND_BY_AAAA | HOST_FIND_IPV4_ONLY;
   else if (f.search_find_defer)
     return DEFER;
   if (  ob->ipv4_prefer
-     && expand_check_condition(ob->ipv4_prefer, rblock->name, US"router"))
+     && expand_check_condition(ob->ipv4_prefer, rblock->drinst.name, US"router"))
     flags |= HOST_FIND_IPV4_FIRST;
   else if (f.search_find_defer)
     return DEFER;
@@ -314,7 +314,7 @@ for (;;)
 
       case OK:
       DEBUG(D_route) debug_printf("%s router rejected %s: no MX record(s)\n",
-        rblock->name, fully_qualified_name);
+        rblock->drinst.name, fully_qualified_name);
       continue;
       }
 
@@ -331,7 +331,7 @@ for (;;)
     if (rblock->pass_on_timeout)
       {
       DEBUG(D_route) debug_printf("%s router timed out, and pass_on_timeout is set\n",
-        rblock->name);
+        rblock->drinst.name);
       return PASS;
       }
     addr->message = US"host lookup did not complete";
@@ -351,7 +351,7 @@ for (;;)
 
       case OK:
 	DEBUG(D_route) debug_printf("%s router: matched fail_defer_domains\n",
-	  rblock->name);
+	  rblock->drinst.name);
 	addr->message = US"missing MX, or all MXs point to missing A records,"
 	  " and defer requested";
 	return DEFER;
@@ -467,13 +467,12 @@ addr->host_list[0] = h;
 /* Fill in the transport and queue the address for delivery. */
 
 if (!rf_get_transport(rblock->transport_name, &(rblock->transport),
-      addr, rblock->name, NULL))
+      addr, rblock->drinst.name, NULL))
   return DEFER;
 
 addr->transport = rblock->transport;
 
-return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
-  OK : DEFER;
+return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ?  OK : DEFER;
 }
 
 #endif	/*!MACRO_PREDEF*/

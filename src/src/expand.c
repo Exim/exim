@@ -1044,9 +1044,10 @@ Returns:        TRUE if condition is met, FALSE if not
 */
 
 BOOL
-expand_check_condition(uschar *condition, uschar *m1, uschar *m2)
+expand_check_condition(const uschar * condition,
+  const uschar * m1, const uschar * m2)
 {
-uschar * ss = expand_string(condition);
+const uschar * ss = expand_cstring(condition);
 if (!ss)
   {
   if (!f.expand_string_forcedfail && !f.search_find_defer)
@@ -8701,16 +8702,16 @@ Returns:     OK     value placed in rvalue
 
 int
 exp_bool(address_item * addr,
-  uschar * mtype, uschar * mname, unsigned dbg_opt,
+  const uschar * mtype, const uschar * mname, unsigned dbg_opt,
   uschar * oname, BOOL bvalue,
-  uschar * svalue, BOOL * rvalue)
+  const uschar * svalue, BOOL * rvalue)
 {
-uschar * expanded;
+const uschar * expanded;
 
 DEBUG(D_expand) debug_printf("try option %s\n", oname);
 if (!svalue) { *rvalue = bvalue; return OK; }
 
-if (!(expanded = expand_string(svalue)))
+if (!(expanded = expand_cstring(svalue)))
   {
   if (f.expand_string_forcedfail)
     {

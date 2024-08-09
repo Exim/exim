@@ -212,55 +212,55 @@ exim binary. */
 #include "routers/rf_functions.h"
 
 #ifdef ROUTER_ACCEPT
-#include "routers/accept.h"
+# include "routers/accept.h"
 #endif
 
 #ifdef ROUTER_DNSLOOKUP
-#include "routers/dnslookup.h"
+# include "routers/dnslookup.h"
 #endif
 
 #ifdef ROUTER_MANUALROUTE
-#include "routers/manualroute.h"
+# include "routers/manualroute.h"
 #endif
 
 #ifdef ROUTER_IPLITERAL
-#include "routers/ipliteral.h"
+# include "routers/ipliteral.h"
 #endif
 
 #ifdef ROUTER_IPLOOKUP
-#include "routers/iplookup.h"
+# include "routers/iplookup.h"
 #endif
 
 #ifdef ROUTER_QUERYPROGRAM
-#include "routers/queryprogram.h"
+# include "routers/queryprogram.h"
 #endif
 
 #ifdef ROUTER_REDIRECT
-#include "routers/redirect.h"
+# include "routers/redirect.h"
 #endif
 
 #ifdef TRANSPORT_APPENDFILE
-#include "transports/appendfile.h"
+# include "transports/appendfile.h"
 #endif
 
 #ifdef TRANSPORT_AUTOREPLY
-#include "transports/autoreply.h"
+# include "transports/autoreply.h"
 #endif
 
 #ifdef TRANSPORT_LMTP
-#include "transports/lmtp.h"
+# include "transports/lmtp.h"
 #endif
 
 #ifdef TRANSPORT_PIPE
-#include "transports/pipe.h"
+# include "transports/pipe.h"
 #endif
 
 #ifdef EXPERIMENTAL_QUEUEFILE
-#include "transports/queuefile.h"
+# include "transports/queuefile.h"
 #endif
 
 #ifdef TRANSPORT_SMTP
-#include "transports/smtp.h"
+# include "transports/smtp.h"
 #endif
 
 
@@ -269,12 +269,14 @@ exim binary. */
 router_info routers_available[] = {
 #ifdef ROUTER_ACCEPT
   {
-  .driver_name =	US"accept",
-  .options =		accept_router_options,
-  .options_count =	&accept_router_options_count,
-  .options_block =	&accept_router_option_defaults,
-  .options_len =	sizeof(accept_router_options_block),
-  .init =		accept_router_init,
+  .drinfo = {
+    .driver_name =	US"accept",
+    .options =		accept_router_options,
+    .options_count =	&accept_router_options_count,
+    .options_block =	&accept_router_option_defaults,
+    .options_len =	sizeof(accept_router_options_block),
+    .init =		accept_router_init,
+    },
   .code =		accept_router_entry,
   .tidyup =		NULL,     /* no tidyup entry */
   .ri_flags =		ri_yestransport
@@ -282,12 +284,14 @@ router_info routers_available[] = {
 #endif
 #ifdef ROUTER_DNSLOOKUP
   {
-  .driver_name =	US"dnslookup",
-  .options =		dnslookup_router_options,
-  .options_count =	&dnslookup_router_options_count,
-  .options_block =	&dnslookup_router_option_defaults,
-  .options_len =	sizeof(dnslookup_router_options_block),
-  .init =		dnslookup_router_init,
+  .drinfo = {
+    .driver_name =	US"dnslookup",
+    .options =		dnslookup_router_options,
+    .options_count =	&dnslookup_router_options_count,
+    .options_block =	&dnslookup_router_option_defaults,
+    .options_len =	sizeof(dnslookup_router_options_block),
+    .init =		dnslookup_router_init,
+    },
   .code =		dnslookup_router_entry,
   .tidyup =		NULL,     /* no tidyup entry */
   .ri_flags =		ri_yestransport
@@ -295,12 +299,14 @@ router_info routers_available[] = {
 #endif
 #ifdef ROUTER_IPLITERAL
   {
-  .driver_name =	US"ipliteral",
-  .options =		ipliteral_router_options,
-  .options_count =	&ipliteral_router_options_count,
-  .options_block =	&ipliteral_router_option_defaults,
-  .options_len =	sizeof(ipliteral_router_options_block),
-  .init =		ipliteral_router_init,
+  .drinfo = {
+    .driver_name =	US"ipliteral",
+    .options =		ipliteral_router_options,
+    .options_count =	&ipliteral_router_options_count,
+    .options_block =	&ipliteral_router_option_defaults,
+    .options_len =	sizeof(ipliteral_router_options_block),
+    .init =		ipliteral_router_init,
+    },
   .code =		ipliteral_router_entry,
   .tidyup =		NULL,     /* no tidyup entry */
   .ri_flags =		ri_yestransport
@@ -308,12 +314,14 @@ router_info routers_available[] = {
 #endif
 #ifdef ROUTER_IPLOOKUP
   {
-  .driver_name =	US"iplookup",
-  .options =		iplookup_router_options,
-  .options_count =	&iplookup_router_options_count,
-  .options_block =	&iplookup_router_option_defaults,
-  .options_len =	sizeof(iplookup_router_options_block),
-  .init =		iplookup_router_init,
+  .drinfo = {
+    .driver_name =	US"iplookup",
+    .options =		iplookup_router_options,
+    .options_count =	&iplookup_router_options_count,
+    .options_block =	&iplookup_router_option_defaults,
+    .options_len =	sizeof(iplookup_router_options_block),
+    .init =		iplookup_router_init,
+    },
   .code =		iplookup_router_entry,
   .tidyup =		NULL,     /* no tidyup entry */
   .ri_flags =		ri_notransport
@@ -321,12 +329,14 @@ router_info routers_available[] = {
 #endif
 #ifdef ROUTER_MANUALROUTE
   {
-  .driver_name =	US"manualroute",
-  .options =		manualroute_router_options,
-  .options_count =	&manualroute_router_options_count,
-  .options_block =	&manualroute_router_option_defaults,
-  .options_len =	sizeof(manualroute_router_options_block),
-  .init =		manualroute_router_init,
+  .drinfo = {
+    .driver_name =	US"manualroute",
+    .options =		manualroute_router_options,
+    .options_count =	&manualroute_router_options_count,
+    .options_block =	&manualroute_router_option_defaults,
+    .options_len =	sizeof(manualroute_router_options_block),
+    .init =		manualroute_router_init,
+    },
   .code =		manualroute_router_entry,
   .tidyup =		NULL,     /* no tidyup entry */
   .ri_flags =		0
@@ -334,12 +344,14 @@ router_info routers_available[] = {
 #endif
 #ifdef ROUTER_QUERYPROGRAM
   {
-  .driver_name =	US"queryprogram",
-  .options =		queryprogram_router_options,
-  .options_count =	&queryprogram_router_options_count,
-  .options_block =	&queryprogram_router_option_defaults,
-  .options_len =	sizeof(queryprogram_router_options_block),
-  .init =		queryprogram_router_init,
+  .drinfo = {
+    .driver_name =	US"queryprogram",
+    .options =		queryprogram_router_options,
+    .options_count =	&queryprogram_router_options_count,
+    .options_block =	&queryprogram_router_option_defaults,
+    .options_len =	sizeof(queryprogram_router_options_block),
+    .init =		queryprogram_router_init,
+    },
   .code =		queryprogram_router_entry,
   .tidyup =		NULL,     /* no tidyup entry */
   .ri_flags =		0
@@ -347,12 +359,14 @@ router_info routers_available[] = {
 #endif
 #ifdef ROUTER_REDIRECT
   {
-  .driver_name =	US"redirect",
-  .options =		redirect_router_options,
-  .options_count =	&redirect_router_options_count,
-  .options_block =	&redirect_router_option_defaults,
-  .options_len =	sizeof(redirect_router_options_block),
-  .init =		redirect_router_init,
+  .drinfo = {
+    .driver_name =	US"redirect",
+    .options =		redirect_router_options,
+    .options_count =	&redirect_router_options_count,
+    .options_block =	&redirect_router_option_defaults,
+    .options_len =	sizeof(redirect_router_options_block),
+    .init =		redirect_router_init,
+    },
   .code =		redirect_router_entry,
   .tidyup =		NULL,     /* no tidyup entry */
   .ri_flags =		ri_notransport
@@ -466,8 +480,8 @@ gstring *
 route_show_supported(gstring * g)
 {
 g = string_cat(g, US"Routers:");
-for (router_info * rr = routers_available; rr->driver_name[0]; rr++)
-       	g = string_fmt_append(g, " %s", rr->driver_name);
+for (router_info * rr = routers_available; rr->drinfo.driver_name[0]; rr++)
+       	g = string_fmt_append(g, " %s", rr->drinfo.driver_name);
 return string_cat(g, US"\n");
 }
 
@@ -555,8 +569,8 @@ lookup_list[pos] = info;
 
 
 /* These need to be at file level for old versions of gcc (2.95.2 reported),
- * which give parse errors on an extern in function scope.  Each entry needs
- * to also be invoked in init_lookup_list() below  */
+which give parse errors on an extern in function scope.  Each entry needs
+to also be invoked in init_lookup_list() below  */
 
 #if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
 extern lookup_module_info cdb_lookup_module_info;

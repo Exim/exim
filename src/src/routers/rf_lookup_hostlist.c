@@ -174,7 +174,7 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
       {
       DEBUG(D_route)
         debug_printf("%s router timed out and pass_on_timeout set\n",
-          rblock->name);
+          rblock->drinst.name);
       return PASS;
       }
     addr->message = string_sprintf("host lookup for %s did not complete "
@@ -199,7 +199,7 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
     addr->basic_errno = ERRNO_UNKNOWNHOST;
     addr->message =
       string_sprintf("lookup of host \"%s\" failed in %s router%s",
-        h->name, rblock->name,
+        h->name, rblock->drinst.name,
         f.host_find_failed_syntax? ": syntax error in name" : "");
 
     if (hff_code == hff_defer) return DEFER;

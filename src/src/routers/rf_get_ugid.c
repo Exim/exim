@@ -41,20 +41,22 @@ ugid->initgroups = rblock->initgroups;
 /* If there is no fixed uid set, see if there's a dynamic one that can
 be expanded and possibly looked up. */
 
-if (!ugid->uid_set && rblock->expand_uid != NULL)
+if (!ugid->uid_set && rblock->expand_uid)
   {
-  if (route_find_expanded_user(rblock->expand_uid, rblock->name, US"router",
-    &upw, &(ugid->uid), &(addr->message))) ugid->uid_set = TRUE;
-  else return FALSE;
+  if (!route_find_expanded_user(rblock->expand_uid, rblock->drinst.name,
+			      US"router", &upw, &ugid->uid, &addr->message))
+    return FALSE;
+  ugid->uid_set = TRUE;
   }
 
 /* Likewise for the gid */
 
-if (!ugid->gid_set && rblock->expand_gid != NULL)
+if (!ugid->gid_set && rblock->expand_gid)
   {
-  if (route_find_expanded_group(rblock->expand_gid, rblock->name, US"router",
-    &(ugid->gid), &(addr->message))) ugid->gid_set = TRUE;
-  else return FALSE;
+  if (!route_find_expanded_group(rblock->expand_gid, rblock->drinst.name,
+			      US"router", &ugid->gid, &addr->message))
+    return FALSE;
+  ugid->gid_set = TRUE;
   }
 
 /* If a uid is set, then a gid must also be available; use one from the passwd
@@ -62,7 +64,7 @@ lookup if it happened. */
 
 if (ugid->uid_set && !ugid->gid_set)
   {
-  if (upw != NULL)
+  if (upw)
     {
     ugid->gid = upw->pw_gid;
     ugid->gid_set = TRUE;
@@ -70,7 +72,7 @@ if (ugid->uid_set && !ugid->gid_set)
   else
     {
     addr->message = string_sprintf("user set without group for %s router",
-      rblock->name);
+      rblock->drinst.name);
     return FALSE;
     }
   }

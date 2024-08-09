@@ -2235,7 +2235,7 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
     /* Show router, and transport */
 
     fprintf(fp, "router = %s, transport = %s\n",
-      addr->router->name, tp ? tp->name : US"unset");
+      addr->router->drinst.name, tp ? tp->name : US"unset");
 
     /* Show any hosts that are set up by a router unless the transport
     is going to override them; fiddle a bit to get a nice format. */

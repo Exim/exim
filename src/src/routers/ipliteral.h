@@ -30,6 +30,6 @@ extern int ipliteral_router_entry(router_instance *, address_item *,
   struct passwd *, int, address_item **, address_item **,
   address_item **, address_item **);
 
-extern void ipliteral_router_init(router_instance *);
+extern void ipliteral_router_init(driver_instance *);
 
 /* End of routers/ipliteral.h */

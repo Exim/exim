@@ -615,85 +615,92 @@ for (optionlist * o = optionlist_config;	       /* main-config options */
   if (listptr == o->v.value)
     return US o->name;
 
-for (router_instance * r = routers; r; r = r->next)
-  if (router_name && Ustrcmp(r->name, router_name) == 0)
-  {
-  const router_info * ri = r->info;
+if (router_name)
+  for (const driver_instance * rd = (driver_instance *)routers;
+	rd; rd = rd->next) if (Ustrcmp(rd->name, router_name) == 0)
+    {
+    const router_instance * r = (router_instance *)rd;
+    const router_info * ri = (router_info *)rd->info;
 
-  /* Check for a listptr match first */
+    /* Check for a listptr match first */
 
-  for (optionlist * o = optionlist_routers;		/* generic options */
-      o < optionlist_routers + optionlist_routers_size; o++)
-    if (  (o->type & opt_mask) == opt_stringptr
-       && listptr == CS r + o->v.offset)
-      return US o->name;
+    for (optionlist * o = optionlist_routers;		/* generic options */
+	o < optionlist_routers + optionlist_routers_size; o++)
+      if (  (o->type & opt_mask) == opt_stringptr
+	 && listptr == CS r + o->v.offset)
+	return US o->name;
 
-  for (optionlist * o = ri->options;			/* private options */
-      o < ri->options + *ri->options_count; o++)
-    if (  (o->type & opt_mask) == opt_stringptr
-       && listptr == CS (r->options_block) + o->v.offset)
-      return US o->name;
+    for (optionlist * o = ri->drinfo.options;		/* private options */
+	o < ri->drinfo.options + *ri->drinfo.options_count; o++)
+      if (  (o->type & opt_mask) == opt_stringptr
+	 && listptr == CS rd->options_block + o->v.offset)
+	return US o->name;
 
-  /* Check for a list addr match, unless null */
+    /* Check for a list addr match, unless null */
 
-  if (!list) continue;
+    if (!list) continue;
 
-  for (optionlist * o = optionlist_routers;		/* generic options */
-      o < optionlist_routers + optionlist_routers_size; o++)
-    if (  (o->type & opt_mask) == opt_stringptr
-       && list == * USS(CS r + o->v.offset))
-      if (name) return string_sprintf("DUP: %s %s vs. %s %s",
-	drname, name, r->name, o->name);
-      else { name = US o->name; drname = r->name; }
+    for (optionlist * o = optionlist_routers;		/* generic options */
+	o < optionlist_routers + optionlist_routers_size; o++)
+      if (  (o->type & opt_mask) == opt_stringptr
+	 && list == * USS(CS r + o->v.offset))
+	if (name)
+	  return string_sprintf("DUP: %s %s vs. %s %s",
+				drname, name, rd->name, o->name);
+	else
+	  { name = US o->name; drname = rd->name; }
 
-  for (optionlist * o = ri->options;			/* private options */
-      o < ri->options + *ri->options_count; o++)
-    if (  (o->type & opt_mask) == opt_stringptr
-       && list == * USS(CS (r->options_block) + o->v.offset))
-      if (name) return string_sprintf("DUP: %s %s vs. %s %s",
-	drname, name, r->name, o->name);
-      else { name = US o->name; drname = r->name; }
-  }
+    for (optionlist * o = ri->drinfo.options;		/* private options */
+	o < ri->drinfo.options + *ri->drinfo.options_count; o++)
+      if (  (o->type & opt_mask) == opt_stringptr
+	 && list == * USS(CS rd->options_block + o->v.offset))
+	if (name)
+	  return string_sprintf("DUP: %s %s vs. %s %s",
+				drname, name, rd->name, o->name);
+	else
+	  { name = US o->name; drname = rd->name; }
+    }
 
-for (transport_instance * t = transports; t; t = t->next)
-  if (transport_name && Ustrcmp(t->name, transport_name) == 0)
-  {
-  const transport_info * ti = t->info;
+if (transport_name)
+  for (transport_instance * t = transports; t; t = t->next)
+    if (Ustrcmp(t->name, transport_name) == 0)
+      {
+      const transport_info * ti = t->info;
 
-  /* Check for a listptr match first */
+      /* Check for a listptr match first */
 
-  for (optionlist * o = optionlist_transports;		/* generic options */
-      o < optionlist_transports + optionlist_transports_size; o++)
-    if (  (o->type & opt_mask) == opt_stringptr
-       && listptr == CS t + o->v.offset)
-      return US o->name;
+      for (optionlist * o = optionlist_transports;		/* generic options */
+	  o < optionlist_transports + optionlist_transports_size; o++)
+	if (  (o->type & opt_mask) == opt_stringptr
+	   && listptr == CS t + o->v.offset)
+	  return US o->name;
 
-  for (optionlist * o = ti->options;			/* private options */
-      o < ti->options + *ti->options_count; o++)
-    if (  (o->type & opt_mask) == opt_stringptr
-       && listptr == CS t->options_block + o->v.offset)
-      return US o->name;
+      for (optionlist * o = ti->options;			/* private options */
+	  o < ti->options + *ti->options_count; o++)
+	if (  (o->type & opt_mask) == opt_stringptr
+	   && listptr == CS t->options_block + o->v.offset)
+	  return US o->name;
 
-  /* Check for a list addr match, unless null */
+      /* Check for a list addr match, unless null */
 
-  if (!list) continue;
+      if (!list) continue;
 
-  for (optionlist * o = optionlist_transports;		/* generic options */
-      o < optionlist_transports + optionlist_transports_size; o++)
-    if (  (o->type & opt_mask) == opt_stringptr
-       && list == * USS(CS t + o->v.offset))
-      if (name) return string_sprintf("DUP: %s %s vs. %s %s",
-	drname, name, t->name, o->name);
-      else { name = US o->name; drname = t->name; }
+      for (optionlist * o = optionlist_transports;		/* generic options */
+	  o < optionlist_transports + optionlist_transports_size; o++)
+	if (  (o->type & opt_mask) == opt_stringptr
+	   && list == * USS(CS t + o->v.offset))
+	  if (name) return string_sprintf("DUP: %s %s vs. %s %s",
+	    drname, name, t->name, o->name);
+	  else { name = US o->name; drname = t->name; }
 
-  for (optionlist * o = ti->options;			/* private options */
-      o < ti->options + *ti->options_count; o++)
-    if (  (o->type & opt_mask) == opt_stringptr
-       && list == * USS(CS t->options_block + o->v.offset))
-      if (name) return string_sprintf("DUP: %s %s vs. %s %s",
-	drname, name, t->name, o->name);
-      else { name = US o->name; drname = t->name; }
-  }
+      for (optionlist * o = ti->options;			/* private options */
+	  o < ti->options + *ti->options_count; o++)
+	if (  (o->type & opt_mask) == opt_stringptr
+	   && list == * USS(CS t->options_block + o->v.offset))
+	  if (name) return string_sprintf("DUP: %s %s vs. %s %s",
+	    drname, name, t->name, o->name);
+	  else { name = US o->name; drname = t->name; }
+      }
 
 return name ? name : US"";
 }
@@ -3008,6 +3015,8 @@ if (names_only)
 for (; d; d = d->next)
   {
   BOOL rc = FALSE;
+  driver_info * di = d->info;
+
   if (!name)
     printf("\n%s %s:\n", d->name, type);
   else if (Ustrcmp(d->name, name) != 0) continue;
@@ -3016,11 +3025,11 @@ for (; d; d = d->next)
     if (!(ol->type & opt_hidden))
       rc |= print_ol(ol, US ol->name, d, ol2, size, no_labels);
 
-  for (optionlist * ol = d->info->options;
-       ol < d->info->options + *(d->info->options_count); ol++)
+  for (optionlist * ol = di->options;
+       ol < di->options + *di->options_count; ol++)
     if (!(ol->type & opt_hidden))
-      rc |= print_ol(ol, US ol->name, d, d->info->options,
-		    *d->info->options_count, no_labels);
+      rc |= print_ol(ol, US ol->name, d, di->options,
+		    *di->options_count, no_labels);
 
   if (name) return rc;
   }
@@ -3727,10 +3736,12 @@ return NULL;   /* never obeyed */
 static void
 driver_init_fini(driver_instance * d, const uschar * class)
 {
+driver_info * di = d->info;
+
 if (!d->driver_name)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "no driver defined for %s \"%s\"", class, d->name);
-(d->info->init)(d);
+(di->init)(d);
 }
 
 
@@ -3826,7 +3837,7 @@ while ((buffer = get_config_line()))
     d = store_get_perm(instance_size, FALSE);
     memcpy(d, instance_default, instance_size);
     *p = d;
-    p = &d->next;
+    p = (driver_instance **)&d->next;
     d->name = string_copy(name);
     d->srcfile = config_filename;
     d->srcline = config_lineno; 
@@ -3865,8 +3876,11 @@ while ((buffer = get_config_line()))
   block. */
 
   else if (d->info)
-    readconf_handle_option(buffer, d->info->options,
-      *(d->info->options_count), d, US"option \"%s\" unknown");
+    {
+    driver_info * di = d->info;
+    readconf_handle_option(buffer, di->options,
+      *di->options_count, d, US"option \"%s\" unknown");
+    }
 
   /* The option is not generic and the driver name has not yet been given. */
 
@@ -3898,12 +3912,13 @@ Returns:   TRUE if a dependency is found
 */
 
 BOOL
-readconf_depends(driver_instance *d, uschar *s)
+readconf_depends(driver_instance * d, uschar * s)
 {
-int count = *(d->info->options_count);
-uschar *ss;
+driver_info * di = d->info;
+int count = *di->options_count;
+uschar * ss;
 
-for (optionlist * ol = d->info->options; ol < d->info->options + count; ol++)
+for (optionlist * ol = di->options; ol < di->options + count; ol++)
   if ((ol->type & opt_mask) == opt_stringptr)
     {
     void * options_block = ol->type & opt_public ? (void *)d : d->options_block;

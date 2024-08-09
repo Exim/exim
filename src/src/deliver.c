@@ -903,10 +903,11 @@ const uschar * save_domain = deliver_domain;
 const uschar * save_local =  deliver_localpart;
 const uschar * save_host = deliver_host;
 const uschar * save_address = deliver_host_address;
-uschar * save_rn = router_name, * save_tn = transport_name;
+const uschar * save_rn = router_name;
+uschar * save_tn = transport_name;
 const int      save_port =   deliver_host_port;
 
-router_name =    addr->router ? addr->router->name : NULL;
+router_name =    addr->router ? addr->router->drinst.name : NULL;
 deliver_domain = addr->domain;
 deliver_localpart = addr->local_part;
 deliver_host =   addr->host_used ? addr->host_used->name : NULL;
@@ -1177,7 +1178,7 @@ if (msg)
 
 /* For a delivery from a system filter, there may not be a router */
 if (addr->router)
-  g = string_append(g, 2, US" R=", addr->router->name);
+  g = string_append(g, 2, US" R=", addr->router->drinst.name);
 
 g = string_append(g, 2, US" T=", addr->transport->name);
 
@@ -1329,7 +1330,7 @@ so nothing has been done at all, both variables contain null strings. */
 if (driver_name)
   {
   if (driver_kind[1] == 't' && addr->router)
-    g = string_append(g, 2, US" R=", addr->router->name);
+    g = string_append(g, 2, US" R=", addr->router->drinst.name);
   g = string_fmt_append(g, " %c=%s", toupper(driver_kind[1]), driver_name);
   }
 else if (driver_kind)
@@ -1406,7 +1407,7 @@ if (used_return_path && LOGGING(return_path_on_delivery))
   g = string_append(g, 3, US" P=<", used_return_path, US">");
 
 if (addr->router)
-  g = string_append(g, 2, US" R=", addr->router->name);
+  g = string_append(g, 2, US" R=", addr->router->drinst.name);
 if (addr->transport)
   g = string_append(g, 2, US" T=", addr->transport->name);
 
@@ -1487,7 +1488,7 @@ else if (driver_type == EXIM_DTYPE_ROUTER)
   {
   if (addr->router)
     {
-    driver_name = addr->router->name;
+    driver_name = addr->router->drinst.name;
     driver_kind = US" router";
     f.disable_logging = addr->router->disable_logging;
     }
@@ -2377,7 +2378,7 @@ if ((pid = exim_fork(US"delivery-local")) == 0)
     /* Setting these globals in the subprocess means we need never clear them */
 
     transport_name = tp->name;
-    if (addr->router) router_name = addr->router->name;
+    if (addr->router) router_name = addr->router->drinst.name;
     driver_srcfile = tp->srcfile;
     driver_srcline = tp->srcline;
 
@@ -2742,7 +2743,7 @@ while (addr_local)
     logflags |= LOG_PANIC;
     f.disable_logging = FALSE;  /* Jic */
     addr->message = addr->router
-      ? string_sprintf("No transport set by %s router", addr->router->name)
+      ? string_sprintf("No transport set by %s router", addr->router->drinst.name)
       : US"No transport set by system filter";
     post_process_one(addr, DEFER, logflags, EXIM_DTYPE_TRANSPORT, 0);
     continue;
@@ -4818,7 +4819,7 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
     /* Setting these globals in the subprocess means we need never clear them */
 
     transport_name = tp->name;
-    if (addr->router) router_name = addr->router->name;
+    if (addr->router) router_name = addr->router->drinst.name;
     driver_srcfile = tp->srcfile;
     driver_srcline = tp->srcline;
 
@@ -6459,7 +6460,7 @@ for (const address_item * a = addr_succeed; a; a = a->next)
       "DSN: envid: %s  ret: %d\n"
       "DSN: Final recipient: %s\n"
       "DSN: Remote SMTP server supports DSN: %d\n",
-      a->router ? a->router->name : US"(unknown)",
+      a->router ? a->router->drinst.name : US"(unknown)",
       a->address,
       sender_address,
       a->dsn_orcpt ? a->dsn_orcpt : US"NULL",

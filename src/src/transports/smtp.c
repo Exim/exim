@@ -672,7 +672,8 @@ deferred_event_raise(address_item * addr, host_item * host, uschar * evstr)
 {
 uschar * action = addr->transport->event_action;
 const uschar * save_domain, * save_local;
-uschar * save_rn, * save_tn;
+const uschar * save_rn;
+uschar * save_tn;
 
 if (!action)
   return;
@@ -687,7 +688,7 @@ deliver_host_address = string_copy(host->address);
 deliver_host_port =    host->port == PORT_NONE ? 25 : host->port;
 event_defer_errno =    addr->basic_errno;
 
-router_name =    addr->router->name;
+router_name =    addr->router->drinst.name;
 transport_name = addr->transport->name;
 deliver_domain = addr->domain;
 deliver_localpart = addr->local_part;

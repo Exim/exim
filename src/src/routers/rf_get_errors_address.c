@@ -53,7 +53,7 @@ if (!(s = expand_string(rblock->errors_to)))
     return OK;
     }
   addr->message = string_sprintf("%s router failed to expand \"%s\": %s",
-    rblock->name, rblock->errors_to, expand_string_message);
+    rblock->drinst.name, rblock->errors_to, expand_string_message);
   return DEFER;
   }
 

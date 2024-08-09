@@ -49,7 +49,7 @@ int queryprogram_router_options_count =
 
 /* Dummy entries */
 queryprogram_router_options_block queryprogram_router_option_defaults = {0};
-void queryprogram_router_init(router_instance *rblock) {}
+void queryprogram_router_init(driver_instance *rblock) {}
 int queryprogram_router_entry(router_instance *rblock, address_item *addr,
   struct passwd *pw, int verify, address_item **addr_local,
   address_item **addr_remote, address_item **addr_new,
@@ -82,7 +82,7 @@ queryprogram_router_options_block queryprogram_router_option_defaults = {
 consistency checks to be done, or anything else that needs to be set up. */
 
 void
-queryprogram_router_init(router_instance *rblock)
+queryprogram_router_init(driver_instance * rblock)
 {
 queryprogram_router_options_block *ob =
   (queryprogram_router_options_block *)(rblock->options_block);
@@ -142,11 +142,11 @@ while (generated != NULL)
 
   if (addr->child_count == USHRT_MAX)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s router generated more than %d "
-      "child addresses for <%s>", rblock->name, USHRT_MAX, addr->address);
+      "child addresses for <%s>", rblock->drinst.name, USHRT_MAX, addr->address);
   addr->child_count++;
 
   DEBUG(D_route)
-    debug_printf("%s router generated %s\n", rblock->name, next->address);
+    debug_printf("%s router generated %s\n", rblock->drinst.name, next->address);
   }
 }
 
@@ -215,8 +215,8 @@ uschar buffer[1024];
 const uschar **argvptr;
 uschar *rword, *rdata, *s;
 address_item_propagated addr_prop;
-queryprogram_router_options_block *ob =
-  (queryprogram_router_options_block *)(rblock->options_block);
+queryprogram_router_options_block * ob =
+  (queryprogram_router_options_block *)(rblock->drinst.options_block);
 uschar *current_directory = ob->current_directory;
 ugid_block ugid;
 uid_t curr_uid = getuid();
@@ -227,7 +227,7 @@ uid_t *puid = &uid;
 gid_t *pgid = &gid;
 
 DEBUG(D_route) debug_printf("%s router called for %s: domain = %s\n",
-  rblock->name, addr->address, addr->domain);
+  rblock->drinst.name, addr->address, addr->domain);
 
 ugid.uid_set = ugid.gid_set = FALSE;
 
@@ -249,8 +249,8 @@ if (rc != OK) return rc;
 (initialization ensures that one or the other is set). */
 
 if (  !ob->cmd_uid_set
-   && !route_find_expanded_user(ob->expand_cmd_uid, rblock->name, US"router",
-	&upw, &uid, &(addr->message)))
+   && !route_find_expanded_user(ob->expand_cmd_uid, rblock->drinst.name,
+	US"router", &upw, &uid, &(addr->message)))
     return DEFER;
 
 /* Get the fixed or expanded gid, or take the gid from the passwd entry. */
@@ -258,7 +258,7 @@ if (  !ob->cmd_uid_set
 if (!ob->cmd_gid_set)
   if (ob->expand_cmd_gid)
     {
-    if (route_find_expanded_group(ob->expand_cmd_gid, rblock->name,
+    if (route_find_expanded_group(ob->expand_cmd_gid, rblock->drinst.name,
         US"router", &gid, &(addr->message)))
       return DEFER;
     }
@@ -267,7 +267,7 @@ if (!ob->cmd_gid_set)
   else
     {
     addr->message = string_sprintf("command_user set without command_group "
-      "for %s router", rblock->name);
+      "for %s router", rblock->drinst.name);
     return DEFER;
     }
 
@@ -305,7 +305,7 @@ if ((pid = child_open_uid(argvptr, NULL, 0077, puid, pgid, &fd_in, &fd_out,
 			  current_directory, TRUE, US"queryprogram-cmd")) < 0)
   {
   addr->message = string_sprintf("%s router couldn't create child process: %s",
-    rblock->name, strerror(errno));
+    rblock->drinst.name, strerror(errno));
   return DEFER;
   }
 
@@ -320,22 +320,22 @@ if ((rc = child_close(pid, ob->timeout)) != 0)
   {
   if (rc > 0)
     addr->message = string_sprintf("%s router: command returned non-zero "
-      "code %d", rblock->name, rc);
+      "code %d", rblock->drinst.name, rc);
 
   else if (rc == -256)
     {
     addr->message = string_sprintf("%s router: command timed out",
-      rblock->name);
+      rblock->drinst.name);
     killpg(pid, SIGKILL);       /* Kill the whole process group */
     }
 
   else if (rc == -257)
     addr->message = string_sprintf("%s router: wait() failed: %s",
-      rblock->name, strerror(errno));
+      rblock->drinst.name, strerror(errno));
 
   else
     addr->message = string_sprintf("%s router: command killed by signal %d",
-      rblock->name, -rc);
+      rblock->drinst.name, -rc);
 
   return DEFER;
   }
@@ -350,7 +350,7 @@ len = read(fd_out, buffer, sizeof(buffer) - 1);
 if (len <= 0)
   {
   addr->message = string_sprintf("%s router: command failed to return data",
-    rblock->name);
+    rblock->drinst.name);
   return DEFER;
   }
 
@@ -394,7 +394,7 @@ if (strcmpic(rword, US"REDIRECT") == 0)
     &addr->message,              /* where to put messages */
     NULL,                        /* don't skip syntax errors */
     &filtertype,                 /* not used; will always be FILTER_FORWARD */
-    string_sprintf("%s router", rblock->name));
+    string_sprintf("%s router", rblock->drinst.name));
 
   switch (rc)
     {
@@ -456,7 +456,7 @@ if (strcmpic(rword, US"accept") != 0)
   else if (strcmpic(rword, US"defer") != 0)
     {
     addr->message = string_sprintf("bad command yield: %s %s", rword, rdata);
-    log_write(0, LOG_PANIC, "%s router: %s", rblock->name, addr->message);
+    log_write(0, LOG_PANIC, "%s router: %s", rblock->drinst.name, addr->message);
     }
   return DEFER;
   }
@@ -479,7 +479,7 @@ if ((s = expand_getkeyed(US"transport", rdata)) && *s)
     {
     addr->message = string_sprintf("unknown transport name %s yielded by "
       "command", s);
-    log_write(0, LOG_PANIC, "%s router: %s", rblock->name, addr->message);
+    log_write(0, LOG_PANIC, "%s router: %s", rblock->drinst.name, addr->message);
     return DEFER;
     }
   addr->transport = transport;
@@ -492,7 +492,7 @@ the last argument not being NULL. */
 else
   {
   if (!rf_get_transport(rblock->transport_name, &rblock->transport, addr,
-       rblock->name, US"transport"))
+       rblock->drinst.name, US"transport"))
     return DEFER;
   addr->transport = rblock->transport;
   }
@@ -512,7 +512,7 @@ if ((s = expand_getkeyed(US"hosts", rdata)) && *s)
       {
       addr->message = string_sprintf("bad lookup type \"%s\" yielded by "
         "command", ss);
-      log_write(0, LOG_PANIC, "%s router: %s", rblock->name, addr->message);
+      log_write(0, LOG_PANIC, "%s router: %s", rblock->drinst.name, addr->message);
       return DEFER;
       }
     }

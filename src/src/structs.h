@@ -130,9 +130,9 @@ three, the layout of the start of the blocks is kept the same, and represented
 by the generic structures driver_info and driver_instance. */
 
 typedef struct driver_instance {
-  struct driver_instance *next;
+  void   *next;
   uschar *name;                   /* Instance name */
-  struct driver_info *info;       /* Points to info for this driver */
+  void   *info;			  /* Points to info for this driver */
   void   *options_block;          /* Pointer to private options */
 
   uschar *driver_name;            /* All start with this generic option */
@@ -148,7 +148,7 @@ typedef struct driver_info {
   void   *options_block;          /* Points to default private block */
   int     options_len;            /* Length of same in bytes */
   void  (*init)(                  /* Initialization entry point */
-    struct driver_instance *);
+	  struct driver_instance *);
 } driver_info;
 
 
@@ -286,13 +286,7 @@ typedef struct {
 /* Structure for holding information about the configured routers. */
 
 typedef struct router_instance {
-  struct router_instance *next;
-  uschar *name;
-  struct router_info *info;
-  void   *options_block;          /* Pointer to private options */
-  uschar *driver_name;            /* Must be first */
-  const uschar *srcfile;
-  int	  srcline;
+  driver_instance drinst;
 
   uschar *address_data;           /* Arbitrary data */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -369,18 +363,12 @@ typedef struct router_instance {
 } router_instance;
 
 
-/* Structure for holding information about a type of router. The first six
-fields must match driver_info above. */
+/* Structure for holding information about a type of router.  The first element
+must be a struct driver_info, to match auths and transports. */
 
 typedef struct router_info {
-  uschar *driver_name;
-  optionlist *options;            /* Table of private options names */
-  int    *options_count;          /* -> Number of entries in table */
-  void   *options_block;          /* Points to default private block */
-  int     options_len;            /* Length of same in bytes */
-  void (*init)(                   /* Initialization function */
-    struct router_instance *);
-/****/
+  driver_info drinfo;
+
   int (*code)(                    /* Main entry point */
     router_instance *,
     struct address_item *,

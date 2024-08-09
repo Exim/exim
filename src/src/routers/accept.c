@@ -39,7 +39,7 @@ accept_router_options_block accept_router_option_defaults = {
 #ifdef MACRO_PREDEF
 
 /* Dummy entries */
-void accept_router_init(router_instance *rblock) {}
+void accept_router_init(driver_instance *rblock) {}
 int accept_router_entry(router_instance *rblock, address_item *addr,
   struct passwd *pw, int verify, address_item **addr_local,
   address_item **addr_remote, address_item **addr_new,
@@ -56,8 +56,10 @@ int accept_router_entry(router_instance *rblock, address_item *addr,
 /* Called for each instance, after its options have been read, to enable
 consistency checks to be done, or anything else that needs to be set up. */
 
-void accept_router_init(router_instance *rblock)
+void
+accept_router_init(driver_instance * r)
 {
+router_instance * rblock = (router_instance *)r;
 /*
 accept_router_options_block *ob =
   (accept_router_options_block *)(rblock->options_block);
@@ -111,7 +113,7 @@ uschar * remove_headers;
 header_line * extra_headers;
 
 DEBUG(D_route) debug_printf("%s router called for %s\n  domain = %s\n",
-  rblock->name, addr->address, addr->domain);
+  rblock->drinst.name, addr->address, addr->domain);
 
 /* Set up the errors address, if any. */
 
@@ -128,7 +130,7 @@ header munging. Initialization ensures that there is a transport except when
 verifying. */
 
 if (!rf_get_transport(rblock->transport_name, &(rblock->transport),
-  addr, rblock->name, NULL)) return DEFER;
+  addr, rblock->drinst.name, NULL)) return DEFER;
 
 addr->transport = rblock->transport;
 addr->prop.errors_address = errors_to;

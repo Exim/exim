@@ -35,6 +35,6 @@ extern int manualroute_router_entry(router_instance *, address_item *,
   struct passwd *, int, address_item **, address_item **,
   address_item **, address_item **);
 
-extern void manualroute_router_init(router_instance *);
+extern void manualroute_router_init(driver_instance *);
 
 /* End of routers/manualroute.h */

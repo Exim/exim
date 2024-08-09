@@ -263,10 +263,10 @@ extern void    exim_nullstd(void);
 extern void    exim_setugid(uid_t, gid_t, BOOL, const uschar *);
 extern void    exim_underbar_exit(int) NORETURN;
 extern void    exim_wait_tick(struct timeval *, int);
-extern int     exp_bool(address_item *addr,
-  uschar *mtype, uschar *mname, unsigned dgb_opt, uschar *oname, BOOL bvalue,
-  uschar *svalue, BOOL *rvalue);
-extern BOOL    expand_check_condition(uschar *, uschar *, uschar *);
+extern int     exp_bool(address_item *,
+  const uschar *, const uschar *, unsigned, uschar *, BOOL bvalue,
+  const uschar *, BOOL *);
+extern BOOL    expand_check_condition(const uschar *, const uschar *, const uschar *);
 extern uschar *expand_file_big_buffer(const uschar *);
 extern uschar *expand_string(uschar *);	/* public, cannot make const */
 extern const uschar *expand_string_2(const uschar *, BOOL *);

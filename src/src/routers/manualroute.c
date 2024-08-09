@@ -43,7 +43,7 @@ int manualroute_router_options_count =
 
 /* Dummy entries */
 manualroute_router_options_block manualroute_router_option_defaults = {0};
-void manualroute_router_init(router_instance *rblock) {}
+void manualroute_router_init(driver_instance *rblock) {}
 int manualroute_router_entry(router_instance *rblock, address_item *addr,
   struct passwd *pw, int verify, address_item **addr_local,
   address_item **addr_remote, address_item **addr_new,
@@ -91,7 +91,7 @@ static int hff_count= sizeof(hff_codes)/sizeof(int);
 consistency checks to be done, or anything else that needs to be set up. */
 
 void
-manualroute_router_init(router_instance *rblock)
+manualroute_router_init(driver_instance *rblock)
 {
 manualroute_router_options_block *ob =
   (manualroute_router_options_block *)(rblock->options_block);
@@ -245,14 +245,14 @@ const uschar *hostlist = NULL;
 const uschar *domain;
 uschar *newhostlist;
 const uschar *listptr;
-manualroute_router_options_block *ob =
-  (manualroute_router_options_block *)(rblock->options_block);
+manualroute_router_options_block * ob =
+  (manualroute_router_options_block *)(rblock->drinst.options_block);
 transport_instance *transport = NULL;
 BOOL individual_transport_set = FALSE;
 BOOL randomize = ob->hosts_randomize;
 
 DEBUG(D_route) debug_printf("%s router called for %s\n  domain = %s\n",
-  rblock->name, addr->address, addr->domain);
+  rblock->drinst.name, addr->address, addr->domain);
 
 /* The initialization check ensures that either route_list or route_data is
 set. */
@@ -318,7 +318,7 @@ if (!newhostlist)
   {
   if (f.expand_string_forcedfail) return DECLINE;
   addr->message = string_sprintf("%s router: failed to expand \"%s\": %s",
-    rblock->name, hostlist, expand_string_message);
+    rblock->drinst.name, hostlist, expand_string_message);
   return DEFER;
   }
 else hostlist = newhostlist;
@@ -360,7 +360,7 @@ while (*options)
     if (!t)
       {
       s = string_sprintf("unknown routing option or transport name \"%s\"", s);
-      log_write(0, LOG_MAIN, "Error in %s router: %s", rblock->name, s);
+      log_write(0, LOG_MAIN, "Error in %s router: %s", rblock->drinst.name, s);
       addr->message = string_sprintf("error in router: %s", s);
       return DEFER;
       }
@@ -390,8 +390,8 @@ set. */
 
 if (!individual_transport_set)
   {
-  if (!rf_get_transport(rblock->transport_name, &(rblock->transport), addr,
-      rblock->name, NULL))
+  if (!rf_get_transport(rblock->transport_name, &rblock->transport, addr,
+      rblock->drinst.name, NULL))
     return DEFER;
   transport = rblock->transport;
   }
@@ -420,8 +420,7 @@ if (transport && transport->info->local)
   rf_queue_add() function. */
 
   addr->transport = transport;
-  return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
-    OK : DEFER;
+  return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ?  OK : DEFER;
   }
 
 /* There is either no transport (verify_only) or a remote transport. A host
@@ -432,7 +431,7 @@ if (!hostlist[0])
   {
   if (verify != v_none) goto ROUTED;
   addr->message = string_sprintf("error in %s router: no host(s) specified "
-    "for domain %s", rblock->name, addr->domain);
+    "for domain %s", rblock->drinst.name, addr->domain);
   log_write(0, LOG_MAIN, "%s", addr->message);
   return DEFER;
   }
@@ -460,7 +459,8 @@ if (!addr->host_list)
     if (ob->hai_code == hff_codes[i]) break;
 
   addr->message = string_sprintf("lookup failed for all hosts in %s router: "
-    "host_find_failed=ignore host_all_ignored=%s", rblock->name, hff_names[i]);
+    "host_find_failed=ignore host_all_ignored=%s",
+    rblock->drinst.name, hff_names[i]);
 
   if (ob->hai_code == hff_defer) return DEFER;
   if (ob->hai_code == hff_fail) return FAIL;
@@ -476,7 +476,7 @@ dealt with above. However, we don't need one if verifying only. */
 if (!transport && verify == v_none)
     {
     log_write(0, LOG_MAIN, "Error in %s router: no transport defined",
-      rblock->name);
+      rblock->drinst.name);
     addr->message = US"error in router: transport missing";
     return DEFER;
     }

@@ -949,7 +949,7 @@ extern uid_t   root_uid;               /* The uid for root */
 extern router_info routers_available[];/* Vector of available routers */
 extern router_instance *routers;       /* Chain of instantiated routers */
 extern router_instance router_defaults;/* Default values */
-extern uschar *router_name;            /* Name of router last started */
+extern const uschar *router_name;      /* Name of router last started */
 extern tree_node *router_var;	       /* Variables set by router */
 extern ip_address_item *running_interfaces; /* Host's running interfaces */
 extern uschar *running_status;         /* Flag string for testing */
