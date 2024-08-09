@@ -662,44 +662,48 @@ if (router_name)
     }
 
 if (transport_name)
-  for (transport_instance * t = transports; t; t = t->next)
-    if (Ustrcmp(t->name, transport_name) == 0)
+  for (transport_instance * t = transports; t; t = t->drinst.next)
+    if (Ustrcmp(t->drinst.name, transport_name) == 0)
       {
-      const transport_info * ti = t->info;
+      const transport_info * ti = t->drinst.info;
 
       /* Check for a listptr match first */
 
-      for (optionlist * o = optionlist_transports;		/* generic options */
+      for (optionlist * o = optionlist_transports;	/* generic options */
 	  o < optionlist_transports + optionlist_transports_size; o++)
 	if (  (o->type & opt_mask) == opt_stringptr
 	   && listptr == CS t + o->v.offset)
 	  return US o->name;
 
-      for (optionlist * o = ti->options;			/* private options */
-	  o < ti->options + *ti->options_count; o++)
+      for (optionlist * o = ti->drinfo.options;		/* private options */
+	  o < ti->drinfo.options + *ti->drinfo.options_count; o++)
 	if (  (o->type & opt_mask) == opt_stringptr
-	   && listptr == CS t->options_block + o->v.offset)
+	   && listptr == CS t->drinst.options_block + o->v.offset)
 	  return US o->name;
 
       /* Check for a list addr match, unless null */
 
       if (!list) continue;
 
-      for (optionlist * o = optionlist_transports;		/* generic options */
+      for (optionlist * o = optionlist_transports;	/* generic options */
 	  o < optionlist_transports + optionlist_transports_size; o++)
 	if (  (o->type & opt_mask) == opt_stringptr
 	   && list == * USS(CS t + o->v.offset))
-	  if (name) return string_sprintf("DUP: %s %s vs. %s %s",
-	    drname, name, t->name, o->name);
-	  else { name = US o->name; drname = t->name; }
+	  if (name)
+	    return string_sprintf("DUP: %s %s vs. %s %s",
+				  drname, name, t->drinst.name, o->name);
+	  else
+	    { name = US o->name; drname = t->drinst.name; }
 
-      for (optionlist * o = ti->options;			/* private options */
-	  o < ti->options + *ti->options_count; o++)
+      for (optionlist * o = ti->drinfo.options;		/* private options */
+	  o < ti->drinfo.options + *ti->drinfo.options_count; o++)
 	if (  (o->type & opt_mask) == opt_stringptr
-	   && list == * USS(CS t->options_block + o->v.offset))
-	  if (name) return string_sprintf("DUP: %s %s vs. %s %s",
-	    drname, name, t->name, o->name);
-	  else { name = US o->name; drname = t->name; }
+	   && list == * USS(CS t->drinst.options_block + o->v.offset))
+	  if (name)
+	    return string_sprintf("DUP: %s %s vs. %s %s",
+				  drname, name, t->drinst.name, o->name);
+	  else
+	    { name = US o->name; drname = t->drinst.name; }
       }
 
 return name ? name : US"";

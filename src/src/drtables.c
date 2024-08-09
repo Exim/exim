@@ -380,12 +380,14 @@ router_info routers_available[] = {
 transport_info transports_available[] = {
 #ifdef TRANSPORT_APPENDFILE
   {
-  .driver_name =	US"appendfile",
-  .options =		appendfile_transport_options,
-  .options_count =	&appendfile_transport_options_count,
-  .options_block =	&appendfile_transport_option_defaults,       /* private options defaults */
-  .options_len =	sizeof(appendfile_transport_options_block),
-  .init =		appendfile_transport_init,
+  .drinfo = {
+    .driver_name =	US"appendfile",
+    .options =		appendfile_transport_options,
+    .options_count =	&appendfile_transport_options_count,
+    .options_block =	&appendfile_transport_option_defaults,       /* private options defaults */
+    .options_len =	sizeof(appendfile_transport_options_block),
+    .init =		appendfile_transport_init,
+    },
   .code =		appendfile_transport_entry,
   .tidyup =		NULL,
   .closedown =		NULL,
@@ -394,12 +396,14 @@ transport_info transports_available[] = {
 #endif
 #ifdef TRANSPORT_AUTOREPLY
   {
-  .driver_name =	US"autoreply",
-  .options =		autoreply_transport_options,
-  .options_count =	&autoreply_transport_options_count,
-  .options_block =	&autoreply_transport_option_defaults,
-  .options_len =	sizeof(autoreply_transport_options_block),
-  .init =		autoreply_transport_init,
+  .drinfo = {
+    .driver_name =	US"autoreply",
+    .options =		autoreply_transport_options,
+    .options_count =	&autoreply_transport_options_count,
+    .options_block =	&autoreply_transport_option_defaults,
+    .options_len =	sizeof(autoreply_transport_options_block),
+    .init =		autoreply_transport_init,
+    },
   .code =		autoreply_transport_entry,
   .tidyup =		NULL,
   .closedown =		NULL,
@@ -408,12 +412,14 @@ transport_info transports_available[] = {
 #endif
 #ifdef TRANSPORT_LMTP
   {
-  .driver_name =	US"lmtp",
-  .options =		lmtp_transport_options,
-  .options_count =	&lmtp_transport_options_count,
-  .options_block =	&lmtp_transport_option_defaults,
-  .options_len =	sizeof(lmtp_transport_options_block),
-  .init =		lmtp_transport_init,
+  .drinfo = {
+    .driver_name =	US"lmtp",
+    .options =		lmtp_transport_options,
+    .options_count =	&lmtp_transport_options_count,
+    .options_block =	&lmtp_transport_option_defaults,
+    .options_len =	sizeof(lmtp_transport_options_block),
+    .init =		lmtp_transport_init,
+    },
   .code =		lmtp_transport_entry,
   .tidyup =		NULL,
   .closedown =		NULL,
@@ -422,12 +428,14 @@ transport_info transports_available[] = {
 #endif
 #ifdef TRANSPORT_PIPE
   {
-  .driver_name =	US"pipe",
-  .options =		pipe_transport_options,
-  .options_count =	&pipe_transport_options_count,
-  .options_block =	&pipe_transport_option_defaults,
-  .options_len =	sizeof(pipe_transport_options_block),
-  .init =		pipe_transport_init,
+  .drinfo = {
+    .driver_name =	US"pipe",
+    .options =		pipe_transport_options,
+    .options_count =	&pipe_transport_options_count,
+    .options_block =	&pipe_transport_option_defaults,
+    .options_len =	sizeof(pipe_transport_options_block),
+    .init =		pipe_transport_init,
+    },
   .code =		pipe_transport_entry,
   .tidyup =		NULL,
   .closedown =		NULL,
@@ -436,12 +444,14 @@ transport_info transports_available[] = {
 #endif
 #ifdef EXPERIMENTAL_QUEUEFILE
   {
-  .driver_name =	US"queuefile",
-  .options =		queuefile_transport_options,
-  .options_count =	&queuefile_transport_options_count,
-  .options_block =	&queuefile_transport_option_defaults,
-  .options_len =	sizeof(queuefile_transport_options_block),
-  .init =		queuefile_transport_init,
+  .drinfo = {
+    .driver_name =	US"queuefile",
+    .options =		queuefile_transport_options,
+    .options_count =	&queuefile_transport_options_count,
+    .options_block =	&queuefile_transport_option_defaults,
+    .options_len =	sizeof(queuefile_transport_options_block),
+    .init =		queuefile_transport_init,
+    },
   .code =		queuefile_transport_entry,
   .tidyup =		NULL,
   .closedown =		NULL,
@@ -450,12 +460,14 @@ transport_info transports_available[] = {
 #endif
 #ifdef TRANSPORT_SMTP
   {
-  .driver_name =	US"smtp",
-  .options =		smtp_transport_options,
-  .options_count =	&smtp_transport_options_count,
-  .options_block =	&smtp_transport_option_defaults,
-  .options_len =	sizeof(smtp_transport_options_block),
-  .init =		smtp_transport_init,
+  .drinfo = {
+    .driver_name =	US"smtp",
+    .options =		smtp_transport_options,
+    .options_count =	&smtp_transport_options_count,
+    .options_block =	&smtp_transport_option_defaults,
+    .options_len =	sizeof(smtp_transport_options_block),
+    .init =		smtp_transport_init,
+    },
   .code =		smtp_transport_entry,
   .tidyup =		NULL,
   .closedown =		smtp_transport_closedown,

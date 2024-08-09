@@ -159,7 +159,7 @@ int smtp_transport_options_count = nelem(smtp_transport_options);
 
 /* Dummy values */
 smtp_transport_options_block smtp_transport_option_defaults = {0};
-void smtp_transport_init(transport_instance *tblock) {}
+void smtp_transport_init(driver_instance *tblock) {}
 BOOL smtp_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
 void smtp_transport_closedown(transport_instance *tblock) {}
 
@@ -314,7 +314,7 @@ static int
 smtp_transport_setup(transport_instance *tblock, address_item *addrlist,
   transport_feedback *tf, uid_t uid, gid_t gid, uschar **errmsg)
 {
-smtp_transport_options_block *ob = SOB tblock->options_block;
+smtp_transport_options_block * ob = tblock->drinst.options_block;
 
 /* Pass back options if required. This interface is getting very messy. */
 
@@ -358,9 +358,10 @@ Returns:    nothing
 */
 
 void
-smtp_transport_init(transport_instance *tblock)
+smtp_transport_init(driver_instance * t)
 {
-smtp_transport_options_block * ob = SOB tblock->options_block;
+transport_instance * tblock = (transport_instance *)t;
+smtp_transport_options_block * ob = t->options_block;
 int old_pool = store_pool;
 
 /* Retry_use_local_part defaults FALSE if unset */
@@ -387,7 +388,7 @@ if (ob->command_timeout <= 0 || ob->data_timeout <= 0 ||
     ob->final_timeout <= 0)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "command, data, or final timeout value is zero for %s transport",
-      tblock->name);
+      t->name);
 
 /* If hosts_override is set and there are local hosts, set the global
 flag that stops verify from showing router hosts. */
@@ -672,8 +673,7 @@ deferred_event_raise(address_item * addr, host_item * host, uschar * evstr)
 {
 uschar * action = addr->transport->event_action;
 const uschar * save_domain, * save_local;
-const uschar * save_rn;
-uschar * save_tn;
+const uschar * save_rn, * save_tn;
 
 if (!action)
   return;
@@ -689,7 +689,7 @@ deliver_host_port =    host->port == PORT_NONE ? 25 : host->port;
 event_defer_errno =    addr->basic_errno;
 
 router_name =    addr->router->drinst.name;
-transport_name = addr->transport->name;
+transport_name = addr->transport->drinst.name;
 deliver_domain = addr->domain;
 deliver_localpart = addr->local_part;
 
@@ -1836,6 +1836,7 @@ sender_address, helo_data and tls_certificate if enabled.
 static uschar *
 smtp_local_identity(const uschar * sender, struct transport_instance * tblock)
 {
+smtp_transport_options_block * ob = tblock->drinst.options_block;
 address_item * addr1;
 uschar * if1 = US"";
 uschar * helo1 = US"";
@@ -1844,7 +1845,6 @@ uschar * tlsc1 = US"";
 #endif
 const uschar * save_sender_address = sender_address;
 uschar * local_identity = NULL;
-smtp_transport_options_block * ob = SOB tblock->options_block;
 
 sender_address = sender;
 
@@ -1992,7 +1992,7 @@ static int
 smtp_chunk_cmd_callback(transport_ctx * tctx, unsigned chunk_size,
   unsigned flags)
 {
-smtp_transport_options_block * ob = SOB tctx->tblock->options_block;
+smtp_transport_options_block * ob = tctx->tblock->drinst.options_block;
 smtp_context * sx = tctx->smtp_context;
 int cmd_count = 0;
 int prev_cmd_count;
@@ -2140,7 +2140,7 @@ Returns:          OK    - the connection was made and the delivery attempted;
 int
 smtp_setup_conn(smtp_context * sx, BOOL suppress_tls)
 {
-smtp_transport_options_block * ob = sx->conn_args.tblock->options_block;
+smtp_transport_options_block * ob = sx->conn_args.tblock->drinst.options_block;
 BOOL pass_message = FALSE;
 uschar * message = NULL;
 int yield = OK;
@@ -3819,7 +3819,8 @@ smtp_deliver(address_item *addrlist, host_item *host, int host_af, int defport,
   uschar *interface, transport_instance *tblock,
   BOOL *message_defer, BOOL suppress_tls)
 {
-smtp_transport_options_block * ob = SOB tblock->options_block;
+smtp_transport_options_block * ob = tblock->drinst.options_block;
+const uschar * trname = tblock->drinst.name;
 int yield = OK;
 int save_errno;
 int rc;
@@ -3897,7 +3898,7 @@ if (tblock->filter_command)
 
   if (!transport_set_up_command(&transport_filter_argv,
 	tblock->filter_command, TSUC_EXPAND_ARGS, DEFER, addrlist,
-	string_sprintf("%.50s transport filter", tblock->name), NULL))
+	string_sprintf("%.50s transport filter", trname), NULL))
     {
     set_errno_nohost(addrlist->next, addrlist->basic_errno, addrlist->message, DEFER,
       FALSE, &sx->delivery_start);
@@ -4156,7 +4157,7 @@ else
 	   )
         &&
 #endif
-           transport_check_waiting(tblock->name, host->name,
+           transport_check_waiting(trname, host->name,
              tblock->connection_max_messages, continue_next_id,
 	     (oicf)smtp_are_same_identities, (void*)&t_compare);
     if (!tcw)
@@ -4428,7 +4429,7 @@ else
         write error, as it may prove possible to update the spool file later. */
 
         if (testflag(addr, af_homonym))
-          sprintf(CS sx->buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
+          sprintf(CS sx->buffer, "%.500s/%s\n", addr->unique + 3, trname);
         else
           sprintf(CS sx->buffer, "%.500s\n", addr->unique);
 
@@ -4475,7 +4476,7 @@ else
 	if (addr->transport_return == OK)
 	  {
 	  if (testflag(addr, af_homonym))
-	    sprintf(CS sx->buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
+	    sprintf(CS sx->buffer, "%.500s/%s\n", addr->unique + 3, trname);
 	  else
 	    sprintf(CS sx->buffer, "%.500s\n", addr->unique);
 
@@ -4745,7 +4746,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	     )
 	  &&
 #endif
-	     transport_check_waiting(tblock->name, host->name,
+	     transport_check_waiting(trname, host->name,
 	       sx->max_mail, continue_next_id,
 	       (oicf)smtp_are_same_identities, (void*)&t_compare)
        )  )
@@ -5077,9 +5078,9 @@ Returns:    nothing
 */
 
 void
-smtp_transport_closedown(transport_instance *tblock)
+smtp_transport_closedown(transport_instance * tblock)
 {
-smtp_transport_options_block * ob = SOB tblock->options_block;
+smtp_transport_options_block * ob = tblock->drinst.options_block;
 client_conn_ctx cctx;
 smtp_context sx = {0};
 uschar buffer[256];
@@ -5173,18 +5174,19 @@ smtp_transport_entry(
   transport_instance * tblock,      /* data for this instantiation */
   address_item * addrlist)          /* addresses we are working on */
 {
+smtp_transport_options_block * ob = tblock->drinst.options_block;
+const uschar * trname = tblock->drinst.name;
 int defport;
 int hosts_defer = 0, hosts_fail  = 0, hosts_looked_up = 0;
 int hosts_retry = 0, hosts_serial = 0, hosts_total = 0, total_hosts_tried = 0;
 BOOL expired = TRUE;
 uschar * expanded_hosts = NULL, * pistring;
-uschar * tid = string_sprintf("%s transport", tblock->name);
-smtp_transport_options_block * ob = SOB tblock->options_block;
+uschar * tid = string_sprintf("%s transport", trname);
 host_item * hostlist = addrlist->host_list, * host = NULL;
 
 DEBUG(D_transport)
   {
-  debug_printf("%s transport entered\n", tblock->name);
+  debug_printf("%s transport entered\n", trname);
   for (address_item * addr = addrlist; addr; addr = addr->next)
     debug_printf("  %s\n", addr->address);
   if (hostlist)
@@ -5232,7 +5234,7 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
   if (!ob->hosts)
     {
     addrlist->message = string_sprintf("%s transport called with no hosts set",
-      tblock->name);
+      trname);
     addrlist->transport_return = PANIC;
     return FALSE;   /* Only top address has status */
     }
@@ -5257,7 +5259,7 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
       if (!(expanded_hosts = expand_string(s)))
         {
         addrlist->message = string_sprintf("failed to expand list of hosts "
-          "\"%s\" in %s transport: %s", s, tblock->name, expand_string_message);
+          "\"%s\" in %s transport: %s", s, trname, expand_string_message);
         addrlist->transport_return = f.search_find_defer ? DEFER : PANIC;
         return FALSE;     /* Only top address has status */
         }
@@ -5272,7 +5274,7 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
       {
       log_write(0, LOG_MAIN|LOG_PANIC,
 	"attempt to use tainted host list '%s' from '%s' in transport %s",
-	s, ob->hosts, tblock->name);
+	s, ob->hosts, trname);
       /* Avoid leaking info to an attacker */
       addrlist->message = US"internal configuration error";
       addrlist->transport_return = PANIC;
@@ -5285,7 +5287,7 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
     if (!hostlist)
       {
       addrlist->message =
-        string_sprintf("%s transport has empty hosts setting", tblock->name);
+        string_sprintf("%s transport has empty hosts setting", trname);
       addrlist->transport_return = PANIC;
       return FALSE;   /* Only top address has status */
       }
@@ -5527,7 +5529,7 @@ retry_non_continued:
           {
           addr->basic_errno = ERRNO_HOST_IS_LOCAL;
           addr->message = string_sprintf("%s transport found host %s to be "
-            "local", tblock->name, host->name);
+            "local", trname, host->name);
           }
         goto END_TRANSPORT;
         }
@@ -5657,7 +5659,7 @@ retry_non_continued:
       If either of these retry records are actually read, the keys used are
       returned to save recomputing them later. */
 
-      if (exp_bool(addrlist, US"transport", tblock->name, D_transport,
+      if (exp_bool(addrlist, US"transport", trname, D_transport,
 		US"retry_include_ip_address", ob->retry_include_ip_address,
 		ob->expand_retry_include_ip_address, &incl_ip) != OK)
 	continue;	/* with next host */
@@ -5780,7 +5782,7 @@ retry_non_continued:
       DEBUG(D_transport)
         {
         debug_printf("*** delivery by %s transport bypassed by -N option\n"
-                     "*** host and remaining hosts:\n", tblock->name);
+                     "*** host and remaining hosts:\n", trname);
         for (host_item * host2 = host; host2; host2 = host2->next)
           debug_printf("    %s [%s]\n", host2->name,
             host2->address ? host2->address : US"unset");
@@ -5929,7 +5931,7 @@ retry_non_continued:
       if (!retry_host_key)
         {
 	BOOL incl_ip;
-	if (exp_bool(addrlist, US"transport", tblock->name, D_transport,
+	if (exp_bool(addrlist, US"transport", trname, D_transport,
 		  US"retry_include_ip_address", ob->retry_include_ip_address,
 		  ob->expand_retry_include_ip_address, &incl_ip) != OK)
 	  incl_ip = TRUE;	/* error; use most-specific retry record */
@@ -5975,7 +5977,7 @@ retry_non_continued:
       if (!retry_message_key)
         {
 	BOOL incl_ip;
-	if (exp_bool(addrlist, US"transport", tblock->name, D_transport,
+	if (exp_bool(addrlist, US"transport", trname, D_transport,
 		  US"retry_include_ip_address", ob->retry_include_ip_address,
 		  ob->expand_retry_include_ip_address, &incl_ip) != OK)
 	  incl_ip = TRUE;	/* error; use most-specific retry record */
@@ -6212,11 +6214,11 @@ per connection then follow-on deliveries are not possible and there's no need
 to create/update the per-transport wait-<transport_name> database. */
 
 if (update_waiting && tblock->connection_max_messages != 1)
-  transport_update_waiting(hostlist, tblock->name);
+  transport_update_waiting(hostlist, trname);
 
 END_TRANSPORT:
 
-DEBUG(D_transport) debug_printf("Leaving %s transport\n", tblock->name);
+DEBUG(D_transport) debug_printf("Leaving %s transport\n", trname);
 
 return TRUE;   /* Each address has its status */
 }

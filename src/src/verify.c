@@ -364,7 +364,7 @@ if (addr->transport == cutthrough.addr.transport)
       deliver_host_address = host->address;
       deliver_host_port = host->port;
       deliver_domain = addr->domain;
-      transport_name = addr->transport->name;
+      transport_name = addr->transport->drinst.name;
 
       host_af = Ustrchr(host->address, ':') ? AF_INET6 : AF_INET;
 
@@ -565,13 +565,12 @@ if (!addr->transport)
   HDEBUG(D_verify) debug_printf("cannot callout via null transport\n");
   }
 
-else if (Ustrcmp(addr->transport->driver_name, "smtp") != 0)
+else if (Ustrcmp(addr->transport->drinst.driver_name, "smtp") != 0)
   log_write(0, LOG_MAIN|LOG_PANIC|LOG_CONFIG_FOR, "callout transport '%s': %s is non-smtp",
-    addr->transport->name, addr->transport->driver_name);
+    addr->transport->drinst.name, addr->transport->drinst.driver_name);
 else
   {
-  smtp_transport_options_block *ob =
-    (smtp_transport_options_block *)addr->transport->options_block;
+  smtp_transport_options_block * ob = addr->transport->drinst.options_block;
   smtp_context * sx = NULL;
 
   /* The information wasn't available in the cache, so we have to do a real
@@ -663,7 +662,7 @@ coding means skipping this whole loop and doing the append separately.  */
     deliver_host_address = host->address;
     deliver_host_port = host->port;
     deliver_domain = addr->domain;
-    transport_name = addr->transport->name;
+    transport_name = addr->transport->drinst.name;
 
     GET_OPTION("interface");
     if (  !smtp_get_interface(tf->interface, host_af, addr, &interface,
@@ -1127,7 +1126,7 @@ no_conn:
       /* We assume no buffer in use in the outblock */
       cutthrough.cctx =		sx->cctx;
       cutthrough.nrcpt =	1;
-      cutthrough.transport =	addr->transport->name;
+      cutthrough.transport =	addr->transport->drinst.name;
       cutthrough.interface =	interface;
       cutthrough.snd_port =	sending_port;
       cutthrough.peer_options =	smtp_peer_options;
@@ -1853,7 +1852,7 @@ while (addr_new)
         fprintf(fp, "\n*** Error in setting up pipe, file, or autoreply:\n"
           "%s\n", addr->message);
       else if (allow)
-        fprintf(fp, "\n  transport = %s\n", addr->transport->name);
+        fprintf(fp, "\n  transport = %s\n", addr->transport->drinst.name);
       else
         fprintf(fp, " *** forbidden ***\n");
       }
@@ -1916,7 +1915,9 @@ while (addr_new)
       sending a message to this address. */
 
       if ((tp = addr->transport))
-	if (!tp->info->local)
+	{
+	transport_info * ti = tp->drinst.info;
+	if (!ti->local)
 	  {
 	  (void)(tp->setup)(tp, addr, &tf, 0, 0, NULL);
 
@@ -1942,7 +1943,7 @@ while (addr_new)
 	      {
 	      log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand list of hosts "
 		"\"%s\" in %s transport for callout: %s", tf.hosts,
-		tp->name, expand_string_message);
+		tp->drinst.name, expand_string_message);
 	      }
 	    else
 	      {
@@ -1968,10 +1969,9 @@ while (addr_new)
 		else
 		  {
 		  const dnssec_domains * dsp = NULL;
-		  if (Ustrcmp(tp->driver_name, "smtp") == 0)
+		  if (Ustrcmp(tp->drinst.driver_name, "smtp") == 0)
 		    {
-		    smtp_transport_options_block * ob =
-			(smtp_transport_options_block *) tp->options_block;
+		    smtp_transport_options_block * ob = tp->drinst.options_block;
 		    dsp = &ob->dnssec;
 		    }
 
@@ -1983,8 +1983,9 @@ while (addr_new)
 	    }
 	  }
 	else if (  options & vopt_quota
-		&& Ustrcmp(tp->driver_name, "appendfile") == 0)
+		&& Ustrcmp(tp->drinst.driver_name, "appendfile") == 0)
 	  local_verify = TRUE;
+	}
 
       /* Can only do a callout if we have at least one host! If the callout
       fails, it will have set ${sender,recipient}_verify_failure. */
@@ -2235,13 +2236,14 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
     /* Show router, and transport */
 
     fprintf(fp, "router = %s, transport = %s\n",
-      addr->router->drinst.name, tp ? tp->name : US"unset");
+      addr->router->drinst.name, tp ? tp->drinst.name : US"unset");
 
     /* Show any hosts that are set up by a router unless the transport
     is going to override them; fiddle a bit to get a nice format. */
 
     if (addr->host_list && tp && !tp->overrides_hosts)
       {
+      transport_info * ti = tp->drinst.info;
       int maxlen = 0;
       int maxaddlen = 0;
       for (host_item * h = addr->host_list; h; h = h->next)
@@ -2257,7 +2259,7 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
 
 	if (h->address)
 	  fprintf(fp, "[%s%-*c", h->address, maxaddlen+1 - Ustrlen(h->address), ']');
-	else if (tp->info->local)
+	else if (ti->local)
 	  fprintf(fp, " %-*s ", maxaddlen, "");  /* Omit [unknown] for local */
 	else
 	  fprintf(fp, "[%s%-*c", "unknown", maxaddlen+1 - 7, ']');

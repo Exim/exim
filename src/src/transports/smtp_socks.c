@@ -211,10 +211,8 @@ int
 socks_sock_connect(host_item * host, int host_af, int port, uschar * interface,
   transport_instance * tb, int timeout)
 {
-smtp_transport_options_block * ob =
-  (smtp_transport_options_block *)tb->options_block;
-const uschar * proxy_list;
-const uschar * proxy_spec;
+smtp_transport_options_block * ob = tb->drinst.options_block;
+const uschar * proxy_list, * proxy_spec;
 int sep = 0;
 int fd;
 time_t tmo;
@@ -233,7 +231,7 @@ GET_OPTION("socks_proxy");
 if (!(proxy_list = expand_string(ob->socks_proxy)))
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "Bad expansion for socks_proxy in %s",
-    tb->name);
+    tb->drinst.name);
   return -1;
   }
 

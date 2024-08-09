@@ -1907,7 +1907,8 @@ a queue-run startup with watch clear. */
 static void
 tls_client_creds_init(transport_instance * t, BOOL watch)
 {
-smtp_transport_options_block * ob = t->options_block;
+smtp_transport_options_block * ob = t->drinst.options_block;
+const uschar * trname = t->drinst.name;
 exim_openssl_state_st tpt_dummy_state;
 host_item * dummy_host = (host_item *)1;
 uschar * dummy_errstr;
@@ -1934,7 +1935,7 @@ if (  opt_set_and_noexpand(ob->tls_certificate)
     uschar * pkey = ob->tls_privatekey;
 
     DEBUG(D_tls)
-      debug_printf("TLS: preloading client certs for transport '%s'\n",t->name);
+      debug_printf("TLS: preloading client certs for transport '%s'\n", trname);
 
     if (  tls_add_certfile(ctx, &tpt_dummy_state, ob->tls_certificate,
 				    &dummy_errstr) == 0
@@ -1947,7 +1948,7 @@ if (  opt_set_and_noexpand(ob->tls_certificate)
   }
 else
   DEBUG(D_tls)
-    debug_printf("TLS: not preloading client certs, for transport '%s'\n", t->name);
+    debug_printf("TLS: not preloading client certs, for transport '%s'\n", trname);
 
 
 if (  opt_set_and_noexpand(ob->tls_verify_certificates)
@@ -1961,7 +1962,7 @@ if (  opt_set_and_noexpand(ob->tls_verify_certificates)
     {
     uschar * v_certs = ob->tls_verify_certificates;
     DEBUG(D_tls)
-      debug_printf("TLS: preloading CA bundle for transport '%s'\n", t->name);
+      debug_printf("TLS: preloading CA bundle for transport '%s'\n", trname);
 
     if (setup_certs(ctx, &v_certs,
 	  ob->tls_crl, dummy_host, &dummy_errstr) == OK)
@@ -1970,7 +1971,7 @@ if (  opt_set_and_noexpand(ob->tls_verify_certificates)
   }
 else
   DEBUG(D_tls)
-      debug_printf("TLS: not preloading CA bundle, for transport '%s'\n", t->name);
+    debug_printf("TLS: not preloading CA bundle, for transport '%s'\n", trname);
 
 #endif /*EXIM_HAVE_INOTIFY*/
 }
@@ -1994,7 +1995,7 @@ state_server.u_ocsp.server.file_expanded = NULL;
 static void
 tls_client_creds_invalidate(transport_instance * t)
 {
-smtp_transport_options_block * ob = t->options_block;
+smtp_transport_options_block * ob = t->drinst.options_block;
 SSL_CTX_free(ob->tls_preload.lib_ctx);
 ob->tls_preload = null_tls_preload;
 }
@@ -4150,7 +4151,7 @@ tls_client_start(client_conn_ctx * cctx, smtp_connect_args * conn_args,
 host_item * host = conn_args->host;		/* for msgs and option-tests */
 transport_instance * tb = conn_args->tblock;	/* always smtp or NULL */
 smtp_transport_options_block * ob = tb
-  ? (smtp_transport_options_block *)tb->options_block
+  ? tb->drinst.options_block
   : &smtp_transport_option_defaults;
 exim_openssl_client_tls_ctx * exim_client_ctx;
 uschar * expciphers;

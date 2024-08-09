@@ -459,7 +459,7 @@ extern const uschar *continue_hostname;      /* Host for continued delivery */
 extern const uschar *continue_host_address;  /* IP address for ditto */
 extern uschar  continue_next_id[];     /* Next message_id from hintsdb */
 extern int     continue_sequence;      /* Sequence num for continued delivery */
-extern uschar *continue_transport;     /* Transport for continued delivery */
+extern const uschar *continue_transport; /* Transport for continued delivery */
 #ifndef COMPILE_UTILITY
 extern open_db *continue_retry_db;     /* Hintsdb for retries */
 extern open_db *continue_wait_db;      /* Hintsdb for wait-transport */
@@ -1104,7 +1104,7 @@ extern int     timeout_frozen_after;   /* Max time to keep frozen messages */
 extern struct timeval timestamp_startup; /* For development measurements */
 #endif
 
-extern uschar *transport_name;         /* Name of transport last started */
+extern const uschar *transport_name;   /* Name of transport last started */
 extern int     transport_count;        /* Count of bytes transported */
 extern int     transport_newlines;     /* Accurate count of number of newline chars transported */
 extern const uschar **transport_filter_argv; /* For on-the-fly filtering */

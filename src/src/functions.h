@@ -635,7 +635,7 @@ extern void    transport_init(void);
 extern const uschar *transport_rcpt_address(address_item *, BOOL);
 extern BOOL    transport_set_up_command(const uschar ***, const uschar *,
 		 unsigned, int, address_item *, const uschar *, uschar **);
-extern void    transport_update_waiting(host_item *, uschar *);
+extern void    transport_update_waiting(host_item *, const uschar *);
 extern BOOL    transport_write_block(transport_ctx *, uschar *, int, BOOL);
 extern void    transport_write_reset(int);
 extern BOOL    transport_write_string(int, const char *, ...);

@@ -472,9 +472,9 @@ if ((s = expand_getkeyed(US"data", rdata)) && *s)
 
 if ((s = expand_getkeyed(US"transport", rdata)) && *s)
   {
-  transport_instance *transport;
-  for (transport = transports; transport; transport = transport->next)
-    if (Ustrcmp(transport->name, s) == 0) break;
+  transport_instance * transport;
+  for (transport = transports; transport; transport = transport->drinst.next)
+    if (Ustrcmp(transport->drinst.name, s) == 0) break;
   if (!transport)
     {
     addr->message = string_sprintf("unknown transport name %s yielded by "

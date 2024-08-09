@@ -40,7 +40,7 @@ extern autoreply_transport_options_block autoreply_transport_option_defaults;
 
 /* The main and init entry points for the transport */
 
+extern void autoreply_transport_init(driver_instance *);
 extern BOOL autoreply_transport_entry(transport_instance *, address_item *);
-extern void autoreply_transport_init(transport_instance *);
 
 /* End of transports/autoreply.h */

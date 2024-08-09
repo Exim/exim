@@ -44,7 +44,7 @@ optionlist optionlist_transports[] = {
   { "disable_logging",  opt_bool|opt_public,
                  LOFF(disable_logging) },
   { "driver",           opt_stringptr|opt_public,
-                 LOFF(driver_name) },
+                 LOFF(drinst.driver_name) },
   { "envelope_to_add",   opt_bool|opt_public,
                  LOFF(envelope_to_add) },
 #ifndef DISABLE_EVENT
@@ -102,11 +102,12 @@ uschar buf[64];
 
 options_from_list(optionlist_transports, nelem(optionlist_transports), US"TRANSPORTS", NULL);
 
-for (transport_info * ti = transports_available; ti->driver_name[0]; ti++)
+for (transport_info * ti= transports_available; ti->drinfo.driver_name[0]; ti++)
   {
-  spf(buf, sizeof(buf), US"_DRIVER_TRANSPORT_%T", ti->driver_name);
+  spf(buf, sizeof(buf), US"_DRIVER_TRANSPORT_%T", ti->drinfo.driver_name);
   builtin_macro_create(buf);
-  options_from_list(ti->options, (unsigned)*ti->options_count, US"TRANSPORT", ti->driver_name);
+  options_from_list(ti->drinfo.options, (unsigned)*ti->drinfo.options_count,
+		    US"TRANSPORT", ti->drinfo.driver_name);
   }
 }
 
@@ -156,16 +157,17 @@ readconf_driver_init(US"transport",
 /* Now scan the configured transports and check inconsistencies. A shadow
 transport is permitted only for local transports. */
 
-for (transport_instance * t = transports; t; t = t->next)
+for (transport_instance * t = transports; t; t = t->drinst.next)
   {
-  if (!t->info->local && t->shadow)
+  transport_info * ti = t->drinst.info;
+  if (!ti->local && t->shadow)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-      "shadow transport not allowed on non-local transport %s", t->name);
+      "shadow transport not allowed on non-local transport %s", t->drinst.name);
 
   if (t->body_only && t->headers_only)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "%s transport: body_only and headers_only are mutually exclusive",
-      t->name);
+      t->drinst.name);
   }
 }
 
@@ -1497,7 +1499,7 @@ Returns:    nothing
 */
 
 void
-transport_update_waiting(host_item * hostlist, uschar * tpname)
+transport_update_waiting(host_item * hostlist, const uschar * tpname)
 {
 const uschar * prevname = US"";
 open_db dbblock, * dbp;

@@ -754,7 +754,7 @@ const uschar *continue_hostname      = NULL;
 const uschar *continue_host_address  = NULL;
 uschar  continue_next_id[MESSAGE_ID_LENGTH +1] = {[0]='\0'};
 int     continue_sequence      = 1;
-uschar *continue_transport     = NULL;
+const uschar *continue_transport = NULL;
 #ifndef COMPILE_UTILITY
 open_db *continue_retry_db     = NULL;
 open_db *continue_wait_db      = NULL;
@@ -1562,7 +1562,7 @@ transport_instance  transport_defaults = {
 };
 
 int     transport_count;
-uschar *transport_name          = NULL;
+const uschar *transport_name          = NULL;
 int     transport_newlines;
 const uschar **transport_filter_argv  = NULL;
 int     transport_filter_timeout;

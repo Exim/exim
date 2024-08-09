@@ -261,8 +261,7 @@ int
 smtp_boundsock(smtp_connect_args * sc)
 {
 transport_instance * tb = sc->tblock;
-smtp_transport_options_block * ob =
-  (smtp_transport_options_block *)tb->options_block;
+smtp_transport_options_block * ob = tb->drinst.options_block;
 const uschar * dscp = ob->dscp;
 int sock, dscp_value, dscp_level, dscp_option;
 
@@ -338,8 +337,7 @@ Returns:      connected socket number, or -1 with errno set
 int
 smtp_sock_connect(smtp_connect_args * sc, int timeout, const blob * early_data)
 {
-smtp_transport_options_block * ob =
-  (smtp_transport_options_block *)sc->tblock->options_block;
+smtp_transport_options_block * ob = sc->tblock->drinst.options_block;
 int sock;
 int save_errno = 0;
 const blob * fastopen_blob = NULL;

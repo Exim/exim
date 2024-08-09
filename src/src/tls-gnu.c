@@ -1630,7 +1630,8 @@ and there seems little downside. */
 static void
 tls_client_creds_init(transport_instance * t, BOOL watch)
 {
-smtp_transport_options_block * ob = t->options_block;
+smtp_transport_options_block * ob = t->drinst.options_block;
+const uschar * trname = t->drinst.name;
 exim_gnutls_state_st tpt_dummy_state;
 host_item * dummy_host = (host_item *)1;
 uschar * dummy_errstr;
@@ -1663,7 +1664,7 @@ if (  opt_set_and_noexpand(ob->tls_certificate)
     const uschar * pkey = ob->tls_privatekey;
 
     DEBUG(D_tls)
-      debug_printf("TLS: preloading client certs for transport '%s'\n", t->name);
+      debug_printf("TLS: preloading client certs for transport '%s'\n", trname);
 
     /* The state->lib_state.x509_cred is used for the certs load, and is the sole
     structure element used.  So we can set up a dummy.  The hoat arg only
@@ -1677,7 +1678,7 @@ if (  opt_set_and_noexpand(ob->tls_certificate)
   }
 else
   DEBUG(D_tls)
-    debug_printf("TLS: not preloading client certs, for transport '%s'\n", t->name);
+    debug_printf("TLS: not preloading client certs, for transport '%s'\n", trname);
 
 /* If tls_verify_certificates is non-empty and has no $, load CAs.
 If none was configured and we can't handle "system", treat as empty. */
@@ -1691,7 +1692,7 @@ if (  opt_set_and_noexpand(ob->tls_verify_certificates)
   if (!watch || tls_set_watch(ob->tls_verify_certificates, FALSE))
     {
     DEBUG(D_tls)
-      debug_printf("TLS: preloading CA bundle for transport '%s'\n", t->name);
+      debug_printf("TLS: preloading CA bundle for transport '%s'\n", trname);
     if (creds_load_cabundle(&tpt_dummy_state, ob->tls_verify_certificates,
 			    dummy_host, &dummy_errstr) != OK)
       return;
@@ -1701,19 +1702,19 @@ if (  opt_set_and_noexpand(ob->tls_verify_certificates)
       {
       if (!watch || tls_set_watch(ob->tls_crl, FALSE))
 	{
-	DEBUG(D_tls) debug_printf("TLS: preloading CRL for transport '%s'\n", t->name);
+	DEBUG(D_tls) debug_printf("TLS: preloading CRL for transport '%s'\n", trname);
 	if (creds_load_crl(&tpt_dummy_state, ob->tls_crl, &dummy_errstr) != OK)
 	  return;
 	ob->tls_preload.crl = TRUE;
 	}
       }
     else
-      DEBUG(D_tls) debug_printf("TLS: not preloading CRL, for transport '%s'\n", t->name);
+      DEBUG(D_tls) debug_printf("TLS: not preloading CRL, for transport '%s'\n", trname);
     }
   }
 else
   DEBUG(D_tls)
-      debug_printf("TLS: not preloading CA bundle, for transport '%s'\n", t->name);
+      debug_printf("TLS: not preloading CA bundle, for transport '%s'\n", trname);
 
 /* We do not preload tls_require_ciphers to to the transport as it implicitly
 depends on DANE or plain usage. */
@@ -1742,7 +1743,7 @@ state_server.lib_state = null_tls_preload;
 static void
 tls_client_creds_invalidate(transport_instance * t)
 {
-smtp_transport_options_block * ob = t->options_block;
+smtp_transport_options_block * ob = t->drinst.options_block;
 if (ob->tls_preload.x509_cred)
   gnutls_certificate_free_credentials(ob->tls_preload.x509_cred);
 ob->tls_preload = null_tls_preload;
@@ -3478,7 +3479,7 @@ tls_client_start(client_conn_ctx * cctx, smtp_connect_args * conn_args,
 host_item * host = conn_args->host;          /* for msgs and option-tests */
 transport_instance * tb = conn_args->tblock; /* always smtp or NULL */
 smtp_transport_options_block * ob = tb
-  ? (smtp_transport_options_block *)tb->options_block
+  ? tb->drinst.options_block
   : &smtp_transport_option_defaults;
 int rc;
 exim_gnutls_state_st * state = NULL;

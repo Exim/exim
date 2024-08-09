@@ -82,7 +82,7 @@ int pipe_transport_options_count =
 
 /* Dummy values */
 pipe_transport_options_block pipe_transport_option_defaults = {0};
-void pipe_transport_init(transport_instance *tblock) {}
+void pipe_transport_init(driver_instance *tblock) {}
 BOOL pipe_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
 
 #else   /*!MACRO_PREDEF*/
@@ -126,8 +126,7 @@ static int
 pipe_transport_setup(transport_instance *tblock, address_item *addrlist,
   transport_feedback *dummy, uid_t uid, gid_t gid, uschar **errmsg)
 {
-pipe_transport_options_block *ob =
-  (pipe_transport_options_block *)(tblock->options_block);
+pipe_transport_options_block * ob = tblock->drinst.options_block;
 
 #ifdef HAVE_SETCLASSRESOURCES
 if (ob->use_classresources)
@@ -177,10 +176,11 @@ enable consistency checks to be done, or anything else that needs
 to be set up. */
 
 void
-pipe_transport_init(transport_instance *tblock)
+pipe_transport_init(driver_instance * t)
 {
-pipe_transport_options_block *ob =
-  (pipe_transport_options_block *)(tblock->options_block);
+transport_instance * tblock = (transport_instance *)t;
+const uschar * trname = t->name;
+pipe_transport_options_block * ob = t->options_block;
 
 /* Set up the setup entry point, to be called in the privileged state */
 
@@ -192,13 +192,13 @@ if (tblock->deliver_as_creator && (tblock->uid_set || tblock->gid_set ||
   tblock->expand_uid != NULL || tblock->expand_gid != NULL))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "both pipe_as_creator and an explicit uid/gid are set for the %s "
-        "transport", tblock->name);
+        "transport", trname);
 
 /* If a fixed uid field is set, then a gid field must also be set. */
 
 if (tblock->uid_set && !tblock->gid_set && tblock->expand_gid == NULL)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-    "user set without group for the %s transport", tblock->name);
+    "user set without group for the %s transport", trname);
 
 /* Temp_errors must consist only of digits and colons, but there can be
 spaces round the colons, so allow them too. */
@@ -209,7 +209,7 @@ if (ob->temp_errors != NULL && Ustrcmp(ob->temp_errors, "*") != 0)
   if (ob->temp_errors[p] != 0)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "temp_errors must be a list of numbers or an asterisk for the %s "
-      "transport", tblock->name);
+      "transport", trname);
   }
 
 /* Only one of return_output/return_fail_output or log_output/log_fail_output
@@ -218,12 +218,12 @@ should be set. */
 if (tblock->return_output && tblock->return_fail_output)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "both return_output and return_fail_output set for %s transport",
-    tblock->name);
+    trname);
 
 if (tblock->log_output && tblock->log_fail_output)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "both log_output and log_fail_output set for the %s transport",
-    tblock->name);
+    trname);
 
 /* If batch SMTP is set, force the check and escape strings, and arrange that
 headers are also escaped. */
@@ -250,14 +250,14 @@ else
 if (ob->restrict_to_path && ob->use_shell)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "both restrict_to_path and use_shell set for %s transport",
-    tblock->name);
+    trname);
 
 /* The allow_commands and use_shell options are incompatible */
 
 if (ob->allow_commands && ob->use_shell)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "both allow_commands and use_shell set for %s transport",
-    tblock->name);
+    trname);
 
 /* Set up the bitwise options for transport_write_message from the various
 driver options. Only one of body_only and headers_only can be set. */
@@ -295,8 +295,8 @@ Returns:             TRUE if all went well; otherwise an error will be
 
 static BOOL
 set_up_direct_command(const uschar *** argvptr, const uschar * cmd,
-  BOOL expand_arguments, int expand_fail, address_item * addr, uschar * tname,
-  pipe_transport_options_block * ob)
+  BOOL expand_arguments, int expand_fail, address_item * addr,
+  const uschar * tname, pipe_transport_options_block * ob)
 {
 BOOL permitted = FALSE;
 const uschar **argv;
@@ -419,7 +419,8 @@ Returns:             TRUE if all went well; otherwise an error will be
 
 static BOOL
 set_up_shell_command(const uschar *** argvptr, const uschar * cmd,
-  BOOL expand_arguments, int expand_fail, address_item * addr, uschar * tname)
+  BOOL expand_arguments, int expand_fail, address_item * addr,
+  const uschar * tname)
 {
 const uschar **argv;
 
@@ -512,20 +513,15 @@ pipe_transport_entry(
   transport_instance *tblock,      /* data for this instantiation */
   address_item *addr)              /* address(es) we are working on */
 {
+pipe_transport_options_block * ob = tblock->drinst.options_block;
+const uschar * trname = tblock->drinst.name;
 pid_t pid, outpid;
 int fd_in, fd_out, rc;
-int envcount = 0;
-int envsep = 0;
-int expand_fail;
-pipe_transport_options_block *ob =
-  (pipe_transport_options_block *)(tblock->options_block);
-int timeout = ob->timeout;
-BOOL written_ok = FALSE;
-BOOL expand_arguments;
+int envcount = 0, envsep = 0, expand_fail, timeout = ob->timeout;
+BOOL written_ok = FALSE, expand_arguments;
 const uschar ** argv;
 uschar * envp[50];
-const uschar * envlist = ob->environment;
-const uschar * cmd;
+const uschar * envlist = ob->environment, * cmd;
 uschar * ss;
 uschar * eol = ob->use_crlf ? US"\r\n" : US"\n";
 transport_ctx tctx = {
@@ -536,7 +532,7 @@ transport_ctx tctx = {
   ob->options | topt_not_socket /* set at initialization time */
 };
 
-DEBUG(D_transport) debug_printf("%s transport entered\n", tblock->name);
+DEBUG(D_transport) debug_printf("%s transport entered\n", trname);
 
 /* Set up for the good case */
 
@@ -582,14 +578,14 @@ if (!cmd || !*cmd)
   {
   addr->transport_return = DEFER;
   addr->message = string_sprintf("no command specified for %s transport",
-    tblock->name);
+    trname);
   return FALSE;
   }
 if (is_tainted(cmd))
   {
   DEBUG(D_transport) debug_printf("cmd '%s' is tainted\n", cmd);
   addr->message = string_sprintf("Tainted '%s' (command "
-    "for %s transport) not permitted", cmd, tblock->name);
+    "for %s transport) not permitted", cmd, trname);
   addr->transport_return = PANIC;
   return FALSE;
   }
@@ -618,10 +614,10 @@ there is an option to do that. */
 if (ob->use_shell)
   {
   if (!set_up_shell_command(&argv, cmd, expand_arguments, expand_fail, addr,
-    tblock->name)) return FALSE;
+    trname)) return FALSE;
   }
 else if (!set_up_direct_command(&argv, cmd, expand_arguments, expand_fail, addr,
-  tblock->name, ob)) return FALSE;
+  trname, ob)) return FALSE;
 
 expand_nmax = -1;           /* Reset */
 filter_thisaddress = NULL;
@@ -662,7 +658,7 @@ if (envlist)
     {
     addr->transport_return = DEFER;
     addr->message = string_sprintf("failed to expand string \"%s\" "
-      "for %s transport: %s", ob->environment, tblock->name,
+      "for %s transport: %s", ob->environment, trname,
       expand_string_message);
     return FALSE;
     }
@@ -674,7 +670,7 @@ while ((ss = string_nextinlist(&envlist, &envsep, NULL, 0)))
      addr->transport_return = DEFER;
      addr->basic_errno = E2BIG;
      addr->message = string_sprintf("too many environment settings for "
-       "%s transport", tblock->name);
+       "%s transport", trname);
      return FALSE;
      }
    envp[envcount++] = string_copy(ss);
@@ -688,7 +684,7 @@ if (f.dont_deliver)
   {
   DEBUG(D_transport)
     debug_printf("*** delivery by %s transport bypassed by -N option",
-      tblock->name);
+      trname);
   return FALSE;
   }
 
@@ -719,7 +715,7 @@ if ((pid = child_open(USS argv, envp, ob->umask, &fd_in, &fd_out, TRUE,
   {
   addr->transport_return = DEFER;
   addr->message = string_sprintf(
-    "Failed to create child process for %s transport: %s", tblock->name,
+    "Failed to create child process for %s transport: %s", trname,
       strerror(errno));
   return FALSE;
   }
@@ -733,7 +729,7 @@ if ((outpid = exim_fork(US"pipe-tpt-output")) < 0)
   addr->transport_return = DEFER;
   addr->message = string_sprintf(
     "Failed to create process for handling output in %s transport",
-      tblock->name);
+      trname);
   (void)close(fd_in);
   (void)close(fd_out);
   return FALSE;
@@ -811,7 +807,7 @@ if (ob->message_prefix)
     {
     addr->transport_return = f.search_find_defer? DEFER : PANIC;
     addr->message = string_sprintf("Expansion of \"%s\" (prefix for %s "
-      "transport) failed: %s", ob->message_prefix, tblock->name,
+      "transport) failed: %s", ob->message_prefix, trname,
       expand_string_message);
     return FALSE;
     }
@@ -854,7 +850,7 @@ if (ob->message_suffix)
     {
     addr->transport_return = f.search_find_defer? DEFER : PANIC;
     addr->message = string_sprintf("Expansion of \"%s\" (suffix for %s "
-      "transport) failed: %s", ob->message_suffix, tblock->name,
+      "transport) failed: %s", ob->message_suffix, trname,
       expand_string_message);
     return FALSE;
     }
@@ -948,7 +944,7 @@ if ((rc = child_close(pid, timeout)) != 0)
     {
     addr->transport_return = PANIC;
     addr->message = string_sprintf("Wait() failed for child process of %s "
-      "transport: %s%s", tblock->name, strerror(errno), tmsg);
+      "transport: %s%s", trname, strerror(errno), tmsg);
     }
 
   /* Since the transport_filter timed out we assume it has sent the child process
@@ -976,14 +972,14 @@ if ((rc = child_close(pid, timeout)) != 0)
       addr->transport_return = DEFER;
       addr->special_action = SPECIAL_FREEZE;
       addr->message = string_sprintf("Child process of %s transport (running "
-        "command \"%s\") was terminated by signal %d (%s)%s", tblock->name, cmd,
+        "command \"%s\") was terminated by signal %d (%s)%s", trname, cmd,
         -rc, os_strsignal(-rc), tmsg);
       }
     else if (!ob->ignore_status)
       {
       addr->transport_return = FAIL;
       addr->message = string_sprintf("Child process of %s transport (running "
-        "command \"%s\") was terminated by signal %d (%s)%s", tblock->name, cmd,
+        "command \"%s\") was terminated by signal %d (%s)%s", trname, cmd,
         -rc, os_strsignal(-rc), tmsg);
       }
     }
@@ -1069,7 +1065,7 @@ if ((rc = child_close(pid, timeout)) != 0)
       doesn't have to be brilliantly efficient - it is an error situation. */
 
       addr->message = string_sprintf("Child process of %s transport returned "
-        "%d", tblock->name, rc);
+        "%d", trname, rc);
       g = string_cat(NULL, addr->message);
 
       /* If the return code is > 128, it often means that a shell command
@@ -1119,7 +1115,7 @@ are complete before we pass this point. */
 
 while (wait(&rc) >= 0);
 
-DEBUG(D_transport) debug_printf("%s transport yielded %d\n", tblock->name,
+DEBUG(D_transport) debug_printf("%s transport yielded %d\n", trname,
   addr->transport_return);
 
 /* If there has been a problem, the message in addr->message contains details

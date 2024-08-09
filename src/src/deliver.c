@@ -680,7 +680,7 @@ else if (testflag(addr, af_homonym))
   {
   if (addr->transport)
     tree_add_nonrecipient(
-      string_sprintf("%s/%s", addr->unique + 3, addr->transport->name));
+      string_sprintf("%s/%s", addr->unique + 3, addr->transport->drinst.name));
   }
 
 /* Non-homonymous child address */
@@ -904,7 +904,7 @@ const uschar * save_local =  deliver_localpart;
 const uschar * save_host = deliver_host;
 const uschar * save_address = deliver_host_address;
 const uschar * save_rn = router_name;
-uschar * save_tn = transport_name;
+const uschar * save_tn = transport_name;
 const int      save_port =   deliver_host_port;
 
 router_name =    addr->router ? addr->router->drinst.name : NULL;
@@ -925,13 +925,14 @@ if (!addr->transport)
   }
 else
   {
-  transport_name = addr->transport->name;
+  const uschar * dr_name = addr->transport->drinst.driver_name;
 
+  transport_name = addr->transport->drinst.name;
   (void) event_raise(addr->transport->event_action, event,
 	    addr->host_used
-	    || Ustrcmp(addr->transport->driver_name, "smtp") == 0
-	    || Ustrcmp(addr->transport->driver_name, "lmtp") == 0
-	    || Ustrcmp(addr->transport->driver_name, "autoreply") == 0
+	    || Ustrcmp(dr_name, "smtp") == 0
+	    || Ustrcmp(dr_name, "lmtp") == 0
+	    || Ustrcmp(dr_name, "autoreply") == 0
 	   ? addr->message : NULL,
 	   NULL);
   }
@@ -1034,7 +1035,8 @@ so won't necessarily look like a path. Add extra text for this case. */
 if (  testflag(addr, af_pfr)
    || (  success
       && addr->router && addr->router->log_as_local
-      && addr->transport && addr->transport->info->local
+      && addr->transport
+      && ((transport_info *)addr->transport->drinst.info)->local
    )  )
   {
   if (testflag(addr, af_file) && addr->local_part[0] != '/')
@@ -1180,14 +1182,14 @@ if (msg)
 if (addr->router)
   g = string_append(g, 2, US" R=", addr->router->drinst.name);
 
-g = string_append(g, 2, US" T=", addr->transport->name);
+g = string_append(g, 2, US" T=", addr->transport->drinst.name);
 
 if (LOGGING(delivery_size))
   g = string_fmt_append(g, " S=%d", transport_count);
 
 /* Local delivery */
 
-if (addr->transport->info->local)
+if (((transport_info *)addr->transport->drinst.info)->local)
   {
   if (addr->host_list)
     g = string_append(g, 2, US" H=", addr->host_list->name);
@@ -1262,7 +1264,8 @@ else
 
 if (  LOGGING(smtp_confirmation)
    && addr->message
-   && (addr->host_used || Ustrcmp(addr->transport->driver_name, "lmtp") == 0)
+   && (  addr->host_used
+      || Ustrcmp(addr->transport->drinst.driver_name, "lmtp") == 0)
    )
   {
   unsigned lim = big_buffer_size < 1024 ? big_buffer_size : 1024;
@@ -1409,7 +1412,7 @@ if (used_return_path && LOGGING(return_path_on_delivery))
 if (addr->router)
   g = string_append(g, 2, US" R=", addr->router->drinst.name);
 if (addr->transport)
-  g = string_append(g, 2, US" T=", addr->transport->name);
+  g = string_append(g, 2, US" T=", addr->transport->drinst.name);
 
 if (addr->host_used)
   g = d_hostlog(g, addr);
@@ -1478,7 +1481,7 @@ if (driver_type == EXIM_DTYPE_TRANSPORT)
   {
   if (addr->transport)
     {
-    driver_name = addr->transport->name;
+    driver_name = addr->transport->drinst.name;
     driver_kind = US" transport";
     f.disable_logging = addr->transport->disable_logging;
     }
@@ -1532,7 +1535,7 @@ if (addr->return_file >= 0 && addr->return_filename)
 
   if (fstat(addr->return_file, &statbuf) == 0 && statbuf.st_size > 0)
     {
-    transport_instance *tb = addr->transport;
+    transport_instance * tb = addr->transport;
 
     /* Handle logging options */
 
@@ -1541,11 +1544,11 @@ if (addr->return_file >= 0 && addr->return_filename)
        || result == DEFER && tb->log_defer_output
        )
       {
-      uschar *s;
-      FILE *f = Ufopen(addr->return_filename, "rb");
+      uschar * s;
+      FILE * f = Ufopen(addr->return_filename, "rb");
       if (!f)
         log_write(0, LOG_MAIN|LOG_PANIC, "failed to open %s to log output "
-          "from %s transport: %s", addr->return_filename, tb->name,
+          "from %s transport: %s", addr->return_filename, tb->drinst.name,
           strerror(errno));
       else
         if ((s = US Ufgets(big_buffer, big_buffer_size, f)))
@@ -1556,7 +1559,7 @@ if (addr->return_file >= 0 && addr->return_filename)
           *p = 0;
           sp = string_printing(big_buffer);
           log_write(0, LOG_MAIN, "<%s>: %s transport output: %s",
-            addr->address, tb->name, sp);
+            addr->address, tb->drinst.name, sp);
           }
       (void)fclose(f);
       }
@@ -1858,8 +1861,8 @@ if (tp->gid_set)
 else if (tp->expand_gid)
   {
   GET_OPTION("group");
-  if (!route_find_expanded_group(tp->expand_gid, tp->name, US"transport", gidp,
-    &addr->message))
+  if (!route_find_expanded_group(tp->expand_gid, tp->drinst.name, US"transport",
+    gidp, &addr->message))
     {
     common_error(FALSE, addr, ERRNO_GIDFAIL, NULL);
     return FALSE;
@@ -1886,8 +1889,8 @@ else if (tp->expand_uid)
   {
   struct passwd *pw;
   GET_OPTION("user");
-  if (!route_find_expanded_user(tp->expand_uid, tp->name, US"transport", &pw,
-       uidp, &(addr->message)))
+  if (!route_find_expanded_user(tp->expand_uid, tp->drinst.name, US"transport",
+	&pw, uidp, &(addr->message)))
     {
     common_error(FALSE, addr, ERRNO_UIDFAIL, NULL);
     return FALSE;
@@ -1940,7 +1943,7 @@ a uid, it must also provide a gid. */
 if (!gid_set)
   {
   common_error(TRUE, addr, ERRNO_GIDFAIL, US"User set without group for "
-    "%s transport", tp->name);
+    "%s transport", tp->drinst.name);
   return FALSE;
   }
 
@@ -1955,7 +1958,7 @@ nuname = check_never_users(*uidp, never_users)
 if (nuname)
   {
   common_error(TRUE, addr, ERRNO_UIDFAIL, US"User %ld set for %s transport "
-    "is on the %s list", (long int)(*uidp), tp->name, nuname);
+    "is on the %s list", (long int)(*uidp), tp->drinst.name, nuname);
   return FALSE;
   }
 
@@ -1999,9 +2002,9 @@ if (expand_string_message)
   rc = DEFER;
   addr->message = size_limit == -1
     ? string_sprintf("failed to expand message_size_limit "
-      "in %s transport: %s", tp->name, expand_string_message)
+      "in %s transport: %s", tp->drinst.name, expand_string_message)
     : string_sprintf("invalid message_size_limit "
-      "in %s transport: %s", tp->name, expand_string_message);
+      "in %s transport: %s", tp->drinst.name, expand_string_message);
   }
 else if (size_limit > 0 && message_size > size_limit)
   {
@@ -2038,13 +2041,14 @@ static BOOL
 previously_transported(address_item *addr, BOOL testing)
 {
 uschar * s = string_sprintf("%s/%s",
-  addr->unique + (testflag(addr, af_homonym) ? 3:0), addr->transport->name);
+  addr->unique + (testflag(addr, af_homonym) ? 3:0),
+  addr->transport->drinst.name);
 
 if (tree_search(tree_nonrecipients, s) != 0)
   {
   DEBUG(D_deliver|D_route|D_transport)
     debug_printf("%s was previously delivered (%s transport): discarded\n",
-    addr->address, addr->transport->name);
+    addr->address, addr->transport->drinst.name);
   if (!testing) child_done(addr, tod_stamp(tod_log));
   return TRUE;
   }
@@ -2142,7 +2146,8 @@ int pfd[2];
 pid_t pid;
 uschar *working_directory;
 address_item *addr2;
-transport_instance *tp = addr->transport;
+transport_instance * tp = addr->transport;
+const uschar * trname = tp->drinst.name;
 
 /* Set up the return path from the errors or sender address. If the transport
 has its own return path setting, expand it and replace the existing value. */
@@ -2162,7 +2167,7 @@ if (tp->return_path)
     {
     common_error(TRUE, addr, ERRNO_EXPANDFAIL,
       US"Failed to expand return path \"%s\" in %s transport: %s",
-      tp->return_path, tp->name, expand_string_message);
+      tp->return_path, trname, expand_string_message);
     return;
     }
   }
@@ -2193,14 +2198,14 @@ if (  (deliver_home = tp->home_dir)		/* Set in transport, or */
   if (!(deliver_home = expand_string(rawhome)))
     {
     common_error(TRUE, addr, ERRNO_EXPANDFAIL, US"home directory \"%s\" failed "
-      "to expand for %s transport: %s", rawhome, tp->name,
+      "to expand for %s transport: %s", rawhome, trname,
       expand_string_message);
     return;
     }
   if (*deliver_home != '/')
     {
     common_error(TRUE, addr, ERRNO_NOTABSOLUTE, US"home directory path \"%s\" "
-      "is not absolute for %s transport", deliver_home, tp->name);
+      "is not absolute for %s transport", deliver_home, trname);
     return;
     }
   }
@@ -2220,14 +2225,14 @@ if (working_directory)
   if (!(working_directory = expand_string(raw)))
     {
     common_error(TRUE, addr, ERRNO_EXPANDFAIL, US"current directory \"%s\" "
-      "failed to expand for %s transport: %s", raw, tp->name,
+      "failed to expand for %s transport: %s", raw, trname,
       expand_string_message);
     return;
     }
   if (*working_directory != '/')
     {
     common_error(TRUE, addr, ERRNO_NOTABSOLUTE, US"current directory path "
-      "\"%s\" is not absolute for %s transport", working_directory, tp->name);
+      "\"%s\" is not absolute for %s transport", working_directory, trname);
     return;
     }
   }
@@ -2252,7 +2257,7 @@ if (  !shadowing
   if ((addr->return_file = open_msglog_file(addr->return_filename, 0400, &error)) < 0)
     {
     common_error(TRUE, addr, errno, US"Unable to %s file for %s transport "
-      "to return message: %s", error, tp->name, strerror(errno));
+      "to return message: %s", error, trname, strerror(errno));
     return;
     }
   }
@@ -2349,7 +2354,7 @@ if ((pid = exim_fork(US"delivery-local")) == 0)
     FD_CLOEXEC);
   exim_setugid(uid, gid, use_initgroups,
     string_sprintf("local delivery to %s <%s> transport=%s", addr->local_part,
-      addr->address, addr->transport->name));
+      addr->address, addr->transport->drinst.name));
 
   DEBUG(D_deliver)
     {
@@ -2373,14 +2378,14 @@ if ((pid = exim_fork(US"delivery-local")) == 0)
     {
     BOOL ok = TRUE;
     set_process_info("delivering %s to %s using %s", message_id,
-     addr->local_part, tp->name);
+     addr->local_part, trname);
 
     /* Setting these globals in the subprocess means we need never clear them */
 
-    transport_name = tp->name;
+    transport_name = trname;
     if (addr->router) router_name = addr->router->drinst.name;
-    driver_srcfile = tp->srcfile;
-    driver_srcline = tp->srcline;
+    driver_srcfile = tp->drinst.srcfile;
+    driver_srcline = tp->drinst.srcline;
 
     /* If a transport filter has been specified, set up its argument list.
     Any errors will get put into the address, and FALSE yielded. */
@@ -2396,8 +2401,9 @@ if ((pid = exim_fork(US"delivery-local")) == 0)
 
     if (ok)
       {
+      transport_info * ti = tp->drinst.info;
       debug_print_string(tp->debug_string);
-      replicate = !(tp->info->code)(addr->transport, addr);
+      replicate = !(ti->code)(addr->transport, addr);
       }
     }
 
@@ -2552,7 +2558,7 @@ if (!shadowing)
     if (addr2->transport_return == OK)
       {
       if (testflag(addr2, af_homonym))
-	sprintf(CS big_buffer, "%.500s/%s\n", addr2->unique + 3, tp->name);
+	sprintf(CS big_buffer, "%.500s/%s\n", addr2->unique + 3, trname);
       else
 	sprintf(CS big_buffer, "%.500s\n", addr2->unique);
 
@@ -2587,7 +2593,7 @@ while ((rc = wait(&status)) != pid)
   if (rc < 0 && errno == ECHILD)      /* Process has vanished */
     {
     log_write(0, LOG_MAIN, "%s transport process vanished unexpectedly",
-      addr->transport->driver_name);
+      addr->transport->drinst.driver_name);
     status = 0;
     break;
     }
@@ -2601,7 +2607,7 @@ if ((status & 0xffff) != 0)
     addr->special_action = SPECIAL_FREEZE;
   log_write(0, LOG_MAIN|LOG_PANIC, "%s transport process returned non-zero "
     "status 0x%04x: %s %d",
-    addr->transport->driver_name,
+    addr->transport->drinst.driver_name,
     status,
     msb == 0 ? "terminated by signal" : "exit code",
     code);
@@ -2623,7 +2629,7 @@ if (addr->special_action == SPECIAL_WARN)
     if (!(warn_message = expand_string(warn_message)))
       log_write(0, LOG_MAIN|LOG_PANIC, "Failed to expand \"%s\" (warning "
 	"message for %s transport): %s", addr->transport->warn_message,
-	addr->transport->name, expand_string_message);
+	addr->transport->drinst.name, expand_string_message);
 
     else if ((pid = child_open_exim(&fd, US"tpt-warning-message")) > 0)
       {
@@ -2656,6 +2662,7 @@ the key for the hints database used for the concurrency count. */
 static BOOL
 tpt_parallel_check(transport_instance * tp, address_item * addr, uschar ** key)
 {
+const uschar * trname = tp->drinst.name;
 unsigned max_parallel;
 
 GET_OPTION("max_parallel");
@@ -2665,20 +2672,20 @@ max_parallel = (unsigned) expand_string_integer(tp->max_parallel, TRUE);
 if (expand_string_message)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "Failed to expand max_parallel option "
-	"in %s transport (%s): %s", tp->name, addr->address,
+	"in %s transport (%s): %s", trname, addr->address,
 	expand_string_message);
   return TRUE;
   }
 
 if (max_parallel > 0)
   {
-  uschar * serialize_key = string_sprintf("tpt-serialize-%s", tp->name);
+  uschar * serialize_key = string_sprintf("tpt-serialize-%s", trname);
   if (!enq_start(serialize_key, max_parallel))
     {
     address_item * next;
     DEBUG(D_transport)
       debug_printf("skipping tpt %s because concurrency limit %u reached\n",
-		  tp->name, max_parallel);
+		  trname, max_parallel);
     do
       {
       next = addr->next;
@@ -2724,8 +2731,9 @@ while (addr_local)
   address_item *addr2, *addr3, *nextaddr;
   int logflags = LOG_MAIN;
   int logchar = f.dont_deliver? '*' : '=';
-  transport_instance *tp;
+  transport_instance * tp;
   uschar * serialize_key = NULL;
+  const uschar * trname;
 
   /* Pick the first undelivered address off the chain */
 
@@ -2748,6 +2756,7 @@ while (addr_local)
     post_process_one(addr, DEFER, logflags, EXIM_DTYPE_TRANSPORT, 0);
     continue;
     }
+  trname = tp->drinst.name;
 
   /* Check that this base address hasn't previously been delivered to this
   transport. The check is necessary at this point to handle homonymic addresses
@@ -2790,7 +2799,7 @@ while (addr_local)
       if (!batch_id)
         {
         log_write(0, LOG_MAIN|LOG_PANIC, "Failed to expand batch_id option "
-          "in %s transport (%s): %s", tp->name, addr->address,
+          "in %s transport (%s): %s", trname, addr->address,
           expand_string_message);
         batch_count = tp->batch_max;
         }
@@ -2847,7 +2856,7 @@ while (addr_local)
         if (!bid)
           {
           log_write(0, LOG_MAIN|LOG_PANIC, "Failed to expand batch_id option "
-            "in %s transport (%s): %s", tp->name, next->address,
+            "in %s transport (%s): %s", trname, next->address,
             expand_string_message);
           ok = FALSE;
           }
@@ -3048,15 +3057,15 @@ while (addr_local)
 
   if (  tp->shadow
      && (  !tp->shadow_condition
-        || expand_check_condition(tp->shadow_condition, tp->name, US"transport")
+        || expand_check_condition(tp->shadow_condition, trname, US"transport")
      )  )
     {
-    transport_instance *stp;
-    address_item *shadow_addr = NULL;
-    address_item **last = &shadow_addr;
+    transport_instance * stp;
+    address_item * shadow_addr = NULL;
+    address_item ** last = &shadow_addr;
 
-    for (stp = transports; stp; stp = stp->next)
-      if (Ustrcmp(stp->name, tp->shadow) == 0) break;
+    for (stp = transports; stp; stp = stp->drinst.next)
+      if (Ustrcmp(stp->drinst.name, tp->shadow) == 0) break;
 
     if (!stp)
       log_write(0, LOG_MAIN|LOG_PANIC, "shadow transport \"%s\" not found ",
@@ -3086,6 +3095,7 @@ while (addr_local)
 
     if (shadow_addr)
       {
+      const uschar * s_trname = stp->drinst.name;
       int save_count = transport_count;
 
       DEBUG(D_deliver|D_transport)
@@ -3097,8 +3107,8 @@ while (addr_local)
         int sresult = shadow_addr->transport_return;
         *(uschar **)shadow_addr->shadow_message =
 	  sresult == OK
-	  ? string_sprintf(" ST=%s", stp->name)
-	  : string_sprintf(" ST=%s (%s%s%s)", stp->name,
+	  ? string_sprintf(" ST=%s", s_trname)
+	  : string_sprintf(" ST=%s (%s%s%s)", s_trname,
 	      shadow_addr->basic_errno <= 0
 	      ? US""
 	      : US strerror(shadow_addr->basic_errno),
@@ -3113,7 +3123,7 @@ while (addr_local)
 
         DEBUG(D_deliver|D_transport)
           debug_printf("%s shadow transport returned %s for %s\n",
-            stp->name, rc_to_string(sresult), shadow_addr->address);
+            s_trname, rc_to_string(sresult), shadow_addr->address);
         }
 
       DEBUG(D_deliver|D_transport)
@@ -3142,7 +3152,7 @@ while (addr_local)
 
     DEBUG(D_deliver|D_transport)
       debug_printf("%s transport returned %s for %s\n",
-        tp->name, rc_to_string(result), addr2->address);
+        trname, rc_to_string(result), addr2->address);
 
     /* If there is a retry_record, or if delivery is deferred, build a retry
     item for setting a new retry time or deleting the old retry record from
@@ -3374,7 +3384,7 @@ while (!done)
     {
     msg = string_sprintf("got " SSIZE_T_FMT " of %d bytes (pipeheader) "
       "from transport process %ld for transport %s",
-      got, PIPE_HEADER_SIZE, (long)pid, addr->transport->driver_name);
+      got, PIPE_HEADER_SIZE, (long)pid, addr->transport->drinst.driver_name);
     done = TRUE;
     break;
     }
@@ -3393,7 +3403,7 @@ while (!done)
     {
     msg = string_sprintf("failed to read pipe "
       "from transport process %ld for transport %s: error decoding size from header",
-      (long)pid, addr ? addr->transport->driver_name : US"?");
+      (long)pid, addr ? addr->transport->drinst.driver_name : US"?");
     done = TRUE;
     break;
     }
@@ -3410,7 +3420,7 @@ while (!done)
     {
     msg = string_sprintf("got only " SSIZE_T_FMT " of " SIZE_T_FMT
       " bytes (pipedata) from transport process %ld for transport %s",
-      got, required, (long)pid, addr->transport->driver_name);
+      got, required, (long)pid, addr->transport->drinst.driver_name);
     done = TRUE;
     break;
     }
@@ -3600,7 +3610,7 @@ while (!done)
 	ADDR_MISMATCH:
 	msg = string_sprintf("address count mismatch for data read from pipe "
 	  "for transport process %ld for transport %s",
-	    (long)pid, addrlist->transport->driver_name);
+	    (long)pid, addrlist->transport->drinst.driver_name);
 	done = TRUE;
 	break;
 	}
@@ -3788,7 +3798,7 @@ while (!done)
     default:
       msg = string_sprintf("malformed data (%d) read from pipe for transport "
 	"process %ld for transport %s", ptr[-1], (long)pid,
-	  addr ? addr->transport->driver_name : US"?");
+	  addr ? addr->transport->drinst.driver_name : US"?");
       done = TRUE;
       break;
     }
@@ -3822,7 +3832,7 @@ something is wrong. */
 if (!msg && addr)
   msg = string_sprintf("insufficient address data read from pipe "
     "for transport process %ld for transport %s", (long)pid,
-      addr->transport->driver_name);
+      addr->transport->drinst.driver_name);
 
 /* If an error message is set, something has gone wrong in getting back
 the delivery data. Put the message into each address and freeze it. */
@@ -4149,7 +4159,7 @@ if ((status & 0xffff) != 0)
 
   msg = string_sprintf("%s transport process returned non-zero status 0x%04x: "
     "%s %d",
-    addrlist->transport->driver_name,
+    addrlist->transport->drinst.driver_name,
     status,
     msb == 0 ? "terminated by signal" : "exit code",
     code);
@@ -4217,7 +4227,7 @@ while (parcount > max)
     {
     transport_instance * tp = doneaddr->transport;
     if (tp->max_parallel)
-      enq_end(string_sprintf("tpt-serialize-%s", tp->name));
+      enq_end(string_sprintf("tpt-serialize-%s", tp->drinst.name));
 
     remote_post_process(doneaddr, LOG_MAIN, NULL, fallback);
     }
@@ -4392,7 +4402,7 @@ So look out for the place it gets used.
   if (tp->expand_multi_domain)
     deliver_set_expansions(addr);
 
-  if (exp_bool(addr, US"transport", tp->name, D_transport,
+  if (exp_bool(addr, US"transport", tp->drinst.name, D_transport,
 		US"multi_domain", tp->multi_domain, tp->expand_multi_domain,
 		&multi_domain) != OK)
     {
@@ -4503,7 +4513,7 @@ nonmatch domains
 	  || (  (
 		(void)(!tp->expand_multi_domain || ((void)deliver_set_expansions(next), 1)),
 	        exp_bool(addr,
-		    US"transport", next->transport->name, D_transport,
+		    US"transport", next->transport->drinst.name, D_transport,
 		    US"multi_domain", next->transport->multi_domain,
 		    next->transport->expand_multi_domain, &md) == OK
 	        )
@@ -4614,7 +4624,7 @@ nonmatch domains
   f.continue_more = FALSE;           /* In case got set for the last lot */
   if (continue_transport)
     {
-    BOOL ok = Ustrcmp(continue_transport, tp->name) == 0;
+    BOOL ok = Ustrcmp(continue_transport, tp->drinst.name) == 0;
 /*XXX do we need to check for a DANEd conn vs. a change of domain? */
 
     /* If the transport is about to override the host list do not check
@@ -4625,11 +4635,11 @@ nonmatch domains
 
     if (ok)
       {
-      smtp_transport_options_block * ob;
+      transport_info * ti = tp->drinst.info;
+      smtp_transport_options_block * ob = tp->drinst.options_block;
 
-      if (  !(  Ustrcmp(tp->info->driver_name, "smtp") == 0
-	     && (ob = (smtp_transport_options_block *)tp->options_block)
-	     && ob->hosts_override && ob->hosts
+      if (  !(  Ustrcmp(ti->drinfo.driver_name, "smtp") == 0
+	     && ob && ob->hosts_override && ob->hosts
 	     )
 	 && addr->host_list
 	 )
@@ -4648,8 +4658,8 @@ nonmatch domains
     if (!ok)
       {
       DEBUG(D_deliver) debug_printf("not suitable for continue_transport (%s)\n",
-	Ustrcmp(continue_transport, tp->name) != 0
-	? string_sprintf("tpt %s vs %s", continue_transport, tp->name)
+	Ustrcmp(continue_transport, tp->drinst.name) != 0
+	? string_sprintf("tpt %s vs %s", continue_transport, tp->drinst.name)
 	: string_sprintf("no host matching %s", continue_hostname));
       if (serialize_key) enq_end(serialize_key);
 
@@ -4658,7 +4668,8 @@ nonmatch domains
 	for (next = addr; ; next = next->next)
           {
           next->host_list = next->fallback_hosts;
-          DEBUG(D_deliver) debug_printf("%s queued for fallback host(s)\n", next->address);
+          DEBUG(D_deliver)
+	    debug_printf("%s queued for fallback host(s)\n", next->address);
           if (!next->next) break;
           }
         next->next = addr_fallback;
@@ -4818,10 +4829,10 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
 
     /* Setting these globals in the subprocess means we need never clear them */
 
-    transport_name = tp->name;
+    transport_name = tp->drinst.name;
     if (addr->router) router_name = addr->router->drinst.name;
-    driver_srcfile = tp->srcfile;
-    driver_srcline = tp->srcline;
+    driver_srcfile = tp->drinst.srcfile;
+    driver_srcline = tp->drinst.srcline;
 
     /* There are weird circumstances in which logging is disabled */
     f.disable_logging = tp->disable_logging;
@@ -4877,19 +4888,24 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
 
     exim_setugid(uid, gid, use_initgroups,
       string_sprintf("remote delivery to %s with transport=%s",
-        addr->address, tp->name));
+        addr->address, tp->drinst.name));
 
     /* Close the unwanted half of this process' pipe, set the process state,
     and run the transport. Afterwards, transport_count will contain the number
     of bytes written. */
 
     (void)close(pfd[pipe_read]);
-    set_process_info("delivering %s using %s", message_id, tp->name);
+    set_process_info("delivering %s using %s", message_id, tp->drinst.name);
     debug_print_string(tp->debug_string);
-    if (!(tp->info->code)(addr->transport, addr)) replicate_status(addr);
+
+      {
+      transport_info * ti = tp->drinst.info;
+      if (!(ti->code)(addr->transport, addr))	/* Call the transport */
+	replicate_status(addr);
+      }
 
     set_process_info("delivering %s (just run %s for %s%s in subprocess)",
-      message_id, tp->name, addr->address, addr->next ? ", ..." : "");
+      message_id, tp->drinst.name, addr->address, addr->next ? ", ..." : "");
 
     /* Ensure any cached resources that we used are now released */
 
@@ -5478,10 +5494,11 @@ static int
 continue_closedown(void)
 {
 if (continue_transport)
-  for (transport_instance * t = transports; t; t = t->next)
-    if (Ustrcmp(t->name, continue_transport) == 0)
+  for (transport_instance * t = transports; t; t = t->drinst.next)
+    if (Ustrcmp(t->drinst.name, continue_transport) == 0)
       {
-      if (t->info->closedown) (t->info->closedown)(t);
+      transport_info * ti = t->drinst.info;
+      if (ti->closedown) (ti->closedown)(t);
       continue_transport = NULL;
       break;
       }
@@ -7211,8 +7228,8 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
         if (tpname)
           {
           transport_instance *tp;
-          for (tp = transports; tp; tp = tp->next)
-            if (Ustrcmp(tp->name, tpname) == 0)
+          for (tp = transports; tp; tp = tp->drinst.next)
+            if (Ustrcmp(tp->drinst.name, tpname) == 0)
               { p->transport = tp; break; }
           if (!tp)
             p->message = string_sprintf("failed to find \"%s\" transport "
@@ -7629,7 +7646,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 	transport_instance * save_t = addr->transport;
 	transport_instance * t = store_get(sizeof(*t), save_t);
 	*t = *save_t;
-	t->name = US"**bypassed**";
+	t->drinst.name = US"**bypassed**";
 	addr->transport = t;
         (void)post_process_one(addr, OK, LOG_MAIN, EXIM_DTYPE_TRANSPORT, '=');
         addr->transport= save_t;
@@ -7640,7 +7657,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
       delivery. */
 
       DEBUG(D_deliver|D_route)
-        debug_printf("queued for %s transport\n", addr->transport->name);
+        debug_printf("queued for %s transport\n", addr->transport->drinst.name);
       addr->next = addr_local;
       addr_local = addr;
       continue;       /* with the next new address */

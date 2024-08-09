@@ -24,7 +24,7 @@ extern queuefile_transport_options_block queuefile_transport_option_defaults;
 
 /* The main and init entry points for the transport */
 
+extern void queuefile_transport_init(driver_instance *);
 extern BOOL queuefile_transport_entry(transport_instance *, address_item *);
-extern void queuefile_transport_init(transport_instance *);
 
 /* End of transports/queuefile.h */

@@ -1143,8 +1143,8 @@ not_good:
   if (!transport_name)
     s = event_action;
   else
-    for(transport_instance * tp = transports; tp; tp = tp->next)
-      if (Ustrcmp(tp->name, transport_name) == 0)
+    for(transport_instance * tp = transports; tp; tp = tp->drinst.next)
+      if (Ustrcmp(tp->drinst.name, transport_name) == 0)
 	{ s = tp->event_action; break; }
 
   if (s)

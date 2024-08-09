@@ -324,8 +324,8 @@ struct timespec t = {0};
 void
 tls_client_creds_reload(BOOL watch)
 {
-for(transport_instance * t = transports; t; t = t->next)
-  if (Ustrcmp(t->driver_name, "smtp") == 0)
+for(transport_instance * t = transports; t; t = t->drinst.next)
+  if (Ustrcmp(t->drinst.driver_name, "smtp") == 0)
     {
 #if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
     tls_client_creds_invalidate(t);
@@ -905,7 +905,7 @@ if (*sni)
   conn_args.tblock = tb = store_get(sizeof(*tb), GET_UNTAINTED);
   memset(tb, 0, sizeof(*tb));
 
-  tb->options_block = ob = store_get(sizeof(*ob), GET_UNTAINTED);
+  tb->drinst.options_block = ob = store_get(sizeof(*ob), GET_UNTAINTED);
   memcpy(ob, &smtp_transport_option_defaults, sizeof(*ob));
 
   ob->tls_sni = sni;

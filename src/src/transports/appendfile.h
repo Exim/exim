@@ -91,8 +91,8 @@ extern appendfile_transport_options_block appendfile_transport_option_defaults;
 
 /* The main and init entry points for the transport */
 
+extern void appendfile_transport_init(driver_instance *);
 extern BOOL appendfile_transport_entry(transport_instance *, address_item *);
-extern void appendfile_transport_init(transport_instance *);
 
 /* Function that is shared with tf_maildir.c */
 

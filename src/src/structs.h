@@ -159,13 +159,7 @@ transports. They need to be generally accessible, however, as they are used by
 the main transport code. */
 
 typedef struct transport_instance {
-  struct transport_instance *next;
-  uschar *name;                   /* Instance name */
-  struct transport_info *info;    /* Info for this driver */
-  void *options_block;            /* Pointer to private options */
-  uschar *driver_name;            /* Must be first */
-  const uschar *srcfile;
-  int	  srcline;
+  driver_instance drinst;
 
   int   (*setup)(                 /* Setup entry point */
     struct transport_instance *,
@@ -227,18 +221,12 @@ typedef struct transport_instance {
 } transport_instance;
 
 
-/* Structure for holding information about a type of transport. The first six
-fields must match driver_info above. */
+/* Structure for holding information about a type of transport.  The first
+element must be a struct driver_info, to match auths and routers. */
 
 typedef struct transport_info {
-  uschar *driver_name;            /* Driver name */
-  optionlist *options;            /* Table of private options names */
-  int    *options_count;          /* -> Number of entries in table */
-  void   *options_block;          /* Points to default private block */
-  int     options_len;            /* Length of same in bytes */
-  void (*init)(                   /* Initialization function */
-    struct transport_instance *);
-/****/
+  driver_info drinfo;
+
   BOOL (*code)(                   /* Main entry point */
     transport_instance *,
     struct address_item *);

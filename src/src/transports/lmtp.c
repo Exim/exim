@@ -49,7 +49,7 @@ int lmtp_transport_options_count =
 
 /* Dummy values */
 lmtp_transport_options_block lmtp_transport_option_defaults = {0};
-void lmtp_transport_init(transport_instance *tblock) {}
+void lmtp_transport_init(driver_instance *tblock) {}
 BOOL lmtp_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
 
 #else   /*!MACRO_PREDEF*/
@@ -76,33 +76,33 @@ enable consistency checks to be done, or anything else that needs
 to be set up. */
 
 void
-lmtp_transport_init(transport_instance *tblock)
+lmtp_transport_init(driver_instance * t)
 {
-lmtp_transport_options_block *ob =
-  (lmtp_transport_options_block *)(tblock->options_block);
+transport_instance * tblock = (transport_instance *)t;
+lmtp_transport_options_block * ob = t->options_block;
 
 /* Either the command field or the socket field must be set */
 
 if ((ob->cmd == NULL) == (ob->skt == NULL))
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "one (and only one) of command or socket must be set for the %s transport",
-    tblock->name);
+    tblock->drinst.name);
 
 /* If a fixed uid field is set, then a gid field must also be set. */
 
 if (tblock->uid_set && !tblock->gid_set && tblock->expand_gid == NULL)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-    "user set without group for the %s transport", tblock->name);
+    "user set without group for the %s transport", tblock->drinst.name);
 
 /* Set up the bitwise options for transport_write_message from the various
 driver options. Only one of body_only and headers_only can be set. */
 
 ob->options |=
-  (tblock->body_only? topt_no_headers : 0) |
-  (tblock->headers_only? topt_no_body : 0) |
-  (tblock->return_path_add? topt_add_return_path : 0) |
-  (tblock->delivery_date_add? topt_add_delivery_date : 0) |
-  (tblock->envelope_to_add? topt_add_envelope_to : 0) |
+  (tblock->body_only		? topt_no_headers : 0) |
+  (tblock->headers_only		? topt_no_body : 0) |
+  (tblock->return_path_add	? topt_add_return_path : 0) |
+  (tblock->delivery_date_add	? topt_add_delivery_date : 0) |
+  (tblock->envelope_to_add	? topt_add_envelope_to : 0) |
   topt_use_crlf | topt_end_dot;
 }
 
@@ -467,10 +467,10 @@ lmtp_transport_entry(
   transport_instance *tblock,      /* data for this instantiation */
   address_item *addrlist)          /* address(es) we are working on */
 {
+lmtp_transport_options_block * ob = tblock->drinst.options_block;
+const uschar * trname = tblock->drinst.name;
 pid_t pid = 0;
 FILE *out;
-lmtp_transport_options_block *ob =
-  (lmtp_transport_options_block *)(tblock->options_block);
 struct sockaddr_un sockun;         /* don't call this "sun" ! */
 int timeout = ob->timeout;
 int fd_in = -1, fd_out = -1;
@@ -482,7 +482,7 @@ uschar *sockname = NULL;
 const uschar **argv;
 uschar buffer[256];
 
-DEBUG(D_transport) debug_printf("%s transport entered\n", tblock->name);
+DEBUG(D_transport) debug_printf("%s transport entered\n", trname);
 
 /* Initialization ensures that either a command or a socket is specified, but
 not both. When a command is specified, call the common function for creating an
@@ -491,7 +491,7 @@ argument list and expanding the items. */
 if (ob->cmd)
   {
   DEBUG(D_transport) debug_printf("using command %s\n", ob->cmd);
-  sprintf(CS buffer, "%.50s transport", tblock->name);
+  sprintf(CS buffer, "%.50s transport", trname);
   if (!transport_set_up_command(&argv, ob->cmd, TSUC_EXPAND_ARGS, PANIC,
 	addrlist, buffer, NULL))
     return FALSE;
@@ -508,7 +508,7 @@ leader, so we can kill it and all its children on an error. */
 			US"lmtp-tpt-cmd")) < 0)
     {
     addrlist->message = string_sprintf(
-      "Failed to create child process for %s transport: %s", tblock->name,
+      "Failed to create child process for %s transport: %s", trname,
         strerror(errno));
     return FALSE;
     }
@@ -522,7 +522,7 @@ else
   if (!(sockname = expand_string(ob->skt)))
     {
     addrlist->message = string_sprintf("Expansion of \"%s\" (socket setting "
-      "for %s transport) failed: %s", ob->skt, tblock->name,
+      "for %s transport) failed: %s", ob->skt, trname,
       expand_string_message);
     return FALSE;
     }
@@ -530,7 +530,7 @@ else
     {
     addrlist->message = string_sprintf(
       "Failed to create socket %s for %s transport: %s",
-        ob->skt, tblock->name, strerror(errno));
+        ob->skt, trname, strerror(errno));
     return FALSE;
     }
 
@@ -544,7 +544,7 @@ else
     {
     addrlist->message = string_sprintf(
       "Failed to connect to socket %s for %s transport: %s",
-        sockun.sun_path, tblock->name, strerror(errno));
+        sockun.sun_path, trname, strerror(errno));
     return FALSE;
     }
   }
@@ -795,7 +795,7 @@ if (fd_in >= 0) (void)close(fd_in);
 if (fd_out >= 0) (void)fclose(out);
 
 DEBUG(D_transport)
-  debug_printf("%s transport yields %d\n", tblock->name, yield);
+  debug_printf("%s transport yields %d\n", trname, yield);
 
 return yield;
 
@@ -803,7 +803,7 @@ return yield;
 MINUS_N:
   DEBUG(D_transport)
     debug_printf("*** delivery by %s transport bypassed by -N option",
-      tblock->name);
+      trname);
   addrlist->transport_return = OK;
   return FALSE;
 }

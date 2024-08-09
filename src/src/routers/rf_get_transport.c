@@ -82,8 +82,8 @@ if (expandable)
 else
   ss = tpname;
 
-for (transport_instance * tp = transports; tp; tp = tp->next)
-  if (Ustrcmp(tp->name, ss) == 0)
+for (transport_instance * tp = transports; tp; tp = tp->drinst.next)
+  if (Ustrcmp(tp->drinst.name, ss) == 0)
     {
     DEBUG(D_route) debug_printf("set transport %s\n", ss);
     *tpptr = tp;

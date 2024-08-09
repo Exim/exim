@@ -2039,7 +2039,7 @@ DEBUG(D_route)
   {
   debug_printf("  envelope to: %s\n", addr->address);
   debug_printf("  transport: %s\n", addr->transport
-    ? addr->transport->name : US"<none>");
+    ? addr->transport->drinst.name : US"<none>");
 
   if (addr->prop.errors_address)
     debug_printf("  errors to %s\n", addr->prop.errors_address);

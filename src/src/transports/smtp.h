@@ -240,8 +240,8 @@ extern smtp_transport_options_block smtp_transport_option_defaults;
 
 /* The main, init, and closedown entry points for the transport */
 
+extern void smtp_transport_init(driver_instance *);
 extern BOOL smtp_transport_entry(transport_instance *, address_item *);
-extern void smtp_transport_init(transport_instance *);
 extern void smtp_transport_closedown(transport_instance *);
 
 

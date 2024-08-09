@@ -336,7 +336,7 @@ while (*options)
   const uschar * s = options;
 
   Uskip_nonwhite(&options);
-  n = options-s;
+  n = options - s;
 
   if (Ustrncmp(s, "randomize", n) == 0) randomize = TRUE;
   else if (Ustrncmp(s, "no_randomize", n) == 0) randomize = FALSE;
@@ -348,9 +348,9 @@ while (*options)
   else if (Ustrncmp(s, "ipv4_only",   n) == 0) lookup_type |= LK_IPV4_ONLY;
   else
     {
-    transport_instance *t;
-    for (t = transports; t; t = t->next)
-      if (Ustrncmp(t->name, s, n) == 0)
+    transport_instance * t;
+    for (t = transports; t; t = t->drinst.next)
+      if (Ustrncmp(t->drinst.name, s, n) == 0)
         {
         transport = t;
         individual_transport_set = TRUE;
@@ -399,28 +399,32 @@ if (!individual_transport_set)
 /* Deal with the case of a local transport. The host list is passed over as a
 single text string that ends up in $host. */
 
-if (transport && transport->info->local)
+if (transport)
   {
-  if (hostlist[0])
+  transport_info * ti = transport->drinst.info;
+  if (ti->local)
     {
-    host_item *h;
-    addr->host_list = h = store_get(sizeof(host_item), GET_UNTAINTED);
-    h->name = string_copy(hostlist);
-    h->address = NULL;
-    h->port = PORT_NONE;
-    h->mx = MX_NONE;
-    h->status = hstatus_unknown;
-    h->why = hwhy_unknown;
-    h->last_try = 0;
-    h->next = NULL;
+    if (hostlist[0])
+      {
+      host_item * h = store_get(sizeof(host_item), GET_UNTAINTED);
+      h->name = string_copy(hostlist);
+      h->address = NULL;
+      h->port = PORT_NONE;
+      h->mx = MX_NONE;
+      h->status = hstatus_unknown;
+      h->why = hwhy_unknown;
+      h->last_try = 0;
+      h->next = NULL;
+      addr->host_list = h;
+      }
+
+    /* There is nothing more to do other than to queue the address for the
+    local transport, filling in any uid/gid. This can be done by the common
+    rf_queue_add() function. */
+
+    addr->transport = transport;
+    return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ? OK : DEFER;
     }
-
-  /* There is nothing more to do other than to queue the address for the
-  local transport, filling in any uid/gid. This can be done by the common
-  rf_queue_add() function. */
-
-  addr->transport = transport;
-  return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ?  OK : DEFER;
   }
 
 /* There is either no transport (verify_only) or a remote transport. A host

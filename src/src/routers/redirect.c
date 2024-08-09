@@ -420,7 +420,7 @@ while (generated)
       next->address,
       testflag(next, af_pfr)? "pipe, file, or autoreply\n  " : "",
       next->prop.errors_address,
-      (next->transport == NULL)? US"NULL" : next->transport->name);
+      next->transport ? next->transport->drinst.name : US"NULL");
 
     if (testflag(next, af_uid_set))
       debug_printf("  uid=%ld ", (long int)(next->uid));
