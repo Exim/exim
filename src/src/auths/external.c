@@ -44,7 +44,7 @@ auth_external_options_block auth_external_option_defaults = {
 #ifdef MACRO_PREDEF
 
 /* Dummy values */
-void auth_external_init(auth_instance *ablock) {}
+void auth_external_init(driver_instance *ablock) {}
 int auth_external_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_external_client(auth_instance *ablock, void * sx,
   int timeout, uschar *buffer, int buffsize) {return 0;}
@@ -63,12 +63,17 @@ enable consistency checks to be done, or anything else that needs
 to be set up. */
 
 void
-auth_external_init(auth_instance *ablock)
+auth_external_init(driver_instance * a)
 {
-auth_external_options_block * ob = (auth_external_options_block *)ablock->options_block;
-if (!ablock->public_name) ablock->public_name = ablock->name;
-if (ablock->server_condition) ablock->server = TRUE;
-if (ob->client_send) ablock->client = TRUE;
+auth_instance * ablock = (auth_instance *)a;
+auth_external_options_block * ob = a->options_block;
+
+if (!ablock->public_name)
+  ablock->public_name = a->name;
+if (ablock->server_condition)
+  ablock->server = TRUE;
+if (ob->client_send)
+  ablock->client = TRUE;
 }
 
 
@@ -82,7 +87,7 @@ if (ob->client_send) ablock->client = TRUE;
 int
 auth_external_server(auth_instance * ablock, uschar * data)
 {
-auth_external_options_block * ob = (auth_external_options_block *)ablock->options_block;
+auth_external_options_block * ob = ablock->drinst.options_block;
 int rc;
 
 /* If data was supplied on the AUTH command, decode it, and split it up into
@@ -138,8 +143,7 @@ auth_external_client(
   uschar *buffer,                        /* buffer for reading response */
   int buffsize)                          /* size of buffer */
 {
-auth_external_options_block *ob =
-  (auth_external_options_block *)(ablock->options_block);
+auth_external_options_block * ob = ablock->drinst.options_block;
 const uschar * text = ob->client_send;
 int rc;
 

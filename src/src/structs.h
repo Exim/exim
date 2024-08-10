@@ -381,13 +381,7 @@ typedef struct router_info {
 mechanisms */
 
 typedef struct auth_instance {
-  struct auth_instance *next;
-  uschar *name;                   /* Exim instance name */
-  struct auth_info *info;         /* Pointer to driver info block */
-  void   *options_block;          /* Pointer to private options */
-  uschar *driver_name;            /* Must be first */
-  const uschar *srcfile;
-  int	  srcline;
+  driver_instance drinst;
 
   uschar *advertise_condition;    /* Are we going to advertise this?*/
   uschar *client_condition;       /* Should the client try this? */
@@ -404,17 +398,11 @@ typedef struct auth_instance {
 
 
 /* Structure for holding information about an authentication mechanism. The
-first six fields must match driver_info above. */
+first element must be a struct driver_info, to match routers and transports. */
 
 typedef struct auth_info {
-  uschar *driver_name;            /* e.g. "condition" */
-  optionlist *options;            /* Table of private options names */
-  int    *options_count;          /* -> Number of entries in table */
-  void   *options_block;          /* Points to default private block */
-  int     options_len;            /* Length of same in bytes */
-  void (*init)(                   /* initialization function */
-    struct auth_instance *);
-/****/
+  driver_info drinfo;
+
   int (*servercode)(              /* server function */
     auth_instance *,              /* the instance data */
     uschar *);                    /* rest of AUTH command */

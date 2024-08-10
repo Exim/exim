@@ -82,7 +82,7 @@ auth_heimdal_gssapi_options_block auth_heimdal_gssapi_option_defaults = {
 #ifdef MACRO_PREDEF
 
 /* Dummy values */
-void auth_heimdal_gssapi_init(auth_instance *ablock) {}
+void auth_heimdal_gssapi_init(driver_instance *ablock) {}
 int auth_heimdal_gssapi_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_heimdal_gssapi_client(auth_instance *ablock, void * sx,
   int timeout, uschar *buffer, int buffsize) {return 0;}
@@ -117,8 +117,11 @@ in the init, we mostly just use raw krb5 methods so that we can report
 the keytab contents, for -D+auth debugging. */
 
 void
-auth_heimdal_gssapi_init(auth_instance *ablock)
+auth_heimdal_gssapi_init(driver_instance * a)
 {
+auth_instance * ablock = (auth_instance *)a;
+auth_heimdal_gssapi_options_block * ob =
+  (auth_heimdal_gssapi_options_block *)(a->options_block);
 krb5_context context;
 krb5_keytab keytab;
 krb5_kt_cursor cursor;
@@ -126,8 +129,6 @@ krb5_keytab_entry entry;
 krb5_error_code krc;
 char *principal, *enctype_s;
 const char *k_keytab_typed_name = NULL;
-auth_heimdal_gssapi_options_block *ob =
-  (auth_heimdal_gssapi_options_block *)(ablock->options_block);
 
 ablock->server = FALSE;
 ablock->client = FALSE;
@@ -226,6 +227,8 @@ gss_buffer_desc / *gss_buffer_t: hold/point-to size_t .length & void *value
 int
 auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
 {
+auth_heimdal_gssapi_options_block * ob =
+  (auth_heimdal_gssapi_options_block *)(ablock->drinfo.options_block);
 gss_name_t gclient = GSS_C_NO_NAME;
 gss_name_t gserver = GSS_C_NO_NAME;
 gss_cred_id_t gcred = GSS_C_NO_CREDENTIAL;
@@ -238,8 +241,6 @@ gss_OID mech_type;
 OM_uint32 maj_stat, min_stat;
 int step, error_out;
 uschar *tmp1, *tmp2, *from_client;
-auth_heimdal_gssapi_options_block *ob =
-  (auth_heimdal_gssapi_options_block *)(ablock->options_block);
 BOOL handled_empty_ir;
 rmark store_reset_point;
 uschar *keytab;

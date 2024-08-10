@@ -78,7 +78,7 @@ auth_spa_options_block auth_spa_option_defaults = {
 #ifdef MACRO_PREDEF
 
 /* Dummy values */
-void auth_spa_init(auth_instance *ablock) {}
+void auth_spa_init(driver_instance *ablock) {}
 int auth_spa_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_spa_client(auth_instance *ablock, void * sx, int timeout,
     uschar *buffer, int buffsize) {return 0;}
@@ -97,21 +97,22 @@ enable consistency checks to be done, or anything else that needs
 to be set up. */
 
 void
-auth_spa_init(auth_instance *ablock)
+auth_spa_init(driver_instance * a)
 {
-auth_spa_options_block *ob =
-  (auth_spa_options_block *)(ablock->options_block);
+auth_instance * ablock = (auth_instance *)a;
+auth_spa_options_block * ob = a->options_block;
 
 /* The public name defaults to the authenticator name */
 
-if (ablock->public_name == NULL) ablock->public_name = ablock->name;
+if (!ablock->public_name)
+  ablock->public_name = ablock->drinst.name;
 
 /* Both username and password must be set for a client */
 
 if ((ob->spa_username == NULL) != (ob->spa_password == NULL))
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:\n  "
       "one of client_username and client_password cannot be set without "
-      "the other", ablock->name);
+      "the other", ablock->drinst.name);
 ablock->client = ob->spa_username != NULL;
 
 /* For a server we have just one option */
@@ -135,7 +136,7 @@ ablock->server = ob->spa_serverpassword != NULL;
 int
 auth_spa_server(auth_instance *ablock, uschar *data)
 {
-auth_spa_options_block *ob = (auth_spa_options_block *)(ablock->options_block);
+auth_spa_options_block * ob = ablock->drinst.options_block;
 uint8x lmRespData[24];
 uint8x ntRespData[24];
 SPAAuthRequest request;
@@ -281,8 +282,8 @@ auth_spa_client(
   uschar *buffer,                        /* buffer for reading response */
   int buffsize)                          /* size of buffer */
 {
-auth_spa_options_block *ob =
-       (auth_spa_options_block *)(ablock->options_block);
+auth_spa_options_block * ob = ablock->drinst.options_block;
+const uschar * auname = ablock->drinst.name;
 SPAAuthRequest   request;
 SPAAuthChallenge challenge;
 SPAAuthResponse  response;
@@ -297,7 +298,7 @@ if (!(username = expand_string(ob->spa_username)))
   {
   if (f.expand_string_forcedfail) return CANCELLED;
   string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
-   "authenticator: %s", ob->spa_username, ablock->name,
+   "authenticator: %s", ob->spa_username, auname,
    expand_string_message);
   return ERROR;
   }
@@ -306,7 +307,7 @@ if (!(password = expand_string(ob->spa_password)))
   {
   if (f.expand_string_forcedfail) return CANCELLED;
   string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
-   "authenticator: %s", ob->spa_password, ablock->name,
+   "authenticator: %s", ob->spa_password, auname,
    expand_string_message);
   return ERROR;
   }
@@ -316,7 +317,7 @@ if (ob->spa_domain)
     {
     if (f.expand_string_forcedfail) return CANCELLED;
     string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
-		  "authenticator: %s", ob->spa_domain, ablock->name,
+		  "authenticator: %s", ob->spa_domain, auname,
 		  expand_string_message);
     return ERROR;
     }
@@ -330,12 +331,12 @@ if (smtp_write_command(sx, SCMD_FLUSH, "AUTH %s\r\n", ablock->public_name) < 0)
 if (!smtp_read_response(sx, US buffer, buffsize, '3', timeout))
   return FAIL;
 
-DSPA("\n\n%s authenticator: using domain %s\n\n", ablock->name, domain);
+DSPA("\n\n%s authenticator: using domain %s\n\n", auname, domain);
 
 spa_build_auth_request(&request, username, domain);
 spa_bits_to_base64(US msgbuf, US &request, spa_request_length(&request));
 
-DSPA("\n\n%s authenticator: sending request (%s)\n\n", ablock->name, msgbuf);
+DSPA("\n\n%s authenticator: sending request (%s)\n\n", auname, msgbuf);
 
 /* send the encrypted password */
 if (smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", msgbuf) < 0)
@@ -346,12 +347,12 @@ if (!smtp_read_response(sx, US buffer, buffsize, '3', timeout))
   return FAIL;
 
 /* convert the challenge into the challenge struct */
-DSPA("\n\n%s authenticator: challenge (%s)\n\n", ablock->name, buffer + 4);
+DSPA("\n\n%s authenticator: challenge (%s)\n\n", auname, buffer + 4);
 spa_base64_to_bits(CS (&challenge), sizeof(challenge), CCS (buffer + 4));
 
 spa_build_auth_response(&challenge, &response, username, password);
 spa_bits_to_base64(US msgbuf, US &response, spa_request_length(&response));
-DSPA("\n\n%s authenticator: challenge response (%s)\n\n", ablock->name, msgbuf);
+DSPA("\n\n%s authenticator: challenge response (%s)\n\n", auname, msgbuf);
 
 /* send the challenge response */
 if (smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", msgbuf) < 0)

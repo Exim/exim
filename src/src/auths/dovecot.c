@@ -54,8 +54,10 @@ The cost is the length of an array of pointers on the stack.
 
 /* Options specific to the authentication mechanism. */
 optionlist auth_dovecot_options[] = {
-  { "server_socket", opt_stringptr, OPT_OFF(auth_dovecot_options_block, server_socket) },
-/*{ "server_tls", opt_bool, OPT_OFF(auth_dovecot_options_block, server_tls) },*/
+  { "server_socket", opt_stringptr,
+    OPT_OFF(auth_dovecot_options_block, server_socket) },
+/*{ "server_tls", opt_bool,
+    OPT_OFF(auth_dovecot_options_block, server_tls) },*/
 };
 
 /* Size of the options list. An extern variable has to be used so that its
@@ -76,7 +78,7 @@ auth_dovecot_options_block auth_dovecot_option_defaults = {
 #ifdef MACRO_PREDEF
 
 /* Dummy values */
-void auth_dovecot_init(auth_instance *ablock) {}
+void auth_dovecot_init(driver_instance *ablock) {}
 int auth_dovecot_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_dovecot_client(auth_instance *ablock, void * sx,
   int timeout, uschar *buffer, int buffsize) {return 0;}
@@ -100,14 +102,19 @@ enable consistency checks to be done, or anything else that needs
 to be set up. */
 
 void
-auth_dovecot_init(auth_instance * ablock)
+auth_dovecot_init(driver_instance * a)
 {
+auth_instance * ablock = (auth_instance *)a;
 auth_dovecot_options_block * ob =
-       (auth_dovecot_options_block *)(ablock->options_block);
+       (auth_dovecot_options_block *)(a->options_block);
 
-if (!ablock->public_name) ablock->public_name = ablock->name;
-if (ob->server_socket) ablock->server = TRUE;
-else DEBUG(D_auth) debug_printf("Dovecot auth driver: no server_socket for %s\n", ablock->public_name);
+if (!ablock->public_name)
+  ablock->public_name = a->name;
+if (ob->server_socket)
+  ablock->server = TRUE;
+else DEBUG(D_auth)
+  debug_printf("Dovecot auth driver: no server_socket for %s\n",
+	      ablock->public_name);
 ablock->client = FALSE;
 }
 
@@ -250,8 +257,7 @@ return s;
 int
 auth_dovecot_server(auth_instance * ablock, uschar * data)
 {
-auth_dovecot_options_block *ob =
-       (auth_dovecot_options_block *) ablock->options_block;
+auth_dovecot_options_block * ob = ablock->drinst.options_block;
 uschar buffer[DOVECOT_AUTH_MAXLINELEN];
 uschar *args[DOVECOT_AUTH_MAXFIELDCOUNT];
 uschar *auth_command;

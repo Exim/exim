@@ -42,7 +42,7 @@ auth_plaintext_options_block auth_plaintext_option_defaults = {
 #ifdef MACRO_PREDEF
 
 /* Dummy values */
-void auth_plaintext_init(auth_instance *ablock) {}
+void auth_plaintext_init(driver_instance *ablock) {}
 int auth_plaintext_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_plaintext_client(auth_instance *ablock, void * sx, int timeout,
     uschar *buffer, int buffsize) {return 0;}
@@ -60,13 +60,17 @@ enable consistency checks to be done, or anything else that needs
 to be set up. */
 
 void
-auth_plaintext_init(auth_instance *ablock)
+auth_plaintext_init(driver_instance * a)
 {
-auth_plaintext_options_block *ob =
-  (auth_plaintext_options_block *)(ablock->options_block);
-if (!ablock->public_name) ablock->public_name = ablock->name;
-if (ablock->server_condition) ablock->server = TRUE;
-if (ob->client_send) ablock->client = TRUE;
+auth_instance * ablock = (auth_instance *)a;
+auth_plaintext_options_block * ob = a->options_block;
+
+if (!ablock->public_name)
+  ablock->public_name = ablock->drinst.name;
+if (ablock->server_condition)
+  ablock->server = TRUE;
+if (ob->client_send)
+  ablock->client = TRUE;
 }
 
 
@@ -80,8 +84,7 @@ if (ob->client_send) ablock->client = TRUE;
 int
 auth_plaintext_server(auth_instance * ablock, uschar * data)
 {
-auth_plaintext_options_block * ob =
-  (auth_plaintext_options_block *)(ablock->options_block);
+auth_plaintext_options_block * ob = ablock->drinst.options_block;
 const uschar * prompts = ob->server_prompts;
 uschar * s;
 int number = 1;
@@ -143,8 +146,7 @@ auth_plaintext_client(
   uschar *buffer,                        /* buffer for reading response */
   int buffsize)                          /* size of buffer */
 {
-auth_plaintext_options_block *ob =
-  (auth_plaintext_options_block *)(ablock->options_block);
+auth_plaintext_options_block * ob = ablock->drinst.options_block;
 const uschar * text = ob->client_send;
 const uschar * s;
 int sep = 0;

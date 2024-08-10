@@ -3408,9 +3408,9 @@ int rc;
 
 /* Set up globals for error messages */
 
-authenticator_name = au->name;
-driver_srcfile = au->srcfile;
-driver_srcline = au->srcline;
+authenticator_name = au->drinst.name;
+driver_srcfile = au->drinst.srcfile;
+driver_srcline = au->drinst.srcline;
 
 /* Run the checking code, passing the remainder of the command line as
 data. Initials the $auth<n> variables as empty. Initialize $0 empty and set
@@ -3428,7 +3428,10 @@ for (int i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;
 expand_nmax = 0;
 expand_nlength[0] = 0;   /* $0 contains nothing */
 
-rc = (au->info->servercode)(au, smtp_cmd_data);
+  {
+  auth_info * ai = au->drinst.info;
+  rc = (ai->servercode)(au, smtp_cmd_data);
+  }
 if (au->set_id) set_id = expand_string(au->set_id);
 expand_nmax = -1;        /* Reset numeric variables */
 for (int i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;   /* Reset $auth<n> */
@@ -3457,7 +3460,7 @@ switch(rc)
     if (!au->set_id || set_id)    /* Complete success */
       {
       if (set_id) authenticated_id = string_copy_perm(set_id, TRUE);
-      sender_host_authenticated = au->name;
+      sender_host_authenticated = au->drinst.name;
       sender_host_auth_pubname  = au->public_name;
       authentication_failed = FALSE;
       authenticated_fail_id = NULL;   /* Impossible to already be set? */
@@ -3747,8 +3750,8 @@ while (done <= 0)
     {
     cmd_list[CL_TLAU].is_mail_cmd = FALSE;
 
-    for (auth_instance * au = auths; au; au = au->next)
-      if (strcmpic(US"tls", au->driver_name) == 0)
+    for (auth_instance * au = auths; au; au = au->drinst.next)
+      if (strcmpic(US"tls", au->drinst.driver_name) == 0)
 	{
 	GET_OPTION("acl_smtp_auth");
 	if (  acl_smtp_auth
@@ -3768,7 +3771,7 @@ while (done <= 0)
 #ifndef DISABLE_EVENT
 	     {
 	      uschar * save_name = sender_host_authenticated, * logmsg;
-	      sender_host_authenticated = au->name;
+	      sender_host_authenticated = au->drinst.name;
 	      if ((logmsg = event_raise(event_action, US"auth:fail", s, NULL)))
 		log_write(0, LOG_MAIN, "%s", logmsg);
 	      sender_host_authenticated = save_name;
@@ -3867,7 +3870,7 @@ while (done <= 0)
 	auth_instance * au;
 	uschar * smtp_resp, * errmsg;
 
-	for (au = auths; au; au = au->next)
+	for (au = auths; au; au = au->drinst.next)
 	  if (strcmpic(s, au->public_name) == 0 && au->server &&
 	      (au->advertised || f.allow_auth_unadvertised))
 	    break;
@@ -3882,7 +3885,7 @@ while (done <= 0)
 	    uschar * logmsg = NULL;
 #ifndef DISABLE_EVENT
 	     {uschar * save_name = sender_host_authenticated;
-	      sender_host_authenticated = au->name;
+	      sender_host_authenticated = au->drinst.name;
 	      logmsg = event_raise(event_action, US"auth:fail", smtp_resp, NULL);
 	      sender_host_authenticated = save_name;
 	     }
@@ -3891,7 +3894,7 @@ while (done <= 0)
 	      log_write(0, LOG_MAIN|LOG_REJECT, "%s", logmsg);
 	    else
 	      log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
-		au->name, host_and_ident(FALSE), errmsg);
+		au->drinst.name, host_and_ident(FALSE), errmsg);
 	    }
 	  }
 	else
@@ -4215,17 +4218,17 @@ while (done <= 0)
 	   )
 	  {
 	  BOOL first = TRUE;
-	  for (auth_instance * au = auths; au; au = au->next)
+	  for (auth_instance * au = auths; au; au = au->drinst.next)
 	    {
 	    au->advertised = FALSE;
 	    if (au->server)
 	      {
 	      DEBUG(D_auth+D_expand) debug_printf_indent(
 		"Evaluating advertise_condition for %s %s athenticator\n",
-		au->name, au->public_name);
+		au->drinst.name, au->public_name);
 	      if (  !au->advertise_condition
-		 || expand_check_condition(au->advertise_condition, au->name,
-			US"authenticator")
+		 || expand_check_condition(au->advertise_condition,
+					  au->drinst.name, US"authenticator")
 		 )
 		{
 		int saveptr;
@@ -4599,7 +4602,7 @@ while (done <= 0)
 		  if (authenticated_by == NULL ||
 		      authenticated_by->mail_auth_condition == NULL ||
 		      expand_check_condition(authenticated_by->mail_auth_condition,
-			  authenticated_by->name, US"authenticator"))
+			  authenticated_by->drinst.name, US"authenticator"))
 		    break;     /* Accept the AUTH */
 
 		  ignore_msg = US"server_mail_auth_condition failed";

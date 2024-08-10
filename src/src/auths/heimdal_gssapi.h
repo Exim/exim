@@ -32,7 +32,7 @@ extern auth_heimdal_gssapi_options_block auth_heimdal_gssapi_option_defaults;
 
 /* The entry points for the mechanism */
 
-extern void auth_heimdal_gssapi_init(auth_instance *);
+extern void auth_heimdal_gssapi_init(driver_instance *);
 extern int auth_heimdal_gssapi_server(auth_instance *, uschar *);
 extern int auth_heimdal_gssapi_client(auth_instance *, void *, int, uschar *, int);
 extern void auth_heimdal_gssapi_version_report(BOOL);

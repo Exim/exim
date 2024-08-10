@@ -54,7 +54,7 @@ auth_cram_md5_options_block auth_cram_md5_option_defaults = {
 #  ifdef MACRO_PREDEF
 
 /* Dummy values */
-void auth_cram_md5_init(auth_instance *ablock) {}
+void auth_cram_md5_init(driver_instance* ablock) {}
 int auth_cram_md5_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_cram_md5_client(auth_instance *ablock, void *sx, int timeout,
     uschar *buffer, int buffsize) {return 0;}
@@ -71,15 +71,18 @@ enable consistency checks to be done, or anything else that needs
 to be set up. */
 
 void
-auth_cram_md5_init(auth_instance *ablock)
+auth_cram_md5_init(driver_instance * a)
 {
-auth_cram_md5_options_block *ob =
-  (auth_cram_md5_options_block *)(ablock->options_block);
-if (ob->server_secret != NULL) ablock->server = TRUE;
-if (ob->client_secret != NULL)
+auth_instance * ablock = (auth_instance *)a;
+auth_cram_md5_options_block * ob =
+  (auth_cram_md5_options_block *)(a->options_block);
+
+if (ob->server_secret)
+  ablock->server = TRUE;
+if (ob->client_secret)
   {
   ablock->client = TRUE;
-  if (ob->client_name == NULL) ob->client_name = primary_hostname;
+  if (!ob->client_name) ob->client_name = primary_hostname;
   }
 }
 
@@ -169,8 +172,7 @@ md5_end(&base, md5secret, 16, digestptr);
 int
 auth_cram_md5_server(auth_instance * ablock, uschar * data)
 {
-auth_cram_md5_options_block * ob =
-  (auth_cram_md5_options_block *)(ablock->options_block);
+auth_cram_md5_options_block * ob = ablock->drinst.options_block;
 uschar * challenge = string_sprintf("<%d.%ld@%s>", getpid(),
     (long int) time(NULL), primary_hostname);
 uschar * clear, * secret;
@@ -269,8 +271,7 @@ auth_cram_md5_client(
   uschar *buffer,                        /* for reading response */
   int buffsize)                          /* size of buffer */
 {
-auth_cram_md5_options_block *ob =
-  (auth_cram_md5_options_block *)(ablock->options_block);
+auth_cram_md5_options_block * ob = ablock->drinst.options_block;
 uschar *secret = expand_string(ob->client_secret);
 uschar *name = expand_string(ob->client_name);
 uschar *challenge, *p;
@@ -290,7 +291,7 @@ if (!secret || !name)
   string_format(buffer, buffsize, "expansion of \"%s\" failed in "
     "%s authenticator: %s",
     !secret ? ob->client_secret : ob->client_name,
-    ablock->name, expand_string_message);
+    ablock->drinst.name, expand_string_message);
   return ERROR;
   }
 

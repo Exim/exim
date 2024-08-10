@@ -25,7 +25,7 @@ extern auth_tls_options_block auth_tls_option_defaults;
 
 /* The entry points for the mechanism */
 
-extern void auth_tls_init(auth_instance *);
+extern void auth_tls_init(driver_instance *);
 extern int auth_tls_server(auth_instance *, uschar *);
 
 /* End of tls.h */

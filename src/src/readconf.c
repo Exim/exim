@@ -432,13 +432,16 @@ options_auths(void)
 {
 uschar buf[EXIM_DRIVERNAME_MAX];
 
-options_from_list(optionlist_auths, optionlist_auths_size, US"AUTHENTICATORS", NULL);
+options_from_list(optionlist_auths, optionlist_auths_size,
+  US"AUTHENTICATORS", NULL);
 
-for (struct auth_info * ai = auths_available; ai->driver_name[0]; ai++)
+for (struct auth_info * ai = auths_available; ai->drinfo.driver_name[0]; ai++)
   {
-  spf(buf, sizeof(buf), US"_DRIVER_AUTHENTICATOR_%T", ai->driver_name);
+  driver_info * di = &ai->drinfo;
+  spf(buf, sizeof(buf), US"_DRIVER_AUTHENTICATOR_%T", di->driver_name);
   builtin_macro_create(buf);
-  options_from_list(ai->options, (unsigned)*ai->options_count, US"AUTHENTICATOR", ai->driver_name);
+  options_from_list(di->options, (unsigned)*di->options_count,
+    US"AUTHENTICATOR", di->driver_name);
 
   if (ai->macros_create) (ai->macros_create)();
   }
@@ -4249,20 +4252,20 @@ readconf_driver_init(US"authenticator",
   optionlist_auths,                  /* generic options */
   optionlist_auths_size);
 
-for (auth_instance * au = auths; au; au = au->next)
+for (auth_instance * au = auths; au; au = au->drinst.next)
   {
   if (!au->public_name)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "no public name specified for "
-      "the %s authenticator", au->name);
+      "the %s authenticator", au->drinst.name);
 
-  for (auth_instance * bu = au->next; bu; bu = bu->next)
+  for (auth_instance * bu = au->drinst.next; bu; bu = bu->drinst.next)
     if (strcmpic(au->public_name, bu->public_name) == 0)
       if (  au->client && bu->client
 	 || au->server && bu->server)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "two %s authenticators "
           "(%s and %s) have the same public name (%s)",
           au->client && bu->client ? US"client" : US"server",
-	  au->name, bu->name, au->public_name);
+	  au->drinst.name, bu->drinst.name, au->public_name);
 #ifndef DISABLE_PIPE_CONNECT
   nauths++;
 #endif

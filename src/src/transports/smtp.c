@@ -1033,14 +1033,15 @@ if (!regex_match_and_setup(regex_AUTH, sx->buffer, 0, -1)) return 0;
 expand_nmax = -1;						/* reset */
 names = string_copyn(expand_nstring[1], expand_nlength[1]);
 
-for (au = auths, authnum = 0; au; au = au->next, authnum++) if (au->client)
-  {
-  const uschar * list = names;
-  uschar * s;
-  for (int sep = ' '; s = string_nextinlist(&list, &sep, NULL, 0); )
-    if (strcmpic(au->public_name, s) == 0)
-      { authbits |= BIT(authnum); break; }
-  }
+for (au = auths, authnum = 0; au; au = au->drinst.next, authnum++)
+  if (au->client)
+    {
+    const uschar * list = names;
+    uschar * s;
+    for (int sep = ' '; s = string_nextinlist(&list, &sep, NULL, 0); )
+      if (strcmpic(au->public_name, s) == 0)
+	{ authbits |= BIT(authnum); break; }
+    }
 
 DEBUG(D_transport)
   debug_printf("server offers %s AUTH, methods '%s', usable-bitmap 0x%04x\n",
@@ -1514,16 +1515,20 @@ int rc;
 
 /* Set up globals for error messages */
 
-authenticator_name = au->name;
-driver_srcfile = au->srcfile;
-driver_srcline = au->srcline;
+authenticator_name = au->drinst.name;
+driver_srcfile = au->drinst.srcfile;
+driver_srcline = au->drinst.srcline;
 
-sx->outblock.authenticating = TRUE;
-rc = (au->info->clientcode)(au, sx, ob->command_timeout,
-			    sx->buffer, sizeof(sx->buffer));
-sx->outblock.authenticating = FALSE;
+  {
+  auth_info * ai = au->drinst.info;
+  sx->outblock.authenticating = TRUE;
+  rc = (ai->clientcode)(au, sx, ob->command_timeout,
+			      sx->buffer, sizeof(sx->buffer));
+  sx->outblock.authenticating = FALSE;
+  }
 driver_srcfile = authenticator_name = NULL; driver_srcline = 0;
-DEBUG(D_transport) debug_printf("%s authenticator yielded %s\n", au->name, rc_names[rc]);
+DEBUG(D_transport) debug_printf("%s authenticator yielded %s\n",
+  au->drinst.name, rc_names[rc]);
 
 /* A temporary authentication failure must hold up delivery to
 this host. After a permanent authentication failure, we carry on
@@ -1534,7 +1539,7 @@ switch(rc)
   {
   case OK:
     f.smtp_authenticated = TRUE;   /* stops the outer loop */
-    client_authenticator = au->name;
+    client_authenticator = au->drinst.name;
     if (au->set_client_id)
       client_authenticated_id = expand_string(au->set_client_id);
     break;
@@ -1554,16 +1559,16 @@ switch(rc)
 #ifndef DISABLE_EVENT
      {
       uschar * save_name = sender_host_authenticated;
-      sender_host_authenticated = au->name;
-      if ((logmsg = event_raise(sx->conn_args.tblock->event_action, US"auth:fail",
-				sx->buffer, NULL)))
+      sender_host_authenticated = au->drinst.name;
+      if ((logmsg = event_raise(sx->conn_args.tblock->event_action,
+				US"auth:fail", sx->buffer, NULL)))
 	log_write(0, LOG_MAIN, "%s", logmsg);
       sender_host_authenticated = save_name;
      }
 #endif
     if (!logmsg)
       log_write(0, LOG_MAIN, "%s authenticator failed H=%s [%s] %s",
-	au->name, host->name, host->address, sx->buffer);
+	au->drinst.name, host->name, host->address, sx->buffer);
     break;
     }
 
@@ -1576,7 +1581,7 @@ switch(rc)
   case CANCELLED:
     if (*sx->buffer != 0)
       log_write(0, LOG_MAIN, "%s authenticator cancelled "
-	"authentication H=%s [%s] %s", au->name, host->name,
+	"authentication H=%s [%s] %s", au->drinst.name, host->name,
 	host->address, sx->buffer);
     break;
 
@@ -1670,26 +1675,27 @@ if (  sx->esmtp
 
       for (bitnum = 0, au = auths;
 	   !f.smtp_authenticated && au && bitnum < 16;
-	   bitnum++, au = au->next) if (authbits & BIT(bitnum))
-	{
-	if (  au->client_condition
-	   && !expand_check_condition(au->client_condition, au->name,
-                   US"client authenticator"))
+	   bitnum++, au = au->drinst.next)
+	if (authbits & BIT(bitnum))
 	  {
-	  DEBUG(D_transport) debug_printf("skipping %s authenticator: %s\n",
-	    au->name, "client_condition is false");
-	  continue;
+	  if (  au->client_condition
+	     && !expand_check_condition(au->client_condition, au->drinst.name,
+		     US"client authenticator"))
+	    {
+	    DEBUG(D_transport) debug_printf("skipping %s authenticator: %s\n",
+	      au->drinst.name, "client_condition is false");
+	    continue;
+	    }
+
+	  /* Found data for a listed mechanism. Call its client entry. Set
+	  a flag in the outblock so that data is overwritten after sending so
+	  that reflections don't show it. */
+
+	  fail_reason = US"authentication attempt(s) failed";
+
+	  if ((rc = try_authenticator(sx, au)) != OK)
+	    return rc;
 	  }
-
-	/* Found data for a listed mechanism. Call its client entry. Set
-	a flag in the outblock so that data is overwritten after sending so
-	that reflections don't show it. */
-
-	fail_reason = US"authentication attempt(s) failed";
-
-	if ((rc = try_authenticator(sx, au)) != OK)
-	  return rc;
-	}
       }
     else
 #endif
@@ -1700,17 +1706,18 @@ if (  sx->esmtp
     If one is found, attempt to authenticate by calling its client function.
     */
 
-    for (auth_instance * au = auths; !f.smtp_authenticated && au; au = au->next)
+    for (auth_instance * au = auths; !f.smtp_authenticated && au;
+	au = au->drinst.next)
       {
-      uschar *p = names;
+      uschar * p = names;
 
       if (  !au->client
          || (   au->client_condition
-	    &&  !expand_check_condition(au->client_condition, au->name,
+	    &&  !expand_check_condition(au->client_condition, au->drinst.name,
 		   US"client authenticator")))
 	{
 	DEBUG(D_transport) debug_printf("skipping %s authenticator: %s\n",
-	  au->name,
+	  au->drinst.name,
 	  au->client ? "client_condition is false"
 		    : "not configured as a client");
 	continue;

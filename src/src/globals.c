@@ -22,7 +22,7 @@ optionlist optionlist_auths[] = {
   { "client_set_id", opt_stringptr | opt_public,
                  OPT_OFF(auth_instance, set_client_id) },
   { "driver",        opt_stringptr | opt_public,
-                 OPT_OFF(auth_instance, driver_name) },
+                 OPT_OFF(auth_instance, drinst.driver_name) },
   { "public_name",   opt_stringptr | opt_public,
                  OPT_OFF(auth_instance, public_name) },
   { "server_advertise_condition", opt_stringptr | opt_public,
@@ -632,11 +632,13 @@ uschar *authenticated_sender   = NULL;
 auth_instance  *auths          = NULL;
 uschar *auth_advertise_hosts   = US"*";
 auth_instance auth_defaults    = {
-    .next =		NULL,
-    .name =		NULL,
-    .info =		NULL,
-    .options_block =	NULL,
-    .driver_name =	NULL,
+    .drinst = {
+      .next =		NULL,
+      .name =		NULL,
+      .info =		NULL,
+      .options_block =	NULL,
+      .driver_name =	NULL,
+    },
     .advertise_condition = NULL,
     .client_condition =	NULL,
     .public_name =	NULL,

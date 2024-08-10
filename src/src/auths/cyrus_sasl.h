@@ -29,7 +29,7 @@ extern auth_cyrus_sasl_options_block auth_cyrus_sasl_option_defaults;
 
 /* The entry points for the mechanism */
 
-extern void auth_cyrus_sasl_init(auth_instance *);
+extern void auth_cyrus_sasl_init(driver_instance *);
 extern int auth_cyrus_sasl_server(auth_instance *, uschar *);
 extern int auth_cyrus_sasl_client(auth_instance *, void *, int, uschar *, int);
 extern gstring * auth_cyrus_sasl_version_report(gstring *);

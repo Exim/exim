@@ -26,7 +26,7 @@ extern auth_external_options_block auth_external_option_defaults;
 
 /* The entry points for the mechanism */
 
-extern void auth_external_init(auth_instance *);
+extern void auth_external_init(driver_instance *);
 extern int auth_external_server(auth_instance *, uschar *);
 extern int auth_external_client(auth_instance *, void *, int, uschar *, int);
 

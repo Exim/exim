@@ -25,7 +25,7 @@ extern auth_cram_md5_options_block auth_cram_md5_option_defaults;
 
 /* The entry points for the mechanism */
 
-extern void auth_cram_md5_init(auth_instance *);
+extern void auth_cram_md5_init(driver_instance*);
 extern int auth_cram_md5_server(auth_instance *, uschar *);
 extern int auth_cram_md5_client(auth_instance *, void *, int, uschar *, int);
 

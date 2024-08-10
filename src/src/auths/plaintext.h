@@ -25,7 +25,7 @@ extern auth_plaintext_options_block auth_plaintext_option_defaults;
 
 /* The entry points for the mechanism */
 
-extern void auth_plaintext_init(auth_instance *);
+extern void auth_plaintext_init(driver_instance *);
 extern int auth_plaintext_server(auth_instance *, uschar *);
 extern int auth_plaintext_client(auth_instance *, void *, int, uschar *, int);
 

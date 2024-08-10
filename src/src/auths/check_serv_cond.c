@@ -66,7 +66,7 @@ uschar * cond;
 
 HDEBUG(D_auth)
   {
-  debug_printf("%s authenticator %s:\n", ablock->name, label);
+  debug_printf("%s authenticator %s:\n", ablock->drinst.name, label);
   for (int i = 0; i < AUTH_VARS; i++) if (auth_vars[i])
     debug_printf("  $auth%d = %s\n", i + 1, auth_vars[i]);
   for (int i = 1; i <= expand_nmax; i++)

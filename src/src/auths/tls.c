@@ -47,7 +47,7 @@ auth_tls_options_block auth_tls_option_defaults = {
 #ifdef MACRO_PREDEF
 
 /* Dummy values */
-void auth_tls_init(auth_instance *ablock) {}
+void auth_tls_init(driver_instance *ablock) {}
 int auth_tls_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_tls_client(auth_instance *ablock, void * sx,
   int timeout, uschar *buffer, int buffsize) {return 0;}
@@ -66,9 +66,10 @@ enable consistency checks to be done, or anything else that needs
 to be set up. */
 
 void
-auth_tls_init(auth_instance *ablock)
+auth_tls_init(driver_instance * a)
 {
-ablock->public_name = ablock->name;	/* needed for core code */
+auth_instance * ablock = (auth_instance *)a;
+ablock->public_name = a->name;	/* needed for core code */
 }
 
 
@@ -82,7 +83,7 @@ ablock->public_name = ablock->name;	/* needed for core code */
 int
 auth_tls_server(auth_instance *ablock, uschar *data)
 {
-auth_tls_options_block * ob = (auth_tls_options_block *)ablock->options_block;
+auth_tls_options_block * ob = ablock->drinst.options_block;
 
 if (ob->server_param1)
   auth_vars[expand_nmax++] = expand_string(ob->server_param1);

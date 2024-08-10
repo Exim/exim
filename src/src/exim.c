@@ -1377,9 +1377,9 @@ g = show_db_version(g);
 show_string(is_stdout, g);
 g = NULL;
 
-for (auth_info * authi = auths_available; *authi->driver_name != '\0'; ++authi)
-  if (authi->version_report)
-    g = (*authi->version_report)(g);
+for (auth_info * ai= auths_available; *ai->drinfo.driver_name != '\0'; ai++)
+  if (ai->version_report)
+    g = (*ai->version_report)(g);
 
   /* PCRE_PRERELEASE is either defined and empty or a bare sequence of
   characters; unless it's an ancient version of PCRE in which case it

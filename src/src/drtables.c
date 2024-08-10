@@ -67,12 +67,14 @@ auth_info auths_available[] = {
 
 #ifdef AUTH_CRAM_MD5
   {
-  .driver_name =	US"cram_md5",                              /* lookup name */
-  .options =		auth_cram_md5_options,
-  .options_count =	&auth_cram_md5_options_count,
-  .options_block =	&auth_cram_md5_option_defaults,
-  .options_len =	sizeof(auth_cram_md5_options_block),
-  .init =		auth_cram_md5_init,
+  .drinfo = {
+    .driver_name =	US"cram_md5",			/* lookup name */
+    .options =		auth_cram_md5_options,
+    .options_count =	&auth_cram_md5_options_count,
+    .options_block =	&auth_cram_md5_option_defaults,
+    .options_len =	sizeof(auth_cram_md5_options_block),
+    .init =		auth_cram_md5_init,
+    },
   .servercode =		auth_cram_md5_server,
   .clientcode =		auth_cram_md5_client,
   .version_report =	NULL,
@@ -82,12 +84,14 @@ auth_info auths_available[] = {
 
 #ifdef AUTH_CYRUS_SASL
   {
-  .driver_name =	US"cyrus_sasl",
-  .options =		auth_cyrus_sasl_options,
-  .options_count =	&auth_cyrus_sasl_options_count,
-  .options_block =	&auth_cyrus_sasl_option_defaults,
-  .options_len =	sizeof(auth_cyrus_sasl_options_block),
-  .init =		auth_cyrus_sasl_init,
+  .drinfo = {
+    .driver_name =	US"cyrus_sasl",
+    .options =		auth_cyrus_sasl_options,
+    .options_count =	&auth_cyrus_sasl_options_count,
+    .options_block =	&auth_cyrus_sasl_option_defaults,
+    .options_len =	sizeof(auth_cyrus_sasl_options_block),
+    .init =		auth_cyrus_sasl_init,
+    },
   .servercode =		auth_cyrus_sasl_server,
   .clientcode =		NULL,
   .version_report =	auth_cyrus_sasl_version_report,
@@ -97,12 +101,14 @@ auth_info auths_available[] = {
 
 #ifdef AUTH_DOVECOT
   {
-  .driver_name =	US"dovecot",
-  .options =		auth_dovecot_options,
-  .options_count =	&auth_dovecot_options_count,
-  .options_block =	&auth_dovecot_option_defaults,
-  .options_len =	sizeof(auth_dovecot_options_block),
-  .init =		auth_dovecot_init,
+  .drinfo = {
+    .driver_name =	US"dovecot",
+    .options =		auth_dovecot_options,
+    .options_count =	&auth_dovecot_options_count,
+    .options_block =	&auth_dovecot_option_defaults,
+    .options_len =	sizeof(auth_dovecot_options_block),
+    .init =		auth_dovecot_init,
+    },
   .servercode =		auth_dovecot_server,
   .clientcode =		NULL,
   .version_report =	NULL,
@@ -112,12 +118,14 @@ auth_info auths_available[] = {
 
 #ifdef AUTH_EXTERNAL
   {
-  .driver_name =	US"external",
-  .options =		auth_external_options,
-  .options_count =	&auth_external_options_count,
-  .options_block =	&auth_external_option_defaults,
-  .options_len =	sizeof(auth_external_options_block),
-  .init =		auth_external_init,
+  .drinfo = {
+    .driver_name =	US"external",
+    .options =		auth_external_options,
+    .options_count =	&auth_external_options_count,
+    .options_block =	&auth_external_option_defaults,
+    .options_len =	sizeof(auth_external_options_block),
+    .init =		auth_external_init,
+    },
   .servercode =		auth_external_server,
   .clientcode =		auth_external_client,
   .version_report =	NULL,
@@ -127,12 +135,14 @@ auth_info auths_available[] = {
 
 #ifdef AUTH_GSASL
   {
-  .driver_name =	US"gsasl",
-  .options =		auth_gsasl_options,
-  .options_count =	&auth_gsasl_options_count,
-  .options_block =	&auth_gsasl_option_defaults,
-  .options_len =	sizeof(auth_gsasl_options_block),
-  .init =		auth_gsasl_init,
+  .drinfo = {
+    .driver_name =	US"gsasl",
+    .options =		auth_gsasl_options,
+    .options_count =	&auth_gsasl_options_count,
+    .options_block =	&auth_gsasl_option_defaults,
+    .options_len =	sizeof(auth_gsasl_options_block),
+    .init =		auth_gsasl_init,
+    },
   .servercode =		auth_gsasl_server,
   .clientcode =		auth_gsasl_client,
   .version_report =	auth_gsasl_version_report,
@@ -142,12 +152,14 @@ auth_info auths_available[] = {
 
 #ifdef AUTH_HEIMDAL_GSSAPI
   {
-  .driver_name =	US"heimdal_gssapi",
-  .options =		auth_heimdal_gssapi_options,
-  .options_count =	&auth_heimdal_gssapi_options_count,
-  .options_block =	&auth_heimdal_gssapi_option_defaults,
-  .options_len =	sizeof(auth_heimdal_gssapi_options_block),
-  .init =		auth_heimdal_gssapi_init,
+  .drinfo = {
+    .driver_name =	US"heimdal_gssapi",
+    .options =		auth_heimdal_gssapi_options,
+    .options_count =	&auth_heimdal_gssapi_options_count,
+    .options_block =	&auth_heimdal_gssapi_option_defaults,
+    .options_len =	sizeof(auth_heimdal_gssapi_options_block),
+    .init =		auth_heimdal_gssapi_init,
+    },
   .servercode =		auth_heimdal_gssapi_server,
   .clientcode =		NULL,
   .version_report =	auth_heimdal_gssapi_version_report,
@@ -157,12 +169,14 @@ auth_info auths_available[] = {
 
 #ifdef AUTH_PLAINTEXT
   {
-  .driver_name =	US"plaintext",
-  .options =		auth_plaintext_options,
-  .options_count =	&auth_plaintext_options_count,
-  .options_block =	&auth_plaintext_option_defaults,
-  .options_len =	sizeof(auth_plaintext_options_block),
-  .init =		auth_plaintext_init,
+  .drinfo = {
+    .driver_name =	US"plaintext",
+    .options =		auth_plaintext_options,
+    .options_count =	&auth_plaintext_options_count,
+    .options_block =	&auth_plaintext_option_defaults,
+    .options_len =	sizeof(auth_plaintext_options_block),
+    .init =		auth_plaintext_init,
+    },
   .servercode =		auth_plaintext_server,
   .clientcode =		auth_plaintext_client,
   .version_report =	NULL,
@@ -172,12 +186,14 @@ auth_info auths_available[] = {
 
 #ifdef AUTH_SPA
   {
-  .driver_name =	US"spa",
-  .options =		auth_spa_options,
-  .options_count =	&auth_spa_options_count,
-  .options_block =	&auth_spa_option_defaults,
-  .options_len =	sizeof(auth_spa_options_block),
-  .init =		auth_spa_init,
+  .drinfo = {
+    .driver_name =	US"spa",
+    .options =		auth_spa_options,
+    .options_count =	&auth_spa_options_count,
+    .options_block =	&auth_spa_option_defaults,
+    .options_len =	sizeof(auth_spa_options_block),
+    .init =		auth_spa_init,
+    },
   .servercode =		auth_spa_server,
   .clientcode =		auth_spa_client,
   .version_report =	NULL,
@@ -187,12 +203,14 @@ auth_info auths_available[] = {
 
 #ifdef AUTH_TLS
   {
-  .driver_name =	US"tls",
-  .options =		auth_tls_options,
-  .options_count =	&auth_tls_options_count,
-  .options_block =	&auth_tls_option_defaults,
-  .options_len =	sizeof(auth_tls_options_block),
-  .init =		auth_tls_init,
+  .drinfo = {
+    .driver_name =	US"tls",
+    .options =		auth_tls_options,
+    .options_count =	&auth_tls_options_count,
+    .options_block =	&auth_tls_option_defaults,
+    .options_len =	sizeof(auth_tls_options_block),
+    .init =		auth_tls_init,
+    },
   .servercode =		auth_tls_server,
   .clientcode =		NULL,
   .version_report =	NULL,
@@ -200,7 +218,7 @@ auth_info auths_available[] = {
   },
 #endif
 
-  { .driver_name = US"" }		/* end marker */
+  { .drinfo = { .driver_name = US"" }}		/* end marker */
 };
 
 
@@ -372,7 +390,7 @@ router_info routers_available[] = {
   .ri_flags =		ri_notransport
   },
 #endif
-  { US"" }
+  { .drinfo = { .driver_name = US"" }}
 };
 
 
@@ -474,7 +492,7 @@ transport_info transports_available[] = {
   .local =		FALSE
   },
 #endif
-  { US"" }
+  { .drinfo = { .driver_name = US"" }}
 };
 
 #ifndef MACRO_PREDEF
@@ -483,8 +501,8 @@ gstring *
 auth_show_supported(gstring * g)
 {
 g = string_cat(g, US"Authenticators:");
-for (auth_info * ai = auths_available; ai->driver_name[0]; ai++)
-       	g = string_fmt_append(g, " %s", ai->driver_name);
+for (auth_info * ai = auths_available; ai->drinfo.driver_name[0]; ai++)
+       	g = string_fmt_append(g, " %s", ai->drinfo.driver_name);
 return string_cat(g, US"\n");
 }
 

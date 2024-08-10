@@ -166,7 +166,7 @@ if (!ss)
     return CANCELLED;
     }
   string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
-    "authenticator: %s", *inout, ablock->name, expand_string_message);
+    "authenticator: %s", *inout, ablock->drinst.name, expand_string_message);
   return ERROR;
   }
 
@@ -225,7 +225,7 @@ if (flags & AUTH_ITEM_LAST)
   if (smtp_write_command(sx, SCMD_FLUSH, "*\r\n") >= 0)
     (void)smtp_read_response(sx, US buffer, buffsize, '2', timeout);
   string_format(buffer, buffsize, "Too few items in client_send in %s "
-    "authenticator", ablock->name);
+    "authenticator", ablock->drinst.name);
   return ERROR;
   }
 

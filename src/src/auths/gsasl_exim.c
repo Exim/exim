@@ -121,7 +121,7 @@ auth_gsasl_options_block auth_gsasl_option_defaults = {
 # include "../macro_predef.h"
 
 /* Dummy values */
-void auth_gsasl_init(auth_instance *ablock) {}
+void auth_gsasl_init(driver_instance *ablock) {}
 int auth_gsasl_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_gsasl_client(auth_instance *ablock, void * sx,
   int timeout, uschar *buffer, int buffsize) {return 0;}
@@ -173,12 +173,12 @@ enable consistency checks to be done, or anything else that needs
 to be set up. */
 
 void
-auth_gsasl_init(auth_instance *ablock)
+auth_gsasl_init(driver_instance * a)
 {
+auth_instance * ablock = (auth_instance *)a;
+auth_gsasl_options_block * ob = a->options_block;
 static char * once = NULL;
 int rc;
-auth_gsasl_options_block *ob =
-  (auth_gsasl_options_block *)(ablock->options_block);
 
 /* As per existing Cyrus glue, use the authenticator's public name as
 the default for the mechanism name; we don't handle multiple mechanisms
@@ -195,7 +195,7 @@ if (!gsasl_ctx)
   if ((rc = gsasl_init(&gsasl_ctx)) != GSASL_OK)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
 	      "couldn't initialise GNU SASL library: %s (%s)",
-	      ablock->name, gsasl_strerror_name(rc), gsasl_strerror(rc));
+	      a->name, gsasl_strerror_name(rc), gsasl_strerror(rc));
 
   gsasl_callback_set(gsasl_ctx, main_callback);
   }
@@ -207,7 +207,7 @@ HDEBUG(D_auth) if (!once)
   if ((rc = gsasl_server_mechlist(gsasl_ctx, &once)) != GSASL_OK)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
 	      "failed to retrieve list of mechanisms: %s (%s)",
-	      ablock->name,  gsasl_strerror_name(rc), gsasl_strerror(rc));
+	      a->name,  gsasl_strerror_name(rc), gsasl_strerror(rc));
 
   debug_printf("GNU SASL supports: %s\n", once);
   }
@@ -215,7 +215,7 @@ HDEBUG(D_auth) if (!once)
 if (!gsasl_client_support_p(gsasl_ctx, CCS ob->server_mech))
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
 	    "GNU SASL does not support mechanism \"%s\"",
-	    ablock->name, ob->server_mech);
+	    a->name, ob->server_mech);
 
 if (ablock->server_condition)
   ablock->server = TRUE;
@@ -235,7 +235,7 @@ else if(  ob->server_mech
   ablock->server = FALSE;
   HDEBUG(D_auth) debug_printf("%s authenticator:  "
 	    "Need server_condition for %s mechanism\n",
-	    ablock->name, ob->server_mech);
+	    a->name, ob->server_mech);
   }
 
 /* This does *not* scale to new SASL mechanisms.  Need a better way to ask
@@ -247,7 +247,7 @@ if (  !ob->server_realm
   ablock->server = FALSE;
   HDEBUG(D_auth) debug_printf("%s authenticator:  "
 	    "Need server_realm for %s mechanism\n",
-	    ablock->name, ob->server_mech);
+	    a->name, ob->server_mech);
   }
 
 ablock->client = ob->client_username && ob->client_password;
@@ -309,7 +309,7 @@ else if (cb_state->currently == CURRENTLY_SERVER)
   rc = server_callback(ctx, sctx, prop, cb_state->ablock);
 else
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
-      "unhandled callback state, bug in Exim", cb_state->ablock->name);
+      "unhandled callback state, bug in Exim", cb_state->ablock->drinst.name);
   /* NOTREACHED */
 
 callback_loop = 0;
@@ -384,17 +384,17 @@ gsasl_property_set(sctx, propcode, CCS val);
 int
 auth_gsasl_server(auth_instance * ablock, uschar * initial_data)
 {
+auth_gsasl_options_block * ob = ablock->drinst.options_block;
+const uschar * auname = ablock->drinst.name;
 uschar * tmps;
 char * to_send, * received;
 Gsasl_session * sctx = NULL;
-auth_gsasl_options_block * ob =
-  (auth_gsasl_options_block *)(ablock->options_block);
 struct callback_exim_state cb_state;
 int rc, auth_result, exim_error, exim_error_override;
 
 HDEBUG(D_auth)
   debug_printf("GNU SASL: initialising session for %s, mechanism %s\n",
-      ablock->name, ob->server_mech);
+      auname, ob->server_mech);
 
 #ifndef DISABLE_TLS
 if (tls_in.channelbinding && ob->server_channelbinding)
@@ -473,7 +473,7 @@ if (tls_in.channelbinding)
   if (ob->server_channelbinding)
     {
     HDEBUG(D_auth) debug_printf("Auth %s: Enabling channel-binding\n",
-	ablock->name);
+	auname);
 # ifndef CHANNELBIND_HACK
     preload_prop(sctx,
 #  ifdef EXIM_GSASL_HAVE_EXPORTER
@@ -486,12 +486,12 @@ if (tls_in.channelbinding)
   else
     HDEBUG(D_auth)
       debug_printf("Auth %s: Not enabling channel-binding (data available)\n",
-	  ablock->name);
+	  auname);
   }
 else
   HDEBUG(D_auth)
     debug_printf("Auth %s: no channel-binding data available\n",
-	ablock->name);
+	auname);
 #endif
 
 checked_server_condition = FALSE;
@@ -524,7 +524,7 @@ do {
 	  gsasl_strerror_name(rc), gsasl_strerror(rc));
       log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
 	  "GNU SASL permanent failure: %s (%s)",
-	  ablock->name, ob->server_mech,
+	  auname, ob->server_mech,
 	  gsasl_strerror_name(rc), gsasl_strerror(rc));
       if (rc == GSASL_BASE64_ERROR)
 	exim_error_override = BAD64;
@@ -607,7 +607,7 @@ switch (exim_rc)
   case FAIL:	return GSASL_AUTHENTICATION_ERROR;
   default:	log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
 		  "Unhandled return from checking %s: %d",
-		  ablock->name, label, exim_rc);
+		  ablock->drinst.name, label, exim_rc);
   }
 
 /* NOTREACHED */
@@ -671,14 +671,13 @@ static int
 server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop,
   auth_instance *ablock)
 {
+auth_gsasl_options_block * ob = ablock->drinst.options_block;
 char * tmps;
 uschar * s;
 int cbrc = GSASL_NO_CALLBACK;
-auth_gsasl_options_block * ob =
-  (auth_gsasl_options_block *)(ablock->options_block);
 
 HDEBUG(D_auth) debug_printf("GNU SASL callback %s for %s/%s as server\n",
-	    gsasl_prop_code_to_name(prop), ablock->name, ablock->public_name);
+      gsasl_prop_code_to_name(prop), ablock->drinst.name, ablock->public_name);
 
 for (int i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;
 expand_nmax = 0;
@@ -846,8 +845,8 @@ auth_gsasl_client(
   uschar * buffer,			/* buffer for reading response */
   int buffsize)				/* size of buffer */
 {
-auth_gsasl_options_block * ob =
-  (auth_gsasl_options_block *)(ablock->options_block);
+auth_gsasl_options_block * ob = ablock->drinst.options_block;
+const uschar * auname = ablock->drinst.name;
 Gsasl_session * sctx = NULL;
 struct callback_exim_state cb_state;
 uschar * s;
@@ -856,7 +855,7 @@ int rc, yield = FAIL;
 
 HDEBUG(D_auth)
   debug_printf("GNU SASL: initialising session for %s, mechanism %s\n",
-      ablock->name, ob->server_mech);
+      auname, ob->server_mech);
 
 *buffer = 0;
 
@@ -910,7 +909,7 @@ if (tls_out.channelbinding)
   if (ob->client_channelbinding)
     {
     HDEBUG(D_auth) debug_printf("Auth %s: Enabling channel-binding\n",
-	ablock->name);
+	auname);
 # ifndef CHANNELBIND_HACK
     preload_prop(sctx,
 #  ifdef EXIM_GSASL_HAVE_EXPORTER
@@ -923,7 +922,7 @@ if (tls_out.channelbinding)
   else
     HDEBUG(D_auth)
       debug_printf("Auth %s: Not enabling channel-binding (data available)\n",
-	  ablock->name);
+	  auname);
 #endif
 
 /* Run the SASL conversation with the server */
@@ -999,7 +998,7 @@ static int
 client_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_instance *ablock)
 {
 HDEBUG(D_auth) debug_printf("GNU SASL callback %s for %s/%s as client\n",
-	    gsasl_prop_code_to_name(prop), ablock->name, ablock->public_name);
+      gsasl_prop_code_to_name(prop), ablock->drinst.name, ablock->public_name);
 switch (prop)
   {
 #ifdef EXIM_GSASL_HAVE_EXPORTER
@@ -1019,7 +1018,7 @@ switch (prop)
   case GSASL_SCRAM_SALTED_PASSWORD:
     {
     uschar * client_spassword =
-      ((auth_gsasl_options_block *) ablock->options_block)->client_spassword;
+      ((auth_gsasl_options_block *) ablock->drinst.options_block)->client_spassword;
     uschar dummy[4];
     HDEBUG(D_auth) if (!client_spassword)
       debug_printf(" client_spassword option unset\n");
