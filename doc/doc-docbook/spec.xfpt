@@ -16632,7 +16632,7 @@ has been built with LDAP support.
 .cindex "ESMTP extensions" LIMITS
 This option can be used to suppress the advertisement of the SMTP
 LIMITS extension (RFC 9422) to specific hosts.
-If permitted, Exim as a servier will advertise in the EHLO response
+If permitted, Exim as a server will advertise in the EHLO response
 the limit for RCPT commands set by the &%recipients_max%& option (if it is set)
 and the limit for MAIL commands set by the &%smtp_accept_max_per_connection%&
 option.
@@ -17196,7 +17196,7 @@ See also the &%hosts_pipe_connect%& smtp transport option.
 
 The SMTP service extension keyword advertised is &"PIPECONNECT"&;
 it permits the client to pipeline
-TCP connection and hello command (inclear phase),
+TCP connection and hello command (cleatext phase),
 or TLS-establishment and hello command (encrypted phase),
 on later connections to the same host.
 
