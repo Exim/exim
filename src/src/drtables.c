@@ -563,7 +563,8 @@ static struct lookupmodulestr *lookupmodules = NULL;
 static void
 addlookupmodule(void *dl, struct lookup_module_info *info)
 {
-struct lookupmodulestr *p = store_get(sizeof(struct lookupmodulestr), GET_UNTAINTED);
+struct lookupmodulestr * p =
+  store_get(sizeof(struct lookupmodulestr), GET_UNTAINTED);
 
 p->dl = dl;
 p->info = info;

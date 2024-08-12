@@ -3078,7 +3078,7 @@ read_named_list(tree_node **anchorp, int *numberp, int max, uschar *s,
 BOOL forcecache = FALSE;
 uschar *ss;
 tree_node *t;
-namedlist_block * nb = store_get_perm(sizeof(namedlist_block), FALSE);
+namedlist_block * nb = store_get_perm(sizeof(namedlist_block), GET_UNTAINTED);
 
 if (Ustrncmp(s, "_cache", 6) == 0)
   {
@@ -3724,7 +3724,7 @@ for (driver_info * dd = drivers_available; dd->driver_name[0] != 0;
     {
     int len = dd->options_len;
     d->info = dd;
-    d->options_block = store_get_perm(len, FALSE);
+    d->options_block = store_get_perm(len, GET_UNTAINTED);
     memcpy(d->options_block, dd->options_block, len);
     for (int i = 0; i < *(dd->options_count); i++)
       dd->options[i].type &= ~opt_set;
@@ -3841,7 +3841,7 @@ while ((buffer = get_config_line()))
     /* Set up a new driver instance data block on the chain, with
     its default values installed. */
 
-    d = store_get_perm(instance_size, FALSE);
+    d = store_get_perm(instance_size, GET_UNTAINTED);
     memcpy(d, instance_default, instance_size);
     *p = d;
     p = (driver_instance **)&d->next;

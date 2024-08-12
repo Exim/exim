@@ -323,7 +323,7 @@ while ((len = Ustrlen(big_buffer)) == big_buffer_size-1
 
   if (big_buffer_size >= BIG_BUFFER_SIZE * 4) return NULL;
   newsize = big_buffer_size * 2;
-  newbuffer = store_get_perm(newsize, FALSE);
+  newbuffer = store_get_perm(newsize, GET_UNTAINTED);
   memcpy(newbuffer, big_buffer, len);
 
   big_buffer = newbuffer;
