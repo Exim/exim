@@ -4138,7 +4138,7 @@ system("sudo cp eximdir/exim eximdir/exim_exim;" .
 
 ($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
 
-while (my $file = glob("$parm_exim_dir/lookups/*.so")) {
+while (my $file = glob("$parm_exim_dir/dynmodules/*.so")) {
   my $base = basename($file);
   cp("$file", "eximdir/");
   system("sudo chmod 755 eximdir/$base");

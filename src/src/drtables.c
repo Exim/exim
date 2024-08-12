@@ -770,12 +770,13 @@ addlookupmodule(NULL, &readsock_lookup_module_info);
 if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
   {
   DEBUG(D_lookup) debug_printf("Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
-  log_write(0, LOG_MAIN, "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
+  log_write(0, LOG_MAIN|LOG_PANIC,
+	  "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
   }
 else
   {
   const pcre2_code * regex_islookupmod = regex_must_compile(
-    US"\\." DYNLIB_FN_EXT "$", MCS_NOFLAGS, TRUE);
+    US"_lookup\\." DYNLIB_FN_EXT "$", MCS_NOFLAGS, TRUE);
 
   DEBUG(D_lookup) debug_printf("Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
   while ((ent = readdir(dd)))

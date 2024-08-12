@@ -2,16 +2,17 @@
 # This is called from the main make file, after cd'ing
 # to the lookups subdirectory.
 #
-# Copyright (c) The Exim Maintainers 2021
+# Copyright (c) The Exim Maintainers 2021 - 2024
 
 # nb: at build time, the version of this file used will have had some
 #     extra variable definitions and prepended to it and module build rules
-#     interpolated below.
+#     interpolated below. This is done by scripts/lookups-Makefile.
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
 
 all:             lookups.a lf_quote.o lf_check_file.o lf_sqlperform.o $(MODS)
+#		 for f in *.so; do mv $$f `basename $$f .so`_lookup.so; done
 
 lookups.a:       $(OBJ)
 		 @$(RM_COMMAND) -f lookups.a
