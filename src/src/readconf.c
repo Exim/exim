@@ -435,9 +435,13 @@ uschar buf[EXIM_DRIVERNAME_MAX];
 options_from_list(optionlist_auths, optionlist_auths_size,
   US"AUTHENTICATORS", NULL);
 
+#ifdef old
 for (struct auth_info * ai = auths_available; ai->drinfo.driver_name[0]; ai++)
+#endif
+for (driver_info * di = (driver_info *)auths_available_newlist; di; di = di->next)
   {
-  driver_info * di = &ai->drinfo;
+  auth_info * ai = (auth_info *)di;
+
   spf(buf, sizeof(buf), US"_DRIVER_AUTHENTICATOR_%T", di->driver_name);
   builtin_macro_create(buf);
   options_from_list(di->options, (unsigned)*di->options_count,
@@ -3718,9 +3722,42 @@ static driver_info *
 init_driver(driver_instance * d, driver_info * drivers_available,
   int size_of_info, const uschar * class)
 {
-/*XXX this is walking the old-array */
-for (driver_info * dd = drivers_available; *dd->driver_name;
+/*XXX if dynamic, the _info entry will be here but code may or may not
+be loaded.  How to tell?  What's the entry point?  init call?
+Currently that is IN the _info entry.
+
+For lookups it does it by pulling the info entry out of the dlopen()d
+file (for dynamic) or direct from the lookup .o file (for static).
+It builds a linked-list with those two classes,
+then an array sorted by (? name) and discards the list.
+The array is the _info list.
+
+We'd rather not have to do two passes over the config file(s) section.
+With the number of drivers I see no point in sorting,
+so we could stick with a one-pass build of an _info linked-list.
+This does mean converting any code using the current array.
+
+DONE:
+Rename the array to old.  For now, walk it once and build a linked-list.
+Find and convert all the uses,
+
+Move all the element defns to driver code files.
+Change the init/build to scan them.
+
+Move the scan to the place-of-use reading the config,
+only load if not already on linked-list.
+
+Add the build-dynamic wrapper,
+and scan from dlopen if marked dynamic.
+*/
+
+#ifdef old
+/*XXX walk the old array */
+for (driver_info * dd = drivers_available; dd->driver_name[0] != 0;
      dd = (driver_info *)((US dd) + size_of_info))
+#endif
+
+for (driver_info * dd = drivers_available; dd; dd = dd->next)
   if (Ustrcmp(d->driver_name, dd->driver_name) == 0)
     {
     int len = dd->options_len;
@@ -3784,7 +3821,7 @@ Returns:                     nothing
 void
 readconf_driver_init(
   driver_instance ** anchor,
-  driver_info * drivers_available,
+  driver_info * drivers_available,	/*XXX now list not array */
   int size_of_info,
   void * instance_default,
   int  instance_size,
@@ -4245,8 +4282,21 @@ auths_init(void)
 int nauths = 0;
 #endif
 
+/*XXX temp loop just copying the old array to build the new list.
+Will replace with haul from either static build file or dyn module
+done by readconf_driver_init() */
+for (auth_info * tblent = auths_available_oldarray;
+    *tblent->drinfo.driver_name; tblent++)
+  {
+  driver_info * listent = store_get(sizeof(auth_info), tblent);
+  memcpy(listent, tblent, sizeof(auth_info));
+  listent->next = (driver_info *)auths_available_newlist;
+  auths_available_newlist = (auth_info *)listent;
+  }
+
+
 readconf_driver_init((driver_instance **)&auths,      /* chain anchor */
-  (driver_info *)auths_available,    /* available drivers */
+  (driver_info *)auths_available_newlist,    /* available drivers */
   sizeof(auth_info),                 /* size of info block */
   &auth_defaults,                    /* default values for generic options */
   sizeof(auth_instance),             /* size of instance block */
@@ -4430,6 +4480,7 @@ while(next_section[0] != 0)
   int mid = last/2;
   int n = Ustrlen(next_section);
 
+  READCONF_DEBUG fprintf(stderr, "%s: %s\n", __FUNCTION__, next_section);
   if (tolower(next_section[n-1]) != 's') Ustrcpy(next_section+n, US"s");
 
   for (;;)

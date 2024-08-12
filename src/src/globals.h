@@ -374,7 +374,8 @@ extern uschar *authenticated_sender;   /* From AUTH on MAIL */
 extern BOOL    authentication_failed;  /* TRUE if AUTH was tried and failed */
 extern uschar *authenticator_name;     /* for debug and error messages */
 extern uschar *auth_advertise_hosts;   /* Only advertise to these */
-extern auth_info auths_available[];    /* Vector of available auth mechanisms */
+extern auth_info auths_available_oldarray[];    /* Vector of available auth mechanisms */
+extern auth_info * auths_available_newlist;
 extern auth_instance *auths;           /* Chain of instantiated auths */
 extern auth_instance auth_defaults;    /* Default values */
 extern uschar *auth_defer_msg;         /* Error message for log */
@@ -946,7 +947,8 @@ extern int     rfc1413_query_timeout;  /* Timeout on RFC 1413 calls */
 /* extern BOOL    rfc821_domains;  */       /* If set, syntax is 821, not 822 => being abolished */
 extern uid_t   root_gid;               /* The gid for root */
 extern uid_t   root_uid;               /* The uid for root */
-extern router_info routers_available[];/* Vector of available routers */
+extern router_info routers_available_oldarray[];/* Vector of available routers */
+extern router_info *routers_available_newlist;
 extern router_instance *routers;       /* Chain of instantiated routers */
 extern router_instance router_defaults;/* Default values */
 extern const uschar *router_name;      /* Name of router last started */
@@ -1110,7 +1112,8 @@ extern int     transport_newlines;     /* Accurate count of number of newline ch
 extern const uschar **transport_filter_argv; /* For on-the-fly filtering */
 extern int     transport_filter_timeout; /* Timeout for same */
 
-extern transport_info transports_available[]; /* Vector of available transports */
+extern transport_info transports_available_oldarray[]; /* Vector of available transports */
+extern transport_info * transports_available_newlist;
 extern transport_instance *transports; /* Chain of instantiated transports */
 extern transport_instance transport_defaults; /* Default values */
 

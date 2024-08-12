@@ -159,12 +159,15 @@ uschar buf[64];
 
 options_from_list(optionlist_routers, nelem(optionlist_routers), US"ROUTERS", NULL);
 
+#ifdef old
 for (router_info * ri = routers_available; ri->drinfo.driver_name[0]; ri++)
+#endif
+for (driver_info * di = (driver_info *)routers_available_newlist; di; di = di->next)
   {
-  spf(buf, sizeof(buf), US"_DRIVER_ROUTER_%T", ri->drinfo.driver_name);
+  spf(buf, sizeof(buf), US"_DRIVER_ROUTER_%T", di->driver_name);
   builtin_macro_create(buf);
-  options_from_list(ri->drinfo.options, (unsigned)*ri->drinfo.options_count,
-		    US"ROUTER", ri->drinfo.driver_name);
+  options_from_list(di->options, (unsigned)*di->options_count,
+		    US"ROUTER", di->driver_name);
   }
 }
 
@@ -227,8 +230,21 @@ function. */
 void
 route_init(void)
 {
+/*XXX temp loop just copying the old array to build the new list.
+Will replace with haul from either static build file or dyn module
+done by readconf_driver_init() */
+
+for (router_info * tblent = routers_available_oldarray;
+    *tblent->drinfo.driver_name; tblent++)
+  {
+  driver_info * listent = store_get(sizeof(router_info), tblent);
+  memcpy(listent, tblent, sizeof(router_info));
+  listent->next = (driver_info *)routers_available_newlist;
+  routers_available_newlist = (router_info *)listent;
+  }
+
 readconf_driver_init((driver_instance **)&routers,     /* chain anchor */
-  (driver_info *)routers_available,   /* available drivers */
+  (driver_info *)routers_available_newlist,   /* available drivers */
   sizeof(router_info),                /* size of info blocks */
   &router_defaults,                   /* default values for generic options */
   sizeof(router_instance),            /* size of instance block */

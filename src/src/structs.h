@@ -141,6 +141,7 @@ typedef struct driver_instance {
 } driver_instance;
 
 typedef struct driver_info {
+  struct driver_info * next;
   uschar *driver_name;            /* Name of driver */
 
   optionlist *options;            /* Table of private options names */
@@ -149,6 +150,7 @@ typedef struct driver_info {
   int     options_len;            /* Length of same in bytes */
   void  (*init)(                  /* Initialization entry point */
 	  struct driver_instance *);
+  BOOL	  dynamic;		  /* Built as dynamic-load module */
 } driver_info;
 
 

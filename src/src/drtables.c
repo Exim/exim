@@ -61,7 +61,8 @@ set to NULL for those that are not compiled into the binary. */
 #include "auths/tls.h"
 #endif
 
-auth_info auths_available[] = {
+auth_info * auths_available_newlist = NULL;
+auth_info auths_available_oldarray[] = {
 
 /* Checking by an expansion condition on plain text */
 
@@ -282,9 +283,11 @@ exim binary. */
 #endif
 
 
+router_info * routers_available_newlist = NULL;
+
 /* Now set up the structures, terminated by an entry with a null name. */
 
-router_info routers_available[] = {
+router_info routers_available_oldarray[] = {
 #ifdef ROUTER_ACCEPT
   {
   .drinfo = {
@@ -369,6 +372,9 @@ router_info routers_available[] = {
     .options_block =	&queryprogram_router_option_defaults,
     .options_len =	sizeof(queryprogram_router_options_block),
     .init =		queryprogram_router_init,
+# if ROUTER_QUIRYPROGRAM==2
+    .dynamic =		TRUE,
+# endif
     },
   .code =		queryprogram_router_entry,
   .tidyup =		NULL,     /* no tidyup entry */
@@ -395,7 +401,8 @@ router_info routers_available[] = {
 
 
 
-transport_info transports_available[] = {
+transport_info * transports_available_newlist = NULL;
+transport_info transports_available_oldarray[] = {
 #ifdef TRANSPORT_APPENDFILE
   {
   .drinfo = {
@@ -501,7 +508,9 @@ gstring *
 auth_show_supported(gstring * g)
 {
 g = string_cat(g, US"Authenticators:");
-for (auth_info * ai = auths_available; ai->drinfo.driver_name[0]; ai++)
+/*XXX these run off the static list as we want them before the conf is read */
+/*XXX Could possibly check for dyn flag + file presence */
+for (auth_info * ai = auths_available_oldarray; ai->drinfo.driver_name[0]; ai++)
        	g = string_fmt_append(g, " %s", ai->drinfo.driver_name);
 return string_cat(g, US"\n");
 }
@@ -510,7 +519,8 @@ gstring *
 route_show_supported(gstring * g)
 {
 g = string_cat(g, US"Routers:");
-for (router_info * rr = routers_available; rr->drinfo.driver_name[0]; rr++)
+/*XXX these run off the static list as we want them before the conf is read */
+for (router_info * rr = routers_available_oldarray; rr->drinfo.driver_name[0]; rr++)
        	g = string_fmt_append(g, " %s", rr->drinfo.driver_name);
 return string_cat(g, US"\n");
 }
