@@ -150,8 +150,13 @@ typedef struct driver_info {
   int     options_len;            /* Length of same in bytes */
   void  (*init)(                  /* Initialization entry point */
 	  struct driver_instance *);
-  BOOL	  dynamic;		  /* Built as dynamic-load module */
+  uint	  dyn_magic;		  /* Magic num if dynamic, else zero */
 } driver_info;
+
+/* Values for dyn_magic.  Encode types and api version. */
+#define ROUTER_MAGIC	0x52544d31	/* RTM1 */
+#define TRANSPORT_MAGIC	0x54504d31	/* TPM1 */
+#define AUTH_MAGIC	0x65554d31	/* AUM1 */
 
 
 /* Structure for holding information about the configured transports. Some

@@ -220,6 +220,17 @@ if (after && !afterthis)
 *             Initialize router list             *
 *************************************************/
 
+/*XXX will likely want to rename to generic */
+
+static void
+add_router(driver_info ** drlist_p, const driver_info * newent, size_t size)
+{
+driver_info * listent = store_get(size, newent);
+memcpy(listent, newent, size);
+listent->next = *drlist_p;
+*drlist_p= listent;
+}
+
 /* Read the routers section of the configuration file, and set up a chain of
 router instances according to its contents. Each router has generic options and
 may also have its own private options. This function is only ever called when
@@ -230,10 +241,9 @@ function. */
 void
 route_init(void)
 {
-/*XXX temp loop just copying the old array to build the new list.
-Will replace with haul from either static build file or dyn module
-done by readconf_driver_init() */
 
+#ifdef old
+/*XXX temp loop just copying the old array to build the new list. */
 for (router_info * tblent = routers_available_oldarray;
     *tblent->drinfo.driver_name; tblent++)
   {
@@ -242,7 +252,58 @@ for (router_info * tblent = routers_available_oldarray;
   listent->next = (driver_info *)routers_available_newlist;
   routers_available_newlist = (router_info *)listent;
   }
+#else
 
+/*XXX
+Will replace with ifdeffed explicit calls in drtab.c just building list
+(2 lists?) of names for -bV (DONE),
+plut ifdeffed repeated code here adding static-build modules to list (DONE)
+plus code in readconf.c for dlopen()s just before per-driver init api call.
+*/
+
+int old_pool = store_pool;
+store_pool = POOL_PERM;
+  {
+  driver_info ** anchor = (driver_info **) &routers_available_newlist;
+  extern router_info accept_router_info;
+  extern router_info dnslookup_router_info;
+  extern router_info ipliteral_router_info;
+  extern router_info iplookup_router_info;
+  extern router_info manualroute_router_info;
+  extern router_info redirect_router_info;
+  extern router_info queryprogram_router_info;
+
+  /*XXX this addsonly the statics.  We can't get the dynamics as they
+  are not linked.  Until dlopen(), when we can use dlsym().  So the discovery
+  is by the file exitence, via the filename pattern. */
+  /*XXX TODO: move the info structs to individual driver files */
+#if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT!=2
+  add_router(anchor, &accept_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP!=2
+  add_router(anchor, &dnslookup_router_info.drinfo, sizeof(router_info));
+#endif
+# if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL!=2
+  add_router(anchor, &ipliteral_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP!=2
+  add_router(anchor, &iplookup_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE!=2
+  add_router(anchor, &manualroute_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT!=2
+  add_router(anchor, &redirect_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM!=2
+  add_router(anchor, &queryprogram_router_info.drinfo, sizeof(router_info));
+#endif
+  }
+store_pool = old_pool;
+
+#endif /*!old*/
+
+/*XXX this does the config file "routers" section reading */
 readconf_driver_init((driver_instance **)&routers,     /* chain anchor */
   (driver_info *)routers_available_newlist,   /* available drivers */
   sizeof(router_info),                /* size of info blocks */

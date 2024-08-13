@@ -495,6 +495,31 @@ addr->transport = transport;
 return OK;
 }
 
+
+
+
+# ifdef DYNLOOKUP
+#  define manualroute_router_info _router_info
+# endif
+
+router_info manualroute_router_info =
+{
+.drinfo = {
+  .driver_name =	US"manualroute",
+  .options =		manualroute_router_options,
+  .options_count =	&manualroute_router_options_count,
+  .options_block =	&manualroute_router_option_defaults,
+  .options_len =	sizeof(manualroute_router_options_block),
+  .init =		manualroute_router_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		ROUTER_MAGIC,           /*XXX*/
+# endif
+  },
+.code =			manualroute_router_entry,
+.tidyup =		NULL,     /* no tidyup entry */
+.ri_flags =		0
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*ROUTER_MANUALROUTE*/
 /* End of routers/manualroute.c */

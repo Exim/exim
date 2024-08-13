@@ -534,6 +534,30 @@ addr->prop = addr_prop;
 return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ? OK : DEFER;
 }
 
+
+
+# ifdef DYNLOOKUP
+#  define queryprogram_router_info _router_info
+# endif
+
+router_info queryprogram_router_info =
+{
+.drinfo = {
+  .driver_name =      US"queryprogram",
+  .options =          queryprogram_router_options,
+  .options_count =    &queryprogram_router_options_count,
+  .options_block =    &queryprogram_router_option_defaults,
+  .options_len =      sizeof(queryprogram_router_options_block),
+  .init =             queryprogram_router_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =	      ROUTER_MAGIC,           /*XXX*/
+# endif
+  },
+.code =               queryprogram_router_entry,
+.tidyup =             NULL,     /* no tidyup entry */
+.ri_flags =           0
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*ROUTER_QUERYPROGRAM*/
 /* End of routers/queryprogram.c */

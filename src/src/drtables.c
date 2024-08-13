@@ -230,10 +230,7 @@ exim binary. */
 
 #include "routers/rf_functions.h"
 
-#ifdef ROUTER_ACCEPT
-# include "routers/accept.h"
-#endif
-
+/*XXX delete */
 #ifdef ROUTER_DNSLOOKUP
 # include "routers/dnslookup.h"
 #endif
@@ -288,96 +285,6 @@ router_info * routers_available_newlist = NULL;
 /* Now set up the structures, terminated by an entry with a null name. */
 
 router_info routers_available_oldarray[] = {
-#ifdef ROUTER_ACCEPT
-  {
-  .drinfo = {
-    .driver_name =	US"accept",
-    .options =		accept_router_options,
-    .options_count =	&accept_router_options_count,
-    .options_block =	&accept_router_option_defaults,
-    .options_len =	sizeof(accept_router_options_block),
-    .init =		accept_router_init,
-    },
-  .code =		accept_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		ri_yestransport
-  },
-#endif
-#ifdef ROUTER_DNSLOOKUP
-  {
-  .drinfo = {
-    .driver_name =	US"dnslookup",
-    .options =		dnslookup_router_options,
-    .options_count =	&dnslookup_router_options_count,
-    .options_block =	&dnslookup_router_option_defaults,
-    .options_len =	sizeof(dnslookup_router_options_block),
-    .init =		dnslookup_router_init,
-    },
-  .code =		dnslookup_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		ri_yestransport
-  },
-#endif
-#ifdef ROUTER_IPLITERAL
-  {
-  .drinfo = {
-    .driver_name =	US"ipliteral",
-    .options =		ipliteral_router_options,
-    .options_count =	&ipliteral_router_options_count,
-    .options_block =	&ipliteral_router_option_defaults,
-    .options_len =	sizeof(ipliteral_router_options_block),
-    .init =		ipliteral_router_init,
-    },
-  .code =		ipliteral_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		ri_yestransport
-  },
-#endif
-#ifdef ROUTER_IPLOOKUP
-  {
-  .drinfo = {
-    .driver_name =	US"iplookup",
-    .options =		iplookup_router_options,
-    .options_count =	&iplookup_router_options_count,
-    .options_block =	&iplookup_router_option_defaults,
-    .options_len =	sizeof(iplookup_router_options_block),
-    .init =		iplookup_router_init,
-    },
-  .code =		iplookup_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		ri_notransport
-  },
-#endif
-#ifdef ROUTER_MANUALROUTE
-  {
-  .drinfo = {
-    .driver_name =	US"manualroute",
-    .options =		manualroute_router_options,
-    .options_count =	&manualroute_router_options_count,
-    .options_block =	&manualroute_router_option_defaults,
-    .options_len =	sizeof(manualroute_router_options_block),
-    .init =		manualroute_router_init,
-    },
-  .code =		manualroute_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		0
-  },
-#endif
-#ifdef ROUTER_REDIRECT
-  {
-  .drinfo = {
-    .driver_name =	US"redirect",
-    .options =		redirect_router_options,
-    .options_count =	&redirect_router_options_count,
-    .options_block =	&redirect_router_option_defaults,
-    .options_len =	sizeof(redirect_router_options_block),
-    .init =		redirect_router_init,
-    },
-  .code =		redirect_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		ri_notransport
-  },
-#endif
   { .drinfo = { .driver_name = US"" }}
 };
 

@@ -140,6 +140,30 @@ addr->prop.remove_headers = remove_headers;
 return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ? OK : DEFER;
 }
 
+
+
+# ifdef DYNLOOKUP
+#  define accept_router_info _router_info
+# endif
+
+router_info accept_router_info =
+{
+.drinfo = {
+  .driver_name =	US"accept",
+  .options =		accept_router_options,
+  .options_count =	&accept_router_options_count,
+  .options_block =	&accept_router_option_defaults,
+  .options_len =	sizeof(accept_router_options_block),
+  .init =		accept_router_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		ROUTER_MAGIC,           /*XXX*/
+# endif
+  },
+.code =		accept_router_entry,
+.tidyup =		NULL,     /* no tidyup entry */
+.ri_flags =		ri_yestransport
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*ROUTER_ACCEPT*/
 
