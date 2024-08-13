@@ -1298,10 +1298,14 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # drop lookups
     next if /^$time_pid?(?: Lookups\ \((?:built-in|dynamic)\):
-					|Loaded\ "[^.]+\.so"\ \(\d+\ lookup\ types\)
+					| Loaded\ "[^.]+\.so"\ \(\d+\ lookup\ types\)
 					| Loading\ lookup\ modules\ from
 					| Loaded\ \d+\ lookup\ modules
 					| Total\ \d+\ lookups)/x;
+
+    # drop loads of dyn-module drivers
+    next if /^$time_pid?(?:Loading\ \w+\ (?:router|transport|auth)\ driver\ from
+			  | Loaded\ \w+\ (?:router|transport|auth)$)/x;
 
     # drop compiler information
     next if /^$time_pid?Compiler:/;

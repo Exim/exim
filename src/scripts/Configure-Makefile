@@ -4,7 +4,7 @@
 # just got too horrendous to get it right in "make", because of the optionally
 # existing configuration files.
 #
-# Copyright (c) The Exim Maintainers 1995 - 2021
+# Copyright (c) The Exim Maintainers 1995 - 2024
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 
@@ -290,6 +290,13 @@ rm -f $mftt
 
 cp ../src/lookups/Makefile $look_mf_pre
 ../scripts/lookups-Makefile
+
+class="routers"
+cp ../src/$class/Makefile $class/Makefile.predynamic
+../scripts/$class-Makefile
+mv routers/Makefile.postdynamic $class/Makefile
+rm $class/Makefile.predynamic
+class=
 
 # See if there is a definition of EXIM_PERL in what we have built so far.
 # If so, run Perl to find the default values for PERL_CC, PERL_CCOPTS,

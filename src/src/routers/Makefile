@@ -2,14 +2,24 @@
 # calling it routers.a. This is called from the main make file, after cd'ing
 # to the directors subdirectory. The library also contains functions that
 # are called only from within the individual routers.
+#
+# Copyright (c) The Exim Maintainers 2021 - 2024
 
-OBJ = accept.o dnslookup.o ipliteral.o iplookup.o manualroute.o \
-      queryprogram.o redirect.o \
-      rf_change_domain.o rf_expand_data.o rf_get_errors_address.o \
+# nb: at build time, the version of this file used will have had some
+#     extra variable definitions and prepended to it and module build rules
+#     interpolated below. This is done by scripts/routers-Makefile.
+
+# MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
+
+RF_OBJ = rf_change_domain.o rf_expand_data.o rf_get_errors_address.o \
       rf_get_munge_headers.o rf_get_transport.o rf_get_ugid.o \
       rf_lookup_hostlist.o \
       rf_queue_add.o rf_self_action.o \
       rf_set_ugid.o
+
+OBJ += $(RF_OBJ)
+
+all:             routers.a $(MODS)
 
 routers.a:       $(OBJ)
 		 @$(RM_COMMAND) -f routers.a
@@ -17,27 +27,34 @@ routers.a:       $(OBJ)
 		 @$(AR) routers.a $(OBJ)
 		 $(RANLIB) $@
 
-.SUFFIXES:       .o .c
+.SUFFIXES:       .o .c .so
 .c.o:;           @echo "$(CC) $*.c"
 		 $(FE)$(CC) -c $(CFLAGS) $(INCLUDE) $*.c
 
-rf_change_domain.o:      $(HDRS) rf_change_domain.c      rf_functions.h
-rf_expand_data.o:        $(HDRS) rf_expand_data.c        rf_functions.h
-rf_get_errors_address.o: $(HDRS) rf_get_errors_address.c rf_functions.h
-rf_get_munge_headers.o:  $(HDRS) rf_get_munge_headers.c  rf_functions.h
-rf_get_transport.o:      $(HDRS) rf_get_transport.c      rf_functions.h
-rf_get_ugid.o:           $(HDRS) rf_get_ugid.c           rf_functions.h
-rf_lookup_hostlist.o:    $(HDRS) rf_lookup_hostlist.c    rf_functions.h
-rf_queue_add.o:          $(HDRS) rf_queue_add.c          rf_functions.h
-rf_self_action.o:        $(HDRS) rf_self_action.c        rf_functions.h
-rf_set_ugid.o:           $(HDRS) rf_set_ugid.c           rf_functions.h
+.c.so:;          @echo "$(CC) -shared $*.c"
+		 $(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS) $*.c -o $@
 
-accept.o:        $(HDRS) accept.c       rf_functions.h accept.h
-dnslookup.o:     $(HDRS) dnslookup.c    rf_functions.h dnslookup.h
-ipliteral.o:     $(HDRS) ipliteral.c    rf_functions.h ipliteral.h
-iplookup.o:      $(HDRS) iplookup.c     rf_functions.h iplookup.h
-manualroute.o:   $(HDRS) manualroute.c  rf_functions.h manualroute.h
-queryprogram.o:  $(HDRS) queryprogram.c rf_functions.h queryprogram.h
-redirect.o:      $(HDRS) redirect.c     rf_functions.h redirect.h
+
+
+$(OBJ) $(MOD): $(HDRS) rf_functions.h
+
+rf_change_domain.o:      rf_change_domain.c
+rf_expand_data.o:        rf_expand_data.c
+rf_get_errors_address.o: rf_get_errors_address.c
+rf_get_munge_headers.o:  rf_get_munge_headers.c
+rf_get_transport.o:      rf_get_transport.c
+rf_get_ugid.o:           rf_get_ugid.c
+rf_lookup_hostlist.o:    rf_lookup_hostlist.c
+rf_queue_add.o:          rf_queue_add.c
+rf_self_action.o:        rf_self_action.c
+rf_set_ugid.o:           rf_set_ugid.c
+
+accept.o accept.so:             accept.c       accept.h
+dnslookup.o dnslookup.so:       dnslookup.c    dnslookup.h
+ipliteral.o ipliteral.so:       ipliteral.c    ipliteral.h
+iplookup.o iplookup.so:         iplookup.c     iplookup.h
+manualroute.o manualroute.so:   manualroute.c  manualroute.h
+queryprogram.o queryprogram.so: queryprogram.c queryprogram.h
+redirect.o redirect.so:         redirect.c     redirect.h
 
 # End
