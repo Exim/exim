@@ -227,14 +227,14 @@ function. */
 void
 route_init(void)
 {
-readconf_driver_init(US"router",
-  (driver_instance **)(&routers),     /* chain anchor */
+readconf_driver_init((driver_instance **)&routers,     /* chain anchor */
   (driver_info *)routers_available,   /* available drivers */
   sizeof(router_info),                /* size of info blocks */
   &router_defaults,                   /* default values for generic options */
   sizeof(router_instance),            /* size of instance block */
   optionlist_routers,                 /* generic options */
-  optionlist_routers_size);
+  optionlist_routers_size,
+  US"router");
 
 for (router_instance * r = routers; r; r = r->drinst.next)
   {

@@ -423,8 +423,8 @@ extern int     rda_interpret(redirect_block *, int, const uschar *,
 		uschar **, error_block **, int *, const uschar *);
 extern int     rda_is_filter(const uschar *);
 extern BOOL    readconf_depends(driver_instance *, uschar *);
-extern void    readconf_driver_init(uschar *, driver_instance **,
-                 driver_info *, int, void *, int, optionlist *, int);
+extern void    readconf_driver_init(driver_instance **, driver_info *, int,
+		void *, int, optionlist *, int, const uschar *);
 extern const uschar *readconf_find_option(void *);
 extern void    readconf_main(BOOL);
 extern void    readconf_options_from_list(optionlist *, unsigned, const uschar *, uschar *);

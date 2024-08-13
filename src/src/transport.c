@@ -145,14 +145,14 @@ the work. */
 void
 transport_init(void)
 {
-readconf_driver_init(US"transport",
-  (driver_instance **)(&transports),     /* chain anchor */
+readconf_driver_init((driver_instance **)&transports,     /* chain anchor */
   (driver_info *)transports_available,   /* available drivers */
   sizeof(transport_info),                /* size of info block */
-  &transport_defaults,                   /* default values for generic options */
+  &transport_defaults,                   /* default values for generic options*/
   sizeof(transport_instance),            /* size of instance block */
   optionlist_transports,                 /* generic options */
-  optionlist_transports_size);
+  optionlist_transports_size,
+  US"transport");
 
 /* Now scan the configured transports and check inconsistencies. A shadow
 transport is permitted only for local transports. */

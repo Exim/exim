@@ -3715,10 +3715,11 @@ Returns:              pointer to the driver info block
 */
 
 static driver_info *
-init_driver(driver_instance *d, driver_info *drivers_available,
-  int size_of_info, uschar *class)
+init_driver(driver_instance * d, driver_info * drivers_available,
+  int size_of_info, const uschar * class)
 {
-for (driver_info * dd = drivers_available; dd->driver_name[0] != 0;
+/*XXX this is walking the old-array */
+for (driver_info * dd = drivers_available; *dd->driver_name;
      dd = (driver_info *)((US dd) + size_of_info))
   if (Ustrcmp(d->driver_name, dd->driver_name) == 0)
     {
@@ -3726,7 +3727,7 @@ for (driver_info * dd = drivers_available; dd->driver_name[0] != 0;
     d->info = dd;
     d->options_block = store_get_perm(len, GET_UNTAINTED);
     memcpy(d->options_block, dd->options_block, len);
-    for (int i = 0; i < *(dd->options_count); i++)
+    for (int i = 0; i < *dd->options_count; i++)
       dd->options[i].type &= ~opt_set;
     return dd;
     }
@@ -3767,7 +3768,6 @@ driver_instance must map the first portions of all the _info and _instance
 blocks for this shared code to work.
 
 Arguments:
-  class                      "router", "transport", or "authenticator"
   anchor                     &routers, &transports, &auths
   drivers_available          available drivers
   size_of_info               size of each info block
@@ -3775,20 +3775,22 @@ Arguments:
   instance_size              size of instance block
   driver_optionlist          generic option list
   driver_optionlist_count    count of generic option list
+  class                      "router", "transport", or "authenticator"
+			      for error message
 
 Returns:                     nothing
 */
 
 void
 readconf_driver_init(
-  uschar *class,
-  driver_instance **anchor,
-  driver_info *drivers_available,
+  driver_instance ** anchor,
+  driver_info * drivers_available,
   int size_of_info,
-  void *instance_default,
+  void * instance_default,
   int  instance_size,
-  optionlist *driver_optionlist,
-  int  driver_optionlist_count)
+  optionlist * driver_optionlist,
+  int  driver_optionlist_count,
+  const uschar * class)
 {
 driver_instance ** p = anchor;
 driver_instance * d = NULL;
@@ -4243,14 +4245,14 @@ auths_init(void)
 int nauths = 0;
 #endif
 
-readconf_driver_init(US"authenticator",
-  (driver_instance **)(&auths),      /* chain anchor */
+readconf_driver_init((driver_instance **)&auths,      /* chain anchor */
   (driver_info *)auths_available,    /* available drivers */
   sizeof(auth_info),                 /* size of info block */
   &auth_defaults,                    /* default values for generic options */
   sizeof(auth_instance),             /* size of instance block */
   optionlist_auths,                  /* generic options */
-  optionlist_auths_size);
+  optionlist_auths_size,
+  US"authenticator");
 
 for (auth_instance * au = auths; au; au = au->drinst.next)
   {
