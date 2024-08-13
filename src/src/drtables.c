@@ -626,8 +626,8 @@ void
 init_lookup_list(void)
 {
 #ifdef LOOKUP_MODULE_DIR
-DIR *dd;
-struct dirent *ent;
+DIR * dd;
+struct dirent * ent;
 int countmodules = 0;
 int moduleerrors = 0;
 #endif

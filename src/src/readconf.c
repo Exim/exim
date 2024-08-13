@@ -3699,6 +3699,18 @@ if (!nowarn && !keep_environment && environ && *environ)
 
 
 
+/* Add a driver info struct to a list. */
+
+void
+add_driver_info(driver_info ** drlist_p, const driver_info * newent,
+  size_t size)
+{
+driver_info * listent = store_get(size, newent);
+memcpy(listent, newent, size);
+listent->next = *drlist_p;
+*drlist_p= listent;
+}
+
 /*************************************************
 *          Initialize one driver                 *
 *************************************************/
@@ -3711,20 +3723,18 @@ set by another incarnation of the same driver).
 Arguments:
   d                   pointer to driver instance block, with generic
                         options filled in
-  drivers_available   vector of available drivers
+  info_anchor	      list of available drivers
   size_of_info        size of each block in drivers_available
-  class               class of driver, for error message
+  class               class of driver
 
 Returns:              pointer to the driver info block
 */
 
 static driver_info *
-init_driver(driver_instance * d, driver_info * drivers_available,
+init_driver(driver_instance * d, driver_info ** info_anchor,
   int size_of_info, const uschar * class)
 {
-/*XXX if dynamic, the _info entry will be here but code may or may not
-be loaded.  How to tell?  What's the entry point?  init call?
-Currently that is IN the _info entry.
+/*XXX if dynamic, the _info entry will not be here yet.
 
 For lookups it does it by pulling the info entry out of the dlopen()d
 file (for dynamic) or direct from the lookup .o file (for static).
@@ -3753,26 +3763,93 @@ and scan from dlopen if marked dynamic.
 
 #ifdef old
 /*XXX walk the old array */
-for (driver_info * dd = drivers_available; dd->driver_name[0] != 0;
-     dd = (driver_info *)((US dd) + size_of_info))
+for (driver_info * di= *info_anchor; di->driver_name[0] != 0;
+     di= (driver_info *)((US di) + size_of_info))
 #endif
 
-for (driver_info * dd = drivers_available; dd; dd = dd->next)
-  if (Ustrcmp(d->driver_name, dd->driver_name) == 0)
+driver_info * di;
+int len;
+DIR * dd;
+
+/* First scan the list of statically-built drivers. */
+
+for (di = *info_anchor; di; di = di->next)
+  if (Ustrcmp(d->driver_name, di->driver_name) == 0)
+    goto found;
+
+#ifdef LOOKUP_MODULE_DIR
+/* Potentially a loadable module. Look for a file with the right name. */
+
+if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC,
+	    "Couldn't open %s: not loading driver modules\n", LOOKUP_MODULE_DIR);
+  }
+else
+  {
+  uschar * fname = string_sprintf("%s_%s." DYNLIB_FN_EXT, d->driver_name, class), * sname;
+  const char * errormsg;
+
+  DEBUG(D_any) debug_printf("Loading %s %s driver from %s\n",
+			    d->driver_name, class, LOOKUP_MODULE_DIR);
+
+  for(struct dirent * ent; ent = readdir(dd); ) if (Ustrcmp(ent->d_name, fname) == 0)
     {
-    int len = dd->options_len;
-    d->info = dd;
-    d->options_block = store_get_perm(len, GET_UNTAINTED);
-    memcpy(d->options_block, dd->options_block, len);
-    for (int i = 0; i < *dd->options_count; i++)
-      dd->options[i].type &= ~opt_set;
-    return dd;
+    void * dl = dlopen(CS string_sprintf(LOOKUP_MODULE_DIR "/%s", fname), RTLD_NOW);
+    static driver_magics dm[] = {
+      { ROUTER_MAGIC,	US"router" },
+      { TRANSPORT_MAGIC, US"transport" },
+      { AUTH_MAGIC,	US"auth" },
+    };
+
+    if (!dl)
+      {
+      errormsg = dlerror();
+      log_write(0, LOG_MAIN|LOG_PANIC, "Error loading %s %s driver: %s\n",
+		d->driver_name, class, errormsg);
+      break;
+      }
+    (void) dlerror();		/* cf. comment in init_lookup_list() */
+
+    di = (driver_info *) dlsym(dl, CS string_sprintf("_%s_info", class));
+    if ((errormsg = dlerror()))
+      {
+      log_write(0, LOG_MAIN|LOG_PANIC,
+		"%s does not appear to be a %s module (%s)\n", fname, class, errormsg);
+      dlclose(dl);
+      break;
+      }
+    for(driver_magics * dmp = dm; dmp < dm + nelem(dm); dmp++)
+      if(Ustrcmp(dmp->class, class) == 0 && dmp->magic == di->dyn_magic)
+	{
+	add_driver_info(info_anchor, di, size_of_info);
+	DEBUG(D_any) debug_printf("Loaded %s %s\n", d->driver_name, class);
+	closedir(dd);
+	goto found;
+	}
+
+    log_write(0, LOG_MAIN|LOG_PANIC,
+	      "%s module %s is not compatible with this version of Exim\n",
+	      class, d->driver_name);
+    dlclose(dl);
+    break;
     }
+  closedir(dd);
+  }
+#endif	/* LOOKUP_MODULE_DIR */
 
 log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
   "%s %s: cannot find %s driver \"%s\"", class, d->name, class, d->driver_name);
 
-return NULL;   /* never obeyed */
+found:
+
+len = di->options_len;
+d->info = di;
+d->options_block = store_get_perm(len, GET_UNTAINTED);
+memcpy(d->options_block, di->options_block, len);
+for (int i = 0; i < *di->options_count; i++)
+  di->options[i].type &= ~opt_set;
+return di;
 }
 
 
@@ -3806,7 +3883,7 @@ blocks for this shared code to work.
 
 Arguments:
   anchor                     &routers, &transports, &auths
-  drivers_available          available drivers
+  info_anchor		     available drivers
   size_of_info               size of each info block
   instance_default           points to default data for an instance
   instance_size              size of instance block
@@ -3821,7 +3898,7 @@ Returns:                     nothing
 void
 readconf_driver_init(
   driver_instance ** anchor,
-  driver_info * drivers_available,	/*XXX now list not array */
+  driver_info ** info_anchor,	/*XXX now list not array, static only so far */
   int size_of_info,
   void * instance_default,
   int  instance_size,
@@ -3914,7 +3991,7 @@ while ((buffer = get_config_line()))
         driver_optionlist_count, d, NULL))
     {
     if (!d->info && d->driver_name)
-      init_driver(d, drivers_available, size_of_info, class);
+      init_driver(d, info_anchor, size_of_info, class);
     }
 
   /* Handle private options - pass the generic block because some may
@@ -4296,7 +4373,7 @@ for (auth_info * tblent = auths_available_oldarray;
 
 
 readconf_driver_init((driver_instance **)&auths,      /* chain anchor */
-  (driver_info *)auths_available_newlist,    /* available drivers */
+  (driver_info **)&auths_available_newlist,    /* available drivers */
   sizeof(auth_info),                 /* size of info block */
   &auth_defaults,                    /* default values for generic options */
   sizeof(auth_instance),             /* size of instance block */

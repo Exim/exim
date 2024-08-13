@@ -107,6 +107,8 @@ extern uschar *acl_standalone_setvar(const uschar *, BOOL);
 
 extern tree_node *acl_var_create(uschar *);
 extern void    acl_var_write(uschar *, uschar *, void *);
+extern void    add_driver_info(driver_info **, const driver_info *, size_t);
+
 
 #ifdef EXPERIMENTAL_ARC
 # ifdef SUPPORT_DMARC
@@ -423,7 +425,7 @@ extern int     rda_interpret(redirect_block *, int, const uschar *,
 		uschar **, error_block **, int *, const uschar *);
 extern int     rda_is_filter(const uschar *);
 extern BOOL    readconf_depends(driver_instance *, uschar *);
-extern void    readconf_driver_init(driver_instance **, driver_info *, int,
+extern void    readconf_driver_init(driver_instance **, driver_info **, int,
 		void *, int, optionlist *, int, const uschar *);
 extern const uschar *readconf_find_option(void *);
 extern void    readconf_main(BOOL);

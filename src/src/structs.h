@@ -158,6 +158,11 @@ typedef struct driver_info {
 #define TRANSPORT_MAGIC	0x54504d31	/* TPM1 */
 #define AUTH_MAGIC	0x65554d31	/* AUM1 */
 
+typedef struct {
+  uint		magic;
+  uschar *	class;
+} driver_magics;
+
 
 /* Structure for holding information about the configured transports. Some
 of the generally accessible options are set from the configuration file; others

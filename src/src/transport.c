@@ -159,7 +159,7 @@ for (transport_info * tblent = transports_available_oldarray;
   }
 
 readconf_driver_init((driver_instance **)&transports,     /* chain anchor */
-  (driver_info *)transports_available_newlist,   /* available drivers */
+  (driver_info **)&transports_available_newlist,   /* available drivers */
   sizeof(transport_info),                /* size of info block */
   &transport_defaults,                   /* default values for generic options */
   sizeof(transport_instance),            /* size of instance block */
