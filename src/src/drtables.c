@@ -363,24 +363,6 @@ router_info routers_available_oldarray[] = {
   .ri_flags =		0
   },
 #endif
-#ifdef ROUTER_QUERYPROGRAM
-  {
-  .drinfo = {
-    .driver_name =	US"queryprogram",
-    .options =		queryprogram_router_options,
-    .options_count =	&queryprogram_router_options_count,
-    .options_block =	&queryprogram_router_option_defaults,
-    .options_len =	sizeof(queryprogram_router_options_block),
-    .init =		queryprogram_router_init,
-# if ROUTER_QUIRYPROGRAM==2
-    .dynamic =		TRUE,
-# endif
-    },
-  .code =		queryprogram_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		0
-  },
-#endif
 #ifdef ROUTER_REDIRECT
   {
   .drinfo = {
@@ -518,10 +500,69 @@ return string_cat(g, US"\n");
 gstring *
 route_show_supported(gstring * g)
 {
+gstring * b = NULL, * d = NULL;
+
+#ifdef old
 g = string_cat(g, US"Routers:");
 /*XXX these run off the static list as we want them before the conf is read */
+/*XXX lookup_show_supported is in exim.c and just works off the #defines, with hardoded strings */
 for (router_info * rr = routers_available_oldarray; rr->drinfo.driver_name[0]; rr++)
        	g = string_fmt_append(g, " %s", rr->drinfo.driver_name);
+#else
+
+#ifdef ROUTER_ACCEPT
+# if ROUTER_ACCEPT!=2
+  b = string_cat(b, US" accept");
+# else
+  d = string_cat(d, US" cdb");
+# endif
+#endif
+#ifdef ROUTER_DNSLOOKUP
+# if ROUTER_DNSLOOKUP!=2
+  b = string_cat(g, US" dnslookup");
+# else
+  d = string_cat(g, US" dnslookup");
+# endif
+#endif
+# ifdef ROUTER_IPLITERAL
+# if ROUTER_IPLITERAL!=2
+  b = string_cat(g, US" ipliteral");
+# else
+  d = string_cat(g, US" ipliteral");
+# endif
+#endif
+#ifdef ROUTER_IPLOOKUP
+# if ROUTER_IPLOOKUP!=2
+  b = string_cat(g, US" iplookup");
+# else
+  d = string_cat(g, US" iplookup");
+# endif
+#endif
+#ifdef ROUTER_MANUALROUTE
+# if ROUTER_MANUALROUTE!=2
+  b = string_cat(g, US" manualroute");
+# else
+  d = string_cat(g, US" manualroute");
+# endif
+#endif
+#ifdef ROUTER_REDIRECT
+# if ROUTER_REDIRECT!=2
+  b = string_cat(g, US" redirect");
+# else
+  d = string_cat(g, US" redirect");
+# endif
+#endif
+#ifdef ROUTER_QUERYPROGRAM
+# if ROUTER_QUERYPROGRAM!=2
+  b = string_cat(g, US" queryprogram");
+# else
+  d = string_cat(g, US" queryprogram");
+# endif
+#endif
+
+if (b) g = string_fmt_append(g, "Routers (built-in):%Y\n", b);
+if (d) g = string_fmt_append(g, "Routers (dynamic): %Y\n", d);
+#endif
 return string_cat(g, US"\n");
 }
 
@@ -773,6 +814,10 @@ addlookupmodule(NULL, &testdb_lookup_module_info);
 #if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
 addlookupmodule(NULL, &whoson_lookup_module_info);
 #endif
+
+/* This is a custom expansion, and not available as either
+a list-syntax lookup or a lookup expansion. However, it is
+implemented by a lookup module. */
 
 addlookupmodule(NULL, &readsock_lookup_module_info);
 
