@@ -1163,7 +1163,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 		  | Authenticators:
 		  | Lookups(?:\(built-in\))?:
 		  | Support\ for:
-		  | Routers:
+		  | Routers\ \((?:built-in|dynamic)\):
 		  | Transports:
 		  | Malware:
 		  | log\ selectors\ =
@@ -3745,12 +3745,13 @@ while (<EXIMINFO>)
     %parm_authenticators = @temp;
     }
 
-  elsif (/^Routers: (.*)/)
+  elsif (/^Routers \((?:built-in|dynamic)\):  ?(.*)/)
     {
     print;
     @temp = split /(\s+)/, $1;
     push(@temp, ' ');
-    %parm_routers = @temp;
+    my %temp_routers= @temp;
+    @parm_routers{keys %temp_routers} = values %temp_routers;
     }
 
   # Some transports have options, e.g. appendfile/maildir. For those, ensure

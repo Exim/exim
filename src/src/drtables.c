@@ -500,70 +500,67 @@ return string_cat(g, US"\n");
 gstring *
 route_show_supported(gstring * g)
 {
-gstring * b = NULL, * d = NULL;
-
 #ifdef old
 g = string_cat(g, US"Routers:");
 /*XXX these run off the static list as we want them before the conf is read */
 /*XXX lookup_show_supported is in exim.c and just works off the #defines, with hardoded strings */
 for (router_info * rr = routers_available_oldarray; rr->drinfo.driver_name[0]; rr++)
        	g = string_fmt_append(g, " %s", rr->drinfo.driver_name);
+return string_cat(g, US"\n");
 #else
 
-#ifdef ROUTER_ACCEPT
-# if ROUTER_ACCEPT!=2
-  b = string_cat(b, US" accept");
-# else
-  d = string_cat(d, US" cdb");
-# endif
+uschar * b = US""		/* static-build router names */
+#if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT!=2
+  " accept"
 #endif
-#ifdef ROUTER_DNSLOOKUP
-# if ROUTER_DNSLOOKUP!=2
-  b = string_cat(g, US" dnslookup");
-# else
-  d = string_cat(g, US" dnslookup");
-# endif
+#if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP!=2
+  " dnslookup"
 #endif
-# ifdef ROUTER_IPLITERAL
-# if ROUTER_IPLITERAL!=2
-  b = string_cat(g, US" ipliteral");
-# else
-  d = string_cat(g, US" ipliteral");
-# endif
+# if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL!=2
+  " ipliteral"
 #endif
-#ifdef ROUTER_IPLOOKUP
-# if ROUTER_IPLOOKUP!=2
-  b = string_cat(g, US" iplookup");
-# else
-  d = string_cat(g, US" iplookup");
-# endif
+#if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP!=2
+  " iplookup"
 #endif
-#ifdef ROUTER_MANUALROUTE
-# if ROUTER_MANUALROUTE!=2
-  b = string_cat(g, US" manualroute");
-# else
-  d = string_cat(g, US" manualroute");
-# endif
+#if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE!=2
+  " manualroute"
 #endif
-#ifdef ROUTER_REDIRECT
-# if ROUTER_REDIRECT!=2
-  b = string_cat(g, US" redirect");
-# else
-  d = string_cat(g, US" redirect");
-# endif
+#if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT!=2
+  " redirect"
 #endif
-#ifdef ROUTER_QUERYPROGRAM
-# if ROUTER_QUERYPROGRAM!=2
-  b = string_cat(g, US" queryprogram");
-# else
-  d = string_cat(g, US" queryprogram");
-# endif
+#if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM!=2
+  " queryprogram"
 #endif
+  ;
 
-if (b) g = string_fmt_append(g, "Routers (built-in):%Y\n", b);
-if (d) g = string_fmt_append(g, "Routers (dynamic): %Y\n", d);
+uschar * d = US""		/* dynamic-module router names */
+#if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT==2
+  " accept"
 #endif
-return string_cat(g, US"\n");
+#if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP==2
+  " dnslookup"
+#endif
+# if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL==2
+  " ipliteral"
+#endif
+#if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP==2
+  " iplookup"
+#endif
+#if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE==2
+  " manualroute"
+#endif
+#if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT==2
+  " redirect"
+#endif
+#if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM==2
+  " queryprogram"
+#endif
+  ;
+
+if (*b) g = string_fmt_append(g, "Routers (built-in):%s\n", b);
+if (*d) g = string_fmt_append(g, "Routers (dynamic): %s\n", d);
+return g;
+#endif	/*!old*/
 }
 
 gstring *
