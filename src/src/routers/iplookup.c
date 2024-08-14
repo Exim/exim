@@ -53,7 +53,7 @@ int iplookup_router_options_count =
 
 /* Dummy entries */
 iplookup_router_options_block iplookup_router_option_defaults = {0};
-void iplookup_router_init(router_instance *rblock) {}
+void iplookup_router_init(driver_instance *rblock) {}
 int iplookup_router_entry(router_instance *rblock, address_item *addr,
   struct passwd *pw, int verify, address_item **addr_local,
   address_item **addr_remote, address_item **addr_new,
@@ -87,20 +87,21 @@ iplookup_router_options_block iplookup_router_option_defaults = {
 consistency checks to be done, or anything else that needs to be set up. */
 
 void
-iplookup_router_init(router_instance * rblock)
+iplookup_router_init(driver_instance * r)
 {
+router_instance * rblock = (router_instance *)r;
 iplookup_router_options_block * ob =
-  (iplookup_router_options_block *) rblock->options_block;
+  (iplookup_router_options_block *) r->options_block;
 
 /* A port and a host list must be given */
 
 if (ob->port < 0)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
-    "a port must be specified", rblock->name);
+    "a port must be specified", r->name);
 
 if (!ob->hosts)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
-    "a host list must be specified", rblock->name);
+    "a host list must be specified", r->name);
 
 /* Translate protocol name into value */
 
@@ -109,7 +110,7 @@ if (ob->protocol_name)
   if (Ustrcmp(ob->protocol_name, "udp") == 0) ob->protocol = ip_udp;
   else if (Ustrcmp(ob->protocol_name, "tcp") == 0) ob->protocol = ip_tcp;
   else log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
-    "protocol not specified as udp or tcp", rblock->name);
+    "protocol not specified as udp or tcp", r->name);
   }
 
 /* If a response pattern is given, compile it now to get the error early. */
@@ -167,13 +168,13 @@ uschar host_buffer[256];
 host_item *host = store_get(sizeof(host_item), GET_UNTAINTED);
 address_item *new_addr;
 iplookup_router_options_block *ob =
-  (iplookup_router_options_block *)(rblock->options_block);
+  (iplookup_router_options_block *)(rblock->drinst.options_block);
 const pcre2_code *re = ob->re_response_pattern;
 int count, query_len, rc;
 int sep = 0;
 
 DEBUG(D_route) debug_printf("%s router called for %s: domain = %s\n",
-  rblock->name, addr->address, addr->domain);
+  rblock->drinst.name, addr->address, addr->domain);
 
 reply = store_get(256, GET_TAINTED);
 
@@ -188,12 +189,12 @@ else
   if (!(query = expand_string(ob->query)))
     {
     addr->message = string_sprintf("%s router: failed to expand %s: %s",
-      rblock->name, ob->query, expand_string_message);
+      rblock->drinst.name, ob->query, expand_string_message);
     return DEFER;
     }
 
 query_len = Ustrlen(query);
-DEBUG(D_route) debug_printf("%s router query is \"%s\"\n", rblock->name,
+DEBUG(D_route) debug_printf("%s router query is \"%s\"\n", rblock->drinst.name,
   string_printing(query));
 
 /* Now connect to the required port for each of the hosts in turn, until a
@@ -238,7 +239,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
     /* Create a socket, for UDP or TCP, as configured. IPv6 addresses are
     detected by checking for a colon in the address. */
 
-    host_af = (Ustrchr(h->address, ':') != NULL)? AF_INET6 : AF_INET;
+    host_af = Ustrchr(h->address, ':') ? AF_INET6 : AF_INET;
 
     query_cctx.sock = ip_socket(ob->protocol == ip_udp ? SOCK_DGRAM:SOCK_STREAM,
       host_af);
@@ -246,7 +247,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
       {
       if (ob->optional) return PASS;
       addr->message = string_sprintf("failed to create socket in %s router",
-        rblock->name);
+        rblock->drinst.name);
       return DEFER;
       }
 
@@ -291,7 +292,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
 
     reply[count] = 0;
     DEBUG(D_route) debug_printf("%s router received \"%s\" from %s\n",
-      rblock->name, string_printing(reply), h->address);
+      rblock->drinst.name, string_printing(reply), h->address);
     break;
     }
 
@@ -307,12 +308,12 @@ connect to any of the IP addresses, or timed out while reading or writing to
 those we have connected to. In all cases, we must pass if optional and
 defer otherwise. */
 
-if (hostname == NULL)
+if (!hostname)
   {
-  DEBUG(D_route) debug_printf("%s router failed to get anything\n", rblock->name);
+  DEBUG(D_route) debug_printf("%s router failed to get anything\n", rblock->drinst.name);
   if (ob->optional) return PASS;
   addr->message = string_sprintf("%s router: failed to communicate with any "
-    "host", rblock->name);
+    "host", rblock->drinst.name);
   return DEFER;
   }
 
@@ -326,7 +327,7 @@ if (re != NULL)
   if (!regex_match_and_setup(re, reply, 0, -1))
     {
     DEBUG(D_route) debug_printf("%s router: %s failed to match response %s\n",
-      rblock->name, ob->response_pattern, reply);
+      rblock->drinst.name, ob->response_pattern, reply);
     return DECLINE;
     }
   }
@@ -351,7 +352,7 @@ else
     if (Ustrcmp(query + query_len/2 + 1, reply+nn) != 0)
       {
       DEBUG(D_route) debug_printf("%s router: failed to match identification "
-        "in response %s\n", rblock->name, reply);
+        "in response %s\n", rblock->drinst.name, reply);
       return DECLINE;
       }
     }
@@ -370,7 +371,7 @@ if (ob->reroute)
   if (!reroute)
     {
     addr->message = string_sprintf("%s router: failed to expand %s: %s",
-      rblock->name, ob->reroute, expand_string_message);
+      rblock->drinst.name, ob->reroute, expand_string_message);
     return DEFER;
     }
   }
@@ -382,9 +383,9 @@ else
 if (!(domain = Ustrchr(reroute, '@')))
   {
   log_write(0, LOG_MAIN, "%s router: reroute string %s is not of the form "
-    "user@domain", rblock->name, reroute);
+    "user@domain", rblock->drinst.name, reroute);
   addr->message = string_sprintf("%s router: reroute string %s is not of the "
-    "form user@domain", rblock->name, reroute);
+    "form user@domain", rblock->drinst.name, reroute);
   return DEFER;
   }
 
@@ -398,7 +399,7 @@ new_addr->prop = addr->prop;
 
 if (addr->child_count == USHRT_MAX)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s router generated more than %d "
-    "child addresses for <%s>", rblock->name, USHRT_MAX, addr->address);
+    "child addresses for <%s>", rblock->drinst.name, USHRT_MAX, addr->address);
 addr->child_count++;
 new_addr->next = *addr_new;
 *addr_new = new_addr;
