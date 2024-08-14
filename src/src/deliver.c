@@ -6660,7 +6660,7 @@ int i, rc, final_yield, process_recipients;
 time_t now;
 address_item * addr_last;
 uschar * filter_message, * info;
-open_db dbblock, * dbm_file;
+open_db dbblock, * dbm_file = NULL;
 extern int acl_where;
 
 CONTINUED_ID:
@@ -7469,9 +7469,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
   queue run don't bother checking domain- or address-retry info; they will take
   effect on the second stage. */
 
-  if (f.queue_2stage)
-    dbm_file = NULL;
-  else
+  if (!f.queue_2stage)
     {
     /* If we have transaction-capable hintsdbs, open the retry db without
     locking, and leave open for the transport process and for subsequent
@@ -7925,7 +7923,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 
   if (dbm_file)
     if (exim_lockfile_needed())
-      { dbfn_close(dbm_file); dbm_file = NULL; }
+      { dbfn_close(dbm_file); continue_retry_db = dbm_file = NULL; }
     else
       DEBUG(D_hints_lookup) debug_printf("retaining retry hintsdb handle\n");
 
