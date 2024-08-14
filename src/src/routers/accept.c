@@ -156,7 +156,7 @@ router_info accept_router_info =
   .options_len =	sizeof(accept_router_options_block),
   .init =		accept_router_init,
 # ifdef DYNLOOKUP
-  .dyn_magic =		ROUTER_MAGIC,           /*XXX*/
+  .dyn_magic =		ROUTER_MAGIC,
 # endif
   },
 .code =		accept_router_entry,

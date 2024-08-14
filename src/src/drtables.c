@@ -230,31 +230,6 @@ exim binary. */
 
 #include "routers/rf_functions.h"
 
-/*XXX delete */
-#ifdef ROUTER_DNSLOOKUP
-# include "routers/dnslookup.h"
-#endif
-
-#ifdef ROUTER_MANUALROUTE
-# include "routers/manualroute.h"
-#endif
-
-#ifdef ROUTER_IPLITERAL
-# include "routers/ipliteral.h"
-#endif
-
-#ifdef ROUTER_IPLOOKUP
-# include "routers/iplookup.h"
-#endif
-
-#ifdef ROUTER_QUERYPROGRAM
-# include "routers/queryprogram.h"
-#endif
-
-#ifdef ROUTER_REDIRECT
-# include "routers/redirect.h"
-#endif
-
 #ifdef TRANSPORT_APPENDFILE
 # include "transports/appendfile.h"
 #endif
@@ -280,14 +255,7 @@ exim binary. */
 #endif
 
 
-router_info * routers_available_newlist = NULL;
-
-/* Now set up the structures, terminated by an entry with a null name. */
-
-router_info routers_available_oldarray[] = {
-  { .drinfo = { .driver_name = US"" }}
-};
-
+router_info * routers_available = NULL;
 
 
 transport_info * transports_available_newlist = NULL;
@@ -397,8 +365,6 @@ gstring *
 auth_show_supported(gstring * g)
 {
 g = string_cat(g, US"Authenticators:");
-/*XXX these run off the static list as we want them before the conf is read */
-/*XXX Could possibly check for dyn flag + file presence */
 for (auth_info * ai = auths_available_oldarray; ai->drinfo.driver_name[0]; ai++)
        	g = string_fmt_append(g, " %s", ai->drinfo.driver_name);
 return string_cat(g, US"\n");
@@ -407,15 +373,6 @@ return string_cat(g, US"\n");
 gstring *
 route_show_supported(gstring * g)
 {
-#ifdef old
-g = string_cat(g, US"Routers:");
-/*XXX these run off the static list as we want them before the conf is read */
-/*XXX lookup_show_supported is in exim.c and just works off the #defines, with hardoded strings */
-for (router_info * rr = routers_available_oldarray; rr->drinfo.driver_name[0]; rr++)
-       	g = string_fmt_append(g, " %s", rr->drinfo.driver_name);
-return string_cat(g, US"\n");
-#else
-
 uschar * b = US""		/* static-build router names */
 #if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT!=2
   " accept"
@@ -467,7 +424,6 @@ uschar * d = US""		/* dynamic-module router names */
 if (*b) g = string_fmt_append(g, "Routers (built-in):%s\n", b);
 if (*d) g = string_fmt_append(g, "Routers (dynamic): %s\n", d);
 return g;
-#endif	/*!old*/
 }
 
 gstring *

@@ -947,8 +947,7 @@ extern int     rfc1413_query_timeout;  /* Timeout on RFC 1413 calls */
 /* extern BOOL    rfc821_domains;  */       /* If set, syntax is 821, not 822 => being abolished */
 extern uid_t   root_gid;               /* The gid for root */
 extern uid_t   root_uid;               /* The uid for root */
-extern router_info routers_available_oldarray[];/* Vector of available routers */
-extern router_info *routers_available_newlist;
+extern router_info *routers_available; /* List of available router drivers */
 extern router_instance *routers;       /* Chain of instantiated routers */
 extern router_instance router_defaults;/* Default values */
 extern const uschar *router_name;      /* Name of router last started */

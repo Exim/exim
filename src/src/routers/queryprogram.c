@@ -550,7 +550,7 @@ router_info queryprogram_router_info =
   .options_len =      sizeof(queryprogram_router_options_block),
   .init =             queryprogram_router_init,
 # ifdef DYNLOOKUP
-  .dyn_magic =	      ROUTER_MAGIC,           /*XXX*/
+  .dyn_magic =	      ROUTER_MAGIC,
 # endif
   },
 .code =               queryprogram_router_entry,

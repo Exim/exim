@@ -804,7 +804,7 @@ router_info redirect_router_info =
   .options_len =	sizeof(redirect_router_options_block),
   .init =		redirect_router_init,
 # ifdef DYNLOOKUP
-  .dyn_magic =		ROUTER_MAGIC,           /*XXX*/
+  .dyn_magic =		ROUTER_MAGIC,
 # endif
   },
 .code =			redirect_router_entry,

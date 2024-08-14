@@ -433,7 +433,7 @@ router_info iplookup_router_info =
   .options_len =	sizeof(iplookup_router_options_block),
   .init =		iplookup_router_init,
 # ifdef DYNLOOKUP
-  .dyn_magic =		ROUTER_MAGIC,           /*XXX*/
+  .dyn_magic =		ROUTER_MAGIC,
 # endif
   },
 .code =			iplookup_router_entry,

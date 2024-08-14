@@ -492,7 +492,7 @@ router_info dnslookup_router_info =
   .options_len =	sizeof(dnslookup_router_options_block),
   .init =		dnslookup_router_init,
 # ifdef DYNLOOKUP
-  .dyn_magic =		ROUTER_MAGIC,           /*XXX*/
+  .dyn_magic =		ROUTER_MAGIC,
 # endif
   },
 .code =			dnslookup_router_entry,

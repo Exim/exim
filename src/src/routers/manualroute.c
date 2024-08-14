@@ -512,7 +512,7 @@ router_info manualroute_router_info =
   .options_len =	sizeof(manualroute_router_options_block),
   .init =		manualroute_router_init,
 # ifdef DYNLOOKUP
-  .dyn_magic =		ROUTER_MAGIC,           /*XXX*/
+  .dyn_magic =		ROUTER_MAGIC,
 # endif
   },
 .code =			manualroute_router_entry,

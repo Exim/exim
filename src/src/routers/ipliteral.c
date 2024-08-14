@@ -217,7 +217,7 @@ router_info ipliteral_router_info =
   .options_len =	sizeof(ipliteral_router_options_block),
   .init =		ipliteral_router_init,
 # ifdef DYNLOOKUP
-  .dyn_magic =		ROUTER_MAGIC,           /*XXX*/
+  .dyn_magic =		ROUTER_MAGIC,
 # endif
   },
 .code =			ipliteral_router_entry,

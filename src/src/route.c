@@ -159,10 +159,7 @@ uschar buf[64];
 
 options_from_list(optionlist_routers, nelem(optionlist_routers), US"ROUTERS", NULL);
 
-#ifdef old
-for (router_info * ri = routers_available; ri->drinfo.driver_name[0]; ri++)
-#endif
-for (driver_info * di = (driver_info *)routers_available_newlist; di; di = di->next)
+for (driver_info * di = (driver_info *)routers_available; di; di = di->next)
   {
   spf(buf, sizeof(buf), US"_DRIVER_ROUTER_%T", di->driver_name);
   builtin_macro_create(buf);
@@ -231,29 +228,10 @@ void
 route_init(void)
 {
 
-#ifdef old
-/*XXX temp loop just copying the old array to build the new list. */
-for (router_info * tblent = routers_available_oldarray;
-    *tblent->drinfo.driver_name; tblent++)
-  {
-  driver_info * listent = store_get(sizeof(router_info), tblent);
-  memcpy(listent, tblent, sizeof(router_info));
-  listent->next = (driver_info *)routers_available_newlist;
-  routers_available_newlist = (router_info *)listent;
-  }
-#else
-
-/*XXX
-Will replace with ifdeffed explicit calls in drtab.c just building list
-(2 lists?) of names for -bV (DONE),
-plut ifdeffed repeated code here adding static-build modules to list (DONE)
-plus code in readconf.c for dlopen()s just before per-driver init api call.
-*/
-
 int old_pool = store_pool;
 store_pool = POOL_PERM;
   {
-  driver_info ** anchor = (driver_info **) &routers_available_newlist;
+  driver_info ** anchor = (driver_info **) &routers_available;
   extern router_info accept_router_info;
   extern router_info dnslookup_router_info;
   extern router_info ipliteral_router_info;
@@ -262,10 +240,9 @@ store_pool = POOL_PERM;
   extern router_info redirect_router_info;
   extern router_info queryprogram_router_info;
 
-  /*XXX this adds only the statics.  We can't get the dynamics as they
-  are not linked.  Until dlopen(), when we can use dlsym().  So the discovery
-  is by the file exitence, via the filename pattern. */
-  /*XXX TODO: move the info structs to individual driver files */
+  /* Add the router drivers that are built for static linkage to the
+  list of availables. */
+
 #if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT!=2
   add_driver_info(anchor, &accept_router_info.drinfo, sizeof(router_info));
 #endif
@@ -290,11 +267,13 @@ store_pool = POOL_PERM;
   }
 store_pool = old_pool;
 
-#endif /*!old*/
 
-/*XXX this does the config file "routers" section reading */
+/* Read the config file "routers" section, creating a routers instance list.
+For any yet-undiscovered driver, check for a loadable module and add it to
+those available. */
+
 readconf_driver_init((driver_instance **)&routers,     /* chain anchor */
-  (driver_info **)&routers_available_newlist,   /* available drivers */
+  (driver_info **)&routers_available, /* available drivers */
   sizeof(router_info),                /* size of info blocks */
   &router_defaults,                   /* default values for generic options */
   sizeof(router_instance),            /* size of instance block */

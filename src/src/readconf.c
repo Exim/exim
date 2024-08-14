@@ -3734,39 +3734,6 @@ static driver_info *
 init_driver(driver_instance * d, driver_info ** info_anchor,
   int size_of_info, const uschar * class)
 {
-/*XXX if dynamic, the _info entry will not be here yet.
-
-For lookups it does it by pulling the info entry out of the dlopen()d
-file (for dynamic) or direct from the lookup .o file (for static).
-It builds a linked-list with those two classes,
-then an array sorted by (? name) and discards the list.
-The array is the _info list.
-
-We'd rather not have to do two passes over the config file(s) section.
-With the number of drivers I see no point in sorting,
-so we could stick with a one-pass build of an _info linked-list.
-This does mean converting any code using the current array.
-
-DONE:
-Rename the array to old.  For now, walk it once and build a linked-list.
-Find and convert all the uses,
-
-Move all the element defns to driver code files.
-Change the init/build to scan them.
-
-Move the scan to the place-of-use reading the config,
-only load if not already on linked-list.
-
-Add the build-dynamic wrapper,
-and scan from dlopen if marked dynamic.
-*/
-
-#ifdef old
-/*XXX walk the old array */
-for (driver_info * di= *info_anchor; di->driver_name[0] != 0;
-     di= (driver_info *)((US di) + size_of_info))
-#endif
-
 driver_info * di;
 int len;
 DIR * dd;
@@ -3822,7 +3789,10 @@ else
     for(driver_magics * dmp = dm; dmp < dm + nelem(dm); dmp++)
       if(Ustrcmp(dmp->class, class) == 0 && dmp->magic == di->dyn_magic)
 	{
+	int old_pool = store_pool;
+	store_pool = POOL_PERM;
 	add_driver_info(info_anchor, di, size_of_info);
+	store_pool = old_pool;
 	DEBUG(D_any) debug_printf("Loaded %s %s\n", d->driver_name, class);
 	closedir(dd);
 	goto found;
@@ -3898,7 +3868,7 @@ Returns:                     nothing
 void
 readconf_driver_init(
   driver_instance ** anchor,
-  driver_info ** info_anchor,	/*XXX now list not array, static only so far */
+  driver_info ** info_anchor,
   int size_of_info,
   void * instance_default,
   int  instance_size,
@@ -4359,9 +4329,6 @@ auths_init(void)
 int nauths = 0;
 #endif
 
-/*XXX temp loop just copying the old array to build the new list.
-Will replace with haul from either static build file or dyn module
-done by readconf_driver_init() */
 for (auth_info * tblent = auths_available_oldarray;
     *tblent->drinfo.driver_name; tblent++)
   {

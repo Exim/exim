@@ -146,9 +146,6 @@ the work. */
 void
 transport_init(void)
 {
-/*XXX temp loop just copying the old array to build the new list.
-Will replace with haul from either static build file or dyn module
-done by readconf_driver_init() */
 for (transport_info * tblent = transports_available_oldarray;
     *tblent->drinfo.driver_name; tblent++)
   {
