@@ -1163,7 +1163,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 		  | Authenticators:
 		  | Lookups(?:\(built-in\))?:
 		  | Support\ for:
-		  | Routers:
+		  | Routers\ \((?:built-in|dynamic)\):
 		  | Transports:
 		  | Malware:
 		  | log\ selectors\ =
@@ -1298,10 +1298,14 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # drop lookups
     next if /^$time_pid?(?: Lookups\ \((?:built-in|dynamic)\):
-					|Loaded\ "[^.]+\.so"\ \(\d+\ lookup\ types\)
+					| Loaded\ "[^.]+\.so"\ \(\d+\ lookup\ types\)
 					| Loading\ lookup\ modules\ from
 					| Loaded\ \d+\ lookup\ modules
 					| Total\ \d+\ lookups)/x;
+
+    # drop loads of dyn-module drivers
+    next if /^$time_pid?(?:Loading\ \w+\ (?:router|transport|auth)\ driver\ from
+			  | Loaded\ \w+\ (?:router|transport|auth)$)/x;
 
     # drop compiler information
     next if /^$time_pid?Compiler:/;
@@ -3745,12 +3749,13 @@ while (<EXIMINFO>)
     %parm_authenticators = @temp;
     }
 
-  elsif (/^Routers: (.*)/)
+  elsif (/^Routers \((?:built-in|dynamic)\):  ?(.*)/)
     {
     print;
     @temp = split /(\s+)/, $1;
     push(@temp, ' ');
-    %parm_routers = @temp;
+    my %temp_routers= @temp;
+    @parm_routers{keys %temp_routers} = values %temp_routers;
     }
 
   # Some transports have options, e.g. appendfile/maildir. For those, ensure
@@ -4138,7 +4143,7 @@ system("sudo cp eximdir/exim eximdir/exim_exim;" .
 
 ($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
 
-while (my $file = glob("$parm_exim_dir/lookups/*.so")) {
+while (my $file = glob("$parm_exim_dir/dynmodules/*.so")) {
   my $base = basename($file);
   cp("$file", "eximdir/");
   system("sudo chmod 755 eximdir/$base");

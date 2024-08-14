@@ -482,7 +482,7 @@ lookup_info cdb_lookup_info = {
 };
 
 #ifdef DYNLOOKUP
-#define cdb_lookup_module_info _lookup_module_info
+# define cdb_lookup_module_info _lookup_module_info
 #endif
 
 static lookup_info *_lookup_list[] = { &cdb_lookup_info };

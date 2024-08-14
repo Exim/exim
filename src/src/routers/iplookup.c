@@ -417,6 +417,30 @@ if (rc != OK) return rc;
 return OK;
 }
 
+
+
+# ifdef DYNLOOKUP
+#  define iplookup_router_info _router_info
+# endif
+
+router_info iplookup_router_info =
+{
+.drinfo = {
+  .driver_name =	US"iplookup",
+  .options =		iplookup_router_options,
+  .options_count =	&iplookup_router_options_count,
+  .options_block =	&iplookup_router_option_defaults,
+  .options_len =	sizeof(iplookup_router_options_block),
+  .init =		iplookup_router_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		ROUTER_MAGIC,
+# endif
+  },
+.code =			iplookup_router_entry,
+.tidyup =		NULL,     /* no tidyup entry */
+.ri_flags =		ri_notransport
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*ROUTER_IPLOOKUP*/
 /* End of routers/iplookup.c */

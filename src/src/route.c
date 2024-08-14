@@ -159,12 +159,12 @@ uschar buf[64];
 
 options_from_list(optionlist_routers, nelem(optionlist_routers), US"ROUTERS", NULL);
 
-for (router_info * ri = routers_available; ri->drinfo.driver_name[0]; ri++)
+for (driver_info * di = (driver_info *)routers_available; di; di = di->next)
   {
-  spf(buf, sizeof(buf), US"_DRIVER_ROUTER_%T", ri->drinfo.driver_name);
+  spf(buf, sizeof(buf), US"_DRIVER_ROUTER_%T", di->driver_name);
   builtin_macro_create(buf);
-  options_from_list(ri->drinfo.options, (unsigned)*ri->drinfo.options_count,
-		    US"ROUTER", ri->drinfo.driver_name);
+  options_from_list(di->options, (unsigned)*di->options_count,
+		    US"ROUTER", di->driver_name);
   }
 }
 
@@ -227,14 +227,59 @@ function. */
 void
 route_init(void)
 {
-readconf_driver_init(US"router",
-  (driver_instance **)(&routers),     /* chain anchor */
-  (driver_info *)routers_available,   /* available drivers */
+
+int old_pool = store_pool;
+store_pool = POOL_PERM;
+  {
+  driver_info ** anchor = (driver_info **) &routers_available;
+  extern router_info accept_router_info;
+  extern router_info dnslookup_router_info;
+  extern router_info ipliteral_router_info;
+  extern router_info iplookup_router_info;
+  extern router_info manualroute_router_info;
+  extern router_info redirect_router_info;
+  extern router_info queryprogram_router_info;
+
+  /* Add the router drivers that are built for static linkage to the
+  list of availables. */
+
+#if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT!=2
+  add_driver_info(anchor, &accept_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP!=2
+  add_driver_info(anchor, &dnslookup_router_info.drinfo, sizeof(router_info));
+#endif
+# if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL!=2
+  add_driver_info(anchor, &ipliteral_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP!=2
+  add_driver_info(anchor, &iplookup_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE!=2
+  add_driver_info(anchor, &manualroute_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT!=2
+  add_driver_info(anchor, &redirect_router_info.drinfo, sizeof(router_info));
+#endif
+#if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM!=2
+  add_driver_info(anchor, &queryprogram_router_info.drinfo, sizeof(router_info));
+#endif
+  }
+store_pool = old_pool;
+
+
+/* Read the config file "routers" section, creating a routers instance list.
+For any yet-undiscovered driver, check for a loadable module and add it to
+those available. */
+
+readconf_driver_init((driver_instance **)&routers,     /* chain anchor */
+  (driver_info **)&routers_available, /* available drivers */
   sizeof(router_info),                /* size of info blocks */
   &router_defaults,                   /* default values for generic options */
   sizeof(router_instance),            /* size of instance block */
   optionlist_routers,                 /* generic options */
-  optionlist_routers_size);
+  optionlist_routers_size,
+  US"router");
 
 for (router_instance * r = routers; r; r = r->drinst.next)
   {

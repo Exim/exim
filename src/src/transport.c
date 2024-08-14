@@ -102,12 +102,13 @@ uschar buf[64];
 
 options_from_list(optionlist_transports, nelem(optionlist_transports), US"TRANSPORTS", NULL);
 
-for (transport_info * ti= transports_available; ti->drinfo.driver_name[0]; ti++)
+//for (transport_info * ti= transports_available; ti->drinfo.driver_name[0]; ti++)
+for (driver_info * di= (driver_info *)transports_available_newlist; di; di = di->next)
   {
-  spf(buf, sizeof(buf), US"_DRIVER_TRANSPORT_%T", ti->drinfo.driver_name);
+  spf(buf, sizeof(buf), US"_DRIVER_TRANSPORT_%T", di->driver_name);
   builtin_macro_create(buf);
-  options_from_list(ti->drinfo.options, (unsigned)*ti->drinfo.options_count,
-		    US"TRANSPORT", ti->drinfo.driver_name);
+  options_from_list(di->options, (unsigned)*di->options_count,
+		    US"TRANSPORT", di->driver_name);
   }
 }
 
@@ -145,14 +146,23 @@ the work. */
 void
 transport_init(void)
 {
-readconf_driver_init(US"transport",
-  (driver_instance **)(&transports),     /* chain anchor */
-  (driver_info *)transports_available,   /* available drivers */
+for (transport_info * tblent = transports_available_oldarray;
+    *tblent->drinfo.driver_name; tblent++)
+  {
+  driver_info * listent = store_get(sizeof(transport_info), tblent);
+  memcpy(listent, tblent, sizeof(transport_info));
+  listent->next = (driver_info *)transports_available_newlist;
+  transports_available_newlist = (transport_info *)listent;
+  }
+
+readconf_driver_init((driver_instance **)&transports,     /* chain anchor */
+  (driver_info **)&transports_available_newlist,   /* available drivers */
   sizeof(transport_info),                /* size of info block */
   &transport_defaults,                   /* default values for generic options */
   sizeof(transport_instance),            /* size of instance block */
   optionlist_transports,                 /* generic options */
-  optionlist_transports_size);
+  optionlist_transports_size,
+  US"transport");
 
 /* Now scan the configured transports and check inconsistencies. A shadow
 transport is permitted only for local transports. */

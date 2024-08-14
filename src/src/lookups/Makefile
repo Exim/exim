@@ -2,11 +2,11 @@
 # This is called from the main make file, after cd'ing
 # to the lookups subdirectory.
 #
-# Copyright (c) The Exim Maintainers 2021
+# Copyright (c) The Exim Maintainers 2021 - 2024
 
 # nb: at build time, the version of this file used will have had some
 #     extra variable definitions and prepended to it and module build rules
-#     interpolated below.
+#     interpolated below. This is done by scripts/lookups-Makefile.
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
@@ -30,47 +30,26 @@ lf_check_file.o: $(HDRS) lf_check_file.c  lf_functions.h
 lf_quote.o:      $(HDRS) lf_quote.c       lf_functions.h
 lf_sqlperform.o: $(HDRS) lf_sqlperform.c  lf_functions.h
 
-cdb.o:           $(HDRS) cdb.c
-dbmdb.o:         $(HDRS) dbmdb.c
-dnsdb.o:         $(HDRS) dnsdb.c
-dsearch.o:       $(HDRS) dsearch.c
-ibase.o:         $(HDRS) ibase.c
-ldap.o:          $(HDRS) ldap.c
-lmdb.o:          $(HDRS) lmdb.c
-json.o:          $(HDRS) json.c
-lsearch.o:       $(HDRS) lsearch.c
-mysql.o:         $(HDRS) mysql.c
-nis.o:           $(HDRS) nis.c
-nisplus.o:       $(HDRS) nisplus.c
-oracle.o:        $(HDRS) oracle.c
-passwd.o:        $(HDRS) passwd.c
-pgsql.o:         $(HDRS) pgsql.c
-readsock.o:      $(HDRS) readsock.c
-redis.o:         $(HDRS) redis.c
-spf.o:           $(HDRS) spf.c
-sqlite.o:        $(HDRS) sqlite.c
-testdb.o:        $(HDRS) testdb.c
-whoson.o:        $(HDRS) whoson.c
-
-cdb.so:           $(HDRS) cdb.c
-dbmdb.so:         $(HDRS) dbmdb.c
-dnsdb.so:         $(HDRS) dnsdb.c
-dsearch.so:       $(HDRS) dsearch.c
-ibase.so:         $(HDRS) ibase.c
-json.so:          $(HDRS) json.c
-ldap.so:          $(HDRS) ldap.c
-lmdb.so:          $(HDRS) lmdb.c
-lsearch.so:       $(HDRS) lsearch.c
-mysql.so:         $(HDRS) mysql.c
-nis.so:           $(HDRS) nis.c
-nisplus.so:       $(HDRS) nisplus.c
-oracle.so:        $(HDRS) oracle.c
-passwd.so:        $(HDRS) passwd.c
-pgsql.so:         $(HDRS) pgsql.c
-redis.so:         $(HDRS) redis.c
-spf.so:           $(HDRS) spf.c
-sqlite.so:        $(HDRS) sqlite.c
-testdb.so:        $(HDRS) testdb.c
-whoson.so:        $(HDRS) whoson.c
+cdb.o cdb.so:           $(HDRS) cdb.c
+dbmdb.o dbmdb.so:       $(HDRS) dbmdb.c
+dnsdb.o dnsdb.so:       $(HDRS) dnsdb.c
+dsearch.o dsearch.so:   $(HDRS) dsearch.c
+ibase.o ibase.so:       $(HDRS) ibase.c
+ldap.o ldap.so:         $(HDRS) ldap.c
+lmdb.o lmdb.so:         $(HDRS) lmdb.c
+json.o json.so:         $(HDRS) json.c
+lsearch.o lsearch.so:   $(HDRS) lsearch.c
+mysql.o mysql.so:       $(HDRS) mysql.c
+nis.o nis.so:           $(HDRS) nis.c
+nisplus.o nisplus.so:   $(HDRS) nisplus.c
+oracle.o oracle.so:     $(HDRS) oracle.c
+passwd.o passwd.so:     $(HDRS) passwd.c
+pgsql.o pgsql.so:       $(HDRS) pgsql.c
+readsock.o readsock.so: $(HDRS) readsock.c
+redis.o redis.so:       $(HDRS) redis.c
+spf.o spf.so:           $(HDRS) spf.c
+sqlite.o sqlite.so:     $(HDRS) sqlite.c
+testdb.o testdb.so:     $(HDRS) testdb.c
+whoson.o whoson.so:     $(HDRS) whoson.c
 
 # End

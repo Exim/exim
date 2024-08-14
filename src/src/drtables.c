@@ -61,7 +61,8 @@ set to NULL for those that are not compiled into the binary. */
 #include "auths/tls.h"
 #endif
 
-auth_info auths_available[] = {
+auth_info * auths_available_newlist = NULL;
+auth_info auths_available_oldarray[] = {
 
 /* Checking by an expansion condition on plain text */
 
@@ -229,34 +230,6 @@ exim binary. */
 
 #include "routers/rf_functions.h"
 
-#ifdef ROUTER_ACCEPT
-# include "routers/accept.h"
-#endif
-
-#ifdef ROUTER_DNSLOOKUP
-# include "routers/dnslookup.h"
-#endif
-
-#ifdef ROUTER_MANUALROUTE
-# include "routers/manualroute.h"
-#endif
-
-#ifdef ROUTER_IPLITERAL
-# include "routers/ipliteral.h"
-#endif
-
-#ifdef ROUTER_IPLOOKUP
-# include "routers/iplookup.h"
-#endif
-
-#ifdef ROUTER_QUERYPROGRAM
-# include "routers/queryprogram.h"
-#endif
-
-#ifdef ROUTER_REDIRECT
-# include "routers/redirect.h"
-#endif
-
 #ifdef TRANSPORT_APPENDFILE
 # include "transports/appendfile.h"
 #endif
@@ -282,120 +255,11 @@ exim binary. */
 #endif
 
 
-/* Now set up the structures, terminated by an entry with a null name. */
-
-router_info routers_available[] = {
-#ifdef ROUTER_ACCEPT
-  {
-  .drinfo = {
-    .driver_name =	US"accept",
-    .options =		accept_router_options,
-    .options_count =	&accept_router_options_count,
-    .options_block =	&accept_router_option_defaults,
-    .options_len =	sizeof(accept_router_options_block),
-    .init =		accept_router_init,
-    },
-  .code =		accept_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		ri_yestransport
-  },
-#endif
-#ifdef ROUTER_DNSLOOKUP
-  {
-  .drinfo = {
-    .driver_name =	US"dnslookup",
-    .options =		dnslookup_router_options,
-    .options_count =	&dnslookup_router_options_count,
-    .options_block =	&dnslookup_router_option_defaults,
-    .options_len =	sizeof(dnslookup_router_options_block),
-    .init =		dnslookup_router_init,
-    },
-  .code =		dnslookup_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		ri_yestransport
-  },
-#endif
-#ifdef ROUTER_IPLITERAL
-  {
-  .drinfo = {
-    .driver_name =	US"ipliteral",
-    .options =		ipliteral_router_options,
-    .options_count =	&ipliteral_router_options_count,
-    .options_block =	&ipliteral_router_option_defaults,
-    .options_len =	sizeof(ipliteral_router_options_block),
-    .init =		ipliteral_router_init,
-    },
-  .code =		ipliteral_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		ri_yestransport
-  },
-#endif
-#ifdef ROUTER_IPLOOKUP
-  {
-  .drinfo = {
-    .driver_name =	US"iplookup",
-    .options =		iplookup_router_options,
-    .options_count =	&iplookup_router_options_count,
-    .options_block =	&iplookup_router_option_defaults,
-    .options_len =	sizeof(iplookup_router_options_block),
-    .init =		iplookup_router_init,
-    },
-  .code =		iplookup_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		ri_notransport
-  },
-#endif
-#ifdef ROUTER_MANUALROUTE
-  {
-  .drinfo = {
-    .driver_name =	US"manualroute",
-    .options =		manualroute_router_options,
-    .options_count =	&manualroute_router_options_count,
-    .options_block =	&manualroute_router_option_defaults,
-    .options_len =	sizeof(manualroute_router_options_block),
-    .init =		manualroute_router_init,
-    },
-  .code =		manualroute_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		0
-  },
-#endif
-#ifdef ROUTER_QUERYPROGRAM
-  {
-  .drinfo = {
-    .driver_name =	US"queryprogram",
-    .options =		queryprogram_router_options,
-    .options_count =	&queryprogram_router_options_count,
-    .options_block =	&queryprogram_router_option_defaults,
-    .options_len =	sizeof(queryprogram_router_options_block),
-    .init =		queryprogram_router_init,
-    },
-  .code =		queryprogram_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		0
-  },
-#endif
-#ifdef ROUTER_REDIRECT
-  {
-  .drinfo = {
-    .driver_name =	US"redirect",
-    .options =		redirect_router_options,
-    .options_count =	&redirect_router_options_count,
-    .options_block =	&redirect_router_option_defaults,
-    .options_len =	sizeof(redirect_router_options_block),
-    .init =		redirect_router_init,
-    },
-  .code =		redirect_router_entry,
-  .tidyup =		NULL,     /* no tidyup entry */
-  .ri_flags =		ri_notransport
-  },
-#endif
-  { .drinfo = { .driver_name = US"" }}
-};
+router_info * routers_available = NULL;
 
 
-
-transport_info transports_available[] = {
+transport_info * transports_available_newlist = NULL;
+transport_info transports_available_oldarray[] = {
 #ifdef TRANSPORT_APPENDFILE
   {
   .drinfo = {
@@ -501,7 +365,7 @@ gstring *
 auth_show_supported(gstring * g)
 {
 g = string_cat(g, US"Authenticators:");
-for (auth_info * ai = auths_available; ai->drinfo.driver_name[0]; ai++)
+for (auth_info * ai = auths_available_oldarray; ai->drinfo.driver_name[0]; ai++)
        	g = string_fmt_append(g, " %s", ai->drinfo.driver_name);
 return string_cat(g, US"\n");
 }
@@ -509,10 +373,57 @@ return string_cat(g, US"\n");
 gstring *
 route_show_supported(gstring * g)
 {
-g = string_cat(g, US"Routers:");
-for (router_info * rr = routers_available; rr->drinfo.driver_name[0]; rr++)
-       	g = string_fmt_append(g, " %s", rr->drinfo.driver_name);
-return string_cat(g, US"\n");
+uschar * b = US""		/* static-build router names */
+#if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT!=2
+  " accept"
+#endif
+#if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP!=2
+  " dnslookup"
+#endif
+# if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL!=2
+  " ipliteral"
+#endif
+#if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP!=2
+  " iplookup"
+#endif
+#if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE!=2
+  " manualroute"
+#endif
+#if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT!=2
+  " redirect"
+#endif
+#if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM!=2
+  " queryprogram"
+#endif
+  ;
+
+uschar * d = US""		/* dynamic-module router names */
+#if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT==2
+  " accept"
+#endif
+#if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP==2
+  " dnslookup"
+#endif
+# if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL==2
+  " ipliteral"
+#endif
+#if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP==2
+  " iplookup"
+#endif
+#if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE==2
+  " manualroute"
+#endif
+#if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT==2
+  " redirect"
+#endif
+#if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM==2
+  " queryprogram"
+#endif
+  ;
+
+if (*b) g = string_fmt_append(g, "Routers (built-in):%s\n", b);
+if (*d) g = string_fmt_append(g, "Routers (dynamic): %s\n", d);
+return g;
 }
 
 gstring *
@@ -671,8 +582,8 @@ void
 init_lookup_list(void)
 {
 #ifdef LOOKUP_MODULE_DIR
-DIR *dd;
-struct dirent *ent;
+DIR * dd;
+struct dirent * ent;
 int countmodules = 0;
 int moduleerrors = 0;
 #endif
@@ -764,18 +675,23 @@ addlookupmodule(NULL, &testdb_lookup_module_info);
 addlookupmodule(NULL, &whoson_lookup_module_info);
 #endif
 
+/* This is a custom expansion, and not available as either
+a list-syntax lookup or a lookup expansion. However, it is
+implemented by a lookup module. */
+
 addlookupmodule(NULL, &readsock_lookup_module_info);
 
 #ifdef LOOKUP_MODULE_DIR
 if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
   {
   DEBUG(D_lookup) debug_printf("Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
-  log_write(0, LOG_MAIN, "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
+  log_write(0, LOG_MAIN|LOG_PANIC,
+	  "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
   }
 else
   {
   const pcre2_code * regex_islookupmod = regex_must_compile(
-    US"\\." DYNLIB_FN_EXT "$", MCS_NOFLAGS, TRUE);
+    US"_lookup\\." DYNLIB_FN_EXT "$", MCS_NOFLAGS, TRUE);
 
   DEBUG(D_lookup) debug_printf("Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
   while ((ent = readdir(dd)))

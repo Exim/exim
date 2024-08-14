@@ -201,6 +201,30 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
   OK : DEFER;
 }
 
+
+
+# ifdef DYNLOOKUP
+#  define ipliteral_router_info _router_info
+# endif
+
+router_info ipliteral_router_info =
+{
+.drinfo = {
+  .driver_name =	US"ipliteral",
+  .options =		ipliteral_router_options,
+  .options_count =	&ipliteral_router_options_count,
+  .options_block =	&ipliteral_router_option_defaults,
+  .options_len =	sizeof(ipliteral_router_options_block),
+  .init =		ipliteral_router_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		ROUTER_MAGIC,
+# endif
+  },
+.code =			ipliteral_router_entry,
+.tidyup =		NULL,     /* no tidyup entry */
+.ri_flags =		ri_yestransport
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*ROUTER_IPLITERAL*/
 /* End of routers/ipliteral.c */

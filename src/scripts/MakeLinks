@@ -46,7 +46,8 @@ cd ..
 d="routers"
 mkdir $d
 cd $d
-for f in README Makefile accept.h accept.c dnslookup.h dnslookup.c \
+# Makefile is generated
+for f in README accept.h accept.c dnslookup.h dnslookup.c \
   ipliteral.h ipliteral.c iplookup.h iplookup.c manualroute.h \
   manualroute.c queryprogram.h queryprogram.c redirect.h redirect.c \
   rf_functions.h rf_change_domain.c rf_expand_data.c rf_get_errors_address.c \

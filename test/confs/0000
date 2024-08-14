@@ -10,4 +10,6 @@ gecos_name = CALLER_NAME
 tls_advertise_hosts =
 keep_environment =
 
+begin routers
+
 # End

@@ -36,7 +36,7 @@ FE       = $(FULLECHO)
 # up-to-date. Then the os-specific source files and the C configuration file
 # are set up, and finally it goes to the main Exim target.
 
-all:       utils exim
+all:       utils exim dynmodules
 config:    $(EDITME) checklocalmake Makefile os.c config.h version.h version.sh macro.c
 
 exim_openssl exim_gnutls: clean exim
@@ -245,7 +245,7 @@ macro.c: macro_predef
 
 .PHONY: all config utils \
 	buildauths buildlookups buildpdkim buildrouters \
-        buildtransports checklocalmake clean
+        buildtransports dynmodules checklocalmake clean
 
 
 utils: $(EXIM_MONITOR) exicyclog exinext exiwhat \
@@ -943,6 +943,18 @@ $(MONBIN): $(HDRS)
 
 # Targets for the various libraries that Exim uses.
 
+# Copies of modules built as dynamic-load libraries
+
+dynmodules: buildlookups buildrouters buildtransports buildauths
+	rm -fr dynmodules
+	mkdir dynmodules
+	for d in lookup router transport auth; do \
+	  for f in $${d}s/*.so; do \
+	    [ -e $$f ] && ln $$f dynmodules/`basename $$f .so`_$$d.so; \
+	  done; \
+	done; \
+	true
+
 # The lookups library.
 
 buildlookups: config
@@ -956,6 +968,7 @@ buildlookups: config
 
 buildrouters: config
 	 @cd routers && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
+	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
 	 @echo " "
@@ -964,6 +977,7 @@ buildrouters: config
 
 buildtransports: config
 	 @cd transports && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
+	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
 	 @echo " "
@@ -972,6 +986,7 @@ buildtransports: config
 
 buildauths: config
 	 @cd auths && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
+	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
 	 @echo " "

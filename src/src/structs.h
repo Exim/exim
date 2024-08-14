@@ -141,6 +141,7 @@ typedef struct driver_instance {
 } driver_instance;
 
 typedef struct driver_info {
+  struct driver_info * next;
   uschar *driver_name;            /* Name of driver */
 
   optionlist *options;            /* Table of private options names */
@@ -149,7 +150,18 @@ typedef struct driver_info {
   int     options_len;            /* Length of same in bytes */
   void  (*init)(                  /* Initialization entry point */
 	  struct driver_instance *);
+  uint	  dyn_magic;		  /* Magic num if dynamic, else zero */
 } driver_info;
+
+/* Values for dyn_magic.  Encode types and api version. */
+#define ROUTER_MAGIC	0x52544d31	/* RTM1 */
+#define TRANSPORT_MAGIC	0x54504d31	/* TPM1 */
+#define AUTH_MAGIC	0x65554d31	/* AUM1 */
+
+typedef struct {
+  uint		magic;
+  uschar *	class;
+} driver_magics;
 
 
 /* Structure for holding information about the configured transports. Some
