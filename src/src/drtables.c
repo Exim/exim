@@ -230,134 +230,11 @@ exim binary. */
 
 #include "routers/rf_functions.h"
 
-#ifdef TRANSPORT_APPENDFILE
-# include "transports/appendfile.h"
-#endif
-
-#ifdef TRANSPORT_AUTOREPLY
-# include "transports/autoreply.h"
-#endif
-
-#ifdef TRANSPORT_LMTP
-# include "transports/lmtp.h"
-#endif
-
-#ifdef TRANSPORT_PIPE
-# include "transports/pipe.h"
-#endif
-
-#ifdef EXPERIMENTAL_QUEUEFILE
-# include "transports/queuefile.h"
-#endif
-
-#ifdef TRANSPORT_SMTP
-# include "transports/smtp.h"
-#endif
-
 
 router_info * routers_available = NULL;
+transport_info * transports_available = NULL;
 
 
-transport_info * transports_available_newlist = NULL;
-transport_info transports_available_oldarray[] = {
-#ifdef TRANSPORT_APPENDFILE
-  {
-  .drinfo = {
-    .driver_name =	US"appendfile",
-    .options =		appendfile_transport_options,
-    .options_count =	&appendfile_transport_options_count,
-    .options_block =	&appendfile_transport_option_defaults,       /* private options defaults */
-    .options_len =	sizeof(appendfile_transport_options_block),
-    .init =		appendfile_transport_init,
-    },
-  .code =		appendfile_transport_entry,
-  .tidyup =		NULL,
-  .closedown =		NULL,
-  .local =		TRUE
-  },
-#endif
-#ifdef TRANSPORT_AUTOREPLY
-  {
-  .drinfo = {
-    .driver_name =	US"autoreply",
-    .options =		autoreply_transport_options,
-    .options_count =	&autoreply_transport_options_count,
-    .options_block =	&autoreply_transport_option_defaults,
-    .options_len =	sizeof(autoreply_transport_options_block),
-    .init =		autoreply_transport_init,
-    },
-  .code =		autoreply_transport_entry,
-  .tidyup =		NULL,
-  .closedown =		NULL,
-  .local =		TRUE
-  },
-#endif
-#ifdef TRANSPORT_LMTP
-  {
-  .drinfo = {
-    .driver_name =	US"lmtp",
-    .options =		lmtp_transport_options,
-    .options_count =	&lmtp_transport_options_count,
-    .options_block =	&lmtp_transport_option_defaults,
-    .options_len =	sizeof(lmtp_transport_options_block),
-    .init =		lmtp_transport_init,
-    },
-  .code =		lmtp_transport_entry,
-  .tidyup =		NULL,
-  .closedown =		NULL,
-  .local =		TRUE
-  },
-#endif
-#ifdef TRANSPORT_PIPE
-  {
-  .drinfo = {
-    .driver_name =	US"pipe",
-    .options =		pipe_transport_options,
-    .options_count =	&pipe_transport_options_count,
-    .options_block =	&pipe_transport_option_defaults,
-    .options_len =	sizeof(pipe_transport_options_block),
-    .init =		pipe_transport_init,
-    },
-  .code =		pipe_transport_entry,
-  .tidyup =		NULL,
-  .closedown =		NULL,
-  .local =		TRUE
-  },
-#endif
-#ifdef EXPERIMENTAL_QUEUEFILE
-  {
-  .drinfo = {
-    .driver_name =	US"queuefile",
-    .options =		queuefile_transport_options,
-    .options_count =	&queuefile_transport_options_count,
-    .options_block =	&queuefile_transport_option_defaults,
-    .options_len =	sizeof(queuefile_transport_options_block),
-    .init =		queuefile_transport_init,
-    },
-  .code =		queuefile_transport_entry,
-  .tidyup =		NULL,
-  .closedown =		NULL,
-  .local =		TRUE
-  },
-#endif
-#ifdef TRANSPORT_SMTP
-  {
-  .drinfo = {
-    .driver_name =	US"smtp",
-    .options =		smtp_transport_options,
-    .options_count =	&smtp_transport_options_count,
-    .options_block =	&smtp_transport_option_defaults,
-    .options_len =	sizeof(smtp_transport_options_block),
-    .init =		smtp_transport_init,
-    },
-  .code =		smtp_transport_entry,
-  .tidyup =		NULL,
-  .closedown =		smtp_transport_closedown,
-  .local =		FALSE
-  },
-#endif
-  { .drinfo = { .driver_name = US"" }}
-};
 
 #ifndef MACRO_PREDEF
 
@@ -429,35 +306,69 @@ return g;
 gstring *
 transport_show_supported(gstring * g)
 {
-g = string_cat(g, US"Transports:");
-#ifdef TRANSPORT_APPENDFILE
-  g = string_cat(g, US" appendfile");
-  #ifdef SUPPORT_MAILDIR
-    g = string_cat(g, US"/maildir");	/* damn these subclasses */
-  #endif
-  #ifdef SUPPORT_MAILSTORE
-    g = string_cat(g, US"/mailstore");
-  #endif
-  #ifdef SUPPORT_MBX
-    g = string_cat(g, US"/mbx");
-  #endif
+uschar * b = US""		/* static-build transportnames */
+#if defined(TRANSPORT_APPENDFILE) && TRANSPORT_APPENDFILE!=2
+  " appendfile"
+# ifdef SUPPORT_MAILDIR
+    "/maildir"
+# endif
+# ifdef SUPPORT_MAILSTORE
+    "/mailstore"
+# endif
+# ifdef SUPPORT_MBX
+    "/mbx"
+# endif
 #endif
-#ifdef TRANSPORT_AUTOREPLY
-  g = string_cat(g, US" autoreply");
+#if defined(TRANSPORT_AUTOREPLY) && TRANSPORT_AUTOREPLY!=2
+  " autoreply"
 #endif
-#ifdef TRANSPORT_LMTP
-  g = string_cat(g, US" lmtp");
+#if defined(TRANSPORT_LMTP) && TRANSPORT_LMTP!=2
+  " lmtp"
 #endif
-#ifdef TRANSPORT_PIPE
-  g = string_cat(g, US" pipe");
+#if defined(TRANSPORT_PIPE) && TRANSPORT_PIPE!=2
+  " pipe"
 #endif
-#ifdef EXPERIMENTAL_QUEUEFILE
-  g = string_cat(g, US" queuefile");
+#if defined(EXPERIMENTAL_QUEUEFILE) && EXPERIMENTAL_QUEUEFILE!=2
+  " queuefile"
 #endif
-#ifdef TRANSPORT_SMTP
-  g = string_cat(g, US" smtp");
+#if defined(TRANSPORT_SMTP) && TRANSPORT_SMTP!=2
+  " smtp"
 #endif
-return string_cat(g, US"\n");
+  ;
+
+uschar * d = US""		/* dynamic-module transportnames */
+#if defined(TRANSPORT_APPENDFILE) && TRANSPORT_APPENDFILE==2
+  " appendfile"
+# ifdef SUPPORT_MAILDIR
+    "/maildir"
+# endif
+# ifdef SUPPORT_MAILSTORE
+    "/mailstore"
+# endif
+# ifdef SUPPORT_MBX
+    "/mbx"
+# endif
+#endif
+#if defined(TRANSPORT_AUTOREPLY) && TRANSPORT_AUTOREPLY==2
+  " autoreply"
+#endif
+#if defined(TRANSPORT_LMTP) && TRANSPORT_LMTP==2
+  " lmtp"
+#endif
+#if defined(TRANSPORT_PIPE) && TRANSPORT_PIPE==2
+  " pipe"
+#endif
+#if defined(EXPERIMENTAL_QUEUEFILE) && EXPERIMENTAL_QUEUEFILE==2
+  " queuefile"
+#endif
+#if defined(TRANSPORT_SMTP) && TRANSPORT_SMTP==2
+  " smtp"
+#endif
+  ;
+
+if (*b) g = string_fmt_append(g, "Transports (built-in):%s\n", b);
+if (*d) g = string_fmt_append(g, "Transports (dynamic): %s\n", d);
+return g;
 }
 
 

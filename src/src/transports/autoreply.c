@@ -806,6 +806,31 @@ DEBUG(D_transport) debug_printf("%s transport succeeded\n", trname);
 return FALSE;
 }
 
+
+
+
+# ifdef DYNLOOKUP
+#  define autoreply_transport_info _transport_info
+# endif
+
+transport_info autoreply_transport_info = {
+.drinfo = {
+  .driver_name =	US"autoreply",
+  .options =		autoreply_transport_options,
+  .options_count =	&autoreply_transport_options_count,
+  .options_block =	&autoreply_transport_option_defaults,
+  .options_len =	sizeof(autoreply_transport_options_block),
+  .init =		autoreply_transport_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		TRANSPORT_MAGIC,
+# endif
+  },
+.code =		autoreply_transport_entry,
+.tidyup =	NULL,
+.closedown =	NULL,
+.local =	TRUE
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*TRANSPORT_AUTOREPOL*/
 /* End of transport/autoreply.c */

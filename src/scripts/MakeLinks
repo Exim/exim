@@ -63,7 +63,8 @@ cd ..
 d="transports"
 mkdir $d
 cd $d
-for f in README Makefile appendfile.h appendfile.c autoreply.h \
+# Makefile is generated
+for f in README appendfile.h appendfile.c autoreply.h \
   autoreply.c lmtp.h lmtp.c pipe.h pipe.c queuefile.c queuefile.h \
   smtp.h smtp.c smtp_socks.c tf_maildir.c tf_maildir.h
 do

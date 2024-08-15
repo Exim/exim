@@ -2072,6 +2072,7 @@ withdrawn.
 .section "Dynamically loaded module support" "SECTdynamicmodules"
 .cindex "lookup modules"
 .cindex "router modules"
+.cindex "transport modules"
 .cindex "dynamic modules"
 .cindex ".so building"
 On some platforms, Exim supports not compiling all lookup types directly into
@@ -2083,7 +2084,7 @@ dependencies.
 Most, but not all, lookup types can be built this way.
 
 .new
-Similarly, router drivers can be built as external modules.
+Similarly, router and transport drivers can be built as external modules.
 This permits a smaller exim binary, growing only as needed for the
 runtime cofiguration.
 .wen

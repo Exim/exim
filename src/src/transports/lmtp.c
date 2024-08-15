@@ -808,6 +808,31 @@ MINUS_N:
   return FALSE;
 }
 
+
+
+
+# ifdef DYNLOOKUP
+#  define lmtp_transport_info _transport_info
+# endif
+
+transport_info lmtp_transport_info = {
+.drinfo = {
+  .driver_name =	US"lmtp",
+  .options =		lmtp_transport_options,
+  .options_count =	&lmtp_transport_options_count,
+  .options_block =	&lmtp_transport_option_defaults,
+  .options_len =	sizeof(lmtp_transport_options_block),
+  .init =		lmtp_transport_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		TRANSPORT_MAGIC,
+# endif
+  },
+.code =		lmtp_transport_entry,
+.tidyup =	NULL,
+.closedown =	NULL,
+.local =	TRUE
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*TRANSPORT_LMTP*/
 /* End of transport/lmtp.c */

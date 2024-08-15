@@ -14,8 +14,8 @@ Version 4.98
 
  3. Events smtp:fail:protocol and smtp:fail:syntax
 
- 4. JSON lookup support, and all the router driver except manualroute,
-    can now be built as lodable modules
+ 4. JSON lookup support, all the router drivers except manualroute, and all the transport
+    drivers except smtp can now be built as lodable modules
 
 Version 4.98
 ------------

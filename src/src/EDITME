@@ -344,6 +344,15 @@ ROUTER_REDIRECT=yes
 # file. By commenting out those you know you don't want to use, you can make
 # the binary a bit smaller. If you are unsure, leave all of these included for
 # now.
+#
+# If set to "2" instead of "yes" then the corresponding driver will be
+# built as a module and must be installed into LOOKUP_MODULE_DIR (the name
+# is historic).
+# You need to add -export-dynamic -rdynamic to EXTRALIBS. You may also need to
+# add -ldl to EXTRALIBS so that dlopen() is available to Exim. You need to
+# define CFLAGS_DYNAIC and LOOKUP_MODULE_DIR below so the builds are done right,
+# and so the exim binary actually loads dynamic lookup modules.
+# The smtp transport cannot be built as a module.
 
 TRANSPORT_APPENDFILE=yes
 TRANSPORT_AUTOREPLY=yes

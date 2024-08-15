@@ -6230,6 +6230,31 @@ DEBUG(D_transport) debug_printf("Leaving %s transport\n", trname);
 return TRUE;   /* Each address has its status */
 }
 
+
+
+
+# ifdef DYNLOOKUP
+#  define smtp_transport_info _transport_info
+# endif
+
+transport_info smtp_transport_info = {
+.drinfo = {
+  .driver_name =	US"smtp",
+  .options =		smtp_transport_options,
+  .options_count =	&smtp_transport_options_count,
+  .options_block =	&smtp_transport_option_defaults,
+  .options_len =	sizeof(smtp_transport_options_block),
+  .init =		smtp_transport_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		TRANSPORT_MAGIC,
+# endif
+  },
+.code =		smtp_transport_entry,
+.tidyup =	NULL,
+.closedown =	smtp_transport_closedown,
+.local =	FALSE
+};
+
 #endif	/*!MACRO_PREDEF*/
 /* vi: aw ai sw=2
 */

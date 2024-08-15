@@ -10,6 +10,7 @@
 
 LC_ALL=C
 export LC_ALL
+set -e
 
 
 # First off, get the OS type, and check that there is a make file for it.
@@ -291,12 +292,16 @@ rm -f $mftt
 cp ../src/lookups/Makefile $look_mf_pre
 ../scripts/lookups-Makefile
 
-class="routers"
-cp ../src/$class/Makefile $class/Makefile.predynamic
-../scripts/$class-Makefile
-mv routers/Makefile.postdynamic $class/Makefile
-rm $class/Makefile.predynamic
-class=
+while read class classdef names
+do
+  cp ../src/$class/Makefile $class/Makefile.predynamic
+  CLASS=$class CLASSDEF=$classdef DRNAMES="$names" ../scripts/drivers-Makefile
+  mv $class/Makefile.postdynamic $class/Makefile
+  rm $class/Makefile.predynamic
+done <<-END
+ routers ROUTER		ACCEPT DNSLOOKUP IPLITERAL IPLOOKUP MANUALROUTE QUERYPROGRAM REDIRECT
+ transports TRANSPORT	APPENDFILE AUTOREPLY LMTP PIPE QUEUEFILE SMTP
+END
 
 # See if there is a definition of EXIM_PERL in what we have built so far.
 # If so, run Perl to find the default values for PERL_CC, PERL_CCOPTS,

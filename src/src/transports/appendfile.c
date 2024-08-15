@@ -3319,6 +3319,31 @@ ret_panic:
   return FALSE;
 }
 
+
+
+
+# ifdef DYNLOOKUP
+#  define appendfile_transport_info _transport_info
+# endif
+
+transport_info appendfile_transport_info = {
+.drinfo = {
+  .driver_name =	US"appendfile",
+  .options =		appendfile_transport_options,
+  .options_count =	&appendfile_transport_options_count,
+  .options_block =	&appendfile_transport_option_defaults,	/* private options defaults */
+  .options_len =	sizeof(appendfile_transport_options_block),
+  .init =		appendfile_transport_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		TRANSPORT_MAGIC,
+# endif
+  },
+.code =		appendfile_transport_entry,
+.tidyup =	NULL,
+.closedown =	NULL,
+.local =	TRUE
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*TRANSPORT_APPENDFILE*/
 /* End of transport/appendfile.c */

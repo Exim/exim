@@ -285,5 +285,30 @@ put in the first address of a batch. */
 return FALSE;
 }
 
+
+
+
+# ifdef DYNLOOKUP
+#  define queuefile_transport_info _transport_info
+# endif
+
+transport_info queuefile_transport_info = {
+.drinfo = {
+  .driver_name =	US"queuefile",
+  .options =		queuefile_transport_options,
+  .options_count =	&queuefile_transport_options_count,
+  .options_block =	&queuefile_transport_option_defaults,
+  .options_len =	sizeof(queuefile_transport_options_block),
+  .init =		queuefile_transport_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		TRANSPORT_MAGIC,
+# endif
+  },
+.code =		queuefile_transport_entry,
+.tidyup =	NULL,
+.closedown =	NULL,
+.local =	TRUE
+};
+
 #endif /*!MACRO_PREDEF*/
 #endif /*EXPERIMENTAL_QUEUEFILE*/

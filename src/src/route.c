@@ -227,7 +227,6 @@ function. */
 void
 route_init(void)
 {
-
 int old_pool = store_pool;
 store_pool = POOL_PERM;
   {

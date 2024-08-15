@@ -11,5 +11,6 @@ tls_advertise_hosts =
 keep_environment =
 
 begin routers
+begin transports
 
 # End

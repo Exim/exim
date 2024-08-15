@@ -1128,6 +1128,31 @@ if (addr->transport_return != OK)
 return FALSE;
 }
 
+
+
+
+# ifdef DYNLOOKUP
+#  define pipe_transport_info _transport_info
+# endif
+
+transport_info pipe_transport_info = {
+.drinfo = {
+  .driver_name =	US"pipe",
+  .options =		pipe_transport_options,
+  .options_count =	&pipe_transport_options_count,
+  .options_block =	&pipe_transport_option_defaults,
+  .options_len =	sizeof(pipe_transport_options_block),
+  .init =		pipe_transport_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		TRANSPORT_MAGIC,
+# endif
+  },
+.code =		pipe_transport_entry,
+.tidyup =	NULL,
+.closedown =	NULL,
+.local =	TRUE
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*TRASPORT_PIPE*/
 /* End of transport/pipe.c */

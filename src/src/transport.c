@@ -102,8 +102,7 @@ uschar buf[64];
 
 options_from_list(optionlist_transports, nelem(optionlist_transports), US"TRANSPORTS", NULL);
 
-//for (transport_info * ti= transports_available; ti->drinfo.driver_name[0]; ti++)
-for (driver_info * di= (driver_info *)transports_available_newlist; di; di = di->next)
+for (driver_info * di= (driver_info *)transports_available; di; di = di->next)
   {
   spf(buf, sizeof(buf), US"_DRIVER_TRANSPORT_%T", di->driver_name);
   builtin_macro_create(buf);
@@ -146,21 +145,51 @@ the work. */
 void
 transport_init(void)
 {
-for (transport_info * tblent = transports_available_oldarray;
-    *tblent->drinfo.driver_name; tblent++)
+int old_pool = store_pool;
+store_pool = POOL_PERM;
   {
-  driver_info * listent = store_get(sizeof(transport_info), tblent);
-  memcpy(listent, tblent, sizeof(transport_info));
-  listent->next = (driver_info *)transports_available_newlist;
-  transports_available_newlist = (transport_info *)listent;
+  driver_info ** anchor = (driver_info **) &transports_available;
+  extern transport_info appendfile_transport_info;
+  extern transport_info autoreply_transport_info;
+  extern transport_info lmtp_transport_info;
+  extern transport_info pipe_transport_info;
+  extern transport_info queuefile_transport_info;
+  extern transport_info smtp_transport_info;
+
+  /* Add the transport drivers that are built for static linkage to the
+  list of availables. */
+
+#if defined(TRANSPORT_APPENDFILE) && TRANSPORT_APPENDFILE!=2
+  add_driver_info(anchor, &appendfile_transport_info.drinfo, sizeof(transport_info));
+#endif
+#if defined(TRANSPORT_AUTOREPLY) && TRANSPORT_AUTOREPLY!=2
+  add_driver_info(anchor, &autoreply_transport_info.drinfo, sizeof(transport_info));
+#endif
+#if defined(TRANSPORT_LMTP) && TRANSPORT_LMTP!=2
+  add_driver_info(anchor, &lmtp_transport_info.drinfo, sizeof(transport_info));
+#endif
+#if defined(TRANSPORT_PIPE) && TRANSPORT_PIPE!=2
+  add_driver_info(anchor, &pipe_transport_info.drinfo, sizeof(transport_info));
+#endif
+#if defined(EXPERIMENTAL_QUEUEFILE) && EXPERIMENTAL_QUEUEFILE!=2
+  add_driver_info(anchor, &queuefile_transport_info.drinfo, sizeof(transport_info));
+#endif
+#if defined(TRANSPORT_SMTP) && TRANSPORT_SMTP!=2
+  add_driver_info(anchor, &smtp_transport_info.drinfo, sizeof(transport_info));
+#endif
   }
+store_pool = old_pool;
+
+/* Read the config file "transports" section, creating a transportsinstance list.
+For any yet-undiscovered driver, check for a loadable module and add it to
+those available. */
 
 readconf_driver_init((driver_instance **)&transports,     /* chain anchor */
-  (driver_info **)&transports_available_newlist,   /* available drivers */
-  sizeof(transport_info),                /* size of info block */
-  &transport_defaults,                   /* default values for generic options */
-  sizeof(transport_instance),            /* size of instance block */
-  optionlist_transports,                 /* generic options */
+  (driver_info **)&transports_available, /* available drivers */
+  sizeof(transport_info),		/* size of info block */
+  &transport_defaults,			/* default values for generic options */
+  sizeof(transport_instance),		/* size of instance block */
+  optionlist_transports,		/* generic options */
   optionlist_transports_size,
   US"transport");
 

@@ -1,17 +1,23 @@
 #! /bin/sh
 
-# Copyright (c) The Exim Maintainers 1995 - 2021
+# Copyright (c) The Exim Maintainers 1995 - 2024
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-# We turn the configure-built build-$foo/routers/Makefile.predynamic into Makefile
+set -e
+class=${CLASS:?}
+classdef=${CLASSDEF:?}
+drnames="${DRNAMES:?}"
+
+# We turn the configure-built build-$foo/$class/Makefile.predynamic into Makefile.
+# This is used for router and transport drivers, called from scripts/Configure-Makefile.
 
 # We always re-exec ourselves at least once, because it's the cleanest and
 # most portable way to turn on various features we expect of POSIX sh.
-if [ -z "$EXIM_ROUTER_MAKEFILE_ADJUSTED" ]
+if [ -z "$EXIM_DRIVER_MAKEFILE_ADJUSTED" ]
 then
   SHELL=/bin/sh
-  EXIM_ROUTER_MAKEFILE_ADJUSTED=yes
-  export EXIM_ROUTER_MAKEFILE_ADJUSTED
+  EXIM_DRIVER_MAKEFILE_ADJUSTED=yes
+  export EXIM_DRIVER_MAKEFILE_ADJUSTED
 
   # Solaris sh and tr are problematic until we get xpg4 variants
   if [ -x /usr/xpg4/bin/sh ]
@@ -46,8 +52,8 @@ then
   exec "$SHELL" "$0" "$@"
 fi
 
-input=routers/Makefile.predynamic
-target=routers/Makefile.postdynamic
+input=$class/Makefile.predynamic
+target=$class/Makefile.postdynamic
 defs_source=Makefile-t
 tag_marker='MAGIC-TAG-MODS-OBJ-RULES-GO-HERE'
 
@@ -76,10 +82,10 @@ fi
 if grep -q "^CFLAGS_DYNAMIC[ $tab?:]*=" "$defs_source"
 then
   # we have a definition, we're good to go
-  echo >&2 ">>> Creating routers/Makefile for building dynamic modules"
+  echo >&2 ">>> Creating $class/Makefile for building dynamic modules"
   enable_dynamic=yes
 else
-  echo >&2 ">>> Creating routers/Makefile without dynamic module support"
+  echo >&2 ">>> Creating $class/Makefile without dynamic module support"
   enable_dynamic=''
   # We always do something now, since there should always be a lookup,
   # and now we need to run in order to put the OBJ=$(OBJ)+ rules in.  So we
@@ -91,27 +97,18 @@ fi
 
 want_dynamic() {
   local dyn_name="$1"
-  local re="ROUTER_${dyn_name}[ $tab]*=[ $tab]*2"
-  env | grep -q "^$re"
+  local re="(${classdef}|EXPERIMENTAL)_${dyn_name}[ $tab]*=[ $tab]*2"
+  env | grep -E -q "^$re"
   if [ $? -eq 0 ]; then return 0; fi
-  grep -q "^[ $tab]*$re" "$defs_source"
+  grep -E -q "^[ $tab]*$re" "$defs_source"
 }
 
 want_at_all() {
   local want_name="$1"
-  local re="ROUTER_${want_name}[ $tab]*=[ $tab]*."
-  env | grep -q "^$re"
+  local re="(${classdef}|EXPERIMENTAL)_${want_name}[ $tab]*=[ $tab]*."
+  env | grep -E -q "^$re"
   if [ $? -eq 0 ]; then return 0; fi
-  grep -q "^[ $tab]*$re" "$defs_source"
-}
-
-# Adapted want_at_all above to work for EXPERIMENTAL features
-want_experimental() {
-  local want_name="$1"
-  local re="EXPERIMENTAL_${want_name}[ $tab]*=[ $tab]*."
-  env | grep -q "^$re"
-  if [ $? -eq 0 ]; then return 0; fi
-  grep -q "^[ $tab]*$re" "$defs_source"
+  grep -E -q "^[ $tab]*$re" "$defs_source"
 }
 
 # The values of these variables will be emitted into the Makefile.
@@ -140,15 +137,15 @@ emit_module_rule() {
       exit 1
     fi
     MODS="${MODS} ${mod_name}.so"
-#    pkgconf=$(grep "^ROUTER_${name}_PC" "$defs_source")
+#    pkgconf=$(grep "^${classdef}_${name}_PC" "$defs_source")
 #    if [ $? -eq 0 ]; then
 #      pkgconf=$(echo $pkgconf | sed 's/^.*= *//')
-#      echo "ROUTER_${mod_name}_INCLUDE = $(pkg-config --cflags $pkgconf)"
-#      echo "ROUTER_${mod_name}_LIBS = $(pkg-config --libs $pkgconf)"
+#      echo "${classdef}_${mod_name}_INCLUDE = $(pkg-config --cflags $pkgconf)"
+#      echo "${classdef}_${mod_name}_LIBS = $(pkg-config --libs $pkgconf)"
 #    else
-#      grep "^ROUTER_${name}_" "$defs_source"
-#      echo "ROUTER_${mod_name}_INCLUDE = \$(ROUTER_${name}_INCLUDE)"
-#      echo "ROUTER_${mod_name}_LIBS = \$(ROUTER_${name}_LIBS)"
+#      grep "^${classdef}_${name}_" "$defs_source"
+#      echo "${classdef}_${mod_name}_INCLUDE = \$(${classdef}_${name}_INCLUDE)"
+#      echo "${classdef}_${mod_name}_LIBS = \$(${classdef}_${name}_LIBS)"
 #    fi
   elif want_at_all "$name"
   then
@@ -162,8 +159,7 @@ exec > "$target"
 
 sed -n "1,/$tag_marker/p" < "$input"
 
-for name_mod in \
-    ACCEPT DNSLOOKUP IPLITERAL IPLOOKUP MANUALROUTE QUERYPROGRAM REDIRECT
+for name_mod in $drnames
 do
   emit_module_rule $name_mod
 done

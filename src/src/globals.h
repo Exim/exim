@@ -1111,10 +1111,9 @@ extern int     transport_newlines;     /* Accurate count of number of newline ch
 extern const uschar **transport_filter_argv; /* For on-the-fly filtering */
 extern int     transport_filter_timeout; /* Timeout for same */
 
-extern transport_info transports_available_oldarray[]; /* Vector of available transports */
-extern transport_info * transports_available_newlist;
-extern transport_instance *transports; /* Chain of instantiated transports */
-extern transport_instance transport_defaults; /* Default values */
+extern transport_info * transports_available;	/* Listof available transports */
+extern transport_instance *transports;		/* Chain of instantiated transports */
+extern transport_instance transport_defaults;	/* Default values */
 
 extern int     transport_write_timeout;/* Set to time out individual writes */
 
