@@ -10,7 +10,6 @@
 
 LC_ALL=C
 export LC_ALL
-set -e
 
 
 # First off, get the OS type, and check that there is a make file for it.
