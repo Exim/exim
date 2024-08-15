@@ -7,7 +7,8 @@
 
 # nb: at build time, the version of this file used will have had some
 #     extra variable definitions and prepended to it and module build rules
-#     interpolated below. This is done by scripts/drivers-Makefile.
+#     interpolated below. This is done by scripts/drivers-Makefile with
+#     definitions from scripts/Configure-Makefile.
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
