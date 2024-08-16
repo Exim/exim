@@ -180,6 +180,29 @@ while ((s = string_nextinlist(&text, &sep, NULL, 0)))
 return FAIL;
 }
 
+
+# ifdef DYNLOOKUP
+#  define plaintext_auth_info _auth_info
+# endif
+
+auth_info plaintext_auth_info = {
+.drinfo = {
+  .driver_name =	US"plaintext",                   /* lookup name */
+  .options =		auth_plaintext_options,
+  .options_count =	&auth_plaintext_options_count,
+  .options_block =	&auth_plaintext_option_defaults,
+  .options_len =	sizeof(auth_plaintext_options_block),
+  .init =		auth_plaintext_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		AUTH_MAGIC,
+# endif
+  },
+.servercode =		auth_plaintext_server,
+.clientcode =		auth_plaintext_client,
+.version_report =	NULL,
+.macros_create =	NULL,
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*AUTH_PLAINTEST*/
 /* End of plaintext.c */

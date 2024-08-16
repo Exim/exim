@@ -546,6 +546,9 @@ expanded: 'TESTSUITE/test-mail/junk'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail/junk
 extract item: TESTSUITE/test-mail/junk
+try option errors_to
+try option headers_add
+try option headers_remove
 try option file_transport
 try option transport
 set transport ft1
@@ -604,6 +607,9 @@ expanded: 'TESTSUITE/test-mail/junk'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail/junk
 extract item: TESTSUITE/test-mail/junk
+try option errors_to
+try option headers_add
+try option headers_remove
 try option file_transport
 try option transport
 set transport ft1
@@ -650,6 +656,9 @@ try option set
 calling r3 router
 r3 router called for userz@test.ex
   domain = test.ex
+try option errors_to
+try option headers_add
+try option headers_remove
 try option transport
 set transport t2
 queued for t2 transport: local_part = userz
@@ -688,6 +697,9 @@ try option set
 calling r2 router
 r2 router called for usery@test.ex
   domain = test.ex
+try option errors_to
+try option headers_add
+try option headers_remove
 try option transport
 set transport t1
 queued for t1 transport: local_part = usery
@@ -719,6 +731,9 @@ try option set
 calling r1 router
 r1 router called for CALLER@test.ex
   domain = test.ex
+try option errors_to
+try option headers_add
+try option headers_remove
 try option transport
 set transport t1
 queued for t1 transport: local_part = CALLER

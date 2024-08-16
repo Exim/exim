@@ -1382,8 +1382,7 @@ g = show_db_version(g);
 show_string(is_stdout, g);
 g = NULL;
 
-//for (auth_info * ai= auths_available; *ai->drinfo.driver_name != '\0'; ai++)
-for (auth_info * ai = auths_available_newlist; ai; ai = (auth_info *)ai->drinfo.next)
+for (auth_info * ai = auths_available; ai; ai = (auth_info *)ai->drinfo.next)
   if (ai->version_report)
     g = (*ai->version_report)(g);
 

@@ -1,13 +1,13 @@
 /*
- * Copyright (c) The Exim Maintainers 2006 - 2024
- * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
- * SPDX-License-Identifier: GPL-2.0-or-later
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
+Copyright (c) The Exim Maintainers 2006 - 2024
+Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
+SPDX-License-Identifier: GPL-2.0-or-later
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published
+by the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+*/
 
 /* A number of modifications have been made to the original code. Originally I
 commented them specially, but now they are getting quite extensive, so I have
@@ -540,6 +540,28 @@ HDEBUG(D_auth) debug_printf("dovecot auth ret: %s\n", rc_names[ret]);
 return ret;
 }
 
+
+# ifdef DYNLOOKUP
+#  define dovecot_auth_info _auth_info
+# endif
+
+auth_info dovecot_auth_info = {
+.drinfo = {
+  .driver_name =	US"dovecot",                   /* lookup name */
+  .options =		auth_dovecot_options,
+  .options_count =	&auth_dovecot_options_count,
+  .options_block =	&auth_dovecot_option_defaults,
+  .options_len =	sizeof(auth_dovecot_options_block),
+  .init =		auth_dovecot_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		AUTH_MAGIC,
+# endif
+  },
+.servercode =		auth_dovecot_server,
+.clientcode =		NULL,
+.version_report =	NULL,
+.macros_create =	NULL,
+};
 
 #endif	/*!MACRO_PREDEF*/
 #endif	/*AUTH_DOVECOT*/

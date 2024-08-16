@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2019 - 2023 */
+/* Copyright (c) The Exim Maintainers 2019 - 2024 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -37,7 +37,7 @@ static void dummy(int x) { dummy2(x-1); }
 #else
 
 #include <gsasl.h>
-#include "gsasl_exim.h"
+#include "gsasl.h"
 
 
 #if GSASL_VERSION_MAJOR == 2
@@ -1059,6 +1059,28 @@ return string_fmt_append(g, "Library version: GNU SASL: Compile: %s\n"
 
 /* Dummy */
 void auth_gsasl_macros(void) {}
+
+# ifdef DYNLOOKUP
+#  define gsasl_auth_info _auth_info
+# endif
+
+auth_info gsasl_auth_info = {
+.drinfo = {
+  .driver_name =	US"gsasl",                   /* lookup name */
+  .options =		auth_gsasl_options,
+  .options_count =	&auth_gsasl_options_count,
+  .options_block =	&auth_gsasl_option_defaults,
+  .options_len =	sizeof(auth_gsasl_options_block),
+  .init =		auth_gsasl_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		AUTH_MAGIC,
+# endif
+  },
+.servercode =		auth_gsasl_server,
+.clientcode =		auth_gsasl_client,
+.version_report =	auth_gsasl_version_report,
+.macros_create =	auth_gsasl_macros,
+};
 
 #endif   /*!MACRO_PREDEF*/
 #endif  /* AUTH_GSASL */

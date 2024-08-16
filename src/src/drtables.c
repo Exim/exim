@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2023 */
+/* Copyright (c) The Exim Maintainers 2020 - 2024 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -21,216 +21,9 @@ all described in src/EDITME. */
 lookup_info **lookup_list;
 int lookup_list_count = 0;
 
-/* Table of information about all possible authentication mechanisms. All
-entries are always present if any mechanism is declared, but the functions are
-set to NULL for those that are not compiled into the binary. */
+/* Lists of information about which drivers are included in the exim binary. */
 
-#ifdef AUTH_CRAM_MD5
-#include "auths/cram_md5.h"
-#endif
-
-#ifdef AUTH_CYRUS_SASL
-#include "auths/cyrus_sasl.h"
-#endif
-
-#ifdef AUTH_DOVECOT
-#include "auths/dovecot.h"
-#endif
-
-#ifdef AUTH_EXTERNAL
-#include "auths/external.h"
-#endif
-
-#ifdef AUTH_GSASL
-#include "auths/gsasl_exim.h"
-#endif
-
-#ifdef AUTH_HEIMDAL_GSSAPI
-#include "auths/heimdal_gssapi.h"
-#endif
-
-#ifdef AUTH_PLAINTEXT
-#include "auths/plaintext.h"
-#endif
-
-#ifdef AUTH_SPA
-#include "auths/spa.h"
-#endif
-
-#ifdef AUTH_TLS
-#include "auths/tls.h"
-#endif
-
-auth_info * auths_available_newlist = NULL;
-auth_info auths_available_oldarray[] = {
-
-/* Checking by an expansion condition on plain text */
-
-#ifdef AUTH_CRAM_MD5
-  {
-  .drinfo = {
-    .driver_name =	US"cram_md5",			/* lookup name */
-    .options =		auth_cram_md5_options,
-    .options_count =	&auth_cram_md5_options_count,
-    .options_block =	&auth_cram_md5_option_defaults,
-    .options_len =	sizeof(auth_cram_md5_options_block),
-    .init =		auth_cram_md5_init,
-    },
-  .servercode =		auth_cram_md5_server,
-  .clientcode =		auth_cram_md5_client,
-  .version_report =	NULL,
-  .macros_create =	NULL,
-  },
-#endif
-
-#ifdef AUTH_CYRUS_SASL
-  {
-  .drinfo = {
-    .driver_name =	US"cyrus_sasl",
-    .options =		auth_cyrus_sasl_options,
-    .options_count =	&auth_cyrus_sasl_options_count,
-    .options_block =	&auth_cyrus_sasl_option_defaults,
-    .options_len =	sizeof(auth_cyrus_sasl_options_block),
-    .init =		auth_cyrus_sasl_init,
-    },
-  .servercode =		auth_cyrus_sasl_server,
-  .clientcode =		NULL,
-  .version_report =	auth_cyrus_sasl_version_report,
-  .macros_create =	NULL,
-  },
-#endif
-
-#ifdef AUTH_DOVECOT
-  {
-  .drinfo = {
-    .driver_name =	US"dovecot",
-    .options =		auth_dovecot_options,
-    .options_count =	&auth_dovecot_options_count,
-    .options_block =	&auth_dovecot_option_defaults,
-    .options_len =	sizeof(auth_dovecot_options_block),
-    .init =		auth_dovecot_init,
-    },
-  .servercode =		auth_dovecot_server,
-  .clientcode =		NULL,
-  .version_report =	NULL,
-  .macros_create =	NULL,
-  },
-#endif
-
-#ifdef AUTH_EXTERNAL
-  {
-  .drinfo = {
-    .driver_name =	US"external",
-    .options =		auth_external_options,
-    .options_count =	&auth_external_options_count,
-    .options_block =	&auth_external_option_defaults,
-    .options_len =	sizeof(auth_external_options_block),
-    .init =		auth_external_init,
-    },
-  .servercode =		auth_external_server,
-  .clientcode =		auth_external_client,
-  .version_report =	NULL,
-  .macros_create =	NULL,
-  },
-#endif
-
-#ifdef AUTH_GSASL
-  {
-  .drinfo = {
-    .driver_name =	US"gsasl",
-    .options =		auth_gsasl_options,
-    .options_count =	&auth_gsasl_options_count,
-    .options_block =	&auth_gsasl_option_defaults,
-    .options_len =	sizeof(auth_gsasl_options_block),
-    .init =		auth_gsasl_init,
-    },
-  .servercode =		auth_gsasl_server,
-  .clientcode =		auth_gsasl_client,
-  .version_report =	auth_gsasl_version_report,
-  .macros_create =	auth_gsasl_macros,
-  },
-#endif
-
-#ifdef AUTH_HEIMDAL_GSSAPI
-  {
-  .drinfo = {
-    .driver_name =	US"heimdal_gssapi",
-    .options =		auth_heimdal_gssapi_options,
-    .options_count =	&auth_heimdal_gssapi_options_count,
-    .options_block =	&auth_heimdal_gssapi_option_defaults,
-    .options_len =	sizeof(auth_heimdal_gssapi_options_block),
-    .init =		auth_heimdal_gssapi_init,
-    },
-  .servercode =		auth_heimdal_gssapi_server,
-  .clientcode =		NULL,
-  .version_report =	auth_heimdal_gssapi_version_report,
-  .macros_create =	NULL,
-  },
-#endif
-
-#ifdef AUTH_PLAINTEXT
-  {
-  .drinfo = {
-    .driver_name =	US"plaintext",
-    .options =		auth_plaintext_options,
-    .options_count =	&auth_plaintext_options_count,
-    .options_block =	&auth_plaintext_option_defaults,
-    .options_len =	sizeof(auth_plaintext_options_block),
-    .init =		auth_plaintext_init,
-    },
-  .servercode =		auth_plaintext_server,
-  .clientcode =		auth_plaintext_client,
-  .version_report =	NULL,
-  .macros_create =	NULL,
-  },
-#endif
-
-#ifdef AUTH_SPA
-  {
-  .drinfo = {
-    .driver_name =	US"spa",
-    .options =		auth_spa_options,
-    .options_count =	&auth_spa_options_count,
-    .options_block =	&auth_spa_option_defaults,
-    .options_len =	sizeof(auth_spa_options_block),
-    .init =		auth_spa_init,
-    },
-  .servercode =		auth_spa_server,
-  .clientcode =		auth_spa_client,
-  .version_report =	NULL,
-  .macros_create =	NULL,
-  },
-#endif
-
-#ifdef AUTH_TLS
-  {
-  .drinfo = {
-    .driver_name =	US"tls",
-    .options =		auth_tls_options,
-    .options_count =	&auth_tls_options_count,
-    .options_block =	&auth_tls_option_defaults,
-    .options_len =	sizeof(auth_tls_options_block),
-    .init =		auth_tls_init,
-    },
-  .servercode =		auth_tls_server,
-  .clientcode =		NULL,
-  .version_report =	NULL,
-  .macros_create =	NULL,
-  },
-#endif
-
-  { .drinfo = { .driver_name = US"" }}		/* end marker */
-};
-
-
-/* Tables of information about which routers and transports are included in the
-exim binary. */
-
-/* Pull in the necessary header files */
-
-#include "routers/rf_functions.h"
-
-
+auth_info * auths_available= NULL;
 router_info * routers_available = NULL;
 transport_info * transports_available = NULL;
 
@@ -241,10 +34,69 @@ transport_info * transports_available = NULL;
 gstring *
 auth_show_supported(gstring * g)
 {
-g = string_cat(g, US"Authenticators:");
-for (auth_info * ai = auths_available_oldarray; ai->drinfo.driver_name[0]; ai++)
-       	g = string_fmt_append(g, " %s", ai->drinfo.driver_name);
-return string_cat(g, US"\n");
+uschar * b = US""               /* static-build authenticatornames */
+#if defined(AUTH_CRAM_MD5) && AUTH_CRAM_MD5!=2
+  " cram_md5"
+#endif
+#if defined(AUTH_CYRUS_SASL) && AUTH_CYRUS_SASL!=2
+  " cyrus_sasl"
+#endif
+#if defined(AUTH_DOVECOT) && AUTH_DOVECOT!=2
+  " dovecot"
+#endif
+#if defined(AUTH_EXTERNAL) && AUTH_EXTERNAL!=2
+  " external"
+#endif
+#if defined(AUTH_GSASL) && AUTH_GSASL!=2
+  " gsasl"
+#endif
+#if defined(AUTH_HEIMDAL_GSSAPI) && AUTH_HEIMDAL_GSSAPI!=2
+  " heimdal_gssapi"
+#endif
+#if defined(AUTH_PLAINTEXT) && AUTH_PLAINTEXT!=2
+  " plaintext"
+#endif
+#if defined(AUTH_SPA) && AUTH_SPA!=2
+  " spa"
+#endif
+#if defined(AUTH_TLS) && AUTH_TLS!=2
+  " tls"
+#endif
+  ;
+
+uschar * d = US""		/* dynamic-module authenticator names */
+#if defined(AUTH_CRAM_MD5) && AUTH_CRAM_MD5==2
+  " cram_md5"
+#endif
+#if defined(AUTH_CYRUS_SASL) && AUTH_CYRUS_SASL==2
+  " cyrus_sasl"
+#endif
+#if defined(AUTH_DOVECOT) && AUTH_DOVECOT==2
+  " dovecot"
+#endif
+#if defined(AUTH_EXTERNAL) && AUTH_EXTERNAL==2
+  " external"
+#endif
+#if defined(AUTH_GSASL) && AUTH_GSASL==2
+  " gsasl"
+#endif
+#if defined(AUTH_HEIMDAL_GSSAPI) && AUTH_HEIMDAL_GSSAPI==2
+  " heimdal_gssapi"
+#endif
+#if defined(AUTH_PLAINTEXT) && AUTH_PLAINTEXT==2
+  " plaintext"
+#endif
+#if defined(AUTH_SPA) && AUTH_SPA==2
+  " spa"
+#endif
+#if defined(AUTH_TLS) && AUTH_TLS==2
+  " tls"
+#endif
+  ;
+
+if (*b) g = string_fmt_append(g, "Authenticators (built-in):%s\n", b);
+if (*d) g = string_fmt_append(g, "Authenticators (dynamic): %s\n", d);
+return g;
 }
 
 gstring *

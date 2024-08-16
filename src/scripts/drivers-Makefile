@@ -3,7 +3,6 @@
 # Copyright (c) The Exim Maintainers 1995 - 2024
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-set -e
 class=${CLASS:?}
 classdef=${CLASSDEF:?}
 drnames="${DRNAMES:?}"
@@ -137,16 +136,17 @@ emit_module_rule() {
       exit 1
     fi
     MODS="${MODS} ${mod_name}.so"
-#    pkgconf=$(grep "^${classdef}_${name}_PC" "$defs_source")
-#    if [ $? -eq 0 ]; then
-#      pkgconf=$(echo $pkgconf | sed 's/^.*= *//')
-#      echo "${classdef}_${mod_name}_INCLUDE = $(pkg-config --cflags $pkgconf)"
-#      echo "${classdef}_${mod_name}_LIBS = $(pkg-config --libs $pkgconf)"
-#    else
-#      grep "^${classdef}_${name}_" "$defs_source"
-#      echo "${classdef}_${mod_name}_INCLUDE = \$(${classdef}_${name}_INCLUDE)"
-#      echo "${classdef}_${mod_name}_LIBS = \$(${classdef}_${name}_LIBS)"
-#    fi
+    grep "^${classdef}_${name}_PC" "$defs_source" 1>&2
+    pkgconf=$(grep "^${classdef}_${name}_PC" "$defs_source")
+    if [ $? -eq 0 ]; then
+      pkgconf=$(echo $pkgconf | sed 's/^.*= *//')
+      echo "${classdef}_${mod_name}_INCLUDE = $(pkg-config --cflags $pkgconf)"
+      echo "${classdef}_${mod_name}_LIBS = $(pkg-config --libs $pkgconf)"
+    else
+      grep "^${classdef}_${name}_" "$defs_source"
+      echo "${classdef}_${mod_name}_INCLUDE = \$(${classdef}_${name}_INCLUDE)"
+      echo "${classdef}_${mod_name}_LIBS = \$(${classdef}_${name}_LIBS)"
+    fi
   elif want_at_all "$name"
   then
     OBJ="${OBJ} ${mod_name}.o"

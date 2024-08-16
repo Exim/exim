@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2023 */
+/* Copyright (c) The Exim Maintainers 2020 - 2024 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -228,7 +228,7 @@ int
 auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
 {
 auth_heimdal_gssapi_options_block * ob =
-  (auth_heimdal_gssapi_options_block *)(ablock->drinfo.options_block);
+  (auth_heimdal_gssapi_options_block *)(ablock->drinst.options_block);
 gss_name_t gclient = GSS_C_NO_NAME;
 gss_name_t gserver = GSS_C_NO_NAME;
 gss_cred_id_t gcred = GSS_C_NO_CREDENTIAL;
@@ -250,7 +250,7 @@ uschar requested_qop;
 store_reset_point = store_mark();
 
 HDEBUG(D_auth)
-  debug_printf("heimdal: initialising auth context for %s\n", ablock->name);
+  debug_printf("heimdal: initialising auth context for %s\n", ablock->drinst.name);
 
 /* Construct our gss_name_t gserver describing ourselves */
 tmp1 = expand_string(ob->server_service);
@@ -548,7 +548,7 @@ va_list ap;
 OM_uint32 maj_stat, min_stat;
 OM_uint32 msgcontext = 0;
 gss_buffer_desc status_string;
-gstring * g;
+gstring * g = NULL;
 
 HDEBUG(D_auth)
   {
@@ -610,8 +610,30 @@ build-time and export the result as a string into a header ourselves. */
 
 return string_fmt_append(g, "Library version: Heimdal: Runtime: %s\n"
 			    " Build Info: %s\n",
-	heimdal_version, heimdal_long_version));
+	heimdal_version, heimdal_long_version);
 }
+
+# ifdef DYNLOOKUP
+#  define heimdal_gssapi_auth_info _auth_info
+# endif
+
+auth_info heimdal_gssapi_auth_info = {
+.drinfo = {
+  .driver_name =	US"heimdal_gssapi",                   /* lookup name */
+  .options =		auth_heimdal_gssapi_options,
+  .options_count =	&auth_heimdal_gssapi_options_count,
+  .options_block =	&auth_heimdal_gssapi_option_defaults,
+  .options_len =	sizeof(auth_heimdal_gssapi_options_block),
+  .init =		auth_heimdal_gssapi_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		AUTH_MAGIC,
+# endif
+  },
+.servercode =		auth_heimdal_gssapi_server,
+.clientcode =		NULL,
+.version_report =	auth_heimdal_gssapi_version_report,
+.macros_create =	NULL,
+};
 
 #endif   /*!MACRO_PREDEF*/
 #endif  /* AUTH_HEIMDAL_GSSAPI */

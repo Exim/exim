@@ -508,6 +508,29 @@ auth_cyrus_sasl_client(
 return FAIL;
 }
 
+
+# ifdef DYNLOOKUP
+#  define cyrus_sasl_auth_info _auth_info
+# endif
+
+auth_info cyrus_sasl_auth_info = {
+.drinfo = {
+  .driver_name =	US"cyrus_sasl",                   /* lookup name */
+  .options =		auth_cyrus_sasl_options,
+  .options_count =	&auth_cyrus_sasl_options_count,
+  .options_block =	&auth_cyrus_sasl_option_defaults,
+  .options_len =	sizeof(auth_cyrus_sasl_options_block),
+  .init =		auth_cyrus_sasl_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		AUTH_MAGIC,
+# endif
+  },
+.servercode =		auth_cyrus_sasl_server,
+.clientcode =		NULL,
+.version_report =	auth_cyrus_sasl_version_report,
+.macros_create =	NULL,
+};
+
 #endif   /*!MACRO_PREDEF*/
 #endif  /* AUTH_CYRUS_SASL */
 

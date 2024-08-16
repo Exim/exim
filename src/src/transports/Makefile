@@ -25,8 +25,9 @@ transports.a:    $(OBJ) smtp_socks.o tf_maildir.o
 .c.o:;           @echo "$(CC) $*.c"
 		 $(FE)$(CC) -c $(CFLAGS) $(INCLUDE) $*.c
 
+SO_FLAGS = -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS)
 .c.so:;          @echo "$(CC) -shared $*.c"
-		 $(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS) $*.c -o $@
+		 $(FE)$(CC) $(SO_FLAGS) $*.c -o $@
 
 
 $(OBJ) $(MOD): $(HDRS)
@@ -47,7 +48,6 @@ tf_maildir.o:			tf_maildir.c tf_maildir.h appendfile.h
 
 appendfile.so: appendfile.c appendfile.h tf_maildir.c tf_maildir.h
 	@echo "$(CC) -shared appendfile.c tf_maildir.c"
-	$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS) \
-		appendfile.c tf_maildir.c -o $@
+	$(FE)$(CC) $(SO_FLAGS) appendfile.c tf_maildir.c -o $@
 
 # End

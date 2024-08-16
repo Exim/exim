@@ -435,10 +435,7 @@ uschar buf[EXIM_DRIVERNAME_MAX];
 options_from_list(optionlist_auths, optionlist_auths_size,
   US"AUTHENTICATORS", NULL);
 
-#ifdef old
-for (struct auth_info * ai = auths_available; ai->drinfo.driver_name[0]; ai++)
-#endif
-for (driver_info * di = (driver_info *)auths_available_newlist; di; di = di->next)
+for (driver_info * di = (driver_info *)auths_available; di; di = di->next)
   {
   auth_info * ai = (auth_info *)di;
 
@@ -3738,7 +3735,7 @@ driver_info * di;
 int len;
 DIR * dd;
 
-/* First scan the list of statically-built drivers. */
+/* First scan the list of driver seen so far. */
 
 for (di = *info_anchor; di; di = di->next)
   if (Ustrcmp(d->driver_name, di->driver_name) == 0)
@@ -3859,8 +3856,8 @@ Arguments:
   instance_size              size of instance block
   driver_optionlist          generic option list
   driver_optionlist_count    count of generic option list
-  class                      "router", "transport", or "authenticator"
-			      for error message
+  class                      "router", "transport", or "auth"
+			      for filename component (and error message)
 
 Returns:                     nothing
 */
@@ -4328,25 +4325,65 @@ auths_init(void)
 #ifndef DISABLE_PIPE_CONNECT
 int nauths = 0;
 #endif
-
-for (auth_info * tblent = auths_available_oldarray;
-    *tblent->drinfo.driver_name; tblent++)
+int old_pool = store_pool;
+store_pool = POOL_PERM;
   {
-  driver_info * listent = store_get(sizeof(auth_info), tblent);
-  memcpy(listent, tblent, sizeof(auth_info));
-  listent->next = (driver_info *)auths_available_newlist;
-  auths_available_newlist = (auth_info *)listent;
-  }
+  driver_info ** anchor = (driver_info **) &auths_available;
+  extern auth_info cram_md5_auth_info;
+  extern auth_info cyrus_sasl_auth_info;
+  extern auth_info dovecot_auth_info;
+  extern auth_info external_auth_info;
+  extern auth_info gsasl_auth_info;
+  extern auth_info heimdal_gssapi_auth_info;
+  extern auth_info plaintext_auth_info;
+  extern auth_info spa_auth_info;
+  extern auth_info tls_auth_info;
 
+  /* Add the transport drivers that are built for static linkage to the
+  list of availables. */
+
+#if defined(AUTH_CRAM_MD5) && AUTH_CRAM_MD5!=2
+  add_driver_info(anchor, &cram_md5_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_CYRUS_SASL) && AUTH_CYRUS_SASL!=2
+  add_driver_info(anchor, &cyrus_sasl_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_DOVECOT) && AUTH_DOVECOT!=2
+  add_driver_info(anchor, &dovecot_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_EXTERNAL) && AUTH_EXTERNAL!=2
+  add_driver_info(anchor, &external_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_GSASL) && AUTH_GSASL!=2
+  add_driver_info(anchor, &gsasl_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_HEIMDAL_GSSAPI) && AUTH_HEIMDAL_GSSAPI!=2
+  add_driver_info(anchor, &heimdal_gssapi_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_PLAINTEXT) && AUTH_PLAINTEXT!=2
+  add_driver_info(anchor, &plaintext_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_SPA) && AUTH_SPA!=2
+  add_driver_info(anchor, &spa_auth_info.drinfo, sizeof(auth_info));
+#endif
+#if defined(AUTH_TLS) && AUTH_TLS!=2
+  add_driver_info(anchor, &tls_auth_info.drinfo, sizeof(auth_info));
+#endif
+  }
+store_pool = old_pool;
+
+/* Read the config file "authenticators" section, creating an auth instance list.
+For any yet-undiscovered driver, check for a loadable module and add it to
+those available. */
 
 readconf_driver_init((driver_instance **)&auths,      /* chain anchor */
-  (driver_info **)&auths_available_newlist,    /* available drivers */
+  (driver_info **)&auths_available,  /* available drivers */
   sizeof(auth_info),                 /* size of info block */
   &auth_defaults,                    /* default values for generic options */
   sizeof(auth_instance),             /* size of instance block */
   optionlist_auths,                  /* generic options */
   optionlist_auths_size,
-  US"authenticator");
+  US"auth");
 
 for (auth_instance * au = auths; au; au = au->drinst.next)
   {
@@ -4367,7 +4404,7 @@ for (auth_instance * au = auths; au; au = au->drinst.next)
 #endif
   }
 #ifndef DISABLE_PIPE_CONNECT
-f.smtp_in_early_pipe_no_auth = nauths > 16;
+f.smtp_in_early_pipe_no_auth = nauths > 16;	/* bits in bitmap limit */
 #endif
 }
 

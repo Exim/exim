@@ -95,6 +95,28 @@ return auth_check_serv_cond(ablock);
 }
 
 
+# ifdef DYNLOOKUP
+#  define tls_auth_info _auth_info
+# endif
+
+auth_info tls_auth_info = {
+.drinfo = {
+  .driver_name =	US"tls",                   /* lookup name */
+  .options =		auth_tls_options,
+  .options_count =	&auth_tls_options_count,
+  .options_block =	&auth_tls_option_defaults,
+  .options_len =	sizeof(auth_tls_options_block),
+  .init =		auth_tls_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		AUTH_MAGIC,
+# endif
+  },
+.servercode =		auth_tls_server,
+.clientcode =		NULL,
+.version_report =	NULL,
+.macros_create =	NULL,
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*AUTH_TLS*/
 /* End of tls.c */

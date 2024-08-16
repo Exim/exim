@@ -119,7 +119,7 @@ OBJ_MACRO = macro_predef.o \
 	macro-appendfile.o macro-autoreply.o macro-lmtp.o macro-pipe.o macro-queuefile.o \
 	macro-smtp.o macro-accept.o macro-dnslookup.o macro-ipliteral.o macro-iplookup.o \
 	macro-manualroute.o macro-queryprogram.o macro-redirect.o \
-	macro-auth-spa.o macro-cram_md5.o macro-cyrus_sasl.o macro-dovecot.o macro-gsasl_exim.o \
+	macro-auth-spa.o macro-cram_md5.o macro-cyrus_sasl.o macro-dovecot.o macro-gsasl.o \
 	macro-heimdal_gssapi.o macro-plaintext.o macro-spa.o macro-authtls.o macro-external.o \
 	macro-dkim.o macro-malware.o macro-signing.o
 
@@ -206,9 +206,9 @@ macro-dovecot.o:	auths/dovecot.c
 macro-external.o:	auths/external.c
 	@echo "$(CC) -DMACRO_PREDEF auths/external.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/external.c
-macro-gsasl_exim.o :	auths/gsasl_exim.c
-	@echo "$(CC) -DMACRO_PREDEF auths/gsasl_exim.c"
-	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/gsasl_exim.c
+macro-gsasl.o :	auths/gsasl.c
+	@echo "$(CC) -DMACRO_PREDEF auths/gsasl.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/gsasl.c
 macro-heimdal_gssapi.o:	auths/heimdal_gssapi.c
 	@echo "$(CC) -DMACRO_PREDEF auths/heimdal_gssapi.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/heimdal_gssapi.c

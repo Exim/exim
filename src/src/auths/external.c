@@ -159,6 +159,28 @@ return OK;
 
 
 
+# ifdef DYNLOOKUP
+#  define external_auth_info _auth_info
+# endif
+
+auth_info external_auth_info = {
+.drinfo = {
+  .driver_name =	US"external",                   /* lookup name */
+  .options =		auth_external_options,
+  .options_count =	&auth_external_options_count,
+  .options_block =	&auth_external_option_defaults,
+  .options_len =	sizeof(auth_external_options_block),
+  .init =		auth_external_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		AUTH_MAGIC,
+# endif
+  },
+.servercode =		auth_external_server,
+.clientcode =		auth_external_client,
+.version_report =	NULL,
+.macros_create =	NULL,
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*AUTH_EXTERNAL*/
 /* End of external.c */

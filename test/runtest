@@ -1160,7 +1160,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 		(?: .*\sBerkeley\ DB
 		  | \sProbably\ (?:Berkeley\ DB|ndbm|GDBM)
 		  | \sUsing\ (?:tdb|sqlite3)
-		  | Authenticators:
+		  | Authenticators\ \((?:built-in|dynamic)\):
 		  | Lookups(?:\(built-in\))?:
 		  | Support\ for:
 		  | Routers\ \((?:built-in|dynamic)\):
@@ -3741,12 +3741,13 @@ while (<EXIMINFO>)
     @parm_lookups{keys %temp_lookups} = values %temp_lookups;
     }
 
-  elsif (/^Authenticators: (.*)/)
+  elsif (/^Authenticators \((?:built-in|dynamic)\):  ?(.*)/)
     {
     print;
     @temp = split /(\s+)/, $1;
     push(@temp, ' ');
-    %parm_authenticators = @temp;
+    my %temp_auths= @temp;
+    @parm_authenticators{keys %temp_auths} = values %temp_auths;
     }
 
   elsif (/^Routers \((?:built-in|dynamic)\):  ?(.*)/)

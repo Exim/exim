@@ -375,6 +375,28 @@ if (errno != 0 || buffer[0] != '3')
 return FAIL;
 }
 
+# ifdef DYNLOOKUP
+#  define spa_auth_info _auth_info
+# endif
+
+auth_info spa_auth_info = {
+.drinfo = {
+  .driver_name =	US"spa",                   /* lookup name */
+  .options =		auth_spa_options,
+  .options_count =	&auth_spa_options_count,
+  .options_block =	&auth_spa_option_defaults,
+  .options_len =	sizeof(auth_spa_options_block),
+  .init =		auth_spa_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		AUTH_MAGIC,
+# endif
+  },
+.servercode =		auth_spa_server,
+.clientcode =		auth_spa_client,
+.version_report =	NULL,
+.macros_create =	NULL,
+};
+
 #endif	/*!MACRO_PREDEF*/
 #endif	/*AUTH_SPA*/
 /* End of spa.c */

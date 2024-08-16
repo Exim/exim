@@ -334,9 +334,33 @@ if (smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", b64encode(CUS big_buffer,
 return smtp_read_response(sx, US buffer, buffsize, '2', timeout)
   ? OK : FAIL;
 }
+
+
+# ifdef DYNLOOKUP
+#  define cram_md5_auth_info _auth_info
+# endif
+
+auth_info cram_md5_auth_info = {
+.drinfo = {
+  .driver_name =	US"cram_md5",                   /* lookup name */
+  .options =		auth_cram_md5_options,
+  .options_count =	&auth_cram_md5_options_count,
+  .options_block =	&auth_cram_md5_option_defaults,
+  .options_len =	sizeof(auth_cram_md5_options_block),
+  .init =		auth_cram_md5_init,
+# ifdef DYNLOOKUP
+  .dyn_magic =		AUTH_MAGIC,
+# endif
+  },
+.servercode =		auth_cram_md5_server,
+.clientcode =		auth_cram_md5_client,
+.version_report =	NULL,
+.macros_create =	NULL,
+};
+
+
 #  endif  /*AUTH_CRAM_MD5*/
 # endif  /*!STAND_ALONE*/
-
 
 /*************************************************
 **************************************************

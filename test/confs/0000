@@ -12,5 +12,6 @@ keep_environment =
 
 begin routers
 begin transports
+begin authenticators
 
 # End

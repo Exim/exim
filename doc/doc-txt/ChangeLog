@@ -40,6 +40,11 @@ JH/07 Bug 3106: Fix coding in SPA authenticator. A macro argument was not
 JH/08 The output of "exim -bV" now includes lookup types built as dynamic-load
       modules.
 
+JH/09 Not a change, but worthy of note: There is no test coverage of the
+      heimdall-gssapi authenticator driver.  It does build, though with (on at
+      least one platform) library version conflicts with the gsasl auth
+      driver).  Confidence in its operation is lacking.
+
 Exim version 4.98
 -----------------
 

@@ -95,6 +95,9 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option errors_to
+try option headers_add
+try option headers_remove
 try option transport
 try option unseen
 ----------- end verify ------------
@@ -122,6 +125,9 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option errors_to
+try option headers_add
+try option headers_remove
 try option transport
 try option unseen
 try option interface
@@ -766,6 +772,9 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option errors_to
+try option headers_add
+try option headers_remove
 try option transport
 try option unseen
 ----------- end verify ------------
@@ -793,6 +802,9 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option errors_to
+try option headers_add
+try option headers_remove
 try option transport
 try option unseen
 try option interface
@@ -1386,6 +1398,9 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option errors_to
+try option headers_add
+try option headers_remove
 try option transport
 try option unseen
 ----------- end verify ------------
@@ -1413,6 +1428,9 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option errors_to
+try option headers_add
+try option headers_remove
 try option transport
 try option unseen
 try option interface

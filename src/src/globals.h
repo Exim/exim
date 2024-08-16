@@ -374,8 +374,7 @@ extern uschar *authenticated_sender;   /* From AUTH on MAIL */
 extern BOOL    authentication_failed;  /* TRUE if AUTH was tried and failed */
 extern uschar *authenticator_name;     /* for debug and error messages */
 extern uschar *auth_advertise_hosts;   /* Only advertise to these */
-extern auth_info auths_available_oldarray[];    /* Vector of available auth mechanisms */
-extern auth_info * auths_available_newlist;
+extern auth_info * auths_available;	/* List of available auth mechanisms */
 extern auth_instance *auths;           /* Chain of instantiated auths */
 extern auth_instance auth_defaults;    /* Default values */
 extern uschar *auth_defer_msg;         /* Error message for log */

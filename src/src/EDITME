@@ -827,6 +827,20 @@ FIXED_NEVER_USERS=root
 # you must uncomment at least one of the following, so that appropriate code is
 # included in the Exim binary. You will then need to set up the run time
 # configuration to make use of the mechanism(s) selected.
+#
+# If set to "2" instead of "yes" then the corresponding driver will be
+# built as a module and must be installed into LOOKUP_MODULE_DIR (the name
+# is historic).
+# You need to add -export-dynamic -rdynamic to EXTRALIBS. You may also need to
+# add -ldl to EXTRALIBS so that dlopen() is available to Exim. You need to
+# define CFLAGS_DYNAIC and LOOKUP_MODULE_DIR below so the builds are done right,
+# and so the exim binary actually loads dynamic lookup modules.
+#
+# Libraries being built as modules should be added to respective
+# LOOKUP_*_INCLUDE and LOOKUP_*_LIBS rather than the the ones for the
+# core exim build.  This gets them linked with the module instead
+# Only the cram_md5, cyrus_sasl, dovecot, external and tls builds for modules
+# are known to work. The heimdal does build, but we have no test coverage.
 
 # AUTH_CRAM_MD5=yes
 # AUTH_CYRUS_SASL=yes
