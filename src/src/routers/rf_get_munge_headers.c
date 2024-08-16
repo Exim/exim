@@ -36,6 +36,7 @@ rf_get_munge_headers(address_item *addr, router_instance *rblock,
 /* Default is to retain existing headers */
 *extra_headers = addr->prop.extra_headers;
 
+GET_OPTION("headers_add");
 if (rblock->extra_headers)
   {
   const uschar * list = rblock->extra_headers;
@@ -88,6 +89,7 @@ if (rblock->extra_headers)
 *remove_headers = addr->prop.remove_headers;
 
 /* Expand items from colon-sep list separately, then build new list */
+GET_OPTION("headers_remove");
 if (rblock->remove_headers)
   {
   const uschar * list = rblock->remove_headers;

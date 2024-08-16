@@ -159,7 +159,7 @@ router_info accept_router_info =
   .dyn_magic =		ROUTER_MAGIC,
 # endif
   },
-.code =		accept_router_entry,
+.code =			accept_router_entry,
 .tidyup =		NULL,     /* no tidyup entry */
 .ri_flags =		ri_yestransport
 };

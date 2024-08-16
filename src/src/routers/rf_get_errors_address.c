@@ -41,9 +41,9 @@ rf_get_errors_address(address_item * addr, router_instance * rblock,
 uschar * s;
 
 *errors_to = addr->prop.errors_address;
+GET_OPTION("errors_to");
 if (!rblock->errors_to) return OK;
 
-GET_OPTION("errors_to");
 if (!(s = expand_string(rblock->errors_to)))
   {
   if (f.expand_string_forcedfail)
