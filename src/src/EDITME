@@ -321,7 +321,6 @@ SPOOL_DIRECTORY=/var/spool/exim
 # add -ldl to EXTRALIBS so that dlopen() is available to Exim. You need to
 # define CFLAGS_DYNAIC and LOOKUP_MODULE_DIR below so the builds are done right,
 # and so the exim binary actually loads dynamic lookup modules.
-# MANUALROUTE cannot currently be built as a module.
 
 ROUTER_ACCEPT=yes
 ROUTER_DNSLOOKUP=yes
@@ -838,9 +837,8 @@ FIXED_NEVER_USERS=root
 #
 # Libraries being built as modules should be added to respective
 # LOOKUP_*_INCLUDE and LOOKUP_*_LIBS rather than the the ones for the
-# core exim build.  This gets them linked with the module instead
-# Only the cram_md5, cyrus_sasl, dovecot, external and tls builds for modules
-# are known to work. The heimdal does build, but we have no test coverage.
+# core exim build.  This gets them linked with the module instead.
+# The heimdal does build but we have no test coverage so it is not know to work.
 
 # AUTH_CRAM_MD5=yes
 # AUTH_CYRUS_SASL=yes

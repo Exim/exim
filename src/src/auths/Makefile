@@ -14,10 +14,10 @@
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
-OBJ += auth-spa.o call_pam.o call_pwcheck.o call_radius.o check_serv_cond.o \
+AF_OBJ = auth-spa.o call_pam.o call_pwcheck.o call_radius.o check_serv_cond.o \
 	get_data.o get_no64_data.o pwcheck.o
 
-all:		auths.a $(MODS)
+all:		$(AF_OBJ) auths.a $(MODS)
 
 auths.a:	$(OBJ)
 		@$(RM_COMMAND) -f auths.a
