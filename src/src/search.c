@@ -520,8 +520,8 @@ Returns:       a pointer to a dynamic string containing the answer,
 */
 
 static uschar *
-internal_search_find(void * handle, const uschar * filename, uschar * keystring,
-  BOOL cache_rd, const uschar * opts)
+internal_search_find(void * handle, const uschar * filename,
+  const uschar * keystring, BOOL cache_rd, const uschar * opts)
 {
 tree_node * t = (tree_node *)handle;
 search_cache * c = (search_cache *)(t->data.ptr);
@@ -729,7 +729,7 @@ Returns:         a pointer to a dynamic string containing the answer,
 */
 
 uschar *
-search_find(void * handle, const uschar * filename, uschar * keystring,
+search_find(void * handle, const uschar * filename, const uschar * keystring,
   int partial, const uschar * affix, int affixlen, int starflags,
   int * expand_setup, const uschar * opts)
 {
@@ -830,14 +830,16 @@ else if (partial >= 0)
 
   /* Try with the affix on the front, except for a zero-length affix */
 
-  if (affixlen == 0) keystring2 = keystring; else
+  if (affixlen == 0)
+    keystring2 = string_copy(keystring);
+  else
     {
     keystring2 = store_get(len + affixlen + 1,
 	  is_tainted(keystring) || is_tainted(affix) ? GET_TAINTED : GET_UNTAINTED);
     Ustrncpy(keystring2, affix, affixlen);
     Ustrcpy(keystring2 + affixlen, keystring);
     DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring2);
-    yield = internal_search_find(handle, filename, keystring2, cache_rd, opts);
+    yield = internal_search_find(handle, filename, CUS keystring2, cache_rd, opts);
     if (f.search_find_defer) return NULL;
     }
 
@@ -875,7 +877,7 @@ else if (partial >= 0)
         }
 
       DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring3);
-      yield = internal_search_find(handle, filename, keystring3,
+      yield = internal_search_find(handle, filename, CUS keystring3,
 		cache_rd, opts);
       if (f.search_find_defer) return NULL;
       if (yield)

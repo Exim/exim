@@ -1043,56 +1043,56 @@ lookup_show_supported(gstring * g)
 {
 gstring * b = NULL, * d = NULL;
 
-#if defined(LOOKUP_LSEARCH)
+#ifdef LOOKUP_LSEARCH
 # if LOOKUP_LSEARCH!=2
   b = string_cat(b, US" lsearch wildlsearch nwildlsearch iplsearch");
 # else
   d = string_cat(d, US" lsearch wildlsearch nwildlsearch iplsearch");
 # endif
 #endif
-#if defined(LOOKUP_CDB)
+#ifdef LOOKUP_CDB
 # if LOOKUP_CDB!=2
   b = string_cat(b, US" cdb");
 # else
   d = string_cat(d, US" cdb");
 # endif
 #endif
-#if defined(LOOKUP_DBM)
+#ifdef LOOKUP_DBM
 # if LOOKUP_DBM!=2
   b = string_cat(b, US" dbm dbmjz dbmnz");
 # else
   d = string_cat(d, US" dbm dbmjz dbmnz");
 # endif
 #endif
-#if defined(LOOKUP_DNSDB)
+#ifdef LOOKUP_DNSDB
 # if LOOKUP_DNSDB!=2
   b = string_cat(b, US" dnsdb");
 # else
   d = string_cat(d, US" dnsdb");
 # endif
 #endif
-#if defined(LOOKUP_DSEARCH)
+#ifdef LOOKUP_DSEARCH
 # if LOOKUP_DSEARCH!=2
   b = string_cat(b, US" dsearch");
 # else
   d = string_cat(d, US" dsearch");
 # endif
 #endif
-#if defined(LOOKUP_IBASE)
+#ifdef LOOKUP_IBASE
 # if LOOKUP_IBASE!=2
   b = string_cat(b, US" ibase");
 # else
   d = string_cat(d, US" ibase");
 # endif
 #endif
-#if defined(LOOKUP_JSON)
+#ifdef LOOKUP_JSON
 # if LOOKUP_JSON!=2
   b = string_cat(b, US" json");
 # else
   d = string_cat(d, US" json");
 # endif
 #endif
-#if defined(LOOKUP_LDAP)
+#ifdef LOOKUP_LDAP
 # if LOOKUP_LDAP!=2
   b = string_cat(b, US" ldap ldapdn ldapm");
 # else
@@ -1100,72 +1100,76 @@ gstring * b = NULL, * d = NULL;
 # endif
 #endif
 #ifdef LOOKUP_LMDB
+# if LOOKUP_LMDB!=2
   b = string_cat(b, US" lmdb");
+# else
+  d = string_cat(d, US" lmdb");
+# endif
 #endif
-#if defined(LOOKUP_MYSQL)
+#ifdef LOOKUP_MYSQL
 # if LOOKUP_MYSQL!=2
   b = string_cat(b, US" mysql");
 # else
   d = string_cat(d, US" mysql");
 # endif
 #endif
-#if defined(LOOKUP_NIS)
+#ifdef LOOKUP_NIS
 # if LOOKUP_NIS!=2
   b = string_cat(b, US" nis nis0");
 # else
   d = string_cat(d, US" nis nis0");
 # endif
 #endif
-#if defined(LOOKUP_NISPLUS)
+#ifdef LOOKUP_NISPLUS
 # if LOOKUP_NISPLUS!=2
   b = string_cat(b, US" nisplus");
 # else
   d = string_cat(d, US" nisplus");
 # endif
 #endif
-#if defined(LOOKUP_ORACLE)
+#ifdef LOOKUP_ORACLE
 # if LOOKUP_ORACLE!=2
   b = string_cat(b, US" oracle");
 # else
   d = string_cat(d, US" oracle");
 # endif
 #endif
-#if defined(LOOKUP_PASSWD)
+#ifdef LOOKUP_PASSWD
 # if LOOKUP_PASSWD!=2
   b = string_cat(b, US" passwd");
 # else
   d = string_cat(d, US" passwd");
 # endif
 #endif
-#if defined(LOOKUP_PGSQL)
+#ifdef LOOKUP_PGSQL
 # if LOOKUP_PGSQL!=2
   b = string_cat(b, US" pgsql");
 # else
   d = string_cat(d, US" pgsql");
 # endif
 #endif
-#if defined(LOOKUP_REDIS)
+#ifdef LOOKUP_REDIS
 # if LOOKUP_REDIS!=2
   b = string_cat(b, US" redis");
 # else
   d = string_cat(d, US" redis");
 # endif
 #endif
-#if defined(LOOKUP_SQLITE)
+#ifdef LOOKUP_SQLITE
 # if LOOKUP_SQLITE!=2
   b = string_cat(b, US" sqlite");
 # else
   d = string_cat(d, US" sqlite");
 # endif
 #endif
-#if defined(LOOKUP_TESTDB)
+#ifdef LOOKUP_TESTDB
 # if LOOKUP_TESTDB!=2
   b = string_cat(b, US" testdb");
 # else
   d = string_cat(d, US" testdb");
 # endif
 #endif
-#if defined(LOOKUP_WHOSON)
+#ifdef LOOKUP_WHOSON
 # if LOOKUP_WHOSON!=2
   b = string_cat(b, US" whoson");
 # else

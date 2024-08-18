@@ -416,10 +416,8 @@ TRANSPORT_SMTP=yes
 # the dynamic library and not the exim binary will be linked against the
 # library.
 #
-# NOTE: LDAP cannot be built as a module!
-# JSON cannot (yet).
-# Also, PASSWD, DBM and DNSDB can but there is little point since the accesses
-# are always needed by the Exim core.
+# PASSWD, DBM and DNSDB can be build as modules but there is little point since
+# the accesses are always needed by the Exim core.
 #
 # For Redis you need to have hiredis installed on your system
 # (https://github.com/redis/hiredis).
@@ -479,6 +477,7 @@ LOOKUP_DNSDB=yes
 # If you don't set any of these, Exim assumes the original University of
 # Michigan (OpenLDAP 1) library.
 
+# For building as a modules, set LOOKUP_LDAP_INCLUDE and LOOKUP_LDAP_LIBS
 
 #------------------------------------------------------------------------------
 # The PCRE2 library is required for Exim.  There is no longer an embedded
@@ -538,6 +537,7 @@ SUPPORT_DANE=yes
 #
 # LOOKUP_INCLUDE += -I/usr/local/include
 # LOOKUP_LIBS += -llmdb
+# For dynamic-modules builds, use instead LOOKUP_LMDB_INCLUDE & LOOKUP_LMDB_LIBS
 
 
 #------------------------------------------------------------------------------

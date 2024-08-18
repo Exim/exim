@@ -30,10 +30,6 @@ typedef unsigned esi_flags;
 # endif
 #endif	/*!STAND_ALONE*/
 
-#ifdef LOOKUP_LDAP
-# include "lookups/ldap.h"
-#endif
-
 #ifdef SUPPORT_CRYPTEQ
 # ifdef CRYPT_H
 #  include <crypt.h>
@@ -2808,13 +2804,14 @@ switch(cond_type = identify_operator(&s, &opname))
     case ECOND_LDAPAUTH:
     #ifdef LOOKUP_LDAP
       {
-      /* Just to keep the interface the same */
-      BOOL do_cache;
-      int old_pool = store_pool;
-      store_pool = POOL_SEARCH;
-      rc = eldapauth_find((void *)(-1), NULL, sub[0], Ustrlen(sub[0]), NULL,
-        &expand_string_message, &do_cache);
-      store_pool = old_pool;
+      int stype = search_findtype(US"ldapauth", 8), expand_setup = -1;
+      void * handle = search_open(NULL, stype, 0, NULL, NULL);
+      if (handle)
+	rc= search_find(handle, NULL, sub[0],
+			-1, NULL, 0, 0, &expand_setup, NULL)
+	  ? OK : f.search_find_defer ? DEFER : FAIL;
+      else
+	{ expand_string_message = search_error_message; rc = FAIL; }
       }
     goto END_AUTH;
     #else

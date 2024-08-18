@@ -101,7 +101,10 @@ and eldapm_find(), with a difference in the "search_type" argument.
 
 The case of eldapauth_find() is special in that all it does is do
 authentication, returning OK or FAIL as appropriate. This isn't used as a
-lookup. Instead, it is called from expand.c as an expansion condition test.
+lookup. Instead, it is called via the generic search interface from expand.c
+as an expansion condition test.  We take a non/NULL return string as OK/FAIL.
+We do not advertise or document it as a general search method,
+but probably could.
 
 The DN from a successful lookup is placed in $ldap_dn. This feature postdates
 the provision of the SEARCH_LDAP_DN facility for returning just the DN as the
@@ -1305,7 +1308,8 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_DN, result, errmsg));
 
 int
 eldapauth_find(void * handle, const uschar * filename, const uschar * ldap_url,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 return(control_ldap_search(ldap_url, SEARCH_LDAP_AUTH, result, errmsg));
 }
@@ -1559,6 +1563,7 @@ gstring *
 ldap_version_report(gstring * g)
 {
 #ifdef DYNLOOKUP
+/*XXX it would be nice to haul a version string for the underlying ldap library */
 g = string_fmt_append(g, "Library version: LDAP: Exim version %s\n", EXIM_VERSION_STR);
 #endif
 return g;
@@ -1601,11 +1606,28 @@ static lookup_info ldapm_lookup_info = {
   .version_report = NULL                           /* no version reporting (redundant) */
 };
 
+static lookup_info ldapauth_lookup_info = {
+  .name = US"ldapauth",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = eldap_open,			/* sic */    /* open function */
+  .check = NULL,			/* check function */
+  .find = eldapauth_find,		/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = eldap_tidy,			/* sic */    /* tidy function */
+  .quote = eldap_quote,			/* sic */    /* quoting function */
+  .version_report = NULL                           /* no version reporting (redundant) */
+};
+
 #ifdef DYNLOOKUP
 #define ldap_lookup_module_info _lookup_module_info
 #endif
 
-static lookup_info *_lookup_list[] = { &ldap_lookup_info, &ldapdn_lookup_info, &ldapm_lookup_info };
-lookup_module_info ldap_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 3 };
+static lookup_info *_lookup_list[] = {
+  &ldap_lookup_info,
+  &ldapdn_lookup_info,
+  &ldapm_lookup_info,
+  &ldapauth_lookup_info,
+  };
+lookup_module_info ldap_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 4 };
 
 /* End of lookups/ldap.c */

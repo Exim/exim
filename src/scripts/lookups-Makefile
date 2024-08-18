@@ -163,16 +163,11 @@ exec > "$target"
 sed -n "1,/$tag_marker/p" < "$input"
 
 for name_mod in \
-    CDB DBM:dbmdb DNSDB DSEARCH IBASE JSON LMDB LSEARCH MYSQL NIS NISPLUS ORACLE \
-    PASSWD PGSQL REDIS SQLITE TESTDB WHOSON
+    CDB DBM:dbmdb DNSDB DSEARCH IBASE JSON LMDB LDAP LSEARCH MYSQL NIS NISPLUS \
+    ORACLE PASSWD PGSQL REDIS SQLITE TESTDB WHOSON
 do
   emit_module_rule $name_mod
 done
-
-if want_at_all LDAP
-then
-  OBJ="${OBJ} ldap.o"
-fi
 
 # Because the variable is EXPERIMENTAL_SPF and not LOOKUP_SPF we
 # always include spf.o and compile a dummy if EXPERIMENTAL_SPF is not

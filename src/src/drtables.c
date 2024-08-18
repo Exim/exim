@@ -295,7 +295,7 @@ extern lookup_module_info ibase_lookup_module_info;
 #if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
 extern lookup_module_info json_lookup_module_info;
 #endif
-#if defined(LOOKUP_LDAP)
+#if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
 extern lookup_module_info ldap_lookup_module_info;
 #endif
 #if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
@@ -322,7 +322,7 @@ extern lookup_module_info pgsql_lookup_module_info;
 #if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
 extern lookup_module_info redis_lookup_module_info;
 #endif
-#if defined(LOOKUP_LMDB)
+#if defined(LOOKUP_LMDB) && LOOKUP_LMDB!=2
 extern lookup_module_info lmdb_lookup_module_info;
 #endif
 #if defined(SUPPORT_SPF)
@@ -378,7 +378,7 @@ addlookupmodule(NULL, &dsearch_lookup_module_info);
 addlookupmodule(NULL, &ibase_lookup_module_info);
 #endif
 
-#ifdef LOOKUP_LDAP
+#if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
 addlookupmodule(NULL, &ldap_lookup_module_info);
 #endif
 
@@ -418,7 +418,7 @@ addlookupmodule(NULL, &pgsql_lookup_module_info);
 addlookupmodule(NULL, &redis_lookup_module_info);
 #endif
 
-#ifdef LOOKUP_LMDB
+#if defined(LOOKUP_LMDB) && LOOKUP_LMDB!=2
 addlookupmodule(NULL, &lmdb_lookup_module_info);
 #endif
 

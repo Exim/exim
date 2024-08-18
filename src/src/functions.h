@@ -491,7 +491,7 @@ extern void    route_tidyup(void);
 extern uschar *router_current_name(void);
 
 extern uschar *search_args(int, uschar *, uschar *, uschar **, const uschar *);
-extern uschar *search_find(void *, const uschar *, uschar *, int,
+extern uschar *search_find(void *, const uschar *, const uschar *, int,
 		 const uschar *, int, int, int *, const uschar *);
 extern int     search_findtype(const uschar *, int);
 extern int     search_findtype_partial(const uschar *, int *, const uschar **, int *,
