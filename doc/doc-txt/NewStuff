@@ -14,7 +14,7 @@ Version 4.98
 
  3. Events smtp:fail:protocol and smtp:fail:syntax
 
- 4. JSON lookup support, all the router drivers except manualroute, all the
+ 4. JSON lookup support, all the router drivers, all the
     transport drivers except smtp, and all the authenticator drivers except
     plaintext, gsasl and spa can now be built as loadable modules
 

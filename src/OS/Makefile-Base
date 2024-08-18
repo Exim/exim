@@ -509,6 +509,11 @@ OBJ_EXPERIMENTAL =	arc.o \
 # updated each time. We don't bother with that for the auxiliaries.
 
 OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
+OBJ_ROUTERS = routers/rf_change_domain.o routers/rf_expand_data.o \
+	routers/rf_get_errors_address.o \
+	routers/rf_get_munge_headers.o routers/rf_get_transport.o \
+	routers/rf_get_ugid.o routers/rf_lookup_hostlist.o \
+	routers/rf_queue_add.o routers/rf_self_action.o routers/rf_set_ugid.o
 
 OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
@@ -519,7 +524,7 @@ OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         std-crypto.o store.o string.o tls.o tod.o transport.o tree.o verify.o \
         xtextencode.o environment.o macro.o \
-        $(OBJ_LOOKUPS) \
+        $(OBJ_LOOKUPS) $(OBJ_ROUTERS) \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_EXPERIMENTAL)
 
@@ -918,6 +923,7 @@ drtables.o:      $(HDRS) drtables.c
 # in the sub-directory unless we force that dependency:
 
 $(OBJ_LOOKUPS):  buildlookups
+$(OBJ_ROUTERS):  buildrouters
 
 # The exim monitor's private modules - the sources live in a private
 # subdirectory. The final binary combines the private modules with some

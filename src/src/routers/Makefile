@@ -14,13 +14,9 @@
 
 RF_OBJ = rf_change_domain.o rf_expand_data.o rf_get_errors_address.o \
       rf_get_munge_headers.o rf_get_transport.o rf_get_ugid.o \
-      rf_lookup_hostlist.o \
-      rf_queue_add.o rf_self_action.o \
-      rf_set_ugid.o
+      rf_lookup_hostlist.o rf_queue_add.o rf_self_action.o rf_set_ugid.o
 
-OBJ += $(RF_OBJ)
-
-all:             routers.a $(MODS)
+all:             $(RF_OBJ) routers.a $(MODS)
 
 routers.a:       $(OBJ)
 		 @$(RM_COMMAND) -f routers.a
