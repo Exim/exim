@@ -734,7 +734,7 @@ return total_written;
 static inline ssize_t
 write_gstring_to_fd_buf(int fd, const gstring * g)
 {
-return write_to_fd_buf(fd, g->s, g->ptr);
+return write_to_fd_buf(fd, g->s, gstring_length(g));
 }
 
 
@@ -1008,9 +1008,9 @@ string_fmt_append_noextend(&gs, "%s ", tod_stamp(tod_log));
 
 if (LOGGING(pid))
   {
-  if (!syslog_pid) pid_position[0] = g->ptr;		/* remember begin … */
+  if (!syslog_pid) pid_position[0] = gstring_length(g);	/* remember begin … */
   string_fmt_append_noextend(g, "[%ld] ", (long)getpid());
-  if (!syslog_pid) pid_position[1] = g->ptr;		/*  … and end+1 of the PID */
+  if (!syslog_pid) pid_position[1] = gstring_length(g);	/*  … and end+1 of the PID */
   }
 
 if (f.really_exim && message_id[0])
@@ -1027,7 +1027,7 @@ va_start(ap, format);
 
   if (!string_vformat(g, SVFMT_TAINT_NOCHK, format, ap))
     {
-    uschar * s = US"**** log string overflowed log buffer ****\n";
+    uschar * s = US"**** log string overflowed log buffer ****";
     gstring_trim(g, Ustrlen(s));
     string_fmt_append_noextend(g, "%s", s);
     }
@@ -1133,9 +1133,10 @@ if (  flags & LOG_MAIN
 
     /* Failing to write to the log is disastrous */
 
-    if ((written_len = write_gstring_to_fd_buf(mainlogfd, g)) != g->ptr)
+    if (  (written_len = write_gstring_to_fd_buf(mainlogfd, g))
+       != gstring_length(g))
       {
-      log_write_failed(US"main log", g->ptr, written_len);
+      log_write_failed(US"main log", gstring_length(g), written_len);
       /* That function does not return */
       }
     }
@@ -1233,7 +1234,8 @@ if (flags & LOG_REJECT)
       if (fstat(rejectlogfd, &statbuf) >= 0) rejectlog_inode = statbuf.st_ino;
       }
 
-    if ((written_len = write_gstring_to_fd_buf(rejectlogfd, g)) != g->ptr)
+    if (  (written_len = write_gstring_to_fd_buf(rejectlogfd, g))
+       != gstring_length(g))
       {
       log_write_failed(US"reject log", g->ptr, written_len);
       /* That function does not return */
@@ -1267,7 +1269,8 @@ if (flags & LOG_PANIC)
     if (panic_save_buffer)
       (void) write(paniclogfd, panic_save_buffer, Ustrlen(panic_save_buffer));
 
-    if ((written_len = write_gstring_to_fd_buf(paniclogfd, g)) != g->ptr)
+    if (  (written_len = write_gstring_to_fd_buf(paniclogfd, g))
+       != gstring_length(g))
       {
       int save_errno = errno;
       write_syslog(LOG_CRIT, log_buffer);
