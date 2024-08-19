@@ -117,7 +117,7 @@ Arguments:
   search_type   SEARCH_LDAP_MULTIPLE allows values from multiple entries
                 SEARCH_LDAP_SINGLE allows values from one entry only
                 SEARCH_LDAP_DN gets the DN from one entry
-  res           set to point at the result (not used for ldapauth)
+  res           set to point at the result (ldapauth gets an empty string if OK)
   errmsg        set to point a message if result is not OK
   defer_break   set TRUE if no more servers to be tried after a DEFER
   user          user name for authentication, or NULL
@@ -611,6 +611,7 @@ if (  !lcp->bound
 if (search_type == SEARCH_LDAP_AUTH)
   {
   DEBUG(D_lookup) debug_printf_indent("Bind succeeded: ldapauth returns OK\n");
+  *res = US"";
   goto RETURN_OK;
   }
 
@@ -1614,7 +1615,7 @@ static lookup_info ldapauth_lookup_info = {
   .find = eldapauth_find,		/* find function */
   .close = NULL,			/* no close function */
   .tidy = eldap_tidy,			/* sic */    /* tidy function */
-  .quote = eldap_quote,			/* sic */    /* quoting function */
+  .quote = NULL,			/* NO quoting function */
   .version_report = NULL                           /* no version reporting (redundant) */
 };
 

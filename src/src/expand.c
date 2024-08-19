@@ -2807,7 +2807,7 @@ switch(cond_type = identify_operator(&s, &opname))
       int stype = search_findtype(US"ldapauth", 8), expand_setup = -1;
       void * handle = search_open(NULL, stype, 0, NULL, NULL);
       if (handle)
-	rc= search_find(handle, NULL, sub[0],
+	rc = search_find(handle, NULL, sub[0],
 			-1, NULL, 0, 0, &expand_setup, NULL)
 	  ? OK : f.search_find_defer ? DEFER : FAIL;
       else
