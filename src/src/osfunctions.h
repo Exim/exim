@@ -41,4 +41,8 @@ extern int           os_unsetenv(const uschar *);
 extern uschar       *os_getcwd(uschar *, size_t);
 #endif
 
+#ifndef EXIM_HAVE_STRCHRNUL
+extern char * strchrnul(const char *, int);
+#endif
+
 /* End of osfunctions.h */
