@@ -2082,16 +2082,13 @@ on demand.
 This permits packagers to build Exim with support for lookups with extensive
 library dependencies without requiring all systems to install all of those
 dependencies.
-Most, but not all, lookup types can be built this way.
-
 .new
-Similarly, authenticator, router and transport drivers can be built
-as external modules.
-This permits a smaller exim binary, growing only as needed for the
-runtime cofiguration.
+Any combination of lookup types can be built this way.
+All of the lookup modules found as an Exim process starts will be loaded.
 .wen
 
-Set &`LOOKUP_MODULE_DIR`& to the directory into which the modules will be
+For building
+set &`LOOKUP_MODULE_DIR`& to the directory into which the modules will be
 installed; Exim will only load modules from that directory, as a security
 measure.  You will need to set &`CFLAGS_DYNAMIC`& if not already defined
 for your OS; see &_OS/Makefile-Linux_& for an example.
@@ -2107,6 +2104,19 @@ LOOKUP_LSEARCH=yes
 LOOKUP_SQLITE=2
 LOOKUP_MYSQL=2
 .endd
+Set also &`LOOKUP_`&<&'lookup_type'&>&` INCLUDE`& and
+&`LOOKUP_`&<&'lookup_type'&>`_LIBS if needed for each lookup type,
+ensuring that duplicates are not present in more global values.
+
+.new
+Similarly, authenticator, router and transport drivers can be built
+as external modules.
+Modules will be searched for as demanded by the runtime configuration,
+permitting a smaller Exim binary.
+
+For building, as above but using
+&`AUTH_*`&, &`ROUTER_*`& and &`TRANSPORT_*`& instead of &`LOOKUP_*`&,
+.wen
 
 
 .section "The building process" "SECID29"

@@ -1580,4 +1580,4 @@ EXIM_TMPDIR="/tmp"
 
 # DISABLE_CLIENT_CMD_LOG=yes
 
-# End of EDITME for Exim 4.
+# End of EDITME for Exim.
