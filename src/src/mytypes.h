@@ -117,7 +117,7 @@ functions that are called quite often; for other calls to external libraries
 #define Urename(s,t)       rename(CCS(s),CCS(t))
 #define Ustat(s,t)         stat(CCS(s),t)
 #define Ustrchr(s,n)       US strchr(CCS(s),n)
-#define CUstrchr(s,n)      CUS strchr(CCS(s),n)
+#define Ustrchrnul(s,n)    US strchrnul(CCS(s),n)
 #define CUstrerror(n)      CUS strerror(n)
 #define Ustrcmp(s,t)       strcmp(CCS(s),CCS(t))
 #define Ustrcpy_nt(s,t)    strcpy(CS s, CCS t)		/* no taint check */

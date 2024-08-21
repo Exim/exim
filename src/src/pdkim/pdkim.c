@@ -665,7 +665,7 @@ memset(pub, 0, sizeof(pdkim_pubkey));
 for (const uschar * ele = raw_record, * tspec, * end, * val; *ele; ele = end)
   {
   Uskip_whitespace(&ele);
-  end = US strchrnul(CS ele, ';');
+  end = Ustrchrnul(ele, ';');
   tspec = string_copyn(ele, end - ele);
   if (*end) end++;			/* skip the ; */
 
