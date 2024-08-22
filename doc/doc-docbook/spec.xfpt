@@ -8218,7 +8218,7 @@ ${lookup mysql{servers=master; UPDATE ...} }
 The new version avoids issues with tainted
 arguments explicitly expanded as part of the query.
 The entire string within the braces becomes tainted,
-including the server sepcification - which is not permissible.
+including the server specification - which is not permissible.
 If the older sytax is used, a warning message will be logged.
 This syntax will be removed in a future release.
 
@@ -16278,7 +16278,7 @@ set.
 .cindex "underscore in EHLO/HELO"
 This option can be set to a string of rogue characters that are permitted in
 non-ip-literal EHLO and HELO names in addition to the standard letters, digits,
-hyphens, and dots. For examplem if you really must allow underscores,
+hyphens, and dots. For example if you really must allow underscores,
 you can set
 .code
 helo_allow_chars = _
@@ -35974,7 +35974,7 @@ The third argument may be NULL, in which case the &%-oMas%& option is omitted.
 
 
 .vitem &*void&~debug_printf(char&~*,&~...)*&
-This is Exim's debugging function, with arguments as for &'(printf()'&. The
+This is Exim's debugging function, with arguments as for &'printf()'&. The
 output is written to the standard error stream. If no debugging is selected,
 calls to &'debug_printf()'& have no effect. Normally, you should make calls
 conditional on the &`local_scan`& debug selector by coding like this:
