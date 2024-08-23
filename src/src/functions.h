@@ -338,6 +338,8 @@ extern int     ipv6_nmtoa(int *, uschar *);
 extern const uschar *local_part_quote(const uschar *);
 extern int     log_open_as_exim(const uschar * const);
 extern void    log_close_all(void);
+extern const lookup_info * lookup_with_acq_num(unsigned);
+
 
 extern macro_item * macro_create(const uschar *, const uschar *, BOOL);
 extern BOOL    macro_read_assignment(uschar *);
@@ -490,13 +492,15 @@ extern gstring * route_show_supported(gstring *);
 extern void    route_tidyup(void);
 extern uschar *router_current_name(void);
 
-extern uschar *search_args(int, uschar *, uschar *, uschar **, const uschar *);
+extern uschar *search_args(const lookup_info *, uschar *, uschar *, uschar **,
+		const uschar *);
 extern uschar *search_find(void *, const uschar *, const uschar *, int,
 		 const uschar *, int, int, int *, const uschar *);
-extern int     search_findtype(const uschar *, int);
-extern int     search_findtype_partial(const uschar *, int *, const uschar **, int *,
-                 int *, const uschar **);
-extern void   *search_open(const uschar *, int, int, uid_t *, gid_t *);
+extern const lookup_info * search_findtype(const uschar *, int);
+extern const lookup_info * search_findtype_partial(const uschar *, int *,
+		const uschar **, int *, int *, const uschar **);
+extern void   *search_open(const uschar *, const lookup_info *, int,
+		uid_t *, gid_t *);
 extern void    search_tidyup(void);
 extern BOOL    send_fd_over_socket(int, int);
 extern uschar *sender_helo_verified_boolstr(void);

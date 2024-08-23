@@ -1408,7 +1408,7 @@ Arguments:
   s          the string to be quoted
   opt        additional option text or NULL if none
              only "dn" is recognized
-  idx	     lookup type index
+  idx	     quoter identification number
 
 Returns:     the processed string or NULL for a bad option
 */

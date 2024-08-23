@@ -1234,7 +1234,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Lookups have a char which depends on the number of lookup types compiled in,
     # in stderr output.  Replace with a "0".  Recognising this while avoiding
     # other output is fragile; perhaps the debug output should be revised instead.
-    s%^\s+(:?closing )?\K[0-?]TESTSUITE/aux-fixed/%0TESTSUITE/aux-fixed/%g;
+    s%^\s+(?:closing )?\K[0-Z]TESTSUITE/aux-fixed/%0TESTSUITE/aux-fixed/%g;
 
     # drop gnutls version strings
     next if /GnuTLS compile-time version: \d+[\.\d]+$/;
@@ -1471,7 +1471,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
 
     # Different builds will have different lookup types included
-    s/search_type \K\d+ \((\w+)\) quoting -1 \(none\)$/NN ($1) quoting -1 (none)/;
+    s/quoter_id \K\d+ \((\w+)\) quoting -1 \(none\)$/NN ($1) quoting -1 (none)/;
     # and different numbers of lookup types result in different type-code letters,
     # so convert them all to "0"
     s%(?<!lsearch)[^ ](?=TESTSUITE/aux-fixed/(?:0414.list[12]|0464.domains)$)%0%;

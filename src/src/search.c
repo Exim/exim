@@ -59,41 +59,22 @@ Arguments:
   name       lookup type name - not necessarily zero terminated (e.g. dbm*)
   len        length of the name
 
-Returns:     +ve => valid lookup name; value is offset in lookup_list
-             -ve => invalid name; message in search_error_message.
+Returns:     ptr to info struct for the lookup,
+	     or NULL with message in search_error_message.
 */
 
-int
+const lookup_info *
 search_findtype(const uschar * name, int len)
 {
-for (int bot = 0, top = lookup_list_count; top > bot; )
-  {
-  int mid = (top + bot)/2;
-  int c = Ustrncmp(name, lookup_list[mid]->name, len);
+const uschar * s = name[len] ? string_copyn(name, len) : name;
+tree_node * t = tree_search(lookups_tree, s);
 
-  /* If c == 0 we have matched the incoming name with the start of the search
-  type name. However, some search types are substrings of others (e.g. nis and
-  nisplus) so we need to check that the lengths are the same. The length of the
-  type name cannot be shorter (else c would not be 0); if it is not equal it
-  must be longer, and in that case, the incoming name comes before the name we
-  are testing. By leaving c == 0 when the lengths are different, and doing a
-  > 0 test below, this all falls out correctly. */
+if (t) return t->data.ptr;
 
-  if (c == 0 && Ustrlen(lookup_list[mid]->name) == len)
-    {
-    if (lookup_list[mid]->find != NULL) return mid;
-    search_error_message  = string_sprintf("lookup type \"%.*s\" is not "
-      "available (not in the binary - check buildtime LOOKUP configuration)",
-      len, name);
-    return -1;
-    }
-
-  if (c > 0) bot = mid + 1; else top = mid;
-  }
-
-search_error_message = string_sprintf("unknown lookup type \"%.*s\"", len, name);
-return -1;
+search_error_message = string_sprintf("unknown lookup type \"%s\"", s);
+return NULL;
 }
+
 
 
 
@@ -117,18 +98,17 @@ Arguments:
   starflags    where to put the SEARCH_STAR and SEARCH_STARAT flags
   opts	       where to put the options
 
-Returns:     +ve => valid lookup name; value is offset in lookup_list
-             -ve => invalid name; message in search_error_message.
+Returns:     ptr to info struct for the lookup,
+	     or NULL with message in search_error_message.
 */
 
-int
+const lookup_info *
 search_findtype_partial(const uschar *name, int *ptypeptr, const uschar **ptypeaff,
   int *afflen, int *starflags, const uschar ** opts)
 {
-int len, stype;
-int pv = -1;
-const uschar *ss = name;
-const uschar * t;
+const lookup_info * li;
+int pv = -1, len;
+const uschar * ss = name, * t;
 
 *starflags = 0;
 *ptypeaff = NULL;
@@ -165,7 +145,7 @@ if (Ustrncmp(name, "partial", 7) == 0)
     BAD_TYPE:
     search_error_message = string_sprintf("format error in lookup type \"%s\"",
       name);
-    return -1;
+    return NULL;
     }
   }
 
@@ -194,31 +174,31 @@ else
 binary are valid. For query-style types, "partial" and default types are
 erroneous. */
 
-stype = search_findtype(ss, len);
-if (stype >= 0 && mac_islookup(stype, lookup_querystyle))
+li = search_findtype(ss, len);
+if (li && mac_islookup(li, lookup_querystyle))
   {
   if (pv >= 0)
     {
     search_error_message = string_sprintf("\"partial\" is not permitted "
       "for lookup type \"%s\"", ss);
-    return -1;
+    return NULL;
     }
   if ((*starflags & (SEARCH_STAR|SEARCH_STARAT)) != 0)
     {
     search_error_message = string_sprintf("defaults using \"*\" or \"*@\" are "
       "not permitted for lookup type \"%s\"", ss);
-    return -1;
+    return NULL;
     }
   }
 
 *ptypeptr = pv;
-return stype;
+return li;
 }
 
 
 /* Set the parameters for the three different kinds of lookup.
 Arguments:
- search_type	the search-type code
+ li		the info block for the search type
  search		the search-type string
  query		argument for the search; filename or query
  fnamep		pointer to return filename
@@ -227,11 +207,11 @@ Arguments:
 Return:	keyquery	the search-type (for single-key) or query (for query-type)
  */
 uschar *
-search_args(int search_type, uschar * search, uschar * query, uschar ** fnamep,
+search_args(const lookup_info * li, uschar * search, uschar * query, uschar ** fnamep,
   const uschar * opts)
 {
 Uskip_whitespace(&query);
-if (mac_islookup(search_type, lookup_absfilequery))
+if (mac_islookup(li, lookup_absfilequery))
   {					/* query-style but with file (sqlite) */
   int sep = ',';
 
@@ -255,7 +235,7 @@ if (mac_islookup(search_type, lookup_absfilequery))
     *fnamep = NULL;
   return query;		/* remainder after file skipped */
   }
-if (!mac_islookup(search_type, lookup_querystyle))
+if (!mac_islookup(li, lookup_querystyle))
   {					/* single-key */
   *fnamep = query;
   return search;	/* modifiers important so use "keyquery" for them */
@@ -288,11 +268,19 @@ Returns:     nothing
 static void
 tidyup_subtree(tree_node *t)
 {
-search_cache * c = (search_cache *)(t->data.ptr);
+search_cache * c = (search_cache *)t->data.ptr;
 if (t->left)  tidyup_subtree(t->left);
 if (t->right) tidyup_subtree(t->right);
-if (c && c->handle && lookup_list[c->search_type]->close)
-  lookup_list[c->search_type]->close(c->handle);
+if (c && c->handle && c->li->close)
+  c->li->close(c->handle);
+}
+
+
+static void
+tidy_cb(uschar * name, uschar * ptr, void * ctx)
+{
+lookup_info * li = (lookup_info *)ptr;
+if (li->tidy) (li->tidy)();
 }
 
 
@@ -322,8 +310,7 @@ open_filecount = 0;
 
 /* Call the general tidyup entry for any drivers that have one. */
 
-for (int i = 0; i < lookup_list_count; i++) if (lookup_list[i]->tidy)
-  (lookup_list[i]->tidy)();
+tree_walk(lookups_tree, tidy_cb, NULL);
 
 if (search_reset_point) search_reset_point = store_reset(search_reset_point);
 store_pool = old_pool;
@@ -366,7 +353,7 @@ but is marked closed.
 Arguments:
   filename       the name of the file for single-key+file style lookups,
                  NULL for query-style lookups
-  search_type    the type of search required
+  li		 the info block for the type of search required
   modemask       if a real single file is used, this specifies mode bits that
                  must not be set; otherwise it is ignored
   owners         if a real single file is used, this specifies the possible
@@ -381,13 +368,12 @@ Returns:         an identifying handle for the open database;
 */
 
 void *
-search_open(const uschar * filename, int search_type, int modemask,
+search_open(const uschar * filename, const lookup_info * li, int modemask,
   uid_t * owners, gid_t * owngroups)
 {
 void *handle;
 tree_node *t;
 search_cache *c;
-lookup_info *lk = lookup_list[search_type];
 uschar keybuffer[256];
 int old_pool = store_pool;
 
@@ -403,7 +389,7 @@ if (filename && is_tainted(filename))
 store_pool = POOL_SEARCH;
 if (!search_reset_point) search_reset_point = store_mark();
 
-DEBUG(D_lookup) debug_printf_indent("search_open: %s \"%s\"\n", lk->name,
+DEBUG(D_lookup) debug_printf_indent("search_open: %s \"%s\"\n", li->name,
   filename ? filename : US"NULL");
 
 /* See if we already have this open for this type of search, and if so,
@@ -411,7 +397,7 @@ pass back the tree block as the handle. The key for the tree node is the search
 type plus '0' concatenated with the file name. There may be entries in the tree
 with closed files if a lot of files have been opened. */
 
-sprintf(CS keybuffer, "%c%.254s", search_type + '0',
+sprintf(CS keybuffer, "%c%.254s", li->acq_num+ '0',
   filename ? filename : US"");
 
 if ((t = tree_search(search_tree, keybuffer)))
@@ -431,7 +417,7 @@ this, if the search type is one that uses real files, check on the number that
 we are holding open in the cache. If the limit is reached, close the least
 recently used one. */
 
-if (lk->type == lookup_absfile && open_filecount >= lookup_open_max)
+if (li->type == lookup_absfile && open_filecount >= lookup_open_max)
   if (!open_bot)
     log_write(0, LOG_MAIN|LOG_PANIC, "too many lookups open, but can't find "
       "one to close");
@@ -444,7 +430,7 @@ if (lk->type == lookup_absfile && open_filecount >= lookup_open_max)
       ((search_cache *)(open_bot->data.ptr))->down = NULL;
     else
       open_top = NULL;
-    ((lookup_list[c->search_type])->close)(c->handle);
+    ((c->li)->close)(c->handle);
     c->handle = NULL;
     open_filecount--;
     }
@@ -452,24 +438,24 @@ if (lk->type == lookup_absfile && open_filecount >= lookup_open_max)
 /* If opening is successful, call the file-checking function if there is one,
 and if all is still well, enter the open database into the tree. */
 
-if (!(handle = (lk->open)(filename, &search_error_message)))
+if (!(handle = (li->open)(filename, &search_error_message)))
   {
   store_pool = old_pool;
   return NULL;
   }
 
-if (  lk->check
-   && !lk->check(handle, filename, modemask, owners, owngroups,
+if (  li->check
+   && !li->check(handle, filename, modemask, owners, owngroups,
 	 &search_error_message))
   {
-  lk->close(handle);
+  li->close(handle);
   store_pool = old_pool;
   return NULL;
   }
 
 /* If this is a search type that uses real files, keep count. */
 
-if (lk->type == lookup_absfile) open_filecount++;
+if (li->type == lookup_absfile) open_filecount++;
 
 /* If we found a previously opened entry in the tree, re-use it; otherwise
 insert a new entry. On re-use, leave any cached lookup data and the lookup
@@ -486,7 +472,7 @@ if (!t)
 else c = t->data.ptr;
 
 c->handle = handle;
-c->search_type = search_type;
+c->li = li;
 c->up = c->down = NULL;
 
 store_pool = old_pool;
@@ -525,9 +511,10 @@ internal_search_find(void * handle, const uschar * filename,
 {
 tree_node * t = (tree_node *)handle;
 search_cache * c = (search_cache *)(t->data.ptr);
+const lookup_info * li = c->li;
 expiring_data * e = NULL;	/* compiler quietening */
 uschar * data = NULL;
-int search_type = t->name[0] - '0';
+int quoter_id = li->acq_num;
 int old_pool = store_pool;
 
 /* Lookups that return DEFER may not always set an error message. So that
@@ -538,8 +525,7 @@ f.search_find_defer = FALSE;
 
 DEBUG(D_lookup) debug_printf_indent("internal_search_find: file=\"%s\"\n  "
   "type=%s key=\"%s\" opts=%s%s%s\n", filename,
-  lookup_list[search_type]->name, keystring,
-  opts ? "\"" : "", opts, opts ? "\"" : "");
+  li->name, keystring, opts ? "\"" : "", opts, opts ? "\"" : "");
 
 /* Insurance. If the keystring is empty, just fail. */
 
@@ -591,11 +577,11 @@ else
 
   XXX Should we this move into lf_sqlperform() ?  The server-taint check is there.
   Also it already knows about looking for a "servers" spec in the query string.
-  Passing search_type down that far is an issue.
+  Passing quoter_id down that far is an issue.
   */
 
-  if (  !filename && lookup_list[search_type]->quote
-     && is_tainted(keystring) && !is_quoted_like(keystring, search_type))
+  if (  !filename && li->quote
+     && is_tainted(keystring) && !is_quoted_like(keystring, quoter_id))
     {
     const uschar * ks = keystring;
     uschar * loc = acl_current_verb();
@@ -628,9 +614,12 @@ else
     DEBUG(D_lookup)
       {
       int q = quoter_for_address(ks);
-      debug_printf_indent("search_type %d (%s) quoting %d (%s)\n",
-	search_type, lookup_list[search_type]->name,
-	q, is_real_quoter(q) ? lookup_list[q]->name : US"none");
+      const lookup_info * qli = lookup_with_acq_num(q);
+
+      debug_printf_indent("quoter_id %d (%s) quoting %d (%s)\n",
+	quoter_id, li->name,
+	q,
+	is_real_quoter(q) ? qli ? qli->name : US"???" : US"none");
       }
 #endif
     }
@@ -639,7 +628,7 @@ else
   like FAIL, except that search_find_defer is set so the caller can
   distinguish if necessary. */
 
-  if (lookup_list[search_type]->find(c->handle, filename, keystring, keylength,
+  if (li->find(c->handle, filename, keystring, keylength,
 	  &data, &search_error_message, &do_cache, opts) == DEFER)
     f.search_find_defer = TRUE;
 
@@ -768,33 +757,36 @@ if (opts)
 /* Arrange to put this database at the top of the LRU chain if it is a type
 that opens real files. */
 
-if (  open_top != (tree_node *)handle 
-   && lookup_list[t->name[0]-'0']->type == lookup_absfile)
+if (open_top != (tree_node *)handle)
   {
-  search_cache *c = (search_cache *)(t->data.ptr);
-  tree_node *up = c->up;
-  tree_node *down = c->down;
-
-  /* Cut it out of the list. A newly opened file will a NULL up pointer.
-  Otherwise there will be a non-NULL up pointer, since we checked above that
-  this block isn't already at the top of the list. */
-
-  if (up)
+  const lookup_info * li = lookup_with_acq_num(t->name[0]-'0');
+  if (li && li->type == lookup_absfile)
     {
-    ((search_cache *)(up->data.ptr))->down = down;
-    if (down)
-      ((search_cache *)(down->data.ptr))->up = up;
-    else
-      open_bot = up;
+    search_cache *c = (search_cache *)(t->data.ptr);
+    tree_node *up = c->up;
+    tree_node *down = c->down;
+
+    /* Cut it out of the list. A newly opened file will a NULL up pointer.
+    Otherwise there will be a non-NULL up pointer, since we checked above that
+    this block isn't already at the top of the list. */
+
+    if (up)
+      {
+      ((search_cache *)(up->data.ptr))->down = down;
+      if (down)
+	((search_cache *)(down->data.ptr))->up = up;
+      else
+	open_bot = up;
+      }
+
+    /* Now put it at the head of the list. */
+
+    c->up = NULL;
+    c->down = open_top;
+    if (!open_top) open_bot = t;
+    else ((search_cache *)(open_top->data.ptr))->up = t;
+    open_top = t;
     }
-
-  /* Now put it at the head of the list. */
-
-  c->up = NULL;
-  c->down = open_top;
-  if (!open_top) open_bot = t;
-  else ((search_cache *)(open_top->data.ptr))->up = t;
-  open_top = t;
   }
 
 DEBUG(D_lookup)

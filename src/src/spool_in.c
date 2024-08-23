@@ -518,15 +518,15 @@ for (;;)
     for (s = ++var; *s != ')'; ) s++;
 #ifndef COMPILE_UTILITY
       {
-      int idx;
-      if ((idx = search_findtype(var, s - var)) < 0)
+      const lookup_info * li;
+      if (!(li= search_findtype(var, s - var)))
 	{
 	DEBUG(D_any)
 	  debug_printf("Unrecognised quoter %.*s\n", (int)(s - var), var+1);
 	where = NULL;
 	goto SPOOL_FORMAT_ERROR;
 	}
-      proto_mem = store_get_quoted(1, GET_TAINTED, idx);
+      proto_mem = store_get_quoted(1, GET_TAINTED, li->acq_num);
       }
 #endif  /* COMPILE_UTILITY */
     var = s + 1;

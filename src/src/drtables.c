@@ -18,8 +18,9 @@ various macros in config.h that ultimately come from Local/Makefile. They are
 all described in src/EDITME. */
 
 
-lookup_info **lookup_list;
-int lookup_list_count = 0;
+//lookup_info **lookup_list;
+tree_node * lookups_tree = NULL;
+unsigned lookup_list_count = 0;
 
 /* Lists of information about which drivers are included in the exim binary. */
 
@@ -225,52 +226,49 @@ return g;
 
 
 
-struct lookupmodulestr
-{
-  void *dl;
-  struct lookup_module_info *info;
-  struct lookupmodulestr *next;
-};
-
-static struct lookupmodulestr *lookupmodules = NULL;
-
 static void
-addlookupmodule(void *dl, struct lookup_module_info *info)
+add_lookup_to_tree(lookup_info * li)
 {
-struct lookupmodulestr * p =
-  store_get(sizeof(struct lookupmodulestr), GET_UNTAINTED);
-
-p->dl = dl;
-p->info = info;
-p->next = lookupmodules;
-lookupmodules = p;
-lookup_list_count += info->lookupcount;
+tree_node * new = store_get_perm(sizeof(tree_node) + Ustrlen(li->name),
+							GET_UNTAINTED);
+new->data.ptr = (void *)li;
+Ustrcpy(new->name, li->name);
+if (tree_insertnode(&lookups_tree, new))
+  li->acq_num = lookup_list_count++;
+else
+  log_write(0, LOG_MAIN|LOG_PANIC, "Duplicate lookup name '%s'", li->name);
 }
 
-/* only valid after lookup_list and lookup_list_count are assigned */
+
+/* Add all the lookup types provided by the module */
 static void
-add_lookup_to_list(lookup_info *info)
+addlookupmodule(const struct lookup_module_info * lmi)
 {
-/* need to add the lookup to lookup_list, sorted */
-int pos = 0;
-
-/* strategy is to go through the list until we find
-either an empty spot or a name that is higher.
-this can't fail because we have enough space. */
-
-while (lookup_list[pos] && (Ustrcmp(lookup_list[pos]->name, info->name) <= 0))
-  pos++;
-
-if (lookup_list[pos])
-  {
-  /* need to insert it, so move all the other items up
-  (last slot is still empty, of course) */
-
-  memmove(&lookup_list[pos+1], &lookup_list[pos],
-	  sizeof(lookup_info *) * (lookup_list_count-pos-1));
-  }
-lookup_list[pos] = info;
+for (int j = 0; j < lmi->lookupcount; j++)
+  add_lookup_to_tree(lmi->lookups[j]);
 }
+
+
+
+static unsigned hunt_acq;
+
+static void
+acq_cb(uschar * name, uschar * ptr, void * ctx)
+{
+lookup_info * li = (lookup_info *)ptr;
+if (li->acq_num == hunt_acq) *(lookup_info **)ctx = li;
+}
+
+/*XXX many of the calls here could instead use a name on the quoted-pool */
+const lookup_info *
+lookup_with_acq_num(unsigned k)
+{
+const lookup_info * li = NULL;
+hunt_acq = k;
+tree_walk(lookups_tree, acq_cb, &li);
+return li;
+}
+
 
 
 /* These need to be at file level for old versions of gcc (2.95.2 reported),
@@ -351,98 +349,96 @@ int countmodules = 0;
 int moduleerrors = 0;
 #endif
 static BOOL lookup_list_init_done = FALSE;
-rmark reset_point;
 
 if (lookup_list_init_done)
   return;
-reset_point = store_mark();
 lookup_list_init_done = TRUE;
 
 #if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
-addlookupmodule(NULL, &cdb_lookup_module_info);
+addlookupmodule(&cdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
-addlookupmodule(NULL, &dbmdb_lookup_module_info);
+addlookupmodule(&dbmdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
-addlookupmodule(NULL, &dnsdb_lookup_module_info);
+addlookupmodule(&dnsdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
-addlookupmodule(NULL, &dsearch_lookup_module_info);
+addlookupmodule(&dsearch_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
-addlookupmodule(NULL, &ibase_lookup_module_info);
+addlookupmodule(&ibase_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
-addlookupmodule(NULL, &ldap_lookup_module_info);
+addlookupmodule(&ldap_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
-addlookupmodule(NULL, &json_lookup_module_info);
+addlookupmodule(&json_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
-addlookupmodule(NULL, &lsearch_lookup_module_info);
+addlookupmodule(&lsearch_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
-addlookupmodule(NULL, &mysql_lookup_module_info);
+addlookupmodule(&mysql_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
-addlookupmodule(NULL, &nis_lookup_module_info);
+addlookupmodule(&nis_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
-addlookupmodule(NULL, &nisplus_lookup_module_info);
+addlookupmodule(&nisplus_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
-addlookupmodule(NULL, &oracle_lookup_module_info);
+addlookupmodule(&oracle_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
-addlookupmodule(NULL, &passwd_lookup_module_info);
+addlookupmodule(&passwd_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
-addlookupmodule(NULL, &pgsql_lookup_module_info);
+addlookupmodule(&pgsql_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
-addlookupmodule(NULL, &redis_lookup_module_info);
+addlookupmodule(&redis_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_LMDB) && LOOKUP_LMDB!=2
-addlookupmodule(NULL, &lmdb_lookup_module_info);
+addlookupmodule(&lmdb_lookup_module_info);
 #endif
 
 #ifdef SUPPORT_SPF
-addlookupmodule(NULL, &spf_lookup_module_info);
+addlookupmodule(&spf_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
-addlookupmodule(NULL, &sqlite_lookup_module_info);
+addlookupmodule(&sqlite_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
-addlookupmodule(NULL, &testdb_lookup_module_info);
+addlookupmodule(&testdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
-addlookupmodule(NULL, &whoson_lookup_module_info);
+addlookupmodule(&whoson_lookup_module_info);
 #endif
 
 /* This is a custom expansion, and not available as either
 a list-syntax lookup or a lookup expansion. However, it is
 implemented by a lookup module. */
 
-addlookupmodule(NULL, &readsock_lookup_module_info);
+addlookupmodule(&readsock_lookup_module_info);
 
 #ifdef LOOKUP_MODULE_DIR
 if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
@@ -513,7 +509,7 @@ else
 	continue;
 	}
 
-      addlookupmodule(dl, info);
+      addlookupmodule(info);
       DEBUG(D_lookup) debug_printf("Loaded \"%s\" (%d lookup types)\n", name, info->lookupcount);
       countmodules++;
       }
@@ -527,16 +523,6 @@ DEBUG(D_lookup) debug_printf("Loaded %d lookup modules\n", countmodules);
 
 DEBUG(D_lookup) debug_printf("Total %d lookups\n", lookup_list_count);
 
-lookup_list = store_malloc(sizeof(lookup_info *) * lookup_list_count);
-memset(lookup_list, 0, sizeof(lookup_info *) * lookup_list_count);
-
-/* now add all lookups to the real list */
-for (struct lookupmodulestr * p = lookupmodules; p; p = p->next)
-  for (int j = 0; j < p->info->lookupcount; j++)
-    add_lookup_to_list(p->info->lookups[j]);
-store_reset(reset_point);
-/* just to be sure */
-lookupmodules = NULL;
 }
 
 #endif	/*!MACRO_PREDEF*/

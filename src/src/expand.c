@@ -2804,9 +2804,11 @@ switch(cond_type = identify_operator(&s, &opname))
     case ECOND_LDAPAUTH:
     #ifdef LOOKUP_LDAP
       {
-      int stype = search_findtype(US"ldapauth", 8), expand_setup = -1;
-      void * handle = search_open(NULL, stype, 0, NULL, NULL);
-      if (handle)
+      int expand_setup = -1;
+      const lookup_info * li = search_findtype(US"ldapauth", 8);
+      void * handle;
+
+      if (li && (handle = search_open(NULL, li, 0, NULL, NULL)))
 	rc = search_find(handle, NULL, sub[0],
 			-1, NULL, 0, 0, &expand_setup, NULL)
 	  ? OK : f.search_find_defer ? DEFER : FAIL;
@@ -5018,9 +5020,9 @@ while (*s)
 
     case EITEM_LOOKUP:
       {
-      int stype, partial, affixlen, starflags;
-      int expand_setup = 0;
-      int nameptr = 0;
+      int expand_setup = 0, nameptr = 0;
+      int partial, affixlen, starflags;
+      const lookup_info * li;
       uschar * key, * filename;
       const uschar * affix, * opts;
       uschar * save_lookup_value = lookup_value;
@@ -5073,8 +5075,8 @@ while (*s)
       /* Now check for the individual search type and any partial or default
       options. Only those types that are actually in the binary are valid. */
 
-      if ((stype = search_findtype_partial(name, &partial, &affix, &affixlen,
-	  &starflags, &opts)) < 0)
+      if (!(li = search_findtype_partial(name, &partial, &affix, &affixlen,
+	  &starflags, &opts)))
         {
         expand_string_message = search_error_message;
         goto EXPAND_FAILED;
@@ -5083,7 +5085,7 @@ while (*s)
       /* Check that a key was provided for those lookup types that need it,
       and was not supplied for those that use the query style. */
 
-      if (!mac_islookup(stype, lookup_querystyle|lookup_absfilequery))
+      if (!mac_islookup(li, lookup_querystyle|lookup_absfilequery))
         {
         if (!key)
           {
@@ -5126,7 +5128,7 @@ while (*s)
       file types, the query (i.e. "key") starts with a file name. */
 
       if (!key)
-	key = search_args(stype, name, filename, &filename, opts);
+	key = search_args(li, name, filename, &filename, opts);
 
       /* If skipping, don't do the next bit - just lookup_value == NULL, as if
       the entry was not found. Note that there is no search_close() function.
@@ -5145,7 +5147,7 @@ while (*s)
         lookup_value = NULL;
       else
         {
-        void * handle = search_open(filename, stype, 0, NULL, NULL);
+        void * handle = search_open(filename, li, 0, NULL, NULL);
         if (!handle)
           {
           expand_string_message = search_error_message;
@@ -5526,11 +5528,17 @@ while (*s)
 
       if (!(flags & ESI_SKIPPING))
         {
-	int stype = search_findtype(US"readsock", 8);
+	const lookup_info * li = search_findtype(US"readsock", 8);
 	gstring * g = NULL;
 	void * handle;
 	int expand_setup = -1;
 	uschar * s;
+
+	if (!li)
+	  {
+	  expand_string_message = search_error_message;
+	  goto EXPAND_FAILED;
+	  }
 
 	/* If the reqstr is empty, flag that and set a dummy */
 
@@ -5569,7 +5577,7 @@ while (*s)
 
 	/* Gat a (possibly cached) handle for the connection */
 
-	if (!(handle = search_open(sub_arg[0], stype, 0, NULL, NULL)))
+	if (!(handle = search_open(sub_arg[0], li, 0, NULL, NULL)))
 	  {
 	  if (*expand_string_message) goto EXPAND_FAILED;
 	  expand_string_message = search_error_message;
@@ -7792,19 +7800,19 @@ NOT_ITEM: ;
 
 	else
 	  {
-	  int n;
+	  const lookup_info * li;
 	  uschar * opt = Ustrchr(arg, '_');
 
 	  if (opt) *opt++ = 0;
 
-	  if ((n = search_findtype(arg, Ustrlen(arg))) < 0)
+	  if (!(li = search_findtype(arg, Ustrlen(arg))))
 	    {
 	    expand_string_message = search_error_message;
 	    goto EXPAND_FAILED;
 	    }
 
-	  if (lookup_list[n]->quote)
-	    sub = (lookup_list[n]->quote)(sub, opt, (unsigned)n);
+	  if (li->quote)
+	    sub = (li->quote)(sub, opt, li->acq_num);
 	  else if (opt)
 	    sub = NULL;
 

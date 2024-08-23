@@ -1183,6 +1183,17 @@ return g;
 }
 
 
+static void
+lookup_version_report_cb(uschar * name, uschar * ptr, void * ctx)
+{
+const lookup_info * li = (lookup_info *)ptr;
+gstring ** gp = ctx;
+
+if (li->version_report)
+  *gp = li->version_report(*gp);
+}
+
+
 /* This function is called for -bV/--version and for -d to output the optional
 features of the current Exim binary.
 
@@ -1368,7 +1379,7 @@ DEBUG(D_any)
 	       	gnu_get_libc_version());
 #endif
 
-g = show_db_version(g);
+  g = show_db_version(g);
 
 #ifndef DISABLE_TLS
   g = tls_version_report(g);
@@ -1383,12 +1394,12 @@ g = show_db_version(g);
   g = spf_lib_version_report(g);
 #endif
 
-show_string(is_stdout, g);
-g = NULL;
+  show_string(is_stdout, g);
+  g = NULL;
 
-for (auth_info * ai = auths_available; ai; ai = (auth_info *)ai->drinfo.next)
-  if (ai->version_report)
-    g = (*ai->version_report)(g);
+  for (auth_info * ai = auths_available; ai; ai = (auth_info *)ai->drinfo.next)
+    if (ai->version_report)
+      g = (*ai->version_report)(g);
 
   /* PCRE_PRERELEASE is either defined and empty or a bare sequence of
   characters; unless it's an ancient version of PCRE in which case it
@@ -1398,27 +1409,25 @@ for (auth_info * ai = auths_available; ai; ai = (auth_info *)ai->drinfo.next)
 #endif
 #define QUOTE(X) #X
 #define EXPAND_AND_QUOTE(X) QUOTE(X)
-  {
-  uschar buf[24];
-  pcre2_config(PCRE2_CONFIG_VERSION, buf);
-  g = string_fmt_append(g, "Library version: PCRE2: Compile: %d.%d%s\n"
-              "                        Runtime: %s\n",
-          PCRE2_MAJOR, PCRE2_MINOR,
-          EXPAND_AND_QUOTE(PCRE2_PRERELEASE) "",
-          buf);
-  }
+    {
+    uschar buf[24];
+    pcre2_config(PCRE2_CONFIG_VERSION, buf);
+    g = string_fmt_append(g, "Library version: PCRE2: Compile: %d.%d%s\n"
+		"                        Runtime: %s\n",
+	    PCRE2_MAJOR, PCRE2_MINOR,
+	    EXPAND_AND_QUOTE(PCRE2_PRERELEASE) "",
+	    buf);
+    }
 #undef QUOTE
 #undef EXPAND_AND_QUOTE
 
-show_string(is_stdout, g);
-g = NULL;
+  show_string(is_stdout, g);
+  g = NULL;
 
-init_lookup_list();
-for (int i = 0; i < lookup_list_count; i++)
-  if (lookup_list[i]->version_report)
-    g = lookup_list[i]->version_report(g);
-show_string(is_stdout, g);
-g = NULL;
+  init_lookup_list();
+  tree_walk(lookups_tree, lookup_version_report_cb, &g);
+  show_string(is_stdout, g);
+  g = NULL;
 
 #ifdef WHITELIST_D_MACROS
   g = string_fmt_append(g, "WHITELIST_D_MACROS: \"%s\"\n", WHITELIST_D_MACROS);

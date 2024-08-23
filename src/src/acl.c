@@ -5017,7 +5017,11 @@ if (is_tainted(value))
   {
   int q = quoter_for_address(value);
   putc('-', f);
-  if (is_real_quoter(q)) fprintf(f, "(%s)", lookup_list[q]->name);
+  if (is_real_quoter(q))
+    {
+    const lookup_info * li = lookup_with_acq_num(q);
+    fprintf(f, "(%s)", li ? li->name : US"???");
+    }
   }
 fprintf(f, "acl%c %s %d\n%s\n", name[0], name+1, Ustrlen(value), value);
 }

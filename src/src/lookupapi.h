@@ -19,6 +19,7 @@
 typedef struct lookup_info {
   uschar *name;                   /* e.g. "lsearch" */
   int type;                       /* query/singlekey/abs-file */
+  unsigned acq_num;		  /* acquisition number */
   void *(*open)(                  /* open function */
     const uschar *,               /* file name for those that have one */
     uschar **);                   /* for error message */

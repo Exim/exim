@@ -96,7 +96,8 @@ check_string(void * arg, const uschar * pattern, const uschar ** valueptr,
   uschar ** error)
 {
 const check_string_block * cb = arg;
-int search_type, partial, affixlen, starflags;
+int partial, affixlen, starflags;
+const lookup_info * li;
 int expand_setup = cb->expand_setup;
 const uschar * affix, * opts;
 uschar *s;
@@ -268,11 +269,10 @@ if ((semicolon = Ustrchr(pattern, ';')) == NULL)
 the part of the string preceding the semicolon. */
 
 *semicolon = 0;
-search_type = search_findtype_partial(pattern, &partial, &affix, &affixlen,
+li = search_findtype_partial(pattern, &partial, &affix, &affixlen,
   &starflags, &opts);
 *semicolon = ';';
-if (search_type < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
-  search_error_message);
+if (!li) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
 
 /* Partial matching is not appropriate for certain lookups (e.g. when looking
 up user@domain for sender rejection). There's a flag to disable it. */
@@ -281,13 +281,13 @@ if (!(cb->flags & MCS_PARTIAL)) partial = -1;
 
 /* Set the parameters for the three different kinds of lookup. */
 
-keyquery = search_args(search_type, s, semicolon+1, &filename, opts);
+keyquery = search_args(li, s, semicolon+1, &filename, opts);
 
 /* Now do the actual lookup; throw away the data returned unless it was asked
 for; partial matching is all handled inside search_find(). Note that there is
 no search_close() because of the caching arrangements. */
 
-if (!(handle = search_open(filename, search_type, 0, NULL, NULL)))
+if (!(handle = search_open(filename, li, 0, NULL, NULL)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
 result = search_find(handle, filename, keyquery, partial, affix, affixlen,
   starflags, &expand_setup, opts);

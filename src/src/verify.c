@@ -3060,7 +3060,7 @@ else
 if (iplookup)
   {
   int insize;
-  int search_type;
+  const lookup_info * li;
   int incoming[4];
   void *handle;
   uschar *filename, *key, *result;
@@ -3068,10 +3068,8 @@ if (iplookup)
 
   /* Find the search type */
 
-  search_type = search_findtype(t, endname - t);
-
-  if (search_type < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
-    search_error_message);
+  if (!(li = search_findtype(t, endname - t)))
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
 
   /* Adjust parameters for the type of lookup. For a query-style lookup, there
   is no file name, and the "key" is just the query. For query-style with a file
@@ -3081,7 +3079,7 @@ if (iplookup)
   dot separators instead of colons, except when the lookup type is "iplsearch".
   */
 
-  if (mac_islookup(search_type, lookup_absfilequery))
+  if (mac_islookup(li, lookup_absfilequery))
     {
     filename = semicolon + 1;
     key = filename;
@@ -3089,14 +3087,14 @@ if (iplookup)
     filename = string_copyn(filename, key - filename);
     Uskip_whitespace(&key);
     }
-  else if (mac_islookup(search_type, lookup_querystyle))
+  else if (mac_islookup(li, lookup_querystyle))
     {
     filename = NULL;
     key = semicolon + 1;
     }
   else   /* Single-key style */
     {
-    int sep = (Ustrcmp(lookup_list[search_type]->name, "iplsearch") == 0)?
+    int sep = (Ustrcmp(li->name, "iplsearch") == 0)?
       ':' : '.';
     insize = host_aton(cb->host_address, incoming);
     host_mask(insize, incoming, mlen);
@@ -3108,7 +3106,7 @@ if (iplookup)
   /* Now do the actual lookup; note that there is no search_close() because
   of the caching arrangements. */
 
-  if (!(handle = search_open(filename, search_type, 0, NULL, NULL)))
+  if (!(handle = search_open(filename, li, 0, NULL, NULL)))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
 
   result = search_find(handle, filename, key, -1, NULL, 0, 0, NULL, opts);
@@ -3182,20 +3180,21 @@ on spec. */
 if ((semicolon = Ustrchr(ss, ';')))
   {
   const uschar * affix, * opts;
-  int partial, affixlen, starflags, id;
+  int partial, affixlen, starflags;
+  const lookup_info * li;
 
   *semicolon = 0;
-  id = search_findtype_partial(ss, &partial, &affix, &affixlen, &starflags,
+  li = search_findtype_partial(ss, &partial, &affix, &affixlen, &starflags,
 	  &opts);
   *semicolon=';';
 
-  if (id < 0)                           /* Unknown lookup type */
+  if (!li)				/* Unknown lookup type */
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "%s in host list item \"%s\"",
       search_error_message, ss);
     return DEFER;
     }
-  isquery = mac_islookup(id, lookup_querystyle|lookup_absfilequery);
+  isquery = mac_islookup(li, lookup_querystyle|lookup_absfilequery);
   }
 
 if (isquery)

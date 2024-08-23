@@ -729,8 +729,8 @@ extern uschar *log_selector_string;    /* As supplied in the config */
 extern FILE   *log_stderr;             /* Copy of stderr for log use, or NULL */
 extern BOOL    log_timezone;           /* TRUE to include the timezone in log lines */
 extern uschar *login_sender_address;   /* The actual sender address */
-extern lookup_info **lookup_list;      /* Array of pointers to available lookups */
-extern int     lookup_list_count;      /* Number of entries in the list */
+extern tree_node *lookups_tree;        /* Tree of available lookups */
+extern unsigned lookup_list_count;     /* Number of entries in the list */
 extern uschar *lookup_dnssec_authenticated; /* AD status of dns lookup */
 extern int     lookup_open_max;        /* Max lookup files to cache */
 extern uschar *lookup_value;           /* Value looked up from file */

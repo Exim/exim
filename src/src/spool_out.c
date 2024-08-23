@@ -126,7 +126,11 @@ if (is_tainted(val))
   {
   int q = quoter_for_address(val);
   putc('-', fp);
-  if (is_real_quoter(q)) fprintf(fp, "(%s)", lookup_list[q]->name);
+  if (is_real_quoter(q))
+    {
+    const lookup_info * li = lookup_with_acq_num(q);
+    fprintf(fp, "(%s)", li ? li->name : US"unknown!");
+    }
   }
 fprintf(fp, "%s %s\n", name, val);
 }

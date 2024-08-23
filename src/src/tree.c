@@ -191,7 +191,7 @@ node->balance = 0;
 
 /* Deal with an empty tree */
 
-if (p == NULL)
+if (!p)
   {
   *treebase = node;
   return TRUE;
@@ -214,9 +214,9 @@ for (;;)
   /* Deal with climbing down the tree, exiting from the loop
   when we reach a leaf. */
 
-  q = (c > 0)? &(p->right) : &(p->left);
+  q = c > 0 ? &p->right : &p->left;
   p = *q;
-  if (p == NULL) break;
+  if (!p) break;
 
   /* Save the address of the pointer to the last node en route
   which has a non-zero balance factor. */

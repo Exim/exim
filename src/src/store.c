@@ -651,8 +651,11 @@ BOOL
 is_quoted_like(const void * p, unsigned quoter)
 {
 int pq = quoter_for_address(p);
-BOOL y =
-  is_real_quoter(pq) && lookup_list[pq]->quote == lookup_list[quoter]->quote;
+const lookup_info * p_li = lookup_with_acq_num(pq);
+void * p_qfn = p_li ? p_li->quote : NULL;
+const lookup_info * q_li = lookup_with_acq_num(quoter);
+void * q_qfn = q_li ? q_li->quote : NULL;
+BOOL y = is_real_quoter(pq) && p_qfn == q_qfn;
 /* debug_printf("is_quoted(%p, %u): %c\n", p, quoter, y?'T':'F'); */
 return y;
 }
@@ -1254,8 +1257,10 @@ DEBUG(D_memory)
  for (quoted_pooldesc * qp = quoted_pools; qp; i++, qp = qp->next)
    {
    pooldesc * pp = &qp->pool;
+   const lookup_info* li = lookup_with_acq_num(qp->quoter);
    debug_printf("----Exit  pool Q%d max: %3d kB in %d blocks at order %u\ttainted quoted:%s\n",
-    i, (pp->maxbytes+1023)/1024, pp->maxblocks, pp->maxorder, lookup_list[qp->quoter]->name);
+    i, (pp->maxbytes+1023)/1024, pp->maxblocks, pp->maxorder,
+    li ? li->name : US"???");
    }
  }
 #endif
@@ -1297,7 +1302,11 @@ debug_print_taint(const void * p)
 int q = quoter_for_address(p);
 if (!is_tainted(p)) return;
 debug_printf("(tainted");
-if (is_real_quoter(q)) debug_printf(", quoted:%s", lookup_list[q]->name);
+if (is_real_quoter(q))
+  {
+  const lookup_info * li = lookup_with_acq_num(q);
+  debug_printf(", quoted:%s", li ? li->name : US"???");
+  }
 debug_printf(")\n");
 }
 #endif
