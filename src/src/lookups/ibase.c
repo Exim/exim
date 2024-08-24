@@ -511,7 +511,7 @@ if (opt)
 while ((c = *t++))
   if (c == '\'') count++;
 
-t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx);
+t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx, US(ibase));
 
 while ((c = *s++))
   if (c == '\'') { *t++ = '\''; *t++ = '\''; }

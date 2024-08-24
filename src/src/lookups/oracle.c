@@ -560,7 +560,7 @@ if (opt) return NULL;    /* No options are recognized */
 while ((c = *t++))
   if (strchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
-t = quoted = store_get_quoted((int)Ustrlen(s) + count + 1, s, idx);
+t = quoted = store_get_quoted((int)Ustrlen(s) + count + 1, s, idx, US"oracle");
 
 while ((c = *s++))
   {

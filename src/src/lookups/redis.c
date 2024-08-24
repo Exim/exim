@@ -416,7 +416,7 @@ if (opt) return NULL;     /* No options recognized */
 while ((c = *t++))
   if (isspace(c) || c == '\\') count++;
 
-t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx);
+t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx, US"redis");
 
 while ((c = *s++))
   {

@@ -431,7 +431,7 @@ if (opt) return NULL;     /* No options recognized */
 while ((c = *t++))
   if (Ustrchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
-t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx);
+t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx, US"pgsql");
 
 while ((c = *s++))
   {

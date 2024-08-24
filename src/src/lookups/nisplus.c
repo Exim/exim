@@ -242,7 +242,7 @@ if (opt) return NULL;    /* No options recognized */
 
 while (*t) if (*t++ == '\"') count++;
 
-t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx);
+t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx, US"nisplus");
 
 while (*s)
   {

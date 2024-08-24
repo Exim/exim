@@ -124,13 +124,11 @@ spool_var_write(FILE * fp, const uschar * name, const uschar * val)
 putc('-', fp);
 if (is_tainted(val))
   {
-  int q = quoter_for_address(val);
+  const uschar * quoter_name;
   putc('-', fp);
-  if (is_real_quoter(q))
-    {
-    const lookup_info * li = lookup_with_acq_num(q);
-    fprintf(fp, "(%s)", li ? li->name : US"unknown!");
-    }
+  (void) quoter_for_address(val, &quoter_name);
+  if (quoter_name)
+    fprintf(fp, "(%s)", quoter_name);
   }
 fprintf(fp, "%s %s\n", name, val);
 }

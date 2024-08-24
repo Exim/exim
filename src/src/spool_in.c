@@ -526,7 +526,7 @@ for (;;)
 	where = NULL;
 	goto SPOOL_FORMAT_ERROR;
 	}
-      proto_mem = store_get_quoted(1, GET_TAINTED, li->acq_num);
+      proto_mem = store_get_quoted(1, GET_TAINTED, li->acq_num, li->name);
       }
 #endif  /* COMPILE_UTILITY */
     var = s + 1;

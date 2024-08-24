@@ -250,6 +250,8 @@ for (int j = 0; j < lmi->lookupcount; j++)
 
 
 
+/* Hunt for the lookup with the given acquisition number */
+
 static unsigned hunt_acq;
 
 static void
@@ -259,7 +261,6 @@ lookup_info * li = (lookup_info *)ptr;
 if (li->acq_num == hunt_acq) *(lookup_info **)ctx = li;
 }
 
-/*XXX many of the calls here could instead use a name on the quoted-pool */
 const lookup_info *
 lookup_with_acq_num(unsigned k)
 {

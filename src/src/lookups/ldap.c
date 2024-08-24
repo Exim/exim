@@ -1467,7 +1467,7 @@ while ((c = *t++))
 
 /* Get sufficient store to hold the quoted string */
 
-t = quoted = store_get_quoted(len + count + 1, s, idx);
+t = quoted = store_get_quoted(len + count + 1, s, idx, US"ldap");
 
 /* Handle plain quote_ldap */
 

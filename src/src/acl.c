@@ -5015,13 +5015,11 @@ FILE * f = (FILE *)ctx;
 putc('-', f);
 if (is_tainted(value))
   {
-  int q = quoter_for_address(value);
+  const uschar * quoter_name;
   putc('-', f);
-  if (is_real_quoter(q))
-    {
-    const lookup_info * li = lookup_with_acq_num(q);
-    fprintf(f, "(%s)", li ? li->name : US"???");
-    }
+  (void) quoter_for_address(value, &quoter_name);
+  if (quoter_name)
+    fprintf(f, "(%s)", quoter_name);
   }
 fprintf(f, "acl%c %s %d\n%s\n", name[0], name+1, Ustrlen(value), value);
 }

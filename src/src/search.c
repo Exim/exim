@@ -514,7 +514,7 @@ search_cache * c = (search_cache *)(t->data.ptr);
 const lookup_info * li = c->li;
 expiring_data * e = NULL;	/* compiler quietening */
 uschar * data = NULL;
-int quoter_id = li->acq_num;
+int required_quoter_id = li->acq_num;
 int old_pool = store_pool;
 
 /* Lookups that return DEFER may not always set an error message. So that
@@ -577,11 +577,11 @@ else
 
   XXX Should we this move into lf_sqlperform() ?  The server-taint check is there.
   Also it already knows about looking for a "servers" spec in the query string.
-  Passing quoter_id down that far is an issue.
+  Passing required_quoter_id down that far is an issue.
   */
 
   if (  !filename && li->quote
-     && is_tainted(keystring) && !is_quoted_like(keystring, quoter_id))
+     && is_tainted(keystring) && !is_quoted_like(keystring, required_quoter_id))
     {
     const uschar * ks = keystring;
     uschar * loc = acl_current_verb();
@@ -613,13 +613,12 @@ else
 
     DEBUG(D_lookup)
       {
-      int q = quoter_for_address(ks);
-      const lookup_info * qli = lookup_with_acq_num(q);
+      const uschar * quoter_name;
+      int q = quoter_for_address(ks, &quoter_name);
 
-      debug_printf_indent("quoter_id %d (%s) quoting %d (%s)\n",
-	quoter_id, li->name,
-	q,
-	is_real_quoter(q) ? qli ? qli->name : US"???" : US"none");
+      debug_printf_indent("required_quoter_id %d (%s) quoting %d (%s)\n",
+	required_quoter_id, li->name,
+	q, quoter_name);
       }
 #endif
     }

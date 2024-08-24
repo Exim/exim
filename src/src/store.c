@@ -132,6 +132,7 @@ typedef struct pooldesc {
 typedef struct quoted_pooldesc {
   pooldesc			pool;
   unsigned			quoter;
+  const unsigned char *		quoter_name;
   struct quoted_pooldesc *	next;
 } quoted_pooldesc;
 
@@ -335,24 +336,27 @@ log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Taint mismatch, %s: %s %d\n",
 /* Return the pool for the given quoter, or null */
 
 static pooldesc *
-pool_for_quoter(unsigned quoter)
+pool_for_quoter(unsigned quoter, const uschar ** namep)
 {
 for (quoted_pooldesc * qp = quoted_pools; qp; qp = qp->next)
   if (qp->quoter == quoter)
+    {
+    if (namep) *namep = qp->quoter_name;
     return &qp->pool;
+    }
 return NULL;
 }
 
 /* Allocate/init a new quoted-pool and return the pool */
 
 static pooldesc *
-quoted_pool_new(unsigned quoter)
+quoted_pool_new(unsigned quoter, const uschar * quoter_name)
 {
-// debug_printf("allocating quoted-pool\n");
 quoted_pooldesc * qp = store_get_perm(sizeof(quoted_pooldesc), GET_UNTAINTED);
 
 pool_init(&qp->pool);
 qp->quoter = quoter;
+qp->quoter_name = quoter_name;
 qp->next = quoted_pools;
 quoted_pools = qp;
 return &qp->pool;
@@ -504,13 +508,14 @@ void *
 store_get_3(int size, const void * proto_mem, const char * func, int linenumber)
 {
 #ifndef COMPILE_UTILITY
-int quoter = quoter_for_address(proto_mem);
+const uschar * quoter_name;
+int quoter = quoter_for_address(proto_mem, &quoter_name);
 #endif
 pooldesc * pp;
 void * yield;
 
 #ifndef COMPILE_UTILITY
-if (!is_real_quoter(quoter))
+if (!quoter_name)
 #endif
   {
   BOOL tainted = is_tainted(proto_mem);
@@ -533,7 +538,8 @@ else
   DEBUG(D_memory)
     debug_printf("allocating quoted-block for quoter %u (from %s %d)\n",
       quoter, func, linenumber);
-  if (!(pp = pool_for_quoter(quoter))) pp = quoted_pool_new(quoter);
+  if (!(pp = pool_for_quoter(quoter, NULL)))
+    pp = quoted_pool_new(quoter, quoter_name);
   yield = pool_get(pp, size, FALSE, func, linenumber);
   DEBUG(D_memory)
     debug_printf("---QQ Get %6p %5d %-14s %4d\n",
@@ -592,16 +598,16 @@ Return:	allocated memory block
 */
 
 static void *
-store_force_get_quoted(int size, unsigned quoter,
+store_force_get_quoted(int size, unsigned quoter, const uschar * quoter_name,
   const char * func, int linenumber)
 {
-pooldesc * pp = pool_for_quoter(quoter);
+pooldesc * pp = pool_for_quoter(quoter, NULL);
 void * yield;
 
 DEBUG(D_memory)
   debug_printf("allocating quoted-block for quoter %u (from %s %d)\n", quoter, func, linenumber);
 
-if (!pp) pp = quoted_pool_new(quoter);
+if (!pp) pp = quoted_pool_new(quoter, quoter_name);
 yield = pool_get(pp, size, FALSE, func, linenumber);
 
 DEBUG(D_memory)
@@ -616,32 +622,37 @@ prototype memory is tainted. Otherwise, get plain memory.
 */
 void *
 store_get_quoted_3(int size, const void * proto_mem, unsigned quoter,
-  const char * func, int linenumber)
+  const uschar * quoter_name, const char * func, int linenumber)
 {
-// debug_printf("store_get_quoted_3: quoter %u\n", quoter);
 return is_tainted(proto_mem)
-  ? store_force_get_quoted(size, quoter, func, linenumber)
+  ? store_force_get_quoted(size, quoter, quoter_name, func, linenumber)
   : store_get_3(size, proto_mem, func, linenumber);
 }
 
 /* Return quoter for given address, or -1 if not in a quoted-pool. */
 int
-quoter_for_address(const void * p)
+quoter_for_address(const void * p, const uschar ** namep)
 {
-for (quoted_pooldesc * qp = quoted_pools; qp; qp = qp->next)
+const quoted_pooldesc * qp;
+for (qp = quoted_pools; qp; qp = qp->next)
   {
-  pooldesc * pp = &qp->pool;
+  const pooldesc * pp = &qp->pool;
   storeblock * b;
 
   if (b = pp->current_block)
     if (is_pointer_in_block(b, p))
-      return qp->quoter;
+      goto found;
 
   for (b = pp->chainbase; b; b = b->next)
     if (is_pointer_in_block(b, p))
-      return qp->quoter;
+      goto found;
   }
+if (namep) *namep = NULL;
 return -1;
+
+found:
+  if (namep) *namep = qp->quoter_name;
+  return qp->quoter;
 }
 
 /* Return TRUE iff the given address is quoted for the given type.
@@ -650,12 +661,22 @@ find variants but shared quote functions. */
 BOOL
 is_quoted_like(const void * p, unsigned quoter)
 {
-int pq = quoter_for_address(p);
-const lookup_info * p_li = lookup_with_acq_num(pq);
-void * p_qfn = p_li ? p_li->quote : NULL;
-const lookup_info * q_li = lookup_with_acq_num(quoter);
-void * q_qfn = q_li ? q_li->quote : NULL;
-BOOL y = is_real_quoter(pq) && p_qfn == q_qfn;
+const uschar * p_name, * q_name;
+const lookup_info * p_li, * q_li;
+void * p_qfn, * q_qfn;
+
+(void) quoter_for_address(p, &p_name);
+(void) pool_for_quoter(quoter, &q_name);
+
+if (!p_name || !q_name) return FALSE;
+
+p_li = search_findtype(p_name, Ustrlen(p_name));
+p_qfn = p_li ? p_li->quote : NULL;
+q_li = search_findtype(q_name, Ustrlen(q_name));
+q_qfn = q_li ? q_li->quote : NULL;
+
+BOOL y = p_qfn == q_qfn;
+
 /* debug_printf("is_quoted(%p, %u): %c\n", p, quoter, y?'T':'F'); */
 return y;
 }
@@ -666,6 +687,7 @@ is_real_quoter(int quoter)
 {
 return quoter >= 0;
 }
+
 
 /* Return TRUE if the "new" data requires that the "old" data
 be recopied to new-class memory.  We order the classes as
@@ -684,8 +706,8 @@ is_incompatible_fn(const void * old, const void * new)
 int oq, nq;
 unsigned oi, ni;
 
-ni = is_real_quoter(nq = quoter_for_address(new)) ? 1 : is_tainted(new) ? 2 : 0;
-oi = is_real_quoter(oq = quoter_for_address(old)) ? 1 : is_tainted(old) ? 2 : 0;
+ni = is_real_quoter(nq = quoter_for_address(new, NULL)) ? 1 : is_tainted(new) ? 2 : 0;
+oi = is_real_quoter(oq = quoter_for_address(old, NULL)) ? 1 : is_tainted(old) ? 2 : 0;
 return ni > oi || ni == oi && nq != oq;
 }
 
@@ -1257,10 +1279,9 @@ DEBUG(D_memory)
  for (quoted_pooldesc * qp = quoted_pools; qp; i++, qp = qp->next)
    {
    pooldesc * pp = &qp->pool;
-   const lookup_info* li = lookup_with_acq_num(qp->quoter);
    debug_printf("----Exit  pool Q%d max: %3d kB in %d blocks at order %u\ttainted quoted:%s\n",
     i, (pp->maxbytes+1023)/1024, pp->maxblocks, pp->maxorder,
-    li ? li->name : US"???");
+    qp->quoter_name);
    }
  }
 #endif
@@ -1299,14 +1320,12 @@ store_pool = oldpool;
 void
 debug_print_taint(const void * p)
 {
-int q = quoter_for_address(p);
+const uschar * quoter_name;
 if (!is_tainted(p)) return;
 debug_printf("(tainted");
-if (is_real_quoter(q))
-  {
-  const lookup_info * li = lookup_with_acq_num(q);
-  debug_printf(", quoted:%s", li ? li->name : US"???");
-  }
+(void) quoter_for_address(p, &quoter_name);
+if (quoter_name)
+  debug_printf(", quoted:%s", quoter_name);
 debug_printf(")\n");
 }
 #endif

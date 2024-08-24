@@ -433,7 +433,7 @@ while ((c = *t++))
 /* Old code:  if (count == 0) return s;
 Now always allocate and copy, to track the quoted status. */
 
-t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx);
+t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx, US"mysql");
 
 while ((c = *s++))
   {

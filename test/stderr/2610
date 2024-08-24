@@ -381,7 +381,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235                                (tainted)
 01:01:01 p1235  LOG: MAIN PANIC
 01:01:01 p1235    tainted search query is not properly quoted (ACL warn, TESTSUITE/test-config 26): select name from them where id = 'c'
-01:01:01 p1235   quoter_id NN (mysql) quoting -1 (none)
+01:01:01 p1235   required_quoter_id NN (mysql) quoting -1 (NULL)
 01:01:01 p1235   MySQL query: "select name from them where id = 'c'" opts 'no_rd'
 01:01:01 p1235   MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   MYSQL: no data found
@@ -540,7 +540,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235                                (tainted)
 01:01:01 p1235  LOG: MAIN PANIC
 01:01:01 p1235    tainted search query is not properly quoted (ACL warn, TESTSUITE/test-config 39): select name from them where id = 'c'
-01:01:01 p1235   quoter_id NN (mysql) quoting -1 (none)
+01:01:01 p1235   required_quoter_id NN (mysql) quoting -1 (NULL)
 01:01:01 p1235   MySQL query: "servers=127.0.0.1::PORT_N; select name from them where id = 'c'" opts 'NULL'
 01:01:01 p1235  LOG: MAIN
 01:01:01 p1235    Exim configuration error in line 89 of TESTSUITE/test-config:
@@ -846,7 +846,7 @@ processing address_data
                               (tainted)
 LOG: MAIN PANIC
   tainted search query is not properly quoted (router r1, TESTSUITE/test-config 68): select name from them where id='ph10' limit 1
- quoter_id NN (mysql) quoting -1 (none)
+ required_quoter_id NN (mysql) quoting -1 (NULL)
  MySQL query: "select name from them where id='ph10' limit 1" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
  creating new cache entry
@@ -890,7 +890,7 @@ appendfile transport entered
                               (tainted)
 LOG: MAIN
   tainted search query is not properly quoted (transport t1, TESTSUITE/test-config 82): select id from them where id='ph10'
- quoter_id NN (mysql) quoting -1 (none)
+ required_quoter_id NN (mysql) quoting -1 (NULL)
  MySQL query: "select id from them where id='ph10'" opts 'NULL'
  MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root
  creating new cache entry

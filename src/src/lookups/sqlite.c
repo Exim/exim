@@ -143,7 +143,7 @@ if (opt) return NULL;     /* No options recognized */
 while ((c = *t++)) if (c == '\'') count++;
 count += t - s;
 
-t = quoted = store_get_quoted(count + 1, s, idx);
+t = quoted = store_get_quoted(count + 1, s, idx, US"sqlite");
 
 while ((c = *s++))
   {
