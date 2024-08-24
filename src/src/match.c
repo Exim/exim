@@ -272,7 +272,8 @@ the part of the string preceding the semicolon. */
 li = search_findtype_partial(pattern, &partial, &affix, &affixlen,
   &starflags, &opts);
 *semicolon = ';';
-if (!li) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
+if (!li)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
 
 /* Partial matching is not appropriate for certain lookups (e.g. when looking
 up user@domain for sender rejection). There's a flag to disable it. */

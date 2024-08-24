@@ -742,7 +742,7 @@ to close. */
 
 typedef struct search_cache {
   void   *handle;                 /* lookup handle, or NULL if closed */
-  const lookup_info *li;	  /* info struct for search type */
+  const lookup_info * li;	  /* info struct for search type */
   tree_node *up;                  /* LRU up pointer */
   tree_node *down;                /* LRU down pointer */
   tree_node *item_cache;          /* tree of cached results */

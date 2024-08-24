@@ -3059,11 +3059,10 @@ else
 
 if (iplookup)
   {
-  int insize;
   const lookup_info * li;
-  int incoming[4];
-  void *handle;
-  uschar *filename, *key, *result;
+  int incoming[4], insize;
+  void * handle;
+  uschar * filename, * key, * result;
   uschar buffer[64];
 
   /* Find the search type */
@@ -3094,11 +3093,10 @@ if (iplookup)
     }
   else   /* Single-key style */
     {
-    int sep = (Ustrcmp(li->name, "iplsearch") == 0)?
-      ':' : '.';
+    int sep = Ustrcmp(li->name, "iplsearch") == 0 ? ':' : '.';
     insize = host_aton(cb->host_address, incoming);
     host_mask(insize, incoming, mlen);
-    (void)host_nmtoa(insize, incoming, mlen, buffer, sep);
+    (void) host_nmtoa(insize, incoming, mlen, buffer, sep);
     key = buffer;
     filename = semicolon + 1;
     }

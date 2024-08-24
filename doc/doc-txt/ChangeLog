@@ -51,6 +51,11 @@ JH/10 Bug 3108: On platforms not providing strchrnul() [OpenBSD] supply a proper
       different size.  This resulted in crashes while processing DKIM signatures
       of received messages.  Identification and fix from Qualys Security.
 
+JH/11 Lookups built as dynamic-load modules which support a single lookup
+      type are now only loaded if required by the config. Previously all lookup
+      modules present in the modules directory were loaded; this now applies
+      only to those supporting multiple types.
+
 Exim version 4.98
 -----------------
 

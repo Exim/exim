@@ -339,6 +339,9 @@ extern const uschar *local_part_quote(const uschar *);
 extern int     log_open_as_exim(const uschar * const);
 extern void    log_close_all(void);
 extern const lookup_info * lookup_with_acq_num(unsigned);
+#ifdef LOOKUP_MODULE_DIR
+extern BOOL    lookup_one_mod_load(const uschar *, uschar **);
+#endif
 
 
 extern macro_item * macro_create(const uschar *, const uschar *, BOOL);
@@ -388,6 +391,9 @@ extern void    moan_tell_someone(uschar *, address_item *,
 extern BOOL    moan_to_sender(int, error_block *, header_line *, FILE *, BOOL);
 extern void    moan_write_from(FILE *);
 extern void    moan_write_references(FILE *, uschar *);
+#ifdef LOOKUP_MODULE_DIR
+//extern void    mod_load_check(const uschar *);
+#endif
 extern FILE   *modefopen(const uschar *, const char *, mode_t);
 
 extern int     open_cutthrough_connection( address_item * addr );

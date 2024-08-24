@@ -51,9 +51,17 @@ static rmark search_reset_point = NULL;
 *      Validate a plain lookup type name         *
 *************************************************/
 
+static const lookup_info *
+internal_search_findtype(const uschar * name)
+{
+tree_node * t = tree_search(lookups_tree, name);
+return t ? t->data.ptr : NULL;
+}
+
 /* Only those names that are recognized and whose code is included in the
-binary give an OK response. Use a binary chop search now that the list has got
-so long.
+binary give an OK response. Types are held in a binary tree for fast location
+and dynamic insertion.  If not initially found, try to load a module if
+any were compiled.
 
 Arguments:
   name       lookup type name - not necessarily zero terminated (e.g. dbm*)
@@ -66,15 +74,29 @@ Returns:     ptr to info struct for the lookup,
 const lookup_info *
 search_findtype(const uschar * name, int len)
 {
-const uschar * s = name[len] ? string_copyn(name, len) : name;
-tree_node * t = tree_search(lookups_tree, s);
+const lookup_info * li;
 
-if (t) return t->data.ptr;
+if (name[len])
+  name = string_copyn(name, len);
+if ((li = internal_search_findtype(name)))
+  return li;
 
-search_error_message = string_sprintf("unknown lookup type \"%s\"", s);
+#ifdef LOOKUP_MODULE_DIR
+    DEBUG(D_lookup)
+      debug_printf_indent("searchtype %s not initially found\n", name);
+
+    if (lookup_one_mod_load(name, NULL))
+      if ((li = internal_search_findtype(name)))
+	return li;
+      else
+	{ DEBUG(D_lookup) debug_printf_indent("find retry failed\n"); }
+    else DEBUG(D_lookup)
+      debug_printf_indent("scan modules dir for %s failed\n", name);
+#endif
+
+search_error_message  = string_sprintf("unknown lookup type \"%s\"", name);
 return NULL;
 }
-
 
 
 
@@ -207,8 +229,8 @@ Arguments:
 Return:	keyquery	the search-type (for single-key) or query (for query-type)
  */
 uschar *
-search_args(const lookup_info * li, uschar * search, uschar * query, uschar ** fnamep,
-  const uschar * opts)
+search_args(const lookup_info * li, uschar * search, uschar * query,
+  uschar ** fnamep, const uschar * opts)
 {
 Uskip_whitespace(&query);
 if (mac_islookup(li, lookup_absfilequery))
@@ -430,7 +452,7 @@ if (li->type == lookup_absfile && open_filecount >= lookup_open_max)
       ((search_cache *)(open_bot->data.ptr))->down = NULL;
     else
       open_top = NULL;
-    ((c->li)->close)(c->handle);
+    (c->li->close)(c->handle);
     c->handle = NULL;
     open_filecount--;
     }

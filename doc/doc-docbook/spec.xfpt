@@ -2084,7 +2084,10 @@ library dependencies without requiring all systems to install all of those
 dependencies.
 .new
 Any combination of lookup types can be built this way.
-All of the lookup modules found as an Exim process starts will be loaded.
+Lookup types that provide several variants will be loaded as
+Exim starts.
+Types that provide only one method are not loaded until used by
+the runtime configuration.
 .wen
 
 For building

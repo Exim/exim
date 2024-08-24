@@ -1297,11 +1297,12 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^tls_set_watch\(\) fail on '\/usr\/(?:lib\/ssl|local\/openssl3\/etc\/pki\/tls)\/cert.pem': No such file or directory$/;
 
     # drop lookups
-    next if /^$time_pid?(?: Lookups\ \((?:built-in|dynamic)\):
-					| Loaded\ "[^.]+\.so"\ \(\d+\ lookup\ types\)
-					| Loading\ lookup\ modules\ from
-					| Loaded\ \d+\ lookup\ modules
-					| Total\ \d+\ lookups)/x;
+    next if /(?: Lookups\ \((?:built-in|dynamic)\):
+	      | searchtype\ \w+\ not\ initially\ found
+	      | Loaded\ "\w+"\ \(\d+\ lookup\ types?\)
+	      | Loading\ lookup\ modules\ from
+	      | Loaded\ \d+\ lookup\ modules
+	      | Total\ \d+\ built-in\ lookups)/x;
 
     # drop loads of dyn-module drivers
     next if /^$time_pid?(?:Loading\ \w+\ (?:router|transport|auth)\ driver\ from

@@ -1232,6 +1232,12 @@ if (strncmpic(s, US"begin ", 6) == 0)
   return NULL;
   }
 
+#ifdef LOOKUP_MODULE_DIR
+/* Check for any required module load operations */
+
+//mod_load_check(s);
+#endif
+
 /* Return the first non-blank character. */
 
 return s;

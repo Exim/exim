@@ -661,7 +661,7 @@ find variants but shared quote functions. */
 BOOL
 is_quoted_like(const void * p, unsigned quoter)
 {
-const uschar * p_name, * q_name;
+const uschar * p_name, * q_name = NULL;
 const lookup_info * p_li, * q_li;
 void * p_qfn, * q_qfn;
 

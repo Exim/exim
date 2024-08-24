@@ -340,14 +340,90 @@ extern lookup_module_info whoson_lookup_module_info;
 extern lookup_module_info readsock_lookup_module_info;
 
 
+#ifdef LOOKUP_MODULE_DIR
+/* Try to load a lookup module with the given name.
+
+Arguments:
+    name		name of the lookup
+    errstr		if not NULL, place "open fail" error message here
+
+Return: boolean success
+*/
+
+static BOOL
+lookup_mod_load(const uschar * name, uschar ** errstr)
+{
+const uschar * path = string_sprintf(
+  LOOKUP_MODULE_DIR "/%s_lookup." DYNLIB_FN_EXT, name);
+void * dl;
+struct lookup_module_info * info;
+const char * errormsg;
+
+if (!(dl = dlopen(CS path, RTLD_NOW)))
+  {
+  if (errstr)
+    *errstr = string_sprintf("Error loading %s: %s", name, dlerror());
+  else
+    (void) dlerror();		/* clear out error state */
+  return FALSE;
+  }
+
+/* FreeBSD nsdispatch() can trigger dlerror() errors about
+_nss_cache_cycle_prevention_function; we need to clear the dlerror()
+state before calling dlsym(), so that any error afterwards only comes
+from dlsym().  */
+
+errormsg = dlerror();
+
+info = (struct lookup_module_info *) dlsym(dl, "_lookup_module_info");
+if ((errormsg = dlerror()))
+  {
+  fprintf(stderr, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s does not appear to be a lookup module (%s)", name, errormsg);
+  dlclose(dl);
+  return FALSE;
+  }
+if (info->magic != LOOKUP_MODULE_INFO_MAGIC)
+  {
+  fprintf(stderr, "Lookup module %s is not compatible with this version of Exim\n", name);
+  log_write(0, LOG_MAIN|LOG_PANIC, "Lookup module %s is not compatible with this version of Exim", name);
+  dlclose(dl);
+  return FALSE;
+  }
+
+addlookupmodule(info);
+DEBUG(D_lookup) debug_printf_indent("Loaded \"%s\" (%d lookup type%s)\n",
+				    name, info->lookupcount,
+				    info->lookupcount > 1 ? "s" : "");
+return TRUE;
+}
+
+
+/* Try to load a lookup module, assuming the module name is the same
+as the lookup type name.  This will only work for single-method modules.
+Other have to be always-load (see the RE in init_lookup_list() below).
+*/
+
+BOOL
+lookup_one_mod_load(const uschar * name, uschar ** errstr)
+{
+if (!lookup_mod_load(name, errstr)) return FALSE;
+/*XXX notify daemon? */
+return TRUE;
+}
+
+#endif	/*LOOKUP_MODULE_DIR*/
+
+
+
+
+
 void
 init_lookup_list(void)
 {
 #ifdef LOOKUP_MODULE_DIR
 DIR * dd;
-struct dirent * ent;
 int countmodules = 0;
-int moduleerrors = 0;
 #endif
 static BOOL lookup_list_init_done = FALSE;
 
@@ -441,6 +517,9 @@ implemented by a lookup module. */
 
 addlookupmodule(&readsock_lookup_module_info);
 
+DEBUG(D_lookup) debug_printf("Total %d built-in lookups\n", lookup_list_count);
+
+
 #ifdef LOOKUP_MODULE_DIR
 if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
   {
@@ -450,81 +529,39 @@ if (!(dd = exim_opendir(CUS LOOKUP_MODULE_DIR)))
   }
 else
   {
+  /* Look specifically for modules we know offer several lookup types and
+  load them now, since we cannot load-on-first-use. */
+
+  struct dirent * ent;
   const pcre2_code * regex_islookupmod = regex_must_compile(
-    US"_lookup\\." DYNLIB_FN_EXT "$", MCS_NOFLAGS, TRUE);
+    US"(lsearch|ldap|nis)_lookup\\." DYNLIB_FN_EXT "$", MCS_NOFLAGS, TRUE);
 
   DEBUG(D_lookup) debug_printf("Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
   while ((ent = readdir(dd)))
     {
     char * name = ent->d_name;
     int len = (int)strlen(name);
-    if (regex_match(regex_islookupmod, US name, len, NULL))
+    if (regex_match_and_setup(regex_islookupmod, US name, 0, 0))
       {
-      int pathnamelen = len + (int)strlen(LOOKUP_MODULE_DIR) + 2;
-      void *dl;
-      struct lookup_module_info *info;
-      const char *errormsg;
-
-      /* SRH: am I being paranoid here or what? */
-      if (pathnamelen > big_buffer_size)
+      uschar * errstr;
+      if (lookup_mod_load(expand_nstring[1], &errstr))
+	countmodules++;
+      else
 	{
-	fprintf(stderr, "Loading lookup modules: %s/%s: name too long\n", LOOKUP_MODULE_DIR, name);
-	log_write(0, LOG_MAIN|LOG_PANIC, "%s/%s: name too long\n", LOOKUP_MODULE_DIR, name);
-	continue;
+	fprintf(stderr, "%s\n", errstr);
+	log_write(0, LOG_MAIN|LOG_PANIC, "%s", errstr);
 	}
-
-      /* SRH: snprintf here? */
-      sprintf(CS big_buffer, "%s/%s", LOOKUP_MODULE_DIR, name);
-
-      if (!(dl = dlopen(CS big_buffer, RTLD_NOW)))
-	{
-	errormsg = dlerror();
-	fprintf(stderr, "Error loading %s: %s\n", name, errormsg);
-	log_write(0, LOG_MAIN|LOG_PANIC, "Error loading lookup module %s: %s\n", name, errormsg);
-	moduleerrors++;
-	continue;
-	}
-
-      /* FreeBSD nsdispatch() can trigger dlerror() errors about
-      _nss_cache_cycle_prevention_function; we need to clear the dlerror()
-      state before calling dlsym(), so that any error afterwards only comes
-      from dlsym().  */
-
-      errormsg = dlerror();
-
-      info = (struct lookup_module_info*) dlsym(dl, "_lookup_module_info");
-      if ((errormsg = dlerror()))
-	{
-	fprintf(stderr, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
-	log_write(0, LOG_MAIN|LOG_PANIC, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
-	dlclose(dl);
-	moduleerrors++;
-	continue;
-	}
-      if (info->magic != LOOKUP_MODULE_INFO_MAGIC)
-	{
-	fprintf(stderr, "Lookup module %s is not compatible with this version of Exim\n", name);
-	log_write(0, LOG_MAIN|LOG_PANIC, "Lookup module %s is not compatible with this version of Exim\n", name);
-	dlclose(dl);
-	moduleerrors++;
-	continue;
-	}
-
-      addlookupmodule(info);
-      DEBUG(D_lookup) debug_printf("Loaded \"%s\" (%d lookup types)\n", name, info->lookupcount);
-      countmodules++;
       }
     }
-  store_free((void*)regex_islookupmod);
   closedir(dd);
   }
 
 DEBUG(D_lookup) debug_printf("Loaded %d lookup modules\n", countmodules);
 #endif
 
-DEBUG(D_lookup) debug_printf("Total %d lookups\n", lookup_list_count);
 
 }
+
 
 #endif	/*!MACRO_PREDEF*/
 /* End of drtables.c */
