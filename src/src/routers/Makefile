@@ -12,11 +12,7 @@
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
-RF_OBJ = rf_change_domain.o rf_expand_data.o rf_get_errors_address.o \
-      rf_get_munge_headers.o rf_get_transport.o rf_get_ugid.o \
-      rf_lookup_hostlist.o rf_queue_add.o rf_self_action.o rf_set_ugid.o
-
-all:             $(RF_OBJ) routers.a $(MODS)
+all:             routers.a $(MODS)
 
 routers.a:       $(OBJ)
 		 @$(RM_COMMAND) -f routers.a
@@ -34,17 +30,6 @@ routers.a:       $(OBJ)
 
 
 $(OBJ) $(MOD): $(HDRS) rf_functions.h
-
-rf_change_domain.o:      rf_change_domain.c
-rf_expand_data.o:        rf_expand_data.c
-rf_get_errors_address.o: rf_get_errors_address.c
-rf_get_munge_headers.o:  rf_get_munge_headers.c
-rf_get_transport.o:      rf_get_transport.c
-rf_get_ugid.o:           rf_get_ugid.c
-rf_lookup_hostlist.o:    rf_lookup_hostlist.c
-rf_queue_add.o:          rf_queue_add.c
-rf_self_action.o:        rf_self_action.c
-rf_set_ugid.o:           rf_set_ugid.c
 
 accept.o accept.so:             accept.c       accept.h
 dnslookup.o dnslookup.so:       dnslookup.c    dnslookup.h

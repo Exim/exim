@@ -14,10 +14,9 @@
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
-AF_OBJ = auth-spa.o call_pam.o call_pwcheck.o call_radius.o check_serv_cond.o \
-	get_data.o get_no64_data.o pwcheck.o
+OBJ += auth-spa.o
 
-all:		$(AF_OBJ) auths.a $(MODS)
+all:		auths.a $(MODS)
 
 auths.a:	$(OBJ)
 		@$(RM_COMMAND) -f auths.a
@@ -36,15 +35,6 @@ SO_FLAGS = -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS)
 
 
 $(OBJ) $(MOD): $(HDRS)
-
-auth-spa.o:         auth-spa.c
-call_pam.o:         call_pam.c
-call_pwcheck.o:     call_pwcheck.c pwcheck.h
-call_radius.o:      call_radius.c
-check_serv_cond.o:  check_serv_cond.c
-get_data.o:         get_data.c
-get_no64_data.o:    get_no64_data.c
-pwcheck.o:          pwcheck.c pwcheck.h
 
 cram_md5.o:         cram_md5.c cram_md5.h
 cyrus_sasl.o:       cyrus_sasl.c cyrus_sasl.h

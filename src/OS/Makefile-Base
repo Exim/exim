@@ -508,15 +508,12 @@ OBJ_EXPERIMENTAL =	arc.o \
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
 
-OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
-OBJ_ROUTERS = routers/rf_change_domain.o routers/rf_expand_data.o \
-	routers/rf_get_errors_address.o \
-	routers/rf_get_munge_headers.o routers/rf_get_transport.o \
-	routers/rf_get_ugid.o routers/rf_lookup_hostlist.o \
-	routers/rf_queue_add.o routers/rf_self_action.o routers/rf_set_ugid.o
-OBJ_AUTHS = auths/auth-spa.o auths/call_pam.o auths/call_pwcheck.o \
-	auths/call_radius.o auths/check_serv_cond.o auths/get_data.o \
-	auths/get_no64_data.o auths/pwcheck.o
+OBJ_LOOKUPS = lf_quote.o lf_check_file.o lf_sqlperform.o
+OBJ_ROUTERS = rf_change_domain.o rf_expand_data.o rf_get_errors_address.o \
+	rf_get_munge_headers.o rf_get_transport.o rf_get_ugid.o \
+	rf_lookup_hostlist.o rf_queue_add.o rf_self_action.o rf_set_ugid.o
+OBJ_AUTHS = call_pam.o call_pwcheck.o call_radius.o check_serv_cond.o \
+	get_data.o get_no64_data.o pwcheck.o
 
 OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
@@ -921,13 +918,79 @@ xclient.o:	$(HDRS) xclient.c
 
 drtables.o:      $(HDRS) drtables.c
 
-# We depend upon object files built as part of building the lookups library
-# When using parallel make, we don't have the dependency to force building
-# in the sub-directory unless we force that dependency:
+# Some sources live in the lookups, routers or auths directory
 
-$(OBJ_LOOKUPS):  buildlookups
-$(OBJ_ROUTERS):  buildrouters
-$(OBJ_AUTHS):    buildauths
+$(OBJ_LOOKUPS) $(OBJ_ROUTERS) $(OBJ_AUTHS):    $(HDRS)
+
+$(OBJ_LOOKUPS):	lookups/lf_functions.h
+lf_check_file.o: lookups/lf_check_file.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+lf_quote.o:      lookups/lf_quote.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+lf_sqlperform.o: lookups/lf_sqlperform.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+
+$(OBJ_ROUTERS):	routers/rf_functions.h
+rf_change_domain.o:      routers/rf_change_domain.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+rf_expand_data.o:        routers/rf_expand_data.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+rf_get_errors_address.o: routers/rf_get_errors_address.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+rf_get_munge_headers.o:  routers/rf_get_munge_headers.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+rf_get_transport.o:      routers/rf_get_transport.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+rf_get_ugid.o:           routers/rf_get_ugid.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+rf_lookup_hostlist.o:    routers/rf_lookup_hostlist.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+rf_queue_add.o:          routers/rf_queue_add.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+rf_self_action.o:        routers/rf_self_action.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+rf_set_ugid.o:           routers/rf_set_ugid.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+
+auth-spa.o:         auths/auth-spa.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+call_pam.o:         auths/call_pam.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+call_pwcheck.o:     auths/call_pwcheck.c auths/pwcheck.h
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+call_radius.o:      auths/call_radius.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+check_serv_cond.o:  auths/check_serv_cond.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+get_data.o:         auths/get_data.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+get_no64_data.o:    auths/get_no64_data.c
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+pwcheck.o:          auths/pwcheck.c auths/pwcheck.h
+	@echo "$(CC) $<"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $<
+
+
 
 # The exim monitor's private modules - the sources live in a private
 # subdirectory. The final binary combines the private modules with some

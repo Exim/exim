@@ -10,8 +10,9 @@
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
+OBJ += spf.o
 
-all:             lookups.a lf_quote.o lf_check_file.o lf_sqlperform.o $(MODS)
+all:             lookups.a $(MODS)
 
 lookups.a:       $(OBJ)
 		 @$(RM_COMMAND) -f lookups.a
@@ -25,10 +26,6 @@ lookups.a:       $(OBJ)
 
 .c.so:;          @echo "$(CC) -shared $*.c"
 		 $(FE)$(CC) $(LOOKUP_$*_INCLUDE) $(LOOKUP_$*_LIBS) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS) $*.c -o $@
-
-lf_check_file.o: $(HDRS) lf_check_file.c  lf_functions.h
-lf_quote.o:      $(HDRS) lf_quote.c       lf_functions.h
-lf_sqlperform.o: $(HDRS) lf_sqlperform.c  lf_functions.h
 
 cdb.o cdb.so:           $(HDRS) cdb.c
 dbmdb.o dbmdb.so:       $(HDRS) dbmdb.c
