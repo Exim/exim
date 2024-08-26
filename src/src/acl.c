@@ -138,15 +138,17 @@ times. For each condition and modifier, there's a bitmap of dis-allowed times.
 For some, it is easier to specify the negation of a small number of allowed
 times. */
   unsigned	forbids;
+#define FORBIDDEN(times)	(times)
+#define PERMITTED(times)	((unsigned) ~(times))
 
 } condition_def;
 
 static condition_def conditions[] = {
-  [ACLC_ACL] =			{ US"acl",		0,	0 },
+  [ACLC_ACL] =			{ US"acl",		0,
+				  FORBIDDEN(0) },
 
   [ACLC_ADD_HEADER] =		{ US"add_header",	ACD_EXP | ACD_MOD,
-				  (unsigned)
-				  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
+				  PERMITTED(ACL_BIT_MAIL | ACL_BIT_RCPT |
 				    ACL_BIT_PREDATA | ACL_BIT_DATA |
 #ifndef DISABLE_PRDR
 				    ACL_BIT_PRDR |
@@ -157,12 +159,13 @@ static condition_def conditions[] = {
   },
 
   [ACLC_AUTHENTICATED] =	{ US"authenticated",	0,
-				  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START |
-				    ACL_BIT_CONNECT | ACL_BIT_HELO,
+				  FORBIDDEN(ACL_BIT_NOTSMTP |
+				    ACL_BIT_NOTSMTP_START |
+				    ACL_BIT_CONNECT | ACL_BIT_HELO),
   },
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   [ACLC_BMI_OPTIN] =		{ US"bmi_optin",	ACD_EXP | ACD_MOD,
-				  ACL_BIT_AUTH |
+				  FORBIDDEN(ACL_BIT_AUTH |
 				    ACL_BIT_CONNECT | ACL_BIT_HELO |
 				    ACL_BIT_DATA | ACL_BIT_MIME |
 # ifndef DISABLE_PRDR
@@ -172,20 +175,22 @@ static condition_def conditions[] = {
 				    ACL_BIT_MAILAUTH |
 				    ACL_BIT_MAIL | ACL_BIT_STARTTLS |
 				    ACL_BIT_VRFY | ACL_BIT_PREDATA |
-				    ACL_BIT_NOTSMTP_START,
+				    ACL_BIT_NOTSMTP_START),
   },
 #endif
-  [ACLC_CONDITION] =		{ US"condition",	ACD_EXP,	0 },
-  [ACLC_CONTINUE] =		{ US"continue",		ACD_EXP | ACD_MOD, 0 },
+  [ACLC_CONDITION] =		{ US"condition",	ACD_EXP,
+				  FORBIDDEN(0) },
+  [ACLC_CONTINUE] =		{ US"continue",		ACD_EXP | ACD_MOD,
+				  FORBIDDEN(0) },
 
   /* Certain types of control are always allowed, so we let it through
   always and check in the control processing itself. */
-  [ACLC_CONTROL] =		{ US"control",		ACD_EXP | ACD_MOD, 0 },
+  [ACLC_CONTROL] =		{ US"control",		ACD_EXP | ACD_MOD,
+				  FORBIDDEN(0) },
 
 #ifdef EXPERIMENTAL_DCC
   [ACLC_DCC] =			{ US"dcc",		ACD_EXP,
-				  (unsigned)
-				  ~(ACL_BIT_DATA |
+				  PERMITTED(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
 				  ACL_BIT_PRDR |
 # endif
@@ -193,15 +198,17 @@ static condition_def conditions[] = {
   },
 #endif
 #ifdef WITH_CONTENT_SCAN
-  [ACLC_DECODE] =		{ US"decode",		ACD_EXP, (unsigned) ~ACL_BIT_MIME },
+  [ACLC_DECODE] =		{ US"decode",		ACD_EXP,
+				  PERMITTED(ACL_BIT_MIME) },
 
 #endif
-  [ACLC_DELAY] =		{ US"delay",		ACD_EXP | ACD_MOD, ACL_BIT_NOTQUIT },
+  [ACLC_DELAY] =		{ US"delay",		ACD_EXP | ACD_MOD,
+				  FORBIDDEN(ACL_BIT_NOTQUIT) },
 #ifndef DISABLE_DKIM
-  [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",	ACD_EXP, (unsigned) ~ACL_BIT_DKIM },
+  [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",	ACD_EXP, 
+				  PERMITTED(ACL_BIT_DKIM) },
   [ACLC_DKIM_STATUS] =		{ US"dkim_status",	ACD_EXP,
-				  (unsigned)
-				  ~(ACL_BIT_DKIM | ACL_BIT_DATA | ACL_BIT_MIME
+				  PERMITTED(ACL_BIT_DKIM | ACL_BIT_DATA | ACL_BIT_MIME
 # ifndef DISABLE_PRDR
 				  | ACL_BIT_PRDR
 # endif
@@ -209,48 +216,52 @@ static condition_def conditions[] = {
   },
 #endif
 #ifdef SUPPORT_DMARC
-  [ACLC_DMARC_STATUS] =		{ US"dmarc_status",	ACD_EXP, (unsigned int) ~ACL_BIT_DATA },
+  [ACLC_DMARC_STATUS] =		{ US"dmarc_status",	ACD_EXP,
+				  PERMITTED(ACL_BIT_DATA) },
 #endif
 
   /* Explicit key lookups can be made in non-smtp ACLs so pass
   always and check in the verify processing itself. */
-  [ACLC_DNSLISTS] =		{ US"dnslists",		ACD_EXP, 0 },
+  [ACLC_DNSLISTS] =		{ US"dnslists",		ACD_EXP,
+				  FORBIDDEN(0) },
 
   [ACLC_DOMAINS] =		{ US"domains",		0,
-				  (unsigned)
-				  ~(ACL_BIT_RCPT | ACL_BIT_VRFY
+				  PERMITTED(ACL_BIT_RCPT | ACL_BIT_VRFY
 #ifndef DISABLE_PRDR
-				  |ACL_BIT_PRDR
+				  | ACL_BIT_PRDR
 #endif
       ),
   },
   [ACLC_ENCRYPTED] =		{ US"encrypted",	0,
-				  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START |
-				    ACL_BIT_CONNECT
+				  FORBIDDEN(ACL_BIT_NOTSMTP |
+				    ACL_BIT_NOTSMTP_START | ACL_BIT_CONNECT)
   },
 
-  [ACLC_ENDPASS] =		{ US"endpass",	ACD_EXP | ACD_MOD,	0 },
+  [ACLC_ENDPASS] =		{ US"endpass",	ACD_EXP | ACD_MOD,
+				  FORBIDDEN(0) },
 
   [ACLC_HOSTS] =		{ US"hosts",		0,
-				  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START,
+				  FORBIDDEN(ACL_BIT_NOTSMTP |
+				    ACL_BIT_NOTSMTP_START),
   },
   [ACLC_LOCAL_PARTS] =		{ US"local_parts",	0,
-				  (unsigned)
-				  ~(ACL_BIT_RCPT | ACL_BIT_VRFY
+				  PERMITTED(ACL_BIT_RCPT | ACL_BIT_VRFY
 #ifndef DISABLE_PRDR
 				  | ACL_BIT_PRDR
 #endif
       ),
   },
 
-  [ACLC_LOG_MESSAGE] =		{ US"log_message",	ACD_EXP | ACD_MOD, 0 },
-  [ACLC_LOG_REJECT_TARGET] =	{ US"log_reject_target", ACD_EXP | ACD_MOD, 0 },
-  [ACLC_LOGWRITE] =		{ US"logwrite",		ACD_EXP | ACD_MOD, 0 },
+  [ACLC_LOG_MESSAGE] =		{ US"log_message",	ACD_EXP | ACD_MOD,
+				  FORBIDDEN(0) },
+  [ACLC_LOG_REJECT_TARGET] =	{ US"log_reject_target", ACD_EXP | ACD_MOD,
+				  FORBIDDEN(0) },
+  [ACLC_LOGWRITE] =		{ US"logwrite",		ACD_EXP | ACD_MOD,
+				  FORBIDDEN(0) },
 
 #ifdef WITH_CONTENT_SCAN
   [ACLC_MALWARE] =		{ US"malware",		ACD_EXP,
-				  (unsigned)
-				    ~(ACL_BIT_DATA |
+				  PERMITTED(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
 				    ACL_BIT_PRDR |
 # endif
@@ -258,26 +269,29 @@ static condition_def conditions[] = {
   },
 #endif
 
-  [ACLC_MESSAGE] =		{ US"message",		ACD_EXP | ACD_MOD, 0 },
+  [ACLC_MESSAGE] =		{ US"message",		ACD_EXP | ACD_MOD,
+				  FORBIDDEN(0) },
 #ifdef WITH_CONTENT_SCAN
-  [ACLC_MIME_REGEX] =		{ US"mime_regex",	ACD_EXP, (unsigned) ~ACL_BIT_MIME },
+  [ACLC_MIME_REGEX] =		{ US"mime_regex",	ACD_EXP,
+				  PERMITTED(ACL_BIT_MIME) },
 #endif
 
   [ACLC_QUEUE] =		{ US"queue",		ACD_EXP | ACD_MOD,
-				  ACL_BIT_NOTSMTP |
+				  FORBIDDEN(ACL_BIT_NOTSMTP |
 #ifndef DISABLE_PRDR
 				  ACL_BIT_PRDR |
 #endif
-				  ACL_BIT_DATA,
+				  ACL_BIT_DATA),
   },
 
-  [ACLC_RATELIMIT] =		{ US"ratelimit",	ACD_EXP,	0 },
-  [ACLC_RECIPIENTS] =		{ US"recipients",	0, (unsigned) ~ACL_BIT_RCPT },
+  [ACLC_RATELIMIT] =		{ US"ratelimit",	ACD_EXP,
+				  FORBIDDEN(0) },
+  [ACLC_RECIPIENTS] =		{ US"recipients",	0,
+				  PERMITTED(ACL_BIT_RCPT) },
 
 #ifdef WITH_CONTENT_SCAN
   [ACLC_REGEX] =		{ US"regex",		ACD_EXP,
-				  (unsigned)
-				  ~(ACL_BIT_DATA |
+				  PERMITTED(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
 				    ACL_BIT_PRDR |
 # endif
@@ -287,8 +301,7 @@ static condition_def conditions[] = {
 
 #endif
   [ACLC_REMOVE_HEADER] =	{ US"remove_header",	ACD_EXP | ACD_MOD,
-				  (unsigned)
-				  ~(ACL_BIT_MAIL|ACL_BIT_RCPT |
+				  PERMITTED(ACL_BIT_MAIL|ACL_BIT_RCPT |
 				    ACL_BIT_PREDATA | ACL_BIT_DATA |
 #ifndef DISABLE_PRDR
 				    ACL_BIT_PRDR |
@@ -296,27 +309,29 @@ static condition_def conditions[] = {
 				    ACL_BIT_MIME | ACL_BIT_NOTSMTP |
 				    ACL_BIT_NOTSMTP_START),
   },
-  [ACLC_SEEN] =			{ US"seen",		ACD_EXP,	0 },
+  [ACLC_SEEN] =			{ US"seen",		ACD_EXP,
+				  FORBIDDEN(0) },
   [ACLC_SENDER_DOMAINS] =	{ US"sender_domains",	0,
-				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
+				  FORBIDDEN(ACL_BIT_AUTH | ACL_BIT_CONNECT |
 				    ACL_BIT_HELO |
 				    ACL_BIT_MAILAUTH | ACL_BIT_QUIT |
 				    ACL_BIT_ETRN | ACL_BIT_EXPN |
-				    ACL_BIT_STARTTLS | ACL_BIT_VRFY,
+				    ACL_BIT_STARTTLS | ACL_BIT_VRFY),
   },
   [ACLC_SENDERS] =		{ US"senders",	0,
-				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
+				  FORBIDDEN(ACL_BIT_AUTH | ACL_BIT_CONNECT |
 				    ACL_BIT_HELO |
 				    ACL_BIT_MAILAUTH | ACL_BIT_QUIT |
 				    ACL_BIT_ETRN | ACL_BIT_EXPN |
-				    ACL_BIT_STARTTLS | ACL_BIT_VRFY,
+				    ACL_BIT_STARTTLS | ACL_BIT_VRFY),
   },
 
-  [ACLC_SET] =			{ US"set",		ACD_EXP | ACD_MOD, 0 },
+  [ACLC_SET] =			{ US"set",		ACD_EXP | ACD_MOD,
+				  FORBIDDEN(0) },
 
 #ifdef WITH_CONTENT_SCAN
   [ACLC_SPAM] =			{ US"spam",		ACD_EXP,
-				  (unsigned) ~(ACL_BIT_DATA |
+				  PERMITTED(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
 				  ACL_BIT_PRDR |
 # endif
@@ -325,25 +340,27 @@ static condition_def conditions[] = {
 #endif
 #ifdef SUPPORT_SPF
   [ACLC_SPF] =			{ US"spf",		ACD_EXP,
-				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
+				  FORBIDDEN(ACL_BIT_AUTH | ACL_BIT_CONNECT |
 				    ACL_BIT_HELO | ACL_BIT_MAILAUTH |
 				    ACL_BIT_ETRN | ACL_BIT_EXPN |
 				    ACL_BIT_STARTTLS | ACL_BIT_VRFY |
-				    ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START,
+				    ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START),
   },
   [ACLC_SPF_GUESS] =		{ US"spf_guess",	ACD_EXP,
-				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
+				  FORBIDDEN(ACL_BIT_AUTH | ACL_BIT_CONNECT |
 				    ACL_BIT_HELO | ACL_BIT_MAILAUTH |
 				    ACL_BIT_ETRN | ACL_BIT_EXPN |
 				    ACL_BIT_STARTTLS | ACL_BIT_VRFY |
-				    ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START,
+				    ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START),
   },
 #endif
-  [ACLC_UDPSEND] =		{ US"udpsend",		ACD_EXP | ACD_MOD,	0 },
+  [ACLC_UDPSEND] =		{ US"udpsend",		ACD_EXP | ACD_MOD,
+				  FORBIDDEN(0) },
 
   /* Certain types of verify are always allowed, so we let it through
   always and check in the verify function itself */
-  [ACLC_VERIFY] =		{ US"verify",		ACD_EXP,	0 },
+  [ACLC_VERIFY] =		{ US"verify",		ACD_EXP,
+				  FORBIDDEN(0) },
 };
 
 
