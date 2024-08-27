@@ -1682,8 +1682,14 @@ bmi_verdicts = NULL;
 #endif
 dnslist_domain = dnslist_matched = NULL;
 #ifdef SUPPORT_SPF
-spf_header_comment = spf_received = spf_result = spf_smtp_comment = NULL;
-spf_result_guessed = FALSE;
+  {
+  misc_module_info * mi = misc_mod_findonly(US"spf");
+  if (mi)
+    {
+    typedef void (*fn_t)(void);
+    (((fn_t *) mi->functions)[4])();	/* spf_smtp_reset*/
+    }
+  }
 #endif
 #ifndef DISABLE_DKIM
 dkim_cur_signer = dkim_signers =
@@ -4020,8 +4026,22 @@ while (done <= 0)
 	}
 
 #ifdef SUPPORT_SPF
-      /* set up SPF context */
-      spf_conn_init(sender_helo_name, sender_host_address);
+      /* If we have an spf module, set up SPF context */
+      {
+      misc_module_info * mi = misc_mod_findonly(US"spf");
+      if (mi)
+	{
+	/* We have hardwired function-call numbers, and also prototypes for the
+	functions.  We could do a function name table search for the number
+	but I can't see how to deal with prototypes.  Is a K&R non-prototyped
+	function still usable with today's compilers? */
+
+	typedef BOOL (*fn_t)(uschar *, uschar *);
+	fn_t fn = ((fn_t *) mi->functions)[0];	/* spf_conn_init */
+
+	(void) fn(sender_helo_name, sender_host_address);
+	}
+      }
 #endif
 
       /* Apply an ACL check if one is defined; afterwards, recheck

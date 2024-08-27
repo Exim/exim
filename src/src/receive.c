@@ -1836,7 +1836,7 @@ if (smtp_input && !smtp_batched_input && !f.dkim_disable_verify)
 #endif
 
 #ifdef SUPPORT_DMARC
-if (sender_host_address) dmarc_init();	/* initialize libopendmarc */
+if (sender_host_address) dmarc_conn_init();	/* initialize libopendmarc */
 #endif
 
 /* In SMTP sessions we may receive several messages in one connection. Before

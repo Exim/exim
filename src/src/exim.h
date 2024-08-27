@@ -543,7 +543,7 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 # include "bmi_spam.h"
 #endif
 #ifdef SUPPORT_SPF
-# include "spf.h"
+# include "miscmods/spf.h"
 #endif
 #ifndef DISABLE_DKIM
 # include "dkim.h"

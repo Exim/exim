@@ -344,8 +344,8 @@ static optionlist optionlist_config[] = {
   { "spamd_address",            opt_stringptr,   {&spamd_address} },
 #endif
 #ifdef SUPPORT_SPF
-  { "spf_guess",                opt_stringptr,   {&spf_guess} },
-  { "spf_smtp_comment_template",opt_stringptr,   {&spf_smtp_comment_template} },
+  { "spf_guess",                opt_module,	 {US"spf"} },
+  { "spf_smtp_comment_template",opt_module,	 {US"spf"} },
 #endif
   { "split_spool_directory",    opt_bool,        {&split_spool_directory} },
   { "spool_directory",          opt_stringptr,   {&spool_directory} },
@@ -1764,6 +1764,8 @@ if (Ustrncmp(name, "not_", 4) == 0)
   offset = 4;
   }
 
+sublist:
+
 /* Search the list for the given name. A non-existent name, or an option that
 is set twice, is a disaster. */
 
@@ -2443,6 +2445,20 @@ switch (type)
   case opt_func:
     ol->v.fn(name, s, 0);
     break;
+
+  case opt_module:
+    {
+    uschar * errstr;
+    misc_module_info * mi = misc_mod_find(US ol->v.value, &errstr);
+    if (!mi)
+      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+	"failed to find %s module for %s: %s", US ol->v.value, name, errstr);
+
+debug_printf("hunting for option %s in module %s\n", name, mi->name);
+    oltop = mi->options;
+    last = mi->options_count;
+    goto sublist;
+    }
   }
 
 return TRUE;

@@ -1049,16 +1049,6 @@ extern uschar *spam_action;            /* the spamd recommended-action */
 extern uschar *spam_score;             /* the spam score (float) */
 extern uschar *spam_score_int;         /* spam_score * 10 (int) */
 #endif
-#ifdef SUPPORT_SPF
-extern uschar *spf_guess;              /* spf best-guess record */
-extern uschar *spf_header_comment;     /* spf header comment */
-extern uschar *spf_received;           /* Received-SPF: header */
-extern uschar *spf_result;             /* spf result in string form */
-extern BOOL    spf_result_guessed;     /* spf result is of best-guess operation */
-extern uschar *spf_smtp_comment;       /* spf comment to include in SMTP reply */
-extern uschar *spf_smtp_comment_template;
-                                       /* template to construct the spf comment by libspf2 */
-#endif
 extern BOOL    split_spool_directory;  /* TRUE to use multiple subdirs */
 extern FILE   *spool_data_file;	       /* handle for -D file */
 extern uschar *spool_directory;        /* Name of spool directory */

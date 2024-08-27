@@ -2578,8 +2578,8 @@ smtp_deliver_init();	/* Used for callouts */
 #ifdef WITH_CONTENT_SCAN
 malware_init();
 #endif
-#ifdef SUPPORT_SPF
-spf_init();
+#ifdef SUPPORT_DMARC
+dmarc_init();
 #endif
 #ifndef DISABLE_TLS
 tls_daemon_init();

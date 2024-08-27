@@ -304,8 +304,6 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  sender_fullhost = (test) [10.0.0.0]
 01:01:01 p1235  sender_rcvhost = [10.0.0.0] (helo=test)
 01:01:01 p1235  set_process_info: pppp handling incoming connection from (test) [10.0.0.0]
-01:01:01 p1235  spf_conn_init: test 10.0.0.0
-01:01:01 p1235  SPF_dns_exim_new
 01:01:01 p1235  try option acl_smtp_helo
 01:01:01 p1235  SMTP>> 250 myhost.test.ex Hello test [10.0.0.0]
 01:01:01 p1235  SMTP<< mail from:<a@b>

@@ -383,7 +383,7 @@ $date = "\\d{2}-\\w{3}-\\d{4}\\s\\d{2}:\\d{2}:\\d{2}";
 
 # Debug time & pid
 
-$time_pid = "(?:\\d{2}:\\d{2}:\\d{2}\\s+\\d+\\s)";
+$time_pid = "(?:(?:\\d{2}:\\d{2}:\\d{2}\\s+)?\\d+\\s)";
 
 # Pattern for matching pids at start of stderr lines; initially something
 # that won't match.
@@ -1315,11 +1315,14 @@ RESET_AFTER_EXTRA_LINE_READ:
     # different libraries will have different numbers (possibly 0) of follow-up
     # lines, indenting with more data
     if (/^$time_pid?Library version:/) {
-      while (1) {
+      $_ = <IN>;
+      if (/^$time_pid?\s/) {
 	$_ = <IN>;
-	next if /^$time_pid?\s/;
-	goto RESET_AFTER_EXTRA_LINE_READ;
+	if (/^$time_pid?\s/) {
+	  $_ = <IN>;
+	}
       }
+      goto RESET_AFTER_EXTRA_LINE_READ;
     }
 
     # drop other build-time controls emitted for debugging
@@ -1556,8 +1559,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^DKIM >> Body data for hash, canonicalized/;
 
     # Not all platforms build with SPF enabled
-    next if /(^spf_conn_init|^SPF_dns_exim_new|spf_compile\.c)/;
+    next if /(^$time_pid?spf_conn_init|spf_compile\.c)/;
     next if /try option spf_smtp_comment_template$/;
+    next if /loading module 'spf'$/;
+    next if /^Loaded "spf"$/;
 
     # Not all platforms have sendfile support
     next if /^cannot use sendfile for body: no support$/;

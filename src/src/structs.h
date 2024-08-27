@@ -965,4 +965,73 @@ typedef struct qrunner {
   BOOL queue_2stage :1;
 } qrunner;
 
+
+/* Types of variable table entry */
+
+enum vtypes {
+  vtype_int,            /* value is address of int */
+  vtype_filter_int,     /* ditto, but recognized only when filtering */
+  vtype_ino,            /* value is address of ino_t (not always an int) */
+  vtype_uid,            /* value is address of uid_t (not always an int) */
+  vtype_gid,            /* value is address of gid_t (not always an int) */
+  vtype_bool,           /* value is address of bool */
+  vtype_stringptr,      /* value is address of pointer to string */
+  vtype_msgbody,        /* as stringptr, but read when first required */
+  vtype_msgbody_end,    /* ditto, the end of the message */
+  vtype_msgheaders,     /* the message's headers, processed */
+  vtype_msgheaders_raw, /* the message's headers, unprocessed */
+  vtype_localpart,      /* extract local part from string */
+  vtype_domain,         /* extract domain from string */
+  vtype_string_func,	/* value is string returned by given function */
+  vtype_todbsdin,       /* value not used; generate BSD inbox tod */
+  vtype_tode,           /* value not used; generate tod in epoch format */
+  vtype_todel,          /* value not used; generate tod in epoch/usec format */
+  vtype_todf,           /* value not used; generate full tod */
+  vtype_todl,           /* value not used; generate log tod */
+  vtype_todlf,          /* value not used; generate log file datestamp tod */
+  vtype_todzone,        /* value not used; generate time zone only */
+  vtype_todzulu,        /* value not used; generate zulu tod */
+  vtype_reply,          /* value not used; get reply from headers */
+  vtype_pid,            /* value not used; result is pid */
+  vtype_host_lookup,    /* value not used; get host name */
+  vtype_load_avg,       /* value not used; result is int from os_getloadavg */
+  vtype_pspace,         /* partition space; value is T/F for spool/log */
+  vtype_pinodes,        /* partition inodes; value is T/F for spool/log */
+  vtype_cert,		/* SSL certificate */
+#ifndef DISABLE_DKIM
+  vtype_dkim,           /* Lookup of value in DKIM signature */
+#endif
+  vtype_module,		/* variable lives in a module; value is module name */
+};
+
+/* Type for main variable table */
+
+typedef struct {
+  const char *name;
+  enum vtypes type;
+  void       *value;
+} var_entry;
+
+
+
+/* dynamic-load module info */
+
+typedef struct misc_module_info {
+  struct misc_module_info * next;
+
+  const uschar * name;
+  unsigned	dyn_magic;
+  BOOL		(*init)(void *);	/* arg is the misc_module_info ptr */
+  gstring *	(*lib_vers_report)(gstring *);	/* underlying library */
+
+  void *	options;
+  unsigned	options_count;
+  void *	functions;
+  unsigned	functions_count;
+  void *	variables;
+  unsigned	variables_count;
+} misc_module_info;
+
+#define MISC_MODULE_MAGIC	0x4d4d4d31	/* MMM1 */
+
 /* End of structs.h */

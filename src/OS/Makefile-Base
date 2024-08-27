@@ -245,7 +245,7 @@ macro.c: macro_predef
 
 .PHONY: all config utils \
 	buildauths buildlookups buildpdkim buildrouters \
-        buildtransports dynmodules checklocalmake clean
+        buildtransports buildmisc dynmodules checklocalmake clean
 
 
 utils: $(EXIM_MONITOR) exicyclog exinext exiwhat \
@@ -501,7 +501,6 @@ OBJ_EXPERIMENTAL =	arc.o \
 			dcc.o \
 			dmarc.o \
 			imap_utf7.o \
-			spf.o \
 			utf8.o \
 			xclient.o
 
@@ -529,12 +528,12 @@ OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         $(OBJ_EXPERIMENTAL)
 
 exim:   buildlookups buildauths pdkim/pdkim.a \
-        buildrouters buildtransports \
+        buildrouters buildtransports buildmisc \
         $(OBJ_EXIM) version.o
 	@echo "$(LNCC) -o exim"
 	$(FE)$(PURIFY) $(LNCC) -o exim $(LFLAGS) $(OBJ_EXIM) version.o \
 	  routers/routers.a transports/transports.a lookups/lookups.a \
-	  auths/auths.a pdkim/pdkim.a \
+	  auths/auths.a pdkim/pdkim.a miscmods/miscmods.a \
 	  $(LIBRESOLV) $(LIBS) $(LIBS_EXIM) $(IPV6_LIBS) $(EXTRALIBS) \
 	  $(EXTRALIBS_EXIM) $(DBMLIB) $(LOOKUP_LIBS) $(AUTH_LIBS) \
 	  $(PERL_LIBS) $(TLS_LIBS) $(PCRE_LIBS) $(LDFLAGS)
@@ -904,7 +903,6 @@ dane.o:		$(HDRS) dane.c dane-openssl.c
 dcc.o:		$(HDRS) dcc.h dcc.c
 dmarc.o:	$(HDRS) pdkim/pdkim.h dmarc.h dmarc.c
 imap_utf7.o:	$(HDRS) imap_utf7.c
-spf.o:		$(HDRS) spf.h spf.c
 utf8.o:		$(HDRS) utf8.c
 xclient.o:	$(HDRS) xclient.c
 
@@ -1018,10 +1016,11 @@ $(MONBIN): $(HDRS)
 
 # Copies of modules built as dynamic-load libraries
 
-dynmodules: buildlookups buildrouters buildtransports buildauths
+dynmodules: buildlookups buildrouters buildtransports buildauths \
+		buildmisc
 	rm -fr dynmodules
 	mkdir dynmodules
-	for d in lookup router transport auth; do \
+	for d in lookup router transport auth miscmod; do \
 	  for f in $${d}s/*.so; do \
 	    [ -e $$f ] && ln $$f dynmodules/`basename $$f .so`_$$d.so; \
 	  done; \
@@ -1071,6 +1070,14 @@ pdkim/pdkim.a: config
 	 @cd pdkim && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
+	 @echo " "
+
+buildmisc: config
+	 @cd miscmods && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) \
+	   CC="$(CC)" CFLAGS="$(CFLAGS)" \
+	     CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" HDRS="../version.h $(PHDRS)" \
+	     FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" \
+	     INCLUDE="$(INCLUDE) $(IPV6_INCLUDE)"
 	 @echo " "
 
 # The "clean", "install", and "makefile" targets just pass themselves back to

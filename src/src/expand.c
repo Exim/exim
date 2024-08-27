@@ -421,51 +421,6 @@ enum {
 };
 
 
-/* Types of table entry */
-
-enum vtypes {
-  vtype_int,            /* value is address of int */
-  vtype_filter_int,     /* ditto, but recognized only when filtering */
-  vtype_ino,            /* value is address of ino_t (not always an int) */
-  vtype_uid,            /* value is address of uid_t (not always an int) */
-  vtype_gid,            /* value is address of gid_t (not always an int) */
-  vtype_bool,           /* value is address of bool */
-  vtype_stringptr,      /* value is address of pointer to string */
-  vtype_msgbody,        /* as stringptr, but read when first required */
-  vtype_msgbody_end,    /* ditto, the end of the message */
-  vtype_msgheaders,     /* the message's headers, processed */
-  vtype_msgheaders_raw, /* the message's headers, unprocessed */
-  vtype_localpart,      /* extract local part from string */
-  vtype_domain,         /* extract domain from string */
-  vtype_string_func,	/* value is string returned by given function */
-  vtype_todbsdin,       /* value not used; generate BSD inbox tod */
-  vtype_tode,           /* value not used; generate tod in epoch format */
-  vtype_todel,          /* value not used; generate tod in epoch/usec format */
-  vtype_todf,           /* value not used; generate full tod */
-  vtype_todl,           /* value not used; generate log tod */
-  vtype_todlf,          /* value not used; generate log file datestamp tod */
-  vtype_todzone,        /* value not used; generate time zone only */
-  vtype_todzulu,        /* value not used; generate zulu tod */
-  vtype_reply,          /* value not used; get reply from headers */
-  vtype_pid,            /* value not used; result is pid */
-  vtype_host_lookup,    /* value not used; get host name */
-  vtype_load_avg,       /* value not used; result is int from os_getloadavg */
-  vtype_pspace,         /* partition space; value is T/F for spool/log */
-  vtype_pinodes,        /* partition inodes; value is T/F for spool/log */
-  vtype_cert		/* SSL certificate */
-#ifndef DISABLE_DKIM
-  ,vtype_dkim           /* Lookup of value in DKIM signature */
-#endif
-};
-
-/* Type for main variable table */
-
-typedef struct {
-  const char *name;
-  enum vtypes type;
-  void       *value;
-} var_entry;
-
 /* Type for entries pointing to address/length pairs. Not currently
 in use. */
 
@@ -754,12 +709,12 @@ static var_entry var_table[] = {
   { "spam_score_int",      vtype_stringptr,   &spam_score_int },
 #endif
 #ifdef SUPPORT_SPF
-  { "spf_guess",           vtype_stringptr,   &spf_guess },
-  { "spf_header_comment",  vtype_stringptr,   &spf_header_comment },
-  { "spf_received",        vtype_stringptr,   &spf_received },
-  { "spf_result",          vtype_stringptr,   &spf_result },
-  { "spf_result_guessed",  vtype_bool,        &spf_result_guessed },
-  { "spf_smtp_comment",    vtype_stringptr,   &spf_smtp_comment },
+  { "spf_guess",           vtype_module,	US"spf" },
+  { "spf_header_comment",  vtype_module,	US"spf" },
+  { "spf_received",        vtype_module,	US"spf" },
+  { "spf_result",          vtype_module,	US"spf" },
+  { "spf_result_guessed",  vtype_module,	US"spf" },
+  { "spf_smtp_comment",    vtype_module,	US"spf" },
 #endif
   { "spool_directory",     vtype_stringptr,   &spool_directory },
   { "spool_inodes",        vtype_pinodes,     (void *)TRUE },
@@ -1281,19 +1236,19 @@ return NULL;
 
 
 static var_entry *
-find_var_ent(uschar * name)
+find_var_ent(uschar * name, var_entry * table, unsigned nent)
 {
 int first = 0;
-int last = nelem(var_table);
+int last = nent;
 
 while (last > first)
   {
   int middle = (first + last)/2;
-  int c = Ustrcmp(name, var_table[middle].name);
+  int c = Ustrcmp(name, table[middle].name);
 
   if (c > 0) { first = middle + 1; continue; }
   if (c < 0) { last = middle; continue; }
-  return &var_table[middle];
+  return &table[middle];
   }
 return NULL;
 }
@@ -1420,7 +1375,7 @@ expand_getcertele(uschar * field, uschar * certvar)
 {
 var_entry * vp;
 
-if (!(vp = find_var_ent(certvar)))
+if (!(vp = find_var_ent(certvar, var_table, nelem(var_table))))
   {
   expand_string_message =
     string_sprintf("no variable named \"%s\"", certvar);
@@ -1935,9 +1890,11 @@ static const uschar *
 find_variable(uschar * name, esi_flags flags, int * newsize)
 {
 var_entry * vp;
-uschar *s, *domain;
-uschar **ss;
+uschar * s, * domain;
+uschar ** ss;
 void * val;
+var_entry * table = var_table;
+unsigned table_count = nelem(var_table);
 
 /* Handle ACL variables, whose names are of the form acl_cxxx or acl_mxxx.
 Originally, xxx had to be a number in the range 0-9 (later 0-19), but from
@@ -1982,9 +1939,11 @@ else if (Ustrncmp(name, "regex", 5) == 0)
   }
 #endif
 
+sublist:
+
 /* For all other variables, search the table */
 
-if (!(vp = find_var_ent(name)))
+if (!(vp = find_var_ent(name, table, table_count)))
   return NULL;          /* Unknown variable name */
 
 /* Found an existing variable. If in skipping state, the value isn't needed,
@@ -2175,6 +2134,20 @@ switch (vp->type)
     return dkim_exim_expand_query((int)(long)val);
 #endif
 
+  case vtype_module:
+    {
+    uschar * errstr;
+    misc_module_info * mi = misc_mod_find(val, &errstr);
+    if (mi)
+      {
+      table = mi->variables;
+      table_count = mi->variables_count;
+      goto sublist;
+      }
+    log_write(0, LOG_MAIN|LOG_PANIC,
+      "failed to find %s module for %s: %s", US val, name, errstr);
+    return US"";
+    }
   }
 
 return NULL;  /* Unknown variable. Silences static checkers. */
@@ -2187,7 +2160,8 @@ void
 modify_variable(uschar *name, void * value)
 {
 var_entry * vp;
-if ((vp = find_var_ent(name))) vp->value = value;
+if ((vp = find_var_ent(name, var_table, nelem(var_table))))
+  vp->value = value;
 return;          /* Unknown variable name, fail silently */
 }
 
@@ -4909,7 +4883,15 @@ while (*s)
       yield = authres_iprev(yield);
       yield = authres_smtpauth(yield);
 #ifdef SUPPORT_SPF
-      yield = authres_spf(yield);
+	{
+	misc_module_info * mi = misc_mod_findonly(US"spf");
+	if (mi)
+	  {
+	  typedef gstring * (*fn_t)(gstring *);
+	  fn_t fn = ((fn_t *) mi->functions)[2];	/* authres_spf */
+	  yield = fn(yield);
+	  }
+	}
 #endif
 #ifndef DISABLE_DKIM
       yield = authres_dkim(yield);
@@ -7225,7 +7207,8 @@ NOT_ITEM: ;
 	      string_sprintf("missing '}' closing cert arg of %s", name);
 	    goto EXPAND_FAILED_CURLY;
 	    }
-	  if ((vp = find_var_ent(sub)) && vp->type == vtype_cert)
+	  if (  (vp = find_var_ent(sub, var_table, nelem(var_table)))
+	     && vp->type == vtype_cert)
 	    {
 	    s = s1+1;
 	    break;

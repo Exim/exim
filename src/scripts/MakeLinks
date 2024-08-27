@@ -89,6 +89,17 @@ do
 done
 cd ..
 
+# miscellaneous modules
+d="miscmods"
+mkdir $d
+cd $d
+# Makefile is generated
+for f in spf.c spf.h
+do
+  ln -s ../../src/$d/$f $f
+done
+cd ..
+
 # and the hintsdb implementations
 d="hintsdb"
 mkdir $d

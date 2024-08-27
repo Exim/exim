@@ -25,13 +25,6 @@ typedef struct spf_result_id {
   int    value;
 } spf_result_id;
 
-/* prototypes */
-gstring * spf_lib_version_report(gstring *);
-BOOL spf_init(void);
-BOOL spf_conn_init(uschar *, uschar *);
-int  spf_process(const uschar **, const uschar *, int);
-void spf_response_debug(SPF_response_t *);
-
 #define SPF_PROCESS_NORMAL  0
 #define SPF_PROCESS_GUESS   1
 #define SPF_PROCESS_FALLBACK    2

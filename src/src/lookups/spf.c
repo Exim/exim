@@ -31,92 +31,46 @@ static void dummy(int x) { dummy2(x-1); }
 #include <spf2/spf_dns_resolv.h>
 #include <spf2/spf_dns_cache.h>
 
-extern SPF_dns_server_t * SPF_dns_exim_new(int);
-
 
 static void *
 spf_open(const uschar * filename, uschar ** errmsg)
 {
-SPF_dns_server_t * dc;
-SPF_server_t *spf_server = NULL;
-int debug = 0;
-
-DEBUG(D_lookup) debug = 1;
-
-if ((dc = SPF_dns_exim_new(debug)))
-  if ((dc = SPF_dns_cache_new(dc, NULL, debug, 8)))
-    spf_server = SPF_server_new_dns(dc, debug);
-
-if (!spf_server)
+misc_module_info * mi = misc_mod_find(US"spf", errmsg);
+if (mi)
   {
-  *errmsg = US"SPF_dns_exim_nnew() failed";
-  return NULL;
+  typedef void * (*fn_t)(const uschar *, uschar **);
+  return (((fn_t *) mi->functions)[5]) (filename, errmsg);
   }
-return (void *) spf_server;
+return NULL;
 }
 
 
 static void
-spf_close(void *handle)
+spf_close(void * handle)
 {
-SPF_server_t *spf_server = handle;
-if (spf_server) SPF_server_free(spf_server);
+misc_module_info * mi = misc_mod_find(US"spf", NULL);
+if (mi)
+  {
+  typedef void (*fn_t)(void *);
+  return (((fn_t *) mi->functions)[6]) (handle);
+  }
 }
+
 
 static int
 spf_find(void * handle, const uschar * filename, const uschar * keystring,
   int key_len, uschar ** result, uschar ** errmsg, uint * do_cache,
   const uschar * opts)
 {
-SPF_server_t *spf_server = handle;
-SPF_request_t *spf_request;
-SPF_response_t *spf_response = NULL;
-
-if (!(spf_request = SPF_request_new(spf_server)))
+misc_module_info * mi = misc_mod_find(US"spf", errmsg);
+if (mi)
   {
-  *errmsg = US"SPF_request_new() failed";
-  return FAIL;
+  typedef int (*fn_t) (void *, const uschar *, const uschar *,
+		      int, uschar **, uschar **, uint *, const uschar *);
+  return (((fn_t *) mi->functions)[7]) (handle, filename, keystring, key_len,
+				      result, errmsg, do_cache, opts);
   }
-
-#if HAVE_IPV6
-switch (string_is_ip_address(filename, NULL))
-#else
-switch (4)
-#endif
-  {
-  case 4:
-    if (!SPF_request_set_ipv4_str(spf_request, CS filename))
-      break;
-    *errmsg = string_sprintf("invalid IPv4 address '%s'", filename);
-    return FAIL;
-#if HAVE_IPV6
-
-  case 6:
-    if (!SPF_request_set_ipv6_str(spf_request, CS filename))
-      break;
-    *errmsg = string_sprintf("invalid IPv6 address '%s'", filename);
-    return FAIL;
-
-  default:
-    *errmsg = string_sprintf("invalid IP address '%s'", filename);
-    return FAIL;
-#endif
-  }
-
-if (SPF_request_set_env_from(spf_request, CS keystring))
-    {
-  *errmsg = string_sprintf("invalid envelope from address '%s'", keystring);
-  return FAIL;
-}
-
-SPF_request_query_mailfrom(spf_request, &spf_response);
-*result = string_copy(US SPF_strresult(SPF_response_result(spf_response)));
-
-DEBUG(D_lookup) spf_response_debug(spf_response);
-
-SPF_response_free(spf_response);
-SPF_request_free(spf_request);
-return OK;
+return FAIL;
 }
 
 
@@ -138,7 +92,7 @@ return g;
 }
 
 
-static lookup_info _lookup_info = {
+static lookup_info spf_lookup_info = {
   .name = US"spf",			/* lookup name */
   .type = 0,				/* not absfile, not query style */
   .open = spf_open,			/* open function */
@@ -150,11 +104,11 @@ static lookup_info _lookup_info = {
   .version_report = spf_version_report             /* version reporting */
 };
 
-#ifdef DYNLOOKUP
+#ifdef notdef_DYNLOOKUP
 #define spf_lookup_module_info _lookup_module_info
 #endif
 
-static lookup_info *_lookup_list[] = { &_lookup_info };
+static lookup_info *_lookup_list[] = { &spf_lookup_info };
 lookup_module_info spf_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 #endif /* SUPPORT_SPF */

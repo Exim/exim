@@ -411,9 +411,6 @@ BOOL    smtp_enforce_sync      = TRUE;
 BOOL    smtp_etrn_serialize    = TRUE;
 BOOL    smtp_input             = FALSE;
 BOOL    smtp_return_error_details = FALSE;
-#ifdef SUPPORT_SPF
-BOOL    spf_result_guessed     = FALSE;
-#endif
 BOOL    split_spool_directory  = FALSE;
 BOOL    spool_wireformat       = FALSE;
 BOOL    strict_acl_vars        = FALSE;
@@ -1500,17 +1497,6 @@ uschar *spam_report            = NULL;
 uschar *spam_action            = NULL;
 uschar *spam_score             = NULL;
 uschar *spam_score_int         = NULL;
-#endif
-#ifdef SUPPORT_SPF
-uschar *spf_guess              = US"v=spf1 a/24 mx/24 ptr ?all";
-uschar *spf_header_comment     = NULL;
-uschar *spf_received           = NULL;
-uschar *spf_result             = NULL;
-uschar *spf_smtp_comment       = NULL;
-uschar *spf_smtp_comment_template
-                    /* Used to be: "Please%_see%_http://www.open-spf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}" */
-                               = US"Please%_see%_http://www.open-spf.org/Why";
-
 #endif
 
 FILE   *spool_data_file	       = NULL;

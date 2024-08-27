@@ -42314,6 +42314,12 @@ This includes retransmissions done by traditional forwarders.
 SPF verification support is built into Exim if SUPPORT_SPF=yes is set in
 &_Local/Makefile_&.  The support uses the &_libspf2_& library
 &url(https://www.libspf2.org/).
+.new
+.cindex "dynamic modules"
+The support can be built as a dynamic-load module if desired;
+see the comments in that Makefile.
+.wen
+
 There is no Exim involvement in the transmission of messages;
 publishing certain DNS records is all that is required.
 

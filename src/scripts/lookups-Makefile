@@ -169,8 +169,8 @@ do
   emit_module_rule $name_mod
 done
 
-# Because the variable is EXPERIMENTAL_SPF and not LOOKUP_SPF we
-# always include spf.o and compile a dummy if EXPERIMENTAL_SPF is not
+# Because the variable is SUPPORT_SPF and not LOOKUP_SPF we
+# always include spf.o and compile a dummy if SUPPORT_SPF is not
 # defined.
 
 OBJ="${OBJ} spf.o"

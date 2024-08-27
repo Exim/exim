@@ -10,8 +10,6 @@
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
-OBJ += spf.o
-
 all:             lookups.a $(MODS)
 
 lookups.a:       $(OBJ)

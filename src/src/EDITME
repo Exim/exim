@@ -832,8 +832,8 @@ FIXED_NEVER_USERS=root
 # is historic).
 # You need to add -export-dynamic -rdynamic to EXTRALIBS. You may also need to
 # add -ldl to EXTRALIBS so that dlopen() is available to Exim. You need to
-# define CFLAGS_DYNAIC and LOOKUP_MODULE_DIR below so the builds are done right,
-# and so the exim binary actually loads dynamic lookup modules.
+# define CFLAGS_DYNAMIC and LOOKUP_MODULE_DIR below so the builds are done
+# right and so the exim binary actually loads dynamic lookup modules.
 #
 # Libraries being built as modules should be added to respective
 # LOOKUP_*_INCLUDE and LOOKUP_*_LIBS rather than the the ones for the
@@ -1119,6 +1119,11 @@ ZCAT_COMMAND=/usr/bin/zcat
 # Uncomment the following lines to add SPF support. You need to have libspf2
 # installed on your system (www.libspf2.org). Depending on where it is installed
 # you may have to edit the CFLAGS and LDFLAGS lines.
+#
+# If set to "2" instead of "yes" then the support will be
+# built as a module and must be installed into LOOKUP_MODULE_DIR (the name
+# is historic).  The same rules as for other module builds apply; use
+# SUPPORT_SPF_{INCLUDE,LIBS}.
 
 # SUPPORT_SPF=yes
 # CFLAGS  += -I/usr/local/include

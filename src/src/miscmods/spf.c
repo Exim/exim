@@ -11,7 +11,7 @@
 
 /* Code for calling spf checks via libspf-alt. Called from acl.c. */
 
-#include "exim.h"
+#include "../exim.h"
 #ifdef SUPPORT_SPF
 
 /* must be kept in numeric order */
@@ -34,8 +34,20 @@ SPF_response_t  *spf_response_2mx = NULL;
 
 SPF_dns_rr_t  * spf_nxdomain = NULL;
 
+uschar * spf_guess              = US"v=spf1 a/24 mx/24 ptr ?all";
+uschar * spf_header_comment     = NULL;
+uschar * spf_received           = NULL;
+uschar * spf_result             = NULL;
+uschar * spf_smtp_comment       = NULL;
+uschar * spf_smtp_comment_template
+                    /* Used to be: "Please%_see%_http://www.open-spf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}" */
+				= US"Please%_see%_http://www.open-spf.org/Why";
+BOOL    spf_result_guessed     = FALSE;
 
-gstring *
+
+
+
+static gstring *
 spf_lib_version_report(gstring * g)
 {
 int maj, min, patch;
@@ -188,12 +200,12 @@ return spfrr;
 
 
 
-SPF_dns_server_t *
+static SPF_dns_server_t *
 SPF_dns_exim_new(int debug)
 {
 SPF_dns_server_t * spf_dns_server = store_malloc(sizeof(SPF_dns_server_t));
 
-DEBUG(D_receive) debug_printf("SPF_dns_exim_new\n");
+/* DEBUG(D_receive) debug_printf("SPF_dns_exim_new\n"); */
 
 memset(spf_dns_server, 0, sizeof(SPF_dns_server_t));
 spf_dns_server->destroy      = NULL;
@@ -225,8 +237,8 @@ return spf_dns_server;
    Return: Boolean success.
 */
 
-BOOL
-spf_init(void)
+static BOOL
+spf_init(void * dummy_ctx)
 {
 SPF_dns_server_t * dc;
 int debug = 0;
@@ -278,13 +290,13 @@ return TRUE;
 Return: Boolean success
 */
 
-BOOL
+static BOOL
 spf_conn_init(uschar * spf_helo_domain, uschar * spf_remote_addr)
 {
 DEBUG(D_receive)
   debug_printf("spf_conn_init: %s %s\n", spf_helo_domain, spf_remote_addr);
 
-if (!spf_server && !spf_init()) return FALSE;
+if (!spf_server && !spf_init(NULL)) return FALSE;
 
 if (SPF_server_set_rec_dom(spf_server, CS primary_hostname))
   {
@@ -320,8 +332,15 @@ if (SPF_request_set_helo_dom(spf_request, CS spf_helo_domain))
 return TRUE;
 }
 
+static void
+spf_smtp_reset(void)
+{
+spf_header_comment = spf_received = spf_result = spf_smtp_comment = NULL;
+spf_result_guessed = FALSE;
+}
 
-void
+
+static void
 spf_response_debug(SPF_response_t * spf_response)
 {
 if (SPF_response_messages(spf_response) == 0)
@@ -343,7 +362,7 @@ else for (int i = 0; i < SPF_response_messages(spf_response); i++)
 
 Return: OK/FAIL  */
 
-int
+static int
 spf_process(const uschar ** listptr, const uschar * spf_envelope_sender,
   int action)
 {
@@ -407,7 +426,7 @@ return FAIL;
 
 
 
-gstring *
+static gstring *
 authres_spf(gstring * g)
 {
 uschar * s;
@@ -439,4 +458,149 @@ return g;
 }
 
 
+/* Ugly; used only by dmarc (peeking into our data!)
+Exposure of values as $variables might be better? */
+
+static SPF_response_t *
+spf_get_response(void)
+{
+return spf_response;
+}
+
+/******************************************************************************/
+/* Lookup support */
+
+static void *
+spf_lookup_open(const uschar * filename, uschar ** errmsg)
+{
+SPF_dns_server_t * dc;
+SPF_server_t * spf_server = NULL;
+int debug = 0;
+
+DEBUG(D_lookup) debug = 1;
+
+if ((dc = SPF_dns_exim_new(debug)))
+  if ((dc = SPF_dns_cache_new(dc, NULL, debug, 8)))
+    spf_server = SPF_server_new_dns(dc, debug);
+
+if (!spf_server)
+  {
+  *errmsg = US"SPF_dns_exim_nnew() failed";
+  return NULL;
+  }
+return (void *) spf_server;
+}
+
+static void
+spf_lookup_close(void * handle)
+{
+SPF_server_t * spf_server = handle;
+if (spf_server) SPF_server_free(spf_server);
+}
+
+static int
+spf_lookup_find(void * handle, const uschar * filename,
+  const uschar * keystring, int key_len, uschar ** result, uschar ** errmsg,
+  uint * do_cache, const uschar * opts)
+{
+SPF_server_t *spf_server = handle;
+SPF_request_t *spf_request;
+SPF_response_t *spf_response = NULL;
+
+if (!(spf_request = SPF_request_new(spf_server)))
+  {
+  *errmsg = US"SPF_request_new() failed";
+  return FAIL;
+  }
+
+#if HAVE_IPV6
+switch (string_is_ip_address(filename, NULL))
+#else
+switch (4)
 #endif
+  {
+  case 4:
+    if (!SPF_request_set_ipv4_str(spf_request, CS filename))
+      break;
+    *errmsg = string_sprintf("invalid IPv4 address '%s'", filename);
+    return FAIL;
+#if HAVE_IPV6
+
+  case 6:
+    if (!SPF_request_set_ipv6_str(spf_request, CS filename))
+      break;
+    *errmsg = string_sprintf("invalid IPv6 address '%s'", filename);
+    return FAIL;
+
+  default:
+    *errmsg = string_sprintf("invalid IP address '%s'", filename);
+    return FAIL;
+#endif
+  }
+
+if (SPF_request_set_env_from(spf_request, CS keystring))
+    {
+  *errmsg = string_sprintf("invalid envelope from address '%s'", keystring);
+  return FAIL;
+}
+
+SPF_request_query_mailfrom(spf_request, &spf_response);
+*result = string_copy(US SPF_strresult(SPF_response_result(spf_response)));
+
+DEBUG(D_lookup) spf_response_debug(spf_response);
+
+SPF_response_free(spf_response);
+SPF_request_free(spf_request);
+return OK;
+}
+
+
+/******************************************************************************/
+/* Module API */
+
+static optionlist spf_options[] = {
+  { "spf_guess",                opt_stringptr,   {&spf_guess} },
+  { "spf_smtp_comment_template",opt_stringptr,   {&spf_smtp_comment_template} },
+};
+
+static void * spf_functions[] = {
+  spf_conn_init,
+  spf_process,
+  authres_spf,
+  spf_get_response,		/* ugly; for dmarc */
+  spf_smtp_reset,
+  
+  spf_lookup_open,
+  spf_lookup_close,
+  spf_lookup_find,
+};
+
+static var_entry spf_variables[] = {
+  { "spf_guess",		vtype_stringptr,	&spf_guess },
+  { "spf_header_comment",	vtype_stringptr,	&spf_header_comment },
+  { "spf_received",		vtype_stringptr,	&spf_received },
+  { "spf_result",		vtype_stringptr,	&spf_result },
+  { "spf_result_guessed",	vtype_bool,		&spf_result_guessed },
+  { "spf_smtp_comment",		vtype_stringptr,	&spf_smtp_comment },
+};
+
+misc_module_info spf_module_info =
+{
+  .name =		US"spf",
+# if SUPPORT_SPF==2
+  .dyn_magic =		MISC_MODULE_MAGIC,
+# endif
+  .init =		spf_init,
+  .lib_vers_report =	spf_lib_version_report,
+
+  .options =		spf_options,
+  .options_count =	nelem(spf_options),
+
+  .functions =		spf_functions,
+  .functions_count =	nelem(spf_functions),
+
+  .variables =		spf_variables,
+  .variables_count =	nelem(spf_variables),
+};
+
+#endif	/* almost all the file */

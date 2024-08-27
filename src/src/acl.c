@@ -129,14 +129,16 @@ being the prefix of another; the binary-search in the list will go wrong. */
 typedef struct condition_def {
   uschar	*name;
 
+  /* Flags for actions or checks to do during readconf for this condition */
   unsigned	flags;
 #define ACD_EXP		BIT(0)	/* do expansion at outer level*/
 #define ACD_MOD		BIT(1)	/* is a modifier */
+#define ACD_LOAD	BIT(2)	/* supported by a dynamic-load module */
 
-/* Bit map vector of which conditions and modifiers are not allowed at certain
-times. For each condition and modifier, there's a bitmap of dis-allowed times.
-For some, it is easier to specify the negation of a small number of allowed
-times. */
+  /* Bit map vector of which conditions and modifiers are not allowed at certain
+  times. For each condition and modifier, there's a bitmap of dis-allowed times.
+  For some, it is easier to specify the negation of a small number of allowed
+  times. */
   unsigned	forbids;
 #define FORBIDDEN(times)	(times)
 #define PERMITTED(times)	((unsigned) ~(times))
@@ -339,14 +341,22 @@ static condition_def conditions[] = {
   },
 #endif
 #ifdef SUPPORT_SPF
-  [ACLC_SPF] =			{ US"spf",		ACD_EXP,
+  [ACLC_SPF] =			{ US"spf",
+# if SUPPORT_SPF==2
+				  ACD_LOAD |
+# endif
+				  ACD_EXP,
 				  FORBIDDEN(ACL_BIT_AUTH | ACL_BIT_CONNECT |
 				    ACL_BIT_HELO | ACL_BIT_MAILAUTH |
 				    ACL_BIT_ETRN | ACL_BIT_EXPN |
 				    ACL_BIT_STARTTLS | ACL_BIT_VRFY |
 				    ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START),
   },
-  [ACLC_SPF_GUESS] =		{ US"spf_guess",	ACD_EXP,
+  [ACLC_SPF_GUESS] =		{ US"spf_guess",
+# if SUPPORT_SPF==2
+				  ACD_LOAD |
+# endif
+				  ACD_EXP,
 				  FORBIDDEN(ACL_BIT_AUTH | ACL_BIT_CONNECT |
 				    ACL_BIT_HELO | ACL_BIT_MAILAUTH |
 				    ACL_BIT_ETRN | ACL_BIT_EXPN |
@@ -382,6 +392,25 @@ for (condition_def * c = conditions; c < conditions + nelem(conditions); c++)
 
 
 #ifndef MACRO_PREDEF
+
+# ifdef LOOKUP_MODULE_DIR
+typedef struct condition_module {
+  const uschar *	mod_name;	/* module for the givien conditions */
+  misc_module_info *	info;		/* NULL when not loaded */
+  const int *		conditions;	/* array of ACLC_*, -1 terminated */
+} condition_module;
+
+#  if SUPPORT_SPF==2
+static int spf_condx[] = { ACLC_SPF, ACLC_SPF_GUESS, -1 };
+#  endif
+
+static condition_module condition_modules[] = {
+#  if SUPPORT_SPF==2
+  {.mod_name = US"spf", .conditions = spf_condx},
+#  endif
+};
+
+# endif
 
 /* Return values from decode_control() */
 
@@ -936,7 +965,7 @@ while ((s = (*func)()))
 
   /* The modifiers may not be negated */
 
-  if (negated && conditions[c].flags & ACD_MOD )
+  if (negated && conditions[c].flags & ACD_MOD)
     {
     *error = string_sprintf("ACL error: negation is not allowed with "
       "\"%s\"", conditions[c].name);
@@ -953,6 +982,34 @@ while ((s = (*func)()))
       conditions[c].name, verbs[this->verb]);
     return NULL;
     }
+
+#ifdef LOOKUP_MODULE_DIR
+  if (conditions[c].flags & ACD_LOAD)
+    {				/* a loadable module supports this condition */
+    condition_module * cm;
+    uschar * s = NULL;
+
+    for (cm = condition_modules;
+        cm < condition_modules + nelem(condition_modules); cm++)
+      for (const int * cond = cm->conditions; *cond != -1; cond++)
+	if (*cond == c) goto found;
+    found:
+
+    if (cm >= condition_modules + nelem(condition_modules))
+      {						/* shouldn't happen */
+      *error = string_sprintf("ACL error: failed to locate support for '%s'",
+			      conditions[c].name);
+      return NULL;
+      }
+    if (  !cm->info				/* module not loaded */
+       && !(cm->info = misc_mod_find(cm->mod_name, &s)))
+      {
+      *error = string_sprintf("ACL error: failed to find module for '%s': %s",
+			      conditions[c].name, s);
+      return NULL;
+      }
+    }
+#endif
 
   cond = store_get(sizeof(acl_condition_block), GET_UNTAINTED);
   cond->next = NULL;
@@ -4127,12 +4184,23 @@ for (; cb; cb = cb->next)
 
 #ifdef SUPPORT_SPF
     case ACLC_SPF:
-      rc = spf_process(&arg, sender_address, SPF_PROCESS_NORMAL);
-      break;
-
     case ACLC_SPF_GUESS:
-      rc = spf_process(&arg, sender_address, SPF_PROCESS_GUESS);
+      /* Hardwire the offset of the function in the module functions table
+      for now.  Work out a more general mech later. */
+      {
+      misc_module_info * mi = misc_mod_find(US"spf", &log_message);
+      typedef int (*fn_t)(const uschar **, const uschar *, int);
+      fn_t fn;
+
+      if (!mi)
+	{ rc = DEFER; break; }			/* shouldn't happen */
+
+      fn = ((fn_t *) mi->functions)[1];
+
+      rc = fn(&arg, sender_address,
+	      cb->type == ACLC_SPF ? SPF_PROCESS_NORMAL : SPF_PROCESS_GUESS);
       break;
+      }
 #endif
 
     case ACLC_UDPSEND:

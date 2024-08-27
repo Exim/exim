@@ -21,6 +21,7 @@
 /* prototypes */
 gstring * dmarc_version_report(gstring *);
 int dmarc_init(void);
+int dmarc_conn_init(void);
 int dmarc_store_data(header_line *);
 int dmarc_process(void);
 uschar *dmarc_exim_expand_query(int);

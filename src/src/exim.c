@@ -33,6 +33,7 @@ Also a few functions that don't naturally fit elsewhere. */
 #endif
 
 extern void init_lookup_list(void);
+extern void init_misc_mod_list(void);
 
 
 
@@ -1155,6 +1156,13 @@ gstring * b = NULL, * d = NULL;
   d = string_cat(d, US" redis");
 # endif
 #endif
+#ifdef SUPPORT_SPF
+# if SUPPORT_SPF!=2
+  b = string_cat(b, US" spf");
+# else
+  d = string_cat(d, US" spf");
+# endif
+#endif
 #ifdef LOOKUP_SQLITE
 # if LOOKUP_SQLITE!=2
   b = string_cat(b, US" sqlite");
@@ -1390,9 +1398,6 @@ DEBUG(D_any)
 #ifdef SUPPORT_DMARC
   g = dmarc_version_report(g);
 #endif
-#ifdef SUPPORT_SPF
-  g = spf_lib_version_report(g);
-#endif
 
   show_string(is_stdout, g);
   g = NULL;
@@ -1428,6 +1433,7 @@ DEBUG(D_any)
   tree_walk(lookups_tree, lookup_version_report_cb, &g);
   show_string(is_stdout, g);
   g = NULL;
+  init_misc_mod_list();
 
 #ifdef WHITELIST_D_MACROS
   g = string_fmt_append(g, "WHITELIST_D_MACROS: \"%s\"\n", WHITELIST_D_MACROS);
@@ -4204,6 +4210,7 @@ is equivalent to the ability to modify a setuid binary!
 
 This needs to happen before we read the main configuration. */
 init_lookup_list();
+init_misc_mod_list();
 
 /*XXX this excrescence could move to the testsuite standard config setup file */
 #ifdef SUPPORT_I18N

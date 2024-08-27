@@ -325,7 +325,7 @@ extern lookup_module_info redis_lookup_module_info;
 extern lookup_module_info lmdb_lookup_module_info;
 #endif
 #if defined(SUPPORT_SPF)
-extern lookup_module_info spf_lookup_module_info;
+extern lookup_module_info spf_lookup_module_info;	/* see below */
 #endif
 #if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
 extern lookup_module_info sqlite_lookup_module_info;
@@ -341,6 +341,31 @@ extern lookup_module_info readsock_lookup_module_info;
 
 
 #ifdef LOOKUP_MODULE_DIR
+static void *
+mod_open(const uschar * name, const uschar * class, uschar ** errstr)
+{
+const uschar * path = string_sprintf(
+  LOOKUP_MODULE_DIR "/%s_%s." DYNLIB_FN_EXT, name, class);
+void * dl;
+if (!(dl = dlopen(CS path, RTLD_NOW)))
+  {
+  if (errstr)
+    *errstr = string_sprintf("Error loading %s: %s", name, dlerror());
+  else
+    (void) dlerror();		/* clear out error state */
+  return NULL;
+  }
+
+/* FreeBSD nsdispatch() can trigger dlerror() errors about
+_nss_cache_cycle_prevention_function; we need to clear the dlerror()
+state before calling dlsym(), so that any error afterwards only comes
+from dlsym().  */
+
+(void) dlerror();
+return dl;
+}
+
+
 /* Try to load a lookup module with the given name.
 
 Arguments:
@@ -353,27 +378,12 @@ Return: boolean success
 static BOOL
 lookup_mod_load(const uschar * name, uschar ** errstr)
 {
-const uschar * path = string_sprintf(
-  LOOKUP_MODULE_DIR "/%s_lookup." DYNLIB_FN_EXT, name);
 void * dl;
 struct lookup_module_info * info;
 const char * errormsg;
 
-if (!(dl = dlopen(CS path, RTLD_NOW)))
-  {
-  if (errstr)
-    *errstr = string_sprintf("Error loading %s: %s", name, dlerror());
-  else
-    (void) dlerror();		/* clear out error state */
+if (!(dl = mod_open(name, US"lookup", errstr)))
   return FALSE;
-  }
-
-/* FreeBSD nsdispatch() can trigger dlerror() errors about
-_nss_cache_cycle_prevention_function; we need to clear the dlerror()
-state before calling dlsym(), so that any error afterwards only comes
-from dlsym().  */
-
-errormsg = dlerror();
 
 info = (struct lookup_module_info *) dlsym(dl, "_lookup_module_info");
 if ((errormsg = dlerror()))
@@ -413,6 +423,89 @@ return TRUE;
 }
 
 #endif	/*LOOKUP_MODULE_DIR*/
+
+
+
+misc_module_info * misc_module_list = NULL;
+
+static void
+misc_mod_add(misc_module_info * mi)
+{
+if (mi->init) mi->init(mi);
+DEBUG(D_lookup) if (mi->lib_vers_report)
+  debug_printf_indent("%Y\n", mi->lib_vers_report(NULL));
+
+mi->next = misc_module_list;
+misc_module_list = mi;
+}
+
+
+#ifdef LOOKUP_MODULE_DIR
+
+/* Load a "misc" module, and add to list */
+
+static misc_module_info *
+misc_mod_load(const uschar * name, uschar ** errstr)
+{
+void * dl;
+struct misc_module_info * mi;
+const char * errormsg;
+
+DEBUG(D_any) debug_printf_indent("loading module '%s'\n", name);
+if (!(dl = mod_open(name, US"miscmod", errstr)))
+  return NULL;
+
+mi = (struct misc_module_info *) dlsym(dl,
+				    CS string_sprintf("%s_module_info", name));
+if ((errormsg = dlerror()))
+  {
+  fprintf(stderr, "%s does not appear to be an spf module (%s)\n", name, errormsg);
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s does not appear to be an spf module (%s)", name, errormsg);
+  dlclose(dl);
+  return NULL;
+  }
+if (mi->dyn_magic != MISC_MODULE_MAGIC)
+  {
+  fprintf(stderr, "Module %s is not compatible with this version of Exim\n", name);
+  log_write(0, LOG_MAIN|LOG_PANIC, "Module %s is not compatible with this version of Exim", name);
+  dlclose(dl);
+  return FALSE;
+  }
+
+DEBUG(D_lookup) debug_printf_indent("Loaded \"%s\"\n", name);
+misc_mod_add(mi);
+return mi;
+}
+
+#endif	/*LOOKUP_MODULE_DIR*/
+
+
+/* Find a "misc" module by name, if loaded.
+For now use a linear search down a linked list.  If the number of
+modules gets large, we might consider a tree.
+*/
+
+misc_module_info *
+misc_mod_findonly(const uschar * name)
+{
+for (misc_module_info * mi = misc_module_list; mi; mi = mi->next)
+  if (Ustrcmp(name, mi->name) == 0)
+    return mi;
+}
+
+/* Find a "misc" module, possibly already loaded, by name. */
+
+misc_module_info *
+misc_mod_find(const uschar * name, uschar ** errstr)
+{
+misc_module_info * mi;
+if ((mi = misc_mod_findonly(name))) return mi;
+#ifdef LOOKUP_MODULE_DIR
+return misc_mod_load(name, errstr);
+#else
+return NULL;
+#endif	/*LOOKUP_MODULE_DIR*/
+}
 
 
 
@@ -495,10 +588,6 @@ addlookupmodule(&redis_lookup_module_info);
 addlookupmodule(&lmdb_lookup_module_info);
 #endif
 
-#ifdef SUPPORT_SPF
-addlookupmodule(&spf_lookup_module_info);
-#endif
-
 #if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
 addlookupmodule(&sqlite_lookup_module_info);
 #endif
@@ -509,6 +598,14 @@ addlookupmodule(&testdb_lookup_module_info);
 
 #if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
 addlookupmodule(&whoson_lookup_module_info);
+#endif
+
+/* This is provided by the spf "misc" module, and the lookup aspect is always
+linked statically whether or not the "misc" module (and hence libspf2) is
+dynamic-load. */
+
+#if defined(SUPPORT_SPF)
+addlookupmodule(&spf_lookup_module_info);
 #endif
 
 /* This is a custom expansion, and not available as either
@@ -558,8 +655,22 @@ else
 
 DEBUG(D_lookup) debug_printf("Loaded %d lookup modules\n", countmodules);
 #endif
+}
 
 
+#if defined(SUPPORT_SPF) && SUPPORT_SPF!=2
+extern misc_module_info spf_module_info;
+#endif
+
+void
+init_misc_mod_list(void)
+{
+static BOOL onetime = FALSE;
+if (onetime) return;
+#if defined(SUPPORT_SPF) && SUPPORT_SPF!=2
+misc_mod_add(&spf_module_info);
+#endif
+onetime = TRUE;
 }
 
 
