@@ -129,12 +129,9 @@ being the prefix of another; the binary-search in the list will go wrong. */
 typedef struct condition_def {
   uschar	*name;
 
-/* Flag to indicate the condition/modifier has a string expansion done
-at the outer level. In the other cases, expansion already occurs in the
-checking functions. */
-  BOOL		expand_at_top:1;
-
-  BOOL		is_modifier:1;
+  unsigned	flags;
+#define ACD_EXP		BIT(0)	/* do expansion at outer level*/
+#define ACD_MOD		BIT(1)	/* is a modifier */
 
 /* Bit map vector of which conditions and modifiers are not allowed at certain
 times. For each condition and modifier, there's a bitmap of dis-allowed times.
@@ -145,9 +142,9 @@ times. */
 } condition_def;
 
 static condition_def conditions[] = {
-  [ACLC_ACL] =			{ US"acl",		FALSE, FALSE,	0 },
+  [ACLC_ACL] =			{ US"acl",		0,	0 },
 
-  [ACLC_ADD_HEADER] =		{ US"add_header",	TRUE, TRUE,
+  [ACLC_ADD_HEADER] =		{ US"add_header",	ACD_EXP | ACD_MOD,
 				  (unsigned)
 				  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
 				    ACL_BIT_PREDATA | ACL_BIT_DATA |
@@ -159,12 +156,12 @@ static condition_def conditions[] = {
 				    ACL_BIT_NOTSMTP_START),
   },
 
-  [ACLC_AUTHENTICATED] =	{ US"authenticated",	FALSE, FALSE,
+  [ACLC_AUTHENTICATED] =	{ US"authenticated",	0,
 				  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START |
 				    ACL_BIT_CONNECT | ACL_BIT_HELO,
   },
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  [ACLC_BMI_OPTIN] =		{ US"bmi_optin",	TRUE, TRUE,
+  [ACLC_BMI_OPTIN] =		{ US"bmi_optin",	ACD_EXP | ACD_MOD,
 				  ACL_BIT_AUTH |
 				    ACL_BIT_CONNECT | ACL_BIT_HELO |
 				    ACL_BIT_DATA | ACL_BIT_MIME |
@@ -178,15 +175,15 @@ static condition_def conditions[] = {
 				    ACL_BIT_NOTSMTP_START,
   },
 #endif
-  [ACLC_CONDITION] =		{ US"condition",	TRUE, FALSE,	0 },
-  [ACLC_CONTINUE] =		{ US"continue",	TRUE, TRUE,	0 },
+  [ACLC_CONDITION] =		{ US"condition",	ACD_EXP,	0 },
+  [ACLC_CONTINUE] =		{ US"continue",		ACD_EXP | ACD_MOD, 0 },
 
   /* Certain types of control are always allowed, so we let it through
   always and check in the control processing itself. */
-  [ACLC_CONTROL] =		{ US"control",	TRUE, TRUE,	0 },
+  [ACLC_CONTROL] =		{ US"control",		ACD_EXP | ACD_MOD, 0 },
 
 #ifdef EXPERIMENTAL_DCC
-  [ACLC_DCC] =			{ US"dcc",		TRUE, FALSE,
+  [ACLC_DCC] =			{ US"dcc",		ACD_EXP,
 				  (unsigned)
 				  ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
@@ -196,13 +193,13 @@ static condition_def conditions[] = {
   },
 #endif
 #ifdef WITH_CONTENT_SCAN
-  [ACLC_DECODE] =		{ US"decode",		TRUE, FALSE, (unsigned int) ~ACL_BIT_MIME },
+  [ACLC_DECODE] =		{ US"decode",		ACD_EXP, (unsigned) ~ACL_BIT_MIME },
 
 #endif
-  [ACLC_DELAY] =		{ US"delay",		TRUE, TRUE, ACL_BIT_NOTQUIT },
+  [ACLC_DELAY] =		{ US"delay",		ACD_EXP | ACD_MOD, ACL_BIT_NOTQUIT },
 #ifndef DISABLE_DKIM
-  [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DKIM },
-  [ACLC_DKIM_STATUS] =		{ US"dkim_status",	TRUE, FALSE,
+  [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",	ACD_EXP, (unsigned) ~ACL_BIT_DKIM },
+  [ACLC_DKIM_STATUS] =		{ US"dkim_status",	ACD_EXP,
 				  (unsigned)
 				  ~(ACL_BIT_DKIM | ACL_BIT_DATA | ACL_BIT_MIME
 # ifndef DISABLE_PRDR
@@ -212,14 +209,14 @@ static condition_def conditions[] = {
   },
 #endif
 #ifdef SUPPORT_DMARC
-  [ACLC_DMARC_STATUS] =		{ US"dmarc_status",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DATA },
+  [ACLC_DMARC_STATUS] =		{ US"dmarc_status",	ACD_EXP, (unsigned int) ~ACL_BIT_DATA },
 #endif
 
   /* Explicit key lookups can be made in non-smtp ACLs so pass
   always and check in the verify processing itself. */
-  [ACLC_DNSLISTS] =		{ US"dnslists",	TRUE, FALSE,	0 },
+  [ACLC_DNSLISTS] =		{ US"dnslists",		ACD_EXP, 0 },
 
-  [ACLC_DOMAINS] =		{ US"domains",	FALSE, FALSE,
+  [ACLC_DOMAINS] =		{ US"domains",		0,
 				  (unsigned)
 				  ~(ACL_BIT_RCPT | ACL_BIT_VRFY
 #ifndef DISABLE_PRDR
@@ -227,17 +224,17 @@ static condition_def conditions[] = {
 #endif
       ),
   },
-  [ACLC_ENCRYPTED] =		{ US"encrypted",	FALSE, FALSE,
+  [ACLC_ENCRYPTED] =		{ US"encrypted",	0,
 				  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START |
 				    ACL_BIT_CONNECT
   },
 
-  [ACLC_ENDPASS] =		{ US"endpass",	TRUE, TRUE,	0 },
+  [ACLC_ENDPASS] =		{ US"endpass",	ACD_EXP | ACD_MOD,	0 },
 
-  [ACLC_HOSTS] =		{ US"hosts",		FALSE, FALSE,
+  [ACLC_HOSTS] =		{ US"hosts",		0,
 				  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START,
   },
-  [ACLC_LOCAL_PARTS] =		{ US"local_parts",	FALSE, FALSE,
+  [ACLC_LOCAL_PARTS] =		{ US"local_parts",	0,
 				  (unsigned)
 				  ~(ACL_BIT_RCPT | ACL_BIT_VRFY
 #ifndef DISABLE_PRDR
@@ -246,12 +243,12 @@ static condition_def conditions[] = {
       ),
   },
 
-  [ACLC_LOG_MESSAGE] =		{ US"log_message",	TRUE, TRUE,	0 },
-  [ACLC_LOG_REJECT_TARGET] =	{ US"log_reject_target", TRUE, TRUE,	0 },
-  [ACLC_LOGWRITE] =		{ US"logwrite",	TRUE, TRUE,	0 },
+  [ACLC_LOG_MESSAGE] =		{ US"log_message",	ACD_EXP | ACD_MOD, 0 },
+  [ACLC_LOG_REJECT_TARGET] =	{ US"log_reject_target", ACD_EXP | ACD_MOD, 0 },
+  [ACLC_LOGWRITE] =		{ US"logwrite",		ACD_EXP | ACD_MOD, 0 },
 
 #ifdef WITH_CONTENT_SCAN
-  [ACLC_MALWARE] =		{ US"malware",	TRUE, FALSE,
+  [ACLC_MALWARE] =		{ US"malware",		ACD_EXP,
 				  (unsigned)
 				    ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
@@ -261,12 +258,12 @@ static condition_def conditions[] = {
   },
 #endif
 
-  [ACLC_MESSAGE] =		{ US"message",	TRUE, TRUE,	0 },
+  [ACLC_MESSAGE] =		{ US"message",		ACD_EXP | ACD_MOD, 0 },
 #ifdef WITH_CONTENT_SCAN
-  [ACLC_MIME_REGEX] =		{ US"mime_regex",	TRUE, FALSE, (unsigned int) ~ACL_BIT_MIME },
+  [ACLC_MIME_REGEX] =		{ US"mime_regex",	ACD_EXP, (unsigned) ~ACL_BIT_MIME },
 #endif
 
-  [ACLC_QUEUE] =		{ US"queue",		TRUE, TRUE,
+  [ACLC_QUEUE] =		{ US"queue",		ACD_EXP | ACD_MOD,
 				  ACL_BIT_NOTSMTP |
 #ifndef DISABLE_PRDR
 				  ACL_BIT_PRDR |
@@ -274,11 +271,11 @@ static condition_def conditions[] = {
 				  ACL_BIT_DATA,
   },
 
-  [ACLC_RATELIMIT] =		{ US"ratelimit",	TRUE, FALSE,	0 },
-  [ACLC_RECIPIENTS] =		{ US"recipients",	FALSE, FALSE, (unsigned int) ~ACL_BIT_RCPT },
+  [ACLC_RATELIMIT] =		{ US"ratelimit",	ACD_EXP,	0 },
+  [ACLC_RECIPIENTS] =		{ US"recipients",	0, (unsigned) ~ACL_BIT_RCPT },
 
 #ifdef WITH_CONTENT_SCAN
-  [ACLC_REGEX] =		{ US"regex",		TRUE, FALSE,
+  [ACLC_REGEX] =		{ US"regex",		ACD_EXP,
 				  (unsigned)
 				  ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
@@ -289,7 +286,7 @@ static condition_def conditions[] = {
   },
 
 #endif
-  [ACLC_REMOVE_HEADER] =	{ US"remove_header",	TRUE, TRUE,
+  [ACLC_REMOVE_HEADER] =	{ US"remove_header",	ACD_EXP | ACD_MOD,
 				  (unsigned)
 				  ~(ACL_BIT_MAIL|ACL_BIT_RCPT |
 				    ACL_BIT_PREDATA | ACL_BIT_DATA |
@@ -299,15 +296,15 @@ static condition_def conditions[] = {
 				    ACL_BIT_MIME | ACL_BIT_NOTSMTP |
 				    ACL_BIT_NOTSMTP_START),
   },
-  [ACLC_SEEN] =			{ US"seen",		TRUE, FALSE,	0 },
-  [ACLC_SENDER_DOMAINS] =	{ US"sender_domains",	FALSE, FALSE,
+  [ACLC_SEEN] =			{ US"seen",		ACD_EXP,	0 },
+  [ACLC_SENDER_DOMAINS] =	{ US"sender_domains",	0,
 				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
 				    ACL_BIT_HELO |
 				    ACL_BIT_MAILAUTH | ACL_BIT_QUIT |
 				    ACL_BIT_ETRN | ACL_BIT_EXPN |
 				    ACL_BIT_STARTTLS | ACL_BIT_VRFY,
   },
-  [ACLC_SENDERS] =		{ US"senders",	FALSE, FALSE,
+  [ACLC_SENDERS] =		{ US"senders",	0,
 				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
 				    ACL_BIT_HELO |
 				    ACL_BIT_MAILAUTH | ACL_BIT_QUIT |
@@ -315,10 +312,10 @@ static condition_def conditions[] = {
 				    ACL_BIT_STARTTLS | ACL_BIT_VRFY,
   },
 
-  [ACLC_SET] =			{ US"set",		TRUE, TRUE,	0 },
+  [ACLC_SET] =			{ US"set",		ACD_EXP | ACD_MOD, 0 },
 
 #ifdef WITH_CONTENT_SCAN
-  [ACLC_SPAM] =			{ US"spam",		TRUE, FALSE,
+  [ACLC_SPAM] =			{ US"spam",		ACD_EXP,
 				  (unsigned) ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
 				  ACL_BIT_PRDR |
@@ -327,14 +324,14 @@ static condition_def conditions[] = {
   },
 #endif
 #ifdef SUPPORT_SPF
-  [ACLC_SPF] =			{ US"spf",		TRUE, FALSE,
+  [ACLC_SPF] =			{ US"spf",		ACD_EXP,
 				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
 				    ACL_BIT_HELO | ACL_BIT_MAILAUTH |
 				    ACL_BIT_ETRN | ACL_BIT_EXPN |
 				    ACL_BIT_STARTTLS | ACL_BIT_VRFY |
 				    ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START,
   },
-  [ACLC_SPF_GUESS] =		{ US"spf_guess",	TRUE, FALSE,
+  [ACLC_SPF_GUESS] =		{ US"spf_guess",	ACD_EXP,
 				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
 				    ACL_BIT_HELO | ACL_BIT_MAILAUTH |
 				    ACL_BIT_ETRN | ACL_BIT_EXPN |
@@ -342,11 +339,11 @@ static condition_def conditions[] = {
 				    ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START,
   },
 #endif
-  [ACLC_UDPSEND] =		{ US"udpsend",		TRUE, TRUE,	0 },
+  [ACLC_UDPSEND] =		{ US"udpsend",		ACD_EXP | ACD_MOD,	0 },
 
   /* Certain types of verify are always allowed, so we let it through
   always and check in the verify function itself */
-  [ACLC_VERIFY] =		{ US"verify",		TRUE, FALSE, 0 },
+  [ACLC_VERIFY] =		{ US"verify",		ACD_EXP,	0 },
 };
 
 
@@ -358,7 +355,7 @@ features_acl(void)
 for (condition_def * c = conditions; c < conditions + nelem(conditions); c++)
   {
   uschar buf[64], * p, * s;
-  int n = sprintf(CS buf, "_ACL_%s_", c->is_modifier ? "MOD" : "COND");
+  int n = sprintf(CS buf, "_ACL_%s_", c->flags & ACD_MOD ? "MOD" : "COND");
   for (p = buf + n, s = c->name; *s; s++) *p++ = toupper(*s);
   *p = '\0';
   builtin_macro_create(buf);
@@ -811,7 +808,7 @@ acl_data_to_cond(const uschar * s, acl_condition_block * cond,
 if (*s++ != '=')
   {
   *error = string_sprintf("\"=\" missing after ACL \"%s\" %s", name,
-    conditions[cond->type].is_modifier ? US"modifier" : US"condition");
+    conditions[cond->type].flags & ACD_MOD ? US"modifier" : US"condition");
   return FALSE;
   }
 Uskip_whitespace(&s);
@@ -922,7 +919,7 @@ while ((s = (*func)()))
 
   /* The modifiers may not be negated */
 
-  if (negated && conditions[c].is_modifier)
+  if (negated && conditions[c].flags & ACD_MOD )
     {
     *error = string_sprintf("ACL error: negation is not allowed with "
       "\"%s\"", conditions[c].name);
@@ -3276,7 +3273,7 @@ for (; cb; cb = cb->next)
   of them, but not for all, because expansion happens down in some lower level
   checking functions in some cases. */
 
-  if (!conditions[cb->type].expand_at_top)
+  if (!(conditions[cb->type].flags & ACD_EXP))
     arg = cb->arg;
 
   else if (!(arg = expand_string_2(cb->arg, &textonly)))
@@ -3293,7 +3290,7 @@ for (; cb; cb = cb->next)
     {
     int lhswidth = 0;
     debug_printf_indent("check %s%s %n",
-      (!conditions[cb->type].is_modifier && cb->u.negated)? "!":"",
+      (!(conditions[cb->type].flags & ACD_MOD) && cb->u.negated) ? "!":"",
       conditions[cb->type].name, &lhswidth);
 
     if (cb->type == ACLC_SET)
@@ -3325,7 +3322,7 @@ for (; cb; cb = cb->next)
   if ((conditions[cb->type].forbids & (1 << where)) != 0)
     {
     *log_msgptr = string_sprintf("cannot %s %s condition in %s ACL",
-      conditions[cb->type].is_modifier ? "use" : "test",
+      conditions[cb->type].flags & ACD_MOD ? "use" : "test",
       conditions[cb->type].name, acl_wherenames[where]);
     return ERROR;
     }
@@ -4146,7 +4143,7 @@ for (; cb; cb = cb->next)
 
   /* If a condition was negated, invert OK/FAIL. */
 
-  if (!conditions[cb->type].is_modifier && cb->u.negated)
+  if (!(conditions[cb->type].flags & ACD_MOD) && cb->u.negated)
     if (rc == OK) rc = FAIL;
     else if (rc == FAIL || rc == FAIL_DROP) rc = OK;
 
