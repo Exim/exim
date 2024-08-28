@@ -218,7 +218,11 @@ static condition_def conditions[] = {
   },
 #endif
 #ifdef SUPPORT_DMARC
-  [ACLC_DMARC_STATUS] =		{ US"dmarc_status",	ACD_EXP,
+  [ACLC_DMARC_STATUS] =		{ US"dmarc_status",
+# if SUPPORT_DMARC==2
+				  ACD_LOAD |
+# endif
+				  ACD_EXP,
 				  PERMITTED(ACL_BIT_DATA) },
 #endif
 
@@ -393,6 +397,9 @@ for (condition_def * c = conditions; c < conditions + nelem(conditions); c++)
 
 #ifndef MACRO_PREDEF
 
+/* These tables support loading of dynamic modules triggered by an ACL
+condition use, spotted during readconf. See acl_read(). */
+
 # ifdef LOOKUP_MODULE_DIR
 typedef struct condition_module {
   const uschar *	mod_name;	/* module for the givien conditions */
@@ -403,10 +410,16 @@ typedef struct condition_module {
 #  if SUPPORT_SPF==2
 static int spf_condx[] = { ACLC_SPF, ACLC_SPF_GUESS, -1 };
 #  endif
+#  if SUPPORT_DMARC==2
+static int dmarc_condx[] = { ACLC_DMARC_STATUS, -1 };
+#  endif
 
 static condition_module condition_modules[] = {
 #  if SUPPORT_SPF==2
   {.mod_name = US"spf", .conditions = spf_condx},
+#  endif
+#  if SUPPORT_SPF==2
+  {.mod_name = US"dmarc", .conditions = dmarc_condx},
 #  endif
 };
 
@@ -3942,14 +3955,36 @@ for (; cb; cb = cb->next)
 
 #ifdef SUPPORT_DMARC
     case ACLC_DMARC_STATUS:
-      if (!f.dmarc_has_been_checked)
-	dmarc_process();
-      f.dmarc_has_been_checked = TRUE;
+      /* See comment on ACLC_SPF wrt. coding issues */
+      {
+      misc_module_info * mi = misc_mod_find(US"dmarc", &log_message);
+      typedef uschar * (*efn_t)(int);
+      uschar * expanded_query;
 
+debug_printf("%s %d\n", __FUNCTION__, __LINE__);
+      if (!mi)
+	{ rc = DEFER; break; }			/* shouldn't happen */
+
+debug_printf("%s %d: mi %p\n", __FUNCTION__, __LINE__, mi);
+      if (!f.dmarc_has_been_checked)
+	{
+	typedef int (*pfn_t)(void);
+	(void) (((pfn_t *) mi->functions)[0]) ();	/* dmarc_process */
+	f.dmarc_has_been_checked = TRUE;
+	}
+
+debug_printf("%s %d\n", __FUNCTION__, __LINE__);
       /* used long way of dmarc_exim_expand_query() in case we need more
       view into the process in the future. */
-      rc = match_isinlist(dmarc_exim_expand_query(DMARC_VERIFY_STATUS),
+
+      /*XXX is this call used with any other arg? */
+      expanded_query = (((efn_t *) mi->functions)[1]) (DMARC_VERIFY_STATUS);
+
+debug_printf("%s %d\n", __FUNCTION__, __LINE__);
+      rc = match_isinlist(expanded_query,
 			  &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
+debug_printf("%s %d\n", __FUNCTION__, __LINE__);
+      }
       break;
 #endif
 
@@ -4185,8 +4220,10 @@ for (; cb; cb = cb->next)
 #ifdef SUPPORT_SPF
     case ACLC_SPF:
     case ACLC_SPF_GUESS:
-      /* Hardwire the offset of the function in the module functions table
-      for now.  Work out a more general mech later. */
+      /* We have hardwired function-call numbers, and also prototypes for the
+      functions.  We could do a function name table search for the number
+      but I can't see how to deal with prototypes.  Is a K&R non-prototyped
+      function still usable with today's compilers? */
       {
       misc_module_info * mi = misc_mod_find(US"spf", &log_message);
       typedef int (*fn_t)(const uschar **, const uschar *, int);
@@ -4195,7 +4232,7 @@ for (; cb; cb = cb->next)
       if (!mi)
 	{ rc = DEFER; break; }			/* shouldn't happen */
 
-      fn = ((fn_t *) mi->functions)[1];
+      fn = ((fn_t *) mi->functions)[0];		/* spf_process() */
 
       rc = fn(&arg, sender_address,
 	      cb->type == ACLC_SPF ? SPF_PROCESS_NORMAL : SPF_PROCESS_GUESS);

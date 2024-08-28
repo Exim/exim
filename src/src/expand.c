@@ -513,10 +513,10 @@ static var_entry var_table[] = {
   { "dkim_verify_status",  vtype_stringptr,   &dkim_verify_status },
 #endif
 #ifdef SUPPORT_DMARC
-  { "dmarc_domain_policy", vtype_stringptr,   &dmarc_domain_policy },
-  { "dmarc_status",        vtype_stringptr,   &dmarc_status },
-  { "dmarc_status_text",   vtype_stringptr,   &dmarc_status_text },
-  { "dmarc_used_domain",   vtype_stringptr,   &dmarc_used_domain },
+  { "dmarc_domain_policy", vtype_module,	US"dmarc" },
+  { "dmarc_status",        vtype_module,	US"dmarc" },
+  { "dmarc_status_text",   vtype_module,	US"dmarc" },
+  { "dmarc_used_domain",   vtype_module,	US"dmarc" },
 #endif
   { "dnslist_domain",      vtype_stringptr,   &dnslist_domain },
   { "dnslist_matched",     vtype_stringptr,   &dnslist_matched },
@@ -4888,7 +4888,7 @@ while (*s)
 	if (mi)
 	  {
 	  typedef gstring * (*fn_t)(gstring *);
-	  fn_t fn = ((fn_t *) mi->functions)[2];	/* authres_spf */
+	  fn_t fn = ((fn_t *) mi->functions)[1];	/* authres_spf */
 	  yield = fn(yield);
 	  }
 	}
@@ -4897,7 +4897,16 @@ while (*s)
       yield = authres_dkim(yield);
 #endif
 #ifdef SUPPORT_DMARC
-      yield = authres_dmarc(yield);
+	{
+	misc_module_info * mi = misc_mod_findonly(US"dmarc");
+	if (mi)
+	  {
+	  /*XXX is authres common enough to be generic? */
+	  typedef gstring * (*fn_t)(gstring *);
+	  fn_t fn = ((fn_t *) mi->functions)[2];	/* authres_dmarc*/
+	  yield = fn(yield);
+	  }
+	}
 #endif
 #ifdef EXPERIMENTAL_ARC
       yield = authres_arc(yield);

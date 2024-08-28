@@ -882,15 +882,6 @@ uschar *dkim_verify_signers      = US"$dkim_signers";
 uschar *dkim_verify_status	 = NULL;
 uschar *dkim_verify_reason	 = NULL;
 #endif
-#ifdef SUPPORT_DMARC
-uschar *dmarc_domain_policy     = NULL;
-uschar *dmarc_forensic_sender   = NULL;
-uschar *dmarc_history_file      = NULL;
-uschar *dmarc_status            = NULL;
-uschar *dmarc_status_text       = NULL;
-uschar *dmarc_tld_file          = NULL;
-uschar *dmarc_used_domain       = NULL;
-#endif
 
 uschar *dns_again_means_nonexist = NULL;
 int     dns_csa_search_limit   = 5;

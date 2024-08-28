@@ -12,7 +12,7 @@
 
 /* Code for calling dmarc checks via libopendmarc. Called from acl.c. */
 
-#include "exim.h"
+#include "../exim.h"
 #ifdef SUPPORT_DMARC
 # if !defined SUPPORT_SPF
 #  error SPF must also be enabled for DMARC
@@ -20,9 +20,9 @@
 #  error DKIM must also be enabled for DMARC
 # else
 
-#  include "functions.h"
+#  include "../functions.h"
 #  include "dmarc.h"
-#  include "pdkim/pdkim.h"
+#  include "../pdkim/pdkim.h"
 
 OPENDMARC_LIB_T     dmarc_ctx;
 DMARC_POLICY_T     *dmarc_pctx = NULL;
@@ -55,8 +55,22 @@ static dmarc_exim_p dmarc_policy_description[] = {
 };
 
 
-int
-dmarc_init(void)
+/* $variables */
+uschar * dmarc_domain_policy     = NULL; /* Declared policy of used domain */
+uschar * dmarc_status            = NULL; /* One word value */
+uschar * dmarc_status_text       = NULL; /* Human readable value */
+uschar * dmarc_used_domain       = NULL; /* Domain libopendmarc chose for DMARC policy lookup */
+
+/* options */
+uschar * dmarc_forensic_sender   = NULL; /* Set sender address for forensic reports */
+uschar * dmarc_history_file      = NULL; /* File to store dmarc results */
+uschar * dmarc_tld_file          = NULL; /* Mozilla TLDs text file */
+
+
+/* One-time initialisation for dmarc.  Ensure the spf module is available. */
+
+static BOOL
+dmarc_init(void *)
 {
 uschar * errstr;
 if (!(spf_mod_info = misc_mod_find(US"spf", &errstr)))
@@ -65,12 +79,14 @@ if (!(spf_mod_info = misc_mod_find(US"spf", &errstr)))
 return TRUE;
 }
 
-gstring *
+static gstring *
 dmarc_version_report(gstring * g)
 {
 return string_fmt_append(g, "Library version: dmarc: Compile: %d.%d.%d.%d\n",
-    (OPENDMARC_LIB_VERSION & 0xff000000) >> 24, (OPENDMARC_LIB_VERSION & 0x00ff0000) >> 16,
-    (OPENDMARC_LIB_VERSION & 0x0000ff00) >> 8, OPENDMARC_LIB_VERSION & 0x000000ff);
+    (OPENDMARC_LIB_VERSION & 0xff000000) >> 24,
+    (OPENDMARC_LIB_VERSION & 0x00ff0000) >> 16,
+    (OPENDMARC_LIB_VERSION & 0x0000ff00) >> 8,
+    (OPENDMARC_LIB_VERSION & 0x000000ff));
 }
 
 
@@ -98,12 +114,14 @@ eb->next  = NULL;
 return eblock;
 }
 
-/* dmarc_conn_init sets up a context that can be re-used for several
+/* dmarc_msg_init sets up a context that can be re-used for several
 messages on the same SMTP connection (that come from the
-same host with the same HELO string) */
+same host with the same HELO string).
+However, we seem to only use it for one; we destroy some sort of context
+at the tail end of dmarc_process(). */
 
-int
-dmarc_conn_init(void)
+static int
+dmarc_msg_init()
 {
 int *netmask   = NULL;   /* Ignored */
 int is_ipv6    = 0;
@@ -167,11 +185,19 @@ return OK;
 }
 
 
+static void
+dmarc_smtp_reset(void)
+{
+dmarc_domain_policy = dmarc_status = dmarc_status_text =
+dmarc_used_domain = NULL;
+}
+
+
 /* dmarc_store_data stores the header data so that subsequent dmarc_process can
 access the data.
 Called after the entire message has been received, with the From: header. */
 
-int
+static int
 dmarc_store_data(header_line * hdr)
 {
 /* No debug output because would change every test debug output */
@@ -362,7 +388,7 @@ context (if any), retrieves the result, sets up expansion
 strings and evaluates the condition outcome.
 Called for the first ACL dmarc= condition. */
 
-int
+static int
 dmarc_process(void)
 {
 int sr, origin;             /* used in SPF section */
@@ -433,10 +459,9 @@ if (!dmarc_abort && !sender_host_authenticated)
   spf_sender_domain = expand_string(US"$sender_address_domain");
 
     {
-    misc_module_info * mi = misc_mod_findonly(US"spf");
     typedef SPF_response_t * (*fn_t)(void);
-    if (mi)
-      spf_response_p = ((fn_t *) mi->functions)[3]();	/* spf_get_response */
+    if (spf_mod_info)
+      spf_response_p = ((fn_t *) spf_mod_info->functions)[2]();	/* spf_get_response */
     }
 
   if (!spf_response_p)
@@ -673,7 +698,15 @@ if (!f.dmarc_disable_verify)
 return OK;
 }
 
-uschar *
+static uschar *
+dmarc_exim_expand_defaults(int what)
+{
+if (what == DMARC_VERIFY_STATUS)
+  return f.dmarc_disable_verify ?  US"off" : US"none";
+return US"";
+}
+
+static uschar *
 dmarc_exim_expand_query(int what)
 {
 if (f.dmarc_disable_verify || !dmarc_pctx)
@@ -684,16 +717,8 @@ if (what == DMARC_VERIFY_STATUS)
 return US"";
 }
 
-uschar *
-dmarc_exim_expand_defaults(int what)
-{
-if (what == DMARC_VERIFY_STATUS)
-  return f.dmarc_disable_verify ?  US"off" : US"none";
-return US"";
-}
 
-
-gstring *
+static gstring *
 authres_dmarc(gstring * g)
 {
 if (f.dmarc_has_been_checked)
@@ -710,6 +735,55 @@ else
   DEBUG(D_acl) debug_printf("DMARC:\tno authres\n");
 return g;
 }
+
+/******************************************************************************/
+/* Module API */
+
+static optionlist dmarc_options[] = {
+  { "dmarc_forensic_sender",    opt_stringptr,      {&dmarc_forensic_sender} },
+  { "dmarc_history_file",       opt_stringptr,      {&dmarc_history_file} },
+  { "dmarc_tld_file",           opt_stringptr,      {&dmarc_tld_file} },
+};
+
+static void * dmarc_functions[] = {
+  dmarc_process,
+  dmarc_exim_expand_query,
+  authres_dmarc,
+  dmarc_store_data,
+};
+
+/* dmarc_forensic_sender is provided for visibility of the the option setting
+by moan_send_message. We do not document it as a config-visible $variable.
+We could provide it via a function but there's little advantage. */
+
+static var_entry dmarc_variables[] = {
+  { "dmarc_domain_policy", vtype_stringptr,   &dmarc_domain_policy },
+  { "dmarc_forensic_sender", vtype_stringptr, &dmarc_forensic_sender },
+  { "dmarc_status",        vtype_stringptr,   &dmarc_status },
+  { "dmarc_status_text",   vtype_stringptr,   &dmarc_status_text },
+  { "dmarc_used_domain",   vtype_stringptr,   &dmarc_used_domain },
+};
+
+misc_module_info dmarc_module_info =
+{
+  .name =		US"dmarc",
+# if SUPPORT_SPF==2
+  .dyn_magic =		MISC_MODULE_MAGIC,
+# endif
+  .init =		dmarc_init,
+  .lib_vers_report =	dmarc_version_report,
+  .smtp_reset =		dmarc_smtp_reset,
+  .msg_init =		dmarc_msg_init,
+
+  .options =		dmarc_options,
+  .options_count =	nelem(dmarc_options),
+
+  .functions =		dmarc_functions,
+  .functions_count =	nelem(dmarc_functions),
+
+  .variables =		dmarc_variables,
+  .variables_count =	nelem(dmarc_variables),
+};
 
 # endif /* SUPPORT_SPF */
 #endif /* SUPPORT_DMARC */

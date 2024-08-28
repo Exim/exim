@@ -499,7 +499,6 @@ OBJ_EXPERIMENTAL =	arc.o \
 			bmi_spam.o \
 			dane.o \
 			dcc.o \
-			dmarc.o \
 			imap_utf7.o \
 			utf8.o \
 			xclient.o
@@ -901,7 +900,6 @@ arc.o:		$(HDRS) pdkim/pdkim.h arc.c
 bmi_spam.o:	$(HDRS) bmi_spam.c
 dane.o:		$(HDRS) dane.c dane-openssl.c
 dcc.o:		$(HDRS) dcc.h dcc.c
-dmarc.o:	$(HDRS) pdkim/pdkim.h dmarc.h dmarc.c
 imap_utf7.o:	$(HDRS) imap_utf7.c
 utf8.o:		$(HDRS) utf8.c
 xclient.o:	$(HDRS) xclient.c

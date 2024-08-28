@@ -19,7 +19,7 @@
 #  include "pdkim/signing.h"
 
 #  ifdef SUPPORT_DMARC
-#   include "dmarc.h"
+#   include "miscmods/dmarc.h"
 #  endif
 
 extern pdkim_ctx * dkim_verify_ctx;

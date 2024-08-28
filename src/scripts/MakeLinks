@@ -94,7 +94,7 @@ d="miscmods"
 mkdir $d
 cd $d
 # Makefile is generated
-for f in spf.c spf.h
+for f in dmarc.c dmarc.h spf.c spf.h
 do
   ln -s ../../src/$d/$f $f
 done
@@ -140,7 +140,7 @@ for f in blob.h dbfunctions.h exim.h functions.h globals.h \
   string.c tls.c tlscert-gnu.c tlscert-openssl.c tls-cipher-stdname.c \
   tls-gnu.c tls-openssl.c \
   tod.c transport.c tree.c verify.c version.c xtextencode.c \
-  dkim.c dkim.h dkim_transport.c dmarc.c dmarc.h \
+  dkim.c dkim.h dkim_transport.c \
   valgrind.h memcheck.h \
   macro_predef.c macro_predef.h
 do

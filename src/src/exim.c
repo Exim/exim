@@ -1395,9 +1395,9 @@ DEBUG(D_any)
 #ifdef SUPPORT_I18N
   g = utf8_version_report(g);
 #endif
-#ifdef SUPPORT_DMARC
-  g = dmarc_version_report(g);
-#endif
+
+/*XXX do we need a "show misc-mods version-report" ?
+Currently they are output in misc_mod_add() */
 
   show_string(is_stdout, g);
   g = NULL;

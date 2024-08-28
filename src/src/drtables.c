@@ -432,8 +432,8 @@ static void
 misc_mod_add(misc_module_info * mi)
 {
 if (mi->init) mi->init(mi);
-DEBUG(D_lookup) if (mi->lib_vers_report)
-  debug_printf_indent("%Y\n", mi->lib_vers_report(NULL));
+DEBUG(D_any) if (mi->lib_vers_report)
+  debug_printf_indent("%Y", mi->lib_vers_report(NULL));
 
 mi->next = misc_module_list;
 misc_module_list = mi;
@@ -459,8 +459,10 @@ mi = (struct misc_module_info *) dlsym(dl,
 				    CS string_sprintf("%s_module_info", name));
 if ((errormsg = dlerror()))
   {
-  fprintf(stderr, "%s does not appear to be an spf module (%s)\n", name, errormsg);
-  log_write(0, LOG_MAIN|LOG_PANIC, "%s does not appear to be an spf module (%s)", name, errormsg);
+  fprintf(stderr, "%s does not appear to be a '%s' module (%s)\n",
+	  name, name, errormsg);
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "%s does not contain the expected module info symbol (%s)", name, errormsg);
   dlclose(dl);
   return NULL;
   }
@@ -491,6 +493,7 @@ misc_mod_findonly(const uschar * name)
 for (misc_module_info * mi = misc_module_list; mi; mi = mi->next)
   if (Ustrcmp(name, mi->name) == 0)
     return mi;
+return NULL;
 }
 
 /* Find a "misc" module, possibly already loaded, by name. */
@@ -505,6 +508,42 @@ return misc_mod_load(name, errstr);
 #else
 return NULL;
 #endif	/*LOOKUP_MODULE_DIR*/
+}
+
+
+/* For any "misc" module having a connection-init routine, call it. */
+
+int
+misc_mod_conn_init(const uschar * sender_helo_name,
+  const uschar * sender_host_address)
+{
+for (const misc_module_info * mi = misc_module_list; mi; mi = mi->next)
+  if (mi->conn_init)
+    if ((mi->conn_init) (sender_helo_name, sender_host_address) != OK)
+      return FAIL;
+return OK;
+}
+
+/* Ditto, smtp-reset */
+
+void
+misc_mod_smtp_reset(void)
+{
+for (const misc_module_info * mi = misc_module_list; mi; mi = mi->next)
+  if (mi->smtp_reset)
+    (mi->smtp_reset)();
+}
+
+/* Ditto, msg-init */
+
+int
+misc_mod_msg_init(void)
+{
+for (const misc_module_info * mi = misc_module_list; mi; mi = mi->next)
+  if (mi->msg_init)
+    if ((mi->msg_init)() != OK)
+      return FAIL;
+return OK;
 }
 
 
@@ -658,6 +697,9 @@ DEBUG(D_lookup) debug_printf("Loaded %d lookup modules\n", countmodules);
 }
 
 
+#if defined(SUPPORT_DMARC) && SUPPORT_DMARC!=2
+extern misc_module_info dmarc_module_info;
+#endif
 #if defined(SUPPORT_SPF) && SUPPORT_SPF!=2
 extern misc_module_info spf_module_info;
 #endif
@@ -667,9 +709,15 @@ init_misc_mod_list(void)
 {
 static BOOL onetime = FALSE;
 if (onetime) return;
+
 #if defined(SUPPORT_SPF) && SUPPORT_SPF!=2
+/* dmarc depends on spf so this add must go first, for the dmarc-static case */
 misc_mod_add(&spf_module_info);
 #endif
+#if defined(SUPPORT_DMARC) && SUPPORT_DMARC!=2
+misc_mod_add(&dmarc_module_info);
+#endif
+
 onetime = TRUE;
 }
 

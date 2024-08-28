@@ -563,15 +563,6 @@ extern uschar *dkim_verify_signers;    /* Colon-separated list of domains for ea
 extern uschar *dkim_verify_status;     /* result for this signature */
 extern uschar *dkim_verify_reason;     /* result for this signature */
 #endif
-#ifdef SUPPORT_DMARC
-extern uschar *dmarc_domain_policy;    /* Expansion for declared policy of used domain */
-extern uschar *dmarc_forensic_sender;  /* Set sender address for forensic reports */
-extern uschar *dmarc_history_file;     /* Expansion variable, file to store dmarc results */
-extern uschar *dmarc_status;           /* Expansion variable, one word value */
-extern uschar *dmarc_status_text;      /* Expansion variable, human readable value */
-extern uschar *dmarc_tld_file;         /* Mozilla TLDs text file */
-extern uschar *dmarc_used_domain;      /* Expansion variable, domain libopendmarc chose for DMARC policy lookup */
-#endif
 
 extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
 extern int     dns_csa_search_limit;   /* How deep to search for CSA SRV records */

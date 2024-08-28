@@ -13,19 +13,10 @@
 
 #ifdef SUPPORT_DMARC
 
-# include "opendmarc/dmarc.h"
+# include <opendmarc/dmarc.h>
 # ifdef SUPPORT_SPF
-#  include "spf2/spf.h"
+#  include <spf2/spf.h>
 # endif /* SUPPORT_SPF */
-
-/* prototypes */
-gstring * dmarc_version_report(gstring *);
-int dmarc_init(void);
-int dmarc_conn_init(void);
-int dmarc_store_data(header_line *);
-int dmarc_process(void);
-uschar *dmarc_exim_expand_query(int);
-uschar *dmarc_exim_expand_defaults(int);
 
 #define DMARC_VERIFY_STATUS    1
 

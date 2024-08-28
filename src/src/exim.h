@@ -549,7 +549,7 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 # include "dkim.h"
 #endif
 #ifdef SUPPORT_DMARC
-# include "dmarc.h"
+# include "miscmods/dmarc.h"
 # include <opendmarc/dmarc.h>
 #endif
 

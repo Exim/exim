@@ -26,6 +26,7 @@ miscmods.a:	$(OBJ)
 .c.so:;         @echo "$(CC) -shared $*.c"
 		$(FE)$(CC) $(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS) $*.c -o $@
 
-spf.o spf.so:	$(HDRS) spf.h spf.c
+spf.o spf.so:		$(HDRS) spf.h spf.c
+dmarc.o dmarc.so:	$(HDRS) ../pdkim/pdkim.h dmarc.h dmarc.c
 
 # End

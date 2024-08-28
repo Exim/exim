@@ -39,7 +39,7 @@ misc_module_info * mi = misc_mod_find(US"spf", errmsg);
 if (mi)
   {
   typedef void * (*fn_t)(const uschar *, uschar **);
-  return (((fn_t *) mi->functions)[5]) (filename, errmsg);
+  return (((fn_t *) mi->functions)[3]) (filename, errmsg);
   }
 return NULL;
 }
@@ -52,7 +52,7 @@ misc_module_info * mi = misc_mod_find(US"spf", NULL);
 if (mi)
   {
   typedef void (*fn_t)(void *);
-  return (((fn_t *) mi->functions)[6]) (handle);
+  return (((fn_t *) mi->functions)[4]) (handle);
   }
 }
 
@@ -67,7 +67,7 @@ if (mi)
   {
   typedef int (*fn_t) (void *, const uschar *, const uschar *,
 		      int, uschar **, uschar **, uint *, const uschar *);
-  return (((fn_t *) mi->functions)[7]) (handle, filename, keystring, key_len,
+  return (((fn_t *) mi->functions)[5]) (handle, filename, keystring, key_len,
 				      result, errmsg, do_cache, opts);
   }
 return FAIL;

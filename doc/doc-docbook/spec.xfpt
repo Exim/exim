@@ -32055,11 +32055,19 @@ This control turns off DKIM verification processing entirely.  For details on
 the operation and configuration of DKIM, see section &<<SECDKIM>>&.
 
 
-.vitem &*control&~=&~dmarc_disable_verify*&
+.vitem &*control&~=&~enforce_sync*& &&&
+       &*control&~=&~no_enforce_sync*&
+
+.vitem &*control&~=&~dmarc_disable_verify*& &&&
+       &*control&~=&~dmarc_enable_forensic*&
 .cindex "disable DMARC verify"
-.cindex "DMARC" "disable verify"
-This control turns off DMARC verification processing entirely.  For details on
+.cindex DMARC "disable verify"
+.cindex DMARC controls
+.cindex DMARC "forensic mails"
+These control affect DMARC processing.  For details on
 the operation and configuration of DMARC, see section &<<SECDMARC>>&.
+
+The &"disable"& turns off DMARC verification processing entirely.
 
 
 .vitem &*control&~=&~dscp/*&<&'value'&>

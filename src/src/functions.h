@@ -147,9 +147,6 @@ extern gstring *authres_arc(gstring *);
 #ifndef DISABLE_DKIM
 extern gstring *authres_dkim(gstring *);
 #endif
-#ifdef SUPPORT_DMARC
-extern gstring *authres_dmarc(gstring *);
-#endif
 extern gstring *authres_smtpauth(gstring *);
 
 extern uschar *b64encode(const uschar *, int);
@@ -377,8 +374,13 @@ extern ssize_t mime_decode_base64(FILE *, FILE *, uschar *);
 extern int     mime_regex(const uschar **, BOOL);
 extern void    mime_set_anomaly(int);
 #endif
+
+extern int     misc_mod_conn_init(const uschar *, const uschar *);
 extern misc_module_info * misc_mod_find(const uschar * modname, uschar **);
 extern misc_module_info * misc_mod_findonly(const uschar * modname);
+extern int     misc_mod_msg_init(void);
+extern void    misc_mod_smtp_reset(void);
+
 extern uschar *moan_check_errorcopy(const uschar *);
 extern BOOL    moan_skipped_syntax_errors(uschar *, error_block *, uschar *,
                  BOOL, uschar *);

@@ -129,9 +129,9 @@ static optionlist optionlist_config[] = {
   { "dkim_verify_signers",      opt_stringptr,   {&dkim_verify_signers} },
 #endif
 #ifdef SUPPORT_DMARC
-  { "dmarc_forensic_sender",    opt_stringptr,   {&dmarc_forensic_sender} },
-  { "dmarc_history_file",       opt_stringptr,   {&dmarc_history_file} },
-  { "dmarc_tld_file",           opt_stringptr,   {&dmarc_tld_file} },
+  { "dmarc_forensic_sender",    opt_module,	 {US"dmarc"} },
+  { "dmarc_history_file",       opt_module,	 {US"dmarc"} },
+  { "dmarc_tld_file",           opt_module,	 {US"dmarc"} },
 #endif
   { "dns_again_means_nonexist", opt_stringptr,   {&dns_again_means_nonexist} },
   { "dns_check_names_pattern",  opt_stringptr,   {&check_dns_names_pattern} },
@@ -1707,7 +1707,7 @@ static BOOL
 readconf_handle_option(uschar *buffer, optionlist *oltop, int last,
   void *data_block, uschar *unknown_txt)
 {
-int ptr = 0;
+int ptr;
 int offset = 0;
 int count, type, value;
 int issecure = 0;
@@ -1721,10 +1721,15 @@ rmark reset_point;
 int intbase = 0;
 uschar *inttype = US"";
 uschar *sptr;
-const uschar * s = buffer;
+const uschar * s;
 uschar **str_target;
 uschar name[EXIM_DRIVERNAME_MAX];
 uschar name2[EXIM_DRIVERNAME_MAX];
+
+sublist:
+
+s = buffer;
+ptr = 0;
 
 /* There may be leading spaces; thereafter, we expect an option name starting
 with a letter. */
@@ -1763,8 +1768,6 @@ if (Ustrncmp(name, "not_", 4) == 0)
   boolvalue = FALSE;
   offset = 4;
   }
-
-sublist:
 
 /* Search the list for the given name. A non-existent name, or an option that
 is set twice, is a disaster. */
@@ -2454,7 +2457,6 @@ switch (type)
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
 	"failed to find %s module for %s: %s", US ol->v.value, name, errstr);
 
-debug_printf("hunting for option %s in module %s\n", name, mi->name);
     oltop = mi->options;
     last = mi->options_count;
     goto sublist;
@@ -3515,6 +3517,9 @@ if (!*spool_directory)
 
 /* Expand the spool directory name; it may, for example, contain the primary
 host name. Same comment about failure. */
+
+DEBUG(D_any) if (Ustrchr(spool_directory, '$'))
+  debug_printf("Expanding spool_directory option\n");
 
 if (!(s = expand_string(spool_directory)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand spool_directory "

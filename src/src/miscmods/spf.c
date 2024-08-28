@@ -287,29 +287,30 @@ return TRUE;
    messages on the same SMTP connection (that come from the
    same host with the same HELO string).
 
-Return: Boolean success
+Return: OK/FAIL
 */
 
-static BOOL
-spf_conn_init(uschar * spf_helo_domain, uschar * spf_remote_addr)
+static int
+spf_conn_init(const uschar * spf_helo_domain, const uschar * spf_remote_addr)
 {
 DEBUG(D_receive)
   debug_printf("spf_conn_init: %s %s\n", spf_helo_domain, spf_remote_addr);
 
-if (!spf_server && !spf_init(NULL)) return FALSE;
+if (!spf_server && !spf_init(NULL))
+  return FAIL;
 
 if (SPF_server_set_rec_dom(spf_server, CS primary_hostname))
   {
   DEBUG(D_receive) debug_printf("spf: SPF_server_set_rec_dom(\"%s\") failed.\n",
     primary_hostname);
   spf_server = NULL;
-  return FALSE;
+  return FAIL;
   }
 
 spf_request = SPF_request_new(spf_server);
 
-if (  SPF_request_set_ipv4_str(spf_request, CS spf_remote_addr)
-   && SPF_request_set_ipv6_str(spf_request, CS spf_remote_addr)
+if (  SPF_request_set_ipv4_str(spf_request, CCS spf_remote_addr)
+   && SPF_request_set_ipv6_str(spf_request, CCS spf_remote_addr)
    )
   {
   DEBUG(D_receive)
@@ -317,19 +318,19 @@ if (  SPF_request_set_ipv4_str(spf_request, CS spf_remote_addr)
       "SPF_request_set_ipv6_str() failed [%s]\n", spf_remote_addr);
   spf_server = NULL;
   spf_request = NULL;
-  return FALSE;
+  return FAIL;
   }
 
-if (SPF_request_set_helo_dom(spf_request, CS spf_helo_domain))
+if (SPF_request_set_helo_dom(spf_request, CCS spf_helo_domain))
   {
   DEBUG(D_receive) debug_printf("spf: SPF_set_helo_dom(\"%s\") failed.\n",
     spf_helo_domain);
   spf_server = NULL;
   spf_request = NULL;
-  return FALSE;
+  return FAIL;
   }
 
-return TRUE;
+return OK;
 }
 
 static void
@@ -564,11 +565,9 @@ static optionlist spf_options[] = {
 };
 
 static void * spf_functions[] = {
-  spf_conn_init,
   spf_process,
   authres_spf,
   spf_get_response,		/* ugly; for dmarc */
-  spf_smtp_reset,
   
   spf_lookup_open,
   spf_lookup_close,
@@ -592,6 +591,8 @@ misc_module_info spf_module_info =
 # endif
   .init =		spf_init,
   .lib_vers_report =	spf_lib_version_report,
+  .conn_init =		spf_conn_init,
+  .smtp_reset =		spf_smtp_reset,
 
   .options =		spf_options,
   .options_count =	nelem(spf_options),

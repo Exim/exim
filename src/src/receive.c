@@ -17,7 +17,7 @@ extern int dcc_ok;
 #endif
 
 #ifdef SUPPORT_DMARC
-# include "dmarc.h"
+# include "miscmods/dmarc.h"
 #endif
 
 /*************************************************
@@ -1835,9 +1835,8 @@ if (smtp_input && !smtp_batched_input && !f.dkim_disable_verify)
   dkim_exim_verify_init(chunking_state <= CHUNKING_OFFERED);
 #endif
 
-#ifdef SUPPORT_DMARC
-if (sender_host_address) dmarc_conn_init();	/* initialize libopendmarc */
-#endif
+if (misc_mod_msg_init() != OK)
+  goto TIDYUP;
 
 /* In SMTP sessions we may receive several messages in one connection. Before
 each subsequent one, we wait for the clock to tick at the level of message-id
@@ -3627,7 +3626,14 @@ else
 #endif /* WITH_CONTENT_SCAN */
 
 #ifdef SUPPORT_DMARC
-    dmarc_store_data(dmarc_from_header);
+    {
+    misc_module_info * mi = misc_mod_findonly(US"dmarc");
+    if (mi)
+      {
+      typedef int (*fn_t)(header_line *);
+      (((fn_t *) mi->functions)[3]) (dmarc_from_header);
+      }
+    }
 #endif
 
 #ifndef DISABLE_PRDR

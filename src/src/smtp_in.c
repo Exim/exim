@@ -1681,16 +1681,6 @@ bmi_run = 0;
 bmi_verdicts = NULL;
 #endif
 dnslist_domain = dnslist_matched = NULL;
-#ifdef SUPPORT_SPF
-  {
-  misc_module_info * mi = misc_mod_findonly(US"spf");
-  if (mi)
-    {
-    typedef void (*fn_t)(void);
-    (((fn_t *) mi->functions)[4])();	/* spf_smtp_reset*/
-    }
-  }
-#endif
 #ifndef DISABLE_DKIM
 dkim_cur_signer = dkim_signers =
 dkim_signing_domain = dkim_signing_selector = dkim_signatures = NULL;
@@ -1701,8 +1691,6 @@ dkim_key_length = 0;
 #endif
 #ifdef SUPPORT_DMARC
 f.dmarc_has_been_checked = f.dmarc_disable_verify = f.dmarc_enable_forensic = FALSE;
-dmarc_domain_policy = dmarc_status = dmarc_status_text =
-dmarc_used_domain = NULL;
 #endif
 #ifdef EXPERIMENTAL_ARC
 arc_state = arc_state_reason = NULL;
@@ -1742,6 +1730,7 @@ while (acl_warn_logged)
   store_free(this);
   }
 
+misc_mod_smtp_reset();
 message_tidyup();
 store_reset(reset_point);
 
@@ -4025,24 +4014,14 @@ while (done <= 0)
 	  }
 	}
 
-#ifdef SUPPORT_SPF
-      /* If we have an spf module, set up SPF context */
-      {
-      misc_module_info * mi = misc_mod_findonly(US"spf");
-      if (mi)
+      /* For any misc-module having a connection-init routine, call it. */
+      
+      if (misc_mod_conn_init(sender_helo_name, sender_host_address) != OK)
 	{
-	/* We have hardwired function-call numbers, and also prototypes for the
-	functions.  We could do a function name table search for the number
-	but I can't see how to deal with prototypes.  Is a K&R non-prototyped
-	function still usable with today's compilers? */
-
-	typedef BOOL (*fn_t)(uschar *, uschar *);
-	fn_t fn = ((fn_t *) mi->functions)[0];	/* spf_conn_init */
-
-	(void) fn(sender_helo_name, sender_host_address);
+	DEBUG(D_receive) debug_printf("A module conn-init routine failed\n");
+	done = 1;
+	break;
 	}
-      }
-#endif
 
       /* Apply an ACL check if one is defined; afterwards, recheck
       synchronization in case the client started sending in a delay. */

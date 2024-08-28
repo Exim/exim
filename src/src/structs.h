@@ -1023,6 +1023,9 @@ typedef struct misc_module_info {
   unsigned	dyn_magic;
   BOOL		(*init)(void *);	/* arg is the misc_module_info ptr */
   gstring *	(*lib_vers_report)(gstring *);	/* underlying library */
+  int		(*conn_init)(const uschar *, const uschar *);
+  void		(*smtp_reset)(void);
+  int		(*msg_init)(void);
 
   void *	options;
   unsigned	options_count;

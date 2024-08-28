@@ -178,8 +178,7 @@ header From: and grab the address from that for the envelope FROM. */
 
 GET_OPTION("dmarc_forensic_sender");
 if (  ident == ERRMESS_DMARC_FORENSIC
-   && dmarc_forensic_sender
-   && (s = expand_string(dmarc_forensic_sender))
+   && (s = expand_string(US"$dmarc_forensic_sender"))	/* a hack... */
    && *s
    && (s2 = expand_string(string_sprintf("${address:%s}", s)))
    && *s2
