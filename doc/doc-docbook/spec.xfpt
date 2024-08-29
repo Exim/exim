@@ -5475,7 +5475,7 @@ list items, it is not ignored when parsing the list. The spaces around the first
 colon in the example above are necessary. If they were not there, the list would
 be interpreted as the two items 127.0.0.1:: and 1.
 
-.section "Changing list separators" "SECTlistsepchange"
+.subsection "Changing list separators" "SECTlistsepchange"
 .cindex "list separator" "changing"
 .cindex "IPv6" "addresses in lists"
 Doubling colons in IPv6 addresses is an unwelcome chore, so a mechanism was
@@ -5516,7 +5516,7 @@ enclosing an empty list item.
 
 
 
-.section "Empty items in lists" "SECTempitelis"
+.subsection "Empty items in lists" "SECTempitelis"
 .cindex "list" "empty item in"
 An empty item at the end of a list is always ignored. In other words, trailing
 separator characters are ignored. Thus, the list in
@@ -10833,7 +10833,7 @@ will sort an MX lookup into priority order.
 
 
 .vitem &*${srs_encode&~{*&<&'secret'&>&*}{*&<&'return&~path'&>&*}{*&<&'original&~domain'&>&*}}*&
-SRS encoding.  See SECT &<<SECTSRS>>& for details.
+SRS encoding.  See section &<<SECTSRS>>& for details.
 
 
 
