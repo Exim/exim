@@ -63,6 +63,16 @@ else
 fi
 
 
+# Linux now whines about egrep, saying "use grep -E".
+# Solarix doesn't support -E on grep.  Thanks so much for
+# going non-back-compatible, Linux.
+if echo 1 | grep -E 1 >/dev/null; then
+  egrep="grep -E"
+else
+  egrep="egrep"
+fi
+
+
 # If Makefile is up-to-date, no need to rebuild it.
 
 if [ $rebuild = no ] ; then
@@ -134,7 +144,7 @@ then
   sed "s/^/PKG_CONFIG_PATH='/" < ./$mftepcp2 | sed "s/\$/'/" > ./$mftepcp
   . ./$mftepcp
   export PKG_CONFIG_PATH
-  grep -E -v "^[$st]*PKG_CONFIG_PATH[$st]*=" ./$mft > ./$mftt
+  $egrep -v "^[$st]*PKG_CONFIG_PATH[$st]*=" ./$mft > ./$mftt
   rm -f ./$mft
   (
     echo "# Collapsed PKG_CONFIG_PATH in build-prep:"
@@ -149,10 +159,10 @@ rm -f ./$mftepcp ./$mftepcp2
 
 # handle pkg-config
 # beware portability of extended regexps with sed.
-grep -E "^[$st]*(AUTH|LOOKUP)_[A-Z0-9_]*[$st]*=[$st]*" $mft | \
+$egrep "^[$st]*(AUTH|LOOKUP)_[A-Z0-9_]*[$st]*=[$st]*" $mft | \
   sed "s/[$st]*=/='/" | \
   sed "s/\$/'/" > $mftt
-grep -E "^[$st]*((USE_(OPENSSL|GNUTLS)_PC)|SUPPORT_TLS|USE_GNUTLS|PCRE2?_CONFIG|AVOID_GNUTLS_PKCS11)[$st]*=[$st]*" $mft | \
+$egrep "^[$st]*((USE_(OPENSSL|GNUTLS)_PC)|SUPPORT_TLS|USE_GNUTLS|PCRE2?_CONFIG|AVOID_GNUTLS_PKCS11)[$st]*=[$st]*" $mft | \
   sed "s/[$st]*=/='/" | \
   sed "s/\$/'/" >> $mftt
 if test -s $mftt
