@@ -29,16 +29,6 @@ fi
 
 archtype=`../scripts/arch-type` || exit 1
 
-# Linux now whines about egrep, saying "use grep -E".
-# Solarix doesn't support -E on grep.  Thanks so much for
-# going non-back-compatible, Linux.
-if echo 1 | grep -E 1 >/dev/null; then
-  egrep="grep -E"
-else
-  egrep="egrep"
-fi
-
-
 # Now test for either the non-existence of Makefile, or for any of its
 # components being newer. Note that the "newer" script gives the right
 # answer (for our purposes) when the first file is non-existent.
@@ -76,7 +66,7 @@ fi
 # Linux now whines about egrep, saying "use grep -E".
 # Solarix doesn't support -E on grep.  Thanks so much for
 # going non-back-compatible, Linux.
-if echo 1 | grep -E 1 >/dev/null; then
+if [ "$ostype" != "SunOS5" ] ; then
   egrep="grep -E"
 else
   egrep="egrep"
