@@ -461,7 +461,8 @@ if (!dmarc_abort && !sender_host_authenticated)
     {
     typedef SPF_response_t * (*fn_t)(void);
     if (spf_mod_info)
-      spf_response_p = ((fn_t *) spf_mod_info->functions)[2]();	/* spf_get_response */
+      /*XXX ugly use of a pointer */
+      spf_response_p = ((fn_t *) spf_mod_info->functions)[SPF_GET_RESPONSE]();
     }
 
   if (!spf_response_p)
@@ -746,10 +747,10 @@ static optionlist dmarc_options[] = {
 };
 
 static void * dmarc_functions[] = {
-  dmarc_process,
-  dmarc_exim_expand_query,
-  authres_dmarc,
-  dmarc_store_data,
+  [DMARC_PROCESS] =	dmarc_process,
+  [DMARC_EXPAND_QUERY] = dmarc_exim_expand_query,
+  [DMARC_AUTHRES] =	authres_dmarc,
+  [DMARC_STORE_DATA] =	dmarc_store_data,
 };
 
 /* dmarc_forensic_sender is provided for visibility of the the option setting

@@ -1,0 +1,84 @@
+/*************************************************
+*     Exim - an Internet mail transport agent    *
+*************************************************/
+
+Copyright (c) The Exim Maintainers 2024
+
+This directory contains source for modules that can be built as part
+of Exim, either static-linked or as dynamic-load modules. Doing the
+latter keeps the runtime binary smaller when a feature is not used
+by the configuration, especially when a library is involved.
+
+Which modules are built, and the choice of static vs. dynamic, is
+under the control of the Local/Makefile at build time.
+Any combination of static/dynamic is valid.
+
+Moudules built for dynamic load must be installed in a directory
+which is defined in Local/Makefile.
+
+The API starts with a struct with a known name <foo>_module_info.
+For dynamic builds this includes a magic number permitting versioning
+of the highlevel interface.
+The structure has elements for some commonly-needed call types
+(init, version-report etc.).  Any my be left as null pointers;
+those present will be called at appropriate times.
+
+The current list is
+	init
+	lib_vers_report
+	smtp_reset
+	msg_init
+
+Then there are three pair of elements, each being a table pointer
+and table length, for options, functions, and variable that the
+module provides.
+
+The options table defines main-section configuration options, using
+the same definition entry struct as the main table in readconf.c;
+entries here should have their proper opt_<type> and
+should be duplicated in the main table, but with opt_module and the
+module name (this supports both getting the module loaded, if dynamic,
+and writing the value from the config). Entries must be in order by
+the option name.
+
+The functions table defines service functions additional to the "common"
+ones noted above.  Each offset in the table should have a #define in an
+include-file brought in to the general set by exim.h.
+
+The variables table defins $variables for expansion, using the same
+definition entry struct as the main var_table in expand.c;
+entries here should have their proper vtype_<type> and should be duplicated
+in the main table but with vtype_module and the module name.
+
+There are service functions to locate and to locate-or-load modules
+by name; these hide the static/dynamic aspect of a module.  Most
+new coding will only need these for calls to the "additiona" custom
+functions a module provides. The example code is:
+
+      {
+      /* You need to know the function's prototype */
+      typedef int (*fn_t)(const uschar **, const uschar *, int);
+      fn_t fn;
+      misc_module_info * mi = misc_mod_find(US"spf", &log_message);
+
+      if (mi)
+	{
+	fn = ((fn_t *) mi->functions)[SPF_PROCESS];
+	rc = fn(args...);
+	}
+      }
+
+
+
+Adding new modules
+------------------
+
+Put the code in this directory.  Use filenames starting with the module name.
+Write an include file with anything callers need to know, in particular
+#defines for the function call numbers.  Include that file from exim.h
+and add it to HDRS and PHDRS in OS/Makefile-Base.
+Add a SUPPORT_<foo> line to Local/Makefile, and (if dynamic) any
+SUPPORT_<foo>_INCLUDE or SUPPORT_<foo>_LIBS required.
+Add the capitalised module name <foo> to the "miscmods" like in
+scripts/Configure-Makefile.
+Add all the filenames to the "miscmods" list in scripts/Makelinks

@@ -3961,29 +3961,24 @@ for (; cb; cb = cb->next)
       typedef uschar * (*efn_t)(int);
       uschar * expanded_query;
 
-debug_printf("%s %d\n", __FUNCTION__, __LINE__);
       if (!mi)
 	{ rc = DEFER; break; }			/* shouldn't happen */
 
-debug_printf("%s %d: mi %p\n", __FUNCTION__, __LINE__, mi);
       if (!f.dmarc_has_been_checked)
 	{
 	typedef int (*pfn_t)(void);
-	(void) (((pfn_t *) mi->functions)[0]) ();	/* dmarc_process */
+	(void) (((pfn_t *) mi->functions)[DMARC_PROCESS]) ();
 	f.dmarc_has_been_checked = TRUE;
 	}
 
-debug_printf("%s %d\n", __FUNCTION__, __LINE__);
       /* used long way of dmarc_exim_expand_query() in case we need more
       view into the process in the future. */
 
       /*XXX is this call used with any other arg? */
-      expanded_query = (((efn_t *) mi->functions)[1]) (DMARC_VERIFY_STATUS);
-
-debug_printf("%s %d\n", __FUNCTION__, __LINE__);
+      expanded_query = (((efn_t *) mi->functions)[DMARC_EXPAND_QUERY])
+						      (DMARC_VERIFY_STATUS);
       rc = match_isinlist(expanded_query,
 			  &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
-debug_printf("%s %d\n", __FUNCTION__, __LINE__);
       }
       break;
 #endif
@@ -4223,7 +4218,9 @@ debug_printf("%s %d\n", __FUNCTION__, __LINE__);
       /* We have hardwired function-call numbers, and also prototypes for the
       functions.  We could do a function name table search for the number
       but I can't see how to deal with prototypes.  Is a K&R non-prototyped
-      function still usable with today's compilers? */
+      function still usable with today's compilers (but we would lose on
+      type-checking)?  We could macroize the typedef, and even the function
+      table access - but it obscures how it works rather. */
       {
       misc_module_info * mi = misc_mod_find(US"spf", &log_message);
       typedef int (*fn_t)(const uschar **, const uschar *, int);
@@ -4232,7 +4229,7 @@ debug_printf("%s %d\n", __FUNCTION__, __LINE__);
       if (!mi)
 	{ rc = DEFER; break; }			/* shouldn't happen */
 
-      fn = ((fn_t *) mi->functions)[0];		/* spf_process() */
+      fn = ((fn_t *) mi->functions)[SPF_PROCESS];
 
       rc = fn(&arg, sender_address,
 	      cb->type == ACLC_SPF ? SPF_PROCESS_NORMAL : SPF_PROCESS_GUESS);

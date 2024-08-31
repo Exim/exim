@@ -685,6 +685,8 @@ HDRS  =	blob.h \
 	hintsdb/hints_tdb.h \
 	local_scan.h \
 	macros.h \
+	miscmods/dmarc_api.h \
+	miscmods/spf_api.h \
 	mytypes.h \
 	path_max.h \
 	sha_ver.h \
@@ -704,6 +706,8 @@ PHDRS = ../config.h \
 	../hintsdb/hints_tdb.h \
 	../local_scan.h \
 	../macros.h \
+	../miscmods/dmarc_api.h \
+	../miscmods/spf_api.h \
 	../mytypes.h \
 	../path_max.h \
 	../structs.h \

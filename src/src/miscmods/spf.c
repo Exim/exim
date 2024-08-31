@@ -565,13 +565,13 @@ static optionlist spf_options[] = {
 };
 
 static void * spf_functions[] = {
-  spf_process,
-  authres_spf,
-  spf_get_response,		/* ugly; for dmarc */
+  [SPF_PROCESS] =	spf_process,
+  [SPF_AUTHRES] =	authres_spf,
+  [SPF_GET_RESPONSE] =	spf_get_response,		/* ugly; for dmarc */
   
-  spf_lookup_open,
-  spf_lookup_close,
-  spf_lookup_find,
+  [SPF_OPEN] =		spf_lookup_open,
+  [SPF_CLOSE] =		spf_lookup_close,
+  [SPF_FIND] =		spf_lookup_find,
 };
 
 static var_entry spf_variables[] = {

@@ -3631,7 +3631,7 @@ else
     if (mi)
       {
       typedef int (*fn_t)(header_line *);
-      (((fn_t *) mi->functions)[3]) (dmarc_from_header);
+      (((fn_t *) mi->functions)[DMARC_STORE_DATA]) (dmarc_from_header);
       }
     }
 #endif

@@ -94,7 +94,7 @@ d="miscmods"
 mkdir $d
 cd $d
 # Makefile is generated
-for f in dmarc.c dmarc.h spf.c spf.h
+for f in dmarc.c dmarc.h dmarc_api.h spf.c spf.h spf_api.h
 do
   ln -s ../../src/$d/$f $f
 done

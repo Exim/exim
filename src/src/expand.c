@@ -4888,7 +4888,7 @@ while (*s)
 	if (mi)
 	  {
 	  typedef gstring * (*fn_t)(gstring *);
-	  fn_t fn = ((fn_t *) mi->functions)[1];	/* authres_spf */
+	  fn_t fn = ((fn_t *) mi->functions)[SPF_AUTHRES];
 	  yield = fn(yield);
 	  }
 	}
@@ -4903,7 +4903,7 @@ while (*s)
 	  {
 	  /*XXX is authres common enough to be generic? */
 	  typedef gstring * (*fn_t)(gstring *);
-	  fn_t fn = ((fn_t *) mi->functions)[2];	/* authres_dmarc*/
+	  fn_t fn = ((fn_t *) mi->functions)[DMARC_AUTHRES];
 	  yield = fn(yield);
 	  }
 	}

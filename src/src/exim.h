@@ -544,12 +544,14 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #endif
 #ifdef SUPPORT_SPF
 # include "miscmods/spf.h"
+# include "miscmods/spf_api.h"
 #endif
 #ifndef DISABLE_DKIM
 # include "dkim.h"
 #endif
 #ifdef SUPPORT_DMARC
 # include "miscmods/dmarc.h"
+# include "miscmods/dmarc_api.h"
 # include <opendmarc/dmarc.h>
 #endif
 
