@@ -32055,9 +32055,6 @@ This control turns off DKIM verification processing entirely.  For details on
 the operation and configuration of DKIM, see section &<<SECDKIM>>&.
 
 
-.vitem &*control&~=&~enforce_sync*& &&&
-       &*control&~=&~no_enforce_sync*&
-
 .vitem &*control&~=&~dmarc_disable_verify*& &&&
        &*control&~=&~dmarc_enable_forensic*&
 .cindex "disable DMARC verify"
