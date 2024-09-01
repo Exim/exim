@@ -61,6 +61,17 @@ return OK;
 }
 
 
+/* Don't actually alter the string; just copy to quoted-pool memory */
+
+static uschar *
+testdb_quote(uschar * s, uschar * opt, unsigned idx)
+{
+int len = Ustrlen(s) + 1;
+uschar * quoted = store_get_quoted(len, s, idx, US"testdb");
+memcpy(quoted, s, len);
+return quoted;
+}
+
 /*************************************************
 *         Version reporting entry point          *
 *************************************************/
@@ -79,7 +90,7 @@ return g;
 }
 
 
-static lookup_info _lookup_info = {
+static lookup_info testdb_lookup_info = {
   .name = US"testdb",			/* lookup name */
   .type = lookup_querystyle,		/* query-style lookup */
   .open = testdb_open,			/* open function */
@@ -87,7 +98,31 @@ static lookup_info _lookup_info = {
   .find = testdb_find,			/* find function */
   .close = NULL,			/* no close function */
   .tidy = NULL,				/* no tidy function */
-  .quote = NULL,			/* no quoting function */
+  .quote = testdb_quote,		/* quoting function */
+  .version_report = testdb_version_report          /* version reporting */
+};
+
+static lookup_info testdb2_lookup_info = {
+  .name = US"testdb2",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = testdb_open,			/* open function */
+  .check = NULL,			/* check function */
+  .find = testdb_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = testdb_quote,		/* same quoting function */
+  .version_report = testdb_version_report          /* version reporting */
+};
+
+static lookup_info testdb3_lookup_info = {
+  .name = US"testdb_nq",		/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = testdb_open,			/* open function */
+  .check = NULL,			/* check function */
+  .find = testdb_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* NO quoting function */
   .version_report = testdb_version_report          /* version reporting */
 };
 
@@ -95,7 +130,13 @@ static lookup_info _lookup_info = {
 #define testdb_lookup_module_info _lookup_module_info
 #endif
 
-static lookup_info *_lookup_list[] = { &_lookup_info };
-lookup_module_info testdb_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
+static lookup_info *_lookup_list[] = {
+  &testdb_lookup_info,
+  &testdb2_lookup_info,
+  &testdb3_lookup_info
+};
+
+lookup_module_info testdb_lookup_module_info = {
+  LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 3 };
 
 /* End of lookups/testdb.c */

@@ -83,7 +83,7 @@ extern rmark   store_reset_3(rmark, const char *, int);
 #define GET_TAINTED	(const void *)1
 
 extern int	quoter_for_address(const void *, const uschar **);
-extern BOOL	is_quoted_like(const void *, unsigned);
+extern BOOL	is_quoted_like(const void *, const void *);
 extern BOOL	is_real_quoter(int);
 extern void	debug_print_taint(const void * p);
 

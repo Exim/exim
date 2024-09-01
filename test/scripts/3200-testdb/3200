@@ -9,3 +9,15 @@ bad default:     ${lookup testdb*@{abcd}}
 bad default:     ${lookup testdb*{fail}}
 bad default:     ${lookup testdb*@{fail}}
 ****
+#
+exim -be
+set,t acl_m0 = expected_fail
+set,t acl_m1 = barbaz
+set,t acl_m2 = foo_2
+set,t acl_m3 = foo_3
+missing quoter:  ${lookup testdb {$acl_m0}}
+proper quoter:   ${lookup testdb {${quote_testdb:$acl_m1}}}
+missing (but cached): ${lookup testdb {$acl_m1}}
+shared quoter:   ${lookup testdb2 {${quote_testdb:$acl_m2}}}
+quoter notreq:   ${lookup testdb_nq {$acl_m3}}
+****

@@ -14,7 +14,7 @@ acl_smtp_mail = check_mail
 begin ACL
 
 check_mail:
-  accept  senders = testdb;<$sender_address>
+  accept  senders = testdb;<${quote_testdb:$sender_address}>
 
 
 # End

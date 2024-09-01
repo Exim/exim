@@ -293,9 +293,10 @@ check set acl_m0 = ok:   ${lookup pgsql                    {select name from the
    type=pgsql key="select name from them where id = 'c'" opts=NULL
  cached data found but no_rd option set;  database lookup required for select name from them where id = 'c'
                               (tainted)
+No quoter name for addr
 LOG: MAIN PANIC
   tainted search query is not properly quoted (ACL warn, TESTSUITE/test-config 27): select name from them where id = 'c'
- required_quoter_id NN (pgsql) quoting -1 (NULL)
+ required_quoter_id (pgsql) quoting -1 (NULL)
  PostgreSQL query: "select name from them where id = 'c'" opts 'NULL'
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  PGSQL: no data found
@@ -488,9 +489,10 @@ check set acl_m0 = ok:   ${lookup pgsql                    {select name from the
    type=pgsql key="select name from them where id = 'c'" opts=NULL
  cached data found but no_rd option set;  database lookup required for select name from them where id = 'c'
                               (tainted)
+No quoter name for addr
 LOG: MAIN PANIC
   tainted search query is not properly quoted (ACL warn, TESTSUITE/test-config 27): select name from them where id = 'c'
- required_quoter_id NN (pgsql) quoting -1 (NULL)
+ required_quoter_id (pgsql) quoting -1 (NULL)
  PostgreSQL query: "select name from them where id = 'c'" opts 'NULL'
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  PGSQL: no data found

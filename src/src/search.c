@@ -536,7 +536,6 @@ search_cache * c = (search_cache *)(t->data.ptr);
 const lookup_info * li = c->li;
 expiring_data * e = NULL;	/* compiler quietening */
 uschar * data = NULL;
-int required_quoter_id = li->acq_num;
 int old_pool = store_pool;
 
 /* Lookups that return DEFER may not always set an error message. So that
@@ -603,7 +602,7 @@ else
   */
 
   if (  !filename && li->quote
-     && is_tainted(keystring) && !is_quoted_like(keystring, required_quoter_id))
+     && is_tainted(keystring) && !is_quoted_like(keystring, li))
     {
     const uschar * ks = keystring;
     uschar * loc = acl_current_verb();
@@ -638,8 +637,8 @@ else
       const uschar * quoter_name;
       int q = quoter_for_address(ks, &quoter_name);
 
-      debug_printf_indent("required_quoter_id %d (%s) quoting %d (%s)\n",
-	required_quoter_id, li->name,
+      debug_printf_indent("required_quoter_id (%s) quoting %d (%s)\n",
+	li->name,
 	q, quoter_name);
       }
 #endif

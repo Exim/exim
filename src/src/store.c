@@ -659,20 +659,22 @@ found:
 There is extra complexity to handle lookup providers with multiple
 find variants but shared quote functions. */
 BOOL
-is_quoted_like(const void * p, unsigned quoter)
+is_quoted_like(const void * p, const void * v_q_li)
 {
-const uschar * p_name, * q_name = NULL;
-const lookup_info * p_li, * q_li;
+const uschar * p_name;
+const lookup_info * p_li, * q_li = v_q_li;
 void * p_qfn, * q_qfn;
 
 (void) quoter_for_address(p, &p_name);
-(void) pool_for_quoter(quoter, &q_name);
 
-if (!p_name || !q_name) return FALSE;
+if (!p_name)
+  {
+  DEBUG(D_any) debug_printf("No quoter name for addr\n");
+  return FALSE;
+  }
 
 p_li = search_findtype(p_name, Ustrlen(p_name));
 p_qfn = p_li ? p_li->quote : NULL;
-q_li = search_findtype(q_name, Ustrlen(q_name));
 q_qfn = q_li ? q_li->quote : NULL;
 
 BOOL y = p_qfn == q_qfn;
