@@ -1341,7 +1341,7 @@ The return value can be NULL to signify overflow.
 Field width:		decimal digits, or *
 Precision:		dot, followed by decimal digits or *
 Length modifiers:	h  L  l  ll  z
-Conversion specifiers:	n d o u x X p f e E g G % c s S T W V Y D M
+Conversion specifiers:	n d o u x X p f e E g G % c s S T W V Y D M H Z
 Alternate-form:		%#s is silent about a null string
 
 Returns the possibly-new (if copy for growth or taint-handling was needed)
@@ -1667,6 +1667,53 @@ while (*fp)
 	if (!s) s = null;
 	slen = Ustrlen(s);
 	}
+      goto INSERT_GSTRING;
+
+    case 'Z':			/* pdkim-style "quoteprint" */
+	{
+	gstring * zg = NULL;
+	int p = precision;	/* If given, we can handle embedded NULs */
+
+	s = va_arg(ap, char *);
+	for ( ; precision >= 0 || *s; s++)
+	  if (p >= 0 && --p < 0)
+	    break;
+	  else switch (*s)
+	    {
+	    case ' ' : zg = string_catn(zg, US"{SP}", 4); break;
+	    case '\t': zg = string_catn(zg, US"{TB}", 4); break;
+	    case '\r': zg = string_catn(zg, US"{CR}", 4); break;
+	    case '\n': zg = string_catn(zg, US"{LF}", 4); break;
+	    case '{' : zg = string_catn(zg, US"{BO}", 4); break;
+	    case '}' : zg = string_catn(zg, US"{BC}", 4); break;
+	    default:
+	      if ( (*s < 32) || (*s > 127) )
+		zg = string_fmt_append(zg, "{%02x}", *s);
+	      else
+		zg = string_catn(zg, US s, 1);
+	      break;
+	    }
+	if (zg) { s = CS zg->s; precision = slen = gstring_length(zg); }
+	else    { s = "";	slen = 0; }
+	}
+      goto INSERT_GSTRING;
+
+    case 'H':			/* pdkim-style "hexprint" */
+      {
+      s = va_arg(ap, char *);
+      if (precision < 0) break;	/* precision must be given */
+      if (s)
+	{
+	gstring * zg = NULL;
+	for (int p = precision; p > 0; p--)
+	  zg = string_fmt_append(zg, "%02x", * US s++);
+
+	if (zg) { s = CS zg->s; precision = slen = gstring_length(zg); }
+	else    { s = "";	slen = 0; }
+	}
+      else
+	{ s = "<NULL>"; precision = slen = 6; }
+      }
       goto INSERT_GSTRING;
 
 #endif

@@ -210,40 +210,6 @@ switch(status)
 
 
 /* -------------------------------------------------------------------------- */
-/* Print debugging functions */
-void
-pdkim_quoteprint(const uschar *data, int len)
-{
-for (int i = 0; i < len; i++)
-  {
-  const int c = data[i];
-  switch (c)
-    {
-    case ' ' : debug_printf("{SP}"); break;
-    case '\t': debug_printf("{TB}"); break;
-    case '\r': debug_printf("{CR}"); break;
-    case '\n': debug_printf("{LF}"); break;
-    case '{' : debug_printf("{BO}"); break;
-    case '}' : debug_printf("{BC}"); break;
-    default:
-      if ( (c < 32) || (c > 127) )
-	debug_printf("{%02x}", c);
-      else
-	debug_printf("%c", c);
-      break;
-    }
-  }
-debug_printf("\n");
-}
-
-void
-pdkim_hexprint(const uschar *data, int len)
-{
-if (data) for (int i = 0 ; i < len; i++) debug_printf("%02x", data[i]);
-else debug_printf("<NULL>");
-debug_printf("\n");
-}
-
 
 
 static pdkim_stringlist *
@@ -639,7 +605,7 @@ DEBUG(D_acl)
   {
   debug_printf(
 	  "DKIM >> Raw signature w/o b= tag value >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-  pdkim_quoteprint(US sig->rawsig_no_b_val, Ustrlen(sig->rawsig_no_b_val));
+  debug_printf("%Z\n", US sig->rawsig_no_b_val);
   debug_printf(
 	  "DKIM >> Sig size: %4u bits\n", (unsigned) sig->sighash.len*8);
   debug_printf(
@@ -792,7 +758,7 @@ if (left > 0)
   {
   exim_sha_update(&b->body_hash_ctx, CUS canon_data->data, left);
   b->signed_body_bytes += left;
-  DEBUG(D_acl) pdkim_quoteprint(canon_data->data, left);
+  DEBUG(D_acl) debug_printf("%.*Z\n", left, canon_data->data);
   }
 
 return relaxed_data;
@@ -823,7 +789,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
 		 "DKIM [%s]%s Body %s computed: ",
 	sig->domain, sig->selector, pdkim_canons[b->canon_method], b->signed_body_bytes,
 	sig->domain, sig->selector, pdkim_hashes[b->hashtype].dkim_hashname);
-    pdkim_hexprint(CUS b->bh.data, b->bh.len);
+    debug_printf("%.*H\n", b->bh.len, CUS b->bh.data);
     }
 
   /* SIGNING -------------------------------------------------------------- */
@@ -849,7 +815,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
       DEBUG(D_acl)
         {
 	debug_printf("DKIM [%s] Body hash signature from headers: ", sig->domain);
-	pdkim_hexprint(sig->bodyhash.data, sig->bodyhash.len);
+	debug_printf("%.*H\n", sig->bodyhash.len, sig->bodyhash.data);
 	debug_printf("DKIM [%s] Body hash did NOT verify\n", sig->domain);
 	}
       sig->verify_status     = PDKIM_VERIFY_FAIL;
@@ -991,11 +957,8 @@ if (ctx->flags & PDKIM_MODE_SIGN)
 else
   {
 #ifdef notdef
-  DEBUG(D_acl)
-    {
-    debug_printf("DKIM >> raw hdr: ");
-    pdkim_quoteprint(CUS ctx->cur_header->s, ctx->cur_header->ptr);
-    }
+  DEBUG(D_acl) debug_printf("DKIM >> raw hdr: %.*Z\n",
+			    ctx->cur_head->ptr, CUS ctx->cur_header->s);
 #endif
   if (strncasecmp(CCS ctx->cur_header->s,
 		  DKIM_SIGNATURE_HEADERNAME,
@@ -1372,9 +1335,9 @@ DEBUG(D_acl)
   debug_printf(
     "DKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
     " %s\n"
-    " Raw record: ",
-    dns_txt_name);
-  pdkim_quoteprint(CUS dns_txt_reply, Ustrlen(dns_txt_reply));
+    " Raw record: %Z\n",
+    dns_txt_name,
+    CUS dns_txt_reply);
   }
 
 if (  !(p = pdkim_parse_pubkey_record(CUS dns_txt_reply))
@@ -1630,7 +1593,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
 	/*XXX we could avoid doing this for all but the GnuTLS/RSA case */
 	hdata = exim_dkim_data_append(hdata, rh);
 
-	DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
+	DEBUG(D_acl) debug_printf("%Z\n", rh);
 	}
       }
 
@@ -1687,7 +1650,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
 	    /* Feed header to the hash algorithm */
 	    exim_sha_update_string(&hhash_ctx, CUS rh);
 
-	    DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
+	    DEBUG(D_acl) debug_printf("%Z\n", rh);
 	    hdrs->tag = 1;
 	    break;
 	    }
@@ -1707,7 +1670,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
     {
     debug_printf(
 	    "DKIM >> Signed DKIM-Signature header, pre-canonicalized >>>>>>>>>>>>>\n");
-    pdkim_quoteprint(CUS sig_hdr, Ustrlen(sig_hdr));
+    debug_printf("%Z\n", CUS sig_hdr);
     debug_printf(
 	    "DKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
     }
@@ -1720,7 +1683,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
     {
     debug_printf("DKIM >> Signed DKIM-Signature header, canonicalized (%-7s) >>>>>>>\n",
 	    pdkim_canons[sig->canon_headers]);
-    pdkim_quoteprint(CUS sig_hdr, Ustrlen(sig_hdr));
+    debug_printf("%Z\n", CUS sig_hdr);
     debug_printf(
 	    "DKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
     }
@@ -1733,7 +1696,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
     {
     debug_printf("DKIM [%s] Header %s computed: ",
       sig->domain, pdkim_hashes[sig->hashtype].dkim_hashname);
-    pdkim_hexprint(hhash.data, hhash.len);
+    debug_printf("%.*H\n", hhash.len, hhash.data);
     }
 
   /* Remember headers block for signing (when the signing library cannot do
@@ -1772,7 +1735,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
     DEBUG(D_acl)
       {
       debug_printf( "DKIM [%s] b computed: ", sig->domain);
-      pdkim_hexprint(sig->sighash.data, sig->sighash.len);
+      debug_printf("%.*H\n", sig->sighash.len, sig->sighash.data);
       }
 
     sig->signature_header = pdkim_create_header(sig, TRUE);
@@ -1827,7 +1790,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
     DEBUG(D_acl)
       {
       debug_printf( "DKIM [%s] b from mail: ", sig->domain);
-      pdkim_hexprint(sig->sighash.data, sig->sighash.len);
+      debug_printf("%.*H\n", sig->sighash.len, sig->sighash.data);
       }
 
     if (!(sig->pubkey = pdkim_key_from_dns(ctx, sig, &vctx, err)))

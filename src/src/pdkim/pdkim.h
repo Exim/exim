@@ -356,8 +356,6 @@ const uschar *	pdkim_errstr(int);
 
 extern uschar *		pdkim_encode_base64(blob *);
 extern void		pdkim_decode_base64(const uschar *, blob *);
-extern void		pdkim_hexprint(const uschar *, int);
-extern void		pdkim_quoteprint(const uschar *, int);
 extern pdkim_pubkey *	pdkim_parse_pubkey_record(const uschar *);
 extern uschar *		pdkim_relax_header_n(const uschar *, int, BOOL);
 extern uschar *		pdkim_relax_header(const uschar *, BOOL);

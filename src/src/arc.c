@@ -630,8 +630,7 @@ while ((hn = string_nextinlist(&headernames, &sep, NULL, 0)))
       {
       if (relaxed) s = pdkim_relax_header_n(s, r->h->slen, TRUE);
 
-      len = Ustrlen(s);
-      DEBUG(D_acl) pdkim_quoteprint(s, len);
+      DEBUG(D_acl) debug_printf("%Z\n", s);
       exim_sha_update_string(&hhash_ctx, s);
       r->used = TRUE;
       break;
@@ -642,12 +641,12 @@ while ((hn = string_nextinlist(&headernames, &sep, NULL, 0)))
 s = ams->rawsig_no_b_val.data, len = ams->rawsig_no_b_val.len;
 if (relaxed)
   len = Ustrlen(s = pdkim_relax_header_n(s, len, FALSE));
-DEBUG(D_acl) pdkim_quoteprint(s, len);
+DEBUG(D_acl) debug_printf("%.*Z\n", len, s);
 exim_sha_update(&hhash_ctx, s, len);
 
 exim_sha_finish(&hhash_ctx, hhash);
 DEBUG(D_acl)
-  { debug_printf("ARC: header hash: "); pdkim_hexprint(hhash->data, hhash->len); }
+  { debug_printf("ARC: header hash: %.*H\n", hhash->len, hhash->data); }
 return;
 }
 
@@ -766,7 +765,7 @@ DEBUG(D_acl)
 	       "              Body %.*s computed: ",
 	       as->instance, b->signed_body_bytes,
 	       (int)ams->a_hash.len, ams->a_hash.data);
-  pdkim_hexprint(CUS b->bh.data, b->bh.len);
+  debug_printf("%.*H\n", b->bh.len, b->bh.data);
   }
 
 /* We know the bh-tag blob is of a nul-term string, so safe as a string */
@@ -779,7 +778,7 @@ if (  !ams->bh.data
   DEBUG(D_acl)
     {
     debug_printf("ARC i=%d AMS Body hash from headers: ", as->instance);
-    pdkim_hexprint(sighash.data, sighash.len);
+    debug_printf("%.*H\n", sighash.len, sighash.data);
     debug_printf("ARC i=%d AMS Body hash did NOT match\n", as->instance);
     }
   return as->ams_verify_done = arc_state_reason = US"AMS body hash miscompare";
@@ -971,7 +970,7 @@ for (as2 = ctx->arcset_chain;
     al->relaxed = s = pdkim_relax_header_n(al->complete->text,
 					    al->complete->slen, TRUE);
   len = Ustrlen(s);
-  DEBUG(D_acl) pdkim_quoteprint(s, len);
+  DEBUG(D_acl) debug_printf("%Z\n", s);
   exim_sha_update(&hhash_ctx, s, len);
 
   al = as2->hdr_ams;
@@ -979,7 +978,7 @@ for (as2 = ctx->arcset_chain;
     al->relaxed = s = pdkim_relax_header_n(al->complete->text,
 					    al->complete->slen, TRUE);
   len = Ustrlen(s);
-  DEBUG(D_acl) pdkim_quoteprint(s, len);
+  DEBUG(D_acl) debug_printf("%Z\n", s);
   exim_sha_update(&hhash_ctx, s, len);
 
   al = as2->hdr_as;
@@ -990,7 +989,7 @@ for (as2 = ctx->arcset_chain;
     al->relaxed = s = pdkim_relax_header_n(al->complete->text,
 					    al->complete->slen, TRUE);
   len = Ustrlen(s);
-  DEBUG(D_acl) pdkim_quoteprint(s, len);
+  DEBUG(D_acl) debug_printf("%Z\n", s);
   exim_sha_update(&hhash_ctx, s, len);
   }
 
@@ -1003,7 +1002,7 @@ DEBUG(D_acl)
   {
   debug_printf("ARC i=%d AS Header %.*s computed: ",
     as->instance, (int)hdr_as->a_hash.len, hdr_as->a_hash.data);
-  pdkim_hexprint(hhash_computed.data, hhash_computed.len);
+  debug_printf("%.*H\n", hhash_computed.len, hhash_computed.data);
   }
 
 
@@ -1295,12 +1294,12 @@ DEBUG(D_transport)
   {
   hctx hhash_ctx;
   debug_printf("ARC: %s header data for signing:\n", why);
-  pdkim_quoteprint(hdata->s, hdata->ptr);
+  debug_printf("%.*Z\n", hdata->ptr, hdata->s);
 
   (void) exim_sha_init(&hhash_ctx, pdkim_hashes[hashtype].exim_hashmethod);
   exim_sha_update(&hhash_ctx, hdata->s, hdata->ptr);
   exim_sha_finish(&hhash_ctx, &hhash);
-  debug_printf("ARC: header hash: "); pdkim_hexprint(hhash.data, hhash.len);
+  debug_printf("ARC: header hash: %.*H\n", hhash.len, hhash.data);
   }
 
 if (FALSE /*need hash for Ed25519 or GCrypt signing*/ )
@@ -1333,7 +1332,7 @@ return TRUE;
 static gstring *
 arc_sign_append_sig(gstring * g, blob * sig)
 {
-/*debug_printf("%s: raw sig ", __FUNCTION__); pdkim_hexprint(sig->data, sig->len);*/
+/*debug_printf("%s: raw sig %.*H\n", __FUNCTION__, sig->len, sig->data);*/
 sig->data = pdkim_encode_base64(sig);
 sig->len = Ustrlen(sig->data);
 for (;;)
