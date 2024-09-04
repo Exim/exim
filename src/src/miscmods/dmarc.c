@@ -22,7 +22,7 @@
 
 #  include "../functions.h"
 #  include "dmarc.h"
-#  include "../pdkim/pdkim.h"
+#  include "pdkim.h"
 
 OPENDMARC_LIB_T     dmarc_ctx;
 DMARC_POLICY_T     *dmarc_pctx = NULL;
@@ -32,7 +32,8 @@ BOOL dmarc_abort  = FALSE;
 uschar *dmarc_pass_fail = US"skipped";
 header_line *from_header   = NULL;
 
-misc_module_info * spf_mod_info;
+static misc_module_info * dmarc_dkim_mod_info;
+static misc_module_info * dmarc_spf_mod_info;
 SPF_response_t   *spf_response_p;
 int dmarc_spf_ares_result  = 0;
 uschar *spf_sender_domain  = NULL;
@@ -73,9 +74,19 @@ static BOOL
 dmarc_init(void *)
 {
 uschar * errstr;
-if (!(spf_mod_info = misc_mod_find(US"spf", &errstr)))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-	    "dmarc: failed to find SPF module: %s", errstr);
+if (!(dmarc_spf_mod_info = misc_mod_find(US"spf", &errstr)))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "dmarc: %s", errstr);
+  return FALSE;
+  }
+
+/*XXX not yet used, but will be */
+if (!(dmarc_dkim_mod_info = misc_mod_find(US"dkim", &errstr)))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "dmarc: %s", errstr);
+  return FALSE;
+  }
+
 return TRUE;
 }
 
@@ -188,6 +199,8 @@ return OK;
 static void
 dmarc_smtp_reset(void)
 {
+f.dmarc_has_been_checked = f.dmarc_disable_verify =
+f.dmarc_enable_forensic = FALSE;
 dmarc_domain_policy = dmarc_status = dmarc_status_text =
 dmarc_used_domain = NULL;
 }
@@ -394,7 +407,6 @@ dmarc_process(void)
 int sr, origin;             /* used in SPF section */
 int dmarc_spf_result  = 0;  /* stores spf into dmarc conn ctx */
 int tmp_ans, c;
-pdkim_signature * sig = dkim_signatures;
 uschar * rr;
 BOOL has_dmarc_record = TRUE;
 u_char ** ruf; /* forensic report addressees, if called for */
@@ -453,6 +465,7 @@ if (!dmarc_abort && !sender_host_authenticated)
   {
   uschar * dmarc_domain;
   gstring * dkim_history_buffer = NULL;
+  typedef const pdkim_signature * (*sigs_fn_t)(void);
 
   /* Use the envelope sender domain for this part of DMARC */
 
@@ -460,9 +473,9 @@ if (!dmarc_abort && !sender_host_authenticated)
 
     {
     typedef SPF_response_t * (*fn_t)(void);
-    if (spf_mod_info)
+    if (dmarc_spf_mod_info)
       /*XXX ugly use of a pointer */
-      spf_response_p = ((fn_t *) spf_mod_info->functions)[SPF_GET_RESPONSE]();
+      spf_response_p = ((fn_t *) dmarc_spf_mod_info->functions)[SPF_GET_RESPONSE]();
     }
 
   if (!spf_response_p)
@@ -519,7 +532,9 @@ if (!dmarc_abort && !sender_host_authenticated)
   /* Now we cycle through the dkim signature results and put into
   the opendmarc context, further building the DMARC reply. */
 
-  for(pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
+  for(const pdkim_signature * sig =
+	      (((sigs_fn_t *)dmarc_dkim_mod_info->functions)[DKIM_SIGS_LIST])();
+      sig; sig = sig->next)
     {
     int dkim_result, dkim_ares_result, vs, ves;
 
@@ -749,7 +764,6 @@ static optionlist dmarc_options[] = {
 static void * dmarc_functions[] = {
   [DMARC_PROCESS] =	dmarc_process,
   [DMARC_EXPAND_QUERY] = dmarc_exim_expand_query,
-  [DMARC_AUTHRES] =	authres_dmarc,
   [DMARC_STORE_DATA] =	dmarc_store_data,
 };
 
@@ -775,6 +789,7 @@ misc_module_info dmarc_module_info =
   .lib_vers_report =	dmarc_version_report,
   .smtp_reset =		dmarc_smtp_reset,
   .msg_init =		dmarc_msg_init,
+  .authres =		authres_dmarc,
 
   .options =		dmarc_options,
   .options_count =	nelem(dmarc_options),

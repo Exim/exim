@@ -4545,7 +4545,7 @@ switch(error)
   }
 
 #ifndef DISABLE_DKIM
-dkim_exim_verify_feed(ssl_xfer_buffer, inbytes);
+smtp_verify_feed(ssl_xfer_buffer, inbytes);
 #endif
 ssl_xfer_buffer_hwm = inbytes;
 ssl_xfer_buffer_lwm = 0;
@@ -4615,7 +4615,7 @@ int n = ssl_xfer_buffer_hwm - ssl_xfer_buffer_lwm;
 if (n > lim)
   n = lim;
 if (n > 0)
-  dkim_exim_verify_feed(ssl_xfer_buffer+ssl_xfer_buffer_lwm, n);
+  smtp_verify_feed(ssl_xfer_buffer+ssl_xfer_buffer_lwm, n);
 #endif
 }
 

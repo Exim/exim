@@ -3904,7 +3904,7 @@ else if (inbytes < 0)
   return FALSE;
   }
 #ifndef DISABLE_DKIM
-dkim_exim_verify_feed(state->xfer_buffer, inbytes);
+smtp_verify_feed(state->xfer_buffer, inbytes);
 #endif
 state->xfer_buffer_hwm = (int) inbytes;
 state->xfer_buffer_lwm = 0;
@@ -3980,7 +3980,7 @@ int n = state->xfer_buffer_hwm - state->xfer_buffer_lwm;
 if (n > lim)
   n = lim;
 if (n > 0)
-  dkim_exim_verify_feed(state->xfer_buffer+state->xfer_buffer_lwm, n);
+  smtp_verify_feed(state->xfer_buffer+state->xfer_buffer_lwm, n);
 #endif
 }
 

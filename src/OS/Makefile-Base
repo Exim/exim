@@ -221,15 +221,15 @@ macro-spa.o :		auths/spa.c
 macro-authtls.o:	auths/tls.c
 	@echo "$(CC) -DMACRO_PREDEF auths/tls.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/tls.c
-macro-dkim.o:		dkim.c
-	@echo "$(CC) -DMACRO_PREDEF dkim.c"
-	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ dkim.c
+macro-dkim.o:		miscmods/dkim.c
+	@echo "$(CC) -DMACRO_PREDEF miscmods/dkim.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ miscmods/dkim.c
 macro-malware.o:	malware.c
 	@echo "$(CC) -DMACRO_PREDEF malware.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ malware.c
-macro-signing.o:	pdkim/signing.c
-	@echo "$(CC) -DMACRO_PREDEF pdkim/signing.c"
-	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ pdkim/signing.c
+macro-signing.o:	miscmods/signing.c
+	@echo "$(CC) -DMACRO_PREDEF miscmods/signing.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ miscmods/signing.c
 
 macro_predef: $(OBJ_MACRO)
 	@echo "$(LNCC) -o $@"
@@ -244,7 +244,7 @@ macro.c: macro_predef
 # problem, but it does no harm. Other make programs will just ignore this.
 
 .PHONY: all config utils \
-	buildauths buildlookups buildpdkim buildrouters \
+	buildauths buildlookups buildrouters \
         buildtransports buildmisc dynmodules checklocalmake clean
 
 
@@ -515,7 +515,7 @@ OBJ_AUTHS = call_pam.o call_pwcheck.o call_radius.o check_serv_cond.o \
 
 OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
-        filtertest.o globals.o dkim.o dkim_transport.o dnsbl.o hash.o \
+        filtertest.o globals.o dnsbl.o hash.o \
         header.o host.o host_address.o ip.o log.o lss.o match.o md5.o moan.o \
         os.o parse.o priv.o proxy.o queue.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o regex_cache.o \
@@ -526,13 +526,13 @@ OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_EXPERIMENTAL)
 
-exim:   buildlookups buildauths pdkim/pdkim.a \
+exim:   buildlookups buildauths \
         buildrouters buildtransports buildmisc \
         $(OBJ_EXIM) version.o
 	@echo "$(LNCC) -o exim"
 	$(FE)$(PURIFY) $(LNCC) -o exim $(LFLAGS) $(OBJ_EXIM) version.o \
 	  routers/routers.a transports/transports.a lookups/lookups.a \
-	  auths/auths.a pdkim/pdkim.a miscmods/miscmods.a \
+	  auths/auths.a miscmods/miscmods.a \
 	  $(LIBRESOLV) $(LIBS) $(LIBS_EXIM) $(IPV6_LIBS) $(EXTRALIBS) \
 	  $(EXTRALIBS_EXIM) $(DBMLIB) $(LOOKUP_LIBS) $(AUTH_LIBS) \
 	  $(PERL_LIBS) $(TLS_LIBS) $(PCRE_LIBS) $(LDFLAGS)
@@ -685,6 +685,7 @@ HDRS  =	blob.h \
 	hintsdb/hints_tdb.h \
 	local_scan.h \
 	macros.h \
+	miscmods/dkim_api.h \
 	miscmods/dmarc_api.h \
 	miscmods/spf_api.h \
 	mytypes.h \
@@ -706,6 +707,7 @@ PHDRS = ../config.h \
 	../hintsdb/hints_tdb.h \
 	../local_scan.h \
 	../macros.h \
+	../miscmods/dkim_api.h \
 	../miscmods/dmarc_api.h \
 	../miscmods/spf_api.h \
 	../mytypes.h \
@@ -886,8 +888,6 @@ transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
 verify.o:        $(HDRS) transports/smtp.h verify.c
 xtextencode.o:   $(HDRS) xtextencode.c
-dkim.o:          $(HDRS) pdkim/pdkim.h dkim.c
-dkim_transport.o: $(HDRS) dkim_transport.c
 
 # Dependencies for WITH_CONTENT_SCAN modules
 
@@ -900,7 +900,7 @@ spool_mbox.o:    $(HDRS) spool_mbox.c
 
 # Dependencies for EXPERIMENTAL_* modules
 
-arc.o:		$(HDRS) pdkim/pdkim.h arc.c
+arc.o:		$(HDRS) miscmods/pdkim.h arc.c
 bmi_spam.o:	$(HDRS) bmi_spam.c
 dane.o:		$(HDRS) dane.c dane-openssl.c
 dcc.o:		$(HDRS) dcc.h dcc.c
@@ -1061,15 +1061,6 @@ buildtransports: config
 buildauths: config
 	 @cd auths && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
-	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
-	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
-	 @echo " "
-
-# The PDKIM library
-
-buildpdkim: pdkim/pdkim.a
-pdkim/pdkim.a: config
-	 @cd pdkim && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
 	 @echo " "

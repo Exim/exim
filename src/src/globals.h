@@ -545,25 +545,6 @@ extern BOOL    disable_fsync;          /* Not for normal use */
 #endif
 extern BOOL    disable_ipv6;           /* Don't do any IPv6 things */
 
-#ifndef DISABLE_DKIM
-extern unsigned dkim_collect_input;    /* Runtime count of dkim signtures; tracks whether SMTP input is fed to DKIM validation */
-extern uschar *dkim_cur_signer;        /* Expansion variable, holds the current "signer" domain or identity during a acl_smtp_dkim run */
-extern int     dkim_key_length;        /* Expansion variable, length of signing key in bits */
-extern void   *dkim_signatures;	       /* Actually a (pdkim_signature *) but most files do not need to know */
-extern uschar *dkim_signers;           /* Expansion variable, holds colon-separated list of domains and identities that have signed a message */
-extern gstring *dkim_signing_record;   /* domains+selectors used */
-extern uschar *dkim_signing_domain;    /* Expansion variable, domain used for signing a message. */
-extern uschar *dkim_signing_selector;  /* Expansion variable, selector used for signing a message. */
-extern uschar *dkim_verify_hashes;     /* Preference order for signatures */
-extern uschar *dkim_verify_keytypes;   /* Preference order for signatures */
-extern uschar *dkim_verify_min_keysizes; /* list of minimum key sizes, keyed by algo */
-extern BOOL    dkim_verify_minimal;    /* Shortcircuit signature verification */
-extern uschar *dkim_verify_overall;    /* First successful domain verified, or null */
-extern uschar *dkim_verify_signers;    /* Colon-separated list of domains for each of which we call the DKIM ACL */
-extern uschar *dkim_verify_status;     /* result for this signature */
-extern uschar *dkim_verify_reason;     /* result for this signature */
-#endif
-
 extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
 extern int     dns_csa_search_limit;   /* How deep to search for CSA SRV records */
 extern BOOL    dns_csa_use_reverse;    /* Check CSA in reverse DNS? (non-standard) */

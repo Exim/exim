@@ -3934,23 +3934,19 @@ for (; cb; cb = cb->next)
 
 #ifndef DISABLE_DKIM
     case ACLC_DKIM_SIGNER:
-      if (dkim_cur_signer)
-	rc = match_isinlist(dkim_cur_signer,
-                          &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
-      else
-	rc = FAIL;
-      break;
-
     case ACLC_DKIM_STATUS:
-      {		/* return good for any match */
-      const uschar * s = dkim_verify_status ? dkim_verify_status : US"none";
-      int sep = 0;
-      for (uschar * ss; ss = string_nextinlist(&s, &sep, NULL, 0); )
-	if (   (rc = match_isinlist(ss, &arg,
-				    0, NULL, NULL, MCL_STRING, TRUE, NULL))
-	    == OK) break;
-      }
+      /* See comment on ACLC_SPF wrt. coding issues */
+      {
+      misc_module_info * mi = misc_mod_find(US"dkim", &log_message);
+      typedef int (*fn_t)(const uschar *);
+      rc = mi
+	? (((fn_t *) mi->functions)
+		      [cb->type == ACLC_DKIM_SIGNER
+			? DKIM_SIGNER_ISINLIST
+			: DKIM_STATUS_LISTMATCH]) (arg)
+	: DEFER;
       break;
+      }
 #endif
 
 #ifdef SUPPORT_DMARC
@@ -4183,11 +4179,19 @@ for (; cb; cb = cb->next)
 #endif
 	 )
         store_pool = POOL_PERM;
+
 #ifndef DISABLE_DKIM	/* Overwriteable dkim result variables */
-      if (Ustrcmp(cb->u.varname, "dkim_verify_status") == 0)
-	dkim_verify_status = string_copy(arg);
-      else if (Ustrcmp(cb->u.varname, "dkim_verify_reason") == 0)
-	dkim_verify_reason = string_copy(arg);
+      if (  Ustrcmp(cb->u.varname, "dkim_verify_status") == 0
+	 || Ustrcmp(cb->u.varname, "dkim_verify_reason") == 0
+         )
+	  {
+	  misc_module_info * mi = misc_mod_findonly(US"dkim");
+	  typedef void (*fn_t)(const uschar *, void *);
+	  
+	  if (mi)
+	    (((fn_t *) mi->functions)[DKIM_SETVAR])
+					(cb->u.varname, string_copy(arg));
+	  }
       else
 #endif
 	acl_var_create(cb->u.varname)->data.ptr = string_copy(arg);
@@ -4216,7 +4220,8 @@ for (; cb; cb = cb->next)
     case ACLC_SPF:
     case ACLC_SPF_GUESS:
       /* We have hardwired function-call numbers, and also prototypes for the
-      functions.  We could do a function name table search for the number
+      functions.  We could do a function name table search or (simpler)
+      a module include file with defines for the numbers
       but I can't see how to deal with prototypes.  Is a K&R non-prototyped
       function still usable with today's compilers (but we would lose on
       type-checking)?  We could macroize the typedef, and even the function

@@ -10,14 +10,15 @@
 /* Code for DKIM support. Other DKIM relevant code is in
    receive.c, transport.c and transports/smtp.c */
 
-#include "exim.h"
+#include "../exim.h"
 
 #ifndef DISABLE_DKIM
 
-# include "pdkim/pdkim.h"
+# include "pdkim.h"
+# include "signing.h"
 
 # ifdef MACRO_PREDEF
-#  include "macro_predef.h"
+#  include "../macro_predef.h"
 
 void
 params_dkim(void)
@@ -27,25 +28,56 @@ builtin_macro_create_var(US"_DKIM_OVERSIGN_HEADERS", US PDKIM_OVERSIGN_HEADERS);
 }
 # else	/*!MACRO_PREDEF*/
 
+/* Options */
 
+uschar *dkim_verify_hashes	= US"sha256:sha512";
+uschar *dkim_verify_keytypes	= US"ed25519:rsa";
+uschar *dkim_verify_min_keysizes = US"rsa=1024 ed25519=250";
+BOOL    dkim_verify_minimal	= FALSE;
+uschar *dkim_verify_signers	= US"$dkim_signers";
+
+/* $variables */
+
+uschar *dkim_cur_signer		= NULL;
+int     dkim_key_length		= 0;
+uschar *dkim_signers		= NULL;
+uschar *dkim_signing_domain	= NULL;
+uschar *dkim_signing_selector	= NULL;
+uschar *dkim_verify_reason	= NULL;
+uschar *dkim_verify_status	= NULL;
+
+/* Working variables */
+
+unsigned dkim_collect_input	= 0;
+void   *dkim_signatures		= NULL;
+gstring *dkim_signing_record	= NULL;
+uschar *dkim_vdom_firstpass	= NULL;
+
+
+extern BOOL    dkim_transport_write_message(transport_ctx *,
+                  struct ob_dkim *, const uschar ** errstr);
+
+/****************************************/
 
 pdkim_ctx dkim_sign_ctx;
 
 int dkim_verify_oldpool;
-pdkim_ctx *dkim_verify_ctx = NULL;
+pdkim_ctx * dkim_verify_ctx = NULL;
 pdkim_signature *dkim_cur_sig = NULL;
 static const uschar * dkim_collect_error = NULL;
 
 #define DKIM_MAX_SIGNATURES 20
+static void dkim_exim_verify_pause(BOOL pause);
 
 
+/****************************************/
 
 /* Look up the DKIM record in DNS for the given hostname.
 Will use the first found if there are multiple.
 The return string is tainted, having come from off-site.
 */
 
-uschar *
+static uschar *
 dkim_exim_query_dns_txt(const uschar * name)
 {
 dns_answer * dnsa = store_get_dns_answer();
@@ -93,20 +125,93 @@ return NULL;	/*XXX better error detail?  logging? */
 }
 
 
-void
-dkim_exim_init(void)
+
+/* Module API:  Lookup a DNS DKIM record and parse the pubkey.
+
+Arguments:
+	dnsname		record to lookup in DNS
+	pubkey_p	pointer for return of pubkey
+	hashes_p	pointer for return of hashes
+
+Return: srvtype, or NULL on error
+*/
+
+static const uschar *
+dkim_exim_parse_dns_pubkey(const uschar * dnsname, blob ** pubkey_p,
+  const uschar ** hashes_p)
 {
-if (f.dkim_init_done) return;
-f.dkim_init_done = TRUE;
-pdkim_init();
+const uschar * dnstxt = dkim_exim_query_dns_txt(dnsname);
+pdkim_pubkey * p;
+
+if (!dnstxt)
+  {
+  DEBUG(D_acl) debug_printf_indent("pubkey dns lookup fail\n");
+  return NULL;
+  }
+if (!(p = pdkim_parse_pubkey_record(dnstxt)))
+  {
+  DEBUG(D_acl) debug_printf_indent("pubkey dns record format error\n");
+  return NULL;
+  }
+*pubkey_p = &p->key;
+*hashes_p = p->hashes;
+return p->srvtype;
 }
 
 
 
-void
-dkim_exim_verify_init(BOOL dot_stuffing)
+
+/* Return:
+	OK	verify succesful
+	FAIL	verify did not pass
+	ERROR	problem setting up the pubkey
+*/
+
+static int
+dkim_exim_sig_verify(const blob * sighash, const blob * data_hash,
+  hashmethod hash, const blob * pubkey, const uschar ** errstr_p)
 {
-dkim_exim_init();
+ev_ctx vctx;
+const uschar * errstr;
+int rc = OK;
+
+if ((errstr = exim_dkim_verify_init(pubkey, KEYFMT_DER, &vctx, NULL)))
+  rc = ERROR;
+else if ((errstr = exim_dkim_verify(&vctx, hash, data_hash, sighash)))
+  rc = FAIL;
+
+*errstr_p = errstr;
+return rc;
+}
+
+
+
+/****************************************/
+
+static BOOL
+dkim_exim_init(void * dummy)
+{
+if (f.dkim_init_done) return TRUE;
+f.dkim_init_done = TRUE;
+pdkim_init();
+return TRUE;
+}
+
+
+
+/* Module API: Set up for verification of a message being received.
+Always returns OK.
+*/
+
+static int
+dkim_exim_verify_init(void)
+{
+BOOL dot_stuffing = chunking_state <= CHUNKING_OFFERED;
+
+if (!smtp_input || smtp_batched_input || f.dkim_disable_verify)
+  return OK;
+
+dkim_exim_init(NULL);
 
 /* There is a store-reset between header & body reception for the main pool
 (actually, after every header line) so cannot use that as we need the data we
@@ -126,6 +231,7 @@ if (dkim_verify_ctx)
 /* Create new context */
 
 dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt, dot_stuffing);
+dkim_exim_verify_pause(FALSE);
 dkim_collect_input = dkim_verify_ctx ? DKIM_MAX_SIGNATURES : 0;
 dkim_collect_error = NULL;
 
@@ -134,18 +240,21 @@ receive_get_cache(chunking_state == CHUNKING_LAST
 		  ? chunking_data_left : GETC_BUFFER_UNLIMITED);
 
 store_pool = dkim_verify_oldpool;
+return OK;
 }
 
 
-/* Submit a chunk of data for verification input.
+/* Module API : Submit a chunk of data for verification input.
+A NULL data pointer indicates end-of-message.
 Only use the data when the feed is activated. */
-void
-dkim_exim_verify_feed(uschar * data, int len)
+
+static void
+dkim_exim_verify_feed(const uschar * data, unsigned len)
 {
 int rc;
 
 store_pool = POOL_MESSAGE;
-if (  dkim_collect_input
+if (  (dkim_collect_input || !data)
    && (rc = pdkim_feed(dkim_verify_ctx, data, len)) != PDKIM_OK)
   {
   dkim_collect_error = pdkim_errstr(rc);
@@ -155,6 +264,74 @@ if (  dkim_collect_input
   }
 store_pool = dkim_verify_oldpool;
 }
+
+
+/* Module API: pause/resume the verification data feed */
+
+static void
+dkim_exim_verify_pause(BOOL pause)
+{
+static unsigned save = 0;
+static BOOL paused = FALSE;
+
+if (!pause)
+  {
+  if (paused)
+    { dkim_collect_input = save; paused = FALSE; }
+  }
+else
+  if (!paused)
+    { save = dkim_collect_input; dkim_collect_input = 0; paused = TRUE; }
+}
+
+/* Module API: Finish off the body hashes, calculate sigs and do compares */
+
+static void
+dkim_exim_verify_finish(void)
+{
+int rc;
+gstring * g = NULL;
+const uschar * errstr = NULL;
+
+store_pool = POOL_MESSAGE;
+
+/* Delete eventual previous signature chain */
+
+dkim_signers = NULL;
+dkim_signatures = NULL;
+
+if (dkim_collect_error)
+  {
+  log_write(0, LOG_MAIN,
+      "DKIM: Error during validation, disabling signature verification: %.100s",
+      dkim_collect_error);
+  f.dkim_disable_verify = TRUE;
+  goto out;
+  }
+
+dkim_collect_input = 0;
+
+/* Finish DKIM operation and fetch link to signatures chain */
+
+rc = pdkim_feed_finish(dkim_verify_ctx, (pdkim_signature **)&dkim_signatures,
+			&errstr);
+if (rc != PDKIM_OK && errstr)
+  log_write(0, LOG_MAIN, "DKIM: validation error: %s", errstr);
+
+/* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */
+
+for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
+  {
+  if (sig->domain)   g = string_append_listele(g, ':', sig->domain);
+  if (sig->identity) g = string_append_listele(g, ':', sig->identity);
+  }
+gstring_release_unused(g);
+dkim_signers = string_from_gstring(g);
+
+out:
+store_pool = dkim_verify_oldpool;
+}
+
 
 
 /* Log the result for the given signature */
@@ -168,12 +345,12 @@ if (!sig) return;
 
 /* Remember the domain for the first pass result */
 
-if (  !dkim_verify_overall
+if (  !dkim_vdom_firstpass
    && dkim_verify_status
       ? Ustrcmp(dkim_verify_status, US"pass") == 0
       : sig->verify_status == PDKIM_VERIFY_PASS
    )
-  dkim_verify_overall = string_copy(sig->domain);
+  dkim_vdom_firstpass= string_copy(sig->domain);
 
 /* Rewrite the sig result if the ACL overrode it.  This is only
 needed because the DMARC code (sigh) peeks at the dkim sigs.
@@ -294,7 +471,8 @@ return;
 }
 
 
-/* Log a line for each signature */
+/* Module API:  Log a line for each signature */
+
 void
 dkim_exim_verify_log_all(void)
 {
@@ -303,55 +481,22 @@ for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
 }
 
 
-void
-dkim_exim_verify_finish(void)
+/* Module API: append a log element with domain for the first passing sig */
+
+gstring *
+dkim_exim_vdom_firstpass(gstring * g)
 {
-int rc;
-gstring * g = NULL;
-const uschar * errstr = NULL;
-
-store_pool = POOL_MESSAGE;
-
-/* Delete eventual previous signature chain */
-
-dkim_signers = NULL;
-dkim_signatures = NULL;
-
-if (dkim_collect_error)
-  {
-  log_write(0, LOG_MAIN,
-      "DKIM: Error during validation, disabling signature verification: %.100s",
-      dkim_collect_error);
-  f.dkim_disable_verify = TRUE;
-  goto out;
-  }
-
-dkim_collect_input = 0;
-
-/* Finish DKIM operation and fetch link to signatures chain */
-
-rc = pdkim_feed_finish(dkim_verify_ctx, (pdkim_signature **)&dkim_signatures,
-			&errstr);
-if (rc != PDKIM_OK && errstr)
-  log_write(0, LOG_MAIN, "DKIM: validation error: %s", errstr);
-
-/* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */
-
-for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
-  {
-  if (sig->domain)   g = string_append_listele(g, ':', sig->domain);
-  if (sig->identity) g = string_append_listele(g, ':', sig->identity);
-  }
-gstring_release_unused(g);
-dkim_signers = string_from_gstring(g);
-
-out:
-store_pool = dkim_verify_oldpool;
+if (dkim_vdom_firstpass)
+  g = string_append(g, 2, US" DKIM=", dkim_vdom_firstpass);
+return g;
 }
 
 
+/* For one signature, run the DKIM ACL, log the sig result,
+and append ths sig status to the status list.
 
-/* Args as per dkim_exim_acl_run() below */
+Args as per dkim_exim_acl_run() below */
+
 static int
 dkim_acl_call(uschar * id, gstring ** res_ptr,
   uschar ** user_msgptr, uschar ** log_msgptr)
@@ -387,7 +532,7 @@ Returns:       OK         access is granted by an ACCEPT verb
                ERROR      disaster
 */
 
-int
+static int
 dkim_exim_acl_run(uschar * id, gstring ** res_ptr,
   uschar ** user_msgptr, uschar ** log_msgptr)
 {
@@ -442,6 +587,146 @@ return dkim_acl_call(id, res_ptr, user_msgptr, log_msgptr);
 }
 
 
+/* Module API:
+Loop over dkim_verify_signers option doing ACL calls.  If one return any
+non-OK value stop and return that, else return OK.
+*/
+
+int
+    /*XXX need a user_msgptr */
+dkim_exim_acl_entry(uschar ** user_msgptr, uschar ** log_msgptr)
+{
+int rc = OK;
+
+GET_OPTION("dkim_verify_signers");
+if (dkim_verify_signers && *dkim_verify_signers)
+  {
+  const uschar * dkim_verify_signers_expanded =
+		      expand_cstring(dkim_verify_signers);
+  gstring * results = NULL, * seen_items = NULL;
+  int signer_sep = 0, old_pool = store_pool;
+
+  if (!dkim_verify_signers_expanded)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC,
+      "expansion of dkim_verify_signers option failed: %s",
+      expand_string_message);
+    return DEFER;
+    }
+
+  store_pool = POOL_PERM;   /* Allow created variables to live to data ACL */
+
+  /* Loop over signers we want to verify, calling ACL.  Default to OK
+  when no signers are present.  Each call from here expands to an ACL
+  call per matching sig in the message. */
+
+  for (uschar * item;
+      item = string_nextinlist(&dkim_verify_signers_expanded,
+				    &signer_sep, NULL, 0); )
+    {
+    /* Prevent running ACL for an empty item */
+    if (!item || !*item) continue;
+
+    /* Only run ACL once for each domain or identity,
+    no matter how often it appears in the expanded list. */
+    if (seen_items)
+      {
+      uschar * seen_item;
+      const uschar * seen_items_list = string_from_gstring(seen_items);
+      int seen_sep = ':';
+      BOOL seen_this_item = FALSE;
+
+      while ((seen_item = string_nextinlist(&seen_items_list, &seen_sep,
+					    NULL, 0)))
+	if (Ustrcmp(seen_item, item) == 0)
+	  {
+	  seen_this_item = TRUE;
+	  break;
+	  }
+
+      if (seen_this_item)
+	{
+	DEBUG(D_receive)
+	  debug_printf("acl_smtp_dkim: skipping signer %s, "
+	    "already seen\n", item);
+	continue;
+	}
+
+      seen_items = string_catn(seen_items, US":", 1);
+      }
+    seen_items = string_cat(seen_items, item);
+
+    if ((rc = dkim_exim_acl_run(item, &results, user_msgptr, log_msgptr)) != OK)
+      {
+      DEBUG(D_receive)
+	debug_printf("acl_smtp_dkim: acl_check returned %d on %s, "
+	  "skipping remaining items\n", rc, item);
+      break;
+      }
+    if (dkim_verify_minimal && Ustrcmp(dkim_verify_status, "pass") == 0)
+      break;
+    }			/* signers loop */
+
+  dkim_verify_status = string_from_gstring(results);
+  store_pool = old_pool;
+  }
+else
+  dkim_exim_verify_log_all();
+
+return rc;
+}
+
+/******************************************************************************/
+
+/* Module API */
+
+static int
+dkim_exim_signer_isinlist(const uschar * l)
+{
+return dkim_cur_signer
+  ? match_isinlist(dkim_cur_signer, &l, 0, NULL, NULL, MCL_STRING, TRUE, NULL)
+  : FAIL;
+}
+
+/* Module API */
+
+static int
+dkim_exim_status_listmatch(const uschar * l)
+{						/* return good for any match */
+const uschar * s = dkim_verify_status ? dkim_verify_status : US"none";
+int sep = 0, rc = FAIL;
+for (uschar * ss; ss = string_nextinlist(&s, &sep, NULL, 0); )
+  if (   (rc = match_isinlist(ss, &l, 0, NULL, NULL, MCL_STRING, TRUE, NULL))
+      == OK) break;
+return rc;
+}
+
+/* Module API: Overwriteable dkim result variables */
+
+static void
+dkim_exim_setvar(const uschar * name, void * val)
+{
+if (Ustrcmp(name, "dkim_verify_status") == 0)
+  dkim_verify_status = val;
+else if (Ustrcmp(name, "dkim_verify_reason") == 0)
+  dkim_verify_reason = val;
+}
+
+/******************************************************************************/
+
+static void
+dkim_smtp_reset(void)
+{
+dkim_cur_signer = dkim_signers =
+dkim_signing_domain = dkim_signing_selector = dkim_signatures = NULL;
+f.dkim_disable_verify = FALSE;
+dkim_collect_input = 0;
+dkim_vdom_firstpass = dkim_verify_status = dkim_verify_reason = NULL;
+dkim_key_length = 0;
+}
+
+/******************************************************************************/
+
 static uschar *
 dkim_exim_expand_defaults(int what)
 {
@@ -467,6 +752,8 @@ switch (what)
   }
 }
 
+
+/* Module API: return a computed value for a variable expansion */
 
 uschar *
 dkim_exim_expand_query(int what)
@@ -585,12 +872,14 @@ switch (what)
 }
 
 
-void
+/* Module API */
+
+static void
 dkim_exim_sign_init(void)
 {
 int old_pool = store_pool;
 
-dkim_exim_init();
+dkim_exim_init(NULL);
 store_pool = POOL_MAIN;
 pdkim_init_context(&dkim_sign_ctx, FALSE, &dkim_exim_query_dns_txt);
 store_pool = old_pool;
@@ -834,6 +1123,95 @@ expand_bad:
 
 
 
+#ifdef SUPPORT_DMARC
+
+/* Module API */
+
+static const pdkim_signature *
+dkim_sigs_list(void)
+{
+return dkim_signatures;
+}
+#endif
+
+#ifdef EXPERIMENTAL_ARC
+
+/* Module API */
+static int
+dkim_hashname_to_type(const blob * name)
+{
+return pdkim_hashname_to_hashtype(name->data, name->len);
+}
+
+/* Module API */
+hashmethod
+dkim_hashtype_to_method(int hashtype)
+{
+return hashtype >= 0 ? pdkim_hashes[hashtype].exim_hashmethod : -1;
+}
+
+/* Module API */
+hashmethod
+dkim_hashname_to_method(const blob * name)
+{
+return dkim_hashtype_to_method(dkim_hashname_to_type(name));
+}
+
+/*  Module API: Set up a body hashing method on the given signature-context
+(creates a new one if needed, or uses an already-present one).
+
+Arguments:
+	signing		TRUE to use dkim's signing context, else dkim_verify_ctx
+        canon		canonicalization spec, text form
+        hash		hash spec, text form
+        bodylen         byte count for message body
+
+Return: pointer to hashing method struct
+*/
+
+static pdkim_bodyhash *
+dkim_set_bodyhash(BOOL signing,
+  const blob * canon, const blob * hashname, long bodylen)
+{
+int canon_head = -1, canon_body = -1;
+
+pdkim_cstring_to_canons(canon->data, canon->len, &canon_head, &canon_body);
+return pdkim_set_bodyhash(signing ? &dkim_sign_ctx: dkim_verify_ctx,
+        dkim_hashname_to_type(hashname),
+        canon_body,
+        bodylen);
+}
+
+/* Module API: Sign a blob of data (which might already be a hash, if
+Ed25519 or GCrypt signing).
+
+Arguments:
+	data		to be signed
+	hm		hash to be applied to the data
+	privkey		private key for siging, PEM format
+	signature	pointer for result blob
+
+Return: NULL, or error string on failure
+*/
+
+static const uschar *
+dkim_sign_blob(const blob * data, hashmethod hm, const uschar * privkey,
+  blob * signature)
+{
+es_ctx sctx;
+const uschar * errstr;
+
+if ((errstr = exim_dkim_signing_init(privkey, &sctx)))
+  { DEBUG(D_transport) debug_printf("signing key setup: %s\n", errstr); }
+else errstr = exim_dkim_sign(&sctx, hm, data, signature);
+
+return errstr;
+}
+
+#endif	/*EXPERIMENTAL_ARC*/
+
+
+/* Module API */
 
 gstring *
 authres_dkim(gstring * g)
@@ -909,6 +1287,93 @@ DEBUG(D_acl)
 return g;
 }
 
+/******************************************************************************/
+/* Module API */
+
+static optionlist dkim_options[] = {
+  { "acl_smtp_dkim",		opt_stringptr,   {&acl_smtp_dkim} },
+  { "dkim_verify_hashes",       opt_stringptr,   {&dkim_verify_hashes} },
+  { "dkim_verify_keytypes",     opt_stringptr,   {&dkim_verify_keytypes} },
+  { "dkim_verify_min_keysizes", opt_stringptr,   {&dkim_verify_min_keysizes} },
+  { "dkim_verify_minimal",      opt_bool,        {&dkim_verify_minimal} },
+  { "dkim_verify_signers",      opt_stringptr,   {&dkim_verify_signers} },
+};
+
+static void * dkim_functions[] = {
+  [DKIM_VERIFY_FEED] =		dkim_exim_verify_feed,
+  [DKIM_VERIFY_PAUSE] =		dkim_exim_verify_pause,
+  [DKIM_VERIFY_FINISH] =	dkim_exim_verify_finish,
+  [DKIM_ACL_ENTRY] =		dkim_exim_acl_entry,
+  [DKIM_VERIFY_LOG_ALL] =	dkim_exim_verify_log_all,
+  [DKIM_VDOM_FIRSTPASS] =	dkim_exim_vdom_firstpass,
+
+  [DKIM_SIGNER_ISINLIST] =	dkim_exim_signer_isinlist,
+  [DKIM_STATUS_LISTMATCH] =	dkim_exim_status_listmatch,
+
+  [DKIM_SETVAR] =		dkim_exim_setvar,
+  [DKIM_EXPAND_QUERY] =		dkim_exim_expand_query,
+
+  [DKIM_TRANSPORT_INIT] =	dkim_exim_sign_init,
+  [DKIM_TRANSPORT_WRITE] =	dkim_transport_write_message,
+
+#ifdef SUPPORT_DMARC
+  [DKIM_SIGS_LIST] =		dkim_sigs_list,
+#endif
+#ifdef EXPERIMENTAL_ARC
+  [DKIM_HASHNAME_TO_TYPE] =	dkim_hashname_to_type,
+  [DKIM_HASHTYPE_TO_METHOD] =	dkim_hashtype_to_method,
+  [DKIM_HASHNAME_TO_METHOD] =	dkim_hashname_to_method,
+  [DKIM_SET_BODYHASH] =		dkim_set_bodyhash,
+  [DKIM_DNS_PUBKEY] =		dkim_exim_parse_dns_pubkey,
+  [DKIM_SIG_VERIFY] =		dkim_exim_sig_verify,
+  [DKIM_HEADER_RELAX] =		pdkim_relax_header_n,
+  [DKIM_SIGN_DATA] =		dkim_sign_blob,
+#endif
+};
+
+static var_entry dkim_variables[] = {
+  { "dkim_algo",           vtype_dkim,        (void *)DKIM_ALGO },
+  { "dkim_bodylength",     vtype_dkim,        (void *)DKIM_BODYLENGTH },
+  { "dkim_canon_body",     vtype_dkim,        (void *)DKIM_CANON_BODY },
+  { "dkim_canon_headers",  vtype_dkim,        (void *)DKIM_CANON_HEADERS },
+  { "dkim_copiedheaders",  vtype_dkim,        (void *)DKIM_COPIEDHEADERS },
+  { "dkim_created",        vtype_dkim,        (void *)DKIM_CREATED },
+  { "dkim_cur_signer",     vtype_stringptr,   &dkim_cur_signer },
+  { "dkim_domain",         vtype_stringptr,   &dkim_signing_domain },
+  { "dkim_expires",        vtype_dkim,        (void *)DKIM_EXPIRES },
+  { "dkim_headernames",    vtype_dkim,        (void *)DKIM_HEADERNAMES },
+  { "dkim_identity",       vtype_dkim,        (void *)DKIM_IDENTITY },
+  { "dkim_key_granularity",vtype_dkim,        (void *)DKIM_KEY_GRANULARITY },
+  { "dkim_key_length",     vtype_int,         &dkim_key_length },
+  { "dkim_key_nosubdomains",vtype_dkim,       (void *)DKIM_NOSUBDOMAINS },
+  { "dkim_key_notes",      vtype_dkim,        (void *)DKIM_KEY_NOTES },
+  { "dkim_key_srvtype",    vtype_dkim,        (void *)DKIM_KEY_SRVTYPE },
+  { "dkim_key_testing",    vtype_dkim,        (void *)DKIM_KEY_TESTING },
+  { "dkim_selector",       vtype_stringptr,   &dkim_signing_selector },
+  { "dkim_signers",        vtype_stringptr,   &dkim_signers },
+  { "dkim_verify_reason",  vtype_stringptr,   &dkim_verify_reason },
+  { "dkim_verify_status",  vtype_stringptr,   &dkim_verify_status },
+};
+
+misc_module_info dkim_module_info = {
+  .name =		US"dkim",
+# if SUPPORT_DKIM==2
+  .dyn_magic =		MISC_MODULE_MAGIC,
+# endif
+  .init =		dkim_exim_init,
+  .msg_init =		dkim_exim_verify_init,
+  .authres =		authres_dkim,
+  .smtp_reset =		dkim_smtp_reset,
+
+  .options =		dkim_options,
+  .options_count =	nelem(dkim_options),
+
+  .functions =		dkim_functions,
+  .functions_count =	nelem(dkim_functions),
+
+  .variables =		dkim_variables,
+  .variables_count =	nelem(dkim_variables),
+};
 
 # endif	/*!MACRO_PREDEF*/
 #endif	/*!DISABLE_DKIM*/

@@ -431,12 +431,16 @@ misc_module_info * misc_module_list = NULL;
 static void
 misc_mod_add(misc_module_info * mi)
 {
-if (mi->init) mi->init(mi);
-DEBUG(D_any) if (mi->lib_vers_report)
-  debug_printf_indent("%Y", mi->lib_vers_report(NULL));
+if (mi->init && mi->init(mi))
+  {
+  DEBUG(D_any) if (mi->lib_vers_report)
+    debug_printf_indent("%Y", mi->lib_vers_report(NULL));
 
-mi->next = misc_module_list;
-misc_module_list = mi;
+  mi->next = misc_module_list;
+  misc_module_list = mi;
+  }
+else DEBUG(D_any)
+  debug_printf_indent("module init call failed for %s\n", mi->name);
 }
 
 
@@ -453,7 +457,10 @@ const char * errormsg;
 
 DEBUG(D_any) debug_printf_indent("loading module '%s'\n", name);
 if (!(dl = mod_open(name, US"miscmod", errstr)))
+  {
+  DEBUG(D_any) debug_printf_indent(" mod_open: %s\n", *errstr);
   return NULL;
+  }
 
 mi = (struct misc_module_info *) dlsym(dl,
 				    CS string_sprintf("%s_module_info", name));
@@ -545,6 +552,39 @@ for (const misc_module_info * mi = misc_module_list; mi; mi = mi->next)
       return FAIL;
 return OK;
 }
+
+/* Ditto, authres.  Having to sort the responses (mainly for the testsuite)
+is pretty painful - maybe we should sort the modules on insertion to
+the list? */
+
+gstring *
+misc_mod_authres(gstring * g)
+{
+typedef struct {
+  const uschar * name;
+  gstring *	 res;
+} pref;
+pref prefs[] = {
+  {US"spf", NULL}, {US"dkim", NULL}, {US"dmarc", NULL}, {US"arc", NULL}
+};
+gstring * others = NULL;
+
+for (const misc_module_info * mi = misc_module_list; mi; mi = mi->next)
+  if (mi->authres)
+    {
+    pref * p;
+    for (p = prefs; p < prefs + nelem(prefs); p++)
+      if (Ustrcmp(p->name, mi->name) == 0) break;
+
+    if (p) p->res = (mi->authres)(NULL);
+    else   others = (mi->authres)(others);
+    }
+
+for (pref * p = prefs; p < prefs + nelem(prefs); p++)
+  g = gstring_append(g, p->res);
+return gstring_append(g, others);
+}
+
 
 
 
@@ -697,6 +737,9 @@ DEBUG(D_lookup) debug_printf("Loaded %d lookup modules\n", countmodules);
 }
 
 
+#if !defined(DISABLE_DKIM) && (!defined(SUPPORT_DKIM) || SUPPORT_DKIM!=2)
+extern misc_module_info dkim_module_info;
+#endif
 #if defined(SUPPORT_DMARC) && SUPPORT_DMARC!=2
 extern misc_module_info dmarc_module_info;
 #endif
@@ -709,16 +752,18 @@ init_misc_mod_list(void)
 {
 static BOOL onetime = FALSE;
 if (onetime) return;
+onetime = TRUE;
 
+#if !defined(DISABLE_DKIM) && (!defined(SUPPORT_DKIM) || SUPPORT_DKIM!=2)
+misc_mod_add(&dkim_module_info);
+#endif
 #if defined(SUPPORT_SPF) && SUPPORT_SPF!=2
-/* dmarc depends on spf so this add must go first, for the dmarc-static case */
 misc_mod_add(&spf_module_info);
 #endif
 #if defined(SUPPORT_DMARC) && SUPPORT_DMARC!=2
+/* dmarc depends on spf so this add must go after, for the both-static case */
 misc_mod_add(&dmarc_module_info);
 #endif
-
-onetime = TRUE;
 }
 
 

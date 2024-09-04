@@ -48,7 +48,7 @@ static optionlist optionlist_config[] = {
   { "acl_smtp_data_prdr",       opt_stringptr,   {&acl_smtp_data_prdr} },
 #endif
 #ifndef DISABLE_DKIM
-  { "acl_smtp_dkim",            opt_stringptr,   {&acl_smtp_dkim} },
+  { "acl_smtp_dkim",            opt_module,	 {US"dkim"} },
 #endif
   { "acl_smtp_etrn",            opt_stringptr,   {&acl_smtp_etrn} },
   { "acl_smtp_expn",            opt_stringptr,   {&acl_smtp_expn} },
@@ -122,11 +122,11 @@ static optionlist optionlist_config[] = {
 #endif
   { "disable_ipv6",             opt_bool,        {&disable_ipv6} },
 #ifndef DISABLE_DKIM
-  { "dkim_verify_hashes",       opt_stringptr,   {&dkim_verify_hashes} },
-  { "dkim_verify_keytypes",     opt_stringptr,   {&dkim_verify_keytypes} },
-  { "dkim_verify_min_keysizes", opt_stringptr,   {&dkim_verify_min_keysizes} },
-  { "dkim_verify_minimal",      opt_bool,        {&dkim_verify_minimal} },
-  { "dkim_verify_signers",      opt_stringptr,   {&dkim_verify_signers} },
+  { "dkim_verify_hashes",       opt_module,	 {US"dkim"} },
+  { "dkim_verify_keytypes",     opt_module,	 {US"dkim"} },
+  { "dkim_verify_min_keysizes", opt_module,	 {US"dkim"} },
+  { "dkim_verify_minimal",      opt_module,	 {US"dkim"} },
+  { "dkim_verify_signers",      opt_module,	 {US"dkim"} },
 #endif
 #ifdef SUPPORT_DMARC
   { "dmarc_forensic_sender",    opt_module,	 {US"dmarc"} },

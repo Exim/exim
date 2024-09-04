@@ -15,15 +15,12 @@
 # else
 
 #  include "functions.h"
-#  include "pdkim/pdkim.h"
-#  include "pdkim/signing.h"
+#  include "miscmods/pdkim.h"
+#  include "miscmods/signing.h"
 
 #  ifdef SUPPORT_DMARC
 #   include "miscmods/dmarc.h"
 #  endif
-
-extern pdkim_ctx * dkim_verify_ctx;
-extern pdkim_ctx dkim_sign_ctx;
 
 #define ARC_SIGN_OPT_TSTAMP	BIT(0)
 #define ARC_SIGN_OPT_EXPIRE	BIT(1)
@@ -100,6 +97,8 @@ typedef enum line_extract {
   le_all
 } line_extract_t;
 
+static misc_module_info * arc_dkim_mod_info;
+
 static time_t now;
 static time_t expire;
 static hdr_rlist * headers_rlist;
@@ -131,6 +130,23 @@ this signing operation, we "take copies" of the headers, we call
 arc_parse_line() gathering only the 'i' tag (instance) information.
 */
 
+
+/******************************************************************************/
+
+/* We need a module init function, to check on the dkim module being present
+(and we may as well stack it's modinfo ptr)
+
+For now (until we do an arc module), called from exim.c main().
+*/
+BOOL
+arc_init(void)
+{
+uschar * errstr = NULL;
+if ((arc_dkim_mod_info = misc_mod_find(US"dkim", &errstr)))
+  return TRUE;
+log_write(0, LOG_MAIN|LOG_PANIC, "arc: %s", errstr);
+return FALSE;
+}
 
 /******************************************************************************/
 
@@ -586,6 +602,39 @@ return Ustrncmp(s, al->cv.data, al->cv.len) == 0;
 }
 
 /******************************************************************************/
+/* Service routines provided by the dkim module */
+
+static int
+arc_dkim_hashname_blob_to_type(const blob * name)
+{
+typedef int (*fn_t)(const blob *);
+return (((fn_t *) arc_dkim_mod_info->functions)[DKIM_HASHNAME_TO_TYPE]) (name);
+}
+static hashmethod
+arc_dkim_hashtype_to_method(int hashtype)
+{
+typedef hashmethod (*fn_t)(int);
+return (((fn_t *) arc_dkim_mod_info->functions)[DKIM_HASHTYPE_TO_METHOD]) (hashtype);
+}
+static hashmethod
+arc_dkim_hashname_blob_to_method(const blob * name)
+{
+typedef hashmethod (*fn_t)(const blob *);
+return (((fn_t *) arc_dkim_mod_info->functions)[DKIM_HASHNAME_TO_METHOD]) (name);
+}
+
+/******************************************************************************/
+
+/* Do a "relaxed" canonicalization of a header */
+static uschar *
+arc_relax_header_n(const uschar * text, int len, BOOL append_crlf)
+{
+typedef uschar * (*fn_t)(const uschar *, int, BOOL);
+return (((fn_t *) arc_dkim_mod_info->functions)[DKIM_HEADER_RELAX])
+						(text, len, append_crlf);
+}
+
+
 
 /* Return the hash of headers from the message that the AMS claims it
 signed.
@@ -599,14 +648,12 @@ const uschar * hn;
 int sep = ':';
 hdr_rlist * r;
 BOOL relaxed = Ustrncmp(US"relaxed", ams->c_head.data, ams->c_head.len) == 0;
-int hashtype = pdkim_hashname_to_hashtype(
-		    ams->a_hash.data, ams->a_hash.len);
+hashmethod hm = arc_dkim_hashname_blob_to_method(&ams->a_hash);
 hctx hhash_ctx;
 const uschar * s;
 int len;
 
-if (  hashtype == -1
-   || !exim_sha_init(&hhash_ctx, pdkim_hashes[hashtype].exim_hashmethod))
+if (hm < 0 || !exim_sha_init(&hhash_ctx, hm))
   {
   DEBUG(D_acl)
       debug_printf("ARC: hash setup error, possibly nonhandled hashtype\n");
@@ -628,7 +675,7 @@ while ((hn = string_nextinlist(&headernames, &sep, NULL, 0)))
        && strncasecmp(CCS (s = r->h->text), CCS hn, Ustrlen(hn)) == 0
        )
       {
-      if (relaxed) s = pdkim_relax_header_n(s, r->h->slen, TRUE);
+      if (relaxed) s = arc_relax_header_n(s, r->h->slen, TRUE);
 
       DEBUG(D_acl) debug_printf("%Z\n", s);
       exim_sha_update_string(&hhash_ctx, s);
@@ -640,7 +687,7 @@ while ((hn = string_nextinlist(&headernames, &sep, NULL, 0)))
 
 s = ams->rawsig_no_b_val.data, len = ams->rawsig_no_b_val.len;
 if (relaxed)
-  len = Ustrlen(s = pdkim_relax_header_n(s, len, FALSE));
+  len = Ustrlen(s = arc_relax_header_n(s, len, FALSE));
 DEBUG(D_acl) debug_printf("%.*Z\n", len, s);
 exim_sha_update(&hhash_ctx, s, len);
 
@@ -653,33 +700,34 @@ return;
 
 
 
-static pdkim_pubkey *
-arc_line_to_pubkey(arc_line * al)
+static blob *
+arc_line_to_pubkey(arc_line * al, const uschar ** errstr)
 {
-uschar * dns_txt;
-pdkim_pubkey * p;
+typedef const uschar * (*fn_t)(const uschar *, blob **, const uschar **);
+blob * pubkey;
+const uschar * hashes;
+const uschar * srvtype =
+  (((fn_t *) arc_dkim_mod_info->functions)[DKIM_DNS_PUBKEY])
+    (string_sprintf("%.*s._domainkey.%.*s",
+		  (int)al->s.len, al->s.data, (int)al->d.len, al->d.data),
+    &pubkey, &hashes);
 
-if (!(dns_txt = dkim_exim_query_dns_txt(string_sprintf("%.*s._domainkey.%.*s",
-	  (int)al->s.len, al->s.data, (int)al->d.len, al->d.data))))
-  {
-  DEBUG(D_acl) debug_printf("pubkey dns lookup fail\n");
-  return NULL;
-  }
+/*XXX do we need a blob-string printf %handler?  Other types of blob? */
 
-if (  !(p = pdkim_parse_pubkey_record(dns_txt))
-   || (Ustrcmp(p->srvtype, "*") != 0 && Ustrcmp(p->srvtype, "email") != 0)
-   )
+if (!srvtype)
+  { *errstr = US"pubkey dns lookup fail"; return NULL; }
+if ((Ustrcmp(srvtype, "*") != 0 && Ustrcmp(srvtype, "email") != 0))
   {
-  DEBUG(D_acl) debug_printf("pubkey dns lookup format error\n");
+  *errstr = string_sprintf("pubkey format error: srvtype '%s'", srvtype);
   return NULL;
   }
 
 /* If the pubkey limits use to specified hashes, reject unusable
 signatures. XXX should we have looked for multiple dns records? */
 
-if (p->hashes)
+if (hashes)
   {
-  const uschar * list = p->hashes, * ele;
+  const uschar * list = hashes, * ele;
   int sep = ':';
 
   while ((ele = string_nextinlist(&list, &sep, NULL, 0)))
@@ -687,11 +735,38 @@ if (p->hashes)
   if (!ele)
     {
     DEBUG(D_acl) debug_printf("pubkey h=%s vs sig a=%.*s\n",
-			      p->hashes, (int)al->a.len, al->a.data);
+			      hashes, (int)al->a.len, al->a.data);
+    *errstr = US"no usable sig for this pubkey hash list";
     return NULL;
     }
   }
-return p;
+return pubkey;
+}
+
+
+
+
+/* Set up a body hashing method on the given signature-context
+(creates a new one if needed, or uses an already-present one).
+
+Arguments:
+	signing		TRUE for signing, FALSE for verification
+	c		canonicalization spec, text form
+	ah		hash, text form
+	bodylen		byte count for message body
+
+Return:	pointer to hashing method struct
+*/
+
+static pdkim_bodyhash *
+arc_set_bodyhash(BOOL signing,
+  const blob * c, const blob * ah, long bodylen)
+{
+typedef pdkim_bodyhash * (*fn_t)(BOOL,
+  const blob * canon, const blob * hash, long bodylen);
+
+return (((fn_t *) arc_dkim_mod_info->functions)[DKIM_SET_BODYHASH])
+		    (signing, c, ah, bodylen);
 }
 
 
@@ -700,19 +775,69 @@ return p;
 static pdkim_bodyhash *
 arc_ams_setup_vfy_bodyhash(arc_line * ams)
 {
-int canon_head = -1, canon_body = -1;
-long bodylen;
+blob * c = &ams->c;
+long bodylen = ams->l.data
+	? strtol(CS string_copyn(ams->l.data, ams->l.len), NULL, 10)
+	: -1;
 
-if (!ams->c.data) ams->c.data = US"simple";	/* RFC 6376 (DKIM) default */
-pdkim_cstring_to_canons(ams->c.data, ams->c.len, &canon_head, &canon_body);
-bodylen = ams->l.data
-	? strtol(CS string_copyn(ams->l.data, ams->l.len), NULL, 10) : -1;
+if (!c->data)
+  {
+  c->data = US"simple";	/* RFC 6376 (DKIM) default */
+  c->len = 6;
+  }
 
-return pdkim_set_bodyhash(dkim_verify_ctx,
-	pdkim_hashname_to_hashtype(ams->a_hash.data, ams->a_hash.len),
-	canon_body,
-	bodylen);
+return arc_set_bodyhash(FALSE, c, &ams->a_hash, bodylen);
 }
+
+
+
+static void
+arc_decode_base64(const uschar * str, blob * b)
+{ 
+int dlen = b64decode(str, &b->data, str);
+if (dlen < 0) b->data = NULL;
+b->len = dlen;
+}
+
+
+
+static int
+arc_sig_verify(arc_set * as, arc_line * al, hashmethod hm,
+  blob * hhash_computed, blob * sighash,
+  const uschar * why, const uschar ** errstr_p)
+{
+blob * pubkey;
+const uschar * errstr = NULL;
+int rc;
+typedef int (*fn_t)
+	(const blob *, const blob *, hashmethod, const blob *, const uschar **);
+
+/* Get the public key from DNS */
+
+/*XXX dkim module */
+if (!(pubkey = arc_line_to_pubkey(al, &errstr)))
+  {
+  *errstr_p = string_sprintf("%s (%s)", errstr, why);
+  return ERROR;
+  }
+
+rc = (((fn_t *) arc_dkim_mod_info->functions)[DKIM_SIG_VERIFY])
+			  (sighash, hhash_computed, hm, pubkey, &errstr);
+switch (rc)
+  {
+  case OK:
+    break;
+  case FAIL:
+    DEBUG(D_acl)
+      debug_printf("ARC i=%d %s verify %s\n", as->instance, why, errstr);
+    break;
+  case ERROR:
+    DEBUG(D_acl) debug_printf("ARC verify %s init: %s\n", why, errstr);
+    break;
+  }
+return rc;
+}
+
 
 
 
@@ -725,12 +850,11 @@ arc_ams_verify(arc_ctx * ctx, arc_set * as)
 {
 arc_line * ams = as->hdr_ams;
 pdkim_bodyhash * b;
-pdkim_pubkey * p;
 blob sighash;
-blob hhash;
-ev_ctx vctx;
-int hashtype;
+blob hhash_computed;
+hashmethod hm;
 const uschar * errstr;
+int rc;
 
 as->ams_verify_done = US"in-progress";
 
@@ -771,7 +895,7 @@ DEBUG(D_acl)
 /* We know the bh-tag blob is of a nul-term string, so safe as a string */
 
 if (  !ams->bh.data
-   || (pdkim_decode_base64(ams->bh.data, &sighash), sighash.len != b->bh.len)
+   || (arc_decode_base64(ams->bh.data, &sighash), sighash.len != b->bh.len)
    || memcmp(sighash.data, b->bh.data, b->bh.len) != 0
    )
   {
@@ -786,38 +910,21 @@ if (  !ams->bh.data
 
 DEBUG(D_acl) debug_printf("ARC i=%d AMS Body hash compared OK\n", as->instance);
 
-/* Get the public key from DNS */
-
-if (!(p = arc_line_to_pubkey(ams)))
-  return as->ams_verify_done = arc_state_reason = US"pubkey problem";
-
 /* We know the b-tag blob is of a nul-term string, so safe as a string */
-pdkim_decode_base64(ams->b.data, &sighash);
+arc_decode_base64(ams->b.data, &sighash);
 
-arc_get_verify_hhash(ctx, ams, &hhash);
+arc_get_verify_hhash(ctx, ams, &hhash_computed);
 
-/* Setup the interface to the signing library */
-
-if ((errstr = exim_dkim_verify_init(&p->key, KEYFMT_DER, &vctx, NULL)))
-  {
-  DEBUG(D_acl) debug_printf("ARC verify init: %s\n", errstr);
-  as->ams_verify_done = arc_state_reason = US"internal sigverify init error";
-  return US"fail";
-  }
-
-hashtype = pdkim_hashname_to_hashtype(ams->a_hash.data, ams->a_hash.len);
-if (hashtype == -1)
+if ((hm = arc_dkim_hashname_blob_to_method(&ams->a_hash)) < 0)
   {
   DEBUG(D_acl) debug_printf("ARC i=%d AMS verify bad a_hash\n", as->instance);
   return as->ams_verify_done = arc_state_reason = US"AMS sig nonverify";
   }
 
-if ((errstr = exim_dkim_verify(&vctx,
-	  pdkim_hashes[hashtype].exim_hashmethod, &hhash, &sighash)))
-  {
-  DEBUG(D_acl) debug_printf("ARC i=%d AMS verify %s\n", as->instance, errstr);
-  return as->ams_verify_done = arc_state_reason = US"AMS sig nonverify";
-  }
+rc = arc_sig_verify(as, ams, hm, &hhash_computed, &sighash, US"AMS", &errstr);
+if (rc != OK)
+  return as->ams_verify_done = arc_state_reason =
+    rc == FAIL ? US"AMS sig nonverify" : errstr;
 
 DEBUG(D_acl) debug_printf("ARC i=%d AMS verify pass\n", as->instance);
 as->ams_verify_passed = TRUE;
@@ -901,13 +1008,12 @@ arc_seal_verify(arc_ctx * ctx, arc_set * as)
 {
 arc_line * hdr_as = as->hdr_as;
 arc_set * as2;
-int hashtype;
+hashmethod hm;
 hctx hhash_ctx;
 blob hhash_computed;
 blob sighash;
-ev_ctx vctx;
-pdkim_pubkey * p;
 const uschar * errstr;
+int rc;
 
 DEBUG(D_acl) debug_printf("ARC: AS vfy i=%d\n", as->instance);
 /*
@@ -935,10 +1041,9 @@ if (  as->instance == 1 && !arc_cv_match(hdr_as, US"none")
            the ARC-Seal.
 */
 
-hashtype = pdkim_hashname_to_hashtype(hdr_as->a_hash.data, hdr_as->a_hash.len);
+hm = arc_dkim_hashname_blob_to_method(&hdr_as->a_hash);
 
-if (  hashtype == -1
-   || !exim_sha_init(&hhash_ctx, pdkim_hashes[hashtype].exim_hashmethod))
+if (hm < 0 || !exim_sha_init(&hhash_ctx, hm))
   {
   DEBUG(D_acl)
       debug_printf("ARC: hash setup error, possibly nonhandled hashtype\n");
@@ -967,7 +1072,8 @@ for (as2 = ctx->arcset_chain;
 
   al = as2->hdr_aar;
   if (!(s = al->relaxed))
-    al->relaxed = s = pdkim_relax_header_n(al->complete->text,
+    /*XXX dkim module */
+    al->relaxed = s = arc_relax_header_n(al->complete->text,
 					    al->complete->slen, TRUE);
   len = Ustrlen(s);
   DEBUG(D_acl) debug_printf("%Z\n", s);
@@ -975,7 +1081,8 @@ for (as2 = ctx->arcset_chain;
 
   al = as2->hdr_ams;
   if (!(s = al->relaxed))
-    al->relaxed = s = pdkim_relax_header_n(al->complete->text,
+    /*XXX dkim module */
+    al->relaxed = s = arc_relax_header_n(al->complete->text,
 					    al->complete->slen, TRUE);
   len = Ustrlen(s);
   DEBUG(D_acl) debug_printf("%Z\n", s);
@@ -983,10 +1090,12 @@ for (as2 = ctx->arcset_chain;
 
   al = as2->hdr_as;
   if (as2->instance == as->instance)
-    s = pdkim_relax_header_n(al->rawsig_no_b_val.data,
+    /*XXX dkim module */
+    s = arc_relax_header_n(al->rawsig_no_b_val.data,
 					al->rawsig_no_b_val.len, FALSE);
   else if (!(s = al->relaxed))
-    al->relaxed = s = pdkim_relax_header_n(al->complete->text,
+    /*XXX dkim module */
+    al->relaxed = s = arc_relax_header_n(al->complete->text,
 					    al->complete->slen, TRUE);
   len = Ustrlen(s);
   DEBUG(D_acl) debug_printf("%Z\n", s);
@@ -1009,12 +1118,9 @@ DEBUG(D_acl)
 /*
        6.  Retrieve the public key identified by the "s" and "d" tags in
            the ARC-Seal, as described in Section 4.1.6.
-*/
 
-if (!(p = arc_line_to_pubkey(hdr_as)))
-  return US"pubkey problem";
+Done below, in arc_sig_verify().
 
-/*
        7.  Determine whether the signature portion ("b" tag) of the ARC-
            Seal and the digest computed above are valid according to the
            public key.  (See also Section Section 8.4 for failure case
@@ -1025,21 +1131,12 @@ if (!(p = arc_line_to_pubkey(hdr_as)))
 */
 
 /* We know the b-tag blob is of a nul-term string, so safe as a string */
-pdkim_decode_base64(hdr_as->b.data, &sighash);
+arc_decode_base64(hdr_as->b.data, &sighash);
 
-if ((errstr = exim_dkim_verify_init(&p->key, KEYFMT_DER, &vctx, NULL)))
+rc = arc_sig_verify(as, hdr_as, hm, &hhash_computed, &sighash, US"AS", &errstr);
+if (rc != OK)
   {
-  DEBUG(D_acl) debug_printf("ARC verify init: %s\n", errstr);
-  return US"fail";
-  }
-
-if ((errstr = exim_dkim_verify(&vctx,
-	      pdkim_hashes[hashtype].exim_hashmethod,
-	      &hhash_computed, &sighash)))
-  {
-  DEBUG(D_acl)
-    debug_printf("ARC i=%d AS headers verify: %s\n", as->instance, errstr);
-  arc_state_reason = US"seal sigverify error";
+  if (rc == FAIL) arc_state_reason = US"seal sigverify error";
   return US"fail";
   }
 
@@ -1075,12 +1172,6 @@ acl_verify_arc(void)
 const uschar * res;
 
 memset(&arc_verify_ctx, 0, sizeof(arc_verify_ctx));
-
-if (!dkim_verify_ctx)
-  {
-  DEBUG(D_acl) debug_printf("ARC: no DKIM verify context\n");
-  return NULL;
-  }
 
 /* AS evaluation, per
 https://tools.ietf.org/html/draft-ietf-dmarc-arc-protocol-10#section-6
@@ -1285,10 +1376,13 @@ arc_sig_from_pseudoheader(gstring * hdata, int hashtype, const uschar * privkey,
   blob * sig, const uschar * why)
 {
 hashmethod hm = /*sig->keytype == KEYTYPE_ED25519*/ FALSE
-  ? HASH_SHA2_512 : pdkim_hashes[hashtype].exim_hashmethod;
+  ? HASH_SHA2_512
+  : arc_dkim_hashtype_to_method(hashtype);
+
 blob hhash;
-es_ctx sctx;
 const uschar * errstr;
+typedef const uschar * (*fn_t)
+			  (const blob *, hashmethod, const uschar *, blob *);
 
 DEBUG(D_transport)
   {
@@ -1296,7 +1390,7 @@ DEBUG(D_transport)
   debug_printf("ARC: %s header data for signing:\n", why);
   debug_printf("%.*Z\n", hdata->ptr, hdata->s);
 
-  (void) exim_sha_init(&hhash_ctx, pdkim_hashes[hashtype].exim_hashmethod);
+  (void) exim_sha_init(&hhash_ctx, hm);
   exim_sha_update(&hhash_ctx, hdata->s, hdata->ptr);
   exim_sha_finish(&hhash_ctx, &hhash);
   debug_printf("ARC: header hash: %.*H\n", hhash.len, hhash.data);
@@ -1305,7 +1399,7 @@ DEBUG(D_transport)
 if (FALSE /*need hash for Ed25519 or GCrypt signing*/ )
   {
   hctx hhash_ctx;
-  (void) exim_sha_init(&hhash_ctx, pdkim_hashes[hashtype].exim_hashmethod);
+  (void) exim_sha_init(&hhash_ctx, arc_dkim_hashtype_to_method(hashtype));
   exim_sha_update(&hhash_ctx, hdata->s, hdata->ptr);
   exim_sha_finish(&hhash_ctx, &hhash);
   }
@@ -1315,8 +1409,9 @@ else
   hhash.len = hdata->ptr;
   }
 
-if (  (errstr = exim_dkim_signing_init(privkey, &sctx))
-   || (errstr = exim_dkim_sign(&sctx, hm, &hhash, sig)))
+errstr = (((fn_t *) arc_dkim_mod_info->functions)[DKIM_SIGN_DATA])
+						  (&hhash, hm, privkey, sig);
+if (errstr)
   {
   log_write(0, LOG_MAIN, "ARC: %s signing: %s\n", why, errstr);
   DEBUG(D_transport)
@@ -1324,6 +1419,7 @@ if (  (errstr = exim_dkim_signing_init(privkey, &sctx))
       privkey);
   return FALSE;
   }
+
 return TRUE;
 }
 
@@ -1333,7 +1429,7 @@ static gstring *
 arc_sign_append_sig(gstring * g, blob * sig)
 {
 /*debug_printf("%s: raw sig %.*H\n", __FUNCTION__, sig->len, sig->data);*/
-sig->data = pdkim_encode_base64(sig);
+sig->data = b64encode(sig->data, sig->len);
 sig->len = Ustrlen(sig->data);
 for (;;)
   {
@@ -1360,7 +1456,8 @@ arc_sign_append_ams(gstring * g, arc_ctx * ctx, int instance,
 uschar * s;
 gstring * hdata = NULL;
 int col;
-int hashtype = pdkim_hashname_to_hashtype(US"sha256", 6);	/*XXX hardwired */
+const blob ams_h = {.data = US"sha256", .len = 6};	/*XXX hardwired */
+int hashtype = arc_dkim_hashname_blob_to_type(&ams_h);
 blob sig;
 int ams_off;
 arc_line * al = store_get(sizeof(header_line) + sizeof(arc_line), GET_UNTAINTED);
@@ -1378,7 +1475,7 @@ if (options & ARC_SIGN_OPT_TSTAMP)
 if (options & ARC_SIGN_OPT_EXPIRE)
   g = string_fmt_append(g, "; x=%lu", (u_long)expire);
 g = string_fmt_append(g, ";\r\n\tbh=%s;\r\n\th=",
-      pdkim_encode_base64(bodyhash));
+      b64encode(bodyhash->data, bodyhash->len));
 
 for(col = 3; rheaders; rheaders = rheaders->prev)
   {
@@ -1406,7 +1503,8 @@ for(col = 3; rheaders; rheaders = rheaders->prev)
       /* Accumulate header for hashing/signing */
 
       hdata = string_cat(hdata,
-		pdkim_relax_header_n(htext, rheaders->h->slen, TRUE));	/*XXX hardwired */
+		/*XXX dkim module */
+		arc_relax_header_n(htext, rheaders->h->slen, TRUE));	/*XXX hardwired */
       break;
       }
     }
@@ -1420,7 +1518,8 @@ g = string_catn(g, US";\r\n\tb=;", 7);
 
 /* Include the pseudo-header in the accumulation */
 
-s = pdkim_relax_header_n(g->s + ams_off, g->ptr - ams_off, FALSE);
+/*XXX dkim module */
+s = arc_relax_header_n(g->s + ams_off, g->ptr - ams_off, FALSE);
 hdata = string_cat(hdata, s);
 
 /* Calculate the signature from the accumulation */
@@ -1483,7 +1582,8 @@ header_line * h = (header_line *)(al+1);
 uschar * badline_str;
 
 gstring * hdata = NULL;
-int hashtype = pdkim_hashname_to_hashtype(US"sha256", 6);	/*XXX hardwired */
+const blob as_h = {.data = US"sha256", .len = 6};	/*XXX hardwired */
+int hashtype = arc_dkim_hashname_blob_to_type(&as_h);
 blob sig;
 
 /*
@@ -1533,15 +1633,18 @@ for (arc_set * as = Ustrcmp(status, US"fail") == 0
   badline_str = US"aar";
   if (!(l = as->hdr_aar)) goto badline;
   h = l->complete;
-  hdata = string_cat(hdata, pdkim_relax_header_n(h->text, h->slen, TRUE));
+  /*XXX dkim module */
+  hdata = string_cat(hdata, arc_relax_header_n(h->text, h->slen, TRUE));
   badline_str = US"ams";
   if (!(l = as->hdr_ams)) goto badline;
   h = l->complete;
-  hdata = string_cat(hdata, pdkim_relax_header_n(h->text, h->slen, TRUE));
+  /*XXX dkim module */
+  hdata = string_cat(hdata, arc_relax_header_n(h->text, h->slen, TRUE));
   badline_str = US"as";
   if (!(l = as->hdr_as)) goto badline;
   h = l->complete;
-  hdata = string_cat(hdata, pdkim_relax_header_n(h->text, h->slen, !!as->next));
+  /*XXX dkim module */
+  hdata = string_cat(hdata, arc_relax_header_n(h->text, h->slen, !!as->next));
   }
 
 /* Calculate the signature from the accumulation */
@@ -1567,21 +1670,19 @@ badline:
 
 /**************************************/
 
-/* Return pointer to pdkim_bodyhash for given hash method, creating new
-method if needed.
-*/
+/*XXX not static currently as the smtp tpt calls us */
+/* Really returns pdkim_bodyhash* - but there's an ordering
+problem for functions.h so call it void* */
 
 void *
 arc_ams_setup_sign_bodyhash(void)
 {
-int canon_head, canon_body;
+blob canon = {.data = US"relaxed", .len = 7};	/*XXX hardwired */
+blob hash =  {.data = US"sha256",  .len = 6};	/*XXX hardwired */
 
 DEBUG(D_transport) debug_printf("ARC: requesting bodyhash\n");
-pdkim_cstring_to_canons(US"relaxed", 7, &canon_head, &canon_body);	/*XXX hardwired */
-return pdkim_set_bodyhash(&dkim_sign_ctx,
-	pdkim_hashname_to_hashtype(US"sha256", 6),			/*XXX hardwired */
-	canon_body,
-	-1);
+
+return arc_set_bodyhash(TRUE, &canon, &hash, -1);
 }
 
 
@@ -1767,6 +1868,10 @@ g = arc_sign_append_aar(g, &arc_sign_ctx, identity, instance, &ar);
     - ? oversigning?
   - Covers the data
   - we must have requested a suitable bodyhash previously
+XXX so where was that done?  I don't see it!
+XXX ah, ok - the smtp tpt calls arc_ams_setup_sign_bodyhash() directly, early
+	-> should pref use a better named call to make the point, but that
+	can wait until arc becomes a module
 */
 
 b = arc_ams_setup_sign_bodyhash();
@@ -1826,8 +1931,6 @@ header_line h;
 arc_line al;
 pdkim_bodyhash * b;
 uschar * errstr;
-
-if (!dkim_verify_ctx) return US"no dkim context";
 
 if (strncmpic(ARC_HDR_AMS, g->s, ARC_HDRLEN_AMS) != 0) return US"not AMS";
 

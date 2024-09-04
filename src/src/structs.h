@@ -1026,6 +1026,7 @@ typedef struct misc_module_info {
   int		(*conn_init)(const uschar *, const uschar *);
   void		(*smtp_reset)(void);
   int		(*msg_init)(void);
+  gstring *	(*authres)(gstring *);
 
   void *	options;
   unsigned	options_count;

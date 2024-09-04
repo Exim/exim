@@ -10,7 +10,7 @@
 /* Transport shim for dkim signing */
 
 
-#include "exim.h"
+#include "../exim.h"
 
 #ifndef DISABLE_DKIM	/* rest of file */
 
@@ -154,7 +154,8 @@ if (!rc) return FALSE;
 /* Get signatures for headers plus spool data file */
 
 #ifdef EXPERIMENTAL_ARC
-arc_sign_init();
+arc_sign_init();	/*XXX perhaps move this call back to the smtp tpt
+	      around where it currently calls arc_ams_setup_sign_bodyhash() ? */
 #endif
 
 /* The dotstuffed status of the datafile depends on whether it was stored
@@ -395,7 +396,7 @@ if (  !(dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector)
 
 /* If there is no filter command set up, construct the message and calculate
 a dkim signature of it, send the signature and a reconstructed message. This
-avoids using a temprary file. */
+avoids using a temporary file. */
 
 if (  !transport_filter_argv
    || !*transport_filter_argv

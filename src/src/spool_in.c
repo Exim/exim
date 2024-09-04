@@ -269,9 +269,18 @@ bmi_verdicts = NULL;
 #endif
 
 #ifndef DISABLE_DKIM
-dkim_signers = NULL;
 f.dkim_disable_verify = FALSE;
+# ifdef COMPILE_UTILITY
+dkim_signers = NULL;
 dkim_collect_input = 0;
+#else
+  {
+  misc_module_info * mi = misc_mod_findonly(US"dkim");
+  /* We used to clear only dkim_signers, dkim_collect_input. This does more
+  but I think it is safe. */
+  if (mi) mi->smtp_reset();
+  }
+# endif
 #endif
 
 #ifndef DISABLE_TLS

@@ -1560,8 +1560,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Not all platforms build with SPF enabled
     next if /(^$time_pid?spf_conn_init|spf_compile\.c)/;
     next if /try option spf_smtp_comment_template$/;
-    next if /loading module '(?:dmarc|spf)'$/;
-    next if /^$time_pid?Loaded "(?:dmarc|spf)"$/;
+    next if /loading module '(?:dkim|dmarc|spf)'$/;
+    next if /^$time_pid?Loaded "(?:dkim|dmarc|spf)"$/;
 
     # Not all platforms have sendfile support
     next if /^cannot use sendfile for body: no support$/;
@@ -4147,7 +4147,6 @@ system("sudo cp eximdir/exim eximdir/exim_exim;" .
        "sudo chmod 06755 eximdir/exim_exim");
 
 # Copy any libraries that were built for dynamic load
-# Currently this is only for lookup methods
 
 ($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
 

@@ -1,3 +1,4 @@
+extern BOOL arc_init(void);
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
@@ -144,9 +145,6 @@ extern uschar *authenticator_current_name(void);
 #ifdef EXPERIMENTAL_ARC
 extern gstring *authres_arc(gstring *);
 #endif
-#ifndef DISABLE_DKIM
-extern gstring *authres_dkim(gstring *);
-#endif
 extern gstring *authres_smtpauth(gstring *);
 
 extern uschar *b64encode(const uschar *, int);
@@ -222,13 +220,6 @@ extern void    delivery_re_exec(int);
 
 extern void    die_tainted(const uschar *, const uschar *, int);
 extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
-#ifndef DISABLE_DKIM
-extern uschar *dkim_exim_query_dns_txt(const uschar *);
-extern void    dkim_exim_sign_init(void);
-
-extern BOOL    dkim_transport_write_message(transport_ctx *,
-		  struct ob_dkim *, const uschar ** errstr);
-#endif
 extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
 extern int     dns_basic_lookup(dns_answer *, const uschar *, int);
 extern uschar *dns_build_reverse(const uschar *);
@@ -375,6 +366,7 @@ extern int     mime_regex(const uschar **, BOOL);
 extern void    mime_set_anomaly(int);
 #endif
 
+extern gstring *misc_mod_authres(gstring *);
 extern int     misc_mod_conn_init(const uschar *, const uschar *);
 extern misc_module_info * misc_mod_find(const uschar * modname, uschar **);
 extern misc_module_info * misc_mod_findonly(const uschar * modname);
@@ -552,6 +544,7 @@ extern int     smtp_setup_msg(void);
 extern int     smtp_sock_connect(smtp_connect_args *, int, const blob *);
 extern BOOL    smtp_start_session(void);
 extern int     smtp_ungetc(int);
+extern void    smtp_verify_feed(const uschar *, unsigned);
 extern BOOL    smtp_verify_helo(void);
 extern int     smtp_write_command(void *, int, const char *, ...) PRINTF_FUNCTION(3,4);
 #ifdef WITH_CONTENT_SCAN
@@ -1112,7 +1105,7 @@ g->s = s;
 static inline gstring *
 gstring_append(gstring * dest, gstring * item)
 {
-return string_catn(dest, item->s, item->ptr);
+return item ? string_catn(dest, item->s, item->ptr) : dest;
 }
 
 

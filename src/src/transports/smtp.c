@@ -46,6 +46,7 @@ optionlist smtp_transport_options[] = {
   { "data_timeout",         opt_time,	   LOFF(data_timeout) },
   { "delay_after_cutoff",   opt_bool,	   LOFF(delay_after_cutoff) },
 #ifndef DISABLE_DKIM
+  /*XXX dkim module */
   { "dkim_canon", opt_stringptr,	   LOFF(dkim.dkim_canon) },
   { "dkim_domain", opt_stringptr,	   LOFF(dkim.dkim_domain) },
   { "dkim_hash", opt_stringptr,		   LOFF(dkim.dkim_hash) },
@@ -4103,13 +4104,18 @@ else
 
 #ifndef DISABLE_DKIM
   {
+  typedef void (*fn_t)(void);
+  misc_module_info * mi;
 # ifdef MEASURE_TIMING
   struct timeval t0;
   gettimeofday(&t0, NULL);
 # endif
-  dkim_exim_sign_init();
-# ifdef EXPERIMENTAL_ARC
+
+  if ((mi = misc_mod_find(US"dkim", NULL)))
     {
+    (((fn_t *) mi->functions)[DKIM_TRANSPORT_INIT]) ();
+
+# ifdef EXPERIMENTAL_ARC
     uschar * s = ob->arc_sign;
     if (s)
       {
@@ -4129,8 +4135,8 @@ else
 	ob->dkim.force_bodyhash = TRUE;
 	}
       }
+# endif	/*ARC*/
     }
-# endif
 # ifdef MEASURE_TIMING
   report_time_since(&t0, US"dkim_exim_sign_init (delta)");
 # endif
@@ -4175,7 +4181,15 @@ else
     }
 
 #ifndef DISABLE_DKIM
-  sx->ok = dkim_transport_write_message(&tctx, &ob->dkim, CUSS &message);
+    {
+    misc_module_info * mi = misc_mod_find(US"dkim", NULL);
+    typedef BOOL (*fn_t)(transport_ctx *, struct ob_dkim *, const uschar **);
+
+    sx->ok = mi
+      ? (((fn_t *) mi->functions)[DKIM_TRANSPORT_WRITE])
+				      (&tctx, &ob->dkim, CUSS &message)
+      : transport_write_message(&tctx, 0);
+    }
 #else
   sx->ok = transport_write_message(&tctx, 0);
 #endif

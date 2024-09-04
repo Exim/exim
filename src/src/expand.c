@@ -490,27 +490,28 @@ static var_entry var_table[] = {
   { "dcc_result",          vtype_stringptr,   &dcc_result },
 #endif
 #ifndef DISABLE_DKIM
-  { "dkim_algo",           vtype_dkim,        (void *)DKIM_ALGO },
-  { "dkim_bodylength",     vtype_dkim,        (void *)DKIM_BODYLENGTH },
-  { "dkim_canon_body",     vtype_dkim,        (void *)DKIM_CANON_BODY },
-  { "dkim_canon_headers",  vtype_dkim,        (void *)DKIM_CANON_HEADERS },
-  { "dkim_copiedheaders",  vtype_dkim,        (void *)DKIM_COPIEDHEADERS },
-  { "dkim_created",        vtype_dkim,        (void *)DKIM_CREATED },
-  { "dkim_cur_signer",     vtype_stringptr,   &dkim_cur_signer },
-  { "dkim_domain",         vtype_stringptr,   &dkim_signing_domain },
-  { "dkim_expires",        vtype_dkim,        (void *)DKIM_EXPIRES },
-  { "dkim_headernames",    vtype_dkim,        (void *)DKIM_HEADERNAMES },
-  { "dkim_identity",       vtype_dkim,        (void *)DKIM_IDENTITY },
-  { "dkim_key_granularity",vtype_dkim,        (void *)DKIM_KEY_GRANULARITY },
-  { "dkim_key_length",     vtype_int,         &dkim_key_length },
-  { "dkim_key_nosubdomains",vtype_dkim,       (void *)DKIM_NOSUBDOMAINS },
-  { "dkim_key_notes",      vtype_dkim,        (void *)DKIM_KEY_NOTES },
-  { "dkim_key_srvtype",    vtype_dkim,        (void *)DKIM_KEY_SRVTYPE },
-  { "dkim_key_testing",    vtype_dkim,        (void *)DKIM_KEY_TESTING },
-  { "dkim_selector",       vtype_stringptr,   &dkim_signing_selector },
-  { "dkim_signers",        vtype_stringptr,   &dkim_signers },
-  { "dkim_verify_reason",  vtype_stringptr,   &dkim_verify_reason },
-  { "dkim_verify_status",  vtype_stringptr,   &dkim_verify_status },
+  { "dkim_algo",           vtype_module,	US"dkim" },
+  { "dkim_bodylength",     vtype_module,	US"dkim" },
+  { "dkim_canon_body",     vtype_module,	US"dkim" },
+  { "dkim_canon_headers",  vtype_module,	US"dkim" },
+  { "dkim_copiedheaders",  vtype_module,	US"dkim" },
+  { "dkim_created",        vtype_module,	US"dkim" },
+  { "dkim_cur_signer",     vtype_module,	US"dkim" },
+  { "dkim_domain",         vtype_module,	US"dkim" },
+  { "dkim_expires",        vtype_module,	US"dkim" },
+  { "dkim_headernames",    vtype_module,	US"dkim" },
+  { "dkim_identity",       vtype_module,	US"dkim" },
+  { "dkim_key_granularity",vtype_module,	US"dkim" },
+  { "dkim_key_length",     vtype_module,	US"dkim" },
+  { "dkim_key_nosubdomains",vtype_module,	US"dkim" },
+  { "dkim_key_notes",      vtype_module,	US"dkim" },
+  { "dkim_key_srvtype",    vtype_module,	US"dkim" },
+  { "dkim_key_testing",    vtype_module,	US"dkim" },
+  { "dkim_selector",       vtype_module,	US"dkim" },
+  { "dkim_signers",        vtype_module,	US"dkim" },
+  { "dkim_verify_reason",  vtype_module,	US"dkim" },
+  { "dkim_verify_signers", vtype_module,	US"dkim" },
+  { "dkim_verify_status",  vtype_module,	US"dkim" },
 #endif
 #ifdef SUPPORT_DMARC
   { "dmarc_domain_policy", vtype_module,	US"dmarc" },
@@ -2131,7 +2132,13 @@ switch (vp->type)
 
 #ifndef DISABLE_DKIM
   case vtype_dkim:
-    return dkim_exim_expand_query((int)(long)val);
+    {
+    misc_module_info * mi = misc_mod_findonly(US"dkim");
+    typedef uschar * (*fn_t)(int);
+    return mi
+      ? (((fn_t *) mi->functions)[DKIM_EXPAND_QUERY]) ((int)(long)val)
+      : US"";
+    }
 #endif
 
   case vtype_module:
@@ -4882,32 +4889,7 @@ while (*s)
       yield = authres_local(yield, sub_arg[0]);
       yield = authres_iprev(yield);
       yield = authres_smtpauth(yield);
-#ifdef SUPPORT_SPF
-	{
-	misc_module_info * mi = misc_mod_findonly(US"spf");
-	if (mi)
-	  {
-	  typedef gstring * (*fn_t)(gstring *);
-	  fn_t fn = ((fn_t *) mi->functions)[SPF_AUTHRES];
-	  yield = fn(yield);
-	  }
-	}
-#endif
-#ifndef DISABLE_DKIM
-      yield = authres_dkim(yield);
-#endif
-#ifdef SUPPORT_DMARC
-	{
-	misc_module_info * mi = misc_mod_findonly(US"dmarc");
-	if (mi)
-	  {
-	  /*XXX is authres common enough to be generic? */
-	  typedef gstring * (*fn_t)(gstring *);
-	  fn_t fn = ((fn_t *) mi->functions)[DMARC_AUTHRES];
-	  yield = fn(yield);
-	  }
-	}
-#endif
+      yield = misc_mod_authres(yield);
 #ifdef EXPERIMENTAL_ARC
       yield = authres_arc(yield);
 #endif

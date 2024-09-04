@@ -566,7 +566,6 @@ static optionlist spf_options[] = {
 
 static void * spf_functions[] = {
   [SPF_PROCESS] =	spf_process,
-  [SPF_AUTHRES] =	authres_spf,
   [SPF_GET_RESPONSE] =	spf_get_response,		/* ugly; for dmarc */
   
   [SPF_OPEN] =		spf_lookup_open,
@@ -593,6 +592,7 @@ misc_module_info spf_module_info =
   .lib_vers_report =	spf_lib_version_report,
   .conn_init =		spf_conn_init,
   .smtp_reset =		spf_smtp_reset,
+  .authres =		authres_spf,
 
   .options =		spf_options,
   .options_count =	nelem(spf_options),

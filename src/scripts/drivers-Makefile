@@ -95,11 +95,23 @@ fi
 # command-line, not just check the Makefile.
 
 want_dynamic() {
-  local dyn_name="$1"
+  local dyn_name="${1#_}"
   local re="(${classdef}|EXPERIMENTAL)_${dyn_name}[ $tab]*=[ $tab]*2"
+  #XXX Solaris does not support -E on grep.  Must use egrep.
   env | grep -E -q "^$re"
   if [ $? -eq 0 ]; then return 0; fi
   grep -E -q "^[ $tab]*$re" "$defs_source"
+}
+
+want_not_disabled() {
+  local want_name="${1#_}"
+  [ "$local_want_name" = "$1" ] && return 0;
+  local re="DISABLED_${want_name}[ $tab]*=[ $tab]*."
+  env | grep -E -q "^$re"
+  [ $? -ne 0 ] && return 0
+  grep -E -q "^[ $tab]*$re" "$defs_source"
+  [ $? -ne 0 ] && return 0
+  return 1
 }
 
 want_at_all() {
@@ -135,20 +147,21 @@ emit_module_rule() {
       echo >&2 "Missing CFLAGS_DYNAMIC prevents building dynamic $name"
       exit 1
     fi
-    MODS="${MODS} ${mod_name}.so"
+    MODS="${MODS} ${mod_name#_}.so"
     grep "^${classdef}_${name}_PC" "$defs_source" 1>&2
     pkgconf=$(grep "^${classdef}_${name}_PC" "$defs_source")
     if [ $? -eq 0 ]; then
       pkgconf=$(echo $pkgconf | sed 's/^.*= *//')
-      echo "${classdef}_${mod_name}_INCLUDE = $(pkg-config --cflags $pkgconf)"
-      echo "${classdef}_${mod_name}_LIBS = $(pkg-config --libs $pkgconf)"
+      echo "${classdef}_${mod_name#_}_INCLUDE = $(pkg-config --cflags $pkgconf)"
+      echo "${classdef}_${mod_name#_}_LIBS = $(pkg-config --libs $pkgconf)"
     else
       grep "^${classdef}_${name}_" "$defs_source"
-      echo "${classdef}_${mod_name}_INCLUDE = \$(${classdef}_${name}_INCLUDE)"
-      echo "${classdef}_${mod_name}_LIBS = \$(${classdef}_${name}_LIBS)"
+      echo "${classdef}_${mod_name#_}_INCLUDE = \$(${classdef}_${name}_INCLUDE)"
+      echo "${classdef}_${mod_name#_}_LIBS = \$(${classdef}_${name}_LIBS)"
     fi
-  elif want_at_all "$name"
-  then
+  elif want_not_disabled "$name"; then
+    OBJ="${OBJ} ${mod_name#_}.o"
+  elif want_at_all "$name"; then
     OBJ="${OBJ} ${mod_name}.o"
   fi
 }

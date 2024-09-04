@@ -298,6 +298,7 @@ return PDKIM_FAIL;
 
 
 /* -------------------------------------------------------------------------- */
+/* Module API */
 /* Performs "relaxed" canonicalization of a header. */
 
 uschar *
@@ -422,7 +423,7 @@ b->len = dlen;
 uschar *
 pdkim_encode_base64(blob * b)
 {
-return b64encode(CUS b->data, b->len);
+return b64encode(b->data, b->len);
 }
 
 
@@ -1005,13 +1006,13 @@ return PDKIM_OK;
 #define HEADER_BUFFER_FRAG_SIZE 256
 
 DLLEXPORT int
-pdkim_feed(pdkim_ctx * ctx, uschar * data, int len)
+pdkim_feed(pdkim_ctx * ctx, const uschar * data, unsigned len)
 {
 /* Alternate EOD signal, used in non-dotstuffing mode */
 if (!data)
   pdkim_body_complete(ctx);
 
-else for (int p = 0; p < len; p++)
+else for (unsigned p = 0; p < len; p++)
   {
   uschar c = data[p];
   int rc;
@@ -2008,6 +2009,12 @@ pdkim_bodyhash * b;
 
 if (hashtype == -1 || canon_method == -1) return NULL;
 
+if (!ctx)
+  {
+  DEBUG(D_receive) debug_printf("pdkim_set_bodyhash: null context\n");
+  return NULL;
+  }
+
 for (b = ctx->bodyhash; b; b = b->next)
   if (  hashtype == b->hashtype
      && canon_method == b->canon_method
@@ -2073,7 +2080,7 @@ DEBUG(D_acl) ctx->dns_txt_callback = dns_txt_callback;
 void
 pdkim_init(void)
 {
-exim_dkim_init();
+exim_dkim_signers_init();
 }
 
 

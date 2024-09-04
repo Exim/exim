@@ -90,13 +90,20 @@ done
 cd ..
 
 # miscellaneous modules
+# Note that the file in the miscmods/pdkim/ source subdir get linked to the 
+# destination miscmods/ dir
 d="miscmods"
 mkdir $d
 cd $d
 # Makefile is generated
-for f in dmarc.c dmarc.h dmarc_api.h dummy.c spf.c spf.h spf_api.h
+for f in dummy.c \
+	dkim.c dkim_transport.c dkim.h dkim_api.h \
+	pdkim/crypt_ver.h pdkim/pdkim.c pdkim/pdkim.h \
+	pdkim/pdkim_hash.h pdkim/signing.c pdkim/signing.h \
+	dmarc.c dmarc.h dmarc_api.h \
+	spf.c spf.h spf_api.h
 do
-  ln -s ../../src/$d/$f $f
+  ln -s ../../src/$d/$f `basename $f`
 done
 cd ..
 
@@ -105,17 +112,6 @@ d="hintsdb"
 mkdir $d
 cd $d
 for f in hints_bdb.h hints_gdbm.h hints_ndbm.h hints_sqlite.h hints_tdb.h
-do
-  ln -s ../../src/$d/$f $f
-done
-cd ..
-
-# Likewise for the code for the PDKIM library
-d="pdkim"
-mkdir $d
-cd $d
-for f in README Makefile crypt_ver.h pdkim.c \
-  pdkim.h hash.c hash.h signing.c signing.h blob.h
 do
   ln -s ../../src/$d/$f $f
 done
@@ -140,7 +136,6 @@ for f in blob.h dbfunctions.h exim.h functions.h globals.h \
   string.c tls.c tlscert-gnu.c tlscert-openssl.c tls-cipher-stdname.c \
   tls-gnu.c tls-openssl.c \
   tod.c transport.c tree.c verify.c version.c xtextencode.c \
-  dkim.c dkim.h dkim_transport.c \
   valgrind.h memcheck.h \
   macro_predef.c macro_predef.h
 do
@@ -155,7 +150,7 @@ done
 
 # EXPERIMENTAL_*
 for f in  arc.c bmi_spam.c bmi_spam.h dcc.c dcc.h dane.c dane-openssl.c \
-  danessl.h imap_utf7.c spf.c spf.h utf8.c xclient.c
+  danessl.h imap_utf7.c utf8.c xclient.c
 do
   ln -s ../src/$f $f
 done

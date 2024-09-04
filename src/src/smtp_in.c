@@ -464,6 +464,23 @@ smtp_had_eof = smtp_had_error = 0;
 
 
 
+#ifndef DISABLE_DKIM
+/* Feed received message data to the dkim module */
+/*XXX maybe a global dkim_info? */
+void
+smtp_verify_feed(const uschar * s, unsigned n)
+{
+static misc_module_info * dkim_mi = NULL;
+typedef void (*fn_t)(const uschar *, int);
+
+if (!dkim_mi && !(dkim_mi = misc_mod_findonly(US"dkim")))
+  return;
+
+(((fn_t *) dkim_mi->functions)[DKIM_VERIFY_FEED]) (s, n);
+}
+#endif
+
+
 /* Refill the buffer, and notify DKIM verification code.
 Return false for error or EOF.
 */
@@ -507,7 +524,7 @@ if (rc <= 0)
   return FALSE;
   }
 #ifndef DISABLE_DKIM
-dkim_exim_verify_feed(smtp_inbuffer, rc);
+smtp_verify_feed(smtp_inbuffer, rc);
 #endif
 smtp_inend = smtp_inbuffer + rc;
 smtp_inptr = smtp_inbuffer;
@@ -570,7 +587,7 @@ int n = smtp_inend - smtp_inptr;
 if (n > lim)
   n = lim;
 if (n > 0)
-  dkim_exim_verify_feed(smtp_inptr, n);
+  smtp_verify_feed(smtp_inptr, n);
 #endif
 }
 
@@ -726,19 +743,24 @@ bdat_getc(unsigned lim)
 uschar * user_msg = NULL;
 uschar * log_msg;
 
+#ifndef DISABLE_DKIM
+misc_module_info * dkim_info = misc_mod_findonly(US"dkim");
+typedef void (*dkim_pause_t)(BOOL);
+dkim_pause_t dkim_pause;
+
+dkim_pause = dkim_info
+  ? ((dkim_pause_t *) dkim_info->functions)[DKIM_VERIFY_PAUSE] : NULL;
+#endif
+
 for(;;)
   {
-#ifndef DISABLE_DKIM
-  unsigned dkim_save;
-#endif
 
   if (chunking_data_left > 0)
     return lwr_receive_getc(chunking_data_left--);
 
   bdat_pop_receive_functions();
 #ifndef DISABLE_DKIM
-  dkim_save = dkim_collect_input;
-  dkim_collect_input = 0;
+  if (dkim_pause) dkim_pause(TRUE);
 #endif
 
   /* Unless PIPELINING was offered, there should be no next command
@@ -767,9 +789,7 @@ for(;;)
   if (chunking_state == CHUNKING_LAST)
     {
 #ifndef DISABLE_DKIM
-    dkim_collect_input = dkim_save;
-    dkim_exim_verify_feed(NULL, 0);	/* notify EOD */
-    dkim_collect_input = 0;
+    smtp_verify_feed(NULL, 0);	/* notify EOD */
 #endif
     return EOD;
     }
@@ -843,7 +863,7 @@ next_cmd:
 
       bdat_push_receive_functions();
 #ifndef DISABLE_DKIM
-      dkim_collect_input = dkim_save;
+      if (dkim_pause) dkim_pause(FALSE);
 #endif
       break;	/* to top of main loop */
       }
@@ -1681,17 +1701,6 @@ bmi_run = 0;
 bmi_verdicts = NULL;
 #endif
 dnslist_domain = dnslist_matched = NULL;
-#ifndef DISABLE_DKIM
-dkim_cur_signer = dkim_signers =
-dkim_signing_domain = dkim_signing_selector = dkim_signatures = NULL;
-f.dkim_disable_verify = FALSE;
-dkim_collect_input = 0;
-dkim_verify_overall = dkim_verify_status = dkim_verify_reason = NULL;
-dkim_key_length = 0;
-#endif
-#ifdef SUPPORT_DMARC
-f.dmarc_has_been_checked = f.dmarc_disable_verify = f.dmarc_enable_forensic = FALSE;
-#endif
 #ifdef EXPERIMENTAL_ARC
 arc_state = arc_state_reason = NULL;
 arc_received_instance = 0;

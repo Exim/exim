@@ -64,7 +64,7 @@ DEBUG(D_tls) debug_printf("GnuTLS<%d>: %s%s", level, message,
 
 
 void
-exim_dkim_init(void)
+exim_dkim_signers_init(void)
 {
 #if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
 DEBUG(D_tls)
@@ -125,10 +125,16 @@ return NULL;
 /* allocate mem for signature (when signing) */
 /* hash & sign data.   No way to do incremental.
 
+Arguments:
+	sign_ctx	library-specific context for a signature (incl. key)
+	hash		hash method to apply to data
+	data		data to be signed
+	sig		returned signature
+
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, blob * data, blob * sig)
+exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, const blob * data, blob * sig)
 {
 gnutls_datum_t k_data = { .data = data->data, .size = data->len };
 gnutls_digest_algorithm_t dig;
@@ -159,7 +165,7 @@ return NULL;
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx,
+exim_dkim_verify_init(const blob * pubkey, keyformat fmt, ev_ctx * verify_ctx,
   unsigned * bits)
 {
 gnutls_datum_t k;
@@ -197,7 +203,8 @@ return ret;
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data_hash, blob * sig)
+exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, const blob * data_hash,
+  const blob * sig)
 {
 gnutls_datum_t k = { .data = data_hash->data, .size = data_hash->len };
 gnutls_datum_t s = { .data = sig->data,       .size = sig->len };
@@ -301,7 +308,7 @@ return NULL;
 
 
 void
-exim_dkim_init(void)
+exim_dkim_signers_init(void)
 {
 /* Version check should be the very first call because it
 makes sure that important subsystems are initialized. */
@@ -484,7 +491,7 @@ asn_err: return US asn1_strerror(rc);
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, blob * data, blob * sig)
+exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, const blob * data, blob * sig)
 {
 char * sexp_hash;
 gcry_sexp_t s_hash = NULL, s_key = NULL, s_sig = NULL;
@@ -559,7 +566,7 @@ return NULL;
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx,
+exim_dkim_verify_init(const blob * pubkey, keyformat fmt, ev_ctx * verify_ctx,
   unsigned * bits)
 {
 /*
@@ -648,7 +655,8 @@ XXX though we appear to be doing a hash, too!
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data_hash, blob * sig)
+exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, const blob * data_hash,
+  const blob * sig)
 {
 /*
 cf. libgnutls 2.8.5 _wrap_gcry_pk_verify()
@@ -702,7 +710,7 @@ return NULL;
 /******************************************************************************/
 
 void
-exim_dkim_init(void)
+exim_dkim_signers_init(void)
 {
 ERR_load_crypto_strings();
 }
@@ -747,7 +755,7 @@ return NULL;
 Return: NULL for success with the signaature in the sig blob, or an error string */
 
 const uschar *
-exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, blob * data, blob * sig)
+exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, const blob * data, blob * sig)
 {
 const EVP_MD * md;
 EVP_MD_CTX * ctx;
@@ -804,7 +812,7 @@ return US ERR_error_string(ERR_get_error(), NULL);
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx,
+exim_dkim_verify_init(const blob * pubkey, keyformat fmt, ev_ctx * verify_ctx,
   unsigned * bits)
 {
 const uschar * s = pubkey->data;
@@ -841,7 +849,8 @@ return ret;
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data, blob * sig)
+exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, const blob * data,
+  const blob * sig)
 {
 const EVP_MD * md;
 

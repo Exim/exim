@@ -49,6 +49,7 @@ The variables table defins $variables for expansion, using the same
 definition entry struct as the main var_table in expand.c;
 entries here should have their proper vtype_<type> and should be duplicated
 in the main table but with vtype_module and the module name.
+Entries must be in order by the variable name.
 
 There are service functions to locate and to locate-or-load modules
 by name; these hide the static/dynamic aspect of a module.  Most
@@ -79,6 +80,14 @@ Write an include file with anything callers need to know, in particular
 and add it to HDRS and PHDRS in OS/Makefile-Base.
 Add a SUPPORT_<foo> line to Local/Makefile, and (if dynamic) any
 SUPPORT_<foo>_INCLUDE or SUPPORT_<foo>_LIBS required.
-Add the capitalised module name <foo> to the "miscmods" like in
+Add the capitalised module name <foo> to the "miscmods" line in
 scripts/Configure-Makefile.
 Add all the filenames to the "miscmods" list in scripts/Makelinks
+
+For statically-linked modules the SUPPORT_<foo> line should say "yes",
+for dynamic: "2".
+
+If include-by-default is wanted for the module, use DISABLE_<foo> instead
+of SUPPORT_<foo> (and leave it commented out as appropriate), and prefix
+the name in the "miscmods" line with an underbar ("_").
+For dynamic builds, a SUPPORT_ line is still needed.

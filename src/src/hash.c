@@ -227,49 +227,6 @@ memcpy(b->data, gcry_md_read(h->sha, 0), h->hashlen);
 
 
 
-#elif defined(SHA_POLARSSL)
-# define HAVE_PARTIAL_SHA
-/******************************************************************************/
-
-BOOL
-exim_sha_init(hctx * h, hashmethod m)
-{
-/*XXX extend for sha512 */
-switch (h->method = m)
-  {
-  case HASH_SHA1:   h->hashlen = 20; sha1_starts(&h->u.sha1);    break;
-  case HASH_SHA2_256: h->hashlen = 32; sha2_starts(&h->u.sha2, 0); break;
-  default:	    h->hashlen = 0; return FALSE;
-  }
-return TRUE;
-}
-
-
-void
-exim_sha_update(hctx * h, const uschar * data, int len)
-{
-switch (h->method)
-  {
-  case HASH_SHA1:   sha1_update(h->u.sha1, US data, len); break;
-  case HASH_SHA2_256: sha2_update(h->u.sha2, US data, len); break;
-  }
-}
-
-
-void
-exim_sha_finish(hctx * h, blob * b)
-{
-b->data = store_get(b->len = h->hashlen, GET_INTAINTED);
-switch (h->method)
-  {
-  case HASH_SHA1:   sha1_finish(h->u.sha1, b->data); break;
-  case HASH_SHA2_256: sha2_finish(h->u.sha2, b->data); break;
-  }
-}
-
-
-
-
 #elif defined(SHA_NATIVE)
 /******************************************************************************/
 /* Only sha-1 supported */

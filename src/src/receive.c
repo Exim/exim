@@ -1828,13 +1828,6 @@ mime_is_rfc822         = 0;
 mime_part_count        = -1;
 #endif
 
-#ifndef DISABLE_DKIM
-/* Call into DKIM to set up the context.  In CHUNKING mode
-we clear the dot-stuffing flag */
-if (smtp_input && !smtp_batched_input && !f.dkim_disable_verify)
-  dkim_exim_verify_init(chunking_state <= CHUNKING_OFFERED);
-#endif
-
 if (misc_mod_msg_init() != OK)
   goto TIDYUP;
 
@@ -3517,100 +3510,47 @@ else
 #ifndef DISABLE_DKIM
     if (!f.dkim_disable_verify)
       {
-      /* Finish off the body hashes, calculate sigs and do compares */
-      dkim_exim_verify_finish();
+      misc_module_info * mi = misc_mod_findonly(US"dkim");
+      if (mi)
+	{
+	typedef void (*vfin_fn_t)(void);
+	typedef int  (*vacl_fn_t)(uschar **, uschar**);
+	typedef void (*vlog_fn_t)(void);
 
-      /* Check if we must run the DKIM ACL */
-      GET_OPTION("acl_smtp_dkim");
-      if (acl_smtp_dkim && dkim_verify_signers && *dkim_verify_signers)
-        {
-        uschar * dkim_verify_signers_expanded =
-          expand_string(dkim_verify_signers);
-	gstring * results = NULL, * seen_items = NULL;
-	int signer_sep = 0, old_pool = store_pool;
-	const uschar * ptr;
-	uschar * item;
+	/* Finish off the body hashes, calculate sigs and do compares */
 
-	store_pool = POOL_PERM;   /* Allow created variables to live to data ACL */
+	(((vfin_fn_t *) mi->functions)[DKIM_VERIFY_FINISH]) ();
 
-        if (!(ptr = dkim_verify_signers_expanded))
-          log_write(0, LOG_MAIN|LOG_PANIC,
-            "expansion of dkim_verify_signers option failed: %s",
-            expand_string_message);
+	/* Check if we must run the DKIM ACL */
 
-	/* Loop over signers we want to verify, calling ACL.  Default to OK
-	when no signers are present.  Each call from here expands to a n ACL
-	call per matching sig in the message. */
-
-	rc = OK;
-	while ((item = string_nextinlist(&ptr, &signer_sep, NULL, 0)))
+	GET_OPTION("acl_smtp_dkim");
+	if (acl_smtp_dkim)
 	  {
-	  /* Prevent running ACL for an empty item */
-	  if (!item || !*item) continue;
+	  rc = (((vacl_fn_t *) mi->functions)[DKIM_ACL_ENTRY])
+						    (&user_msg, &log_msg);
+	  add_acl_headers(ACL_WHERE_DKIM, US"DKIM");
 
-	  /* Only run ACL once for each domain or identity,
-	  no matter how often it appears in the expanded list. */
-	  if (seen_items)
-	    {
-	    uschar * seen_item;
-	    const uschar * seen_items_list = string_from_gstring(seen_items);
-	    int seen_sep = ':';
-	    BOOL seen_this_item = FALSE;
-
-	    while ((seen_item = string_nextinlist(&seen_items_list, &seen_sep,
-						  NULL, 0)))
-	      if (Ustrcmp(seen_item,item) == 0)
-		{
-		seen_this_item = TRUE;
-		break;
-		}
-
-	    if (seen_this_item)
-	      {
-	      DEBUG(D_receive)
-		debug_printf("acl_smtp_dkim: skipping signer %s, "
-		  "already seen\n", item);
-	      continue;
-	      }
-
-	    seen_items = string_catn(seen_items, US":", 1);
-	    }
-	  seen_items = string_cat(seen_items, item);
-
-	  rc = dkim_exim_acl_run(item, &results, &user_msg, &log_msg);
 	  if (rc != OK)
 	    {
-	    DEBUG(D_receive)
-	      debug_printf("acl_smtp_dkim: acl_check returned %d on %s, "
-		"skipping remaining items\n", rc, item);
 	    cancel_cutthrough_connection(TRUE, US"dkim acl not ok");
-	    break;
+
+	    if (rc != DISCARD)
+	      {
+	      Uunlink(spool_name);
+	      if (smtp_handle_acl_fail(ACL_WHERE_DKIM, rc, user_msg, log_msg) != 0)
+		smtp_yield = FALSE;	/* No more msgs after dropped conn */
+	      smtp_reply = US"";	/* Indicate reply already sent */
+	      goto NOT_ACCEPTED;	/* Skip to end of function */
+	      }
+	    recipients_count = 0;
+	    blackholed_by = US"DKIM ACL";
+	    if (log_msg)
+	      blackhole_log_msg = string_sprintf(": %s", log_msg);
 	    }
-	  else
-	    if (dkim_verify_minimal && Ustrcmp(dkim_verify_status, "pass") == 0)
-	      break;
 	  }
-	dkim_verify_status = string_from_gstring(results);
-	store_pool = old_pool;
-	add_acl_headers(ACL_WHERE_DKIM, US"DKIM");
-	if (rc == DISCARD)
-	  {
-	  recipients_count = 0;
-	  blackholed_by = US"DKIM ACL";
-	  if (log_msg)
-	    blackhole_log_msg = string_sprintf(": %s", log_msg);
-	  }
-	else if (rc != OK)
-	  {
-	  Uunlink(spool_name);
-	  if (smtp_handle_acl_fail(ACL_WHERE_DKIM, rc, user_msg, log_msg) != 0)
-	    smtp_yield = FALSE;    /* No more messages after dropped connection */
-	  smtp_reply = US"";       /* Indicate reply already sent */
-	  goto NOT_ACCEPTED;			/* Skip to end of function */
-	  }
-        }
-      else				/* No acl or no wanted signers */
-	dkim_exim_verify_log_all();
+	else	/* No ACL; just log */
+	  (((vlog_fn_t *) mi->functions)[DKIM_VERIFY_LOG_ALL]) ();
+	}
       }
 #endif /* DISABLE_DKIM */
 
@@ -4189,8 +4129,13 @@ if (LOGGING(8bitmime))
   g = string_fmt_append(g, " M8S=%d", body_8bitmime);
 
 #ifndef DISABLE_DKIM
-if (LOGGING(dkim) && dkim_verify_overall)
-  g = string_append(g, 2, US" DKIM=", dkim_verify_overall);
+if (LOGGING(dkim))
+  {
+  misc_module_info * mi = misc_mod_findonly(US"dkim");
+  typedef gstring * (*fn_t)(gstring *);
+  if (mi)
+    g = (((fn_t *) mi->functions)[DKIM_VDOM_FIRSTPASS]) (g);
+  }
 # ifdef EXPERIMENTAL_ARC
 if (LOGGING(dkim) && arc_state && Ustrcmp(arc_state, "pass") == 0)
   g = string_catn(g, US" ARC", 4);

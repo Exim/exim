@@ -586,6 +586,10 @@ DISABLE_MAL_MKS=yes
 # turned on by default.  See the spec for information on conditionally
 # disabling it.  To disable the inclusion of the entire feature, set
 # DISABLE_DKIM to "yes"
+#
+# It is possible to build the support as a dynamic-load module. In addition
+# to not defining DISABLE_DKIM, define SUPPORT_DKIM=2.  The usual rules on
+# defines for includes and libs apply.
 
 # DISABLE_DKIM=yes
 

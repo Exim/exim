@@ -547,7 +547,8 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 # include "miscmods/spf_api.h"
 #endif
 #ifndef DISABLE_DKIM
-# include "dkim.h"
+# include "miscmods/dkim.h"
+# include "miscmods/dkim_api.h"
 #endif
 #ifdef SUPPORT_DMARC
 # include "miscmods/dmarc.h"

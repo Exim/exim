@@ -1688,7 +1688,7 @@ while (*fp)
 	    case '}' : zg = string_catn(zg, US"{BC}", 4); break;
 	    default:
 	      {
-	      unsigned char u = *s;
+	      uschar u = *s;
 	      if ( (u < 32) || (u > 127) )
 		zg = string_fmt_append(zg, "{%02x}", u);
 	      else

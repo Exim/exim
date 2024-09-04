@@ -344,7 +344,7 @@ pdkim_bodyhash *pdkim_set_bodyhash(pdkim_ctx *, int, int, long);
 pdkim_bodyhash *pdkim_set_sig_bodyhash(pdkim_ctx *, pdkim_signature *);
 
 DLLEXPORT
-int        pdkim_feed         (pdkim_ctx *, uschar *, int);
+int        pdkim_feed         (pdkim_ctx *, const uschar *, unsigned);
 DLLEXPORT
 int        pdkim_feed_finish  (pdkim_ctx *, pdkim_signature **, const uschar **);
 

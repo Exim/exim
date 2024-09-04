@@ -864,25 +864,6 @@ address_item  *deliver_recipients = NULL;
 uschar *deliver_selectstring   = NULL;
 uschar *deliver_selectstring_sender = NULL;
 
-#ifndef DISABLE_DKIM
-unsigned dkim_collect_input      = 0;
-uschar *dkim_cur_signer          = NULL;
-int     dkim_key_length          = 0;
-void   *dkim_signatures		 = NULL;
-uschar *dkim_signers             = NULL;
-uschar *dkim_signing_domain      = NULL;
-uschar *dkim_signing_selector    = NULL;
-gstring *dkim_signing_record	 = NULL;
-uschar *dkim_verify_hashes       = US"sha256:sha512";
-uschar *dkim_verify_keytypes     = US"ed25519:rsa";
-uschar *dkim_verify_min_keysizes = US"rsa=1024 ed25519=250";
-BOOL	dkim_verify_minimal      = FALSE;
-uschar *dkim_verify_overall      = NULL;
-uschar *dkim_verify_signers      = US"$dkim_signers";
-uschar *dkim_verify_status	 = NULL;
-uschar *dkim_verify_reason	 = NULL;
-#endif
-
 uschar *dns_again_means_nonexist = NULL;
 int     dns_csa_search_limit   = 5;
 int	dns_cname_loops	       = 1;

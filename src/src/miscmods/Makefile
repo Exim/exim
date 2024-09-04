@@ -25,10 +25,28 @@ miscmods.a:	$(OBJ)
 		$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) $*.c
 
 .c.so:;         @echo "$(CC) -shared $*.c"
-		$(FE)$(CC) $(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS) $*.c -o $@
+		$(FE)$(CC) $(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) \
+			-DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) \
+			$(DLFLAGS) $*.c -o $@
 
-dmarc.o dmarc.so:	$(HDRS) ../pdkim/pdkim.h dmarc.h dmarc.c
+# Note that the sources from pdkim/ are linked into the build.../miscmods/ dir
+# by scripts/Makelinks.
+dkim.o  dkim.so:	$(HDRS) dkim.h dkim.c dkim_transport.c \
+			crypt_ver.h pdkim.h pdkim_hash.h pdkim.c \
+			signing.h signing.c
+dmarc.o dmarc.so:	$(HDRS) pdkim.h dmarc.h dmarc.c
 dummy.o:		dummy.c
-spf.o spf.so:		$(HDRS) spf.h spf.c
+spf.o   spf.so:		$(HDRS) spf.h spf.c
+
+dkim.o:
+		@echo "$(CC) dkim.c dkim_transport.c pdkim.c signing.c"
+		$(FE)$(CC) -r $(CFLAGS) $(INCLUDE) \
+			dkim.c dkim_transport.c pdkim.c signing.c -o $@
+
+dkim.so:
+		@echo "$(CC) -shared dkim.c dkim_transport.c pdkim.c signing.c"
+		$(FE)$(CC) $(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) \
+			-DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) \
+			$(DLFLAGS) dkim.c dkim_transport.c pdkim.c signing.c -o $@
 
 # End

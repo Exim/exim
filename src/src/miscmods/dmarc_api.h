@@ -13,5 +13,4 @@
 
 #define	DMARC_PROCESS		0
 #define DMARC_EXPAND_QUERY	1
-#define DMARC_AUTHRES		2
-#define DMARC_STORE_DATA	3
+#define DMARC_STORE_DATA	2
