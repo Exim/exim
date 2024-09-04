@@ -1687,11 +1687,14 @@ while (*fp)
 	    case '{' : zg = string_catn(zg, US"{BO}", 4); break;
 	    case '}' : zg = string_catn(zg, US"{BC}", 4); break;
 	    default:
-	      if ( (*s < 32) || (*s > 127) )
-		zg = string_fmt_append(zg, "{%02x}", *s);
+	      {
+	      unsigned char u = *s;
+	      if ( (u < 32) || (u > 127) )
+		zg = string_fmt_append(zg, "{%02x}", u);
 	      else
 		zg = string_catn(zg, US s, 1);
 	      break;
+	      }
 	    }
 	if (zg) { s = CS zg->s; precision = slen = gstring_length(zg); }
 	else    { s = "";	slen = 0; }
