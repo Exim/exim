@@ -71,7 +71,7 @@ uschar * dmarc_tld_file          = NULL; /* Mozilla TLDs text file */
 /* One-time initialisation for dmarc.  Ensure the spf module is available. */
 
 static BOOL
-dmarc_init(void *)
+dmarc_init(void * dummy)
 {
 uschar * errstr;
 if (!(dmarc_spf_mod_info = misc_mod_find(US"spf", &errstr)))
@@ -80,7 +80,6 @@ if (!(dmarc_spf_mod_info = misc_mod_find(US"spf", &errstr)))
   return FALSE;
   }
 
-/*XXX not yet used, but will be */
 if (!(dmarc_dkim_mod_info = misc_mod_find(US"dkim", &errstr)))
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "dmarc: %s", errstr);

@@ -161,6 +161,7 @@ return p->srvtype;
 
 
 
+#ifdef EXPERIMENTAL_ARC
 /* Return:
 	OK	verify succesful
 	FAIL	verify did not pass
@@ -183,6 +184,7 @@ else if ((errstr = exim_dkim_verify(&vctx, hash, data_hash, sighash)))
 *errstr_p = errstr;
 return rc;
 }
+#endif
 
 
 

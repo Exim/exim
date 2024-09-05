@@ -869,16 +869,16 @@ ehlo_limits_apply(sx, sx->peer_limit_mail, sx->peer_limit_rcpt,
   sx->peer_limit_rcptdom);
 }
 
+# ifndef DISABLE_PIPE_CONNECT
 /* Apply values read from cache to the current connection */
 static void
 ehlo_cache_limits_apply(smtp_context * sx)
 {
-# ifndef DISABLE_PIPE_CONNECT
 ehlo_limits_apply(sx, sx->ehlo_resp.limit_mail, sx->ehlo_resp.limit_rcpt,
   sx->ehlo_resp.limit_rcptdom);
-# endif
 }
-#endif	/*EXPERIMENTAL_ESMTP_LIMITS*/
+# endif
+#endif	/*DISABLE_ESMTP_LIMITS*/
 
 /******************************************************************************/
 
@@ -1096,7 +1096,7 @@ if (pending_BANNER)
     if (tls_out.active.sock >= 0) rc = DEFER;
     goto fail;
     }
-  /*XXX EXPERIMENTAL_ESMTP_LIMITS ? */
+  /*XXX DISABLE_ESMTP_LIMITS ? */
 
 # if !defined(DISABLE_TLS) && !defined(DISABLE_TLS_RESUME)
   GET_OPTION("host_name_extract");
