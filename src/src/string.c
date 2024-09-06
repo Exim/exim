@@ -1092,6 +1092,26 @@ return list;
 
 
 
+/* Listmaker that takes a format string and args for the element.
+Currently no checking of the element content for sep chars */
+
+gstring *
+string_append_listele_fmt(gstring * list, uschar sep, const char * fmt, ...)
+{
+if (list && list->ptr)
+  list = string_catn(list, &sep, 1);
+
+va_list ap;
+va_start(ap, fmt);
+list = string_vformat_trc(list, US __FUNCTION__, __LINE__,
+	  STRING_SPRINTF_BUFFER_SIZE, SVFMT_REBUFFER|SVFMT_EXTEND, fmt, ap);
+va_end(ap);
+
+(void) string_from_gstring(list);
+return list;
+}
+
+
 /* A slightly-bogus listmaker utility; the separator is a string so
 can be multiple chars - there is no checking for the element content
 containing any of the separator. */
@@ -1341,8 +1361,8 @@ The return value can be NULL to signify overflow.
 Field width:		decimal digits, or *
 Precision:		dot, followed by decimal digits or *
 Length modifiers:	h  L  l  ll  z
-Conversion specifiers:	n d o u x X p f e E g G % c s S T W V Y D M H Z
-Alternate-form:		%#s is silent about a null string
+Conversion specifiers:	n d o u x X p f e E g G % c s S T W V Y D M H Z b
+Alternate-form:		#: s/Y/b are silent about a null string
 
 Returns the possibly-new (if copy for growth or taint-handling was needed)
 string, not nul-terminated.
@@ -1596,7 +1616,15 @@ while (*fp)
       goto INSERT_GSTRING;
       }
 #ifndef COMPILE_UTILITY
-    case 'V':			/* Maybe convert ascii-art to UTF-8 chars */
+    case 'b':			/* blob pointer, carrying a string */
+      {
+      blob * b = va_arg(ap, blob *);
+      if (b) { s = CS b->data; slen = b->len; }
+      else   { s = null;       slen = Ustrlen(s); }
+      goto INSERT_GSTRING;
+      }
+
+    case 'V':		/* string; maybe convert ascii-art to UTF-8 chars */
       {
       gstring * zg = NULL;
       s = va_arg(ap, char *);
