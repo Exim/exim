@@ -1068,7 +1068,8 @@ buildauths: config
 buildmisc: config
 	 @cd miscmods && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) \
 	   CC="$(CC)" CFLAGS="$(CFLAGS)" \
-	     CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" HDRS="../version.h $(PHDRS)" \
+	     CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
+	     LDFLAGS_PARTIAL="$(LDFLAGS_PARTIAL)" HDRS="../version.h $(PHDRS)" \
 	     FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" \
 	     INCLUDE="$(INCLUDE) $(IPV6_INCLUDE)"
 	 @echo " "

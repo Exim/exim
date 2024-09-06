@@ -41,7 +41,7 @@ spf.o   spf.so:		$(HDRS) spf.h spf.c
 
 dkim.o:
 		@echo "$(CC) dkim.c dkim_transport.c pdkim.c signing.c"
-		$(FE)$(CC) -r -nostdlib $(CFLAGS) $(INCLUDE) \
+		$(FE)$(CC) -r $(LDFLAGS_PARTIAL) $(CFLAGS) $(INCLUDE) \
 			dkim.c dkim_transport.c pdkim.c signing.c -o $@
 
 dkim.so:

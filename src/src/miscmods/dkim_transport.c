@@ -11,6 +11,7 @@
 
 
 #include "../exim.h"
+#include "arc_api.h"
 
 #ifndef DISABLE_DKIM	/* rest of file */
 
