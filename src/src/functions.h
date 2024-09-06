@@ -1,4 +1,3 @@
-extern BOOL arc_init(void);
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
@@ -111,18 +110,6 @@ extern void    acl_var_write(uschar *, uschar *, void *);
 extern void    add_driver_info(driver_info **, const driver_info *, size_t);
 
 
-#ifdef EXPERIMENTAL_ARC
-# ifdef SUPPORT_DMARC
-extern gstring *arc_dmarc_hist_append(gstring *);
-# endif
-extern void   *arc_ams_setup_sign_bodyhash(void);
-extern const uschar *arc_header_feed(gstring *, BOOL);
-extern gstring *arc_sign(const uschar *, gstring *, uschar **);
-extern void     arc_sign_init(void);
-extern const uschar *acl_verify_arc(void);
-extern uschar * fn_arc_domains(void);
-#endif
-
 extern void    assert_no_variables(void *, int, const char *, int);
 extern int     auth_call_pam(const uschar *, uschar **);
 extern int     auth_call_pwcheck(uschar *, uschar **);
@@ -142,9 +129,6 @@ extern int     auth_read_input(const uschar *);
 extern gstring * auth_show_supported(gstring *);
 extern uschar *authenticator_current_name(void);
 
-#ifdef EXPERIMENTAL_ARC
-extern gstring *authres_arc(gstring *);
-#endif
 extern gstring *authres_smtpauth(gstring *);
 
 extern uschar *b64encode(const uschar *, int);

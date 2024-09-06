@@ -441,6 +441,7 @@ if (mi->init && mi->init(mi))
   }
 else DEBUG(D_any)
   debug_printf_indent("module init call failed for %s\n", mi->name);
+/* fprintf(stderr,"misc_mod_add: added %s\n", mi->name); */
 }
 
 
@@ -746,6 +747,9 @@ extern misc_module_info dmarc_module_info;
 #if defined(SUPPORT_SPF) && SUPPORT_SPF!=2
 extern misc_module_info spf_module_info;
 #endif
+#if defined(EXPERIMENTAL_ARC) && (!defined(SUPPORT_ARC) || SUPPORT_ARC!=2)
+extern misc_module_info arc_module_info;
+#endif
 
 void
 init_misc_mod_list(void)
@@ -755,14 +759,17 @@ if (onetime) return;
 onetime = TRUE;
 
 #if !defined(DISABLE_DKIM) && (!defined(SUPPORT_DKIM) || SUPPORT_DKIM!=2)
-misc_mod_add(&dkim_module_info);
+  misc_mod_add(&dkim_module_info);
 #endif
 #if defined(SUPPORT_SPF) && SUPPORT_SPF!=2
-misc_mod_add(&spf_module_info);
+  misc_mod_add(&spf_module_info);
 #endif
 #if defined(SUPPORT_DMARC) && SUPPORT_DMARC!=2
 /* dmarc depends on spf so this add must go after, for the both-static case */
-misc_mod_add(&dmarc_module_info);
+  misc_mod_add(&dmarc_module_info);
+#endif
+#if defined(EXPERIMENTAL_ARC) && (!defined(SUPPORT_ARC) || SUPPORT_ARC!=2)
+  misc_mod_add(&arc_module_info);
 #endif
 }
 

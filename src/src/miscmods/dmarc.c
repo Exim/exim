@@ -360,7 +360,32 @@ g = string_fmt_append(g, "align_dkim %d\nalign_spf %d\naction %d\n",
 
 #if DMARC_API >= 100400
 # ifdef EXPERIMENTAL_ARC
-g = arc_dmarc_hist_append(g);
+  {
+  const misc_module_info * mi = misc_mod_findonly(US"arc");
+  const uschar * s;
+  gstring * g2 = NULL;
+  typedef const uschar * (*fn_t)(gstring **);
+
+  if (mi && (s = (((fn_t *) mi->functions)[ARC_ARCSET_INFO]) (&g2)))
+    {
+    int i = Ustrcmp(s, "pass") == 0 ? ARES_RESULT_PASS
+	    : Ustrcmp(s, "fail") == 0 ? ARES_RESULT_FAIL
+	    : ARES_RESULT_UNKNOWN;
+
+    g = string_fmt_append(g, "arc %d\n"
+			     "arc_policy %d json[%#Y ]\n",
+			  i,
+			  i == ARES_RESULT_PASS ? DMARC_ARC_POLICY_RESULT_PASS
+			  : i == ARES_RESULT_FAIL ? DMARC_ARC_POLICY_RESULT_FAIL
+			  : DMARC_ARC_POLICY_RESULT_UNUSED,
+			  g2
+			  );
+    }
+  else
+    string_fmt_append(g, "arc %d\narc_policy %d json:[]\n",
+			ARES_RESULT_UNKNOWN, DMARC_ARC_POLICY_RESULT_UNUSED);
+  }
+
 # else
 g = string_fmt_append(g, "arc %d\narc_policy %d json:[]\n",
 		      ARES_RESULT_UNKNOWN, DMARC_ARC_POLICY_RESULT_UNUSED);

@@ -169,6 +169,7 @@ Do not put spaces between # and the 'define'.
 
 /* Required to support dynamic-module build */
 #define SUPPORT_DKIM
+#define SUPPORT_ARC
 
 #define SYSLOG_LOG_PID
 #define SYSLOG_LONG_LINES

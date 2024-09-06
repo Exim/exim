@@ -935,13 +935,19 @@ return;
 static int
 pdkim_header_complete(pdkim_ctx * ctx)
 {
-if (ctx->cur_header->ptr > 1)
-  gstring_trim_trailing(ctx->cur_header, '\r');
-(void) string_from_gstring(ctx->cur_header);
+gstring * g = ctx->cur_header;
+const misc_module_info * mi;
+typedef const uschar * (*fn_t)(gstring *, BOOL);
+
+if (gstring_length(g) > 1)
+  gstring_trim_trailing(g, '\r');
+(void) string_from_gstring(g);
 
 #ifdef EXPERIMENTAL_ARC
-/* Feed the header line to ARC processing */
-(void) arc_header_feed(ctx->cur_header, !(ctx->flags & PDKIM_MODE_SIGN));
+/* Feed the header line also to ARC processing */
+if ((mi = misc_mod_findonly(US"arc")))
+  (((fn_t *) mi->functions)[ARC_HEADER_FEED])
+					  (g, !(ctx->flags & PDKIM_MODE_SIGN));
 #endif
 
 if (++ctx->num_headers > PDKIM_MAX_HEADERS) goto BAIL;
@@ -951,7 +957,7 @@ if (ctx->flags & PDKIM_MODE_SIGN)
   for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)  /* Traverse all signatures */
 
     /* Add header to the signed headers list (in reverse order) */
-    sig->headers = pdkim_prepend_stringlist(sig->headers, ctx->cur_header->s);
+    sig->headers = pdkim_prepend_stringlist(sig->headers, g->s);
 
 /* VERIFICATION ----------------------------------------------------------- */
 /* DKIM-Signature: headers are added to the verification list */
@@ -959,9 +965,9 @@ else
   {
 #ifdef notdef
   DEBUG(D_acl) debug_printf("DKIM >> raw hdr: %.*Z\n",
-			    ctx->cur_head->ptr, CUS ctx->cur_header->s);
+			    ctx->cur_head->ptr, CUS g->s);
 #endif
-  if (strncasecmp(CCS ctx->cur_header->s,
+  if (strncasecmp(CCS g->s,
 		  DKIM_SIGNATURE_HEADERNAME,
 		  Ustrlen(DKIM_SIGNATURE_HEADERNAME)) == 0)
     {
@@ -973,7 +979,7 @@ else
     DEBUG(D_acl) debug_printf(
 	"DKIM >> Found sig, trying to parse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
-    sig = pdkim_parse_sig_header(ctx, ctx->cur_header->s);
+    sig = pdkim_parse_sig_header(ctx, g->s);
 
     if (!(last_sig = ctx->sig))
       ctx->sig = sig;
@@ -985,18 +991,18 @@ else
 
     if (dkim_collect_input && --dkim_collect_input == 0)
       {
-      ctx->headers = pdkim_prepend_stringlist(ctx->headers, ctx->cur_header->s);
-      ctx->cur_header->s[ctx->cur_header->ptr = 0] = '\0';
+      ctx->headers = pdkim_prepend_stringlist(ctx->headers, g->s);
+      g->s[g->ptr = 0] = '\0';
       return PDKIM_ERR_EXCESS_SIGS;
       }
     }
 
   /* all headers are stored for signature verification */
-  ctx->headers = pdkim_prepend_stringlist(ctx->headers, ctx->cur_header->s);
+  ctx->headers = pdkim_prepend_stringlist(ctx->headers, g->s);
   }
 
 BAIL:
-ctx->cur_header->s[ctx->cur_header->ptr = 0] = '\0';	/* leave buffer for reuse */
+g->s[g->ptr = 0] = '\0';	/* leave buffer for reuse */
 return PDKIM_OK;
 }
 

@@ -97,6 +97,7 @@ mkdir $d
 cd $d
 # Makefile is generated
 for f in dummy.c \
+	arc.c arc_api.h \
 	dkim.c dkim_transport.c dkim.h dkim_api.h \
 	pdkim/crypt_ver.h pdkim/pdkim.c pdkim/pdkim.h \
 	pdkim/pdkim_hash.h pdkim/signing.c pdkim/signing.h \
@@ -149,7 +150,7 @@ do
 done
 
 # EXPERIMENTAL_*
-for f in  arc.c bmi_spam.c bmi_spam.h dcc.c dcc.h dane.c dane-openssl.c \
+for f in  bmi_spam.c bmi_spam.h dcc.c dcc.h dane.c dane-openssl.c \
   danessl.h imap_utf7.c utf8.c xclient.c
 do
   ln -s ../src/$f $f

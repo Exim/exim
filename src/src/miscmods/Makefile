@@ -31,6 +31,7 @@ miscmods.a:	$(OBJ)
 
 # Note that the sources from pdkim/ are linked into the build.../miscmods/ dir
 # by scripts/Makelinks.
+arc.o	arc.so:		$(HDRS) pdkim.h arc.c
 dkim.o  dkim.so:	$(HDRS) dkim.h dkim.c dkim_transport.c \
 			crypt_ver.h pdkim.h pdkim_hash.h pdkim.c \
 			signing.h signing.c

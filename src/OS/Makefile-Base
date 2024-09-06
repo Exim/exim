@@ -495,8 +495,7 @@ transport-filter.pl: config ../src/transport-filter.src
 # are thrown away by the linker.
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
-OBJ_EXPERIMENTAL =	arc.o \
-			bmi_spam.o \
+OBJ_EXPERIMENTAL =	bmi_spam.o \
 			dane.o \
 			dcc.o \
 			imap_utf7.o \
@@ -685,6 +684,7 @@ HDRS  =	blob.h \
 	hintsdb/hints_tdb.h \
 	local_scan.h \
 	macros.h \
+	miscmods/arc_api.h \
 	miscmods/dkim_api.h \
 	miscmods/dmarc_api.h \
 	miscmods/spf_api.h \
@@ -707,6 +707,7 @@ PHDRS = ../config.h \
 	../hintsdb/hints_tdb.h \
 	../local_scan.h \
 	../macros.h \
+	../miscmods/arc_api.h \
 	../miscmods/dkim_api.h \
 	../miscmods/dmarc_api.h \
 	../miscmods/spf_api.h \
@@ -900,7 +901,6 @@ spool_mbox.o:    $(HDRS) spool_mbox.c
 
 # Dependencies for EXPERIMENTAL_* modules
 
-arc.o:		$(HDRS) miscmods/pdkim.h arc.c
 bmi_spam.o:	$(HDRS) bmi_spam.c
 dane.o:		$(HDRS) dane.c dane-openssl.c
 dcc.o:		$(HDRS) dcc.h dcc.c

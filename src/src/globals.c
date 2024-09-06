@@ -615,14 +615,6 @@ tree_node *addresslist_anchor  = NULL;
 int     addresslist_count      = 0;
 gid_t  *admin_groups           = NULL;
 
-#ifdef EXPERIMENTAL_ARC
-struct arc_set *arc_received	= NULL;
-int     arc_received_instance	= 0;
-int     arc_oldest_pass		= 0;
-const uschar *arc_state		= NULL;
-const uschar *arc_state_reason	= NULL;
-#endif
-
 uschar *authenticated_fail_id  = NULL;
 uschar *authenticated_id       = NULL;
 uschar *authenticated_sender   = NULL;

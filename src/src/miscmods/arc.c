@@ -8,20 +8,25 @@
    SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "exim.h"
+#include "../exim.h"
 #if defined EXPERIMENTAL_ARC
 # if defined DISABLE_DKIM
 #  error DKIM must also be enabled for ARC
 # else
 
-#  include "functions.h"
-#  include "miscmods/pdkim.h"
-#  include "miscmods/signing.h"
+#  include "../functions.h"
+#  include "pdkim.h"
+#  include "signing.h"
 
-#  ifdef SUPPORT_DMARC
-#   include "miscmods/dmarc.h"
-#  endif
+/* Globals */
 
+struct arc_set *arc_received = NULL;	/* highest ARC instance eval struct */
+int     arc_received_instance = 0;	/* highest ARC instance num in hdrs */
+int     arc_oldest_pass = 0;		/* lowest passing inst num in hdrs */
+const uschar *arc_state = NULL;		/* verification state */
+const uschar *arc_state_reason = NULL;
+
+/******************************************************************************/
 #define ARC_SIGN_OPT_TSTAMP	BIT(0)
 #define ARC_SIGN_OPT_EXPIRE	BIT(1)
 
@@ -134,18 +139,24 @@ arc_parse_line() gathering only the 'i' tag (instance) information.
 /******************************************************************************/
 
 /* We need a module init function, to check on the dkim module being present
-(and we may as well stack it's modinfo ptr)
-
-For now (until we do an arc module), called from exim.c main().
+(and we may as well stash it's modinfo ptr)
 */
-BOOL
-arc_init(void)
+
+static BOOL
+arc_init(void * dummy)
 {
 uschar * errstr = NULL;
 if ((arc_dkim_mod_info = misc_mod_find(US"dkim", &errstr)))
   return TRUE;
-log_write(0, LOG_MAIN|LOG_PANIC, "arc: %s", errstr);
+log_write(0, LOG_MAIN, "arc: %s", errstr);
 return FALSE;
+}
+
+static void
+arc_smtp_reset(void)
+{
+arc_state = arc_state_reason = NULL;
+arc_received_instance = 0;
 }
 
 /******************************************************************************/
@@ -708,11 +719,7 @@ blob * pubkey;
 const uschar * hashes;
 const uschar * srvtype =
   (((fn_t *) arc_dkim_mod_info->functions)[DKIM_DNS_PUBKEY])
-    (string_sprintf("%.*s._domainkey.%.*s",
-		  (int)al->s.len, al->s.data, (int)al->d.len, al->d.data),
-    &pubkey, &hashes);
-
-/*XXX do we need a blob-string printf %handler?  Other types of blob? */
+    (string_sprintf("%b._domainkey.%b", &al->s, &al->d), &pubkey, &hashes);
 
 if (!srvtype)
   { *errstr = US"pubkey dns lookup fail"; return NULL; }
@@ -734,8 +741,7 @@ if (hashes)
     if (Ustrncmp(ele, al->a_hash.data, al->a_hash.len) == 0) break;
   if (!ele)
     {
-    DEBUG(D_acl) debug_printf("pubkey h=%s vs sig a=%.*s\n",
-			      hashes, (int)al->a.len, al->a.data);
+    DEBUG(D_acl) debug_printf("pubkey h=%s vs sig a=%b\n", hashes, &al->a);
     *errstr = US"no usable sig for this pubkey hash list";
     return NULL;
     }
@@ -886,10 +892,9 @@ if (!(b = arc_ams_setup_vfy_bodyhash(ams)))
 DEBUG(D_acl)
   {
   debug_printf("ARC i=%d AMS   Body bytes hashed: %lu\n"
-	       "              Body %.*s computed: ",
+	       "              Body %b computed: %.*H\n",
 	       as->instance, b->signed_body_bytes,
-	       (int)ams->a_hash.len, ams->a_hash.data);
-  debug_printf("%.*H\n", b->bh.len, b->bh.data);
+	       &ams->a_hash, b->bh.len, b->bh.data);
   }
 
 /* We know the bh-tag blob is of a nul-term string, so safe as a string */
@@ -1072,7 +1077,6 @@ for (as2 = ctx->arcset_chain;
 
   al = as2->hdr_aar;
   if (!(s = al->relaxed))
-    /*XXX dkim module */
     al->relaxed = s = arc_relax_header_n(al->complete->text,
 					    al->complete->slen, TRUE);
   len = Ustrlen(s);
@@ -1081,7 +1085,6 @@ for (as2 = ctx->arcset_chain;
 
   al = as2->hdr_ams;
   if (!(s = al->relaxed))
-    /*XXX dkim module */
     al->relaxed = s = arc_relax_header_n(al->complete->text,
 					    al->complete->slen, TRUE);
   len = Ustrlen(s);
@@ -1090,11 +1093,9 @@ for (as2 = ctx->arcset_chain;
 
   al = as2->hdr_as;
   if (as2->instance == as->instance)
-    /*XXX dkim module */
     s = arc_relax_header_n(al->rawsig_no_b_val.data,
 					al->rawsig_no_b_val.len, FALSE);
   else if (!(s = al->relaxed))
-    /*XXX dkim module */
     al->relaxed = s = arc_relax_header_n(al->complete->text,
 					    al->complete->slen, TRUE);
   len = Ustrlen(s);
@@ -1109,8 +1110,8 @@ for (as2 = ctx->arcset_chain;
 exim_sha_finish(&hhash_ctx, &hhash_computed);
 DEBUG(D_acl)
   {
-  debug_printf("ARC i=%d AS Header %.*s computed: ",
-    as->instance, (int)hdr_as->a_hash.len, hdr_as->a_hash.data);
+  debug_printf("ARC i=%d AS Header %b computed: ",
+		as->instance, &hdr_as->a_hash);
   debug_printf("%.*H\n", hhash_computed.len, hhash_computed.data);
   }
 
@@ -1161,13 +1162,17 @@ return NULL;
 /******************************************************************************/
 
 /* Do ARC verification.  Called from DATA ACL, on a verify = arc
-condition.  No arguments; we are checking globals.
+condition.  Set arc_state, and compare with given list of acceptable states.
 
-Return:  The ARC state, or NULL on error.
+Arguments:
+	condlist	list of resulta to test for OK/FAIL return;
+			NULL for default list
+
+Return:  OK/FAIL, or DEFER on error
 */
 
-const uschar *
-acl_verify_arc(void)
+static int
+acl_verify_arc(const uschar * condlist)
 {
 const uschar * res;
 
@@ -1246,7 +1251,27 @@ if ((res = arc_verify_seals(&arc_verify_ctx)))
 res = US"pass";
 
 out:
-  return res;
+  {
+  int csep = 0;
+  uschar * cond;
+
+  if (!(arc_state = res))
+    return DEFER;
+
+  DEBUG(D_acl) debug_printf_indent("ARC verify result %s %s%s%s\n", arc_state,
+    arc_state_reason ? "(":"", arc_state_reason, arc_state_reason ? ")":"");
+
+  if (!condlist) condlist = US"none:pass";
+  while ((cond = string_nextinlist(&condlist, &csep, NULL, 0)))
+    if (Ustrcmp(res, cond) == 0) return OK;
+  return FAIL;
+  }
+}
+
+static BOOL
+arc_is_pass(void)
+{
+return arc_state && Ustrcmp(arc_state, "pass") == 0;
 }
 
 /******************************************************************************/
@@ -1348,9 +1373,8 @@ arc_line * al = (arc_line *)(as+1);
 header_line * h = (header_line *)(al+1);
 
 g = string_catn(g, ARC_HDR_AAR, ARC_HDRLEN_AAR);
-g = string_fmt_append(g, " i=%d; %s; smtp.remote-ip=%s;\r\n\t",
-			 instance, identity, sender_host_address);
-g = string_catn(g, US ar->data, ar->len);
+g = string_fmt_append(g, " i=%d; %s; smtp.remote-ip=%s;\r\n\t%b",
+			 instance, identity, sender_host_address, ar);
 
 h->slen = g->ptr - aar_off;
 h->text = g->s + aar_off;
@@ -1503,7 +1527,6 @@ for(col = 3; rheaders; rheaders = rheaders->prev)
       /* Accumulate header for hashing/signing */
 
       hdata = string_cat(hdata,
-		/*XXX dkim module */
 		arc_relax_header_n(htext, rheaders->h->slen, TRUE));	/*XXX hardwired */
       break;
       }
@@ -1518,7 +1541,6 @@ g = string_catn(g, US";\r\n\tb=;", 7);
 
 /* Include the pseudo-header in the accumulation */
 
-/*XXX dkim module */
 s = arc_relax_header_n(g->s + ams_off, g->ptr - ams_off, FALSE);
 hdata = string_cat(hdata, s);
 
@@ -1633,17 +1655,14 @@ for (arc_set * as = Ustrcmp(status, US"fail") == 0
   badline_str = US"aar";
   if (!(l = as->hdr_aar)) goto badline;
   h = l->complete;
-  /*XXX dkim module */
   hdata = string_cat(hdata, arc_relax_header_n(h->text, h->slen, TRUE));
   badline_str = US"ams";
   if (!(l = as->hdr_ams)) goto badline;
   h = l->complete;
-  /*XXX dkim module */
   hdata = string_cat(hdata, arc_relax_header_n(h->text, h->slen, TRUE));
   badline_str = US"as";
   if (!(l = as->hdr_as)) goto badline;
   h = l->complete;
-  /*XXX dkim module */
   hdata = string_cat(hdata, arc_relax_header_n(h->text, h->slen, !!as->next));
   }
 
@@ -1670,11 +1689,7 @@ badline:
 
 /**************************************/
 
-/*XXX not static currently as the smtp tpt calls us */
-/* Really returns pdkim_bodyhash* - but there's an ordering
-problem for functions.h so call it void* */
-
-void *
+static pdkim_bodyhash *
 arc_ams_setup_sign_bodyhash(void)
 {
 blob canon = {.data = US"relaxed", .len = 7};	/*XXX hardwired */
@@ -1687,11 +1702,18 @@ return arc_set_bodyhash(TRUE, &canon, &hash, -1);
 
 
 
-void
+/* Module API: initilise, and set up a bodyhash for AMS */
+
+static void
 arc_sign_init(void)
 {
+blob canon = {.data = US"relaxed", .len = 7};	/*XXX hardwired */
+blob hash =  {.data = US"sha256",  .len = 6};	/*XXX hardwired */
+
 memset(&arc_sign_ctx, 0, sizeof(arc_sign_ctx));
 headers_rlist = NULL;
+
+(void) arc_ams_setup_sign_bodyhash();
 }
 
 
@@ -1735,7 +1757,9 @@ return TRUE;
 
 
 
-/* ARC signing.  Called from the smtp transport, if the arc_sign option is set.
+/* Module API: ARC signing.
+
+Called from the smtp transport, if the arc_sign option is set.
 The dkim_exim_sign() function has already been called, so will have hashed the
 message body for us so long as we requested a hash previously.
 
@@ -1751,7 +1775,7 @@ Return value
   but not the plainheaders.
 */
 
-gstring *
+static gstring *
 arc_sign(const uschar * signspec, gstring * sigheaders, uschar ** errstr)
 {
 const uschar * identity, * selector, * privkey, * opts, * s;
@@ -1868,10 +1892,7 @@ g = arc_sign_append_aar(g, &arc_sign_ctx, identity, instance, &ar);
     - ? oversigning?
   - Covers the data
   - we must have requested a suitable bodyhash previously
-XXX so where was that done?  I don't see it!
-XXX ah, ok - the smtp tpt calls arc_ams_setup_sign_bodyhash() directly, early
-	-> should pref use a better named call to make the point, but that
-	can wait until arc becomes a module
+    [done in arc_sign_init()]
 */
 
 b = arc_ams_setup_sign_bodyhash();
@@ -1975,7 +1996,8 @@ badline:
 
 
 
-/* A header line has been identified by DKIM processing.
+/* Module API: A header line has been identified by DKIM processing;
+feed it to ARC processing.
 
 Arguments:
   g		Header line
@@ -1985,7 +2007,7 @@ Return:
   NULL for success, or an error string (probably unused)
 */
 
-const uschar *
+static const uschar *
 arc_header_feed(gstring * g, BOOL is_vfy)
 {
 return is_vfy ? arc_header_vfy_feed(g) : arc_header_sign_feed(g);
@@ -1997,7 +2019,7 @@ return is_vfy ? arc_header_vfy_feed(g) : arc_header_sign_feed(g);
 
 /* Construct the list of domains from the ARC chain after validation */
 
-uschar *
+const uschar *
 fn_arc_domains(void)
 {
 arc_set * as;
@@ -2033,7 +2055,6 @@ authres_arc(gstring * g)
 {
 if (arc_state)
   {
-  arc_line * highest_ams;
   int start = 0;		/* Compiler quietening */
   DEBUG(D_acl) start = gstring_length(g);
 
@@ -2043,11 +2064,10 @@ if (arc_state)
     g = string_fmt_append(g, " (i=%d)", arc_received_instance);
     if (arc_state_reason)
       g = string_append(g, 3, US"(", arc_state_reason, US")");
-    g = string_catn(g, US" header.s=", 10);
-    highest_ams = arc_received->hdr_ams;
-    g = string_catn(g, highest_ams->s.data, highest_ams->s.len);
 
-    g = string_fmt_append(g, " arc.oldest-pass=%d", arc_oldest_pass);
+    g = string_fmt_append(g, " header.s=%b arc.oldest-pass=%d",
+				&arc_received->hdr_ams->s,
+				arc_oldest_pass);
 
     if (sender_host_address)
       g = string_append(g, 2, US" smtp.remote-ip=", sender_host_address);
@@ -2064,61 +2084,86 @@ return g;
 
 
 #  ifdef SUPPORT_DMARC
-/* Append a DMARC history record pair for ARC, to the given history set */
 
-gstring *
-arc_dmarc_hist_append(gstring * g)
+/* Module API: obtain ARC info for DMARC history.
+Arguments:
+	gp	pointer for return of arcset info string
+Return:
+	status string, or NULL if none
+*/
+
+static const uschar *
+arc_arcset_string(gstring ** gp)
 {
 if (arc_state)
   {
-  BOOL first = TRUE;
-  int i = Ustrcmp(arc_state, "pass") == 0 ? ARES_RESULT_PASS
-	  : Ustrcmp(arc_state, "fail") == 0 ? ARES_RESULT_FAIL
-	  : ARES_RESULT_UNKNOWN;
-  g = string_fmt_append(g, "arc %d\n", i);
-  g = string_fmt_append(g, "arc_policy %d json[",
-			  i == ARES_RESULT_PASS ? DMARC_ARC_POLICY_RESULT_PASS
-			  : i == ARES_RESULT_FAIL ? DMARC_ARC_POLICY_RESULT_FAIL
-			  : DMARC_ARC_POLICY_RESULT_UNUSED);
+  gstring * g = NULL;
+
   /*XXX would we prefer this backwards? */
-  for (arc_set * as = arc_verify_ctx.arcset_chain; as;
-	as = as->next, first = FALSE)
+  for (arc_set * as = arc_verify_ctx.arcset_chain; as; as = as->next)
     {
     arc_line * line = as->hdr_as;
     if (line)
       {
-      blob * d = &line->d;
-      blob * s = &line->s;
+      g = string_append_listele_fmt(g, ',', " (\"i\":%u"                 /*)*/
+					    ", \"d\":\"%#b\""
+					    ", \"s\":\"%#b\"",
+		  as->instance, &line->d, &line->s);
 
-      if (!first)
-	g = string_catn(g, US",", 1);
-
-      g = string_fmt_append(g, " (\"i\":%u,"			/*)*/
-				" \"d\":\"%.*s\","
-				" \"s\":\"%.*s\"",
-		  as->instance,
-		  d->data ? (int)d->len : 0, d->data && d->len ? d->data : US"",
-		  s->data ? (int)s->len : 0, s->data && s->len ? s->data : US""
-			   );
       if ((line = as->hdr_aar))
 	{
 	blob * ip = &line->ip;
 	if (ip->data && ip->len)
-	  g = string_fmt_append(g, ", \"ip\":\"%.*s\"", (int)ip->len, ip->data);
+	  g = string_fmt_append(g, ", \"ip\":\"%#b\"", ip);
 	}
-
+									  /*(*/
       g = string_catn(g, US")", 1);
       }
     }
-  g = string_catn(g, US" ]\n", 3);
+  *gp = g;
   }
-else
-  g = string_fmt_append(g, "arc %d\narc_policy %d json:[]\n",
-			ARES_RESULT_UNKNOWN, DMARC_ARC_POLICY_RESULT_UNUSED);
-return g;
+return arc_state;
 }
 #  endif
 
+
+/******************************************************************************/
+/* Module API */
+
+static void * arc_functions[] = {
+  [ARC_VERIFY] =	acl_verify_arc,
+  [ARC_HEADER_FEED] =	arc_header_feed,
+  [ARC_STATE_IS_PASS] =	arc_is_pass,
+  [ARC_SIGN_INIT] =	arc_sign_init,
+  [ARC_SIGN] =		arc_sign,
+# ifdef SUPPORT_DMARC
+  [ARC_ARCSET_INFO] =	arc_arcset_string,
+# endif
+};
+
+static var_entry arc_variables[] = {
+  { "arc_domains",         vtype_string_func, (void *) &fn_arc_domains },
+  { "arc_oldest_pass",     vtype_int,         &arc_oldest_pass },
+  { "arc_state",           vtype_stringptr,   &arc_state },
+  { "arc_state_reason",    vtype_stringptr,   &arc_state_reason },
+};
+
+misc_module_info arc_module_info =
+{
+  .name =		US"arc",
+# if SUPPORT_SPF==2
+  .dyn_magic =		MISC_MODULE_MAGIC,
+# endif
+  .init =		arc_init,
+  .smtp_reset =		arc_smtp_reset,
+  .authres =		authres_arc,
+
+  .functions =		arc_functions,
+  .functions_count =	nelem(arc_functions),
+
+  .variables =		arc_variables,
+  .variables_count =	nelem(arc_variables),
+};
 
 # endif /* DISABLE_DKIM */
 #endif /* EXPERIMENTAL_ARC */

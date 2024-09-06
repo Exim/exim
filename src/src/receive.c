@@ -4135,11 +4135,16 @@ if (LOGGING(dkim))
   typedef gstring * (*fn_t)(gstring *);
   if (mi)
     g = (((fn_t *) mi->functions)[DKIM_VDOM_FIRSTPASS]) (g);
-  }
+
 # ifdef EXPERIMENTAL_ARC
-if (LOGGING(dkim) && arc_state && Ustrcmp(arc_state, "pass") == 0)
-  g = string_catn(g, US" ARC", 4);
+   {
+    mi = misc_mod_findonly(US"arc");
+    typedef BOOL (*fn_t)(void);
+    if (mi && (((fn_t *) mi->functions)[ARC_STATE_IS_PASS]) ())
+      g = string_catn(g, US" ARC", 4);
+   }
 # endif
+  }
 #endif
 
 if (LOGGING(receive_time))

@@ -555,6 +555,9 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 # include "miscmods/dmarc_api.h"
 # include <opendmarc/dmarc.h>
 #endif
+#ifdef EXPERIMENTAL_ARC
+# include "miscmods/arc_api.h"
+#endif
 
 /* The following stuff must follow the inclusion of config.h because it
 requires various things that are set therein. */

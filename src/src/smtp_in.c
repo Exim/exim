@@ -1701,10 +1701,7 @@ bmi_run = 0;
 bmi_verdicts = NULL;
 #endif
 dnslist_domain = dnslist_matched = NULL;
-#ifdef EXPERIMENTAL_ARC
-arc_state = arc_state_reason = NULL;
-arc_received_instance = 0;
-#endif
+
 dsn_ret = 0;
 dsn_envid = NULL;
 deliver_host = deliver_host_address = NULL;	/* Can be set by ACL */

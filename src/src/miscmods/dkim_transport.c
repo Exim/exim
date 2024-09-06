@@ -109,6 +109,32 @@ return TRUE;
 
 
 
+/* Prepend ARC-signing headers to given set of headers
+
+Arguments:
+  signspec	Three-element colon-sep list: identity, selector, privkey.
+		Optional fourth element: comma-sep list of options.
+		Already expanded
+  sigheaders	Any signature headers already generated, eg. by DKIM, or NULL
+  errstr	Error string
+
+Return value
+  Set of headers to prepend to the message, including the supplied sigheaders
+  but not the plainheaders.
+*/
+
+static gstring *
+dkt_arc_sign(const uschar * signspec, gstring * sigheaders, uschar ** errstr_p)
+{
+const misc_module_info * mi = misc_mod_findonly(US"arc");
+typedef gstring * (*fn_t)(const uschar *, gstring *, uschar **);
+if (mi)
+  return (((fn_t *) mi->functions)[ARC_SIGN]) (signspec, sigheaders, errstr_p);
+*errstr_p = US"failed to find arc module";
+return NULL;
+}
+
+
 
 /* This function is a wrapper around transport_write_message().
    It is only called from the smtp transport if DKIM or Domainkeys support
@@ -153,11 +179,6 @@ if (!rc) return FALSE;
 
 /* Get signatures for headers plus spool data file */
 
-#ifdef EXPERIMENTAL_ARC
-arc_sign_init();	/*XXX perhaps move this call back to the smtp tpt
-	      around where it currently calls arc_ams_setup_sign_bodyhash() ? */
-#endif
-
 /* The dotstuffed status of the datafile depends on whether it was stored
 in wireformat. */
 
@@ -174,7 +195,7 @@ if (!(dkim_signature = dkim_exim_sign(deliver_datafile,
 if (dkim->arc_signspec)			/* Prepend ARC headers */
   {
   uschar * e = NULL;
-  if (!(dkim_signature = arc_sign(dkim->arc_signspec, dkim_signature, &e)))
+  if (!(dkim_signature = dkt_arc_sign(dkim->arc_signspec, dkim_signature, &e)))
     {
     *err = e;
     return FALSE;
@@ -275,10 +296,6 @@ if (!rc)
   goto CLEANUP;
   }
 
-#ifdef EXPERIMENTAL_ARC
-arc_sign_init();
-#endif
-
 /* Feed the file to the goats^W DKIM lib.  At this point the dotstuffed
 status of the file depends on the output of transport_write_message() just
 above, which should be the result of the end_dot flag in tctx->options. */
@@ -299,7 +316,8 @@ else
 #ifdef EXPERIMENTAL_ARC
 if (dkim->arc_signspec)				/* Prepend ARC headers */
   {
-  if (!(dkim_signature = arc_sign(dkim->arc_signspec, dkim_signature, USS err)))
+  if (!(dkim_signature = dkt_arc_sign(dkim->arc_signspec, dkim_signature,
+				      USS err)))
     goto CLEANUP;
   dlen = dkim_signature->ptr;
   }

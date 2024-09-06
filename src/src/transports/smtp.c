@@ -32,7 +32,7 @@ optionlist smtp_transport_options[] = {
       LOFF(address_retry_include_sender) },
   { "allow_localhost",      opt_bool,	   LOFF(allow_localhost) },
 #ifdef EXPERIMENTAL_ARC
-  { "arc_sign", opt_stringptr,		   LOFF(arc_sign) },
+  { "arc_sign",		    opt_stringptr, LOFF(arc_sign) },
 #endif
   { "authenticated_sender", opt_stringptr, LOFF(authenticated_sender) },
   { "authenticated_sender_force", opt_bool, LOFF(authenticated_sender_force) },
@@ -4104,8 +4104,8 @@ else
 
 #ifndef DISABLE_DKIM
   {
-  typedef void (*fn_t)(void);
   misc_module_info * mi;
+
 # ifdef MEASURE_TIMING
   struct timeval t0;
   gettimeofday(&t0, NULL);
@@ -4113,27 +4113,30 @@ else
 
   if ((mi = misc_mod_find(US"dkim", NULL)))
     {
+    typedef void (*fn_t)(void);
     (((fn_t *) mi->functions)[DKIM_TRANSPORT_INIT]) ();
 
 # ifdef EXPERIMENTAL_ARC
-    uschar * s = ob->arc_sign;
-    if (s)
       {
-      if (!(ob->dkim.arc_signspec = s = expand_string(s)))
-	{
-	if (!f.expand_string_forcedfail)
+      uschar * s = ob->arc_sign;
+      if (s)
+	if (!(ob->dkim.arc_signspec = s = expand_string(s)))
 	  {
-	  message = US"failed to expand arc_sign";
-	  sx->ok = FALSE;
-	  goto SEND_FAILED;
+	  if (!f.expand_string_forcedfail)
+	    {
+	    message = US"failed to expand arc_sign";
+	    sx->ok = FALSE;
+	    goto SEND_FAILED;
+	    }
 	  }
-	}
-      else if (*s)
-	{
-	/* Ask dkim code to hash the body for ARC */
-	(void) arc_ams_setup_sign_bodyhash();
-	ob->dkim.force_bodyhash = TRUE;
-	}
+	else if (*s && (mi = misc_mod_find(US"arc", NULL)))
+	  {
+	  typedef void (*fn_t)(void);
+	  (((fn_t *) mi->functions)[ARC_SIGN_INIT]) ();
+
+	  /* Ask dkim code to hash the body for ARC */
+	  ob->dkim.force_bodyhash = TRUE;
+	  }
       }
 # endif	/*ARC*/
     }

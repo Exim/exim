@@ -454,10 +454,10 @@ static var_entry var_table[] = {
   { "address_file",        vtype_stringptr,   &address_file },
   { "address_pipe",        vtype_stringptr,   &address_pipe },
 #ifdef EXPERIMENTAL_ARC
-  { "arc_domains",         vtype_string_func, (void *) &fn_arc_domains },
-  { "arc_oldest_pass",     vtype_int,         &arc_oldest_pass },
-  { "arc_state",           vtype_stringptr,   &arc_state },
-  { "arc_state_reason",    vtype_stringptr,   &arc_state_reason },
+  { "arc_domains",         vtype_module,	US"arc" },
+  { "arc_oldest_pass",     vtype_module,	US"arc" },
+  { "arc_state",           vtype_module,	US"arc" },
+  { "arc_state_reason",    vtype_module,	US"arc" },
 #endif
   { "authenticated_fail_id",vtype_stringptr,  &authenticated_fail_id },
   { "authenticated_id",    vtype_stringptr,   &authenticated_id },
@@ -4890,9 +4890,6 @@ while (*s)
       yield = authres_iprev(yield);
       yield = authres_smtpauth(yield);
       yield = misc_mod_authres(yield);
-#ifdef EXPERIMENTAL_ARC
-      yield = authres_arc(yield);
-#endif
       break;
       }
 

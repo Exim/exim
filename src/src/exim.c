@@ -4211,9 +4211,6 @@ is equivalent to the ability to modify a setuid binary!
 This needs to happen before we read the main configuration. */
 init_lookup_list();
 init_misc_mod_list();
-#ifdef EXPERIMENTAL_ARC
-arc_init();	/*XXX temporary, until we do an arc module */
-#endif
 
 /*XXX this excrescence could move to the testsuite standard config setup file */
 #ifdef SUPPORT_I18N

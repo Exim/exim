@@ -498,6 +498,8 @@ Enable using EXPERIMENTAL_ARC=yes in your Local/Makefile.
 You must also have DKIM present (not disabled), and you very likely
 want to have SPF enabled.
 
+It is possible to build as a dynamic-load module: set also SUPPORT_ARC=2.
+
 
 Verification
 --

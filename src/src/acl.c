@@ -207,9 +207,17 @@ static condition_def conditions[] = {
   [ACLC_DELAY] =		{ US"delay",		ACD_EXP | ACD_MOD,
 				  FORBIDDEN(ACL_BIT_NOTQUIT) },
 #ifndef DISABLE_DKIM
-  [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",	ACD_EXP, 
+  [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",
+# if SUPPORT_DKIM==2
+				  ACD_LOAD |
+# endif
+				  ACD_EXP, 
 				  PERMITTED(ACL_BIT_DKIM) },
-  [ACLC_DKIM_STATUS] =		{ US"dkim_status",	ACD_EXP,
+  [ACLC_DKIM_STATUS] =		{ US"dkim_status",
+# if SUPPORT_DKIM==2
+				  ACD_LOAD |
+# endif
+				  ACD_EXP,
 				  PERMITTED(ACL_BIT_DKIM | ACL_BIT_DATA | ACL_BIT_MIME
 # ifndef DISABLE_PRDR
 				  | ACL_BIT_PRDR
@@ -394,6 +402,7 @@ for (condition_def * c = conditions; c < conditions + nelem(conditions); c++)
 }
 #endif
 
+/******************************************************************************/
 
 #ifndef MACRO_PREDEF
 
@@ -410,20 +419,31 @@ typedef struct condition_module {
 #  if SUPPORT_SPF==2
 static int spf_condx[] = { ACLC_SPF, ACLC_SPF_GUESS, -1 };
 #  endif
+#  if SUPPORT_DKIM==2
+static int dkim_condx[] = { ACLC_DKIM_SIGNER, ACLC_DKIM_STATUS, -1 };
+#  endif
 #  if SUPPORT_DMARC==2
 static int dmarc_condx[] = { ACLC_DMARC_STATUS, -1 };
 #  endif
+
+/* These are modules which can be loaded on seeing an ACL condition
+during readconf, The "arc" module is handled by custom coding. */
 
 static condition_module condition_modules[] = {
 #  if SUPPORT_SPF==2
   {.mod_name = US"spf", .conditions = spf_condx},
 #  endif
-#  if SUPPORT_SPF==2
+#  if SUPPORT_DKIM==2
+  {.mod_name = US"dkim", .conditions = dkim_condx},
+#  endif
+#  if SUPPORT_DMARC==2
   {.mod_name = US"dmarc", .conditions = dmarc_condx},
 #  endif
 };
 
-# endif
+# endif	/*LOOKUP_MODULE_DIR*/
+
+/****************************/
 
 /* Return values from decode_control() */
 
@@ -933,7 +953,7 @@ while ((s = (*func)()))
 
   if ((v = acl_checkname(name, verbs, nelem(verbs))) < 0)
     {
-    if (!this)
+    if (!this)		/* not handling a verb right now */
       {
       *error = string_sprintf("unknown ACL verb \"%s\" in \"%s\"", name,
         saveline);
@@ -1002,6 +1022,9 @@ while ((s = (*func)()))
     condition_module * cm;
     uschar * s = NULL;
 
+    /* Over the list of modules we support, check the list of ACL conditions
+    each supports.  This assumes no duplicates. */
+
     for (cm = condition_modules;
         cm < condition_modules + nelem(condition_modules); cm++)
       for (const int * cond = cm->conditions; *cond != -1; cond++)
@@ -1022,7 +1045,21 @@ while ((s = (*func)()))
       return NULL;
       }
     }
-#endif
+# ifdef EXPERIMENTAL_ARC
+  else if (c == ACLC_VERIFY)	/* Special handling for verify=arc; */
+    {	/* not invented a more general method yet- flag in verify_type_list? */
+    const uschar * t = s;
+    uschar * e;
+    if (  *t++ == '=' && Uskip_whitespace(&t) && Ustrncmp(t, "arc", 3) == 0
+       && !misc_mod_find(US"arc", &e))
+      {
+      *error = string_sprintf("ACL error: failed to find module for '%s': %s",
+			      conditions[c].name, e);
+      return NULL;
+      }
+    }
+# endif
+#endif	/*LOOKUP_MODULE_DIR*/
 
   cond = store_get(sizeof(acl_condition_block), GET_UNTAINTED);
   cond->next = NULL;
@@ -1876,19 +1913,11 @@ switch(vp->value)
 
 #ifdef EXPERIMENTAL_ARC
   case VERIFY_ARC:
-    {	/* Do Authenticated Received Chain checks in a separate function. */
-    const uschar * condlist = CUS string_nextinlist(&list, &sep, NULL, 0);
-    int csep = 0;
-    uschar * cond;
-
-    if (!(arc_state = acl_verify_arc())) return DEFER;
-    DEBUG(D_acl) debug_printf_indent("ARC verify result %s %s%s%s\n", arc_state,
-      arc_state_reason ? "(":"", arc_state_reason, arc_state_reason ? ")":"");
-
-    if (!condlist) condlist = US"none:pass";
-    while ((cond = string_nextinlist(&condlist, &csep, NULL, 0)))
-      if (Ustrcmp(arc_state, cond) == 0) return OK;
-    return FAIL;
+    {
+    const misc_module_info * mi = misc_mod_findonly(US"arc");
+    typedef int (*fn_t)(const uschar *);
+    if (mi) return (((fn_t *) mi->functions)[ARC_VERIFY])
+				(CUS string_nextinlist(&list, &sep, NULL, 0));
     }
 #endif
 
