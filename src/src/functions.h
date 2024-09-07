@@ -113,7 +113,6 @@ extern void    add_driver_info(driver_info **, const driver_info *, size_t);
 extern void    assert_no_variables(void *, int, const char *, int);
 extern int     auth_call_pam(const uschar *, uschar **);
 extern int     auth_call_pwcheck(uschar *, uschar **);
-extern int     auth_call_radius(const uschar *, uschar **);
 extern int     auth_call_saslauthd(const uschar *, const uschar *,
 	         const uschar *, const uschar *, uschar **);
 extern int     auth_check_serv_cond(auth_instance *);

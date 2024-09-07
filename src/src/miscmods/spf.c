@@ -585,7 +585,7 @@ static var_entry spf_variables[] = {
 misc_module_info spf_module_info =
 {
   .name =		US"spf",
-# if SUPPORT_SPF==2
+# ifdef DYNLOOKUP
   .dyn_magic =		MISC_MODULE_MAGIC,
 # endif
   .init =		spf_init,

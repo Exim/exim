@@ -2151,7 +2151,7 @@ static var_entry arc_variables[] = {
 misc_module_info arc_module_info =
 {
   .name =		US"arc",
-# if SUPPORT_SPF==2
+# ifdef DYNLOOKUP
   .dyn_magic =		MISC_MODULE_MAGIC,
 # endif
   .init =		arc_init,

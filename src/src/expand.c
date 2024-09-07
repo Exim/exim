@@ -2775,12 +2775,19 @@ switch(cond_type = identify_operator(&s, &opname))
     #endif  /* SUPPORT_PAM */
 
     case ECOND_RADIUS:
-    #ifdef RADIUS_CONFIG_FILE
-    rc = auth_call_radius(sub[0], &expand_string_message);
-    goto END_AUTH;
-    #else
-    goto COND_FAILED_NOT_COMPILED;
-    #endif  /* RADIUS_CONFIG_FILE */
+#ifdef RADIUS_CONFIG_FILE
+      {
+      const misc_module_info * mi = misc_mod_find(US"radius", NULL);
+      typedef int (*fn_t)(const uschar *, uschar **);
+      if (!mi)
+	goto COND_FAILED_NOT_COMPILED;
+      rc = (((fn_t *) mi->functions)[RADIUS_AUTH_CALL])
+					  (sub[0], &expand_string_message);
+      goto END_AUTH;
+      }
+#else
+      goto COND_FAILED_NOT_COMPILED;
+#endif  /* RADIUS_CONFIG_FILE */
 
     case ECOND_LDAPAUTH:
     #ifdef LOOKUP_LDAP

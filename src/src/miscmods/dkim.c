@@ -1359,7 +1359,7 @@ static var_entry dkim_variables[] = {
 
 misc_module_info dkim_module_info = {
   .name =		US"dkim",
-# if SUPPORT_DKIM==2
+# ifdef DYNLOOKUP
   .dyn_magic =		MISC_MODULE_MAGIC,
 # endif
   .init =		dkim_exim_init,

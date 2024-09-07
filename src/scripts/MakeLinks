@@ -79,7 +79,7 @@ mkdir $d
 cd $d
 # Makefile is generated
 for f in README call_pam.c call_pwcheck.c \
-  call_radius.c check_serv_cond.c cyrus_sasl.c cyrus_sasl.h gsasl.c \
+  check_serv_cond.c cyrus_sasl.c cyrus_sasl.h gsasl.c \
   gsasl.h get_data.c get_no64_data.c heimdal_gssapi.c heimdal_gssapi.h \
   cram_md5.c cram_md5.h plaintext.c plaintext.h \
   pwcheck.c pwcheck.h auth-spa.c auth-spa.h dovecot.c dovecot.h spa.c \
@@ -102,6 +102,7 @@ for f in dummy.c \
 	pdkim/crypt_ver.h pdkim/pdkim.c pdkim/pdkim.h \
 	pdkim/pdkim_hash.h pdkim/signing.c pdkim/signing.h \
 	dmarc.c dmarc.h dmarc_api.h \
+	radius.c radius_api.h \
 	spf.c spf.h spf_api.h
 do
   ln -s ../../src/$d/$f `basename $f`

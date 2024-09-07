@@ -41,13 +41,14 @@ spf.o   spf.so:		$(HDRS) spf.h spf.c
 
 dkim.o:
 		@echo "$(CC) dkim.c dkim_transport.c pdkim.c signing.c"
-		$(FE)$(CC) -r $(LDFLAGS_PARTIAL) $(CFLAGS) $(INCLUDE) \
-			dkim.c dkim_transport.c pdkim.c signing.c -o $@
+		$(FE)$(CC) -r $(LDFLAGS_PARTIAL) -o $@ $(CFLAGS) $(INCLUDE) \
+			dkim.c dkim_transport.c pdkim.c signing.c
 
 dkim.so:
 		@echo "$(CC) -shared dkim.c dkim_transport.c pdkim.c signing.c"
-		$(FE)$(CC) $(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) \
-			-DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) \
-			$(DLFLAGS) dkim.c dkim_transport.c pdkim.c signing.c -o $@
+		$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) -o $@ \
+			$(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) \
+			$(CFLAGS) $(INCLUDE) $(DLFLAGS) \
+			dkim.c dkim_transport.c pdkim.c signing.c
 
 # End

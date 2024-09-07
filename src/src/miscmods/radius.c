@@ -67,7 +67,7 @@ Returns:   OK if authentication succeeded
            ERROR some other error condition
 */
 
-int
+static int
 auth_call_radius(const uschar *s, uschar **errptr)
 {
 uschar *user;
@@ -218,6 +218,26 @@ return result;
 
 #endif  /* RADIUS_LIB_RADLIB */
 }
+
+
+
+/******************************************************************************/
+/* Module API */
+
+static void * rad_functions[] = {
+  [RADIUS_AUTH_CALL] =	auth_call_radius,
+};
+
+misc_module_info rad_module_info =
+{
+  .name =		US"radius",
+# ifdef DYNLOOKUP
+  .dyn_magic =		MISC_MODULE_MAGIC,
+# endif
+
+  .functions =		rad_functions,
+  .functions_count =	nelem(rad_functions),
+};
 
 #endif  /* RADIUS_CONFIG_FILE */
 

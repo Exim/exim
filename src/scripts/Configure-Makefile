@@ -247,17 +247,6 @@ then
           yes|YES|y|Y)
 	     echo >&2 "pcre is no longer supported; migrate to pcre2"
 	     exit 1
-
-#            cflags=`pcre-config --cflags`
-#            if [ $? -ne 0 ]; then
-#              echo >&2 "*** Missing pcre-config for regular expression support"
-#              exit 1
-#            fi
-#            libs=`pcre-config --libs`
-#            if [ ".$cflags" != "." ]; then
-#              echo "INCLUDE += $cflags"
-#            fi
-#            echo "PCRE_LIBS=$libs"
             ;;
         esac
         ;;
@@ -295,23 +284,32 @@ then
 fi
 rm -f $mftt
 
+#XXX look for RADIUS in $mft; add a SUPPORT_
+if $egrep -q "^RADIUS_CONFIG_FILE" $mft; then
+  echo "# radius fixup"
+  $egrep -q "^SUPPORT_RADIUS" $mft || echo "SUPPORT_RADIUS=yes" >> $mft
+fi
+
+
 # make the lookups Makefile with the definitions
 # the auxiliary script generates $look_mf_post from $look_mf_pre
 
 cp ../src/lookups/Makefile $look_mf_pre
 ../scripts/lookups-Makefile
 
+# make the Makefiles for routers, transports, auths and miscmods
+#
 while read class classdef names
 do
   cp ../src/$class/Makefile $class/Makefile.predynamic
-  CLASS=$class CLASSDEF=$classdef DRNAMES="$names" ../scripts/drivers-Makefile
+  CLASS=$class CLASSDEF=$classdef DRNAMES="$names" EGREP="$egrep" ../scripts/drivers-Makefile
   mv $class/Makefile.postdynamic $class/Makefile
   rm $class/Makefile.predynamic
 done <<-END
  routers    ROUTER	ACCEPT DNSLOOKUP IPLITERAL IPLOOKUP MANUALROUTE QUERYPROGRAM REDIRECT
  transports TRANSPORT	APPENDFILE AUTOREPLY LMTP PIPE QUEUEFILE SMTP
  auths	    AUTH	CRAM_MD5 CYRUS_SASL DOVECOT EXTERNAL GSASL HEIMDAL_GSSAPI PLAINTEXT SPA TLS
- miscmods   SUPPORT	ARC _DKIM DMARC SPF
+ miscmods   SUPPORT	ARC _DKIM DMARC RADIUS SPF
 END
 
 # See if there is a definition of EXIM_PERL in what we have built so far.

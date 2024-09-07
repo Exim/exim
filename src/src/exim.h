@@ -558,6 +558,9 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #ifdef EXPERIMENTAL_ARC
 # include "miscmods/arc_api.h"
 #endif
+#ifdef RADIUS_CONFIG_FILE
+# include "miscmods/radius_api.h"
+#endif
 
 /* The following stuff must follow the inclusion of config.h because it
 requires various things that are set therein. */
