@@ -228,7 +228,7 @@ static void * rad_functions[] = {
   [RADIUS_AUTH_CALL] =	auth_call_radius,
 };
 
-misc_module_info rad_module_info =
+misc_module_info radius_module_info =
 {
   .name =		US"radius",
 # ifdef DYNLOOKUP

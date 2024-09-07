@@ -738,6 +738,9 @@ DEBUG(D_lookup) debug_printf("Loaded %d lookup modules\n", countmodules);
 }
 
 
+/* Add module info struct to the modules list for those that are
+built as static */
+
 #if !defined(DISABLE_DKIM) && (!defined(SUPPORT_DKIM) || SUPPORT_DKIM!=2)
 extern misc_module_info dkim_module_info;
 #endif
@@ -749,6 +752,12 @@ extern misc_module_info spf_module_info;
 #endif
 #if defined(EXPERIMENTAL_ARC) && (!defined(SUPPORT_ARC) || SUPPORT_ARC!=2)
 extern misc_module_info arc_module_info;
+#endif
+#if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADUIS!=2)
+extern misc_module_info radius_module_info;
+#endif
+#if defined(SUPPORT_PAM) && SUPPORT_PAM!=2
+extern misc_module_info pam_module_info;
 #endif
 
 void
@@ -770,6 +779,12 @@ onetime = TRUE;
 #endif
 #if defined(EXPERIMENTAL_ARC) && (!defined(SUPPORT_ARC) || SUPPORT_ARC!=2)
   misc_mod_add(&arc_module_info);
+#endif
+#if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADUIS!=2)
+  misc_mod_add(&radius_module_info);
+#endif
+#if defined(SUPPORT_PAM) && SUPPORT_PAM!=2
+  misc_mod_add(&pam_module_info);
 #endif
 }
 
