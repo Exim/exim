@@ -209,7 +209,7 @@ static void * pam_functions[] = {
   [RADIUS_AUTH_CALL] =	auth_call_pam,
 };
 
-misc_module_info rad_module_info =
+misc_module_info pam_module_info =
 {
   .name =		US"pam",
 # ifdef DYNLOOKUP
