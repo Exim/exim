@@ -37,6 +37,8 @@ dkim.o  dkim.so:	$(HDRS) dkim.h dkim.c dkim_transport.c \
 			signing.h signing.c
 dmarc.o dmarc.so:	$(HDRS) pdkim.h dmarc.h dmarc.c
 dummy.o:		dummy.c
+pam.o   pam.so:		$(HDRS) pam.c
+radius.o radius.so:	$(HDRS) radius.c
 spf.o   spf.so:		$(HDRS) spf.h spf.c
 
 dkim.o:

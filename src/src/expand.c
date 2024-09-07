@@ -2767,12 +2767,19 @@ switch(cond_type = identify_operator(&s, &opname))
     /* Various authentication tests - all optionally compiled */
 
     case ECOND_PAM:
-    #ifdef SUPPORT_PAM
-    rc = auth_call_pam(sub[0], &expand_string_message);
-    goto END_AUTH;
-    #else
-    goto COND_FAILED_NOT_COMPILED;
-    #endif  /* SUPPORT_PAM */
+#ifdef SUPPORT_PAM
+      {
+      const misc_module_info * mi = misc_mod_find(US"pam", NULL);
+      typedef int (*fn_t)(const uschar *, uschar **);
+      if (!mi)
+	goto COND_FAILED_NOT_COMPILED;
+      rc = (((fn_t *) mi->functions)[PAM_AUTH_CALL])
+					  (sub[0], &expand_string_message);
+      goto END_AUTH;
+      }
+#else
+      goto COND_FAILED_NOT_COMPILED;
+#endif  /* SUPPORT_PAM */
 
     case ECOND_RADIUS:
 #ifdef RADIUS_CONFIG_FILE

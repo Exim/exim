@@ -2,8 +2,8 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
+/* Copyright (c) The Exim Maintainers 2020 - 2024 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
-/* Copyright (c) The Exim Maintainers 2020 - 2021 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
@@ -28,9 +28,9 @@ static void dummy(int x) { dummy2(x-1); }
 #else  /* SUPPORT_PAM */
 
 #ifdef PAM_H_IN_PAM
-#include <pam/pam_appl.h>
+# include <pam/pam_appl.h>
 #else
-#include <security/pam_appl.h>
+# include <security/pam_appl.h>
 #endif
 
 /* According to the specification, it should be possible to have an application
@@ -128,7 +128,7 @@ Returns:   OK if authentication succeeded
            ERROR some other error condition
 */
 
-int
+static int
 auth_call_pam(const uschar *s, uschar **errptr)
 {
 pam_handle_t *pamh = NULL;
@@ -199,6 +199,26 @@ if (pam_error == PAM_USER_UNKNOWN ||
 
 return ERROR;
 }
+
+
+
+/******************************************************************************/
+/* Module API */
+
+static void * pam_functions[] = {
+  [RADIUS_AUTH_CALL] =	auth_call_pam,
+};
+
+misc_module_info rad_module_info =
+{
+  .name =		US"pam",
+# ifdef DYNLOOKUP
+  .dyn_magic =		MISC_MODULE_MAGIC,
+# endif
+
+  .functions =		pam_functions,
+  .functions_count =	nelem(pam_functions),
+};
 
 #endif  /* SUPPORT_PAM */
 

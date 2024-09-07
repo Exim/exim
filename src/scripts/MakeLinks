@@ -102,6 +102,7 @@ for f in dummy.c \
 	pdkim/crypt_ver.h pdkim/pdkim.c pdkim/pdkim.h \
 	pdkim/pdkim_hash.h pdkim/signing.c pdkim/signing.h \
 	dmarc.c dmarc.h dmarc_api.h \
+	pam.c pam_api.h \
 	radius.c radius_api.h \
 	spf.c spf.h spf_api.h
 do

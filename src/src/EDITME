@@ -1089,6 +1089,8 @@ ZCAT_COMMAND=/usr/bin/zcat
 # distributions (see http://ftp.kernel.org/pub/linux/libs/pam/). The Exim
 # support, which is intended for use in conjunction with the SMTP AUTH
 # facilities, is included only when requested by the following setting:
+#
+# For a dynamic module build add SUPPORT_PAM=2 and SUPPORT_PAM_LIBS=-lpam
 
 # SUPPORT_PAM=yes
 
@@ -1146,6 +1148,9 @@ ZCAT_COMMAND=/usr/bin/zcat
 # which is intended for use in conjunction with the SMTP AUTH facilities,
 # is included only when requested by setting the following parameter to the
 # location of your Radius configuration file:
+#
+# For a dynamic module build add SUPPORT_RADIUS=2 and (if needed)
+# SUPPORT_RADIUS_LIBS=-l<foo>
 
 # RADIUS_CONFIG_FILE=/etc/radiusclient/radiusclient.conf
 # RADIUS_CONFIG_FILE=/etc/radius.conf
