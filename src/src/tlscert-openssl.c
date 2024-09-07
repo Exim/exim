@@ -411,8 +411,9 @@ while (sk_GENERAL_NAME_num(san) > 0)
     ele = string_copyn(ele, len);
 
   if (Ustrlen(ele) == len)	/* ignore any with embedded nul */
-    list = string_append_listele(list, osep,
-	  match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
+    list = match == -1
+      ? string_append_listele_fmt(list, osep, TRUE, "%s=%s", tag, ele)
+      : string_append_listele(list, osep, ele);
   }
 
 sk_GENERAL_NAME_free(san);

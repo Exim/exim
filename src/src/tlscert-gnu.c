@@ -334,8 +334,9 @@ for (int index = 0;; index++)
     case GNUTLS_SAN_RFC822NAME: tag = US"MAIL"; break;
     default: continue;        /* ignore unrecognised types */
     }
-  list = string_append_listele(list, sep,
-          match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
+  list = match == -1
+    ? string_append_listele_fmt(list, sep, TRUE, "%s=%s", tag, ele)
+    : string_append_listele(list, sep, ele);
   }
 /*NOTREACHED*/
 }

@@ -5535,8 +5535,7 @@ while (*s)
 
 	  /* First option has no tag and is timeout */
 	  if ((item = string_nextinlist(&list, &sep, NULL, 0)))
-	    g = string_append_listele(g, ',',
-		  string_sprintf("timeout=%s", item));
+	    g = string_append_listele_fmt(g, ',', TRUE, "timeout=%s", item);
 
 	  /* The rest of the options from the expansion */
 	  while ((item = string_nextinlist(&list, &sep, NULL, 0)))
@@ -5547,9 +5546,8 @@ while (*s)
 	  options is the readsock expansion. */
 
 	  if (sub_arg[3] && *sub_arg[3])
-	    g = string_append_listele(g, ',',
-		  string_sprintf("eol=%s",
-		    string_printing2(sub_arg[3], SP_TAB|SP_SPACE)));
+	    g = string_append_listele_fmt(g, ',', TRUE, 
+		  "eol=%s", string_printing2(sub_arg[3], SP_TAB|SP_SPACE));
 	  }
 
 	/* Gat a (possibly cached) handle for the connection */

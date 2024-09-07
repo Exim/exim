@@ -2105,7 +2105,8 @@ if (arc_state)
     arc_line * line = as->hdr_as;
     if (line)
       {
-      g = string_append_listele_fmt(g, ',', " (\"i\":%u"                 /*)*/
+      g = string_append_listele_fmt(g, ',', FALSE,
+					    " (\"i\":%u"                 /*)*/
 					    ", \"d\":\"%#b\""
 					    ", \"s\":\"%#b\"",
 		  as->instance, &line->d, &line->s);

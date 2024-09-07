@@ -1976,16 +1976,17 @@ if (f.daemon_listen && !f.inetd_wait_mode)
       tls_in.on_connect_ports = NULL;
       sep = 0;
       while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
-	{
-        if (!isdigit(*s))
+        if (isdigit(*s))
+	  g = string_append_listele(g, ':', s);
+	else
 	  {
 	  struct servent * smtp_service = getservbyname(CS s, "tcp");
 	  if (!smtp_service)
 	    log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "TCP port \"%s\" not found", s);
-	  s = string_sprintf("%d", (int)ntohs(smtp_service->s_port));
+	  g = string_append_listele_fmt(g, ':', FALSE, "%d",
+					      (int)ntohs(smtp_service->s_port));
 	  }
-	g = string_append_listele(g, ':', s);
-	}
+
       if (g)
 	tls_in.on_connect_ports = g->s;
       break;

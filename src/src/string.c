@@ -1093,22 +1093,45 @@ return list;
 
 
 /* Listmaker that takes a format string and args for the element.
-Currently no checking of the element content for sep chars */
+A flag arg is required to handle embedded sep chars in the (expanded) element;
+if false then no check is done */
 
 gstring *
-string_append_listele_fmt(gstring * list, uschar sep, const char * fmt, ...)
+string_append_listele_fmt(gstring * list, uschar sep, BOOL check,
+  const char * fmt, ...)
 {
-if (list && list->ptr)
-  list = string_catn(list, &sep, 1);
-
 va_list ap;
+unsigned start;
+gstring * g;
+
+if (list && list->ptr)
+  {
+  list = string_catn(list, &sep, 1);
+  start = list->ptr;
+  }
+else
+  start = 0;
+
 va_start(ap, fmt);
 list = string_vformat_trc(list, US __FUNCTION__, __LINE__,
 	  STRING_SPRINTF_BUFFER_SIZE, SVFMT_REBUFFER|SVFMT_EXTEND, fmt, ap);
 va_end(ap);
 
 (void) string_from_gstring(list);
-return list;
+
+/* if the appended element turns out to have an embedded sep char, rewind
+and do the lazy-coded separate string method */
+
+if (!check || !Ustrchr(&list->s[start], sep))
+  return list;
+
+va_start(ap, fmt);
+g = string_vformat_trc(NULL, US __FUNCTION__, __LINE__,
+	STRING_SPRINTF_BUFFER_SIZE, SVFMT_REBUFFER|SVFMT_EXTEND, fmt, ap);
+va_end(ap);
+
+list->ptr = start;
+return string_append_listele_n(list, sep, g->s, g->ptr);
 }
 
 

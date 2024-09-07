@@ -555,7 +555,7 @@ extern void    store_writeprotect(int);
 extern gstring *string_append(gstring *, int, ...) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele(gstring *, uschar, const uschar *) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele_n(gstring *, uschar, const uschar *, unsigned) WARN_UNUSED_RESULT;
-extern gstring *string_append_listele_fmt(gstring *, uschar, const char *, ...) WARN_UNUSED_RESULT;
+extern gstring *string_append_listele_fmt(gstring *, uschar, BOOL, const char *, ...) WARN_UNUSED_RESULT;
 extern gstring *string_append2_listele_n(gstring *, const uschar *, const uschar *, unsigned) WARN_UNUSED_RESULT;
 extern uschar *string_base62_32(unsigned long int);
 extern uschar *string_base62_64(unsigned long int);
