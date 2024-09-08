@@ -5192,10 +5192,19 @@ while (*s)
       {
       uschar * sub_arg[EXIM_PERL_MAX_ARGS + 2];
       gstring * new_yield;
+      const misc_module_info * mi;
+      uschar * errstr;
 
       if (expand_forbid & RDO_PERL)
         {
         expand_string_message = US"Perl calls are not permitted";
+        goto EXPAND_FAILED;
+        }
+
+      if (!(mi = misc_mod_find(US"perl", &errstr)))
+        {
+        expand_string_message =
+	  string_sprintf("failed to locate perl module: %s", errstr);
         goto EXPAND_FAILED;
         }
 
@@ -5213,6 +5222,8 @@ while (*s)
       if (!opt_perl_started)
         {
         uschar * initerror;
+	typedef uschar * (*fn_t)(uschar *);
+
         if (!opt_perl_startup)
           {
           expand_string_message = US"A setting of perl_startup is needed when "
@@ -5220,7 +5231,8 @@ while (*s)
           goto EXPAND_FAILED;
           }
         DEBUG(D_any) debug_printf("Starting Perl interpreter\n");
-        if ((initerror = init_perl(opt_perl_startup)))
+	initerror = (((fn_t *) mi->functions)[PERL_STARTUP]) (opt_perl_startup);
+        if (initerror)
           {
           expand_string_message =
             string_sprintf("error in perl_startup code: %s\n", initerror);
@@ -5232,8 +5244,12 @@ while (*s)
       /* Call the function */
 
       sub_arg[EXIM_PERL_MAX_ARGS + 1] = NULL;
-      new_yield = call_perl_cat(yield, &expand_string_message,
-        sub_arg[0], sub_arg + 1);
+	{
+	typedef gstring * (*fn_t)(gstring *, uschar **, uschar *, uschar **);
+	new_yield = (((fn_t *) mi->functions)[PERL_CAT])
+					      (yield, &expand_string_message,
+						sub_arg[0], sub_arg + 1);
+	}
 
       /* NULL yield indicates failure; if the message pointer has been set to
       NULL, the yield was undef, indicating a forced failure. Otherwise the

@@ -522,7 +522,7 @@ OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         std-crypto.o store.o string.o tls.o tod.o transport.o tree.o verify.o \
         xtextencode.o environment.o macro.o \
         $(OBJ_LOOKUPS) $(OBJ_ROUTERS) $(OBJ_AUTHS) \
-        local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
+        local_scan.o $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_EXPERIMENTAL)
 
 exim:   buildlookups buildauths \
@@ -737,12 +737,6 @@ version.o: $(HDRS) cnumber.h version.h version.c
 # in the tested code.
 
 dummies.o:       dummies.c
-
-# Compile instructions for perl.o for when EXIM_PERL is set
-
-perl.o:          $(HDRS) perl.c
-	@echo "$(PERL_CC) perl.c"
-	$(FE)$(PERL_CC) $(PERL_CCOPTS) $(CFLAGS) $(INCLUDE) -c perl.c
 
 # Compile instructions for the database utility modules
 
@@ -1065,6 +1059,8 @@ buildmisc: config
 	     CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
 	     LDFLAGS_PARTIAL="$(LDFLAGS_PARTIAL)" HDRS="../version.h $(PHDRS)" \
 	     FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" \
+	     PERL_CC="$(PERL_CC)" PERL_CCOPTS="$(PERL_CCOPTS)" \
+	     PERL_CFLAGS="$(PERL_CFLAGS)" PERL_LFLAGS="$(PERL_LFLAGS)" \
 	     INCLUDE="$(INCLUDE) $(IPV6_INCLUDE)"
 	 @echo " "
 

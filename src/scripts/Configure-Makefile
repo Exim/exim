@@ -284,10 +284,16 @@ then
 fi
 rm -f $mftt
 
-#XXX look for RADIUS in $mft; add a SUPPORT_
+
+# look for RADIUS in $mft; add a SUPPORT_
 if $egrep -q "^RADIUS_CONFIG_FILE" $mft; then
   echo "# radius fixup"
   $egrep -q "^SUPPORT_RADIUS" $mft || echo "SUPPORT_RADIUS=yes" >> $mft
+fi
+# also PERL
+if $egrep -q "^EXIM_PERL" $mft; then
+  echo "# perl fixup"
+  $egrep -q "^SUPPORT_PERL" $mft || echo "SUPPORT_PERL=yes" >> $mft
 fi
 
 
@@ -309,7 +315,7 @@ done <<-END
  routers    ROUTER	ACCEPT DNSLOOKUP IPLITERAL IPLOOKUP MANUALROUTE QUERYPROGRAM REDIRECT
  transports TRANSPORT	APPENDFILE AUTOREPLY LMTP PIPE QUEUEFILE SMTP
  auths	    AUTH	CRAM_MD5 CYRUS_SASL DOVECOT EXTERNAL GSASL HEIMDAL_GSSAPI PLAINTEXT SPA TLS
- miscmods   SUPPORT	ARC _DKIM DMARC PAM RADIUS SPF
+ miscmods   SUPPORT	ARC _DKIM DMARC PAM PERL RADIUS SPF
 END
 
 # See if there is a definition of EXIM_PERL in what we have built so far.
@@ -338,10 +344,27 @@ if [ "${EXIM_PERL}" != "" ] ; then
     exit 1;
   fi
 
+  perl_cc="`$PERL_COMMAND -MConfig -e 'print $Config{cc}'`"
+  perl_ccopts="`$PERL_COMMAND -MExtUtils::Embed -e ccopts`"
+  perl_libs="`$PERL_COMMAND -MExtUtils::Embed -e ldopts`"
+
+  # For the dynamic-module build, pull out all the -D & -I into another var,
+  # and -L (maybe & -l?) to another, both for feed to miscmods
+  # ending up as SUPPORT_PERL_INCLUDE & SUPPORT_PERL_LIB respectively
+
+  perl_cflags=`PERL_CCOPTS="$perl_ccopts" $PERL_COMMAND \
+		-e 'my @list = split(" ", $ENV{PERL_CCOPTS});' \
+		-e 'foreach (@list) {print "$_ " if (/^-[DI]/)}'`
+  perl_lflags=`PERL_LIBS="$perl_libs" $PERL_COMMAND \
+		-e 'my @list = split(" ", $ENV{PERL_LIBS});' \
+		-e 'foreach (@list) {print "$_ " if (/^-L/)}'`
+
   mv $mft $mftt
-  echo "PERL_CC=`$PERL_COMMAND -MConfig -e 'print $Config{cc}'`" >>$mft
-  echo "PERL_CCOPTS=`$PERL_COMMAND -MExtUtils::Embed -e ccopts`" >>$mft
-  echo "PERL_LIBS=`$PERL_COMMAND -MExtUtils::Embed -e ldopts`" >>$mft
+  echo "PERL_CC=${perl_cc}" >>$mft
+  echo "PERL_CCOPTS=${perl_ccopts}" >>$mft
+  echo "PERL_LIBS=${perl_libs}" >>$mft
+  echo "PERL_CFLAGS=${perl_cflags}" >>$mft
+  echo "PERL_LFLAGS=${perl_lflags}" >>$mft
   echo "" >>$mft
   cat $mftt >> $mft
   rm -f $mftt

@@ -1554,13 +1554,15 @@ RESET_AFTER_EXTRA_LINE_READ:
       <IN>; <IN>; <IN>; <IN>; <IN>; next;
       }
 
+    # various features can be built as dynamic-load modules
+    next if /loading module '(?:arc|dkim|dmarc|pam|perl|radius|spf)'$/;
+
     # Not all platforms build with DKIM enabled
     next if /^DKIM >> Body data for hash, canonicalized/;
 
     # Not all platforms build with SPF enabled
     next if /(^$time_pid?spf_conn_init|spf_compile\.c)/;
     next if /try option spf_smtp_comment_template$/;
-    next if /loading module '(?:dkim|dmarc|spf)'$/;
     next if /^$time_pid?Loaded "(?:dkim|dmarc|spf)"$/;
 
     # Not all platforms have sendfile support

@@ -4499,9 +4499,16 @@ if (perl_start_option != 0)
   opt_perl_at_start = (perl_start_option > 0);
 if (opt_perl_at_start && opt_perl_startup != NULL)
   {
-  uschar *errstr;
+  uschar * errstr;
+  const misc_module_info * mi = misc_mod_find(US"perl", &errstr);
+  typedef uschar * (*fn_t)(uschar *);
+
+  if (!mi)
+    exim_fail("exim: error finding perl module: %s\n", errstr);
+
   DEBUG(D_any) debug_printf("Starting Perl interpreter\n");
-  if ((errstr = init_perl(opt_perl_startup)))
+
+  if ((errstr = (((fn_t *) mi->functions)[PERL_STARTUP]) (opt_perl_startup)))
     exim_fail("exim: error in perl_startup code: %s\n", errstr);
   opt_perl_started = TRUE;
   }

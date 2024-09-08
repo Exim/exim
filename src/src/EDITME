@@ -1069,8 +1069,14 @@ ZCAT_COMMAND=/usr/bin/zcat
 # use Perl code in Exim's string manipulation language and you have Perl
 # (version 5.004 or later) installed, set EXIM_PERL to perl.o. Using embedded
 # Perl costs quite a lot of resources. Only do this if you really need it.
+#
 
 # EXIM_PERL=perl.o
+
+# For a dynamic module build add also SUPPORT_PERL=2 and SUPPORT_PAM_(INCLUED,LIBS)
+#SUPPORT_PERL=2
+#SUPPORT_PERL_INCLUDE=$(PERL_CFLAGS)
+#SUPPORT_PERL_LIBS=$(PERL_LFLAGS) -lperl
 
 
 #------------------------------------------------------------------------------

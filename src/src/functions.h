@@ -19,14 +19,6 @@ are in in fact in separate headers. */
 #include <sys/time.h>
 
 
-#ifdef EXIM_PERL
-extern gstring *call_perl_cat(gstring *, uschar **, uschar *,
-                 uschar **) WARN_UNUSED_RESULT;
-extern void    cleanup_perl(void);
-extern uschar *init_perl(uschar *);
-#endif
-
-
 #ifndef DISABLE_TLS
 extern const char *
                std_dh_prime_default(void);

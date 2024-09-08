@@ -431,16 +431,16 @@ misc_module_info * misc_module_list = NULL;
 static void
 misc_mod_add(misc_module_info * mi)
 {
-if (mi->init && mi->init(mi))
-  {
-  DEBUG(D_any) if (mi->lib_vers_report)
-    debug_printf_indent("%Y", mi->lib_vers_report(NULL));
+mi->next = misc_module_list;
+misc_module_list = mi;
 
-  mi->next = misc_module_list;
-  misc_module_list = mi;
-  }
-else DEBUG(D_any)
-  debug_printf_indent("module init call failed for %s\n", mi->name);
+if (mi->init && !mi->init(mi))
+  DEBUG(D_any)
+    debug_printf_indent("module init call failed for %s\n", mi->name);
+
+DEBUG(D_any) if (mi->lib_vers_report)
+  debug_printf_indent("%Y", mi->lib_vers_report(NULL));
+
 /* fprintf(stderr,"misc_mod_add: added %s\n", mi->name); */
 }
 
@@ -459,7 +459,7 @@ const char * errormsg;
 DEBUG(D_any) debug_printf_indent("loading module '%s'\n", name);
 if (!(dl = mod_open(name, US"miscmod", errstr)))
   {
-  DEBUG(D_any) debug_printf_indent(" mod_open: %s\n", *errstr);
+  DEBUG(D_any) if (errstr) debug_printf_indent(" mod_open: %s\n", *errstr);
   return NULL;
   }
 
@@ -753,11 +753,14 @@ extern misc_module_info spf_module_info;
 #if defined(EXPERIMENTAL_ARC) && (!defined(SUPPORT_ARC) || SUPPORT_ARC!=2)
 extern misc_module_info arc_module_info;
 #endif
-#if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADUIS!=2)
+#if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADIUS!=2)
 extern misc_module_info radius_module_info;
 #endif
 #if defined(SUPPORT_PAM) && SUPPORT_PAM!=2
 extern misc_module_info pam_module_info;
+#endif
+#if defined(EXIM_PERL) && (!defined(SUPPORT_PERL) || SUPPORT_PERL!=2)
+extern misc_module_info perl_module_info;
 #endif
 
 void
@@ -780,11 +783,14 @@ onetime = TRUE;
 #if defined(EXPERIMENTAL_ARC) && (!defined(SUPPORT_ARC) || SUPPORT_ARC!=2)
   misc_mod_add(&arc_module_info);
 #endif
-#if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADUIS!=2)
+#if defined(RADIUS_CONFIG_FILE) && (!defined(SUPPORT_RADIUS) || SUPPORT_RADIUS!=2)
   misc_mod_add(&radius_module_info);
 #endif
 #if defined(SUPPORT_PAM) && SUPPORT_PAM!=2
   misc_mod_add(&pam_module_info);
+#endif
+#if defined(EXIM_PERL) && (!defined(SUPPORT_PERL) || SUPPORT_PERL!=2)
+  misc_mod_add(&perl_module_info);
 #endif
 }
 

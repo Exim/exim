@@ -564,6 +564,9 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #ifdef SUPPORT_PAM
 # include "miscmods/pam_api.h"
 #endif
+#ifdef EXIM_PERL
+# include "miscmods/perl_api.h"
+#endif
 
 /* The following stuff must follow the inclusion of config.h because it
 requires various things that are set therein. */

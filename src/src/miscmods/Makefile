@@ -38,19 +38,27 @@ dkim.o  dkim.so:	$(HDRS) dkim.h dkim.c dkim_transport.c \
 dmarc.o dmarc.so:	$(HDRS) pdkim.h dmarc.h dmarc.c
 dummy.o:		dummy.c
 pam.o   pam.so:		$(HDRS) pam.c
+perl.o perl.so:         $(HDRS) perl.c
 radius.o radius.so:	$(HDRS) radius.c
 spf.o   spf.so:		$(HDRS) spf.h spf.c
 
 dkim.o:
-		@echo "$(CC) dkim.c dkim_transport.c pdkim.c signing.c"
-		$(FE)$(CC) -r $(LDFLAGS_PARTIAL) -o $@ $(CFLAGS) $(INCLUDE) \
-			dkim.c dkim_transport.c pdkim.c signing.c
+	@echo "$(CC) dkim.c dkim_transport.c pdkim.c signing.c"
+	$(FE)$(CC) -r $(LDFLAGS_PARTIAL) -o $@ $(CFLAGS) $(INCLUDE) \
+		dkim.c dkim_transport.c pdkim.c signing.c
 
 dkim.so:
-		@echo "$(CC) -shared dkim.c dkim_transport.c pdkim.c signing.c"
-		$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) -o $@ \
-			$(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) \
-			$(CFLAGS) $(INCLUDE) $(DLFLAGS) \
-			dkim.c dkim_transport.c pdkim.c signing.c
+	@echo "$(CC) -shared dkim.c dkim_transport.c pdkim.c signing.c"
+	$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) -o $@ \
+		$(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) \
+		$(CFLAGS) $(INCLUDE) $(DLFLAGS) \
+		dkim.c dkim_transport.c pdkim.c signing.c
+
+# Compile instructions for static perl.o for when EXIM_PERL is set
+# Dynamic is managed all via scripts/Configure-Makefile
+
+perl.o:
+	@echo "$(PERL_CC) perl.c"
+	$(FE)$(PERL_CC) $(PERL_CCOPTS) $(CFLAGS) $(INCLUDE) -c perl.c
 
 # End

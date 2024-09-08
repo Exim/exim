@@ -20,7 +20,7 @@
 #define HINTSDB_H
 #define DBFUNCTIONS_H
 
-#include "exim.h"
+#include "../exim.h"
 
 #define EXIM_TRUE TRUE
 #undef TRUE
@@ -99,7 +99,7 @@ static void  xs_init(pTHX)
   newXS("Exim::log_write", xs_log_write, file);
 }
 
-uschar *
+static uschar *
 init_perl(uschar *startup_code)
 {
   static int argc = 1;
@@ -146,7 +146,8 @@ init_perl(uschar *startup_code)
     }
 }
 
-void
+#ifdef notdef
+static void
 cleanup_perl(void)
 {
   if (!interp_perl)
@@ -155,8 +156,9 @@ cleanup_perl(void)
   perl_free(interp_perl);
   interp_perl = 0;
 }
+#endif
 
-gstring *
+static gstring *
 call_perl_cat(gstring * yield, uschar **errstrp, uschar *name, uschar **arg)
 {
   dSP;
@@ -198,5 +200,27 @@ call_perl_cat(gstring * yield, uschar **errstrp, uschar *name, uschar **arg)
   setlocale(LC_ALL, "C");    /* In case it got changed */
   return yield;
 }
+
+
+
+
+/******************************************************************************/
+/* Module API */
+
+static void * perl_functions[] = {
+  [PERL_STARTUP] =	init_perl,
+  [PERL_CAT] =		call_perl_cat,
+};
+
+misc_module_info perl_module_info =
+{
+  .name =		US"perl",
+# ifdef DYNLOOKUP
+  .dyn_magic =		MISC_MODULE_MAGIC,
+# endif
+
+  .functions =		perl_functions,
+  .functions_count =	nelem(perl_functions),
+};
 
 /* End of perl.c */
