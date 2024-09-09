@@ -41067,20 +41067,31 @@ will be used during message reception.
 .next
 A queue runner process retains root privilege throughout its execution. Its
 job is to fork a controlled sequence of delivery processes.
+
 .next
-A delivery process retains root privilege throughout most of its execution,
-but any actual deliveries (that is, the transports themselves) are run in
-subprocesses which always change to a non-root uid and gid. For local
-deliveries this is typically the uid and gid of the owner of the mailbox; for
-remote deliveries, the Exim uid and gid are used. Once all the delivery
+A delivery process retains root privilege throughout most of its execution.,
+including while the recipient addresses in a message are being routed.
+
+.ilist
+However, if a user's filter file has to be processed,
+this is done in a subprocess that runs under the individual user's uid and
+gid. A system filter is run as root unless &%system_filter_user%& is set.
+.endlist
+
+Any actual deliveries (that is, the transports themselves) are run in
+subprocesses which always change to a non-root uid and gid.
+.ilist
+For local
+deliveries this is typically the uid and gid of the owner of the mailbox.
+.next
+For remote deliveries, the Exim uid and gid are used.
+.endlist
+
+Once all the delivery
 subprocesses have been run, a delivery process changes to the Exim uid and gid
 while doing post-delivery tidying up such as updating the retry database and
 generating bounce and warning messages.
 
-While the recipient addresses in a message are being routed, the delivery
-process runs as root. However, if a user's filter file has to be processed,
-this is done in a subprocess that runs under the individual user's uid and
-gid. A system filter is run as root unless &%system_filter_user%& is set.
 .next
 A process that is testing addresses (the &%-bt%& option) runs as root so that
 the routing is done in the same environment as a message delivery.
