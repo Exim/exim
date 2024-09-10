@@ -3,11 +3,11 @@
 *************************************************/
 
 /*
- * Copyright (c) The Exim Maintainers 2016 - 2023
- * Copyright (c) Michael Haardt 2003 - 2015
- * See the file NOTICE for conditions of use and distribution.
- * SPDX-License-Identifier: GPL-2.0-or-later
- */
+Copyright (c) The Exim Maintainers 2016 - 2024
+Copyright (c) Michael Haardt 2003 - 2015
+See the file NOTICE for conditions of use and distribution.
+SPDX-License-Identifier: GPL-2.0-or-later
+*/
 
 /* This code was contributed by Michael Haardt. */
 
@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "exim.h"
+#include "../exim.h"
 
 #if HAVE_ICONV
 # include <iconv.h>
@@ -113,7 +113,7 @@ that callers don't get surprised.
 
 List *MUST* end with a NULL.  Which at least makes ifdef-vs-comma easier. */
 
-const uschar *exim_sieve_extension_list[] = {
+static const uschar *exim_sieve_extension_list[] = {
   CUS"comparator-i;ascii-numeric",
   CUS"copy",
 #ifdef ENCODED_CHARACTER
@@ -283,7 +283,7 @@ Returns
  -1           syntax error
 */
 
-int
+static int
 check_mail_address(struct Sieve * filter, const gstring * address)
 {
 int start, end, domain;
@@ -1883,20 +1883,11 @@ static int
 parse_matchtype(struct Sieve *filter, enum MatchType *m)
 {
 if (parse_identifier(filter, CUS ":is") == 1)
-{
-  *m = MATCH_IS;
-  return 1;
-}
+  { *m = MATCH_IS; return 1; }
 else if (parse_identifier(filter, CUS ":contains") == 1)
-{
-  *m = MATCH_CONTAINS;
-  return 1;
-}
+  { *m = MATCH_CONTAINS; return 1; }
 else if (parse_identifier(filter, CUS ":matches") == 1)
-{
-  *m = MATCH_MATCHES;
-  return 1;
-}
+  { *m = MATCH_MATCHES; return 1; }
 else return 0;
 }
 
@@ -3615,3 +3606,34 @@ expand_level--;
 DEBUG(D_route) debug_printf_indent("Sieve: end of processing\n");
 return r;
 }
+
+
+/* Module API: print list of supported sieve extensions to given stream */
+static void
+sieve_extensions(FILE * fp)
+{
+for (const uschar ** pp = exim_sieve_extension_list; *pp; ++pp)
+  fprintf(fp, "%s\n", *pp);
+}
+
+
+/******************************************************************************/
+/* Module API */
+
+static void * sieve_functions[] = {
+  [SIEVE_INTERPRET] =	sieve_interpret,
+  [SIEVE_EXTENSIONS] =	sieve_extensions,
+};
+
+misc_module_info sieve_filter_module_info =
+{
+  .name =		US"sieve_filter",
+# ifdef DYNLOOKUP
+  .dyn_magic =		MISC_MODULE_MAGIC,
+# endif
+
+  .functions =		sieve_functions,
+  .functions_count =	nelem(sieve_functions),
+};
+
+/* End of sieve_filter.c */

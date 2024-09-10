@@ -552,6 +552,17 @@ SUPPORT_DANE=yes
 
 
 #------------------------------------------------------------------------------
+# Compiling with support for Sieve filters is the default. To disable this
+# uncomment the line below.
+
+# DISABLE_SIEVE_FILTER=yes
+
+# Alternatively, to build the support as a dynamically-loaded module uncomment
+# this line.
+
+# SUPPORT_SIEVE_FILTER=2
+
+#------------------------------------------------------------------------------
 # Compiling Exim with content scanning support: If you want to compile Exim
 # with support for message body content scanning, set WITH_CONTENT_SCAN to
 # the value "yes". This will give you malware and spam scanning in the DATA ACL,

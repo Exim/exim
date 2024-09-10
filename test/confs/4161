@@ -1,4 +1,4 @@
-# Exim test configuration 0428
+# Exim test configuration 4161
 
 .include DIR/aux-var/std_conf_prefix
 

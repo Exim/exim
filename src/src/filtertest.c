@@ -270,12 +270,22 @@ if (is_system)
   f.enable_dollar_recipients = FALSE;
   f.system_filtering = FALSE;
   }
-else
+else if (filter_type == FILTER_SIEVE)
   {
-  yield = filter_type == FILTER_SIEVE
-    ? sieve_interpret(filebuf, RDO_REWRITE, NULL, &generated, &error)
-    : filter_interpret(filebuf, RDO_REWRITE, &generated, &error);
+  const misc_module_info * mi;
+  uschar * errstr = NULL;
+  typedef int (*fn_t)(const uschar *, int, const sieve_block *,
+		       address_item **, uschar **);
+  if (!(mi = misc_mod_find(US"sieve_filter", &errstr)))
+    {
+    printf("exim: Sieve filtering not available: %s\n", errstr ? errstr : US"?");
+    return FALSE;
+    }
+  yield = (((fn_t *) mi->functions)[SIEVE_INTERPRET])
+				    (filebuf, RDO_REWRITE, NULL, &generated, &error);
   }
+else
+  yield = filter_interpret(filebuf, RDO_REWRITE, &generated, &error);
 
 return yield != FF_ERROR;
 }

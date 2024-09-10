@@ -481,8 +481,6 @@ extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    sha1_end(hctx *, const uschar *, int, uschar *);
 extern void    sha1_mid(hctx *, const uschar *);
 extern void    sha1_start(hctx *);
-extern int     sieve_interpret(const uschar *, int, const sieve_block *,
-		 address_item **, uschar **);
 extern void    sigalrm_handler(int);
 extern void    single_queue_run(qrunner *, const uschar *, const uschar *);
 extern int     smtp_boundsock(smtp_connect_args *);

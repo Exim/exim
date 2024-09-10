@@ -388,16 +388,27 @@ if (*filtertype != FILTER_FORWARD)
       *error = US"Exim filtering not enabled";
       return FF_ERROR;
       }
+/*XXX*/
     frc = filter_interpret(data, options, generated, error);
     }
   else
     {
+    const misc_module_info * mi;
+    typedef int (*fn_t)(const uschar *, int, const sieve_block *,
+		       address_item **, uschar **);
+
     if (options & RDO_SIEVE_FILTER)
       {
       *error = US"Sieve filtering not enabled";
       return FF_ERROR;
       }
-    frc = sieve_interpret(data, options, sieve, generated, error);
+    if (!(mi = misc_mod_find(US"sieve_filter", NULL)))
+      {
+      *error = US"Sieve filtering not available";
+      return FF_ERROR;
+      }
+    frc = (((fn_t *) mi->functions)[SIEVE_INTERPRET])
+				      (data, options, sieve, generated, error);
     }
 
   expand_forbid = old_expand_forbid;

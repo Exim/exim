@@ -31,16 +31,17 @@ miscmods.a:	$(OBJ)
 
 # Note that the sources from pdkim/ are linked into the build.../miscmods/ dir
 # by scripts/Makelinks.
-arc.o	arc.so:		$(HDRS) pdkim.h arc.c
-dkim.o  dkim.so:	$(HDRS) dkim.h dkim.c dkim_transport.c \
-			crypt_ver.h pdkim.h pdkim_hash.h pdkim.c \
-			signing.h signing.c
-dmarc.o dmarc.so:	$(HDRS) pdkim.h dmarc.h dmarc.c
-dummy.o:		dummy.c
-pam.o   pam.so:		$(HDRS) pam.c
-perl.o perl.so:         $(HDRS) perl.c
-radius.o radius.so:	$(HDRS) radius.c
-spf.o   spf.so:		$(HDRS) spf.h spf.c
+arc.o	arc.so:			$(HDRS) pdkim.h arc.c
+dkim.o  dkim.so:		$(HDRS) dkim.h dkim.c dkim_transport.c \
+				crypt_ver.h pdkim.h pdkim_hash.h pdkim.c \
+				signing.h signing.c
+dmarc.o dmarc.so:		$(HDRS) pdkim.h dmarc.h dmarc.c
+dummy.o:			dummy.c
+pam.o   pam.so:			$(HDRS) pam.c
+perl.o perl.so:         	$(HDRS) perl.c
+radius.o radius.so:		$(HDRS) radius.c
+sieve_filter.o sieve_filter.so:	$(HDRS) sieve_filter.c
+spf.o   spf.so:			$(HDRS) spf.h spf.c
 
 dkim.o:
 	@echo "$(CC) dkim.c dkim_transport.c pdkim.c signing.c"

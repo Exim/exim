@@ -14,8 +14,10 @@ Version 4.98
 
  3. Events smtp:fail:protocol and smtp:fail:syntax
 
- 4. JSON and LDAP lookup support, PAM, RADIUS, perl, SPF, DKIM, DMARC and ARC
-    support, all the router and authenticator drivers, and all the transport
+ 4. Support for Sieve filters can be omitted at build time
+
+ 5. JSON and LDAP lookup support, Sieve, PAM, RADIUS, perl, SPF, DKIM, DMARC and
+    ARC support, all the router and authenticator drivers, and all the transport
     drivers except smtp, can now be built as loadable modules
 
 Version 4.98

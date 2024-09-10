@@ -105,6 +105,7 @@ for f in dummy.c \
 	pam.c pam_api.h \
 	perl.c perl_api.h \
 	radius.c radius_api.h \
+	sieve_filter.c sieve_filter_api.h \
 	spf.c spf.h spf_api.h
 do
   ln -s ../../src/$d/$f `basename $f`
@@ -136,7 +137,7 @@ for f in blob.h dbfunctions.h exim.h functions.h globals.h \
   globals.c hash.c header.c host.c host_address.c ip.c log.c lss.c match.c md5.c moan.c \
   parse.c priv.c proxy.c queue.c rda.c readconf.c receive.c retry.c rewrite.c \
   regex_cache.c rfc2047.c route.c search.c setenv.c environment.c \
-  sieve.c smtp_in.c smtp_out.c spool_in.c spool_out.c std-crypto.c store.c \
+  smtp_in.c smtp_out.c spool_in.c spool_out.c std-crypto.c store.c \
   string.c tls.c tlscert-gnu.c tlscert-openssl.c tls-cipher-stdname.c \
   tls-gnu.c tls-openssl.c \
   tod.c transport.c tree.c verify.c version.c xtextencode.c \

@@ -762,6 +762,9 @@ extern misc_module_info pam_module_info;
 #if defined(EXIM_PERL) && (!defined(SUPPORT_PERL) || SUPPORT_PERL!=2)
 extern misc_module_info perl_module_info;
 #endif
+#if !defined(DISABLE_SIEVE_FILTER) && (!defined(SUPPORT_SIEVE_FILTER) || SUPPORT_SIEVE_FILTER!=2)
+extern misc_module_info sieve_filter_module_info;
+#endif
 
 void
 init_misc_mod_list(void)
@@ -791,6 +794,9 @@ onetime = TRUE;
 #endif
 #if defined(EXIM_PERL) && (!defined(SUPPORT_PERL) || SUPPORT_PERL!=2)
   misc_mod_add(&perl_module_info);
+#endif
+#if !defined(DISABLE_SIEVE_FILTER) && (!defined(SUPPORT_SIEVE_FILTER) || SUPPORT_SIEVE_FILTER!=2)
+  misc_mod_add(&sieve_filter_module_info);
 #endif
 }
 

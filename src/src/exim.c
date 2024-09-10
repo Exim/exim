@@ -1221,6 +1221,9 @@ g = string_cat(g, US"Support for:");
 #ifdef WITH_CONTENT_SCAN
   g = string_cat(g, US" Content_Scanning");
 #endif
+#ifndef DISABLE_SIEVE_FILTER
+  g = string_cat(g, US" Sieve_filter");
+#endif
 #ifdef SUPPORT_CRYPTEQ
   g = string_cat(g, US" crypteq");
 #endif
@@ -1475,8 +1478,14 @@ switch(request)
 );
     return;
   case CMDINFO_SIEVE:
-    for (const uschar ** pp = exim_sieve_extension_list; *pp; ++pp)
-      fprintf(stream, "%s\n", *pp);
+    {
+    const misc_module_info * mi;
+    typedef void (*fn_t)(FILE *);
+    if ((mi = misc_mod_find(US"sieve_filter", NULL)))
+      (((fn_t *) mi->functions)[SIEVE_EXTENSIONS]) (stream);
+    else
+      fprintf(stream, "Sieve filtering not available\n");
+    }
     return;
   case CMDINFO_DSCP:
     dscp_list_to_stream(stream);
