@@ -472,6 +472,7 @@ tree_node *acl_var_c           = NULL;
 tree_node *acl_var_m           = NULL;
 uschar *acl_verify_message     = NULL;
 string_item *acl_warn_logged   = NULL;
+int acl_where		       = ACL_WHERE_UNKNOWN;
 
 /* Names of SMTP places for use in ACL error messages, and corresponding SMTP
 error codes (only those used) */
@@ -713,7 +714,7 @@ int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
 FILE   *config_file            = NULL;
 const uschar *config_filename  = NULL;
-int     config_lineno          = 0;
+unsigned config_lineno         = 0;
 #ifdef CONFIGURE_GROUP
 gid_t   config_gid             = CONFIGURE_GROUP;
 #else

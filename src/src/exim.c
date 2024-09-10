@@ -5494,8 +5494,12 @@ if (expansion_test)
   /* Expand command line items */
 
   if (recipients_arg < argc)
-    while (recipients_arg < argc)
-      expansion_test_line(exim_str_fail_toolong(argv[recipients_arg++], EXIM_EMAILADDR_MAX, "recipient"));
+    {
+    config_filename = US"-be args";
+    for (config_lineno = 1; recipients_arg < argc; config_lineno++)
+      expansion_test_line(exim_str_fail_toolong(argv[recipients_arg++],
+					      EXIM_EMAILADDR_MAX, "-be arg"));
+    }
 
   /* Read stdin */
 
@@ -5509,7 +5513,9 @@ if (expansion_test)
     void *dlhandle = set_readline(&fn_readline, &fn_addhist);
 #endif
 
-    while (s = get_stdinput(fn_readline, fn_addhist))
+    config_filename = US"-be stdin";
+    for (config_lineno = 1; s = get_stdinput(fn_readline, fn_addhist);
+	config_lineno++)
       expansion_test_line(s);
 
 #ifdef USE_READLINE

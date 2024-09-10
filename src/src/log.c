@@ -642,8 +642,20 @@ if (flags & (LOG_CONFIG_FOR & ~LOG_CONFIG))
 else
   {
   if (flags & (LOG_CONFIG_IN & ~LOG_CONFIG))
-    string_fmt_append_noextend(g, " in line %d of %s",
+    if (config_lineno > 0)
+      {
+      if (acl_where != ACL_WHERE_UNKNOWN)
+	string_fmt_append_noextend(g, " in ACL verb at");
+      else
+	string_fmt_append_noextend(g, " in");
+
+      string_fmt_append_noextend(g, " line %d of %s",
 				  config_lineno, config_filename);
+      }
+    else if (router_name)
+      string_fmt_append_noextend(g, " in %s router", router_name);
+    else if (transport_name)
+      string_fmt_append_noextend(g, " in %s transport", transport_name);
 
   string_fmt_append_noextend(g, ":\n  ");
   }

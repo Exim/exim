@@ -135,7 +135,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for servers=x:localhost; select name from them where id='ph10';
  PostgreSQL query: "servers=x:localhost; select name from them where id='ph10';" opts 'NULL'
 LOG: MAIN
-  Exim configuration error in line 78 of TESTSUITE/test-config:
+  Exim configuration error in line 11 of -be stdin:
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "x" not found in pgsql_servers
  search_open: pgsql "NULL"
@@ -148,7 +148,7 @@ LOG: MAIN
  database lookup required for servers=localhost::PORT_N:x; select name from them where id='ph10';
  PostgreSQL query: "servers=localhost::PORT_N:x; select name from them where id='ph10';" opts 'NULL'
 LOG: MAIN
-  Exim configuration error in line 78 of TESTSUITE/test-config:
+  Exim configuration error in line 12 of -be stdin:
   WARNING: obsolete syntax used for lookup
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
@@ -163,7 +163,7 @@ LOG: MAIN
  database lookup required for servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: "servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';" opts 'NULL'
 LOG: MAIN
-  Exim configuration error in line 78 of TESTSUITE/test-config:
+  Exim configuration error in line 13 of -be stdin:
   WARNING: obsolete syntax used for lookup
  PGSQL using cached connection for localhost:PORT_N/test/CALLER
  creating new cache entry
@@ -178,7 +178,7 @@ LOG: MAIN
  database lookup required for servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: "servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';" opts 'NULL'
 LOG: MAIN
-  Exim configuration error in line 78 of TESTSUITE/test-config:
+  Exim configuration error in line 14 of -be stdin:
   WARNING: obsolete syntax used for lookup
  PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER
  creating new cache entry
@@ -349,7 +349,7 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N    {select nam
                               (tainted, quoted:pgsql)
  PostgreSQL query: "servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'" opts 'NULL'
 LOG: MAIN
-  Exim configuration error in line 78 of TESTSUITE/test-config:
+  Exim configuration error in ACL verb at line 32 of TESTSUITE/test-config:
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 warn: condition test deferred in ACL "check_recipient"
@@ -392,7 +392,7 @@ host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them
                               (tainted, quoted:pgsql)
  PostgreSQL query: "servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'" opts 'NULL'
 LOG: MAIN
-  Exim configuration error in line 78 of TESTSUITE/test-config:
+  Exim configuration error in ACL verb at line 44 of TESTSUITE/test-config:
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
@@ -545,7 +545,7 @@ check set acl_m0 = ok:   ${lookup pgsql,servers=localhost::PORT_N    {select nam
                               (tainted, quoted:pgsql)
  PostgreSQL query: "servers=localhost::PORT_N/test/CALLER/; select name from them where id = 'c'" opts 'NULL'
 LOG: MAIN
-  Exim configuration error in line 78 of TESTSUITE/test-config:
+  Exim configuration error in ACL verb at line 32 of TESTSUITE/test-config:
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 warn: condition test deferred in ACL "check_recipient"
@@ -583,7 +583,7 @@ host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them
                               (tainted, quoted:pgsql)
  PostgreSQL query: "servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'" opts 'NULL'
 LOG: MAIN
-  Exim configuration error in line 78 of TESTSUITE/test-config:
+  Exim configuration error in ACL verb at line 44 of TESTSUITE/test-config:
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'

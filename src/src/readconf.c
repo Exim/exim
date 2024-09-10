@@ -4621,6 +4621,7 @@ while(next_section[0] != 0)
   }
 
 (void)fclose(config_file);
+config_lineno = 0;		/* Ensure we don't log a spurious position */
 }
 
 /* Init the storage for the pre-parsed config lines */

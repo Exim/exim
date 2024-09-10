@@ -349,6 +349,7 @@ extern tree_node *acl_var_c;           /* ACL connection variables */
 extern tree_node *acl_var_m;           /* ACL message variables */
 extern uschar *acl_verify_message;     /* User message for verify failure */
 extern string_item *acl_warn_logged;   /* Logged lines */
+extern int acl_where;		       /* Current running ACL */
 extern uschar *acl_wherecodes[];       /* Response codes for ACL fails */
 extern uschar *acl_wherenames[];       /* Names for messages */
 extern address_item *addr_duplicate;   /* Duplicate address list */
@@ -433,7 +434,7 @@ extern int     connection_max_messages;/* Max down one SMTP connection */
 extern FILE   *config_file;            /* Configuration file */
 extern const uschar *config_filename;  /* Configuration file name */
 extern gid_t   config_gid;             /* Additional group owner */
-extern int     config_lineno;          /* Line number */
+extern unsigned config_lineno;         /* Line number */
 extern const uschar *config_main_filelist; /* List of possible config files */
 extern uschar *config_main_filename;   /* File name actually used */
 extern uschar *config_main_directory;  /* Directory where the main config file was found */

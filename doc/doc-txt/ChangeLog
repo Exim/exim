@@ -56,6 +56,9 @@ JH/11 Lookups built as dynamic-load modules which support a single lookup
       modules present in the modules directory were loaded; this now applies
       only to those supporting multiple types.
 
+JH/12 Bug 3112: Fix logging of config-file position for "obsolete lookup
+      syntax". Previously, the end of the top-level file was reported.
+
 Exim version 4.98
 -----------------
 

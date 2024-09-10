@@ -4666,8 +4666,11 @@ while ((acl_current = acl))
   *log_msgptr = *user_msgptr = NULL;
   f.acl_temp_details = FALSE;
 
+  config_filename = acl->srcfile;
+  config_lineno = acl->srcline;
+
   HDEBUG(D_acl) debug_printf_indent("processing \"%s\" (%s %d)\n",
-    verbs[acl->verb], acl->srcfile, acl->srcline);
+    verbs[acl->verb], config_filename, config_lineno);
 
   /* Clear out any search error message from a previous check before testing
   this condition. */
@@ -4877,6 +4880,7 @@ while (i < 9)
 acl_level++;
 ret = acl_check_internal(where, addr, name, user_msgptr, log_msgptr);
 acl_level--;
+config_lineno = 0;
 
 acl_narg = sav_narg;
 for (i = 0; i < 9; i++) acl_arg[i] = sav_arg[i];
@@ -4922,6 +4926,7 @@ if (where == ACL_WHERE_RCPT)
 acl_level++;
 rc = acl_check_internal(where, addr, s, user_msgptr, log_msgptr);
 acl_level--;
+config_lineno = 0;
 return rc;
 }
 
@@ -4945,7 +4950,6 @@ Returns:       OK         access is granted by an ACCEPT verb
                DEFER      can't tell at the moment
                ERROR      disaster
 */
-int acl_where = ACL_WHERE_UNKNOWN;
 
 int
 acl_check(int where, const uschar * recipient, uschar * s,
@@ -4990,6 +4994,7 @@ acl_level = 0;
 rc = acl_check_internal(where, addr, s, user_msgptr, log_msgptr);
 acl_level = 0;
 acl_where = ACL_WHERE_UNKNOWN;
+config_lineno = 0;
 
 /* Cutthrough - if requested,
 and WHERE_RCPT and not yet opened conn as result of recipient-verify,
