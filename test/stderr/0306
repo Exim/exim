@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
->>> processing "accept" (TESTSUITE/test-config 18)
+>>> processing ACL rcpt "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list1-request@lists.test.ex
@@ -36,10 +36,10 @@
 >>> calling r5 router
 >>> routed by r5 router
 >>> ----------- end verify ------------
->>> accept: condition test succeeded in ACL "rcpt"
->>> end of ACL "rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL rcpt
+>>> end of ACL rcpt: ACCEPT
 >>> using ACL "rcpt"
->>> processing "accept" (TESTSUITE/test-config 18)
+>>> processing ACL rcpt "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list1@lists.test.ex
@@ -52,13 +52,13 @@
 >>> calling r2 router
 >>> routed by r2 router
 >>> ----------- end verify ------------
->>> accept: condition test succeeded in ACL "rcpt"
->>> end of ACL "rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL rcpt
+>>> end of ACL rcpt: ACCEPT
 >>> host in smtp_accept_max_nonmail_hosts?
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "rcpt"
->>> processing "accept" (TESTSUITE/test-config 18)
+>>> processing ACL rcpt "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list1@lists.test.ex
@@ -74,11 +74,11 @@
 >>> calling r3 router
 >>> r3 router forced address failure
 >>> ----------- end verify ------------
->>> accept: condition test failed in ACL "rcpt"
+>>> accept: condition test failed in ACL rcpt
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [1.2.3.4] F=<anyone@anywhere> rejected RCPT <list1@lists.test.ex>: list1@lists.test.ex is a closed mailing list
 >>> using ACL "rcpt"
->>> processing "accept" (TESTSUITE/test-config 18)
+>>> processing ACL rcpt "accept" (TESTSUITE/test-config 18)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing nonlist@lists.test.ex
@@ -99,6 +99,6 @@ LOG: H=(test) [1.2.3.4] F=<anyone@anywhere> rejected RCPT <list1@lists.test.ex>:
 >>> calling r3 router
 >>> r3 router forced address failure
 >>> ----------- end verify ------------
->>> accept: condition test failed in ACL "rcpt"
+>>> accept: condition test failed in ACL rcpt
 >>> accept: endpass encountered - denying access
 LOG: H=(test) [1.2.3.4] F=<anyone@anywhere> rejected RCPT <nonlist@lists.test.ex>: nonlist@lists.test.ex is a closed mailing list

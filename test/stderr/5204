@@ -294,7 +294,7 @@ host in pipelining_advertise_hosts?
   host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts?
 host in chunking_advertise_hosts? no (end of list)
-processing "accept" (TESTSUITE/test-config 79)
+processing inline ACL "accept"
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "FAIL cannot route this one (FAIL)"@some.host

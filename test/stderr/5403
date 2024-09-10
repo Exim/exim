@@ -20,19 +20,19 @@ LOG: no host name found for IP address 1.2.3.4
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "ar"
->>> processing "warn" (TESTSUITE/test-config 21)
+>>> processing ACL ar "warn" (TESTSUITE/test-config 21)
 >>> check control = cutthrough_delivery
 >>> check logwrite = rcpt for $local_part@$domain
 >>>                = rcpt for plain@domain.com
 LOG: rcpt for plain@domain.com
->>> warn: condition test succeeded in ACL "ar"
->>> processing "warn" (TESTSUITE/test-config 23)
+>>> warn: condition test succeeded in ACL ar
+>>> processing ACL ar "warn" (TESTSUITE/test-config 23)
 >>> check condition = ${if eq {verify}{$local_part}}
 >>>                 = 
->>> warn: condition test failed in ACL "ar"
->>> processing "accept" (TESTSUITE/test-config 25)
->>> accept: condition test succeeded in ACL "ar"
->>> end of ACL "ar": ACCEPT
+>>> warn: condition test failed in ACL ar
+>>> processing ACL ar "accept" (TESTSUITE/test-config 25)
+>>> accept: condition test succeeded in ACL ar
+>>> end of ACL ar: ACCEPT
 LOG: 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex H=(myhost.test.ex) [1.2.3.4] P=esmtp S=sss for plain@domain.com
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -56,13 +56,13 @@ LOG: no host name found for IP address 1.2.3.4
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "ar"
->>> processing "warn" (TESTSUITE/test-config 21)
+>>> processing ACL ar "warn" (TESTSUITE/test-config 21)
 >>> check control = cutthrough_delivery
 >>> check logwrite = rcpt for $local_part@$domain
 >>>                = rcpt for verify@domain.com
 LOG: rcpt for verify@domain.com
->>> warn: condition test succeeded in ACL "ar"
->>> processing "warn" (TESTSUITE/test-config 23)
+>>> warn: condition test succeeded in ACL ar
+>>> processing ACL ar "warn" (TESTSUITE/test-config 23)
 >>> check condition = ${if eq {verify}{$local_part}}
 >>>                 = true
 >>> check verify = recipient/callout=use_sender
@@ -116,10 +116,10 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP<< 250 OK
 >>> holding verify callout open for cutthrough delivery
 >>> ----------- end verify ------------
->>> warn: condition test succeeded in ACL "ar"
->>> processing "accept" (TESTSUITE/test-config 25)
->>> accept: condition test succeeded in ACL "ar"
->>> end of ACL "ar": ACCEPT
+>>> warn: condition test succeeded in ACL ar
+>>> processing ACL ar "accept" (TESTSUITE/test-config 25)
+>>> accept: condition test succeeded in ACL ar
+>>> end of ACL ar: ACCEPT
 >>>   SMTP>> QUIT
 >>>   SMTP<< 220 OK
 >>>   SMTP(close)>>

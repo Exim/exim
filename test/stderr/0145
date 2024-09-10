@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 18)
+>>> processing ACL check_recipient "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt10.test.ex
@@ -26,8 +26,8 @@
 >>> "more" is false: skipping remaining routers
 >>> no more routers
 >>> ----------- end verify ------------
->>> require: condition test failed in ACL "check_recipient"
->>> end of ACL "check_recipient": not OK
+>>> require: condition test failed in ACL check_recipient
+>>> end of ACL check_recipient: not OK
 LOG: H=(test) [V4NET.9.8.7] sender verify fail for <x@mxt10.test.ex>: all relevant MX records point to non-existent hosts or (invalidly) to IP addresses
 LOG: H=(test) [V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
@@ -43,7 +43,7 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender veri
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 18)
+>>> processing ACL check_recipient "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1.test.ex
@@ -56,8 +56,8 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender veri
 >>>    ten-1.test.ex in dnssec_request_domains? yes (matched "*")
 >>> routed by domainlist router
 >>> ----------- end verify ------------
->>> require: condition test succeeded in ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 19)
+>>> require: condition test succeeded in ACL check_recipient
+>>> processing ACL check_recipient "require" (TESTSUITE/test-config 19)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt10.test.ex
@@ -72,6 +72,6 @@ LOG: H=(test) [V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender veri
 >>> "more" is false: skipping remaining routers
 >>> no more routers
 >>> ----------- end verify ------------
->>> require: condition test failed in ACL "check_recipient"
->>> end of ACL "check_recipient": not OK
+>>> require: condition test failed in ACL check_recipient
+>>> end of ACL check_recipient: not OK
 LOG: H=(test) [V4NET.9.8.7] F=<x@ten-1.test.ex> rejected RCPT <x@mxt10.test.ex>: all relevant MX records point to non-existent hosts or (invalidly) to IP addresses

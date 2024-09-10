@@ -71,7 +71,7 @@ try option acl_smtp_rcpt
  ├───expanded: ${if░eq░{SERVER}{server}{queue}{cutthrough}}
  ╰─────result: cutthrough
 using ACL "cutthrough"
-processing "accept" (TESTSUITE/test-config 22)
+processing ACL cutthrough "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
 domain.com in domains?
@@ -101,8 +101,8 @@ try option headers_remove
 try option transport
 try option unseen
 ----------- end verify ------------
-accept: condition test succeeded in ACL "cutthrough"
-end of ACL "cutthrough": ACCEPT
+accept: condition test succeeded in ACL cutthrough
+end of ACL cutthrough: ACCEPT
 ----------- start cutthrough setup ------------
 domain.com in domains?
  list element: !░+local_domains
@@ -288,7 +288,7 @@ sync_responses expect rcpt for userx@domain.com
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
 try option acl_smtp_predata
-processing "accept" (TESTSUITE/test-config 57)
+processing inline ACL "accept"
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
@@ -748,7 +748,7 @@ try option acl_smtp_rcpt
  ├───expanded: ${if░eq░{SERVER}{server}{queue}{cutthrough}}
  ╰─────result: cutthrough
 using ACL "cutthrough"
-processing "accept" (TESTSUITE/test-config 22)
+processing ACL cutthrough "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
 domain.com in domains?
@@ -778,8 +778,8 @@ try option headers_remove
 try option transport
 try option unseen
 ----------- end verify ------------
-accept: condition test succeeded in ACL "cutthrough"
-end of ACL "cutthrough": ACCEPT
+accept: condition test succeeded in ACL cutthrough
+end of ACL cutthrough: ACCEPT
 ----------- start cutthrough setup ------------
 domain.com in domains?
  list element: !░+local_domains
@@ -914,7 +914,7 @@ sync_responses expect rcpt for usery@domain.com
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
 try option acl_smtp_predata
-processing "accept" (TESTSUITE/test-config 57)
+processing inline ACL "accept"
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
@@ -1374,7 +1374,7 @@ try option acl_smtp_rcpt
  ├───expanded: ${if░eq░{SERVER}{server}{queue}{cutthrough}}
  ╰─────result: cutthrough
 using ACL "cutthrough"
-processing "accept" (TESTSUITE/test-config 22)
+processing ACL cutthrough "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
 domain.com in domains?
@@ -1404,8 +1404,8 @@ try option headers_remove
 try option transport
 try option unseen
 ----------- end verify ------------
-accept: condition test succeeded in ACL "cutthrough"
-end of ACL "cutthrough": ACCEPT
+accept: condition test succeeded in ACL cutthrough
+end of ACL cutthrough: ACCEPT
 ----------- start cutthrough setup ------------
 domain.com in domains?
  list element: !░+local_domains
@@ -1540,7 +1540,7 @@ sync_responses expect rcpt for usery@domain.com
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
 try option acl_smtp_predata
-processing "accept" (TESTSUITE/test-config 57)
+processing inline ACL "accept"
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA

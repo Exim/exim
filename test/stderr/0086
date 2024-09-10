@@ -12,19 +12,19 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-000000005vi-0000 qualify/rewrite: '>' missing at end of address
 >>> using ACL "check_message"
->>> processing "deny" (TESTSUITE/test-config 19)
+>>> processing ACL check_message "deny" (TESTSUITE/test-config 19)
 >>> check !verify = header_syntax
 >>> check logwrite = acl_verify_message: '$acl_verify_message'
 >>>                = acl_verify_message: ''>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z'
 LOG: 10HmaY-000000005vi-0000 acl_verify_message: ''>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z'
->>> deny: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": DENY
+>>> deny: condition test succeeded in ACL check_message
+>>> end of ACL check_message: DENY
 LOG: 10HmaY-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -40,20 +40,20 @@ LOG: 10HmaY-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> re
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaZ-000000005vi-0000 qualify/rewrite: '>' missing at end of address
 LOG: 10HmaZ-000000005vi-0000 qualify/rewrite: '>' missing at end of address
 >>> using ACL "check_message"
->>> processing "deny" (TESTSUITE/test-config 19)
+>>> processing ACL check_message "deny" (TESTSUITE/test-config 19)
 >>> check !verify = header_syntax
 >>> check logwrite = acl_verify_message: '$acl_verify_message'
 >>>                = acl_verify_message: ''>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z'
 LOG: 10HmaZ-000000005vi-0000 acl_verify_message: ''>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z'
->>> deny: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": DENY
+>>> deny: condition test succeeded in ACL check_message
+>>> end of ACL check_message: DENY
 LOG: 10HmaZ-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -69,19 +69,19 @@ LOG: 10HmaZ-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> re
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmbA-000000005vi-0000 qualify/rewrite: '>' missing at end of address
 >>> using ACL "check_message"
->>> processing "deny" (TESTSUITE/test-config 19)
+>>> processing ACL check_message "deny" (TESTSUITE/test-config 19)
 >>> check !verify = header_syntax
 >>> check logwrite = acl_verify_message: '$acl_verify_message'
 >>>                = acl_verify_message: ''>' missing at end of address: failing address in "Resent-To:" header is: <xyz@a.b.c.d'
 LOG: 10HmbA-000000005vi-0000 acl_verify_message: ''>' missing at end of address: failing address in "Resent-To:" header is: <xyz@a.b.c.d'
->>> deny: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": DENY
+>>> deny: condition test succeeded in ACL check_message
+>>> end of ACL check_message: DENY
 LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Resent-To:" header is: <xyz@a.b.c.d
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -97,19 +97,19 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> re
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmbB-000000005vi-0000 qualify/rewrite: unmatched doublequote in local part
 >>> using ACL "check_message"
->>> processing "deny" (TESTSUITE/test-config 19)
+>>> processing ACL check_message "deny" (TESTSUITE/test-config 19)
 >>> check !verify = header_syntax
 >>> check logwrite = acl_verify_message: '$acl_verify_message'
 >>>                = acl_verify_message: 'unmatched doublequote in local part: failing address in "Cc:" header begins: "abcd@x.y.z (missing quote),\n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addre'
 LOG: 10HmbB-000000005vi-0000 acl_verify_message: 'unmatched doublequote in local part: failing address in "Cc:" header begins: "abcd@x.y.z (missing quote),\n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addre'
->>> deny: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": DENY
+>>> deny: condition test succeeded in ACL check_message
+>>> end of ACL check_message: DENY
 LOG: 10HmbB-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: unmatched doublequote in local part: failing address in "Cc:" header begins: "abcd@x.y.z (missing quote),\n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addre
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -125,18 +125,18 @@ LOG: 10HmbB-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> re
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "deny" (TESTSUITE/test-config 19)
+>>> processing ACL check_message "deny" (TESTSUITE/test-config 19)
 >>> check !verify = header_syntax
 >>> check logwrite = acl_verify_message: '$acl_verify_message'
 >>>                = acl_verify_message: 'unqualified address not permitted: failing address in "Cc:" header is: <abcd>'
 LOG: 10HmbC-000000005vi-0000 acl_verify_message: 'unqualified address not permitted: failing address in "Cc:" header is: <abcd>'
->>> deny: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": DENY
+>>> deny: condition test succeeded in ACL check_message
+>>> end of ACL check_message: DENY
 LOG: 10HmbC-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: unqualified address not permitted: failing address in "Cc:" header is: <abcd>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -152,15 +152,15 @@ LOG: 10HmbC-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> re
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "deny" (TESTSUITE/test-config 19)
+>>> processing ACL check_message "deny" (TESTSUITE/test-config 19)
 >>> check !verify = header_syntax
->>> deny: condition test failed in ACL "check_message"
->>> processing "accept" (TESTSUITE/test-config 21)
->>> accept: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": ACCEPT
+>>> deny: condition test failed in ACL check_message
+>>> processing ACL check_message "accept" (TESTSUITE/test-config 21)
+>>> accept: condition test succeeded in ACL check_message
+>>> end of ACL check_message: ACCEPT
 LOG: 10HmaX-000000005vi-0000 <= userx@exim.test.ex H=(test) [V4NET.10.10.9] P=smtp S=sss

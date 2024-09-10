@@ -72,25 +72,25 @@
 >>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
 >>> expanded string: true
 >>> using ACL "check_recipient"
->>> processing "warn" (TESTSUITE/test-config 31)
+>>> processing ACL check_recipient "warn" (TESTSUITE/test-config 31)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
->>> warn: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 33)
+>>> warn: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 33)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 34)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 34)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 35)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 35)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -103,8 +103,8 @@
 >>> cram_md5 in "*"?
 >>>  list element: *
 >>>  cram_md5 in "*"? yes (matched "*")
->>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 38)
+>>> deny: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 38)
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -115,8 +115,8 @@
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-000000005vi-0000 <= userx@some.domain H=(test.host) [10.0.0.1] P=esmtpa A=cram_md5:tim S=sss
 >>> host in hosts_connection_nolog? no (option unset)
@@ -160,19 +160,19 @@ LOG: 10HmaY-000000005vi-0000 <= userx@some.domain H=(test.host) [10.0.0.1] P=esm
 >>> expanded string: 
 LOG: cram_md5 authenticator failed for (test.host) [10.0.0.5]: 535 Incorrect authentication data (set_id=tim)
 >>> using ACL "check_recipient"
->>> processing "warn" (TESTSUITE/test-config 31)
+>>> processing ACL check_recipient "warn" (TESTSUITE/test-config 31)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>>  host in "10.0.0.5"? yes (matched "10.0.0.5")
 >>>   message: authentication-failed: $authentication_failed
->>> warn: condition test succeeded in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 33)
+>>> warn: condition test succeeded in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 33)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>>  host in "10.0.0.5"? yes (matched "10.0.0.5")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaZ-000000005vi-0000 <= userx@some.domain H=(test.host) [10.0.0.5] P=esmtp S=sss

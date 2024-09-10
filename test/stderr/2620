@@ -268,7 +268,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
-processing "warn" (TESTSUITE/test-config 27)
+processing ACL check_recipient "warn" (TESTSUITE/test-config 27)
  search_open: pgsql "NULL"
  search_find: file="NULL"
    key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
@@ -304,8 +304,8 @@ LOG: MAIN PANIC
  lookup failed
 check set acl_m0 = FAIL: ${lookup pgsql,cache=no_rd        {select name from them where id = '$local_part'}}
                  = FAIL: 
-warn: condition test succeeded in ACL "check_recipient"
-processing "warn" (TESTSUITE/test-config 32)
+warn: condition test succeeded in ACL check_recipient
+processing ACL check_recipient "warn" (TESTSUITE/test-config 32)
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -352,10 +352,10 @@ LOG: MAIN
   Exim configuration error in ACL verb at line 32 of TESTSUITE/test-config:
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-warn: condition test deferred in ACL "check_recipient"
+warn: condition test deferred in ACL check_recipient
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-processing "warn" (TESTSUITE/test-config 41)
+processing ACL check_recipient "warn" (TESTSUITE/test-config 41)
 check set acl_m0 = ok:   hostlist
 check hosts = net-pgsql;select * from them where id='${quote_pgsql:$local_part}'
 host in "net-pgsql;select * from them where id='c'"?
@@ -375,8 +375,8 @@ host in "net-pgsql;select * from them where id='c'"?
  creating new cache entry
  lookup failed
 host in "net-pgsql;select * from them where id='c'"? no (end of list)
-warn: condition test failed in ACL "check_recipient"
-processing "warn" (TESTSUITE/test-config 44)
+warn: condition test failed in ACL check_recipient
+processing ACL check_recipient "warn" (TESTSUITE/test-config 44)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
 host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
@@ -396,10 +396,10 @@ LOG: MAIN
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
-warn: condition test deferred in ACL "check_recipient"
+warn: condition test deferred in ACL check_recipient
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-processing "warn" (TESTSUITE/test-config 49)
+processing ACL check_recipient "warn" (TESTSUITE/test-config 49)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
 host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
@@ -416,10 +416,10 @@ host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them
  PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::PORT_N/test/CALLER/'
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
-warn: condition test deferred in ACL "check_recipient"
+warn: condition test deferred in ACL check_recipient
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-processing "accept" (TESTSUITE/test-config 52)
+processing ACL check_recipient "accept" (TESTSUITE/test-config 52)
 check domains = +local_domains
 d in "+local_domains"?
  list element: +local_domains
@@ -429,8 +429,8 @@ d in "+local_domains"?
    d in "@"? no (end of list)
   end sublist local_domains
 d in "+local_domains"? no (end of list)
-accept: condition test failed in ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 53)
+accept: condition test failed in ACL check_recipient
+processing ACL check_recipient "accept" (TESTSUITE/test-config 53)
 check hosts = +relay_hosts
 host in "+relay_hosts"?
  list element: +relay_hosts
@@ -453,17 +453,17 @@ host in "+relay_hosts"?
   host in "net-pgsql;select * from them where id='10.0.0.0'"? no (end of list)
   end sublist relay_hosts
 host in "+relay_hosts"? no (end of list)
-accept: condition test failed in ACL "check_recipient"
-processing "deny" (TESTSUITE/test-config 54)
+accept: condition test failed in ACL check_recipient
+processing ACL check_recipient "deny" (TESTSUITE/test-config 54)
   message: relay not permitted
-deny: condition test succeeded in ACL "check_recipient"
-end of ACL "check_recipient": DENY
+deny: condition test succeeded in ACL check_recipient
+end of ACL check_recipient: DENY
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=(test) [10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
-processing "warn" (TESTSUITE/test-config 27)
+processing ACL check_recipient "warn" (TESTSUITE/test-config 27)
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -500,8 +500,8 @@ LOG: MAIN PANIC
  lookup failed
 check set acl_m0 = FAIL: ${lookup pgsql,cache=no_rd        {select name from them where id = '$local_part'}}
                  = FAIL: 
-warn: condition test succeeded in ACL "check_recipient"
-processing "warn" (TESTSUITE/test-config 32)
+warn: condition test succeeded in ACL check_recipient
+processing ACL check_recipient "warn" (TESTSUITE/test-config 32)
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
@@ -548,10 +548,10 @@ LOG: MAIN
   Exim configuration error in ACL verb at line 32 of TESTSUITE/test-config:
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-warn: condition test deferred in ACL "check_recipient"
+warn: condition test deferred in ACL check_recipient
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-processing "warn" (TESTSUITE/test-config 41)
+processing ACL check_recipient "warn" (TESTSUITE/test-config 41)
 check set acl_m0 = ok:   hostlist
 check hosts = net-pgsql;select * from them where id='${quote_pgsql:$local_part}'
 host in "net-pgsql;select * from them where id='c'"?
@@ -566,8 +566,8 @@ host in "net-pgsql;select * from them where id='c'"?
  cached data used for lookup of select * from them where id='c'
  lookup failed
 host in "net-pgsql;select * from them where id='c'"? no (end of list)
-warn: condition test failed in ACL "check_recipient"
-processing "warn" (TESTSUITE/test-config 44)
+warn: condition test failed in ACL check_recipient
+processing ACL check_recipient "warn" (TESTSUITE/test-config 44)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
 host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
@@ -587,10 +587,10 @@ LOG: MAIN
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
-warn: condition test deferred in ACL "check_recipient"
+warn: condition test deferred in ACL check_recipient
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-processing "warn" (TESTSUITE/test-config 49)
+processing ACL check_recipient "warn" (TESTSUITE/test-config 49)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
 host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
@@ -607,10 +607,10 @@ host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them
  PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::PORT_N/test/CALLER/'
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
-warn: condition test deferred in ACL "check_recipient"
+warn: condition test deferred in ACL check_recipient
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-processing "accept" (TESTSUITE/test-config 52)
+processing ACL check_recipient "accept" (TESTSUITE/test-config 52)
 check domains = +local_domains
 d in "+local_domains"?
  list element: +local_domains
@@ -620,8 +620,8 @@ d in "+local_domains"?
    d in "@"? no (end of list)
   end sublist local_domains
 d in "+local_domains"? no (end of list)
-accept: condition test failed in ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 53)
+accept: condition test failed in ACL check_recipient
+processing ACL check_recipient "accept" (TESTSUITE/test-config 53)
 check hosts = +relay_hosts
 host in "+relay_hosts"?
  list element: +relay_hosts
@@ -640,11 +640,11 @@ host in "+relay_hosts"?
   host in "net-pgsql;select * from them where id='10.0.0.0'"? no (end of list)
   end sublist relay_hosts
 host in "+relay_hosts"? no (end of list)
-accept: condition test failed in ACL "check_recipient"
-processing "deny" (TESTSUITE/test-config 54)
+accept: condition test failed in ACL check_recipient
+processing ACL check_recipient "deny" (TESTSUITE/test-config 54)
   message: relay not permitted
-deny: condition test succeeded in ACL "check_recipient"
-end of ACL "check_recipient": DENY
+deny: condition test succeeded in ACL check_recipient
+end of ACL check_recipient: DENY
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=(test) [10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted

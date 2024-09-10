@@ -7,10 +7,10 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
->>> processing "accept" (TESTSUITE/test-config 24)
+>>> processing ACL connect "accept" (TESTSUITE/test-config 24)
 >>> check acl = log
 >>>  using ACL "log"
->>>  processing "accept" (TESTSUITE/test-config 31)
+>>>  processing ACL log "accept" (TESTSUITE/test-config 31)
 >>>  check logwrite = ===========================================================
 LOG: ===========================================================
 >>>  check logwrite = sender_ip_address=[$sender_host_address]
@@ -39,10 +39,10 @@ LOG: sender_host_name=
 >>>  check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=
 LOG: sender_ident=
->>>  accept: condition test succeeded in ACL "log"
->>>  end of ACL "log": ACCEPT
->>> accept: condition test succeeded in ACL "connect"
->>> end of ACL "connect": ACCEPT
+>>>  accept: condition test succeeded in ACL log
+>>>  end of ACL log: ACCEPT
+>>> accept: condition test succeeded in ACL connect
+>>> end of ACL connect: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -52,10 +52,10 @@ LOG: sender_ident=
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
->>> processing "accept" (TESTSUITE/test-config 24)
+>>> processing ACL connect "accept" (TESTSUITE/test-config 24)
 >>> check acl = log
 >>>  using ACL "log"
->>>  processing "accept" (TESTSUITE/test-config 31)
+>>>  processing ACL log "accept" (TESTSUITE/test-config 31)
 >>>  check logwrite = ===========================================================
 LOG: ===========================================================
 >>>  check logwrite = sender_ip_address=[$sender_host_address]
@@ -82,10 +82,10 @@ LOG: sender_host_name=hostname
 >>>  check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
->>>  accept: condition test succeeded in ACL "log"
->>>  end of ACL "log": ACCEPT
->>> accept: condition test succeeded in ACL "connect"
->>> end of ACL "connect": ACCEPT
+>>>  accept: condition test succeeded in ACL log
+>>>  end of ACL log: ACCEPT
+>>> accept: condition test succeeded in ACL connect
+>>> end of ACL connect: ACCEPT
 >>>  list element: *
 >>>  host in limits_advertise_hosts? yes (matched "*")
 >>> host in dsn_advertise_hosts? no (option unset)
@@ -95,10 +95,10 @@ LOG: sender_ident=ident
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "mail"
->>> processing "accept" (TESTSUITE/test-config 27)
+>>> processing ACL mail "accept" (TESTSUITE/test-config 27)
 >>> check acl = log
 >>>  using ACL "log"
->>>  processing "accept" (TESTSUITE/test-config 31)
+>>>  processing ACL log "accept" (TESTSUITE/test-config 31)
 >>>  check logwrite = ===========================================================
 LOG: ===========================================================
 >>>  check logwrite = sender_ip_address=[$sender_host_address]
@@ -125,26 +125,26 @@ LOG: sender_host_name=hostname
 >>>  check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
->>>  accept: condition test succeeded in ACL "log"
->>>  end of ACL "log": ACCEPT
+>>>  accept: condition test succeeded in ACL log
+>>>  end of ACL log: ACCEPT
 >>> check acl = auth
 >>>  using ACL "auth"
->>>  processing "accept" (TESTSUITE/test-config 42)
+>>>  processing ACL auth "accept" (TESTSUITE/test-config 42)
 >>>  check authenticated = *
 >>>  authname in "*"?
 >>>   list element: *
 >>>   authname in "*"? yes (matched "*")
 >>>  check logwrite = +++ host is authenticated +++
 LOG: +++ host is authenticated +++
->>>  accept: condition test succeeded in ACL "auth"
->>>  end of ACL "auth": ACCEPT
->>> accept: condition test succeeded in ACL "mail"
->>> end of ACL "mail": ACCEPT
+>>>  accept: condition test succeeded in ACL auth
+>>>  end of ACL auth: ACCEPT
+>>> accept: condition test succeeded in ACL mail
+>>> end of ACL mail: ACCEPT
 >>> using ACL "mail"
->>> processing "accept" (TESTSUITE/test-config 27)
+>>> processing ACL mail "accept" (TESTSUITE/test-config 27)
 >>> check acl = log
 >>>  using ACL "log"
->>>  processing "accept" (TESTSUITE/test-config 31)
+>>>  processing ACL log "accept" (TESTSUITE/test-config 31)
 >>>  check logwrite = ===========================================================
 LOG: ===========================================================
 >>>  check logwrite = sender_ip_address=[$sender_host_address]
@@ -171,18 +171,18 @@ LOG: sender_host_name=hostname
 >>>  check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
->>>  accept: condition test succeeded in ACL "log"
->>>  end of ACL "log": ACCEPT
+>>>  accept: condition test succeeded in ACL log
+>>>  end of ACL log: ACCEPT
 >>> check acl = auth
 >>>  using ACL "auth"
->>>  processing "accept" (TESTSUITE/test-config 42)
+>>>  processing ACL auth "accept" (TESTSUITE/test-config 42)
 >>>  check authenticated = *
 >>>  authname in "*"?
 >>>   list element: *
 >>>   authname in "*"? yes (matched "*")
 >>>  check logwrite = +++ host is authenticated +++
 LOG: +++ host is authenticated +++
->>>  accept: condition test succeeded in ACL "auth"
->>>  end of ACL "auth": ACCEPT
->>> accept: condition test succeeded in ACL "mail"
->>> end of ACL "mail": ACCEPT
+>>>  accept: condition test succeeded in ACL auth
+>>>  end of ACL auth: ACCEPT
+>>> accept: condition test succeeded in ACL mail
+>>> end of ACL mail: ACCEPT

@@ -11,13 +11,13 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 21)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
@@ -30,8 +30,8 @@
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
->>> require: condition test succeeded in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> require: condition test succeeded in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -42,18 +42,18 @@
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require" (TESTSUITE/test-config 26)
+>>> processing ACL check_message "require" (TESTSUITE/test-config 26)
 >>> check verify = header_sender
 >>> verifying From: header address userx@test.ex
 >>> previously checked as envelope sender
->>> require: condition test succeeded in ACL "check_message"
->>> processing "accept" (TESTSUITE/test-config 27)
->>> accept: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": ACCEPT
+>>> require: condition test succeeded in ACL check_message
+>>> processing ACL check_message "accept" (TESTSUITE/test-config 27)
+>>> accept: condition test succeeded in ACL check_message
+>>> end of ACL check_message: ACCEPT
 LOG: 10HmaX-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -68,13 +68,13 @@ LOG: 10HmaX-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 21)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
@@ -87,8 +87,8 @@ LOG: 10HmaX-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
->>> require: condition test succeeded in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> require: condition test succeeded in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -99,19 +99,19 @@ LOG: 10HmaX-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-000000005vi-0000 qualify/rewrite: '>' missing at end of address
 >>> using ACL "check_message"
->>> processing "require" (TESTSUITE/test-config 26)
+>>> processing ACL check_message "require" (TESTSUITE/test-config 26)
 >>> check verify = header_sender
 >>> verifying Sender: header address userx@test.ex
 >>> previously checked as envelope sender
->>> require: condition test succeeded in ACL "check_message"
->>> processing "accept" (TESTSUITE/test-config 27)
->>> accept: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": ACCEPT
+>>> require: condition test succeeded in ACL check_message
+>>> processing ACL check_message "accept" (TESTSUITE/test-config 27)
+>>> accept: condition test succeeded in ACL check_message
+>>> end of ACL check_message: ACCEPT
 LOG: 10HmaY-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -126,13 +126,13 @@ LOG: 10HmaY-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 21)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
@@ -145,8 +145,8 @@ LOG: 10HmaY-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
->>> require: condition test succeeded in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> require: condition test succeeded in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -157,11 +157,11 @@ LOG: 10HmaY-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require" (TESTSUITE/test-config 26)
+>>> processing ACL check_message "require" (TESTSUITE/test-config 26)
 >>> check verify = header_sender
 >>> verifying From: header address badbad@test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -173,8 +173,8 @@ LOG: 10HmaY-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>>  list element: userx
 >>> badbad in local_parts? no (end of list)
 >>> no more routers
->>> require: condition test failed in ACL "check_message"
->>> end of ACL "check_message": not OK
+>>> require: condition test failed in ACL check_message
+>>> end of ACL check_message: not OK
 LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -189,13 +189,13 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejecte
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 21)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
@@ -208,8 +208,8 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejecte
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
->>> require: condition test succeeded in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> require: condition test succeeded in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -220,11 +220,11 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejecte
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require" (TESTSUITE/test-config 26)
+>>> processing ACL check_message "require" (TESTSUITE/test-config 26)
 >>> check verify = header_sender
 >>> verifying From: header address badbad@test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -238,10 +238,10 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> rejecte
 >>> no more routers
 >>> verifying From: header address userx@test.ex
 >>> previously checked as envelope sender
->>> require: condition test succeeded in ACL "check_message"
->>> processing "accept" (TESTSUITE/test-config 27)
->>> accept: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": ACCEPT
+>>> require: condition test succeeded in ACL check_message
+>>> processing ACL check_message "accept" (TESTSUITE/test-config 27)
+>>> accept: condition test succeeded in ACL check_message
+>>> end of ACL check_message: ACCEPT
 LOG: 10HmaZ-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -256,13 +256,13 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 21)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
@@ -275,8 +275,8 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
->>> require: condition test succeeded in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> require: condition test succeeded in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -287,11 +287,11 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require" (TESTSUITE/test-config 26)
+>>> processing ACL check_message "require" (TESTSUITE/test-config 26)
 >>> check verify = header_sender
 >>> verifying From: header address defer@test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -302,5 +302,5 @@ LOG: 10HmaZ-000000005vi-0000 <= userx@test.ex H=(test) [V4NET.10.10.10] P=smtp S
 >>> calling defer router
 >>> defer router: defer for defer@test.ex
 >>>   message: this is a forced defer
->>> require: condition test deferred in ACL "check_message"
+>>> require: condition test deferred in ACL check_message
 LOG: 10HmbB-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@test.ex> temporarily rejected after DATA: all attempts to verify a sender in a header line deferred

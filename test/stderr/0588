@@ -10,7 +10,7 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing inline ACL "accept"
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing should_log@delay1500.test.ex
@@ -39,7 +39,7 @@ LOG: Long A lookup for 'delay1500.test.ex': ssss msec
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing inline ACL "accept"
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing should_not_log@delay500.test.ex

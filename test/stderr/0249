@@ -48,7 +48,7 @@ User@d.domain in "a@b"? no (end of list)
 >>>  list element: @
 >>>  list element: @[]
 >>> tester in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)

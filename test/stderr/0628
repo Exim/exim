@@ -1,7 +1,7 @@
-01:01:01 p1237  warn: condition test succeeded in ACL "chk_data"
-01:01:01 p1237  processing "accept" (TESTSUITE/test-config 28)
-01:01:01 p1237  accept: condition test succeeded in ACL "chk_data"
-01:01:01 p1237  end of ACL "chk_data": ACCEPT
+01:01:01 p1237  warn: condition test succeeded in ACL chk_data
+01:01:01 p1237  processing ACL chk_data "accept" (TESTSUITE/test-config 28)
+01:01:01 p1237  accept: condition test succeeded in ACL chk_data
+01:01:01 p1237  end of ACL chk_data: ACCEPT
 01:01:01 p1237   ╭considering: ${tod_full}
 01:01:01 p1237   ├───expanded: ${tod_full}
 01:01:01 p1237   ╰─────result: Tue,░2░Mar░1999░09:44:33░+0000
@@ -112,10 +112,10 @@
 01:01:01 p1237  SMTP>>(close on process exit)
 01:01:01 p1237  >>>>>>>>>>>>>>>> Exim pid=p1237 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 01:01:01 p1240  check control = queue_only
-01:01:01 p1240  warn: condition test succeeded in ACL "chk_data"
-01:01:01 p1240  processing "accept" (TESTSUITE/test-config 28)
-01:01:01 p1240  accept: condition test succeeded in ACL "chk_data"
-01:01:01 p1240  end of ACL "chk_data": ACCEPT
+01:01:01 p1240  warn: condition test succeeded in ACL chk_data
+01:01:01 p1240  processing ACL chk_data "accept" (TESTSUITE/test-config 28)
+01:01:01 p1240  accept: condition test succeeded in ACL chk_data
+01:01:01 p1240  end of ACL chk_data: ACCEPT
 01:01:01 p1240   ╭considering: ${tod_full}
 01:01:01 p1240   ├───expanded: ${tod_full}
 01:01:01 p1240   ╰─────result: Tue,░2░Mar░1999░09:44:33░+0000

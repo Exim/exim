@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 17)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 17)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.again.dns
@@ -30,7 +30,7 @@
 >>> temp router: defer for userx@test.again.dns
 >>>   message: host lookup did not complete
 >>> ----------- end verify ------------
->>> accept: condition test deferred in ACL "check_recipient"
+>>> accept: condition test deferred in ACL check_recipient
 LOG: H=(test) [1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <userx@test.again.dns>: host lookup did not complete
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -45,7 +45,7 @@ LOG: H=(test) [1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <userx@test.
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 17)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 17)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing r1-userx@test.again.dns
@@ -64,5 +64,5 @@ LOG: H=(test) [1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <userx@test.
 >>> r1 router: defer for r1-userx@test.again.dns
 >>>   message: host lookup did not complete
 >>> ----------- end verify ------------
->>> accept: condition test deferred in ACL "check_recipient"
+>>> accept: condition test deferred in ACL check_recipient
 LOG: H=(test) [1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <r1-userx@test.again.dns>: host lookup did not complete

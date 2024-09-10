@@ -18,107 +18,107 @@
 >>>  host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 25)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing ACL check_data "accept" (TESTSUITE/test-config 23)
 >>> check logwrite = mime_acl: mime_part_count $mime_part_count
 >>>                = mime_acl: mime_part_count -1
 LOG: 10HmaX-000000005vi-0000 mime_acl: mime_part_count -1
->>> accept: condition test succeeded in ACL "check_data"
->>> end of ACL "check_data": ACCEPT
+>>> accept: condition test succeeded in ACL check_data
+>>> end of ACL check_data: ACCEPT
 LOG: 10HmaX-000000005vi-0000 <= sender@test.ex H=(mailserver.test) [127.0.0.1] P=esmtp S=sss
->>> processing "accept" (TESTSUITE/test-config 25)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_mime"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL check_mime "accept" (TESTSUITE/test-config 19)
 >>> check decode = default
 >>> check logwrite = mime_acl: mime_part_count $mime_part_count
 >>>                = mime_acl: mime_part_count 0
 LOG: 10HmaY-000000005vi-0000 mime_acl: mime_part_count 0
->>> accept: condition test succeeded in ACL "check_mime"
->>> end of ACL "check_mime": ACCEPT
+>>> accept: condition test succeeded in ACL check_mime
+>>> end of ACL check_mime: ACCEPT
 >>> using ACL "check_mime"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL check_mime "accept" (TESTSUITE/test-config 19)
 >>> check decode = default
 >>> check logwrite = mime_acl: mime_part_count $mime_part_count
 >>>                = mime_acl: mime_part_count 1
 LOG: 10HmaY-000000005vi-0000 mime_acl: mime_part_count 1
->>> accept: condition test succeeded in ACL "check_mime"
->>> end of ACL "check_mime": ACCEPT
+>>> accept: condition test succeeded in ACL check_mime
+>>> end of ACL check_mime: ACCEPT
 >>> using ACL "check_mime"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL check_mime "accept" (TESTSUITE/test-config 19)
 >>> check decode = default
 >>> check logwrite = mime_acl: mime_part_count $mime_part_count
 >>>                = mime_acl: mime_part_count 2
 LOG: 10HmaY-000000005vi-0000 mime_acl: mime_part_count 2
->>> accept: condition test succeeded in ACL "check_mime"
->>> end of ACL "check_mime": ACCEPT
+>>> accept: condition test succeeded in ACL check_mime
+>>> end of ACL check_mime: ACCEPT
 >>> using ACL "check_data"
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing ACL check_data "accept" (TESTSUITE/test-config 23)
 >>> check logwrite = mime_acl: mime_part_count $mime_part_count
 >>>                = mime_acl: mime_part_count 2
 LOG: 10HmaY-000000005vi-0000 mime_acl: mime_part_count 2
->>> accept: condition test succeeded in ACL "check_data"
->>> end of ACL "check_data": ACCEPT
+>>> accept: condition test succeeded in ACL check_data
+>>> end of ACL check_data: ACCEPT
 >>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaY-000000005vi-0000/FFFFFFFFF'
 >>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaY-000000005vi-0000/FFFFFFFFF'
 >>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaY-000000005vi-0000/FFFFFFFFF'
 >>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaY-000000005vi-0000/FFFFFFFFF'
 LOG: 10HmaY-000000005vi-0000 <= sender@test.ex H=(mailserver.test) [127.0.0.1] P=esmtp S=sss
->>> processing "accept" (TESTSUITE/test-config 25)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_mime"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL check_mime "accept" (TESTSUITE/test-config 19)
 >>> check decode = default
 >>> check logwrite = mime_acl: mime_part_count $mime_part_count
 >>>                = mime_acl: mime_part_count 0
 LOG: 10HmaZ-000000005vi-0000 mime_acl: mime_part_count 0
->>> accept: condition test succeeded in ACL "check_mime"
->>> end of ACL "check_mime": ACCEPT
+>>> accept: condition test succeeded in ACL check_mime
+>>> end of ACL check_mime: ACCEPT
 >>> using ACL "check_mime"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL check_mime "accept" (TESTSUITE/test-config 19)
 >>> check decode = default
 >>> check logwrite = mime_acl: mime_part_count $mime_part_count
 >>>                = mime_acl: mime_part_count 1
 LOG: 10HmaZ-000000005vi-0000 mime_acl: mime_part_count 1
->>> accept: condition test succeeded in ACL "check_mime"
->>> end of ACL "check_mime": ACCEPT
+>>> accept: condition test succeeded in ACL check_mime
+>>> end of ACL check_mime: ACCEPT
 >>> using ACL "check_mime"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL check_mime "accept" (TESTSUITE/test-config 19)
 >>> check decode = default
 >>> check logwrite = mime_acl: mime_part_count $mime_part_count
 >>>                = mime_acl: mime_part_count 2
 LOG: 10HmaZ-000000005vi-0000 mime_acl: mime_part_count 2
->>> accept: condition test succeeded in ACL "check_mime"
->>> end of ACL "check_mime": ACCEPT
+>>> accept: condition test succeeded in ACL check_mime
+>>> end of ACL check_mime: ACCEPT
 >>> using ACL "check_data"
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing ACL check_data "accept" (TESTSUITE/test-config 23)
 >>> check logwrite = mime_acl: mime_part_count $mime_part_count
 >>>                = mime_acl: mime_part_count 2
 LOG: 10HmaZ-000000005vi-0000 mime_acl: mime_part_count 2
->>> accept: condition test succeeded in ACL "check_data"
->>> end of ACL "check_data": ACCEPT
+>>> accept: condition test succeeded in ACL check_data
+>>> end of ACL check_data: ACCEPT
 >>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaZ-000000005vi-0000/FFFFFFFFF'
 >>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaZ-000000005vi-0000/FFFFFFFFF'
 >>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaZ-000000005vi-0000/FFFFFFFFF'
 >>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaZ-000000005vi-0000/FFFFFFFFF'
 LOG: 10HmaZ-000000005vi-0000 <= sender@test.ex H=(mailserver.test) [127.0.0.1] P=esmtp S=sss
->>> processing "accept" (TESTSUITE/test-config 25)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing ACL check_data "accept" (TESTSUITE/test-config 23)
 >>> check logwrite = mime_acl: mime_part_count $mime_part_count
 >>>                = mime_acl: mime_part_count -1
 LOG: 10HmbA-000000005vi-0000 mime_acl: mime_part_count -1
->>> accept: condition test succeeded in ACL "check_data"
->>> end of ACL "check_data": ACCEPT
+>>> accept: condition test succeeded in ACL check_data
+>>> end of ACL check_data: ACCEPT
 LOG: 10HmbA-000000005vi-0000 <= sender@test.ex H=(mailserver.test) [127.0.0.1] P=esmtp S=sss

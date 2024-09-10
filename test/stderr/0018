@@ -10,7 +10,7 @@
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_etrn"
->>> processing "deny" (TESTSUITE/test-config 17)
+>>> processing ACL check_etrn "deny" (TESTSUITE/test-config 17)
 >>> check hosts = !localhost
 >>> host in "!localhost"?
 >>>  list element: !localhost
@@ -18,13 +18,13 @@ MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=localhost address=127.0.0.1
 >>>  host in "!localhost"? no (matched "!localhost")
->>> deny: condition test failed in ACL "check_etrn"
->>> processing "warn" (TESTSUITE/test-config 18)
+>>> deny: condition test failed in ACL check_etrn
+>>> processing ACL check_etrn "warn" (TESTSUITE/test-config 18)
 >>> l_message: accepted $smtp_command
->>> warn: condition test succeeded in ACL "check_etrn"
+>>> warn: condition test succeeded in ACL check_etrn
 LOG: H=[127.0.0.1] Warning: accepted etrn #some.random.domain
->>> processing "accept" (TESTSUITE/test-config 19)
->>> accept: condition test succeeded in ACL "check_etrn"
->>> end of ACL "check_etrn": ACCEPT
+>>> processing ACL check_etrn "accept" (TESTSUITE/test-config 19)
+>>> accept: condition test succeeded in ACL check_etrn
+>>> end of ACL check_etrn: ACCEPT
 >>> ETRN command is: exim -R
 >>> ETRN command execution skipped

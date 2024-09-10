@@ -11,13 +11,13 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 21)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 21)
 >>> check domains = +local_domains
 >>> external.test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -27,8 +27,8 @@
 >>>    external.test.ex in "test.ex"? no (end of list)
 >>>   end sublist local_domains
 >>> external.test.ex in "+local_domains"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
@@ -41,20 +41,20 @@ LOG: no host name found for IP address V4NET.0.0.97
 >>>    ╎host in "*.friendly.test.ex"? no (failed to find host name for V4NET.0.0.97)
 >>>    end sublist relay_hosts
 >>>  host in "+relay_hosts"? no (end of list)
->>>  accept: condition test failed in ACL "check_recipient"
->>>  processing "deny" (TESTSUITE/test-config 23)
+>>>  accept: condition test failed in ACL check_recipient
+>>>  processing ACL check_recipient "deny" (TESTSUITE/test-config 23)
 >>>    message: relay not permitted
->>>  deny: condition test succeeded in ACL "check_recipient"
->>>  end of ACL "check_recipient": DENY
+>>>  deny: condition test succeeded in ACL check_recipient
+>>>  end of ACL check_recipient: DENY
 LOG: H=(test) [V4NET.0.0.97] F=<userx@test.ex> rejected RCPT <userx@external.test.ex>: relay not permitted
 >>>  using ACL "check_recipient"
->>>  processing "accept" (TESTSUITE/test-config 20)
+>>>  processing ACL check_recipient "accept" (TESTSUITE/test-config 20)
 >>>  check hosts = :
 >>>  host in ":"?
 >>>   list element: 
 >>>  host in ":"? no (end of list)
->>>  accept: condition test failed in ACL "check_recipient"
->>>  processing "accept" (TESTSUITE/test-config 21)
+>>>  accept: condition test failed in ACL check_recipient
+>>>  processing ACL check_recipient "accept" (TESTSUITE/test-config 21)
 >>>  check domains = +local_domains
 >>>  external.test.ex in "+local_domains"?
 >>>   list element: +local_domains
@@ -64,8 +64,8 @@ LOG: H=(test) [V4NET.0.0.97] F=<userx@test.ex> rejected RCPT <userx@external.tes
 >>>    ╎external.test.ex in "test.ex"? no (end of list)
 >>>    end sublist local_domains
 >>>  external.test.ex in "+local_domains"? no (end of list)
->>>  accept: condition test failed in ACL "check_recipient"
->>>  processing "accept" (TESTSUITE/test-config 22)
+>>>  accept: condition test failed in ACL check_recipient
+>>>  processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>>  check hosts = +relay_hosts
 >>>  host in "+relay_hosts"?
 >>>   list element: +relay_hosts
@@ -73,9 +73,9 @@ LOG: H=(test) [V4NET.0.0.97] F=<userx@test.ex> rejected RCPT <userx@external.tes
 >>>   cached no match for +relay_hosts
 >>>   cached lookup data = NULL
 >>>  host in "+relay_hosts"? no (end of list)
->>>  accept: condition test failed in ACL "check_recipient"
->>>  processing "deny" (TESTSUITE/test-config 23)
+>>>  accept: condition test failed in ACL check_recipient
+>>>  processing ACL check_recipient "deny" (TESTSUITE/test-config 23)
 >>>    message: relay not permitted
->>>  deny: condition test succeeded in ACL "check_recipient"
->>>  end of ACL "check_recipient": DENY
+>>>  deny: condition test succeeded in ACL check_recipient
+>>>  end of ACL check_recipient: DENY
 LOG: H=(test) [V4NET.0.0.97] F=<userx@test.ex> rejected RCPT <userx@external.test.ex>: relay not permitted

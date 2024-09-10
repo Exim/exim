@@ -38,7 +38,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<a@b>
 using ACL "rcpt"
-processing "accept" (TESTSUITE/test-config 35)
+processing ACL rcpt "accept" (TESTSUITE/test-config 35)
 check hosts = +ignore_unknown : *.$sender_address_domain : $sender_address_domain : ${lookup dnsdb{>:defer_never,mxh=$sender_address_domain}}
  search_open: dnsdb "NULL"
  search_find: file="NULL"
@@ -98,8 +98,8 @@ LOG: host_lookup_failed MAIN
   no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
  failed to find IP address for cioce.test.again.dns: item ignored by +ignore_unknown
 host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "? no (end of list)
-accept: condition test failed in ACL "rcpt"
-end of ACL "rcpt": implicit DENY
+accept: condition test failed in ACL rcpt
+end of ACL rcpt: implicit DENY
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT
   H=the.local.host.name (test) [ip4.ip4.ip4.ip4] F=<xx@cioce.test.again.dns> rejected RCPT <a@b>
@@ -139,7 +139,7 @@ host in smtp_accept_max_nonmail_hosts?
  list element: *
   host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 using ACL "vrfy"
-processing "warn" (TESTSUITE/test-config 28)
+processing ACL vrfy "warn" (TESTSUITE/test-config 28)
 check domains = +try_again_dns_list
 test.again.dns in "+try_again_dns_list"?
  list element: +try_again_dns_list
@@ -174,8 +174,8 @@ LOG: MAIN PANIC
    test.again.dns in "@mx_any"? no (end of list)
   end sublist try_again_dns_list
 test.again.dns in "+try_again_dns_list"? no (end of list)
-warn: condition test failed in ACL "vrfy"
-end of ACL "vrfy": implicit DENY
+warn: condition test failed in ACL vrfy
+end of ACL vrfy: implicit DENY
 SMTP>> 252 Administrative prohibition
 LOG: MAIN REJECT
   H=[ip4.ip4.ip4.ip4] rejected VRFY a@test.again.dns

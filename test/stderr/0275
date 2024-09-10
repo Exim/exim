@@ -558,7 +558,7 @@ test.ex in percent_hack_domains?
    ╎test.ex in "test.ex"? yes (matched "test.ex")
   end sublist not_queue_domains
  test.ex in percent_hack_domains? yes (matched "+not_queue_domains")
-processing "accept" (TESTSUITE/test-config 102)
+processing inline ACL "accept"
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying error@test.ex

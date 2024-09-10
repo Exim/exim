@@ -26871,12 +26871,12 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for r1@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check"
-processing "warn" (TESTSUITE/test-config 15)
+processing ACL check "warn" (TESTSUITE/test-config 15)
 check !verify = header_syntax
-warn: condition test failed in ACL "check"
-processing "accept" (TESTSUITE/test-config 17)
-accept: condition test succeeded in ACL "check"
-end of ACL "check": ACCEPT
+warn: condition test failed in ACL check
+processing ACL check "accept" (TESTSUITE/test-config 17)
+accept: condition test succeeded in ACL check
+end of ACL check: ACCEPT
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <r1@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-000000005vi-0000-H
@@ -27069,12 +27069,12 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for r2@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check"
-processing "warn" (TESTSUITE/test-config 15)
+processing ACL check "warn" (TESTSUITE/test-config 15)
 check !verify = header_syntax
-warn: condition test failed in ACL "check"
-processing "accept" (TESTSUITE/test-config 17)
-accept: condition test succeeded in ACL "check"
-end of ACL "check": ACCEPT
+warn: condition test failed in ACL check
+processing ACL check "accept" (TESTSUITE/test-config 17)
+accept: condition test succeeded in ACL check
+end of ACL check: ACCEPT
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <r2@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaY-000000005vi-0000-H
@@ -27266,12 +27266,12 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for r3@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check"
-processing "warn" (TESTSUITE/test-config 15)
+processing ACL check "warn" (TESTSUITE/test-config 15)
 check !verify = header_syntax
-warn: condition test failed in ACL "check"
-processing "accept" (TESTSUITE/test-config 17)
-accept: condition test succeeded in ACL "check"
-end of ACL "check": ACCEPT
+warn: condition test failed in ACL check
+processing ACL check "accept" (TESTSUITE/test-config 17)
+accept: condition test succeeded in ACL check
+end of ACL check: ACCEPT
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaZ-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <r3@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaZ-000000005vi-0000-H
@@ -27432,15 +27432,15 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for r4@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check"
-processing "warn" (TESTSUITE/test-config 15)
+processing ACL check "warn" (TESTSUITE/test-config 15)
 check !verify = header_syntax
 check logwrite = verify header_syntax fails
 LOG: MAIN
   verify header_syntax fails
-warn: condition test succeeded in ACL "check"
-processing "accept" (TESTSUITE/test-config 17)
-accept: condition test succeeded in ACL "check"
-end of ACL "check": ACCEPT
+warn: condition test succeeded in ACL check
+processing ACL check "accept" (TESTSUITE/test-config 17)
+accept: condition test succeeded in ACL check
+end of ACL check: ACCEPT
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbA-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <r4@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmbA-000000005vi-0000-H
@@ -27599,12 +27599,12 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for r5@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check"
-processing "warn" (TESTSUITE/test-config 15)
+processing ACL check "warn" (TESTSUITE/test-config 15)
 check !verify = header_syntax
-warn: condition test failed in ACL "check"
-processing "accept" (TESTSUITE/test-config 17)
-accept: condition test succeeded in ACL "check"
-end of ACL "check": ACCEPT
+warn: condition test failed in ACL check
+processing ACL check "accept" (TESTSUITE/test-config 17)
+accept: condition test succeeded in ACL check
+end of ACL check: ACCEPT
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbB-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <r5@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmbB-000000005vi-0000-H
@@ -27765,15 +27765,15 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for r6@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check"
-processing "warn" (TESTSUITE/test-config 15)
+processing ACL check "warn" (TESTSUITE/test-config 15)
 check !verify = header_syntax
 check logwrite = verify header_syntax fails
 LOG: MAIN
   verify header_syntax fails
-warn: condition test succeeded in ACL "check"
-processing "accept" (TESTSUITE/test-config 17)
-accept: condition test succeeded in ACL "check"
-end of ACL "check": ACCEPT
+warn: condition test succeeded in ACL check
+processing ACL check "accept" (TESTSUITE/test-config 17)
+accept: condition test succeeded in ACL check
+end of ACL check: ACCEPT
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbC-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <r6@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmbC-000000005vi-0000-H

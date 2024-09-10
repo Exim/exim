@@ -11,19 +11,19 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl_rcpt_1"
->>> processing "require" (TESTSUITE/test-config 19)
+>>> processing ACL acl_rcpt_1 "require" (TESTSUITE/test-config 19)
 >>>   message: domain doesn't match @ or @[]
 >>> check domains = @ : @[]
 >>> [::1] in "@ : @[]"?
 >>>  list element: @
 >>>  list element: @[]
 >>>  [::1] in "@ : @[]"? yes (matched "@[]")
->>> require: condition test succeeded in ACL "acl_rcpt_1"
->>> processing "accept" (TESTSUITE/test-config 21)
->>> accept: condition test succeeded in ACL "acl_rcpt_1"
->>> end of ACL "acl_rcpt_1": ACCEPT
+>>> require: condition test succeeded in ACL acl_rcpt_1
+>>> processing ACL acl_rcpt_1 "accept" (TESTSUITE/test-config 21)
+>>> accept: condition test succeeded in ACL acl_rcpt_1
+>>> end of ACL acl_rcpt_1: ACCEPT
 >>> using ACL "acl_rcpt_6"
->>> processing "require" (TESTSUITE/test-config 44)
+>>> processing ACL acl_rcpt_6 "require" (TESTSUITE/test-config 44)
 >>>   message: domain doesn't match @mx_any/ignore=<;127.0.0.1;::1
 >>> check domains = <+ @mx_any/ignore=<;127.0.0.1;::1
 >>> mxt11a.test.ex in "<+ @mx_any/ignore=<;127.0.0.1;::1"?
@@ -45,6 +45,6 @@
 >>>   list element: other1.test.ex
 >>>  ten-1.test.ex in hosts_treat_as_local? no (end of list)
 >>> mxt11a.test.ex in "<+ @mx_any/ignore=<;127.0.0.1;::1"? no (end of list)
->>> require: condition test failed in ACL "acl_rcpt_6"
->>> end of ACL "acl_rcpt_6": not OK
+>>> require: condition test failed in ACL acl_rcpt_6
+>>> end of ACL acl_rcpt_6: not OK
 LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <6@mxt11a.test.ex>: domain doesn't match @mx_any/ignore=<;127.0.0.1;::1

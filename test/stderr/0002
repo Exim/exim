@@ -552,7 +552,7 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect1"
-processing "deny" (TESTSUITE/test-config 45)
+processing ACL connect1 "deny" (TESTSUITE/test-config 45)
 check hosts = <\n partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch \n 1.2.3.4
 host in "<
  partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
@@ -590,8 +590,8 @@ sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1])
   host in "<
   partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
   1.2.3.4"? yes (matched "partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch")
-deny: condition test succeeded in ACL "connect1"
-end of ACL "connect1": DENY
+deny: condition test succeeded in ACL connect1
+end of ACL connect1: DENY
 SMTP>> 550 Administrative prohibition
 LOG: connection_reject MAIN REJECT
   H=ten-1.test.ex [V4NET.0.0.1] rejected connection in "connect" ACL
@@ -621,7 +621,7 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect2"
-processing "deny" (TESTSUITE/test-config 48)
+processing ACL connect2 "deny" (TESTSUITE/test-config 48)
 check hosts = net-lsearch;TESTSUITE/aux-fixed/0002.lsearch
 host in "net-lsearch;TESTSUITE/aux-fixed/0002.lsearch"?
  list element: net-lsearch;TESTSUITE/aux-fixed/0002.lsearch
@@ -638,8 +638,8 @@ host in "net-lsearch;TESTSUITE/aux-fixed/0002.lsearch"?
  creating new cache entry
  lookup failed
 host in "net-lsearch;TESTSUITE/aux-fixed/0002.lsearch"? no (end of list)
-deny: condition test failed in ACL "connect2"
-end of ACL "connect2": implicit DENY
+deny: condition test failed in ACL connect2
+end of ACL connect2: implicit DENY
 SMTP>> 550 Administrative prohibition
 LOG: connection_reject MAIN REJECT
   H=[V4NET.0.0.2] rejected connection in "connect" ACL
@@ -654,89 +654,89 @@ search_tidyup called
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect0"
->>> processing "accept" (TESTSUITE/test-config 42)
+>>> processing ACL connect0 "accept" (TESTSUITE/test-config 42)
 >>> check logwrite = connection_id: $connection_id
 >>>                = connection_id: conn1111
 LOG: connection_id: conn1111
->>> accept: condition test succeeded in ACL "connect0"
->>> end of ACL "connect0": ACCEPT
+>>> accept: condition test succeeded in ACL connect0
+>>> end of ACL connect0: ACCEPT
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 70)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> using ACL "check_data"
->>> processing "warn" (TESTSUITE/test-config 51)
+>>> processing ACL check_data "warn" (TESTSUITE/test-config 51)
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: ""
 LOG: 10HmaX-000000005vi-0000 Subject is: ""
->>> warn: condition test succeeded in ACL "check_data"
->>> processing "deny" (TESTSUITE/test-config 52)
+>>> warn: condition test succeeded in ACL check_data
+>>> processing ACL check_data "deny" (TESTSUITE/test-config 52)
 >>>   message: reply_address=<$reply_address>
->>> deny: condition test succeeded in ACL "check_data"
->>> end of ACL "check_data": DENY
+>>> deny: condition test succeeded in ACL check_data
+>>> end of ACL check_data: DENY
 LOG: 10HmaX-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
->>> processing "accept" (TESTSUITE/test-config 70)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn" (TESTSUITE/test-config 51)
+>>> processing ACL check_data "warn" (TESTSUITE/test-config 51)
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: ""
 LOG: 10HmaY-000000005vi-0000 Subject is: ""
->>> warn: condition test succeeded in ACL "check_data"
->>> processing "deny" (TESTSUITE/test-config 52)
+>>> warn: condition test succeeded in ACL check_data
+>>> processing ACL check_data "deny" (TESTSUITE/test-config 52)
 >>>   message: reply_address=<$reply_address>
->>> deny: condition test succeeded in ACL "check_data"
->>> end of ACL "check_data": DENY
+>>> deny: condition test succeeded in ACL check_data
+>>> end of ACL check_data: DENY
 LOG: 10HmaY-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_address=<a@b>
->>> processing "accept" (TESTSUITE/test-config 70)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn" (TESTSUITE/test-config 51)
+>>> processing ACL check_data "warn" (TESTSUITE/test-config 51)
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: ""
 LOG: 10HmaZ-000000005vi-0000 Subject is: ""
->>> warn: condition test succeeded in ACL "check_data"
->>> processing "deny" (TESTSUITE/test-config 52)
+>>> warn: condition test succeeded in ACL check_data
+>>> processing ACL check_data "deny" (TESTSUITE/test-config 52)
 >>>   message: reply_address=<$reply_address>
->>> deny: condition test succeeded in ACL "check_data"
->>> end of ACL "check_data": DENY
+>>> deny: condition test succeeded in ACL check_data
+>>> end of ACL check_data: DENY
 LOG: 10HmaZ-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_address=<c@d>
->>> processing "accept" (TESTSUITE/test-config 70)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn" (TESTSUITE/test-config 51)
+>>> processing ACL check_data "warn" (TESTSUITE/test-config 51)
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: ""
 LOG: 10HmbA-000000005vi-0000 Subject is: ""
->>> warn: condition test succeeded in ACL "check_data"
->>> processing "deny" (TESTSUITE/test-config 52)
+>>> warn: condition test succeeded in ACL check_data
+>>> processing ACL check_data "deny" (TESTSUITE/test-config 52)
 >>>   message: reply_address=<$reply_address>
->>> deny: condition test succeeded in ACL "check_data"
->>> end of ACL "check_data": DENY
+>>> deny: condition test succeeded in ACL check_data
+>>> end of ACL check_data: DENY
 LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
->>> processing "accept" (TESTSUITE/test-config 70)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn" (TESTSUITE/test-config 51)
+>>> processing ACL check_data "warn" (TESTSUITE/test-config 51)
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: ""
 LOG: 10HmbB-000000005vi-0000 Subject is: ""
->>> warn: condition test succeeded in ACL "check_data"
->>> processing "deny" (TESTSUITE/test-config 52)
+>>> warn: condition test succeeded in ACL check_data
+>>> processing ACL check_data "deny" (TESTSUITE/test-config 52)
 >>>   message: reply_address=<$reply_address>
->>> deny: condition test succeeded in ACL "check_data"
->>> end of ACL "check_data": DENY
+>>> deny: condition test succeeded in ACL check_data
+>>> end of ACL check_data: DENY
 LOG: 10HmbB-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_address=<x@y>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -747,30 +747,30 @@ LOG: 10HmbB-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: re
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect0"
->>> processing "accept" (TESTSUITE/test-config 42)
+>>> processing ACL connect0 "accept" (TESTSUITE/test-config 42)
 >>> check logwrite = connection_id: $connection_id
 >>>                = connection_id: conn1112
 LOG: connection_id: conn1112
->>> accept: condition test succeeded in ACL "connect0"
->>> end of ACL "connect0": ACCEPT
+>>> accept: condition test succeeded in ACL connect0
+>>> end of ACL connect0: ACCEPT
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 70)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn" (TESTSUITE/test-config 51)
+>>> processing ACL check_data "warn" (TESTSUITE/test-config 51)
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: "=?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_it_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fact_this_one_will_go_over_the_150_character_limit?="
 LOG: 10HmbC-000000005vi-0000 Subject is: "=?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_it_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fact_this_one_will_go_over_the_150_character_limit?="
->>> warn: condition test succeeded in ACL "check_data"
->>> processing "deny" (TESTSUITE/test-config 52)
+>>> warn: condition test succeeded in ACL check_data
+>>> processing ACL check_data "deny" (TESTSUITE/test-config 52)
 >>>   message: reply_address=<$reply_address>
->>> deny: condition test succeeded in ACL "check_data"
->>> end of ACL "check_data": DENY
+>>> deny: condition test succeeded in ACL check_data
+>>> end of ACL check_data: DENY
 LOG: 10HmbC-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -781,30 +781,30 @@ LOG: 10HmbC-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: re
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect0"
->>> processing "accept" (TESTSUITE/test-config 42)
+>>> processing ACL connect0 "accept" (TESTSUITE/test-config 42)
 >>> check logwrite = connection_id: $connection_id
 >>>                = connection_id: conn1113
 LOG: connection_id: conn1113
->>> accept: condition test succeeded in ACL "connect0"
->>> end of ACL "connect0": ACCEPT
+>>> accept: condition test succeeded in ACL connect0
+>>> end of ACL connect0: ACCEPT
 >>> test in helo_lookup_domains?
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 70)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn" (TESTSUITE/test-config 51)
+>>> processing ACL check_data "warn" (TESTSUITE/test-config 51)
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: " here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit"
 LOG: 10HmbD-000000005vi-0000 Subject is: " here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit"
->>> warn: condition test succeeded in ACL "check_data"
->>> processing "deny" (TESTSUITE/test-config 52)
+>>> warn: condition test succeeded in ACL check_data
+>>> processing ACL check_data "deny" (TESTSUITE/test-config 52)
 >>>   message: reply_address=<$reply_address>
->>> deny: condition test succeeded in ACL "check_data"
->>> end of ACL "check_data": DENY
+>>> deny: condition test succeeded in ACL check_data
+>>> end of ACL check_data: DENY
 LOG: 10HmbD-000000005vi-0000 H=(test) [V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 Exim version x.yz ....
 Hints DB:

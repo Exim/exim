@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 21)
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 21)
 >>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -37,7 +37,7 @@ LOG: remote host address is the local host: not.test.ex (while verifying <userx@
 >>> islocal router: defer for userx@not.test.ex
 >>>   message: remote host address is the local host
 >>> ----------- end verify ------------
->>> deny: condition test deferred in ACL "check_recipient"
+>>> deny: condition test deferred in ACL check_recipient
 LOG: H=(test) [V4NET.0.0.0] F=<userx@test.ex> temporarily rejected RCPT <userx@not.test.ex>: remote host address is the local host
 LOG: MAIN
   remote host address is the local host: not.test.ex (while routing <userx@not.test.ex>)

@@ -19,7 +19,7 @@ r4: $local_part_data = LOCAL PART DATA
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "a1"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL a1 "accept" (TESTSUITE/test-config 19)
 >>> check domains = +test_domains
 >>> a.b.c in "+test_domains"?
 >>>  list element: +test_domains
@@ -42,8 +42,8 @@ r4: $local_part_data = LOCAL PART DATA
 >>>  xxx in "+test_local_parts"? yes (matched "+test_local_parts")
 >>> check condition = ${if eq{$domain_data/$local_part_data}{DOMAIN DATA/LOCAL PART DATA}{no}{yes}}
 >>>                 = no
->>> accept: condition test failed in ACL "a1"
->>> processing "deny" (TESTSUITE/test-config 24)
+>>> accept: condition test failed in ACL a1
+>>> processing ACL a1 "deny" (TESTSUITE/test-config 24)
 >>> check domains = +test_domains
 >>> a.b.c in "+test_domains"?
 >>>  list element: +test_domains
@@ -59,6 +59,6 @@ r4: $local_part_data = LOCAL PART DATA
 >>>  cached lookup data = LOCAL PART DATA
 >>>  xxx in "+test_local_parts"? yes (matched "+test_local_parts" - cached)
 >>>   message: \$domain_data=$domain_data \$local_part_data=$local_part_data
->>> deny: condition test succeeded in ACL "a1"
->>> end of ACL "a1": DENY
+>>> deny: condition test succeeded in ACL a1
+>>> end of ACL a1: DENY
 LOG: H=(test) [V4NET.0.0.0] F=<a@b.c> rejected RCPT xxx@a.b.c: $domain_data=DOMAIN DATA $local_part_data=LOCAL PART DATA

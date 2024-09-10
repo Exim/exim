@@ -19,11 +19,11 @@
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_mail"
->>> processing "accept" (TESTSUITE/test-config 18)
+>>> processing ACL check_mail "accept" (TESTSUITE/test-config 18)
 >>>   message: CSA status is $csa_status
 >>> check verify = csa
->>> accept: condition test succeeded in ACL "check_mail"
->>> end of ACL "check_mail": ACCEPT
+>>> accept: condition test succeeded in ACL check_mail
+>>> end of ACL check_mail: ACCEPT
 >>> host in smtp_accept_max_nonmail_hosts?
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
@@ -40,10 +40,10 @@
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_mail"
->>> processing "accept" (TESTSUITE/test-config 18)
+>>> processing ACL check_mail "accept" (TESTSUITE/test-config 18)
 >>>   message: CSA status is $csa_status
 >>> check verify = csa
->>> accept: condition test failed in ACL "check_mail"
+>>> accept: condition test failed in ACL check_mail
 >>> accept: endpass encountered - denying access
 LOG: H=(csa2.test.ex) [V4NET.9.8.7] rejected MAIL <>: client SMTP authorization failed (host name not authorized)
 >>> host in hosts_connection_nolog? no (option unset)
@@ -67,10 +67,10 @@ LOG: H=(csa2.test.ex) [V4NET.9.8.7] rejected MAIL <>: client SMTP authorization 
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_mail"
->>> processing "accept" (TESTSUITE/test-config 18)
+>>> processing ACL check_mail "accept" (TESTSUITE/test-config 18)
 >>>   message: CSA status is $csa_status
 >>> check verify = csa
->>> accept: condition test failed in ACL "check_mail"
+>>> accept: condition test failed in ACL check_mail
 >>> accept: endpass encountered - denying access
 LOG: H=(csa1.test.ex) [V4NET.9.8.8] rejected MAIL <>: client SMTP authorization failed (client address mismatch)
 >>> host in smtp_accept_max_nonmail_hosts?
@@ -89,9 +89,9 @@ LOG: H=(csa1.test.ex) [V4NET.9.8.8] rejected MAIL <>: client SMTP authorization 
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_mail"
->>> processing "accept" (TESTSUITE/test-config 18)
+>>> processing ACL check_mail "accept" (TESTSUITE/test-config 18)
 >>>   message: CSA status is $csa_status
 >>> check verify = csa
->>> accept: condition test failed in ACL "check_mail"
+>>> accept: condition test failed in ACL check_mail
 >>> accept: endpass encountered - denying access
 LOG: H=(csa2.test.ex) [V4NET.9.8.8] rejected MAIL <>: client SMTP authorization failed (host name not authorized)

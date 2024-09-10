@@ -4595,7 +4595,7 @@ if (Ustrchr(ss, ' ') == NULL)
       HDEBUG(D_acl) debug_printf_indent("ACL \"%s\" is empty: implicit DENY\n", ss);
       return FAIL;
       }
-    acl_name = string_sprintf("ACL \"%s\"", ss);
+    acl_name = string_sprintf("ACL %s", ss);
     HDEBUG(D_acl) debug_printf_indent("using ACL \"%s\"\n", ss);
     }
 
@@ -4628,7 +4628,7 @@ if (Ustrchr(ss, ' ') == NULL)
     acl_text[statbuf.st_size] = 0;
     (void)close(fd);
 
-    acl_name = string_sprintf("ACL \"%s\"", ss);
+    acl_name = string_sprintf("ACL %s", ss);
     HDEBUG(D_acl) debug_printf_indent("read ACL from file %s\n", ss);
     }
   }
@@ -4669,8 +4669,12 @@ while ((acl_current = acl))
   config_filename = acl->srcfile;
   config_lineno = acl->srcline;
 
-  HDEBUG(D_acl) debug_printf_indent("processing \"%s\" (%s %d)\n",
-    verbs[acl->verb], config_filename, config_lineno);
+  HDEBUG(D_acl)
+    {
+    debug_printf_indent("processing %s \"%s\"", acl_name, verbs[acl->verb]);
+    if (config_lineno) debug_printf(" (%s %d)", config_filename, config_lineno);
+    debug_printf("\n");
+    }
 
   /* Clear out any search error message from a previous check before testing
   this condition. */

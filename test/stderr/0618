@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> tester in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL chk_rcpt "accept" (TESTSUITE/test-config 20)
 >>> check local_parts = lsearch;TESTSUITE/aux-fixed/0618.list
 >>> fred in "lsearch;TESTSUITE/aux-fixed/0618.list"?
 >>>  list element: lsearch;TESTSUITE/aux-fixed/0618.list
@@ -20,11 +20,11 @@
 >>> good1.ex in "lsearch;TESTSUITE/aux-fixed/0618.list"?
 >>>  list element: lsearch;TESTSUITE/aux-fixed/0618.list
 >>>  good1.ex in "lsearch;TESTSUITE/aux-fixed/0618.list"? yes (matched "lsearch;TESTSUITE/aux-fixed/0618.list")
->>> accept: condition test succeeded in ACL "chk_rcpt"
->>> end of ACL "chk_rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL chk_rcpt
+>>> end of ACL chk_rcpt: ACCEPT
 LOG: 10HmbA-000000005vi-0000 <= a@test.ex H=(tester) [99.99.99.99] P=smtp S=sss
 >>> using ACL "chk_rcpt"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL chk_rcpt "accept" (TESTSUITE/test-config 20)
 >>> check local_parts = lsearch;TESTSUITE/aux-fixed/0618.list
 >>> jim in "lsearch;TESTSUITE/aux-fixed/0618.list"?
 >>>  list element: lsearch;TESTSUITE/aux-fixed/0618.list
@@ -33,8 +33,8 @@ LOG: 10HmbA-000000005vi-0000 <= a@test.ex H=(tester) [99.99.99.99] P=smtp S=sss
 >>> good2.ex in "lsearch;TESTSUITE/aux-fixed/0618.list"?
 >>>  list element: lsearch;TESTSUITE/aux-fixed/0618.list
 >>>  good2.ex in "lsearch;TESTSUITE/aux-fixed/0618.list"? yes (matched "lsearch;TESTSUITE/aux-fixed/0618.list")
->>> accept: condition test succeeded in ACL "chk_rcpt"
->>> end of ACL "chk_rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL chk_rcpt
+>>> end of ACL chk_rcpt: ACCEPT
 LOG: 10HmbB-000000005vi-0000 <= b@test.ex H=(tester) [99.99.99.99] P=smtp S=sss
 
 ******** SERVER ********

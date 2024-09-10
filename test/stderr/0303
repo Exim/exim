@@ -112,7 +112,7 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<x@y>
-processing "accept" (TESTSUITE/test-config 12)
+processing inline ACL "accept"
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
@@ -196,7 +196,7 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<x@y>
-processing "accept" (TESTSUITE/test-config 12)
+processing inline ACL "accept"
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted

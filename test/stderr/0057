@@ -18,7 +18,7 @@
 >>>  list element: *.test.ex
 >>> test.ex in percent_hack_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 23)
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -29,8 +29,8 @@
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 >>> anotherhost.example.com in percent_hack_domains?
 >>>  list element: !░a.test.ex
 >>>  list element: !b.test.ex
@@ -39,7 +39,7 @@
 >>>  list element: *.test.ex
 >>> anotherhost.example.com in percent_hack_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 23)
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
@@ -51,8 +51,8 @@
 >>>    anotherhost.example.com in "test.ex : myhost.ex : *.test.ex"? no (end of list)
 >>>   end sublist local_domains
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 24)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 24)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
@@ -64,11 +64,11 @@
 >>>   end sublist relay_domains
 >>>  data from lookup saved for cache for +relay_domains: key 'anotherhost.example.com' value '*'
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 25)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 25)
 >>>   message: relay not permitted
->>> deny: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": DENY
+>>> deny: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: DENY
 LOG: H=(test) [V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
 >>> 3rdhost.example.com in percent_hack_domains?
 >>>  list element: !░a.test.ex
@@ -78,7 +78,7 @@ LOG: H=(test) [V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@
 >>>  list element: *.test.ex
 >>> 3rdhost.example.com in percent_hack_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 23)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 23)
 >>> check domains = +local_domains
 >>> 3rdhost.example.com in "+local_domains"?
 >>>  list element: +local_domains
@@ -90,8 +90,8 @@ LOG: H=(test) [V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@
 >>>    3rdhost.example.com in "test.ex : myhost.ex : *.test.ex"? no (end of list)
 >>>   end sublist local_domains
 >>> 3rdhost.example.com in "+local_domains"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 24)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 24)
 >>> check domains = +relay_domains
 >>> 3rdhost.example.com in "+relay_domains"?
 >>>  list element: +relay_domains
@@ -103,10 +103,10 @@ LOG: H=(test) [V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@
 >>>   end sublist relay_domains
 >>>  data from lookup saved for cache for +relay_domains: key '3rdhost.example.com' value '*'
 >>> 3rdhost.example.com in "+relay_domains"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 25)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 25)
 >>>   message: relay not permitted
->>> deny: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": DENY
+>>> deny: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: DENY
 LOG: H=(test) [V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@3rdhost.example.com>: relay not permitted
 LOG: 10HmaX-000000005vi-0000 <= userx@somehost.example.com H=(test) [V4NET.0.0.1] P=smtp S=sss

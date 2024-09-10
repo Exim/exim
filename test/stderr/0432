@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL mail "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
@@ -25,8 +25,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> ... callout omitted by default when host testing
 >>> (Use -bhc if you want the callouts to happen.)
 >>> ----------- end verify ------------
->>> accept: condition test succeeded in ACL "mail"
->>> end of ACL "mail": ACCEPT
+>>> accept: condition test succeeded in ACL mail
+>>> end of ACL mail: ACCEPT
 Exim version x.yz ....
 Hints DB:
 changed uid/gid: forcing real = effective
@@ -65,7 +65,7 @@ SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 using ACL "mail"
-processing "accept" (TESTSUITE/test-config 20)
+processing ACL mail "accept" (TESTSUITE/test-config 20)
 check verify = sender/callout=1s,maxwait=1s
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@y
@@ -138,8 +138,8 @@ dbfn_write: key=x@y datalen nn
 wrote positive callout cache address record for x@y
 ----------- end verify ------------
 sender x@y verified ok
-accept: condition test succeeded in ACL "mail"
-end of ACL "mail": ACCEPT
+accept: condition test succeeded in ACL mail
+end of ACL mail: ACCEPT
 SMTP>> 250 OK
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -185,7 +185,7 @@ SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 using ACL "mail"
-processing "accept" (TESTSUITE/test-config 20)
+processing ACL mail "accept" (TESTSUITE/test-config 20)
 check verify = sender/callout=1s,maxwait=1s
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@y
@@ -223,8 +223,8 @@ callout cache: found address record for x@y
 callout cache: address record is positive
 ----------- end verify ------------
 sender x@y verified ok
-accept: condition test succeeded in ACL "mail"
-end of ACL "mail": ACCEPT
+accept: condition test succeeded in ACL mail
+end of ACL mail: ACCEPT
 SMTP>> 250 OK
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -245,7 +245,7 @@ search_tidyup called
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL mail "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
@@ -260,8 +260,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> callout cache: found address record for x@y
 >>> callout cache: address record is positive
 >>> ----------- end verify ------------
->>> accept: condition test succeeded in ACL "mail"
->>> end of ACL "mail": ACCEPT
+>>> accept: condition test succeeded in ACL mail
+>>> end of ACL mail: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -275,7 +275,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL mail "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing a@b
@@ -314,8 +314,8 @@ MUNGED: ::1 will be omitted in what follows
 >>>   result=1 postmaster=0 random=0
 >>> wrote positive callout cache address record for a@b
 >>> ----------- end verify ------------
->>> accept: condition test succeeded in ACL "mail"
->>> end of ACL "mail": ACCEPT
+>>> accept: condition test succeeded in ACL mail
+>>> end of ACL mail: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -329,7 +329,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL mail "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing p1@q
@@ -355,6 +355,6 @@ MUNGED: ::1 will be omitted in what follows
 >>> cmdlog: '220:EHLO'
 >>> SMTP timeout
 >>> ----------- end verify ------------
->>> accept: condition test deferred in ACL "mail"
+>>> accept: condition test deferred in ACL mail
 LOG: H=(test) [1.2.3.4] sender verify defer for <p1@q>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : SMTP timeout after EHLO myhost.test.ex
 LOG: H=(test) [1.2.3.4] temporarily rejected MAIL <p1@q>: Could not complete sender verify callout

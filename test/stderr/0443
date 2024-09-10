@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL rcpt "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1.test.ex
@@ -28,6 +28,6 @@
 >>> callout cache: no address record found for x@ten-1.test.ex
 >>> cannot callout via null transport
 >>> ----------- end verify ------------
->>> accept: condition test deferred in ACL "rcpt"
+>>> accept: condition test deferred in ACL rcpt
 LOG: H=(test) [V4NET.0.0.1] sender verify defer for <x@ten-1.test.ex>: Could not complete sender verify callout
 LOG: H=(test) [V4NET.0.0.1] F=<x@ten-1.test.ex> temporarily rejected RCPT x@y: Could not complete sender verify callout

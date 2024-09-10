@@ -9,7 +9,7 @@
 >>> host in smtp_accept_max_nonmail_hosts?
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
->>> processing "accept" (TESTSUITE/test-config 47)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -31,7 +31,7 @@
 >>>  userx in local_parts? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
->>> processing "accept" (TESTSUITE/test-config 47)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -53,7 +53,7 @@
 >>> junkjunk in local_parts? no (end of list)
 >>> no more routers
 LOG: VRFY failed for junkjunk@test.ex H=[1.1.1.1]
->>> processing "accept" (TESTSUITE/test-config 47)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

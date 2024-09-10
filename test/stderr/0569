@@ -13,28 +13,28 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_from "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"?
 >>>  list element: usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
->>> accept: condition test failed in ACL "check_from"
->>> processing "accept" (TESTSUITE/test-config 22)
->>> accept: condition test succeeded in ACL "check_from"
->>> end of ACL "check_from": ACCEPT
->>> processing "accept" (TESTSUITE/test-config 29)
+>>> accept: condition test failed in ACL check_from
+>>> processing ACL check_from "accept" (TESTSUITE/test-config 22)
+>>> accept: condition test succeeded in ACL check_from
+>>> end of ACL check_from: ACCEPT
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaX-000000005vi-0000 qualify/rewrite: '>' missing at end of address
 >>> using ACL "check_message"
->>> processing "require" (TESTSUITE/test-config 25)
+>>> processing ACL check_message "require" (TESTSUITE/test-config 25)
 >>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
->>> require: condition test succeeded in ACL "check_message"
->>> processing "accept" (TESTSUITE/test-config 27)
->>> accept: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": ACCEPT
+>>> require: condition test succeeded in ACL check_message
+>>> processing ACL check_message "accept" (TESTSUITE/test-config 27)
+>>> accept: condition test succeeded in ACL check_message
+>>> end of ACL check_message: ACCEPT
 LOG: 10HmaX-000000005vi-0000 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -51,25 +51,25 @@ LOG: 10HmaX-000000005vi-0000 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=s
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_from "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"?
 >>>  list element: usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
->>> accept: condition test failed in ACL "check_from"
->>> processing "accept" (TESTSUITE/test-config 22)
->>> accept: condition test succeeded in ACL "check_from"
->>> end of ACL "check_from": ACCEPT
->>> processing "accept" (TESTSUITE/test-config 29)
+>>> accept: condition test failed in ACL check_from
+>>> processing ACL check_from "accept" (TESTSUITE/test-config 22)
+>>> accept: condition test succeeded in ACL check_from
+>>> end of ACL check_from: ACCEPT
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require" (TESTSUITE/test-config 25)
+>>> processing ACL check_message "require" (TESTSUITE/test-config 25)
 >>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
->>> require: condition test failed in ACL "check_message"
->>> end of ACL "check_message": not OK
+>>> require: condition test failed in ACL check_message
+>>> end of ACL check_message: not OK
 LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "﻿Received" found
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -86,7 +86,7 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> re
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_from "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
 >>> usery@exim.test.ex in "usery@exim.test.ex"?
 >>>  list element: usery@exim.test.ex
@@ -95,18 +95,18 @@ LOG: 10HmbA-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> re
 >>>   exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>>  usery@exim.test.ex in "usery@exim.test.ex"? yes (matched "usery@exim.test.ex")
 >>> check set acl_m_message = I do not like your message
->>> accept: condition test succeeded in ACL "check_from"
->>> end of ACL "check_from": ACCEPT
->>> processing "accept" (TESTSUITE/test-config 29)
+>>> accept: condition test succeeded in ACL check_from
+>>> end of ACL check_from: ACCEPT
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require" (TESTSUITE/test-config 25)
+>>> processing ACL check_message "require" (TESTSUITE/test-config 25)
 >>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
->>> require: condition test failed in ACL "check_message"
->>> end of ACL "check_message": not OK
+>>> require: condition test failed in ACL check_message
+>>> end of ACL check_message: not OK
 LOG: 10HmbB-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<usery@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -123,25 +123,25 @@ LOG: 10HmbB-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<usery@exim.test.ex> re
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_from "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"?
 >>>  list element: usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
->>> accept: condition test failed in ACL "check_from"
->>> processing "accept" (TESTSUITE/test-config 22)
->>> accept: condition test succeeded in ACL "check_from"
->>> end of ACL "check_from": ACCEPT
->>> processing "accept" (TESTSUITE/test-config 29)
+>>> accept: condition test failed in ACL check_from
+>>> processing ACL check_from "accept" (TESTSUITE/test-config 22)
+>>> accept: condition test succeeded in ACL check_from
+>>> end of ACL check_from: ACCEPT
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require" (TESTSUITE/test-config 25)
+>>> processing ACL check_message "require" (TESTSUITE/test-config 25)
 >>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
->>> require: condition test failed in ACL "check_message"
->>> end of ACL "check_message": not OK
+>>> require: condition test failed in ACL check_message
+>>> end of ACL check_message: not OK
 LOG: 10HmbC-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -158,27 +158,27 @@ LOG: 10HmbC-000000005vi-0000 H=(test) [V4NET.10.10.10] F=<userx@exim.test.ex> re
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_from "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"?
 >>>  list element: usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
->>> accept: condition test failed in ACL "check_from"
->>> processing "accept" (TESTSUITE/test-config 22)
->>> accept: condition test succeeded in ACL "check_from"
->>> end of ACL "check_from": ACCEPT
->>> processing "accept" (TESTSUITE/test-config 29)
+>>> accept: condition test failed in ACL check_from
+>>> processing ACL check_from "accept" (TESTSUITE/test-config 22)
+>>> accept: condition test succeeded in ACL check_from
+>>> end of ACL check_from: ACCEPT
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require" (TESTSUITE/test-config 25)
+>>> processing ACL check_message "require" (TESTSUITE/test-config 25)
 >>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
->>> require: condition test succeeded in ACL "check_message"
->>> processing "accept" (TESTSUITE/test-config 27)
->>> accept: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": ACCEPT
+>>> require: condition test succeeded in ACL check_message
+>>> processing ACL check_message "accept" (TESTSUITE/test-config 27)
+>>> accept: condition test succeeded in ACL check_message
+>>> end of ACL check_message: ACCEPT
 LOG: 10HmaY-000000005vi-0000 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -195,25 +195,25 @@ LOG: 10HmaY-000000005vi-0000 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=s
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_from"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_from "accept" (TESTSUITE/test-config 20)
 >>> check senders = usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"?
 >>>  list element: usery@exim.test.ex
 >>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
->>> accept: condition test failed in ACL "check_from"
->>> processing "accept" (TESTSUITE/test-config 22)
->>> accept: condition test succeeded in ACL "check_from"
->>> end of ACL "check_from": ACCEPT
->>> processing "accept" (TESTSUITE/test-config 29)
+>>> accept: condition test failed in ACL check_from
+>>> processing ACL check_from "accept" (TESTSUITE/test-config 22)
+>>> accept: condition test succeeded in ACL check_from
+>>> end of ACL check_from: ACCEPT
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require" (TESTSUITE/test-config 25)
+>>> processing ACL check_message "require" (TESTSUITE/test-config 25)
 >>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
->>> require: condition test succeeded in ACL "check_message"
->>> processing "accept" (TESTSUITE/test-config 27)
->>> accept: condition test succeeded in ACL "check_message"
->>> end of ACL "check_message": ACCEPT
+>>> require: condition test succeeded in ACL check_message
+>>> processing ACL check_message "accept" (TESTSUITE/test-config 27)
+>>> accept: condition test succeeded in ACL check_message
+>>> end of ACL check_message: ACCEPT
 LOG: 10HmaZ-000000005vi-0000 <= userx@exim.test.ex H=(test) [V4NET.10.10.10] P=smtp S=sss

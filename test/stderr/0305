@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "acl1"
->>> processing "accept" (TESTSUITE/test-config 18)
+>>> processing ACL acl1 "accept" (TESTSUITE/test-config 18)
 >>> check domains = +ok_domains
 >>> ten-1.test.ex in "+ok_domains"?
 >>>  list element: +ok_domains
@@ -21,10 +21,10 @@
 >>>    ╎ten-1.test.ex in "ten-1.test.ex"? yes (matched "ten-1.test.ex")
 >>>   end sublist ok_domains
 >>>  ten-1.test.ex in "+ok_domains"? yes (matched "+ok_domains")
->>> accept: condition test succeeded in ACL "acl1"
->>> end of ACL "acl1": ACCEPT
+>>> accept: condition test succeeded in ACL acl1
+>>> end of ACL acl1: ACCEPT
 >>> using ACL "acl1"
->>> processing "accept" (TESTSUITE/test-config 18)
+>>> processing ACL acl1 "accept" (TESTSUITE/test-config 18)
 >>> check domains = +ok_domains
 >>> junk.junk in "+ok_domains"?
 >>>  list element: +ok_domains
@@ -33,6 +33,6 @@
 >>>    junk.junk in ""? no (end of list)
 >>>   end sublist ok_domains
 >>> junk.junk in "+ok_domains"? no (end of list)
->>> accept: condition test failed in ACL "acl1"
->>> end of ACL "acl1": implicit DENY
+>>> accept: condition test failed in ACL acl1
+>>> end of ACL acl1: implicit DENY
 LOG: H=(test) [V4NET.2.3.4] F=<x@y> rejected RCPT <x@junk.junk>

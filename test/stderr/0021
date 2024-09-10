@@ -14,40 +14,40 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect"
-processing "deny" (TESTSUITE/test-config 52)
+processing ACL connect "deny" (TESTSUITE/test-config 52)
 check hosts = : 10.9.8.7
 host in ": 10.9.8.7"?
  list element: 
  list element: 10.9.8.7
 host in ": 10.9.8.7"? no (end of list)
-deny: condition test failed in ACL "connect"
-processing "drop" (TESTSUITE/test-config 53)
+deny: condition test failed in ACL connect
+processing ACL connect "drop" (TESTSUITE/test-config 53)
 l_message: forcibly dropped
 check hosts = 10.9.8.9
 host in "10.9.8.9"?
  list element: 10.9.8.9
 host in "10.9.8.9"? no (end of list)
-drop: condition test failed in ACL "connect"
-processing "accept" (TESTSUITE/test-config 55)
+drop: condition test failed in ACL connect
+processing ACL connect "accept" (TESTSUITE/test-config 55)
 check logwrite = $sender_host_address accepted by connect ACL
                = 10.9.8.8 accepted by connect ACL
 LOG: MAIN
   10.9.8.8 accepted by connect ACL
-accept: condition test succeeded in ACL "connect"
-end of ACL "connect": ACCEPT
+accept: condition test succeeded in ACL connect
+end of ACL connect: ACCEPT
 host in hosts_require_helo?
  list element: 
 host in hosts_require_helo? no (end of list)
 using ACL "mail"
-processing "warn" (TESTSUITE/test-config 63)
+processing ACL mail "warn" (TESTSUITE/test-config 63)
   message: added header line
 check senders = ok@test3
 bad@test1 in "ok@test3"?
  list element: ok@test3
  address match test: subject=bad@test1 pattern=ok@test3
 bad@test1 in "ok@test3"? no (end of list)
-warn: condition test failed in ACL "mail"
-processing "accept" (TESTSUITE/test-config 65)
+warn: condition test failed in ACL mail
+processing ACL mail "accept" (TESTSUITE/test-config 65)
 check senders = ok@test1 : ok@test3
 bad@test1 in "ok@test1 : ok@test3"?
  list element: ok@test1
@@ -55,15 +55,15 @@ bad@test1 in "ok@test1 : ok@test3"?
  list element: ok@test3
  address match test: subject=bad@test1 pattern=ok@test3
 bad@test1 in "ok@test1 : ok@test3"? no (end of list)
-accept: condition test failed in ACL "mail"
-end of ACL "mail": implicit DENY
+accept: condition test failed in ACL mail
+end of ACL mail: implicit DENY
 LOG: MAIN REJECT
   H=[10.9.8.8] U=CALLER rejected MAIL <bad@test1>
 host in hosts_require_helo?
  list element: 
 host in hosts_require_helo? no (end of list)
 using ACL "mail"
-processing "warn" (TESTSUITE/test-config 63)
+processing ACL mail "warn" (TESTSUITE/test-config 63)
   message: added header line
 check senders = ok@test3
 ok@test1 in "ok@test3"?
@@ -73,8 +73,8 @@ ok@test1 in "ok@test3"?
   list element: test3
  test1 in "test3"? no (end of list)
 ok@test1 in "ok@test3"? no (end of list)
-warn: condition test failed in ACL "mail"
-processing "accept" (TESTSUITE/test-config 65)
+warn: condition test failed in ACL mail
+processing ACL mail "accept" (TESTSUITE/test-config 65)
 check senders = ok@test1 : ok@test3
 ok@test1 in "ok@test1 : ok@test3"?
  list element: ok@test1
@@ -93,10 +93,10 @@ check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argu
                = :main,reject: mail accepted "mail from:<ok@test1>" "<ok@test1>"
 LOG: MAIN REJECT
   mail accepted "mail from:<ok@test1>" "<ok@test1>"
-accept: condition test succeeded in ACL "mail"
-end of ACL "mail": ACCEPT
+accept: condition test succeeded in ACL mail
+end of ACL mail: ACCEPT
 using ACL "rcpt"
-processing "accept" (TESTSUITE/test-config 70)
+processing ACL rcpt "accept" (TESTSUITE/test-config 70)
 check senders = +ok_senders
 ok@test1 in "+ok_senders"?
  list element: +ok_senders
@@ -130,10 +130,10 @@ check logwrite = :panic: rcpt accepted C=$smtp_command_history
                = :panic: rcpt accepted C=MAIL,MAIL,RCPT
 LOG: PANIC
   rcpt accepted C=MAIL,MAIL,RCPT
-accept: condition test succeeded in ACL "rcpt"
-end of ACL "rcpt": ACCEPT
+accept: condition test succeeded in ACL rcpt
+end of ACL rcpt: ACCEPT
 using ACL "rcpt"
-processing "accept" (TESTSUITE/test-config 70)
+processing ACL rcpt "accept" (TESTSUITE/test-config 70)
 check senders = +ok_senders
 ok@test1 in "+ok_senders"?
  list element: +ok_senders
@@ -151,8 +151,8 @@ check logwrite = :panic: rcpt accepted C=$smtp_command_history
                = :panic: rcpt accepted C=MAIL,MAIL,RCPT,RCPT
 LOG: PANIC
   rcpt accepted C=MAIL,MAIL,RCPT,RCPT
-accept: condition test succeeded in ACL "rcpt"
-end of ACL "rcpt": ACCEPT
+accept: condition test succeeded in ACL rcpt
+end of ACL rcpt: ACCEPT
 LOG: smtp_connection MAIN
   SMTP connection from CALLER D=qqs closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -173,32 +173,32 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect"
-processing "deny" (TESTSUITE/test-config 52)
+processing ACL connect "deny" (TESTSUITE/test-config 52)
 check hosts = : 10.9.8.7
 host in ": 10.9.8.7"?
  list element: 
  list element: 10.9.8.7
 host in ": 10.9.8.7"? no (end of list)
-deny: condition test failed in ACL "connect"
-processing "drop" (TESTSUITE/test-config 53)
+deny: condition test failed in ACL connect
+processing ACL connect "drop" (TESTSUITE/test-config 53)
 l_message: forcibly dropped
 check hosts = 10.9.8.9
 host in "10.9.8.9"?
  list element: 10.9.8.9
 host in "10.9.8.9"? no (end of list)
-drop: condition test failed in ACL "connect"
-processing "accept" (TESTSUITE/test-config 55)
+drop: condition test failed in ACL connect
+processing ACL connect "accept" (TESTSUITE/test-config 55)
 check logwrite = $sender_host_address accepted by connect ACL
                = 10.9.8.8 accepted by connect ACL
 LOG: MAIN
   10.9.8.8 accepted by connect ACL
-accept: condition test succeeded in ACL "connect"
-end of ACL "connect": ACCEPT
+accept: condition test succeeded in ACL connect
+end of ACL connect: ACCEPT
 host in hosts_require_helo?
  list element: 
 host in hosts_require_helo? no (end of list)
 using ACL "mail"
-processing "warn" (TESTSUITE/test-config 63)
+processing ACL mail "warn" (TESTSUITE/test-config 63)
   message: added header line
 check senders = ok@test3
 ok@test3 in "ok@test3"?
@@ -208,8 +208,8 @@ ok@test3 in "ok@test3"?
   list element: test3
   test3 in "test3"? yes (matched "test3")
  ok@test3 in "ok@test3"? yes (matched "ok@test3")
-warn: condition test succeeded in ACL "mail"
-processing "accept" (TESTSUITE/test-config 65)
+warn: condition test succeeded in ACL mail
+processing ACL mail "accept" (TESTSUITE/test-config 65)
 check senders = ok@test1 : ok@test3
 ok@test3 in "ok@test1 : ok@test3"?
  list element: ok@test1
@@ -233,10 +233,10 @@ check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argu
                = :main,reject: mail accepted "mail from:<ok@test3>" "<ok@test3>"
 LOG: MAIN REJECT
   mail accepted "mail from:<ok@test3>" "<ok@test3>"
-accept: condition test succeeded in ACL "mail"
-end of ACL "mail": ACCEPT
+accept: condition test succeeded in ACL mail
+end of ACL mail: ACCEPT
 using ACL "rcpt"
-processing "accept" (TESTSUITE/test-config 70)
+processing ACL rcpt "accept" (TESTSUITE/test-config 70)
 check senders = +ok_senders
 ok@test3 in "+ok_senders"?
  list element: +ok_senders
@@ -276,8 +276,8 @@ check logwrite = :panic: rcpt accepted C=$smtp_command_history
                = :panic: rcpt accepted C=MAIL,RCPT
 LOG: PANIC
   rcpt accepted C=MAIL,RCPT
-accept: condition test succeeded in ACL "rcpt"
-end of ACL "rcpt": ACCEPT
+accept: condition test succeeded in ACL rcpt
+end of ACL rcpt: ACCEPT
 >>Headers added by MAIL or RCPT ACL:
   X-ACL-Warn: added header line
 >>

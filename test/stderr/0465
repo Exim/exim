@@ -60,7 +60,7 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<abc@domain.>
-processing "accept" (TESTSUITE/test-config 22)
+processing inline ACL "accept"
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
@@ -90,10 +90,10 @@ P Received: from CALLER (helo=test)
 	for abc@domain;
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check_data"
-processing "accept" (TESTSUITE/test-config 20)
+processing ACL check_data "accept" (TESTSUITE/test-config 20)
 check verify = header_syntax
-accept: condition test succeeded in ACL "check_data"
-end of ACL "check_data": ACCEPT
+accept: condition test succeeded in ACL check_data
+end of ACL check_data: ACCEPT
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <abc@domain> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaY-000000005vi-0000-H
@@ -135,7 +135,7 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<abc@xyz>
-processing "accept" (TESTSUITE/test-config 22)
+processing inline ACL "accept"
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
@@ -167,10 +167,10 @@ P Received: from CALLER (helo=test)
 	for abc@xyz;
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check_data"
-processing "accept" (TESTSUITE/test-config 20)
+processing ACL check_data "accept" (TESTSUITE/test-config 20)
 check verify = header_syntax
-accept: condition test failed in ACL "check_data"
-end of ACL "check_data": implicit DENY
+accept: condition test failed in ACL check_data
+end of ACL check_data: implicit DENY
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT
   U=CALLER F=<> rejected after DATA: domain missing or malformed: failing address in "To:" header is: abc@xyz.

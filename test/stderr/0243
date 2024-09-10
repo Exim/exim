@@ -19,7 +19,7 @@
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 20)
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 20)
 >>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -37,8 +37,8 @@
 >>> calling algemeen_aliases router
 >>> routed by algemeen_aliases router
 >>> ----------- end verify ------------
->>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> deny: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> nl.demon.net in "+local_domains"?
 >>>  list element: +local_domains
@@ -49,5 +49,5 @@
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'nl.demon.net' value 'nl.demon.net'
 >>>  nl.demon.net in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT

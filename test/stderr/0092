@@ -20,20 +20,20 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1] D=qqs
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 27)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 27)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 28)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 28)
 >>>   message: unrouteable address
 >>> check recipients = verify@test.ex
 >>> userx@test.ex in "verify@test.ex"?
 >>>  list element: verify@test.ex
 >>> userx@test.ex in "verify@test.ex"? no (end of list)
->>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 31)
+>>> deny: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 31)
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -44,8 +44,8 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1] D=qqs
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 LOG: SMTP data timeout (message abandoned) on connection from (test) [V4NET.0.0.1] F=<userx@test.ex> D=qqs
 Exim version x.yz ....
 Hints DB:
@@ -142,21 +142,21 @@ SMTP>> 250 OK
 SMTP<< rcpt to:userx@test.ex
 try option acl_smtp_rcpt
 using ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 27)
+processing ACL check_recipient "accept" (TESTSUITE/test-config 27)
 check hosts = :
 host in ":"?
  list element: 
 host in ":"? no (end of list)
-accept: condition test failed in ACL "check_recipient"
-processing "deny" (TESTSUITE/test-config 28)
+accept: condition test failed in ACL check_recipient
+processing ACL check_recipient "deny" (TESTSUITE/test-config 28)
   message: unrouteable address
 check recipients = verify@test.ex
 userx@test.ex in "verify@test.ex"?
  list element: verify@test.ex
  address match test: subject=userx@test.ex pattern=verify@test.ex
 userx@test.ex in "verify@test.ex"? no (end of list)
-deny: condition test failed in ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 31)
+deny: condition test failed in ACL check_recipient
+processing ACL check_recipient "accept" (TESTSUITE/test-config 31)
 check domains = +local_domains
 test.ex in "+local_domains"?
  list element: +local_domains
@@ -167,8 +167,8 @@ test.ex in "+local_domains"?
   end sublist local_domains
  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
  test.ex in "+local_domains"? yes (matched "+local_domains")
-accept: condition test succeeded in ACL "check_recipient"
-end of ACL "check_recipient": ACCEPT
+accept: condition test succeeded in ACL check_recipient
+end of ACL check_recipient: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
 try option acl_smtp_predata
@@ -195,13 +195,13 @@ exim: timed out while reading - message abandoned
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 27)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 27)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
->>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 28)
+>>> accept: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 28)
 >>>   message: unrouteable address
 >>> check recipients = verify@test.ex
 >>> verify@test.ex in "verify@test.ex"?
@@ -226,8 +226,8 @@ exim: timed out while reading - message abandoned
 >>> forward router declined for verify@test.ex
 >>> no more routers
 >>> ----------- end verify ------------
->>> deny: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": DENY
+>>> deny: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: DENY
 LOG: H=(test) [V4NET.0.0.1] F=<userx@test.ex> rejected RCPT verify@test.ex: Unrouteable address
 LOG: SMTP command timeout on connection from (test) [V4NET.0.0.1] D=qqs
 An error was detected while processing a file of BSMTP input.

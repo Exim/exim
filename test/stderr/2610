@@ -314,7 +314,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  SMTP<< rcpt to:<c@d>
 01:01:01 p1235  try option acl_smtp_rcpt
 01:01:01 p1235  using ACL "check_recipient"
-01:01:01 p1235  processing "warn" (TESTSUITE/test-config 26)
+01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 26)
 01:01:01 p1235   ╭considering: ok:░░░░${lookup░mysql░░░░░░░░░░░░░░░░░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
 01:01:01 p1235   ├───────text: ok:░░░░
 01:01:01 p1235   ├considering: ${lookup░mysql░░░░░░░░░░░░░░░░░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
@@ -391,8 +391,8 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   ╰─────result: FAIL1:░
 01:01:01 p1235  check set acl_m0 = FAIL1: ${lookup mysql,no_rd              {select name from them where id = '$local_part'}}
 01:01:01 p1235                   = FAIL1: 
-01:01:01 p1235  warn: condition test succeeded in ACL "check_recipient"
-01:01:01 p1235  processing "warn" (TESTSUITE/test-config 31)
+01:01:01 p1235  warn: condition test succeeded in ACL check_recipient
+01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 31)
 01:01:01 p1235   ╭considering: ok:░░░░${lookup░mysql,servers=127.0.0.1::PORT_N/test/root/pass░░░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
 01:01:01 p1235   ├───────text: ok:░░░░
 01:01:01 p1235   ├considering: ${lookup░mysql,servers=127.0.0.1::PORT_N/test/root/pass░░░░░░{select░name░from░them░where░id░=░'${quote_mysql:$local_part}'}}
@@ -510,10 +510,10 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   lookup deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
 01:01:01 p1235   ├failed to expand: FAIL2: ${lookup mysql     {servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = '${quote_mysql:$local_part}'}}
 01:01:01 p1235   ╰───error message: lookup of "servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = 'c'" gave DEFER: MySQL server "127.0.0.1:1223/test" is tainted
-01:01:01 p1235  warn: condition test deferred in ACL "check_recipient"
+01:01:01 p1235  warn: condition test deferred in ACL check_recipient
 01:01:01 p1235  LOG: MAIN
 01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
-01:01:01 p1235  processing "warn" (TESTSUITE/test-config 39)
+01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 39)
 01:01:01 p1235   ╭considering: FAIL3:░${lookup░mysql░░░░░{servers=127.0.0.1::PORT_N;░select░name░from░them░where░id░=░'$local_part'}}
 01:01:01 p1235   ├───────text: FAIL3:░
 01:01:01 p1235   ├considering: ${lookup░mysql░░░░░{servers=127.0.0.1::PORT_N;░select░name░from░them░where░id░=░'$local_part'}}
@@ -554,8 +554,8 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   ╰─────result: FAIL3:░
 01:01:01 p1235  check set acl_m0 = FAIL3: ${lookup mysql     {servers=127.0.0.1::PORT_N; select name from them where id = '$local_part'}}
 01:01:01 p1235                   = FAIL3: 
-01:01:01 p1235  warn: condition test succeeded in ACL "check_recipient"
-01:01:01 p1235  processing "warn" (TESTSUITE/test-config 42)
+01:01:01 p1235  warn: condition test succeeded in ACL check_recipient
+01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 42)
 01:01:01 p1235  check set acl_m0 = ok:    hostlist
 01:01:01 p1235  check hosts = net-mysql;select * from them where id='${quote_mysql:$local_part}'
 01:01:01 p1235   ╭considering: net-mysql;select░*░from░them░where░id='${quote_mysql:$local_part}'
@@ -592,8 +592,8 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   creating new cache entry
 01:01:01 p1235   lookup failed
 01:01:01 p1235  host in "net-mysql;select * from them where id='c'"? no (end of list)
-01:01:01 p1235  warn: condition test failed in ACL "check_recipient"
-01:01:01 p1235  processing "warn" (TESTSUITE/test-config 45)
+01:01:01 p1235  warn: condition test failed in ACL check_recipient
+01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 45)
 01:01:01 p1235  check set acl_m0 = FAIL4: hostlist
 01:01:01 p1235  check hosts = <& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
 01:01:01 p1235   ╭considering: <&░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
@@ -630,10 +630,10 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    WARNING: obsolete syntax used for lookup
 01:01:01 p1235   lookup deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
 01:01:01 p1235  host in "<& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
-01:01:01 p1235  warn: condition test deferred in ACL "check_recipient"
+01:01:01 p1235  warn: condition test deferred in ACL check_recipient
 01:01:01 p1235  LOG: MAIN
 01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
-01:01:01 p1235  processing "warn" (TESTSUITE/test-config 50)
+01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 50)
 01:01:01 p1235  check set acl_m0 = FAIL5: hostlist
 01:01:01 p1235  check hosts = <& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
 01:01:01 p1235   ╭considering: <&░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
@@ -667,10 +667,10 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   MySQL query: " select * from them where id='c'" opts 'servers=127.0.0.1::PORT_N/test/root/pass'
 01:01:01 p1235   lookup deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
 01:01:01 p1235  host in "<& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
-01:01:01 p1235  warn: condition test deferred in ACL "check_recipient"
+01:01:01 p1235  warn: condition test deferred in ACL check_recipient
 01:01:01 p1235  LOG: MAIN
 01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
-01:01:01 p1235  processing "accept" (TESTSUITE/test-config 53)
+01:01:01 p1235  processing ACL check_recipient "accept" (TESTSUITE/test-config 53)
 01:01:01 p1235  check domains = +local_domains
 01:01:01 p1235  d in "+local_domains"?
 01:01:01 p1235   list element: +local_domains
@@ -680,8 +680,8 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235     d in "@"? no (end of list)
 01:01:01 p1235    end sublist local_domains
 01:01:01 p1235  d in "+local_domains"? no (end of list)
-01:01:01 p1235  accept: condition test failed in ACL "check_recipient"
-01:01:01 p1235  processing "accept" (TESTSUITE/test-config 56)
+01:01:01 p1235  accept: condition test failed in ACL check_recipient
+01:01:01 p1235  processing ACL check_recipient "accept" (TESTSUITE/test-config 56)
 01:01:01 p1235  check hosts = +relay_hosts
 01:01:01 p1235  host in "+relay_hosts"?
 01:01:01 p1235   list element: +relay_hosts
@@ -712,11 +712,11 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235     host in "net-mysql;select * from them where id='10.0.0.0'"? no (end of list)
 01:01:01 p1235    end sublist relay_hosts
 01:01:01 p1235  host in "+relay_hosts"? no (end of list)
-01:01:01 p1235  accept: condition test failed in ACL "check_recipient"
-01:01:01 p1235  processing "deny" (TESTSUITE/test-config 57)
+01:01:01 p1235  accept: condition test failed in ACL check_recipient
+01:01:01 p1235  processing ACL check_recipient "deny" (TESTSUITE/test-config 57)
 01:01:01 p1235    message: relay not permitted
-01:01:01 p1235  deny: condition test succeeded in ACL "check_recipient"
-01:01:01 p1235  end of ACL "check_recipient": DENY
+01:01:01 p1235  deny: condition test succeeded in ACL check_recipient
+01:01:01 p1235  end of ACL check_recipient: DENY
 01:01:01 p1235  SMTP>> 550 relay not permitted
 01:01:01 p1235  LOG: MAIN REJECT
 01:01:01 p1235    H=(test) [10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
@@ -769,11 +769,11 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for ph10@myhost.test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check_notsmtp"
-processing "accept" (TESTSUITE/test-config 60)
+processing ACL check_notsmtp "accept" (TESTSUITE/test-config 60)
 check set acl_m_qtest = ${quote_mysql:$recipients}
                       = ph10@myhost.test.ex
-accept: condition test succeeded in ACL "check_notsmtp"
-end of ACL "check_notsmtp": ACCEPT
+accept: condition test succeeded in ACL check_notsmtp
+end of ACL check_notsmtp: ACCEPT
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-000000005vi-0000
 DSN: **** SPOOL_OUT - address: <ph10@myhost.test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-000000005vi-0000-H

@@ -19,12 +19,12 @@
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_acl_smtp_rcpt"
->>> processing "accept" (TESTSUITE/test-config 11)
+>>> processing ACL check_acl_smtp_rcpt "accept" (TESTSUITE/test-config 11)
 >>> check set acl_m_empty = 
 >>> check set acl_m0 = $acl_c_empty
 >>>                  = 
->>> accept: condition test succeeded in ACL "check_acl_smtp_rcpt"
->>> end of ACL "check_acl_smtp_rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL check_acl_smtp_rcpt
+>>> end of ACL check_acl_smtp_rcpt: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -46,12 +46,12 @@
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_acl_smtp_rcpt"
->>> processing "accept" (TESTSUITE/test-config 11)
+>>> processing ACL check_acl_smtp_rcpt "accept" (TESTSUITE/test-config 11)
 >>> check set acl_m_empty = 
 >>> check set acl_m0 = $acl_c_empty${hexquote:A}
 >>>                  = A
->>> accept: condition test succeeded in ACL "check_acl_smtp_rcpt"
->>> end of ACL "check_acl_smtp_rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL check_acl_smtp_rcpt
+>>> end of ACL check_acl_smtp_rcpt: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -73,9 +73,9 @@
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_acl_smtp_rcpt"
->>> processing "accept" (TESTSUITE/test-config 11)
+>>> processing ACL check_acl_smtp_rcpt "accept" (TESTSUITE/test-config 11)
 >>> check set acl_m_empty = 
 >>> check set acl_m0 = $acl_c_empty${listquote{:}{A}}
 >>>                  = A
->>> accept: condition test succeeded in ACL "check_acl_smtp_rcpt"
->>> end of ACL "check_acl_smtp_rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL check_acl_smtp_rcpt
+>>> end of ACL check_acl_smtp_rcpt: ACCEPT

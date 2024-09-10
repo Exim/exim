@@ -43,7 +43,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<x@test.ex>
 using ACL "check_rcpt"
-processing "warn" (TESTSUITE/test-config 17)
+processing ACL check_rcpt "warn" (TESTSUITE/test-config 17)
 check hosts = *.gov.uk.test.ex
 host in "*.gov.uk.test.ex"?
  list element: *.gov.uk.test.ex
@@ -77,28 +77,28 @@ sender_fullhost = x.gov.uk.test.ex (test) [V4NET.99.99.97]
 sender_rcvhost = x.gov.uk.test.ex
 	([V4NET.99.99.97] helo=test ident=CALLER)
   host in "*.gov.uk.test.ex"? yes (matched "*.gov.uk.test.ex")
-warn: condition test succeeded in ACL "check_rcpt"
-processing "warn" (TESTSUITE/test-config 18)
+warn: condition test succeeded in ACL check_rcpt
+processing ACL check_rcpt "warn" (TESTSUITE/test-config 18)
 check hosts = !*.gov.uk.test.ex
 host in "!*.gov.uk.test.ex"?
  list element: !*.gov.uk.test.ex
   host in "!*.gov.uk.test.ex"? no (matched "!*.gov.uk.test.ex")
-warn: condition test failed in ACL "check_rcpt"
-processing "warn" (TESTSUITE/test-config 19)
+warn: condition test failed in ACL check_rcpt
+processing ACL check_rcpt "warn" (TESTSUITE/test-config 19)
 check hosts = *.co.uk.test.ex
 host in "*.co.uk.test.ex"?
  list element: *.co.uk.test.ex
   host in "*.co.uk.test.ex"? yes (matched "*.co.uk.test.ex")
-warn: condition test succeeded in ACL "check_rcpt"
-processing "warn" (TESTSUITE/test-config 20)
+warn: condition test succeeded in ACL check_rcpt
+processing ACL check_rcpt "warn" (TESTSUITE/test-config 20)
 check hosts = !*.co.uk.test.ex
 host in "!*.co.uk.test.ex"?
  list element: !*.co.uk.test.ex
   host in "!*.co.uk.test.ex"? no (matched "!*.co.uk.test.ex")
-warn: condition test failed in ACL "check_rcpt"
-processing "accept" (TESTSUITE/test-config 21)
-accept: condition test succeeded in ACL "check_rcpt"
-end of ACL "check_rcpt": ACCEPT
+warn: condition test failed in ACL check_rcpt
+processing ACL check_rcpt "accept" (TESTSUITE/test-config 21)
+accept: condition test succeeded in ACL check_rcpt
+end of ACL check_rcpt: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

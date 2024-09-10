@@ -1,15 +1,15 @@
   message: yes1
   message: yes2
   message: yes3
-accept: condition test succeeded in ACL "chk_mail"
-end of ACL "chk_mail": ACCEPT
+accept: condition test succeeded in ACL chk_mail
+end of ACL chk_mail: ACCEPT
 using ACL "chk_rcpt"
-processing "accept" (TESTSUITE/test-config 27)
+processing ACL chk_rcpt "accept" (TESTSUITE/test-config 27)
 check control = debug/trigger=now
-accept: condition test succeeded in ACL "chk_rcpt"
-end of ACL "chk_rcpt": ACCEPT
+accept: condition test succeeded in ACL chk_rcpt
+end of ACL chk_rcpt: ACCEPT
 using ACL "chk_data"
-processing "accept" (TESTSUITE/test-config 30)
+processing ACL chk_data "accept" (TESTSUITE/test-config 30)
 check control = debug/stop
 debug terminated by stop
 

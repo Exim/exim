@@ -7,19 +7,19 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
->>> processing "warn" (TESTSUITE/test-config 21)
+>>> processing ACL check_connect "warn" (TESTSUITE/test-config 21)
 >>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
 >>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"?
 >>>  list element: 2001:ab8:37f:20:0:0:0:1
 >>>  host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "2001:ab8:37f:20:0:0:0:1")
->>> warn: condition test succeeded in ACL "check_connect"
+>>> warn: condition test succeeded in ACL check_connect
 LOG: H=[2001:ab8:37f:20::1] Warning: matched hostlist
->>> processing "accept" (TESTSUITE/test-config 24)
+>>> processing ACL check_connect "accept" (TESTSUITE/test-config 24)
 >>> check condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
 >>>                 = 
->>> accept: condition test failed in ACL "check_connect"
->>> end of ACL "check_connect": implicit DENY
+>>> accept: condition test failed in ACL check_connect
+>>> end of ACL check_connect: implicit DENY
 LOG: H=[2001:ab8:37f:20::1] rejected connection in "connect" ACL
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup?
@@ -40,7 +40,7 @@ LOG: H=[2001:ab8:37f:20::1] rejected connection in "connect" ACL
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
->>> processing "warn" (TESTSUITE/test-config 21)
+>>> processing ACL check_connect "warn" (TESTSUITE/test-config 21)
 >>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
 >>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"?
@@ -50,12 +50,12 @@ MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=v6.test.ex address=V6NET:ffff:836f:a00:a:800:200a:c032
 >>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? no (end of list)
->>> warn: condition test failed in ACL "check_connect"
->>> processing "accept" (TESTSUITE/test-config 24)
+>>> warn: condition test failed in ACL check_connect
+>>> processing ACL check_connect "accept" (TESTSUITE/test-config 24)
 >>> check condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
 >>>                 = 
->>> accept: condition test failed in ACL "check_connect"
->>> end of ACL "check_connect": implicit DENY
+>>> accept: condition test failed in ACL check_connect
+>>> end of ACL check_connect: implicit DENY
 LOG: H=test3.ipv6.test.ex [V6NET:1234:5:6:7:8:abc:d] rejected connection in "connect" ACL
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -66,7 +66,7 @@ LOG: H=test3.ipv6.test.ex [V6NET:1234:5:6:7:8:abc:d] rejected connection in "con
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
->>> processing "warn" (TESTSUITE/test-config 21)
+>>> processing ACL check_connect "warn" (TESTSUITE/test-config 21)
 >>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
 >>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"?
@@ -76,11 +76,11 @@ MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=v6.test.ex address=V6NET:ffff:836f:a00:a:800:200a:c032
 >>>  host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "v6.test.ex")
->>> warn: condition test succeeded in ACL "check_connect"
+>>> warn: condition test succeeded in ACL check_connect
 LOG: H=[V6NET:ffff:836f:a00:a:800:200a:c032] Warning: matched hostlist
->>> processing "accept" (TESTSUITE/test-config 24)
+>>> processing ACL check_connect "accept" (TESTSUITE/test-config 24)
 >>> check condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
 >>>                 = 
->>> accept: condition test failed in ACL "check_connect"
->>> end of ACL "check_connect": implicit DENY
+>>> accept: condition test failed in ACL check_connect
+>>> end of ACL check_connect: implicit DENY
 LOG: H=[V6NET:ffff:836f:a00:a:800:200a:c032] rejected connection in "connect" ACL

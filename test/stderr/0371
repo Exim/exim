@@ -22,13 +22,13 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect"
-processing "accept" (TESTSUITE/test-config 23)
+processing ACL connect "accept" (TESTSUITE/test-config 23)
 check set acl_c0 = $acl_c0; connect
                  = ; connect
 check set acl_c9 = $acl_c9; connect
                  = ; connect
-accept: condition test succeeded in ACL "connect"
-end of ACL "connect": ACCEPT
+accept: condition test succeeded in ACL connect
+end of ACL connect: ACCEPT
 SMTP>> 220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< ehlo something
@@ -58,27 +58,27 @@ SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 using ACL "mail"
-processing "accept" (TESTSUITE/test-config 27)
+processing ACL mail "accept" (TESTSUITE/test-config 27)
 check set acl_c0 = $acl_c0; mail
                  = ; connect; mail
 check set acl_c9 = $acl_c9; mail
                  = ; connect; mail
 check set acl_m0 = $acl_m0; mail
                  = ; mail
-accept: condition test succeeded in ACL "mail"
-end of ACL "mail": ACCEPT
+accept: condition test succeeded in ACL mail
+end of ACL mail: ACCEPT
 SMTP>> 250 OK
 SMTP<< rcpt to:<x@y>
 using ACL "rcpt"
-processing "accept" (TESTSUITE/test-config 32)
+processing ACL rcpt "accept" (TESTSUITE/test-config 32)
 check set acl_m0 = $acl_m0; rcpt
                  = ; mail; rcpt
 check set acl_m9 = $acl_m9; rcpt
                  = ; rcpt
 check set acl_c0 = $acl_c0; rcpt
                  = ; connect; mail; rcpt
-accept: condition test succeeded in ACL "rcpt"
-end of ACL "rcpt": ACCEPT
+accept: condition test succeeded in ACL rcpt
+end of ACL rcpt: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -101,13 +101,13 @@ P Received: from [V4NET.0.0.0] (helo=something)
 	for x@y;
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "data"
-processing "accept" (TESTSUITE/test-config 37)
+processing ACL data "accept" (TESTSUITE/test-config 37)
 check set acl_m0 = $acl_m0; data
                  = ; mail; rcpt; data
 check set acl_m9 = $acl_m9; data
                  = ; rcpt; data
-accept: condition test succeeded in ACL "data"
-end of ACL "data": ACCEPT
+accept: condition test succeeded in ACL data
+end of ACL data: ACCEPT
 LOG: MAIN
   <= x@y H=(something) [V4NET.0.0.0] P=esmtp S=sss
 SMTP>> 250 OK id=10HmaX-000000005vi-0000
@@ -117,15 +117,15 @@ host in smtp_accept_max_nonmail_hosts?
  list element: *
   host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 using ACL "vrfy"
-processing "accept" (TESTSUITE/test-config 41)
+processing ACL vrfy "accept" (TESTSUITE/test-config 41)
 check set acl_c0 = $acl_c0; vrfy
                  = ; connect; mail; rcpt; vrfy
 check set acl_c9 = $acl_c9; vrfy
                  = ; connect; mail; vrfy
 check set acl_m0 = $acl_m0; vrfy
                  = ; vrfy
-accept: condition test succeeded in ACL "vrfy"
-end of ACL "vrfy": ACCEPT
+accept: condition test succeeded in ACL vrfy
+end of ACL vrfy: ACCEPT
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@y
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -140,15 +140,15 @@ SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 using ACL "mail"
-processing "accept" (TESTSUITE/test-config 27)
+processing ACL mail "accept" (TESTSUITE/test-config 27)
 check set acl_c0 = $acl_c0; mail
                  = ; connect; mail; rcpt; vrfy; mail
 check set acl_c9 = $acl_c9; mail
                  = ; connect; mail; vrfy; mail
 check set acl_m0 = $acl_m0; mail
                  = ; mail
-accept: condition test succeeded in ACL "mail"
-end of ACL "mail": ACCEPT
+accept: condition test succeeded in ACL mail
+end of ACL mail: ACCEPT
 SMTP>> 250 OK
 SMTP<< quit
 SMTP>> 221 mail.test.ex closing connection

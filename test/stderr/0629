@@ -1,12 +1,12 @@
-accept: condition test succeeded in ACL "chk_mail"
-end of ACL "chk_mail": ACCEPT
+accept: condition test succeeded in ACL chk_mail
+end of ACL chk_mail: ACCEPT
 SMTP>> 250 OK
 SMTP<< RCPT TO:<dest2@test.ex>
 using ACL "chk_rcpt"
-processing "deny" (TESTSUITE/test-config 20)
+processing ACL chk_rcpt "deny" (TESTSUITE/test-config 20)
 check log_reject_target = panic
-deny: condition test succeeded in ACL "chk_rcpt"
-end of ACL "chk_rcpt": DENY
+deny: condition test succeeded in ACL chk_rcpt
+end of ACL chk_rcpt: DENY
 SMTP>> 550 Administrative prohibition
 LOG: PANIC
   H=(test.ex) [127.0.0.1] F=<test_2@paniclogrcpt> rejected RCPT <dest2@test.ex>

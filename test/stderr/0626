@@ -11,11 +11,11 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL chk_rcpt "accept" (TESTSUITE/test-config 19)
 >>> check seen = -1s
 >>> seen db written (create)
->>> accept: condition test failed in ACL "chk_rcpt"
->>> end of ACL "chk_rcpt": implicit DENY
+>>> accept: condition test failed in ACL chk_rcpt
+>>> end of ACL chk_rcpt: implicit DENY
 LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -30,10 +30,10 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL chk_rcpt "accept" (TESTSUITE/test-config 19)
 >>> check seen = -1s
->>> accept: condition test succeeded in ACL "chk_rcpt"
->>> end of ACL "chk_rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL chk_rcpt
+>>> end of ACL chk_rcpt: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -47,11 +47,11 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL chk_rcpt "accept" (TESTSUITE/test-config 19)
 >>> check seen = -1s / write
 >>> seen db written (update)
->>> accept: condition test succeeded in ACL "chk_rcpt"
->>> end of ACL "chk_rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL chk_rcpt
+>>> end of ACL chk_rcpt: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -65,11 +65,11 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL chk_rcpt "accept" (TESTSUITE/test-config 19)
 >>> check seen = -1s
 >>> seen db written (create)
->>> accept: condition test failed in ACL "chk_rcpt"
->>> end of ACL "chk_rcpt": implicit DENY
+>>> accept: condition test failed in ACL chk_rcpt
+>>> end of ACL chk_rcpt: implicit DENY
 LOG: H=(test) [ip4.ip4.ip4.ip4] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -84,12 +84,12 @@ LOG: H=(test) [ip4.ip4.ip4.ip4] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL chk_rcpt "accept" (TESTSUITE/test-config 19)
 >>> check seen = -1s / key=${sender_host_address}_foo
 >>>            = -1s / key=127.0.0.1_foo
 >>> seen db written (create)
->>> accept: condition test failed in ACL "chk_rcpt"
->>> end of ACL "chk_rcpt": implicit DENY
+>>> accept: condition test failed in ACL chk_rcpt
+>>> end of ACL chk_rcpt: implicit DENY
 LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -104,11 +104,11 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL chk_rcpt "accept" (TESTSUITE/test-config 19)
 >>> check seen = -1s / refresh=1s
 >>> seen db written (refresh)
->>> accept: condition test succeeded in ACL "chk_rcpt"
->>> end of ACL "chk_rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL chk_rcpt
+>>> end of ACL chk_rcpt: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -122,12 +122,12 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL chk_rcpt "accept" (TESTSUITE/test-config 19)
 >>> check seen = 5s/key=${sender_host_address}_foo/readonly
 >>>            = 5s/key=127.0.0.1_foo/readonly
 >>> seen db not written (readonly)
->>> accept: condition test succeeded in ACL "chk_rcpt"
->>> end of ACL "chk_rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL chk_rcpt
+>>> end of ACL chk_rcpt: ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -141,12 +141,12 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL chk_rcpt "accept" (TESTSUITE/test-config 19)
 >>> check seen = 1s / key=${sender_host_address}_foo
 >>>            = 1s / key=127.0.0.1_foo
 >>> seen db written (update)
->>> accept: condition test failed in ACL "chk_rcpt"
->>> end of ACL "chk_rcpt": implicit DENY
+>>> accept: condition test failed in ACL chk_rcpt
+>>> end of ACL chk_rcpt: implicit DENY
 LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -161,9 +161,9 @@ LOG: H=(test) [127.0.0.1] F=<tester@test.ex> rejected RCPT <a1@test.ex>
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "chk_rcpt"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> processing ACL chk_rcpt "accept" (TESTSUITE/test-config 19)
 >>> check seen = 1s / key=${sender_host_address}_foo
 >>>            = 1s / key=127.0.0.1_foo
 >>> seen db written (update)
->>> accept: condition test succeeded in ACL "chk_rcpt"
->>> end of ACL "chk_rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL chk_rcpt
+>>> end of ACL chk_rcpt: ACCEPT

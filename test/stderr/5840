@@ -13,7 +13,7 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 88)
+>>> processing inline ACL "accept"
 >>> check verify = recipient/callout
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing rcptuser@dane256ee.test.ex

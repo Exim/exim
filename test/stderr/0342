@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_rcpt"
->>> processing "deny" (TESTSUITE/test-config 17)
+>>> processing ACL check_rcpt "deny" (TESTSUITE/test-config 17)
 >>>   message: unverifiable
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -35,7 +35,7 @@
 >>>    ten-1.test.ex in dnssec_request_domains? yes (matched "*")
 >>> routed by dnslookup router
 >>> ----------- end verify ------------
->>> deny: condition test failed in ACL "check_rcpt"
->>> processing "accept" (TESTSUITE/test-config 19)
->>> accept: condition test succeeded in ACL "check_rcpt"
->>> end of ACL "check_rcpt": ACCEPT
+>>> deny: condition test failed in ACL check_rcpt
+>>> processing ACL check_rcpt "accept" (TESTSUITE/test-config 19)
+>>> accept: condition test succeeded in ACL check_rcpt
+>>> end of ACL check_rcpt: ACCEPT

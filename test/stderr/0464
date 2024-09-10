@@ -22,7 +22,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<abc@domain1>
 using ACL "rcpt"
-processing "require" (TESTSUITE/test-config 20)
+processing ACL rcpt "require" (TESTSUITE/test-config 20)
 check domains = +special_domains
 domain1 in "+special_domains"?
  list element: +special_domains
@@ -116,8 +116,8 @@ routed by r2 router
   envelope to: abc@xxx.domain1
   transport: smtp
 ----------- end verify ------------
-require: condition test succeeded in ACL "rcpt"
-processing "require" (TESTSUITE/test-config 23)
+require: condition test succeeded in ACL rcpt
+processing ACL rcpt "require" (TESTSUITE/test-config 23)
 check domains = +special_domains
 domain1 in "+special_domains"?
  list element: +special_domains
@@ -194,10 +194,10 @@ routed by r2 router
   envelope to: abc@xxx.domain1
   transport: smtp
 ----------- end verify ------------
-require: condition test succeeded in ACL "rcpt"
-processing "accept" (TESTSUITE/test-config 25)
-accept: condition test succeeded in ACL "rcpt"
-end of ACL "rcpt": ACCEPT
+require: condition test succeeded in ACL rcpt
+processing ACL rcpt "accept" (TESTSUITE/test-config 25)
+accept: condition test succeeded in ACL rcpt
+end of ACL rcpt: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

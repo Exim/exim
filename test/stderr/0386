@@ -43,28 +43,28 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<1@b>
 using ACL "chk_rcpt"
-processing "accept" (TESTSUITE/test-config 18)
+processing ACL chk_rcpt "accept" (TESTSUITE/test-config 18)
 check local_parts = 1
 1 in "1"?
  list element: 1
  1 in "1"? yes (matched "1")
 check acl = TESTSUITE/aux-fixed/0386.acl1
  read ACL from file TESTSUITE/aux-fixed/0386.acl1
- processing "accept" (TESTSUITE/test-config 44)
+ processing ACL TESTSUITE/aux-fixed/0386.acl1 "accept" (TESTSUITE/test-config 18)
  check hosts = :
   host in ":"?
   list element: 
   host in ":"? no (end of list)
- accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "deny" (TESTSUITE/test-config 44)
+ accept: condition test failed in ACL TESTSUITE/aux-fixed/0386.acl1
+ processing ACL TESTSUITE/aux-fixed/0386.acl1 "deny" (TESTSUITE/test-config 18)
  check local_parts = ^.*[@%!/|]
  1 in "^.*[@%!/|]"?
   list element: ^.*[@%!/|]
   compiled caseless RE '^.*[@%!/|]' not found in local cache
   compiled RE '^.*[@%!/|]' saved in local cache
  1 in "^.*[@%!/|]"? no (end of list)
- deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "require" (TESTSUITE/test-config 44)
+ deny: condition test failed in ACL TESTSUITE/aux-fixed/0386.acl1
+ processing ACL TESTSUITE/aux-fixed/0386.acl1 "require" (TESTSUITE/test-config 18)
  l_message: Invalid sender
    message: Couldn't verify the sender
  check verify = sender/defer_ok
@@ -89,12 +89,12 @@ routed by r1 router
   transport: t1
  ----------- end verify ------------
  sender x@y verified ok
- require: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "deny" (TESTSUITE/test-config 44)
+ require: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl1
+ processing ACL TESTSUITE/aux-fixed/0386.acl1 "deny" (TESTSUITE/test-config 18)
    message: No such user here
- deny: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
- end of ACL "TESTSUITE/aux-fixed/0386.acl1": DENY
-accept: condition test failed in ACL "chk_rcpt"
+ deny: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl1
+ end of ACL TESTSUITE/aux-fixed/0386.acl1: DENY
+accept: condition test failed in ACL chk_rcpt
 accept: endpass encountered - denying access
 SMTP>> 550 No such user here
 LOG: MAIN REJECT
@@ -107,27 +107,27 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<1@b>
 using ACL "chk_rcpt"
-processing "accept" (TESTSUITE/test-config 18)
+processing ACL chk_rcpt "accept" (TESTSUITE/test-config 18)
 check local_parts = 1
 1 in "1"?
  list element: 1
  1 in "1"? yes (matched "1")
 check acl = TESTSUITE/aux-fixed/0386.acl1
  using ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "accept" (TESTSUITE/test-config 44)
+ processing ACL TESTSUITE/aux-fixed/0386.acl1 "accept" (TESTSUITE/test-config 18)
  check hosts = :
   host in ":"?
   list element: 
   host in ":"? no (end of list)
- accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "deny" (TESTSUITE/test-config 44)
+ accept: condition test failed in ACL TESTSUITE/aux-fixed/0386.acl1
+ processing ACL TESTSUITE/aux-fixed/0386.acl1 "deny" (TESTSUITE/test-config 18)
  check local_parts = ^.*[@%!/|]
  1 in "^.*[@%!/|]"?
   list element: ^.*[@%!/|]
   compiled caseless RE '^.*[@%!/|]' found in local cache
  1 in "^.*[@%!/|]"? no (end of list)
- deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "require" (TESTSUITE/test-config 44)
+ deny: condition test failed in ACL TESTSUITE/aux-fixed/0386.acl1
+ processing ACL TESTSUITE/aux-fixed/0386.acl1 "require" (TESTSUITE/test-config 18)
  l_message: Invalid sender
    message: Couldn't verify the sender
  check verify = sender/defer_ok
@@ -151,12 +151,12 @@ routed by r1 router
   transport: t1
  ----------- end verify ------------
  sender x@y verified ok
- require: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
- processing "deny" (TESTSUITE/test-config 44)
+ require: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl1
+ processing ACL TESTSUITE/aux-fixed/0386.acl1 "deny" (TESTSUITE/test-config 18)
    message: No such user here
- deny: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
- end of ACL "TESTSUITE/aux-fixed/0386.acl1": DENY
-accept: condition test failed in ACL "chk_rcpt"
+ deny: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl1
+ end of ACL TESTSUITE/aux-fixed/0386.acl1: DENY
+accept: condition test failed in ACL chk_rcpt
 accept: endpass encountered - denying access
 SMTP>> 550 No such user here
 LOG: MAIN REJECT
@@ -214,20 +214,20 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<2@b>
 using ACL "chk_rcpt"
-processing "accept" (TESTSUITE/test-config 18)
+processing ACL chk_rcpt "accept" (TESTSUITE/test-config 18)
 check local_parts = 1
 2 in "1"?
  list element: 1
 2 in "1"? no (end of list)
-accept: condition test failed in ACL "chk_rcpt"
-processing "accept" (TESTSUITE/test-config 21)
+accept: condition test failed in ACL chk_rcpt
+processing ACL chk_rcpt "accept" (TESTSUITE/test-config 21)
 check local_parts = 2
 2 in "2"?
  list element: 2
  2 in "2"? yes (matched "2")
 check acl = TESTSUITE/aux-fixed/0386.acl2
  read ACL from file TESTSUITE/aux-fixed/0386.acl2
- processing "warn" (TESTSUITE/test-config 44)
+ processing ACL TESTSUITE/aux-fixed/0386.acl2 "warn" (TESTSUITE/test-config 21)
    message: X-Warning: $sender_host_address is listed at $dnslist_domain\nX-Warning: $dnslist_text
  l_message: found in $dnslist_domain: $dnslist_text
  check dnslists = rbl.test.ex 
@@ -240,15 +240,15 @@ DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
  DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) using fakens
  DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) succeeded
 => that means V4NET.11.12.13 is listed at rbl.test.ex
- warn: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
+ warn: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl2
 LOG: MAIN
   H=(test) [V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
 created log directory TESTSUITE/spool/log
- processing "accept" (TESTSUITE/test-config 44)
- accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
- end of ACL "TESTSUITE/aux-fixed/0386.acl2": ACCEPT
-accept: condition test succeeded in ACL "chk_rcpt"
-end of ACL "chk_rcpt": ACCEPT
+ processing ACL TESTSUITE/aux-fixed/0386.acl2 "accept" (TESTSUITE/test-config 21)
+ accept: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl2
+ end of ACL TESTSUITE/aux-fixed/0386.acl2: ACCEPT
+accept: condition test succeeded in ACL chk_rcpt
+end of ACL chk_rcpt: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -410,20 +410,20 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<2@b>
 using ACL "chk_rcpt"
-processing "accept" (TESTSUITE/test-config 18)
+processing ACL chk_rcpt "accept" (TESTSUITE/test-config 18)
 check local_parts = 1
 2 in "1"?
  list element: 1
 2 in "1"? no (end of list)
-accept: condition test failed in ACL "chk_rcpt"
-processing "accept" (TESTSUITE/test-config 21)
+accept: condition test failed in ACL chk_rcpt
+processing ACL chk_rcpt "accept" (TESTSUITE/test-config 21)
 check local_parts = 2
 2 in "2"?
  list element: 2
  2 in "2"? yes (matched "2")
 check acl = TESTSUITE/aux-fixed/0386.acl2
  using ACL "TESTSUITE/aux-fixed/0386.acl2"
- processing "warn" (TESTSUITE/test-config 44)
+ processing ACL TESTSUITE/aux-fixed/0386.acl2 "warn" (TESTSUITE/test-config 21)
    message: X-Warning: $sender_host_address is listed at $dnslist_domain\nX-Warning: $dnslist_text
  l_message: found in $dnslist_domain: $dnslist_text
  check dnslists = rbl.test.ex 
@@ -431,14 +431,14 @@ dnslists check: rbl.test.ex
 dnslists: using result of previous lookup
 DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 => that means V4NET.11.12.13 is listed at rbl.test.ex
- warn: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
+ warn: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl2
 LOG: MAIN
   H=(test) [V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
- processing "accept" (TESTSUITE/test-config 44)
- accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
- end of ACL "TESTSUITE/aux-fixed/0386.acl2": ACCEPT
-accept: condition test succeeded in ACL "chk_rcpt"
-end of ACL "chk_rcpt": ACCEPT
+ processing ACL TESTSUITE/aux-fixed/0386.acl2 "accept" (TESTSUITE/test-config 21)
+ accept: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl2
+ end of ACL TESTSUITE/aux-fixed/0386.acl2: ACCEPT
+accept: condition test succeeded in ACL chk_rcpt
+end of ACL chk_rcpt: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself

@@ -93,11 +93,11 @@ LOG: smtp_connection MAIN
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing ACL check_rcpt "accept" (TESTSUITE/test-config 20)
 LOG: this is a warning at TESTSUITE/aux-fixed/3000.pl line 25.
 >>> check condition = ${if !eq {${perl{foo_warn}}}{}}
 >>>                 = true
->>> accept: condition test succeeded in ACL "check_rcpt"
->>> end of ACL "check_rcpt": ACCEPT
+>>> accept: condition test succeeded in ACL check_rcpt
+>>> end of ACL check_rcpt: ACCEPT
 
 ******** SERVER ********

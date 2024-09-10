@@ -38,7 +38,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<B@a.b.c>
 using ACL "acl_rcpt"
-processing "accept" (TESTSUITE/test-config 18)
+processing ACL acl_rcpt "accept" (TESTSUITE/test-config 18)
 check verify = sender
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying U@W.x.y
@@ -70,8 +70,8 @@ routed by r1 router
   transport: <none>
 ----------- end verify ------------
 sender U@W.x.y verified ok as U@x.y
-accept: condition test succeeded in ACL "acl_rcpt"
-end of ACL "acl_rcpt": ACCEPT
+accept: condition test succeeded in ACL acl_rcpt
+end of ACL acl_rcpt: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

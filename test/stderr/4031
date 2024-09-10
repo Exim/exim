@@ -13,7 +13,7 @@
 >>>  list element: @[]
 >>> clientname in helo_lookup_domains? no (end of list)
 >>> using ACL "r_acl"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> processing ACL r_acl "accept" (TESTSUITE/test-config 22)
 >>> check logwrite = proxy session: $proxy_session
 >>>                = proxy session: no
 LOG: proxy session: no
@@ -29,8 +29,8 @@ LOG: proxy external []:0
 >>> check logwrite = remote         [$sender_host_address]:$sender_host_port
 >>>                = remote         [127.0.0.2]:1111
 LOG: remote         [127.0.0.2]:1111
->>> accept: condition test succeeded in ACL "r_acl"
->>> end of ACL "r_acl": ACCEPT
+>>> accept: condition test succeeded in ACL r_acl
+>>> end of ACL r_acl: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaX-000000005vi-0000 <= a@test.ex H=(clientname) [127.0.0.2] P=smtp S=sss
 ### protocol v1 receive
@@ -50,7 +50,7 @@ LOG: no host name found for IP address 127.0.0.2
 >>>  list element: @[]
 >>> clientname in helo_lookup_domains? no (end of list)
 >>> using ACL "r_acl"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> processing ACL r_acl "accept" (TESTSUITE/test-config 22)
 >>> check logwrite = proxy session: $proxy_session
 >>>                = proxy session: yes
 LOG: proxy session: yes
@@ -66,8 +66,8 @@ LOG: proxy external [127.42.42.42]:1112
 >>> check logwrite = remote         [$sender_host_address]:$sender_host_port
 >>>                = remote         [127.0.0.2]:1113
 LOG: remote         [127.0.0.2]:1113
->>> accept: condition test succeeded in ACL "r_acl"
->>> end of ACL "r_acl": ACCEPT
+>>> accept: condition test succeeded in ACL r_acl
+>>> end of ACL r_acl: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-000000005vi-0000 <= a@test.ex H=(clientname) [127.0.0.2]:1113 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
 ### protocol v2 receive
@@ -87,7 +87,7 @@ LOG: no host name found for IP address 127.0.0.2
 >>>  list element: @[]
 >>> clientname in helo_lookup_domains? no (end of list)
 >>> using ACL "r_acl"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> processing ACL r_acl "accept" (TESTSUITE/test-config 22)
 >>> check logwrite = proxy session: $proxy_session
 >>>                = proxy session: yes
 LOG: proxy session: yes
@@ -103,8 +103,8 @@ LOG: proxy external [127.42.42.42]:1114
 >>> check logwrite = remote         [$sender_host_address]:$sender_host_port
 >>>                = remote         [127.0.0.2]:1115
 LOG: remote         [127.0.0.2]:1115
->>> accept: condition test succeeded in ACL "r_acl"
->>> end of ACL "r_acl": ACCEPT
+>>> accept: condition test succeeded in ACL r_acl
+>>> end of ACL r_acl: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaZ-000000005vi-0000 <= a@test.ex H=(clientname) [127.0.0.2]:1115 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
 ### proxy timeout

@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 20)
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 20)
 >>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -44,8 +44,8 @@
 >>> calling exeter_listf router
 >>> routed by exeter_listf router
 >>> ----------- end verify ------------
->>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> deny: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> listr.test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -57,10 +57,10 @@
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'listr.test.ex' value '*.test.ex'
 >>>  listr.test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 >>> using ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 20)
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 20)
 >>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -77,8 +77,8 @@
 >>> calling exeter_listf router
 >>> routed by exeter_listf router
 >>> ----------- end verify ------------
->>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> deny: condition test failed in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> listr.test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -90,7 +90,7 @@
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'listr.test.ex' value '*.test.ex'
 >>>  listr.test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 
 ******** SERVER ********

@@ -12,50 +12,50 @@
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing "deny" (TESTSUITE/test-config 22)
+>>> processing ACL check_vrfy "deny" (TESTSUITE/test-config 22)
 >>> check local_parts = hardfail
 >>> userx in "hardfail"?
 >>>  list element: hardfail
 >>> userx in "hardfail"? no (end of list)
->>> deny: condition test failed in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 24)
+>>> deny: condition test failed in ACL check_vrfy
+>>> processing ACL check_vrfy "accept" (TESTSUITE/test-config 24)
 >>> check local_parts = acceptable
 >>> userx in "acceptable"?
 >>>  list element: acceptable
 >>> userx in "acceptable"? no (end of list)
->>> accept: condition test failed in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 25)
+>>> accept: condition test failed in ACL check_vrfy
+>>> processing ACL check_vrfy "accept" (TESTSUITE/test-config 25)
 >>> check local_parts = ok_with_dom
 >>> userx in "ok_with_dom"?
 >>>  list element: ok_with_dom
 >>> userx in "ok_with_dom"? no (end of list)
->>> accept: condition test failed in ACL "check_vrfy"
->>> end of ACL "check_vrfy": implicit DENY
+>>> accept: condition test failed in ACL check_vrfy
+>>> end of ACL check_vrfy: implicit DENY
 LOG: H=[1.1.1.1] rejected VRFY userx@test.ex
 >>> using ACL "check_vrfy"
->>> processing "deny" (TESTSUITE/test-config 22)
+>>> processing ACL check_vrfy "deny" (TESTSUITE/test-config 22)
 >>> check local_parts = hardfail
 >>> hardfail in "hardfail"?
 >>>  list element: hardfail
 >>>  hardfail in "hardfail"? yes (matched "hardfail")
 >>>   message: 599 custom reject
->>> deny: condition test succeeded in ACL "check_vrfy"
->>> end of ACL "check_vrfy": DENY
+>>> deny: condition test succeeded in ACL check_vrfy
+>>> end of ACL check_vrfy: DENY
 LOG: H=[1.1.1.1] rejected VRFY hardfail@test.ex: 599 custom reject
 >>> using ACL "check_vrfy"
->>> processing "deny" (TESTSUITE/test-config 22)
+>>> processing ACL check_vrfy "deny" (TESTSUITE/test-config 22)
 >>> check local_parts = hardfail
 >>> ok_with_dom in "hardfail"?
 >>>  list element: hardfail
 >>> ok_with_dom in "hardfail"? no (end of list)
->>> deny: condition test failed in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 24)
+>>> deny: condition test failed in ACL check_vrfy
+>>> processing ACL check_vrfy "accept" (TESTSUITE/test-config 24)
 >>> check local_parts = acceptable
 >>> ok_with_dom in "acceptable"?
 >>>  list element: acceptable
 >>> ok_with_dom in "acceptable"? no (end of list)
->>> accept: condition test failed in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 25)
+>>> accept: condition test failed in ACL check_vrfy
+>>> processing ACL check_vrfy "accept" (TESTSUITE/test-config 25)
 >>> check local_parts = ok_with_dom
 >>> ok_with_dom in "ok_with_dom"?
 >>>  list element: ok_with_dom
@@ -64,8 +64,8 @@ LOG: H=[1.1.1.1] rejected VRFY hardfail@test.ex: 599 custom reject
 >>> test.ex in "test.ex"?
 >>>  list element: test.ex
 >>>  test.ex in "test.ex"? yes (matched "test.ex")
->>> accept: condition test succeeded in ACL "check_vrfy"
->>> end of ACL "check_vrfy": ACCEPT
+>>> accept: condition test succeeded in ACL check_vrfy
+>>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing ok_with_dom@test.ex
 >>> calling system_aliases router
@@ -77,13 +77,13 @@ LOG: H=[1.1.1.1] rejected VRFY hardfail@test.ex: 599 custom reject
 >>> calling localuser router
 >>> routed by localuser router
 >>> using ACL "check_expn"
->>> processing "accept" (TESTSUITE/test-config 29)
+>>> processing ACL check_expn "accept" (TESTSUITE/test-config 29)
 >>> check hosts = 2.2.2.2
 >>> host in "2.2.2.2"?
 >>>  list element: 2.2.2.2
 >>> host in "2.2.2.2"? no (end of list)
->>> accept: condition test failed in ACL "check_expn"
->>> end of ACL "check_expn": implicit DENY
+>>> accept: condition test failed in ACL check_expn
+>>> end of ACL check_expn: implicit DENY
 LOG: H=[1.1.1.1] rejected EXPN postmaster
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -99,19 +99,19 @@ LOG: H=[1.1.1.1] rejected EXPN postmaster
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing "deny" (TESTSUITE/test-config 22)
+>>> processing ACL check_vrfy "deny" (TESTSUITE/test-config 22)
 >>> check local_parts = hardfail
 >>> acceptable in "hardfail"?
 >>>  list element: hardfail
 >>> acceptable in "hardfail"? no (end of list)
->>> deny: condition test failed in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 24)
+>>> deny: condition test failed in ACL check_vrfy
+>>> processing ACL check_vrfy "accept" (TESTSUITE/test-config 24)
 >>> check local_parts = acceptable
 >>> acceptable in "acceptable"?
 >>>  list element: acceptable
 >>>  acceptable in "acceptable"? yes (matched "acceptable")
->>> accept: condition test succeeded in ACL "check_vrfy"
->>> end of ACL "check_vrfy": ACCEPT
+>>> accept: condition test succeeded in ACL check_vrfy
+>>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing acceptable@test.ex
 >>> calling system_aliases router
@@ -137,13 +137,13 @@ LOG: H=[1.1.1.1] rejected EXPN postmaster
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_expn"
->>> processing "accept" (TESTSUITE/test-config 29)
+>>> processing ACL check_expn "accept" (TESTSUITE/test-config 29)
 >>> check hosts = 2.2.2.2
 >>> host in "2.2.2.2"?
 >>>  list element: 2.2.2.2
 >>>  host in "2.2.2.2"? yes (matched "2.2.2.2")
->>> accept: condition test succeeded in ACL "check_expn"
->>> end of ACL "check_expn": ACCEPT
+>>> accept: condition test succeeded in ACL check_expn
+>>> end of ACL check_expn: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list@test.ex
 >>> calling system_aliases router

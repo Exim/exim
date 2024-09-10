@@ -40,7 +40,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<x@a.b.c>
 using ACL "check_rcpt"
-processing "accept" (TESTSUITE/test-config 22)
+processing ACL check_rcpt "accept" (TESTSUITE/test-config 22)
 check domains = +local_domains
 a.b.c in "+local_domains"?
  list element: +local_domains
@@ -50,8 +50,8 @@ a.b.c in "+local_domains"?
    a.b.c in "*.test.ex"? no (end of list)
   end sublist local_domains
 a.b.c in "+local_domains"? no (end of list)
-accept: condition test failed in ACL "check_rcpt"
-processing "accept" (TESTSUITE/test-config 23)
+accept: condition test failed in ACL check_rcpt
+processing ACL check_rcpt "accept" (TESTSUITE/test-config 23)
 check domains = +relay_domains
 a.b.c in "+relay_domains"?
  list element: +relay_domains
@@ -114,8 +114,8 @@ routed by r2 router
   envelope to: x@x.test.ex
   transport: t2
 ----------- end verify ------------
-accept: condition test succeeded in ACL "check_rcpt"
-end of ACL "check_rcpt": ACCEPT
+accept: condition test succeeded in ACL check_rcpt
+end of ACL check_rcpt: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 the.local.host.name closing connection

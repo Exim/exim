@@ -36,13 +36,13 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in hosts_require_helo?
 >>> host in hosts_require_helo? no (end of list)
 >>> using ACL "rcpt"
->>> processing "require" (TESTSUITE/test-config 23)
+>>> processing ACL rcpt "require" (TESTSUITE/test-config 23)
 >>>   message: helo not verified
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "NULL"
 >>> no EHLO/HELO command was issued
->>> require: condition test failed in ACL "rcpt"
->>> end of ACL "rcpt": not OK
+>>> require: condition test failed in ACL rcpt
+>>> end of ACL rcpt: not OK
 LOG: H=[V4NET.0.0.13] F=<userx@cus.cam.ac.uk> rejected RCPT <a@b>: helo not verified
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -73,11 +73,11 @@ MUNGED: ::1 will be omitted in what follows
 >>> verifying EHLO/HELO argument "[V4NET.0.0.1]"
 >>> HELO verification failed but host is in helo_try_verify_hosts
 >>> using ACL "rcpt"
->>> processing "require" (TESTSUITE/test-config 23)
+>>> processing ACL rcpt "require" (TESTSUITE/test-config 23)
 >>>   message: helo not verified
 >>> check verify = helo
->>> require: condition test failed in ACL "rcpt"
->>> end of ACL "rcpt": not OK
+>>> require: condition test failed in ACL rcpt
+>>> end of ACL rcpt: not OK
 LOG: H=([V4NET.0.0.1]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo not verified
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -108,14 +108,14 @@ MUNGED: ::1 will be omitted in what follows
 >>> verifying EHLO/HELO argument "[V4NET.0.0.2]"
 >>> matched host address
 >>> using ACL "rcpt"
->>> processing "require" (TESTSUITE/test-config 23)
+>>> processing ACL rcpt "require" (TESTSUITE/test-config 23)
 >>>   message: helo not verified
 >>> check verify = helo
->>> require: condition test succeeded in ACL "rcpt"
->>> processing "deny" (TESTSUITE/test-config 26)
+>>> require: condition test succeeded in ACL rcpt
+>>> processing ACL rcpt "deny" (TESTSUITE/test-config 26)
 >>>   message: helo did verify
->>> deny: condition test succeeded in ACL "rcpt"
->>> end of ACL "rcpt": DENY
+>>> deny: condition test succeeded in ACL rcpt
+>>> end of ACL rcpt: DENY
 LOG: H=([V4NET.0.0.2]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo did verify
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -290,12 +290,12 @@ MUNGED: ::1 will be omitted in what follows
 >>>  list element: @[]
 >>> [V4NET.0.0.99] in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
->>> processing "require" (TESTSUITE/test-config 23)
+>>> processing ACL rcpt "require" (TESTSUITE/test-config 23)
 >>>   message: helo not verified
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "[V4NET.0.0.99]"
->>> require: condition test failed in ACL "rcpt"
->>> end of ACL "rcpt": not OK
+>>> require: condition test failed in ACL rcpt
+>>> end of ACL rcpt: not OK
 LOG: H=([V4NET.0.0.99]) [V4NET.0.0.13] F=<a@b> rejected RCPT <c@d>: helo not verified
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -324,16 +324,16 @@ MUNGED: ::1 will be omitted in what follows
 >>>  list element: @[]
 >>> [V4NET.0.0.13] in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
->>> processing "require" (TESTSUITE/test-config 23)
+>>> processing ACL rcpt "require" (TESTSUITE/test-config 23)
 >>>   message: helo not verified
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "[V4NET.0.0.13]"
 >>> matched host address
->>> require: condition test succeeded in ACL "rcpt"
->>> processing "deny" (TESTSUITE/test-config 26)
+>>> require: condition test succeeded in ACL rcpt
+>>> processing ACL rcpt "deny" (TESTSUITE/test-config 26)
 >>>   message: helo did verify
->>> deny: condition test succeeded in ACL "rcpt"
->>> end of ACL "rcpt": DENY
+>>> deny: condition test succeeded in ACL rcpt
+>>> end of ACL rcpt: DENY
 LOG: H=([V4NET.0.0.13]) [V4NET.0.0.13] F=<a@b> rejected RCPT <c@d>: helo did verify
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -370,7 +370,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "rcpt"
->>> processing "require" (TESTSUITE/test-config 23)
+>>> processing ACL rcpt "require" (TESTSUITE/test-config 23)
 >>>   message: helo not verified
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "rhubarb"
@@ -384,6 +384,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>  rhubarb in "*"?
 >>>   list element: *
 >>>   rhubarb in "*"? yes (matched "*")
->>> require: condition test failed in ACL "rcpt"
->>> end of ACL "rcpt": not OK
+>>> require: condition test failed in ACL rcpt
+>>> end of ACL rcpt: not OK
 LOG: H=(rhubarb) [99.99.99.99] F=<a@b> rejected RCPT <c@d>: helo not verified

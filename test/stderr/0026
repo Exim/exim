@@ -10,26 +10,26 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 61)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmbI-000000005vi-0000 qualify/rewrite: domain missing or malformed
 >>> using ACL "acl_data"
->>> processing "deny" (TESTSUITE/test-config 21)
+>>> processing ACL acl_data "deny" (TESTSUITE/test-config 21)
 >>> l_message: body contains trigger
 >>> check condition = ${if match{$message_body}{trigger}{yes}{no}}
 >>>                 = no
->>> deny: condition test failed in ACL "acl_data"
->>> processing "warn" (TESTSUITE/test-config 23)
+>>> deny: condition test failed in ACL acl_data
+>>> processing ACL acl_data "warn" (TESTSUITE/test-config 23)
 >>> check logwrite = \$h_from: '$h_from:'
 >>>                = $h_from: '@'
 LOG: 10HmbI-000000005vi-0000 $h_from: '@'
->>> warn: condition test succeeded in ACL "acl_data"
->>> processing "require" (TESTSUITE/test-config 24)
+>>> warn: condition test succeeded in ACL acl_data
+>>> processing ACL acl_data "require" (TESTSUITE/test-config 24)
 >>> check verify = header_syntax
->>> require: condition test failed in ACL "acl_data"
->>> end of ACL "acl_data": not OK
+>>> require: condition test failed in ACL acl_data
+>>> end of ACL acl_data: not OK
 LOG: 10HmbI-000000005vi-0000 H=(test) [10.0.0.0] F=<x@y> rejected after DATA: domain missing or malformed: failing address in "From:" header is: @
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -43,15 +43,15 @@ LOG: 10HmbI-000000005vi-0000 H=(test) [10.0.0.0] F=<x@y> rejected after DATA: do
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 61)
+>>> processing inline ACL "accept"
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "acl_data"
->>> processing "deny" (TESTSUITE/test-config 21)
+>>> processing ACL acl_data "deny" (TESTSUITE/test-config 21)
 >>> l_message: body contains trigger
 >>> check condition = ${if match{$message_body}{trigger}{yes}{no}}
 >>>                 = yes
->>> deny: condition test succeeded in ACL "acl_data"
->>> end of ACL "acl_data": DENY
+>>> deny: condition test succeeded in ACL acl_data
+>>> end of ACL acl_data: DENY
 LOG: 10HmbJ-000000005vi-0000 H=(test) [10.0.0.0] F=<x@y> rejected after DATA: body contains trigger

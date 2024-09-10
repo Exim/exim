@@ -10,7 +10,7 @@
 >>>  list element: @
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept" (TESTSUITE/test-config 14)
+>>> processing inline ACL "accept"
 >>> check hosts = test.again.dns
 >>> host in "test.again.dns"?
 >>>  list element: test.again.dns

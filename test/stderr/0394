@@ -12,10 +12,10 @@ LOG: no host name found for IP address V4NET.255.255.255
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
->>> processing "require" (TESTSUITE/test-config 18)
+>>> processing ACL connect "require" (TESTSUITE/test-config 18)
 >>> check verify = reverse_host_lookup
->>> require: condition test failed in ACL "connect"
->>> end of ACL "connect": not OK
+>>> require: condition test failed in ACL connect
+>>> end of ACL connect: not OK
 LOG: H=[V4NET.255.255.255] rejected connection in "connect" ACL: host lookup failed (failed to find host name from IP address)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup?
@@ -31,9 +31,9 @@ LOG: no host name found for IP address V4NET.255.255.255
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
->>> processing "require" (TESTSUITE/test-config 18)
+>>> processing ACL connect "require" (TESTSUITE/test-config 18)
 >>> check verify = certificate/defer_ok
->>> require: condition test error in ACL "connect"
+>>> require: condition test error in ACL connect
 LOG: H=[V4NET.255.255.255] temporarily rejected connection in "connect" ACL: unexpected '/' found in "certificate/defer_ok" (this verify item has no options)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup?
@@ -49,9 +49,9 @@ LOG: no host name found for IP address V4NET.255.255.255
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
->>> processing "require" (TESTSUITE/test-config 18)
+>>> processing ACL connect "require" (TESTSUITE/test-config 18)
 >>> check verify = helo/defer_ok
->>> require: condition test error in ACL "connect"
+>>> require: condition test error in ACL connect
 LOG: H=[V4NET.255.255.255] temporarily rejected connection in "connect" ACL: unexpected '/' found in "helo/defer_ok" (this verify item has no options)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup?
@@ -67,7 +67,7 @@ LOG: no host name found for IP address V4NET.255.255.255
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
->>> processing "require" (TESTSUITE/test-config 18)
+>>> processing ACL connect "require" (TESTSUITE/test-config 18)
 >>> check verify = header_syntax/defer_ok
->>> require: condition test error in ACL "connect"
+>>> require: condition test error in ACL connect
 LOG: H=[V4NET.255.255.255] temporarily rejected connection in "connect" ACL: unexpected '/' found in "header_syntax/defer_ok" (this verify item has no options)

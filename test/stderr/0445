@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
->>> processing "deny" (TESTSUITE/test-config 20)
+>>> processing ACL rcpt "deny" (TESTSUITE/test-config 20)
 >>> check !verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing lp1@x.y
@@ -19,12 +19,12 @@
 >>> calling bad_addresses router
 >>> bad_addresses router forced address failure
 >>> ----------- end verify ------------
->>> deny: condition test succeeded in ACL "rcpt"
->>> end of ACL "rcpt": DENY
+>>> deny: condition test succeeded in ACL rcpt
+>>> end of ACL rcpt: DENY
 LOG: H=(test) [1.2.3.4] sender verify fail for <lp1@x.y>: 
 LOG: H=(test) [1.2.3.4] F=<lp1@x.y> rejected RCPT <zz@x.y>: Sender verify failed
 >>> using ACL "rcpt"
->>> processing "deny" (TESTSUITE/test-config 20)
+>>> processing ACL rcpt "deny" (TESTSUITE/test-config 20)
 >>> check !verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing lp2@x.y
@@ -32,7 +32,7 @@ LOG: H=(test) [1.2.3.4] F=<lp1@x.y> rejected RCPT <zz@x.y>: Sender verify failed
 >>> calling bad_addresses router
 >>> bad_addresses router forced address failure
 >>> ----------- end verify ------------
->>> deny: condition test succeeded in ACL "rcpt"
->>> end of ACL "rcpt": DENY
+>>> deny: condition test succeeded in ACL rcpt
+>>> end of ACL rcpt: DENY
 LOG: H=(test) [1.2.3.4] sender verify fail for <lp2@x.y>: This is a message
 LOG: H=(test) [1.2.3.4] F=<lp2@x.y> rejected RCPT <zz@x.y>: Sender verify failed

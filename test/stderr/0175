@@ -11,7 +11,7 @@
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 18)
+>>> processing ACL check_recipient "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@bad.domain
@@ -34,8 +34,8 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=localhost address=127.0.0.1
 >>> fail_sender router forced address failure
 >>> ----------- end verify ------------
->>> require: condition test failed in ACL "check_recipient"
->>> end of ACL "check_recipient": not OK
+>>> require: condition test failed in ACL check_recipient
+>>> end of ACL check_recipient: not OK
 LOG: H=(test) [V4NET.0.0.0] sender verify fail for <user@bad.domain>: remote host address is the local host
 LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
@@ -51,7 +51,7 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain> rejected RCPT <userx@test.ex>: S
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 18)
+>>> processing ACL check_recipient "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@bad.domain2
@@ -84,8 +84,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=localhost address=127.0.0.1
 >>> ----------- end verify ------------
->>> require: condition test failed in ACL "check_recipient"
->>> end of ACL "check_recipient": not OK
+>>> require: condition test failed in ACL check_recipient
+>>> end of ACL check_recipient: not OK
 LOG: H=(test) [V4NET.0.0.0] sender verify fail for <user@bad.domain2>: fail_sender2 router forced verify failure
 LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
@@ -101,7 +101,7 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: 
 >>>  list element: @[]
 >>> test in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 18)
+>>> processing ACL check_recipient "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@ten-1.test.ex
@@ -144,8 +144,8 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: 
 >>>    ten-1.test.ex in dnssec_request_domains? yes (matched "*")
 >>> routed by lookuphost router
 >>> ----------- end verify ------------
->>> require: condition test succeeded in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 19)
+>>> require: condition test succeeded in ACL check_recipient
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 19)
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -156,6 +156,6 @@ LOG: H=(test) [V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: 
 >>>   end sublist local_domains
 >>>  data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 >>>  test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded in ACL "check_recipient"
->>> end of ACL "check_recipient": ACCEPT
+>>> accept: condition test succeeded in ACL check_recipient
+>>> end of ACL check_recipient: ACCEPT
 LOG: 10HmaX-000000005vi-0000 <= user@ten-1.test.ex H=(test) [V4NET.0.0.0] P=smtp S=sss
