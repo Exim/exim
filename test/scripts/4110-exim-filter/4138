@@ -1,0 +1,22 @@
+# skip_syntax_errors and syntax_errors_to
+touch DIR/test-private
+sudo chown EXIMUSER DIR/test-private
+sudo chmod 0600 DIR/test-private
+#
+exim -odi list@test.ex
+****
+exim -odi list2@test.ex
+Message to list2.
+****
+exim -odi filter@test.ex
+****
+exim -odi nmlist@test.ex
+Message to nmlist.
+****
+exim -odi filter2@test.ex
+Message to filter2.
+****
+exim -odi filter3@test.ex
+Message to filter3.
+****
+no_msglog_check

@@ -40,18 +40,6 @@ r1a:
   file = ${lookup {TESTNUM.$local_part} dsearch,ret=full {DIR/aux-fixed} {$value}fail}
   no_more
 
-r2:
-  driver = redirect
-  skip_syntax_errors
-  local_parts = ^filter
-  syntax_errors_to = postmaster@test.ex
-  syntax_errors_text = "There's an error in your filter file.\n\
-                        The file has been ignored."
-  file = ${lookup {TESTNUM.$local_part} dsearch,ret=full {DIR/aux-fixed} {$value}fail}
-  allow_filter
-  router_home_directory = DIR
-  user = CALLER
-
 r3:
   driver = accept
   transport = t1

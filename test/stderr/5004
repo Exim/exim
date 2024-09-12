@@ -89,19 +89,11 @@ routing userx@test.ex
 --------> r1 router <--------
 local_part=userx domain=test.ex
 calling r1 router
-rda_interpret (string): '# Exim filter\nsave TESTSUITE/test-mail'
-expanded: '# Exim filter
-save TESTSUITE/test-mail'
-search_tidyup called
-changed uid/gid: r1 router (recipient is userx@test.ex)
-  uid=CALLER_UID gid=CALLER_GID pid=p1236
-turned off address rewrite logging (not root or exim in this process)
-data is an Exim filter program
-Filter: start of processing
-Filter: end of processing
-search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=p1236 (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
-rda_interpret: subprocess yield=0 error=NULL
+rda_interpret (string): 'TESTSUITE/test-mail'
+expanded: 'TESTSUITE/test-mail'
+file is not a filter file
+parse_forward_list: TESTSUITE/test-mail
+extract item: TESTSUITE/test-mail
 set transport t1
 r1 router generated TESTSUITE/test-mail
   pipe, file, or autoreply
@@ -128,7 +120,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to TESTSUITE/test-mail <TESTSUITE/test-mail> transport=t1
-  uid=CALLER_UID gid=CALLER_GID pid=p1237
+  uid=CALLER_UID gid=CALLER_GID pid=p1236
   home=NULL current=/
 set_process_info: pppp delivering 10HmaX-000000005vi-0000 to TESTSUITE/test-mail using t1
 appendfile transport entered
@@ -149,7 +141,7 @@ renaming temporary file
 renamed tmp/MAILDIR.mail.test.ex as new/MAILDIR.mail.test.ex
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=p1237 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=p1236 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 journalling TESTSUITE/test-mail:userx@test.ex
 t1 transport returned OK for TESTSUITE/test-mail
 post-process TESTSUITE/test-mail (0)

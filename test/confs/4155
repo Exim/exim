@@ -1,0 +1,49 @@
+# Exim test configuration 4155
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  local_parts = sender
+  transport = t2
+
+r2:
+  driver = redirect
+  allow_filter
+  data = #Exim filter\nmail text rhubarb\nseen finish
+  reply_transport = t1
+  user = CALLER
+  initgroups
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = autoreply
+
+t2:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,1d,10m
+
+# End

@@ -22,9 +22,9 @@ r1:
 r2:
   driver = redirect
   domains = dom1
-  allow_filter
   user = CALLER
-  data = "#Exim filter\n unseen deliver x@dom2"
+  data = x@dom2
+  unseen = true
 
 r3:
   driver = accept

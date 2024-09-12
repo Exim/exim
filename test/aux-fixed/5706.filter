@@ -1,3 +1,3 @@
 # Exim filter
 
-fail "failed in filter file"
+deliver usery@domain1

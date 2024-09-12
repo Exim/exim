@@ -383,13 +383,21 @@ if (*filtertype != FILTER_FORWARD)
 
   if (*filtertype == FILTER_EXIM)
     {
+    const misc_module_info * mi;
+    typedef int (*fn_t)(const uschar *, int, address_item **, uschar **);
+
     if (options & RDO_EXIM_FILTER)
       {
       *error = US"Exim filtering not enabled";
       return FF_ERROR;
       }
-/*XXX*/
-    frc = filter_interpret(data, options, generated, error);
+    if (!(mi = misc_mod_find(US"exim_filter", NULL)))
+      {
+      *error = US"Exim-filtering not available";
+      return FF_ERROR;
+      }
+    frc = (((fn_t *) mi->functions)[EXIM_INTERPRET])
+				      (data, options, generated, error);
     }
   else
     {

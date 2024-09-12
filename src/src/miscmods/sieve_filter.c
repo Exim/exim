@@ -3220,13 +3220,19 @@ while (*filter->pc)
 
     if (exec)
       {
-      address_item *addr;
+      address_item * addr;
       md5 base;
-      uschar digest[16];
-      uschar hexdigest[33];
+      uschar digest[16], hexdigest[33];
       gstring * once;
+      misc_module_info * mi;
+      typedef BOOL (*fn_t)(string_item *, BOOL);
 
-      if (filter_personal(aliases, TRUE))
+      if (!(mi = misc_mod_find(US"exim_filter", NULL)))
+        {
+        filter->errmsg = CUS "test for 'personal': module not available";
+        return -1;
+        }
+      if ((((fn_t *) mi->functions)[EXIM_FILTER_PERSONAL])(aliases, TRUE))
         {
         if (filter_test == FTEST_NONE)
           {

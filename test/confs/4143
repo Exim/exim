@@ -1,0 +1,50 @@
+# Exim test configuration 4143
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+filter:
+  driver = redirect
+  allow_filter
+  file = DIR/aux-var/TESTNUM.filter
+  file_transport = address_file
+  user = CALLER
+
+all:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+  user = CALLER
+
+address_file:
+  driver = appendfile
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

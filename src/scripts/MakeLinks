@@ -102,6 +102,7 @@ for f in dummy.c \
 	pdkim/crypt_ver.h pdkim/pdkim.c pdkim/pdkim.h \
 	pdkim/pdkim_hash.h pdkim/signing.c pdkim/signing.h \
 	dmarc.c dmarc.h dmarc_api.h \
+	exim_filter.c exim_filter_api.h \
 	pam.c pam_api.h \
 	perl.c perl_api.h \
 	radius.c radius_api.h \
@@ -133,7 +134,7 @@ for f in blob.h dbfunctions.h exim.h functions.h globals.h \
   \
   acl.c buildconfig.c base64.c child.c crypt16.c daemon.c dbfn.c debug.c \
   deliver.c directory.c dns.c dnsbl.c drtables.c dummies.c enq.c exim.c \
-  exim_dbmbuild.c exim_dbutil.c exim_lock.c expand.c filter.c filtertest.c \
+  exim_dbmbuild.c exim_dbutil.c exim_lock.c expand.c filtertest.c \
   globals.c hash.c header.c host.c host_address.c ip.c log.c lss.c match.c md5.c moan.c \
   parse.c priv.c proxy.c queue.c rda.c readconf.c receive.c retry.c rewrite.c \
   regex_cache.c rfc2047.c route.c search.c setenv.c environment.c \

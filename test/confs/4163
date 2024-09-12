@@ -1,58 +1,41 @@
 # Exim test configuration 4163
 
-SERVER=
+FUSER=
 
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
-log_selector = +received_recipients +smtp_connection +millisec
-
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept
+system_filter = DIR/aux-fixed/TESTNUM.F
+FUSER
+
 
 # ----- Routers -----
 
 begin routers
 
-discard:
-  driver =		redirect
-  domains =		!test.ex
-  data =		:blackhole:
-
-client:
-  driver =		redirect
-  file =		DIR/aux-fixed/TESTNUM.sieve
+r1:
+  driver = redirect
   allow_filter
-  user =		CALLER
-  file_transport =	local_file
-  errors_to =		""
+  file = DIR/aux-var/TESTNUM.f
+  user = CALLER
+
+r2:
+  driver = accept
+  transport = t1
+
 
 # ----- Transports -----
 
 begin transports
 
-local_file:
-  driver =		appendfile
-  file =		DIR/test-mail/${if eq{$address_file}{inbox} {$local_part} {$address_file}}
-  create_file =		DIR/test-mail
-  delivery_date_add
-  envelope_to_add
-  return_path_add
-
-send_to_server:
-  driver = smtp
-  allow_localhost
-  hosts = 127.0.0.1
-  port = PORT_D
-
-# ----- Retry -----
-
-
-begin retry
-
-* * F,5d,10s
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+  user = CALLER
 
 
 # End

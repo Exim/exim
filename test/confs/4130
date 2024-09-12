@@ -1,0 +1,31 @@
+# Exim test configuration 4130
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+
+# ----- Routers -----
+
+begin routers
+
+filter:
+  driver = redirect
+  allow_filter
+  no_check_local_user
+  file = DIR/aux-var/TESTNUM.filter
+  owners =
+  retry_use_local_part
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,1d
+
+# End

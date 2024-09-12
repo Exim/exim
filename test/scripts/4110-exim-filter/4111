@@ -1,0 +1,50 @@
+# local part prefix
+need_ipv4
+#
+exim -odi page+userx
+Some message text.
+****
+exim -odi page+ux
+Some more message text.
+****
+exim -odi B+userx@Test.Ex
+Text.
+****
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+300 go ahead
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi S+userx@Test.Ex
+More text.
+****
+exim -odi userx-B@Test.Ex X+userx-B@Test.Ex
+****
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+300 go ahead
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi Userx-S@Test.Ex
+More text.
+****

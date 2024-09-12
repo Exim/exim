@@ -567,9 +567,8 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #ifdef EXIM_PERL
 # include "miscmods/perl_api.h"
 #endif
-#ifndef DISABLE_SIEVE
-# include "miscmods/sieve_filter_api.h"
-#endif
+#include "miscmods/exim_filter_api.h"
+#include "miscmods/sieve_filter_api.h"
 
 /* The following stuff must follow the inclusion of config.h because it
 requires various things that are set therein. */

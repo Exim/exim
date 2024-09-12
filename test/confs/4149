@@ -1,0 +1,46 @@
+# Exim test configuration 4149
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+qualify_domain = test.ex
+system_filter = DIR/aux-fixed/TESTNUM.F
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = t1
+  headers_add = ${if !eq{$h_found2:}{}{FOUND-found2: !!}fail}
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  user = CALLER
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+  headers_add = "\n\
+                TO: $h_to:\n\
+                --------------------------------\n\
+                CC: $h_cc:\n\
+                --------------------------------\n\
+                RESENT-TO: $h_resent-to:\n\
+                --------------------------------\n\
+                REPLY-TO: $h_reply-to:\n\
+                --------------------------------\n\
+                SUBJECT: $h_subject:\n\
+                --------------------------------\n\
+                ALL: $message_headers\n\
+                "
+
+# End

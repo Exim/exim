@@ -1,0 +1,54 @@
+# Exim test configuration 4147
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  domains = dom2
+  data = $local_part@dom1
+
+r2:
+  driver = redirect
+  domains = dom1
+  allow_filter
+  user = CALLER
+  data = "#Exim filter\n unseen deliver x@dom2"
+
+r3:
+  driver = accept
+  domains = dom1
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+  user = CALLER
+  envelope_to_add
+
+
+# ----- Retry -----
+
+
+begin retry
+
+*         *        F,1d,15m
+
+# End

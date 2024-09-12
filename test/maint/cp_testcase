@@ -1,0 +1,45 @@
+#! /bin/sh
+#
+# cp_testcase <src_num> <dest_scripts_dir> <dest_num>
+# Run using the test/ dir as current-working-directory.
+# Include leading zeroes in the testcase numbers.
+
+srcnum="${1:?missing src testcase number}"
+dstdir="${2:?missing dest scripts dir}"
+dstnum="${3:? missing dest testcase number}"
+
+if [ -f confs/$dstnum -o -f scripts/*/$dstnum ]
+then
+  echo "testcase $dstnun already exists?" >&2
+  exit 1
+fi
+
+set -x
+cp scripts/*/$srcnum $dstdir/$dstnum
+git add $dstdir/$dstnum
+
+for d in confs log rejectlog paniclog stdin stderr
+do
+  if [ -f "$d/$srcnum" ]
+  then
+    cp "$d/$srcnum" "$d/$dstnum"
+    git add "$d/$dstnum"
+  fi
+done
+
+for d in mail aux-fixed aux-var-src
+do
+  cd $d
+  for f in $srcnum*
+  do
+    if [ -f "$f" ]
+      then
+      suff=${f#$srcnum}
+      cp $f ${dstnum}${suff}
+      git add ${dstnum}${suff}
+      fi
+  done
+  cd ..
+done
+
+rm -f aux-var/$srcnum*

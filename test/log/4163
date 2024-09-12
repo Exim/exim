@@ -1,17 +1,6 @@
-
-******** SERVER ********
-2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
-2017-07-30 18:51:05.712 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
-2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= implcit@test.ex H=(tester) [127.0.0.1] P=smtp S=sss for CALLER@test.ex
-2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 => TESTSUITE/test-mail/CALLER <CALLER@test.ex> R=client T=local_file
-2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= discard@test.ex H=(tester) [127.0.0.1] P=smtp S=sss for CALLER@test.ex
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 => discarded <CALLER@test.ex> R=client
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= identified@test.ex H=(tester) [127.0.0.1] P=smtp S=sss for CALLER@test.ex
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 => TESTSUITE/test-mail/myfolder <CALLER@test.ex> R=client T=local_file
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= redirect@test.ex H=(tester) [127.0.0.1] P=smtp S=sss for CALLER@test.ex
-2017-07-30 18:51:05.712 SMTP connection from (tester) [127.0.0.1] D=q.qqqs closed by QUIT
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 => :blackhole: <fred@some_other_dom.ain> R=discard
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => userz99 <userz@myhost.test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => userz99 <userz@myhost.test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed

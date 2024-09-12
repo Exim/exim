@@ -1,0 +1,45 @@
+# Exim test configuration 4144
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- ACLs -----
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  allow_filter
+  local_part_prefix = *-
+  local_part_prefix_optional
+  local_part_suffix = +*
+  local_part_suffix_optional
+  file = DIR/aux-var/TESTNUM.filter
+  user = EXIMUSER
+  headers_add = "OLP: $original_local_part"
+
+r2:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+  user = CALLER
+
+# End

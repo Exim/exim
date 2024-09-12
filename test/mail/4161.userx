@@ -1,31 +1,13 @@
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
-Return-path: <CALLER@test.ex>
-Envelope-to: userx@test.ex
-Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
-Received: from CALLER by mail.test.ex with local (Exim x.yz)
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaX-000000005vi-0000@mail.test.ex>
+fno: 1
+Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-Test 1
-
-From CALLER@test.ex Tue Mar 02 09:44:33 1999
-Return-path: <CALLER@test.ex>
-Envelope-to: userx@test.ex
-Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
-Received: from CALLER by mail.test.ex with local (Exim x.yz)
-	(envelope-from <CALLER@test.ex>)
-	id 10HmbF-000000005vi-0000
-	for userx@test.ex;
-	Tue, 2 Mar 1999 09:44:33 +0000
-Filter: if true { stop; fileinto "inbox.never"; }
-Message-Id: <E10HmbF-000000005vi-0000@mail.test.ex>
-From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-
-Test 7
+This is a message.
 

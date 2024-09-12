@@ -4,8 +4,6 @@
 
 # ----- Main settings -----
 
-system_filter = DIR/aux-fixed/TESTNUM.filter
-
 event_action = ${acl {logger}}
 
 # ----- ACL -----
@@ -18,11 +16,25 @@ begin acl
 
 begin routers
 
-dump_bounces:
+router_filter:
   driver = redirect
-  senders = :
+  reply_transport = reply
+  local_parts = userx-filter
+  allow_filter
+  data = #Exim filter\n seen mail text "This is an autoreply."
+  user = EXIMUSER
+
+others:
+  driver = redirect
   data = :blackhole:
 
 # ----- Transports -----
+
+begin transports
+
+reply:
+  driver = autoreply
+  to = $reply_address
+  event_action = ${acl {logger}}
 
 # End

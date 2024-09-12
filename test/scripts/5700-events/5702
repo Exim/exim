@@ -1,26 +1,6 @@
-# Raise msg:fail:delivery when an error, originated by a filter, gets ignored.
+# tcp:connect deny
 #
-exim -odq userx@domain1
-Also try to deliver this message to usery via a filter deliver command.
-However that fails. But because of the noerror cmd the error just gets ignored.
+exim -odf userx@domain1
+A deliverable message
 ****
-server PORT_S
-220 ESMTP
-EHLO
-250-OK
-250 HELP
-MAIL
-250 OK
-RCPT
-250 OK
-RCPT
-550 Not that one
-DATA
-354 More...
-.
-250 OK
-QUIT
-220 OK
-****
-exim -qqf
-****
+no_msglog_check

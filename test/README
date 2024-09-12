@@ -1211,7 +1211,7 @@ whose content is fixed, and those whose content needs to be varied according to
 the current environment. The former are kept in the directory aux-fixed. The
 latter are distributed in the directory aux-var-src, and copied with the
 standard substitutions into the directory aux-var at the start of each test
-run.
+run (with TESTNUM from the numeric prefix of the filename is there is one).
 
 Most of the auxiliary files have names that start with a test number,
 indicating that they are specific to that one test. A few fixed files (for

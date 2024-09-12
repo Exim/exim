@@ -1,0 +1,8 @@
+/a/b/c@myhost.test.ex -> /a/b/c
+  transport = tf1
+/x/y/z@myhost.test.ex -> /x/y/z
+  transport = tf2
+/a/b/c/@myhost.test.ex -> /a/b/c/
+  transport = td1
+/a/a/b//@myhost.test.ex -> /a/a/b//
+  transport = td2

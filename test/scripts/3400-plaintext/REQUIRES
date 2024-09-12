@@ -1,1 +1,2 @@
 authenticator plaintext
+support Exim_filter

@@ -1,0 +1,187 @@
+# Exim test configuration 4161
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+trusted_users = CALLER
+
+# ----- Routers -----
+
+begin routers
+
+rb:
+  driver = accept
+  senders = :
+  transport = t2
+
+r0:
+  driver = redirect
+  local_parts = redirected
+  allow_filter
+  user = CALLER
+  file_transport = t1
+  data = "#Sieve filter\n keep;"
+
+r1:
+  driver = redirect
+  local_parts = ^restrict-
+  allow_filter
+  forbid_file
+  skip_syntax_errors
+  data = "#Sieve filter\n$h_filter:"
+  user = CALLER
+  file_transport = t1
+
+r2_8:
+  driver = redirect
+  local_parts = userx8
+  allow_filter
+  data = #Sieve filter\n \
+	require["fileinto","comparator-i;ascii-numeric"]; \
+        if header :comparator "i;ascii-numeric" "X-Sieve" "99" { \
+          fileinto "inbox.JUNK"; \
+          stop; \
+        }
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2_9:
+  driver = redirect
+  local_parts = userx9
+  allow_filter
+  data = #Sieve filter\n \
+	require["fileinto","comparator-i;ascii-numeric"]; \
+        if header :comparator "i;ascii-numeric" "X-Sieve" "98" { \
+          fileinto "inbox.JUNK"; \
+          stop; \
+        }
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2_10:
+  driver = redirect
+  local_parts = userx10
+  allow_filter
+  data = #Sieve filter\n \
+	 require["fileinto","comparator-i;ascii-numeric"]; \
+        if header :comparator "i;ascii-numeric" "X-Sieve" "99" { \
+          fileinto "inbox.JUNK"; \
+          stop; \
+        }
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2_11:
+  driver = redirect
+  local_parts = userx11
+  allow_filter
+  data = #Sieve filter\n \
+	 require["fileinto","comparator-i;ascii-numeric"]; \
+        if header :comparator "i;ascii-numeric" "X-Sieve" "-99" { \
+          fileinto "inbox.JUNK"; \
+          stop; \
+        }
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2_12:
+  driver = redirect
+  local_parts = userx12
+  allow_filter
+  data = #Sieve filter\n \
+	 require["fileinto","comparator-i;ascii-numeric"]; \
+        if header :comparator "i;ascii-numeric" "X-Sieve" "-98" { \
+          fileinto "inbox.JUNK"; \
+          stop; \
+        }
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2_13:
+  driver = redirect
+  local_parts = userx13 : someone13
+  allow_filter
+  data = #Sieve filter\n \
+	 require ["vacation"];  \
+        vacation "I am gone.  Not here.";
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+  sieve_vacation_directory = DIR/test-vacation-directory
+
+r2_14:
+  driver = redirect
+  local_parts = userx14
+  local_part_suffix = -*
+  local_part_suffix_optional
+  allow_filter
+  data = #Sieve filter\n \
+	 require ["envelope","fileinto"];  \
+        if envelope :matches :localpart "to" "*-suffix" { \
+          fileinto "userx-sawsuffix"; \
+          stop;  \
+        }   
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2_15:
+  driver = redirect
+  local_parts = userx_inbox
+  allow_filter
+  data = "#Sieve filter\nkeep;\n"
+  user = CALLER
+  sieve_inbox = inbox.changed
+  file_transport = t1
+
+r2:
+  driver = redirect
+  allow_filter
+  skip_syntax_errors
+  data = "#Sieve filter\n$h_filter:"
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = ${if eq{$address_file}{inbox} \
+              {DIR/test-mail/$local_part} \
+              {${if eq{${substr_0_1:$address_file}}{/} \
+                    {$address_file} \
+                    {DIR/test-mail/$address_file} \
+              }} \
+         }
+  create_file = DIR/test-mail
+  delivery_date_add
+  envelope_to_add
+  return_path_add
+  user = CALLER
+
+t2:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+  delivery_date_add
+  envelope_to_add
+  return_path_add
+  user = CALLER
+
+t3:
+  driver = autoreply
+
+# End

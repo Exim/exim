@@ -1,0 +1,45 @@
+# Exim test configuration 4113
+
+NL=FALSE
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+message_body_newlines = NL
+message_id_header_domain = test.ex
+qualify_domain = test.ex
+# Omit Received: so as to keep the header size fixed
+received_header_text =
+trusted_users = CALLER
+
+
+# ----- Routers -----
+
+begin routers
+
+localuser:
+  driver = accept
+  local_parts = userx
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+  headers_add = "X-size: $message_size\n\
+                 X-body-size: $message_body_size\n\
+                 X-body: $message_body\n\
+                 X-tail: $message_body_end\n\
+                 X-local-user: uid=$local_user_uid gid=$local_user_gid"
+  return_path_add
+  user = CALLER
+
+# End

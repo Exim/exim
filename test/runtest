@@ -1555,7 +1555,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
 
     # various features can be built as dynamic-load modules
-    next if /loading module '(?:arc|dkim|dmarc|pam|perl|radius|spf)'$/;
+    next if /loading module '(?:arc|exim_filter|dkim|dmarc|pam|perl|radius|sieve_filter|spf)'$/;
 
     # Not all platforms build with DKIM enabled
     next if /^DKIM >> Body data for hash, canonicalized/;
@@ -1563,7 +1563,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Not all platforms build with SPF enabled
     next if /(^$time_pid?spf_conn_init|spf_compile\.c)/;
     next if /try option spf_smtp_comment_template$/;
-    next if /^$time_pid?Loaded "(?:dkim|dmarc|spf)"$/;
+    next if /^$time_pid?Loaded "(?:dkim|dmarc|exim_filter|spf)"$/;
 
     # Not all platforms have sendfile support
     next if /^cannot use sendfile for body: no support$/;
@@ -4430,6 +4430,9 @@ foreach $basedir ("aux-var", "dnszones")
       $" = ' ';
       }
 
+    my $testnum = 0;
+    if ($file =~ /^(\d+)/) { $testnum = $1; }
+
     print ">>Copying $basedir-src/$file to $basedir/$outfile\n" if $debug;
     open(IN, "$parm_cwd/$basedir-src/$file") ||
       tests_exit(-1, "Failed to open $parm_cwd/$basedir-src/$file: $!");
@@ -4437,7 +4440,7 @@ foreach $basedir ("aux-var", "dnszones")
       tests_exit(-1, "Failed to open $parm_cwd/$basedir/$outfile: $!");
     while (<IN>)
       {
-      do_substitute(0);
+      do_substitute($testnum);
       print OUT;
       }
     close(IN);

@@ -1,0 +1,21 @@
+# Exim test configuration 4160
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+
+# ----- Routers -----
+
+begin routers
+
+
+# ----- Transports -----
+
+begin transports
+
+
+# End

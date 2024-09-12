@@ -17,7 +17,7 @@ convert_to_real_name:
   allow_defer
   data = "\
     $local_part_prefix${lookup{$local_part}\
-    lsearch{DIR/aux-fixed/0015.realnames}{$value}fail}@$domain"
+    lsearch{DIR/aux-fixed/TESTNUM.realnames}{$value}fail}@$domain"
   local_part_prefix = *+
   local_part_prefix_optional
   retry_use_local_part
@@ -25,7 +25,7 @@ convert_to_real_name:
 #system_aliases:
 #  driver = redirect
 #  allow_defer
-#  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/0015.aliases}}
+#  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.aliases}}
 #  retry_use_local_part
 
 userforward:
@@ -33,7 +33,7 @@ userforward:
   allow_filter
   local_parts = userx
   user = CALLER
-  file = DIR/aux-fixed/0015.filter.userx
+  file = DIR/aux-fixed/TESTNUM.filter.userx
   local_part_prefix = *+
   local_part_prefix_optional
   pipe_transport = address_pipe

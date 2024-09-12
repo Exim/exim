@@ -1,0 +1,57 @@
+# Exim test configuration 4134
+
+exim_path = EXIM_PATH/junk
+keep_environment =
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+system_filter = DIR/aux-fixed/TESTNUM.filter
+system_filter_reply_transport = address_reply
+
+
+# ----- Routers -----
+
+begin routers
+
+all:
+  driver = accept
+  retry_use_local_part
+  transport = local
+
+
+# ----- Transports -----
+
+begin transports
+
+local:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+  user = CALLER
+
+address_reply:
+  driver = autoreply
+  user = EXIMUSER
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

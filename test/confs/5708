@@ -1,32 +1,32 @@
 # Exim test configuration 5708
-# Check for event on dns lookup fail
 
 .include DIR/aux-var/std_conf_prefix
 
-primary_hostname = myhost.test.ex
-
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept verify = helo
+event_action = ${acl {logger}}
 
-event_action = ${acl {accept logwrite = M <$event_name> <$event_data>}}
+# ----- ACL -----
+
+begin acl
+
+.include DIR/aux-fixed/event-logger-acl
 
 # ----- Routers -----
+
 begin routers
-all:
-  driver = accept
-  transport = all
-  errors_to = ""
 
-# ----- Transports -----
-begin transports
-all:
-  driver = smtp
-  hosts = ${if inlist {$domain} {nonexistent.test.ex} {$value}}
-  event_action = ${acl {accept logwrite = T <$event_name> <$event_data>}}
+filter_file_fail:
+  driver = redirect
+  local_parts = userx
+  allow_filter
+  allow_fail
+  file = DIR/aux-fixed/TESTNUM.filter
+  user = EXIMUSER
 
-# ------ Retries ----
-begin retry
-* * F,10m,2d
+dump_bounces:
+  driver = redirect
+  senders = :
+  data = :blackhole:
 
 # End

@@ -1,21 +1,12 @@
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 qualify/rewrite: missing or malformed local part (expected word or "<")
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** >**bad-reply** <userx-filter@domain1> R=router_filter T=reply: filter autoreply generated syntactically invalid recipient
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:fail:delivery
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . refused by fdqn <> local_part <>**bad-reply**> domain <> errstr <filter autoreply generated syntactically invalid recipient>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 >**bad-reply** <userx-filter@domain1>: error ignored
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:complete
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . finished: 10HmaX-000000005vi-0000
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= <> R=10HmaY-000000005vi-0000 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => :blackhole: <userx@domain1> R=others
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 event msg:complete
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 . finished: 10HmaZ-000000005vi-0000
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 => >userx@domain1 <userx-filter@domain1> R=router_filter T=reply
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:delivery
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 . delivery ip <> port <0> fqdn <> local_part <>userx@domain1> domain <domain1> confirmation <> router <router_filter> transport <reply>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:fail:internal
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . local_part <userx> domain <domain1> reason <this filter failed>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** userx@domain1 R=filter_fail: this filter failed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <CALLER@the.local.host.name> R=dump_bounces
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:complete
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 . finished: 10HmaY-000000005vi-0000
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . finished: 10HmaX-000000005vi-0000

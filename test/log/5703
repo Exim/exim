@@ -1,37 +1,12 @@
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=p1234 -qqf
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event tcp:connect
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1]:1111
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event smtp:connect
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . banner <220 ESMTP>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event smtp:ehlo
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . ehlo-resp <250-OK\n250 HELP>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event tcp:close
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:fail:delivery
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . refused by fdqn <127.0.0.1> local_part <usery> domain <domain1> errstr <SMTP error from remote mail server after RCPT TO:<usery@domain1>: 550 Not that one>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** usery@domain1 <userx@domain1> R=route_smtp T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<usery@domain1>: 550 Not that one
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event tcp:connect
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 . [127.0.0.1]:1111
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event tcp:close
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to initial connection
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:host:defer
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 . host deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <CALLER> domain <the.local.host.name> errno <-18> errstr <Remote host closed connection in response to initial connection> router <route_smtp> transport <smtp>
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:defer
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 . message deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <CALLER> domain <the.local.host.name> errno <-18> errstr <Remote host closed connection in response to initial connection> router <route_smtp> transport <smtp>
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 == CALLER@the.local.host.name R=route_smtp T=smtp defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to initial connection
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 ** CALLER@the.local.host.name: retry timeout exceeded
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:fail:delivery
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 . refused by fdqn <127.0.0.1> local_part <CALLER> domain <the.local.host.name> errstr <Remote host closed connection in response to initial connection: retry timeout exceeded>
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 CALLER@the.local.host.name: error ignored
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:complete
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 . finished: 10HmaY-000000005vi-0000
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:complete
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . finished: 10HmaX-000000005vi-0000
-1999-03-02 09:44:33 End queue run: pid=p1234 -qqf
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 M <dns:fail> <DNS_NOMATCH:nonexistent.test.ex:A>
+1999-03-02 09:44:33 H=(nonexistent.test.ex) [127.0.0.1] F=<a@b> rejected RCPT <c@d>
+1999-03-02 09:44:33 M <dns:fail> <DNS_NOMATCH:rhubarb.test.ex:A>
+1999-03-02 09:44:33 H=(badcname.test.ex) [127.0.0.1] F=<a@b> rejected RCPT <c@d>
+1999-03-02 09:44:33 M <dns:fail> <DNS_AGAIN:test.again.dns:A>
+1999-03-02 09:44:33 H=(test.again.dns) [127.0.0.1] F=<a@b> rejected RCPT <c@d>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= a@b H=(localhost) [127.0.0.1] P=smtp S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 T <dns:fail> <DNS_NOMATCH:nonexistent.test.ex:A>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == bad_a@nonexistent.test.ex <bad_A@nonexistent.test.ex> R=all T=all defer (-32): failed to lookup IP address for nonexistent.test.ex

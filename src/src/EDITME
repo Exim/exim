@@ -552,6 +552,17 @@ SUPPORT_DANE=yes
 
 
 #------------------------------------------------------------------------------
+# Compiling with support for Exim filters is the default. To disable this
+# uncomment the line below.
+
+# DISABLE_EXIM_FILTER=yes
+
+# Alternatively, to build the support as a dynamically-loaded module uncomment
+# this line.
+
+# SUPPORT_EXIM_FILTER=2
+
+#------------------------------------------------------------------------------
 # Compiling with support for Sieve filters is the default. To disable this
 # uncomment the line below.
 

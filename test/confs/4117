@@ -1,0 +1,10 @@
+# Exim test configuration 4117
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+# End

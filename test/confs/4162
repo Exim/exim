@@ -1,15 +1,17 @@
 # Exim test configuration 4162
 
-ALLOW=allow_filter
-FORBID=
-
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
 
+
 # ----- Main settings -----
 
-log_selector = +queue_time_overall
+qualify_domain = test.ex
+
+acl_smtp_rcpt = accept
+log_selector = +address_rewrite
+
 
 # ----- Routers -----
 
@@ -17,16 +19,31 @@ begin routers
 
 r1:
   driver = redirect
-  user = EXIMUSER
-  ALLOW
-  FORBID
-  file = ${lookup {TESTNUM.$local_part} dsearch,ret=full {DIR/aux-fixed} {$value}fail}
+  allow_filter
+  file = DIR/aux-fixed/TESTNUM.filter
+  redirect_router = r2
+  user = CALLER
+
+r2:
+  driver = accept
+  transport = t1
 
 
-# ----- Retry -----
+# ----- Transports -----
 
-begin retry
+begin transports
 
-* *    F,1d,1h
+t1:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+
+# ----- Rewrite -----
+
+begin rewrite
+
+*@cam   $local_part@cam.ac.uk
+
 
 # End

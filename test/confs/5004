@@ -15,8 +15,7 @@ begin routers
 
 r1:
   driver = redirect
-  data = "# Exim filter\nsave DIR/test-mail"
-  allow_filter
+  data = "DIR/test-mail"
   file_transport = t1
   user = CALLER
 

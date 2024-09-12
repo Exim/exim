@@ -1,23 +1,4 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=p1234 -qqf
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event tcp:connect
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1]:1111
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event smtp:connect
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . banner <220 ESMTP>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event smtp:ehlo
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . ehlo-resp <250-OK\n250 HELP>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event tcp:close
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 => userx@domain1 R=route_smtp T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:delivery
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . delivery ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> confirmation <250 OK> router <route_smtp> transport <smtp>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** usery@domain1 <userx@domain1> R=route_smtp T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<usery@domain1>: 550 Not that one
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:fail:delivery
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . refused by fdqn <127.0.0.1> local_part <usery> domain <domain1> errstr <SMTP error from remote mail server after RCPT TO:<usery@domain1>: 550 Not that one>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 usery@domain1 <userx@domain1>: error ignored
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:complete
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 . finished: 10HmaX-000000005vi-0000
-1999-03-02 09:44:33 End queue run: pid=p1234 -qqf
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Denying tcp connection
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=127.0.0.1 [127.0.0.1] Event requests alternate response
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 == userx@domain1 R=others T=smtp defer (-58)

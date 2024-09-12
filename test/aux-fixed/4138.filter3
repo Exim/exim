@@ -1,0 +1,6 @@
+# Exim filter
+
+# router_home_directory = DIR/
+
+logfile ${home}test-private
+logwrite "Testing"

@@ -2,9 +2,14 @@
 
 .include DIR/aux-var/std_conf_prefix
 
+
 # ----- Main settings -----
 
+acl_smtp_rcpt = accept
+acl_smtp_data = accept
+
 event_action = ${acl {logger}}
+
 
 # ----- ACL -----
 
@@ -12,33 +17,40 @@ begin acl
 
 .include DIR/aux-fixed/event-logger-acl
 
+conn_deny:
+  accept	!condition =	${if eq {tcp:connect}{$event_name}}
+  deny		logwrite =	Denying tcp connection
+		message =	deny
+
 # ----- Routers -----
 
 begin routers
 
-route_userx:
+dump_bounces:
   driver = redirect
-  local_parts = userx
-  allow_filter
-  file = DIR/aux-fixed/TESTNUM.filter
-  user = EXIMUSER
-  no_more
+  senders = :
+  data = :blackhole:
 
-route_smtp:
+others:
   driver = manualroute
   route_list = * 127.0.0.1 byname
   self = send
   transport = smtp
+  errors_to = ""
   no_more
+
 
 # ----- Transports -----
 
 begin transports
 
 smtp:
-  driver = smtp
-  port = PORT_S
-  hosts_try_fastopen =	:
-  event_action = ${acl {logger}}
+  driver =	smtp
+  port =	PORT_S
+  event_action = ${acl {conn_deny}}
+
+# ----- Retry -----
+begin retry
+* * F,5d,10s
 
 # End

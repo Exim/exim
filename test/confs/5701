@@ -16,25 +16,17 @@ begin acl
 
 begin routers
 
-router_filter:
+filter_fail:
   driver = redirect
-  reply_transport = reply
-  local_parts = userx-filter
+  local_parts = userx
   allow_filter
-  data = #Exim filter\n seen mail text "This is an autoreply."
+  allow_fail
   user = EXIMUSER
+  data = :fail: this filter failed
 
-others:
+dump_bounces:
   driver = redirect
+  senders = :
   data = :blackhole:
-
-# ----- Transports -----
-
-begin transports
-
-reply:
-  driver = autoreply
-  to = $reply_address
-  event_action = ${acl {logger}}
 
 # End

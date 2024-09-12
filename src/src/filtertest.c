@@ -101,7 +101,6 @@ if (!dot_ended && !stdin_feof())
     }
   if (s == message_body_end || s[-1] != '\n') body_linecount++;
   }
-debug_printf("%s %d\n", __FUNCTION__, __LINE__);
 
 message_body[body_len] = 0;
 message_body_size = message_size - header_size;
@@ -140,6 +139,30 @@ while (body_end_len > 0)
       message_body_end[body_end_len] == 0)
     message_body_end[body_end_len] = ' ';
   }
+}
+
+
+
+static int
+exim_filter_interpret(const uschar * filebuf, int options,
+  address_item ** addrp, uschar ** error)
+{
+#ifdef DISABLE_EXIM_FILTER
+  printf("exim: Exim-filtering not available\n");
+  return FF_ERROR;
+#else
+
+const misc_module_info * mi;
+uschar * errstr = NULL;
+typedef int (*fn_t)(const uschar *, int, address_item **, uschar **);
+if (!(mi = misc_mod_find(US"exim_filter", &errstr)))
+  {
+  printf("exim: Exim-filtering not available: %s\n", errstr ? errstr : US"?");
+  return FF_ERROR;
+  }
+return(((fn_t *) mi->functions)[EXIM_INTERPRET])
+			      (filebuf, options, addrp, error);
+#endif
 }
 
 
@@ -202,8 +225,8 @@ filter_type = rda_is_filter(filebuf);
 if (is_system && filter_type == FILTER_FORWARD) filter_type = FILTER_EXIM;
 
 printf("Testing %s file \"%s\"\n\n",
-  (filter_type == FILTER_EXIM)? "Exim filter" :
-  (filter_type == FILTER_SIEVE)? "Sieve filter" :
+  filter_type == FILTER_EXIM ? "Exim filter" :
+  filter_type == FILTER_SIEVE ? "Sieve filter" :
   "forward file",
   filename);
 
@@ -234,13 +257,13 @@ if (filter_type == FILTER_FORWARD)
     return FALSE;
     }
 
-  if (generated == NULL)
+  if (!generated)
     printf("exim: no addresses generated from forward file\n");
 
   else
     {
     printf("exim: forward file generated:\n");
-    while (generated != NULL)
+    while (generated)
       {
       printf("  %s\n", generated->address);
       generated = generated->next;
@@ -264,9 +287,8 @@ if (is_system)
   {
   f.system_filtering = TRUE;
   f.enable_dollar_recipients = TRUE; /* Permit $recipients in system filter */
-  yield = filter_interpret
-    (filebuf,
-    RDO_DEFER|RDO_FAIL|RDO_FILTER|RDO_FREEZE|RDO_REWRITE, &generated, &error);
+  yield = exim_filter_interpret(filebuf,
+      RDO_DEFER|RDO_FAIL|RDO_FILTER|RDO_FREEZE|RDO_REWRITE, &generated, &error);
   f.enable_dollar_recipients = FALSE;
   f.system_filtering = FALSE;
   }
@@ -279,13 +301,14 @@ else if (filter_type == FILTER_SIEVE)
   if (!(mi = misc_mod_find(US"sieve_filter", &errstr)))
     {
     printf("exim: Sieve filtering not available: %s\n", errstr ? errstr : US"?");
-    return FALSE;
+    yield = FF_ERROR;
     }
-  yield = (((fn_t *) mi->functions)[SIEVE_INTERPRET])
-				    (filebuf, RDO_REWRITE, NULL, &generated, &error);
+  else
+    yield = (((fn_t *) mi->functions)[SIEVE_INTERPRET])
+			      (filebuf, RDO_REWRITE, NULL, &generated, &error);
   }
 else
-  yield = filter_interpret(filebuf, RDO_REWRITE, &generated, &error);
+  yield = exim_filter_interpret(filebuf, RDO_REWRITE, &generated, &error);
 
 return yield != FF_ERROR;
 }

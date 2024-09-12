@@ -1221,6 +1221,9 @@ g = string_cat(g, US"Support for:");
 #ifdef WITH_CONTENT_SCAN
   g = string_cat(g, US" Content_Scanning");
 #endif
+#ifndef DISABLE_EXIM_FILTER
+  g = string_cat(g, US" Exim_filter");
+#endif
 #ifndef DISABLE_SIEVE_FILTER
   g = string_cat(g, US" Sieve_filter");
 #endif

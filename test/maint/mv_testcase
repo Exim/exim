@@ -1,0 +1,39 @@
+#! /bin/sh
+#
+# mv_testcase <src_num> <dest_scripts_dir> <dest_num>
+# Run using the test/ dir as current-working-directory.
+# Include leading zeroes in the testcase numbers.
+
+srcnum="${1:?missing src testcase number}"
+dstdir="${2:?missing dest scripts dir}"
+dstnum="${3:? missing dest testcase number}"
+
+if [ -f confs/$dstnum -o -f scripts/*/$dstnum ]
+then
+  echo "testcase $dstnun already exists?" >&2
+  exit 1
+fi
+
+set -x
+git mv scripts/*/$srcnum $dstdir/$dstnum
+
+for d in confs log rejectlog paniclog stdin stderr
+do
+  [ -f "$d/$srcnum" ] && git mv "$d/$srcnum" "$d/$dstnum"
+done
+
+for d in mail aux-fixed aux-var-src
+do
+  cd $d
+  for f in $srcnum*
+  do
+    if [ -f "$f" ]
+      then
+      suff=${f#$srcnum}
+      git mv $f ${dstnum}${suff}
+      fi
+  done
+  cd ..
+done
+
+rm -f aux-var/$srcnum*

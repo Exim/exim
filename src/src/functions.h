@@ -240,11 +240,7 @@ extern int_eximarith_t expand_string_integer(uschar *, BOOL);
 extern void    modify_variable(uschar *, void *);
 
 extern BOOL    fd_ready(int, time_t);
-
-extern int     filter_interpret(const uschar *, int, address_item **, uschar **);
-extern BOOL    filter_personal(string_item *, BOOL);
 extern BOOL    filter_runtest(int, const uschar *, BOOL, BOOL);
-extern BOOL    filter_system_interpret(address_item **, uschar **);
 
 extern uschar * fn_hdrs_added(void);
 extern void    force_fd(int, int);

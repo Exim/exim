@@ -1,12 +1,12 @@
-
-******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 M <dns:fail> <DNS_NOMATCH:nonexistent.test.ex:A>
-1999-03-02 09:44:33 H=(nonexistent.test.ex) [127.0.0.1] F=<a@b> rejected RCPT <c@d>
-1999-03-02 09:44:33 M <dns:fail> <DNS_NOMATCH:rhubarb.test.ex:A>
-1999-03-02 09:44:33 H=(badcname.test.ex) [127.0.0.1] F=<a@b> rejected RCPT <c@d>
-1999-03-02 09:44:33 M <dns:fail> <DNS_AGAIN:test.again.dns:A>
-1999-03-02 09:44:33 H=(test.again.dns) [127.0.0.1] F=<a@b> rejected RCPT <c@d>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= a@b H=(localhost) [127.0.0.1] P=smtp S=sss
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 T <dns:fail> <DNS_NOMATCH:nonexistent.test.ex:A>
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 == bad_a@nonexistent.test.ex <bad_A@nonexistent.test.ex> R=all T=all defer (-32): failed to lookup IP address for nonexistent.test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:fail:internal
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . local_part <userx> domain <domain1> reason <failed in filter file>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** userx@domain1 R=filter_file_fail: failed in filter file
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <CALLER@the.local.host.name> R=dump_bounces
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 . finished: 10HmaY-000000005vi-0000
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 event msg:complete
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 . finished: 10HmaX-000000005vi-0000
