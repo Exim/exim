@@ -17,7 +17,7 @@ fi
 set -x
 git mv scripts/*/$srcnum $dstdir/$dstnum
 
-for d in confs log rejectlog paniclog stdin stderr
+for d in confs log rejectlog paniclog stdout stderr
 do
   [ -f "$d/$srcnum" ] && git mv "$d/$srcnum" "$d/$dstnum"
 done

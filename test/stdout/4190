@@ -1,0 +1,458 @@
+==========
+# Sieve filter
+if address ["From","To"] "marian@abcdefgh.example"
+        { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if address :is "From" "marian@abcdefgh.example"
+        { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if address :is "To" "marian@abcdefgh.example"
+        { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if address :contains "To" "abcdefgh"
+        { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if address :matches "To" "*abc?efgh*"
+        { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if true { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if false { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if allof (false,false) { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if allof (true,false) { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if allof (false,true) { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if allof (true,true) { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if anyof (false,false) { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if anyof (true,false) { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if anyof (false,true) { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if anyof (true,true) { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if not anyof (false,false) { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if not anyof (true,false) { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if not anyof (false,true) { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if not anyof (true,true) { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if header "to" "MARIAN@abcdefgh.example" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header :comparator "i;octet" "to" "MARIAN@abcdefgh.example" { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if header :comparator "i;ascii-casemap" "to" "MARIAN@abcdefgh.example" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+require "envelope";
+if envelope "from" "marian@somenet.example" { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+require "envelope";
+if envelope "from" "offerqn@bpk.example.com" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if exists [ "X-NotHere", "X-Notheretoo" ] { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if exists [ "X-NotHere", "Delivered-To" ] { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if exists [ "From", "Delivered-To" ] { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header :contains "X-NotHere" "" { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if header "Delivered-To" "" { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if header :contains "Delivered-To" "" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header :contains "Delivered-To" "rc@irc.somenet.example" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "Delivered-To" ["irc@irc.somenet.example"] { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if header "Delivered-To" ["irc@irc.somenet.example","irc@01019somenet.example","some.one"] { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if header "Mime-Version" "1.0" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if false { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if true { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if true { discard; } else { keep; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if false { keep; } else { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if false { keep; } elsif true { discard; } else { keep; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if true { discard; } elsif true { keep; } else { keep; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if false { keep; }
+	else
+	{ if true { discard; } else { keep; } }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header :matches "to" "MA*AN@abc*fg?.example" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if not header :matches "to" "MA?AN@abc*fg?.example" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header :matches "to" "*marian@abcdefgh.example" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if not header :matches "to" "?marian@abcdefgh.example" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header :matches "to" "marian@abcdefgh.example*" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if not header :matches "to" "marian@abcdefgh.example?" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header :matches "x-special1" "\\?*\\*" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header :matches "x-special1" "*\0*" { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if not header :matches "x-special1" "*\0*q" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+require "encoded-character";
+if not header :matches "x-special1" "*${hex:00}*" { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if not header :matches "x-special2" "\\?*\\*" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if not header :matches "x-special2" "*\0*" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if size :over 400 {
+            discard;
+            }
+==========
+No implicit keep
+==========
+# Sieve filter
+if size :over 4K {
+            discard;
+            }
+==========
+Implicit keep
+==========
+# Sieve filter
+if size :under 4K { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if size :under 400 { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if false { keep; }
+==========
+Implicit keep
+==========
+# no filter line here
+if unknowntest { keep; }
+==========
+Testing forward file file "test-data"
+
+exim: error in forward file: missing or malformed local part (expected word or "<") in "if unknowntest { keep; }"
+==========
+# Sieve filter
+if test keep; }
+==========
+Sieve error: missing test in line 2
+==========
+# Sieve filter
+if test { keep;
+==========
+Sieve error: missing test in line 2
+==========
+# Sieve filter
+if true { unknownaction; }
+==========
+Sieve error: expecting command or closing brace in line 2
+==========
+# Sieve filter
+if true { fileinto abcdefgh; }
+==========
+Sieve error: missing previous require "fileinto"; in line 2
+==========
+# Sieve filter
+require "fileinto";
+if true { fileinto "abcdefgh"; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header ["to"] [ "marian@abcdefgh.example", "achnee"] { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "to" [ "egal", "achnee" { keep; }
+==========
+Sieve error: missing string list in line 2
+==========
+# Sieve filter
+if header "to","from"] "egal" { keep; }
+==========
+Sieve error: key string list expected in line 2
+==========
+# Sieve filter
+if header ["to","from" "egal" { keep; }
+==========
+Sieve error: missing string list in line 2
+==========
+# Sieve filter
+if header ["to",,"from"] "egal" { keep; }
+==========
+Sieve error: missing string list in line 2
+==========
+# Sieve filter
+if header ["to",] "egal" { keep; }
+==========
+Sieve error: missing string list in line 2
+==========
+# Sieve filter
+if header [,"to"] "egal" { keep; }
+==========
+Sieve error: missing string list in line 2
+==========
+# Sieve filter
+if unknowntest { keep; }
+==========
+Sieve error: missing test in line 2
+==========
+# Sieve filter
+if header :matches "to" "egal" { keep; }
+==========
+Implicit keep
+==========
+# Sieve filter
+if header :unknown "to" "egal" { keep; }
+==========
+Sieve error: header string list expected in line 2
+==========
+# Sieve filter
+#
+require ["fileinto", "envelope"];
+
+if header :matches "X-Warning" "* is listed at list.dsbl.org*"
+            {
+            keep;               # keep in "In" folder
+            }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "x-1" "1" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if not header "x-1" "=?ISO-8859-1?Q?=31?=" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "x-1b" "=?ISO-8859-1?Q?=31=" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "x-b64" "This is BASE64" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "x-b64-broken" "=?iso-8859-1?b?VGhpcyBpcyBCQVNFNjQ?=" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "x-q75total" "0123456789012345678901234567890123456789012345678901234567" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "x-q76total" "=?ISO-8859-1?Q?01234567890123456789012345678901234567890123456789012345678?=" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "X-Wrapped" "eins zwei  drei" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "x-nomimewrap" "=?iso-8859-1?q?abc def  ghi?=" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "subject" "abcdefghi" { discard; }
+==========
+No implicit keep
+==========
+# Sieve filter
+if header "x-mixed" "abc def" { discard; }
+==========
+No implicit keep
+==========
+#Sieve filter
+if true { stop; fileinto "inbox.never"; }
+==========
+Implicit keep

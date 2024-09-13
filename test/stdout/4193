@@ -1,0 +1,80 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> HELO tester
+??? 250
+<<< 250 myhost.test.ex Hello tester [127.0.0.1]
+>>> MAIL FROM:<implcit@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<CALLER@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> From: <good@test.ex>
+>>> Subject: this should be accepted and filed
+>>> 
+>>> a single body line
+>>> .
+??? 250
+<<< 250 OK id=10HmaX-000000005vi-0000
+>>> RSET
+??? 250
+<<< 250 Reset OK
++++ 1
+>>> MAIL FROM:<discard@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<CALLER@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> From: <coyote@test.ex>
+>>> Subject: this should be discarded by the filter
+>>> .
+??? 250
+<<< 250 OK id=10HmaY-000000005vi-0000
+>>> RSET
+??? 250
+<<< 250 Reset OK
++++ 1
+>>> MAIL FROM:<identified@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<CALLER@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> From: <spot_this@test.ex>
+>>> Subject: this should be delivered to a speicifc place by the filter
+>>> .
+??? 250
+<<< 250 OK id=10HmaZ-000000005vi-0000
+>>> RSET
+??? 250
+<<< 250 Reset OK
++++ 1
+>>> MAIL FROM:<redirect@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<CALLER@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> From: <redirect@test.ex>
+>>> Subject: this should be redirected by the filter to a different address
+>>> .
+??? 250
+<<< 250 OK id=10HmbA-000000005vi-0000
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
