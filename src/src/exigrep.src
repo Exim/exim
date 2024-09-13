@@ -379,3 +379,5 @@ This  manual  page  was stitched together from spec.txt by Andreas Metzler L<ame
 and updated by Heiko Schlittermann L<hs@schlittermann.de>.
 
 =cut
+
+# vim:ft=perl:

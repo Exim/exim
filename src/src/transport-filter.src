@@ -95,4 +95,5 @@ while (<STDIN>)
   printf(STDOUT "%s\n", $_);
   }
 
+# vim:ft=perl:
 # End

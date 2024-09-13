@@ -215,3 +215,5 @@ sub msg_utc() {
 	while($#c >= 0) { $s = $s * $base + $tab62[ord(shift @c) - ord('0')] }
 	return $s;
 }
+
+# vim:ft=perl:

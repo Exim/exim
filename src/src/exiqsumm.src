@@ -183,4 +183,5 @@ printf("%5d  %.6s  %6s  %6s  %.80s\n",
   $count, &print_volume_rounded($volume), $max_age, $min_age, "TOTAL");
 print "\n";
 
+# vim:ft=perl:
 # End

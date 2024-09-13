@@ -626,3 +626,5 @@ L<exim(8)>
 L<Exim spec.txt chapter 4|https://exim.org/exim-html-current/doc/html/spec_html/ch-how_exim_receives_and_delivers_mail.html#SECTmessiden>
 
 =cut
+
+# vim:ft=perl:

@@ -1,4 +1,4 @@
-#!PERL_COMMAND
+#! PERL_COMMAND
 # Copyright (c) 2023 The Exim Maintainers
 # SPDX-License-Identifier: GPL-2.0-or-later
 # See the file NOTICE for conditions of use and distribution.
@@ -7,59 +7,64 @@
 # around the 4.97 transition
 
 
-# This variables should be set by the building process
-my $spool = 'SPOOL_DIRECTORY';  # may be overridden later
-
 use strict;
 use warnings;
-use Getopt::Std;
+use Fcntl qw(:DEFAULT :seek);
+use File::Basename;
 use File::Find;
-use Fcntl;
-use File::FcntlLock;
+use Getopt::Long;
 use IO::Handle;
 
 
-my %opt;
-my $mode_upgrade;
-my $id;
+my $ME = basename($0);
+my $help = <<"EOF";
+Utility for one-time down/upgrade of Exim message-id formats
+in spool files.  Only the filenames and first-line ID tag values
+are affected; not message content such as Message-ID fields.
+Only -H, -D and -J files are handled.
 
-my $b62 = '[0-9A-Za-z]';
+Usage: $ME [-d | -u | -h | -v] [spooldir]
 
-if (  !getopts('hudv', \%opt)
-   || $opt{h}
-   || !$opt{v} && !$opt{u} && !$opt{d}
-   ) {
-  &help; exit 1;
-}
-if ($opt{v}) {
+	-d --downgrade downgrade mode
+	-h --help      help message
+	-u --upgrade   upgrade mode
+	-v --version   show version and exit cleanly
+	--verbose      more output about what's going on
+	--force        force overwriting (may be required after failure)
+	--dry          dry run (do file operations, but cleanup and keep the old files)
+
+Exactly one of -d|--downgrade or -u|--upgrade must be given.
+The spool directory defaults to the build-time value,
+or can be given as a command-line argument.
+EOF
+
+GetOptions(\my %opt,
+        'help|h!',
+        'version|v!',
+        'upgrade|u!',
+        'downgrade|d!',
+        'force!',
+        'verbose!',
+        'dry!',
+) or print STDERR $help and exit(1);
+
+if ($opt{version}) {
     print "exim_id_update:\n",
           "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
           "perl(runtime): $]\n";
     exit 0;
 }
 
-$spool = $ARGV[0] if ($ARGV[0]);
-$mode_upgrade = $opt{u};
+print $help and exit 0 if $opt{help};
 
-sub help(){
-  print <<'EOF'
-Utility for one-time down/upgrade of Exim message-id formats
-in spool files.  Only the filenames and first-line ID tag values
-are affected; not message content such as Message-ID fields.
-Only -H, -D and -J files are handled.
+# No help requested, do further option processing
+my $spool = $ARGV[0] // 'SPOOL_DIRECTORY'; # This variable should be set by the building process
 
-Syntax:  exim_id_update [-d | -u | -h | -v] [spooldir]
+die "$ME: --upgrade and --downgrade are mutually exclusive\n" if $opt{upgrade} && $opt{downgrade};
+die "$ME: one of --upgrade or --downgrade is required\n" if !$opt{upgrade} && !$opt{downgrade};
 
-	-d	Downgrade mode
-	-h	This help message
-	-u	Upgrade mode
-	-v	Version
-
-Exactly one of -d or -u must be given.
-The spool directory defaults to the build-time value,
-or can be given as a command-line argument.
-EOF
-}
+require File::FcntlLock;
+File::FcntlLock->import;
 
 # For downgrade mode:
 # - Check exim not running
@@ -110,90 +115,91 @@ EOF
 #     remove old -D
 #     unlock new -D
 #
+#
+my $id;
+my $pattern = do {
+        # setup the pattern, creating match groups already
+        my $b62 = qr/(?i:[\da-z])/; # one of the base62 characters
+        $opt{upgrade} ? qr/^(?<prefix>($b62{6})-($b62{6})-($b62{2}))-D$/ : qr/^(?<prefix>($b62{6})-$b62{5}($b62{6})-($b62{2})$b62{2})-D$/;
+};
 
-chdir $spool or die "failed cd to $spool";
-find( sub {
-	  do_file($_)
-	    if ($_ =~ ($mode_upgrade ? "${b62}{6}-${b62}{6}-${b62}{2}-D" : "${b62}{6}-${b62}{11}-${b62}{4}-D") );
-	  },
-      '.' );
+chdir $spool or die "chdir to $spool: $!\n";
+find( sub { do_file($_) if -f }, '.');
 exit 0;
 
 
 sub do_file {
-  my $old_dfile = shift;
-  my $old_prefix = $old_dfile;
-  my ($old_hfile , $new_prefix);
-  my ($d_old, $d_new);
-  my $line;
+  (my $old_dfile = shift) =~ /$pattern/ or return;
 
-  $old_prefix =~ s/-D$//;
-  $old_hfile = $old_prefix . '-H';
+  # $1…$4 are set by the regexp match
+  my $old_prefix = $+{prefix};
+  my $new_prefix = $opt{upgrade}
+        ? "$2-00000$3-${4}00"
+        : "$2-$3-$4";
 
-  # The -H file must also exist
-  return if (! -e $old_hfile);
+  my $old_hfile = "$old_prefix-H";
 
-  $new_prefix = $old_prefix;
-  if ($mode_upgrade) {
-    $new_prefix =~ s/^([^-]*)-([^-]*)-(.*)$/$1-00000$2-${3}00/;
-  } else {
-    $new_prefix =~ s/^([^-]*)-.....([^-]*)-(..)..$/$1-$2-${3}/;
-  }
+  # The -H file must also exist, otherwise something is broken
+  return if not -e $old_hfile;
+
+  my $old_jfile = "$old_prefix-J";
+  my $new_dfile = "$new_prefix-D";
+  my $new_hfile = "$new_prefix-H";
+  my $new_jfile = "$new_prefix-J";
+
+  print "$old_prefix -> $new_prefix\n" if $opt{verbose};
 
   ####### create the new -D file
+  open my $d_old, '+<', $old_dfile or die "Can't open file: $!\n";
 
-  open $d_old, '+<', $old_dfile
-      or die "Can't open file: $!\n";
-
-  # lock the old -D file
-  dfile_lock($d_old, $mode_upgrade ? 16 : 23);
-  # seek past the first line
+  # lock the old -D file and seek past the first line
+  lock_range($d_old, 2 + length($old_prefix)); # 2 for -D
   <$d_old>;
 
-  # create the new -D file
-  $d_new = f_create($new_prefix . '-D');
-
-  # lock the new -D file
-  dfile_lock($d_new, $mode_upgrade ? 23 : 16);
+  # create and lock the new -D file
+  my $d_new = f_create($new_dfile, $old_dfile);
+  lock_range($d_new, 2 + length($new_prefix)); # 2 for -D
 
   # write the new message-id to the first line
+  # and copy the rest of the -D file
   print $d_new "$new_prefix-D\n";
-
-  # copy the rest of the -D file
-  while ($line = <$d_old>) {
-    print $d_new $line;
-  }
+  print $d_new $_ while <$d_old>;
 
   ####### create the new -H file
-
-  open my $h_old, '<', $old_hfile
-      or die "Can't open file: $!\n";
+  open my $h_old, '<', $old_hfile or die "Can't open file: $!\n";
   <$h_old>;
 
-  my $h_new = f_create($new_prefix . '-H');
+  my $h_new = f_create($new_hfile, $old_hfile);
   print $h_new "$new_prefix-H\n";
-  while ($line = <$h_old>) {
-    print $h_new $line;
+  print $h_new $_ while <$h_old>;
+
+  if ($opt{dry}) {
+        unlink $new_hfile, $new_dfile; # make sure they're removed, even if we die during close
+        close $h_new or die "close $new_hfile: $!\n";
+        close $d_new or die "close $new_dfile: $!\n";
+        return; # this will close the all file handles that are still open (and release their locks)
   }
 
   ###### rename a journal file if it exists
-
-  rename $old_prefix . '-J', $new_prefix . '-J' if (-e $old_prefix . '-J');
+  rename $old_jfile => $new_jfile
+        or $!{ENOENT}
+        or die "Can't rename $old_jfile to $new_jfile: $!\n";
 
   ###### tidy up
+  # close the files we wrote, to be sure that there's nothing wrong
+  # the locks are released implicitly by closing the file handles.
+  close $h_new or die "$h_new: $!\n";
+  close $d_new or die "$d_new: $!\n";
 
-  close $h_old;
-  unlink $old_hfile or die "failed to remove $old_hfile";
-  close $d_old;
-  unlink $old_dfile or die "failed to remove $old_dfile";
+  unlink $old_hfile or die "failed to remove $old_hfile: $!\n";
+  unlink $old_dfile or die "failed to remove $old_dfile: $!\n";
 
-  dfile_unlock($d_new, $mode_upgrade ? 23 : 16);
-  close $d_new;
+  # no need to explicitly close the $d_old, $h_old, they're closed
+  # automatically when they go out of scope. And the locks are released
+  # by the OS after closing the files.
 }
 
-
-
-sub dfile_lock {
+sub lock_range {
   my $fh = shift;
   my $nbytes = shift;
   my $fs = new File::FcntlLock;
@@ -207,25 +213,14 @@ sub dfile_lock {
       or die "Locking failed: " . $fs->error . "\n";
 }
 
-sub dfile_unlock {
-  my $fh = shift;
-  my $nbytes = shift;
-  my $fs = new File::FcntlLock;
-
-  $fs->l_type( F_UNLCK );
-  $fs->l_whence( SEEK_CUR );
-  $fs->l_start( 0 );
-  $fs->l_len( $nbytes );
-  $fs->lock( $fh, F_SETLK )
-      or die "Unlocking failed: " . $fs->error . "\n";
-}
-
 sub f_create {
-  my $filename = shift;
-  sysopen(my $fh, $filename, O_RDWR|O_CREAT|O_EXCL)
+  my ($filename, $reference) = @_;
+  sysopen(my $fh, $filename, O_RDWR|O_CREAT| ($opt{force} ? 0 : O_EXCL))
       or die "Can't create $filename: $!";
-  $fh->autoflush(1);
-  #
-  # TODO: chown, chgrp exim; chmod 0640
+  my ($perms, $uid, $gid) = (stat $reference)[2,4,5] or die "Can't stat reference $reference: $!\n";
+  chown $uid, $gid => $fh or die "chown $filename: $!\n";
+  chmod $perms & 07777 => $fh or die "chmod $filename: $!\n";
   return $fh;
 }
+
+# vim:ft=perl:

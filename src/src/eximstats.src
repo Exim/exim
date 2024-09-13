@@ -4249,4 +4249,5 @@ if ($xls_fh) {
 }
 
 
+# vim:ft=perl:
 # End of eximstats
