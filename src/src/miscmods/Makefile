@@ -1,6 +1,6 @@
 # Make file for building Exim's lookup modules.
 # This is called from the main make file, after cd'ing
-# to the misc_modulessubdirectory.
+# to the misc_modules subdirectory.
 #
 # Copyright (c) The Exim Maintainers 2024
 
@@ -10,6 +10,7 @@
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
+# Ensure a non-empty .a since some platforms complain
 OBJ += dummy.o
 
 all:		miscmods.a $(MODS)
@@ -44,11 +45,24 @@ radius.o radius.so:		$(HDRS) radius.c
 sieve_filter.o sieve_filter.so:	$(HDRS) sieve_filter.c
 spf.o   spf.so:			$(HDRS) spf.h spf.c
 
+# We need a single .o because that's what scripts/Configure-Makefile
+# understands and fills in to $(OBJ).
+# Try desparately to get the Solaris cc/ld to build one.
+#dkim.o:
+#	@echo "$(CC) dkim.c dkim_transport.c pdkim.c signing.c"
+#	$(FE)$(CC) -r $(LDFLAGS_PARTIAL) -o $@ $(CFLAGS) $(INCLUDE) \
+#		dkim.c dkim_transport.c pdkim.c signing.c
 dkim.o:
 	@echo "$(CC) dkim.c dkim_transport.c pdkim.c signing.c"
-	$(FE)$(CC) -r $(LDFLAGS_PARTIAL) -o $@ $(CFLAGS) $(INCLUDE) \
-		dkim.c dkim_transport.c pdkim.c signing.c
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) dkim.c
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) dkim_transport.c
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) pdkim.c
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) signing.c
+	$(FE)mv dkim.o dkim_tmp.o
+	$(FE)ld -r -o dkim.o $(LDFLAGS_PARTIAL) \
+		dkim_tmp.o dkim_transport.o pdkim.o signing.o
 
+# Similarly, we want a single .so for the dynamic-load module
 dkim.so:
 	@echo "$(CC) -shared dkim.c dkim_transport.c pdkim.c signing.c"
 	$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) -o $@ \
