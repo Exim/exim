@@ -110,6 +110,7 @@ return TRUE;
 
 
 
+#ifdef EXPERIMENTAL_ARC
 /* Prepend ARC-signing headers to given set of headers
 
 Arguments:
@@ -134,6 +135,7 @@ if (mi)
 *errstr_p = US"failed to find arc module";
 return NULL;
 }
+#endif
 
 
 

@@ -2132,13 +2132,13 @@ return arc_state;
 /* Module API */
 
 static void * arc_functions[] = {
-  [ARC_VERIFY] =	acl_verify_arc,
-  [ARC_HEADER_FEED] =	arc_header_feed,
-  [ARC_STATE_IS_PASS] =	arc_is_pass,
-  [ARC_SIGN_INIT] =	arc_sign_init,
-  [ARC_SIGN] =		arc_sign,
+  [ARC_VERIFY] =	(void *) acl_verify_arc,
+  [ARC_HEADER_FEED] =	(void *) arc_header_feed,
+  [ARC_STATE_IS_PASS] =	(void *) arc_is_pass,
+  [ARC_SIGN_INIT] =	(void *) arc_sign_init,
+  [ARC_SIGN] =		(void *) arc_sign,
 # ifdef SUPPORT_DMARC
-  [ARC_ARCSET_INFO] =	arc_arcset_string,
+  [ARC_ARCSET_INFO] =	(void *) arc_arcset_string,
 # endif
 };
 

@@ -2644,8 +2644,8 @@ return yield;
 /* Module API */
 
 static void * exim_functions[] = {
-  [EXIM_INTERPRET] =		filter_interpret,
-  [EXIM_FILTER_PERSONAL] =	filter_personal,
+  [EXIM_INTERPRET] =		(void *) filter_interpret,
+  [EXIM_FILTER_PERSONAL] =	(void *) filter_personal,
 };
 
 misc_module_info exim_filter_module_info =

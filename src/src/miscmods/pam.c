@@ -206,7 +206,7 @@ return ERROR;
 /* Module API */
 
 static void * pam_functions[] = {
-  [RADIUS_AUTH_CALL] =	auth_call_pam,
+  [PAM_AUTH_CALL] =	(void *) auth_call_pam,
 };
 
 misc_module_info pam_module_info =

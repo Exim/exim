@@ -208,8 +208,8 @@ call_perl_cat(gstring * yield, uschar **errstrp, uschar *name, uschar **arg)
 /* Module API */
 
 static void * perl_functions[] = {
-  [PERL_STARTUP] =	init_perl,
-  [PERL_CAT] =		call_perl_cat,
+  [PERL_STARTUP] =	(void *) init_perl,
+  [PERL_CAT] =		(void *) call_perl_cat,
 };
 
 misc_module_info perl_module_info =

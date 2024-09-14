@@ -936,18 +936,20 @@ static int
 pdkim_header_complete(pdkim_ctx * ctx)
 {
 gstring * g = ctx->cur_header;
-const misc_module_info * mi;
-typedef const uschar * (*fn_t)(gstring *, BOOL);
 
 if (gstring_length(g) > 1)
   gstring_trim_trailing(g, '\r');
 (void) string_from_gstring(g);
 
 #ifdef EXPERIMENTAL_ARC
-/* Feed the header line also to ARC processing */
-if ((mi = misc_mod_findonly(US"arc")))
-  (((fn_t *) mi->functions)[ARC_HEADER_FEED])
+  /* Feed the header line also to ARC processing */
+  {
+  const misc_module_info * mi;
+  typedef const uschar * (*fn_t)(gstring *, BOOL);
+  if ((mi = misc_mod_findonly(US"arc")))
+    (((fn_t *) mi->functions)[ARC_HEADER_FEED])
 					  (g, !(ctx->flags & PDKIM_MODE_SIGN));
+  }
 #endif
 
 if (++ctx->num_headers > PDKIM_MAX_HEADERS) goto BAIL;

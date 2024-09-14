@@ -786,9 +786,9 @@ static optionlist dmarc_options[] = {
 };
 
 static void * dmarc_functions[] = {
-  [DMARC_PROCESS] =	dmarc_process,
-  [DMARC_EXPAND_QUERY] = dmarc_exim_expand_query,
-  [DMARC_STORE_DATA] =	dmarc_store_data,
+  [DMARC_PROCESS] =	(void *) dmarc_process,
+  [DMARC_EXPAND_QUERY] = (void *) dmarc_exim_expand_query,
+  [DMARC_STORE_DATA] =	(void *) dmarc_store_data,
 };
 
 /* dmarc_forensic_sender is provided for visibility of the the option setting

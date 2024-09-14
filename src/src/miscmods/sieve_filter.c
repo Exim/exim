@@ -3627,8 +3627,8 @@ for (const uschar ** pp = exim_sieve_extension_list; *pp; ++pp)
 /* Module API */
 
 static void * sieve_functions[] = {
-  [SIEVE_INTERPRET] =	sieve_interpret,
-  [SIEVE_EXTENSIONS] =	sieve_extensions,
+  [SIEVE_INTERPRET] =	(void *) sieve_interpret,
+  [SIEVE_EXTENSIONS] =	(void *) sieve_extensions,
 };
 
 misc_module_info sieve_filter_module_info =

@@ -126,6 +126,7 @@ return NULL;	/*XXX better error detail?  logging? */
 
 
 
+#ifdef EXPERIMENTAL_ARC
 /* Module API:  Lookup a DNS DKIM record and parse the pubkey.
 
 Arguments:
@@ -161,7 +162,6 @@ return p->srvtype;
 
 
 
-#ifdef EXPERIMENTAL_ARC
 /* Return:
 	OK	verify succesful
 	FAIL	verify did not pass
@@ -1302,34 +1302,34 @@ static optionlist dkim_options[] = {
 };
 
 static void * dkim_functions[] = {
-  [DKIM_VERIFY_FEED] =		dkim_exim_verify_feed,
-  [DKIM_VERIFY_PAUSE] =		dkim_exim_verify_pause,
-  [DKIM_VERIFY_FINISH] =	dkim_exim_verify_finish,
-  [DKIM_ACL_ENTRY] =		dkim_exim_acl_entry,
-  [DKIM_VERIFY_LOG_ALL] =	dkim_exim_verify_log_all,
-  [DKIM_VDOM_FIRSTPASS] =	dkim_exim_vdom_firstpass,
+  [DKIM_VERIFY_FEED] =		(void *) dkim_exim_verify_feed,
+  [DKIM_VERIFY_PAUSE] =		(void *) dkim_exim_verify_pause,
+  [DKIM_VERIFY_FINISH] =	(void *) dkim_exim_verify_finish,
+  [DKIM_ACL_ENTRY] =		(void *) dkim_exim_acl_entry,
+  [DKIM_VERIFY_LOG_ALL] =	(void *) dkim_exim_verify_log_all,
+  [DKIM_VDOM_FIRSTPASS] =	(void *) dkim_exim_vdom_firstpass,
 
-  [DKIM_SIGNER_ISINLIST] =	dkim_exim_signer_isinlist,
-  [DKIM_STATUS_LISTMATCH] =	dkim_exim_status_listmatch,
+  [DKIM_SIGNER_ISINLIST] =	(void *) dkim_exim_signer_isinlist,
+  [DKIM_STATUS_LISTMATCH] =	(void *) dkim_exim_status_listmatch,
 
-  [DKIM_SETVAR] =		dkim_exim_setvar,
-  [DKIM_EXPAND_QUERY] =		dkim_exim_expand_query,
+  [DKIM_SETVAR] =		(void *) dkim_exim_setvar,
+  [DKIM_EXPAND_QUERY] =		(void *) dkim_exim_expand_query,
 
-  [DKIM_TRANSPORT_INIT] =	dkim_exim_sign_init,
-  [DKIM_TRANSPORT_WRITE] =	dkim_transport_write_message,
+  [DKIM_TRANSPORT_INIT] =	(void *) dkim_exim_sign_init,
+  [DKIM_TRANSPORT_WRITE] =	(void *) dkim_transport_write_message,
 
 #ifdef SUPPORT_DMARC
-  [DKIM_SIGS_LIST] =		dkim_sigs_list,
+  [DKIM_SIGS_LIST] =		(void *) dkim_sigs_list,
 #endif
 #ifdef EXPERIMENTAL_ARC
-  [DKIM_HASHNAME_TO_TYPE] =	dkim_hashname_to_type,
-  [DKIM_HASHTYPE_TO_METHOD] =	dkim_hashtype_to_method,
-  [DKIM_HASHNAME_TO_METHOD] =	dkim_hashname_to_method,
-  [DKIM_SET_BODYHASH] =		dkim_set_bodyhash,
-  [DKIM_DNS_PUBKEY] =		dkim_exim_parse_dns_pubkey,
-  [DKIM_SIG_VERIFY] =		dkim_exim_sig_verify,
-  [DKIM_HEADER_RELAX] =		pdkim_relax_header_n,
-  [DKIM_SIGN_DATA] =		dkim_sign_blob,
+  [DKIM_HASHNAME_TO_TYPE] =	(void *) dkim_hashname_to_type,
+  [DKIM_HASHTYPE_TO_METHOD] =	(void *) dkim_hashtype_to_method,
+  [DKIM_HASHNAME_TO_METHOD] =	(void *) dkim_hashname_to_method,
+  [DKIM_SET_BODYHASH] =		(void *) dkim_set_bodyhash,
+  [DKIM_DNS_PUBKEY] =		(void *) dkim_exim_parse_dns_pubkey,
+  [DKIM_SIG_VERIFY] =		(void *) dkim_exim_sig_verify,
+  [DKIM_HEADER_RELAX] =		(void *) pdkim_relax_header_n,
+  [DKIM_SIGN_DATA] =		(void *) dkim_sign_blob,
 #endif
 };
 
