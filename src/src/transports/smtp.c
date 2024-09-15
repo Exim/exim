@@ -5237,7 +5237,10 @@ if (max_received_linelength > ob->message_linelength_limit)
       addr->transport_return = PENDING_DEFER;
 
   set_errno_nohost(addrlist, ERRNO_SMTPFORMAT,
-    US"message has lines too long for transport", FAIL, TRUE, &now);
+    string_sprintf("message has lines too long for transport "
+		    "(received %d, limit %d)",
+		    max_received_linelength, ob->message_linelength_limit),
+		  FAIL, TRUE, &now);
   goto END_TRANSPORT;
   }
 
