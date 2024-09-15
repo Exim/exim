@@ -1852,7 +1852,7 @@ LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: ass
 >>> dnslists: using result of previous lookup
 LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: returned DEFER
 >>> warn: condition test deferred in ACL acl_44_44_44
-LOG: H=(test) [44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferred
+LOG: H=(test) [44.44.44.1] Warning: ACL 'warn' statement skipped (in ACL acl_44_44_44 at line 195 of TESTSUITE/test-config): condition test deferred
 >>> processing ACL acl_44_44_44 "accept" (TESTSUITE/test-config 196)
 >>> accept: condition test succeeded in ACL acl_44_44_44
 >>> end of ACL acl_44_44_44: ACCEPT

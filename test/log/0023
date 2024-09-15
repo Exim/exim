@@ -19,7 +19,7 @@
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= userx@test.ex H=(test) [56.56.56.56] U=CALLER P=smtp S=sss
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 => cond-true <cond-true@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
-1999-03-02 09:44:33 H=(test) [56.56.56.56] U=CALLER Warning: ACL "warn" statement skipped: condition test deferred: invalid "condition" value "rhubarb"
+1999-03-02 09:44:33 H=(test) [56.56.56.56] U=CALLER Warning: ACL 'warn' statement skipped (in ACL acl_56_56_56 at line 204 of TESTSUITE/test-config): condition test deferred: invalid "condition" value "rhubarb"
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= userx@test.ex H=(test) [56.56.56.56] U=CALLER P=smtp S=sss
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 => cond-rhubarb <cond-rhubarb@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed

@@ -4807,10 +4807,18 @@ while ((acl_current = acl))
       if (cond == OK)
 	acl_warn(where, *user_msgptr, *log_msgptr);
       else if (cond == DEFER && LOGGING(acl_warn_skipped))
-	log_write(0, LOG_MAIN, "%s Warning: ACL \"warn\" statement skipped: "
-	  "condition test deferred%s%s", host_and_ident(TRUE),
-	  *log_msgptr ? US": " : US"",
-	  *log_msgptr ? *log_msgptr : US"");
+	if (config_lineno > 0)
+	  log_write(0, LOG_MAIN,
+	    "%s Warning: ACL 'warn' statement skipped (in %s at line %d of %s):"
+	    " condition test deferred%s%s",
+	    host_and_ident(TRUE), acl_name, config_lineno, config_filename,
+	    *log_msgptr ? US": " : US"", *log_msgptr ? *log_msgptr : US"");
+	else
+	  log_write(0, LOG_MAIN,
+	    "%s Warning: ACL 'warn' statement skipped (in %s):"
+	    " condition test deferred%s%s",
+	    host_and_ident(TRUE), acl_name,
+	    *log_msgptr ? US": " : US"", *log_msgptr ? *log_msgptr : US"");
       *log_msgptr = *user_msgptr = NULL;  /* In case implicit DENY follows */
       break;
 

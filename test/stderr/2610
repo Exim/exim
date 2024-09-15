@@ -512,7 +512,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   ╰───error message: lookup of "servers=127.0.0.1::PORT_N/test/root/pass; select name from them where id = 'c'" gave DEFER: MySQL server "127.0.0.1:1223/test" is tainted
 01:01:01 p1235  warn: condition test deferred in ACL check_recipient
 01:01:01 p1235  LOG: MAIN
-01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
+01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL 'warn' statement skipped (in ACL check_recipient at line 31 of TESTSUITE/test-config): condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
 01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 39)
 01:01:01 p1235   ╭considering: FAIL3:░${lookup░mysql░░░░░{servers=127.0.0.1::PORT_N;░select░name░from░them░where░id░=░'$local_part'}}
 01:01:01 p1235   ├───────text: FAIL3:░
@@ -632,7 +632,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  host in "<& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
 01:01:01 p1235  warn: condition test deferred in ACL check_recipient
 01:01:01 p1235  LOG: MAIN
-01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
+01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL 'warn' statement skipped (in ACL check_recipient at line 45 of TESTSUITE/test-config): condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
 01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 50)
 01:01:01 p1235  check set acl_m0 = FAIL5: hostlist
 01:01:01 p1235  check hosts = <& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
@@ -669,7 +669,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235  host in "<& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
 01:01:01 p1235  warn: condition test deferred in ACL check_recipient
 01:01:01 p1235  LOG: MAIN
-01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
+01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL 'warn' statement skipped (in ACL check_recipient at line 50 of TESTSUITE/test-config): condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
 01:01:01 p1235  processing ACL check_recipient "accept" (TESTSUITE/test-config 53)
 01:01:01 p1235  check domains = +local_domains
 01:01:01 p1235  d in "+local_domains"?
