@@ -86,7 +86,7 @@ void auth_heimdal_gssapi_init(driver_instance *ablock) {}
 int auth_heimdal_gssapi_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_heimdal_gssapi_client(auth_instance *ablock, void * sx,
   int timeout, uschar *buffer, int buffsize) {return 0;}
-gstring * auth_heimdal_gssapi_version_report(gstring * g) {}
+gstring * auth_heimdal_gssapi_version_report(gstring * g) { return NULL; }
 
 #else   /*!MACRO_PREDEF*/
 
