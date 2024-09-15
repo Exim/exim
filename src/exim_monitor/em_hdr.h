@@ -96,13 +96,13 @@ this interface so that this kind of kludge isn't needed. */
 #ifndef NS_MAXMSG
 # define NS_MAXMSG 65535
 #endif
-typedef void * hctx;
 
 #include "local_scan.h"
 #include "path_max.h"
 #include "macros.h"
 #include "structs.h"
 #include "blob.h"
+#include "hash.h"
 #include "globals.h"
 #include "hintsdb.h"
 #include "hintsdb_structs.h"

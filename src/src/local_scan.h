@@ -22,6 +22,8 @@ Coders of dlfunc routines should read the notes on tainting at the start of
 store.c
 */
 
+#ifndef LOCAL_SCAN_H
+#define LOCAL_SCAN_H
 
 /* Some basic types that make some things easier, the Exim configuration
 settings, and the store functions. */
@@ -247,4 +249,5 @@ extern pid_t    child_open_exim2_function(int *, uschar *, uschar *, const uscha
 extern pid_t    child_open_function(uschar **, uschar **, int, int *, int *, BOOL, const uschar *);
 #endif
 
+#endif	/* whole file */
 /* End of local_scan.h */

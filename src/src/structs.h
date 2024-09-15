@@ -7,6 +7,8 @@
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#ifndef STRUCTS_H
+#define STRUCTS_H
 
 /* Definitions of various structures. In addition, those that are visible for
 the compilation of local_scan() are defined in local_scan.h. These are
@@ -1038,4 +1040,5 @@ typedef struct misc_module_info {
 
 #define MISC_MODULE_MAGIC	0x4d4d4d31	/* MMM1 */
 
+#endif	/* whole file */
 /* End of structs.h */

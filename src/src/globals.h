@@ -7,6 +7,9 @@
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#ifndef GLOBALS_H
+#define GLOBALS_H
+
 /* Almost all the global variables are defined together in this one header, so
 that they are easy to find. However, those that are visible during the
 compilation of the local_scan() function are defined separately in the
@@ -1104,4 +1107,5 @@ extern uschar *wellknown_advertise_hosts;/* Allow WELLKNOWN command for specifie
 extern uschar *wellknown_response;     /* SMTP response for WELLKNOWN verb */
 #endif
 
+#endif	/* whole file */
 /* End of globals.h */

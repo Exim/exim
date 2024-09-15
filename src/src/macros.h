@@ -7,6 +7,8 @@
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#ifndef MACROS_H
+#define MACROS_H
 
 /* These two macros make it possible to obtain the result of macro-expanding
 a string as a text string. This is sometimes useful for debugging output. */
@@ -1214,6 +1216,7 @@ When doing en extended loop of matching, release store periodically. */
 #define GET_OPTION(name) \
   DEBUG(D_expand) debug_printf("try option " name "\n");
 
+#endif	/* whole file */
 /* End of macros.h */
 /* vi: aw ai sw=2
 */
