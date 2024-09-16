@@ -231,36 +231,36 @@ int old_pool = store_pool;
 store_pool = POOL_PERM;
   {
   driver_info ** anchor = (driver_info **) &routers_available;
-  extern router_info accept_router_info;
-  extern router_info dnslookup_router_info;
-  extern router_info ipliteral_router_info;
-  extern router_info iplookup_router_info;
-  extern router_info manualroute_router_info;
-  extern router_info redirect_router_info;
-  extern router_info queryprogram_router_info;
 
   /* Add the router drivers that are built for static linkage to the
   list of availables. */
 
 #if defined(ROUTER_ACCEPT) && ROUTER_ACCEPT!=2
+  extern router_info accept_router_info;
   add_driver_info(anchor, &accept_router_info.drinfo, sizeof(router_info));
 #endif
 #if defined(ROUTER_DNSLOOKUP) && ROUTER_DNSLOOKUP!=2
+  extern router_info dnslookup_router_info;
   add_driver_info(anchor, &dnslookup_router_info.drinfo, sizeof(router_info));
 #endif
 # if defined(ROUTER_IPLITERAL) && ROUTER_IPLITERAL!=2
+  extern router_info ipliteral_router_info;
   add_driver_info(anchor, &ipliteral_router_info.drinfo, sizeof(router_info));
 #endif
 #if defined(ROUTER_IPLOOKUP) && ROUTER_IPLOOKUP!=2
+  extern router_info iplookup_router_info;
   add_driver_info(anchor, &iplookup_router_info.drinfo, sizeof(router_info));
 #endif
 #if defined(ROUTER_MANUALROUTE) && ROUTER_MANUALROUTE!=2
+  extern router_info manualroute_router_info;
   add_driver_info(anchor, &manualroute_router_info.drinfo, sizeof(router_info));
 #endif
 #if defined(ROUTER_REDIRECT) && ROUTER_REDIRECT!=2
+  extern router_info redirect_router_info;
   add_driver_info(anchor, &redirect_router_info.drinfo, sizeof(router_info));
 #endif
 #if defined(ROUTER_QUERYPROGRAM) && ROUTER_QUERYPROGRAM!=2
+  extern router_info queryprogram_router_info;
   add_driver_info(anchor, &queryprogram_router_info.drinfo, sizeof(router_info));
 #endif
   }

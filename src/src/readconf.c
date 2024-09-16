@@ -3760,7 +3760,9 @@ init_driver(driver_instance * d, driver_info ** info_anchor,
 {
 driver_info * di;
 int len;
+#ifdef LOOKUP_MODULE_DIR
 DIR * dd;
+#endif
 
 /* First scan the list of driver seen so far. */
 
@@ -4356,44 +4358,44 @@ int old_pool = store_pool;
 store_pool = POOL_PERM;
   {
   driver_info ** anchor = (driver_info **) &auths_available;
-  extern auth_info cram_md5_auth_info;
-  extern auth_info cyrus_sasl_auth_info;
-  extern auth_info dovecot_auth_info;
-  extern auth_info external_auth_info;
-  extern auth_info gsasl_auth_info;
-  extern auth_info heimdal_gssapi_auth_info;
-  extern auth_info plaintext_auth_info;
-  extern auth_info spa_auth_info;
-  extern auth_info tls_auth_info;
 
   /* Add the transport drivers that are built for static linkage to the
   list of availables. */
 
 #if defined(AUTH_CRAM_MD5) && AUTH_CRAM_MD5!=2
+  extern auth_info cram_md5_auth_info;
   add_driver_info(anchor, &cram_md5_auth_info.drinfo, sizeof(auth_info));
 #endif
 #if defined(AUTH_CYRUS_SASL) && AUTH_CYRUS_SASL!=2
+  extern auth_info cyrus_sasl_auth_info;
   add_driver_info(anchor, &cyrus_sasl_auth_info.drinfo, sizeof(auth_info));
 #endif
 #if defined(AUTH_DOVECOT) && AUTH_DOVECOT!=2
+  extern auth_info dovecot_auth_info;
   add_driver_info(anchor, &dovecot_auth_info.drinfo, sizeof(auth_info));
 #endif
 #if defined(AUTH_EXTERNAL) && AUTH_EXTERNAL!=2
+  extern auth_info external_auth_info;
   add_driver_info(anchor, &external_auth_info.drinfo, sizeof(auth_info));
 #endif
 #if defined(AUTH_GSASL) && AUTH_GSASL!=2
+  extern auth_info gsasl_auth_info;
   add_driver_info(anchor, &gsasl_auth_info.drinfo, sizeof(auth_info));
 #endif
 #if defined(AUTH_HEIMDAL_GSSAPI) && AUTH_HEIMDAL_GSSAPI!=2
+  extern auth_info heimdal_gssapi_auth_info;
   add_driver_info(anchor, &heimdal_gssapi_auth_info.drinfo, sizeof(auth_info));
 #endif
 #if defined(AUTH_PLAINTEXT) && AUTH_PLAINTEXT!=2
+  extern auth_info plaintext_auth_info;
   add_driver_info(anchor, &plaintext_auth_info.drinfo, sizeof(auth_info));
 #endif
 #if defined(AUTH_SPA) && AUTH_SPA!=2
+  extern auth_info spa_auth_info;
   add_driver_info(anchor, &spa_auth_info.drinfo, sizeof(auth_info));
 #endif
 #if defined(AUTH_TLS) && AUTH_TLS!=2
+  extern auth_info tls_auth_info;
   add_driver_info(anchor, &tls_auth_info.drinfo, sizeof(auth_info));
 #endif
   }
