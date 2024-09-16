@@ -1149,11 +1149,15 @@ ZCAT_COMMAND=/usr/bin/zcat
 # You need to have the IDN library installed.
 # If you want IDNA2008 mappings per RFCs 5890, 6530 and 6533, you additionally
 # need libidn2 and SUPPORT_I18N_2008.
+# If you're using pkg-config, enable the _PC lines, otherwise the LDFLAGS ones.
 
 # SUPPORT_I18N=yes
+# SUPPORT_I18N_PC=libidn
 # LDFLAGS += -lidn
+#
 # SUPPORT_I18N_2008=yes
-# LDFLAGS += -lidn -lidn2
+# SUPPORT_I18N_2008_PC=libidn2
+# LDFLAGS += -lidn2
 
 
 #------------------------------------------------------------------------------
