@@ -256,7 +256,7 @@ dkim_exim_verify_feed(const uschar * data, unsigned len)
 int rc;
 
 store_pool = POOL_MESSAGE;
-if (  (dkim_collect_input || !data)
+if (  dkim_collect_input
    && (rc = pdkim_feed(dkim_verify_ctx, data, len)) != PDKIM_OK)
   {
   dkim_collect_error = pdkim_errstr(rc);
