@@ -995,7 +995,7 @@ if (dkim_domain)
     if (!(dkim_private_key_expanded = expand_string(dkim->dkim_private_key)))
       { errwhen = US"dkim_private_key"; goto expand_bad; }
 
-    if (  Ustrlen(dkim_private_key_expanded) == 0
+    if (  dkim_private_key_expanded[0] == '\0'
        || Ustrcmp(dkim_private_key_expanded, "0") == 0
        || Ustrcmp(dkim_private_key_expanded, "false") == 0
        )

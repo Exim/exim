@@ -957,7 +957,7 @@ if (buffer)
     die_tainted(US"string_nextinlist", func, line);
   for (; *s; s++)
     {
-    if (*s == sep && (*(++s) != sep || sep_is_special)) break;
+    if (*s == sep && (*++s != sep || sep_is_special)) break;
     if (p < buflen - 1) buffer[p++] = *s;
     }
   while (p > 0 && isspace(buffer[p-1])) p--;

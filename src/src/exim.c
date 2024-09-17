@@ -257,6 +257,12 @@ int nptrs = backtrace(buf, STACKDUMP_MAX);
 
 log_write(0, LOG_MAIN|LOG_PANIC, "backtrace");
 log_write(0, LOG_MAIN|LOG_PANIC, "---");
+
+/* This function is officially not callable from a signal handler, as it
+calls malloc() for the returned data. However, it seems to work - and we
+know we're going on to crash anyway - so just hold our noses and do it.
+A alternative might be backtrace_symbols_fd(). */
+
 if ((ss = backtrace_symbols(buf, nptrs)))
   {
   for (int i = 0; i < nptrs; i++)

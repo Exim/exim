@@ -991,7 +991,7 @@ return g ? (unsigned)g->ptr : 0;
 static inline uschar
 gstring_last_char(gstring * g)
 {
-return g ? g->s[g->ptr-1] : '\0';
+return g && g->ptr > 0 ? g->s[g->ptr-1] : '\0';
 }
 
 static inline void
