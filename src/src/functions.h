@@ -1270,7 +1270,7 @@ if (f.running_in_test_harness && f.testsuite_delays) millisleep(millisec);
 }
 
 /******************************************************************************/
-/* Taint-checked file opens */
+/* Taint-checked file opens. Return values/errno per open(2). */
 
 static inline int
 exim_open2(const char *pathname, int flags)

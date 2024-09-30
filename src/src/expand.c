@@ -8786,8 +8786,8 @@ int fd, off = 0, len;
 
 if ((fd = exim_open2(CS filename, O_RDONLY)) < 0)
   {
-  log_write(0, LOG_MAIN | LOG_PANIC, "unable to open file for reading: %s",
-	     filename);
+  log_write(0, LOG_MAIN | LOG_PANIC, "unable to open file '%s' for reading: %s",
+	     filename, strerror(errno));
   return NULL;
   }
 
@@ -8956,7 +8956,7 @@ if (opt_perl_startup != NULL)
   uschar *errstr;
   printf("Starting Perl interpreter\n");
   errstr = init_perl(opt_perl_startup);
-  if (errstr != NULL)
+  if (errstr)
     {
     printf("** error in perl_startup code: %s\n", errstr);
     return EXIT_FAILURE;
