@@ -834,10 +834,10 @@ DEBUG(D_queue_run) debug_printf("Single queue run%s%s%s%s\n",
   stop_id ?  US" stopping at " : US"",
   stop_id ?  stop_id : US"");
 
-if (*queue_name)
-  set_process_info("running the '%s' queue (single queue run)", queue_name);
-else
-  set_process_info("running the queue (single queue run)");
+set_process_info("running the %s%s%squeue (single queue run%s)",
+  *queue_name ? "'" : "", queue_name, *queue_name ? "' " : "",
+  q->queue_2stage ? ", 2-phase" : ""
+  );
 queue_run(q, start_id, stop_id, FALSE);
 }
 
