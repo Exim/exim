@@ -446,7 +446,7 @@ website, are hosted at the University of Cambridge.
 .cindex "FAQ"
 As well as Exim distribution tar files, the Exim website contains a number of
 differently formatted versions of the documentation. A recent addition to the
-online information is the Exim wiki (&url(https://wiki.exim.org)),
+online information is &url(https://wiki.exim.org,the Exim wiki),
 which contains what used to be a separate FAQ, as well as various other
 examples, tips, and know-how that have been contributed by Exim users.
 The wiki site should always redirect to the correct place, which is currently
@@ -487,7 +487,7 @@ lists.
 .cindex "bug reports"
 .cindex "reporting bugs"
 Reports of obvious bugs can be emailed to &'bugs@exim.org'& or reported
-via the Bugzilla (&url(https://bugs.exim.org)). However, if you are unsure
+via &url(https://bugs.exim.org,the Bugzilla). However, if you are unsure
 whether some behaviour is a bug or not, the best thing to do is to post a
 message to the &'exim-dev'& mailing list and have it discussed.
 
@@ -1811,7 +1811,7 @@ Yet another DBM library, called &'tdb'&, is available from
 &url(https://sourceforge.net/projects/tdb/files/). It has its own interface, and also
 operates on a single file.
 .next
-It is possible to use sqlite3 (&url(https://www.sqlite.org/index.html))
+It is possible to use &url(https://www.sqlite.org/index.html,sqlite3)
 for the DBM library.
 .endlist
 
@@ -3080,7 +3080,7 @@ acceptable or not. See section &<<SECTcheckaccess>>&.
 Features such as authentication and encryption, where the client input is not
 plain text, cannot easily be tested with &%-bh%&. Instead, you should use a
 specialized SMTP test program such as
-&url(https://www.jetmore.org/john/code/swaks/,swaks).
+&url(https://www.jetmore.org/john/code/swaks/,swaks,swaks).
 
 .cmdopt -bhc <&'IP&~address'&>
 This option operates in the same way as &%-bh%&, except that address
@@ -6990,7 +6990,7 @@ For elements of type string, the returned value is de-quoted.
 The given file is an LMDB database.
 LMDB is a memory-mapped key-value store,
 with API modeled loosely on that of BerkeleyDB.
-See &url(https://symas.com/products/lightning-memory-mapped-database/)
+See &url(https://symas.com/products/lightning-memory-mapped-database/,LMDB)
 for the feature set and operation modes.
 
 Exim provides read-only access via the LMDB C library.
@@ -28933,7 +28933,7 @@ The &(spa)& authenticator provides client support for Microsoft's &'Secure
 Password Authentication'& mechanism,
 which is also sometimes known as NTLM (NT LanMan). The code for client side of
 this authenticator was contributed by Marc Prud'hommeaux, and much of it is
-taken from the Samba project (&url(https://www.samba.org/)). The code for the
+taken from the &url(https://www.samba.org/,Samba project). The code for the
 server side was subsequently contributed by Tom Kistner. The mechanism works as
 follows:
 
@@ -29021,8 +29021,8 @@ msn:
 .cindex "Certificate-based authentication"
 The &(external)& authenticator provides support for
 authentication based on non-SMTP information.
-The specification is in RFC 4422 Appendix A
-(&url(https://tools.ietf.org/html/rfc4422)).
+The specification is in
+&url(https://tools.ietf.org/html/rfc4422,PFC 4422) Appendix A.
 It is only a transport and negotiation mechanism;
 the process of authentication is entirely controlled
 by the server configuration.
@@ -29033,7 +29033,7 @@ and for clients to only attempt,
 this authentication method on a secure (eg. under TLS) connection.
 
 One possible use, compatible with the
-K-9 Mail Android client (&url(https://k9mail.github.io/)),
+&url(https://k9mail.github.io/,K-9 Mail Android client)
 is for using X509 client certificates.
 
 It thus overlaps in function with the TLS authenticator
@@ -42633,14 +42633,14 @@ Example usage:
 DMARC combines feedback from SPF, DKIM, and header From: in order
 to attempt to provide better indicators of the authenticity of an
 email.  This document does not explain the fundamentals; you
-should read and understand how it works by visiting the website at
-&url(http://www.dmarc.org/).
+should read and understand how it works by visiting the
+&url(http://www.dmarc.org/,DMARC website).
 
 If Exim is built with DMARC support,
 the libopendmarc library is used.
 
 For building Exim yourself, obtain the library from
-&url(http://sourceforge.net/projects/opendmarc/)
+&url(http://sourceforge.net/projects/opendmarc/,sourceforge)
 to obtain a copy, or find it in your favorite package
 repository.  You will need to attend to the local/Makefile feature
 SUPPORT_DMARC and the associated LDFLAGS addition.
