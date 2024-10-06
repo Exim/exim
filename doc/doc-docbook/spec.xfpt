@@ -577,7 +577,8 @@ distribution, and are also available in &_.bz2_& and &_.xz_& forms.
 .cindex "limitations of Exim"
 .cindex "bang paths" "not handled by Exim"
 Exim is designed for use as an Internet MTA, and therefore handles addresses in
-RFC 2822 domain format only. It cannot handle UUCP &"bang paths"&, though
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+domain format only. It cannot handle UUCP &"bang paths"&, though
 simple two-component bang paths can be converted by a straightforward rewriting
 configuration. This restriction does not prevent Exim from being interfaced to
 UUCP as a transport mechanism, provided that domain addresses are used.
@@ -689,7 +690,8 @@ line.
 
 .cindex "local part" "definition of"
 .cindex "domain" "definition of"
-The term &'local part'&, which is taken from RFC 2822, is used to refer to the
+The term &'local part'&, which is taken from
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822), is used to refer to the
 part of an email address that precedes the @ sign. The part that follows the
 @ sign is called the &'domain'& or &'mail domain'&.
 
@@ -952,7 +954,7 @@ of filtering are available:
 
 .ilist
 Sieve filters are written in the standard filtering language that is defined
-by RFC 3028.
+by &url(https://www.rfc-editor.org/rfc/rfc3028.html,RFC 3028).
 .next
 Exim filters are written in a syntax that is unique to Exim, but which is more
 powerful than Sieve, which it pre-dates.
@@ -1931,7 +1933,8 @@ do this.
 .cindex "&[iconv()]& support"
 .cindex "RFC 2047"
 The contents of header lines in messages may be encoded according to the rules
-described RFC 2047. This makes it possible to transmit characters that are not
+described in &url(https://www.rfc-editor.org/rfc/rfc2047,RFC 2047).
+This makes it possible to transmit characters that are not
 in the ASCII character set, and to label them as being in a particular
 character set. When Exim is inspecting header lines by means of the &%$h_%&
 mechanism, it decodes them, and translates them into a specified character set
@@ -1956,7 +1959,8 @@ to your &_Local/Makefile_& and rebuild Exim.
 .cindex "OpenSSL" "building Exim with"
 .cindex "GnuTLS" "building Exim with"
 Exim is usually built to support encrypted SMTP connections, using the STARTTLS
-command as per RFC 2487. It can also support clients that expect to
+command as per &url(https://www.rfc-editor.org/rfc/rfc2487,RFC 2487).
+It can also support clients that expect to
 start a TLS session immediately on connection to a non-standard port (see the
 &%tls_on_connect_ports%& runtime option and the &%-tls-on-connect%& command
 line option).
@@ -3057,7 +3061,8 @@ test your relay controls using &%-bh%&.
 
 &*Warning 1*&:
 .cindex "RFC 1413"
-You can test features of the configuration that rely on ident (RFC 1413)
+You can test features of the configuration that rely on ident
+(&url(https://www.rfc-editor.org/rfc/rfc2487,RFC 1413))
 information by using the &%-oMt%& option. However, Exim cannot actually perform
 an ident callout when testing using &%-bh%& because there is no incoming SMTP
 connection.
@@ -3123,7 +3128,9 @@ recognised DSCP names.
 .cindex "Sieve filter" "capabilities"
 This option causes Exim to emit an alphabetically sorted list of all supported
 Sieve protocol extensions on stdout, one per line.  This is anticipated to be
-useful for ManageSieve (RFC 5804) implementations, in providing that protocol's
+useful for ManageSieve
+(&url(https://datatracker.ietf.org/doc/html/rfc5804.html,RFC 5804))
+implementations, in providing that protocol's
 &`SIEVE`& capability response line.  As the precise list may depend upon
 compile-time build options, which this option will adapt to, this is the only
 way to guarantee a correct response.
@@ -3133,7 +3140,9 @@ way to guarantee a correct response.
 This option runs an Exim receiving process that accepts an incoming,
 locally-generated message on the standard input. The recipients are given as the
 command arguments (except when &%-t%& is also present &-- see below). Each
-argument can be a comma-separated list of RFC 2822 addresses. This is the
+argument can be a comma-separated list of
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822) addresses.
+This is the
 default option for selecting the overall action of an Exim call; it is assumed
 if no other conflicting option is present.
 
@@ -3155,7 +3164,9 @@ The format
 .cindex "&""From""& line"
 .cindex "UUCP" "&""From""& line"
 .cindex "Sendmail compatibility" "&""From""& line"
-of the message must be as defined in RFC 2822, except that, for
+of the message must be as defined in
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822),
+except that, for
 compatibility with Sendmail and Smail, a line in one of the forms
 .code
 From sender Fri Jan  5 12:55 GMT 1997
@@ -4142,8 +4153,9 @@ written to the standard output. This option can be used only by an admin user.
 .cindex "message" "listing in RFC 2822 format"
 .cindex "listing" "message in RFC 2822 format"
 This option causes a copy of the complete message (header lines plus body) to
-be written to the standard output in RFC 2822 format. This option can be used
-only by an admin user.
+be written to the standard output in
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+format. This option can be used only by an admin user.
 
 .cmdopt -Mvh <&'message&~id'&>
 .cindex "listing" "message headers"
@@ -4808,7 +4820,8 @@ lines instead of from &'To:'&, &'Cc:'&, and &'Bcc:'&. This is for compatibility
 with Sendmail and other MTAs. (Prior to release 4.20, Exim gave an error if
 &%-t%& was used in conjunction with &%Resent-%& header lines.)
 
-RFC 2822 talks about different sets of &%Resent-%& header lines (for when a
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+talks about different sets of &%Resent-%& header lines (for when a
 message is resent several times). The RFC also specifies that they should be
 added at the front of the message, and separated by &'Received:'& lines. It is
 not at all clear how &%-t%& should operate in the present of multiple sets,
@@ -5775,9 +5788,11 @@ Mail submission from mail clients (MUAs) should be separate from inbound mail
 to your domain (MX delivery) for various good reasons (eg, ability to impose
 much saner TLS protocol and ciphersuite requirements without unintended
 consequences).
-RFC 6409 (previously 4409) specifies use of port 587 for SMTP Submission,
+&url(https://www.rfc-editor.org/rfc/rfc6409,RFC 6409) (previously 4409)
+specifies use of port 587 for SMTP Submission,
 which uses STARTTLS, so this is the &"submission"& port.
-RFC 8314 specifies use of port 465 as the &"submissions"& protocol,
+&url(https://www.rfc-editor.org/rfc/rfc8314,RFC 8314)
+specifies use of port 465 as the &"submissions"& protocol,
 which should be used in preference to 587.
 You should also consider deploying SRV records to help clients find
 these ports.
@@ -5836,8 +5851,9 @@ Note that it is not always possible to find a host name from an IP address,
 because not all DNS reverse zones are maintained, and sometimes DNS servers are
 unreachable.
 
-The next two lines are concerned with &'ident'& callbacks, as defined by RFC
-1413 (hence their names):
+The next two lines are concerned with &'ident'& callbacks, as defined by
+&url(https://www.rfc-editor.org/rfc/rfc1413,RFC 1413)
+(hence their names):
 .code
 rfc1413_hosts = *
 rfc1413_query_timeout = 0s
@@ -5910,7 +5926,8 @@ not often needed).
 .endd
 
 In an ideal world everybody follows the standards. For non-ASCII
-messages RFC 2047 is a standard, allowing a maximum line length of 76
+messages &url(https://www.rfc-editor.org/rfc/rfc2048,RFC 2047)
+is a standard, allowing a maximum line length of 76
 characters. Exim adheres that standard and won't process messages which
 violate this standard. (Even ${rfc2047:...} expansions will fail.)
 In particular, the Exim maintainers have had multiple reports of
@@ -6012,7 +6029,9 @@ block local parts that begin with a dot or contain &"@"&, &"%"&, &"!"&, &"/"&,
 or &"|"&. If you have local accounts that include these characters, you will
 have to modify this rule.
 
-Empty components (two dots in a row) are not valid in RFC 2822, but Exim
+Empty components (two dots in a row) are not valid in
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822),
+but Exim
 allows them because they have been encountered in practice. (Consider the
 common convention of local parts constructed as
 &"&'first-initial.second-initial.family-name'&"& when applied to someone like
@@ -7716,7 +7735,8 @@ First we explain how LDAP queries are coded.
 
 .subsection "Format of LDAP queries" SECTforldaque
 .cindex "LDAP" "query format"
-An LDAP query takes the form of a URL as defined in RFC 2255. For example, in
+An LDAP query takes the form of a URL as defined in
+&url(https://www.rfc-editor.org/rfc/rfc2255,RFC 2255). For example, in
 the configuration of a &(redirect)& router one might have this setting:
 .code
 data = ${lookup ldap \
@@ -7759,7 +7779,9 @@ the string:
 )   =>   \29
 \   =>   \5C
 .endd
-in accordance with RFC 2254. The resulting string is then quoted according
+in accordance with
+&url(https://www.rfc-editor.org/rfc/rfc2254,RFC 2254).
+The resulting string is then quoted according
 to the rules for URLs, that is, all non-alphanumeric characters except
 .code
 ! $ ' - . _ ( ) * +
@@ -7783,8 +7805,10 @@ by inserting a backslash in front of any of the following characters:
 , + " \ < > ;
 .endd
 It also inserts a backslash before any leading spaces or # characters, and
-before any trailing spaces. (These rules are in RFC 2253.) The resulting string
-is then quoted according to the rules for URLs. For example:
+before any trailing spaces. (These rules are in
+&url(https://www.rfc-editor.org/rfc/rfc2255,RFC 2253).)
+The resulting string is then quoted according to the rules for URLs.
+For example:
 .code
 ${quote_ldap_dn: a(bc)*, a<yz>; }
 .endd
@@ -7820,7 +7844,8 @@ Errors which cause the next server to be tried are connection failures, bind
 failures, and timeouts.
 
 For each server name in the list, a port number can be given. The standard way
-of specifying a host and port is to use a colon separator (RFC 1738). Because
+of specifying a host and port is to use a colon separator
+(&url(https://www.rfc-editor.org/rfc/rfc1738,RFC 1738)). Because
 &%ldap_default_servers%& is a colon-separated list, such colons have to be
 doubled. For example
 .code
@@ -9534,7 +9559,8 @@ example it is a named domain list.
 .cindex "case forcing in address lists"
 Domains in email addresses are always handled caselessly, but for local parts
 case may be significant on some systems (see &%caseful_local_part%& for how
-Exim deals with this when routing addresses). However, RFC 2505 (&'Anti-Spam
+Exim deals with this when routing addresses). However,
+&url(https://www.rfc-editor.org/rfc/rfc2505,RFC 2505) (&'Anti-Spam
 Recommendations for SMTP MTAs'&) suggests that matching of addresses to
 blocking lists should be done in a case-independent manner. Since most address
 lists in Exim are used for this kind of control, Exim attempts to do this by
@@ -10177,7 +10203,9 @@ option in the runtime configuration. The value of this option defaults to the
 value of HEADERS_CHARSET in &_Local/Makefile_&. The ultimate default is
 ISO-8859-1.
 
-Header names follow the syntax of RFC 2822, which states that they may contain
+Header names follow the syntax of
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822),
+which states that they may contain
 any printing characters except space and colon. Consequently, curly brackets
 &'do not'& terminate header names, and should not be used to enclose them as
 if they were variables. Attempting to do so causes a syntax error.
@@ -10226,7 +10254,8 @@ the result of expanding any of these variables is tainted.
 .cindex &%hmac%&
 This function uses cryptographic hashing (either MD5 or SHA-1) to convert a
 shared secret and some text into a message authentication code, as specified in
-RFC 2104. This differs from &`${md5:secret_text...}`& or
+&url(https://www.rfc-editor.org/rfc/rfc2104.RFC 2104).
+This differs from &`${md5:secret_text...}`& or
 &`${sha1:secret_text...}`& in that the hmac step adds a signature to the
 cryptographic hash, allowing for authentication that is not possible with MD5
 or SHA-1 alone. The hash name must expand to either &`md5`& or &`sha1`& at
@@ -10928,7 +10957,9 @@ following operations can be performed:
 .vitem &*${address:*&<&'string'&>&*}*&
 .cindex "expansion" "RFC 2822 address handling"
 .cindex "&%address%& expansion item"
-The string is interpreted as an RFC 2822 address, as it might appear in a
+The string is interpreted as an
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+address, as it might appear in a
 header line, and the effective address is extracted from it. If the string does
 not parse successfully, the result is empty.
 
@@ -10938,8 +10969,9 @@ The parsing correctly handles SMTPUTF8 Unicode in the string.
 .vitem &*${addresses:*&<&'string'&>&*}*&
 .cindex "expansion" "RFC 2822 address handling"
 .cindex "&%addresses%& expansion item"
-The string (after expansion) is interpreted as a list of addresses in RFC
-2822 format, such as can be found in a &'To:'& or &'Cc:'& header line. The
+The string (after expansion) is interpreted as a list of addresses in
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+format, such as can be found in a &'To:'& or &'Cc:'& header line. The
 operative address (&'local-part@domain'&) is extracted from each item, and the
 result of the expansion is a colon-separated list, with appropriate
 doubling of colons should any happen to be present in the email addresses.
@@ -11042,8 +11074,10 @@ This operator converts a base64-encoded string into the un-coded form.
 .vitem &*${domain:*&<&'string'&>&*}*&
 .cindex "domain" "extraction"
 .cindex "expansion" "domain extraction"
-The string is interpreted as an RFC 2822 address and the domain is extracted
-from it. If the string does not parse successfully, the result is empty.
+The string is interpreted as an
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+address and the domain is extracted from it.
+If the string does not parse successfully, the result is empty.
 
 
 .vitem &*${escape:*&<&'string'&>&*}*&
@@ -11276,9 +11310,10 @@ nor expansion of lookup elements, is done by the &%listnamed%& operator.
 .vitem &*${local_part:*&<&'string'&>&*}*&
 .cindex "expansion" "local part extraction"
 .cindex "&%local_part%& expansion item"
-The string is interpreted as an RFC 2822 address and the local part is
-extracted from it. If the string does not parse successfully, the result is
-empty.
+The string is interpreted as an
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+address and the local part is extracted from it.
+If the string does not parse successfully, the result is empty.
 The parsing correctly handles SMTPUTF8 Unicode in the string.
 
 
@@ -11364,8 +11399,10 @@ variable or a message header.
 .vitem &*${quote_local_part:*&<&'string'&>&*}*&
 .cindex "&%quote_local_part%& expansion item"
 This operator is like &%quote%&, except that it quotes the string only if
-required to do so by the rules of RFC 2822 for quoting local parts. For
-example, a plus sign would not cause quoting (but it would for &%quote%&).
+required to do so by the rules of
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+for quoting local parts. For example,
+a plus sign would not cause quoting (but it would for &%quote%&).
 If you are creating a new email address from the contents of &$local_part$&
 (or any other unknown data), you should always use this operator.
 
@@ -11424,7 +11461,8 @@ f.7.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
 .cindex "expansion" "RFC 2047"
 .cindex "RFC 2047" "expansion operator"
 .cindex "&%rfc2047%& expansion item"
-This operator encodes text according to the rules of RFC 2047. This is an
+This operator encodes text according to the rules of
+&url(https://www.rfc-editor.org/rfc/rfc2047,RFC 2047). This is an
 encoding that is used in header lines to encode non-ASCII characters. It is
 assumed that the input string is in the encoding specified by the
 &%headers_charset%& option, which gets its default at build time. If the string
@@ -11442,7 +11480,9 @@ characters.
 .cindex "expansion" "RFC 2047"
 .cindex "RFC 2047" "decoding"
 .cindex "&%rfc2047d%& expansion item"
-This operator decodes strings that are encoded as per RFC 2047. Binary zero
+This operator decodes strings that are encoded as per
+&url(https://www.rfc-editor.org/rfc/rfc2047,RFC 2047).
+Binary zero
 bytes are replaced by question marks. Characters are converted into the
 character set defined by &%headers_charset%&. Overlong RFC 2047 &"words"& are
 not recognized unless &%check_rfc2047_length%& is set false.
@@ -11628,7 +11668,8 @@ For information on internationalisation support see &<<SECTi18nMTA>>&.
 .cindex "string" "xtext decoding"
 .cindex "xtext"
 .cindex "&%xtextd%& expansion item"
-This performs xtext decoding of the string (per RFC 3461 section 4).
+This performs xtext decoding of the string (per
+&url(https://www.rfc-editor.org/rfc/rfc3461,RFC 3461) section 4).
 
 
 
@@ -12280,7 +12321,9 @@ initiated by queue runner processes, and false otherwise.
 .cindex "Radius"
 .cindex "expansion" "Radius authentication"
 .cindex "&%radius%& expansion condition"
-Radius authentication (RFC 2865) is supported in a similar way to PAM. You must
+Radius authentication
+(&url(https://www.rfc-editor.org/rfc/rfc2865,RFC 2865))
+is supported in a similar way to PAM. You must
 set RADIUS_CONFIG_FILE in &_Local/Makefile_& to specify the location of
 the Radius client configuration file in order to build Exim with Radius
 support.
@@ -14531,7 +14574,7 @@ The common use of this option is expected to be
 .code
 tls_on_connect_ports = 465
 .endd
-per RFC 8314.
+per &url(https://www.rfc-editor.org/rfc/rfc8314,RFC 8314).
 There is also a command line option &%-tls-on-connect%&, which forces all ports
 to behave in this way when a daemon is started.
 
@@ -15324,7 +15367,9 @@ To permit this, you have to add individuals to the Exim group.
 
 .option allow_domain_literals main boolean false
 .cindex "domain literal"
-If this option is set, the RFC 2822 domain literal format is permitted in
+If this option is set, the
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+domain literal format is permitted in
 email addresses. The option is not set by default, because the domain literal
 format is not normally required these days, and few people know about it. It
 has, however, been exploited by mail abusers.
@@ -15570,7 +15615,8 @@ See &%check_spool_space%& below.
 .oindex "&%check_rfc2047_length%&"
 .cindex "RFC 2047" "disabling length check"
 .option check_rfc2047_length main boolean true
-RFC 2047 defines a way of encoding non-ASCII characters in headers using a
+&url(https://www.rfc-editor.org/rfc/rfc2047,RFC 2047)
+defines a way of encoding non-ASCII characters in headers using a
 system of &"encoded words"&. The RFC specifies a maximum length for an encoded
 word; strings to be encoded that exceed this length are supposed to use
 multiple encoded words. By default, Exim does not recognize encoded words that
@@ -15635,8 +15681,9 @@ may wish to deliberately disable them.
 .cindex CHUNKING advertisement
 .cindex "RFC 3030" "CHUNKING"
 .cindex "ESMTP extensions" CHUNKING
-The CHUNKING extension (RFC3030) will be advertised in the EHLO message to
-these hosts.
+The CHUNKING extension
+(&url(https://www.rfc-editor.org/rfc/rfc3030.html,RFC 3030))
+will be advertised in the EHLO message to these hosts.
 Hosts may use the BDAT command as an alternate to DATA.
 
 .option commandline_checks_require_admin main boolean &`false`&
@@ -15782,7 +15829,8 @@ sha256
 sha512
 .endd
 
-Note that the acceptance of sha1 violates RFC 8301.
+Note that the acceptance of sha1 violates
+&url(https://www.rfc-editor.org/rfc/rfc8301,RFC 8301).
 
 .option dkim_verify_keytypes main "string list" "ed25519 : rsa"
 This option gives a list of key types which are acceptable in signatures,
@@ -15795,7 +15843,9 @@ This option gives a list of key sizes which are acceptable in signatures.
 The list is keyed by the algorithm type for the key; the values are in bits.
 Signatures with keys smaller than given by this option will fail verification.
 
-The default enforces the RFC 8301 minimum key size for RSA signatures.
+The default enforces the
+&url(https://www.rfc-editor.org/rfc/rfc8301,RFC 8301)
+minimum key size for RSA signatures.
 
 .option dkim_verify_minimal main boolean false
 If set to true, verification of signatures will terminate after the
@@ -15990,7 +16040,8 @@ described in section &<<SECTlineendings>>&.
 .cindex "DSN" "success"
 .cindex "Delivery Status Notification" "success"
 .cindex "ESMTP extensions" DSN
-DSN extensions (RFC3461) will be advertised in the EHLO message to,
+DSN extensions (&url(https://www.rfc-editor.org/rfc/rfc3461,RFC 3461))
+will be advertised in the EHLO message to,
 and accepted from, these hosts.
 Hosts may use the NOTIFY and ORCPT options on RCPT TO commands,
 and RET and ENVID options on MAIL FROM commands.
@@ -16070,7 +16121,8 @@ and warning messages. For example:
 .code
 errors_reply_to = postmaster@my.domain.example
 .endd
-The value of the option is not expanded. It must specify a valid RFC 2822
+The value of the option is not expanded. It must specify a valid
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
 address. However, if a warning message that is generated by the
 &%quota_warn_message%& option in an &(appendfile)& transport contain its
 own &'Reply-To:'& header line, the value of the &%errors_reply_to%& option is
@@ -16654,7 +16706,8 @@ has been built with LDAP support.
 .cindex LIMITS "suppressing advertising"
 .cindex "ESMTP extensions" LIMITS
 This option can be used to suppress the advertisement of the SMTP
-LIMITS extension (RFC 9422) to specific hosts.
+LIMITS extension (&url(https://www.ietf.org/rfc/rfc9422.html,RFC 9422))
+to specific hosts.
 If permitted, Exim as a server will advertise in the EHLO response
 the limit for RCPT commands set by the &%recipients_max%& option (if it is set)
 and the limit for MAIL commands set by the &%smtp_accept_max_per_connection%&
@@ -16885,8 +16938,9 @@ empty string, the option is ignored.
 .option message_id_header_text main string&!! unset
 If this variable is set, the string is expanded and used to augment the text of
 the &'Message-id:'& header that Exim creates if a locally-originated incoming
-message does not have one. The text of this header is required by RFC 2822 to
-take the form of an address. By default, Exim uses its internal message id as
+message does not have one. The text of this header is required by
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+to take the form of an address. By default, Exim uses its internal message id as
 the local part, and the primary host name as the domain. If this option is set,
 it is expanded, and provided the expansion is not forced to fail, and does not
 yield an empty string, the result is inserted into the header immediately
@@ -17145,7 +17199,9 @@ common installed configuration.
 The &"percent hack"& is the convention whereby a local part containing a
 percent sign is re-interpreted as a new email address, with the percent
 replaced by @. This is sometimes called &"source routing"&, though that term is
-also applied to RFC 2822 addresses that begin with an @ character. If this
+also applied to
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+addresses that begin with an @ character. If this
 option is set, Exim implements the percent facility for those domains listed,
 but no others. This happens before an incoming SMTP address is tested against
 an ACL.
@@ -17273,7 +17329,8 @@ is set, code values of 128 and above are also considered to be printing
 characters.
 
 This option also affects the header syntax checks performed by the
-&(autoreply)& transport, and whether Exim uses RFC 2047 encoding of
+&(autoreply)& transport, and whether Exim uses
+&url(https://www.rfc-editor.org/rfc/rfc2047,RFC 2047) encoding of
 the user's full name when constructing From: and Sender: addresses (as
 described in section &<<SECTconstr>>&). Setting this option can cause
 Exim to generate eight bit message headers that do not conform to the
@@ -17499,8 +17556,9 @@ added to each message, except for the timestamp, which is automatically added
 on at the end (preceded by a semicolon). The string is expanded each time it is
 used. If the expansion yields an empty string, no &'Received:'& header line is
 added to the message. Otherwise, the string should start with the text
-&"Received:"& and conform to the RFC 2822 specification for &'Received:'&
-header lines.
+&"Received:"& and conform to the
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+specification for &'Received:'& header lines.
 The default setting is:
 
 .code
@@ -17669,7 +17727,8 @@ the default value.
 
 .option return_path_remove main boolean true
 .cindex "&'Return-path:'& header line" "removing"
-RFC 2821, section 4.4, states that an SMTP server must insert a
+&url(https://www.rfc-editor.org/rfc/rfc2821,RFC 2821), section 4.4,
+states that an SMTP server must insert a
 &'Return-path:'& header line into a message when it makes a &"final delivery"&.
 The &'Return-path:'& header preserves the sender address as received in the
 MAIL command. This description implies that this header should not be present
@@ -17686,7 +17745,8 @@ This option is an obsolete synonym for &%bounce_return_size_limit%&.
 .option rfc1413_hosts main "host list&!!" @[]
 .cindex "RFC 1413"
 .cindex "host" "for RFC 1413 calls"
-RFC 1413 identification calls are made to any client host which matches
+&url(https://www.rfc-editor.org/rfc/rfc1413,RFC 1413)
+identification calls are made to any client host which matches
 an item in the list.
 The default value specifies just this host, being any local interface
 for the system.
@@ -17694,7 +17754,9 @@ for the system.
 .option rfc1413_query_timeout main time 0s
 .cindex "RFC 1413" "query timeout"
 .cindex "timeout" "for RFC 1413 call"
-This sets the timeout on RFC 1413 identification calls. If it is set to zero,
+This sets the timeout on
+&url(https://www.rfc-editor.org/rfc/rfc1413,RFC 1413)
+identification calls. If it is set to zero,
 no RFC 1413 calls are ever made.
 
 
@@ -18613,11 +18675,16 @@ If Exim is using OpenSSL and this option is empty or unset, then Exim will load
 a default DH prime; the default is Exim-specific but lacks verifiable provenance.
 
 In older versions of Exim the default was the 2048 bit prime described in section
-2.2 of RFC 5114, "2048-bit MODP Group with 224-bit Prime Order Subgroup", which
+2.2 of &url(https://www.rfc-editor.org/rfc/rfc5114,RFC 5114),
+"2048-bit MODP Group with 224-bit Prime Order Subgroup", which
 in IKE is assigned number 23.
 
 Otherwise, the option must expand to the name used by Exim for any of a number
-of DH primes specified in RFC 2409, RFC 3526, RFC 5114, RFC 7919, or from other
+of DH primes specified in
+&url(https://www.rfc-editor.org/rfc/rfc2409,RFC 2409),
+&url(https://www.rfc-editor.org/rfc/rfc3526,RFC 3526),
+&url(https://www.rfc-editor.org/rfc/rfc5114,RFC 5114),
+&url(https://www.rfc-editor.org/rfc/rfc7919,RFC 7919), or from other
 sources.  As names, Exim uses a standard specified name, else "ike" followed by
 the number used by IKE, or "default" which corresponds to
 &`exim.dev.20160529.3`&.
@@ -18634,13 +18701,15 @@ The available additional primes are:
 Some of these will be too small to be accepted by clients.
 Some may be too large to be accepted by clients.
 The open cryptographic community has suspicions about the integrity of some
-of the later IKE values, which led into RFC7919 providing new fixed constants
-(the "ffdhe" identifiers).
+of the later IKE values, which led into
+&url(https://www.rfc-editor.org/rfc/rfc7919,RFC 7919)
+providing new fixed constants (the "ffdhe" identifiers).
 
 At this point, all of the "ike" values should be considered obsolete;
 they are still in Exim to avoid breaking unusual configurations, but are
 candidates for removal the next time we have backwards-incompatible changes.
-Two of them in particular (&`ike1`& and &`ike22`&) are called out by RFC 8247
+Two of them in particular (&`ike1`& and &`ike22`&) are called out by
+&url(https://www.rfc-editor.org/rfc/rfc8247,RFC 8247)
 as MUST NOT use for IPSEC, and two more (&`ike23`& and &`ike24`&) as
 SHOULD NOT.
 Because of this, Exim regards them as deprecated; if either of the first pair
@@ -19309,7 +19378,8 @@ to be used.
 .option dsn_lasthop routers boolean false
 .cindex "DSN" "success"
 .cindex "Delivery Status Notification" "success"
-If this option is set true, and extended DSN (RFC3461) processing is in effect,
+If this option is set true, and extended DSN
+(&url(https://www.rfc-editor.org/rfc/rfc3461,RFC 3461)) processing is in effect,
 Exim will not pass on DSN requests to downstream DSN-aware hosts but will
 instead send a success DSN as if the next hop does not support DSN.
 Not effective on redirect routers.
@@ -20352,8 +20422,9 @@ the local host is described in section &<<SECTreclocipadd>>&.
 
 .option check_srv dnslookup string&!! unset
 .cindex "SRV record" "enabling use of"
-The &(dnslookup)& router supports the use of SRV records (see RFC 2782) in
-addition to MX and address records. The support is disabled by default. To
+The &(dnslookup)& router supports the use of SRV records
+(see &url(https://www.rfc-editor.org/rfc/rfc2782,RFC 2782))
+in addition to MX and address records. The support is disabled by default. To
 enable SRV support, set the &%check_srv%& option to the name of the service
 required. For example,
 .code
@@ -20581,7 +20652,9 @@ entered. No widening ever takes place for these lookups.
 This router has no private options. Unless it is being used purely for
 verification (see &%verify_only%&) a transport is required to be defined by the
 generic &%transport%& option. The router accepts the address if its domain part
-takes the form of an RFC 2822 domain literal. For example, the &(ipliteral)&
+takes the form of an
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+domain literal. For example, the &(ipliteral)&
 router handles the address
 .code
 root@[192.168.1.1]
@@ -21430,8 +21503,9 @@ userforward:
 If the file does not exist, or causes no action to be taken (for example, it is
 empty or consists only of comments), the router declines. &*Warning*&: This
 is not the case when the file contains syntactically valid items that happen to
-yield empty addresses, for example, items containing only RFC 2822 address
-comments.
+yield empty addresses, for example, items containing only
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+address comments.
 
 .cindex "tainted data" "in filenames"
 .cindex redirect "tainted data"
@@ -21555,8 +21629,9 @@ preceded by &"\"&, but this is not a requirement for loop prevention. However,
 it does make a difference if more than one domain is being handled
 synonymously.
 
-If an item begins with &"\"& and the rest of the item parses as a valid RFC
-2822 address that does not include a domain, the item is qualified using the
+If an item begins with &"\"& and the rest of the item parses as a valid
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+address that does not include a domain, the item is qualified using the
 domain of the incoming address. In the absence of a leading &"\"&, unqualified
 addresses are qualified using the value in &%qualify_recipient%&, but you can
 force the incoming domain to be used by setting &%qualify_preserve_domain%&.
@@ -21595,7 +21670,9 @@ lists (that is, in non-filter redirection data):
 .cindex "pipe" "in redirection list"
 .cindex "address redirection" "to pipe"
 An item is treated as a pipe command if it begins with &"|"& and does not parse
-as a valid RFC 2822 address that includes a domain. A transport for running the
+as a valid
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+address that includes a domain. A transport for running the
 command must be specified by the &%pipe_transport%& option.
 Normally, either the router or the transport specifies a user and a group under
 which to run the delivery. The default is to use the Exim user and group.
@@ -21628,7 +21705,9 @@ an &%accept%& router.
 .cindex "file" "in redirection list"
 .cindex "address redirection" "to file"
 An item is interpreted as a path name if it begins with &"/"& and does not
-parse as a valid RFC 2822 address that includes a domain. For example,
+parse as a valid
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+address that includes a domain. For example,
 .code
 /home/world/minbari
 .endd
@@ -22305,7 +22384,9 @@ so it is passed to the following routers.
 
 .cindex "Sieve filter" "syntax errors in"
 Syntax errors in a Sieve filter file cause the &"keep"& action to occur. This
-action is specified by RFC 3028. The values of &%skip_syntax_errors%&,
+action is specified by
+&url(https://www.rfc-editor.org/rfc/rfc3028.html,RFC 3028).
+The values of &%skip_syntax_errors%&,
 &%syntax_errors_to%&, and &%syntax_errors_text%& are not used.
 
 &%skip_syntax_errors%& can be used to specify that errors in users' forward
@@ -22881,7 +22962,8 @@ Although the return path is normally available in the prefix line of BSD
 mailboxes, this is commonly not displayed by MUAs, and so the user does not
 have easy access to it.
 
-RFC 2821 states that the &'Return-path:'& header is added to a message &"when
+&url(https://www.rfc-editor.org/rfc/rfc2821,RFC 2821)
+states that the &'Return-path:'& header is added to a message &"when
 the delivery SMTP server makes the final delivery"&. This implies that this
 header should not be present in incoming messages. Exim has a configuration
 option, &%return_path_remove%&, which requests removal of this header from
@@ -22953,7 +23035,9 @@ filter itself, and the original process that reads the result and delivers it
 are all run in parallel, like a shell pipeline.
 
 The filter can perform any transformations it likes, but of course should take
-care not to break RFC 2822 syntax. Exim does not check the result, except to
+care not to break
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+syntax. Exim does not check the result, except to
 test for a final newline when SMTP is in use. All messages transmitted over
 SMTP must end with a newline, so Exim supplies one if it is missing.
 
@@ -24431,7 +24515,9 @@ The &(autoreply)& transport is not a true transport in that it does not cause
 the message to be transmitted. Instead, it generates a new mail message as an
 automatic reply to the incoming message. &'References:'& and
 &'Auto-Submitted:'& header lines are included. These are constructed according
-to the rules in RFCs 2822 and 3834, respectively.
+to the rules in RFCs
+&url(https://www.rfc-editor.org/rfc/rfc2822,2822) and
+&url(https://datatracker.ietf.org/doc/html/rfc3834,3834), respectively.
 
 If the router that passes the message to this transport does not have the
 &%unseen%& option set, the original message (for the current recipient) is not
@@ -24527,7 +24613,9 @@ specified by the transport.
 
 
 .option headers autoreply string&!! unset
-This specifies additional RFC 2822 headers that are to be added to the message
+This specifies additional
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+headers that are to be added to the message
 when the message is specified by the transport. Several can be given by using
 &"\n"& to separate them. There is no check on the format.
 
@@ -24636,7 +24724,8 @@ when the message is specified by the transport.
 .cindex "&(lmtp)& transport"
 .cindex "LMTP" "over a pipe"
 .cindex "LMTP" "over a unix-domain socket"
-The &(lmtp)& transport runs the LMTP protocol (RFC 2033) over a pipe to a
+The &(lmtp)& transport runs the LMTP protocol
+(&url(https://www.rfc-editor.org/rfc/rfc2033,RFC 2033)) over a pipe to a
 specified command
 or by interacting with a Unix domain socket.
 This transport is something of a cross between the &(pipe)& and &(smtp)&
@@ -25480,7 +25569,8 @@ to a remote host. A setting of zero allows the system timeout (typically
 several minutes) to act. To have any effect, the value of this option must be
 less than the system timeout. However, it has been observed that on some
 systems there is no system timeout, which is why the default value for this
-option is 5 minutes, a value recommended by RFC 1123.
+option is 5 minutes, a value recommended by
+&url(https://www.rfc-editor.org/rfc/rfc1123,RFC 1123).
 
 
 .option connection_max_messages smtp integer 500
@@ -25987,7 +26077,7 @@ See section &<<SECDANE>>&.
 .cindex "RFC 7413" "TCP Fast Open"
 This option provides a list of servers to which, provided
 the facility is supported by this system, Exim will attempt to
-perform a TCP Fast Open.
+perform a TCP Fast Open (&url(https://www.rfc-editor.org/rfc/rfc7413,RFC 7413).
 No data is sent on the SYN segment but, if the remote server also
 supports the facility, it can send its SMTP banner immediately after
 the SYN,ACK segment.  This can save up to one round-trip time.
@@ -26143,7 +26233,9 @@ to put &"smtps"& in its &"/etc/services"& file, resulting is such deferrals.
 .vindex "&$port$&"
 If this option is set to &"lmtp"& instead of &"smtp"&, the default value for
 the &%port%& option changes to &"lmtp"&, and the transport operates the LMTP
-protocol (RFC 2033) instead of SMTP. This protocol is sometimes used for local
+protocol
+(&url(https://www.rfc-editor.org/rfc/rfc2033,RFC 2033)) instead of SMTP.
+This protocol is sometimes used for local
 deliveries into closed message stores. Exim also has support for running LMTP
 over a pipe to a local process &-- see chapter &<<CHAPLMTP>>&.
 
@@ -26154,7 +26246,8 @@ If this option is set to &"smtps"&, the default value for the &%port%& option
 changes to &"smtps"&, and the transport initiates TLS immediately after
 connecting, as an outbound SSL-on-connect, instead of using STARTTLS to upgrade.
 The Internet standards bodies used to strongly discourage use of this mode,
-but as of RFC 8314 it is preferred over STARTTLS for message submission
+but as of &url(https://www.rfc-editor.org/rfc/rfc8314,RFC 8314) it is preferred
+over STARTTLS for message submission
 (as distinct from MTA-MTA communication).
 
 
@@ -26638,8 +26731,9 @@ transport time.
 .cindex "testing" "rewriting"
 Exim's input rewriting configuration appears in a part of the runtime
 configuration file headed by &"begin rewrite"&. It can be tested by the
-&%-brw%& command line option. This takes an address (which can be a full RFC
-2822 address) as its argument. The output is a list of how the address would be
+&%-brw%& command line option. This takes an address (which can be a full
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+address) as its argument. The output is a list of how the address would be
 transformed by the rewriting rules for each of the different places it might
 appear in an incoming message, that is, for each different header and for the
 envelope sender and recipient fields. For example,
@@ -26850,7 +26944,10 @@ data for the command, including any surrounding angle brackets.
 .vindex "&$domain$&"
 .vindex "&$local_part$&"
 This form of rewrite rule allows for the handling of addresses that are not
-compliant with RFCs 2821 and 2822 (for example, &"bang paths"& in batched SMTP
+compliant with RFCs
+&url(https://www.rfc-editor.org/rfc/rfc2821,2821) and
+&url(https://www.rfc-editor.org/rfc/rfc2822,2822)
+(for example, &"bang paths"& in batched SMTP
 input). Because the input is not required to be a syntactically valid address,
 the variables &$local_part$& and &$domain$& are not available during the
 expansion of the replacement string. The result of rewriting replaces the
@@ -26878,8 +26975,9 @@ rewriting once it fails to match (after at least one successful rewrite).
 .next
 .cindex "rewriting" "whole addresses"
 When an address in a header is rewritten, the rewriting normally applies only
-to the working part of the address, with any comments and RFC 2822 &"phrase"&
-left unchanged. For example, rewriting might change
+to the working part of the address, with any comments and
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+&"phrase"& left unchanged. For example, rewriting might change
 .code
 From: Ford Prefect <fp42@restaurant.hitch.fict.example>
 .endd
@@ -26891,10 +26989,12 @@ From: Ford Prefect <prefectf@hitch.fict.example>
 Sometimes there is a need to replace the whole address item, and this can be
 done by adding the flag letter &"w"& to a rule. If this is set on a rule that
 causes an address in a header line to be rewritten, the entire address is
-replaced, not just the working part. The replacement must be a complete RFC
-2822 address, including the angle brackets if necessary. If text outside angle
+replaced, not just the working part. The replacement must be a complete
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+address, including the angle brackets if necessary. If text outside angle
 brackets contains a character whose value is greater than 126 or less than 32
-(except for tab), the text is encoded according to RFC 2047. The character set
+(except for tab), the text is encoded according to
+&url(https://www.rfc-editor.org/rfc/rfc2047,RFC 2047). The character set
 is taken from &%headers_charset%&, which gets its default at build time.
 
 When the &"w"& flag is set on a rule that causes an envelope address to be
@@ -27523,7 +27623,9 @@ considered immediately.
 .scindex IIDauthconf2 "authentication"
 The &"authenticators"& section of Exim's runtime configuration is concerned
 with SMTP authentication. This facility is an extension to the SMTP protocol,
-described in RFC 2554, which allows a client SMTP host to authenticate itself
+described in
+&url(https://www.rfc-editor.org/rfc/rfc2554,RFC 2554),
+which allows a client SMTP host to authenticate itself
 to a server. This is a common way for a server to recognize clients that are
 permitted to use it as a relay. SMTP authentication is not of relevance to the
 transfer of mail between servers that have no managerial connection with each
@@ -27597,18 +27699,21 @@ AUTH_SPA=yes
 AUTH_TLS=yes
 .endd
 in &_Local/Makefile_&, respectively. The first of these supports the CRAM-MD5
-authentication mechanism (RFC 2195), and the second provides an interface to
-the Cyrus SASL authentication library.
+authentication mechanism
+(&url(https://www.rfc-editor.org/rfc/rfc2195,RFC 2195)),
+and the second provides an interface to the Cyrus SASL authentication library.
 The third is an interface to Dovecot's authentication system, delegating the
 work via a socket interface.
 The fourth provides for negotiation of authentication done via non-SMTP means,
-as defined by RFC 4422 Appendix A.
+as defined by &url(https://www.rfc-editor.org/rfc/rfc4422,RFC 4422) Appendix A.
 The fifth provides an interface to the GNU SASL authentication library, which
 provides mechanisms but typically not data sources.
 The sixth provides direct access to Heimdal GSSAPI, geared for Kerberos, but
 supporting setting a server keytab.
 The seventh can be configured to support
-the PLAIN authentication mechanism (RFC 2595) or the LOGIN mechanism, which is
+the PLAIN authentication mechanism
+(&url(https://www.rfc-editor.org/rfc/rfc2595,RFC 2595))
+or the LOGIN mechanism, which is
 not formally documented, but used by several MUAs.
 The eighth authenticator
 supports Microsoft's &'Secure Password Authentication'& mechanism.
@@ -27697,7 +27802,8 @@ authenticators is to be used.
 .option public_name authenticators string unset
 This option specifies the name of the authentication mechanism that the driver
 implements, and by which it is known to the outside world. These names should
-contain only upper case letters, digits, underscores, and hyphens (RFC 2222),
+contain only upper case letters, digits, underscores, and hyphens
+(&url(https://www.rfc-editor.org/rfc/rfc2222,RFC 2222)),
 but Exim in fact matches them caselessly. If &%public_name%& is not set, it
 defaults to the driver's instance name.
 
@@ -28118,7 +28224,9 @@ There are good and bad examples at the end of the next section.
 .cindex "PLAIN authentication mechanism"
 .cindex authentication PLAIN
 .cindex "binary zero" "in &(plaintext)& authenticator"
-The PLAIN authentication mechanism (RFC 2595) specifies that three strings be
+The PLAIN authentication mechanism
+(&url(https://www.rfc-editor.org/rfc/rfc2595,RFC 2595))
+specifies that three strings be
 sent as one item of data (that is, one combined string containing two NUL
 separators). The data is sent either as part of the AUTH command, or
 subsequently in response to an empty prompt from the server.
@@ -28325,7 +28433,8 @@ prompts.
 .scindex IIDcramauth2 "authenticators" "&(cram_md5)&"
 .cindex "CRAM-MD5 authentication mechanism"
 .cindex authentication CRAM-MD5
-The CRAM-MD5 authentication mechanism is described in RFC 2195. The server
+The CRAM-MD5 authentication mechanism is described in
+&url(https://www.rfc-editor.org/rfc/rfc2195,RFC 2195). The server
 sends a challenge string to the client, and the response consists of a user
 name and the CRAM-MD5 digest of the challenge string combined with a secret
 string (password) which is known to both server and client. Thus, the secret
@@ -28443,7 +28552,9 @@ The code for this authenticator was provided by Matthew Byng-Maddick while
 at A L Digital Ltd.
 
 The &(cyrus_sasl)& authenticator provides server support for the Cyrus SASL
-library implementation of the RFC 2222 (&"Simple Authentication and Security
+library implementation of the
+&url(https://www.rfc-editor.org/rfc/rfc2222,RFC 2222)
+(&"Simple Authentication and Security
 Layer"&). This library supports a number of authentication mechanisms,
 including PLAIN and LOGIN, but also several others that Exim does not support
 directly. In particular, there is support for Kerberos authentication.
@@ -29022,7 +29133,7 @@ msn:
 The &(external)& authenticator provides support for
 authentication based on non-SMTP information.
 The specification is in
-&url(https://tools.ietf.org/html/rfc4422,PFC 4422) Appendix A.
+&url(https://tools.ietf.org/html/rfc4422,RFC 4422) Appendix A.
 It is only a transport and negotiation mechanism;
 the process of authentication is entirely controlled
 by the server configuration.
@@ -29263,7 +29374,8 @@ You also need to understand the basic concepts of encryption at a managerial
 level, and in particular, the way that public keys, private keys, and
 certificates are used.
 
-RFC 3207 defines how SMTP connections can make use of encryption. Once a
+&url(https://www.rfc-editor.org/rfc/rfc3207,RFC 3207)
+defines how SMTP connections can make use of encryption. Once a
 connection is established, the client issues a STARTTLS command. If the
 server accepts this, the client and the server negotiate an encryption
 mechanism. If the negotiation succeeds, the data that subsequently passes
@@ -29290,7 +29402,9 @@ in order to get TLS to work.
 .cindex "SMTP" "ssmtp protocol"
 .cindex "SMTP" "smtps protocol"
 The history of port numbers for TLS in SMTP is a little messy and has been
-contentious.  As of RFC 8314, the common practice of using the historically
+contentious.  As of
+&url(https://www.rfc-editor.org/rfc/rfc8314,RFC 8314),
+the common practice of using the historically
 allocated port 465 for "email submission but with TLS immediately upon connect
 instead of using STARTTLS" is officially blessed by the IETF, and recommended
 by them in preference to STARTTLS.
@@ -29360,7 +29474,8 @@ The default value for &%tls_dhparam%& differs for historical reasons.
 .vindex "&$tls_in_peerdn$&"
 .vindex "&$tls_out_peerdn$&"
 Distinguished Name (DN) strings reported by the OpenSSL library use a slash for
-separating fields; GnuTLS uses commas, in accordance with RFC 2253. This
+separating fields; GnuTLS uses commas, in accordance with
+&url(https://www.rfc-editor.org/rfc/rfc2253,RFC 2253). This
 affects the value of the &$tls_in_peerdn$& and &$tls_out_peerdn$& variables.
 .next
 OpenSSL identifies cipher suites using hyphens as separators, for example:
@@ -30021,7 +30136,9 @@ initiated by Exim.
 .oindex "&%tls_in_sni%&"
 With TLS1.0 or above, there is an extension mechanism by which extra
 information can be included at various points in the protocol.  One of these
-extensions, documented in RFC 6066 (and before that RFC 4366) is
+extensions, documented in
+&url(https://www.rfc-editor.org/rfc/rfc6066,RFC 6066)
+(and before that &url(https://www.rfc-editor.org/rfc/rfc4366,RFC 4366)) is
 &"Server Name Indication"&, commonly &"SNI"&.  This extension is sent by the
 client in the initial handshake, so that the server can examine the servername
 within and possibly choose to use different certificates and keys (and more)
@@ -30356,8 +30473,8 @@ There is no current way to staple a proof for a client certificate.
 .section "TLS Resumption" "SECTresumption"
 .cindex TLS resumption
 TLS Session Resumption for TLS 1.2 and TLS 1.3 connections can be used (defined
-in RFC 5077 for 1.2).  The support for this requires GnuTLS 3.6.3 or OpenSSL 1.1.1
-(or later).
+in &url(https://www.rfc-editor.org/rfc/rfc5077,RFC 5077) for 1.2).
+The support for this requires GnuTLS 3.6.3 or OpenSSL 1.1.1 (or later).
 
 Session resumption (this is the "stateless" variant) involves the server sending
 a "session ticket" to the client on one connection, which can be stored by the
@@ -30643,12 +30760,14 @@ Section 4.3 of that document.
 .subsection General
 Under GnuTLS, DANE is only supported from version 3.0.0 onwards.
 
-DANE is specified in RFC 6698. It decouples certificate authority trust
+DANE is specified in &url(https://www.rfc-editor.org/rfc/rfc6698,RFC 6698).
+It decouples certificate authority trust
 selection from a "race to the bottom" of "you must trust everything for mail
 to get through".
 It does retain the need to trust the assurances provided by the DNSSEC tree.
 
-There is an alternative technology called MTA-STS (RFC 8461), which
+There is an alternative technology called MTA-STS
+(&url(https://www.rfc-editor.org/rfc/rfc8461,RFC 8461)), which
 instead publishes MX trust anchor information on an HTTPS website.
 The discovery of the address for that website does not (per standard)
 require DNSSEC, and could be regarded as being less secure than DANE
@@ -30976,8 +31095,11 @@ to test/retrieve WELLKNOWN items. Syntax is
 
 WELLKNOWN is a ESMTP extension providing access to extended
 information about the server.  It is modelled on the webserver
-facilities documented in RFC 8615 and can be used for a security.txt
-file and could be used for ACME handshaking (RFC 8555).
+facilities documented in
+&url(https://www.rfc-editor.org/rfc/rfc8615,RFC 8615)
+and can be used for a security.txt file
+and could be used for ACME handshaking
+(&url(https://www.rfc-editor.org/rfc/rfc8555,RFC 8555)).
 
 Exim will advertise WELLKNOWN support in the EHLO response
 .oindex &%wellknown_advertise_hosts%&
@@ -30985,7 +31107,8 @@ Exim will advertise WELLKNOWN support in the EHLO response
 and service WELLKNOWN smtp verbs having a single parameter
 giving a key for an item of "site-wide metadata".
 The verb and key are separated by whitespace,
-and the key is xtext-encoded (per RFC 3461 section 4).
+and the key is xtext-encoded
+(per &url(https://www.rfc-editor.org/rfc/rfc3461,RFC 3461) section 4).
 
 
 .subsection "The QUIT ACL" SECTQUITACL
@@ -31061,8 +31184,11 @@ acl_smtp_rcpt = ${if ={25}{$interface_port} \
                      {acl_check_rcpt} {acl_check_rcpt_submit} }
 .endd
 In the default configuration file there are some example settings for
-providing an RFC 4409 message &"submission"& service on port 587 and
-an RFC 8314 &"submissions"& service on port 465. You can use a string
+providing an
+&url(https://www.rfc-editor.org/rfc/rfc4409,RFC 4409)
+message &"submission"& service on port 587 and an
+&url(https://www.rfc-editor.org/rfc/rfc8314,RFC 8314)
+&"submissions"& service on port 465. You can use a string
 expansion like this to choose an ACL for MUAs on these ports which is
 more appropriate for this purpose than the default ACL on port 25.
 
@@ -32174,11 +32300,15 @@ to be useful in production.
 .cindex "multiline responses, suppressing"
 This control is permitted for any ACL except the one for non-SMTP messages.
 It seems that there are broken clients in use that cannot handle multiline
-SMTP responses, despite the fact that RFC 821 defined them over 20 years ago.
+SMTP responses, despite the fact that
+&url(https://www.rfc-editor.org/rfc/rfc821,RFC 821)
+defined them over 20 years ago.
 
 If this control is set, multiline SMTP responses from ACL rejections are
 suppressed. One way of doing this would have been to put out these responses as
-one long line. However, RFC 2821 specifies a maximum of 512 bytes per response
+one long line. However,
+&url(https://www.rfc-editor.org/rfc/rfc2821,RFC 2821)
+specifies a maximum of 512 bytes per response
 (&"use multiline responses for more"& it says &-- ha!), and some of the
 responses might get close to that. So this facility, which is after all only a
 sop to broken clients, is implemented by doing two very easy things:
@@ -34002,8 +34132,9 @@ updated in this circumstance.
 .cindex "callout" "full postmaster check"
 This operates like the &%postmaster%& option (see below), but if the check for
 &'postmaster@domain'& fails, it tries just &'postmaster'&, without a domain, in
-accordance with the specification in RFC 2821. The RFC states that the
-unqualified address &'postmaster'& should be accepted.
+accordance with the specification in
+&url(https://www.rfc-editor.org/rfc/rfc2821,RFC 2821).
+The RFC states that the unqualified address &'postmaster'& should be accepted.
 
 
 .vitem &*mailfrom&~=&~*&<&'email&~address'&>
@@ -35375,8 +35506,8 @@ containing the decoded data.
 This is perhaps the most important of the MIME variables. It contains a
 proposed filename for an attachment, if one was found in either the
 &'Content-Type:'& or &'Content-Disposition:'& headers. The filename will be
-RFC2047
-or RFC2231
+&url(https://www.rfc-editor.org/rfc/rfc2047,RFC 2047) or
+&url(https://www.rfc-editor.org/rfc/rfc2231,RFC 2231)
 decoded, but no additional sanity checks are done.
  If no filename was
 found, this variable contains the empty string.
@@ -36137,7 +36268,8 @@ address.
 .vlist
 .vitem "&*uschar&~rfc2047_decode(uschar&~*string,&~BOOL&~lencheck,&&&
   &~uschar&~*target,&~int&~zeroval,&~int&~*lenptr, &~&~uschar&~**error)*&"
-This function decodes strings that are encoded according to RFC 2047. Typically
+This function decodes strings that are encoded according to
+&url(https://www.rfc-editor.org/rfc/rfc2047,RFC 2047). Typically
 these are the contents of header lines. First, each &"encoded word"& is decoded
 from the Q or B encoding into a byte-string. Then, if provided with the name of
 a charset encoding, and if the &[iconv()]& function is available, an attempt is
@@ -36469,7 +36601,8 @@ headers remove <string>
 .endd
 The argument for the &%headers add%& is a string that is expanded and then
 added to the end of the message's headers. It is the responsibility of the
-filter maintainer to make sure it conforms to RFC 2822 syntax. Leading white
+filter maintainer to make sure it conforms to
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822) syntax. Leading white
 space is ignored, and if the string is otherwise empty, or if the expansion is
 forced to fail, the command has no effect.
 
@@ -36689,7 +36822,8 @@ spoof another's address.
 .cindex "line endings"
 .cindex "carriage return"
 .cindex "linefeed"
-RFC 2821 specifies that CRLF (two characters: carriage-return, followed by
+&url(https://www.rfc-editor.org/rfc/rfc2821,RFC 2821)
+specifies that CRLF (two characters: carriage-return, followed by
 linefeed) is the line ending for messages transmitted over the Internet using
 SMTP over TCP/IP. However, within individual operating systems, different
 conventions are used. For example, Unix-like systems use just LF, but others
@@ -36773,7 +36907,9 @@ with a line containing the envelope sender and a timestamp, following the word
 From a.oakley@berlin.mus Fri Jan  5 12:35 GMT 1996
 From f.butler@berlin.mus Fri, 7 Jan 97 14:00:00 GMT
 .endd
-This line precedes the RFC 2822 header lines. For compatibility with Sendmail,
+This line precedes the
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+header lines. For compatibility with Sendmail,
 Exim recognizes such lines at the start of messages that are submitted to it
 via the command line (that is, on the standard input). It does not recognize
 such lines in incoming SMTP messages, unless the sending host matches
@@ -36787,7 +36923,9 @@ that follows &"From"& into &$1$&.
 When the caller of Exim for a non-SMTP message that contains a &"From"& line is
 a trusted user, the message's sender address is constructed by expanding the
 contents of &%uucp_sender_address%&, whose default value is &"$1"&. This is
-then parsed as an RFC 2822 address. If there is no domain, the local part is
+then parsed as an
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+address. If there is no domain, the local part is
 qualified with &%qualify_domain%& unless it is the empty string. However, if
 the command line &%-f%& option is used, it overrides the &"From"& line.
 
@@ -36805,7 +36943,8 @@ incoming SMTP message from a source that is not permitted to send them.
 .section "Header lines"
 .subsection "Resent- header lines" SECID220
 .chindex Resent-
-RFC 2822 makes provision for sets of header lines starting with the string
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+makes provision for sets of header lines starting with the string
 &`Resent-`& to be added to a message when it is resent by the original
 recipient to somebody else. These headers are &'Resent-Date:'&,
 &'Resent-From:'&, &'Resent-Sender:'&, &'Resent-To:'&, &'Resent-Cc:'&,
@@ -36868,8 +37007,10 @@ Exim adds one, using the current date and time, unless the
 .subsection Delivery-date: SECID224
 .cindex "&'Delivery-date:'& header line"
 .oindex "&%delivery_date_remove%&"
-&'Delivery-date:'& header lines are not part of the standard RFC 2822 header
-set. Exim can be configured to add them to the final delivery of messages. (See
+&'Delivery-date:'& header lines are not part of the standard
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+header set.
+Exim can be configured to add them to the final delivery of messages. (See
 the generic &%delivery_date_add%& transport option.) They should not be present
 in messages in transit. If the &%delivery_date_remove%& configuration option is
 set (the default), Exim removes &'Delivery-date:'& header lines from incoming
@@ -36879,7 +37020,8 @@ messages.
 .subsection Envelope-to: SECID225
 .chindex Envelope-to:
 .oindex "&%envelope_to_remove%&"
-&'Envelope-to:'& header lines are not part of the standard RFC 2822 header set.
+&'Envelope-to:'& header lines are not part of the standard
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822) header set.
 Exim can be configured to add them to the final delivery of messages. (See the
 generic &%envelope_to_add%& transport option.) They should not be present in
 messages in transit. If the &%envelope_to_remove%& configuration option is set
@@ -36965,8 +37107,11 @@ changed to the time of acceptance, which is (apart from a small delay while the
 .chindex References:
 Messages created by the &(autoreply)& transport include a &'References:'&
 header line. This is constructed according to the rules that are described in
-section 3.64 of RFC 2822 (which states that replies should contain such a
-header line), and section 3.14 of RFC 3834 (which states that automatic
+section 3.64 of
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+(which states that replies should contain such a header line),
+and section 3.14 of &url(https://datatracker.ietf.org/doc/html/rfc3834,RFC 3834)
+(which states that automatic
 responses are not different in this respect). However, because some mail
 processing software does not cope well with very long header lines, no more
 than 12 message IDs are copied from the &'References:'& header line in the
@@ -37068,8 +37213,9 @@ the transport cannot refer to the modified header lines, because such
 expansions all occur before the message is actually transported.
 
 For both routers and transports, the argument of a &%headers_add%&
-option must be in the form of one or more RFC 2822 header lines, separated by
-newlines (coded as &"\n"&). For example:
+option must be in the form of one or more
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+header lines, separated by newlines (coded as &"\n"&). For example:
 .code
 headers_add = X-added-header: added by $primary_hostname\n\
               X-added-second: another added header line
@@ -37180,9 +37326,12 @@ The &%unknown_username%& option can be used to specify user names in cases when
 there is no password file entry.
 
 .cindex "RFC 2047"
-In all cases, the user name is made to conform to RFC 2822 by quoting all or
+In all cases, the user name is made to conform to
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+by quoting all or
 parts of it if necessary. In addition, if it contains any non-printing
-characters, it is encoded as described in RFC 2047, which defines a way of
+characters, it is encoded as described in
+&url(https://www.rfc-editor.org/rfc/rfc2047,RFC 2047), which defines a way of
 including non-ASCII characters in header lines. The value of the
 &%headers_charset%& option specifies the name of the encoding that is used (the
 characters are assumed to be in this encoding). The setting of
@@ -37194,7 +37343,8 @@ is, with codes greater than 127) count as printing characters or not.
 .section "Case of local parts" "SECID230"
 .cindex "case of local parts"
 .cindex "local part" "case of"
-RFC 2822 states that the case of letters in the local parts of addresses cannot
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+states that the case of letters in the local parts of addresses cannot
 be assumed to be non-significant. Exim preserves the case of local parts of
 addresses, but by default it uses a lower-cased form when it is routing,
 because on most Unix systems, usernames are in lower case and case-insensitive
@@ -37226,7 +37376,8 @@ local parts with the correct case in a case-sensitive manner.
 .section "Dots in local parts" "SECID231"
 .cindex "dot" "in local part"
 .cindex "local part" "dots in"
-RFC 2822 forbids empty components in local parts. That is, an unquoted local
+&url(https://www.rfc-editor.org/rfc/rfc2822,RFC 2822)
+forbids empty components in local parts. That is, an unquoted local
 part may not begin or end with a dot, nor have two consecutive dots in the
 middle. However, it seems that many MTAs do not enforce this, so Exim permits
 empty components for compatibility.
@@ -37329,8 +37480,9 @@ transport filter. If &%size_addition%& is set negative, the use of SIZE is
 suppressed.
 
 If the remote server advertises support for PIPELINING, Exim uses the
-pipelining extension to SMTP (RFC 2197) to reduce the number of TCP/IP packets
-required for the transaction.
+pipelining extension to SMTP
+(&url(https://datatracker.ietf.org/doc/html/rfc2197,RFC 2197))
+to reduce the number of TCP/IP packets required for the transaction.
 
 If the remote server advertises support for the STARTTLS command, and Exim
 was built to support TLS encryption, it tries to start a TLS session unless the
@@ -37720,7 +37872,8 @@ destination (eg. one using a dialup connection).
 The command is only available if permitted by an ACL
 specfied by the main-section &%acl_smtp_etrn%& option.
 
-RFC 1985 describes an ESMTP command called ETRN that is designed to
+&url(https://www.rfc-editor.org/rfc/rfc1985,RFC 1985)
+describes an ESMTP command called ETRN that is designed to
 overcome the security problems of the TURN command (which has fallen into
 disuse). When Exim receives an ETRN command on a TCP/IP connection, it runs
 the ACL specified by &%acl_smtp_etrn%& in order to decide whether the command
@@ -38909,7 +39062,7 @@ calls at each internal newline, and also after a maximum of
 870 data characters. (This allows for a total syslog line length of 1024, when
 additions such as timestamps are added.) If you are running a syslog
 replacement that can handle lines longer than the 1024 characters allowed by
-RFC 3164, you should set
+&url(https://www.rfc-editor.org/rfc/rfc3164,RFC 3164), you should set
 .code
 SYSLOG_LONG_LINES=yes
 .endd
@@ -39506,7 +39659,8 @@ added to log entries and &'Received:'& header lines, following the IP address
 in square brackets, and separated from it by a colon. This is implemented by
 changing the value that is put in the &$sender_fullhost$& and
 &$sender_rcvhost$& variables. Recording the remote port number has become more
-important with the widening use of NAT (see RFC 2505).
+important with the widening use of NAT
+(see &url(https://www.rfc-editor.org/rfc/rfc2505,RFC 2505)).
 .next
 .cindex "log" "dropped connection"
 &%lost_incoming_connection%&: A log line is written when an incoming SMTP
@@ -41784,7 +41938,7 @@ There is no dot-stuffing (and no dot-termination).
 DKIM is a mechanism by which messages sent by some entity can be provably
 linked to a domain which that entity controls.  It permits reputation to
 be tracked on a per-domain basis, rather than merely upon source IP address.
-DKIM is documented in RFC 6376.
+DKIM is documented in &url(https://www.rfc-editor.org/rfc/rfc6376,RFC 6376).
 
 As DKIM relies on the message being unchanged in transit, messages handled
 by a mailing-list (which traditionally adds to the message) will not match
@@ -41835,7 +41989,8 @@ senders).
 .cindex DKIM signing
 
 For signing to be usable you must have published a DKIM record in DNS.
-Note that RFC 8301 (which does not cover EC keys) says:
+Note that &url(https://www.rfc-editor.org/rfc/rfc8301,RFC 8301)
+(which does not cover EC keys) says:
 .code
 rsa-sha1 MUST NOT be used for signing or verifying.
 
@@ -41909,7 +42064,8 @@ permissions set so that Exim can read it,
 and this option set to use it.
 Take the base-64 lines from the output of the second command, concatenated,
 for the DNS TXT record.
-See section 3.6 of RFC6376 for the record specification.
+See section 3.6 of &url(https://www.rfc-editor.org/rfc/rfc6376,RFC 6376)
+for the record specification.
 
 Under GnuTLS:
 .code
@@ -41917,13 +42073,14 @@ certtool --generate-privkey --rsa --bits=2048 --password='' -8 --outfile=dkim_rs
 certtool --load-privkey=dkim_rsa.private --pubkey-info
 .endd
 
-Note that RFC 8301 says:
+Note that &url(https://www.rfc-editor.org/rfc/rfc8301,RFC 8301) says:
 .code
 Signers MUST use RSA keys of at least 1024 bits for all keys.
 Signers SHOULD use RSA keys of at least 2048 bits.
 .endd
 
-EC keys for DKIM are defined by RFC 8463.
+EC keys for DKIM are defined by
+&url(https://www.rfc-editor.org/rfc/rfc8463,RFC 8463).
 They are considerably smaller than RSA keys for equivalent protection.
 As they are a recent development, users should consider dual-signing
 (by setting a list of selectors, and an expansion for this option)
@@ -41958,7 +42115,7 @@ Can be set to any one of the supported hash methods, which are:
 &`sha512`& &-- possibly more secure but less well supported
 .endlist
 
-Note that RFC 8301 says:
+Note that &url(https://www.rfc-editor.org/rfc/rfc8301,RFC 8301) says:
 .code
 rsa-sha1 MUST NOT be used for signing or verifying.
 .endd
@@ -41988,7 +42145,8 @@ If set, this option must expand to a colon-separated
 list of header names.
 Headers with these names, or the absence of such a header, will be included
 in the message signature.
-When unspecified, the header names listed in RFC4871 will be used,
+When unspecified, the header names listed in
+&url(https://www.rfc-editor.org/rfc/rfc4871,RFC 4871) will be used,
 whether or not each header is present in the message.
 The default list is available for the expansion in the macro
 &"_DKIM_SIGN_HEADERS"&
@@ -42012,7 +42170,8 @@ Otherwise, must be an unsigned number giving an offset in seconds from the
 current time for the expiry tag (e.g. 1209600 for two weeks); both creation
 (t=) and expiry (x=) tags will be included unless the offset is 0 (no expiry).
 
-RFC 6376 lists these tags as RECOMMENDED.
+&url(https://www.rfc-editor.org/rfc/rfc6376,RFC 6376)
+lists these tags as RECOMMENDED.
 
 
 .subsection "Verifying DKIM signatures in incoming mail" SECDKIMVFY
@@ -42176,7 +42335,7 @@ may also be 'ed25519-sha256'.
 The "_CRYPTO_SIGN_ED25519" macro will be defined if support is present
 for EC keys.
 
-Note that RFC 8301 says:
+Note that &url(https://www.rfc-editor.org/rfc/rfc8301,RFC 8301) says:
 .code
 rsa-sha1 MUST NOT be used for signing or verifying.
 
@@ -42198,7 +42357,8 @@ The header canonicalization method. One of 'relaxed' or 'simple'.
 .vitem &%$dkim_copiedheaders%&
 A transcript of headers and their values which are included in the signature
 (copied from the 'z=' tag of the signature).
-Note that RFC6376 requires that verification fail if the From: header is
+Note that &url(https://www.rfc-editor.org/rfc/rfc6376,RFC 6376)
+requires that verification fail if the From: header is
 not included in the signature.  Exim does not enforce this; sites wishing
 strict enforcement should code the check explicitly.
 
@@ -42247,7 +42407,7 @@ Number of bits in the key.
 Valid only once the key is loaded, which is at the time the header signature
 is verified, which is after the body hash is.
 
-Note that RFC 8301 says:
+Note that &url(https://www.rfc-editor.org/rfc/rfc8301,RFC 8301) says:
 .code
 Verifiers MUST NOT consider signatures using RSA keys of
 less than 1024 bits as valid signatures.
@@ -42317,7 +42477,8 @@ is any one of the supplied list.
 .cindex SPF verification
 
 SPF is a mechanism whereby a domain may assert which IP addresses may transmit
-messages with its domain in the envelope from, documented by RFC 7208.
+messages with its domain in the envelope from, documented by
+&url(https://www.rfc-editor.org/rfc/rfc7208,RFC 7208).
 For more information on SPF see &url(http://www.open-spf.org), a static copy of
 the &url(http://openspf.org).
 . --- 2019-10-28: still not https, open-spf.org is told to be a
@@ -42954,7 +43115,8 @@ A possible solution is:
 .cindex proxy SOCKS
 .cindex SOCKS proxy
 Exim has support for sending outbound SMTP via a proxy
-using a protocol called SOCKS5 (defined by RFC1928).
+using a protocol called SOCKS5 (defined by
+&url(https://www.rfc-editor.org/rfc/rfc1928,RFC 1928)).
 The support can be optionally included by defining SUPPORT_SOCKS=yes in
 Local/Makefile.
 
@@ -42984,7 +43146,8 @@ More details on each of these options follows:
 .cindex authentication "to proxy"
 .cindex proxy authentication
 &%auth%&: Either &"none"& (default) or &"name"&.
-Using &"name"& selects username/password authentication per RFC 1929
+Using &"name"& selects username/password authentication per
+&url(https://www.rfc-editor.org/rfc/rfc1929,RFC 1929)
 for access to the proxy.
 Default is &"none"&.
 .next
@@ -43031,7 +43194,11 @@ This will add a component tagged with &"PRX="& to the line.
 
 Exim has support for Internationalised mail names.
 To include this it must be built with SUPPORT_I18N and the libidn library.
-Standards supported are RFCs 2060, 5890, 6530 and 6533.
+Standards supported are RFCs
+&url(https://www.rfc-editor.org/rfc/rfc2060.html,2060),
+&url(https://www.rfc-editor.org/rfc/rfc5890.html,5890),
+&url(https://www.rfc-editor.org/rfc/rfc6530.html,6530) and
+&url(https://www.rfc-editor.org/rfc/rfc6533.html,6533).
 
 If Exim is built with SUPPORT_I18N_2008 (in addition to SUPPORT_I18N, not
 instead of it) then IDNA2008 is supported; this adds an extra library
@@ -43133,7 +43300,8 @@ The string is converted from the charset specified by
 the "headers charset" command (in a filter file)
 or &%headers_charset%& main configuration option (otherwise),
 to the
-modified UTF-7 encoding specified by RFC 2060,
+modified UTF-7 encoding specified by
+&url(https://www.rfc-editor.org/rfc/rfc2060.html,RFC 2060),
 with the following exception: All occurrences of <sep>
 (which has to be a single character)
 are replaced with periods ("."), and all periods and slashes that are not
