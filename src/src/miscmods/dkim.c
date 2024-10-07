@@ -957,10 +957,8 @@ if (dkim_domain)
     uschar * dkim_canon_expanded;
     int pdkim_canon;
     uschar * dkim_sign_headers_expanded = NULL;
-    uschar * dkim_private_key_expanded;
-    uschar * dkim_hash_expanded;
-    uschar * dkim_identity_expanded = NULL;
-    uschar * dkim_timestamps_expanded = NULL;
+    uschar * dkim_private_key_expanded, * dkim_hash_expanded;
+    uschar * dkim_identity_expanded = NULL, * dkim_timestamps_expanded = NULL;
     unsigned long tval = 0, xval = 0;
 
     /* Get canonicalization to use */
@@ -1004,23 +1002,23 @@ if (dkim_domain)
     if (  dkim_private_key_expanded[0] == '/'
        && !(dkim_private_key_expanded =
 	     expand_file_big_buffer(dkim_private_key_expanded)))
-      goto bad;
+      goto clear_key_bad;
 
     GET_OPTION("dkim_hash");
     if (!(dkim_hash_expanded = expand_string(dkim->dkim_hash)))
-      { errwhen = US"dkim_hash"; goto expand_bad; }
+      { errwhen = US"dkim_hash"; goto clear_key_expand_bad; }
 
     GET_OPTION("dkim_identity");
     if (dkim->dkim_identity)
       if (!(dkim_identity_expanded = expand_string(dkim->dkim_identity)))
-	{ errwhen = US"dkim_identity"; goto expand_bad; }
+	{ errwhen = US"dkim_identity"; goto clear_key_expand_bad; }
       else if (!*dkim_identity_expanded)
 	dkim_identity_expanded = NULL;
 
     GET_OPTION("dkim_timestamps");
     if (dkim->dkim_timestamps)
       if (!(dkim_timestamps_expanded = expand_string(dkim->dkim_timestamps)))
-	{ errwhen = US"dkim_timestamps"; goto expand_bad; }
+	{ errwhen = US"dkim_timestamps"; goto clear_key_expand_bad; }
       else
         {
         tval = (unsigned long) time(NULL);
@@ -1035,8 +1033,11 @@ if (dkim_domain)
 			  dkim_hash_expanded,
 			  errstr
 			  )))
-      goto bad;
-    dkim_private_key_expanded[0] = '\0';
+      goto clear_key_bad;
+
+    if (dkim_private_key_expanded != dkim->dkim_private_key)
+      /* Avoid leaking keying material via big_buffer */
+      dkim_private_key_expanded[0] = '\0';
 
     pdkim_set_optional(sig,
 			CS dkim_sign_headers_expanded,
@@ -1058,6 +1059,17 @@ if (dkim_domain)
       while (n->next) n = n->next;
       n->next = sig;
       }
+    continue;				/* next selector */
+
+    clear_key_bad:
+      if (dkim_private_key_expanded != dkim->dkim_private_key)
+	dkim_private_key_expanded[0] = '\0';
+      goto bad;
+
+    clear_key_expand_bad:
+      if (dkim_private_key_expanded != dkim->dkim_private_key)
+	dkim_private_key_expanded[0] = '\0';
+      goto expand_bad;
     }
   }
 

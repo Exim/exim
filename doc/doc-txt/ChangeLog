@@ -63,6 +63,10 @@ JH/13 Bug 3120: Fix parsing of DKIM pubkey DNS record. Previously a crafted
       record could crash the meesage recieve process. Investigation by
       Maxim Galaganov.
 
+JH/14 Bug 3116: Fix crash in dkim signing.  On kernels supporting immutable
+      memory segments, a write was done into one when a constant string was
+      configured for a transport's dkim private key.
+
 Exim version 4.98
 -----------------
 
