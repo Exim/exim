@@ -43122,13 +43122,16 @@ Local/Makefile.
 
 Use of a proxy is enabled by setting the &%socks_proxy%& option
 on an smtp transport.
-The option value is expanded and should then be a list
+.new
+If unset (or empty after expansion) then proxying is not done.
+.wen
+Otherwise, expansion should result in a list
 (colon-separated by default) of proxy specifiers.
 Each proxy specifier is a list
 (space-separated by default) where the initial element
 is an IP address and any subsequent elements are options.
 
-Options are a string <name>=<value>.
+Each option is a string of form <name>=<value>.
 The list of options is in the following table:
 .itable none 0 0 2 10* left 90* left
 .irow &'auth'&	"authentication method"

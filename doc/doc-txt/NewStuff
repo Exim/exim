@@ -21,6 +21,9 @@ Version 4.98
     and all the transport drivers except smtp, can now be built as loadable
     modules
 
+ 6. A transport "socks_proxy" may expand to an empty string, specifying no
+    proxying.
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

@@ -319,12 +319,8 @@ return sock;
 
 
 /* Arguments:
-  host        host item containing name and address and port
-  host_af     AF_INET or AF_INET6
-  port	      TCP port number
-  interface   outgoing interface address or NULL
-  tb          transport
-  timeout     timeout value or 0
+  sc		details for making connection: host, af, interface, transport
+  timeout	timeout value or 0
   early_data	if non-NULL, idempotent data to be sent -
 		preferably in the TCP SYN segment
 	      Special case: non-NULL but with NULL blob.data - caller is
@@ -484,48 +480,36 @@ Returns:      connected socket number, or -1 with errno set
 int
 smtp_connect(smtp_connect_args * sc, const blob * early_data)
 {
-int port = sc->host->port;
 smtp_transport_options_block * ob = sc->ob;
 
-callout_address = string_sprintf("[%s]:%d", sc->host->address, port);
+callout_address = string_sprintf("[%s]:%d", sc->host->address, sc->host->port);
 
 HDEBUG(D_transport|D_acl|D_v)
   {
-  uschar * s = US" ";
-  if (sc->interface) s = string_sprintf(" from %s ", sc->interface);
+  gstring * g = sc->interface
+    ? string_fmt_append(NULL, " from %s", sc->interface)
+    : string_get(10);
 #ifdef SUPPORT_SOCKS
-  if (ob->socks_proxy) s = string_sprintf("%svia proxy ", s);
+  if (ob->socks_proxy) g = string_catn(g, US"via proxy", 9);
 #endif
-  debug_printf_indent("Connecting to %s %s%s...\n", sc->host->name, callout_address, s);
+  debug_printf_indent("Connecting to %s %s%Y ...\n",
+		      sc->host->name, callout_address, g);
   }
 
 /* Create and connect the socket */
 
 #ifdef SUPPORT_SOCKS
+GET_OPTION("socks_proxy");
 if (ob->socks_proxy)
   {
-  int sock = socks_sock_connect(sc->host, sc->host_af, port, sc->interface,
-				sc->tblock, ob->connect_timeout);
-  
-  if (sock >= 0)
+  if (!(ob->socks_proxy = expand_string(ob->socks_proxy)))
     {
-    if (early_data && early_data->data && early_data->len)
-      if (send(sock, early_data->data, early_data->len, 0) < 0)
-	{
-	int save_errno = errno;
-	HDEBUG(D_transport|D_acl|D_v)
-	  {
-	  debug_printf_indent("failed: %s", CUstrerror(save_errno));
-	  if (save_errno == ETIMEDOUT)
-	    debug_printf(" (timeout=%s)", readconf_printtime(ob->connect_timeout));
-	  debug_printf("\n");
-	  }
-	(void)close(sock);
-	sock = -1;
-	errno = save_errno;
-	}
+    log_write(0, LOG_MAIN|LOG_PANIC, "Bad expansion for socks_proxy in %s",
+      sc->tblock->drinst.name);
+    return -1;
     }
-  return sock;
+  if (*ob->socks_proxy)
+    return socks_sock_connect(sc, early_data);
   }
 #endif
 

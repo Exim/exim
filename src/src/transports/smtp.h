@@ -247,8 +247,7 @@ extern void smtp_transport_closedown(transport_instance *);
 
 
 #ifdef SUPPORT_SOCKS
-extern int     socks_sock_connect(host_item *, int, int, uschar *,
-	         transport_instance *, int);
+extern int     socks_sock_connect(smtp_connect_args *, const blob *);
 #endif
 
 /* End of transports/smtp.h */

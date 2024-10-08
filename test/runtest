@@ -1560,6 +1560,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Not all platforms build with DKIM enabled
     next if /^DKIM >> Body data for hash, canonicalized/;
 
+    # Not all platforms build with SOCKS enabled
+    next if /^try option socks_proxy$/;
+
     # Not all platforms build with SPF enabled
     next if /(^$time_pid?spf_conn_init|spf_compile\.c)/;
     next if /try option spf_smtp_comment_template$/;
