@@ -488,9 +488,9 @@ HDEBUG(D_transport|D_acl|D_v)
   {
   gstring * g = sc->interface
     ? string_fmt_append(NULL, " from %s", sc->interface)
-    : string_get(10);
+    : string_get(20);
 #ifdef SUPPORT_SOCKS
-  if (ob->socks_proxy) g = string_catn(g, US"via proxy", 9);
+  if (ob->socks_proxy) g = string_cat(g, US" (proxy option set)");
 #endif
   debug_printf_indent("Connecting to %s %s%Y ...\n",
 		      sc->host->name, callout_address, g);
