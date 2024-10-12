@@ -128,7 +128,6 @@ extern tls_support tls_out;
 
 #ifndef DISABLE_TLS
 extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */
-extern BOOL    tls_ignore_missing_close_notify; /* For semi-broken TLS servers like Gmail and Yandex */
 extern BOOL    gnutls_allow_auto_pkcs11; /* Let GnuTLS autoload PKCS11 modules */
 extern uschar *hosts_require_alpn;     /* Mandatory ALPN successful nogitiation */
 extern uschar *openssl_options;        /* OpenSSL compatibility options */
@@ -139,6 +138,7 @@ extern uschar *tls_crl;                /* CRL File */
 extern int     tls_dh_max_bits;        /* don't accept higher lib suggestions */
 extern uschar *tls_dhparam;            /* DH param file */
 extern uschar *tls_eccurve;            /* EC curve */
+extern BOOL    tls_ignore_missing_close_notify; /* For semi-broken TLS servers like Gmail and Yandex */
 # ifndef DISABLE_OCSP
 extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
 # endif
