@@ -120,7 +120,6 @@ uschar *dsn_advertise_hosts    = NULL;
 
 #ifndef DISABLE_TLS
 BOOL    gnutls_compat_mode     = FALSE;
-BOOL    tls_ignore_missing_close_notify = TRUE;
 BOOL    gnutls_allow_auto_pkcs11 = FALSE;
 uschar *hosts_require_alpn     = NULL;
 uschar *openssl_options        = NULL;
@@ -135,6 +134,7 @@ bit-count as "NORMAL" (2432) and Thunderbird dropping connection. */
 int     tls_dh_max_bits        = 2236;
 uschar *tls_dhparam            = NULL;
 uschar *tls_eccurve            = US"auto";
+BOOL    tls_ignore_missing_close_notify = TRUE;
 # ifndef DISABLE_OCSP
 uschar *tls_ocsp_file          = NULL;
 # endif
