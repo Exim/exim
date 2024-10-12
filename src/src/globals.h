@@ -128,6 +128,7 @@ extern tls_support tls_out;
 
 #ifndef DISABLE_TLS
 extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */
+extern BOOL    tls_ignore_missing_close_notify; /* For semi-broken TLS servers like Gmail and Yandex */
 extern BOOL    gnutls_allow_auto_pkcs11; /* Let GnuTLS autoload PKCS11 modules */
 extern uschar *hosts_require_alpn;     /* Mandatory ALPN successful nogitiation */
 extern uschar *openssl_options;        /* OpenSSL compatibility options */

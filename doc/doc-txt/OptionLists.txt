@@ -267,6 +267,7 @@ gecos_pattern                        string          unset         main
 gethostbyname                        boolean         false         smtp
 gnutls_allow_auto_pkcs11             boolean         false         main              4.82
 gnutls_compat_mode                   boolean         unset         main              4.70
+tls_ignore_missing_close_notify      boolean         true          main              (todo git master)
 gnutls_require_kx                    string*         unset         main              4.67 deprecated, warns
                                      string*         unset         smtp              4.67 deprecated, warns
 gnutls_require_mac                   string*         unset         main              4.67 deprecated, warns

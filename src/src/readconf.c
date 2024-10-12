@@ -168,6 +168,7 @@ static optionlist optionlist_config[] = {
 #ifndef DISABLE_TLS
   { "gnutls_allow_auto_pkcs11", opt_bool,        {&gnutls_allow_auto_pkcs11} },
   { "gnutls_compat_mode",       opt_bool,        {&gnutls_compat_mode} },
+  { "tls_ignore_missing_close_notify", opt_bool, {&tls_ignore_missing_close_notify} },
 #endif
   { "header_line_maxsize",      opt_int,         {&header_line_maxsize} },
   { "header_maxsize",           opt_int,         {&header_maxsize} },
