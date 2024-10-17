@@ -31,13 +31,26 @@
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 Authentication-Results: myhost.test.ex
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 dkim_state DOES NOT include pass
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=20180418125440.Horde.vVKB6E7UvpLfJsPzv2ZPs6z@webmail.sego.es
-1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 unknown
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 DKIM: d=test.ex s=sel_nullkey [failed key import]
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 DKIM: validation error: error:068000E0:asn1 encoding routines::too small
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 signer: test.ex bits: 0
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=0 [invalid - signature tag missing or invalid]
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	dkim=neutral (signature tag missing or invalid)\n		 header.d=test.ex header.s=sel header.a=rsa-sha1
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 DKIM: d=test.ex s=sel_nullkey c=simple/simple a=rsa-sha1 b=1024 [invalid - syntax error in public key record]
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	dkim=neutral (public key record import problem)\n		 header.d=test.ex header.s=sel_nullkey header.a=rsa-sha1
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 dkim_state DOES NOT include pass
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=qwerty1234@disco-zombie.net
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 DKIM: d=test.ex s=sel_snullkey [failed key import]
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 signer: test.ex bits: 0
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 DKIM: d=test.ex s=sel_snullkey c=simple/simple a=rsa-sha1 b=1024 [invalid - syntax error in public key record]
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	dkim=neutral (public key record import problem)\n		 header.d=test.ex header.s=sel_snullkey header.a=rsa-sha1
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 dkim_state DOES NOT include pass
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=qwerty1234@disco-zombie.net
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 unknown
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 signer: test.ex bits: 0
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=0 [invalid - signature tag missing or invalid]
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	dkim=neutral (signature tag missing or invalid)\n		 header.d=test.ex header.s=sel header.a=rsa-sha1
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 dkim_state DOES NOT include pass
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=qwerty1234@disco-zombie.net
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 signer: test.ex bits: 0
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=0 [invalid - signature tag missing or invalid]

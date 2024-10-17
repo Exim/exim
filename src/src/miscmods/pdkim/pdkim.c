@@ -649,7 +649,12 @@ for (const uschar * ele = raw_record, * tspec, * end, * val; *ele; ele = end)
       gstring * g = string_cat(NULL, val);
       while (isspace(gstring_last_char(g)))
 	gstring_trim(g, 1);
-      val = string_from_gstring(g);
+      if (!(val = string_from_gstring(g)))
+	{
+	DEBUG(D_acl)
+	  debug_printf(" Missing value for tag '%.*s'\n", taglen, tspec);
+	return NULL;
+	}
       }
 
     if (taglen == 1) switch (tspec[0])

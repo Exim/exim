@@ -59,6 +59,10 @@ JH/11 Lookups built as dynamic-load modules which support a single lookup
 JH/12 Bug 3112: Fix logging of config-file position for "obsolete lookup
       syntax". Previously, the end of the top-level file was reported.
 
+JH/13 Bug 3120: Fix parsing of DKIM pubkey DNS record. Previously a crafted
+      record could crash the meesage recieve process. Investigation by
+      Maxim Galaganov.
+
 Exim version 4.98
 -----------------
 
