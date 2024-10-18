@@ -29,7 +29,7 @@ features_crypto(void)
 #ifndef DISABLE_DKIM	/* rest of file */
 
 #ifdef DISABLE_TLS
-# error Must no DISABLE_TLS, for DKIM
+# error Must not DISABLE_TLS, for DKIM
 #endif
 
 

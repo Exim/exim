@@ -57,7 +57,7 @@ dkim.o:
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) dkim.c
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) dkim_transport.c
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) pdkim.c
-	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) signing.c
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) $(TLS_INCLUDE) signing.c
 	$(FE)mv dkim.o dkim_tmp.o
 	$(FE)ld -r -o dkim.o $(LDFLAGS_PARTIAL) \
 		dkim_tmp.o dkim_transport.o pdkim.o signing.o
@@ -67,7 +67,7 @@ dkim.so:
 	@echo "$(CC) -shared dkim.c dkim_transport.c pdkim.c signing.c"
 	$(FE)$(CC) -DDYNLOOKUP $(CFLAGS_DYNAMIC) -o $@ \
 		$(SUPPORT_$*_INCLUDE) $(SUPPORT_$*_LIBS) \
-		$(CFLAGS) $(INCLUDE) $(DLFLAGS) \
+		$(CFLAGS) $(INCLUDE) $(TLS_INCLUDE) $(DLFLAGS) \
 		dkim.c dkim_transport.c pdkim.c signing.c
 
 # Compile instructions for static perl.o for when EXIM_PERL is set

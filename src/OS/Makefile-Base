@@ -1059,7 +1059,7 @@ buildmisc: config
 	     FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" \
 	     PERL_CC="$(PERL_CC)" PERL_CCOPTS="$(PERL_CCOPTS)" \
 	     PERL_CFLAGS="$(PERL_CFLAGS)" PERL_LFLAGS="$(PERL_LFLAGS)" \
-	     INCLUDE="$(INCLUDE) $(IPV6_INCLUDE)"
+	     INCLUDE="$(INCLUDE) $(IPV6_INCLUDE)" TLS_INCLUDE="$(TLS_INCLUDE)"
 	 @echo " "
 
 # The "clean", "install", and "makefile" targets just pass themselves back to

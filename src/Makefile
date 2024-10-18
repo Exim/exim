@@ -89,17 +89,17 @@ install:        all
 
 # Tidy-up targets
 
-clean:; @echo ""; echo '*** "make clean" just removes all .o and .a files'
+clean_exim:; cd build-$(buildname); \
+	$(RM_COMMAND) -f *.o; \
+	for d in lookups auths routers transports miscmods; do \
+		$(RM_COMMAND) -f $$d/*.{o,a,so}; \
+	done; \
+	$(RM_COMMAND) -fr dynmodules
+
+clean:	clean_exim
+	@echo ""; echo '*** "make clean" just removes all .o and .a files'
 	@echo '*** Use "make makefile" to force a rebuild of the makefile'
 	@echo ""
-	cd build-$(buildname); \
-	$(RM_COMMAND) -f *.o lookups/*.o lookups/*.a auths/*.o auths/*.a \
-	routers/*.o routers/*.a transports/*.o transports/*.a \
-	pdkim/*.o pdkim/*.a
-
-clean_exim:; cd build-$(buildname); \
-	 $(RM_COMMAND) -f *.o lookups/*.o lookups/*.a auths/*.o auths/*.a \
-	routers/*.o routers/*.a transports/*.o transports/*.a lookups/*.so
 
 distclean:; $(RM_COMMAND) -rf build-* cscope*
 
