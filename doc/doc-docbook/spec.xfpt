@@ -28220,7 +28220,7 @@ There are good and bad examples at the end of the next section.
 
 
 
-.section "The PLAIN authentication mechanism" "SECID172"
+.subsection "The PLAIN authentication mechanism" "SECID172"
 .cindex "PLAIN authentication mechanism"
 .cindex authentication PLAIN
 .cindex "binary zero" "in &(plaintext)& authenticator"
@@ -28304,7 +28304,7 @@ always fails if its second argument is empty. However, the second way of
 writing the test makes the logic clearer.
 
 
-.section "The LOGIN authentication mechanism" "SECID173"
+.subsection "The LOGIN authentication mechanism" "SECID173"
 .cindex "LOGIN authentication mechanism"
 .cindex authentication LOGIN
 The LOGIN authentication mechanism is not documented in any RFC, but is in use
@@ -28352,7 +28352,7 @@ the password conform to the Exim syntax. At the LDAP level, the password is an
 uninterpreted string.
 
 
-.section "Support for different kinds of authentication" "SECID174"
+.subsection "Support for different kinds of authentication" "SECID174"
 A number of string expansion features are provided for the purpose of
 interfacing to different ways of user authentication. These include checking
 traditionally encrypted passwords from &_/etc/passwd_& (or equivalent), PAM,
