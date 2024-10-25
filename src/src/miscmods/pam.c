@@ -120,7 +120,7 @@ return PAM_SUCCESS;
 more data strings.
 
 Arguments:
-  s        a colon-separated list of strings
+  s        a (not-changeable-colon)-separated list of strings
   errptr   where to point an error message
 
 Returns:   OK if authentication succeeded
@@ -129,12 +129,12 @@ Returns:   OK if authentication succeeded
 */
 
 static int
-auth_call_pam(const uschar *s, uschar **errptr)
+auth_call_pam(const uschar * s, uschar ** errptr)
 {
 pam_handle_t *pamh = NULL;
 struct pam_conv pamc;
 int pam_error;
-int sep = 0;
+int sep = ':';	/* Do not permit change-of-separator */
 uschar *user;
 
 /* Set up the input data structure: the address of the conversation function,

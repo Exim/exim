@@ -73,7 +73,7 @@ auth_call_radius(const uschar *s, uschar **errptr)
 uschar *user;
 const uschar *radius_args = s;
 int result;
-int sep = 0;
+int sep = ':';
 
 #ifdef RADIUS_LIB_RADLIB
   struct rad_handle *h;

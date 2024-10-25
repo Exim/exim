@@ -37,10 +37,9 @@ Returns:   OK if authentication succeeded
 int
 auth_call_pwcheck(uschar *s, uschar **errptr)
 {
-uschar *reply = NULL;
-uschar *pw = Ustrrchr(s, ':');
+uschar * reply = NULL, * pw = Ustrrchr(s, ':');
 
-if (pw == NULL)
+if (!pw)
   {
   *errptr = US"pwcheck: malformed input - missing colon";
   return ERROR;

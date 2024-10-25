@@ -111,7 +111,7 @@ auth_cyrus_sasl_init(driver_instance * a)
 auth_instance * ablock = (auth_instance *)a;
 auth_cyrus_sasl_options_block * ob = a->options_block;
 const uschar *list, *listptr, *buffer;
-int rc, i;
+int rc, sep;
 unsigned int len;
 rmark rs_point;
 uschar *expanded_hostname;
@@ -153,11 +153,11 @@ if ((rc = sasl_server_new(CS ob->server_service, CS expanded_hostname,
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't initialise Cyrus SASL server connection.", a->name);
 
-if ((rc = sasl_listmech(conn, NULL, "", ":", "", CCSS &list, &len, &i)) != SASL_OK)
+if ((rc = sasl_listmech(conn, NULL, "", ":", "", CCSS &list, &len, NULL)) != SASL_OK)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't get Cyrus SASL mechanism list.", a->name);
 
-i = ':';
+sep = ':';
 listptr = list;
 
 HDEBUG(D_auth)
@@ -176,7 +176,7 @@ rs_point = store_mark();
 /* loop until either we get to the end of the list, or we match the
 public name of this authenticator */
 
-while (  (buffer = string_nextinlist(&listptr, &i, NULL, 0))
+while (  (buffer = string_nextinlist(&listptr, &sep, NULL, 0))
       && strcmpic(buffer,ob->server_mech) );
 
 if (!buffer)
