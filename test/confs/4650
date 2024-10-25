@@ -36,6 +36,8 @@ check_data:
 		logwrite =	dmarc_status_text <$dmarc_status_text>
 		logwrite =	dmarc_used_domain <$dmarc_used_domain>
 		logwrite =	dmarc_domain_policy <$dmarc_domain_policy>
+		logwrite =	dmarc_alignment_spf <$dmarc_alignment_spf>
+		logwrite =	dmarc_alignment_dkim <$dmarc_alignment_dkim>
 		logwrite =	${authresults {$primary_hostname}}
 
 # End

@@ -24,6 +24,8 @@ Version 4.98
  6. A transport "socks_proxy" may expand to an empty string, specifying no
     proxying.
 
+ 7. Variables $dmarc_alignment_spf and $dmarc_alignment_dkim.
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

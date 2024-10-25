@@ -12714,7 +12714,9 @@ When a message has been received this variable contains
 a colon-separated list of signer domains and identities for the message.
 For details see section &<<SECDKIMVFY>>&.
 
-.vitem &$dmarc_domain_policy$& &&&
+.vitem &$dmarc_alignment_spf$& &&&
+       &$dmarc_alignment_dkim$& &&&
+       &$dmarc_domain_policy$& &&&
        &$dmarc_status$& &&&
        &$dmarc_status_text$& &&&
        &$dmarc_used_domains$&
@@ -42951,6 +42953,18 @@ The domain which DMARC used to look up the DMARC policy record.
 The policy declared in the DMARC record.  Valid values
 are "none", "reject" and "quarantine".  It is blank when there
 is any error, including no DMARC record.
+
+.new
+.vitem &$dmarc_alignment_spf$&
+.vindex &$dmarc_alignment_spf$&
+The result of the SPF alignment portion of the test status;
+"yes" or "no".
+
+.vitem &$dmarc_alignment_dkim$&
+.vindex &$dmarc_alignment_dkim$&
+The result of the DKIM alignment portion of the test status;
+"yes" or "no".
+.wen
 .endlist
 
 .subsection Logging SSECDMARCLOGGING

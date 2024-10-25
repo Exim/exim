@@ -57,6 +57,8 @@ static dmarc_exim_p dmarc_policy_description[] = {
 
 
 /* $variables */
+BOOL	 dmarc_alignment_dkim	 = FALSE; /* Subtest result */
+BOOL	 dmarc_alignment_spf	 = FALSE; /* Subtest result */
 uschar * dmarc_domain_policy     = NULL; /* Declared policy of used domain */
 uschar * dmarc_status            = NULL; /* One word value */
 uschar * dmarc_status_text       = NULL; /* Human readable value */
@@ -435,6 +437,8 @@ uschar * rr;
 BOOL has_dmarc_record = TRUE;
 u_char ** ruf; /* forensic report addressees, if called for */
 
+dmarc_alignment_spf = dmarc_alignment_dkim = FALSE;
+
 /* ACLs have "control=dmarc_disable_verify" */
 if (f.dmarc_disable_verify)
   return OK;
@@ -716,11 +720,14 @@ The EDITME provides a DMARC_API variable */
 
   if (has_dmarc_record)
     {
+    dmarc_alignment_spf = sa == DMARC_POLICY_SPF_ALIGNMENT_PASS;
+    dmarc_alignment_dkim = da == DMARC_POLICY_DKIM_ALIGNMENT_PASS;
+
     log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
 			   "spf_align=%s dkim_align=%s enforcement='%s'",
 			   spf_sender_domain, dmarc_used_domain,
-			   sa==DMARC_POLICY_SPF_ALIGNMENT_PASS  ?"yes":"no",
-			   da==DMARC_POLICY_DKIM_ALIGNMENT_PASS ?"yes":"no",
+			   dmarc_alignment_spf  ? "yes" : "no",
+			   dmarc_alignment_dkim ? "yes" : "no",
 			   dmarc_status_text);
     history_file_status = dmarc_write_history_file(dkim_history_buffer);
     /* Now get the forensic reporting addresses, if any */
@@ -796,11 +803,13 @@ by moan_send_message. We do not document it as a config-visible $variable.
 We could provide it via a function but there's little advantage. */
 
 static var_entry dmarc_variables[] = {
-  { "dmarc_domain_policy", vtype_stringptr,   &dmarc_domain_policy },
-  { "dmarc_forensic_sender", vtype_stringptr, &dmarc_forensic_sender },
-  { "dmarc_status",        vtype_stringptr,   &dmarc_status },
-  { "dmarc_status_text",   vtype_stringptr,   &dmarc_status_text },
-  { "dmarc_used_domain",   vtype_stringptr,   &dmarc_used_domain },
+  { "dmarc_alignment_dkim",	vtype_bool,		&dmarc_alignment_dkim },
+  { "dmarc_alignment_spf",	vtype_bool,		&dmarc_alignment_spf },
+  { "dmarc_domain_policy",	vtype_stringptr,	&dmarc_domain_policy },
+  { "dmarc_forensic_sender",	vtype_stringptr,	&dmarc_forensic_sender},
+  { "dmarc_status",		vtype_stringptr,	&dmarc_status },
+  { "dmarc_status_text",	vtype_stringptr,	&dmarc_status_text },
+  { "dmarc_used_domain",	vtype_stringptr,	&dmarc_used_domain },
 };
 
 misc_module_info dmarc_module_info =

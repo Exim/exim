@@ -514,6 +514,8 @@ static var_entry var_table[] = {
   { "dkim_verify_status",  vtype_module,	US"dkim" },
 #endif
 #ifdef SUPPORT_DMARC
+  { "dmarc_alignment_dkim",vtype_module,	US"dmarc" },
+  { "dmarc_alignment_spf", vtype_module,	US"dmarc" },
   { "dmarc_domain_policy", vtype_module,	US"dmarc" },
   { "dmarc_status",        vtype_module,	US"dmarc" },
   { "dmarc_status_text",   vtype_module,	US"dmarc" },

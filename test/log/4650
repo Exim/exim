@@ -6,6 +6,8 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 dmarc_status_text <None, Accept>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 dmarc_used_domain <test.ex>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 dmarc_domain_policy <none>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 dmarc_alignment_spf <no>
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 dmarc_alignment_dkim <no>
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	spf=none smtp.mailfrom=test.ex;\n	dmarc=none header.from=test.ex
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= a@test.ex H=(testclient) [ip4.ip4.ip4.ip4] P=smtp S=sss
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 DMARC results: spf_domain=bloggs.com dmarc_domain=test.ex spf_align=no dkim_align=yes enforcement='Accept'
@@ -13,5 +15,7 @@
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 dmarc_status_text <Accept>
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 dmarc_used_domain <test.ex>
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 dmarc_domain_policy <none>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 dmarc_alignment_spf <no>
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 dmarc_alignment_dkim <yes>
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	spf=none smtp.mailfrom=bloggs.com;\n	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha1;\n	dmarc=pass header.from=test.ex
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@bloggs.com H=(testclient) [ip4.ip4.ip4.ip4] P=smtp S=sss DKIM=test.ex id=qwerty1234@disco-zombie.net
