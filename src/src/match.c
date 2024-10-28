@@ -489,6 +489,9 @@ else
     }
   }
 
+/* If expansion had no effect on the list text, the list-test result can
+be cached */
+
 if (textonly_re) switch (type)
   {
   case MCL_STRING:
@@ -601,203 +604,10 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
   else
     yield = OK;
 
-  /* If the item does not begin with '/', it might be a + item for a named
-  list. Otherwise, it is just a single list entry that has to be matched.
-  We recognize '+' only when supplied with a tree of named lists. */
-
-  if (*ss != '/')
-    {
-    if (*ss == '+' && anchorptr)
-      {
-      int bits = 0, offset = 0, shift = 0;
-      unsigned int * use_cache_bits = original_cache_bits;
-      uschar * cached = US"";
-      namedlist_block * nb;
-      tree_node * t;
-
-      HDEBUG(D_lists)
-	{ debug_printf_indent(" start sublist %s\n", ss+1); expand_level += 2; }
-
-      if (!(t = tree_search(*anchorptr, ss+1)))
-	{
-        log_write(0, LOG_MAIN|LOG_PANIC, "unknown named%s list \"%s\"",
-          type == MCL_DOMAIN ?    " domain" :
-          type == MCL_HOST ?      " host" :
-          type == MCL_ADDRESS ?   " address" :
-          type == MCL_LOCALPART ? " local part" : "",
-          ss);
-	goto DEFER_RETURN;
-	}
-      nb = t->data.ptr;
-
-      /* If the list number is negative, it means that this list is not
-      cacheable because it contains expansion items. */
-
-      if (nb->number < 0) use_cache_bits = NULL;
-
-      /* If we have got a cache pointer, get the bits. This is not an "else"
-      because the pointer may be NULL from the start if caching is not
-      required. */
-
-      if (use_cache_bits)
-        {
-        offset = (nb->number)/16;
-        shift = ((nb->number)%16)*2;
-        bits = use_cache_bits[offset] & (3 << shift);
-        }
-
-      /* Not previously tested or no cache - run the full test */
-
-      if (bits == 0)
-        {
-        int res = match_check_list(&(nb->string), 0, anchorptr, &use_cache_bits,
-                func, arg, type, name, valueptr);
-	HDEBUG(D_lists)
-	  { expand_level -= 2; debug_printf_indent(" end sublist %s\n", ss+1); }
-
-        switch (res)
-          {
-          case OK:   bits = 1; break;
-          case FAIL: bits = 3; break;
-          case DEFER: goto DEFER_RETURN;
-          }
-
-        /* If this list was uncacheable, or a sublist turned out to be
-        uncacheable, the value of use_cache_bits will now be NULL, even if it
-        wasn't before. Ensure that this is passed up to the next level.
-        Otherwise, remember the result of the search in the cache. */
-
-        if (!use_cache_bits)
-          *cache_ptr = NULL;
-        else
-          {
-          use_cache_bits[offset] |= bits << shift;
-
-          if (valueptr)
-            {
-            int old_pool = store_pool;
-            namedlist_cacheblock *p;
-
-            /* Cached data for hosts persists over more than one message,
-            so we use the permanent store pool */
-
-            store_pool = POOL_PERM;
-            p = store_get(sizeof(namedlist_cacheblock), GET_UNTAINTED);
-            p->key = string_copy(get_check_key(arg, type));
-
-
-            p->data = *valueptr ? string_copy(*valueptr) : NULL;
-            store_pool = old_pool;
-
-            p->next = nb->cache_data;
-            nb->cache_data = p;
-            if (*valueptr)
-              HDEBUG(D_lists) debug_printf_indent("data from lookup saved for "
-                "cache for %s: key '%s' value '%s'\n", ss, p->key, *valueptr);
-            }
-          }
-        }
-
-       /* Previously cached; to find a lookup value, search a chain of values
-       and compare keys. Typically, there is only one such, but it is possible
-       for different keys to have matched the same named list. */
-
-      else
-        {
-        HDEBUG(D_lists)
-	  {
-	  expand_level -= 2;
-	  debug_printf_indent("cached %s match for %s\n",
-	    (bits & (-bits)) == bits ? "yes" : "no", ss);
-	  }
-
-        cached = US" - cached";
-        if (valueptr)
-          {
-          const uschar *key = get_check_key(arg, type);
-
-          for (namedlist_cacheblock * p = nb->cache_data; p; p = p->next)
-            if (Ustrcmp(key, p->key) == 0)
-              {
-              *valueptr = p->data;
-              break;
-              }
-          HDEBUG(D_lists) debug_printf_indent("cached lookup data = %s\n", *valueptr);
-          }
-        }
-
-      /* Result of test is indicated by value in bits. For each test, we
-      have 00 => untested, 01 => tested yes, 11 => tested no. */
-
-      if ((bits & (-bits)) == bits)    /* Only one of the two bits is set */
-        {
-        HDEBUG(D_lists) debug_printf_indent("%s %s (matched \"%s\"%s)\n", ot,
-          yield == OK ? "yes" : "no", sss, cached);
-	goto YIELD_RETURN;
-        }
-      }
-
-    /* Run the provided function to do the individual test. */
-
-    else
-      {
-      uschar * error = NULL;
-      switch ((func)(arg, ss, valueptr, &error))
-        {
-        case OK:
-	  HDEBUG(D_lists) debug_printf_indent("%s %s (matched \"%s\")\n", ot,
-	    yield == OK ? "yes" : "no", sss);
-	  goto YIELD_RETURN;
-
-        case DEFER:
-	  if (!error)
-	    error = string_sprintf("DNS lookup of \"%s\" deferred", ss);
-	  if (ignore_defer)
-	    {
-	    HDEBUG(D_lists)
-	      debug_printf_indent("%s: item ignored by +ignore_defer\n", error);
-	    break;
-	    }
-	  if (include_defer)
-	    {
-	    log_write(0, LOG_MAIN, "%s: accepted by +include_defer", error);
-	    return OK;
-	    }
-	  if (!search_error_message) search_error_message = error;
-	  goto DEFER_RETURN;
-
-        /* The ERROR return occurs when checking hosts, when either a forward
-        or reverse lookup has failed. It can also occur in a match_ip list if a
-        non-IP address item is encountered. The error string gives details of
-        which it was. */
-
-        case ERROR:
-	  if (ignore_unknown)
-	    {
-	    HDEBUG(D_lists) debug_printf_indent(
-	      "%s: item ignored by +ignore_unknown\n", error);
-	    }
-	  else
-	    {
-	    HDEBUG(D_lists) debug_printf_indent("%s %s (%s)\n", ot,
-	      include_unknown? "yes":"no", error);
-	    if (!include_unknown)
-	      {
-	      if (LOGGING(unknown_in_list))
-		log_write(0, LOG_MAIN, "list matching forced to fail: %s", error);
-	      return FAIL;
-	      }
-	    log_write(0, LOG_MAIN, "%s: accepted by +include_unknown", error);
-	    return OK;
-	    }
-        }
-      }
-    }
-
   /* If the item is a file name, we read the file and do a match attempt
   on each line in the file, including possibly more negation processing. */
 
-  else
+  if (*ss == '/')
     {
     int file_yield = yield;       /* In case empty file */
     uschar * filename = ss;
@@ -915,6 +725,197 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
     yield = file_yield;
     (void)fclose(f);
     }
+
+  /* If the item does not begin with '/', it might be a + item for a named
+  list. Otherwise, it is just a single list entry that has to be matched.
+  We recognize '+' only when supplied with a tree of named lists. */
+
+  else if (*ss == '+' && anchorptr)
+    {
+    int bits = 0, offset = 0, shift = 0;
+    unsigned int * use_cache_bits = original_cache_bits;
+    uschar * cached = US"";
+    namedlist_block * nb;
+    tree_node * t;
+
+    HDEBUG(D_lists)
+      { debug_printf_indent(" start sublist %s\n", ss+1); expand_level += 2; }
+
+    if (!(t = tree_search(*anchorptr, ss+1)))
+      {
+      log_write(0, LOG_MAIN|LOG_PANIC, "unknown named%s list \"%s\"",
+	type == MCL_DOMAIN ?    " domain" :
+	type == MCL_HOST ?      " host" :
+	type == MCL_ADDRESS ?   " address" :
+	type == MCL_LOCALPART ? " local part" : "",
+	ss);
+      goto DEFER_RETURN;
+      }
+    nb = t->data.ptr;
+
+    /* If the list number is negative, it means that this list is not
+    cacheable because it contains expansion items. */
+
+    if (nb->number < 0) use_cache_bits = NULL;
+
+    /* If we have got a cache pointer, get the bits. This is not an "else"
+    because the pointer may be NULL from the start if caching is not
+    required. */
+
+    if (use_cache_bits)
+      {
+      offset = (nb->number)/16;
+      shift = ((nb->number)%16)*2;
+      bits = use_cache_bits[offset] & (3 << shift);
+      }
+
+    /* Not previously tested or no cache - run the full test */
+
+    if (bits == 0)
+      {
+      int res = match_check_list(&(nb->string), 0, anchorptr, &use_cache_bits,
+	      func, arg, type, name, valueptr);
+      HDEBUG(D_lists)
+	{ expand_level -= 2; debug_printf_indent(" end sublist %s\n", ss+1); }
+
+      switch (res)
+	{
+	case OK:   bits = 1; break;
+	case FAIL: bits = 3; break;
+	case DEFER: goto DEFER_RETURN;
+	}
+
+      /* If this list was uncacheable, or a sublist turned out to be
+      uncacheable, the value of use_cache_bits will now be NULL, even if it
+      wasn't before. Ensure that this is passed up to the next level.
+      Otherwise, remember the result of the search in the cache. */
+
+      if (!use_cache_bits)
+	*cache_ptr = NULL;
+      else
+	{
+	use_cache_bits[offset] |= bits << shift;
+
+	if (valueptr)
+	  {
+	  int old_pool = store_pool;
+	  namedlist_cacheblock *p;
+
+	  /* Cached data for hosts persists over more than one message,
+	  so we use the permanent store pool */
+
+	  store_pool = POOL_PERM;
+	  p = store_get(sizeof(namedlist_cacheblock), GET_UNTAINTED);
+	  p->key = string_copy(get_check_key(arg, type));
+
+
+	  p->data = *valueptr ? string_copy(*valueptr) : NULL;
+	  store_pool = old_pool;
+
+	  p->next = nb->cache_data;
+	  nb->cache_data = p;
+	  if (*valueptr)
+	    HDEBUG(D_lists) debug_printf_indent("data from lookup saved for "
+	      "cache for %s: key '%s' value '%s'\n", ss, p->key, *valueptr);
+	  }
+	}
+      }
+
+     /* Previously cached; to find a lookup value, search a chain of values
+     and compare keys. Typically, there is only one such, but it is possible
+     for different keys to have matched the same named list. */
+
+    else
+      {
+      HDEBUG(D_lists)
+	{
+	expand_level -= 2;
+	debug_printf_indent("cached %s match for %s\n",
+	  (bits & (-bits)) == bits ? "yes" : "no", ss);
+	}
+
+      cached = US" - cached";
+      if (valueptr)
+	{
+	const uschar *key = get_check_key(arg, type);
+
+	for (namedlist_cacheblock * p = nb->cache_data; p; p = p->next)
+	  if (Ustrcmp(key, p->key) == 0)
+	    {
+	    *valueptr = p->data;
+	    break;
+	    }
+	HDEBUG(D_lists) debug_printf_indent("cached lookup data = %s\n", *valueptr);
+	}
+      }
+
+    /* Result of test is indicated by value in bits. For each test, we
+    have 00 => untested, 01 => tested yes, 11 => tested no. */
+
+    if ((bits & (-bits)) == bits)    /* Only one of the two bits is set */
+      {
+      HDEBUG(D_lists) debug_printf_indent("%s %s (matched \"%s\"%s)\n", ot,
+	yield == OK ? "yes" : "no", sss, cached);
+      goto YIELD_RETURN;
+      }
+    }
+
+  /* Run the provided function to do the individual test. */
+
+  else
+    {
+    uschar * error = NULL;
+    switch ((func)(arg, ss, valueptr, &error))
+      {
+      case OK:
+	HDEBUG(D_lists) debug_printf_indent("%s %s (matched \"%s\")\n", ot,
+	  yield == OK ? "yes" : "no", sss);
+	goto YIELD_RETURN;
+
+      case DEFER:
+	if (!error)
+	  error = string_sprintf("DNS lookup of \"%s\" deferred", ss);
+	if (ignore_defer)
+	  {
+	  HDEBUG(D_lists)
+	    debug_printf_indent("%s: item ignored by +ignore_defer\n", error);
+	  break;
+	  }
+	if (include_defer)
+	  {
+	  log_write(0, LOG_MAIN, "%s: accepted by +include_defer", error);
+	  return OK;
+	  }
+	if (!search_error_message) search_error_message = error;
+	goto DEFER_RETURN;
+
+      /* The ERROR return occurs when checking hosts, when either a forward
+      or reverse lookup has failed. It can also occur in a match_ip list if a
+      non-IP address item is encountered. The error string gives details of
+      which it was. */
+
+      case ERROR:
+	if (ignore_unknown)
+	  {
+	  HDEBUG(D_lists) debug_printf_indent(
+	    "%s: item ignored by +ignore_unknown\n", error);
+	  }
+	else
+	  {
+	  HDEBUG(D_lists) debug_printf_indent("%s %s (%s)\n", ot,
+	    include_unknown? "yes":"no", error);
+	  if (!include_unknown)
+	    {
+	    if (LOGGING(unknown_in_list))
+	      log_write(0, LOG_MAIN, "list matching forced to fail: %s", error);
+	    return FAIL;
+	    }
+	  log_write(0, LOG_MAIN, "%s: accepted by +include_unknown", error);
+	  return OK;
+	  }
+      }
+    }
+
   }    /* Loop for the next item on the top-level list */
 
 /* End of list reached: if the last item was negated yield OK, else FAIL. */
@@ -1197,12 +1198,12 @@ if ((pdomain = Ustrrchr(pattern, '@')))
   automatically interpreted in match_check_string. We just need to arrange that
   the leading @ is included in the domain. */
 
-  if (pdomain > pattern && pdomain[-1] == '@' &&
-       (pdomain[1] == 0 ||
-        Ustrcmp(pdomain+1, "[]") == 0 ||
-        Ustrcmp(pdomain+1, "mx_any") == 0 ||
-        Ustrcmp(pdomain+1, "mx_primary") == 0 ||
-        Ustrcmp(pdomain+1, "mx_secondary") == 0))
+  if (pdomain > pattern && pdomain[-1] == '@'
+     && (pdomain[1] == 0
+        || Ustrcmp(pdomain+1, "[]") == 0
+        || Ustrcmp(pdomain+1, "mx_any") == 0
+        || Ustrcmp(pdomain+1, "mx_primary") == 0
+        || Ustrcmp(pdomain+1, "mx_secondary") == 0))
     pdomain--;
 
   pllen = pdomain - pattern;

@@ -5173,8 +5173,7 @@ while (*s)
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
 
-      if (flags & ESI_SKIPPING) continue;
-      break;
+      if (flags & ESI_SKIPPING) continue; else break;
       }
 
     /* If Perl support is configured, handle calling embedded perl subroutines,
@@ -5474,7 +5473,7 @@ while (*s)
       FILE * f;
       uschar * sub_arg[2];
 
-      if ((expand_forbid & RDO_READFILE) != 0)
+      if (expand_forbid & RDO_READFILE)
         {
         expand_string_message = US"file insertions are not permitted";
         goto EXPAND_FAILED;
@@ -5627,8 +5626,7 @@ while (*s)
 	expand_string_message = US"missing '}' closing readsocket";
 	goto EXPAND_FAILED_CURLY;
 	}
-      if (flags & ESI_SKIPPING) continue;
-      break;
+      if (flags & ESI_SKIPPING) continue; else break;
 
       /* Come here on failure to create socket, connect socket, write to the
       socket, or timeout on reading. If another substring follows, expand and
@@ -5798,8 +5796,7 @@ while (*s)
         case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
         }
 
-      if (flags & ESI_SKIPPING) continue;
-      break;
+      if (flags & ESI_SKIPPING) continue; else break;
       }
 
     /* Handle character translation for "tr" */
@@ -6353,8 +6350,7 @@ while (*s)
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
 
-      if (flags & ESI_SKIPPING) continue;
-      break;
+      if (flags & ESI_SKIPPING) continue; else break;
       }
 
     /* return the Nth item from a list */
@@ -6453,8 +6449,7 @@ while (*s)
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
 
-      if (flags & ESI_SKIPPING) continue;
-      break;
+      if (flags & ESI_SKIPPING) continue; else break;
       }
 
     case EITEM_LISTQUOTE:
@@ -6553,8 +6548,7 @@ while (*s)
 
       restore_expand_strings(save_expand_nmax, save_expand_nstring,
         save_expand_nlength);
-      if (flags & ESI_SKIPPING) continue;
-      break;
+      if (flags & ESI_SKIPPING) continue; else break;
       }
 #endif	/*DISABLE_TLS*/
 
@@ -6766,8 +6760,7 @@ while (*s)
       /* Restore preserved $item */
 
       iterate_item = save_iterate_item;
-      if (flags & ESI_SKIPPING) continue;
-      break;
+      if (flags & ESI_SKIPPING) continue; else break;
       }
 
     case EITEM_SORT:
@@ -7068,8 +7061,7 @@ while (*s)
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
         case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
         }
-      if (flags & ESI_SKIPPING) continue;
-      break;
+      if (flags & ESI_SKIPPING) continue; else break;
       }
 
 #ifdef SUPPORT_SRS

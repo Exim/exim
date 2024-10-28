@@ -1875,14 +1875,12 @@ write to stderr. */
 
 if (f.daemon_listen && !f.inetd_wait_mode)
   {
-  int *default_smtp_port;
-  int sep;
+  int * default_smtp_port;
   int pct = 0;
-  uschar *s;
+  uschar * s;
   const uschar * list;
-  uschar *local_iface_source = US"local_interfaces";
-  ip_address_item *ipa;
-  ip_address_item **pipa;
+  uschar * local_iface_source = US"local_interfaces";
+  ip_address_item * ipa, ** pipa;
 
   /* If -oX was used, disable the writing of a pid file unless -oP was
   explicitly used to force it. Then scan the string given to -oX. Any items
@@ -1891,23 +1889,20 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
   if (override_local_interfaces)
     {
-    gstring * new_smtp_port = NULL;
-    gstring * new_local_interfaces = NULL;
+    gstring * new_smtp_port = NULL, * new_local_interfaces = NULL;
 
     if (!override_pid_file_path) write_pid = FALSE;
 
     list = override_local_interfaces;
-    sep = 0;
-    while ((s = string_nextinlist(&list, &sep, NULL, 0)))
+    for (int sep = 0; s = string_nextinlist(&list, &sep, NULL, 0); )
       {
       uschar joinstr[4];
       gstring ** gp = Ustrpbrk(s, ".:") ? &new_local_interfaces : &new_smtp_port;
-
       if (!*gp)
         {
         joinstr[0] = sep;
         joinstr[1] = ' ';
-        *gp = string_catn(*gp, US"<", 1);
+        *gp = string_catn(NULL, US"<", 1);
         }
 
       *gp = string_catn(*gp, joinstr, 2);
@@ -1935,39 +1930,34 @@ if (f.daemon_listen && !f.inetd_wait_mode)
   build a translated list in a vector. */
 
   list = daemon_smtp_port;
-  sep = 0;
-  while ((s = string_nextinlist(&list, &sep, NULL, 0)))
+  for (int sep = 0; s = string_nextinlist(&list, &sep, NULL, 0); )
     pct++;
   default_smtp_port = store_get((pct+1) * sizeof(int), GET_UNTAINTED);
   list = daemon_smtp_port;
-  sep = 0;
-  for (pct = 0;
-       (s = string_nextinlist(&list, &sep, NULL, 0));
-       pct++)
-    {
+  pct= 0;
+  for (int sep = 0; s = string_nextinlist(&list, &sep, NULL, 0); pct++)
     if (isdigit(*s))
       {
-      uschar *end;
+      uschar * end;
       default_smtp_port[pct] = Ustrtol(s, &end, 0);
       if (end != s + Ustrlen(s))
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "invalid SMTP port: %s", s);
       }
     else
       {
-      struct servent *smtp_service = getservbyname(CS s, "tcp");
+      struct servent * smtp_service = getservbyname(CS s, "tcp");
       if (!smtp_service)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "TCP port \"%s\" not found", s);
       default_smtp_port[pct] = ntohs(smtp_service->s_port);
       }
-    }
   default_smtp_port[pct] = 0;
 
   /* Check the list of TLS-on-connect ports and do name lookups if needed */
 
   list = tls_in.on_connect_ports;
-  sep = 0;
   /* the list isn't expanded so cannot be tainted.  If it ever is we will trap here */
-  while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
+  for (int sep = 0;
+      s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size); )
     if (!isdigit(*s))
       {
       gstring * g = NULL;

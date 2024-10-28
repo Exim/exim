@@ -1074,7 +1074,9 @@ g->s = s;
 static inline gstring *
 gstring_append(gstring * dest, gstring * item)
 {
-return item ? string_catn(dest, item->s, item->ptr) : dest;
+return item
+  ? dest ? string_catn(dest, item->s, item->ptr) : item
+  : dest;
 }
 
 
