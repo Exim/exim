@@ -35,8 +35,8 @@
 >>>   start sublist relay_hosts
 >>>    host in "*.friendly.test.ex"?
 >>>    ╎list element: *.friendly.test.ex
->>> sender host name required, to match against *.friendly.test.ex
->>> looking up host name for V4NET.0.0.97
+>>>    ╎sender host name required, to match against *.friendly.test.ex
+>>>    ╎ looking up host name for V4NET.0.0.97
 LOG: no host name found for IP address V4NET.0.0.97
 >>>    ╎host in "*.friendly.test.ex"? no (failed to find host name for V4NET.0.0.97)
 >>>    end sublist relay_hosts

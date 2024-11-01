@@ -63,26 +63,27 @@ check hosts = +ignore_unknown : *.$sender_address_domain : $sender_address_domai
 host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "?
  list element: +ignore_unknown
  list element: *.cioce.test.again.dns
-sender host name required, to match against *.cioce.test.again.dns
-looking up host name for ip4.ip4.ip4.ip4
-  DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens
-  DNS lookup of ip4-reverse.in-addr.arpa (PTR) succeeded
-IP address lookup yielded "the.local.host.name"
-  check dnssec require list
-   the.local.host.name not in empty list (option unset? cannot trace name)
-  check dnssec request list
-   the.local.host.name not in empty list (option unset? cannot trace name)
-  DNS lookup of the.local.host.name (A) using fakens
-  DNS lookup of the.local.host.name (A) succeeded
-local host found for non-MX address
-  the.local.host.name ip4.ip4.ip4.ip4 mx=-1 sort=xx 
-checking addresses for the.local.host.name
-Forward DNS security status: unverified
+ sender host name required, to match against *.cioce.test.again.dns
+  looking up host name for ip4.ip4.ip4.ip4
+   DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens
+   DNS lookup of ip4-reverse.in-addr.arpa (PTR) succeeded
+   Reverse DNS security status: unverified
+   IP address lookup yielded "the.local.host.name"
+   check dnssec require list
+   ╎the.local.host.name not in empty list (option unset? cannot trace name)
+   check dnssec request list
+   ╎the.local.host.name not in empty list (option unset? cannot trace name)
+   DNS lookup of the.local.host.name (A) using fakens
+   DNS lookup of the.local.host.name (A) succeeded
+   local host found for non-MX address
+   the.local.host.name ip4.ip4.ip4.ip4 mx=-1 sort=xx 
+   checking addresses for the.local.host.name
+   Forward DNS security status: unverified
   ip4.ip4.ip4.ip4 OK
-sender_fullhost = the.local.host.name (test) [ip4.ip4.ip4.ip4]
-sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4] helo=test)
+ sender_fullhost = the.local.host.name (test) [ip4.ip4.ip4.ip4]
+ sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4] helo=test)
  list element: cioce.test.again.dns
-using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
+ using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
  DNS lookup of cioce.test.again.dns (A) using fakens
  DNS lookup of cioce.test.again.dns (A) gave TRY_AGAIN
  cioce.test.again.dns in dns_again_means_nonexist?
@@ -92,8 +93,8 @@ using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
  DNS: couldn't fake dnsa len
  DNS: no SOA record found for neg-TTL
   writing neg-cache entry for cioce.test.again.dns-A-xxxx, ttl -1
-host_fake_gethostbyname(af=inet) returned 1 (HOST_NOT_FOUND)
-no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
+ host_fake_gethostbyname(af=inet) returned 1 (HOST_NOT_FOUND)
+ no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
 LOG: host_lookup_failed MAIN
   no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
  failed to find IP address for cioce.test.again.dns: item ignored by +ignore_unknown

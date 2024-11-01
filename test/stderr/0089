@@ -3,8 +3,8 @@
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts?
 >>>  list element: *N-99.test.EX
->>> sender host name required, to match against *N-99.test.EX
->>> looking up host name for V4NET.0.0.0
+>>>  sender host name required, to match against *N-99.test.EX
+>>>   looking up host name for V4NET.0.0.0
 LOG: no host name found for IP address V4NET.0.0.0
 >>>  host in sender_unqualified_hosts? no (failed to find host name for V4NET.0.0.0)
 >>>  host in recipient_unqualified_hosts? no (option unset)
@@ -12,7 +12,7 @@ LOG: no host name found for IP address V4NET.0.0.0
 >>>  host in helo_try_verify_hosts? no (option unset)
 >>>  host in helo_accept_junk_hosts?
 >>>   list element: *N-99.test.ex
->>> sender host name required, to match against *N-99.test.ex
+>>>   sender host name required, to match against *N-99.test.ex
 >>>   host in helo_accept_junk_hosts? no (failed to find host name for V4NET.0.0.0)
 LOG: rejected HELO from [V4NET.0.0.0]: syntactically invalid argument(s): @#$%^&*()
 >>>   host in smtp_accept_max_nonmail_hosts?
@@ -83,14 +83,14 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts?
 >>>  list element: *N-99.test.EX
->>> sender host name required, to match against *N-99.test.EX
->>> looking up host name for V4NET.0.0.99
->>> IP address lookup yielded "ten-99.test.ex"
->>>   check dnssec require list
->>>    ten-99.test.ex not in empty list (option unset? cannot trace name)
->>>   check dnssec request list
->>>    ten-99.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for ten-99.test.ex
+>>>  sender host name required, to match against *N-99.test.EX
+>>>   looking up host name for V4NET.0.0.99
+>>>    IP address lookup yielded "ten-99.test.ex"
+>>>    check dnssec require list
+>>>    ╎ten-99.test.ex not in empty list (option unset? cannot trace name)
+>>>    check dnssec request list
+>>>    ╎ten-99.test.ex not in empty list (option unset? cannot trace name)
+>>>    checking addresses for ten-99.test.ex
 >>>   V4NET.0.0.99 OK
 >>>  host in sender_unqualified_hosts? yes (matched "*N-99.test.EX")
 >>> host in recipient_unqualified_hosts? no (option unset)

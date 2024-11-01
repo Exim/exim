@@ -22,7 +22,7 @@
 >>>    list element: *
 >>>    delay1500.test.ex in dnssec_request_domains? yes (matched "*")
 LOG: Long A lookup for 'delay1500.test.ex': ssss msec
->>> local host found for non-MX address
+>>>  local host found for non-MX address
 >>> routed by all router
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in inline ACL
@@ -50,7 +50,7 @@ LOG: Long A lookup for 'delay1500.test.ex': ssss msec
 >>>   delay500.test.ex in dnssec_request_domains?
 >>>    list element: *
 >>>    delay500.test.ex in dnssec_request_domains? yes (matched "*")
->>> local host found for non-MX address
+>>>  local host found for non-MX address
 >>> routed by all router
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in inline ACL

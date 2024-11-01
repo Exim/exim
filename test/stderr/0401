@@ -23,7 +23,7 @@
 >>> check hosts = TESTSUITE/aux-var/0401.hosts2
 >>> host in "TESTSUITE/aux-var/0401.hosts2"?
 >>>  list element: TESTSUITE/aux-var/0401.hosts2
->>> no IP address found for host not-exist.test.ex (during SMTP connection from (xxx) [V4NET.9.8.7])
+>>>  no IP address found for host not-exist.test.ex (during SMTP connection from (xxx) [V4NET.9.8.7])
 LOG: no IP address found for host not-exist.test.ex (during SMTP connection from (xxx) [V4NET.9.8.7])
 >>>  host in "TESTSUITE/aux-var/0401.hosts2"? no (failed to find IP address for not-exist.test.ex)
 >>> accept: condition test failed in ACL mail
@@ -42,8 +42,8 @@ LOG: H=(xxx) [V4NET.9.8.7] rejected MAIL <x@y>
 >>> check hosts = TESTSUITE/aux-var/0401.hosts1
 >>> host in "TESTSUITE/aux-var/0401.hosts1"?
 >>>  list element: TESTSUITE/aux-var/0401.hosts1
->>> sender host name required, to match against *.2.2
->>> looking up host name for V4NET.9.9.9
+>>>  sender host name required, to match against *.2.2
+>>>   looking up host name for V4NET.9.9.9
 LOG: no host name found for IP address V4NET.9.9.9
 >>>  host in "TESTSUITE/aux-var/0401.hosts1"? no (failed to find host name for V4NET.9.9.9)
 >>> accept: condition test failed in ACL connect

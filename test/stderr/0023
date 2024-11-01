@@ -1552,19 +1552,19 @@ LOG: H=(test) [28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> check verify = reverse_host_lookup
 >>> looking up host name to force name/address consistency check
 >>> looking up host name for V4NET.0.0.3
->>> IP address lookup yielded "ten-3.test.ex"
->>>   alias "ten-3-alias.test.ex"
+>>>  IP address lookup yielded "ten-3.test.ex"
+>>>    alias "ten-3-alias.test.ex"
 >>>  check dnssec require list
 >>>   ten-3.test.ex not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list
 >>>   ten-3.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for ten-3.test.ex
+>>>  checking addresses for ten-3.test.ex
 >>>   V4NET.0.0.3 OK
 >>>  check dnssec require list
 >>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list
 >>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for ten-3-alias.test.ex
+>>>  checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>> require: condition test succeeded in ACL acl_V4NET_0_0
 >>> processing ACL acl_V4NET_0_0 "accept" (TESTSUITE/test-config 98)
@@ -1614,7 +1614,7 @@ LOG: H=(test) [V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for re
 >>> check verify = reverse_host_lookup
 >>> looking up host name to force name/address consistency check
 >>> looking up host name for V4NET.99.99.96
->>> IP address lookup yielded "x.test.again.dns"
+>>>  IP address lookup yielded "x.test.again.dns"
 >>>  check dnssec require list
 >>>   x.test.again.dns not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list
@@ -1644,7 +1644,7 @@ LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup
 >>> check verify = reverse_host_lookup/defer_ok
 >>> looking up host name to force name/address consistency check
 >>> looking up host name for V4NET.99.99.96
->>> IP address lookup yielded "x.test.again.dns"
+>>>  IP address lookup yielded "x.test.again.dns"
 >>>  check dnssec require list
 >>>   x.test.again.dns not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list

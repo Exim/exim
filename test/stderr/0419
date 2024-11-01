@@ -62,9 +62,9 @@ main lookup for domain
    ╎ other2.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? yes (matched "*.test.ex")
    end sublist local_domains
   other2.test.ex in hosts_treat_as_local? yes (matched "+local_domains")
-local host in host list - removed hosts:
-  other2.test.ex V4NET.12.3.2 5
-  other2.test.ex V4NET.12.3.1 5
+ local host in host list - removed hosts:
+   other2.test.ex V4NET.12.3.2 5
+   other2.test.ex V4NET.12.3.1 5
  fully qualified name = mxt13.test.ex
  host_find_bydns yield = HOST_FOUND (3); returned hosts:
    other1.test.ex V4NET.12.4.5 MX=4 

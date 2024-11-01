@@ -47,35 +47,36 @@ processing ACL check_rcpt "warn" (TESTSUITE/test-config 17)
 check hosts = *.gov.uk.test.ex
 host in "*.gov.uk.test.ex"?
  list element: *.gov.uk.test.ex
-sender host name required, to match against *.gov.uk.test.ex
-looking up host name for V4NET.99.99.97
-  DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) using fakens
-  DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) succeeded
-IP address lookup yielded "x.gov.uk.test.ex"
-  alias "x.co.uk.test.ex"
-  check dnssec require list
-   x.gov.uk.test.ex not in empty list (option unset? cannot trace name)
-  check dnssec request list
-   x.gov.uk.test.ex not in empty list (option unset? cannot trace name)
-  DNS lookup of x.gov.uk.test.ex (A) using fakens
-  DNS lookup of x.gov.uk.test.ex (A) succeeded
-  x.gov.uk.test.ex V4NET.99.99.97 mx=-1 sort=xx 
-checking addresses for x.gov.uk.test.ex
-Forward DNS security status: unverified
+ sender host name required, to match against *.gov.uk.test.ex
+  looking up host name for V4NET.99.99.97
+   DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) using fakens
+   DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) succeeded
+   Reverse DNS security status: unverified
+   IP address lookup yielded "x.gov.uk.test.ex"
+     alias "x.co.uk.test.ex"
+   check dnssec require list
+   ╎x.gov.uk.test.ex not in empty list (option unset? cannot trace name)
+   check dnssec request list
+   ╎x.gov.uk.test.ex not in empty list (option unset? cannot trace name)
+   DNS lookup of x.gov.uk.test.ex (A) using fakens
+   DNS lookup of x.gov.uk.test.ex (A) succeeded
+   x.gov.uk.test.ex V4NET.99.99.97 mx=-1 sort=xx 
+   checking addresses for x.gov.uk.test.ex
+   Forward DNS security status: unverified
   V4NET.99.99.97 OK
-  check dnssec require list
-   x.co.uk.test.ex not in empty list (option unset? cannot trace name)
-  check dnssec request list
-   x.co.uk.test.ex not in empty list (option unset? cannot trace name)
-  DNS lookup of x.co.uk.test.ex (A) using fakens
-  DNS lookup of x.co.uk.test.ex (A) succeeded
-  x.co.uk.test.ex V4NET.99.99.97 mx=-1 sort=xx 
-checking addresses for x.co.uk.test.ex
-Forward DNS security status: unverified
+   check dnssec require list
+   ╎x.co.uk.test.ex not in empty list (option unset? cannot trace name)
+   check dnssec request list
+   ╎x.co.uk.test.ex not in empty list (option unset? cannot trace name)
+   DNS lookup of x.co.uk.test.ex (A) using fakens
+   DNS lookup of x.co.uk.test.ex (A) succeeded
+   x.co.uk.test.ex V4NET.99.99.97 mx=-1 sort=xx 
+   checking addresses for x.co.uk.test.ex
+   Forward DNS security status: unverified
   V4NET.99.99.97 OK
-sender_fullhost = x.gov.uk.test.ex (test) [V4NET.99.99.97]
-sender_rcvhost = x.gov.uk.test.ex
-	([V4NET.99.99.97] helo=test ident=CALLER)
+ sender_fullhost = x.gov.uk.test.ex (test) [V4NET.99.99.97]
+ sender_rcvhost = x.gov.uk.test.ex
+ 	([V4NET.99.99.97] helo=test ident=CALLER)
   host in "*.gov.uk.test.ex"? yes (matched "*.gov.uk.test.ex")
 warn: condition test succeeded in ACL check_rcpt
 processing ACL check_rcpt "warn" (TESTSUITE/test-config 18)

@@ -10,12 +10,12 @@
 >>>  list element: @
 >>>  myhost.test.ex in helo_lookup_domains? yes (matched "@")
 >>> looking up host name for V4NET.0.0.1
->>> IP address lookup yielded "ten-1.test.ex"
+>>>  IP address lookup yielded "ten-1.test.ex"
 >>>  check dnssec require list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for ten-1.test.ex
+>>>  checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -30,12 +30,12 @@
 >>>  list element: @[]
 >>>  [127.0.0.1] in helo_lookup_domains? yes (matched "@[]")
 >>> looking up host name for V4NET.0.0.1
->>> IP address lookup yielded "ten-1.test.ex"
+>>>  IP address lookup yielded "ten-1.test.ex"
 >>>  check dnssec require list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for ten-1.test.ex
+>>>  checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>>  list element: *
 >>>  host in limits_advertise_hosts? yes (matched "*")

@@ -1347,17 +1347,19 @@ static inline pid_t
 exim_fork(const unsigned char * purpose)
 {
 pid_t pid;
-DEBUG(D_any) debug_printf("%s forking for %s\n", process_purpose, purpose);
+DEBUG(D_any)
+  debug_printf_indent("%s forking for %s\n", process_purpose, purpose);
 if ((pid = fork()) == 0)
   {
   f.daemon_listen = FALSE;
   process_purpose = purpose;
-  DEBUG(D_any) debug_printf("postfork: %s\n", purpose);
+  DEBUG(D_any) debug_printf_indent("postfork: %s\n", purpose);
   }
 else
   {
   testharness_pause_ms(100); /* let child work */
-  DEBUG(D_any) debug_printf("%s forked for %s: %d\n", process_purpose, purpose, (int)pid);
+  DEBUG(D_any) debug_printf_indent("%s forked for %s: %d\n",
+				  process_purpose, purpose, (int)pid);
   }
 return pid;
 }

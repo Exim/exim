@@ -3,7 +3,7 @@
 >>>  list element: *
 >>>  host in host_lookup? yes (matched "*")
 >>> looking up host name for V4NET.255.255.255
->>> IP address lookup yielded an empty name: treated as non-existent host name
+>>>  IP address lookup yielded an empty name: treated as non-existent host name
 LOG: no host name found for IP address V4NET.255.255.255
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
@@ -22,7 +22,7 @@ LOG: H=[V4NET.255.255.255] rejected connection in "connect" ACL: host lookup fai
 >>>  list element: *
 >>>  host in host_lookup? yes (matched "*")
 >>> looking up host name for V4NET.255.255.255
->>> IP address lookup yielded an empty name: treated as non-existent host name
+>>>  IP address lookup yielded an empty name: treated as non-existent host name
 LOG: no host name found for IP address V4NET.255.255.255
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
@@ -40,7 +40,7 @@ LOG: H=[V4NET.255.255.255] temporarily rejected connection in "connect" ACL: une
 >>>  list element: *
 >>>  host in host_lookup? yes (matched "*")
 >>> looking up host name for V4NET.255.255.255
->>> IP address lookup yielded an empty name: treated as non-existent host name
+>>>  IP address lookup yielded an empty name: treated as non-existent host name
 LOG: no host name found for IP address V4NET.255.255.255
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
@@ -58,7 +58,7 @@ LOG: H=[V4NET.255.255.255] temporarily rejected connection in "connect" ACL: une
 >>>  list element: *
 >>>  host in host_lookup? yes (matched "*")
 >>> looking up host name for V4NET.255.255.255
->>> IP address lookup yielded an empty name: treated as non-existent host name
+>>>  IP address lookup yielded an empty name: treated as non-existent host name
 LOG: no host name found for IP address V4NET.255.255.255
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)

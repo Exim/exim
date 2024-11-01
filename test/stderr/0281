@@ -55,7 +55,7 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't
 >>>  other1.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>   other1.test.ex in hosts_treat_as_local? yes (matched "other1.test.ex")
->>> local host has lowest MX
+>>>  local host has lowest MX
 >>>  mxt13.test.ex in "@mx_any"? yes (matched "@mx_any")
 >>> require: condition test succeeded in ACL acl_rcpt_2
 >>> processing ACL acl_rcpt_2 "accept" (TESTSUITE/test-config 26)
@@ -72,7 +72,7 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't
 >>>  eximtesthost.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
->>> local host has lowest MX
+>>>  local host has lowest MX
 >>>  mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
 >>> require: condition test succeeded in ACL acl_rcpt_2
 >>> processing ACL acl_rcpt_2 "accept" (TESTSUITE/test-config 26)
@@ -92,9 +92,9 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't
 >>>  eximtesthost.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
->>> local host in host list - removed hosts:
->>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
->>>   ten-2.test.ex V4NET.0.0.2 6
+>>>  local host in host list - removed hosts:
+>>>    eximtesthost.test.ex ip4.ip4.ip4.ip4 6
+>>>    ten-2.test.ex V4NET.0.0.2 6
 >>>  mxt6.test.ex in "@mx_any"? yes (matched "@mx_any")
 >>> require: condition test succeeded in ACL acl_rcpt_2
 >>> processing ACL acl_rcpt_2 "accept" (TESTSUITE/test-config 26)
@@ -147,7 +147,7 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <2@mxnone.test.ex>: domain doe
 >>>  eximtesthost.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
->>> local host has lowest MX
+>>>  local host has lowest MX
 >>>  mxt5.test.ex in "@mx_primary"? yes (matched "@mx_primary")
 >>> require: condition test succeeded in ACL acl_rcpt_3
 >>> processing ACL acl_rcpt_3 "accept" (TESTSUITE/test-config 31)
@@ -170,9 +170,9 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <2@mxnone.test.ex>: domain doe
 >>>  eximtesthost.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
->>> local host in host list - removed hosts:
->>>   ten-2.test.ex V4NET.0.0.2 6
->>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
+>>>  local host in host list - removed hosts:
+>>>    ten-2.test.ex V4NET.0.0.2 6
+>>>    eximtesthost.test.ex ip4.ip4.ip4.ip4 6
 >>> mxt6.test.ex in "@mx_primary"? no (end of list)
 >>> require: condition test failed in ACL acl_rcpt_3
 >>> end of ACL acl_rcpt_3: not OK
@@ -221,7 +221,7 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxnone.test.ex>: domain doe
 >>>  eximtesthost.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
->>> local host has lowest MX
+>>>  local host has lowest MX
 >>> mxt5.test.ex in "@mx_secondary"? no (end of list)
 >>> require: condition test failed in ACL acl_rcpt_4
 >>> end of ACL acl_rcpt_4: not OK
@@ -243,9 +243,9 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <4@mxt5.test.ex>: domain doesn
 >>>  eximtesthost.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
->>> local host in host list - removed hosts:
->>>   ten-2.test.ex V4NET.0.0.2 6
->>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
+>>>  local host in host list - removed hosts:
+>>>    ten-2.test.ex V4NET.0.0.2 6
+>>>    eximtesthost.test.ex ip4.ip4.ip4.ip4 6
 >>>  mxt6.test.ex in "@mx_secondary"? yes (matched "@mx_secondary")
 >>> require: condition test succeeded in ACL acl_rcpt_4
 >>> processing ACL acl_rcpt_4 "accept" (TESTSUITE/test-config 36)
@@ -377,8 +377,8 @@ MUNGED: ::1 will be omitted in what follows
 >>>  eximtesthost.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
->>> local host in host list - removed hosts:
->>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
+>>>  local host in host list - removed hosts:
+>>>    eximtesthost.test.ex ip4.ip4.ip4.ip4 6
 >>>  mxt3.test.ex in "@mx_any"? yes (matched "@mx_any")
 >>> require: condition test succeeded in ACL acl_rcpt_2
 >>> processing ACL acl_rcpt_2 "accept" (TESTSUITE/test-config 26)
@@ -398,8 +398,8 @@ MUNGED: ::1 will be omitted in what follows
 >>>  eximtesthost.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
->>> local host in host list - removed hosts:
->>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
+>>>  local host in host list - removed hosts:
+>>>    eximtesthost.test.ex ip4.ip4.ip4.ip4 6
 >>> mxt3.test.ex in "@mx_primary"? no (end of list)
 >>> require: condition test failed in ACL acl_rcpt_3
 >>> end of ACL acl_rcpt_3: not OK
@@ -418,8 +418,8 @@ LOG: H=(test) [V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxt3.test.ex>: domain doesn
 >>>  eximtesthost.test.ex in hosts_treat_as_local?
 >>>   list element: other1.test.ex
 >>>  eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
->>> local host in host list - removed hosts:
->>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
+>>>  local host in host list - removed hosts:
+>>>    eximtesthost.test.ex ip4.ip4.ip4.ip4 6
 >>>  mxt3.test.ex in "@mx_secondary"? yes (matched "@mx_secondary")
 >>> require: condition test succeeded in ACL acl_rcpt_4
 >>> processing ACL acl_rcpt_4 "accept" (TESTSUITE/test-config 36)

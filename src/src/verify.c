@@ -3213,13 +3213,16 @@ do a check on the name and all its aliases. */
 if (!sender_host_name)
   {
   HDEBUG(D_host_lookup)
-    debug_printf("sender host name required, to match against %s\n", ss);
+    debug_printf_indent("sender host name required, to match against %s\n", ss);
+  expand_level++;
   if (host_lookup_failed || host_name_lookup() != OK)
     {
+    expand_level--;
     *error = string_sprintf("failed to find host name for %s",
       sender_host_address);;
     return ERROR;
     }
+  expand_level--;
   host_build_sender_fullhost();
   }
 

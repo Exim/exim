@@ -135,12 +135,12 @@ MUNGED: ::1 will be omitted in what follows
 >>> ten-1.test.ex in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "ten-1.test.ex"
 >>> looking up host name for V4NET.0.0.1
->>> IP address lookup yielded "ten-1.test.ex"
+>>>  IP address lookup yielded "ten-1.test.ex"
 >>>  check dnssec require list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for ten-1.test.ex
+>>>  checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> matched host name
 >>> host in hosts_connection_nolog? no (option unset)
@@ -165,19 +165,19 @@ MUNGED: ::1 will be omitted in what follows
 >>> ten-3.test.ex in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "ten-3.test.ex"
 >>> looking up host name for V4NET.0.0.3
->>> IP address lookup yielded "ten-3.test.ex"
->>>   alias "ten-3-alias.test.ex"
+>>>  IP address lookup yielded "ten-3.test.ex"
+>>>    alias "ten-3-alias.test.ex"
 >>>  check dnssec require list
 >>>   ten-3.test.ex not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list
 >>>   ten-3.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for ten-3.test.ex
+>>>  checking addresses for ten-3.test.ex
 >>>   V4NET.0.0.3 OK
 >>>  check dnssec require list
 >>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list
 >>>   ten-3-alias.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for ten-3-alias.test.ex
+>>>  checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>> matched host name
 >>> host in smtp_accept_max_nonmail_hosts?
@@ -214,12 +214,12 @@ MUNGED: ::1 will be omitted in what follows
 >>> rhubarb in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "rhubarb"
 >>> looking up host name for V4NET.0.0.1
->>> IP address lookup yielded "ten-1.test.ex"
+>>>  IP address lookup yielded "ten-1.test.ex"
 >>>  check dnssec require list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list
 >>>   ten-1.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for ten-1.test.ex
+>>>  checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> getting IP address for rhubarb
 >>> check dnssec require list

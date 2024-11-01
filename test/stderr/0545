@@ -40,7 +40,7 @@ main lookup for domain
  CNAME found: change to eximtesthost.test.ex
  DNS lookup of eximtesthost.test.ex (A) using fakens
  DNS lookup of eximtesthost.test.ex (A) succeeded
-local host found for non-MX address
+ local host found for non-MX address
  fully qualified name = alias-eximtesthost.test.ex
  eximtesthost.test.ex ip4.ip4.ip4.ip4 mx=-1 sort=xx 
 domain changed to alias-eximtesthost.test.ex
@@ -71,7 +71,7 @@ main lookup for domain
  CNAME found: change to eximtesthost.test.ex
  DNS lookup of eximtesthost.test.ex (A) using fakens
  DNS lookup of eximtesthost.test.ex (A) succeeded
-local host found for non-MX address
+ local host found for non-MX address
  fully qualified name = alias-eximtesthost.test.ex
  eximtesthost.test.ex ip4.ip4.ip4.ip4 mx=-1 sort=xx 
 remote host address is the local host: alias-eximtesthost.test.ex: configured to try delivery anyway
@@ -128,7 +128,7 @@ main lookup for domain
  CNAME found: change to eximtesthost.test.ex
  DNS lookup of eximtesthost.test.ex (A) using fakens
  DNS lookup of eximtesthost.test.ex (A) succeeded
-local host found for non-MX address
+ local host found for non-MX address
  fully qualified name = alias-eximtesthost.test.ex
  eximtesthost.test.ex ip4.ip4.ip4.ip4 mx=-1 sort=xx 
 remote host address is the local host: alias-eximtesthost.test.ex: configured to try delivery anyway

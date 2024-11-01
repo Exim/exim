@@ -183,7 +183,7 @@ dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 
 DEBUG(D_host_lookup)
-  debug_printf("using host_fake_gethostbyname for %s (%s)\n", name,
+  debug_printf_indent("using host_fake_gethostbyname for %s (%s)\n", name,
     af == AF_INET ? "IPv4" : "IPv6");
 
 /* Handle unqualified "localhost" */
@@ -582,8 +582,11 @@ sender_rcvhost = string_copy_perm(rcvhost, TRUE);
 
 store_reset(reset_point);
 
-DEBUG(D_host_lookup) debug_printf("sender_fullhost = %s\n", sender_fullhost);
-DEBUG(D_host_lookup) debug_printf("sender_rcvhost = %s\n", sender_rcvhost);
+DEBUG(D_host_lookup)
+  {
+  debug_printf_indent("sender_fullhost = %s\n", sender_fullhost);
+  debug_printf_indent("sender_rcvhost = %s\n", sender_rcvhost);
+  }
 }
 
 
@@ -1345,17 +1348,17 @@ FOUND_LOCAL:
 
 if (!prev)
   {
-  HDEBUG(D_host_lookup) debug_printf((h->mx >= 0)?
-    "local host has lowest MX\n" :
-    "local host found for non-MX address\n");
+  HDEBUG(D_host_lookup) debug_printf_indent(h->mx >= 0
+    ? "local host has lowest MX\n"
+    : "local host found for non-MX address\n");
   return HOST_FOUND_LOCAL;
   }
 
 HDEBUG(D_host_lookup)
   {
-  debug_printf("local host in host list - removed hosts:\n");
+  debug_printf_indent("local host in host list - removed hosts:\n");
   for (h = prev->next; h != last->next; h = h->next)
-    debug_printf("  %s %s %d\n", h->name, h->address, h->mx);
+    debug_printf_indent("  %s %s %d\n", h->name, h->address, h->mx);
   }
 
 if (removed) *removed = TRUE;
@@ -1490,8 +1493,9 @@ empty string; in others as a single dot. */
 
 if (!hosts->h_name || !hosts->h_name[0] || hosts->h_name[0] == '.')
   {
-  HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an empty name: "
-    "treated as non-existent host name\n");
+  HDEBUG(D_host_lookup)
+    debug_printf_indent("IP address lookup yielded an empty name: "
+      "treated as non-existent host name\n");
   return FAIL;
   }
 
@@ -1580,7 +1584,7 @@ dns_scan dnss;
 sender_host_dnssec = host_lookup_deferred = host_lookup_failed = FALSE;
 
 HDEBUG(D_host_lookup)
-  debug_printf("looking up host name for %s\n", sender_host_address);
+  debug_printf_indent("looking up host name for %s\n", sender_host_address);
 expand_level++;
 
 /* For testing the case when a lookup does not complete, we have a special
@@ -1623,7 +1627,7 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
 
       sender_host_dnssec = dns_is_secure(dnsa);
       DEBUG(D_dns)
-        debug_printf("Reverse DNS security status: %s\n",
+        debug_printf_indent("Reverse DNS security status: %s\n",
             sender_host_dnssec ? "DNSSEC verified (AD)" : "unverified");
 
       store_pool = POOL_PERM;        /* Save names in permanent storage */
@@ -1661,14 +1665,14 @@ while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
         store_release_above(s + (slen = Ustrlen(s)) + 1);
         if (!*s)
           {
-          HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an "
-            "empty name: treated as non-existent host name\n");
+          HDEBUG(D_host_lookup) debug_printf_indent("IP address lookup yielded "
+	    "an empty name: treated as non-existent host name\n");
           continue;
           }
 	if (Ustrspn(s, letter_digit_hyphen_dot) != slen)
           {
-          HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an "
-            "illegal name (bad char): treated as non-existent host name\n");
+          HDEBUG(D_host_lookup) debug_printf_indent("IP address lookup yielded "
+	    "an illegal name (bad char): treated as non-existent host name\n");
           continue;
           }
         if (!sender_host_name) sender_host_name = s;
@@ -1729,9 +1733,9 @@ if (!sender_host_name)
 
 HDEBUG(D_host_lookup)
   {
-  uschar **aliases = sender_host_aliases;
-  debug_printf("IP address lookup yielded \"%s\"\n", sender_host_name);
-  while (*aliases) debug_printf("  alias \"%s\"\n", *aliases++);
+  uschar ** aliases = sender_host_aliases;
+  debug_printf_indent("IP address lookup yielded \"%s\"\n", sender_host_name);
+  while (*aliases) debug_printf_indent("  alias \"%s\"\n", *aliases++);
   }
 
 /* We need to verify that a forward lookup on the name we found does indeed
@@ -1762,11 +1766,12 @@ for (uschar * hname = sender_host_name; hname; hname = *aliases++)
      || rc == HOST_FOUND_LOCAL
      )
     {
-    HDEBUG(D_host_lookup) debug_printf("checking addresses for %s\n", hname);
+    HDEBUG(D_host_lookup)
+      debug_printf_indent("checking addresses for %s\n", hname);
 
     /* If the forward lookup was not secure we cancel the is-secure variable */
 
-    DEBUG(D_dns) debug_printf("Forward DNS security status: %s\n",
+    DEBUG(D_dns) debug_printf_indent("Forward DNS security status: %s\n",
 	  h.dnssec == DS_YES ? "DNSSEC verified (AD)" : "unverified");
     if (h.dnssec != DS_YES) sender_host_dnssec = FALSE;
 
@@ -1997,7 +2002,7 @@ for (int i = 1; i <= times;
       default: error = US"?"; break;
       }
 
-    DEBUG(D_host_lookup) debug_printf("%s(af=%s) returned %d (%s)\n",
+    DEBUG(D_host_lookup) debug_printf_indent("%s(af=%s) returned %d (%s)\n",
       f.running_in_test_harness ? "host_fake_gethostbyname" :
 #if HAVE_IPV6
 # if HAVE_GETIPNODEBYNAME
@@ -2094,7 +2099,7 @@ if (!host->address)
 #endif
     string_sprintf("no IP address found for host %s", host->name);
 
-  HDEBUG(D_host_lookup) debug_printf("%s\n", msg);
+  HDEBUG(D_host_lookup) debug_printf_indent("%s\n", msg);
   if (temp_error) goto RETURN_AGAIN;
   if (host_checking || !f.log_testing_mode)
     log_write(L_host_lookup_failed, LOG_MAIN, "%s", msg);

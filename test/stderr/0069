@@ -4,14 +4,14 @@
 >>> host in sender_unqualified_hosts?
 >>>  list element: +include_unknown
 >>>  list element: ^ten-1\.test\.ex
->>> sender host name required, to match against ^ten-1\.test\.ex
->>> looking up host name for V4NET.0.0.1
->>> IP address lookup yielded "ten-1.test.ex"
->>>   check dnssec require list
->>>    ten-1.test.ex not in empty list (option unset? cannot trace name)
->>>   check dnssec request list
->>>    ten-1.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for ten-1.test.ex
+>>>  sender host name required, to match against ^ten-1\.test\.ex
+>>>   looking up host name for V4NET.0.0.1
+>>>    IP address lookup yielded "ten-1.test.ex"
+>>>    check dnssec require list
+>>>    ╎ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>    check dnssec request list
+>>>    ╎ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>    checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>>  host in sender_unqualified_hosts? yes (matched "^ten-1\.test\.ex")
 >>> host in recipient_unqualified_hosts? no (option unset)
@@ -40,8 +40,8 @@ LOG: H=ten-1.test.ex (test) [V4NET.0.0.1] F=<x@y> rejected RCPT <x@test.ex>
 >>> host in sender_unqualified_hosts?
 >>>  list element: +include_unknown
 >>>  list element: ^ten-1\.test\.ex
->>> sender host name required, to match against ^ten-1\.test\.ex
->>> looking up host name for V4NET.0.0.13
+>>>  sender host name required, to match against ^ten-1\.test\.ex
+>>>   looking up host name for V4NET.0.0.13
 LOG: no host name found for IP address V4NET.0.0.13
 >>>  host in sender_unqualified_hosts? yes (failed to find host name for V4NET.0.0.13)
 LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
@@ -65,7 +65,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  host in "+include_unknown : ^ten-1\.test\.ex"?
 >>>   list element: +include_unknown
 >>>   list element: ^ten-1\.test\.ex
->>> sender host name required, to match against ^ten-1\.test\.ex
+>>>   sender host name required, to match against ^ten-1\.test\.ex
 >>>   host in "+include_unknown : ^ten-1\.test\.ex"? yes (failed to find host name for V4NET.0.0.13)
 LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>   deny: condition test succeeded in ACL check_recipientx
@@ -77,8 +77,8 @@ LOG: H=(test) [V4NET.0.0.13] F=<userx@myhost.test.ex> rejected RCPT <x@test.ex>
 >>> host in sender_unqualified_hosts?
 >>>  list element: +include_unknown
 >>>  list element: ^ten-1\.test\.ex
->>> sender host name required, to match against ^ten-1\.test\.ex
->>> looking up host name for V4NET.0.0.13
+>>>  sender host name required, to match against ^ten-1\.test\.ex
+>>>   looking up host name for V4NET.0.0.13
 LOG: no host name found for IP address V4NET.0.0.13
 >>>  host in sender_unqualified_hosts? yes (failed to find host name for V4NET.0.0.13)
 LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
@@ -95,7 +95,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  check hosts = not-exist.test.ex : V4NET.0.0.13
 >>>  host in "not-exist.test.ex : V4NET.0.0.13"?
 >>>   list element: not-exist.test.ex
->>> no IP address found for host not-exist.test.ex (during SMTP connection from (test) [V4NET.0.0.13])
+>>>   no IP address found for host not-exist.test.ex (during SMTP connection from (test) [V4NET.0.0.13])
 LOG: no IP address found for host not-exist.test.ex (during SMTP connection from (test) [V4NET.0.0.13])
 >>>   host in "not-exist.test.ex : V4NET.0.0.13"? no (failed to find IP address for not-exist.test.ex)
 >>>   accept: condition test failed in ACL check_recipienty
@@ -110,8 +110,8 @@ LOG: H=(test) [V4NET.0.0.13] F=<userx@test.ex> rejected RCPT <y@test.ex>: "Denie
 >>> host in sender_unqualified_hosts?
 >>>  list element: +include_unknown
 >>>  list element: ^ten-1\.test\.ex
->>> sender host name required, to match against ^ten-1\.test\.ex
->>> looking up host name for V4NET.0.0.13
+>>>  sender host name required, to match against ^ten-1\.test\.ex
+>>>   looking up host name for V4NET.0.0.13
 LOG: no host name found for IP address V4NET.0.0.13
 >>>  host in sender_unqualified_hosts? yes (failed to find host name for V4NET.0.0.13)
 LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
@@ -129,7 +129,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  host in "+ignore_unknown : not-exist.test.ex : V4NET.0.0.13"?
 >>>   list element: +ignore_unknown
 >>>   list element: not-exist.test.ex
->>> no IP address found for host not-exist.test.ex (during SMTP connection from (test) [V4NET.0.0.13])
+>>>   no IP address found for host not-exist.test.ex (during SMTP connection from (test) [V4NET.0.0.13])
 LOG: no IP address found for host not-exist.test.ex (during SMTP connection from (test) [V4NET.0.0.13])
 >>>   failed to find IP address for not-exist.test.ex: item ignored by +ignore_unknown
 >>>   list element: V4NET.0.0.13
@@ -142,8 +142,8 @@ LOG: no IP address found for host not-exist.test.ex (during SMTP connection from
 >>> host in sender_unqualified_hosts?
 >>>  list element: +include_unknown
 >>>  list element: ^ten-1\.test\.ex
->>> sender host name required, to match against ^ten-1\.test\.ex
->>> looking up host name for V4NET.0.0.13
+>>>  sender host name required, to match against ^ten-1\.test\.ex
+>>>   looking up host name for V4NET.0.0.13
 LOG: no host name found for IP address V4NET.0.0.13
 >>>  host in sender_unqualified_hosts? yes (failed to find host name for V4NET.0.0.13)
 LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
@@ -160,7 +160,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  check hosts = not-exist.test.ex : V4NET.0.0.13
 >>>  host in "not-exist.test.ex : V4NET.0.0.13"?
 >>>   list element: not-exist.test.ex
->>> no IP address found for host not-exist.test.ex (during SMTP connection from (test) [V4NET.0.0.13])
+>>>   no IP address found for host not-exist.test.ex (during SMTP connection from (test) [V4NET.0.0.13])
 LOG: no IP address found for host not-exist.test.ex (during SMTP connection from (test) [V4NET.0.0.13])
 >>>   host in "not-exist.test.ex : V4NET.0.0.13"? no (failed to find IP address for not-exist.test.ex)
 LOG: list matching forced to fail: failed to find IP address for not-exist.test.ex
@@ -176,8 +176,8 @@ LOG: H=(test) [V4NET.0.0.13] F=<userx@test.ex> rejected RCPT <y@test.ex>: "Denie
 >>> host in sender_unqualified_hosts?
 >>>  list element: +include_unknown
 >>>  list element: ^ten-1\.test\.ex
->>> sender host name required, to match against ^ten-1\.test\.ex
->>> looking up host name for V4NET.0.0.13
+>>>  sender host name required, to match against ^ten-1\.test\.ex
+>>>   looking up host name for V4NET.0.0.13
 LOG: no host name found for IP address V4NET.0.0.13
 >>>  host in sender_unqualified_hosts? yes (failed to find host name for V4NET.0.0.13)
 LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
@@ -202,7 +202,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>   list element: +include_defer
 >>>   list element: test.again.dns
 >>>   test.again.dns in dns_again_means_nonexist? no (option unset)
->>> no IP address found for host test.again.dns (during SMTP connection from (test) [V4NET.0.0.13])
+>>>   no IP address found for host test.again.dns (during SMTP connection from (test) [V4NET.0.0.13])
 >>>   test.again.dns in dns_again_means_nonexist? no (option unset)
 LOG: DNS lookup of "test.again.dns" deferred: accepted by +include_defer
 >>>   deny: condition test succeeded in ACL check_recipienta
@@ -214,8 +214,8 @@ LOG: H=(test) [V4NET.0.0.13] F=<userx@myhost.test.ex> rejected RCPT <a@test.ex>
 >>> host in sender_unqualified_hosts?
 >>>  list element: +include_unknown
 >>>  list element: ^ten-1\.test\.ex
->>> sender host name required, to match against ^ten-1\.test\.ex
->>> looking up host name for V4NET.0.0.13
+>>>  sender host name required, to match against ^ten-1\.test\.ex
+>>>   looking up host name for V4NET.0.0.13
 LOG: no host name found for IP address V4NET.0.0.13
 >>>  host in sender_unqualified_hosts? yes (failed to find host name for V4NET.0.0.13)
 LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
@@ -233,7 +233,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>  host in "test.again.dns : V4NET.0.0.13"?
 >>>   list element: test.again.dns
 >>>   test.again.dns in dns_again_means_nonexist? no (option unset)
->>> no IP address found for host test.again.dns (during SMTP connection from (test) [V4NET.0.0.13])
+>>>   no IP address found for host test.again.dns (during SMTP connection from (test) [V4NET.0.0.13])
 >>>   test.again.dns in dns_again_means_nonexist? no (option unset)
 >>>  host in "test.again.dns : V4NET.0.0.13"? list match deferred for test.again.dns
 >>>  accept: condition test deferred in ACL check_recipientb
@@ -244,8 +244,8 @@ LOG: H=(test) [V4NET.0.0.13] F=<userx@test.ex> temporarily rejected RCPT <b@test
 >>> host in sender_unqualified_hosts?
 >>>  list element: +include_unknown
 >>>  list element: ^ten-1\.test\.ex
->>> sender host name required, to match against ^ten-1\.test\.ex
->>> looking up host name for V4NET.0.0.13
+>>>  sender host name required, to match against ^ten-1\.test\.ex
+>>>   looking up host name for V4NET.0.0.13
 LOG: no host name found for IP address V4NET.0.0.13
 >>>  host in sender_unqualified_hosts? yes (failed to find host name for V4NET.0.0.13)
 LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
@@ -264,7 +264,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>>   list element: +ignore_defer
 >>>   list element: test.again.dns
 >>>   test.again.dns in dns_again_means_nonexist? no (option unset)
->>> no IP address found for host test.again.dns (during SMTP connection from (test) [V4NET.0.0.13])
+>>>   no IP address found for host test.again.dns (during SMTP connection from (test) [V4NET.0.0.13])
 >>>   test.again.dns in dns_again_means_nonexist? no (option unset)
 >>>   DNS lookup of "test.again.dns" deferred: item ignored by +ignore_defer
 >>>   list element: V4NET.0.0.13

@@ -15,8 +15,8 @@
 >>> check hosts = *.test.ex
 >>> host in "*.test.ex"?
 >>>  list element: *.test.ex
->>> sender host name required, to match against *.test.ex
->>> looking up host name for V4NET.0.0.97
+>>>  sender host name required, to match against *.test.ex
+>>>   looking up host name for V4NET.0.0.97
 LOG: no host name found for IP address V4NET.0.0.97
 >>>  host in "*.test.ex"? no (failed to find host name for V4NET.0.0.97)
 >>>  accept: condition test failed in ACL acl_V4NET_0_0
@@ -44,14 +44,14 @@ LOG: no host name found for IP address V4NET.0.0.97
 >>> check hosts = *.test.ex
 >>> host in "*.test.ex"?
 >>>  list element: *.test.ex
->>> sender host name required, to match against *.test.ex
->>> looking up host name for V4NET.0.0.1
->>> IP address lookup yielded "ten-1.test.ex"
->>>   check dnssec require list
->>>    ten-1.test.ex not in empty list (option unset? cannot trace name)
->>>   check dnssec request list
->>>    ten-1.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for ten-1.test.ex
+>>>  sender host name required, to match against *.test.ex
+>>>   looking up host name for V4NET.0.0.1
+>>>    IP address lookup yielded "ten-1.test.ex"
+>>>    check dnssec require list
+>>>    ╎ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>    check dnssec request list
+>>>    ╎ten-1.test.ex not in empty list (option unset? cannot trace name)
+>>>    checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>>  host in "*.test.ex"? yes (matched "*.test.ex")
 >>> accept: condition test succeeded in ACL acl_V4NET_0_0

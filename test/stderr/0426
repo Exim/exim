@@ -33,7 +33,7 @@ main lookup for domain
  check dnssec require list
  check dnssec request list
  uppercase.test.ex (MX resp) DNSSEC
-local host found for non-MX address
+ local host found for non-MX address
  fully qualified name = UpperCase.test.ex
  uppercase.test.ex 127.0.0.1 mx=-1 sort=xx 
 remote host address is the local host: uppercase.test.ex: configured to try delivery anyway

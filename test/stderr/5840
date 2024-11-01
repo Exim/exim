@@ -24,7 +24,7 @@
 >>>   dane256ee.test.ex in dnssec_request_domains?
 >>>    list element: *
 >>>    dane256ee.test.ex in dnssec_request_domains? yes (matched "*")
->>> local host found for non-MX address
+>>>  local host found for non-MX address
 >>> routed by client router
 >>> Attempting full verification using callout
 >>> callout cache: no domain record found for dane256ee.test.ex

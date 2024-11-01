@@ -505,15 +505,15 @@ try option unknown_login
  ╭considering: -oMs░░sender_host_name░=░$sender_host_name
  ├───────text: -oMs░░sender_host_name░=░
  ├considering: $sender_host_name
-looking up host name for V4NET.0.0.1
-IP address lookup yielded "ten-1.test.ex"
+ looking up host name for V4NET.0.0.1
+  IP address lookup yielded "ten-1.test.ex"
   check dnssec require list
   check dnssec request list
   ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
-checking addresses for ten-1.test.ex
+  checking addresses for ten-1.test.ex
   V4NET.0.0.1 OK
-sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
-sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
+ sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
+ sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
  ├──────value: ten-1.test.ex
             ╰──(tainted)
  ├───expanded: -oMs░░sender_host_name░=░$sender_host_name
@@ -558,23 +558,24 @@ host in "<
  partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
  1.2.3.4"?
  list element: partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
-sender host name required, to match against partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
-looking up host name for V4NET.0.0.1
-  DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) using fakens
-  DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) succeeded
-IP address lookup yielded "ten-1.test.ex"
-  check dnssec require list
-   ten-1.test.ex not in empty list (option unset? cannot trace name)
-  check dnssec request list
-   ten-1.test.ex not in empty list (option unset? cannot trace name)
-  DNS lookup of ten-1.test.ex (A) using fakens
-  DNS lookup of ten-1.test.ex (A) succeeded
-  ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
-checking addresses for ten-1.test.ex
-Forward DNS security status: unverified
+ sender host name required, to match against partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
+  looking up host name for V4NET.0.0.1
+   DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) using fakens
+   DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) succeeded
+   Reverse DNS security status: unverified
+   IP address lookup yielded "ten-1.test.ex"
+   check dnssec require list
+   ╎ten-1.test.ex not in empty list (option unset? cannot trace name)
+   check dnssec request list
+   ╎ten-1.test.ex not in empty list (option unset? cannot trace name)
+   DNS lookup of ten-1.test.ex (A) using fakens
+   DNS lookup of ten-1.test.ex (A) succeeded
+   ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+   checking addresses for ten-1.test.ex
+   Forward DNS security status: unverified
   V4NET.0.0.1 OK
-sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
-sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1])
+ sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
+ sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1])
  search_open: lsearch "TESTSUITE/aux-fixed/0002.lsearch"
  search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
    key="ten-1.test.ex" partial=2 affix=*. starflags=0 opts=NULL

@@ -31,7 +31,7 @@ LOG: interface_address=[]
 >>>  check logwrite = received_protocol=$received_protocol
 >>>                = received_protocol=smtp
 LOG: received_protocol=smtp
->>> looking up host name for 1.2.3.4
+>>>   looking up host name for 1.2.3.4
 LOG: no host name found for IP address 1.2.3.4
 >>>  check logwrite = sender_host_name=$sender_host_name
 >>>                = sender_host_name=

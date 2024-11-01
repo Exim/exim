@@ -3,12 +3,12 @@
 >>>  list element: 10.250.104.0/21
 >>>  host in host_lookup? yes (matched "10.250.104.0/21")
 >>> looking up host name for 10.250.104.42
->>> IP address lookup yielded "manyhome.test.ex"
+>>>  IP address lookup yielded "manyhome.test.ex"
 >>>  check dnssec require list
 >>>   manyhome.test.ex not in empty list (option unset? cannot trace name)
 >>>  check dnssec request list
 >>>   manyhome.test.ex not in empty list (option unset? cannot trace name)
->>> checking addresses for manyhome.test.ex
+>>>  checking addresses for manyhome.test.ex
 >>>   10.250.107.163
 >>>   10.250.109.49
 >>>   10.250.105.65
