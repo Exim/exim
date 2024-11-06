@@ -609,7 +609,7 @@ Returns:     the option name, or an empty string
 */
 
 const uschar *
-readconf_find_option(void * listptr)
+readconf_find_option(const void * listptr)
 {
 uschar * list = * USS listptr;
 const uschar * name = NULL, * drname = NULL;

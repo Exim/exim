@@ -312,11 +312,12 @@ extern gstring * malware_show_supported(gstring *);
 extern int     match_address_list(const uschar *, BOOL, BOOL, const uschar **,
                  unsigned int *, int, int, const uschar **);
 extern int     match_address_list_basic(const uschar *, const uschar **, int);
-extern int     match_check_list(const uschar **, int, tree_node **, unsigned int **,
-                 int(*)(void *, const uschar *, const uschar **, uschar **), void *, int,
-                 const uschar *, const uschar **);
-extern int     match_isinlist(const uschar *, const uschar **, int, tree_node **,
-                 unsigned int *, int, BOOL, const uschar **);
+extern int     match_check_list(const uschar * const *, int, tree_node **,
+		 unsigned int **, int(*)(void *, const uschar *,
+					 const uschar **, uschar **),
+		 void *, int, const uschar *, const uschar **);
+extern int     match_isinlist(const uschar *, const uschar * const *, int,
+		 tree_node **, unsigned int *, int, BOOL, const uschar **);
 extern int     match_check_string(const uschar *, const uschar *, int, mcs_flags,
                  const uschar **);
 
@@ -398,7 +399,7 @@ extern int     rda_is_filter(const uschar *);
 extern BOOL    readconf_depends(driver_instance *, uschar *);
 extern void    readconf_driver_init(driver_instance **, driver_info **, int,
 		void *, int, optionlist *, int, const uschar *);
-extern const uschar *readconf_find_option(void *);
+extern const uschar *readconf_find_option(const void *);
 extern void    readconf_main(BOOL);
 extern void    readconf_options_from_list(optionlist *, unsigned, const uschar *, uschar *);
 extern BOOL    readconf_print(const uschar *, const uschar *, BOOL);

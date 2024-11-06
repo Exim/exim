@@ -419,7 +419,7 @@ Returns:       OK    if matched a non-negated item
 */
 
 int
-match_check_list(const uschar **listptr, int sep, tree_node **anchorptr,
+match_check_list(const uschar * const * listptr, int sep, tree_node **anchorptr,
   unsigned int **cache_ptr, int (*func)(void *,const uschar *,const uschar **,uschar **),
   void *arg, int type, const uschar *name, const uschar **valueptr)
 {
@@ -991,7 +991,7 @@ Returns:         OK    if matched a non-negated item
 */
 
 int
-match_isinlist(const uschar *s, const uschar **listptr, int sep,
+match_isinlist(const uschar * s, const uschar * const * listptr, int sep,
    tree_node **anchorptr,
   unsigned int *cache_bits, int type, BOOL caseless, const uschar **valueptr)
 {
