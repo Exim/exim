@@ -1,0 +1,125 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO testclient
+????250
+>>> STARTTLS
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+Succeeded in starting TLS
+>>> EHLO testclient
+????250
+>>> AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+??? 235
+<<< 235 Authentication succeeded
+>>> ATRN
+??? 250
+<<< 250 ODMR server turning line around
+>>> 220 ODMR client now in reversed state
+??? EHLO
+<<< EHLO myhost.test.ex
+>>> 250-hello, mate
+>>> 250 HELP
+??? MAIL
+<<< MAIL FROM:<CALLER@myhost.test.ex>
+>>> 250 saw your MAIL cmd
+??? RCPT
+<<< RCPT TO:<a@clientdom.net>
+>>> 250 saw your RCPT cmd
+??? DATA
+<<< DATA
+>>> 354 go ahead
+??? Received:
+<<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+??? \x09(
+<<< 	(envelope-from <CALLER@myhost.test.ex>)
+??? \x09id
+<<< 	id 10HmaX-000000005vi-0000
+??? \x09for
+<<< 	for a@clientdom.net;
+??? \x09
+<<< 	Tue, 2 Mar 1999 09:44:33 +0000
+??? Subject:
+<<< Subject: foo
+??? Message-Id:
+<<< Message-Id: <E10HmaX-000000005vi-0000@myhost.test.ex>
+??? From:
+<<< From: CALLER_NAME <CALLER@myhost.test.ex>
+??? Date:
+<<< Date: Tue, 2 Mar 1999 09:44:33 +0000
+??? 
+<<< 
+??? sole body line
+<<< sole body line
+??? .
+<<< .
+>>> 250 ODMR client: message accepted
+??? QUIT
+<<< QUIT
+>>> 221 bye
+Shutting down TLS encryption
+???*
+Expected EOF read
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+Attempting to start TLS
+Succeeded in starting TLS
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO testclient
+????250
+>>> EHLO testclient
+????250
+>>> AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+??? 235
+<<< 235 Authentication succeeded
+>>> ATRN
+??? 250
+<<< 250 ODMR server turning line around
+>>> 220 ODMR client now in reversed state
+??? EHLO
+<<< EHLO myhost.test.ex
+>>> 250-hello, mate
+>>> 250 HELP
+??? MAIL
+<<< MAIL FROM:<CALLER@myhost.test.ex>
+>>> 250 saw your MAIL cmd
+??? RCPT
+<<< RCPT TO:<b@clientdom.net>
+>>> 250 saw your RCPT cmd
+??? DATA
+<<< DATA
+>>> 354 go ahead
+??? Received:
+<<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+??? \x09(
+<<< 	(envelope-from <CALLER@myhost.test.ex>)
+??? \x09id
+<<< 	id 10HmaY-000000005vi-0000
+??? \x09for
+<<< 	for b@clientdom.net;
+??? \x09
+<<< 	Tue, 2 Mar 1999 09:44:33 +0000
+??? Subject:
+<<< Subject: foo
+??? Message-Id:
+<<< Message-Id: <E10HmaY-000000005vi-0000@myhost.test.ex>
+??? From:
+<<< From: CALLER_NAME <CALLER@myhost.test.ex>
+??? Date:
+<<< Date: Tue, 2 Mar 1999 09:44:33 +0000
+??? 
+<<< 
+??? sole body line
+<<< sole body line
+??? .
+<<< .
+>>> 250 ODMR client: message accepted
+??? QUIT
+<<< QUIT
+>>> 221 bye
+Shutting down TLS encryption
+???*
+Expected EOF read
+End of script

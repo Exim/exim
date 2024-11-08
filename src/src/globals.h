@@ -326,10 +326,11 @@ extern uschar *acl_smtp_connect;       /* ACL run on SMTP connection */
 extern uschar *acl_smtp_data;          /* ACL run after DATA received */
 #ifndef DISABLE_PRDR
 extern uschar *acl_smtp_data_prdr;     /* ACL run after DATA received if in PRDR mode*/
-extern const pcre2_code *regex_PRDR;         /* For recognizing PRDR settings */
+extern const pcre2_code *regex_PRDR;   /* For recognizing PRDR settings */
 #endif
+extern uschar *acl_smtp_atrn;          /* ACL run for ATRN */
 #ifndef DISABLE_DKIM
-extern uschar *acl_smtp_dkim;          /* ACL run for DKIM signatures / domains */
+extern uschar *acl_smtp_dkim;          /* ACL run for DKIM signatures/domains */
 #endif
 extern uschar *acl_smtp_etrn;          /* ACL run for ETRN */
 extern uschar *acl_smtp_expn;          /* ACL run for EXPN */
@@ -365,6 +366,8 @@ extern gid_t  *admin_groups;           /* List of admin groups */
 extern BOOL    allow_domain_literals;  /* As it says */
 extern BOOL    allow_mx_to_ip;         /* Allow MX records to -> ip address */
 extern BOOL    allow_utf8_domains;     /* For experimenting */
+extern const uschar *atrn_domains;     /* Domains requested for transfer */
+extern const uschar *atrn_host;        /* host spec for client */
 extern uschar *authenticated_fail_id;  /* ID that failed authentication */
 extern uschar *authenticated_id;       /* ID that was authenticated */
 extern uschar *authenticated_sender;   /* From AUTH on MAIL */

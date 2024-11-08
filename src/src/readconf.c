@@ -41,6 +41,7 @@ static optionlist optionlist_config[] = {
   { "acl_not_smtp_mime",        opt_stringptr,   {&acl_not_smtp_mime} },
 #endif
   { "acl_not_smtp_start",       opt_stringptr,   {&acl_not_smtp_start} },
+  { "acl_smtp_atrn",            opt_stringptr,   {&acl_smtp_atrn} },
   { "acl_smtp_auth",            opt_stringptr,   {&acl_smtp_auth} },
   { "acl_smtp_connect",         opt_stringptr,   {&acl_smtp_connect} },
   { "acl_smtp_data",            opt_stringptr,   {&acl_smtp_data} },

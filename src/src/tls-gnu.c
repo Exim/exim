@@ -4305,6 +4305,42 @@ return NULL;
 }
 
 
+/* For ATRN: transfer the tls_in context to tls_out */
+
+void
+tls_turnaround(int newfd, const uschar * ipaddr, int port)
+{
+exim_gnutls_state_st * state;
+host_item * h;
+int old_pool = store_pool;
+
+store_pool = POOL_PERM;
+state = store_get(sizeof(exim_gnutls_state_st), GET_UNTAINTED);
+h = store_get(sizeof(host_item), GET_UNTAINTED);
+
+memset(h, 0, sizeof(host_item));
+h->name = h->address = string_copy(ipaddr);
+h->port = port;
+
+*state = state_server;
+
+state->fd_in = newfd;
+state->fd_out = newfd;
+state->tlsp = &tls_out;
+state->host = h;
+
+tls_out = tls_in;
+tls_out.active.sock = newfd;
+tls_out.active.tls_ctx = state;
+
+memset(&tls_in, 0, sizeof(tls_in));
+
+gnutls_transport_set_ptr2(state->session,
+    (gnutls_transport_ptr_t)(long) newfd,
+    (gnutls_transport_ptr_t)(long) newfd);
+store_pool = old_pool;
+}
+
 
 
 /*************************************************

@@ -1,0 +1,64 @@
+# Exim test configuration 1148
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+.ifdef SUB
+tls_on_connect_ports = SUB
+.endif
+
+tls_advertise_hosts = *
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey = DIR/aux-fixed/cert1
+
+queue_only
+queue_run_in_order
+
+acl_smtp_atrn = check_atrn 
+
+# ----- ACL -----
+
+begin acl
+
+check_atrn:
+  warn		set acl_m0 = clientdom.net
+		logwrite = tls_in_cipher $tls_in_cipher
+  defer		!atrn_domains = <, $acl_m0
+		message = 453 You have no mail
+  accept
+
+# ----- auths ----
+
+begin authenticators
+
+plain:
+  driver = plaintext
+  public_name = PLAIN
+  server_advertise_condition = ${if def:tls_in_cipher}
+  server_condition = "\
+    ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
+  server_set_id = $auth2
+
+# -------- routers ---
+
+begin routers
+
+client:
+  driver =	manualroute
+  route_data =	<;$atrn_host
+  self =	send
+  transport =	client_smtp
+
+begin transports
+
+client_smtp:
+    driver =		smtp
+    allow_localhost
+    hosts_require_tls = *
+    tls_verify_certificates =	DIR/aux-fixed/cert1
+    tls_verify_cert_hostnames =	:
+
+# End

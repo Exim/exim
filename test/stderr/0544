@@ -506,6 +506,7 @@ try option acl_smtp_helo
  ├─────result: true
  ├───expanded: ${if░match_domain░{$sender_helo_name}{+dlist}}
  ╰─────result: true
+try option acl_smtp_atrn
 try option acl_smtp_etrn
 try option acl_smtp_vrfy
 try option acl_smtp_expn

@@ -2181,7 +2181,7 @@ sx->max_rcpt = expand_max_rcpt(sx->conn_args.tblock->max_addresses);
 sx->igquotstr = US"";
 if (!sx->helo_data) sx->helo_data = ob->helo_data;
 
-smtp_command = US"initial connection";
+smtp_command = atrn_domains ? US"ATRN line turnaround" : US"initial connection";
 
 /* Set up the buffer for reading SMTP response packets. */
 
@@ -2196,21 +2196,27 @@ sx->outblock.buffer = sx->outbuffer;
 sx->outblock.buffersize = sizeof(sx->outbuffer);
 sx->outblock.ptr = sx->outbuffer;
 
-/* Reset the parameters of a TLS session. */
+/* Reset the parameters of a TLS session, unless ATRN. */
 
-tls_out.bits = 0;
-tls_out.cipher = NULL;	/* the one we may use for this transport */
+if (!atrn_domains || tls_out.active.sock < 0)
+  {
+  tls_out.bits = 0;
+  tls_out.cipher = NULL;	/* the one we may use for this transport */
+  tls_out.peerdn = NULL;
+#ifdef USE_OPENSSL
+  tls_out.sni = NULL;
+#endif
+  tls_out.ocsp = OCSP_NOT_REQ;
+#ifndef DISABLE_TLS_RESUME
+  tls_out.resumption = 0;
+#endif
+  tls_out.ver = NULL;
+  }
+
+/* If we do not null out ourcert under ATRN we segv trying to write the
+cert down the transport-result pipe. Unclear why. */
 tls_out.ourcert = NULL;
 tls_out.peercert = NULL;
-tls_out.peerdn = NULL;
-#ifdef USE_OPENSSL
-tls_out.sni = NULL;
-#endif
-tls_out.ocsp = OCSP_NOT_REQ;
-#ifndef DISABLE_TLS_RESUME
-tls_out.resumption = 0;
-#endif
-tls_out.ver = NULL;
 
 /* Flip the legacy TLS-related variables over to the outbound set in case
 they're used in the context of the transport.  Don't bother resetting
@@ -2293,7 +2299,7 @@ if (continue_hostname && continue_proxy_cipher)
 the initial interaction and HELO/EHLO/LHLO. Connect timeout errors are handled
 specially so they can be identified for retries. */
 
-if (!continue_hostname)
+if (!continue_hostname || atrn_domains)
   {
   if (sx->verify) HDEBUG(D_verify)
     debug_printf("interface=%s port=%d\n", sx->conn_args.interface, sx->port);
@@ -2340,59 +2346,77 @@ if (!continue_hostname)
   sx->avoid_option = sx->peer_offered = smtp_peer_options = 0;
   smtp_debug_cmd_log_init();
 
-#ifndef DISABLE_PIPE_CONNECT
-  if (  verify_check_given_host(CUSS &ob->hosts_pipe_connect,
-					    sx->conn_args.host) == OK)
-
-    /* We don't find out the local ip address until the connect, so if
-    the helo string might use it avoid doing early-pipelining. */
-
-    if (  !sx->helo_data
-       || sx->conn_args.interface
-       || !Ustrstr(sx->helo_data, "$sending_ip_address")
-       || Ustrstr(sx->helo_data, "def:sending_ip_address")
-       )
-      {
-      sx->early_pipe_ok = TRUE;
-      if (  read_ehlo_cache_entry(sx)
-	 && sx->ehlo_resp.cleartext_features & OPTION_EARLY_PIPE)
-	{
-	DEBUG(D_transport)
-	  debug_printf("Using cached cleartext PIPECONNECT\n");
-	sx->early_pipe_active = TRUE;
-	sx->peer_offered = sx->ehlo_resp.cleartext_features;
-	}
-      }
-    else DEBUG(D_transport)
-      debug_printf("helo needs $sending_ip_address; avoid early-pipelining\n");
-
-PIPE_CONNECT_RETRY:
-  if (sx->early_pipe_active)
+  if (atrn_domains)
     {
-    sx->outblock.conn_args = &sx->conn_args;
-    (void) smtp_boundsock(&sx->conn_args);
+    DEBUG(D_transport)
+      debug_printf("ATRN mode: TCP%s connection already present\n",
+		    tls_out.active.sock >= 0 ? "/TLS" : "");
+    sx->cctx.sock = 0;
+    sx->cctx.tls_ctx = tls_out.active.tls_ctx;
+
+    /* If already TLS, do not do a STARTTLS,EHLO sequence */
+    if (tls_out.active.sock >= 0)
+      sx->smtps = TRUE;
+    
+    /* Record the port that was used */
+    smtp_port_for_connect(sx->conn_args.host, sx->port);
     }
   else
-#endif
     {
-    blob lazy_conn = {.data = NULL};
-    /* For TLS-connect, a TFO lazy-connect is useful since the Client Hello
-    can go on the TCP SYN. */
+#ifndef DISABLE_PIPE_CONNECT
+    if (  verify_check_given_host(CUSS &ob->hosts_pipe_connect,
+					      sx->conn_args.host) == OK)
 
-    if ((sx->cctx.sock = smtp_connect(&sx->conn_args,
-			    sx->smtps ? &lazy_conn : NULL)) < 0)
+      /* We don't find out the local ip address until the connect, so if
+      the helo string might use it avoid doing early-pipelining. */
+
+      if (  !sx->helo_data
+	 || sx->conn_args.interface
+	 || !Ustrstr(sx->helo_data, "$sending_ip_address")
+	 || Ustrstr(sx->helo_data, "def:sending_ip_address")
+	 )
+	{
+	sx->early_pipe_ok = TRUE;
+	if (  read_ehlo_cache_entry(sx)
+	   && sx->ehlo_resp.cleartext_features & OPTION_EARLY_PIPE)
+	  {
+	  DEBUG(D_transport)
+	    debug_printf("Using cached cleartext PIPECONNECT\n");
+	  sx->early_pipe_active = TRUE;
+	  sx->peer_offered = sx->ehlo_resp.cleartext_features;
+	  }
+	}
+      else DEBUG(D_transport)
+	debug_printf("helo needs $sending_ip_address; avoid early-pipelining\n");
+
+  PIPE_CONNECT_RETRY:
+    if (sx->early_pipe_active)
       {
-      set_errno_nohost(sx->addrlist,
-	errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : errno,
-	sx->verify ? US strerror(errno) : NULL,
-	DEFER, FALSE, &sx->delivery_start);
-      sx->send_quit = FALSE;
-      return DEFER;
+      sx->outblock.conn_args = &sx->conn_args;
+      (void) smtp_boundsock(&sx->conn_args);
       }
-#ifdef TCP_QUICKACK
-    (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, TCP_QUICKACK, US &off,
-			sizeof(off));
-#endif
+    else
+#endif	/*DISABLE_PIPE_CONNECT*/
+      {
+      blob lazy_conn = {.data = NULL};
+      /* For TLS-connect, a TFO lazy-connect is useful since the Client Hello
+      can go on the TCP SYN. */
+
+      if ((sx->cctx.sock = smtp_connect(&sx->conn_args,
+			      sx->smtps ? &lazy_conn : NULL)) < 0)
+	{
+	set_errno_nohost(sx->addrlist,
+	  errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : errno,
+	  sx->verify ? US strerror(errno) : NULL,
+	  DEFER, FALSE, &sx->delivery_start);
+	sx->send_quit = FALSE;
+	return DEFER;
+	}
+  #ifdef TCP_QUICKACK
+      (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, TCP_QUICKACK, US &off,
+			  sizeof(off));
+  #endif
+      }
     }
   /* Expand the greeting message while waiting for the initial response. (Makes
   sense if helo_data contains ${lookup dnsdb ...} stuff). The expansion is
@@ -2801,7 +2825,9 @@ if (  smtp_peer_options & OPTION_TLS
   TLS_NEGOTIATE:
     {
     sx->conn_args.sending_ip_address = sending_ip_address;
-    if (!tls_client_start(&sx->cctx, &sx->conn_args, sx->addrlist, &tls_out, &tls_errstr))
+    if (  !atrn_domains
+       && !tls_client_start(&sx->cctx, &sx->conn_args, sx->addrlist, &tls_out,
+			    &tls_errstr))
       {
       /* TLS negotiation failed; give an error. From outside, this function may
       be called again to try in clear on a new connection, if the options permit
@@ -3002,7 +3028,7 @@ so its response needs to be analyzed. If TLS is not active and this is a
 continued session down a previously-used socket, we haven't just done EHLO, so
 we skip this. */
 
-if (   !continue_hostname
+if (   !continue_hostname && !atrn_domains
 #ifndef DISABLE_TLS
     || tls_out.active.sock >= 0
 #endif
@@ -3951,7 +3977,7 @@ commands were already sent; do not re-send but do mark the addrs as
 having been accepted up to RCPT stage.  A traditional cont-conn
 always has a sequence number greater than one. */
 
-if (continue_hostname && continue_sequence == 1)
+if (continue_hostname && continue_sequence == 1 && !atrn_domains)
   {
   /* sx->pending_MAIL = FALSE; */
   sx->ok = TRUE;

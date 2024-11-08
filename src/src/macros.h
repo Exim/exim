@@ -827,7 +827,7 @@ local_scan.h */
 most recent SMTP commands. SCH_NONE is "empty". */
 
 enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_BDAT,
-       SCH_EHLO, SCH_ETRN, SCH_EXPN, SCH_HELO,
+       SCH_EHLO, SCH_ATRN, SCH_ETRN, SCH_EXPN, SCH_HELO,
        SCH_HELP, SCH_MAIL, SCH_NOOP, SCH_QUIT, SCH_RCPT, SCH_RSET, SCH_STARTTLS,
        SCH_VRFY,
 #ifndef DISABLE_WELLKNOWN
@@ -956,20 +956,21 @@ order without checking carefully!
 **** IMPORTANT ****
 */
 
-enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
-       ACL_WHERE_MAIL,       /* )                                           */
-       ACL_WHERE_PREDATA,    /* ) There are several tests for "in message", */
-       ACL_WHERE_MIME,       /* ) implemented by <= WHERE_NOTSMTP           */
-       ACL_WHERE_DKIM,       /* )                                           */
-       ACL_WHERE_DATA,       /* )                                           */
+enum { ACL_WHERE_RCPT,		/* Some controls are for RCPT only */
+       ACL_WHERE_MAIL,		/* )						*/
+       ACL_WHERE_PREDATA,	/* ) There are several tests for "in message",	*/
+       ACL_WHERE_MIME,		/* ) implemented by <= WHERE_NOTSMTP		*/
+       ACL_WHERE_DKIM,		/* )						*/
+       ACL_WHERE_DATA,		/* )						*/
 #ifndef DISABLE_PRDR
-       ACL_WHERE_PRDR,       /* )                                           */
+       ACL_WHERE_PRDR,		/* )						*/
 #endif
-       ACL_WHERE_NOTSMTP,    /* )                                           */
+       ACL_WHERE_NOTSMTP,	/* )						*/
 
-       ACL_WHERE_AUTH,       /* These remaining ones are not currently    */
-       ACL_WHERE_CONNECT,    /* required to be in a special order so they */
-       ACL_WHERE_ETRN,       /* are just alphabetical.                    */
+       ACL_WHERE_AUTH,		/* These remaining ones are not currently	*/
+       ACL_WHERE_ATRN,		/* */
+       ACL_WHERE_CONNECT,	/* required to be in a special order so they	*/
+       ACL_WHERE_ETRN,		/* are just alphabetical.			*/
        ACL_WHERE_EXPN,
        ACL_WHERE_HELO,
        ACL_WHERE_MAILAUTH,
@@ -1000,6 +1001,7 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
 #define ACL_BIT_NOTSMTP		BIT(ACL_WHERE_NOTSMTP)
 #define ACL_BIT_AUTH		BIT(ACL_WHERE_AUTH)
 #define ACL_BIT_CONNECT		BIT(ACL_WHERE_CONNECT)
+#define ACL_BIT_ATRN		BIT(ACL_WHERE_ATRN)
 #define ACL_BIT_ETRN		BIT(ACL_WHERE_ETRN)
 #define ACL_BIT_EXPN		BIT(ACL_WHERE_EXPN)
 #define ACL_BIT_HELO		BIT(ACL_WHERE_HELO)

@@ -5191,6 +5191,37 @@ for (uschar * s = exp; *s; /**/)
 return TRUE;
 }
 
+
+
+/* For ATRN: transfer the tls_in context to tls_out */
+
+void
+tls_turnaround(int newfd, const uschar * ipaddr, int port)
+{
+exim_openssl_client_tls_ctx * exim_client_ctx;
+int old_pool = store_pool;
+
+state_server.is_server = FALSE;
+state_server.tlsp = &tls_out;
+client_static_state = &state_server;
+
+store_pool = POOL_PERM;
+exim_client_ctx = store_get(sizeof(exim_openssl_client_tls_ctx), GET_UNTAINTED);
+exim_client_ctx->ctx = client_static_state->lib_state.lib_ctx;
+exim_client_ctx->ssl = client_static_state->lib_state.lib_ssl;
+exim_client_ctx->corked = NULL;
+store_pool = old_pool;
+
+SSL_set_fd(exim_client_ctx->ssl, newfd);
+
+tls_out = tls_in;
+tls_out.active.sock = newfd;
+tls_out.active.tls_ctx = exim_client_ctx;
+
+memset(&tls_in, 0, sizeof(tls_in));
+}
+
+
 #endif	/*!MACRO_PREDEF*/
 /* vi: aw ai sw=2
 */

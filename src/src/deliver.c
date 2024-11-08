@@ -4624,7 +4624,13 @@ nonmatch domains
   f.continue_more = FALSE;           /* In case got set for the last lot */
   if (continue_transport)
     {
-    BOOL ok = Ustrcmp(continue_transport, tp->drinst.name) == 0;
+    BOOL ok;
+
+    if (atrn_domains)
+      { continue_transport = tp->drinst.name; ok = TRUE; }
+    else
+      ok = Ustrcmp(continue_transport, tp->drinst.name) == 0;
+
 /*XXX do we need to check for a DANEd conn vs. a change of domain? */
 
     /* If the transport is about to override the host list do not check
@@ -4809,7 +4815,7 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
 
   /*XXX what about firsttime? */
   /*XXX also, ph1? Note tp->name would possibly change per message,
-  so a check/close/open would be needed. Might was to change that var name
+  so a check/close/open would be needed. Might want to change that var name
   "continue_wait_db" as we'd be using it for a non-continued-transport
   context. */
   if (continue_transport && !exim_lockfile_needed())
@@ -5300,6 +5306,11 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
     par_reduce(0, fallback);
     if (!*continue_next_id && continue_wait_db)
 	{ dbfn_close_multi(continue_wait_db); continue_wait_db = NULL; }
+
+    /* After the first ATRN message on the channel the EHLO has been dealt with;
+    ensure subsequence ones do not do that. */
+
+    atrn_domains = NULL;
     }
 
   /* Otherwise, if we are running in the test harness, wait a bit, to let the
@@ -6634,6 +6645,7 @@ whoever).
 A delivery operation has a process all to itself; we never deliver more than
 one message in the same process. Therefore we needn't worry too much about
 store leakage.
+XXX No longer true with new continued-transport ops; cf. goto CONTINUED_ID
 
 Liable to be called as root.
 
@@ -7267,6 +7279,9 @@ recipients tree, add an addr item to the chain of new addresses. If the pno
 value is non-negative, we must set the onetime parent from it. This which
 points to the relevant entry in the recipients list.
 
+When running for an ATRN delivery only include addresses for the domains
+to be delivered.
+
 This processing can be altered by the setting of the process_recipients
 variable, which is changed if recipients are to be ignored, failed, or
 deferred. This can happen as a result of system filter activity, or if the -Mg
@@ -7279,9 +7294,17 @@ complications for local addresses. */
 
 if (process_recipients != RECIP_IGNORE)
   for (i = 0; i < recipients_count; i++)
-    if (!tree_search(tree_nonrecipients, recipients_list[i].address))
+    {
+    recipient_item * r = recipients_list + i;
+    uschar * s;
+
+    if (  !tree_search(tree_nonrecipients, r->address)
+       && (  !atrn_domains
+	  ||    (s = Ustrrchr(r->address, '@'))
+	     && match_isinlist(s+1, &atrn_domains, 0, &domainlist_anchor, NULL,
+				MCL_DOMAIN + MCL_NOEXPAND, TRUE, NULL) == OK
+       )  )
       {
-      recipient_item * r = recipients_list + i;
       address_item * new = deliver_make_addr(r->address, FALSE);
 
       new->prop.errors_address = r->errors_to;
@@ -7405,6 +7428,7 @@ if (process_recipients != RECIP_IGNORE)
 	}
 #endif
       }
+    }
 
 DEBUG(D_deliver)
   {

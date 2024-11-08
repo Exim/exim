@@ -72,7 +72,7 @@ enum {
 
   HELO_CMD, EHLO_CMD, DATA_CMD, /* These are listed in the pipelining */
   VRFY_CMD, EXPN_CMD, NOOP_CMD, /* RFC as requiring synchronization */
-  ETRN_CMD,                     /* This by analogy with TURN from the RFC */
+  ATRN_CMD, ETRN_CMD,		/* This by analogy with TURN from the RFC */
   STARTTLS_CMD,                 /* Required by the STARTTLS RFC */
   TLS_AUTH_CMD,			/* auto-command at start of SSL */
 #ifdef EXPERIMENTAL_XCLIENT
@@ -231,6 +231,7 @@ static smtp_cmd_list cmd_list[] = {
   { "bdat",       sizeof("bdat")-1,       BDAT_CMD, TRUE,  TRUE  },
   { "quit",       sizeof("quit")-1,       QUIT_CMD, FALSE, TRUE  },
   { "noop",       sizeof("noop")-1,       NOOP_CMD, TRUE,  FALSE },
+  { "atrn",       sizeof("atrn")-1,       ATRN_CMD, TRUE,  FALSE },
   { "etrn",       sizeof("etrn")-1,       ETRN_CMD, TRUE,  FALSE },
   { "vrfy",       sizeof("vrfy")-1,       VRFY_CMD, TRUE,  FALSE },
   { "expn",       sizeof("expn")-1,       EXPN_CMD, TRUE,  FALSE },
@@ -1949,13 +1950,10 @@ while (done <= 0)
       break;
 
 
-    /* The VRFY, EXPN, HELP, ETRN, and NOOP commands are ignored. */
+    /* The VRFY, EXPN, HELP, ETRN, ATRN and NOOP commands are ignored. */
 
-    case VRFY_CMD:
-    case EXPN_CMD:
-    case HELP_CMD:
-    case NOOP_CMD:
-    case ETRN_CMD:
+    case VRFY_CMD: case EXPN_CMD: case HELP_CMD: case NOOP_CMD:
+    case ETRN_CMD: case ATRN_CMD:
 #ifndef DISABLE_WELLKNOWN
     case WELLKNOWN_CMD:
 #endif
@@ -4161,9 +4159,20 @@ while (done <= 0)
 	  fl.dsn_advertised = TRUE;
 	  }
 
-	/* Advertise ETRN/VRFY/EXPN if there's are ACL checking whether a host is
-	permitted to issue them; a check is made when any host actually tries. */
+	/* Advertise ATRN/ETRN/VRFY/EXPN if there's are ACL checking whether a
+	host is permitted to issue them; a check is made when any host actually
+	tries. */
 
+	GET_OPTION("acl_smtp_atrn");
+	if (acl_smtp_atrn)
+	  {
+	  const uschar * s = expand_cstring(acl_smtp_atrn);
+	  if (s && *s)
+	    {
+	    g = string_catn(g, smtp_code, 3);
+	    g = string_catn(g, US"-ATRN\r\n", 7);
+	    }
+	  }
 	GET_OPTION("acl_smtp_etrn");
 	if (acl_smtp_etrn)
 	  {
@@ -5520,6 +5529,7 @@ while (done <= 0)
 #endif
       smtp_printf(" HELO EHLO MAIL RCPT DATA BDAT", SP_MORE);
       smtp_printf(" NOOP QUIT RSET HELP", SP_MORE);
+      if (acl_smtp_atrn) smtp_printf(" ATRN", SP_MORE);
       if (acl_smtp_etrn) smtp_printf(" ETRN", SP_MORE);
       if (acl_smtp_expn) smtp_printf(" EXPN", SP_MORE);
       if (acl_smtp_vrfy) smtp_printf(" VRFY", SP_MORE);
@@ -5568,6 +5578,85 @@ while (done <= 0)
       done = 1;
       break;
 
+
+    case ATRN_CMD:
+      {
+      uschar * exp_acl = NULL;
+      const uschar * list;
+      int sep = 0;
+      gstring * g = NULL;
+      qrunner q = {0};
+
+      HAD(SCH_ATRN);
+      /*XXX could we used a cached value for "advertised"? */
+      GET_OPTION("acl_smtp_atrn");
+      if (acl_smtp_atrn
+	 && (exp_acl = expand_string(acl_smtp_atrn)) && !*exp_acl)
+	exp_acl = NULL;
+      if (!exp_acl || !authenticated_id || sender_address)
+	{
+	done = synprot_error(L_smtp_protocol_error,
+	  !exp_acl ? 502 : !authenticated_id ? 530 : 503,
+	  NULL,
+	  !exp_acl ?		US"ATRN command used when not advertised"
+	  : !authenticated_id ?	US"ATRN is not permitted without authentication"
+	  :			US"ATRN is not permitted inside a transaction"
+	  );
+	break;
+	}
+
+      log_write(L_etrn, LOG_MAIN, "ATRN '%s' received from %s",
+	smtp_cmd_argument, host_and_ident(FALSE));
+
+      if (  (rc = acl_check(ACL_WHERE_ATRN, NULL, exp_acl, &user_msg, &log_msg))
+	 != OK)
+	{
+	done = smtp_handle_acl_fail(ACL_WHERE_ATRN, rc, user_msg, log_msg);
+	break;
+	}
+
+      /* want to do a qrun for the given domain(s), using the already open channel.
+      TODO: alternate named queue
+      TODO: docs
+
+      /* ACK the command, record the connection details
+      and turn the line around */
+
+      smtp_printf("250 ODMR server turning line around\r\n", SP_NO_MORE);
+      atrn_host = string_sprintf("[%s]:%d",
+				sender_host_address, sender_host_port);
+
+#ifndef DISABLE_TLS
+      if (tls_in.active.sock >= 0)
+	tls_turnaround(0, sender_host_address, sender_host_port);
+#endif
+      fflush(smtp_out);
+      force_fd(fileno(smtp_in), 0);
+      smtp_in = smtp_out = NULL;
+
+      /* Set up a onetime queue run, filtering for messages with the
+      given domains. Later filtering will leave out addresses for other domains
+      on these messages. */
+
+      continue_transport = US"ATRN-client";
+      continue_hostname = continue_host_address = sender_host_address;
+
+      q.next_tick = time(NULL);
+      q.run_max = 1;
+      q.queue_2stage = TRUE;
+
+      /* Convert the domainlist to a regex, as the existing queue-selection
+      facilities support that but not a list */
+
+      list = atrn_domains;
+      for (const uschar * ele; ele = string_nextinlist(&list, &sep, NULL, 0); )
+	g = string_append_listele(g, '|', ele);
+      deliver_selectstring = string_sprintf("@(%Y)", g);
+      f.deliver_selectstring_regex = TRUE;
+
+      single_queue_run(&q , NULL, NULL);
+      exim_exit(EXIT_SUCCESS);
+      }
 
     case ETRN_CMD:
       HAD(SCH_ETRN);

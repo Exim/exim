@@ -1,0 +1,66 @@
+# Exim test configuration 0639
+
+.include DIR/aux-var/std_conf_prefix
+
+QDG=
+
+
+# ----- Main settings -----
+
+acl_smtp_atrn = ${if = {$received_port}{PORT_D2} {check_atrn}{}}
+acl_smtp_rcpt = accept
+
+queue_only
+queue_run_in_order
+
+# ----- ACL -----
+
+begin acl
+
+check_atrn:
+  deny		hosts = 127.0.0.1
+  warn		set acl_m0 = clientdom.net
+  deny		condition = ${if def:smtp_command_argument}
+		set acl_m0 = ${map \
+			    {<, $smtp_command_argument} \
+			    {${if inlist{$item}{clientdom.net:cl2dom.net} {$value}}} \
+			      }
+		condition = ${if !def:acl_m0}
+  defer
+.ifdef QDG
+		queue = QDG
+.endif
+		!atrn_domains = <, $acl_m0
+.ifdef QDG
+		queue =
+.endif
+		message = 453 You have no mail
+  accept
+
+# ----- auths ----
+
+begin authenticators
+
+plain:
+  driver = plaintext
+  public_name = PLAIN
+  server_condition = "\
+    ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
+  server_set_id = $auth2
+
+# -------- routers ---
+
+begin routers
+
+client:
+  driver =	manualroute
+  route_data =	<;$atrn_host
+  self =	send
+  transport =	client_smtp
+
+begin transports
+
+client_smtp:
+  driver =	smtp
+
+# End

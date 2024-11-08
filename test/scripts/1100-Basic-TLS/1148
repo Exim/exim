@@ -1,0 +1,101 @@
+# ATRN under TLS
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim a@clientdom.net
+Subject: foo
+
+sole body line
+****
+client-anytls 127.0.0.1 PORT_D
+??? 220
+EHLO testclient
+????250
+STARTTLS
+??? 220
+EHLO testclient
+????250
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+??? 235
+ATRN
+??? 250
+220 ODMR client now in reversed state
+??? EHLO
+250-hello, mate
+250 HELP
+??? MAIL
+250 saw your MAIL cmd
+??? RCPT
+250 saw your RCPT cmd
+??? DATA
+354 go ahead
+??? Received:
+??? \x09(
+??? \x09id
+??? \x09for
+??? \x09
+??? Subject:
+??? Message-Id:
+??? From:
+??? Date:
+??? 
+??? sole body line
+??? .
+250 ODMR client: message accepted
+??? QUIT
+221 bye
+stoptls
+???*
+****
+millisleep 500
+killdaemon
+#
+#
+#
+# Again, for TLS-on-connect
+exim -DSERVER=server -DSUB=PORT_D -bd -oX PORT_D
+****
+exim b@clientdom.net
+Subject: foo
+
+sole body line
+****
+client-anytls -tls-on-connect 127.0.0.1 PORT_D
+??? 220
+EHLO testclient
+????250
+EHLO testclient
+????250
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+??? 235
+ATRN
+??? 250
+220 ODMR client now in reversed state
+??? EHLO
+250-hello, mate
+250 HELP
+??? MAIL
+250 saw your MAIL cmd
+??? RCPT
+250 saw your RCPT cmd
+??? DATA
+354 go ahead
+??? Received:
+??? \x09(
+??? \x09id
+??? \x09for
+??? \x09
+??? Subject:
+??? Message-Id:
+??? From:
+??? Date:
+??? 
+??? sole body line
+??? .
+250 ODMR client: message accepted
+??? QUIT
+221 bye
+stoptls
+???*
+****
+millisleep 500
+killdaemon

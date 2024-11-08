@@ -459,6 +459,7 @@ static var_entry var_table[] = {
   { "arc_state",           vtype_module,	US"arc" },
   { "arc_state_reason",    vtype_module,	US"arc" },
 #endif
+  { "atrn_host",	   vtype_stringptr,   &atrn_host },
   { "authenticated_fail_id",vtype_stringptr,  &authenticated_fail_id },
   { "authenticated_id",    vtype_stringptr,   &authenticated_id },
   { "authenticated_sender",vtype_stringptr,   &authenticated_sender },

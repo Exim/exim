@@ -441,6 +441,7 @@ uschar *acl_not_smtp_mime      = NULL;
 #endif
 uschar *acl_not_smtp_start     = NULL;
 uschar *acl_removed_headers    = NULL;
+uschar *acl_smtp_atrn          = NULL;
 uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;
@@ -487,6 +488,7 @@ uschar *acl_wherenames[]       = { [ACL_WHERE_RCPT] =		US"RCPT",
                                    [ACL_WHERE_PRDR] =		US"PRDR",
 #endif
                                    [ACL_WHERE_NOTSMTP] =	US"non-SMTP",
+                                   [ACL_WHERE_ATRN] =		US"ATRN",
                                    [ACL_WHERE_AUTH] =		US"AUTH",
                                    [ACL_WHERE_CONNECT] =	US"connection",
                                    [ACL_WHERE_ETRN] =		US"ETRN",
@@ -514,8 +516,10 @@ uschar *acl_wherecodes[]       = { [ACL_WHERE_RCPT] =	US"550",
 #ifndef DISABLE_PRDR
                                    [ACL_WHERE_PRDR] =	US"550",
 #endif
+                                   [ACL_WHERE_ATRN] =	US"450",
                                    [ACL_WHERE_AUTH] =	US"503",
                                    [ACL_WHERE_CONNECT] = US"550",
+                                   [ACL_WHERE_ATRN] =	US"450",
                                    [ACL_WHERE_ETRN] =	US"458",
                                    [ACL_WHERE_EXPN] =	US"550",
                                    [ACL_WHERE_HELO] =	US"550",
@@ -615,6 +619,8 @@ const uschar *address_pipe           = NULL;
 tree_node *addresslist_anchor  = NULL;
 int     addresslist_count      = 0;
 gid_t  *admin_groups           = NULL;
+const uschar *atrn_domains     = NULL;
+const uschar *atrn_host        = NULL;
 
 uschar *authenticated_fail_id  = NULL;
 uschar *authenticated_id       = NULL;

@@ -3435,7 +3435,7 @@ Unqualified addresses are automatically qualified using &%qualify_domain%& and
 &%qualify_recipient%&, as appropriate, unless the &%-bnq%& option is used.
 
 Some other SMTP commands are recognized in the input. HELO and EHLO act
-as RSET; VRFY, EXPN, ETRN, and HELP act as NOOP;
+as RSET; VRFY, EXPN, ETRN, ATRN, and HELP act as NOOP;
 QUIT quits, ignoring the rest of the standard input.
 
 .cindex "return code" "for &%-bS%&"
@@ -12540,6 +12540,13 @@ to the relevant file.
 When, as a result of aliasing or forwarding, a message is directed to a pipe,
 this variable holds the pipe command when the transport is running.
 
+.new
+.vitem &$atrn_host$&
+.vindex ATRN "data for routing"
+When an ATRN command is accepted, this variable is filled in with the client
+IP and port, for use in a manualroute router.
+.wen
+
 .vitem "&$auth1$& &-- &$auth4$&"
 .vindex "&$auth1$&, &$auth2$&, etc"
 These variables are used in SMTP authenticators (see chapters
@@ -14916,6 +14923,7 @@ listed in more than one group.
 .row &%acl_not_smtp%&                "ACL for non-SMTP messages"
 .row &%acl_not_smtp_mime%&           "ACL for non-SMTP MIME parts"
 .row &%acl_not_smtp_start%&          "ACL for start of non-SMTP message"
+.row &%acl_smtp_atrn%&               "ACL for ATRN"
 .row &%acl_smtp_auth%&               "ACL for AUTH"
 .row &%acl_smtp_connect%&            "ACL for connection"
 .row &%acl_smtp_data%&               "ACL for DATA"
@@ -15068,6 +15076,7 @@ See also the &'Policy controls'& section above.
                                            connection"
 .row &%smtp_accept_reserve%&         "only reserve hosts if more connections"
 .row &%smtp_active_hostname%&        "host name to use in messages"
+.row &%smtp_atrn_command%&           "what to run for ATRN"
 .row &%smtp_banner%&                 "text for welcome banner"
 .row &%smtp_check_spool_space%&      "from SIZE on MAIL command"
 .row &%smtp_connect_backlog%&        "passed to TCP/IP stack"
@@ -15238,6 +15247,19 @@ SMTP messages.
 This option defines the ACL that is run before Exim starts reading a
 non-SMTP message. See section &<<SECnonSMTP>>& for further details.
 
+.new
+.option acl_smtp_atrn main string&!! unset
+.cindex ATRN "ACL for"
+.cindex ATRN advertisement
+.cindex "ESMTP extensions" ATRN
+This option defines the ACL that is run when an SMTP ATRN command is
+received.
+If no value is set, or the result after expansion is an empty string,
+then the ATRN facility is not advertised.
+See chapter &<<CHAPACL>>& for general information on ACLs,
+and section &<<SECTATRN>>& for description of ATRN.
+.wen
+
 .option acl_smtp_auth main string&!! unset
 .cindex "&ACL;" "setting up for SMTP commands"
 .cindex "AUTH" "ACL for"
@@ -15281,7 +15303,8 @@ See section &<<SECDKIMVFY>>& for further details.
 This option defines the ACL that is run when an SMTP ETRN command is
 received.
 If no value is set then the ETRN facility is not advertised.
-See chapter &<<CHAPACL>>& for further details.
+See chapter &<<CHAPACL>>& for general information on ACLs,
+and section &<<SECTETRN>>& for description of ETRN.
 
 .option acl_smtp_expn main string&!! unset
 .cindex "EXPN" "ACL for"
@@ -18047,7 +18070,7 @@ hosts), you can do so by an appropriate use of a &%control%& modifier in an ACL
 
 
 .option smtp_etrn_command main string&!! unset
-.cindex "ETRN" "command to be run"
+.cindex ETRN "command to be run"
 .cindex "ESMTP extensions" ETRN
 .vindex "&$domain$&"
 If this option is set, the given command is run whenever an SMTP ETRN
@@ -18074,7 +18097,7 @@ the command.
 
 
 .option smtp_etrn_serialize main boolean true
-.cindex "ETRN" "serializing"
+.cindex ETRN serializing
 When this option is set, it prevents the simultaneous execution of more than
 one identical command as a result of ETRN in an SMTP connection. See
 section &<<SECTETRN>>& for details.
@@ -30833,15 +30856,17 @@ configuration locally by running a fake SMTP session with which you interact.
 .cindex "&ACL;" "options for specifying"
 In order to cause an ACL to be used, you have to name it in one of the relevant
 options in the main part of the configuration. These options are:
+.cindex "ATRN" "ACL for"
 .cindex "AUTH" "ACL for"
 .cindex "DATA" "ACLs for"
+.cindex "DKIM" "ACL for"
 .cindex "ETRN" "ACL for"
 .cindex "EXPN" "ACL for"
 .cindex "HELO" "ACL for"
 .cindex "EHLO" "ACL for"
-.cindex "DKIM" "ACL for"
 .cindex "MAIL" "ACL for"
-.cindex "QUIT, ACL for"
+.cindex "QUIT" "ACL for"
+.cindex "PRDR" "ACL for"
 .cindex "RCPT" "ACL for"
 .cindex "STARTTLS, ACL for"
 .cindex "VRFY" "ACL for"
@@ -30849,12 +30874,12 @@ options in the main part of the configuration. These options are:
 .cindex "SMTP" "connection, ACL for"
 .cindex "non-SMTP messages" "ACLs for"
 .cindex "MIME content scanning" "ACL for"
-.cindex "PRDR" "ACL for"
 
 .table2 140pt
 .irow &%acl_not_smtp%&         "ACL for non-SMTP messages"
 .irow &%acl_not_smtp_mime%&    "ACL for non-SMTP MIME parts"
 .irow &%acl_not_smtp_start%&   "ACL at start of non-SMTP message"
+.irow &%acl_smtp_atrn%&        "ACL for ATRN"
 .irow &%acl_smtp_auth%&        "ACL for AUTH"
 .irow &%acl_smtp_connect%&     "ACL for start of SMTP connection"
 .irow &%acl_smtp_data%&        "ACL after DATA is complete"
@@ -31286,9 +31311,11 @@ For &%acl_not_smtp%&, &%acl_smtp_auth%&, &%acl_smtp_connect%&,
 &%acl_smtp_mime%&, &%acl_smtp_predata%&, and &%acl_smtp_starttls%&, the action
 when the ACL is not defined is &"accept"&.
 
-For the others (&%acl_smtp_etrn%&, &%acl_smtp_expn%&, &%acl_smtp_rcpt%&,
-&%acl_smtp_vrfy%&
-and &%acl_smtp_wellknown%&),
+.new
+For the others (&%acl_smtp_atrn%&,
+.wen
+&%acl_smtp_etrn%&, &%acl_smtp_expn%&, &%acl_smtp_rcpt%&,
+&%acl_smtp_vrfy%& and &%acl_smtp_wellknown%&),
 the action when the ACL
 is not defined is &"deny"&.  This means that &%acl_smtp_rcpt%& must be
 defined in order to receive any messages over an SMTP connection.
@@ -31339,7 +31366,7 @@ of previously accepted recipients. At DATA time (for both the DATA ACLs),
 .cindex "&ACL;" "data for non-message ACL"
 .vindex &$smtp_command_argument$&
 .vindex &$smtp_command$&
-When an ACL is being run for AUTH, EHLO, ETRN, EXPN, HELO, STARTTLS, or VRFY,
+When an ACL is being run for ATRN, AUTH, EHLO, ETRN, EXPN, HELO, STARTTLS, or VRFY,
 the remainder of the SMTP command line is placed in &$smtp_command_argument$&,
 and the entire SMTP command is available in &$smtp_command$&.
 These variables can be tested using a &%condition%& condition. For example,
@@ -32669,6 +32696,18 @@ ACLs may be nested up to 20 deep; the limit exists purely to catch runaway
 loops. This condition allows you to use different ACLs in different
 circumstances. For example, different ACLs can be used to handle RCPT commands
 for different local users or different local domains.
+
+.new
+.vitem &*atrn_domains&~=&~*&<&'domain&~list'&>
+.cindex ATRN "checking for queued messages"
+This condition is only usable in the ATRN ACL.
+It returns true if there are any messages queued for any of the domains given
+in the list.
+The list supplied must not be tainted
+.cindex "tainted data" "de-tainting"
+and should contain only domains relevant for the authenticated user
+(to avoid leaking information about other users).
+.wen
 
 .vitem &*authenticated&~=&~*&<&'string&~list'&>
 .cindex "&%authenticated%& ACL condition"
@@ -37928,6 +37967,114 @@ under its own uid and gid when receiving incoming SMTP, so it is not possible
 for it to change them before running the command.
 
 
+.new
+.subsection "The ATRN command" SECTATRN
+.cindex ATRN processing
+.cindex "ESMTP extensions" ATRN
+A second method for intermittently-connecting destinations
+is specified by
+&url(https://www.rfc-editor.org/rfc/rfc2645.html,RFC 2645).
+
+This describes an ESMTP command called ATRN which requests
+a swap in server/client roles of the communicating endpoints, and delivery
+of queued messages.
+Note that this supports customers having IP addresses that
+change frequently.
+
+Exim supports the &"provider"& side of ATRN, using the terms
+of that specification:
+initially as an SMTP server, then transferring to an SMTP client
+role if an ATRN command is accepted.
+
+.oindex "&%acl_smtp_atrn%&"
+The command is only available if permitted by an ACL
+specfied by the main-section &%acl_smtp_atrn%& option.
+Per the standard, this should only be for a specific
+provider port number (386, named "odmr");
+Exim should be configured to listen on that port
+(in addition to other duties) via &%daemon_smtp_ports%&
+or equivalent commandline options, and restrict the
+advertising of the facility to the port:
+.code
+acl_smtp_atrn = ${if = {$received_port}{386} {check_atrn}{}}
+.endd
+
+A recieved ATRN command will be rejected unless
+authentication has previously been done on the connection.
+
+Any arguments supplied with an ATRN command are (per standard)
+a comma-separated list of requested domains,
+and will be available in the &$smtp_command_argument$&
+variable.
+
+The ACL configured may return &"deny"& for any policy reaons
+(for example, the authenticated user is not permitted the facility).
+Otherwise it should use the ACL &"atrn_domains"& condition,
+which returns true if there are queued messages for any of
+the given list of domains.
+If that condition fails the ACL should return &"defer"&
+with a "453 You have no mail" response;
+else it should return &"accept"&.
+
+For example (with default domain handling, and one possible de-taint method) :
+.code
+check_atrn:
+  warn  set acl_m0 = clientdom.net
+  deny  condition = ${if def:smtp_command_argument}
+        set acl_m0 = ${map \
+          {<, $smtp_command_argument} \
+          {${if inlist{$item}{clientdom.net:cl2dom.net} {$value}}} \
+          }
+        condition = ${if !def:acl_m0}
+  defer !atrn_domains = <, $acl_m0
+        message = 453 You have no mail
+  accept
+.endd
+
+Acceptance by the ACL will result in a queue-run for messages
+having addresses with the given domains.
+A suitable router and transport must be configured for the deliveries.
+
+To access a named queue
+.cindex queue named
+the ACL should use a "queue =" modifier before the "atrn_domains"
+condition.
+If the ACL does not accept, re-set the queue to an empty value
+so as to not disrupt any later SMTP operations on the connection.
+
+Use of the &"atrn_domains"& condition additionally sets up
+the &$atrn_host$& variable, which can be used by a manualroute
+router.  Being otherwise empty, this router will decline in
+other situations so can be safely placed in a general router chain.
+
+For example:
+.code
+begin routers
+odmr_client:
+  driver =      manualroute
+  route_data =  <;$atrn_host
+  transport =   client_smtp
+
+begin transports
+client_smtp:
+  driver =      smtp
+.endd
+
+Although not discssed in the specification document,
+Exim supports use of ATRN within a STARTTLS-
+or TLS-on-connect- encrypted connection
+(which is wise if a plaintext authentication mechanism is used).
+In such cases the TLS connection will remain open across the
+role-swap, and be used for the sending of queued messages.
+
+Note that the RFC requires that the CRAM-MD5 authentication
+method be supported.
+Exim does not enforce this, but leaves it up to the configuration;
+see chapter &<<CHID9>>&.
+
+.wen
+
+
 
 .section "Incoming local SMTP" "SECID238"
 .cindex "SMTP" "local incoming"
@@ -37947,7 +38094,8 @@ This accepts SMTP messages from local processes without doing any other tests.
 
 
 
-.section "Outgoing batched SMTP" "SECTbatchSMTP"
+.section "Batched SMTP" "SECTgenbatchSMTP"
+.subsection "Outgoing batched SMTP" "SECTbatchSMTP"
 .cindex "SMTP" "batched outgoing"
 .cindex "batched SMTP output"
 Both the &(appendfile)& and &(pipe)& transports can be used for handling
@@ -37994,7 +38142,7 @@ message (unless there are more than 1000 recipients).
 
 
 
-.section "Incoming batched SMTP" "SECTincomingbatchedSMTP"
+.subsection "Incoming batched SMTP" "SECTincomingbatchedSMTP"
 .cindex "SMTP" "batched incoming"
 .cindex "batched SMTP input"
 The &%-bS%& command line option causes Exim to accept one or more messages by

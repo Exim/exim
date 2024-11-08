@@ -61,6 +61,7 @@ static int msgcond[] = {
 
 enum { ACLC_ACL,
        ACLC_ADD_HEADER,
+       ACLC_ATRN_DOMAINS,
        ACLC_AUTHENTICATED,
 #ifdef EXPERIMENTAL_BRIGHTMAIL
        ACLC_BMI_OPTIN,
@@ -159,6 +160,10 @@ static condition_def conditions[] = {
 				    ACL_BIT_DKIM |
 				    ACL_BIT_NOTSMTP_START),
   },
+
+  [ACLC_ATRN_DOMAINS] =		{ US"atrn_domains",	ACD_EXP,
+				  PERMITTED(ACL_BIT_ATRN)
+				},
 
   [ACLC_AUTHENTICATED] =	{ US"authenticated",	0,
 				  FORBIDDEN(ACL_BIT_NOTSMTP |
@@ -3448,10 +3453,6 @@ for (; cb; cb = cb->next)
 
   switch(cb->type)
     {
-    case ACLC_ADD_HEADER:
-      setup_header(arg);
-      break;
-
     /* A nested ACL that returns "discard" makes sense only for an "accept" or
     "discard" verb. */
 
@@ -3464,6 +3465,28 @@ for (; cb; cb = cb->next)
           verbs[verb]);
         return ERROR;
         }
+      break;
+
+    case ACLC_ADD_HEADER:
+      setup_header(arg);
+      break;
+
+    case ACLC_ATRN_DOMAINS:
+      if (is_tainted(arg))
+	{
+	log_write(0, LOG_MAIN|LOG_PANIC,
+		  "attempt to used tainted value '%s' for atrn_domains%#s",
+		    arg,
+		    config_lineno
+		    ? string_sprintf(" (%s %d)", config_filename, config_lineno)
+		    : NULL);
+	*log_msgptr = US"internal configuration error";
+        return ERROR;
+	}
+      atrn_domains = string_copy(arg);
+      expand_level++;
+      rc = spool_has_one_undelivered_dom(arg);
+      expand_level--;
       break;
 
     case ACLC_AUTHENTICATED:

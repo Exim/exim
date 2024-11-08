@@ -46,10 +46,9 @@ Returns:       a pointer to a merged ordered list
 */
 
 static queue_filename *
-merge_queue_lists(queue_filename *a, queue_filename *b)
+merge_queue_lists(queue_filename * a, queue_filename * b)
 {
-queue_filename *first = NULL;
-queue_filename **append = &first;
+queue_filename * first = NULL, ** append = &first;
 
 while (a && b)
   {
@@ -126,15 +125,11 @@ Returns:         pointer to a chain of queue name items
 */
 
 static queue_filename *
-queue_get_spool_list(int subdiroffset, uschar *subdirs, int *subcount,
+queue_get_spool_list(int subdiroffset, uschar * subdirs, int * subcount,
   BOOL randomize, unsigned * pcount)
 {
-int i;
-int flags = 0;
-int resetflags = -1;
-int subptr;
-queue_filename *yield = NULL;
-queue_filename *last = NULL;
+int i, flags = 0, resetflags = -1, subptr;
+queue_filename * yield = NULL, * last = NULL;
 uschar buffer[256];
 queue_filename *root[LOG2_MAXNODES];
 
@@ -366,7 +361,7 @@ uschar * log_detail = NULL;
 int subcount = 0;
 uschar subdirs[64];
 pid_t qpid[4] = {0};	/* Parallelism factor for q2stage 1st phase */
-BOOL single_id = FALSE;
+BOOL single_id = FALSE, msg_handled = FALSE;
 
 #ifdef MEASURE_TIMING
 report_time_since(&timestamp_startup, US"queue_run start");
@@ -637,6 +632,8 @@ for (int i = queue_run_in_order ? -1 : 0;
               fq->text, deliver_selectstring);
           wanted = FALSE;
           }
+	else DEBUG(D_acl) if (atrn_domains)
+	  debug_printf_indent("%s matches ATRN\n", fq->text);
         }
 
       /* Recover store used when reading the header */
@@ -688,6 +685,7 @@ for (int i = queue_run_in_order ? -1 : 0;
 #ifdef MEASURE_TIMING
     report_time_since(&timestamp_startup, US"queue msg selected");
 #endif
+    msg_handled = TRUE;
 
 single_item_retry:
     if ((pid = exim_fork(
@@ -708,7 +706,14 @@ single_item_retry:
 
     (void)close(pfd[pipe_write]);
     set_process_info("running queue: waiting for %s (%d)", fq->text, pid);
-    while (wait(&status) != pid);
+    for (int ret; (ret = wait (&status)) != pid; )
+      if (ret == -1)
+	{
+	DEBUG(D_any) debug_printf("%s %d: wait: %s\n", __FUNCTION__, __LINE__,
+				  strerror(errno));
+	status = 0;
+	break;
+	}
 
     /* A zero return means a delivery was attempted; turn off the force flag
     for any subsequent calls unless queue_force is set. */
@@ -816,11 +821,23 @@ if (q->queue_2stage)
 /* At top level, log the end of the run. */
 
 if (!recurse)
+  {
   if (q->name)
     log_write(L_queue_run, LOG_MAIN, "End '%s' queue run: %s",
       q->name, log_detail);
   else
     log_write(L_queue_run, LOG_MAIN, "End queue run: %s", log_detail);
+
+  /* If no ATRN messages were sent, try to close the channel semi-cleanly.
+  XXX is this the best place to be doing this? We really ought to be
+  using smtp_write_command() but that needs a transport context. */
+
+  if (atrn_domains && !msg_handled)
+    {
+    DEBUG(D_any) debug_printf("ATRN: no messages; sending QUIT\n");
+    (void) send(0, "QUIT\r\n", 6, 0);
+    }
+  }
 }
 
 
@@ -838,10 +855,73 @@ set_process_info("running the %s%s%squeue (single queue run%s)",
   *queue_name ? "'" : "", queue_name, *queue_name ? "' " : "",
   q->queue_2stage ? ", 2-phase" : ""
   );
+if (*queue_name) q->name = queue_name;
 queue_run(q, start_id, stop_id, FALSE);
 }
 
 
+
+
+/* Search spool for messages having at least one undelivered recipient domain
+matching the given list, early-out.  We ignore J-files, assuming any such
+will get accounted for elsewhere.
+
+Arguments:	domains		list of domains to match
+Return		OK/FAIL
+*/
+
+int
+spool_has_one_undelivered_dom(const uschar * domains)
+{
+int yield = FAIL, subcount;
+uschar subdirs[64];
+BOOL orig_dont_deliver = f.dont_deliver;
+uschar * orig_sa = sender_host_address;
+int orig_sp = sender_host_port;
+tls_support orig_tls_in = tls_in;
+
+for (queue_filename * fq = queue_get_spool_list(-1,	/* entire queue */
+				      subdirs,		/* for holding sublist*/
+				      &subcount,	/* for subcount */
+				      FALSE,		/* not random */
+				      NULL);
+     fq && yield != OK; fq = fq->next)
+  {
+  struct stat statbuf;
+  rmark reset_point = store_mark();
+
+  message_subdir[0] = fq->dir_uschar;
+  if (  Ustat(spool_fname(US"input", message_subdir, fq->text, US""), &statbuf)
+	>= 0
+     && spool_read_header(fq->text, FALSE, TRUE) == spool_read_OK
+     )
+    {
+    uschar * s;
+    for (const recipient_item * r = recipients_list;
+	r < recipients_list + recipients_count && yield != OK; r++)
+
+      if (  !tree_search(tree_nonrecipients, r->address)
+	 && (s = Ustrchr(r->address, '@'))
+	 && match_isinlist(s+1, &domains, 0, &domainlist_anchor, NULL,
+			  MCL_DOMAIN + MCL_NOEXPAND, TRUE, NULL) == OK)
+	{
+	DEBUG(D_all)
+	  debug_printf_indent("found a matching message: '%s'\n", r->address);
+	yield = OK;
+	}
+
+    spool_clear_header_globals();
+    }
+  store_reset(reset_point);
+  }
+
+f.dont_deliver = orig_dont_deliver;
+sender_host_address = orig_sa;
+sender_host_port = orig_sp;
+tls_in = orig_tls_in;
+
+return yield;
+}
 
 
 /************************************************

@@ -1085,6 +1085,7 @@ Lines in client scripts are of several kinds:
 (1) "??? ": If a line begins with three question marks and a space, the rest of the
     line defines the start of expected output from the server. If what is
     received does not match, the client bombs out with an error message.
+    Escape sequences described below in (7) are usable in the expected text.
 
 (2) "???*": If a line begins with three question marks and an asterisk, the server
     is expected to close the connection.

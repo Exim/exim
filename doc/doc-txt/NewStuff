@@ -22,9 +22,11 @@ Version 4.98
     modules
 
  6. A transport "socks_proxy" may expand to an empty string, specifying no
-    proxying.
+    proxying
 
- 7. Variables $dmarc_alignment_spf and $dmarc_alignment_dkim.
+ 7. Variables $dmarc_alignment_spf and $dmarc_alignment_dkim
+
+ 8. ATRN provider support
 
 Version 4.98
 ------------

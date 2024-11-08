@@ -1,0 +1,37 @@
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss Q=altqueue
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D port PORT_D2
+1999-03-02 09:44:33 ATRN '#failacl' received from (tester) [127.0.0.1]
+1999-03-02 09:44:33 H=(tester) [127.0.0.1] rejected ATRN #failacl
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= fred@example.com H=(tester) [ip4.ip4.ip4.ip4] P=esmtp S=sss
+1999-03-02 09:44:33 ATRN '' received from (tester) [ip4.ip4.ip4.ip4]
+1999-03-02 09:44:33 Start queue run: pid=p1235 -qq -Rr @(clientdom.net)
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 => bill@clientdom.net R=client T=client_smtp H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 ODMR client: message accepted"
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
+1999-03-02 09:44:33 End queue run: pid=p1235 -qq -Rr @(clientdom.net)
+1999-03-02 09:44:33 ATRN '' received from (tester) [ip4.ip4.ip4.ip4]
+1999-03-02 09:44:33 Start queue run: pid=p1236 -qq -Rr @(clientdom.net)
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => b@clientdom.net R=client T=client_smtp H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 ODMR client: message accepted"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 -> d@clientdom.net R=client T=client_smtp H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 ODMR client: message accepted"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => e@clientdom.net R=client T=client_smtp H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]* C="250 ODMR client: message accepted"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
+1999-03-02 09:44:33 End queue run: pid=p1236 -qq -Rr @(clientdom.net)
+1999-03-02 09:44:33 ATRN 'cl2dom.net' received from (tester) [ip4.ip4.ip4.ip4]
+1999-03-02 09:44:33 Start queue run: pid=p1237 -qq -Rr @(cl2dom.net)
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 => f@cl2dom.net R=client T=client_smtp H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 ODMR client: message accepted"
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
+1999-03-02 09:44:33 End queue run: pid=p1237 -qq -Rr @(cl2dom.net)
+1999-03-02 09:44:33 ATRN 'cl2dom.net' received from (tester) [ip4.ip4.ip4.ip4]
+1999-03-02 09:44:33 U=unknown temporarily rejected ATRN cl2dom.net: 453 You have no mail
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTP on port PORT_D port PORT_D2
+1999-03-02 09:44:33 ATRN '' received from (tester) [ip4.ip4.ip4.ip4]
+1999-03-02 09:44:33 Start 'altqueue' queue run: pid=p1239 -qq -Rr @(clientdom.net)
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 => g@clientdom.net Q=altqueue R=client T=client_smtp H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 ODMR client: message accepted"
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
+1999-03-02 09:44:33 End 'altqueue' queue run: pid=p1239 -qq -Rr @(clientdom.net)

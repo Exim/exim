@@ -73,6 +73,7 @@ extern int     tls_read(void *, uschar *, size_t);
 extern int     tls_server_start(uschar **);
 extern void    tls_shutdown_wr(void *);
 extern BOOL    tls_smtp_buffered(void);
+extern void    tls_turnaround(int, const uschar *, int);
 extern int     tls_ungetc(int);
 #if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 extern void    tls_watch_discard_event(int);
@@ -521,6 +522,7 @@ extern int     spam(const uschar **);
 extern FILE   *spool_mbox(unsigned long *, const uschar *, uschar **);
 #endif
 extern void    spool_clear_header_globals(void);
+extern int     spool_has_one_undelivered_dom(const uschar *);
 extern BOOL    spool_move_message(const uschar *, const uschar *, const uschar *, const uschar *);
 extern int     spool_open_datafile(const uschar *);
 extern int     spool_open_temp(uschar *);

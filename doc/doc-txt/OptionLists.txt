@@ -51,6 +51,7 @@ in fact some of them were inherited from earlier versions.
 accept_8bitmime                      boolean         true          main              1.60 changed to true in 4.80
 acl_not_smtp                         string*         unset         main              4.11
 acl_not_smtp_mime                    string*         unset         main              4.51 with content scan
+acl_smtp_etrn                        string*         unset         main              4.99+
 acl_smtp_auth                        string*         unset         main              4.00
 acl_smtp_connect                     string*         unset         main              4.11
 acl_smtp_data                        string*         unset         main              4.00
