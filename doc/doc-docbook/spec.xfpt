@@ -15076,7 +15076,6 @@ See also the &'Policy controls'& section above.
                                            connection"
 .row &%smtp_accept_reserve%&         "only reserve hosts if more connections"
 .row &%smtp_active_hostname%&        "host name to use in messages"
-.row &%smtp_atrn_command%&           "what to run for ATRN"
 .row &%smtp_banner%&                 "text for welcome banner"
 .row &%smtp_check_spool_space%&      "from SIZE on MAIL command"
 .row &%smtp_connect_backlog%&        "passed to TCP/IP stack"
@@ -28026,17 +28025,17 @@ Successful authentication sets up information used by the
 
 .cindex authentication "failure event, server"
 If an authenticator is run and does not succeed,
-an event (see &<<CHAPevents>>&) of type "auth:fail" is raised.
+an event of type "auth:fail" is raised.
 While the event is being processed the variables
 &$sender_host_authenticated$& (with the authenticator name)
 and &$authenticated_fail_id$& (as set by the authenticator &%server_set_id%& option)
 will be valid.
 If the event is serviced and a string is returned then the string will be logged
 instead of the default log line.
-See <<CHAPevents>> for details on events.
+See &<<CHAPevents>>& for details on events.
 
 
-.section "Testing server authentication" "SECID169"
+.subsection "Testing server authentication" "SECID169"
 .cindex "authentication" "testing a server"
 .cindex "AUTH" "testing a server"
 .cindex "base64 encoding" "creating authentication test data"
@@ -28115,12 +28114,12 @@ usual way.
 .next
 .cindex authentication "failure event, client"
 If the response to authentication is a permanent error (5&'xx'& code),
-an event (see &<<CHAPevents>>&) of type "auth:fail" is raised.
+an event of type "auth:fail" is raised.
 While the event is being processed the variable
 &$sender_host_authenticated$& (with the authenticator name)
 will be valid.
 If the event is serviced and a string is returned then the string will be logged.
-See <<CHAPevents>> for details on events.
+See &<<CHAPevents>>& for details on events.
 
 .next
 If the response to authentication is a permanent error (5&'xx'& code), Exim
