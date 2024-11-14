@@ -28,6 +28,8 @@ Version 4.98
 
  8. ATRN provider support
 
+ 9. IPv6 address support for mysql and pgsql lookups
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

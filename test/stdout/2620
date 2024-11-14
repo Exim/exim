@@ -46,7 +46,10 @@ after" id=newline
 > name='stquot id=quote1 
 > Failed: lookup of "servers=x:localhost; select name from them where id='ph10';" gave DEFER: PostgreSQL server "x" not found in pgsql_servers
 > Philip Hazel
-> Philip Hazel
+> name: Philip Hazel
+> ipv4: Philip Hazel
+> oldsyntax ipv6: Philip Hazel
+> newsyntax ipv6: Philip Hazel
 > Philip Hazel
 > x
 > Philip Hazel

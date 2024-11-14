@@ -74,6 +74,8 @@ ${lookup mysql {select * from them where id='nlonly';}}
 ${lookup mysql {servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';}}
 ${lookup mysql {servers=127.0.0.1::PORT_N:x; select name from them where id='ph10';}}
 ${lookup mysql {servers=127.0.0.1::PORT_N/test/root/:x; select name from them where id='ph10';}}
+oldsyntax ipv6: ${lookup mysql {servers=<!::1.PORT_N/test/root/pass!x; select name from them where id='ph10';}}
+newsyntax ipv6: ${lookup mysql,servers=<!::1.PORT_N/test/root/pass!x {select name from them where id='ph10';}}
 ${lookup mysql {servers=HOSTIPV4::PORT_N/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';}}
 ${lookup mysql {servers=localhost(DIR/mysql/sock)/test/root/pass; select name from them where id='ph10';}}
 x

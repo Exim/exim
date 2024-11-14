@@ -146,7 +146,7 @@ for (int i = 2; i >= 0; i--)
   if (!pp)
     {
     *errmsg = string_sprintf("incomplete pgSQL server data: %s",
-      (i == 2)? server : server_copy);
+      i == 2 ? server : server_copy);
     *defer_break = TRUE;
     return DEFER;
     }
@@ -210,12 +210,21 @@ if (!cn)
 
   else
     {
-    uschar *p;
-    if ((p = Ustrchr(server, ':')))
-      {
-      *p++ = 0;
-      port = p;
-      }
+    uschar * p;
+
+    /* If there is a colon (":") it could be a port number after an ipv4 or
+    hostname, or could be an ipv6. The latter must have at least two colons,
+    and we look instead for a period (".").  We assume a hostname never
+    contains a colon. */
+
+    if ((p = Ustrrchr(server, ':')))
+      if (  Ustrchr(server, ':') == p		/* only one colon */
+	 || (p = Ustrrchr(server, '.'))		/* >1 colon, and a period */
+	 )
+	{
+	*p++ = 0;
+	port = p;
+	}
 
     if (Ustrchr(server, '/'))
       {

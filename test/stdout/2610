@@ -14,6 +14,8 @@
 > Failed: lookup of "servers=x:127.0.0.1::1223; select name from them where id='ph10';" gave DEFER: MySQL server "x" not found in mysql_servers
 > Philip Hazel
 > Philip Hazel
+> oldsyntax ipv6: Philip Hazel
+> newsyntax ipv6: Philip Hazel
 > Philip Hazel
 > Philip Hazel
 > x

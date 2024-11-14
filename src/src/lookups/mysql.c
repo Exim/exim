@@ -207,11 +207,18 @@ if (!cn)
     *p = 0;
     }
 
-  if ((p = Ustrchr(sdata[0], ':')))
-    {
-    *p++ = 0;
-    port = Uatoi(p);
-    }
+  /* If there is a colon (":") it could be a port number after an ipv4 or
+  hostname, or could be an ipv6. The latter must have at least two colons,
+  and we look instead for a period ("."). */
+
+  if ((p = Ustrrchr(sdata[0], ':')))
+    if (  Ustrchr(sdata[0], ':') == p		/* only one colon */
+       || (p = Ustrrchr(sdata[0], '.'))		/* >1 colon, and a period */
+       )
+      {
+      *p++ = 0;
+      port = Uatoi(p);
+      }
 
   if (Ustrchr(sdata[0], '/'))
     {

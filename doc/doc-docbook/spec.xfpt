@@ -8261,11 +8261,20 @@ An option group name for MySQL option files can be specified in square brackets;
 the default value is &"exim"&.
 The full syntax of each item in &%mysql_servers%& is:
 .display
-<&'hostname'&>::<&'port'&>(<&'socket name'&>)[<&'option group'&>]/&&&
-  <&'database'&>/<&'user'&>/<&'password'&>
+<&'hostspec'&><&'portspec'&>(<&'socket name'&>)[<&'option group'&>]/&&&
+   <&'database'&>/<&'user'&>/<&'password'&>
 .endd
 Any of the four sub-parts of the first field can be omitted. For normal use on
 the local host it can be left blank or set to just &"localhost"&.
+
+.new
+A &'hostspec'& can be a hostname, an IPv4 address or an IPv6 address.
+For the latter, a &'portspec'& is a dot followed by a port number;
+for the other two a &'portspec'& is a colon followed by a port number.
+.wen
+
+Note that the default list-separator for the list of servers is a colon so
+(unless that is changed) all colons in list items must be doubled.
 
 No database need be supplied &-- but if it is absent here, it must be given in
 the queries.
@@ -8282,6 +8291,10 @@ parameters for the connection.
 
 
 .subsection "Special PostgreSQL features" SECID74
+.new
+The &'hostspec'& for PostgreSQL follows the same rules as for MySQL above.
+.wen
+
 PostgreSQL lookups can also use Unix domain socket connections to the database.
 This is usually faster and costs less CPU time than a TCP/IP connection.
 However it can be used only if the mail server runs on the same machine as the

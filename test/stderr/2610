@@ -173,6 +173,33 @@ LOG: MAIN
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
+   key="servers=<!::1.1223/test/root/pass!x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=mysql key="servers=<!::1.1223/test/root/pass!x; select name from them where id='ph10';" opts=NULL
+ database lookup required for servers=<!::1.1223/test/root/pass!x; select name from them where id='ph10';
+ MySQL query: "servers=<!::1.1223/test/root/pass!x; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 14 of -be stdin:
+  WARNING: obsolete syntax used for lookup
+ MYSQL new connection: host=::1 port=PORT_N socket=NULL database=test user=root
+ creating new cache entry
+ lookup yielded: Philip░Hazel
+ search_open: mysql "NULL"
+   cached open
+ search_find: file="NULL"
+   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts="servers=<!::1.1223/test/root/pass!x"
+ LRU list:
+ internal_search_find: file="NULL"
+   type=mysql key="select name from them where id='ph10';" opts="servers=<!::1.1223/test/root/pass!x"
+ database lookup required for select name from them where id='ph10';
+ MySQL query: "select name from them where id='ph10';" opts 'servers=<!::1.1223/test/root/pass!x'
+ MYSQL using cached connection for ::1.1223/test/root
+ creating new cache entry
+ lookup yielded: Philip░Hazel
+ search_open: mysql "NULL"
+   cached open
+ search_find: file="NULL"
    key="servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
@@ -180,7 +207,7 @@ LOG: MAIN
  database lookup required for servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';
  MySQL query: "servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';" opts 'NULL'
 LOG: MAIN
-  Exim configuration error in line 14 of -be stdin:
+  Exim configuration error in line 16 of -be stdin:
   WARNING: obsolete syntax used for lookup
  MYSQL new connection: host=ip4.ip4.ip4.ip4 port=PORT_N socket=NULL database=test user=root
  creating new cache entry
@@ -195,7 +222,7 @@ LOG: MAIN
  database lookup required for servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';
  MySQL query: "servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';" opts 'NULL'
 LOG: MAIN
-  Exim configuration error in line 15 of -be stdin:
+  Exim configuration error in line 17 of -be stdin:
   WARNING: obsolete syntax used for lookup
  MYSQL new connection: host=localhost port=0 socket=TESTSUITE/mysql/sock database=test user=root
  creating new cache entry
@@ -242,6 +269,7 @@ LOG: MAIN
 search_tidyup called
 close MYSQL connection: localhost(TESTSUITE/mysql/sock)/test/root
 close MYSQL connection: ip4.ip4.ip4.ip4:1223/test/root
+close MYSQL connection: ::1.1223/test/root
 close MYSQL connection: 127.0.0.1:PORT_N/test/root
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 01:01:01 p1235  Exim version x.yz uid=CALLER_UID gid=CALLER_GID pid=p1235 D=fff9ffff

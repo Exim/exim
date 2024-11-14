@@ -171,6 +171,48 @@ LOG: MAIN
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
+   key="servers=127.0.0.1::PORT_N/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=pgsql key="servers=127.0.0.1::PORT_N/test/CALLER/:x; select name from them where id='ph10';" opts=NULL
+ database lookup required for servers=127.0.0.1::PORT_N/test/CALLER/:x; select name from them where id='ph10';
+ PostgreSQL query: "servers=127.0.0.1::PORT_N/test/CALLER/:x; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 14 of -be stdin:
+  WARNING: obsolete syntax used for lookup
+ PGSQL new connection: host=127.0.0.1 port=PORT_N database=test user=CALLER
+ creating new cache entry
+ lookup yielded: Philip░Hazel
+ search_open: pgsql "NULL"
+   cached open
+ search_find: file="NULL"
+   key="servers=<!::1.1223/test/CALLER/!x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=pgsql key="servers=<!::1.1223/test/CALLER/!x; select name from them where id='ph10';" opts=NULL
+ database lookup required for servers=<!::1.1223/test/CALLER/!x; select name from them where id='ph10';
+ PostgreSQL query: "servers=<!::1.1223/test/CALLER/!x; select name from them where id='ph10';" opts 'NULL'
+LOG: MAIN
+  Exim configuration error in line 15 of -be stdin:
+  WARNING: obsolete syntax used for lookup
+ PGSQL new connection: host=::1 port=PORT_N database=test user=CALLER
+ creating new cache entry
+ lookup yielded: Philip░Hazel
+ search_open: pgsql "NULL"
+   cached open
+ search_find: file="NULL"
+   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts="servers=<!::1.1223/test/CALLER/!x"
+ LRU list:
+ internal_search_find: file="NULL"
+   type=pgsql key="select name from them where id='ph10';" opts="servers=<!::1.1223/test/CALLER/!x"
+ database lookup required for select name from them where id='ph10';
+ PostgreSQL query: "select name from them where id='ph10';" opts 'servers=<!::1.1223/test/CALLER/!x'
+ PGSQL using cached connection for ::1.1223/test/CALLER
+ creating new cache entry
+ lookup yielded: Philip░Hazel
+ search_open: pgsql "NULL"
+   cached open
+ search_find: file="NULL"
    key="servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
@@ -178,7 +220,7 @@ LOG: MAIN
  database lookup required for servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: "servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';" opts 'NULL'
 LOG: MAIN
-  Exim configuration error in line 14 of -be stdin:
+  Exim configuration error in line 17 of -be stdin:
   WARNING: obsolete syntax used for lookup
  PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER
  creating new cache entry
@@ -224,6 +266,8 @@ LOG: MAIN
  lookup yielded: 1
 search_tidyup called
 close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER
+close PGSQL connection: ::1.1223/test/CALLER
+close PGSQL connection: 127.0.0.1:PORT_N/test/CALLER
 close PGSQL connection: localhost:PORT_N/test/CALLER
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
