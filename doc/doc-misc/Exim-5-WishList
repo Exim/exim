@@ -1,0 +1,17 @@
+Wishlist for (the mythical) Exim version 5
+==========================================
+
+These are ideas that are so incompatible with version 4
+that we don't want to do them.
+
+1. Test router preconditions in order given
+
+2. Recast the router syntax to look more like the ACL syntax
+   There is no distinction between preconditions and conditions
+   (all of which are procedural rather than declarative)
+   in the current syntax.
+
+3. Redo the retries syntax, again to be more like ACL syntax.
+
+4. Redo syntax for mysql/pgsql host spec, for better parsing
+   - Eg. a proper list, of name=value items
