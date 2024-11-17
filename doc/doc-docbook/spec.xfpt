@@ -19724,8 +19724,8 @@ real_localuser:
 For security, it would probably be a good idea to restrict the use of this
 router to locally-generated messages, using a condition such as this:
 .code
-  condition = ${if match {$sender_host_address}\
-                         {\N^(|127\.0\.0\.1)$\N}}
+  condition = ${if match_ip {$sender_host_address} \
+			{<; ; 127.0.0.1 ; ::1}}
 .endd
 
 If both &%local_part_prefix%& and &%local_part_suffix%& are set for a router,
@@ -22467,8 +22467,8 @@ real_localuser:
 For security, it would probably be a good idea to restrict the use of this
 router to locally-generated messages, using a condition such as this:
 .code
-  condition = ${if match {$sender_host_address}\
-                         {\N^(|127\.0\.0\.1)$\N}}
+  condition = ${if match_ip {$sender_host_address} \
+			{<; ; 127.0.0.1 ; ::1}}
 .endd
 
 
