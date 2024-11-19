@@ -923,14 +923,18 @@ to be conservative. */
 
 while (isspace(*s) && *s != sep) s++;
 
-/* A change of separator is permitted, so look for a leading '<' followed by an
-allowed character. */
+/* A change of separator is permitted (assuming untainted source),
+so look for a leading '<' followed by an allowed character. */
 
 if (sep <= 0)
   {
   if (*s == '<' && (ispunct(s[1]) || iscntrl(s[1])))
     {
-    sep = s[1];
+    if (!is_tainted(s))
+      sep = s[1];
+    else DEBUG(D_any) 
+      debug_printf("attempt to use tainted change-of-seperator spec (%s %d)\n",
+		    config_filename, config_lineno);
     if (*++s) ++s;
     while (isspace(*s) && *s != sep) s++;
     }

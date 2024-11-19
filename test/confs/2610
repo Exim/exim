@@ -41,6 +41,7 @@ check_recipient:
 	  # In list-style lookup, tainted lookup string is ok if server spec comes from main-option
   warn	  set acl_m0 =	ok:    hostlist
 	  hosts =	net-mysql;select * from them where id='${quote_mysql:$local_part}'
+
 	  # ... but setting a per-query servers spec fails due to the taint
   warn	  set acl_m0 =	FAIL4: hostlist
 	  hosts =	<& net-mysql;servers=SSPEC; select * from them where id='${quote_mysql:$local_part}'

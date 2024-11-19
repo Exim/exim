@@ -1331,18 +1331,15 @@ return fieldtext;
 
 
 static uschar *
-expand_getlistele(int field, const uschar * list)
+expand_getlistele(int field, const uschar * list, int sep)
 {
 const uschar * tlist = list;
-int sep = 0;
+int sep_l = sep;
 /* Tainted mem for the throwaway element copies */
 uschar * dummy = store_get(2, GET_TAINTED);
 
 if (field < 0)
-  {
-  for (field++; string_nextinlist(&tlist, &sep, dummy, 1); ) field++;
-  sep = 0;
-  }
+  for (field++; string_nextinlist(&tlist, &sep_l, dummy, 1); ) field++;
 if (field == 0) return NULL;
 while (--field > 0 && (string_nextinlist(&list, &sep, dummy, 1))) ;
 return string_nextinlist(&list, &sep, NULL, 0);
@@ -2947,14 +2944,12 @@ switch(cond_type = identify_operator(&s, &opname))
   case ECOND_MATCH_DOMAIN:
   case ECOND_MATCH_IP:
   case ECOND_MATCH_LOCAL_PART:
-#ifndef EXPAND_LISTMATCH_RHS
+  case ECOND_INLIST:
+  case ECOND_INLISTI:
     sub2_honour_dollar = FALSE;
-#endif
     /* FALLTHROUGH */
 
   case ECOND_CRYPTEQ:
-  case ECOND_INLIST:
-  case ECOND_INLISTI:
   case ECOND_MATCH:
 
   case ECOND_NUM_L:     /* Numerical comparisons */
@@ -3088,13 +3083,24 @@ switch(cond_type = identify_operator(&s, &opname))
       }
 
     case ECOND_MATCH_ADDRESS:  /* Match in an address list */
-      rc = match_address_list(sub[0], TRUE, FALSE, &(sub[1]), NULL, -1, 0,
+      rc = match_address_list(sub[0], TRUE,
+#ifdef EXPAND_LISTMATCH_RHS
+			      TRUE,
+#else
+			      FALSE,
+#endif
+			      &(sub[1]), NULL, -1, 0,
 			      CUSS &lookup_value);
       goto MATCHED_SOMETHING;
 
     case ECOND_MATCH_DOMAIN:   /* Match in a domain list */
       rc = match_isinlist(sub[0], &(sub[1]), 0, &domainlist_anchor, NULL,
-	MCL_DOMAIN + MCL_NOEXPAND, TRUE, CUSS &lookup_value);
+#ifdef EXPAND_LISTMATCH_RHS
+			  MCL_DOMAIN,
+#else
+			  MCL_DOMAIN + MCL_NOEXPAND,
+#endif
+			  TRUE, CUSS &lookup_value);
       goto MATCHED_SOMETHING;
 
     case ECOND_MATCH_IP:       /* Match IP address in a host list */
@@ -3120,21 +3126,30 @@ switch(cond_type = identify_operator(&s, &opname))
 	  cb.host_address + 7 : cb.host_address;
 
 	rc = match_check_list(
-	       &sub[1],                   /* the list */
-	       0,                         /* separator character */
-	       &hostlist_anchor,          /* anchor pointer */
-	       &nullcache,                /* cache pointer */
-	       check_host,                /* function for testing */
-	       &cb,                       /* argument for function */
-	       MCL_HOST,                  /* type of check */
-	       sub[0],                    /* text for debugging */
-	       CUSS &lookup_value);       /* where to pass back data */
+		&sub[1],		/* the list */
+		0,			/* separator character */
+		&hostlist_anchor,	/* anchor pointer */
+		&nullcache,		/* cache pointer */
+		check_host,		/* function for testing */
+		&cb,			/* argument for function */
+#ifdef EXPAND_LISTMATCH_RHS
+		MCL_HOST,
+#else
+		MCL_HOST + MCL_NOEXPAND,/* type of check */
+#endif
+		sub[0],			/* text for debugging */
+		CUSS &lookup_value);	/* where to pass back data */
 	}
       goto MATCHED_SOMETHING;
 
     case ECOND_MATCH_LOCAL_PART:
       rc = match_isinlist(sub[0], &(sub[1]), 0, &localpartlist_anchor, NULL,
-	MCL_LOCALPART + MCL_NOEXPAND, TRUE, CUSS &lookup_value);
+#ifdef EXPAND_LISTMATCH_RHS
+			  MCL_LOCALPART,
+#else
+			  MCL_LOCALPART+ MCL_NOEXPAND,
+#endif
+			  TRUE, CUSS &lookup_value);
       /* Fall through */
       /* VVVVVVVVVVVV */
       MATCHED_SOMETHING:
@@ -3296,11 +3311,17 @@ switch(cond_type = identify_operator(&s, &opname))
     case ECOND_INLISTI:
       {
       const uschar * list = sub[1];
-      int sep = 0;
+      int sep;
       uschar *save_iterate_item = iterate_item;
       int (*compare)(const uschar *, const uschar *);
 
       DEBUG(D_expand) debug_printf_indent("condition: %s  item: %s\n", opname, sub[0]);
+
+      /* grab any listsep spec, then expand the list */
+
+      sep = matchlist_parse_sep(&list);
+      if (!(list = expand_cstring(list)))
+	goto failout;
 
       tempcond = FALSE;
       compare = cond_type == ECOND_INLISTI
@@ -3392,13 +3413,19 @@ switch(cond_type = identify_operator(&s, &opname))
   FORMANY:
     {
     const uschar * list;
-    int sep = 0;
+    int sep;
     uschar *save_iterate_item = iterate_item;
 
     DEBUG(D_expand) debug_printf_indent("condition: %s\n", opname);
 
+    /* First expand the list, apart from a leading change-of-separator
+    on non-json lists */
+
     Uskip_whitespace(&s);
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
+
+    sep = is_json ? 0 : matchlist_parse_sep(&s);
+
     if (!(sub[0] = expand_string_internal(s,
       ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | (yield ? ESI_NOFLAGS : ESI_SKIPPING),
       &s, resetok, NULL)))
@@ -3413,7 +3440,7 @@ switch(cond_type = identify_operator(&s, &opname))
 
     /* Call eval_condition once, with result discarded (as if scanning a
     "false" part). This allows us to find the end of the condition, because if
-    the list it empty, we won't actually evaluate the condition for real. */
+    the list is empty, we won't actually evaluate the condition for real. */
 
     if (!(s = eval_condition(sub[1], resetok, NULL)))
       {
@@ -3431,6 +3458,8 @@ switch(cond_type = identify_operator(&s, &opname))
         "inside \"%s\"", opname);
       goto failout;
       }
+
+    /* Now scan the list, checking the condition for each item */
 
     if (yield) *yield = !testfor;
     list = sub[0];
@@ -6358,7 +6387,7 @@ while (*s)
 
     case EITEM_LISTEXTRACT:
       {
-      int field_number = 1;
+      int field_number = 1, sep = 0;
       uschar * save_lookup_value = lookup_value, * sub[2];
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
@@ -6375,7 +6404,10 @@ while (*s)
 	  goto EXPAND_FAILED_CURLY;
 	  }
 
-	sub[i] = expand_string_internal(s+1,
+	s++;
+	if (i == 1) sep = matchlist_parse_sep(&s);
+
+	sub[i] = expand_string_internal(s,
 	      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL);
 	if (!sub[i])     goto EXPAND_FAILED;				/*{{*/
 	if (*s++ != '}')
@@ -6427,7 +6459,8 @@ while (*s)
       /* Extract the numbered element into $value. If
       skipping, just pretend the extraction failed. */
 
-      lookup_value = flags & ESI_SKIPPING ? NULL : expand_getlistele(field_number, sub[1]);
+      lookup_value = flags & ESI_SKIPPING
+	? NULL : expand_getlistele(field_number, sub[1], sep);
 
       /* If no string follows, $value gets substituted; otherwise there can
       be yes/no strings, as for lookup or if. */
@@ -6559,7 +6592,7 @@ while (*s)
     case EITEM_MAP:
     case EITEM_REDUCE:
       {
-      int sep = 0, save_ptr = gstring_length(yield);
+      int sep, save_ptr = gstring_length(yield);
       uschar outsep[2] = { '\0', '\0' };
       const uschar *list, *expr, *temp;
       uschar * save_iterate_item = iterate_item;
@@ -6574,6 +6607,9 @@ while (*s)
 	}
 
       DEBUG(D_expand) debug_printf_indent("%s: evaluate input list list\n", name);
+      /* Check for a list-sep spec before expansion */
+      sep = matchlist_parse_sep(&s);
+
       if (!(list = expand_string_internal(s,
 	      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL)))
 	goto EXPAND_FAILED;						/*{{*/
@@ -6766,7 +6802,7 @@ while (*s)
 
     case EITEM_SORT:
       {
-      int sep = 0, cond_type;
+      int sep, cond_type;
       const uschar * srclist, * cmp, * xtract;
       uschar * opname, * srcitem;
       const uschar * dstlist = NULL, * dstkeylist = NULL;
@@ -6779,6 +6815,7 @@ while (*s)
 	goto EXPAND_FAILED_CURLY;					/*}*/
 	}
 
+      sep = matchlist_parse_sep(&s);
       srclist = expand_string_internal(s,
 	      ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | flags, &s, &resetok, NULL);
       if (!srclist) goto EXPAND_FAILED;					/*{{*/
@@ -7545,9 +7582,10 @@ NOT_ITEM: ;
 
       case EOP_LISTCOUNT:
 	{
-	int cnt = 0, sep = 0;
+	int cnt = 0, sep;
 	uschar * buf = store_get(2, sub);
 
+	sep = matchlist_parse_sep(CUSS &sub);
 	while (string_nextinlist(CUSS &sub, &sep, buf, 1)) cnt++;
 	yield = string_fmt_append(yield, "%d", cnt);
 	break;

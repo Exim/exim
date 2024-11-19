@@ -51,13 +51,14 @@ CALLER in local_parts?
  cached lookup data = NULL
  list element: +n2_localparts
   start sublist n2_localparts
-   CALLER in "<; never2 ; +n1_localparts"?
+   list separator: ';'
+   CALLER in " never2 ; +n1_localparts"?
    ╎list element: never2
    ╎list element: +n1_localparts
    ╎ start sublist n1_localparts
    ╎cached no match for +n1_localparts
    ╎cached lookup data = NULL
-   CALLER in "<; never2 ; +n1_localparts"? no (end of list)
+   CALLER in " never2 ; +n1_localparts"? no (end of list)
   end sublist n2_localparts
  list element: !+local_localparts
   start sublist local_localparts
@@ -209,13 +210,14 @@ CALLER in local_parts?
  cached lookup data = NULL
  list element: +n2_localparts
   start sublist n2_localparts
-   CALLER in "<; never2 ; +n1_localparts"?
+   list separator: ';'
+   CALLER in " never2 ; +n1_localparts"?
    ╎list element: never2
    ╎list element: +n1_localparts
    ╎ start sublist n1_localparts
    ╎cached no match for +n1_localparts
    ╎cached lookup data = NULL
-   CALLER in "<; never2 ; +n1_localparts"? no (end of list)
+   CALLER in " never2 ; +n1_localparts"? no (end of list)
   end sublist n2_localparts
  list element: !+local_localparts
   start sublist local_localparts
@@ -362,13 +364,14 @@ unknown in local_parts?
  cached lookup data = NULL
  list element: +n2_localparts
   start sublist n2_localparts
-   unknown in "<; never2 ; +n1_localparts"?
+   list separator: ';'
+   unknown in " never2 ; +n1_localparts"?
    ╎list element: never2
    ╎list element: +n1_localparts
    ╎ start sublist n1_localparts
    ╎cached no match for +n1_localparts
    ╎cached lookup data = NULL
-   unknown in "<; never2 ; +n1_localparts"? no (end of list)
+   unknown in " never2 ; +n1_localparts"? no (end of list)
   end sublist n2_localparts
  list element: !+local_localparts
   start sublist local_localparts

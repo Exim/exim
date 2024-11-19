@@ -241,7 +241,7 @@ static condition_def conditions[] = {
 
   /* Explicit key lookups can be made in non-smtp ACLs so pass
   always and check in the verify processing itself. */
-  [ACLC_DNSLISTS] =		{ US"dnslists",		ACD_EXP,
+  [ACLC_DNSLISTS] =		{ US"dnslists",		0,
 				  FORBIDDEN(0) },
 
   [ACLC_DOMAINS] =		{ US"domains",		0,
@@ -786,7 +786,7 @@ Returns:      offset in list, or -1 if not found
 */
 
 static int
-acl_checkcondition(uschar * name, condition_def * list, int end)
+acl_findcondition(uschar * name, condition_def * list, int end)
 {
 for (int start = 0; start < end; )
   {
@@ -994,7 +994,7 @@ while ((s = (*func)()))
 
   /* Handle a condition or modifier. */
 
-  if ((c = acl_checkcondition(name, conditions, nelem(conditions))) < 0)
+  if ((c = acl_findcondition(name, conditions, nelem(conditions))) < 0)
     {
     *error = string_sprintf("unknown ACL condition/modifier in \"%s\"",
       saveline);
@@ -1025,7 +1025,7 @@ while ((s = (*func)()))
   if (conditions[c].flags & ACD_LOAD)
     {				/* a loadable module supports this condition */
     condition_module * cm;
-    uschar * s = NULL;
+    uschar * t = NULL;
 
     /* Over the list of modules we support, check the list of ACL conditions
     each supports.  This assumes no duplicates. */
@@ -1043,10 +1043,10 @@ while ((s = (*func)()))
       return NULL;
       }
     if (  !cm->info				/* module not loaded */
-       && !(cm->info = misc_mod_find(cm->mod_name, &s)))
+       && !(cm->info = misc_mod_find(cm->mod_name, &t)))
       {
       *error = string_sprintf("ACL error: failed to find module for '%s': %s",
-			      conditions[c].name, s);
+			      conditions[c].name, t);
       return NULL;
       }
     }
@@ -3350,12 +3350,11 @@ Returns:       OK        - all conditions are met
 */
 
 static int
-acl_check_condition(int verb, acl_condition_block *cb, int where,
-  address_item *addr, int level, BOOL *epp, uschar **user_msgptr,
-  uschar **log_msgptr, int *basic_errno)
+acl_check_condition(int verb, acl_condition_block * cb, int where,
+  address_item * addr, int level, BOOL * epp, uschar ** user_msgptr,
+  uschar ** log_msgptr, int * basic_errno)
 {
-uschar * user_message = NULL;
-uschar * log_message = NULL;
+uschar * user_message = NULL, * log_message = NULL;
 int rc = OK;
 
 for (; cb; cb = cb->next)
@@ -3364,30 +3363,24 @@ for (; cb; cb = cb->next)
   int control_type;
   BOOL textonly = FALSE;
 
-  /* The message and log_message items set up messages to be used in
-  case of rejection. They are expanded later. */
-
-  if (cb->type == ACLC_MESSAGE)
+  switch (cb->type)
     {
-    HDEBUG(D_acl) debug_printf_indent("  message: %s\n", cb->arg);
-    user_message = cb->arg;
-    continue;
-    }
+    /* The message and log_message items set up messages to be used in
+    case of rejection. They are expanded later. */
 
-  if (cb->type == ACLC_LOG_MESSAGE)
-    {
-    HDEBUG(D_acl) debug_printf_indent("l_message: %s\n", cb->arg);
-    log_message = cb->arg;
-    continue;
-    }
+    case ACLC_MESSAGE:
+      HDEBUG(D_acl) debug_printf_indent("  message: %s\n", cb->arg);
+      user_message = cb->arg;	continue;
 
-  /* The endpass "condition" just sets a flag to show it occurred. This is
-  checked at compile time to be on an "accept" or "discard" item. */
+    case ACLC_LOG_MESSAGE:
+      HDEBUG(D_acl) debug_printf_indent("l_message: %s\n", cb->arg);
+      log_message = cb->arg;	continue;
 
-  if (cb->type == ACLC_ENDPASS)
-    {
-    *epp = TRUE;
-    continue;
+    /* The endpass "condition" just sets a flag to show it occurred. This is
+    checked at compile time to be on an "accept" or "discard" item. */
+
+    case ACLC_ENDPASS:
+      *epp = TRUE;		continue;
     }
 
   /* For other conditions and modifiers, the argument is expanded now for some
@@ -4032,7 +4025,7 @@ for (; cb; cb = cb->next)
 #endif
 
     case ACLC_DNSLISTS:
-      rc = verify_check_dnsbl(where, &arg, log_msgptr);
+      rc = verify_check_dnsbl(where, arg, log_msgptr);
       break;
 
     case ACLC_DOMAINS:

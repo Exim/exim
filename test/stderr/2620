@@ -423,7 +423,8 @@ warn: condition test failed in ACL check_recipient
 processing ACL check_recipient "warn" (TESTSUITE/test-config 44)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
-host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
+list separator: '&'
+host in " net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
  list element: net-pgsql;servers=localhost::PORT_N/test/CALLER/;░select░*░from░them░where░id='c'
  search_open: pgsql "NULL"
    cached open
@@ -439,14 +440,15 @@ LOG: MAIN
   Exim configuration error in ACL verb at line 44 of TESTSUITE/test-config:
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
+host in " net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL check_recipient
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL 'warn' statement skipped (in ACL check_recipient at line 44 of TESTSUITE/test-config): condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 processing ACL check_recipient "warn" (TESTSUITE/test-config 49)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
-host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
+list separator: '&'
+host in " net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
  list element: net-pgsql,servers=localhost::PORT_N/test/CALLER/;░select░*░from░them░where░id='c'
  search_open: pgsql "NULL"
    cached open
@@ -459,7 +461,7 @@ host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them
                               (tainted, quoted:pgsql)
  PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::PORT_N/test/CALLER/'
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
+host in " net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL check_recipient
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL 'warn' statement skipped (in ACL check_recipient at line 49 of TESTSUITE/test-config): condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
@@ -614,7 +616,8 @@ warn: condition test failed in ACL check_recipient
 processing ACL check_recipient "warn" (TESTSUITE/test-config 44)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
-host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
+list separator: '&'
+host in " net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
  list element: net-pgsql;servers=localhost::PORT_N/test/CALLER/;░select░*░from░them░where░id='c'
  search_open: pgsql "NULL"
    cached open
@@ -630,14 +633,15 @@ LOG: MAIN
   Exim configuration error in ACL verb at line 44 of TESTSUITE/test-config:
   WARNING: obsolete syntax used for lookup
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-host in "<& net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
+host in " net-pgsql;servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql;servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL check_recipient
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL 'warn' statement skipped (in ACL check_recipient at line 44 of TESTSUITE/test-config): condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
 processing ACL check_recipient "warn" (TESTSUITE/test-config 49)
 check set acl_m0 = FAIL: hostlist
 check hosts = <& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='${quote_pgsql:$local_part}'
-host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
+list separator: '&'
+host in " net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"?
  list element: net-pgsql,servers=localhost::PORT_N/test/CALLER/;░select░*░from░them░where░id='c'
  search_open: pgsql "NULL"
    cached open
@@ -650,7 +654,7 @@ host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them
                               (tainted, quoted:pgsql)
  PostgreSQL query: " select * from them where id='c'" opts 'servers=localhost::PORT_N/test/CALLER/'
  lookup deferred: PostgreSQL server "localhost:PORT_N/test" is tainted
-host in "<& net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
+host in " net-pgsql,servers=localhost::PORT_N/test/CALLER/; select * from them where id='c'"? list match deferred for net-pgsql,servers=localhost::1223/test/CALLER/; select * from them where id='c'
 warn: condition test deferred in ACL check_recipient
 LOG: MAIN
   H=(test) [10.0.0.0] Warning: ACL 'warn' statement skipped (in ACL check_recipient at line 49 of TESTSUITE/test-config): condition test deferred: PostgreSQL server "localhost:PORT_N/test" is tainted

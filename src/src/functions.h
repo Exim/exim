@@ -321,6 +321,7 @@ extern int     match_isinlist(const uschar *, const uschar * const *, int,
 		 tree_node **, unsigned int *, int, BOOL, const uschar **);
 extern int     match_check_string(const uschar *, const uschar *, int, mcs_flags,
                  const uschar **);
+extern uschar  matchlist_parse_sep(const uschar **);
 
 extern void    message_start(void);
 extern void    message_tidyup(void);
@@ -643,7 +644,7 @@ extern int     vaguely_random_number_fallback(int);
 #endif
 extern int     verify_address(address_item *, FILE *, int, int, int, int,
                  uschar *, uschar *, BOOL *);
-extern int     verify_check_dnsbl(int, const uschar **, uschar **);
+extern int     verify_check_dnsbl(int, const uschar *, uschar **);
 extern int     verify_check_header_address(uschar **, uschar **, int, int, int,
                  uschar *, uschar *, int, int *);
 extern int     verify_check_headers(uschar **);

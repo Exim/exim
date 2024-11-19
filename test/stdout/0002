@@ -1099,5 +1099,6 @@ xyz
 > in list
 > in list
 > 
-> '${listextract {2} {<. my.target.host.name}}'  =>   'target'
+> variable m0 set
+> '${listextract {2} {my:target:string:list}}'  =>   'target'
 > 

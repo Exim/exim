@@ -10,9 +10,9 @@
 >>> processing ACL check_connect "warn" (TESTSUITE/test-config 21)
 >>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
->>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"?
+>>> host in " 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"?
 >>>  list element: 2001:ab8:37f:20:0:0:0:1
->>>  host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "2001:ab8:37f:20:0:0:0:1")
+>>>  host in " 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "2001:ab8:37f:20:0:0:0:1")
 >>> warn: condition test succeeded in ACL check_connect
 LOG: H=[2001:ab8:37f:20::1] Warning: matched hostlist
 >>> processing ACL check_connect "accept" (TESTSUITE/test-config 24)
@@ -43,13 +43,13 @@ LOG: H=[2001:ab8:37f:20::1] rejected connection in "connect" ACL
 >>> processing ACL check_connect "warn" (TESTSUITE/test-config 21)
 >>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
->>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"?
+>>> host in " 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"?
 >>>  list element: 2001:ab8:37f:20:0:0:0:1
 >>>  list element: v6.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=v6.test.ex address=V6NET:ffff:836f:a00:a:800:200a:c032
->>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? no (end of list)
+>>> host in " 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? no (end of list)
 >>> warn: condition test failed in ACL check_connect
 >>> processing ACL check_connect "accept" (TESTSUITE/test-config 24)
 >>> check condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
@@ -69,13 +69,13 @@ LOG: H=test3.ipv6.test.ex [V6NET:1234:5:6:7:8:abc:d] rejected connection in "con
 >>> processing ACL check_connect "warn" (TESTSUITE/test-config 21)
 >>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
->>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"?
+>>> host in " 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"?
 >>>  list element: 2001:ab8:37f:20:0:0:0:1
 >>>  list element: v6.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=v6.test.ex address=V6NET:ffff:836f:a00:a:800:200a:c032
->>>  host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "v6.test.ex")
+>>>  host in " 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "v6.test.ex")
 >>> warn: condition test succeeded in ACL check_connect
 LOG: H=[V6NET:ffff:836f:a00:a:800:200a:c032] Warning: matched hostlist
 >>> processing ACL check_connect "accept" (TESTSUITE/test-config 24)

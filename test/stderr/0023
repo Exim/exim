@@ -1668,7 +1668,7 @@ LOG: H=(test) [V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup
 >>> using ACL "acl_29_29_29"
 >>> processing ACL acl_29_29_29 "deny" (TESTSUITE/test-config 154)
 >>> check dnslists = test.ex/$sender_address_domain
->>>                = test.ex/localhost
+>>> expanded list: test.ex/localhost
 >>> dnslists check: test.ex/localhost
 >>> new DNS lookup for localhost.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
@@ -1680,7 +1680,7 @@ LOG: H=(test) [29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>> using ACL "acl_29_29_29"
 >>> processing ACL acl_29_29_29 "deny" (TESTSUITE/test-config 154)
 >>> check dnslists = test.ex/$sender_address_domain
->>>                = test.ex/elsewhere
+>>> expanded list: test.ex/elsewhere
 >>> dnslists check: test.ex/elsewhere
 >>> new DNS lookup for elsewhere.test.ex
 >>> dnslists: wrote cache entry, ttl=3000
@@ -1706,7 +1706,7 @@ LOG: H=(test) [29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>> processing ACL acl_30_30_30 "deny" (TESTSUITE/test-config 161)
 >>>   message: domain=$dnslist_domain\nvalue=$dnslist_value\nmatched=$dnslist_matched\ntext="$dnslist_text"
 >>> check dnslists = test.ex=V4NET.0.0.1,127.0.0.2/$sender_address_domain
->>>                = test.ex=V4NET.0.0.1,127.0.0.2/ten-1
+>>> expanded list: test.ex=V4NET.0.0.1,127.0.0.2/ten-1
 >>> dnslists check: test.ex=V4NET.0.0.1,127.0.0.2/ten-1
 >>> new DNS lookup for ten-1.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
@@ -1719,7 +1719,7 @@ LOG: H=(test) [30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
 >>> processing ACL acl_30_30_30 "deny" (TESTSUITE/test-config 161)
 >>>   message: domain=$dnslist_domain\nvalue=$dnslist_value\nmatched=$dnslist_matched\ntext="$dnslist_text"
 >>> check dnslists = test.ex=V4NET.0.0.1,127.0.0.2/$sender_address_domain
->>>                = test.ex=V4NET.0.0.1,127.0.0.2/ten-2
+>>> expanded list: test.ex=V4NET.0.0.1,127.0.0.2/ten-2
 >>> dnslists check: test.ex=V4NET.0.0.1,127.0.0.2/ten-2
 >>> new DNS lookup for ten-2.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
@@ -1737,7 +1737,7 @@ LOG: H=(test) [30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
 >>> processing ACL acl_30_30_30 "deny" (TESTSUITE/test-config 161)
 >>>   message: domain=$dnslist_domain\nvalue=$dnslist_value\nmatched=$dnslist_matched\ntext="$dnslist_text"
 >>> check dnslists = test.ex=V4NET.0.0.1,127.0.0.2/$sender_address_domain
->>>                = test.ex=V4NET.0.0.1,127.0.0.2/13.12.11.V4NET.rbl
+>>> expanded list: test.ex=V4NET.0.0.1,127.0.0.2/13.12.11.V4NET.rbl
 >>> dnslists check: test.ex=V4NET.0.0.1,127.0.0.2/13.12.11.V4NET.rbl
 >>> new DNS lookup for 13.12.11.V4NET.rbl.test.ex
 >>> dnslists: wrote cache entry, ttl=3
@@ -1761,7 +1761,7 @@ LOG: H=(test) [30.30.30.30] F=<a@13.12.11.V4NET.rbl> rejected RCPT <x@y>: domain
 >>> using ACL "acl_31_31_31"
 >>> processing ACL acl_31_31_31 "deny" (TESTSUITE/test-config 167)
 >>> check dnslists = test.ex/$sender_address_domain+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
->>>                = test.ex/y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
+>>> expanded list: test.ex/y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
 >>> dnslists check: test.ex/y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
 LOG: dnslist query is too long (ignored): y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END.test.ex...
 >>> deny: condition test failed in ACL acl_31_31_31

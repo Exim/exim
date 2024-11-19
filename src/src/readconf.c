@@ -1250,9 +1250,9 @@ return s;
 *             Read a name                        *
 *************************************************/
 
-/* The yield is the pointer to the next uschar. Names longer than the
-output space are silently truncated. This function is also used from acl.c when
-parsing ACLs.
+/* The yield is the pointer to the next uschar after the name plus
+and whitespace. Names longer than the output space are silently truncated.
+This function is also used from acl.c when parsing ACLs.
 
 Arguments:
   name      where to put the name

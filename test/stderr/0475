@@ -33,18 +33,18 @@ LOG: H=(test) [V4NET.0.0.0] F=<> rejected RCPT <a2@b>
 >>>  using ACL "a3"
 >>>  processing ACL a3 "deny" (TESTSUITE/test-config 23)
 >>>  check hosts = <; fe80::1
->>>  host in "<; fe80::1"?
+>>>  host in " fe80::1"?
 >>>   list element: fe80::1
->>>  host in "<; fe80::1"? no (end of list)
+>>>  host in " fe80::1"? no (end of list)
 >>>  deny: condition test failed in ACL a3
 >>>  end of ACL a3: implicit DENY
 LOG: H=(test) [V4NET.0.0.0] F=<> rejected RCPT <a3@b>
 >>>  using ACL "a4"
 >>>  processing ACL a4 "deny" (TESTSUITE/test-config 26)
 >>>  check hosts = <; fe80:1
->>>  host in "<; fe80:1"?
+>>>  host in " fe80:1"?
 >>>   list element: fe80:1
->>>   host in "<; fe80:1"? no (malformed IPv6 address or address mask: fe80:1)
+>>>   host in " fe80:1"? no (malformed IPv6 address or address mask: fe80:1)
 LOG: list matching forced to fail: malformed IPv6 address or address mask: fe80:1
 >>>   deny: condition test failed in ACL a4
 >>>   end of ACL a4: implicit DENY

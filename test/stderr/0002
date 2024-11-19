@@ -554,8 +554,9 @@ host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect1"
 processing ACL connect1 "deny" (TESTSUITE/test-config 45)
 check hosts = <\n partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch \n 1.2.3.4
-host in "<
- partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
+list separator: '↩
+'
+host in " partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
  1.2.3.4"?
  list element: partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
  sender host name required, to match against partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
@@ -588,8 +589,7 @@ host in "<
    in TESTSUITE/aux-fixed/0002.lsearch
  creating new cache entry
  lookup yielded: 
-  host in "<
-  partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
+  host in " partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
   1.2.3.4"? yes (matched "partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch")
 deny: condition test succeeded in ACL connect1
 end of ACL connect1: DENY
@@ -827,3 +827,49 @@ sender address = CALLER@myhost.test.ex
    ╎ ::1 in "<; aaaa:bbbb"? no (malformed IPv6 address or address mask: aaaa:bbbb)
    search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1240 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+Hints DB:
+environment after trimming:
+ USER=CALLER
+configuration file is TESTSUITE/test-config
+admin user
+dropping to exim gid; retaining priv uid
+try option gecos_pattern
+try option gecos_name
+try option unknown_login
+ ╭considering: '\${listextract░{2}░{$acl_m0}}'░░=>░░░'${listextract░{2}░{$acl_m0}}'
+ ├───────text: '
+ ├considering: \${listextract░{2}░{$acl_m0}}'░░=>░░░'${listextract░{2}░{$acl_m0}}'
+ ├backslashed: '\$'
+ ├considering: {listextract░{2}░{$acl_m0}}'░░=>░░░'${listextract░{2}░{$acl_m0}}'
+ ├───────text: {listextract░{2
+ ├considering: }░{$acl_m0}}'░░=>░░░'${listextract░{2}░{$acl_m0}}'
+ ├───────text: }░{
+ ├considering: $acl_m0}}'░░=>░░░'${listextract░{2}░{$acl_m0}}'
+ ├──────value: my:target:string:list
+            ╰──(tainted)
+ ├considering: }}'░░=>░░░'${listextract░{2}░{$acl_m0}}'
+ ├───────text: }
+ ├considering: }'░░=>░░░'${listextract░{2}░{$acl_m0}}'
+ ├───────text: }'░░=>░░░'
+ ├considering: ${listextract░{2}░{$acl_m0}}'
+  ╭considering: 2}░{$acl_m0}}'
+  ├───────text: 2
+  ├considering: }░{$acl_m0}}'
+  ├───expanded: 2
+  ╰─────result: 2
+  ╭considering: $acl_m0}}'
+  ├──────value: my:target:string:list
+             ╰──(tainted)
+  ├considering: }}'
+  ├───expanded: $acl_m0
+  ╰─────result: my:target:string:list
+             ╰──(tainted)
+ ├───item-res: target
+            ╰──(tainted)
+ ├considering: '
+ ├───────text: '
+ ├───expanded: '\${listextract░{2}░{$acl_m0}}'░░=>░░░'${listextract░{2}░{$acl_m0}}'
+ ╰─────result: '${listextract░{2}░{my:target:string:list}}'░░=>░░░'target'
+            ╰──(tainted)
+>>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

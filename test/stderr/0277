@@ -88,7 +88,8 @@ host in sender_unqualified_hosts?
  cached no match for +lookup_hosts
  list element: !+n2_hosts
   start sublist n2_hosts
-  host in "<; V4NET.2.2.2 ; +n1_hosts"?
+   list separator: ';'
+  host in " V4NET.2.2.2 ; +n1_hosts"?
    ╎list element: V4NET.2.2.2
    ╎list element: +n1_hosts
    ╎ start sublist n1_hosts
@@ -96,7 +97,7 @@ host in sender_unqualified_hosts?
    ╎   list element: V4NET.1.1.1
    ╎  host in "V4NET.1.1.1"? no (end of list)
    ╎ end sublist n1_hosts
-  host in "<; V4NET.2.2.2 ; +n1_hosts"? no (end of list)
+  host in " V4NET.2.2.2 ; +n1_hosts"? no (end of list)
   end sublist n2_hosts
 host in sender_unqualified_hosts? yes (end of list)
 host in recipient_unqualified_hosts? no (option unset)
@@ -159,7 +160,8 @@ host in sender_unqualified_hosts?
  cached no match for +lookup_hosts
  list element: !+n2_hosts
   start sublist n2_hosts
-  host in "<; V4NET.2.2.2 ; +n1_hosts"?
+   list separator: ';'
+  host in " V4NET.2.2.2 ; +n1_hosts"?
    ╎list element: V4NET.2.2.2
    ╎list element: +n1_hosts
    ╎ start sublist n1_hosts
@@ -167,7 +169,7 @@ host in sender_unqualified_hosts?
    ╎   list element: V4NET.1.1.1
    ╎  host in "V4NET.1.1.1"? no (end of list)
    ╎ end sublist n1_hosts
-  host in "<; V4NET.2.2.2 ; +n1_hosts"? no (end of list)
+  host in " V4NET.2.2.2 ; +n1_hosts"? no (end of list)
   end sublist n2_hosts
 host in sender_unqualified_hosts? yes (end of list)
 host in recipient_unqualified_hosts? no (option unset)
@@ -230,7 +232,8 @@ host in sender_unqualified_hosts?
  cached no match for +lookup_hosts
  list element: !+n2_hosts
   start sublist n2_hosts
-  host in "<; V4NET.2.2.2 ; +n1_hosts"?
+   list separator: ';'
+  host in " V4NET.2.2.2 ; +n1_hosts"?
    ╎list element: V4NET.2.2.2
    ╎list element: +n1_hosts
    ╎ start sublist n1_hosts
@@ -238,7 +241,7 @@ host in sender_unqualified_hosts?
    ╎   list element: V4NET.1.1.1
    ╎   host in "V4NET.1.1.1"? yes (matched "V4NET.1.1.1")
    ╎ end sublist n1_hosts
-   ╎host in "<; V4NET.2.2.2 ; +n1_hosts"? yes (matched "+n1_hosts")
+   ╎host in " V4NET.2.2.2 ; +n1_hosts"? yes (matched "+n1_hosts")
   end sublist n2_hosts
   host in sender_unqualified_hosts? no (matched "!+n2_hosts")
 host in recipient_unqualified_hosts? no (option unset)
@@ -301,9 +304,10 @@ host in sender_unqualified_hosts?
  cached no match for +lookup_hosts
  list element: !+n2_hosts
   start sublist n2_hosts
-  host in "<; V4NET.2.2.2 ; +n1_hosts"?
+   list separator: ';'
+  host in " V4NET.2.2.2 ; +n1_hosts"?
    ╎list element: V4NET.2.2.2
-   ╎host in "<; V4NET.2.2.2 ; +n1_hosts"? yes (matched "V4NET.2.2.2")
+   ╎host in " V4NET.2.2.2 ; +n1_hosts"? yes (matched "V4NET.2.2.2")
   end sublist n2_hosts
   host in sender_unqualified_hosts? no (matched "!+n2_hosts")
 host in recipient_unqualified_hosts? no (option unset)

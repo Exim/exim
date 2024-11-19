@@ -68,14 +68,15 @@ CALLER@test.ex in senders?
  cached lookup data = NULL
  list element: +n2_addresses
   start sublist n2_addresses
-   CALLER@test.ex in "<; never2@test.ex ; +n1_addresses"?
+   list separator: ';'
+   CALLER@test.ex in " never2@test.ex ; +n1_addresses"?
    ╎list element: never2@test.ex
    ╎address match test: subject=CALLER@test.ex pattern=never2@test.ex
    ╎list element: +n1_addresses
    ╎ start sublist n1_addresses
    ╎cached no match for +n1_addresses
    ╎cached lookup data = NULL
-   CALLER@test.ex in "<; never2@test.ex ; +n1_addresses"? no (end of list)
+   CALLER@test.ex in " never2@test.ex ; +n1_addresses"? no (end of list)
   end sublist n2_addresses
  list element: !+local_addresses
   start sublist local_addresses

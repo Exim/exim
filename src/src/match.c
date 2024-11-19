@@ -370,6 +370,37 @@ return US"";  /* In practice, should never happen */
 
 
 
+/* Check for a change-of-separator specification on the head of a list.
+Handle interpretation of backslash-char, in the same way that expansion would.
+
+Argument:	listp	pointer to list-pointer, updated on return to
+			next char after the spec if there is one; else unchaged
+
+Return:		separator char, or zero for no spec
+*/
+
+uschar
+matchlist_parse_sep(const uschar ** listp)
+{
+const uschar * list = *listp;
+if (Uskip_whitespace(&list) == '<')
+  {
+  const uschar * s = list+1;
+  uschar c = *s == '\\' ? string_interpret_escape(&s) : *s;
+  if (ispunct(c) || iscntrl(c))
+    {
+    DEBUG(D_lists)
+      {
+      uschar s[2] = {0}; *s = c;
+      debug_printf_indent("list separator: '%W'\n", s);
+      }
+    *listp = s+1;	/* next char after the change-of-separator */
+    return c;
+    }
+  }
+return 0;
+}
+
 /*************************************************
 *       Scan list and run matching function      *
 *************************************************/
@@ -454,14 +485,17 @@ if (!*listptr)
 if the type value is greater than or equal to than MCL_NOEXPAND, do not expand
 the list. */
 
+list = *listptr;
 if (type >= MCL_NOEXPAND)
   {
-  list = *listptr;
   type -= MCL_NOEXPAND;       /* Remove the "no expand" flag */
   textonly_re = TRUE;
   }
 else
   {
+  if (sep <= 0)
+    sep = matchlist_parse_sep(&list);
+
   /* If we are searching a domain list, and $domain is not set, set it to the
   subject that is being sought for the duration of the expansion. */
 
@@ -469,11 +503,11 @@ else
     {
     check_string_block *cb = (check_string_block *)arg;
     deliver_domain = string_copy(cb->subject);
-    list = expand_string_2(*listptr, &textonly_re);
+    list = expand_string_2(list, &textonly_re);
     deliver_domain = NULL;
     }
   else
-    list = expand_string_2(*listptr, &textonly_re);
+    list = expand_string_2(list, &textonly_re);
 
   if (!list)
     {
@@ -1133,8 +1167,7 @@ if (pattern[0] == '@' && pattern[1] == '@')
 
     ss = Ustrrchr(list, ':');
     if (!ss) ss = list; else ss++;
-    Uskip_whitespace(&ss);
-    if (*ss == '>')
+    if (Uskip_whitespace(&ss) == '>')
       {
       *ss++ = 0;
       Uskip_whitespace(&ss);

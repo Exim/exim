@@ -1893,7 +1893,13 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
     if (!override_pid_file_path) write_pid = FALSE;
 
-    list = override_local_interfaces;
+    /* specifically permit change-of-separator for admins (who should be
+    the only people getting here, but we may as well be careful) */
+
+    list = f.admin_user
+      ? string_copy_taint(override_local_interfaces, GET_UNTAINTED)
+      : override_local_interfaces;
+
     for (int sep = 0; s = string_nextinlist(&list, &sep, NULL, 0); )
       {
       uschar joinstr[4];
@@ -1940,7 +1946,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
       {
       uschar * end;
       default_smtp_port[pct] = Ustrtol(s, &end, 0);
-      if (end != s + Ustrlen(s))
+      if (*end)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "invalid SMTP port: %s", s);
       }
     else

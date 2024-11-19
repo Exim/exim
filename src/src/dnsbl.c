@@ -452,24 +452,24 @@ Note: an address for testing DUL is 192.203.178.4
 Note: a domain for testing RFCI is example.tld.dsn.rfc-ignorant.org
 
 Arguments:
-  where        the acl type
-  listptr      the domain/address/data list
-  log_msgptr   log message on error
+  where		the acl type
+  list		the domain/address/data list
+  log_msgptr	log message on error
 
 Returns:    OK      successful lookup (i.e. the address is on the list), or
                       lookup deferred after +include_unknown
             FAIL    name not found, or no data found for the given type, or
                       lookup deferred after +exclude_unknown (default)
             DEFER   lookup failure, if +defer_unknown was set
+	    ERROR   error during expansion
 */
 
 int
-verify_check_dnsbl(int where, const uschar ** listptr, uschar ** log_msgptr)
+verify_check_dnsbl(int where, const uschar * list, uschar ** log_msgptr)
 {
-int sep = 0;
-int defer_return = FAIL;
-const uschar *list = *listptr;
-uschar *domain;
+int sep, defer_return = FAIL;
+uschar * domain;
+const uschar * s = list;
 uschar revadd[128];        /* Long enough for IPv6 address */
 
 /* Indicate that the inverted IP address is not yet set up */
@@ -479,6 +479,21 @@ revadd[0] = 0;
 /* In case this is the first time the DNS resolver is being used. */
 
 dns_init(FALSE, FALSE, FALSE);	/*XXX dnssec? */
+
+/* Expand the list string.  This used to be done by the caller
+but we want to first strip any change-of-list-separator */
+
+sep = matchlist_parse_sep(&s);
+
+if (!(s= expand_cstring(s)))
+  {
+  if (f.expand_string_forcedfail) return OK;
+  *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
+    list, expand_string_message);
+  return f.search_find_defer ? DEFER : ERROR;
+  }
+HDEBUG(D_acl) if (s != list) debug_printf_indent("expanded list: %s\n", s);
+list = s;
 
 /* Loop through all the domains supplied, until something matches */
 

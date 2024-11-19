@@ -621,11 +621,12 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235   lookup failed
 01:01:01 p1235  host in "net-mysql;select * from them where id='c'"? no (end of list)
 01:01:01 p1235  warn: condition test failed in ACL check_recipient
-01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 45)
+01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 46)
 01:01:01 p1235  check set acl_m0 = FAIL4: hostlist
 01:01:01 p1235  check hosts = <& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
-01:01:01 p1235   ╭considering: <&░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
-01:01:01 p1235   ├───────text: <&░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='
+01:01:01 p1235  list separator: '&'
+01:01:01 p1235   ╭considering: ░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
+01:01:01 p1235   ├───────text: ░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='
 01:01:01 p1235   ├considering: ${quote_mysql:$local_part}'
 01:01:01 p1235    ╭considering: $local_part}'
 01:01:01 p1235    ├──────value: c
@@ -638,10 +639,10 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
 01:01:01 p1235   ├considering: '
 01:01:01 p1235   ├───────text: '
-01:01:01 p1235   ├───expanded: <&░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
-01:01:01 p1235   ╰─────result: <&░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
+01:01:01 p1235   ├───expanded: ░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
+01:01:01 p1235   ╰─────result: ░net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
-01:01:01 p1235  host in "<& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"?
+01:01:01 p1235  host in " net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"?
 01:01:01 p1235   list element: net-mysql;servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235   search_open: mysql "NULL"
 01:01:01 p1235     cached open
@@ -654,18 +655,19 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235                                (tainted, quoted:mysql)
 01:01:01 p1235   MySQL query: "servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'" opts 'NULL'
 01:01:01 p1235  LOG: MAIN
-01:01:01 p1235    Exim configuration error in ACL verb at line 45 of TESTSUITE/test-config:
+01:01:01 p1235    Exim configuration error in ACL verb at line 46 of TESTSUITE/test-config:
 01:01:01 p1235    WARNING: obsolete syntax used for lookup
 01:01:01 p1235   lookup deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
-01:01:01 p1235  host in "<& net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
+01:01:01 p1235  host in " net-mysql;servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
 01:01:01 p1235  warn: condition test deferred in ACL check_recipient
 01:01:01 p1235  LOG: MAIN
-01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL 'warn' statement skipped (in ACL check_recipient at line 45 of TESTSUITE/test-config): condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
-01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 50)
+01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL 'warn' statement skipped (in ACL check_recipient at line 46 of TESTSUITE/test-config): condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
+01:01:01 p1235  processing ACL check_recipient "warn" (TESTSUITE/test-config 51)
 01:01:01 p1235  check set acl_m0 = FAIL5: hostlist
 01:01:01 p1235  check hosts = <& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='${quote_mysql:$local_part}'
-01:01:01 p1235   ╭considering: <&░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
-01:01:01 p1235   ├───────text: <&░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='
+01:01:01 p1235  list separator: '&'
+01:01:01 p1235   ╭considering: ░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
+01:01:01 p1235   ├───────text: ░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='
 01:01:01 p1235   ├considering: ${quote_mysql:$local_part}'
 01:01:01 p1235    ╭considering: $local_part}'
 01:01:01 p1235    ├──────value: c
@@ -678,10 +680,10 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
 01:01:01 p1235   ├considering: '
 01:01:01 p1235   ├───────text: '
-01:01:01 p1235   ├───expanded: <&░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
-01:01:01 p1235   ╰─────result: <&░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
+01:01:01 p1235   ├───expanded: ░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='${quote_mysql:$local_part}'
+01:01:01 p1235   ╰─────result: ░net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235              ╰──(tainted, quoted:mysql)
-01:01:01 p1235  host in "<& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"?
+01:01:01 p1235  host in " net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"?
 01:01:01 p1235   list element: net-mysql,servers=127.0.0.1::PORT_N/test/root/pass;░select░*░from░them░where░id='c'
 01:01:01 p1235   search_open: mysql "NULL"
 01:01:01 p1235     cached open
@@ -694,11 +696,11 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235                                (tainted, quoted:mysql)
 01:01:01 p1235   MySQL query: " select * from them where id='c'" opts 'servers=127.0.0.1::PORT_N/test/root/pass'
 01:01:01 p1235   lookup deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
-01:01:01 p1235  host in "<& net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
+01:01:01 p1235  host in " net-mysql,servers=127.0.0.1::PORT_N/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
 01:01:01 p1235  warn: condition test deferred in ACL check_recipient
 01:01:01 p1235  LOG: MAIN
-01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL 'warn' statement skipped (in ACL check_recipient at line 50 of TESTSUITE/test-config): condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
-01:01:01 p1235  processing ACL check_recipient "accept" (TESTSUITE/test-config 53)
+01:01:01 p1235    H=(test) [10.0.0.0] Warning: ACL 'warn' statement skipped (in ACL check_recipient at line 51 of TESTSUITE/test-config): condition test deferred: MySQL server "127.0.0.1:PORT_N/test" is tainted
+01:01:01 p1235  processing ACL check_recipient "accept" (TESTSUITE/test-config 54)
 01:01:01 p1235  check domains = +local_domains
 01:01:01 p1235  d in "+local_domains"?
 01:01:01 p1235   list element: +local_domains
@@ -709,7 +711,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    end sublist local_domains
 01:01:01 p1235  d in "+local_domains"? no (end of list)
 01:01:01 p1235  accept: condition test failed in ACL check_recipient
-01:01:01 p1235  processing ACL check_recipient "accept" (TESTSUITE/test-config 56)
+01:01:01 p1235  processing ACL check_recipient "accept" (TESTSUITE/test-config 57)
 01:01:01 p1235  check hosts = +relay_hosts
 01:01:01 p1235  host in "+relay_hosts"?
 01:01:01 p1235   list element: +relay_hosts
@@ -741,7 +743,7 @@ close MYSQL connection: 127.0.0.1:PORT_N/test/root
 01:01:01 p1235    end sublist relay_hosts
 01:01:01 p1235  host in "+relay_hosts"? no (end of list)
 01:01:01 p1235  accept: condition test failed in ACL check_recipient
-01:01:01 p1235  processing ACL check_recipient "deny" (TESTSUITE/test-config 57)
+01:01:01 p1235  processing ACL check_recipient "deny" (TESTSUITE/test-config 58)
 01:01:01 p1235    message: relay not permitted
 01:01:01 p1235  deny: condition test succeeded in ACL check_recipient
 01:01:01 p1235  end of ACL check_recipient: DENY
@@ -797,7 +799,7 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for ph10@myhost.test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "check_notsmtp"
-processing ACL check_notsmtp "accept" (TESTSUITE/test-config 60)
+processing ACL check_notsmtp "accept" (TESTSUITE/test-config 61)
 check set acl_m_qtest = ${quote_mysql:$recipients}
                       = ph10@myhost.test.ex
 accept: condition test succeeded in ACL check_notsmtp
@@ -874,7 +876,7 @@ processing address_data
                               (tainted)
 No quoter name for addr
 LOG: MAIN PANIC
-  tainted search query is not properly quoted (router r1, TESTSUITE/test-config 68): select name from them where id='ph10' limit 1
+  tainted search query is not properly quoted (router r1, TESTSUITE/test-config 69): select name from them where id='ph10' limit 1
  required_quoter_id (mysql) quoting -1 (NULL)
  MySQL query: "select name from them where id='ph10' limit 1" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:PORT_N/test/root
@@ -919,7 +921,7 @@ appendfile transport entered
                               (tainted)
 No quoter name for addr
 LOG: MAIN
-  tainted search query is not properly quoted (transport t1, TESTSUITE/test-config 82): select id from them where id='ph10'
+  tainted search query is not properly quoted (transport t1, TESTSUITE/test-config 83): select id from them where id='ph10'
  required_quoter_id (mysql) quoting -1 (NULL)
  MySQL query: "select id from them where id='ph10'" opts 'NULL'
  MYSQL new connection: host=127.0.0.1 port=PORT_N socket=NULL database=test user=root

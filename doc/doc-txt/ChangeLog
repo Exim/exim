@@ -67,6 +67,8 @@ JH/14 Bug 3116: Fix crash in dkim signing.  On kernels supporting immutable
       memory segments, a write was done into one when a constant string was
       configured for a transport's dkim private key.
 
+JH/15 Disallow tainted change-of-separator on lists
+
 Exim version 4.98
 -----------------
 

@@ -145,13 +145,14 @@ test.ex in domains?
  cached lookup data = NULL
  list element: +n2_domains
   start sublist n2_domains
-   test.ex in "<; never2.ex ; +n1_domains"?
+   list separator: ';'
+   test.ex in " never2.ex ; +n1_domains"?
    ╎list element: never2.ex
    ╎list element: +n1_domains
    ╎ start sublist n1_domains
    ╎cached no match for +n1_domains
    ╎cached lookup data = NULL
-   test.ex in "<; never2.ex ; +n1_domains"? no (end of list)
+   test.ex in " never2.ex ; +n1_domains"? no (end of list)
   end sublist n2_domains
  list element: !+local_domains
   start sublist local_domains
@@ -408,13 +409,14 @@ test.ex in domains?
  cached lookup data = NULL
  list element: +n2_domains
   start sublist n2_domains
-   test.ex in "<; never2.ex ; +n1_domains"?
+   list separator: ';'
+   test.ex in " never2.ex ; +n1_domains"?
    ╎list element: never2.ex
    ╎list element: +n1_domains
    ╎ start sublist n1_domains
    ╎cached no match for +n1_domains
    ╎cached lookup data = NULL
-   test.ex in "<; never2.ex ; +n1_domains"? no (end of list)
+   test.ex in " never2.ex ; +n1_domains"? no (end of list)
   end sublist n2_domains
  list element: !+local_domains
   start sublist local_domains

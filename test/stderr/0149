@@ -7,7 +7,7 @@ routing x@ten
 --------> domainlist1 router <--------
 local_part=x domain=ten
 checking domains
-ten in "<- test1 - test2-test3--4"? no (end of list)
+ten in " test1 - test2-test3--4"? no (end of list)
 ten in domains? yes (end of list)
 calling domainlist1 router
 domainlist1 router called for x@ten
@@ -33,7 +33,7 @@ routing y@two
 --------> domainlist1 router <--------
 local_part=y domain=two
 checking domains
-two in "<- test1 - test2-test3--4"? no (end of list)
+two in " test1 - test2-test3--4"? no (end of list)
 two in domains? yes (end of list)
 calling domainlist1 router
 domainlist1 router called for y@two
@@ -128,7 +128,7 @@ routing x@one
 --------> domainlist1 router <--------
 local_part=x domain=one
 checking domains
-one in "<- test1 - test2-test3--4"? no (end of list)
+one in " test1 - test2-test3--4"? no (end of list)
 one in domains? yes (end of list)
 calling domainlist1 router
 domainlist1 router called for x@one
@@ -168,7 +168,7 @@ routing x@six
 --------> domainlist1 router <--------
 local_part=x domain=six
 checking domains
-six in "<- test1 - test2-test3--4"? no (end of list)
+six in " test1 - test2-test3--4"? no (end of list)
 six in domains? yes (end of list)
 calling domainlist1 router
 domainlist1 router called for x@six
