@@ -10,6 +10,10 @@ acl_smtp_vrfy = vrfy
 acl_smtp_rcpt = rcpt
 disable_ipv6
 
+# need to use this sublist due to taint
+hostlist goodhosts = *.$sender_address_domain : $sender_address_domain : \
+		      ${lookup dnsdb{>:defer_never,mxh=$sender_address_domain}}
+
 .ifdef DNS_RECURSE
 hosts_treat_as_local =		test.again.dns
 domainlist try_again_dns_list =	@mx_any
@@ -29,9 +33,6 @@ vrfy:
 .endif
 
 rcpt:
-  accept hosts = +ignore_unknown : \
-    *.$sender_address_domain : \
-    $sender_address_domain : \
-    ${lookup dnsdb{>:defer_never,mxh=$sender_address_domain}}
+  accept hosts = +ignore_unknown : +goodhosts
 
 # End

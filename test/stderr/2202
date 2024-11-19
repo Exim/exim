@@ -38,69 +38,73 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<a@b>
 using ACL "rcpt"
-processing ACL rcpt "accept" (TESTSUITE/test-config 35)
-check hosts = +ignore_unknown : *.$sender_address_domain : $sender_address_domain : ${lookup dnsdb{>:defer_never,mxh=$sender_address_domain}}
- search_open: dnsdb "NULL"
- search_find: file="NULL"
-   key=">:defer_never,mxh=cioce.test.again.dns" partial=-1 affix=NULL starflags=0 opts=NULL
- LRU list:
- internal_search_find: file="NULL"
-   type=dnsdb key=">:defer_never,mxh=cioce.test.again.dns" opts=NULL
- database lookup required for >:defer_never,mxh=cioce.test.again.dns
-                              (tainted)
- dnsdb key: cioce.test.again.dns
- DNS lookup of cioce.test.again.dns (MX) using fakens
- DNS lookup of cioce.test.again.dns (MX) gave TRY_AGAIN
- cioce.test.again.dns in dns_again_means_nonexist?
-  list element: *
-  cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
- cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
- DNS: couldn't fake dnsa len
- DNS: no SOA record found for neg-TTL
-  writing neg-cache entry for cioce.test.again.dns-MX-xxxx, ttl -1
- creating new cache entry
- lookup failed
-host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "?
+processing ACL rcpt "accept" (TESTSUITE/test-config 36)
+check hosts = +ignore_unknown : +goodhosts
+host in "+ignore_unknown : +goodhosts"?
  list element: +ignore_unknown
- list element: *.cioce.test.again.dns
- sender host name required, to match against *.cioce.test.again.dns
-  looking up host name for ip4.ip4.ip4.ip4
-   DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens
-   DNS lookup of ip4-reverse.in-addr.arpa (PTR) succeeded
-   Reverse DNS security status: unverified
-   IP address lookup yielded "the.local.host.name"
-   check dnssec require list
-   ╎the.local.host.name not in empty list (option unset? cannot trace name)
-   check dnssec request list
-   ╎the.local.host.name not in empty list (option unset? cannot trace name)
-   DNS lookup of the.local.host.name (A) using fakens
-   DNS lookup of the.local.host.name (A) succeeded
-   local host found for non-MX address
-   the.local.host.name ip4.ip4.ip4.ip4 mx=-1 sort=xx 
-   checking addresses for the.local.host.name
-   Forward DNS security status: unverified
+ list element: +goodhosts
+  start sublist goodhosts
+   ╎search_open: dnsdb "NULL"
+   ╎search_find: file="NULL"
+   ╎  key=">:defer_never,mxh=cioce.test.again.dns" partial=-1 affix=NULL starflags=0 opts=NULL
+   ╎LRU list:
+   ╎internal_search_find: file="NULL"
+   ╎  type=dnsdb key=">:defer_never,mxh=cioce.test.again.dns" opts=NULL
+   ╎database lookup required for >:defer_never,mxh=cioce.test.again.dns
+   ╎                             (tainted)
+   ╎dnsdb key: cioce.test.again.dns
+   ╎DNS lookup of cioce.test.again.dns (MX) using fakens
+   ╎DNS lookup of cioce.test.again.dns (MX) gave TRY_AGAIN
+   ╎cioce.test.again.dns in dns_again_means_nonexist?
+   ╎ list element: *
+   ╎ cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
+   ╎cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
+   ╎DNS: couldn't fake dnsa len
+   ╎DNS: no SOA record found for neg-TTL
+   ╎ writing neg-cache entry for cioce.test.again.dns-MX-xxxx, ttl -1
+   ╎creating new cache entry
+   ╎lookup failed
+  host in "*.cioce.test.again.dns : cioce.test.again.dns : "?
+   ╎list element: *.cioce.test.again.dns
+   ╎sender host name required, to match against *.cioce.test.again.dns
+   ╎ looking up host name for ip4.ip4.ip4.ip4
+   ╎  DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens
+   ╎  DNS lookup of ip4-reverse.in-addr.arpa (PTR) succeeded
+   ╎  Reverse DNS security status: unverified
+   ╎  IP address lookup yielded "the.local.host.name"
+   ╎  check dnssec require list
+   ╎   the.local.host.name not in empty list (option unset? cannot trace name)
+   ╎  check dnssec request list
+   ╎   the.local.host.name not in empty list (option unset? cannot trace name)
+   ╎  DNS lookup of the.local.host.name (A) using fakens
+   ╎  DNS lookup of the.local.host.name (A) succeeded
+   ╎  local host found for non-MX address
+   ╎  the.local.host.name ip4.ip4.ip4.ip4 mx=-1 sort=-151 
+   ╎  checking addresses for the.local.host.name
+   ╎  Forward DNS security status: unverified
   ip4.ip4.ip4.ip4 OK
- sender_fullhost = the.local.host.name (test) [ip4.ip4.ip4.ip4]
- sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4] helo=test)
- list element: cioce.test.again.dns
- using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
- DNS lookup of cioce.test.again.dns (A) using fakens
- DNS lookup of cioce.test.again.dns (A) gave TRY_AGAIN
- cioce.test.again.dns in dns_again_means_nonexist?
-  list element: *
-  cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
- cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
- DNS: couldn't fake dnsa len
- DNS: no SOA record found for neg-TTL
-  writing neg-cache entry for cioce.test.again.dns-A-xxxx, ttl -1
- host_fake_gethostbyname(af=inet) returned 1 (HOST_NOT_FOUND)
- no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
+   ╎sender_fullhost = the.local.host.name (test) [ip4.ip4.ip4.ip4]
+   ╎sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4] helo=test)
+   ╎list element: cioce.test.again.dns
+   ╎using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
+   ╎DNS lookup of cioce.test.again.dns (A) using fakens
+   ╎DNS lookup of cioce.test.again.dns (A) gave TRY_AGAIN
+   ╎cioce.test.again.dns in dns_again_means_nonexist?
+   ╎ list element: *
+   ╎ cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
+   ╎cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
+   ╎DNS: couldn't fake dnsa len
+   ╎DNS: no SOA record found for neg-TTL
+   ╎ writing neg-cache entry for cioce.test.again.dns-A-xxxx, ttl -1
+   ╎host_fake_gethostbyname(af=inet) returned 1 (HOST_NOT_FOUND)
+   ╎no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
 LOG: host_lookup_failed MAIN
   no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4])
- failed to find IP address for cioce.test.again.dns: item ignored by +ignore_unknown
-host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "? no (end of list)
-accept: condition test failed in ACL rcpt
-end of ACL rcpt: implicit DENY
+   ╎host in "*.cioce.test.again.dns : cioce.test.again.dns : "? no (failed to find IP address for cioce.test.again.dns)
+   end sublist goodhosts
+  host in "+ignore_unknown : +goodhosts"? no (end of list)
+ accept: condition test failed in ACL rcpt
+ end of ACL rcpt: implicit DENY
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT
   H=the.local.host.name (test) [ip4.ip4.ip4.ip4] F=<xx@cioce.test.again.dns> rejected RCPT <a@b>
@@ -108,7 +112,7 @@ SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from the.local.host.name (test) [ip4.ip4.ip4.ip4] D=qqs closed by QUIT
-search_tidyup called
+ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
@@ -140,7 +144,7 @@ host in smtp_accept_max_nonmail_hosts?
  list element: *
   host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 using ACL "vrfy"
-processing ACL vrfy "warn" (TESTSUITE/test-config 28)
+processing ACL vrfy "warn" (TESTSUITE/test-config 32)
 check domains = +try_again_dns_list
 test.again.dns in "+try_again_dns_list"?
  list element: +try_again_dns_list

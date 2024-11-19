@@ -4548,7 +4548,7 @@ for (int fill = 11 - Ustrlen(what); fill > 0; fill--)
   debug_printf("%V", "-");
 
 debug_printf("%s: %.*W\n", what, nchar, value);
-if (is_tainted(value))
+if (nchar > 0 && is_tainted(value))
   debug_printf_indent("%V          %V(tainted)\n",
     flags & ESI_SKIPPING ? "|" : " ", "\\__");
 }

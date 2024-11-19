@@ -36,6 +36,16 @@ typedef struct check_address_block {
 
 
 
+static BOOL
+is_tainted_metadata(const uschar * s)
+{
+/* Not enforcing for now, only logging; will enforce in a future release */
+if (is_tainted(s))
+  log_write(0, LOG_MAIN|LOG_PANIC,
+	    "attempt to use tainted list metadata %s", s);
+return FALSE;
+}
+
 /*************************************************
 *           Generalized string match             *
 *************************************************/
@@ -170,6 +180,9 @@ just fall through - the match will fail. */
 
 if (cb->flags & MCS_AT_SPECIAL && pattern[0] == '@')
   {
+  if (is_tainted_metadata(pattern))
+    return DEFER;
+
   if (pattern[1] == 0)
     {
     pattern = primary_hostname;
@@ -572,10 +585,12 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
     {
     if (Ustrcmp(ss, "+caseful") == 0)
       {
-      check_address_block *cb = (check_address_block *)arg;
-      uschar *at = Ustrrchr(cb->origaddress, '@');
+      check_address_block * cb = (check_address_block *)arg;
+      uschar * at;
 
-      if (at)
+      if (is_tainted_metadata(ss)) goto BAD_TAINT;
+
+      if ((at = Ustrrchr(cb->origaddress, '@')))
         Ustrncpy(cb->address, cb->origaddress, at - cb->origaddress);
       cb->flags &= ~MCS_CASELESS;
       continue;
@@ -588,7 +603,8 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
     {
     if (Ustrcmp(ss, "+caseful") == 0)
       {
-      check_string_block *cb = (check_string_block *)arg;
+      check_string_block * cb = (check_string_block *)arg;
+      if (is_tainted_metadata(ss)) goto BAD_TAINT;
       Ustrcpy(US cb->subject, cb->origsubject);
       cb->flags &= ~MCS_CASELESS;
       continue;
@@ -601,6 +617,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 
   else if (type == MCL_HOST && *ss == '+')
     {
+    if (is_tainted_metadata(ss)) goto BAD_TAINT;
     if (Ustrcmp(ss, "+include_unknown") == 0)
       {
       include_unknown = TRUE;
@@ -628,7 +645,16 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
     }
 
   /* Starting with ! specifies a negative item. It is theoretically possible
-  for a local part to start with !. In that case, a regex has to be used. */
+  for a local part to start with !. In that case, a regex has to be used.
+
+  XXX It would be good to disallow a tainted ! here, but the sequence
+  "! $tainted_var" is liable to be frequently used, and requiring a
+  named-list as a workaround would mean a lot of churn. Unfortunately,
+  some attacker can feed "!badthing" into a variable that some overworked
+  admin has used in a list...
+  Maybe we could intro another meta prefix char, which does not negate the
+  element match result (but still protects against a ! in $tainted_var) ?
+  Of course, this would still require churn in configs. */
 
   if (*ss == '!')
     {
@@ -775,6 +801,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
     HDEBUG(D_lists)
       { debug_printf_indent(" start sublist %s\n", ss+1); expand_level += 2; }
 
+    if (is_tainted_metadata(ss)) goto BAD_TAINT;
     if (!(t = tree_search(*anchorptr, ss+1)))
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "unknown named%s list \"%s\"",
@@ -963,6 +990,7 @@ return yield == OK ? FAIL : OK;
  
 /* Something deferred */
 
+BAD_TAINT:
 DEFER_RETURN:
   HDEBUG(D_any)
     {

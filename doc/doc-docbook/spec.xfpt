@@ -8635,6 +8635,11 @@ domainlist  dom2 = !a.b : *.b
 where &'x.y'& does not match. It's best to avoid negation altogether in
 referenced lists if you can.
 
+.new
+The list item which references a named list (&"+<listname>"&)
+may not be tainted.
+.wen
+
 .cindex "hiding named list values"
 .cindex "named lists" "hiding value of"
 Some named list definitions may contain sensitive data, for example, passwords for
@@ -8739,6 +8744,9 @@ possible to use the same configuration file on several different hosts that
 differ only in their names.
 
 The value for a match will be the primary host name.
+.new
+The pattern may not be tainted.
+.wen
 
 
 .next
@@ -8754,6 +8762,9 @@ In today's Internet, the use of domain literals is controversial;
 see the &%allow_domain_literals%& main option.
 
 The value for a match will be the string &`@[]`&.
+.new
+The pattern may not be tainted.
+.wen
 
 
 .next
@@ -8769,6 +8780,10 @@ are similar, except that the first matches only when a primary MX target is the
 local host, and the second only when no primary MX target is the local host,
 but a secondary MX target is. &"Primary"& means an MX record with the lowest
 preference value &-- there may of course be more than one of them.
+
+.new
+The pattern may not be tainted.
+.wen
 
 The MX lookup that takes place when matching a pattern of this type is
 performed with the resolver options for widening names turned off. Thus, for
@@ -9605,6 +9620,12 @@ lower case. However, although independent matches on the domain alone are still
 performed caselessly, regular expressions that match against an entire address
 become case-sensitive after &"+caseful"& has been seen.
 
+.new
+This string may not be tainted.
+To do caseful matching on list elements whic are tainted,
+place them in a named list.
+.wen
+
 
 
 .section "Local part lists" "SECTlocparlis"
@@ -9621,6 +9642,12 @@ case-insensitive. In this case, &"+caseful"& will restore case-sensitive
 matching in the local part list, but not elsewhere in the router. If
 &%caseful_local_part%& is set true in a router, matching in the &%local_parts%&
 option is case-sensitive from the start.
+
+.new
+This string may not be tainted.
+To do caseful matching on list elements whic are tainted,
+place them in a named list.
+.wen
 
 If a local part list is indirected to a file (see section &<<SECTfilnamlis>>&),
 comments are handled in the same way as address lists &-- they are recognized

@@ -377,7 +377,6 @@ p1235   ├───expanded: ░($tls_in_ver)
 p1235   ├─────result:  ◀skipped▶
 p1235   ╰───skipping: result is not used
 p1235  ├───item-res: 
-p1235             ╰──(tainted)
 p1235  ├considering: ${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
 p1235  ␉}}(Exim░$version_number)↩
 p1235  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
@@ -414,7 +413,6 @@ p1235   ␉
 p1235   ├─────result:  ◀skipped▶
 p1235   ╰───skipping: result is not used
 p1235  ├───item-res: 
-p1235             ╰──(tainted)
 p1235  ├considering: (Exim░$version_number)↩
 p1235  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235  ␉}}id░$message_exim_id${if░def:received_for░{↩
@@ -854,7 +852,6 @@ p1236   ├───expanded: ░($tls_in_ver)
 p1236   ├─────result:  ◀skipped▶
 p1236   ╰───skipping: result is not used
 p1236  ├───item-res: 
-p1236             ╰──(tainted)
 p1236  ├considering: ${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
 p1236  ␉}}(Exim░$version_number)↩
 p1236  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
@@ -891,7 +888,6 @@ p1236   ␉
 p1236   ├─────result:  ◀skipped▶
 p1236   ╰───skipping: result is not used
 p1236  ├───item-res: 
-p1236             ╰──(tainted)
 p1236  ├considering: (Exim░$version_number)↩
 p1236  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236  ␉}}id░$message_exim_id${if░def:received_for░{↩

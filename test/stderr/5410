@@ -531,7 +531,6 @@ try option received_header_text
   ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
  ├───item-res: 
-            ╰──(tainted)
  ├considering: ${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
  ␉}}(Exim░$version_number)↩
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
@@ -568,7 +567,6 @@ try option received_header_text
   ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
  ├───item-res: 
-            ╰──(tainted)
  ├considering: (Exim░$version_number)↩
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
@@ -1158,7 +1156,6 @@ try option received_header_text
   ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
  ├───item-res: 
-            ╰──(tainted)
  ├considering: ${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
  ␉}}(Exim░$version_number)↩
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
@@ -1195,7 +1192,6 @@ try option received_header_text
   ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
  ├───item-res: 
-            ╰──(tainted)
  ├considering: (Exim░$version_number)↩
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩
@@ -1785,7 +1781,6 @@ try option received_header_text
   ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
  ├───item-res: 
-            ╰──(tainted)
  ├considering: ${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
  ␉}}(Exim░$version_number)↩
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
@@ -1822,7 +1817,6 @@ try option received_header_text
   ├─────result:  ◀skipped▶
   ╰───skipping: result is not used
  ├───item-res: 
-            ╰──(tainted)
  ├considering: (Exim░$version_number)↩
  ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
  ␉}}id░$message_exim_id${if░def:received_for░{↩

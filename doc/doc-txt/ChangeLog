@@ -67,7 +67,18 @@ JH/14 Bug 3116: Fix crash in dkim signing.  On kernels supporting immutable
       memory segments, a write was done into one when a constant string was
       configured for a transport's dkim private key.
 
-JH/15 Disallow tainted change-of-separator on lists
+JH/15 Disallow tainted metadata in lists.
+      - Change-of-separator prefixes are handled specially when they are
+      explicit text; only the remainder of the list is expanded. A change-of-
+      separator resulting from expansion will not take effect if tainted.
+      - Elements starting with a plus-sign (named-list inclusion,
+      case-interpretation etc) and (hostlist) @[] (et al) are not handled
+      specially and are still operative at this time - but warnings are logged;
+      if any of these are needed in a list with a tainted element (which taints
+      the entire list at string-expansion time) then a named-list can be used
+      for that element.
+      - Exclamation-marks ("!" signifying negation) are not checked for taint
+      at this time.
 
 Exim version 4.98
 -----------------
