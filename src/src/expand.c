@@ -2944,12 +2944,12 @@ switch(cond_type = identify_operator(&s, &opname))
   case ECOND_MATCH_DOMAIN:
   case ECOND_MATCH_IP:
   case ECOND_MATCH_LOCAL_PART:
-  case ECOND_INLIST:
-  case ECOND_INLISTI:
     sub2_honour_dollar = FALSE;
     /* FALLTHROUGH */
 
   case ECOND_CRYPTEQ:
+  case ECOND_INLIST:
+  case ECOND_INLISTI:
   case ECOND_MATCH:
 
   case ECOND_NUM_L:     /* Numerical comparisons */
