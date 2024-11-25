@@ -65,6 +65,8 @@ extern uschar *tls_getbuf(unsigned *);
 extern void    tls_get_cache(unsigned);
 extern BOOL    tls_hasc(void);
 extern BOOL    tls_import_cert(const uschar *, void **);
+extern void    tls_state_in_to_out(int, const uschar *, int);
+extern void    tls_state_out_to_in(int, const uschar *, int);
 extern BOOL    tls_is_name_for_cert(const uschar *, void *);
 # ifdef USE_OPENSSL
 extern BOOL    tls_openssl_options_parse(uschar *, long *);
@@ -73,7 +75,6 @@ extern int     tls_read(void *, uschar *, size_t);
 extern int     tls_server_start(uschar **);
 extern void    tls_shutdown_wr(void *);
 extern BOOL    tls_smtp_buffered(void);
-extern void    tls_turnaround(int, const uschar *, int);
 extern int     tls_ungetc(int);
 #if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 extern void    tls_watch_discard_event(int);
@@ -102,8 +103,10 @@ extern tree_node *acl_var_create(uschar *);
 extern void    acl_var_write(uschar *, uschar *, void *);
 extern void    add_driver_info(driver_info **, const driver_info *, size_t);
 
-
 extern void    assert_no_variables(void *, int, const char *, int);
+extern void    atrn_handle_customer(void);
+extern int     atrn_handle_provider(uschar **, uschar **);
+
 extern int     auth_call_pwcheck(uschar *, uschar **);
 extern int     auth_call_saslauthd(const uschar *, const uschar *,
 	         const uschar *, const uschar *, uschar **);
@@ -111,7 +114,6 @@ extern int     auth_check_serv_cond(auth_instance *);
 extern int     auth_check_some_cond(auth_instance *, uschar *, uschar *, int);
 extern int     auth_client_item(void *, auth_instance *, const uschar **,
 		 unsigned, int, uschar *, int);
-
 
 extern int     auth_get_data(uschar **, const uschar *, int);
 extern int     auth_get_no64_data(uschar **, uschar *);
@@ -504,12 +506,12 @@ extern BOOL    smtp_hasc(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
+extern void    smtp_notquit_exit(uschar *, uschar *, uschar *, ...);
+extern void    smtp_port_for_connect(host_item *, int);
 extern void    smtp_proxy_tls(void *, uschar *, size_t, int *, int, const uschar *) NORETURN;
 extern BOOL    smtp_read_response(void *, uschar *, int, int, int);
 extern void   *smtp_reset(void *);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);
-extern void    smtp_notquit_exit(uschar *, uschar *, uschar *, ...);
-extern void    smtp_port_for_connect(host_item *, int);
 extern void    smtp_send_prohibition_message(int, uschar *);
 extern int     smtp_setup_msg(void);
 extern int     smtp_sock_connect(smtp_connect_args *, int, const blob *);
@@ -517,6 +519,7 @@ extern BOOL    smtp_start_session(void);
 extern int     smtp_ungetc(int);
 extern void    smtp_verify_feed(const uschar *, unsigned);
 extern BOOL    smtp_verify_helo(void);
+extern int     smtp_write_atrn(address_item *, cut_t *);
 extern int     smtp_write_command(void *, int, const char *, ...) PRINTF_FUNCTION(3,4);
 #ifdef WITH_CONTENT_SCAN
 extern int     spam(const uschar **);
@@ -596,6 +599,8 @@ extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 extern const uschar *strstric_c(const uschar *, const uschar *, BOOL);
+
+extern int     synprot_error(int, int, uschar *, uschar *);
 
 extern int     test_harness_fudged_queue_time(int);
 extern void    tcp_init(void);

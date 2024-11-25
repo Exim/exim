@@ -68,7 +68,7 @@ SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
 >>Headers received:
-To: abc@domain.
+ To: abc@domain.
 
 qualify & rewrite recipients list
 rewrite rules on sender address
@@ -143,7 +143,7 @@ SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
 >>Headers received:
-To: abc@xyz.
+ To: abc@xyz.
 
 qualify & rewrite recipients list
 rewrite rules on sender address

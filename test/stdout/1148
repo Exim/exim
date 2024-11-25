@@ -15,7 +15,7 @@ Succeeded in starting TLS
 <<< 235 Authentication succeeded
 >>> ATRN
 ??? 250
-<<< 250 ODMR server turning line around
+<<< 250 ODMR provider turning line around
 >>> 220 ODMR client now in reversed state
 ??? EHLO
 <<< EHLO myhost.test.ex
@@ -76,7 +76,7 @@ Succeeded in starting TLS
 <<< 235 Authentication succeeded
 >>> ATRN
 ??? 250
-<<< 250 ODMR server turning line around
+<<< 250 ODMR provider turning line around
 >>> 220 ODMR client now in reversed state
 ??? EHLO
 <<< EHLO myhost.test.ex

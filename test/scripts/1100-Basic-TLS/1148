@@ -1,4 +1,6 @@
 # ATRN under TLS
+#
+# Provider mode
 exim -DSERVER=server -bd -oX PORT_D
 ****
 exim a@clientdom.net
@@ -99,3 +101,24 @@ stoptls
 ****
 millisleep 500
 killdaemon
+#
+#
+#
+#
+#
+# Customer mode: should be able to trigger a conn, issue ATRN and
+# transition to accepting SMTP commands.
+#
+exim -bd -DSERVER=server -oX PORT_D2
+****
+#
+exim h@clientdom.net
+Subject: should be delivered
+****
+#
+exim -atrn HOSTIPV4 'clientdom.net'
+****
+#
+#
+killdaemon
+no_msglog_check

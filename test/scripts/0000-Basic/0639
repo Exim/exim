@@ -1,8 +1,10 @@
 # ATRN
+#
+# Provider mode
 exim -bd -DSERVER=server -oX PORT_D:PORT_D2
 ****
 #
-# Should not advertise on "normal" SMTP port,
+# Should not advertise on "normal" SMTP port (per the conf acl_smtp_atrn),
 # end should reject an attempt
 client 127.0.0.1 PORT_D
 ??? 220
@@ -289,6 +291,25 @@ ATRN
 ??? QUIT
 221 bye
 ****
+killdaemon
+#
+#
+#
+#
+#
+# Customer mode: should be able to trigger a conn, issue ATRN and
+# transition to accepting SMTP commands.
+#
+exim -bd -DSERVER=server -oX PORT_D2
+****
+#
+exim h@clientdom.net
+Subject: should be delivered
+****
+#
+exim -atrn HOSTIPV4 'clientdom.net'
+****
+#
 #
 killdaemon
 no_msglog_check

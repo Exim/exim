@@ -512,8 +512,8 @@ OBJ_ROUTERS = rf_change_domain.o rf_expand_data.o rf_get_errors_address.o \
 OBJ_AUTHS = call_pwcheck.o check_serv_cond.o \
 	get_data.o get_no64_data.o pwcheck.o
 
-OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
-        directory.o dns.o drtables.o enq.o exim.o expand.o \
+OBJ_EXIM = acl.o atrn.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o \
+	deliver.o directory.o dns.o drtables.o enq.o exim.o expand.o \
         filtertest.o globals.o dnsbl.o hash.o \
         header.o host.o host_address.o ip.o log.o lss.o match.o md5.o moan.o \
         os.o parse.o priv.o proxy.o queue.o \
@@ -825,6 +825,7 @@ local_scan.o:    config local_scan.h ../$(LOCAL_SCAN_SOURCE)
 # Dependencies for the "ordinary" exim modules
 
 acl.o:           $(HDRS) acl.c
+atrn.o:          $(HDRS) atrn.c
 base64.o:        $(HDRS) mime.h base64.c
 child.o:         $(HDRS) child.c
 crypt16.o:       $(HDRS) crypt16.c

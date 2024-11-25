@@ -770,6 +770,7 @@ tls_retry_connection:
     sx->send_rset = TRUE;
     sx->completed_addr = FALSE;
 
+/*XXX do not want to write a cache record for ATRN */
     new_domain_record.result = old_domain_cache_result == ccache_reject_mfnull
       ? ccache_reject_mfnull : ccache_accept;
 
@@ -890,7 +891,7 @@ tls_retry_connection:
     /* Main verify.  For rcpt-verify use SIZE if we know it and we're not cacheing;
     for sndr-verify never use it. */
 
-    if (done)
+    if (done && !(options & vopt_atrn))
       {
       if (!(options & vopt_is_recipient  &&  options & vopt_callout_no_cache))
 	sx->avoid_option = OPTION_SIZE;
@@ -1232,7 +1233,8 @@ if (!done)
 /* Come here from within the cache-reading code on fast-track exit. */
 
 END_CALLOUT:
-tls_modify_variables(&tls_in);	/* return variables to inbound values */
+if (!(options & vopt_atrn))
+  tls_modify_variables(&tls_in);	/* return variables to inbound values */
 return yield;
 }
 
@@ -1705,16 +1707,12 @@ int yield = OK;
 int verify_type = expn ? v_expn :
    f.address_test_mode ? v_none :
           options & vopt_is_recipient ? v_recipient : v_sender;
-address_item * addr_list;
-address_item * addr_new = NULL;
-address_item * addr_remote = NULL;
-address_item * addr_local = NULL;
-address_item * addr_succeed = NULL;
+address_item * addr_list, * addr_new = NULL, * addr_remote = NULL;
+address_item * addr_local = NULL, * addr_succeed = NULL;
 uschar ** failure_ptr = options & vopt_is_recipient
   ? &recipient_verify_failure : &sender_verify_failure;
 uschar * ko_prefix, * cr;
-const uschar * address = vaddr->address;
-const uschar * save_sender;
+const uschar * address = vaddr->address, * save_sender;
 uschar null_sender[] = { 0 };             /* Ensure writeable memory */
 
 /* Clear, just in case */
@@ -2278,7 +2276,8 @@ the -bv or -bt case). */
 
 out:
 verify_mode = NULL;
-tls_modify_variables(&tls_in);	/* return variables to inbound values */
+if (!(options & vopt_atrn))
+  tls_modify_variables(&tls_in);	/* return variables to inbound values */
 
 return yield;
 }

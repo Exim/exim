@@ -7279,8 +7279,8 @@ recipients tree, add an addr item to the chain of new addresses. If the pno
 value is non-negative, we must set the onetime parent from it. This which
 points to the relevant entry in the recipients list.
 
-When running for an ATRN delivery only include addresses for the domains
-to be delivered.
+When running for an ATRN provider-mode delivery only include addresses for the
+domains to be delivered.
 
 This processing can be altered by the setting of the process_recipients
 variable, which is changed if recipients are to be ignored, failed, or
@@ -7299,7 +7299,7 @@ if (process_recipients != RECIP_IGNORE)
     uschar * s;
 
     if (  !tree_search(tree_nonrecipients, r->address)
-       && (  !atrn_domains
+       && (  !atrn_domains				/* normal case */
 	  ||    (s = Ustrrchr(r->address, '@'))
 	     && match_isinlist(s+1, &atrn_domains, 0, &domainlist_anchor, NULL,
 				MCL_DOMAIN + MCL_NOEXPAND, TRUE, NULL) == OK

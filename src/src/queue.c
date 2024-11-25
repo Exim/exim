@@ -422,10 +422,13 @@ if (!recurse)
 
   log_detail = string_copy(big_buffer);
   if (q->name)
-    log_write(L_queue_run, LOG_MAIN, "Start '%s' queue run: %s",
+    log_write(L_queue_run, LOG_MAIN, "Start %s'%s' queue run: %s",
+      atrn_mode ? "ODMR " : "",
       q->name, log_detail);
   else
-    log_write(L_queue_run, LOG_MAIN, "Start queue run: %s", log_detail);
+    log_write(L_queue_run, LOG_MAIN, "Start %squeue run: %s",
+      atrn_mode ? "ODMR " : "",
+      log_detail);
 
   single_id = start_id && stop_id && !q->queue_2stage
 	      && Ustrcmp(start_id, stop_id) == 0;

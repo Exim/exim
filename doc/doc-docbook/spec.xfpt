@@ -2837,6 +2837,12 @@ displayed.
 These options are used by Sendmail for selecting configuration files and are
 ignored by Exim.
 
+.new
+.cmdopt -atrn <&'host'&> <&'domainlist'&>
+This option requests an ODMR customer connection.
+See &<<SECTODMRCUST>>& for details.
+.wen
+
 .cmdopt -B <&'type'&>
 .oindex "&%-B%&"
 .cindex "8-bit characters"
@@ -12637,6 +12643,13 @@ this variable holds the pipe command when the transport is running.
 .vindex ATRN "data for routing"
 When an ATRN command is accepted, this variable is filled in with the client
 IP and port, for use in a manualroute router.
+
+.vitem &$atrn_mode$&
+.vindex ATRN mode
+.vindex ODMR mode
+When in provider mode this variable will contain &"P"&.
+When in customer mode it will contain &"C"&.
+Otherwise, it will be empty.
 .wen
 
 .vitem "&$auth1$& &-- &$auth4$&"
@@ -15343,12 +15356,13 @@ non-SMTP message. See section &<<SECnonSMTP>>& for further details.
 .cindex ATRN "ACL for"
 .cindex ATRN advertisement
 .cindex "ESMTP extensions" ATRN
+.cindex ODMR provider
 This option defines the ACL that is run when an SMTP ATRN command is
 received.
 If no value is set, or the result after expansion is an empty string,
 then the ATRN facility is not advertised.
 See chapter &<<CHAPACL>>& for general information on ACLs,
-and section &<<SECTATRN>>& for description of ATRN.
+and section &<<SECTODMRPRDVR>>& for description of ATRN.
 .wen
 
 .option acl_smtp_auth main string&!! unset
@@ -38059,22 +38073,29 @@ for it to change them before running the command.
 
 
 .new
-.subsection "The ATRN command" SECTATRN
+.subsection "The ATRN command, and ODMR" SECTODMR
 .cindex ATRN processing
 .cindex "ESMTP extensions" ATRN
-A second method for intermittently-connecting destinations
-is specified by
+.cindex ODMR provider
+A second method for handling
+On-Demand Message Reception (ODMR)
+for intermittently-connecting destinations is specified by
 &url(https://www.rfc-editor.org/rfc/rfc2645.html,RFC 2645).
 
 This describes an ESMTP command called ATRN which requests
-a swap in server/client roles of the communicating endpoints, and delivery
-of queued messages.
+a swap in server/client roles of the communicating SMTP endpoints,
+and delivery of queued messages.
 Note that this supports customers having IP addresses that
 change frequently.
 
-Exim supports the &"provider"& side of ATRN, using the terms
-of that specification:
-initially as an SMTP server, then transferring to an SMTP client
+Exim supports both the &"provider"& and &"customer"& sides of ODMR,
+to use the terms of that specification.
+
+. need a sub-subsection here
+.subsection "ODMR provider connection" SECTODMRPRDVR
+
+In the &"provider"& use case Exim is
+initially an SMTP server, then transferring to an SMTP client
 role if an ATRN command is accepted.
 
 .oindex "&%acl_smtp_atrn%&"
@@ -38141,13 +38162,13 @@ other situations so can be safely placed in a general router chain.
 For example:
 .code
 begin routers
-odmr_client:
+to_odmr_customer:
   driver =      manualroute
   route_data =  <;$atrn_host
-  transport =   client_smtp
+  transport =   call_customer
 
 begin transports
-client_smtp:
+call_customer:
   driver =      smtp
 .endd
 
@@ -38163,6 +38184,46 @@ method be supported.
 Exim does not enforce this, but leaves it up to the configuration;
 see chapter &<<CHID9>>&.
 
+
+.subsection "ODMR customer connection" SECTODMRCUST
+.cindex ODMR customer
+Exim supports the &"customer"& side of ODMR,
+with a command-line option &"-atrn"&& that requests a connection
+to a given host, issuance of an ATRN command then operation
+in SMTP server mode.
+The option must be followed by two arguments.
+
+The first is the name or IP of the provider to be contacted.
+
+The second, which may be empty, should be a comma-separated list
+of domains for which mail is to be requested.
+Interpretation of the list is up to the provider;
+an empty list is expected to result in some default being returned.
+
+The provider host is placed in &$domain$" for routing;
+router and transport must be configured suitably to make the connection.
+For example:
+.code
+begin routers
+to_odmr_provider:
+  driver =	manualroute
+  condition =	${if eq {$atrn_mode}{C}}
+  route_data =	<;$domain
+  transport =	call_provider
+
+begin transports
+call_provider:
+  driver =              smtp
+  port =                odmr
+  hosts_try_auth =	*
+  command_timeout =     10m
+.endd
+
+Note that the specification requires a long timeout for the ATRN
+command, to allow for scanning of queued messages.
+
+Configuration should also include client-side authentication
+and processing for receiving messages.
 .wen
 
 

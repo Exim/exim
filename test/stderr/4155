@@ -20,7 +20,8 @@ Recipients:
   userx
 search_tidyup called
 >>Headers received:
-Reply-to: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
+ Reply-to: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
+  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
@@ -49,8 +50,7 @@ Reply-to: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
- sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,
- sender@test.ex, sender@test.ex, sender@te
+ sender@test.ex, sender@test.ex, sender@t
 **** debug string too long - truncated ****
 
 qualify & rewrite recipients list
@@ -259,11 +259,11 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: 
 search_tidyup called
 >>Headers received:
-To: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex,
-**** debug string too long - truncated ****
-In-Reply-To: <E10HmaX-000000005vi-0000@mail.test.ex>
-References: <E10HmaX-000000005vi-0000@mail.test.ex>
-Auto-Submitted: auto-replied
+ To: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex
+ **** debug string too long - truncated ****
+ In-Reply-To: <E10HmaX-000000005vi-0000@mail.test.ex>
+ References: <E10HmaX-000000005vi-0000@mail.test.ex>
+ Auto-Submitted: auto-replied
 
 qualify & rewrite recipients list
 rewrite rules on sender address

@@ -745,6 +745,7 @@ enum { v_none, v_sender, v_recipient, v_expn };
 #define vopt_callout_hold	  0x0200   /* lazy close connection */
 #define vopt_success_on_redirect  0x0400
 #define vopt_quota                0x0800   /* quota check, to local/appendfile */
+#define vopt_atrn		  0x1000   /* ATRN customer mode */
 
 /* Values for fields in callout cache records */
 

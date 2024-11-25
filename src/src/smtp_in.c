@@ -351,7 +351,6 @@ static int     smtp_had_error;
 
 /* forward declarations */
 static int smtp_read_command(BOOL check_sync, unsigned buffer_lim);
-static int synprot_error(int type, int code, uschar *data, uschar *errmess);
 static void smtp_quit_handler(uschar **, uschar **);
 static void smtp_rset_handler(void);
 
@@ -1385,6 +1384,9 @@ if (host_checking)
 else if (f.sender_host_unknown || f.sender_host_notsocket)
   g = string_cat(g, sender_ident ? sender_ident : US"NULL");
 
+else if (atrn_mode)
+  g = string_append(g, 2, hostname, US" (ODMR customer)");
+
 else if (f.is_inetd)
   g = string_append(g, 2, hostname, US" (via inetd)");
 
@@ -2130,10 +2132,13 @@ if (!host_checking && !f.sender_host_notsocket)
 authenticated_by = NULL;
 
 #ifndef DISABLE_TLS
-tls_in.ver = tls_in.cipher = tls_in.peerdn = NULL;
-tls_in.ourcert = tls_in.peercert = NULL;
-tls_in.sni = NULL;
-tls_in.ocsp = OCSP_NOT_REQ;
+if (!atrn_mode)
+  {
+  tls_in.ver = tls_in.cipher = tls_in.peerdn = NULL;
+  tls_in.ourcert = tls_in.peercert = NULL;
+  tls_in.sni = NULL;
+  tls_in.ocsp = OCSP_NOT_REQ;
+  }
 fl.tls_advertised = FALSE;
 #endif
 fl.dsn_advertised = FALSE;
@@ -2172,13 +2177,28 @@ call the local functions instead of the standard C ones. */
 
 smtp_buf_init();
 
-receive_getc = smtp_getc;
-receive_getbuf = smtp_getbuf;
-receive_get_cache = smtp_get_cache;
-receive_hasc = smtp_hasc;
-receive_ungetc = smtp_ungetc;
-receive_feof = smtp_feof;
-receive_ferror = smtp_ferror;
+#ifndef DISABLE_TLS
+if (atrn_mode && tls_in.active.sock >= 0)
+  {
+  receive_getc = tls_getc;
+  receive_getbuf = tls_getbuf;
+  receive_get_cache = tls_get_cache;
+  receive_hasc = tls_hasc;
+  receive_ungetc = tls_ungetc;
+  receive_feof = tls_feof;
+  receive_ferror = tls_ferror;
+  }
+else
+#endif
+  {
+  receive_getc = smtp_getc;
+  receive_getbuf = smtp_getbuf;
+  receive_get_cache = smtp_get_cache;
+  receive_hasc = smtp_hasc;
+  receive_ungetc = smtp_ungetc;
+  receive_feof = smtp_feof;
+  receive_ferror = smtp_ferror;
+  }
 lwr_receive_getc = NULL;
 lwr_receive_getbuf = NULL;
 lwr_receive_hasc = NULL;
@@ -2729,7 +2749,8 @@ smtp_printf("%Y",
 handshake arrived.  If so we must have managed a TFO. */
 
 #ifdef TCP_FASTOPEN
-if (sender_host_address && !f.sender_host_notsocket) tfo_in_check();
+if (sender_host_address && !f.sender_host_notsocket && !atrn_mode)
+  tfo_in_check();
 #endif
 
 return TRUE;
@@ -2759,7 +2780,7 @@ Returns:    -1   limit of syntax/protocol errors NOT exceeded
 These values fit in with the values of the "done" variable in the main
 processing loop in smtp_setup_msg(). */
 
-static int
+int
 synprot_error(int type, int code, uschar *data, uschar *errmess)
 {
 int yield = -1;
@@ -3692,7 +3713,7 @@ cmd_list[CL_EHLO].is_mail_cmd = TRUE;
 cmd_list[CL_STLS].is_mail_cmd = TRUE;
 #endif
 
-if (lwr_receive_getc != NULL)
+if (lwr_receive_getc && !atrn_mode)
   {
   /* This should have already happened, but if we've gotten confused,
   force a reset here. */
@@ -3720,23 +3741,17 @@ value. The values are 2 larger than the required yield of the function. */
 
 while (done <= 0)
   {
-  const uschar **argv;
-  uschar *etrn_command;
-  uschar *etrn_serialize_key;
-  uschar *errmess;
-  uschar *log_msg, *smtp_code;
-  uschar *user_msg = NULL;
-  uschar *recipient = NULL;
-  uschar *hello = NULL;
-  uschar *s, *ss;
-  BOOL was_rej_mail = FALSE;
-  BOOL was_rcpt = FALSE;
+  const uschar ** argv;
+  uschar * etrn_command, * etrn_serialize_key, * errmess;
+  uschar * log_msg, * smtp_code;
+  uschar * user_msg = NULL, * recipient = NULL, * hello = NULL;
+  uschar * s, * ss;
+  BOOL was_rej_mail = FALSE, was_rcpt = FALSE;
   void (*oldsignal)(int);
   pid_t pid;
   int start, end, sender_domain, recipient_domain;
-  int rc, c;
+  int rc, c, dsn_flags;
   uschar * orcpt = NULL;
-  int dsn_flags;
   gstring * g;
 
 #ifdef AUTH_TLS
@@ -4164,7 +4179,7 @@ while (done <= 0)
 	tries. */
 
 	GET_OPTION("acl_smtp_atrn");
-	if (acl_smtp_atrn)
+	if (acl_smtp_atrn && !atrn_mode)
 	  {
 	  const uschar * s = expand_cstring(acl_smtp_atrn);
 	  if (s && *s)
@@ -5580,83 +5595,9 @@ while (done <= 0)
 
 
     case ATRN_CMD:
-      {
-      uschar * exp_acl = NULL;
-      const uschar * list;
-      int sep = 0;
-      gstring * g = NULL;
-      qrunner q = {0};
-
       HAD(SCH_ATRN);
-      /*XXX could we used a cached value for "advertised"? */
-      GET_OPTION("acl_smtp_atrn");
-      if (acl_smtp_atrn
-	 && (exp_acl = expand_string(acl_smtp_atrn)) && !*exp_acl)
-	exp_acl = NULL;
-      if (!exp_acl || !authenticated_id || sender_address)
-	{
-	done = synprot_error(L_smtp_protocol_error,
-	  !exp_acl ? 502 : !authenticated_id ? 530 : 503,
-	  NULL,
-	  !exp_acl ?		US"ATRN command used when not advertised"
-	  : !authenticated_id ?	US"ATRN is not permitted without authentication"
-	  :			US"ATRN is not permitted inside a transaction"
-	  );
-	break;
-	}
-
-      log_write(L_etrn, LOG_MAIN, "ATRN '%s' received from %s",
-	smtp_cmd_argument, host_and_ident(FALSE));
-
-      if (  (rc = acl_check(ACL_WHERE_ATRN, NULL, exp_acl, &user_msg, &log_msg))
-	 != OK)
-	{
-	done = smtp_handle_acl_fail(ACL_WHERE_ATRN, rc, user_msg, log_msg);
-	break;
-	}
-
-      /* want to do a qrun for the given domain(s), using the already open channel.
-      TODO: alternate named queue
-      TODO: docs
-
-      /* ACK the command, record the connection details
-      and turn the line around */
-
-      smtp_printf("250 ODMR server turning line around\r\n", SP_NO_MORE);
-      atrn_host = string_sprintf("[%s]:%d",
-				sender_host_address, sender_host_port);
-
-#ifndef DISABLE_TLS
-      if (tls_in.active.sock >= 0)
-	tls_turnaround(0, sender_host_address, sender_host_port);
-#endif
-      fflush(smtp_out);
-      force_fd(fileno(smtp_in), 0);
-      smtp_in = smtp_out = NULL;
-
-      /* Set up a onetime queue run, filtering for messages with the
-      given domains. Later filtering will leave out addresses for other domains
-      on these messages. */
-
-      continue_transport = US"ATRN-client";
-      continue_hostname = continue_host_address = sender_host_address;
-
-      q.next_tick = time(NULL);
-      q.run_max = 1;
-      q.queue_2stage = TRUE;
-
-      /* Convert the domainlist to a regex, as the existing queue-selection
-      facilities support that but not a list */
-
-      list = atrn_domains;
-      for (const uschar * ele; ele = string_nextinlist(&list, &sep, NULL, 0); )
-	g = string_append_listele(g, '|', ele);
-      deliver_selectstring = string_sprintf("@(%Y)", g);
-      f.deliver_selectstring_regex = TRUE;
-
-      single_queue_run(&q , NULL, NULL);
-      exim_exit(EXIT_SUCCESS);
-      }
+      done = atrn_handle_provider(&user_msg, &log_msg);	/* Normal: exit() */
+      break;						/* Error cases */
 
     case ETRN_CMD:
       HAD(SCH_ETRN);

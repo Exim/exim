@@ -3,6 +3,7 @@
 .include DIR/aux-var/tls_conf_prefix
 
 primary_hostname = myhost.test.ex
+log_selector = +received_recipients
 
 # ----- Main settings -----
 
@@ -18,6 +19,7 @@ queue_only
 queue_run_in_order
 
 acl_smtp_atrn = check_atrn 
+acl_smtp_rcpt = accept
 
 # ----- ACL -----
 
@@ -42,23 +44,42 @@ plain:
     ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
   server_set_id = $auth2
 
+  client_send = ^userx^secret
+
 # -------- routers ---
 
 begin routers
 
-client:
+to_customer:
   driver =	manualroute
+  condition =	${if eq {$atrn_mode}{P}}
   route_data =	<;$atrn_host
   self =	send
-  transport =	client_smtp
+  transport =	call_customer
+
+to_provider:
+  driver =	manualroute
+  condition =	${if eq {$atrn_mode}{C}}
+  route_data =	<;$domain
+  self =	send
+  transport =	call_provider
+
+# -------- transports ---
 
 begin transports
 
-client_smtp:
-    driver =		smtp
-    allow_localhost
-    hosts_require_tls = *
-    tls_verify_certificates =	DIR/aux-fixed/cert1
-    tls_verify_cert_hostnames =	:
+call_customer:
+  driver =			smtp
+  allow_localhost
+  hosts_require_tls =		*
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
+
+call_provider:
+  driver =              smtp
+  port =                PORT_D2
+  hosts_try_auth =	*
+  tls_verify_certificates =
+  command_timeout =     10m
 
 # End

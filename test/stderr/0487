@@ -47,7 +47,7 @@ SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
 >>Headers received:
-From: unqualified
+ From: unqualified
 
 qualify & rewrite recipients list
 rewrite rules on sender address

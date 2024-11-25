@@ -16,7 +16,9 @@ Recipients:
   r1@test.ex
 search_tidyup called
 >>Headers received:
-To: random@test.example,
+ To: random@test.example,
+     random@test.example,
+     random@test.example,
     random@test.example,
     random@test.example,
     random@test.example,
@@ -94,9 +96,6 @@ To: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example,
-    random@test.example,
-    random@test.example,
- 
 **** debug string too long - truncated ****
 
 qualify & rewrite recipients list
@@ -26904,7 +26903,7 @@ Recipients:
   r2@test.ex
 search_tidyup called
 >>Headers received:
-To: localpart_with_056_chars_56789012345678901234567890123456@test.example
+ To: localpart_with_056_chars_56789012345678901234567890123456@test.example
 
 qualify & rewrite recipients list
  r2@test.ex in "^.{40,}@*"?
@@ -27101,7 +27100,7 @@ Recipients:
   r3@test.ex
 search_tidyup called
 >>Headers received:
-To: localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+ To: localpart_with_236_chars_56789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
 
 qualify & rewrite recipients list
  r3@test.ex in "^.{40,}@*"?
@@ -27298,7 +27297,7 @@ Recipients:
   r4@test.ex
 search_tidyup called
 >>Headers received:
-To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+ To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
 
 qualify & rewrite recipients list
  r4@test.ex in "^.{40,}@*"?
@@ -27467,7 +27466,7 @@ Recipients:
   r5@test.ex
 search_tidyup called
 >>Headers received:
-To: undisclosed recpients:;
+ To: undisclosed recpients:;
 
 qualify & rewrite recipients list
  r5@test.ex in "^.{40,}@*"?
@@ -27631,7 +27630,7 @@ Recipients:
   r6@test.ex
 search_tidyup called
 >>Headers received:
-To: fred@
+ To: fred@
 
 qualify & rewrite recipients list
  r6@test.ex in "^.{40,}@*"?

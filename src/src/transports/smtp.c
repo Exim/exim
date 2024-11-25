@@ -373,10 +373,10 @@ if (tblock->retry_use_local_part == TRUE_UNSET)
 /* Set the default port according to the protocol */
 
 if (!ob->port)
-  ob->port = strcmpic(ob->protocol, US"lmtp") == 0
-  ? US"lmtp"
-  : strcmpic(ob->protocol, US"smtps") == 0
-  ? US"smtps" : US"smtp";
+  ob->port = atrn_mode && *atrn_mode == 'C' ? US"odmr"
+	    : strcmpic(ob->protocol, US"lmtp") == 0 ? US"lmtp"
+	    : strcmpic(ob->protocol, US"smtps") == 0 ? US"smtps"
+	    : US"smtp";
 
 /* Set up the setup entry point, to be called before subprocesses for this
 transport. */
@@ -2346,7 +2346,7 @@ if (!continue_hostname || atrn_domains)
   sx->avoid_option = sx->peer_offered = smtp_peer_options = 0;
   smtp_debug_cmd_log_init();
 
-  if (atrn_domains)
+  if (atrn_mode && *atrn_mode == 'P')
     {
     DEBUG(D_transport)
       debug_printf("ATRN mode: TCP%s connection already present\n",
@@ -2412,10 +2412,10 @@ if (!continue_hostname || atrn_domains)
 	sx->send_quit = FALSE;
 	return DEFER;
 	}
-  #ifdef TCP_QUICKACK
+#ifdef TCP_QUICKACK
       (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, TCP_QUICKACK, US &off,
 			  sizeof(off));
-  #endif
+#endif
       }
     }
   /* Expand the greeting message while waiting for the initial response. (Makes
@@ -2825,7 +2825,7 @@ if (  smtp_peer_options & OPTION_TLS
   TLS_NEGOTIATE:
     {
     sx->conn_args.sending_ip_address = sending_ip_address;
-    if (  !atrn_domains
+    if (  !(atrn_mode && *atrn_mode == 'P')
        && !tls_client_start(&sx->cctx, &sx->conn_args, sx->addrlist, &tls_out,
 			    &tls_errstr))
       {
@@ -3028,7 +3028,7 @@ so its response needs to be analyzed. If TLS is not active and this is a
 continued session down a previously-used socket, we haven't just done EHLO, so
 we skip this. */
 
-if (   !continue_hostname && !atrn_domains
+if (   !continue_hostname && (!atrn_domains || atrn_mode && *atrn_mode == 'C')
 #ifndef DISABLE_TLS
     || tls_out.active.sock >= 0
 #endif
@@ -3204,7 +3204,6 @@ if (sx->utf8_needed && !(sx->peer_offered & OPTION_UTF8))
   goto RESPONSE_FAILED;
   }
 #endif	/*SUPPORT_I18N*/
-
 return OK;
 
 
@@ -5160,6 +5159,45 @@ sx.outblock.authenticating = FALSE;
 }
 
 
+
+
+int
+smtp_write_atrn(address_item * addr, cut_t * cutp)
+{
+smtp_transport_options_block * ob = addr->transport->drinst.options_block;
+smtp_context sx = {0};
+uschar buffer[256];
+uschar inbuffer[4096];
+uschar outbuffer[256];
+
+sx.inblock.cctx = &cutp->cctx;
+sx.inblock.buffer = inbuffer;
+sx.inblock.buffersize = sizeof(inbuffer);
+sx.inblock.ptr = inbuffer;
+sx.inblock.ptrend = inbuffer;
+
+sx.outblock.cctx = &cutp->cctx;
+sx.outblock.buffersize = sizeof(outbuffer);
+sx.outblock.buffer = outbuffer;
+sx.outblock.ptr = outbuffer;
+sx.outblock.cmd_count = 0;
+sx.outblock.authenticating = FALSE;
+
+debug_printf("%s: atrn_domains '%s'\n", __FUNCTION__, atrn_domains);
+if (  (*atrn_domains
+	? smtp_write_command(&sx, SCMD_FLUSH, "ATRN %s\r\n", atrn_domains)
+	: smtp_write_command(&sx, SCMD_FLUSH, "ATRN\r\n"))
+   < 0)
+  {
+  debug_printf("smtp_write_command(ATRN) fail: %s\n", strerror(errno));
+  return FAIL;
+  }
+
+if (!smtp_read_response(&sx, buffer, sizeof(buffer), '2', ob->command_timeout))
+  return buffer[0] == '4' ? DEFER : FAIL;
+
+return OK;
+}
 
 /*************************************************
 *            Prepare addresses for delivery      *

@@ -48,19 +48,37 @@ plain:
     ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
   server_set_id = $auth2
 
+  client_send = ^userx^secret
+
 # -------- routers ---
 
 begin routers
 
-client:
+to_customer:
   driver =	manualroute
+  condition =	${if eq {$atrn_mode}{P}}
   route_data =	<;$atrn_host
   self =	send
-  transport =	client_smtp
+  transport =	call_customer
+
+to_provider:
+  driver =	manualroute
+  condition =	${if eq {$atrn_mode}{C}}
+  route_data =	<;$domain
+  self =	send
+  transport =	call_provider
+
+# -------- transports ---
 
 begin transports
 
-client_smtp:
+call_customer:
   driver =	smtp
+
+call_provider:
+  driver =		smtp
+  port =		PORT_D2
+  hosts_require_auth =	*
+  command_timeout =	10m
 
 # End

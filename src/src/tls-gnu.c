@@ -4305,10 +4305,10 @@ return NULL;
 }
 
 
-/* For ATRN: transfer the tls_in context to tls_out */
+/* For ATRN provider: transfer the tls_in context to tls_out */
 
 void
-tls_turnaround(int newfd, const uschar * ipaddr, int port)
+tls_state_in_to_out(int newfd, const uschar * ipaddr, int port)
 {
 exim_gnutls_state_st * state;
 host_item * h;
@@ -4340,6 +4340,43 @@ gnutls_transport_set_ptr2(state->session,
     (gnutls_transport_ptr_t)(long) newfd);
 store_pool = old_pool;
 }
+
+
+
+/* For ATRN customer: transfer the tls_out context to tls_in */
+
+void
+tls_state_out_to_in(int newfd, const uschar * ipaddr, int port)
+{
+host_item * h;
+int old_pool = store_pool;
+
+store_pool = POOL_PERM;
+h = store_get(sizeof(host_item), GET_UNTAINTED);
+store_pool = old_pool;
+memset(h, 0, sizeof(host_item));
+h->name = h->address = string_copy(ipaddr);
+h->port = port;
+
+state_server = *(exim_gnutls_state_st *)tls_out.active.tls_ctx;
+state_server.fd_in = newfd;
+state_server.fd_out = newfd;
+state_server.tlsp = &tls_in;
+state_server.host = h;
+state_server.xfer_buffer = store_malloc(ssl_xfer_buffer_size);
+
+tls_in = tls_out;
+tls_in.on_connect = FALSE;
+tls_in.active.sock = newfd;
+tls_in.active.tls_ctx = &state_server;
+
+memset(&tls_out, 0, sizeof(tls_out));
+
+gnutls_transport_set_ptr2(state_server.session,
+    (gnutls_transport_ptr_t)(long) newfd,
+    (gnutls_transport_ptr_t)(long) newfd);
+}
+
 
 
 

@@ -884,6 +884,14 @@ exim_len_fail_toolong(Ustrlen(item), maxlen, description);
 return item;
 }
 
+/* as above, copying as tainted */
+static inline const uschar *
+exim_arg_copy(const uschar * item, int maxlen, const char * description)
+{
+return string_copy_taint(exim_str_fail_toolong(item, maxlen, description),
+			GET_TAINTED);
+}
+
 /* exim_chown_failure() called from exim_chown()/exim_fchown() on failure
 of chown()/fchown().  See src/functions.h for more explanation */
 int
@@ -2386,28 +2394,46 @@ on the second character (the one after '-'), to save some effort. */
     /* sendmail uses -Ac and -Am to control which .cf file is used;
     we ignore them. */
     case 'A':
-    if (!*argrest) { badarg = TRUE; break; }
-    else
-      {
-      BOOL ignore = FALSE;
-      switch (*argrest)
-        {
-        case 'c':
-        case 'm':
-          if (*(argrest + 1) == '\0')
-            ignore = TRUE;
-          break;
-        }
-      if (!ignore) badarg = TRUE;
-      }
-    break;
+      if (!*argrest) { badarg = TRUE; break; }
+      else
+	{
+	BOOL ignore = FALSE;
+	switch (*argrest)
+	  {
+	  case 'c':
+	  case 'm':
+	    if (*(argrest + 1) == '\0')
+	      ignore = TRUE;
+	    break;
+	  }
+	if (!ignore) badarg = TRUE;
+	}
+      break;
+
+    /* -atrn <host> <domains> */
+    case 'a':
+      if (Ustrcmp(argrest, "trn") == 0)
+	if (i+2 < argc)
+	  {
+	  atrn_mode = US"C";	/* Customer mode */
+
+	  /* The host could at this point have a port attached */
+	  atrn_host = exim_arg_copy(argv[++i], EXIM_DOMAINNAME_MAX, "-atrn");
+	  atrn_domains = exim_arg_copy(argv[++i], EXIM_DOMAINNAME_MAX*4,
+				      "-atrn");
+	  i++;
+	  }
+	else
+	  exim_fail("exim: host and domainlist expected after %s\n", argv[i]);
+      else badarg = TRUE;
+      break;
 
     /* -Btype is a sendmail option for 7bit/8bit setting. Exim is 8-bit clean
     so has no need of it. */
 
     case 'B':
-    if (!*argrest) i++;       /* Skip over the type */
-    break;
+      if (!*argrest) i++;       /* Skip over the type */
+      break;
 
 
     case 'b':
@@ -2681,9 +2707,8 @@ on the second character (the one after '-'), to save some effort. */
 
 	/* -bw: inetd wait mode, accept a listening socket as stdin */
 	case 'w':
-	  f.inetd_wait_mode = TRUE;
+	  f.inetd_wait_mode = f.daemon_listen = f.daemon_scion = TRUE;
 	  f.background_daemon = FALSE;
-	  f.daemon_listen = f.daemon_scion = TRUE;
 	  if (*argrest)
 	    if ((inetd_wait_timeout = readconf_readtime(argrest, 0, FALSE)) <= 0)
 	      exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
@@ -3989,40 +4014,46 @@ END_ARG:
 if (usage_wanted) exim_usage(called_as);
 
 /* Arguments have been processed. Check for incompatibilities. */
-if (  (  (smtp_input || extract_recipients || recipients_arg < argc)
+if (	 (smtp_input || extract_recipients || recipients_arg < argc)
       && (  f.daemon_listen || qrunners || bi_option
 	 || test_retry_arg >= 0 || test_rewrite_arg >= 0
 	 || filter_test != FTEST_NONE
 	 || msg_action_arg > 0 && !one_msg_action
-      )  )
-   || (  msg_action_arg > 0
+	 )
+   ||	 msg_action_arg > 0
       && (  f.daemon_listen || is_multiple_qrun() || list_options
 	 || checking && msg_action != MSG_LOAD
 	 || bi_option || test_retry_arg >= 0 || test_rewrite_arg >= 0
-      )  )
-   || (  (f.daemon_listen || is_multiple_qrun())
+	 )
+   ||	 (f.daemon_listen || is_multiple_qrun())
       && (  sender_address || list_options || list_queue || checking
 	 || bi_option
-      )  )
+	 )
    || f.daemon_listen && is_onetime_qrun()
    || f.inetd_wait_mode && qrunners
-   || (  list_options
+   ||	 list_options
       && (  checking || smtp_input || extract_recipients
 	 || filter_test != FTEST_NONE || bi_option
-      )  )
-   || (  verify_address_mode
+	 )
+   ||	 verify_address_mode
       && (  f.address_test_mode || smtp_input || extract_recipients
 	 || filter_test != FTEST_NONE || bi_option
-      )  )
-   || (  f.address_test_mode
+	 )
+   ||	 f.address_test_mode
       && (  smtp_input || extract_recipients || filter_test != FTEST_NONE
 	 || bi_option
-      )  )
-   || (  smtp_input
+	 )
+   ||	 smtp_input
       && (sender_address || filter_test != FTEST_NONE || extract_recipients)
-      )
    || deliver_selectstring && !qrunners
    || msg_action == MSG_LOAD && (!expansion_test || expansion_test_message)
+   ||	 atrn_mode
+      && (  f.daemon_listen || expansion_test || filter_test != FTEST_NONE
+	 || checking /* || bi_option || info_stdout || receiving_message
+	 || malware_test_file || list_queue || list_config || list_options
+	 || version_printed || msg_action_arg > 0 || qrunners
+	 */
+	 )
    )
   exim_fail("exim: incompatible command-line options or arguments\n");
 
@@ -4736,11 +4767,11 @@ if (smtp_input)
 
       if (real_uid == root_uid || real_uid == exim_uid || interface_port < 1024)
         {
+        if (mua_wrapper) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Input from "
+          "inetd is not supported when mua_wrapper is set");
         f.is_inetd = TRUE;
         sender_host_address = host_ntoa(-1, (struct sockaddr *)(&inetd_sock),
           NULL, &sender_host_port);
-        if (mua_wrapper) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Input from "
-          "inetd is not supported when mua_wrapper is set");
         }
       else
         exim_fail(
@@ -4755,7 +4786,7 @@ root. There will be further calls later for each message received. */
 
 #ifdef LOAD_AVG_NEEDS_ROOT
 if (  receiving_message
-   && (queue_only_load >= 0 || (f.is_inetd && smtp_load_reserve >= 0)))
+   && (queue_only_load >= 0 ||  f.is_inetd && smtp_load_reserve >= 0))
   load_average = OS_GETLOADAVG();
 #endif
 
@@ -5311,6 +5342,7 @@ if (f.daemon_listen || f.inetd_wait_mode || is_multiple_qrun())
 #endif
 
   daemon_go();
+  /*NOTREACHED*/
   }
 
 /* If the sender ident has not been set (by a trusted caller) set it to
@@ -5660,7 +5692,8 @@ otherwise complain unless a version print (-bV) happened or this is a filter
 verification test or info dump.
 In the former case, show the configuration file name. */
 
-if (recipients_arg >= argc && !extract_recipients && !smtp_input)
+if (  recipients_arg >= argc && !extract_recipients
+   && !smtp_input && !atrn_mode)
   {
   if (version_printed)
     {
@@ -5679,6 +5712,10 @@ if (recipients_arg >= argc && !extract_recipients && !smtp_input)
   if (filter_test == FTEST_NONE)
     exim_usage(called_as);
   }
+
+/*XXX somewhere around here.  Maybe earlier, but no later.  ATRN customer */
+if (atrn_mode)
+  atrn_handle_customer();
 
 
 /* If mua_wrapper is set, Exim is being used to turn an MUA that submits on the
@@ -5724,7 +5761,7 @@ if (!smtp_input) error_handling = arg_error_handling;
 logging being sent down the socket and make an identd call to get the
 sender_ident. */
 
-else if (f.is_inetd)
+else if (f.is_inetd && !atrn_mode)
   {
   (void)fclose(stderr);
   exim_nullstd();                       /* Re-open to /dev/null */
@@ -5808,6 +5845,7 @@ if (smtp_input)
   {
   smtp_in = stdin;
   smtp_out = stdout;
+
   memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (verify_check_host(&hosts_connection_nolog) == OK)
     {
@@ -5895,7 +5933,7 @@ for (BOOL more = TRUE; more; )
   rmark reset_point = store_mark();
   message_id[0] = 0;
 
-  /* Handle the SMTP case; call smtp_setup_mst() to deal with the initial SMTP
+  /* Handle the SMTP case; call smtp_setup_msg() to deal with the initial SMTP
   input and build the recipients list, before calling receive_msg() to read the
   message proper. Whatever sender address is given in the SMTP transaction is
   often ignored for local senders - we use the actual sender, which is normally

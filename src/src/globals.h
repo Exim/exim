@@ -368,6 +368,7 @@ extern BOOL    allow_mx_to_ip;         /* Allow MX records to -> ip address */
 extern BOOL    allow_utf8_domains;     /* For experimenting */
 extern const uschar *atrn_domains;     /* Domains requested for transfer */
 extern const uschar *atrn_host;        /* host spec for client */
+extern const uschar *atrn_mode;	       /* "C"ustomer, "P"rovider, or empty */
 extern uschar *authenticated_fail_id;  /* ID that failed authentication */
 extern uschar *authenticated_id;       /* ID that was authenticated */
 extern uschar *authenticated_sender;   /* From AUTH on MAIL */

@@ -196,14 +196,14 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: 
 search_tidyup called
 >>Headers received:
-X-Failed-Recipients: x@y
-Auto-Submitted: auto-replied
-From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
-To: CALLER@myhost.test.ex
-References: <E10HmaX-000000005vi-0000@myhost.test.ex>
-Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
-MIME-Version: 1.0
-Subject: Mail delivery failed: returning message to sender
+ X-Failed-Recipients: x@y
+ Auto-Submitted: auto-replied
+ From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+ To: CALLER@myhost.test.ex
+ References: <E10HmaX-000000005vi-0000@myhost.test.ex>
+ Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+ MIME-Version: 1.0
+ Subject: Mail delivery failed: returning message to sender
 
 qualify & rewrite recipients list
 rewrite rules on sender address

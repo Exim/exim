@@ -5193,10 +5193,10 @@ return TRUE;
 
 
 
-/* For ATRN: transfer the tls_in context to tls_out */
+/* For ATRN provider: transfer the tls_in context to tls_out */
 
 void
-tls_turnaround(int newfd, const uschar * ipaddr, int port)
+tls_state_in_to_out(int newfd, const uschar * ipaddr, int port)
 {
 exim_openssl_client_tls_ctx * exim_client_ctx;
 int old_pool = store_pool;
@@ -5220,6 +5220,33 @@ tls_out.active.tls_ctx = exim_client_ctx;
 
 memset(&tls_in, 0, sizeof(tls_in));
 }
+
+/* For ATRN customer: transfer the tls_out context to tls_in */
+
+void
+tls_state_out_to_in(int newfd, const uschar * ipaddr, int port)
+{
+exim_openssl_client_tls_ctx * exim_client_ctx = tls_out.active.tls_ctx;
+
+if (!ssl_xfer_buffer) ssl_xfer_buffer = store_malloc(ssl_xfer_buffer_size);
+ssl_xfer_buffer_lwm = ssl_xfer_buffer_hwm = 0;
+ssl_xfer_eof = ssl_xfer_error = FALSE;
+
+state_server.is_server = TRUE;
+state_server.tlsp = &tls_in;
+state_server.lib_state.lib_ctx = exim_client_ctx->ctx;
+state_server.lib_state.lib_ssl = exim_client_ctx->ssl;
+
+SSL_set_fd(state_server.lib_state.lib_ssl, newfd);
+
+tls_in = tls_out;
+tls_in.on_connect = FALSE;
+tls_in.active.sock = newfd;
+tls_in.active.tls_ctx = NULL;
+
+memset(&tls_out, 0, sizeof(tls_out));
+}
+
 
 
 #endif	/*!MACRO_PREDEF*/

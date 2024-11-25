@@ -2364,9 +2364,11 @@ normal case). */
 DEBUG(D_receive)
   {
   debug_printf(">>Headers received:\n");
+  acl_level++;
   for (header_line * h = header_list->next; h; h = h->next)
-    debug_printf("%s", h->text);
+    debug_printf_indent("%s", h->text);
   debug_printf("\n");
+  acl_level--;
   }
 
 /* End of file on any SMTP connection is an error. If an incoming SMTP call

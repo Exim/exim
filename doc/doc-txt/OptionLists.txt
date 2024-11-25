@@ -52,6 +52,7 @@ accept_8bitmime                      boolean         true          main         
 acl_not_smtp                         string*         unset         main              4.11
 acl_not_smtp_mime                    string*         unset         main              4.51 with content scan
 acl_smtp_atrn                        string*         unset         main              4.99+
+acl_smtp_atrn                        string*         unset         main              4.99
 acl_smtp_auth                        string*         unset         main              4.00
 acl_smtp_connect                     string*         unset         main              4.11
 acl_smtp_data                        string*         unset         main              4.00

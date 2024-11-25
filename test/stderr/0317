@@ -8,9 +8,9 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@test.ex
 >>Headers received:
-To: x@y.z
-Cc: a@b.c
-Bcc: p@q.r
+ To: x@y.z
+ Cc: a@b.c
+ Bcc: p@q.r
 
 >>Headers after rewriting and local additions:
  T To: x@y.z
@@ -44,12 +44,12 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@test.ex
 >>Headers received:
-To: x@y.z
-Cc: a@b.c
-Bcc: p@q.r
-Resent-to: aa@bb.cc
-Resent-cc: pp@qq.rr
-Resent-bcc: xx@yy.zz
+ To: x@y.z
+ Cc: a@b.c
+ Bcc: p@q.r
+ Resent-to: aa@bb.cc
+ Resent-cc: pp@qq.rr
+ Resent-bcc: xx@yy.zz
 
 >>Headers after rewriting and local additions:
    Resent-Date: Tue, 2 Mar 1999 09:44:33 +0000

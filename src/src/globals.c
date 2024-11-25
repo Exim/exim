@@ -619,8 +619,10 @@ const uschar *address_pipe           = NULL;
 tree_node *addresslist_anchor  = NULL;
 int     addresslist_count      = 0;
 gid_t  *admin_groups           = NULL;
+
 const uschar *atrn_domains     = NULL;
 const uschar *atrn_host        = NULL;
+const uschar *atrn_mode        = NULL;
 
 uschar *authenticated_fail_id  = NULL;
 uschar *authenticated_id       = NULL;
