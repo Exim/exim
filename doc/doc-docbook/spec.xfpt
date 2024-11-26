@@ -38191,7 +38191,7 @@ see chapter &<<CHID9>>&.
 .subsection "ODMR customer connection" SECTODMRCUST
 .cindex ODMR customer
 Exim supports the &"customer"& side of ODMR,
-with a command-line option &"-atrn"&& that requests a connection
+with a command-line option &"-atrn"& that requests a connection
 to a given host, issuance of an ATRN command then operation
 in SMTP server mode.
 The option must be followed by two arguments.
@@ -38203,7 +38203,7 @@ of domains for which mail is to be requested.
 Interpretation of the list is up to the provider;
 an empty list is expected to result in some default being returned.
 
-The provider host is placed in &$domain$" for routing;
+The provider host is placed in &$domain$& for routing;
 router and transport must be configured suitably to make the connection.
 For example:
 .code
