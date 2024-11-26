@@ -24,8 +24,10 @@ extern uschar *version_date;
 void
 version_init(void)
 {
+#ifndef EXIM_BUILD_DATE_OVERRIDE
 int i = 0;
 uschar today[20];
+#endif
 
 version_string = US"2.06";
 

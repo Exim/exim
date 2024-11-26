@@ -1075,6 +1075,8 @@ SPOOL_FORMAT_ERROR:
 #ifndef COMPILE_UTILITY
 DEBUG(D_any) debug_printf("Format error in spool file %s%s%s\n", name,
   where ? ": " : "", where ? where : US"");
+#else
+where = where;	/* compiler quietening */
 #endif  /* COMPILE_UTILITY */
 
 fclose(fp);

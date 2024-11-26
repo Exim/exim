@@ -103,27 +103,9 @@ if (!OK)
 int
 main(int argc, char **argv)
 {
-off_t test_off_t = 0;
-time_t test_time_t = 0;
-ino_t test_ino_t;
-#if ! (__STDC_VERSION__ >= 199901L)
-size_t test_size_t = 0;
-ssize_t test_ssize_t = 0;
-unsigned long test_ulong_t = 0L;
-unsigned int test_uint_t = 0;
-#endif
-long test_long_t = 0;
-long long test_longlong_t = 0;
-int test_int_t = 0;
-FILE *base;
-FILE *new;
-int last_initial = 'A';
-int linecount = 0;
-int have_auth = 0;
-int in_local_makefile = 0;
-int use_which_db = 0;
-int use_which_db_in_local_makefile = 0;
-int support_crypteq = 0;
+FILE * base, * new;
+int last_initial = 'A', linecount = 0, have_auth = 0, in_local_makefile = 0;
+int use_which_db = 0, use_which_db_in_local_makefile = 0, support_crypteq = 0;
 char buffer[1024];
 
 if (argc != 1)
@@ -157,14 +139,14 @@ printing long long variables, and there will be support for the long long type.
 This assumption is known to be OK for the common operating systems. */
 
 fprintf(new, "#ifndef OFF_T_FMT\n");
-if (sizeof(test_off_t) > sizeof(test_long_t))
+if (sizeof(off_t) > sizeof(long))
   fprintf(new, "# define OFF_T_FMT  \"%%lld\"\n");
 else
   fprintf(new, "# define OFF_T_FMT  \"%%ld\"\n");
 fprintf(new, "#endif\n\n");
 
 fprintf(new, "#ifndef LONGLONG_T\n");
-if (sizeof(test_longlong_t) > sizeof(test_long_t))
+if (sizeof(long long) > sizeof(long))
   fprintf(new, "# define LONGLONG_T long long int\n");
 else
   fprintf(new, "# define LONGLONG_T long int\n");
@@ -176,7 +158,7 @@ length is 4 or less, we can leave LONGLONG_T to whatever was defined above for
 off_t. */
 
 fprintf(new, "#ifndef TIME_T_FMT\n");
-if (sizeof(test_time_t) > sizeof(test_long_t))
+if (sizeof(time_t) > sizeof(long))
   {
   fprintf(new, "# define TIME_T_FMT  \"%%lld\"\n");
   fprintf(new, "# undef  LONGLONG_T\n");
@@ -187,7 +169,7 @@ else
 fprintf(new, "#endif\n\n");
 
 fprintf(new, "#ifndef INO_T_FMT\n");
-if (sizeof(test_ino_t) > sizeof(test_long_t))
+if (sizeof(ino_t) > sizeof(long))
   fprintf(new, "# define INO_T_FMT  \"%%llu\"\n");
 else
   fprintf(new, "# define INO_T_FMT  \"%%lu\"\n");
@@ -206,16 +188,16 @@ it then. */
 fprintf(new, "#define SIZE_T_FMT  \"%%zu\"\n");
 fprintf(new, "#define SSIZE_T_FMT  \"%%zd\"\n");
 #else
-if (sizeof(test_size_t) > sizeof (test_ulong_t))
+if (sizeof(size_t) > sizeof (unsigned long))
   fprintf(new, "#define SIZE_T_FMT  \"%%llu\"\n");
-else if (sizeof(test_size_t) > sizeof (test_uint_t))
+else if (sizeof(size_t) > sizeof (unsigned int))
   fprintf(new, "#define SIZE_T_FMT  \"%%lu\"\n");
 else
   fprintf(new, "#define SIZE_T_FMT  \"%%u\"\n");
 
-if (sizeof(test_ssize_t) > sizeof(test_long_t))
+if (sizeof(ssize_t) > sizeof(long))
   fprintf(new, "#define SSIZE_T_FMT  \"%%lld\"\n");
-else if (sizeof(test_ssize_t) > sizeof(test_int_t))
+else if (sizeof(ssize_t) > sizeof(int))
   fprintf(new, "#define SSIZE_T_FMT  \"%%ld\"\n");
 else
   fprintf(new, "#define SSIZE_T_FMT  \"%%d\"\n");
