@@ -120,10 +120,18 @@ if (rc == DEFER)
 
 /* Flip the connection around */
 
+fflush(stdin);
+fflush(stdout);
 force_fd(cutthrough.cctx.sock, 0);
 (void)dup2(0, 1);
-stdin = fdopen(0, "r");
-stdout = fdopen(1, "w");
+
+/* Really should re-open the stdio streams on the new fd's to ensure all
+the invisible stdio state is proper - but there seems no way to do that.
+You cannot assign to std{in,out}, they being macros (per Posix), so fdopen()
+is out.  freopen() requires a filesystem name, and we don't have one and cannot
+portably invent one for a socket.  We'd have to stop using std{in,out} for
+Exim's server side entirely (we use bare fd's for client-side i/o already). */
+
 #ifndef DISABLE_TLS
 if (tls_out.active.sock >= 0)
   tls_state_out_to_in(0, cutthrough.host.address, cutthrough.host.port);
