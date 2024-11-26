@@ -605,7 +605,7 @@ The value is an integer between 0 and 16, or the value "none" which
 means there is no localhost_number.
 
 Do not confuse this with the L<--local|/l---local> option, which displays times
- in the local timezone.
+in the local timezone.
 
 =item B<--C> B<full path to exim configuration file>
 
@@ -614,7 +614,7 @@ We set C<localhost_number> from the exim configfile.
 
 =item B<-dexim_path>
 
-The test test harness passes the full path of the C<exim> binary,
+The test harness passes the full path of the C<exim> binary,
 or here the C<exim_msgdate> being tested. Not currently used.
 
 =back

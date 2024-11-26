@@ -5216,7 +5216,7 @@ This can then be used in a &(redirect)& router setting like this:
 data = ${lookup mysql{ALIAS_QUERY}}
 .endd
 In earlier versions of Exim macros were sometimes used for domain, host, or
-address lists. In Exim 4 these are handled better by named lists &-- see
+address lists. In Exim version 4 these are handled better by named lists &-- see
 section &<<SECTnamedlists>>&.
 
 
@@ -9259,6 +9259,8 @@ does not match the list. This may not always be what you want to happen.
 To change Exim's behaviour, the special items &`+include_unknown`& or
 &`+ignore_unknown`& may appear in the list (at top level &-- they are
 not recognized in an indirected file).
+The effects of these special items do not propagate into referenced
+named lists.
 
 .ilist
 If any item that follows &`+include_unknown`& requires information that
@@ -9625,6 +9627,7 @@ longer case-independent. This does not affect the domain, which remains in
 lower case. However, although independent matches on the domain alone are still
 performed caselessly, regular expressions that match against an entire address
 become case-sensitive after &"+caseful"& has been seen.
+The effects of &"+caseful"& propagate into any referenced named lists.
 
 .new
 This string may not be tainted.
