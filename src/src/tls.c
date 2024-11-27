@@ -310,13 +310,14 @@ void
 tls_watch_discard_event(int fd)
 {
 #ifdef EXIM_HAVE_INOTIFY
-(void) read(fd, big_buffer, big_buffer_size);
+int rc = read(fd, big_buffer, big_buffer_size);
 #endif
 #ifdef EXIM_HAVE_KEVENT
 struct kevent kev;
 struct timespec t = {0};
-(void) kevent(fd, NULL, 0, &kev, 1, &t);
+int rc = kevent(fd, NULL, 0, &kev, 1, &t);
 #endif
+rc = rc;	/* stupid compiler quietening */
 }
 #endif	/*EXIM_HAVE_INOTIFY*/
 

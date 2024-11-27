@@ -1329,6 +1329,7 @@ switch (type)
 	GETSHORT(priority, p);
 	GETSHORT(dummy_weight, p);
 	GETSHORT(port, p);
+	dummy_weight = dummy_weight;	/* stupid compiler quietening */
 
 	/* Check the CSA version number */
 	if (priority != 1) continue;

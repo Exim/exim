@@ -738,7 +738,12 @@ if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrncpy", CUS func, lin
 #endif
 return US strncpy(CS dst, CCS src, n);
 }
+static inline uschar * Ustpcpy(uschar * dst, const uschar * src)
+{
+return US stpcpy(CS dst, CCS src);
+}
 /*XXX will likely need unchecked copy also */
+
 
 
 /* Advance the string pointer given over any whitespace.

@@ -179,6 +179,7 @@ call_perl_cat(gstring * yield, uschar **errstrp, uschar *name, uschar **arg)
   while (*arg != NULL) XPUSHs(newSVpv(CS (*arg++), 0));
   PUTBACK;
   items = perl_call_pv(CS name, G_SCALAR|G_EVAL);
+  items = items;	/* stupid compiler quietening */
   SPAGAIN;
   sv = POPs;
   PUTBACK;

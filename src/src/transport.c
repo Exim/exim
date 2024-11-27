@@ -149,32 +149,32 @@ int old_pool = store_pool;
 store_pool = POOL_PERM;
   {
   driver_info ** anchor = (driver_info **) &transports_available;
-  extern transport_info appendfile_transport_info;
-  extern transport_info autoreply_transport_info;
-  extern transport_info lmtp_transport_info;
-  extern transport_info pipe_transport_info;
-  extern transport_info queuefile_transport_info;
-  extern transport_info smtp_transport_info;
 
   /* Add the transport drivers that are built for static linkage to the
   list of availables. */
 
 #if defined(TRANSPORT_APPENDFILE) && TRANSPORT_APPENDFILE!=2
+  extern transport_info appendfile_transport_info;
   add_driver_info(anchor, &appendfile_transport_info.drinfo, sizeof(transport_info));
 #endif
 #if defined(TRANSPORT_AUTOREPLY) && TRANSPORT_AUTOREPLY!=2
+  extern transport_info autoreply_transport_info;
   add_driver_info(anchor, &autoreply_transport_info.drinfo, sizeof(transport_info));
 #endif
 #if defined(TRANSPORT_LMTP) && TRANSPORT_LMTP!=2
+  extern transport_info lmtp_transport_info;
   add_driver_info(anchor, &lmtp_transport_info.drinfo, sizeof(transport_info));
 #endif
 #if defined(TRANSPORT_PIPE) && TRANSPORT_PIPE!=2
+  extern transport_info pipe_transport_info;
   add_driver_info(anchor, &pipe_transport_info.drinfo, sizeof(transport_info));
 #endif
 #if defined(EXPERIMENTAL_QUEUEFILE) && EXPERIMENTAL_QUEUEFILE!=2
+  extern transport_info queuefile_transport_info;
   add_driver_info(anchor, &queuefile_transport_info.drinfo, sizeof(transport_info));
 #endif
 #if defined(TRANSPORT_SMTP) && TRANSPORT_SMTP!=2
+  extern transport_info smtp_transport_info;
   add_driver_info(anchor, &smtp_transport_info.drinfo, sizeof(transport_info));
 #endif
   }
@@ -1451,6 +1451,7 @@ if (write_pid > 0)
 	int dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
         dummy = read(pfd[pipe_read], (void *)&tctx->addr->more_errno, sizeof(int));
         dummy = read(pfd[pipe_read], (void *)&tctx->addr->delivery_time, sizeof(struct timeval));
+        dummy = dummy;	/* (more) compiler quietening */
         yield = FALSE;
         }
       }

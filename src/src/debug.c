@@ -243,10 +243,7 @@ if (debug_ptr == debug_buffer)
   /* Set up prefix if outputting for host checking and not debugging */
 
   if (host_checking && debug_selector == 0)
-    {
-    Ustrcpy(debug_ptr, US">>> ");
-    debug_ptr += 4;
-    }
+    debug_ptr = Ustpcpy(debug_ptr, US">>> ");
 
   debug_prefix_length = debug_ptr - debug_buffer;
   }
@@ -256,19 +253,16 @@ if (indent > 0)
   for (int i = indent >> 2; i > 0; i--)
     DEBUG(D_noutf8)
       {
-      Ustrcpy(debug_ptr, US"   !");
-      debug_ptr += 4;	/* 3 spaces + shriek */
+      debug_ptr = Ustpcpy(debug_ptr, US"   !");
       debug_prefix_length += 4;
       }
     else
       {
-      Ustrcpy(debug_ptr, US"   " UTF8_VERT_2DASH);
-      debug_ptr += 6;	/* 3 spaces + 3 UTF-8 octets */
+      debug_ptr = Ustpcpy(debug_ptr, US"   " UTF8_VERT_2DASH);
       debug_prefix_length += 6;
       }
 
-  Ustrncpy(debug_ptr, US"   ", indent &= 3);
-  debug_ptr += indent;
+  debug_ptr += sprintf(CS debug_ptr, "%.*s", indent &= 3, "   ");
   debug_prefix_length += indent;
   }
 

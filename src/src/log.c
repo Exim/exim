@@ -513,7 +513,7 @@ switch (type)
   case lt_debug:
     /* and deal with the debug log (which keeps the datestamp, but does not
     update it) */
-    Ustrcpy(debuglog_name, buffer);
+    sprintf(CS debuglog_name, "%.*s", (int) sizeof(debuglog_name)-1, buffer);
     if (tag)
       {
       if (is_tainted(tag))
@@ -524,7 +524,7 @@ switch (type)
       ok2 = string_format(buffer, sizeof(buffer), "%s%s",
         debuglog_name, tag);
       if (ok2)
-        Ustrcpy(debuglog_name, buffer);
+	sprintf(CS debuglog_name, "%.*s", (int)sizeof(debuglog_name)-1, buffer);
       }
     break;
 
@@ -1279,7 +1279,8 @@ if (flags & LOG_PANIC)
     panic_recurseflag = FALSE;
 
     if (panic_save_buffer)
-      (void) write(paniclogfd, panic_save_buffer, Ustrlen(panic_save_buffer));
+      if (write(paniclogfd, panic_save_buffer, Ustrlen(panic_save_buffer)) < 0)
+	DEBUG(D_any) debug_printf("sucks");
 
     if (  (written_len = write_gstring_to_fd_buf(paniclogfd, g))
        != gstring_length(g))
@@ -1548,7 +1549,7 @@ debug_logging_from_spool(const uschar * filename)
 {
 if (debug_fd < 0)
   {
-  Ustrncpy(debuglog_name, filename, sizeof(debuglog_name));
+  Ustrncpy(debuglog_name, filename, sizeof(debuglog_name)-1);
   if ((debug_fd = log_open_as_exim(filename)) >= 0)
     debug_file = fdopen(debug_fd, "w");
   DEBUG(D_deliver) debug_printf("debug enabled by spoolfile\n");

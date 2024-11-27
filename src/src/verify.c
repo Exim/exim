@@ -3477,7 +3477,7 @@ if ((rc = verify_address(&vaddr, NULL, vopt_is_recipient | vopt_quota,
   }
 
 DEBUG(D_verify) debug_printf_indent("verify_quota: len %d\n", len);
-write(1, msg, len);
+if (write(1, msg, len) != 0) ;
 return;
 }
 

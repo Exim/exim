@@ -3381,6 +3381,7 @@ if (f.trusted_config && Ustrcmp(filename, US"/dev/null"))
     {
     rmark r = store_mark();
     void * dummy = store_get((int)statbuf.st_size, GET_UNTAINTED);
+    dummy = dummy;	/* stupid compiler quietening */
     store_reset(r);
     }
   }

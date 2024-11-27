@@ -2286,7 +2286,8 @@ if (continue_hostname && continue_proxy_cipher)
 		    continue_proxy_sni, sni);
 
     smtp_debug_cmd(US"QUIT", 0);
-    write(0, "QUIT\r\n", 6);
+    if (write(0, "QUIT\r\n", 6) < 0)
+      DEBUG(D_any) debug_printf("stupid compiler\n");
     close(0);
     continue_hostname = continue_proxy_cipher = NULL;
     f.continue_more = FALSE;

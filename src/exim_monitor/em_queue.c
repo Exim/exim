@@ -163,7 +163,8 @@ uschar buffer[256];
 
 q->next = q->prev = NULL;
 q->destinations = NULL;
-Ustrncpy(q->name, name, sizeof(q->name));
+Ustrncpy(q->name, name, sizeof(q->name)-1);
+q->name[sizeof(q->name)-1] = '\0';
 q->seen = TRUE;
 q->frozen = FALSE;
 q->dir_char = dir_char;

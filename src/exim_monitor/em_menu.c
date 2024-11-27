@@ -364,7 +364,7 @@ if ((pid = fork()) == 0)
   dup2(pipe_fd[1], 2);
   close(pipe_fd[1]);
 
-  system(CS buffer);
+  if (system(CS buffer)) ;
 
   close(1);
   close(2);
