@@ -87,6 +87,12 @@ install:        all
 		@cd build-$(buildname); \
 		build=$(build) $(SHELL) ../scripts/exim_install $(INSTALL_ARG)
 
+# For testing only; the version number is a dummy.
+# The build for release is done by the release-process script "mk_exim_release"
+
+doc:	FRC
+	cd ../doc/doc-docbook; $(MAKE) EXIM_VER=0 everything
+
 # Tidy-up targets
 
 clean_exim:; cd build-$(buildname); \
