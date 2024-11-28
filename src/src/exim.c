@@ -4625,8 +4625,7 @@ privilege by now. Before the chdir, we try to ensure that the directory exists.
 if (Uchdir(spool_directory) != 0)
   {
   (void) directory_make(spool_directory, US"", SPOOL_DIRECTORY_MODE, FALSE);
-  if (Uchdir(spool_directory) < 0)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "chdir to spool: %s", strerror(errno));
+  if (Uchdir(spool_directory) < 0) ;
   }
 
 /* Handle calls with the -bi option. This is a sendmail option to rebuild *the*
