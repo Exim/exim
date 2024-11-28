@@ -1401,7 +1401,8 @@ check an address given in the SMTP EXPN command (see the &%expn%& option).
 If the &%domains%& option is set, the domain of the address must be in the set
 of domains that it defines.
 .cindex "tainted data" "de-tainting"
-.cindex "de-tainting" "using router domains option"
+.cindex de-tainting "using router domains option"
+.cindex de-tainting &$domains$&
 A match verifies the variable &$domain$& (which carries tainted data)
 and assigns an untainted value to the &$domain_data$& variable.
 Such an untainted value is often needed in the transport.
@@ -1421,6 +1422,7 @@ rather than the generic &%condition%& option.
 If the &%local_parts%& option is set, the local part of the address must be in
 the set of local parts that it defines.
 A match verifies the variable &$local_part$& (which carries tainted data)
+.cindex de-tainting &$local_parts$&
 and assigns an untainted value to the &$local_part_data$& variable.
 Such an untainted value is often needed in the transport.
 For specifics of the matching operation and the resulting untainted value,
@@ -19481,11 +19483,15 @@ This applies to all of the SRV, MX, AAAA, A lookup sequence.
 .option domains routers&!? "domain list&!!" unset
 .cindex "router" "restricting to specific domains"
 .vindex "&$domain_data$&"
-If this option is set, the router is skipped unless the current domain matches
-the list.
+If this option is set,
+the argument is first expanded to give a list.
+The router is skipped unless the current domain matches the list.
 The data returned by the list check
 is placed in &$domain_data$& for use in string
 expansions of the driver's private options and in the transport.
+If the result of expansion is empty or a forced-fail,
+the router is skipped.
+
 See section &<<SECTrouprecon>>& for
 a list of the order in which preconditions are evaluated.
 
@@ -19855,7 +19861,11 @@ See &%local_part_suffix%& above.
 .option local_parts routers&!? "local part list&!!" unset
 .cindex "router" "restricting to specific local parts"
 .cindex "local part" "checking in router"
+If this option is set, the argument is first expanded to give a list.
 The router is run only if the local part of the address matches the list.
+If the result of expansion is empty or a forced-fail,
+the router is skipped.
+
 See section &<<SECTrouprecon>>& for a list of the order in which preconditions
 are evaluated, and
 section &<<SECTlocparlis>>& for a discussion of local part lists. Because the
@@ -19865,7 +19875,7 @@ example:
 local_parts = dbm;/usr/local/specials/$domain_data
 .endd
 .vindex "&$local_part_data$&"
-the data returned by the list check
+The data returned by the list check
 for the local part is placed in the variable &$local_part_data$& for use in
 expansions of the router's private options or in the transport.
 You might use this option, for
