@@ -42,6 +42,7 @@ it seems. */
 
 #if _POSIX_C_SOURCE < 200809L
 # define MISSING_POSIX_MEMALIGN
+# define MISSING_POSIX_STPCPY
 #endif
 
 

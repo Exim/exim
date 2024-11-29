@@ -907,6 +907,19 @@ return CS s;
 
 
 /* ----------------------------------------------------------------------- */
+/* stpcpy() */
+
+#ifdef MISSING_POSIX_STPCPY
+char *
+stpcpy(char * restrict dst, const char * restrict src)
+{
+while ((*dst = *src++)) dst++;
+return dst;
+}
+
+#endif
+
+/* ----------------------------------------------------------------------- */
 
 
 
