@@ -544,6 +544,10 @@ extern void    store_exit(void);
 extern void    store_init(void);
 extern void    store_writeprotect(int);
 
+#ifdef MISSING_POSIX_STPCPY
+extern char * stpcpy(char * restrict, const char * restrict);
+#endif
+
 extern gstring *string_append(gstring *, int, ...) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele(gstring *, uschar, const uschar *) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele_n(gstring *, uschar, const uschar *, unsigned) WARN_UNUSED_RESULT;
