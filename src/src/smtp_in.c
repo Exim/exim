@@ -2317,10 +2317,9 @@ if (!f.sender_host_unknown)
 
     else if (optlen > 0)
       {
-      uschar * p = big_buffer;
-      uschar * pend = big_buffer + big_buffer_size;
+      uschar * p = big_buffer, * pend = big_buffer + big_buffer_size;
       uschar * adptr;
-      int optcount;
+      int optcount, sprint_len;
       struct in_addr addr;
 
 # if OPTSTYLE == 1
@@ -2351,57 +2350,57 @@ if (!f.sender_host_unknown)
           case IPOPT_LSRR:
 	    if (!
 # if OPTSTYLE == 1
-	         string_format(p, pend-p, " %s [@%s",
-		 (*opt == IPOPT_SSRR)? "SSRR" : "LSRR",
-		 inet_ntoa(*((struct in_addr *)(&(ipopt->faddr)))))
+		 string_format(p, pend-p, " %s [@%s%n",
+		   *opt == IPOPT_SSRR ? "SSRR" : "LSRR",
+		   inet_ntoa(*(struct in_addr *)&ipopt->faddr),
+		   &sprint_len)
 # elif OPTSTYLE == 2
-	         string_format(p, pend-p, " %s [@%s",
-		 (*opt == IPOPT_SSRR)? "SSRR" : "LSRR",
-		 inet_ntoa(ipopt->ip_dst))
+		 string_format(p, pend-p, " %s [@%s%n",
+		   *opt == IPOPT_SSRR ? "SSRR" : "LSRR",
+		   inet_ntoa(ipopt->ip_dst),
+		   &sprint_len)
 # else
-	         string_format(p, pend-p, " %s [@%s",
-		 (*opt == IPOPT_SSRR)? "SSRR" : "LSRR",
-		 inet_ntoa(ipopt->ipopt_dst))
+		 string_format(p, pend-p, " %s [@%s%n",
+		   *opt == IPOPT_SSRR ? "SSRR" : "LSRR",
+		   inet_ntoa(ipopt->ipopt_dst),
+		   &sprint_len)
 # endif
-	      )
-	      {
+	        )
 	      opt = NULL;
-	      break;
-	      }
-
-	    p += Ustrlen(p);
-	    optcount = (opt[1] - 3) / sizeof(struct in_addr);
-	    adptr = opt + 3;
-	    while (optcount-- > 0)
+	    else
 	      {
-	      memcpy(&addr, adptr, sizeof(addr));
-	      if (!string_format(p, pend - p - 1, "%s%s",
-		    (optcount == 0)? ":" : "@", inet_ntoa(addr)))
+	      p += sprint_len;
+	      optcount = (opt[1] - 3) / sizeof(struct in_addr);
+	      adptr = opt + 3;
+	      while (optcount-- > 0)
 		{
-		opt = NULL;
-		break;
+		memcpy(&addr, adptr, sizeof(addr));
+		if (!string_format(p, pend - p - 1, "%s%s%n",
+		      optcount == 0 ? ":" : "@", inet_ntoa(addr), &sprint_len))
+		  { opt = NULL; goto bad_srr; }
+		p += sprint_len;
+		adptr += sizeof(struct in_addr);
 		}
-	      p += Ustrlen(p);
-	      adptr += sizeof(struct in_addr);
+	      *p++ = ']';
+	      opt += opt[1];
 	      }
-	    *p++ = ']';
-	    opt += opt[1];
-	    break;
+bad_srr:    break;
 
           default:
+	    if (pend - p < 4 + 3*opt[1])
+	      opt = NULL;
+	    else
 	      {
-	      if (pend - p < 4 + 3*opt[1]) { opt = NULL; break; }
-	      Ustrcat(p, "[ ");
-	      p += 2;
+	      p = Ustpcpy(p, "[ ");
 	      for (int i = 0; i < opt[1]; i++)
 		p += sprintf(CS p, "%2.2x ", opt[i]);
 	      *p++ = ']';
+	      opt += opt[1];
 	      }
-	    opt += opt[1];
 	    break;
           }
 
-      *p = 0;
+      *p = '\0';
       log_write(0, LOG_MAIN, "%s", big_buffer);
 
       /* Refuse any call with IP options. This is what tcpwrappers 7.5 does. */
