@@ -1890,6 +1890,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
   if (override_local_interfaces)
     {
     gstring * new_smtp_port = NULL, * new_local_interfaces = NULL;
+    uschar joinstr[4] = {0};		/* cppcheck silencing */
 
     if (!override_pid_file_path) write_pid = FALSE;
 
@@ -1902,7 +1903,6 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
     for (int sep = 0; s = string_nextinlist(&list, &sep, NULL, 0); )
       {
-      uschar joinstr[4];
       gstring ** gp = Ustrpbrk(s, ".:") ? &new_local_interfaces : &new_smtp_port;
       if (!*gp)
         {

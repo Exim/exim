@@ -337,15 +337,21 @@ for (j = 0; j < lock_retries; j++)
     /* Apply hitching post algorithm. */
 
     if ((rc = link(hitchname, lockname)) != 0)
-     rc2 = fstat(hd, &statbuf);
-    (void)close(hd);
-    unlink(hitchname);
-
-    if (rc != 0 && (rc2 != 0 || statbuf.st_nlink != 2))
       {
-      printf("exim_lock: failed to link hitching post to lock file\n");
-      hd = -1;
-      goto RETRY;
+      rc2 = fstat(hd, &statbuf);
+      (void)close(hd);
+      unlink(hitchname);
+      if ((rc2 != 0 || statbuf.st_nlink != 2))
+	{
+	printf("exim_lock: failed to link hitching post to lock file\n");
+	hd = -1;
+	goto RETRY;
+	}
+      }
+    else
+      {
+      (void)close(hd);
+      unlink(hitchname);
       }
 
     if (!quiet) printf("exim_lock: lock file successfully created\n");

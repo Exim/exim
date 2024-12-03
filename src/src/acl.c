@@ -153,9 +153,7 @@ static condition_def conditions[] = {
   [ACLC_ADD_HEADER] =		{ US"add_header",	ACD_EXP | ACD_MOD,
 				  PERMITTED(ACL_BIT_MAIL | ACL_BIT_RCPT |
 				    ACL_BIT_PREDATA | ACL_BIT_DATA |
-#ifndef DISABLE_PRDR
 				    ACL_BIT_PRDR |
-#endif
 				    ACL_BIT_MIME | ACL_BIT_NOTSMTP |
 				    ACL_BIT_DKIM |
 				    ACL_BIT_NOTSMTP_START),
@@ -175,9 +173,7 @@ static condition_def conditions[] = {
 				  FORBIDDEN(ACL_BIT_AUTH |
 				    ACL_BIT_CONNECT | ACL_BIT_HELO |
 				    ACL_BIT_DATA | ACL_BIT_MIME |
-# ifndef DISABLE_PRDR
 				    ACL_BIT_PRDR |
-# endif
 				    ACL_BIT_ETRN | ACL_BIT_EXPN |
 				    ACL_BIT_MAILAUTH |
 				    ACL_BIT_MAIL | ACL_BIT_STARTTLS |
@@ -198,9 +194,7 @@ static condition_def conditions[] = {
 #ifdef EXPERIMENTAL_DCC
   [ACLC_DCC] =			{ US"dcc",		ACD_EXP,
 				  PERMITTED(ACL_BIT_DATA |
-# ifndef DISABLE_PRDR
 				  ACL_BIT_PRDR |
-# endif
 				  ACL_BIT_NOTSMTP),
   },
 #endif
@@ -224,9 +218,7 @@ static condition_def conditions[] = {
 # endif
 				  ACD_EXP,
 				  PERMITTED(ACL_BIT_DKIM | ACL_BIT_DATA | ACL_BIT_MIME
-# ifndef DISABLE_PRDR
 				  | ACL_BIT_PRDR
-# endif
       ),
   },
 #endif
@@ -246,9 +238,7 @@ static condition_def conditions[] = {
 
   [ACLC_DOMAINS] =		{ US"domains",		0,
 				  PERMITTED(ACL_BIT_RCPT | ACL_BIT_VRFY
-#ifndef DISABLE_PRDR
 				  | ACL_BIT_PRDR
-#endif
       ),
   },
   [ACLC_ENCRYPTED] =		{ US"encrypted",	0,
@@ -265,9 +255,7 @@ static condition_def conditions[] = {
   },
   [ACLC_LOCAL_PARTS] =		{ US"local_parts",	0,
 				  PERMITTED(ACL_BIT_RCPT | ACL_BIT_VRFY
-#ifndef DISABLE_PRDR
 				  | ACL_BIT_PRDR
-#endif
       ),
   },
 
@@ -281,9 +269,7 @@ static condition_def conditions[] = {
 #ifdef WITH_CONTENT_SCAN
   [ACLC_MALWARE] =		{ US"malware",		ACD_EXP,
 				  PERMITTED(ACL_BIT_DATA |
-# ifndef DISABLE_PRDR
 				    ACL_BIT_PRDR |
-# endif
 				    ACL_BIT_NOTSMTP),
   },
 #endif
@@ -297,9 +283,7 @@ static condition_def conditions[] = {
 
   [ACLC_QUEUE] =		{ US"queue",		ACD_EXP | ACD_MOD,
 				  FORBIDDEN(ACL_BIT_NOTSMTP |
-#ifndef DISABLE_PRDR
 				  ACL_BIT_PRDR |
-#endif
 				  ACL_BIT_DATA),
   },
 
@@ -311,9 +295,7 @@ static condition_def conditions[] = {
 #ifdef WITH_CONTENT_SCAN
   [ACLC_REGEX] =		{ US"regex",		ACD_EXP,
 				  PERMITTED(ACL_BIT_DATA |
-# ifndef DISABLE_PRDR
 				    ACL_BIT_PRDR |
-# endif
 				    ACL_BIT_NOTSMTP |
 				    ACL_BIT_MIME),
   },
@@ -322,9 +304,7 @@ static condition_def conditions[] = {
   [ACLC_REMOVE_HEADER] =	{ US"remove_header",	ACD_EXP | ACD_MOD,
 				  PERMITTED(ACL_BIT_MAIL|ACL_BIT_RCPT |
 				    ACL_BIT_PREDATA | ACL_BIT_DATA |
-#ifndef DISABLE_PRDR
 				    ACL_BIT_PRDR |
-#endif
 				    ACL_BIT_MIME | ACL_BIT_NOTSMTP |
 				    ACL_BIT_NOTSMTP_START),
   },
@@ -351,9 +331,7 @@ static condition_def conditions[] = {
 #ifdef WITH_CONTENT_SCAN
   [ACLC_SPAM] =			{ US"spam",		ACD_EXP,
 				  PERMITTED(ACL_BIT_DATA |
-# ifndef DISABLE_PRDR
 				  ACL_BIT_PRDR |
-# endif
 				  ACL_BIT_NOTSMTP),
   },
 #endif
@@ -531,9 +509,7 @@ static control_def controls_list[] = {
 [CONTROL_DKIM_VERIFY] =
   { US"dkim_disable_verify",     FALSE,
 				  ACL_BIT_DATA | ACL_BIT_NOTSMTP |
-# ifndef DISABLE_PRDR
 				  ACL_BIT_PRDR |
-# endif
 				  ACL_BIT_NOTSMTP_START
   },
 #endif
@@ -567,9 +543,7 @@ static control_def controls_list[] = {
 	  (unsigned)
 	  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
 	    ACL_BIT_PREDATA | ACL_BIT_DATA |
-#ifndef DISABLE_PRDR
 	    ACL_BIT_PRDR |
-#endif
 	    ACL_BIT_MIME)
   },
 [CONTROL_FAKEREJECT] =
@@ -577,9 +551,7 @@ static control_def controls_list[] = {
 	  (unsigned)
 	  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
 	    ACL_BIT_PREDATA | ACL_BIT_DATA |
-#ifndef DISABLE_PRDR
 	  ACL_BIT_PRDR |
-#endif
 	  ACL_BIT_MIME)
   },
 [CONTROL_FREEZE] =
@@ -2509,7 +2481,7 @@ BOOL leaky = FALSE, strict = FALSE, readonly = FALSE;
 BOOL noupdate = FALSE, badacl = FALSE;
 int mode = RATE_PER_WHAT;
 int old_pool, rc;
-tree_node **anchor, *t;
+tree_node ** anchor = NULL, * t;
 open_db dbblock, *dbm;
 int dbdb_size;
 dbdata_ratelimit *dbd;
@@ -2680,7 +2652,6 @@ else switch(mode)
     anchor = &ratelimiters_cmd;
     break;
   default:
-    anchor = NULL; /* silence an "unused" complaint */
     log_write(0, LOG_MAIN|LOG_PANIC_DIE,
       "internal ACL error: unknown ratelimit mode %d", mode);
     /*NOTREACHED*/
@@ -5215,7 +5186,7 @@ acl_standalone_setvar(const uschar * s, BOOL taint)
 {
 acl_condition_block * cond = store_get(sizeof(acl_condition_block), GET_UNTAINTED);
 uschar * errstr = NULL, * log_msg = NULL;
-BOOL endpass_seen;
+BOOL endpass_seen = FALSE;
 int e;
 
 cond->next = NULL;

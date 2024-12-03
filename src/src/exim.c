@@ -1393,7 +1393,7 @@ DEBUG(D_any)
 # ifdef __VERSION__
   g = string_fmt_append(g, "Compiler: GCC [%s]\n", __VERSION__);
 # else
-  g = string_fmt_append(g, "Compiler: GCC [%s]\n", "? unknown version ?";
+  g = string_fmt_append(g, "Compiler: GCC [%s]\n", "? unknown version ?");
 # endif
 #else
   g = string_cat(g, US"Compiler: <unknown>\n");
