@@ -743,8 +743,9 @@ if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrncpy", CUS func, lin
 return US strncpy(CS dst, CCS src, n);
 }
 #if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
-static inline uschar * Ustpcpy(uschar * dst, const uschar * src)
+static inline uschar * __Ustpcpy(uschar * dst, const uschar * src, const char * func, int line)
 {
+if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustpcpy", CUS func, line);
 return US stpcpy(CS dst, CCS src);
 }
 #endif

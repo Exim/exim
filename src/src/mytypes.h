@@ -147,6 +147,7 @@ functions that are called quite often; for other calls to external libraries
 # define Ustrcpy(s,t)       __Ustrcpy(s, CUS(t), __FUNCTION__, __LINE__)
 # define Ustrncat(s,t,n)    __Ustrncat(s, CUS(t), n, __FUNCTION__, __LINE__)
 # define Ustrncpy(s,t,n)    __Ustrncpy(s, CUS(t), n, __FUNCTION__, __LINE__)
+# define Ustpcpy(s,t)       __Ustpcpy(s, CUS(t), __FUNCTION__, __LINE__)
 #endif
 
 #endif
