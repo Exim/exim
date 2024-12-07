@@ -87,6 +87,9 @@ JH/16 Bug 3124: Fix theoretical crash in received connection, triggerable by a
       issue was in the coding for logging preceding that refusal.  If coredumps
       were enabled (not common), an attack could cause filesystem space usage.
 
+JH/17 Bug 3126: Fix build error in the ibase lookup.  Find & fix by
+      Andrew Aitchison.
+
 Exim version 4.98
 -----------------
 

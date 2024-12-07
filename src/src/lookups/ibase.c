@@ -544,7 +544,7 @@ static lookup_info _lookup_info = {
   .name = US"ibase",			/* lookup name */
   .type = lookup_querystyle,		/* query-style lookup */
   .open = ibase_open,			/* open function */
-  .check NULL,				/* no check function */
+  .check = NULL,			/* no check function */
   .find = ibase_find,			/* find function */
   .close = NULL,			/* no close function */
   .tidy = ibase_tidy,			/* tidy function */
