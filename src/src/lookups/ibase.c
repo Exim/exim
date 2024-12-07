@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2022 */
+/* Copyright (c) The Exim Maintainers 2020 - 2024 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -26,6 +26,11 @@ typedef struct ibase_connection {
 static ibase_connection *ibase_connections = NULL;
 
 
+#if defined(_LP64) || defined(__LP64__) || defined(__arch64__) || defined(_WIN64)
+# define ISC_NULL 0
+#else
+# define ISC_NULL NULL
+#endif
 
 /*************************************************
 *              Open entry point                  *
@@ -46,44 +51,48 @@ return (void *) (1);        /* Just return something non-null */
 
 /* See local README for interface description. */
 
-static void ibase_tidy(void)
+static void
+ibase_tidy(void)
 {
-    ibase_connection *cn;
-    ISC_STATUS status[20];
+ibase_connection *cn;
+ISC_STATUS status[20];
 
-    while ((cn = ibase_connections) != NULL) {
-        ibase_connections = cn->next;
-        DEBUG(D_lookup) debug_printf_indent("close Interbase connection: %s\n",
-                                     cn->server);
-        isc_commit_transaction(status, &cn->transh);
-        isc_detach_database(status, &cn->dbh);
-    }
+while ((cn = ibase_connections))
+  {
+  ibase_connections = cn->next;
+  DEBUG(D_lookup) debug_printf_indent("close Interbase connection: %s\n",
+			       cn->server);
+  isc_commit_transaction(status, &cn->transh);
+  isc_detach_database(status, &cn->dbh);
+  }
 }
 
-static int fetch_field(char *buffer, int buffer_size, XSQLVAR * var)
+static int
+fetch_field(uschar * buffer, int buffer_size, XSQLVAR * var)
 {
-    if (buffer_size < var->sqllen)
-        return 0;
+if (buffer_size < var->sqllen)
+    return 0;
 
-    switch (var->sqltype & ~1) {
-    case SQL_VARYING:
-        strncpy(buffer, &var->sqldata[2], *(short *) var->sqldata);
-        return *(short *) var->sqldata;
-    case SQL_TEXT:
-        strncpy(buffer, var->sqldata, var->sqllen);
-        return var->sqllen;
-    case SQL_SHORT:
-        return sprintf(buffer, "%d", *(short *) var->sqldata);
-    case SQL_LONG:
-        return sprintf(buffer, "%ld", *(ISC_LONG *) var->sqldata);
-#ifdef SQL_INT64
-    case SQL_INT64:
-        return sprintf(buffer, "%lld", *(ISC_INT64 *) var->sqldata);
-#endif
-    default:
-        /* not implemented */
-        return 0;
-    }
+switch (var->sqltype & ~1)
+  {
+  case SQL_VARYING:
+      strncpy(CS buffer, &var->sqldata[2], *(short *) var->sqldata);
+      return *(short *) var->sqldata;
+  case SQL_TEXT:
+      strncpy(CS buffer, var->sqldata, var->sqllen);
+      return var->sqllen;
+  case SQL_SHORT:
+      return sprintf(CS buffer, "%d", *(short *) var->sqldata);
+  case SQL_LONG:
+      return sprintf(CS buffer, "%ld", *(ISC_LONG *) var->sqldata);
+  #ifdef SQL_INT64
+  case SQL_INT64:
+      return sprintf(CS buffer, "%lld", *(ISC_INT64 *) var->sqldata);
+  #endif
+  default:
+      /* not implemented */
+      return 0;
+  }
 }
 
 /*************************************************
@@ -108,19 +117,19 @@ Returns:       OK, FAIL, or DEFER
 */
 
 static int
-perform_ibase_search(uschar * query, uschar * server, uschar ** resultptr,
+perform_ibase_search(const uschar * query, uschar * server, uschar ** resultptr,
                      uschar ** errmsg, BOOL * defer_break)
 {
-isc_stmt_handle stmth = NULL;
+isc_stmt_handle stmth;
 XSQLDA *out_sqlda;
 XSQLVAR *var;
 int i;
 rmark reset_point;
 
-char buffer[256];
+uschar buffer[256];
 ISC_STATUS status[20], *statusp = status;
 
-gstring * result;
+gstring * result = NULL;
 int yield = DEFER;
 ibase_connection *cn;
 uschar *server_copy = NULL;
@@ -135,7 +144,7 @@ for (int i = 2; i > 0; i--)
   {
   uschar *pp = Ustrrchr(server, '|');
 
-  if (pp == NULL)
+  if (!pp)
     {
     *errmsg = string_sprintf("incomplete Interbase server data: %s",
 		       (i == 3) ? server : server_copy);
@@ -151,7 +160,7 @@ sdata[0] = server;          /* What's left at the start */
 
 /* See if we have a cached connection to the server */
 
-for (cn = ibase_connections; cn != NULL; cn = cn->next)
+for (cn = ibase_connections; cn; cn = cn->next)
   if (Ustrcmp(cn->server, server_copy) == 0)
     break;
 
@@ -163,7 +172,7 @@ if (cn)
 
   /* test if the connection is alive */
   if (isc_database_info(status, &cn->dbh, sizeof(db_info_options),
-	db_info_options, sizeof(buffer), buffer))
+	db_info_options, sizeof(buffer), CS buffer))
     {
     /* error occurred: assume connection is down */
     DEBUG(D_lookup)
@@ -180,17 +189,17 @@ else
   {
   cn = store_get(sizeof(ibase_connection), GET_UNTAINTED);
   cn->server = server_copy;
-  cn->dbh = NULL;
-  cn->transh = NULL;
+  cn->dbh = ISC_NULL;
+  cn->transh = ISC_NULL;
   cn->next = ibase_connections;
   ibase_connections = cn;
   }
 
 /* If no cached connection, we must set one up. */
 
-if (cn->dbh == NULL || cn->transh == NULL)
+if (!cn->dbh || !cn->transh)
   {
-  char *dpb;
+  uschar * dpb;
   short dpb_length;
   static char trans_options[] =
       { isc_tpb_version3, isc_tpb_read, isc_tpb_read_committed,
@@ -201,12 +210,12 @@ if (cn->dbh == NULL || cn->transh == NULL)
   dpb = buffer;
   *dpb++ = isc_dpb_version1;
   *dpb++ = isc_dpb_user_name;
-  *dpb++ = strlen(sdata[1]);
-  for (char * p = sdata[1]; *p;)
+  *dpb++ = Ustrlen(sdata[1]);
+  for (uschar * p = sdata[1]; *p;)
       *dpb++ = *p++;
   *dpb++ = isc_dpb_password;
-  *dpb++ = strlen(sdata[2]);
-  for (char * p = sdata[2]; *p;)
+  *dpb++ = Ustrlen(sdata[2]);
+  for (uschar * p = sdata[2]; *p;)
       *dpb++ = *p++;
   dpb_length = dpb - buffer;
 
@@ -215,10 +224,10 @@ if (cn->dbh == NULL || cn->transh == NULL)
 		   sdata[0], sdata[1]);
 
   /* Connect to the database */
-  if (isc_attach_database
-      (status, 0, sdata[0], &cn->dbh, dpb_length, buffer))
+  if (isc_attach_database(status, 0, CS sdata[0], &cn->dbh,
+			  dpb_length, CS buffer))
     {
-    isc_interprete(buffer, &statusp);
+    isc_interprete(CS buffer, &statusp);
     *errmsg =
 	string_sprintf("Interbase attach() failed: %s", buffer);
     *defer_break = FALSE;
@@ -226,14 +235,12 @@ if (cn->dbh == NULL || cn->transh == NULL)
     }
 
   /* Now start a read-only read-committed transaction */
-  if (isc_start_transaction
-      (status, &cn->transh, 1, &cn->dbh, sizeof(trans_options),
-       trans_options))
+  if (isc_start_transaction(status, &cn->transh, 1, &cn->dbh,
+			    sizeof(trans_options), trans_options))
     {
-    isc_interprete(buffer, &statusp);
+    isc_interprete(CS buffer, &statusp);
     isc_detach_database(status, &cn->dbh);
-    *errmsg =
-	string_sprintf("Interbase start_transaction() failed: %s",
+    *errmsg = string_sprintf("Interbase start_transaction() failed: %s",
 		       buffer);
     *defer_break = FALSE;
     goto IBASE_EXIT;
@@ -243,9 +250,8 @@ if (cn->dbh == NULL || cn->transh == NULL)
 /* Run the query */
 if (isc_dsql_allocate_statement(status, &cn->dbh, &stmth))
   {
-  isc_interprete(buffer, &statusp);
-  *errmsg =
-      string_sprintf("Interbase alloc_statement() failed: %s",
+  isc_interprete(CS buffer, &statusp);
+  *errmsg = string_sprintf("Interbase alloc_statement() failed: %s",
 		     buffer);
   *defer_break = FALSE;
   goto IBASE_EXIT;
@@ -257,14 +263,12 @@ out_sqlda = store_get(XSQLDA_LENGTH(1), GET_UNTAINTED);
 out_sqlda->version = SQLDA_VERSION1;
 out_sqlda->sqln = 1;
 
-if (isc_dsql_prepare
-    (status, &cn->transh, &stmth, 0, query, 1, out_sqlda))
+if (isc_dsql_prepare(status, &cn->transh, &stmth, 0, CCS query, 1, out_sqlda))
   {
-  isc_interprete(buffer, &statusp);
+  isc_interprete(CS buffer, &statusp);
   reset_point = store_reset(reset_point);
   out_sqlda = NULL;
-  *errmsg =
-      string_sprintf("Interbase prepare_statement() failed: %s",
+  *errmsg = string_sprintf("Interbase prepare_statement() failed: %s",
 		     buffer);
   *defer_break = FALSE;
   goto IBASE_EXIT;
@@ -277,7 +281,7 @@ if (out_sqlda->sqln < out_sqlda->sqld)
   if (isc_dsql_describe
       (status, &stmth, out_sqlda->version, new_sqlda))
     {
-    isc_interprete(buffer, &statusp);
+    isc_interprete(CS buffer, &statusp);
     isc_dsql_free_statement(status, &stmth, DSQL_drop);
     reset_point = store_reset(reset_point);
     out_sqlda = NULL;
@@ -341,7 +345,7 @@ for (i = 0, var = out_sqlda->sqlvar; i < out_sqlda->sqld; i++, var++)
 if (isc_dsql_execute
     (status, &cn->transh, &stmth, out_sqlda->version, NULL))
   {
-  isc_interprete(buffer, &statusp);
+  isc_interprete(CS buffer, &statusp);
   *errmsg = string_sprintf("Interbase describe_statement() failed: %s",
 		     buffer);
   isc_dsql_free_statement(status, &stmth, DSQL_drop);
@@ -354,7 +358,7 @@ while (isc_dsql_fetch(status, &stmth, out_sqlda->version, out_sqlda) != 100L)
   /* check if an error occurred */
   if (status[0] & status[1])
     {
-    isc_interprete(buffer, &statusp);
+    isc_interprete(CS buffer, &statusp);
     *errmsg =
 	string_sprintf("Interbase fetch() failed: %s", buffer);
     isc_dsql_free_statement(status, &stmth, DSQL_drop);
@@ -371,8 +375,7 @@ while (isc_dsql_fetch(status, &stmth, out_sqlda->version, out_sqlda) != 100L)
     {
     if (out_sqlda->sqlvar[0].sqlind == NULL || *out_sqlda->sqlvar[0].sqlind != -1)     /* NULL value yields nothing */
       result = string_catn(result, US buffer,
-		       fetch_field(buffer, sizeof(buffer),
-				   &out_sqlda->sqlvar[0]));
+		   fetch_field(buffer, sizeof(buffer), &out_sqlda->sqlvar[0]));
     }
 
   else
@@ -395,8 +398,8 @@ while (isc_dsql_fetch(status, &stmth, out_sqlda->version, out_sqlda) != 100L)
 	for (int j = 0; j < len; j++)
 	  {
 	  if (buffer[j] == '\"' || buffer[j] == '\\')
-	      result = string_cat(result, US "\\", 1);
-	  result = string_cat(result, US buffer + j, 1);
+	      result = string_catn(result, US "\\", 1);
+	  result = string_catn(result, US buffer + j, 1);
 	  }
 	result = string_catn(result, US "\"", 1);
 	}
@@ -452,16 +455,16 @@ arguments are not used. Loop through a list of servers while the query is
 deferred with a retryable error. */
 
 static int
-ibase_find(void * handle, const uschar * filename, uschar * query, int length,
-  uschar ** result, uschar ** errmsg, uint * do_cache, const uschar * opts)
+ibase_find(void * handle, const uschar * filename, const uschar * query,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
-int sep = 0;
-uschar *server;
-uschar *list = ibase_servers;
+uschar * server;
+const uschar * list = ibase_servers;
 
 DEBUG(D_lookup) debug_printf_indent("Interbase query: %s\n", query);
 
-while ((server = string_nextinlist(&list, &sep, NULL, 0)))
+for (int sep = 0; server = string_nextinlist(&list, &sep, NULL, 0); )
   {
   BOOL defer_break = FALSE;
   int rc = perform_ibase_search(query, server, result, errmsg, &defer_break);
@@ -511,7 +514,7 @@ if (opt)
 while ((c = *t++))
   if (c == '\'') count++;
 
-t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx, US(ibase));
+t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx, US"ibase");
 
 while ((c = *s++))
   if (c == '\'') { *t++ = '\''; *t++ = '\''; }
