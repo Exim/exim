@@ -2084,6 +2084,132 @@ if (log_reject_target)
 }
 
 
+
+
+/* IP options: log and reject the connection.
+
+Deal with any IP options that are set. On the systems I have looked at,
+the value of MAX_IPOPTLEN has been 40, meaning that there should never be
+more logging data than will fit in big_buffer. Nevertheless, after somebody
+questioned this code, I've added in some paranoid checking.
+
+Given the disuse of options on the internet as of 2024 I'm tempted to
+drop the detailed parsing and logging. */
+
+#ifdef GLIBC_IP_OPTIONS
+# if (!defined __GLIBC__) || (__GLIBC__ < 2)
+#  define OPTSTYLE 1
+# else
+#  define OPTSTYLE 2
+# endif
+#elif defined DARWIN_IP_OPTIONS
+# define OPTSTYLE 2
+#else
+# define OPTSTYLE 3
+# endif
+
+#if OPTSTYLE == 1
+# define EXIM_IP_OPT_T	struct ip_options
+# define OPTSTART	(ipopt->__data)
+#elif OPTSTYLE == 2
+# define EXIM_IP_OPT_T	struct ip_opts
+# define OPTSTART	(ipopt->ip_opts);
+#else
+# define EXIM_IP_OPT_T	struct ipoption
+# define OPTSTART	(ipopt->ipopt_list);
+#endif
+
+static BOOL
+smtp_in_reject_options(EXIM_IP_OPT_T * ipopt, EXIM_SOCKLEN_T optlen)
+{
+uschar * p, * pend = big_buffer + big_buffer_size;
+uschar * adptr;
+int optcount, sprint_len;
+struct in_addr addr;
+uschar * optstart = US OPTSTART;
+
+DEBUG(D_receive) debug_printf("IP options exist\n");
+
+p = Ustpcpy(big_buffer, "IP options on incoming call:");
+
+for (uschar * opt = optstart; opt && opt < US (ipopt) + optlen; )
+  switch (*opt)
+    {
+    case IPOPT_EOL:
+      opt = NULL;
+      break;
+
+    case IPOPT_NOP:
+      opt++;
+      break;
+
+    case IPOPT_SSRR:
+    case IPOPT_LSRR:
+      if (!
+# if OPTSTYLE == 1
+	   string_format(p, pend-p, " %s [@%s%n",
+	     *opt == IPOPT_SSRR ? "SSRR" : "LSRR",
+	     inet_ntoa(*(struct in_addr *)&ipopt->faddr),
+	     &sprint_len)
+# elif OPTSTYLE == 2
+	   string_format(p, pend-p, " %s [@%s%n",
+	     *opt == IPOPT_SSRR ? "SSRR" : "LSRR",
+	     inet_ntoa(ipopt->ip_dst),
+	     &sprint_len)
+# else
+	   string_format(p, pend-p, " %s [@%s%n",
+	     *opt == IPOPT_SSRR ? "SSRR" : "LSRR",
+	     inet_ntoa(ipopt->ipopt_dst),
+	     &sprint_len)
+# endif
+	  )
+	opt = NULL;
+      else
+	{
+	p += sprint_len;
+	optcount = (opt[1] - 3) / sizeof(struct in_addr);
+	adptr = opt + 3;
+	while (optcount-- > 0)
+	  {
+	  memcpy(&addr, adptr, sizeof(addr));
+	  if (!string_format(p, pend - p - 1, "%s%s%n",
+		optcount == 0 ? ":" : "@", inet_ntoa(addr), &sprint_len))
+	    { opt = NULL; goto bad_srr; }
+	  p += sprint_len;
+	  adptr += sizeof(struct in_addr);
+	  }
+	*p++ = ']';
+	opt += opt[1];
+	}
+bad_srr:    break;
+
+    default:
+      if (pend - p < 4 + 3*opt[1])
+	opt = NULL;
+      else
+	{
+	p = Ustpcpy(p, "[ ");
+	for (int i = 0; i < opt[1]; i++)
+	  p += sprintf(CS p, "%2.2x ", opt[i]);
+	*p++ = ']';
+	opt += opt[1];
+	}
+      break;
+    }
+
+*p = '\0';
+log_write(0, LOG_MAIN, "%s", big_buffer);
+
+/* Refuse any call with IP options. This is what tcpwrappers 7.5 does. */
+
+log_write(0, LOG_MAIN|LOG_REJECT,
+  "connection from %s refused (IP options)", host_and_ident(FALSE));
+
+smtp_printf("554 SMTP service not available\r\n", SP_NO_MORE);
+return FALSE;
+}
+
+
 /*************************************************
 *          Start an SMTP session                 *
 *************************************************/
@@ -2262,31 +2388,15 @@ if (!f.sender_host_unknown)
 
 #if !HAVE_IPV6 && !defined(NO_IP_OPTIONS)
 
-# ifdef GLIBC_IP_OPTIONS
-#  if (!defined __GLIBC__) || (__GLIBC__ < 2)
-#   define OPTSTYLE 1
-#  else
-#   define OPTSTYLE 2
-#  endif
-# elif defined DARWIN_IP_OPTIONS
-# define OPTSTYLE 2
-# else
-# define OPTSTYLE 3
-# endif
-
   if (!host_checking && !f.sender_host_notsocket)
     {
 # if OPTSTYLE == 1
-    EXIM_SOCKLEN_T optlen = sizeof(struct ip_options) + MAX_IPOPTLEN;
-    struct ip_options *ipopt = store_get(optlen, GET_UNTAINTED);
-# elif OPTSTYLE == 2
-    struct ip_opts ipoptblock;
-    struct ip_opts *ipopt = &ipoptblock;
-    EXIM_SOCKLEN_T optlen = sizeof(ipoptblock);
+    EXIM_SOCKLEN_T optlen = sizeof(EXIM_IP_OPT_T) + MAX_IPOPTLEN;
+    EXIM_IP_OPT_T * ipopt = store_get(optlen, GET_UNTAINTED);
 # else
-    struct ipoption ipoptblock;
-    struct ipoption *ipopt = &ipoptblock;
-    EXIM_SOCKLEN_T optlen = sizeof(ipoptblock);
+    EXIM_IP_OPT_T ipoptblock;
+    EXIM_IP_OPT_T * ipopt = &ipoptblock;
+    EXIM_SOCKLEN_T optlen = sizeof(EXIM_IP_OPT_T);
 # endif
 
     /* Occasional genuine failures of getsockopt() have been seen - for
@@ -2298,7 +2408,7 @@ if (!f.sender_host_unknown)
 
     DEBUG(D_receive) debug_printf("checking for IP options\n");
 
-    if (getsockopt(fileno(smtp_out), IPPROTO_IP, IP_OPTIONS, US (ipopt),
+    if (getsockopt(fileno(smtp_out), IPPROTO_IP, IP_OPTIONS, US ipopt,
           &optlen) < 0)
       {
       if (errno != ENOPROTOOPT)
@@ -2316,101 +2426,7 @@ if (!f.sender_host_unknown)
     questioned this code, I've added in some paranoid checking. */
 
     else if (optlen > 0)
-      {
-      uschar * p = big_buffer, * pend = big_buffer + big_buffer_size;
-      uschar * adptr;
-      int optcount, sprint_len;
-      struct in_addr addr;
-
-# if OPTSTYLE == 1
-      uschar * optstart = US (ipopt->__data);
-# elif OPTSTYLE == 2
-      uschar * optstart = US (ipopt->ip_opts);
-# else
-      uschar * optstart = US (ipopt->ipopt_list);
-# endif
-
-      DEBUG(D_receive) debug_printf("IP options exist\n");
-
-      Ustrcpy(p, "IP options on incoming call:");
-      p += Ustrlen(p);
-
-      for (uschar * opt = optstart; opt && opt < US (ipopt) + optlen; )
-        switch (*opt)
-          {
-          case IPOPT_EOL:
-	    opt = NULL;
-	    break;
-
-          case IPOPT_NOP:
-	    opt++;
-	    break;
-
-          case IPOPT_SSRR:
-          case IPOPT_LSRR:
-	    if (!
-# if OPTSTYLE == 1
-		 string_format(p, pend-p, " %s [@%s%n",
-		   *opt == IPOPT_SSRR ? "SSRR" : "LSRR",
-		   inet_ntoa(*(struct in_addr *)&ipopt->faddr),
-		   &sprint_len)
-# elif OPTSTYLE == 2
-		 string_format(p, pend-p, " %s [@%s%n",
-		   *opt == IPOPT_SSRR ? "SSRR" : "LSRR",
-		   inet_ntoa(ipopt->ip_dst),
-		   &sprint_len)
-# else
-		 string_format(p, pend-p, " %s [@%s%n",
-		   *opt == IPOPT_SSRR ? "SSRR" : "LSRR",
-		   inet_ntoa(ipopt->ipopt_dst),
-		   &sprint_len)
-# endif
-	        )
-	      opt = NULL;
-	    else
-	      {
-	      p += sprint_len;
-	      optcount = (opt[1] - 3) / sizeof(struct in_addr);
-	      adptr = opt + 3;
-	      while (optcount-- > 0)
-		{
-		memcpy(&addr, adptr, sizeof(addr));
-		if (!string_format(p, pend - p - 1, "%s%s%n",
-		      optcount == 0 ? ":" : "@", inet_ntoa(addr), &sprint_len))
-		  { opt = NULL; goto bad_srr; }
-		p += sprint_len;
-		adptr += sizeof(struct in_addr);
-		}
-	      *p++ = ']';
-	      opt += opt[1];
-	      }
-bad_srr:    break;
-
-          default:
-	    if (pend - p < 4 + 3*opt[1])
-	      opt = NULL;
-	    else
-	      {
-	      p = Ustpcpy(p, "[ ");
-	      for (int i = 0; i < opt[1]; i++)
-		p += sprintf(CS p, "%2.2x ", opt[i]);
-	      *p++ = ']';
-	      opt += opt[1];
-	      }
-	    break;
-          }
-
-      *p = '\0';
-      log_write(0, LOG_MAIN, "%s", big_buffer);
-
-      /* Refuse any call with IP options. This is what tcpwrappers 7.5 does. */
-
-      log_write(0, LOG_MAIN|LOG_REJECT,
-        "connection from %s refused (IP options)", host_and_ident(FALSE));
-
-      smtp_printf("554 SMTP service not available\r\n", SP_NO_MORE);
-      return FALSE;
-      }
+      return smtp_in_reject_options(ipopt);
 
     /* Length of options = 0 => there are no options */
 
