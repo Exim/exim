@@ -460,6 +460,8 @@ LOOKUP_DNSDB=yes
 # LOOKUP_NWILDLSEARCH=yes
 
 
+# For IBASE you may need:
+#LIBS += -lfbclient
 
 #------------------------------------------------------------------------------
 # If you have set LOOKUP_LDAP, you should set LDAP_LIB_TYPE to indicate

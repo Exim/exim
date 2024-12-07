@@ -71,7 +71,7 @@ static int
 fetch_field(uschar * buffer, int buffer_size, XSQLVAR * var)
 {
 if (buffer_size < var->sqllen)
-    return 0;
+  return 0;
 
 switch (var->sqltype & ~1)
   {
@@ -142,12 +142,12 @@ has the password removed. This copy is also used for debugging output. */
 
 for (int i = 2; i > 0; i--)
   {
-  uschar *pp = Ustrrchr(server, '|');
+  uschar * pp = Ustrrchr(server, '|');
 
   if (!pp)
     {
     *errmsg = string_sprintf("incomplete Interbase server data: %s",
-		       (i == 3) ? server : server_copy);
+		       i == 3 ? server : server_copy);
     *defer_break = TRUE;
     return DEFER;
     }
@@ -176,13 +176,12 @@ if (cn)
     {
     /* error occurred: assume connection is down */
     DEBUG(D_lookup)
-	debug_printf
-	("Interbase cleaning up cached connection: %s\n",
-	 cn->server);
+      debug_printf("Interbase cleaning up cached connection: %s\n", cn->server);
     isc_detach_database(status, &cn->dbh);
     }
   else
-    DEBUG(D_lookup) debug_printf_indent("Interbase using cached connection for %s\n",
+    DEBUG(D_lookup)
+      debug_printf_indent("Interbase using cached connection for %s\n",
 		     server_copy);
   }
 else
@@ -203,20 +202,17 @@ if (!cn->dbh || !cn->transh)
   short dpb_length;
   static char trans_options[] =
       { isc_tpb_version3, isc_tpb_read, isc_tpb_read_committed,
-      isc_tpb_rec_version
-  };
+      isc_tpb_rec_version };
 
   /* Construct the database parameter buffer. */
   dpb = buffer;
   *dpb++ = isc_dpb_version1;
   *dpb++ = isc_dpb_user_name;
   *dpb++ = Ustrlen(sdata[1]);
-  for (uschar * p = sdata[1]; *p;)
-      *dpb++ = *p++;
+  for (uschar * p = sdata[1]; *p;) *dpb++ = *p++;
   *dpb++ = isc_dpb_password;
   *dpb++ = Ustrlen(sdata[2]);
-  for (uschar * p = sdata[2]; *p;)
-      *dpb++ = *p++;
+  for (uschar * p = sdata[2]; *p;) *dpb++ = *p++;
   dpb_length = dpb - buffer;
 
   DEBUG(D_lookup)
@@ -228,8 +224,7 @@ if (!cn->dbh || !cn->transh)
 			  dpb_length, CS buffer))
     {
     isc_interprete(CS buffer, &statusp);
-    *errmsg =
-	string_sprintf("Interbase attach() failed: %s", buffer);
+    *errmsg = string_sprintf("Interbase attach() failed: %s", buffer);
     *defer_break = FALSE;
     goto IBASE_EXIT;
     }
@@ -251,8 +246,7 @@ if (!cn->dbh || !cn->transh)
 if (isc_dsql_allocate_statement(status, &cn->dbh, &stmth))
   {
   isc_interprete(CS buffer, &statusp);
-  *errmsg = string_sprintf("Interbase alloc_statement() failed: %s",
-		     buffer);
+  *errmsg = string_sprintf("Interbase alloc_statement() failed: %s", buffer);
   *defer_break = FALSE;
   goto IBASE_EXIT;
   }
@@ -268,8 +262,7 @@ if (isc_dsql_prepare(status, &cn->transh, &stmth, 0, CCS query, 1, out_sqlda))
   isc_interprete(CS buffer, &statusp);
   reset_point = store_reset(reset_point);
   out_sqlda = NULL;
-  *errmsg = string_sprintf("Interbase prepare_statement() failed: %s",
-		     buffer);
+  *errmsg = string_sprintf("Interbase prepare_statement() failed: %s", buffer);
   *defer_break = FALSE;
   goto IBASE_EXIT;
   }
@@ -342,12 +335,10 @@ for (i = 0, var = out_sqlda->sqlvar; i < out_sqlda->sqld; i++, var++)
   }
 
 /* finally, we're ready to execute the statement */
-if (isc_dsql_execute
-    (status, &cn->transh, &stmth, out_sqlda->version, NULL))
+if (isc_dsql_execute(status, &cn->transh, &stmth, out_sqlda->version, NULL))
   {
   isc_interprete(CS buffer, &statusp);
-  *errmsg = string_sprintf("Interbase describe_statement() failed: %s",
-		     buffer);
+  *errmsg = string_sprintf("Interbase describe_statement() failed: %s", buffer);
   isc_dsql_free_statement(status, &stmth, DSQL_drop);
   *defer_break = FALSE;
   goto IBASE_EXIT;
@@ -359,8 +350,7 @@ while (isc_dsql_fetch(status, &stmth, out_sqlda->version, out_sqlda) != 100L)
   if (status[0] & status[1])
     {
     isc_interprete(CS buffer, &statusp);
-    *errmsg =
-	string_sprintf("Interbase fetch() failed: %s", buffer);
+    *errmsg = string_sprintf("Interbase fetch() failed: %s", buffer);
     isc_dsql_free_statement(status, &stmth, DSQL_drop);
     *defer_break = FALSE;
     goto IBASE_EXIT;
@@ -504,25 +494,20 @@ Returns:     the processed string or NULL for a bad option
 static uschar *
 ibase_quote(uschar * s, uschar * opt, unsigned idx)
 {
-int c;
-int count = 0;
-uschar * t = s, * quoted;
+gstring * quoted = store_get_quoted(1, s, idx, US"ibase");
 
 if (opt)
   return NULL;            /* No options recognized */
 
-while ((c = *t++))
-  if (c == '\'') count++;
-
-t = quoted = store_get_quoted(Ustrlen(s) + count + 1, s, idx, US"ibase");
-
-while ((c = *s++))
-  if (c == '\'') { *t++ = '\''; *t++ = '\''; }
-  else *t++ = c;
-
-*t = 0;
-return quoted;
+for (uschar c; c = *s; s++)
+  {
+  if (c == '\'') quoted = string_catn(quoted, US"\\", 1);
+  quoted = string_catn(quoted, s, 1);
+  }
+gstring_release_unused(quoted);
+return(string_from_gstring(quoted));
 }
+
 
 
 /*************************************************
