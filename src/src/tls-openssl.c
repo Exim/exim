@@ -92,6 +92,9 @@ change this guard and punt the issue for a while longer. */
     && (OPENSSL_VERSION_NUMBER & 0x0000ff000L) >= 0x000002000L
 #  define EXIM_HAVE_OPENSSL_CHECKHOST
 # endif
+# if OPENSSL_VERSION_NUMBER <  0x030200020L
+#  define EXIM_OPENSSL_BOGUS_SERVER_ALPN	/*XXX when was this fixed? */
+# endif
 #endif
 
 #if LIBRESSL_VERSION_NUMBER >= 0x3040000fL
@@ -2382,6 +2385,9 @@ if (  inlen > 1		/* at least one name */
     if (Ustrncmp(in+1, name, in[0]) == 0)
       {
       *out = in+1;			/* we checked for exactly one, so can just point to it */
+#ifndef EXIM_OPENSSL_BOGUS_SERVER_ALPN
+      inlen--;
+#endif
       *outlen = inlen;
       return SSL_TLSEXT_ERR_OK;		/* use ALPN */
       }
@@ -2400,6 +2406,10 @@ for (int pos = 0, siz; pos < inlen; pos += siz+1)
   }
 log_write(0, LOG_MAIN, "TLS ALPN (%Y) rejected", g);
 gstring_release_unused(g);
+
+/* We want a connection-fatal result.
+Do not use the documented SSL_TLSEXT_ERR_NOACK return. */
+
 return SSL_TLSEXT_ERR_ALERT_FATAL;
 }
 #endif	/* EXIM_HAVE_ALPN */
@@ -3732,7 +3742,11 @@ else DEBUG(D_tls)
   unsigned len;
   SSL_get0_alpn_selected(ssl, &name, &len);
   if (len && name)
+#ifdef EXIM_OPENSSL_BOGUS_SERVER_ALPN
     debug_printf("ALPN negotiated: '%.*s'\n", (int)*name, name+1);
+#else
+    debug_printf("ALPN negotiated: '%.*s'\n", len, name);
+#endif
   else
     debug_printf("ALPN: no protocol negotiated\n");
   }
