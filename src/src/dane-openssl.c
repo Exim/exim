@@ -38,14 +38,16 @@
 # else
 					/* Older OpenSSL */
 #  define EXIM_TRANSPARENT_CTX
+#  define EXIM_NEED_CRYPTO_INIT
 # endif
 
 #else					/* LibreSSL */
 # if LIBRESSL_VERSION_NUMBER >= 0x3050000fL
 #  define EXIM_OPAQUE_X509		/* Exact version number uncertain */
 #  define EXIM_NO_NEED_SHA2_REGISTER
+# endif
 
-# elif LIBRESSL_VERSION_NUMBER >= 0x2090000fL
+# if LIBRESSL_VERSION_NUMBER >= 0x2090000fL
     /* LibreSSL 2.9.0 and later - 2.9.0 has removed a number of macros ... */
 #  define EXIM_HAVE_ASN1_MACROS
 
@@ -70,7 +72,9 @@
 # define ASN1_STRING_get0_data	ASN1_STRING_data
 # define X509_getm_notBefore	X509_get_notBefore
 # define X509_getm_notAfter	X509_get_notAfter
+#endif
 
+#ifdef EXIM_NEED_CRYPTO_INIT
 # define CRYPTO_ONCE_STATIC_INIT 0
 # define CRYPTO_THREAD_run_once	 run_once
 typedef int CRYPTO_ONCE;
@@ -379,13 +383,12 @@ ASN1_OCTET_STRING *id;
 unsigned char c = 0;
 int ret = 0;
 
-/*
- * 0 will never be our subject keyid from a SHA-1 hash, but it could be
- * our subject keyid if forced from child's akid.  If so, set our
- * authority keyid to 1.  This way we are never self-signed, and thus
- * exempt from any potential (off by default for now in OpenSSL)
- * self-signature checks!
- */
+/* 0 will never be our subject keyid from a SHA-1 hash, but it could be
+our subject keyid if forced from child's akid.  If so, set our
+authority keyid to 1.  This way we are never self-signed, and thus
+exempt from any potential (off by default for now in OpenSSL)
+self-signature checks! */
+
 id =  akid && akid->keyid ? akid->keyid : 0;
 if (id && ASN1_STRING_length(id) == 1 && *ASN1_STRING_get0_data(id) == c)
   c = 1;
