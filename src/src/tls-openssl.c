@@ -99,6 +99,7 @@ change this guard and punt the issue for a while longer. */
 
 #if LIBRESSL_VERSION_NUMBER >= 0x3040000fL
 # define EXIM_HAVE_OPENSSL_CIPHER_GET_ID
+# define OPENSSL_AUTO_SHA256
 #endif
 #if LIBRESSL_VERSION_NUMBER >= 0x3050000fL
 # define EXIM_HAVE_OPENSSL_OCSP_RESP_GET0_CERTS

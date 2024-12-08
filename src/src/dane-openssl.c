@@ -2,7 +2,7 @@
  *  Author: Viktor Dukhovni
  *  License: THIS CODE IS IN THE PUBLIC DOMAIN.
  *
- * Copyright (c) The Exim Maintainers 2014 - 2019
+ * Copyright (c) The Exim Maintainers 2014 - 2024
  */
 #include <stdio.h>
 #include <string.h>
@@ -22,22 +22,40 @@
 # error "OpenSSL 1.0.0 or higher required"
 #endif
 
-#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+# define X509_up_ref(x) CRYPTO_add(&((x)->references), 1, CRYPTO_LOCK_X509)
+#endif
+#if defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER < 0x3050000fL
+/* Exact version number uncertain */
 # define X509_up_ref(x) CRYPTO_add(&((x)->references), 1, CRYPTO_LOCK_X509)
 #endif
 
-/* LibreSSL 2.9.0 and later - 2.9.0 has removed a number of macros ... */
-#ifdef LIBRESSL_VERSION_NUMBER
-# if LIBRESSL_VERSION_NUMBER >= 0x2090000fL
+#ifndef LIBRESSL_VERSION_NUMBER		/* OpenSSL */
+# if OPENSSL_VERSION_NUMBER >= 0x10100000L
+					/* Newer OpenSSL */
 #  define EXIM_HAVE_ASN1_MACROS
+#  define EXIM_OPAQUE_X509
+# else
+					/* Older OpenSSL */
+#  define EXIM_TRANSPARENT_CTX
+# endif
+
+#else					/* LibreSSL */
+# if LIBRESSL_VERSION_NUMBER >= 0x3050000fL
+#  define EXIM_OPAQUE_X509		/* Exact version number uncertain */
+#  define EXIM_NO_NEED_SHA2_REGISTER
+
+# elif LIBRESSL_VERSION_NUMBER >= 0x2090000fL
+    /* LibreSSL 2.9.0 and later - 2.9.0 has removed a number of macros ... */
+#  define EXIM_HAVE_ASN1_MACROS
+
+# else
+#  define EXIM_TRANSPARENT_CTX
 # endif
 #endif
-/* OpenSSL */
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER)
-# define EXIM_HAVE_ASN1_MACROS
-# define EXIM_OPAQUE_X509
-/* Older OpenSSL and all LibreSSL */
-#else
+
+#ifdef EXIM_TRANSPARENT_CTX
+/* Older OpenSSL and LibreSSL */
 # define X509_STORE_CTX_get_verify(ctx)		(ctx)->verify
 # define X509_STORE_CTX_get_verify_cb(ctx)	(ctx)->verify_cb
 # define X509_STORE_CTX_get0_cert(ctx)		(ctx)->cert
@@ -1621,10 +1639,8 @@ return -1;
 static void
 dane_init(void)
 {
-/*
- * Store library id in zeroth function slot, used to locate the library
- * name.  This must be done before we load the error strings.
- */
+/* Store library id in zeroth function slot, used to locate the library
+name.  This must be done before we load the error strings.  */
 err_lib_dane = ERR_get_next_error_library();
 
 #ifndef OPENSSL_NO_ERR
@@ -1636,24 +1652,23 @@ if (err_lib_dane > 0)
   }
 #endif
 
-/*
- * Register SHA-2 digests, if implemented and not already registered.
- */
-#if defined(LN_sha256) && defined(NID_sha256) && !defined(OPENSSL_NO_SHA256)
+#ifndef EXIM_NO_NEED_SHA2_REGISTER
+/* Register SHA-2 digests, if implemented and not already registered.  */
+
+# if defined(LN_sha256) && defined(NID_sha256) && !defined(OPENSSL_NO_SHA256)
 if (!EVP_get_digestbyname(LN_sha224)) EVP_add_digest(EVP_sha224());
 if (!EVP_get_digestbyname(LN_sha256)) EVP_add_digest(EVP_sha256());
-#endif
-#if defined(LN_sha512) && defined(NID_sha512) && !defined(OPENSSL_NO_SHA512)
+# endif
+# if defined(LN_sha512) && defined(NID_sha512) && !defined(OPENSSL_NO_SHA512)
 if (!EVP_get_digestbyname(LN_sha384)) EVP_add_digest(EVP_sha384());
 if (!EVP_get_digestbyname(LN_sha512)) EVP_add_digest(EVP_sha512());
+# endif
 #endif
 
-/*
- * Register an SSL index for the connection-specific ssl_dane structure.
- * Using a separate index makes it possible to add DANE support to
- * existing OpenSSL releases that don't have a suitable pointer in the
- * SSL structure.
- */
+/* Register an SSL index for the connection-specific ssl_dane structure.
+Using a separate index makes it possible to add DANE support to existing OpenSSL
+releases that don't have a suitable pointer in the SSL structure. */
+
 dane_idx = SSL_get_ex_new_index(0, 0, 0, 0, 0);
 }
 
