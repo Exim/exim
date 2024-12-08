@@ -384,6 +384,7 @@ static optionlist optionlist_config[] = {
   { "tls_dh_max_bits",          opt_int,         {&tls_dh_max_bits} },
   { "tls_dhparam",              opt_stringptr,   {&tls_dhparam} },
   { "tls_eccurve",              opt_stringptr,   {&tls_eccurve} },
+  { "tls_ignore_missing_close_notify", opt_bool, {&tls_ignore_missing_close_notify} },
 # ifndef DISABLE_OCSP
   { "tls_ocsp_file",            opt_stringptr,   {&tls_ocsp_file} },
 # endif
