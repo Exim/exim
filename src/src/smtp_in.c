@@ -2426,7 +2426,7 @@ if (!f.sender_host_unknown)
     questioned this code, I've added in some paranoid checking. */
 
     else if (optlen > 0)
-      return smtp_in_reject_options(ipopt);
+      return smtp_in_reject_options(ipopt, optlen);
 
     /* Length of options = 0 => there are no options */
 
