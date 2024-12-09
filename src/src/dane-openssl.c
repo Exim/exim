@@ -45,6 +45,7 @@
 # if LIBRESSL_VERSION_NUMBER >= 0x3050000fL
 #  define EXIM_OPAQUE_X509		/* Exact version number uncertain */
 #  define EXIM_NO_NEED_SHA2_REGISTER
+#  define EXIM_HAVE_ASN1_MACROS
 # endif
 
 # if LIBRESSL_VERSION_NUMBER >= 0x2090000fL
@@ -54,6 +55,8 @@
 # else
 #  define EXIM_TRANSPARENT_CTX
 # endif
+
+# define EXIM_NEED_CRYPTO_INIT
 #endif
 
 #ifdef EXIM_TRANSPARENT_CTX
