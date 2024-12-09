@@ -2747,9 +2747,10 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
      rr;
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == ind_type)
   {
-  int precedence, weight;
+  int precedence, weight, sort_key;
   int port = PORT_NONE;
   const uschar * s = rr->data;	/* MUST be unsigned for GETSHORT */
+  host_item * next;
   uschar data[256];
 
   if (rr_bad_size(rr, sizeof(uint16_t))) continue;
@@ -2770,6 +2771,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
     GETSHORT(weight, s);
     GETSHORT(port, s);
     }
+  sort_key = precedence * 1000 + weight;
 
   /* Get the name of the host pointed to. */
 
@@ -2795,7 +2797,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
         if (h == host)                            /* Override first item */
           {
           h->mx = precedence;
-          host->sort_key = precedence * 1000 + weight;
+          host->sort_key = sort_key;
           goto NEXT_MX_RR;
           }
 
@@ -2812,49 +2814,36 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   block. Otherwise, add a new block in the correct place; if it has to be
   before the first block, copy the first block's data to a new second block. */
 
-  if (!last)
-    {
-    host->name = string_copy_dnsdomain(data);
-    host->address = NULL;
-    host->port = port;
-    host->mx = precedence;
-    host->sort_key = precedence * 1000 + weight;
-    host->status = hstatus_unknown;
-    host->why = hwhy_unknown;
-    host->dnssec = dnssec;
+  next = last ? store_get(sizeof(host_item), GET_UNTAINTED) : host;
+  next->name = string_copy_dnsdomain(data);
+  next->address = NULL;
+  next->port = port;
+  next->mx = precedence;
+  next->status = hstatus_unknown;
+  next->why = hwhy_unknown;
+  next->dnssec = dnssec;
+  next->sort_key = sort_key;
+
+  if (!last)		/* we're using the first, supplied, host block */
     last = host;
-    }
-  else
+  else			/* a newly allocated block */
 
   /* Make a new host item and seek the correct insertion place */
     {
-    int sort_key = precedence * 1000 + weight;
-    host_item * next = store_get(sizeof(host_item), GET_UNTAINTED);
-    next->name = string_copy_dnsdomain(data);
-    next->address = NULL;
-    next->port = port;
-    next->mx = precedence;
-    next->sort_key = sort_key;
-    next->status = hstatus_unknown;
-    next->why = hwhy_unknown;
-    next->dnssec = dnssec;
     next->last_try = 0;
 
     /* Handle the case when we have to insert before the first item. */
 
     if (sort_key < host->sort_key)
       {
-      host_item htemp;
-      htemp = *host;
+      host_item htemp = *host;
       *host = *next;
       *next = htemp;
       host->next = next;
       if (last == host) last = next;
       }
-    else
-
-    /* Else scan down the items we have inserted as part of this exercise;
-    don't go further. */
+    else /* Scan down the items we have inserted as part of this exercise;
+	 don't go further. */
       {
       for (h = host; h != last; h = h->next)
         if (sort_key < h->next->sort_key)

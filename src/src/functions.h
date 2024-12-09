@@ -1354,7 +1354,7 @@ return NULL;
 
 /* We use the PID of the head process for a connection-id.  Note that
 this is only for tracking a received connection and what it directly
-causes; there is no inttent to describe transport-initiated TCP connections.
+causes; there is no intent to describe transport-initiated TCP connections.
 The value is intented to be a cookie usable for logging, and we might change
 the generator for it at any time. */
 

@@ -2103,6 +2103,7 @@ if (log_reject_target)
 
 
 
+#if !HAVE_IPV6 && !defined(NO_IP_OPTIONS)
 /* IP options: log and reject the connection.
 
 Deal with any IP options that are set. On the systems I have looked at,
@@ -2113,28 +2114,28 @@ questioned this code, I've added in some paranoid checking.
 Given the disuse of options on the internet as of 2024 I'm tempted to
 drop the detailed parsing and logging. */
 
-#ifdef GLIBC_IP_OPTIONS
-# if (!defined __GLIBC__) || (__GLIBC__ < 2)
-#  define OPTSTYLE 1
-# else
+# ifdef GLIBC_IP_OPTIONS
+#  if (!defined __GLIBC__) || (__GLIBC__ < 2)
+#   define OPTSTYLE 1
+#  else
+#   define OPTSTYLE 2
+#  endif
+# elif defined DARWIN_IP_OPTIONS
 #  define OPTSTYLE 2
-# endif
-#elif defined DARWIN_IP_OPTIONS
-# define OPTSTYLE 2
-#else
-# define OPTSTYLE 3
-# endif
+# else
+#  define OPTSTYLE 3
+#  endif
 
-#if OPTSTYLE == 1
-# define EXIM_IP_OPT_T	struct ip_options
-# define OPTSTART	(ipopt->__data)
-#elif OPTSTYLE == 2
-# define EXIM_IP_OPT_T	struct ip_opts
-# define OPTSTART	(ipopt->ip_opts);
-#else
-# define EXIM_IP_OPT_T	struct ipoption
-# define OPTSTART	(ipopt->ipopt_list);
-#endif
+# if OPTSTYLE == 1
+#  define EXIM_IP_OPT_T	struct ip_options
+#  define OPTSTART	(ipopt->__data)
+# elif OPTSTYLE == 2
+#  define EXIM_IP_OPT_T	struct ip_opts
+#  define OPTSTART	(ipopt->ip_opts);
+# else
+#  define EXIM_IP_OPT_T	struct ipoption
+#  define OPTSTART	(ipopt->ipopt_list);
+# endif
 
 static BOOL
 smtp_in_reject_options(EXIM_IP_OPT_T * ipopt, EXIM_SOCKLEN_T optlen)
@@ -2225,6 +2226,7 @@ log_write(0, LOG_MAIN|LOG_REJECT,
 smtp_printf("554 SMTP service not available\r\n", SP_NO_MORE);
 return FALSE;
 }
+#endif  /*!HAVE_IPV6 && !defined(NO_IP_OPTIONS)*/
 
 
 /*************************************************
