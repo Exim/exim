@@ -78,7 +78,7 @@ d="auths"
 mkdir $d
 cd $d
 # Makefile is generated
-for f in README call_pam.c call_pwcheck.c \
+for f in README call_pwcheck.c \
   check_serv_cond.c cyrus_sasl.c cyrus_sasl.h gsasl.c \
   gsasl.h get_data.c get_no64_data.c heimdal_gssapi.c heimdal_gssapi.h \
   cram_md5.c cram_md5.h plaintext.c plaintext.h \
