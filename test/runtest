@@ -1629,6 +1629,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/ \[\d+\] (?=(LOG:  redirecting log|HINT:  Future log output))/ [pppp] /;
 
     # Not all builds include DMARC
+    next if /try option dmarc_tld_file$/;
     next if /^DMARC: no (dmarc_tld_file|sender_host_address)$/ ;
 
     # Platform differences in errno strings

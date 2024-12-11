@@ -90,6 +90,9 @@ JH/16 Bug 3124: Fix theoretical crash in received connection, triggerable by a
 JH/17 Bug 3126: Fix build error in the ibase lookup.  Find & fix by
       Andrew Aitchison.
 
+JH/18 Bug 3102: The dmarc_tld_file and dmarc_history_file options are now
+      expanded before use.
+
 Exim version 4.98
 -----------------
 

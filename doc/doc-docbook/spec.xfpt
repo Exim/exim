@@ -15995,8 +15995,8 @@ See section &<<SECDKIMVFY>>&.
 
 
 .options dmarc_forensic_sender main string&!! unset &&&
-         dmarc_history_file main string unset &&&
-         dmarc_tld_file main string unset
+         dmarc_history_file&!! main string unset &&&
+         dmarc_tld_file main&!! string unset
 .cindex DMARC "main section options"
 These options control DMARC processing.
 See section &<<SECDMARC>>& for details.
@@ -43139,10 +43139,13 @@ the most current version can be downloaded
 from a link at &url(https://publicsuffix.org/list/public_suffix_list.dat).
 See also the util/renew-opendmarc-tlds.sh script.
 The default for the option is unset.
-If not set, DMARC processing is disabled.
+.new
+It is expanded before use.
+If not set (or empty after expansion), DMARC processing is disabled.
+.wen
 
 
-The &%dmarc_history_file%& option, if set
+The &%dmarc_history_file%& option
 .oindex &%dmarc_history_file%&
 defines the location of a file to log results
 of dmarc verification on inbound emails. The
@@ -43151,7 +43154,11 @@ which will manage the data, send out DMARC
 reports, and expire the data. Make sure the
 directory of this file is writable by the user
 exim runs as.
-The default is unset.
+The default for the option is unset.
+.new
+It is expanded before use.
+If not set (or empty after expansion), no history is written.
+.wen
 
 The &%dmarc_forensic_sender%& option
 .oindex &%dmarc_forensic_sender%&

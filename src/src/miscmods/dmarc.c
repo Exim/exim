@@ -137,6 +137,7 @@ dmarc_msg_init()
 {
 int *netmask   = NULL;   /* Ignored */
 int is_ipv6    = 0;
+uschar * s;
 
 /* Set some sane defaults.  Also clears previous results when
 multiple messages in one connection. */
@@ -165,7 +166,8 @@ if (libdm_status != DMARC_PARSE_OKAY)
 		       opendmarc_policy_status_to_str(libdm_status));
   dmarc_abort = TRUE;
   }
-if (!dmarc_tld_file || !*dmarc_tld_file)
+GET_OPTION("dmarc_tld_file");
+if (!(s = dmarc_tld_file) || !(s = expand_string(s)) || !*s)
   {
   DEBUG(D_receive) debug_printf_indent("DMARC: no dmarc_tld_file\n");
   dmarc_abort = TRUE;
@@ -297,28 +299,27 @@ return NULL;
 static int
 dmarc_write_history_file(const gstring * dkim_history_buffer)
 {
-int history_file_fd = 0;
-ssize_t written_len;
-int tmp_ans;
+int history_file_fd = 0, tmp_ans;
 u_char ** rua; /* aggregate report addressees */
+uschar * s;
 gstring * g;
 
-if (!dmarc_history_file)
+GET_OPTION("dmarc_history_file");
+if (!(s = dmarc_history_file) || !(s = expand_string(s)) || !*s)
   {
   DEBUG(D_receive) debug_printf_indent("DMARC history file not set\n");
   return DMARC_HIST_DISABLED;
   }
 if (!host_checking)
-  {
-  uschar * s = string_copy(dmarc_history_file);		/* need a writeable copy */
-  if ((history_file_fd = log_open_as_exim(s)) < 0)
+  /* Ensure we use a modifiiable copy for the filename */
+  if ((history_file_fd =
+	log_open_as_exim(s == dmarc_history_file ? string_copy(s) : s)) < 0)
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
 	      "failure to create DMARC history file: %s: %s",
 	      s, strerror(errno));
     return DMARC_HIST_FILE_ERR;
     }
-  }
 
 /* Generate the contents of the history file entry */
 
@@ -407,7 +408,7 @@ DEBUG(D_receive)
 
 if (!host_checking)
   {
-  written_len = write_to_fd_buf(history_file_fd,
+  ssize_t written_len = write_to_fd_buf(history_file_fd,
 				g->s,
 				gstring_length(g));
   if (written_len == 0)
