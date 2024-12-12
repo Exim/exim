@@ -554,25 +554,13 @@ if (pid == 0)
 
     /* Smtp_setup_msg() returns 0 on QUIT or if the call is from an
     unacceptable host or if an ACL "drop" command was triggered, -1 on
-    connection lost, and +1 on validly reaching DATA. Receive_msg() almost
-    always returns TRUE when smtp_input is true; just retry if no message was
-    accepted (can happen for invalid message parameters). However, it can yield
-    FALSE if the connection was forcibly dropped by the DATA ACL. */
+    connection lost or synprot-error, and +1 on validly reaching DATA.
+    Receive_msg() almost always returns TRUE when smtp_input is true; just retry
+    if no message was accepted (can happen for invalid message parameters).
+    However, it can yield FALSE if the connection was forcibly dropped by the
+    DATA ACL. */
 
-    if ((rc = smtp_setup_msg()) > 0)
-      {
-      BOOL ok = receive_msg(FALSE);
-      search_tidyup();                    /* Close cached databases */
-      if (!ok)                            /* Connection was dropped */
-        {
-	cancel_cutthrough_connection(TRUE, US"receive dropped");
-        mac_smtp_fflush();
-        smtp_log_no_mail();               /* Log no mail if configured */
-        exim_underbar_exit(EXIT_SUCCESS);
-        }
-      if (!message_id[0]) continue;	/* No message was accepted */
-      }
-    else				/* bad smtp_setup_msg() */
+    if ((rc = smtp_setup_msg()) <= 0)		/* bad smtp_setup_msg() */
       {
       if (smtp_out)
 	{
@@ -593,6 +581,19 @@ if (pid == 0)
       DEBUG(D_receive) debug_printf("SMTP>>(close on process exit)\n");
       exim_underbar_exit(rc ? EXIT_FAILURE : EXIT_SUCCESS);
       }
+
+     {
+      BOOL ok = receive_msg(FALSE);
+      search_tidyup();                    /* Close cached databases */
+      if (!ok)                            /* Connection was dropped */
+        {
+	cancel_cutthrough_connection(TRUE, US"receive dropped");
+        mac_smtp_fflush();
+        smtp_log_no_mail();               /* Log no mail if configured */
+        exim_underbar_exit(EXIT_SUCCESS);
+        }
+      if (!message_id[0]) continue;	/* No message was accepted */
+     }
 
     /* Show the recipients when debugging */
 

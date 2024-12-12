@@ -989,7 +989,7 @@ extern int     smtp_mailcmd_max;       /* Limit for MAIL commands */
 extern int     smtp_max_synprot_errors;/* Max syntax/protocol errors */
 extern int     smtp_max_unknown_commands; /* As it says */
 extern uschar *smtp_names[];	       /* decode for command codes */
-extern uschar *smtp_notquit_reason;    /* Global for disconnect reason */
+extern const uschar *smtp_notquit_reason; /* Global for disconnect reason */
 extern FILE   *smtp_out;               /* Incoming SMTP output file */
 extern uschar *smtp_ratelimit_hosts;   /* Rate limit these hosts */
 extern uschar *smtp_ratelimit_mail;    /* Parameters for MAIL limiting */

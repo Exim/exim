@@ -57,6 +57,7 @@ Size of headers = sss
 LOG: MAIN
   <= x@y U=CALLER P=local-smtp S=sss
 created log directory TESTSUITE/spool/log
+receive_msg: tidyup
 SMTP>> 250 OK id=10HmaX-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
@@ -90,6 +91,7 @@ Renaming spool header file: TESTSUITE/spool//input//10HmaY-000000005vi-0000-H
 Size of headers = sss
 LOG: MAIN
   <= x@y U=CALLER P=local-smtp S=sss
+receive_msg: tidyup
 SMTP>> 250 OK id=10HmaY-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>

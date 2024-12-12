@@ -64,7 +64,7 @@ typedef struct ugid_block {
   BOOL    initgroups;
 } ugid_block;
 
-typedef enum {	CHUNKING_NOT_OFFERED = -1,
+typedef enum {	CHUNKING_NOT_OFFERED = 0,
 		CHUNKING_OFFERED,
 		CHUNKING_ACTIVE,
 		CHUNKING_LAST} chunking_state_t;

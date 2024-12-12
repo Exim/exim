@@ -110,6 +110,7 @@ accept: condition test succeeded in ACL data
 end of ACL data: ACCEPT
 LOG: MAIN
   <= x@y H=(something) [V4NET.0.0.0] P=esmtp S=sss
+receive_msg: tidyup
 SMTP>> 250 OK id=10HmaX-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< vrfy x@y

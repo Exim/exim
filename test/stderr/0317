@@ -33,6 +33,7 @@ Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
+receive_msg: tidyup
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
@@ -74,4 +75,5 @@ Renaming spool header file: TESTSUITE/spool//input//10HmaY-000000005vi-0000-H
 Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
+receive_msg: tidyup
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

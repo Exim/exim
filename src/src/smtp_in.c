@@ -156,14 +156,12 @@ static struct {
 #endif
   BOOL rcpt_smtp_response_same		:1;
   BOOL rcpt_in_progress			:1;
-  BOOL smtp_exit_function_called	:1;
 #ifdef SUPPORT_I18N
   BOOL smtputf8_advertised		:1;
 #endif
 } fl = {
   .helo_verify_required = FALSE,
   .helo_verify = FALSE,
-  .smtp_exit_function_called = FALSE,
 };
 
 static auth_instance *authenticated_by;
@@ -324,6 +322,15 @@ static env_mail_type_t env_mail_type_list[] = {
     /* keep this the last entry */
     { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE },
   };
+
+/* State names for debug of chunking */
+
+static const uschar * chunking_states[] = {
+  [CHUNKING_NOT_OFFERED] =	US"not-offered",
+  [CHUNKING_OFFERED] =		US"offered",
+  [CHUNKING_ACTIVE] =		US"active",
+  [CHUNKING_LAST] =		US"last" };
+
 
 /* When reading SMTP from a remote host, we have to use our own versions of the
 C input-reading functions, in order to be able to flush the SMTP output only
@@ -740,8 +747,8 @@ Returns:    the next character or ERR, EOD or EOF
 int
 bdat_getc(unsigned lim)
 {
-uschar * user_msg = NULL;
-uschar * log_msg;
+uschar * user_msg = NULL, * log_msg;
+int rc;
 
 #ifndef DISABLE_DKIM
 misc_module_info * dkim_info = misc_mod_findonly(US"dkim");
@@ -796,7 +803,8 @@ for(;;)
 
   smtp_printf("250 %u byte chunk received\r\n", SP_NO_MORE, chunking_datasize);
   chunking_state = CHUNKING_OFFERED;
-  DEBUG(D_receive) debug_printf("chunking state %d\n", (int)chunking_state);
+  DEBUG(D_receive)
+    debug_printf("chunking state '%s'\n", chunking_states[chunking_state]);
 
   /* Expect another BDAT cmd from input. RFC 3030 says nothing about
   QUIT, RSET or NOOP but handling them seems obvious */
@@ -809,14 +817,14 @@ next_cmd:
 	US"only BDAT permissible after non-LAST BDAT");
 
   repeat_until_rset:
-      switch(smtp_read_command(TRUE, 1))
+      switch(rc = smtp_read_command(TRUE, 1))
 	{
 	case QUIT_CMD:	smtp_quit_handler(&user_msg, &log_msg);	/*FALLTHROUGH */
 	case EOF_CMD:	return EOF;
 	case RSET_CMD:	smtp_rset_handler(); return ERR;
 	default:	if (synprot_error(L_smtp_protocol_error, 503, NULL,
 					  US"only RSET accepted now") > 0)
-			  return EOF;
+			  return ERR;
 			goto repeat_until_rset;
 	}
 
@@ -848,8 +856,8 @@ next_cmd:
       chunking_state = strcmpic(smtp_cmd_data+n, US"LAST") == 0
 	? CHUNKING_LAST : CHUNKING_ACTIVE;
       chunking_data_left = chunking_datasize;
-      DEBUG(D_receive) debug_printf("chunking state %d, %d bytes\n",
-				    (int)chunking_state, chunking_data_left);
+      DEBUG(D_receive) debug_printf("chunking state '%s', %d bytes\n",
+			chunking_states[chunking_state], chunking_data_left);
 
       if (chunking_datasize == 0)
 	if (chunking_state == CHUNKING_LAST)
@@ -904,7 +912,8 @@ while (chunking_data_left)
 
 bdat_pop_receive_functions();
 chunking_state = CHUNKING_OFFERED;
-DEBUG(D_receive) debug_printf("chunking state %d\n", (int)chunking_state);
+DEBUG(D_receive)
+  debug_printf("chunking state '%s'\n", chunking_states[chunking_state]);
 }
 
 
@@ -1181,20 +1190,32 @@ Returns:       a code identifying the command (enumerated above)
 static int
 smtp_read_command(BOOL check_sync, unsigned buffer_lim)
 {
-int c;
-int ptr = 0;
+int ptr = 0, c, rc;
 BOOL hadnull = FALSE;
 
 had_command_timeout = 0;
 os_non_restarting_signal(SIGALRM, command_timeout_handler);
 
-while ((c = (receive_getc)(buffer_lim)) != '\n' && c != EOF)
+/* Read up to end of line */
+
+while ((c = (receive_getc)(buffer_lim)) != '\n')
   {
-  if (ptr >= SMTP_CMD_BUFFER_SIZE)
+  /* If hit end of file, return pseudo EOF command. Whether we have a
+  part-line already read doesn't matter, since this is an error state. */
+
+  if (c < 0 || ptr >= SMTP_CMD_BUFFER_SIZE)
     {
     os_non_restarting_signal(SIGALRM, sigalrm_handler);
-    return OTHER_CMD;
+    /* c could be EOF, ERR, or a good (positive) value overflowing the buffer */
+    DEBUG(D_receive)
+      if (c < 0)
+	debug_printf("SMTP(%s)<<\n", c == EOF ? "closed" : "error");
+      else
+	debug_printf("SMTP(overflow)<< '%.*s'\n",
+		      SMTP_CMD_BUFFER_SIZE, smtp_cmd_buffer);
+    return c == EOF ? EOF_CMD : OTHER_CMD;
     }
+
   if (c == 0)
     {
     hadnull = TRUE;
@@ -1205,11 +1226,6 @@ while ((c = (receive_getc)(buffer_lim)) != '\n' && c != EOF)
 
 receive_linecount++;    /* For BSMTP errors */
 os_non_restarting_signal(SIGALRM, sigalrm_handler);
-
-/* If hit end of file, return pseudo EOF command. Whether we have a
-part-line already read doesn't matter, since this is an error state. */
-
-if (c == EOF) return EOF_CMD;
 
 /* Remove any CR and white space at the end of the line, and terminate the
 string. */
@@ -1278,9 +1294,9 @@ for (smtp_cmd_list * p = cmd_list; p < cmd_list + nelem(cmd_list); p++)
       }
 
     /* If there is data for a command that does not expect it, generate the
-    error here. */
+    error here. Otherwise, return the command code. */
 
-    return (p->has_arg || *smtp_cmd_data == 0)? p->cmd : BADARG_CMD;
+    return p->has_arg || *smtp_cmd_data == 0 ? p->cmd : BADARG_CMD;
     }
   }
 
@@ -1965,6 +1981,7 @@ while (done <= 0)
 
     case QUIT_CMD:
       f.smtp_in_quit = TRUE;
+    case OTHER_CMD:
     case EOF_CMD:
       done = 2;
       break;
@@ -2248,7 +2265,7 @@ fl.auth_advertised = FALSE;
 f.smtp_in_pipelining_advertised = f.smtp_in_pipelining_used = FALSE;
 f.pipelining_enable = TRUE;
 sync_cmd_limit = NON_SYNC_CMD_NON_PIPELINING;
-fl.smtp_exit_function_called = FALSE;    /* For avoiding loop in not-quit exit */
+smtp_notquit_reason = NULL;		/* For avoiding loop in not-quit exit */
 
 /* If receiving by -bs from a trusted user, or testing with -bh, we allow
 authentication settings from -oMaa to remain in force. */
@@ -2810,6 +2827,7 @@ log_write(type, LOG_MAIN, "SMTP %s error in \"%s\" %s %s",
   type == L_smtp_syntax_error ? "syntax" : "protocol",
   string_printing(smtp_cmd_buffer), host_and_ident(TRUE), errmess);
 
+GET_OPTION("smtp_max_synprot_errors");
 if (++synprot_error_count > smtp_max_synprot_errors)
   {
   yield = 1;
@@ -2822,10 +2840,20 @@ if (++synprot_error_count > smtp_max_synprot_errors)
 
 if (code > 0)
   {
-  smtp_printf("%d%c%s%s%s\r\n", SP_NO_MORE, code, yield == 1 ? '-' : ' ',
+  BOOL more = yield == 1;
+  smtp_printf("%d%c%s%s%s\r\n", more, code, more ? '-' : ' ',
     data ? data : US"", data ? US": " : US"", errmess);
-  if (yield == 1)
-    smtp_printf("%d Too many syntax or protocol errors\r\n", SP_NO_MORE, code);
+  if (more)
+    {
+    smtp_notquit_exit(US"bad-command-synprot", string_sprintf("%d", code),
+		      US"Too many syntax or protocol errors");
+    DEBUG(D_any) debug_printf_indent("SMTP(close)>>\n");
+#ifndef DISABLE_TLS
+    tls_close(NULL, TLS_SHUTDOWN_WAIT);
+#endif
+    (void) fclose(smtp_in);
+    (void) fclose(smtp_out);
+    }
   }
 
 return yield;
@@ -3187,7 +3215,7 @@ smtp_notquit_exit(US"acl-drop", NULL, NULL);
 in the TCP conn staying open, and retrying, despite this process exiting. A
 malicious client could possibly do the same, tying up server netowrking
 resources. Close the socket explicitly to try to avoid that (there's a note in
-the Linux socket(7) manpage, SO_LINGER para, to the effect that exim() without
+the Linux socket(7) manpage, SO_LINGER para, to the effect that exit() without
 close() results in the socket always lingering). */
 
 (void) poll_one_fd(fileno(smtp_in), POLLIN, 200);
@@ -3227,36 +3255,40 @@ Returns:          Nothing
 */
 
 void
-smtp_notquit_exit(uschar *reason, uschar *code, uschar *defaultrespond, ...)
+smtp_notquit_exit(const uschar * reason, uschar * code,
+  const uschar * defaultrespond, ...)
 {
 int rc;
 uschar *user_msg = NULL;
 uschar *log_msg = NULL;
 
-/* Check for recursive call */
+/* When a bad-command-excess is seen in the CHUNKING sub-handler, it only
+reports as EOF to the toplevel command loop - which handles EOF for the
+traditional DATA mode and calls here because the line dropped. Maybe we
+should complexify that reporting value?  For now just ignore the second call
+we get when the line goes on to drop when CHUNKING. */
 
-if (fl.smtp_exit_function_called)
+if (smtp_notquit_reason)
   {
-  log_write(0, LOG_PANIC, "smtp_notquit_exit() called more than once (%s)",
-    reason);
+#ifdef notdef
+  log_write(0, LOG_PANIC,
+    "smtp_notquit_exit() called more than once (%s, prev: %s)",
+    reason, smtp_notquit_reason);
+#endif
   return;
   }
-fl.smtp_exit_function_called = TRUE;
+smtp_notquit_reason = reason;
 
 /* Call the not-QUIT ACL, if there is one, unless no reason is given. */
 
 GET_OPTION("acl_smtp_notquit");
 if (acl_smtp_notquit && reason)
   {
-  smtp_notquit_reason = reason;
   if ((rc = acl_check(ACL_WHERE_NOTQUIT, NULL, acl_smtp_notquit, &user_msg,
 		      &log_msg)) == ERROR)
     log_write(0, LOG_MAIN|LOG_PANIC, "ACL for not-QUIT returned ERROR: %s",
       log_msg);
   }
-
-/* If the connection was dropped, we certainly are no longer talking TLS */
-tls_in.active.sock = -1;
 
 /* Write an SMTP response if we are expected to give one. As the default
 responses are all internal, they should be reasonable size. */
@@ -3271,7 +3303,7 @@ if (code && defaultrespond)
     va_list ap;
 
     va_start(ap, defaultrespond);
-    g = string_vformat(NULL, SVFMT_EXTEND|SVFMT_REBUFFER, CS defaultrespond, ap);
+    g = string_vformat(NULL, SVFMT_EXTEND|SVFMT_REBUFFER, CCS defaultrespond, ap);
     va_end(ap);
     smtp_printf("%s %Y\r\n", SP_NO_MORE, code, g);
     }
@@ -3695,7 +3727,7 @@ Argument: none
 
 Returns:  > 0 message successfully started (reached DATA)
           = 0 QUIT read or end of file reached or call refused
-          < 0 lost connection
+          < 0 lost connection, or synprot error
 */
 
 int
@@ -5179,8 +5211,8 @@ while (done <= 0)
       chunking_state = strcmpic(smtp_cmd_data+n, US"LAST") == 0
 	? CHUNKING_LAST : CHUNKING_ACTIVE;
       chunking_data_left = chunking_datasize;
-      DEBUG(D_receive) debug_printf("chunking state %d, %d bytes\n",
-				    (int)chunking_state, chunking_data_left);
+      DEBUG(D_receive) debug_printf("chunking state '%s', %d bytes\n",
+			chunking_states[chunking_state], chunking_data_left);
 
       f.bdat_readers_wanted = TRUE; /* FIXME: redundant vs chunking_state? */
       f.dot_ends = FALSE;

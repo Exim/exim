@@ -101,6 +101,7 @@ Size of headers = sss
 LOG: MAIN
   <= <> U=CALLER P=local-smtp S=sss
 created log directory TESTSUITE/spool/log
+receive_msg: tidyup
 SMTP>> 250 OK id=10HmaY-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
@@ -174,6 +175,7 @@ end of ACL check_data: implicit DENY
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT
   U=CALLER F=<> rejected after DATA: domain missing or malformed: failing address in "To:" header is: abc@xyz.
+receive_msg: tidyup
 smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

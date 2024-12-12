@@ -4778,7 +4778,9 @@ for (int left = len; left > 0;)
       return -1;
 
     case SSL_ERROR_SYSCALL:
-      if (ct_ctx || errno != ECONNRESET || !f.smtp_in_quit)
+      if (errno == 0)
+	{ DEBUG(D_tls) debug_printf("- SSL_ERROR_SYSCALL with zero errno\n"); }
+      else if (ct_ctx || errno != ECONNRESET || !f.smtp_in_quit)
 	log_write(0, LOG_MAIN, "SSL_write: (from %s) syscall: %s",
 	  sender_fullhost ? sender_fullhost : US"<unknown>",
 	  strerror(errno));

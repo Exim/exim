@@ -184,6 +184,7 @@ end of ACL vrfy: implicit DENY
 SMTP>> 252 Administrative prohibition
 LOG: MAIN REJECT
   H=[ip4.ip4.ip4.ip4] rejected VRFY a@test.again.dns
+SMTP(closed)<<
 SMTP>> 421 myhost.test.ex lost input connection
 LOG: smtp_connection MAIN
   SMTP connection from [ip4.ip4.ip4.ip4] lost D=qqs

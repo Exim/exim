@@ -680,7 +680,7 @@ if (!f.dot_ends)
   int last_ch = '\n';
 
   for ( ;
-       log_close_chk(), (ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF;
+       log_close_chk(), (ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) >= 0;
        last_ch = ch)
     {
     if (ch == 0) body_zerocount++;
@@ -723,7 +723,7 @@ if (!f.dot_ends)
 
 ch_state = 1;
 
-while (log_close_chk(), (ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
+while (log_close_chk(), (ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) >= 0)
   {
   if (ch == 0) body_zerocount++;
   switch (ch_state)
@@ -847,7 +847,7 @@ enum { s_linestart, s_normal, s_had_cr, s_had_nl_dot, s_had_dot_cr } ch_state =
 	      s_linestart;
 int linelength = 0, ch;
 
-while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
+while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) >= 0)
   {
   if (ch == 0) body_zerocount++;
   switch (ch_state)
@@ -1829,7 +1829,7 @@ mime_part_count        = -1;
 #endif
 
 if (misc_mod_msg_init() != OK)
-  goto TIDYUP;
+  goto CONN_GONE;
 
 /* In SMTP sessions we may receive several messages in one connection. Before
 each subsequent one, we wait for the clock to tick at the level of message-id
@@ -1918,7 +1918,7 @@ for (;;)
       goto TIDYUP;                       /* Skip to end of function */
       }
     else if (ch == ERR)
-      goto TIDYUP;
+      goto CONN_GONE;
 
   /* See if we are at the current header's size limit - there must be at least
   four bytes left. This allows for the new character plus a zero, plus two for
@@ -1989,14 +1989,16 @@ for (;;)
   if (f.dot_ends && ptr == 0 && ch == '.')
     {
     /* leading dot while in headers-read mode */
-    ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
+    if ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) < 0)
+      goto CONN_GONE;
     if (ch == '\n' && first_line_ended_crlf == TRUE /* and not TRUE_UNSET */ )
     		/* dot, LF  but we are in CRLF mode.  Attack? */
       ch = ' ';	/* replace the LF with a space */
 
     else if (ch == '\r')
       {
-      ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
+      if ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) < 0)
+	goto CONN_GONE;
       if (ch != '\n')
         {
 	if (ch >= 0) receive_ungetc(ch);
@@ -2027,7 +2029,8 @@ for (;;)
 
   if (ch == '\r')
     {
-    ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
+    if ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) < 0)
+      goto CONN_GONE;
     if (ch == '\n')
       {
       if (first_line_ended_crlf == TRUE_UNSET)
@@ -4287,12 +4290,10 @@ if (  smtp_input && sender_host_address && !f.sender_host_notsocket
   if (poll_one_fd(fileno(smtp_in), POLLIN, 0) != 0)
     {
     int c = (receive_getc)(GETC_BUFFER_UNLIMITED);
-    if (c != EOF) (receive_ungetc)(c);
+    if (c >= 0) (receive_ungetc)(c);
     else
       {
       smtp_notquit_exit(US"connection-lost", NULL, NULL);
-      smtp_reply = US"";    /* No attempt to send a response */
-      smtp_yield = FALSE;   /* Nothing more on this connection */
 
       /* Re-use the log line workspace */
 
@@ -4307,7 +4308,7 @@ if (  smtp_input && sender_host_address && !f.sender_host_notsocket
       Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
       Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
 
-      goto TIDYUP;
+      goto CONN_GONE;
       }
     }
   }
@@ -4414,13 +4415,20 @@ Could we make this less likely by doing an fdatasync() just after the fflush()?
 That seems like a good thing on data-security grounds, but how much will it hit
 performance? */
 
-
 goto TIDYUP;
 
+
+CONN_GONE:
+  smtp_reply = US"";    /* No attempt to send a response */
+  smtp_yield = FALSE;   /* Nothing more on this connection */
+  goto TIDYUP;
+
 NOT_ACCEPTED:
-message_id[0] = 0;				/* Indicate no message accepted */
+  message_id[0] = 0;			/* Indicate no message accepted */
 
 TIDYUP:
+DEBUG(D_receive) debug_printf("%s: tidyup\n", __FUNCTION__);
+
 process_info[process_info_len] = 0;			/* Remove message id */
 if (spool_data_file && cutthrough_done == NOT_TRIED)
   {

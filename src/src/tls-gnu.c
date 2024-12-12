@@ -550,6 +550,12 @@ record_io_error(exim_gnutls_state_st *state, int rc, uschar *when, uschar *text)
 const uschar * msg;
 uschar * errstr;
 
+if (rc == GNUTLS_E_INVALID_SESSION && errno == 0)
+  {
+  DEBUG(D_tls) debug_printf("- INVALID_SESSION with zero errno\n");
+  return;
+  }
+
 msg = rc == GNUTLS_E_FATAL_ALERT_RECEIVED
   ? string_sprintf("A TLS fatal alert has been received: %s",
       US gnutls_alert_get_name(gnutls_alert_get(state->session)))

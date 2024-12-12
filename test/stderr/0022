@@ -71,6 +71,7 @@ P Received: from [V4NET.9.8.7] (helo=test)
 	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
+receive_msg: tidyup
 SMTP>> 250 OK id=10HmbF-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
@@ -155,6 +156,7 @@ P Received: from [V4NET.9.8.7] (helo=test)
 	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
+receive_msg: tidyup
 SMTP>> 250 OK id=10HmbG-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
@@ -240,6 +242,7 @@ P Received: from [V4NET.9.8.7] (helo=test)
 >>
 LOG: MAIN
   <= x@y H=(test) [V4NET.9.8.7] P=smtp S=sss
+receive_msg: tidyup
 SMTP>> 250 OK id=10HmbH-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit

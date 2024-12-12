@@ -167,6 +167,7 @@ P Received: from [V4NET.11.12.13] (helo=exim.test.ex)
 	Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.13] P=esmtp S=sss
+receive_msg: tidyup
 SMTP>> 250 OK id=10HmaX-000000005vi-0000
 smtp_setup_msg entered
 SMTP<< quit
@@ -336,6 +337,7 @@ SMTP>> 550-Unrouteable address
 SMTP>> 550 Sender verify failed
 LOG: MAIN REJECT
   H=(exim.test.ex) [V4NET.99.99.99] F=<postmaster@exim.test.ex> rejected RCPT list@exim.test.ex: Sender verify failed
+SMTP(closed)<<
 SMTP>> 421 the.local.host.name lost input connection
 LOG: lost_incoming_connection MAIN
   unexpected disconnection while reading SMTP command from (exim.test.ex) [V4NET.99.99.99] D=qqs

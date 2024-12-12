@@ -93,6 +93,9 @@ JH/17 Bug 3126: Fix build error in the ibase lookup.  Find & fix by
 JH/18 Bug 3102: The dmarc_tld_file and dmarc_history_file options are now
       expanded before use.
 
+JH/19 Bug 3092: Call acl_smtp_notquit for drops associated with the
+      smtp_max_synprot_errors limit.
+
 Exim version 4.98
 -----------------
 
