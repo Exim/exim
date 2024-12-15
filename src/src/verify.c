@@ -389,6 +389,10 @@ if (addr->transport == cutthrough.addr.transport)
 	uschar * resp = NULL;
 
 	/* Match!  Send the RCPT TO, set done from the response */
+
+	DEBUG(D_verify)
+	  debug_printf("already-open verify connection matches recipient\n");
+
 	done =
 	     smtp_write_command(&ctctx, SCMD_FLUSH, "RCPT TO:<%.1000s>\r\n",
 	      transport_rcpt_address(addr,
@@ -486,8 +490,9 @@ Arguments:
                       vopt_callout_no_cache => don't use callout cache
                       vopt_callout_fullpm => if postmaster check, do full one
                       vopt_callout_random => do the "random" thing
-                      vopt_callout_recipsender => use real sender for recipient
-                      vopt_callout_recippmaster => use postmaster for recipient
+                      vopt_callout_recipsender => use original sender addres
+                      vopt_callout_recippmaster => use postmaster as sender
+vopt_callout_r_tptsender => use sender as defined by transport
 		      vopt_callout_hold         => lazy close connection
   se_mailfrom         MAIL FROM address for sender verify; NULL => ""
   pm_mailfrom         if non-NULL, do the postmaster check with this sender
@@ -520,25 +525,46 @@ new_domain_record.random_result = ccache_unknown;
 memset(&new_address_record, 0, sizeof(new_address_record));
 
 /* For a recipient callout, the key used for the address cache record must
-include the sender address if we are using the real sender in the callout,
-because that may influence the result of the callout. */
+include the sender address if we are using anything but a blank sender in the
+callout, because that may influence the result of the callout. */
 
 if (options & vopt_is_recipient)
-  if (options & vopt_callout_recipsender)
+  if (options & ( vopt_callout_recipsender
+		| vopt_callout_r_tptsender
+		| vopt_callout_recippmaster)
+     )
     {
-    from_address = sender_address;
-    address_key = string_sprintf("%s/<%s>", addr->address, sender_address);
+    if (options & vopt_callout_recipsender)
+      from_address = sender_address;
+    else if (options & vopt_callout_r_tptsender)
+      {
+      transport_instance * tp = addr->transport;
+      from_address = addr->prop.errors_address
+		  ? addr->prop.errors_address : sender_address;
+      DEBUG(D_verify)
+	debug_printf(" return-path from routed addr: %s\n", from_address);
+
+      GET_OPTION("return_path");
+      if (tp->return_path)
+	{
+	uschar * new_return_path = expand_string(tp->return_path);
+	if (new_return_path)
+	  from_address = new_return_path;
+	else if (!f.expand_string_forcedfail)
+	  return DEFER;
+	DEBUG(D_verify)
+	  debug_printf(" return-path from transport: %s\n", from_address);
+	}
+      }
+    else /* if (options & vopt_callout_recippmaster) */
+      from_address = string_sprintf("postmaster@%s", qualify_domain_sender);
+
+    address_key = string_sprintf("%s/<%s>", addr->address, from_address);
     if (cutthrough.delivery)			/* cutthrough previously req. */
       {
       options |= vopt_callout_no_cache;		/* in case called by verify= */
       addr->return_path = from_address;		/* for cutthrough logging */
       }
-    }
-  else if (options & vopt_callout_recippmaster)
-    {
-    from_address = string_sprintf("postmaster@%s", qualify_domain_sender);
-    address_key = string_sprintf("%s/<postmaster@%s>", addr->address,
-      qualify_domain_sender);
     }
   else
     {
@@ -621,7 +647,8 @@ coding means skipping this whole loop and doing the append separately.  */
 
   /* Can we re-use an open cutthrough connection? */
   if (  cutthrough.cctx.sock >= 0
-     && (options & (vopt_callout_recipsender | vopt_callout_recippmaster))
+     && (options & ( vopt_callout_recipsender
+		   | vopt_callout_r_tptsender | vopt_callout_recippmaster))
 	== vopt_callout_recipsender
      && !random_local_part
      && !pm_mailfrom
@@ -1114,8 +1141,7 @@ no_conn:
        && rcpt_count == 1
        && done
        && yield == OK
-       &&    (options & (vopt_callout_recipsender|vopt_callout_recippmaster|vopt_success_on_redirect))
-	   == vopt_callout_recipsender
+       && !(options & (vopt_callout_recippmaster | vopt_success_on_redirect))
        && !random_local_part
        && !pm_mailfrom
        && cutthrough.cctx.sock < 0
@@ -1163,7 +1189,7 @@ no_conn:
     else
       {
       /* Ensure no cutthrough on multiple verifies that were incompatible */
-      if (options & vopt_callout_recipsender)
+      if (options & (vopt_callout_recipsender | vopt_callout_r_tptsender))
         cancel_cutthrough_connection(TRUE, US"not usable for cutthrough");
       if (sx->send_quit && sx->cctx.sock >= 0)
 	if (smtp_write_command(sx, SCMD_FLUSH, "QUIT\r\n") != -1)
@@ -1248,10 +1274,10 @@ return yield;
    one was requested and a recipient-verify wasn't subsequently done.
 */
 int
-open_cutthrough_connection(address_item * addr)
+open_cutthrough_connection(address_item * addr, BOOL transport_sender)
 {
 address_item addr2;
-int rc;
+int vopt, rc;
 
 /* Use a recipient-verify-callout to set up the cutthrough connection. */
 /* We must use a copy of the address for verification, because it might
@@ -1260,9 +1286,12 @@ get rewritten. */
 addr2 = *addr;
 HDEBUG(D_acl) debug_printf_indent("----------- %s cutthrough setup ------------\n",
   rcpt_count > 1 ? "more" : "start");
-rc = verify_address(&addr2, NULL,
-	vopt_is_recipient | vopt_callout_recipsender | vopt_callout_no_cache,
-	CUTTHROUGH_CMD_TIMEOUT, -1, -1,
+
+vopt = transport_sender
+  ? vopt_is_recipient | vopt_callout_r_tptsender | vopt_callout_no_cache
+  : vopt_is_recipient | vopt_callout_recipsender | vopt_callout_no_cache;
+
+rc = verify_address(&addr2, NULL, vopt, CUTTHROUGH_CMD_TIMEOUT, -1, -1,
 	NULL, NULL, NULL);
 addr->message = addr2.message;
 addr->user_message = addr2.user_message;
@@ -1678,6 +1707,7 @@ Arguments:
                      vopt_callout_random => do the "random" thing
                      vopt_callout_recipsender => use real sender for recipient
                      vopt_callout_recippmaster => use postmaster for recipient
+vopt_callout_r_tptsender => use sender as defined by transport
 
   callout          if > 0, specifies that callout is required, and gives timeout
                      for individual commands
@@ -1994,7 +2024,8 @@ while (addr_new)
 
       if (host_list)
         {
-        HDEBUG(D_verify) debug_printf("Attempting full verification using callout\n");
+        HDEBUG(D_verify)
+	  debug_printf("Attempting full verification using callout\n");
         if (host_checking && !f.host_checking_callout)
           {
           HDEBUG(D_verify)
@@ -2003,14 +2034,11 @@ while (addr_new)
           }
         else
           {
-#ifndef DISABLE_TLS
 	  deliver_set_expansions(addr);
-#endif
           rc = do_callout(addr, host_list, &tf, callout, callout_overall,
             callout_connect, options, se_mailfrom, pm_mailfrom);
-#ifndef DISABLE_TLS
 	  deliver_set_expansions(NULL);
-#endif
+
 	  if (  options & vopt_is_recipient
 	     && rc == OK
 			 /* set to "random", with OK, for an accepted random */
@@ -2212,7 +2240,7 @@ if (allok && !addr_local && !addr_remote)
 for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
   while (addr_list)
     {
-    address_item *addr = addr_list;
+    address_item * addr = addr_list;
     transport_instance * tp = addr->transport;
 
     addr_list = addr->next;

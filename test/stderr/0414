@@ -85,8 +85,8 @@ domain = b.domain
   errors_to=NULL
   domain_data=b.domain-data local_part_data=NULL
 routed by r2 router
-  envelope to: x@b.domain
-  transport: t1
+  envelope to:	x@b.domain
+  transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Testing x@a.domain
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -171,7 +171,7 @@ domain = a.domain
   errors_to=NULL
   domain_data=a.domain-data local_part_data=NULL
 routed by r3 router
-  envelope to: x@a.domain
-  transport: t1
+  envelope to:	x@a.domain
+  transport:	t1
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

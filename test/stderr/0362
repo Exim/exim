@@ -111,8 +111,8 @@ domain = x.test.ex
   errors_to=NULL
   domain_data=*.test.ex local_part_data=NULL
 routed by r2 router
-  envelope to: x@x.test.ex
-  transport: t2
+  envelope to:	x@x.test.ex
+  transport:	t2
 ----------- end verify ------------
 accept: condition test succeeded in ACL check_rcpt
 end of ACL check_rcpt: ACCEPT

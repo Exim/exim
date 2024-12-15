@@ -116,18 +116,18 @@ domain = test.ex
   errors_to=usery
   domain_data=NULL local_part_data=usery
 routed by r1 router
-  envelope to: usery@test.ex
-  transport: t1
-  errors to usery
+  envelope to:	usery@test.ex
+  transport:	t1
+  errors to:	usery
 ------ End verifying errors address usery ------
 queued for t1 transport: local_part = userx
 domain = test.ex
   errors_to=usery@test.ex
   domain_data=NULL local_part_data=userx
 routed by r1 router
-  envelope to: userx@test.ex
-  transport: t1
-  errors to usery@test.ex
+  envelope to:	userx@test.ex
+  transport:	t1
+  errors to:	usery@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

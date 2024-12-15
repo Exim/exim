@@ -49,8 +49,8 @@ domain = test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=postmaster
 routed by v0 router
-  envelope to: postmaster@test.ex
-  transport: <none>
+  envelope to:	postmaster@test.ex
+  transport:	<none>
 ------ End verifying errors address postmaster@test.ex ------
 r2 router generated defer@test.ex
   errors_to=postmaster@test.ex transport=NULL
@@ -59,9 +59,9 @@ r2 router generated unknown@recurse.test.ex
   errors_to=postmaster@test.ex transport=NULL
   uid=unset gid=unset home=NULL
 routed by r2 router
-  envelope to: cms@test.ex
-  transport: <none>
-  errors to postmaster@test.ex
+  envelope to:	cms@test.ex
+  transport:	<none>
+  errors to:	postmaster@test.ex
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: unknown@recurse.test.ex
@@ -134,9 +134,9 @@ domain = recurse.test.ex.test.ex
   errors_to=postmaster@test.ex
   domain_data=NULL local_part_data=NULL
 routed by r1 router
-  envelope to: unknown@recurse.test.ex.test.ex
-  transport: t1
-  errors to postmaster@test.ex
+  envelope to:	unknown@recurse.test.ex.test.ex
+  transport:	t1
+  errors to:	postmaster@test.ex
   host recurse.test.ex.test.ex [V4NET.99.0.2]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
@@ -195,8 +195,8 @@ domain = test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=postmaster
 routed by v0 router
-  envelope to: postmaster@test.ex
-  transport: <none>
+  envelope to:	postmaster@test.ex
+  transport:	<none>
 ------ End verifying errors address postmaster@test.ex ------
 r2 router generated defer@test.ex
   errors_to=postmaster@test.ex transport=NULL
@@ -205,9 +205,9 @@ r2 router generated unknown@recurse.test.ex
   errors_to=postmaster@test.ex transport=NULL
   uid=unset gid=unset home=NULL
 routed by r2 router
-  envelope to: cms@test.ex
-  transport: <none>
-  errors to postmaster@test.ex
+  envelope to:	cms@test.ex
+  transport:	<none>
+  errors to:	postmaster@test.ex
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: unknown@recurse.test.ex

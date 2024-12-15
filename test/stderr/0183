@@ -151,8 +151,8 @@ domain = ten-1.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
-  envelope to: abcd@ten-1.test.ex
-  transport: smtp
+  envelope to:	abcd@ten-1.test.ex
+  transport:	smtp
   host ten-1.test.ex [V4NET.0.0.1]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Testing usery@test.again.dns
@@ -288,8 +288,8 @@ domain = ten-1.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
-  envelope to: xyz@ten-1.test.ex
-  transport: smtp
+  envelope to:	xyz@ten-1.test.ex
+  transport:	smtp
   host ten-1.test.ex [V4NET.0.0.1]
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>
@@ -445,8 +445,8 @@ domain = ten-1.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
-  envelope to: abcd@ten-1.test.ex
-  transport: smtp
+  envelope to:	abcd@ten-1.test.ex
+  transport:	smtp
   host ten-1.test.ex [V4NET.0.0.1]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Testing usery@test.fail.dns
@@ -581,8 +581,8 @@ domain = ten-1.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
-  envelope to: xyz@ten-1.test.ex
-  transport: smtp
+  envelope to:	xyz@ten-1.test.ex
+  transport:	smtp
   host ten-1.test.ex [V4NET.0.0.1]
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>
@@ -739,8 +739,8 @@ domain = ten-1.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
-  envelope to: abcd@ten-1.test.ex
-  transport: smtp
+  envelope to:	abcd@ten-1.test.ex
+  transport:	smtp
   host ten-1.test.ex [V4NET.0.0.1]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Testing usery@nonexist.test.ex
@@ -876,8 +876,8 @@ domain = ten-1.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
-  envelope to: xyz@ten-1.test.ex
-  transport: smtp
+  envelope to:	xyz@ten-1.test.ex
+  transport:	smtp
   host ten-1.test.ex [V4NET.0.0.1]
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>

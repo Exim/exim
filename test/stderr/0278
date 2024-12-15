@@ -87,8 +87,8 @@ domain = test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=CALLER
 routed by r3 router
-  envelope to: CALLER@test.ex
-  transport: t1
+  envelope to:	CALLER@test.ex
+  transport:	t1
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -247,8 +247,8 @@ domain = test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=CALLER
 routed by r3 router
-  envelope to: CALLER@test.ex
-  transport: t1
+  envelope to:	CALLER@test.ex
+  transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

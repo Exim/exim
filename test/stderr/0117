@@ -15,8 +15,8 @@ domain = mxt9.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
-  envelope to: xxx@mxt9.test.ex
-  transport: <none>
+  envelope to:	xxx@mxt9.test.ex
+  transport:	<none>
   host ten-1.test.ex [V4NET.0.0.1] MX=5 dnssec=no
   host ten-2.test.ex [V4NET.0.0.2] MX=6 dnssec=no
   host ten-3.test.ex [V4NET.0.0.3] MX=7 dnssec=no
@@ -38,8 +38,8 @@ domain = mxt9a.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
-  envelope to: xxx@mxt9a.test.ex
-  transport: <none>
+  envelope to:	xxx@mxt9a.test.ex
+  transport:	<none>
   host ten-1.test.ex [V4NET.0.0.1] MX=5 dnssec=no
   host ten-2.test.ex [V4NET.0.0.2] MX=6 dnssec=no
   host ten-3.test.ex [V4NET.0.0.3] MX=7 dnssec=no
@@ -61,8 +61,8 @@ domain = mxt9b.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by lookuphost router
-  envelope to: xxx@mxt9b.test.ex
-  transport: <none>
+  envelope to:	xxx@mxt9b.test.ex
+  transport:	<none>
   host ten-1.test.ex [V4NET.0.0.1] MX=5 dnssec=no
   host ten-2.test.ex [V4NET.0.0.2] MX=6 dnssec=no
   host ten-3.test.ex [V4NET.0.0.3] MX=7 dnssec=no

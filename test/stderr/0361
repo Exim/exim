@@ -175,8 +175,8 @@ r3 router generated kilos@recurse.test.ex.test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by r3 router
-  envelope to: kilos@recurse.test.ex.test.ex
-  transport: <none>
+  envelope to:	kilos@recurse.test.ex.test.ex
+  transport:	<none>
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: kilos@recurse.test.ex.test.ex
@@ -215,8 +215,8 @@ domain = recurse.test.ex.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r4 router
-  envelope to: kilos@recurse.test.ex.test.ex
-  transport: t2
+  envelope to:	kilos@recurse.test.ex.test.ex
+  transport:	t2
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

@@ -20,8 +20,8 @@ r1 router generated /a/b/c
   errors_to=NULL transport=tf1
   uid=CALLER_UID gid=CALLER_GID home=NULL
 routed by r1 router
-  envelope to: /a/b/c@myhost.test.ex
-  transport: <none>
+  envelope to:	/a/b/c@myhost.test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
@@ -45,8 +45,8 @@ r1 router generated /x/y/z
   errors_to=NULL transport=tf2
   uid=CALLER_UID gid=CALLER_GID home=NULL
 routed by r1 router
-  envelope to: /x/y/z@myhost.test.ex
-  transport: <none>
+  envelope to:	/x/y/z@myhost.test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   <= fil@ter U=CALLER P=local S=sss

@@ -77,8 +77,8 @@ domain = remote
   errors_to=NULL
   domain_data=remote local_part_data=NULL
 routed by r2 router
-  envelope to: qq@remote
-  transport: t2
+  envelope to:	qq@remote
+  transport:	t2
   host 127.0.0.1 [127.0.0.1]
 ----------- end verify ------------
 sender qq@remote verified ok
@@ -135,8 +135,8 @@ domain = remote
   errors_to=NULL
   domain_data=remote local_part_data=NULL
 routed by r2 router
-  envelope to: qq@remote
-  transport: t2
+  envelope to:	qq@remote
+  transport:	t2
   host 127.0.0.1 [127.0.0.1]
 Attempting full verification using callout
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
@@ -262,8 +262,8 @@ domain = remote
   errors_to=NULL
   domain_data=remote local_part_data=NULL
 routed by r2 router
-  envelope to: qq@remote
-  transport: t2
+  envelope to:	qq@remote
+  transport:	t2
   host 127.0.0.1 [127.0.0.1]
 Attempting full verification using callout
  EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR

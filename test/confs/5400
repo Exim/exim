@@ -6,6 +6,9 @@ CONTROL=
 # optional verify-callout
 OPT=
 
+# return_path on transport
+RETURN=
+
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
@@ -62,16 +65,17 @@ all:
 begin transports
 
 smtp:
-  driver = smtp
-  interface = HOSTIPV4
-  port = PORT_S
+  driver =	smtp
+  interface =	HOSTIPV4
+  port =	PORT_S
   hosts_try_fastopen =	:
-  headers_add =  ${if def:h_X-hdr-rtr {X-hdr-tpt-new: new} {}}
+  headers_add =	${if def:h_X-hdr-rtr {X-hdr-tpt-new: new} {}}
+  return_path =	RETURN
 
 smtp2:
-  driver = smtp
-  interface = HOSTIPV4
-  port = PORT_S
+  driver =	smtp
+  interface =	HOSTIPV4
+  port =	PORT_S
   hosts_try_fastopen =	:
 
 

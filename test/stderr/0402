@@ -559,8 +559,8 @@ r5 router generated TESTSUITE/test-mail/junk
   uid=unset gid=unset home=/non-exist/$local_part
 try option unseen
 routed by r5 router
-  envelope to: rd+usery@test.ex
-  transport: <none>
+  envelope to:	rd+usery@test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing rd+CALLER@test.ex
 --------> r1 router <--------
@@ -620,8 +620,8 @@ r4 router generated TESTSUITE/test-mail/junk
   uid=unset gid=unset home=/non-exist/CALLER
 try option unseen
 routed by r4 router
-  envelope to: rd+CALLER@test.ex
-  transport: <none>
+  envelope to:	rd+CALLER@test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userz@test.ex
 --------> r1 router <--------
@@ -668,8 +668,8 @@ domain = test.ex
   domain_data=NULL local_part_data=userz
 try option unseen
 routed by r3 router
-  envelope to: userz@test.ex
-  transport: t2
+  envelope to:	userz@test.ex
+  transport:	t2
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing usery@test.ex
 --------> r1 router <--------
@@ -709,8 +709,8 @@ domain = test.ex
   domain_data=NULL local_part_data=usery
 try option unseen
 routed by r2 router
-  envelope to: usery@test.ex
-  transport: t1
+  envelope to:	usery@test.ex
+  transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@test.ex
 --------> r1 router <--------
@@ -743,8 +743,8 @@ domain = test.ex
   domain_data=NULL local_part_data=CALLER
 try option unseen
 routed by r1 router
-  envelope to: CALLER@test.ex
-  transport: t1
+  envelope to:	CALLER@test.ex
+  transport:	t1
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail/junk

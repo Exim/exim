@@ -364,7 +364,7 @@ extern void    moan_write_references(FILE *, uschar *);
 #endif
 extern FILE   *modefopen(const uschar *, const char *, mode_t);
 
-extern int     open_cutthrough_connection( address_item * addr );
+extern int     open_cutthrough_connection(address_item *, BOOL);
 
 extern uschar *parse_extract_address(const uschar *, uschar **, int *, int *, int *,
                  BOOL);

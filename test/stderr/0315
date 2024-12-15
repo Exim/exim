@@ -36,8 +36,8 @@ domain = ten-1.test.ex
   errors_to=NULL
   domain_data=ten-1.test.ex local_part_data=NULL
 routed by r1 router
-  envelope to: y@ten-1.test.ex
-  transport: t1
+  envelope to:	y@ten-1.test.ex
+  transport:	t1
   host ten-1.test.ex [V4NET.0.0.1]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@ten-1.test.ex
@@ -100,8 +100,8 @@ domain = ten-2.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r2 router
-  envelope to: y@ten-2.test.ex
-  transport: t1
+  envelope to:	y@ten-2.test.ex
+  transport:	t1
   host ten-2.test.ex [V4NET.0.0.2]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@ten-2.test.ex
@@ -121,8 +121,8 @@ domain = ten-2.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r2 router
-  envelope to: x@ten-2.test.ex
-  transport: t1
+  envelope to:	x@ten-2.test.ex
+  transport:	t1
   host ten-2.test.ex [V4NET.0.0.2]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:

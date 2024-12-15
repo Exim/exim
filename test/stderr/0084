@@ -29,8 +29,8 @@ forward router generated userx@test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by forward router
-  envelope to: yes@myhost.test.ex
-  transport: <none>
+  envelope to:	yes@myhost.test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
 --------> localuser router <--------
@@ -44,8 +44,8 @@ domain = test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=userx
 routed by localuser router
-  envelope to: userx@test.ex
-  transport: <none>
+  envelope to:	userx@test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing no@myhost.test.ex
 --------> smart router <--------
@@ -63,6 +63,6 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by smart router
-  envelope to: no@myhost.test.ex
-  transport: <none>
+  envelope to:	no@myhost.test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -23,8 +23,8 @@ domain = no.delay
   errors_to=NULL
   domain_data=no.delay local_part_data=NULL
 routed by r1 router
-  envelope to: ok@no.delay
-  transport: t1
+  envelope to:	ok@no.delay
+  transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:
@@ -61,8 +61,8 @@ domain = no.delay
   errors_to=NULL
   domain_data=no.delay local_part_data=NULL
 routed by r1 router
-  envelope to: ok@no.delay
-  transport: t1
+  envelope to:	ok@no.delay
+  transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

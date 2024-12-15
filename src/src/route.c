@@ -2081,12 +2081,12 @@ HDEBUG(D_route) debug_printf("routed by %s router%s\n", rname_l,
 
 DEBUG(D_route)
   {
-  debug_printf("  envelope to: %s\n", addr->address);
-  debug_printf("  transport: %s\n", addr->transport
+  debug_printf("  envelope to:\t%s\n", addr->address);
+  debug_printf("  transport:\t%s\n", addr->transport
     ? addr->transport->drinst.name : US"<none>");
 
   if (addr->prop.errors_address)
-    debug_printf("  errors to %s\n", addr->prop.errors_address);
+    debug_printf("  errors to:\t%s\n", addr->prop.errors_address);
 
   for (host_item * h = addr->host_list; h; h = h->next)
     {

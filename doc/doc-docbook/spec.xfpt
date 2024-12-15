@@ -32206,16 +32206,16 @@ is what is wanted for subsequent tests.
 .vitem &*control&~=&~cutthrough_delivery/*&<&'options'&>
 .cindex "&ACL;" "cutthrough routing"
 .cindex "cutthrough" "requesting"
-This option requests delivery be attempted while the item is being received.
+This control requests delivery be attempted while the item is being received.
 
-The option is usable in the RCPT ACL.
+The control is usable in the RCPT ACL.
 If enabled for a message received via smtp and routed to an smtp transport,
 and only one transport, interface, destination host and port combination
 is used for all recipients of the message,
 then the delivery connection is made while the receiving connection is open
 and data is copied from one to the other.
 
-An attempt to set this option for any recipient but the first
+An attempt to set this control for any recipient but the first
 for a mail will be quietly ignored.
 If a recipient-verify callout
 (with use_sender)
@@ -32242,9 +32242,8 @@ message body.
 Cutthrough delivery is not supported via transport-filters or when DKIM signing
 of outgoing messages is done, because it sends data to the ultimate destination
 before the entire message has been received from the source.
-It is not supported for messages received with the SMTP PRDR
-or CHUNKING
-options in use.
+It is not supported for messages received with the SMTP PRDR or CHUNKING
+modes in use.
 
 Should the ultimate destination system positively accept or reject the mail,
 a corresponding indication is given to the source system and nothing is queued.
@@ -32252,17 +32251,31 @@ If the item is successfully delivered in cutthrough mode
 the delivery log lines are tagged with ">>" rather than "=>" and appear
 before the acceptance "<=" line.
 
-If there is a temporary error the item is queued for later delivery in the
-usual fashion.
-This behaviour can be adjusted by appending the option &*defer=*&<&'value'&>
-to the control; the default value is &"spool"& and the alternate value
-&"pass"& copies an SMTP defer response from the target back to the initiator
-and does not queue the message.
-Note that this is independent of any recipient verify conditions in the ACL.
-
 Delivery in this mode avoids the generation of a bounce mail to a
 (possibly faked)
 sender when the destination system is doing content-scan based rejection.
+
+.new
+Options for this control may be appended, separated by slash (&"/"&)
+characters.
+There are two possible options,
+both taking a value string prefixed by an equals (&"="&) character.
+
+The &*defer*& option controls the result of a temporary error
+of the cutthrough delivery.
+The default value &"spool"& queues the message in the normal way
+for later processing.
+A value of &"pass"& copies an SMTP defer response back to the initiator
+and does not queue the message.
+Note that this is independent of any recipient verify conditions in the ACL.
+
+The &*sender*& option controls the envelope-from used for the
+outbound connection.
+The default value of &"orig"& uses the address given for envelope-from
+in the inbound (originating) connection.
+A value of &"transport"& permits the transport used for the outbound
+connection to modify the envelope-from, via its &*return_path*& option.
+.wen
 
 
 .vitem &*control&~=&~debug/*&<&'options'&>

@@ -43,8 +43,8 @@ domain = uppercase.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r1 router
-  envelope to: x@UpperCase.test.ex
-  transport: t1
+  envelope to:	x@UpperCase.test.ex
+  transport:	t1
   host uppercase.test.ex [127.0.0.1]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:

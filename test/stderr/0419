@@ -74,8 +74,8 @@ domain = mxt13.test.ex
   errors_to=NULL
   domain_data=mxt13.test.ex local_part_data=NULL
 routed by dnslookup router
-  envelope to: k@mxt13.test.ex
-  transport: smtp
+  envelope to:	k@mxt13.test.ex
+  transport:	smtp
   host other1.test.ex [V4NET.12.4.5] MX=4 dnssec=no
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

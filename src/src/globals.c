@@ -764,6 +764,7 @@ uschar *csa_status             = NULL;
 cut_t   cutthrough = {
   .callout_hold_only =	FALSE,				/* verify-only: normal delivery */
   .delivery =		FALSE,				/* when to attempt */
+  .tpt_sender =		FALSE,				/* use tpt's sender */
   .defer_pass =		FALSE,				/* on defer: spool locally */
   .is_tls =		FALSE,				/* not a TLS conn yet */
   .cctx =		{.sock = -1},			/* open connection */

@@ -50,7 +50,7 @@ domain = testexim.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=joe
 routed by router2 router
-  envelope to: joe-real@testexim.test.ex
-  transport: local_delivery
+  envelope to:	joe-real@testexim.test.ex
+  transport:	local_delivery
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

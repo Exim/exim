@@ -57,3 +57,7 @@
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 >> userx@domain.com P=<CALLER@myhost.test.ex> R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss for userx@domain.com
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
+1999-03-02 09:44:33 rcpt for userx@domain.com
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 >> userx@domain.com P=<return_path_changed@myhost.test.ex> R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss for userx@domain.com
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed

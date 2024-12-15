@@ -81,8 +81,8 @@ domain = alias-eximtesthost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by dns router
-  envelope to: userx@alias-eximtesthost.test.ex
-  transport: smtp
+  envelope to:	userx@alias-eximtesthost.test.ex
+  transport:	smtp
   host eximtesthost.test.ex [ip4.ip4.ip4.ip4]
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -138,8 +138,8 @@ domain = alias-eximtesthost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by dns router
-  envelope to: userx@alias-eximtesthost.test.ex
-  transport: smtp
+  envelope to:	userx@alias-eximtesthost.test.ex
+  transport:	smtp
   host eximtesthost.test.ex [ip4.ip4.ip4.ip4]
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1235 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

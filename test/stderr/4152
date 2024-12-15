@@ -69,8 +69,8 @@ aaaa router generated defer_aaaa@myhost.test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by aaaa router
-  envelope to: aaaa@myhost.test.ex
-  transport: <none>
+  envelope to:	aaaa@myhost.test.ex
+  transport:	<none>
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: defer_aaaa@myhost.test.ex
@@ -210,8 +210,8 @@ aaaa_2nd_time router generated aaaa@myhost.test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by aaaa_2nd_time router
-  envelope to: aaaa@myhost.test.ex
-  transport: <none>
+  envelope to:	aaaa@myhost.test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
 unique = \0\aaaa@myhost.test.ex
@@ -266,8 +266,8 @@ aaaa router generated defer_aaaa@myhost.test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by aaaa router
-  envelope to: aaaa@myhost.test.ex
-  transport: <none>
+  envelope to:	aaaa@myhost.test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: defer_aaaa@myhost.test.ex
 unique = defer_aaaa@myhost.test.ex

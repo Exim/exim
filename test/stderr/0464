@@ -71,8 +71,8 @@ r1 router generated abc@xxx.domain1
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by r1 router
-  envelope to: abc@domain1
-  transport: <none>
+  envelope to:	abc@domain1
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering abc@xxx.domain1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -113,8 +113,8 @@ domain = xxx.domain1
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r2 router
-  envelope to: abc@xxx.domain1
-  transport: smtp
+  envelope to:	abc@xxx.domain1
+  transport:	smtp
 ----------- end verify ------------
 require: condition test succeeded in ACL rcpt
 processing ACL rcpt "require" (TESTSUITE/test-config 23)
@@ -151,8 +151,8 @@ r1 router generated abc@xxx.domain1
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by r1 router
-  envelope to: abc@domain1
-  transport: <none>
+  envelope to:	abc@domain1
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering abc@xxx.domain1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -191,8 +191,8 @@ domain = xxx.domain1
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r2 router
-  envelope to: abc@xxx.domain1
-  transport: smtp
+  envelope to:	abc@xxx.domain1
+  transport:	smtp
 ----------- end verify ------------
 require: condition test succeeded in ACL rcpt
 processing ACL rcpt "accept" (TESTSUITE/test-config 25)

@@ -95,8 +95,8 @@ domain = ten-1.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by all router
-  envelope to: x@ten-1.test.ex
-  transport: smtp
+  envelope to:	x@ten-1.test.ex
+  transport:	smtp
   host ten-1.test.ex [V4NET.0.0.1]
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

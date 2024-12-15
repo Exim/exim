@@ -22,8 +22,8 @@ domain = domain1
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by smarthost router
-  envelope to: userx@domain1
-  transport: smtp
+  envelope to:	userx@domain1
+  transport:	smtp
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

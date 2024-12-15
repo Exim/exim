@@ -4329,7 +4329,7 @@ for this message. */
 
    XXX We do not handle queue-only, freezing, or blackholes.
 */
-if(cutthrough.cctx.sock >= 0 && cutthrough.delivery)
+if (cutthrough.cctx.sock >= 0 && cutthrough.delivery)
   {
   uschar * msg = cutthrough_finaldot();	/* Ask the target system to accept the message */
 					/* Logging was done in finaldot() */

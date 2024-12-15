@@ -135,9 +135,9 @@ domain = myhost.test.ex
   errors_to=
   domain_data=NULL local_part_data=^f\d
 routed by ut6 router (unseen)
-  envelope to: f3@myhost.test.ex
-  transport: ut6
-  errors to 
+  envelope to:	f3@myhost.test.ex
+  transport:	ut6
+  errors to:	
 "unseen" set: replicated f3@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing f2@myhost.test.ex
@@ -178,9 +178,9 @@ domain = myhost.test.ex
   errors_to=
   domain_data=NULL local_part_data=^f\d
 routed by ut6 router (unseen)
-  envelope to: f2@myhost.test.ex
-  transport: ut6
-  errors to 
+  envelope to:	f2@myhost.test.ex
+  transport:	ut6
+  errors to:	
 "unseen" set: replicated f2@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing f1@myhost.test.ex
@@ -221,9 +221,9 @@ domain = myhost.test.ex
   errors_to=
   domain_data=NULL local_part_data=^f\d
 routed by ut6 router (unseen)
-  envelope to: f1@myhost.test.ex
-  transport: ut6
-  errors to 
+  envelope to:	f1@myhost.test.ex
+  transport:	ut6
+  errors to:	
 "unseen" set: replicated f1@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing e1@myhost.test.ex
@@ -259,8 +259,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=^e\d
 routed by ut5 router (unseen)
-  envelope to: e1@myhost.test.ex
-  transport: ut5
+  envelope to:	e1@myhost.test.ex
+  transport:	ut5
 "unseen" set: replicated e1@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d3@myhost.test.ex
@@ -291,9 +291,9 @@ domain = myhost.test.ex
   errors_to=
   domain_data=NULL local_part_data=^d\d
 routed by ut4 router (unseen)
-  envelope to: d3@myhost.test.ex
-  transport: ut4
-  errors to 
+  envelope to:	d3@myhost.test.ex
+  transport:	ut4
+  errors to:	
 "unseen" set: replicated d3@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d2@myhost.test.ex
@@ -323,9 +323,9 @@ domain = myhost.test.ex
   errors_to=
   domain_data=NULL local_part_data=^d\d
 routed by ut4 router (unseen)
-  envelope to: d2@myhost.test.ex
-  transport: ut4
-  errors to 
+  envelope to:	d2@myhost.test.ex
+  transport:	ut4
+  errors to:	
 "unseen" set: replicated d2@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d1@myhost.test.ex
@@ -355,9 +355,9 @@ domain = myhost.test.ex
   errors_to=
   domain_data=NULL local_part_data=^d\d
 routed by ut4 router (unseen)
-  envelope to: d1@myhost.test.ex
-  transport: ut4
-  errors to 
+  envelope to:	d1@myhost.test.ex
+  transport:	ut4
+  errors to:	
 "unseen" set: replicated d1@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing c1@myhost.test.ex
@@ -383,9 +383,9 @@ domain = myhost.test.ex
   errors_to=
   domain_data=NULL local_part_data=^c\d
 routed by ut3 router (unseen)
-  envelope to: c1@myhost.test.ex
-  transport: ut3
-  errors to 
+  envelope to:	c1@myhost.test.ex
+  transport:	ut3
+  errors to:	
 "unseen" set: replicated c1@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing b1@myhost.test.ex
@@ -406,9 +406,9 @@ domain = myhost.test.ex
   errors_to=
   domain_data=NULL local_part_data=^b\d
 routed by ut2 router (unseen)
-  envelope to: b1@myhost.test.ex
-  transport: ut2
-  errors to 
+  envelope to:	b1@myhost.test.ex
+  transport:	ut2
+  errors to:	
 "unseen" set: replicated b1@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing a1@myhost.test.ex
@@ -424,9 +424,9 @@ domain = myhost.test.ex
   errors_to=
   domain_data=NULL local_part_data=^a\d
 routed by u1 router (unseen)
-  envelope to: a1@myhost.test.ex
-  transport: ut1
-  errors to 
+  envelope to:	a1@myhost.test.ex
+  transport:	ut1
+  errors to:	
 "unseen" set: replicated a1@myhost.test.ex
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -492,8 +492,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: f3@myhost.test.ex
-  transport: real
+  envelope to:	f3@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing f2@myhost.test.ex
 --------> ut7 router <--------
@@ -516,8 +516,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: f2@myhost.test.ex
-  transport: real
+  envelope to:	f2@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing f1@myhost.test.ex
 --------> ut7 router <--------
@@ -540,8 +540,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: f1@myhost.test.ex
-  transport: real
+  envelope to:	f1@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing e1@myhost.test.ex
 --------> ut6 router <--------
@@ -569,8 +569,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: e1@myhost.test.ex
-  transport: real
+  envelope to:	e1@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d3@myhost.test.ex
 --------> ut5 router <--------
@@ -603,8 +603,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: d3@myhost.test.ex
-  transport: real
+  envelope to:	d3@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d2@myhost.test.ex
 --------> ut5 router <--------
@@ -637,8 +637,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: d2@myhost.test.ex
-  transport: real
+  envelope to:	d2@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing d1@myhost.test.ex
 --------> ut5 router <--------
@@ -671,8 +671,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: d1@myhost.test.ex
-  transport: real
+  envelope to:	d1@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing c1@myhost.test.ex
 --------> ut4 router <--------
@@ -710,8 +710,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: c1@myhost.test.ex
-  transport: real
+  envelope to:	c1@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing b1@myhost.test.ex
 --------> ut3 router <--------
@@ -754,8 +754,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: b1@myhost.test.ex
-  transport: real
+  envelope to:	b1@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing a1@myhost.test.ex
 --------> ut2 router <--------
@@ -803,8 +803,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: a1@myhost.test.ex
-  transport: real
+  envelope to:	a1@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:
@@ -984,8 +984,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: CALLER@myhost.test.ex
-  transport: real
+  envelope to:	CALLER@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:
@@ -1074,8 +1074,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=^h\d
 routed by ut8 router (unseen)
-  envelope to: h1@myhost.test.ex
-  transport: ut1
+  envelope to:	h1@myhost.test.ex
+  transport:	ut1
 "unseen" set: replicated h1@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: h1@myhost.test.ex
@@ -1094,8 +1094,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by real router
-  envelope to: h1@myhost.test.ex
-  transport: real
+  envelope to:	h1@myhost.test.ex
+  transport:	real
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

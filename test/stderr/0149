@@ -24,8 +24,8 @@ domain = ten
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by domainlist1 router
-  envelope to: x@ten
-  transport: <none>
+  envelope to:	x@ten
+  transport:	<none>
   host V4NET.0.0.0 [V4NET.0.0.0]
   host V4NET.0.0.1 [V4NET.0.0.1]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -52,8 +52,8 @@ domain = two
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by domainlist1 router
-  envelope to: y@two
-  transport: <none>
+  envelope to:	y@two
+  transport:	<none>
   host V4NET.0.0.2 [V4NET.0.0.2]
   host V4NET.0.0.4 [V4NET.0.0.4]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -77,8 +77,8 @@ domain = test1
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by local router
-  envelope to: x@test1
-  transport: local_delivery
+  envelope to:	x@test1
+  transport:	local_delivery
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@test2
 --------> domainlist1 router <--------
@@ -99,8 +99,8 @@ domain = test2
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by local router
-  envelope to: x@test2
-  transport: local_delivery
+  envelope to:	x@test2
+  transport:	local_delivery
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@test3-4
 --------> domainlist1 router <--------
@@ -121,8 +121,8 @@ domain = test3-4
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by local router
-  envelope to: x@test3-4
-  transport: local_delivery
+  envelope to:	x@test3-4
+  transport:	local_delivery
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@one
 --------> domainlist1 router <--------
@@ -159,8 +159,8 @@ domain = one
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by domainlist2 router
-  envelope to: x@one
-  transport: <none>
+  envelope to:	x@one
+  transport:	<none>
   host V4NET.0.0.2 [V4NET.0.0.2]
   host V4NET.0.0.4 [V4NET.0.0.4]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -197,8 +197,8 @@ domain = six
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by domainlist2 router
-  envelope to: x@six
-  transport: <none>
+  envelope to:	x@six
+  transport:	<none>
   host V4NET.0.0.6 [V4NET.0.0.6]
   host V4NET.0.0.7 [V4NET.0.0.7]
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -156,8 +156,8 @@ r2 router generated TESTSUITE/test-mail/junk
   errors_to=NULL transport=t1
   uid=unset gid=unset home=/usr
 routed by r2 router
-  envelope to: userx@test.ex
-  transport: <none>
+  envelope to:	userx@test.ex
+  transport:	<none>
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail/junk
@@ -365,8 +365,8 @@ r1 router generated TESTSUITE/test-mail/junk
   errors_to=NULL transport=t1
   uid=unset gid=unset home=NULL
 routed by r1 router
-  envelope to: charlie@dom1.ain
-  transport: <none>
+  envelope to:	charlie@dom1.ain
+  transport:	<none>
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail/junk

@@ -472,6 +472,7 @@ extern uschar *csa_status;             /* Client SMTP Authorization result */
 typedef struct {
   unsigned     callout_hold_only:1;    /* Conn is only for verify callout */
   unsigned     delivery:1;             /* When to attempt */
+  unsigned     tpt_sender:1;           /* Use tpt-defined sender */
   unsigned     defer_pass:1;           /* Pass 4xx to caller rather than spooling */
   unsigned     is_tls:1;	       /* Conn has TLS active */
   client_conn_ctx cctx;                /* Open connection */

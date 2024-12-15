@@ -66,8 +66,8 @@ domain = x.y
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r1 router
-  envelope to: U@x.y
-  transport: <none>
+  envelope to:	U@x.y
+  transport:	<none>
 ----------- end verify ------------
 sender U@W.x.y verified ok as U@x.y
 accept: condition test succeeded in ACL acl_rcpt

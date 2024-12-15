@@ -30,6 +30,8 @@ Version 4.98
 
  9. IPv6 address support for mysql and pgsql lookups
 
+ 10. Cutthrough deliveries can use an envelope-from specified by a transport.
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

@@ -85,8 +85,8 @@ domain = y
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r1 router
-  envelope to: x@y
-  transport: t1
+  envelope to:	x@y
+  transport:	t1
  ----------- end verify ------------
  sender x@y verified ok
  require: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl1
@@ -147,8 +147,8 @@ domain = y
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r1 router
-  envelope to: x@y
-  transport: t1
+  envelope to:	x@y
+  transport:	t1
  ----------- end verify ------------
  sender x@y verified ok
  require: condition test succeeded in ACL TESTSUITE/aux-fixed/0386.acl1
@@ -334,8 +334,8 @@ domain = b
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r1 router
-  envelope to: 2@b
-  transport: t1
+  envelope to:	2@b
+  transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:
@@ -525,8 +525,8 @@ domain = b
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r1 router
-  envelope to: 2@b
-  transport: t1
+  envelope to:	2@b
+  transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

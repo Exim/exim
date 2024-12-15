@@ -131,8 +131,8 @@ domain = some.host
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by q router
-  envelope to: "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host
-  transport: other_smtp
+  envelope to:	"ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host
+  transport:	other_smtp
   host ten-1.test.ex [V4NET.0.0.1]
 >>>>>>>>>>>>>>>> Exim pid=p1238 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -177,8 +177,8 @@ domain = some.host
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by s router
-  envelope to: PASS@some.host
-  transport: smtp
+  envelope to:	PASS@some.host
+  transport:	smtp
   host 127.0.0.1 [127.0.0.1]
 >>>>>>>>>>>>>>>> Exim pid=p1239 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -235,8 +235,8 @@ parse_forward_list: postmaster@test.ex
 extract item: postmaster@test.ex
 q router generated postmaster@test.ex
 routed by q router
-  envelope to: "REDIRECT postmaster@test.ex"@some.host
-  transport: <none>
+  envelope to:	"REDIRECT postmaster@test.ex"@some.host
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing postmaster@test.ex
 --------> b router <--------
@@ -265,8 +265,8 @@ domain = test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=postmaster
 routed by pm router
-  envelope to: postmaster@test.ex
-  transport: null
+  envelope to:	postmaster@test.ex
+  transport:	null
 >>>>>>>>>>>>>>>> Exim pid=p1241 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:

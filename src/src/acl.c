@@ -3798,10 +3798,18 @@ for (; cb; cb = cb->next)
 		{
 		pp += 6;
 		if (Ustrncmp(pp, "pass", 4) == 0) cutthrough.defer_pass = TRUE;
-		/* else if (Ustrncmp(pp, "spool") == 0) ;	default */
+		/* else if (Ustrncmp(pp, "spool", 5) == 0) ;	default */
 		}
-	      else
-		while (*pp && *pp != '/') pp++;
+	      else if (Ustrncmp(pp, "sender=", 7) == 0)
+		{
+/*XXX rather raises the Q: should r-verify have a similar option?
+Esp. given the callout hold options and upgrade to cutthrough... */
+		pp += 7;
+		if (Ustrncmp(pp, "transport", 9) == 0)
+		  cutthrough.tpt_sender = TRUE;
+		/* else if (Ustrcmp(pp, "orig") == 0) ;	default */
+		}
+	      while (*pp && *pp != '/') pp++;
 	      p = pp;
 	      }
 	    }
@@ -5024,12 +5032,19 @@ switch (where)
     if (f.host_checking_callout)	/* -bhc mode */
       cancel_cutthrough_connection(TRUE, US"host-checking mode");
 
-    else if (  rc == OK
-	    && cutthrough.delivery
-	    && rcpt_count > cutthrough.nrcpt
-	    )
-      {
-      if ((rc = open_cutthrough_connection(addr)) == DEFER)
+    else if (cutthrough.delivery)
+      if (rc != OK)
+	{
+	HDEBUG(D_acl) debug_printf_indent(
+			"ignore cutthrough request; ACL did not accept\n");
+	}
+      else if (rcpt_count <= cutthrough.nrcpt)
+	{
+	HDEBUG(D_acl) debug_printf_indent(
+			"ignore cutthrough request; nonfirst message\n");
+	}
+      else if (  (rc = open_cutthrough_connection(addr, cutthrough.tpt_sender))
+	      == DEFER)
 	if (cutthrough.defer_pass)
 	  {
 	  uschar * s = addr->message;
@@ -5044,12 +5059,7 @@ switch (where)
 	  HDEBUG(D_acl) debug_printf_indent("cutthrough defer; will spool\n");
 	  rc = OK;
 	  }
-      }
-    else HDEBUG(D_acl) if (cutthrough.delivery)
-      if (rcpt_count <= cutthrough.nrcpt)
-	debug_printf_indent("ignore cutthrough request; nonfirst message\n");
-      else if (rc != OK)
-	debug_printf_indent("ignore cutthrough request; ACL did not accept\n");
+
     break;
 
   case ACL_WHERE_PREDATA:

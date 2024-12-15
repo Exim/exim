@@ -55,8 +55,8 @@ userfilter router generated userx@test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by userfilter router
-  envelope to: filter-userx@test.ex
-  transport: <none>
+  envelope to:	filter-userx@test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 unique = userx@test.ex
@@ -100,8 +100,8 @@ domain = test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=userx
 routed by user_accept2 router
-  envelope to: userx@test.ex
-  transport: appendfile
+  envelope to:	userx@test.ex
+  transport:	appendfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

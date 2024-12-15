@@ -115,8 +115,8 @@ domain = smart.domain
   errors_to=NULL
   domain_data=smart.domain local_part_data=x
 routed by smart1 router
-  envelope to: x@smart.domain
-  transport: <none>
+  envelope to:	x@smart.domain
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -222,8 +222,8 @@ domain = test.ex
   errors_to=NULL
   domain_data=test.ex local_part_data=x
 routed by smart2 router
-  envelope to: x@test.ex
-  transport: dummy
+  envelope to:	x@test.ex
+  transport:	dummy
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@myhost.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

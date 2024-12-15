@@ -44,8 +44,8 @@ aaaa_redirect router generated bbbb@myhost.test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by aaaa_redirect router
-  envelope to: aaaa@myhost.test.ex
-  transport: <none>
+  envelope to:	aaaa@myhost.test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing defer@myhost.test.ex
 --------> defer router <--------
@@ -94,8 +94,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=cccc
 routed by bc router
-  envelope to: cccc@myhost.test.ex
-  transport: t1
+  envelope to:	cccc@myhost.test.ex
+  transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing bbbb@myhost.test.ex
 --------> defer router <--------
@@ -119,8 +119,8 @@ domain = myhost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=bbbb
 routed by bc router
-  envelope to: bbbb@myhost.test.ex
-  transport: t1
+  envelope to:	bbbb@myhost.test.ex
+  transport:	t1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

@@ -19,8 +19,8 @@ r1 router generated kilos@thishost.test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by r1 router
-  envelope to: kilos@thishost
-  transport: <none>
+  envelope to:	kilos@thishost
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing kilos@thishost.test.ex
 --------> r2 router <--------
@@ -46,8 +46,8 @@ domain = thishost.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r5 router
-  envelope to: kilos@thishost.test.ex
-  transport: t2
+  envelope to:	kilos@thishost.test.ex
+  transport:	t2
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing solik@otherhost
 --------> r1 router <--------
@@ -64,8 +64,8 @@ r1 router generated solik@otherhost.test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by r1 router
-  envelope to: solik@otherhost
-  transport: <none>
+  envelope to:	solik@otherhost
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing solik@otherhost.test.ex
 --------> r2 router <--------
@@ -93,8 +93,8 @@ r3 router generated solik@otherhost.sub.test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by r3 router
-  envelope to: solik@otherhost.test.ex
-  transport: <none>
+  envelope to:	solik@otherhost.test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing solik@otherhost.sub.test.ex
 --------> r2 router <--------
@@ -139,8 +139,8 @@ r1 router generated xxx@ten-1.test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by r1 router
-  envelope to: xxx@ten-1
-  transport: <none>
+  envelope to:	xxx@ten-1
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@ten-1.test.ex
 --------> r2 router <--------
@@ -157,8 +157,8 @@ domain = ten-1.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r2 router
-  envelope to: xxx@ten-1.test.ex
-  transport: t1
+  envelope to:	xxx@ten-1.test.ex
+  transport:	t1
   host ten-1.test.ex [V4NET.0.0.1]
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@testsub
@@ -176,8 +176,8 @@ r1 router generated xxx@testsub.test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by r1 router
-  envelope to: xxx@testsub
-  transport: <none>
+  envelope to:	xxx@testsub
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@testsub.test.ex
 --------> r2 router <--------
@@ -205,8 +205,8 @@ r3 router generated xxx@testsub.sub.test.ex
   errors_to=NULL transport=NULL
   uid=unset gid=unset home=NULL
 routed by r3 router
-  envelope to: xxx@testsub.test.ex
-  transport: <none>
+  envelope to:	xxx@testsub.test.ex
+  transport:	<none>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xxx@testsub.sub.test.ex
 --------> r2 router <--------
@@ -222,7 +222,7 @@ domain = testsub.sub.test.ex
   errors_to=NULL
   domain_data=NULL local_part_data=NULL
 routed by r2 router
-  envelope to: xxx@testsub.sub.test.ex
-  transport: t1
+  envelope to:	xxx@testsub.sub.test.ex
+  transport:	t1
   host testsub.sub.test.ex [V4NET.99.0.3]
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>

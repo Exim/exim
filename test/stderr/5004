@@ -101,8 +101,8 @@ r1 router generated TESTSUITE/test-mail
   errors_to=NULL transport=t1
   uid=CALLER_UID gid=CALLER_GID home=NULL
 routed by r1 router
-  envelope to: userx@test.ex
-  transport: <none>
+  envelope to:	userx@test.ex
+  transport:	<none>
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail

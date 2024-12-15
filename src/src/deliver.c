@@ -2143,18 +2143,16 @@ gid_t gid;
 int status, len, rc;
 int pfd[2];
 pid_t pid;
-uschar *working_directory;
-address_item *addr2;
+uschar * working_directory;
+address_item * addr2;
 transport_instance * tp = addr->transport;
 const uschar * trname = tp->drinst.name;
 
 /* Set up the return path from the errors or sender address. If the transport
 has its own return path setting, expand it and replace the existing value. */
 
-if(addr->prop.errors_address)
-  return_path = addr->prop.errors_address;
-else
-  return_path = sender_address;
+return_path = addr->prop.errors_address
+  ? addr->prop.errors_address : sender_address;
 
 GET_OPTION("return_path");
 if (tp->return_path)

@@ -68,8 +68,8 @@ domain = test.ex
   errors_to=NULL
   domain_data=A TXT record for test.ex. local_part_data=A TXT record for test.ex.
 routed by r1 router
-  envelope to: test.ex@test.ex
-  transport: local_delivery
+  envelope to:	test.ex@test.ex
+  transport:	local_delivery
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Testing unknown@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -163,8 +163,8 @@ domain = test.ex
   errors_to=NULL
   domain_data=A TXT record for test.ex. local_part_data=NULL
 routed by r2 router
-  envelope to: unknown@test.ex
-  transport: local_delivery
+  envelope to:	unknown@test.ex
+  transport:	local_delivery
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
