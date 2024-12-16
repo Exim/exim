@@ -77,7 +77,6 @@ static pardata *parlist = NULL;
 static struct pollfd *parpoll;
 static int  return_count;
 static uschar *frozen_info = US"";
-static const uschar * used_return_path = NULL;
 
 
 
@@ -1172,8 +1171,8 @@ delivery; indeed, I did for some time, until this statement crashed. The case
 when it is not set is for a delivery to /dev/null which is optimised by not
 being run at all. */
 
-if (used_return_path && LOGGING(return_path_on_delivery))
-  g = string_append(g, 3, US" P=<", used_return_path, US">");
+if (addr->return_path && LOGGING(return_path_on_delivery))
+  g = string_append(g, 3, US" P=<", addr->return_path, US">");
 
 if (msg)
   g = string_append(g, 2, US" ", msg);
@@ -1406,8 +1405,8 @@ if (*queue_name)
 
 /* Return path may not be set if no delivery actually happened */
 
-if (used_return_path && LOGGING(return_path_on_delivery))
-  g = string_append(g, 3, US" P=<", used_return_path, US">");
+if (addr->return_path && LOGGING(return_path_on_delivery))
+  g = string_append(g, 3, US" P=<", addr->return_path, US">");
 
 if (addr->router)
   g = string_append(g, 2, US" R=", addr->router->drinst.name);
@@ -2175,7 +2174,7 @@ if (tp->return_path)
 /* For local deliveries, one at a time, the value used for logging can just be
 set directly, once and for all. */
 
-used_return_path = return_path;
+addr->return_path = return_path;
 
 /* Sort out the uid, gid, and initgroups flag. If an error occurs, the message
 gets put into the address(es), and the expansions are unset, so we can just
@@ -3957,7 +3956,7 @@ static address_item *
 par_wait(void)
 {
 int poffset, status;
-address_item * addr, * addrlist;
+address_item * addrlist;
 pid_t pid;
 
 set_process_info("delivering %s: waiting for a remote delivery subprocess "
@@ -4167,7 +4166,7 @@ if ((status & 0xffff) != 0)
   if (msb != 0 || (code != SIGTERM && code != SIGKILL && code != SIGQUIT))
     addrlist->special_action = SPECIAL_FREEZE;
 
-  for (addr = addrlist; addr; addr = addr->next)
+  for (address_item * addr = addrlist; addr; addr = addr->next)
     {
     addr->transport_return = DEFER;
     addr->message = msg;
@@ -4186,7 +4185,8 @@ else if (!parlist[poffset].done)
 decrement the count of subprocesses, and return the address chain. */
 
 transport_count = parlist[poffset].transport_count;
-used_return_path = parlist[poffset].return_path;
+for (address_item * addr = addrlist; addr; addr = addr->next)
+  addr->return_path = parlist[poffset].return_path;
 parlist[poffset].pid = 0;
 parcount--;
 return addrlist;

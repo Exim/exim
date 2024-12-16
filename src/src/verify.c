@@ -528,7 +528,11 @@ if (options & vopt_is_recipient)
     {
     from_address = sender_address;
     address_key = string_sprintf("%s/<%s>", addr->address, sender_address);
-    if (cutthrough.delivery) options |= vopt_callout_no_cache;
+    if (cutthrough.delivery)			/* cutthrough previously req. */
+      {
+      options |= vopt_callout_no_cache;		/* in case called by verify= */
+      addr->return_path = from_address;		/* for cutthrough logging */
+      }
     }
   else if (options & vopt_callout_recippmaster)
     {

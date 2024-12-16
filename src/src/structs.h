@@ -550,6 +550,7 @@ typedef struct address_item {
   const uschar *suffix_v;	  /*  variable part of above */
   const uschar *domain;           /* working domain (lower cased) */
 
+  const uschar *return_path;	  /* mailfrom, for logging */
   uschar *address_retry_key;      /* retry key including full address */
   uschar *domain_retry_key;       /* retry key for domain only */
 
