@@ -32218,7 +32218,7 @@ and data is copied from one to the other.
 An attempt to set this control for any recipient but the first
 for a mail will be quietly ignored.
 If a recipient-verify callout
-(with use_sender)
+(with use_sender or use_tpt_sender)
 connection is subsequently
 requested in the same ACL it is held open and used for
 any subsequent recipients and the data,
@@ -32275,6 +32275,8 @@ The default value of &"orig"& uses the address given for envelope-from
 in the inbound (originating) connection.
 A value of &"transport"& permits the transport used for the outbound
 connection to modify the envelope-from, via its &*return_path*& option.
+If the control is used on combination with a verify (as described above)
+then the envelope-from options must match for the same connection to be used.
 .wen
 
 
@@ -34236,7 +34238,11 @@ for the sender. This default is chosen because most hosts do not make use of
 the sender address when verifying a recipient. Using the same address means
 that a single cache entry can be used for each recipient. Some sites, however,
 do make use of the sender address when verifying. These are catered for by the
-&%use_sender%& and &%use_postmaster%& options, described in the next section.
+&%use_sender%&,
+.new
+&%use_tptsender%&
+.wen
+and &%use_postmaster%& options, described in the next section.
 
 If the response to the RCPT command is a 2&'xx'& code, the verification
 succeeds. If it is 5&'xx'&, the verification fails. For any other condition,
@@ -34408,6 +34414,11 @@ command when performing the callout, instead of an empty address. There is no
 need to use this option unless you know that the called hosts make use of the
 sender when checking recipients. If used indiscriminately, it reduces the
 usefulness of callout caching.
+
+.vitem &*use_tptsender*&
+This option is similar to &*use_sender*& above,
+but additionally permits the replacement of the sender address
+by the &*return_path*& option of the transport.
 
 .vitem &*hold*&
 This option applies to recipient callouts only. For example:

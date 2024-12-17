@@ -1711,9 +1711,10 @@ static verify_type_t verify_type_list[] = {
 
 
 enum { CALLOUT_DEFER_OK, CALLOUT_NOCACHE, CALLOUT_RANDOM, CALLOUT_USE_SENDER,
-  CALLOUT_USE_POSTMASTER, CALLOUT_POSTMASTER, CALLOUT_FULLPOSTMASTER,
-  CALLOUT_MAILFROM, CALLOUT_POSTMASTER_MAILFROM, CALLOUT_MAXWAIT, CALLOUT_CONNECT,
-  CALLOUT_HOLD, CALLOUT_TIME	/* TIME must be last */
+  CALLOUT_USE_TPTSENDER, CALLOUT_USE_POSTMASTER, CALLOUT_POSTMASTER,
+  CALLOUT_FULLPOSTMASTER, CALLOUT_MAILFROM, CALLOUT_POSTMASTER_MAILFROM,
+  CALLOUT_MAXWAIT, CALLOUT_CONNECT, CALLOUT_HOLD,
+  CALLOUT_TIME	/* TIME must be last */
   };
 typedef struct {
   uschar * name;
@@ -1728,7 +1729,8 @@ static callout_opt_t callout_opt_list[] = {
     { US"no_cache",   	  CALLOUT_NOCACHE,	 vopt_callout_no_cache,		FALSE, FALSE },
     { US"random",	  CALLOUT_RANDOM,	 vopt_callout_random,		FALSE, FALSE },
     { US"use_sender",     CALLOUT_USE_SENDER,	 vopt_callout_recipsender,	FALSE, FALSE },
-    { US"use_postmaster", CALLOUT_USE_POSTMASTER,vopt_callout_recippmaster,	FALSE, FALSE },
+    { US"use_tptsender",  CALLOUT_USE_TPTSENDER, vopt_callout_r_tptsender,	FALSE, FALSE },
+    { US"use_postmaster", CALLOUT_USE_POSTMASTER,vopt_callout_r_pmaster,	FALSE, FALSE },
     { US"postmaster_mailfrom",CALLOUT_POSTMASTER_MAILFROM,0,			TRUE,  FALSE },
     { US"postmaster",	  CALLOUT_POSTMASTER,	 0,				FALSE, FALSE },
     { US"fullpostmaster", CALLOUT_FULLPOSTMASTER,vopt_callout_fullpm,		FALSE, FALSE },
@@ -1802,31 +1804,22 @@ static int
 acl_verify(int where, address_item *addr, const uschar *arg,
   uschar **user_msgptr, uschar **log_msgptr, int *basic_errno)
 {
-int sep = '/';
-int callout = -1;
-int callout_overall = -1;
-int callout_connect = -1;
-int verify_options = 0;
-int rc;
-BOOL verify_header_sender = FALSE;
-BOOL defer_ok = FALSE;
-BOOL callout_defer_ok = FALSE;
-BOOL no_details = FALSE;
-BOOL success_on_redirect = FALSE;
-BOOL quota = FALSE;
+int sep = '/', callout = -1, callout_overall = -1, callout_connect = -1;
+int verify_options = 0, rc;
+BOOL verify_header_sender = FALSE, defer_ok = FALSE, callout_defer_ok = FALSE;
+BOOL no_details = FALSE, success_on_redirect = FALSE, quota = FALSE;
 int quota_pos_cache = QUOTA_POS_DEFAULT, quota_neg_cache = QUOTA_NEG_DEFAULT;
 address_item * sender_vaddr = NULL;
 const uschar * verify_sender_address = NULL;
-uschar * pm_mailfrom = NULL;
-uschar * se_mailfrom = NULL;
+uschar * pm_mailfrom = NULL, * se_mailfrom = NULL;
 
 /* Some of the verify items have slash-separated options; some do not. Diagnose
 an error if options are given for items that don't expect them.
 */
 
-uschar *slash = Ustrchr(arg, '/');
-const uschar *list = arg;
-uschar *ss = string_nextinlist(&list, &sep, NULL, 0);
+uschar * slash = Ustrchr(arg, '/');
+const uschar * list = arg;
+uschar * ss = string_nextinlist(&list, &sep, NULL, 0);
 verify_type_t * vp;
 
 if (!ss) goto BAD_VERIFY;
@@ -2113,13 +2106,22 @@ while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
     }
   }
 
-if ((verify_options & (vopt_callout_recipsender|vopt_callout_recippmaster)) ==
-      (vopt_callout_recipsender|vopt_callout_recippmaster))
-  {
-  *log_msgptr = US"only one of use_sender and use_postmaster can be set "
-    "for a recipient callout";
-  return ERROR;
-  }
+ {
+  int ropts = verify_options &
+    (vopt_callout_recipsender|vopt_callout_r_tptsender|vopt_callout_r_pmaster);
+  if (ropts && verify_sender_address)
+    {
+    *log_msgptr = US"use_sender, use_tptsender or use_postmaster cannot be used"
+      "for a sender verify callout";
+    return ERROR;
+    }
+  if ((ropts-1) & -ropts)		/* more than one bit set */
+    {
+    *log_msgptr = US"only one of use_sender, use_tptsender and use_postmaster"
+      " can be set for a recipient callout";
+    return ERROR;
+    }
+ }
 
 /* Handle quota verification */
 if (quota)
@@ -2185,13 +2187,6 @@ callout handling, should ensure that this is not terribly inefficient. */
 
 else if (verify_sender_address)
   {
-  if ((verify_options & (vopt_callout_recipsender|vopt_callout_recippmaster)))
-    {
-    *log_msgptr = US"use_sender or use_postmaster cannot be used for a "
-      "sender verify callout";
-    return ERROR;
-    }
-
   sender_vaddr = verify_checked_sender(verify_sender_address);
   if (   sender_vaddr				/* Previously checked */
       && callout <= 0)				/* No callout needed this time */
@@ -3802,8 +3797,6 @@ for (; cb; cb = cb->next)
 		}
 	      else if (Ustrncmp(pp, "sender=", 7) == 0)
 		{
-/*XXX rather raises the Q: should r-verify have a similar option?
-Esp. given the callout hold options and upgrade to cutthrough... */
 		pp += 7;
 		if (Ustrncmp(pp, "transport", 9) == 0)
 		  cutthrough.tpt_sender = TRUE;

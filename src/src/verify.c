@@ -445,8 +445,6 @@ if (addr->transport == cutthrough.addr.transport)
 	}
       break;	/* host_list */
       }
-if (!done)
-  cancel_cutthrough_connection(TRUE, US"incompatible connection");
 return done;
 }
 
@@ -491,9 +489,9 @@ Arguments:
                       vopt_callout_fullpm => if postmaster check, do full one
                       vopt_callout_random => do the "random" thing
                       vopt_callout_recipsender => use original sender addres
-                      vopt_callout_recippmaster => use postmaster as sender
-vopt_callout_r_tptsender => use sender as defined by transport
-		      vopt_callout_hold         => lazy close connection
+                      vopt_callout_r_pmaster   => use postmaster as sender
+		      vopt_callout_r_tptsender => use sender defined by tpt
+		      vopt_callout_hold        => lazy close connection
   se_mailfrom         MAIL FROM address for sender verify; NULL => ""
   pm_mailfrom         if non-NULL, do the postmaster check with this sender
 
@@ -531,7 +529,7 @@ callout, because that may influence the result of the callout. */
 if (options & vopt_is_recipient)
   if (options & ( vopt_callout_recipsender
 		| vopt_callout_r_tptsender
-		| vopt_callout_recippmaster)
+		| vopt_callout_r_pmaster)
      )
     {
     if (options & vopt_callout_recipsender)
@@ -560,11 +558,9 @@ if (options & vopt_is_recipient)
       from_address = string_sprintf("postmaster@%s", qualify_domain_sender);
 
     address_key = string_sprintf("%s/<%s>", addr->address, from_address);
+    addr->return_path = from_address;		/* for cutthrough logging */
     if (cutthrough.delivery)			/* cutthrough previously req. */
-      {
       options |= vopt_callout_no_cache;		/* in case called by verify= */
-      addr->return_path = from_address;		/* for cutthrough logging */
-      }
     }
   else
     {
@@ -646,14 +642,19 @@ that conn for verification purposes (and later delivery also).  Simplest
 coding means skipping this whole loop and doing the append separately.  */
 
   /* Can we re-use an open cutthrough connection? */
-  if (  cutthrough.cctx.sock >= 0
-     && (options & ( vopt_callout_recipsender
-		   | vopt_callout_r_tptsender | vopt_callout_recippmaster))
-	== vopt_callout_recipsender
-     && !random_local_part
-     && !pm_mailfrom
-     )
-    done = cutthrough_multi(addr, host_list, tf, &yield);
+
+  if (cutthrough.cctx.sock >= 0)
+    {
+    if (  !(options & vopt_callout_r_pmaster)
+       && !random_local_part
+       && !pm_mailfrom
+       && Ustrcmp(addr->return_path, cutthrough.addr.return_path) == 0
+       )
+      done = cutthrough_multi(addr, host_list, tf, &yield);
+
+    if (!done)
+      cancel_cutthrough_connection(TRUE, US"incompatible connection");
+    }
 
   /* If we did not use a cached connection, make connections to the hosts
   and do real callouts. The list of hosts is passed in as an argument. */
@@ -1141,7 +1142,7 @@ no_conn:
        && rcpt_count == 1
        && done
        && yield == OK
-       && !(options & (vopt_callout_recippmaster | vopt_success_on_redirect))
+       && !(options & (vopt_callout_r_pmaster| vopt_success_on_redirect))
        && !random_local_part
        && !pm_mailfrom
        && cutthrough.cctx.sock < 0
@@ -1704,10 +1705,10 @@ Arguments:
 
                      vopt_callout_fullpm => if postmaster check, do full one
                      vopt_callout_no_cache => don't use callout cache
-                     vopt_callout_random => do the "random" thing
-                     vopt_callout_recipsender => use real sender for recipient
+                     vopt_callout_random   => do the "random" thing
+                     vopt_callout_recipsender  => use real sender for recipient
                      vopt_callout_recippmaster => use postmaster for recipient
-vopt_callout_r_tptsender => use sender as defined by transport
+		     vopt_callout_r_tptsender  => use sender as defined by tpt
 
   callout          if > 0, specifies that callout is required, and gives timeout
                      for individual commands
