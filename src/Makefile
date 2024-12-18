@@ -102,12 +102,17 @@ clean_exim:; cd build-$(buildname); \
 	done; \
 	$(RM_COMMAND) -fr dynmodules
 
-clean:	clean_exim
+clean-doc: FRC
+	cd ../doc/doc-docbook; \
+	$(RM_COMMAND) {filter,spec}*.{pdf,ps,txt,html,xml}
+
+clean:	clean_exim clean_doc
 	@echo ""; echo '*** "make clean" just removes all .o and .a files'
 	@echo '*** Use "make makefile" to force a rebuild of the makefile'
 	@echo ""
 
-distclean:; $(RM_COMMAND) -rf build-* cscope*
+distclean: clean_doc
+	$(RM_COMMAND) -rf build-* cscope*
 
 cscope.files: FRC
 	echo "-q" > $@

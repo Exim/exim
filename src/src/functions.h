@@ -235,6 +235,7 @@ extern uschar *expand_file_big_buffer(const uschar *);
 extern uschar *expand_string(uschar *);	/* public, cannot make const */
 extern const uschar *expand_string_2(const uschar *, BOOL *);
 extern const uschar *expand_cstring(const uschar *); /* ... so use this one */
+extern BOOL   expand_string_nonempty(const uschar *);
 extern uschar *expand_getkeyed(const uschar *, const uschar *);
 
 extern uschar *expand_hide_passwords(uschar * );

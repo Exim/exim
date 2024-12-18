@@ -1115,22 +1115,24 @@ no_conn:
 
     if (cutthrough.delivery)
       {
-      if (addr->transport->filter_command)
+      if (expand_string_nonempty(addr->transport->filter_command))
         {
         cutthrough.delivery= FALSE;
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
         }
 #ifndef DISABLE_DKIM
-      /* DKIM signing needs to add a header after seeing the whole body, so we cannot just copy
-      body bytes to the outbound as they are received, which is the intent of cutthrough. */
-      if (ob->dkim.dkim_domain)
+      /* DKIM signing needs to add a header after seeing the whole body, so we
+      cannot just copy body bytes to the outbound as they are received, which is
+      the intent of cutthrough. */
+      if (expand_string_nonempty(ob->dkim.dkim_domain))
         {
         cutthrough.delivery= FALSE;
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of DKIM signing\n");
         }
 #endif
 #ifdef EXPERIMENTAL_ARC
-      if (ob->arc_sign)
+      /* ARC has the same issue as DKIM above */
+      if (expand_string_nonempty(ob->arc_sign))
         {
         cutthrough.delivery= FALSE;
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of ARC signing\n");

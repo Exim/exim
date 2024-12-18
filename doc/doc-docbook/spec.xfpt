@@ -170,6 +170,8 @@
 . --- ID that ties them together.
 . --- The index entry points to the most-recent chapter head, section or subsection
 . --- head, or list-item.
+. ---- It'd be a lot nicer to point to the precise word-location; a chapter
+. ---- can be pretty big.
 
 .macro cindex
 &<indexterm role="concept">&
@@ -1269,6 +1271,8 @@ one of the checks to be performed in an ACL for incoming messages, on both
 sender and recipient addresses, and it can be tested using the &%-bv%& and
 &%-bvs%& command line options.
 
+.cindex router "verify mode"
+.cindex "verify mode" routers
 When an address is being verified, the routers are run in &"verify mode"&. This
 does not affect the way the routers work, but it is a state that can be
 detected. By this means, a router can be skipped or made to behave differently

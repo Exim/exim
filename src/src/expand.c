@@ -4601,13 +4601,14 @@ and, given the acl condition, ${if }. This is an unfortunate consequence of
 string expansion becoming too powerful.
 
 Arguments:
-  string         the string to be expanded
+  s		  the string to be expanded
   flags
    brace_ends     expansion is to stop at }
    honour_dollar  TRUE if $ is to be expanded,
                   FALSE if it's just another character
    skipping       TRUE for recursive calls when the value isn't actually going
                   to be used (to allow for optimisation)
+   exists_only	  return as soon as we have a char, for optimisation
   left           if not NULL, a pointer to the first character after the
                  expansion is placed here (typically used with brace_ends)
   resetok_p	 if not NULL, pointer to flag - write FALSE if unsafe to reset
@@ -4621,13 +4622,13 @@ Returns:         NULL if expansion fails:
 */
 
 static uschar *
-expand_string_internal(const uschar * string, esi_flags flags, const uschar ** left,
+expand_string_internal(const uschar * s, esi_flags flags, const uschar ** left,
   BOOL *resetok_p, BOOL * textonly_p)
 {
 rmark reset_point = store_mark();
-gstring * yield = string_get(Ustrlen(string) + 64);
+gstring * yield = NULL;
 int item_type;
-const uschar * s = string;
+const uschar * orig_string = s;
 const uschar * save_expand_nstring[EXPAND_MAXN+1];
 int save_expand_nlength[EXPAND_MAXN+1];
 BOOL resetok = TRUE, first = TRUE, textonly = TRUE;
@@ -4636,7 +4637,7 @@ expand_level++;
 f.expand_string_forcedfail = FALSE;
 expand_string_message = US"";
 
-if (is_tainted(string))
+if (is_tainted(s))
   {
   expand_string_message =
     string_sprintf("attempt to expand tainted string '%s'", s);
@@ -4644,9 +4645,16 @@ if (is_tainted(string))
   goto EXPAND_FAILED;
   }
 
+ {
+  int len = Ustrlen(s);
+  if (len) yield = string_get(len + 64);
+ }
+
 while (*s)
   {
   uschar name[256];
+
+  if (flags & ESI_EXISTS_ONLY && gstring_length(yield) > 0) break;
 
   DEBUG(D_expand)
     {
@@ -8491,7 +8499,7 @@ left != NULL, return a pointer to the terminator. */
     BOOL tainted = is_tainted(res);
     debug_printf_indent("%Vexpanded: %.*W\n",
       "K---",
-      (int)(s - string), string);
+      (int)(s - orig_string), orig_string);
     debug_printf_indent("%Vresult: ",
       flags & ESI_SKIPPING ? "K-----" : "\\_____");
     if (*res || !(flags & ESI_SKIPPING))
@@ -8533,7 +8541,7 @@ EXPAND_FAILED:
 if (left) *left = s;
 DEBUG(D_expand)
   {
-  debug_printf_indent("%Vfailed to expand: %s\n", "K", string);
+  debug_printf_indent("%Vfailed to expand: %s\n", "K", orig_string);
   debug_printf_indent("%Verror message: %s\n",
     f.expand_string_forcedfail ? "K---" : "\\___", expand_string_message);
   if (f.expand_string_forcedfail)
@@ -8584,6 +8592,17 @@ expand_string(uschar * string)
 { return US expand_string_2(CUS string, NULL); }
 
 
+/* Just return whether the string is non-empty after expansion */
+
+BOOL
+expand_string_nonempty(const uschar * string)
+{
+const uschar * s;
+if (!string) return FALSE;
+s = expand_string_internal(string, ESI_HONOR_DOLLAR | ESI_EXISTS_ONLY,
+			    NULL, NULL, NULL);
+return s && *s;
+}
 
 
 
