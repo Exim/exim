@@ -102,9 +102,9 @@ clean_exim:; cd build-$(buildname); \
 	done; \
 	$(RM_COMMAND) -fr dynmodules
 
-clean-doc: FRC
+clean_doc: FRC
 	cd ../doc/doc-docbook; \
-	$(RM_COMMAND) {filter,spec}*.{pdf,ps,txt,html,xml}
+	$(RM_COMMAND) -f {filter,spec}*.{pdf,ps,txt,html,xml}
 
 clean:	clean_exim clean_doc
 	@echo ""; echo '*** "make clean" just removes all .o and .a files'
