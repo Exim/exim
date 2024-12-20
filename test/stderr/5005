@@ -17,6 +17,7 @@ Sender: CALLER@test.ex
 Recipients:
   nofile@test.ex
 search_tidyup called
+WARNING: bad header line (no colon).  Assuming first line of body
 >>Headers received:
 
 qualify & rewrite recipients list
@@ -203,6 +204,7 @@ Sender: CALLER@test.ex
 Recipients:
   userx@test.ex
 search_tidyup called
+WARNING: bad header line (no colon).  Assuming first line of body
 >>Headers received:
 
 qualify & rewrite recipients list
@@ -390,6 +392,7 @@ Sender: CALLER@test.ex
 Recipients:
   userx@test.ex
 search_tidyup called
+WARNING: bad header line (no colon).  Assuming first line of body
 >>Headers received:
 
 qualify & rewrite recipients list
@@ -581,6 +584,7 @@ Sender: CALLER@test.ex
 Recipients:
   userx@test.ex
 search_tidyup called
+WARNING: bad header line (no colon).  Assuming first line of body
 >>Headers received:
 
 qualify & rewrite recipients list

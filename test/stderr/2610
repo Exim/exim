@@ -777,6 +777,7 @@ Sender: CALLER@myhost.test.ex
 Recipients:
   ph10
 search_tidyup called
+WARNING: bad header line (no colon).  Assuming first line of body
 >>Headers received:
 
 qualify & rewrite recipients list

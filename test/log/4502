@@ -22,3 +22,6 @@
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	dkim=neutral (public key record import problem)\n		 header.d=test.ex header.s=sel_bad header.a=rsa-sha1
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 dkim_state DOES NOT include pass
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=564CFC9B.1040905@yahoo.com
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 Authentication-Results: myhost.test.ex
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 dkim_state DOES NOT include pass
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=564CFC9B.1040905@yahoo.com

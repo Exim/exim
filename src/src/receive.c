@@ -2245,10 +2245,23 @@ OVERSIZE:
     /* If not a valid header line, break from the header reading loop, leaving
     next != NULL, indicating that it holds the first line of the body. */
 
-    if (isspace(*p)) break;
+    if (isspace(*p))
+      {
+      DEBUG(D_receive) debug_printf("WARNING: bad header line "
+	      " (starts with whitespace).  Assuming first line of body\n");
+#ifndef DISABLE_DKIM
+      f.dkim_disable_verify = TRUE;	/* This could be a DKIM-bypass attack */
+#endif
+      break;
+      }
     while (mac_isgraph(*p) && *p != ':') p++;
     if (Uskip_whitespace(&p) != ':')
       {
+      DEBUG(D_receive) debug_printf("WARNING: bad header line"
+	      " (no colon).  Assuming first line of body\n");
+#ifndef DISABLE_DKIM
+      f.dkim_disable_verify = TRUE;
+#endif
       body_zerocount = had_zero;
       break;
       }
@@ -2563,7 +2576,7 @@ for (header_line * h = header_list->next; h; h = h->next)
       ****/
       break;
     }
-  }
+  }	/* Scan headers to identify them */
 
 /* Extract recipients from the headers if that is required (the -t option).
 Note that this is documented as being done *before* any address rewriting takes
@@ -2719,7 +2732,7 @@ if (extract_recip)
       }   /* For appropriate header line */
     }     /* For each header line */
 
-  }
+  }	/* Extract recipients from headers */
 
 /* Now build the unique message id. This has changed several times over the
 lifetime of Exim, and is changing for Exim 4.97.
@@ -2876,7 +2889,7 @@ if (  !msgid_header
     msgid_header_newly_created = TRUE;
     msgid_header = h;
     }
-  }
+  }	/* Generate Message-ID: header */
 
 /* If we are to log recipients, keep a copy of the raw ones before any possible
 rewriting. Must copy the count, because later ACLs and the local_scan()
@@ -2981,7 +2994,7 @@ if (  !from_header
 
     from_header = header_last;    /* To get it checked for Sender: */
     }
-  }
+  }	/* Generate From: header */
 
 
 /* If the sender is local (without suppress_local_fixups), or if we are in
@@ -3067,7 +3080,7 @@ if (  from_header
         "\"%s\" from env-from rewritten as \"%s\" by submission mode",
         sender_address_unrewritten, generated_sender_address);
     }
-  }
+  }	/* generate Sender: header */
 
 /* If there are any rewriting rules, apply them to the sender address, unless
 it has already been rewritten as part of verification for SMTP input. */

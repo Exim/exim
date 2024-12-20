@@ -96,6 +96,11 @@ JH/18 Bug 3102: The dmarc_tld_file and dmarc_history_file options are now
 JH/19 Bug 3092: Call acl_smtp_notquit for drops associated with the
       smtp_max_synprot_errors limit.
 
+JH/20 Bug 3036: Fix smuggling attack on DKIM verification. A crafted insertion
+      between message header and body could look like a header, unsigned, for
+      the verification code but as part of the body for delivery of the message.
+      Address by cancelling verification.
+
 Exim version 4.98
 -----------------
 
