@@ -1779,6 +1779,7 @@ static gstring *
 arc_sign(const uschar * signspec, gstring * sigheaders, uschar ** errstr)
 {
 const uschar * identity, * selector, * privkey, * opts, * s;
+const uschar * orig_signspec = signspec;
 unsigned options = 0;
 int sep = 0;
 header_line * headers;
@@ -1793,15 +1794,15 @@ expire = now = 0;
 /* Parse the signing specification */
 
 if (!(identity = string_nextinlist(&signspec, &sep, NULL, 0)) || !*identity)
-  { s = US"identity"; goto bad_arg_ret; }
+  { s = US"identity empty"; goto bad_arg_ret; }
 if (!(selector = string_nextinlist(&signspec, &sep, NULL, 0)) || !*selector)
-  { s = US"selector"; goto bad_arg_ret; }
+  { s = US"selector empty"; goto bad_arg_ret; }
 if (!(privkey = string_nextinlist(&signspec, &sep, NULL, 0))  || !*privkey)
-  { s = US"privkey"; goto bad_arg_ret; }
+  { s = US"privkey empty"; goto bad_arg_ret; }
 if (!arc_valid_id(identity))
-  { s = US"identity"; goto bad_arg_ret; }
+  { s = US"identity chars"; goto bad_arg_ret; }
 if (!arc_valid_id(selector))
-  { s = US"selector"; goto bad_arg_ret; }
+  { s = US"selector chars"; goto bad_arg_ret; }
 if (*privkey == '/' && !(privkey = expand_file_big_buffer(privkey)))
   goto ret_sigheaders;
 
@@ -1928,7 +1929,8 @@ out:
 
 
 bad_arg_ret:
-  log_write(0, LOG_MAIN, "ARC: bad signing-specification (%s)", s);
+  log_write(0, LOG_MAIN,
+	    "ARC: bad signing-specification (%s) '%s'", s, orig_signspec);
 ret_sigheaders:
   g = sigheaders;
   goto out;

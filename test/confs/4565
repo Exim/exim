@@ -3,6 +3,7 @@
 SERVER=
 VALUE=
 INSERT=
+REQUIRE= $primary_hostname : sel : DIR/aux-fixed/dkim/dkim.private
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -72,7 +73,7 @@ tsmtp:
   dkim_selector = sel
   dkim_private_key = DIR/aux-fixed/dkim/dkim.private
 .ifndef OPTION
-  arc_sign =	$primary_hostname : sel : DIR/aux-fixed/dkim/dkim.private
+  arc_sign =	REQUIRE
 .endif
 
 # End

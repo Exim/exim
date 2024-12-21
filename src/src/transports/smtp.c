@@ -4145,8 +4145,9 @@ else
 # ifdef EXPERIMENTAL_ARC
       {
       uschar * s = ob->arc_sign;
+      GET_OPTION("arc_sign");
       if (s)
-	if (!(ob->dkim.arc_signspec = s = expand_string(s)))
+	if (!(s = expand_string(s)))
 	  {
 	  if (!f.expand_string_forcedfail)
 	    {
@@ -4162,6 +4163,7 @@ else
 
 	  /* Ask dkim code to hash the body for ARC */
 	  ob->dkim.force_bodyhash = TRUE;
+	  ob->dkim.arc_signspec = s;
 	  }
       }
 # endif	/*ARC*/

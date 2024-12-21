@@ -42,6 +42,39 @@ exim -DSERVER=server -DNOTDAEMON -q
 #
 #
 #
+# We send this one through one forwarding hop, but the forwarder has
+# an arc_sign option which is set but empty.
+# It starts off bare, so the forwarder reception gets an ARC status of "none".
+# The forwarder outbound does not sign due to the empty option,
+# and the final receiver accepts with an AR arc=none
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<za@test.ex>
+??? 250
+DATA
+??? 354
+Subject: Test
+
+This is a test body.
+.
+??? 250
+QUIT
+??? 221
+****
+#
+exim -DREQUIRE='${if eq{1}{1} {}}' -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+#
+#
+#
 #
 killdaemon
 no_stdout_check
