@@ -386,6 +386,7 @@ try option max_rcpt
 try option multi_domain
 try option max_parallel
 try option return_path
+try option hosts_randomize
  ╭considering: $domain
  ├──────value: domain1.ex
             ╰──(tainted)

@@ -23,6 +23,8 @@ to be publicly visible; these are flagged with opt_public. */
 #define LOFF(field) OPT_OFF(smtp_transport_options_block, field)
 
 optionlist smtp_transport_options[] = {
+  { "*expand_hosts_randomize",		opt_stringptr | opt_hidden,
+      LOFF(expand_hosts_randomize) },
   { "*expand_multi_domain",             opt_stringptr | opt_hidden | opt_public,
       OPT_OFF(transport_instance, expand_multi_domain) },
   { "*expand_retry_include_ip_address", opt_stringptr | opt_hidden,
@@ -85,7 +87,7 @@ optionlist smtp_transport_options[] = {
 #ifndef DISABLE_PIPE_CONNECT
   { "hosts_pipe_connect",   opt_stringptr, LOFF(hosts_pipe_connect) },
 #endif
-  { "hosts_randomize",      opt_bool,	   LOFF(hosts_randomize) },
+  { "hosts_randomize",      opt_expand_bool, LOFF(hosts_randomize) },
 #if !defined(DISABLE_TLS) && !defined(DISABLE_OCSP)
   { "hosts_request_ocsp",   opt_stringptr, LOFF(hosts_request_ocsp) },
 #endif
@@ -308,7 +310,7 @@ Arguments:
   gid       the gid that will be set (not used)
   errmsg    place for error message (not used)
 
-Returns:  OK always (FAIL, DEFER not used)
+Returns:  OK/other for failure
 */
 
 static int
@@ -326,11 +328,19 @@ if (tf)
   tf->protocol = ob->protocol;
   tf->hosts = ob->hosts;
   tf->hosts_override = ob->hosts_override;
-  tf->hosts_randomize = ob->hosts_randomize;
   tf->gethostbyname = ob->gethostbyname;
   tf->qualify_single = ob->dns_qualify_single;
   tf->search_parents = ob->dns_search_parents;
   tf->helo_data = ob->helo_data;
+
+  if (ob->expand_hosts_randomize) deliver_set_expansions(addrlist);
+
+  if (exp_bool(addrlist, US"transport", tblock->drinst.name, D_transport,
+	      US"hosts_randomize", ob->hosts_randomize,
+	      ob->expand_hosts_randomize, &tf->hosts_randomize) != OK)
+    return DEFER;
+
+  deliver_set_expansions(NULL);
   }
 
 /* Set the fallback host list for all the addresses that don't have fallback
@@ -5346,7 +5356,7 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
 
   if (!ob->hostlist)
     {
-    uschar *s = ob->hosts;
+    uschar * s = ob->hosts;
 
     if (Ustrchr(s, '$'))
       {
@@ -5361,8 +5371,8 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
         "\"%s\"\n", s, expanded_hosts);
       s = expanded_hosts;
       }
-    else
-      if (ob->hosts_randomize) s = expanded_hosts = string_copy(s);
+    else if (ob->hosts_randomize)
+      s = expanded_hosts = string_copy(s);
 
     if (is_tainted(s))
       {
@@ -5375,7 +5385,18 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
       return FALSE;
       }
 
-    host_build_hostlist(&hostlist, s, ob->hosts_randomize);
+    /* Get the hosts_randomize transport option, expanding if needed */
+      {
+      BOOL randomize;
+      if (exp_bool(addrlist, US"transport", tblock->drinst.name, D_transport,
+	  US"hosts_randomize", ob->hosts_randomize, ob->expand_hosts_randomize,
+	  &randomize))
+	{
+	addrlist->transport_return = DEFER;
+	return FALSE;
+	}
+      host_build_hostlist(&hostlist, s, randomize);
+      }
 
     /* Check that the expansion yielded something useful. */
     if (!hostlist)
@@ -5404,40 +5425,51 @@ must sort it into a random order if it did not come from MX records and has not
 already been randomized (but don't bother if continuing down an existing
 connection). */
 
-else if (ob->hosts_randomize && hostlist->mx == MX_NONE && !continue_hostname)
+else if (hostlist->mx == MX_NONE && !continue_hostname)
   {
-  host_item *newlist = NULL;
-  while (hostlist)
+  BOOL randomize;
+  if (exp_bool(addrlist, US"transport", tblock->drinst.name, D_transport,
+      US"hosts_randomize", ob->hosts_randomize, ob->expand_hosts_randomize,
+      &randomize))
     {
-    host_item *h = hostlist;
-    hostlist = hostlist->next;
-
-    h->sort_key = random_number(100);
-
-    if (!newlist)
-      {
-      h->next = NULL;
-      newlist = h;
-      }
-    else if (h->sort_key < newlist->sort_key)
-      {
-      h->next = newlist;
-      newlist = h;
-      }
-    else
-      {
-      host_item *hh = newlist;
-      while (hh->next)
-        {
-        if (h->sort_key < hh->next->sort_key) break;
-        hh = hh->next;
-        }
-      h->next = hh->next;
-      hh->next = h;
-      }
+    addrlist->transport_return = DEFER;
+    return FALSE;
     }
+  if (randomize)
+    {
+    host_item * newlist = NULL;
+    while (hostlist)
+      {
+      host_item * h = hostlist;
+      hostlist = hostlist->next;
 
-  hostlist = addrlist->host_list = newlist;
+      h->sort_key = random_number(100);
+
+      if (!newlist)
+	{
+	h->next = NULL;
+	newlist = h;
+	}
+      else if (h->sort_key < newlist->sort_key)
+	{
+	h->next = newlist;
+	newlist = h;
+	}
+      else
+	{
+	host_item * hh = newlist;
+	while (hh->next)
+	  {
+	  if (h->sort_key < hh->next->sort_key) break;
+	  hh = hh->next;
+	  }
+	h->next = hh->next;
+	hh->next = h;
+	}
+      }
+
+    hostlist = addrlist->host_list = newlist;
+    }
   }
 
 /* Sort out the default port.  */

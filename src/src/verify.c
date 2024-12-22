@@ -1954,7 +1954,10 @@ while (addr_new)
 	transport_info * ti = tp->drinst.info;
 	if (!ti->local)
 	  {
-	  (void)(tp->setup)(tp, addr, &tf, 0, 0, NULL);
+	  if ((tp->setup)(tp, addr, &tf, 0, 0, NULL) != OK)
+	    log_write(0, LOG_MAIN|LOG_PANIC,
+	      "setup fail for %s transport for callout (%s)",
+	      tp->drinst.name, expand_string_message);
 
 	  /* If the transport has hosts and the router does not, or if the
 	  transport is configured to override the router's hosts, we must build a
@@ -1975,11 +1978,9 @@ while (addr_new)
 	    deliver_localpart = save_deliver_localpart;
 
 	    if (!s)
-	      {
 	      log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand list of hosts "
 		"\"%s\" in %s transport for callout: %s", tf.hosts,
 		tp->drinst.name, expand_string_message);
-	      }
 	    else
 	      {
 	      int flags;

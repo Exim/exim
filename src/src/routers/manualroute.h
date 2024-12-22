@@ -2,6 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
+/* Copyright (c) The Exim Maintainers 2024 */
 /* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -14,6 +15,7 @@ typedef struct {
   int   hai_code;
   int   hff_code;
   BOOL  hosts_randomize;
+  uschar *expand_hosts_randomize;
   uschar *host_all_ignored;
   uschar *host_find_failed;
   uschar *route_data;

@@ -95,6 +95,7 @@ typedef struct {
   BOOL		delay_after_cutoff;
   BOOL		hosts_override;
   BOOL		hosts_randomize;
+  uschar *	expand_hosts_randomize;
   BOOL		keepalive;
   BOOL		lmtp_ignore_quota;
   uschar	*expand_retry_include_ip_address;

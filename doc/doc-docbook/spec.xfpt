@@ -20995,7 +20995,7 @@ state; if a host lookup gets a temporary error, delivery is deferred unless the
 generic &%pass_on_timeout%& option is set.
 
 
-.option hosts_randomize manualroute boolean false
+.option hosts_randomize manualroute boolean&!! false
 .cindex "randomized host list"
 .cindex "host" "list of; randomized"
 If this option is set, the order of the items in a host list in a routing rule
@@ -26111,7 +26111,7 @@ attached to the address are ignored, and instead the hosts specified by the
 &%fallback_hosts%&.
 
 
-.option hosts_randomize smtp boolean false
+.option hosts_randomize smtp boolean&!! false
 .cindex "randomized host list"
 .cindex "host" "list of; randomized"
 .cindex "fallback" "randomized hosts"

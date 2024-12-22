@@ -2324,13 +2324,8 @@ if ((pid = exim_fork(US"delivery-local")) == 0)
     switch((addr->transport->setup)(addr->transport, addr, NULL, uid, gid,
            &addr->message))
       {
-      case DEFER:
-	addr->transport_return = DEFER;
-	goto PASS_BACK;
-
-      case FAIL:
-	addr->transport_return = PANIC;
-	goto PASS_BACK;
+      case DEFER: addr->transport_return = DEFER; goto PASS_BACK;
+      case FAIL:  addr->transport_return = PANIC; goto PASS_BACK;
       }
 
   /* Ignore SIGINT and SIGTERM during delivery. Also ignore SIGUSR1, as
@@ -4593,8 +4588,12 @@ nonmatch domains
   That is why it is called at this point, before the continue delivery
   processing, because that might use the fallback hosts. */
 
-  if (tp->setup)
-    (void)((tp->setup)(addr->transport, addr, NULL, uid, gid, NULL));
+  if (  tp->setup
+     && (tp->setup)(addr->transport, addr, NULL, uid, gid, NULL) != OK)
+    {
+    DEBUG(D_deliver) debug_printf("tpt setup call failed\n");
+    goto enq_continue;
+    }
 
   /* If we have a connection still open from a verify stage (lazy-close)
   treat it as if it is a continued connection (apart from the counter used

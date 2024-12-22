@@ -316,8 +316,8 @@ hosts_nopass_tls                     host list       unset         smtp         
 hosts_noproxy_tls                    host list       "*"           smtp              4.90
 hosts_override                       boolean         false         smtp              2.11
 hosts_pipe_connect		     host_list	     unset	   smtp		     4.93 if experimental_pipe_connect
-hosts_randomize                      boolean         false         manualroute       4.00
-                                                     false         smtp              3.14
+hosts_randomize                      boolean*        false         manualroute       4.00 (expanded from 4.99)
+                                                     false         smtp              3.14 (expanded from 4.99)
 hosts_require_auth                   host list       unset         smtp              4.00
 hosts_require_alpn                   host list       unset         main              4.95
 								   smtp              4.95

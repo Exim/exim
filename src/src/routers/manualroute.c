@@ -18,11 +18,14 @@
 /* Options specific to the manualroute router. */
 
 optionlist manualroute_router_options[] = {
+  { "*expand_hosts_randomize", opt_stringptr | opt_hidden,
+    OPT_OFF(manualroute_router_options_block, expand_hosts_randomize) },
+
   { "host_all_ignored", opt_stringptr,
       OPT_OFF(manualroute_router_options_block, host_all_ignored) },
   { "host_find_failed", opt_stringptr,
       OPT_OFF(manualroute_router_options_block, host_find_failed) },
-  { "hosts_randomize",  opt_bool,
+  { "hosts_randomize",  opt_expand_bool,
       OPT_OFF(manualroute_router_options_block, hosts_randomize) },
   { "route_data",       opt_stringptr,
       OPT_OFF(manualroute_router_options_block, route_data) },
@@ -53,16 +56,14 @@ int manualroute_router_entry(router_instance *rblock, address_item *addr,
 
 
 
-/* Default private options block for the manualroute router. */
+/* Default private options block for the manualroute router.
+All other entries 0/FALSE/NULL */
 
 manualroute_router_options_block manualroute_router_option_defaults = {
-  -1,           /* host_all_ignored code (unset) */
-  -1,           /* host_find_failed code (unset) */
-  FALSE,        /* hosts_randomize */
-  US"defer",    /* host_all_ignored */
-  US"freeze",   /* host_find_failed */
-  NULL,         /* route_data */
-  NULL          /* route_list */
+  .hai_code = -1,			/* host_all_ignored code (unset) */
+  .hff_code = -1,			/* host_find_failed code (unset) */
+  .host_all_ignored =	US"defer",
+  .host_find_failed =	US"freeze",
 };
 
 
@@ -91,10 +92,10 @@ static int hff_count= sizeof(hff_codes)/sizeof(int);
 consistency checks to be done, or anything else that needs to be set up. */
 
 void
-manualroute_router_init(driver_instance *rblock)
+manualroute_router_init(driver_instance * rblock)
 {
-manualroute_router_options_block *ob =
-  (manualroute_router_options_block *)(rblock->options_block);
+manualroute_router_options_block * ob =
+  (manualroute_router_options_block *) rblock->options_block;
 
 /* Host_find_failed must be a recognized word */
 
@@ -240,16 +241,12 @@ manualroute_router_entry(
 {
 int rc, lookup_type;
 uschar *route_item = NULL;
-const uschar *options = NULL;
-const uschar *hostlist = NULL;
-const uschar *domain;
-uschar *newhostlist;
-const uschar *listptr;
+const uschar * options = NULL, * hostlist = NULL, * domain, * listptr;
+uschar * newhostlist;
 manualroute_router_options_block * ob =
   (manualroute_router_options_block *)(rblock->drinst.options_block);
-transport_instance *transport = NULL;
-BOOL individual_transport_set = FALSE;
-BOOL randomize = ob->hosts_randomize;
+transport_instance * transport = NULL;
+BOOL individual_transport_set = FALSE, randomize;
 
 DEBUG(D_route) debug_printf("%s router called for %s\n  domain = %s\n",
   rblock->drinst.name, addr->address, addr->domain);
@@ -326,7 +323,14 @@ else hostlist = newhostlist;
 DEBUG(D_route) debug_printf("expanded list of hosts = '%s' options = '%s'\n",
   hostlist, options);
 
-/* Set default lookup type and scan the options */
+/* Get the hosts_randomize router option, expanding if needed */
+
+if (exp_bool(addr, US"router", rblock->drinst.name, D_route,
+	  US"hosts_randomize", ob->hosts_randomize, ob->expand_hosts_randomize,
+	  &randomize) != OK)
+  return DEFER;
+
+/* Set default lookup type and scan the route-data options */
 
 lookup_type = LK_DEFAULT;
 

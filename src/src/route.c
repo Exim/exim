@@ -1525,20 +1525,16 @@ for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
 
       /* Expand "more" if necessary; DEFER => an expansion failed */
 
-      GET_OPTION("more");
-      yield = exp_bool(addr, US"router", drname, D_route,
-		      US"more", r->more, r->expand_more, &more);
-      if (yield != OK) return yield;
+      if ((yield = exp_bool(addr, US"router", drname, D_route,
+		US"more", r->more, r->expand_more, &more)) != OK) return yield;
 
-      if (!more)
-	{
-	DEBUG(D_route)
-	  debug_printf("\"more\"=false: skipping remaining routers\n");
-	router_name = NULL;
-	r = NULL;
-	return FAIL;
-	}
-      return PASS;
+      if (more) return PASS;
+
+      DEBUG(D_route)
+	debug_printf("\"more\"=false: skipping remaining routers\n");
+      router_name = NULL;
+      r = NULL;
+      return FAIL;
       }
     else
       {
@@ -1816,7 +1812,6 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
         /* Expand "more" if necessary; DEFER => an expansion failed */
 
-	GET_OPTION("more");
         yield = exp_bool(addr, US"router", rname_l, D_route,
 			US"more", r->more, r->expand_more, &more);
         if (yield != OK) goto ROUTE_EXIT;
@@ -1928,7 +1923,6 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
     {
     /* Expand "more" if necessary */
 
-    GET_OPTION("more");
     yield = exp_bool(addr, US"router", rname_l, D_route,
 		       	US"more", r->more, r->expand_more, &more);
     if (yield != OK) goto ROUTE_EXIT;
@@ -2070,9 +2064,8 @@ if (r->translate_ip_address)
 /* See if this is an unseen routing; first expand the option if necessary.
 DEFER can be given if the expansion fails */
 
-yield = exp_bool(addr, US"router", rname_l, D_route,
-	       	US"unseen", r->unseen, r->expand_unseen, &unseen);
-if (yield != OK) goto ROUTE_EXIT;
+if ((yield = exp_bool(addr, US"router", rname_l, D_route,
+      US"unseen", r->unseen, r->expand_unseen, &unseen)) != OK) goto ROUTE_EXIT;
 
 /* Debugging output recording a successful routing */
 

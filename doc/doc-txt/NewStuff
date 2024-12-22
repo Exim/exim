@@ -31,7 +31,10 @@ Version 4.98
  9. IPv6 address support for mysql and pgsql lookups
 
  10. Cutthrough deliveries and recipient verifies can use an envelope-from
-     specified by a transport.
+     specified by a transport
+
+ 11. Options hosts_randomize in manualroute router and smtp transport are
+     now expanded
 
 Version 4.98
 ------------
