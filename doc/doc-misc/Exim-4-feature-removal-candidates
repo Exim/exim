@@ -1,0 +1,19 @@
+Features we might remove
+------------------------
+
+Add to the list as we think of them
+
+
+- IP options
+- DSCP
+- OCSP stapling: Despite IMHO being a seriously better idea than Revocation
+	lists, the Big Boy CAs are removing support in the 2025 timeframe
+	(possibly in favour of shortlived leaf certs, which increases their
+	loading on renewals and doesn't handle revocation of intermediates)
+- ibase lookup
+- brightmail
+- older Berkeley DB versions
+- iplookup router
+- older OpenSSL versions
+- older GnuTLS versions
+- some of the malware scanners and/or variants
