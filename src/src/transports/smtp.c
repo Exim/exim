@@ -318,6 +318,7 @@ smtp_transport_setup(transport_instance *tblock, address_item *addrlist,
   transport_feedback *tf, uid_t uid, gid_t gid, uschar **errmsg)
 {
 smtp_transport_options_block * ob = tblock->drinst.options_block;
+uschar * s;
 
 /* Pass back options if required. This interface is getting very messy. */
 
@@ -333,24 +334,33 @@ if (tf)
   tf->search_parents = ob->dns_search_parents;
   tf->helo_data = ob->helo_data;
 
-  if (ob->expand_hosts_randomize) deliver_set_expansions(addrlist);
-
   if (exp_bool(addrlist, US"transport", tblock->drinst.name, D_transport,
 	      US"hosts_randomize", ob->hosts_randomize,
 	      ob->expand_hosts_randomize, &tf->hosts_randomize) != OK)
     return DEFER;
-
-  deliver_set_expansions(NULL);
   }
 
 /* Set the fallback host list for all the addresses that don't have fallback
 host lists, provided that the local host wasn't present in the original host
-list. */
+list.  If the transport fallback_hosts option was static, a hostlist
+was built from it at driver init time; just copy that now. Otherwise, expand
+the option and build a list now. */
 
-if (!testflag(addrlist, af_local_host_removed))
-  for (; addrlist; addrlist = addrlist->next)
-    if (!addrlist->fallback_hosts) addrlist->fallback_hosts = ob->fallback_hostlist;
+if (testflag(addrlist, af_local_host_removed) || !ob->fallback_hosts)
+  return OK;
 
+GET_OPTION("fallback_hosts");
+if (!(s= expand_string(ob->fallback_hosts)))
+  return DEFER;
+
+for (; addrlist; addrlist = addrlist->next)
+  if (!addrlist->fallback_hosts)
+    {
+    if (!ob->fallback_hostlist)
+      host_build_hostlist(&ob->fallback_hostlist, s, FALSE);
+
+    addrlist->fallback_hosts = ob->fallback_hostlist;
+    }
 return OK;
 }
 
@@ -373,7 +383,7 @@ smtp_transport_init(driver_instance * t)
 {
 transport_instance * tblock = (transport_instance *)t;
 smtp_transport_options_block * ob = t->options_block;
-int old_pool = store_pool;
+uschar * s;
 
 /* Retry_use_local_part defaults FALSE if unset */
 
@@ -406,12 +416,16 @@ flag that stops verify from showing router hosts. */
 
 if (ob->hosts_override && ob->hosts) tblock->overrides_hosts = TRUE;
 
-/* If there are any fallback hosts listed, build a chain of host items
-for them, but do not do any lookups at this time. */
+/* If there are any fallback hosts listed, and the spec requires no expansion,
+build a chain of host items for them, but do not do any lookups at this time. */
 
-store_pool = POOL_PERM;
-host_build_hostlist(&ob->fallback_hostlist, ob->fallback_hosts, FALSE);
-store_pool = old_pool;
+if ((s = ob->fallback_hosts) && Ustrchr(s, '$') == NULL)
+  {
+  int old_pool = store_pool;
+  store_pool = POOL_PERM;
+  host_build_hostlist(&ob->fallback_hostlist, s, FALSE);
+  store_pool = old_pool;
+  }
 }
 
 

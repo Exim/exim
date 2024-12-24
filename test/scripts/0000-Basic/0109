@@ -3,3 +3,7 @@ need_ipv4
 #
 exim -odi xx@non-exist.test.ex
 ****
+#
+# Check that an expansion on the router option works
+exim -odi -DOPTION='${expand:V4NET.0.0.3}' xx@non-exist.test.ex
+****

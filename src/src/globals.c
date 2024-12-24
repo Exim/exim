@@ -532,85 +532,14 @@ uschar *acl_wherecodes[]       = { [ACL_WHERE_RCPT] =	US"550",
 uschar *add_environment        = NULL;
 address_item  *addr_duplicate  = NULL;
 
-address_item address_defaults = {
-  .next =		NULL,
-  .parent =		NULL,
-  .first =		NULL,
-  .dupof =		NULL,
-  .start_router =	NULL,
-  .router =		NULL,
-  .transport =		NULL,
-  .host_list =		NULL,
-  .host_used =		NULL,
-  .fallback_hosts =	NULL,
-  .reply =		NULL,
-  .retries =		NULL,
-  .address =		NULL,
-  .unique =		NULL,
-  .cc_local_part =	NULL,
-  .lc_local_part =	NULL,
-  .local_part =		NULL,
-  .prefix =		NULL,
-  .prefix_v =		NULL,
-  .suffix =		NULL,
-  .suffix_v =		NULL,
-  .domain =		NULL,
-  .address_retry_key =	NULL,
-  .domain_retry_key =	NULL,
-  .current_dir =	NULL,
-  .home_dir =		NULL,
-  .message =		NULL,
-  .user_message =	NULL,
-  .onetime_parent =	NULL,
-  .pipe_expandn =	NULL,
-  .return_filename =	NULL,
-  .self_hostname =	NULL,
-  .shadow_message =	NULL,
-#ifndef DISABLE_TLS
-  .cipher =		NULL,
-  .ourcert =		NULL,
-  .peercert =		NULL,
-  .peerdn =		NULL,
-  .ocsp =		OCSP_NOT_REQ,
-#endif
-#ifdef EXPERIMENTAL_DSN_INFO
-  .smtp_greeting =	NULL,
-  .helo_response =	NULL,
-#endif
-  .authenticator =	NULL,
-  .auth_id =		NULL,
-  .auth_sndr =		NULL,
-  .dsn_orcpt =		NULL,
-  .dsn_flags =		0,
-  .dsn_aware =		0,
+address_item address_defaults = {    /* All unmentioned elements 0/NULL/FALSE */
   .uid =		(uid_t)(-1),
   .gid =		(gid_t)(-1),
-  .flags =		{ 0 },
-  .domain_cache =	{ 0 },                /* domain_cache - any larger array should be zeroed */
-  .localpart_cache =	{ 0 },                /* localpart_cache - ditto */
   .mode =		-1,
-  .more_errno =		0,
-  .delivery_time =	{.tv_sec = 0, .tv_usec = 0},
   .basic_errno =	ERRNO_UNKNOWNERROR,
-  .child_count =	0,
   .return_file =	-1,
   .special_action =	SPECIAL_NONE,
   .transport_return =	DEFER,
-  .prop = {					/* fields that are propagated to children */
-    .address_data =	NULL,
-    .domain_data =	NULL,
-    .localpart_data =	NULL,
-    .errors_address =	NULL,
-    .extra_headers =	NULL,
-    .remove_headers =	NULL,
-    .variables =	NULL,
-    .ignore_error =	FALSE,
-#ifdef SUPPORT_I18N
-    .utf8_msg =		FALSE,
-    .utf8_downcvt =	FALSE,
-    .utf8_downcvt_maybe = FALSE
-#endif
-  }
 };
 
 const uschar *address_file           = NULL;
@@ -628,25 +557,8 @@ uschar *authenticated_id       = NULL;
 uschar *authenticated_sender   = NULL;
 auth_instance  *auths          = NULL;
 uschar *auth_advertise_hosts   = US"*";
-auth_instance auth_defaults    = {
-    .drinst = {
-      .next =		NULL,
-      .name =		NULL,
-      .info =		NULL,
-      .options_block =	NULL,
-      .driver_name =	NULL,
-    },
-    .advertise_condition = NULL,
-    .client_condition =	NULL,
-    .public_name =	NULL,
-    .set_id =		NULL,
-    .set_client_id =	NULL,
-    .mail_auth_condition = NULL,
-    .server_debug_string = NULL,
-    .server_condition =	NULL,
-    .client =		FALSE,
-    .server =		FALSE,
-    .advertised =	FALSE
+auth_instance auth_defaults    = {   /* All unmentioned elements 0/NULL/FALSE */
+    0
 };
 
 uschar *auth_defer_msg         = US"reason not recorded";

@@ -1,5 +1,7 @@
 # Exim test configuration 0109
 
+OPTION= HOSTIPV4
+
 .include DIR/aux-var/std_conf_prefix
 
 
@@ -13,11 +15,11 @@ qualify_domain = test.ex
 begin routers
 
 remote:
-  driver = manualroute
-  fallback_hosts = HOSTIPV4
-  route_list = * 127.0.0.1
-  self = send
-  transport = smtp
+  driver =	manualroute
+  fallback_hosts = OPTION
+  route_list =	* 127.0.0.1
+  self =	send
+  transport =	smtp
   no_more
 
 

@@ -19614,10 +19614,12 @@ verifying a sender, verification fails.
 
 
 
-.option fallback_hosts routers "string list" unset
+.option fallback_hosts routers "string list&!!" unset
 .cindex "router" "fallback hosts"
 .cindex "fallback" "hosts specified on router"
-String expansion is not applied to this option. The argument must be a
+.new
+The argument must, after expansion, be a
+.wen
 colon-separated list of host names or IP addresses. The list separator can be
 changed (see section &<<SECTlistsepchange>>&), and a port can be specified with
 each name or address. In fact, the format of each item is exactly the same as
@@ -25856,9 +25858,11 @@ equipment, or do much of anything without cooperation with your Network
 Engineer and those of all network operators between the source and destination.
 
 
-.option fallback_hosts smtp "string list" unset
+.option fallback_hosts smtp "string list&!!" unset
 .cindex "fallback" "hosts specified on transport"
-String expansion is not applied to this option. The argument must be a
+.new
+The argument must, after expansion, be a
+.wen
 colon-separated list of host names or IP addresses, optionally also including
 port numbers, though the separator can be changed, as described in section
 &<<SECTlistconstruct>>&. Each individual item in the list is the same as an

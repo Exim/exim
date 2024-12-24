@@ -4333,18 +4333,12 @@ for (int delivery_count = 0; addr_remote; delivery_count++)
   uid_t uid;
   gid_t gid;
   int pfd[2];
-  int address_count = 1;
-  int address_count_max;
-  BOOL multi_domain;
-  BOOL use_initgroups;
-  BOOL pipe_done = FALSE;
-  transport_instance *tp;
-  address_item **anchor = &addr_remote;
-  address_item *addr = addr_remote;
-  address_item *last = addr;
-  address_item *next;
-  uschar * panicmsg;
-  uschar * serialize_key = NULL;
+  int address_count = 1, address_count_max;
+  BOOL pipe_done = FALSE, multi_domain, use_initgroups;
+  transport_instance * tp;
+  address_item ** anchor = &addr_remote;
+  address_item * addr = addr_remote, * last = addr, * next;
+  uschar * serialize_key = NULL, * panicmsg;
 
   /* Pull the first address right off the list. */
 
@@ -7236,7 +7230,7 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
 
         if (tpname)
           {
-          transport_instance *tp;
+          transport_instance * tp;
           for (tp = transports; tp; tp = tp->drinst.next)
             if (Ustrcmp(tp->drinst.name, tpname) == 0)
               { p->transport = tp; break; }
@@ -8077,14 +8071,11 @@ while (addr_new)           /* Loop until all addresses dealt with */
        && !addr->prop.remove_headers
        && old_domain == addr->domain
        )
-      {
-      address_item **chain = &addr_route;
-      while (*chain)
+      for (address_item ** chain = &addr_route, * addr2; addr2 = *chain; )
         {
-        address_item *addr2 = *chain;
         if (Ustrcmp(addr2->domain, addr->domain) != 0)
           {
-          chain = &(addr2->next);
+          chain = &addr2->next;
           continue;
           }
 
@@ -8112,7 +8103,6 @@ while (addr_new)           /* Loop until all addresses dealt with */
                        "Routing for %s copied from %s\n",
             addr2->address, addr2->address, addr->address);
         }
-      }
     }  /* Continue with routing the next address. */
   }    /* Loop to process any child addresses that the routers created, and
        any rerouted addresses that got put back on the new chain. */

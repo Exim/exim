@@ -1951,7 +1951,12 @@ while (addr_new)
 
       if ((tp = addr->transport))
 	{
+	const uschar * save_deliver_domain = deliver_domain;
+	const uschar * save_deliver_localpart = deliver_localpart;
 	transport_info * ti = tp->drinst.info;
+
+	deliver_domain = addr->domain;
+	deliver_localpart = addr->local_part;
 	if (!ti->local)
 	  {
 	  if ((tp->setup)(tp, addr, &tf, 0, 0, NULL) != OK)
@@ -1966,16 +1971,10 @@ while (addr_new)
 	  if (tf.hosts && (!host_list || tf.hosts_override))
 	    {
 	    uschar *s;
-	    const uschar * save_deliver_domain = deliver_domain;
-	    const uschar * save_deliver_localpart = deliver_localpart;
 
 	    host_list = NULL;    /* Ignore the router's hosts */
 
-	    deliver_domain = addr->domain;
-	    deliver_localpart = addr->local_part;
 	    s = expand_string(tf.hosts);
-	    deliver_domain = save_deliver_domain;
-	    deliver_localpart = save_deliver_localpart;
 
 	    if (!s)
 	      log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand list of hosts "
@@ -2021,6 +2020,9 @@ while (addr_new)
 	else if (  options & vopt_quota
 		&& Ustrcmp(tp->drinst.driver_name, "appendfile") == 0)
 	  local_verify = TRUE;
+
+	deliver_domain = save_deliver_domain;
+	deliver_localpart = save_deliver_localpart;
 	}
 
       /* Can only do a callout if we have at least one host! If the callout

@@ -230,7 +230,7 @@ extract_addresses_remove_arguments   boolean         true          main         
 fail_verify                          boolean         false         routers
 fail_verify_recipient                boolean         false         routers           4.00
 fail_verify_sender                   boolean         false         routers           4.00
-fallback_hosts                       string list     unset         routers           4.00
+fallback_hosts                       string list*    unset         routers           4.00 (expanded from 4.99)
                                                      unset         smtp
 file                                 string*         unset         appendfile
                                                      unset         autoreply

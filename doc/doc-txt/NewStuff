@@ -36,6 +36,9 @@ Version 4.98
  11. Options hosts_randomize in manualroute router and smtp transport are
      now expanded
 
+ 12. Options fallback_hosts in smtp transport and in all routers are now
+     expanded
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

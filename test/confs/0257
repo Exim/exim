@@ -1,5 +1,7 @@
 # Exim test configuration 0257
 
+OPTION= ten-2.test.ex
+
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
@@ -28,7 +30,7 @@ begin transports
 smtp:
   driver = smtp
   connect_timeout = 1s
-  fallback_hosts = ten-2.test.ex
+  fallback_hosts = OPTION
   port = PORT_S
   hosts_try_fastopen =	:
 

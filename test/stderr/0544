@@ -373,6 +373,7 @@ try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
 try option router_home_directory
 try option set
@@ -380,6 +381,7 @@ try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
 try option multi_domain
 try option max_rcpt

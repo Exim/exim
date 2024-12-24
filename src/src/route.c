@@ -332,8 +332,10 @@ for (router_instance * r = routers; r; r = r->drinst.next)
     r->retry_use_local_part =
       r->check_local_user || r->local_parts || r->condition || r->prefix || r->suffix || r->senders || r->require_files;
 
-  /* Build a host list if fallback hosts is set. */
+  /* Build a host list if fallback hosts is set and would not change under
+  expansion. */
 
+  if (r->fallback_hosts && Ustrchr(r->fallback_hosts, '$') == NULL)
     {
     int old_pool = store_pool;
     store_pool = POOL_PERM;

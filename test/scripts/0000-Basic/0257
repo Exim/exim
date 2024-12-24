@@ -3,4 +3,10 @@ need_ipv4
 #
 exim -odi abcd@ten-1.test.ex
 ****
+#
+sudo rm DIR/spool/db/*
+#
+# Check that an expansion for the transport option works
+exim -odi -DOPTION='${expand:ten-3.test.ex}' abcd@ten-1.test.ex
+****
 no_msglog_check

@@ -101,6 +101,7 @@ try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL cutthrough
@@ -132,6 +133,7 @@ try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
 try option hosts_randomize
 try option interface
@@ -780,6 +782,7 @@ try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL cutthrough
@@ -811,6 +814,7 @@ try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
 try option hosts_randomize
 try option interface
@@ -1408,6 +1412,7 @@ try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL cutthrough
@@ -1439,6 +1444,7 @@ try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
 try option hosts_randomize
 try option interface
