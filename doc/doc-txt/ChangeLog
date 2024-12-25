@@ -101,6 +101,9 @@ JH/20 Bug 3036: Fix smuggling attack on DKIM verification. A crafted insertion
       the verification code but as part of the body for delivery of the message.
       Address by cancelling verification.
 
+JH/21 Bug 2995: For dsearch lookups, remove the requirement for read permission
+      on the directory.  Only search permission is now needed.
+
 Exim version 4.98
 -----------------
 

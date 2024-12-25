@@ -21,22 +21,24 @@ lstat()) rather than a directory scan). */
 *              Open entry point                  *
 *************************************************/
 
-/* See local README for interface description. We open the directory to test
-whether it exists and whether it is searchable. However, we don't need to keep
-it open, because the "search" can be done by a call to lstat() rather than
-actually scanning through the list of files. */
+/* See local README for interface description. We stat the directory to test
+whether it exists. Searchability only gets determined in the "search" function.
+*/
 
 static void *
 dsearch_open(const uschar * dirname, uschar ** errmsg)
 {
-DIR * dp = exim_opendir(dirname);
-if (!dp)
+struct stat statbuf;
+
+if (is_tainted(dirname))
   {
-  *errmsg = string_open_failed("%s for directory search", dirname);
-  return NULL;
+  log_write(0, LOG_MAIN|LOG_PANIC, "Tainted dirname '%s'", dirname);
+  errno = EACCES;
   }
-closedir(dp);
-return (void *)(-1);
+else if (Ustat(dirname, &statbuf) >= 0)
+  return (void *)(-1);
+*errmsg = string_open_failed("%s for directory search", dirname);
+return NULL;
 }
 
 
