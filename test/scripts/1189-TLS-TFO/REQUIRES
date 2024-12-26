@@ -1,0 +1,2 @@
+feature _HAVE_TLS
+support TCP_Fast_Open

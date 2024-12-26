@@ -1,4 +1,4 @@
-# Exim test configuration 1160
+# Exim test configuration 1189
 
 SERVER =
 
@@ -63,7 +63,7 @@ send_to_server1:
   allow_localhost
   hosts = 127.0.0.1
   port = PORT_D
-  hosts_try_fastopen = :
+  hosts_try_fastopen = *
   protocol = smtps
   tls_verify_certificates =	DIR/aux-fixed/cert1
   tls_verify_cert_hostnames =	:
@@ -74,7 +74,7 @@ send_to_server2:
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
-  hosts_try_fastopen = :
+  hosts_try_fastopen = *
   protocol = smtps
   tls_verify_certificates =	DIR/aux-fixed/cert1
   tls_verify_cert_hostnames =	:
