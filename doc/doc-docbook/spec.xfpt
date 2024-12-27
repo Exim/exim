@@ -14924,6 +14924,7 @@ listed in more than one group.
 .row &%event_action%&                "custom logging"
 .row &%hosts_connection_nolog%&      "exemption from connect logging"
 .row &%log_file_path%&               "override compiled-in value"
+.row &%log_ports%&                   "filter logging of port numbers"
 .row &%log_selector%&                "set/unset optional logging"
 .row &%log_timezone%&                "add timezone to log lines"
 .row &%message_logs%&                "create per-message logs"
@@ -16987,6 +16988,18 @@ variables) it is recommended that you do not set this option in the
 configuration file, but instead supply the path using LOG_FILE_PATH in
 &_Local/Makefile_& so that it is available to Exim for logging errors detected
 early on &-- in particular, failure to read the configuration file.
+
+
+.new
+.option log_ports main "integer list" *
+If set, this option must be a list of integers.
+When enabled by logging selectors &%outgoing_port%& or &%incoming_interface%&,
+receiving port numbers are only logged if they match the list.
+For example:
+.code
+log_ports = !25 : !587
+.endd
+.wen
 
 
 .option log_selector main string unset
@@ -40047,6 +40060,10 @@ The local port is also added if &%incoming_interface%& and
 This option is not included in the default setting, because for most ordinary
 configurations, the remote port number is always 25 (the SMTP port), and the
 local port is a random ephemeral port.
+.new
+In both cases, if the &%log_ports%& option is defined then that list
+controls what port numbers are (or are not) added
+.wen
 .next
 .cindex "log" "process ids in"
 .cindex "pid (process id)" "in log lines"

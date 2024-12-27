@@ -226,6 +226,7 @@ static optionlist optionlist_config[] = {
   { "local_sender_retain",      opt_bool,        {&local_sender_retain} },
   { "localhost_number",         opt_stringptr,   {&host_number_string} },
   { "log_file_path",            opt_stringptr,   {&log_file_path} },
+  { "log_ports",		opt_stringptr,	 {&log_ports} },
   { "log_selector",             opt_stringptr,   {&log_selector_string} },
   { "log_timezone",             opt_bool,        {&log_timezone} },
   { "lookup_open_max",          opt_int,         {&lookup_open_max} },

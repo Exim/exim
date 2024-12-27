@@ -369,6 +369,7 @@ log_as_local                         boolean         +             routers      
 log_file_path                        string list     ++            main
 log_defer_output                     boolean         false         pipe              1.89
 log_fail_output                      boolean         false         pipe              1.60
+log_ports			     integer list    *		   main		     4.99
 log_output                           boolean         false         pipe              1.60
 log_selector                         string          unset         main              4.00
 log_timezone                         boolean         false         main              4.11

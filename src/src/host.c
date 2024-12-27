@@ -627,7 +627,10 @@ else
     g = string_catn(g, US"H=", 2);
   g = string_cat(g, sender_fullhost);
   if (LOGGING(incoming_interface) && interface_address)
-    g = string_fmt_append(g, " I=[%s]:%d", interface_address, interface_port);
+    {
+    g = string_fmt_append(g, " I=[%s]", interface_address);
+    g = log_portnum(g, interface_port);
+    }
   if (sender_ident)
     g = string_fmt_append(g, " U=%s", sender_ident);
   }

@@ -650,10 +650,11 @@ Returns:   nothing
 static void
 write_logs(const host_item *host, const uschar *suffix, int basic_errno)
 {
-gstring * message = LOGGING(outgoing_port)
-  ? string_fmt_append(NULL, "H=%s [%s]:%d", host->name, host->address,
-		    host->port == PORT_NONE ? 25 : host->port)
-  : string_fmt_append(NULL, "H=%s [%s]", host->name, host->address);
+gstring * message = string_fmt_append(NULL, "H=%s [%s]",
+		      host->name, host->address);
+
+if (LOGGING(outgoing_port))
+  message = log_portnum(message, host->port == PORT_NONE ? 25 : host->port);
 
 if (suffix)
   {
@@ -1447,13 +1448,15 @@ while (count-- > 0)
 	  If not, log this last one in the == line. */
 
 	  if (sx->conn_args.host->next)
+	    {
+	    gstring * g = string_fmt_append(NULL, "H=%s [%s]",
+		sx->conn_args.host->name, sx->conn_args.host->address);
 	    if (LOGGING(outgoing_port))
-	      log_write(0, LOG_MAIN, "H=%s [%s]:%d %s", sx->conn_args.host->name,
-		sx->conn_args.host->address,
-		sx->port == PORT_NONE ? 25 : sx->port, addr->message);
-	    else
-	      log_write(0, LOG_MAIN, "H=%s [%s]: %s", sx->conn_args.host->name,
-		sx->conn_args.host->address, addr->message);
+	      g = log_portnum(g, sx->port == PORT_NONE ? 25 : sx->port);
+	    g = string_fmt_append(g, " %s", addr->message);
+	    log_write(0, LOG_MAIN, "%Y", g);
+	    gstring_reset(g); gstring_release_unused(g);
+	    }
 
 #ifndef DISABLE_EVENT
 	  else

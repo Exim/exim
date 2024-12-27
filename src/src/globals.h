@@ -693,6 +693,7 @@ extern int     localpartlist_count;    /* Number defined */
 extern uschar *log_buffer;             /* For constructing log entries */
 extern int     log_default[];          /* Initialization list for log_selector */
 extern uschar *log_file_path;          /* If unset, use default */
+extern const uschar *log_ports;	       /* If set, port numbers to log */
 extern int     log_notall[];           /* Log options excluded from +all */
 extern bit_table log_options[];        /* Table of options */
 extern int     log_options_count;      /* Size of table */

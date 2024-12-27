@@ -251,8 +251,10 @@ if (LOGGING(incoming_port))
   whofrom = string_fmt_append(whofrom, ":%d", sender_host_port);
 
 if (LOGGING(incoming_interface))
-  whofrom = string_fmt_append(whofrom, " I=[%s]:%d",
-    interface_address, interface_port);
+  {
+  whofrom = string_fmt_append(whofrom, " I=[%s]", interface_address);
+  whofrom = log_portnum(whofrom, interface_port);
+  }
 
 /* Check maximum number of connections. We do not check for reserved
 connections or unacceptable hosts here. That is done in the subprocess because

@@ -662,6 +662,20 @@ else
 }
 
 
+/* Log a port number, to be appended to an IP address.
+Filter the operation depending on the log_ports option
+*/
+
+gstring *
+log_portnum(gstring * g, int port)
+{
+return (  !log_ports
+       || match_isinlist(string_sprintf("%d", port),
+		&log_ports, 0, NULL, NULL, MCL_STRING, TRUE, NULL) == OK)
+  ? string_fmt_append(g, ":%d", port) : g;
+}
+
+
 /*************************************************
 *           A write() operation failed           *
 *************************************************/

@@ -1385,7 +1385,10 @@ if (sender_fullhost)
     g = string_catn(g, US" DS", 3);
   g = string_append(g, 2, US" H=", sender_fullhost);
   if (LOGGING(incoming_interface) && interface_address)
-    g = string_fmt_append(g, " I=[%s]:%d", interface_address, interface_port);
+    {
+    g = string_fmt_append(g, " I=[%s]", interface_address);
+    g = log_portnum(g, interface_port);
+    }
   }
 if (f.tcp_in_fastopen && !f.tcp_in_fastopen_logged)
   {

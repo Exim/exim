@@ -1044,6 +1044,7 @@ bit_table log_options[]        = { /* must be in alphabetical order,
 };
 int     log_options_count      = nelem(log_options);
 
+const uschar *log_ports	       = NULL;
 int     log_reject_target      = 0;
 unsigned int log_selector[log_selector_size]; /* initialized in main() */
 uschar *log_selector_string    = NULL;

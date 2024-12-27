@@ -39,6 +39,11 @@ Version 4.98
  12. Options fallback_hosts in smtp transport and in all routers are now
      expanded
 
+ 13. Support SRV records specifying TLS availability per
+     https://www.ietf.org/archive/id/draft-nurpmeso-smtp-tls-srv-00.html
+
+ 14. Main-section option "log_ports" to filter logged port numbers
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

@@ -297,6 +297,7 @@ extern int     ipv6_nmtoa(int *, uschar *);
 extern const uschar *local_part_quote(const uschar *);
 extern int     log_open_as_exim(const uschar * const);
 extern void    log_close_all(void);
+extern gstring *log_portnum(gstring *, int);
 extern const lookup_info * lookup_with_acq_num(unsigned);
 #ifdef LOOKUP_MODULE_DIR
 extern BOOL    lookup_one_mod_load(const uschar *, uschar **);

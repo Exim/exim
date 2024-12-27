@@ -96,10 +96,12 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option hosts_randomize
 try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL cutthrough
@@ -126,11 +128,14 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option hosts_randomize
 try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
+try option hosts_randomize
 try option interface
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
 try option dscp
@@ -772,10 +777,12 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option hosts_randomize
 try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL cutthrough
@@ -802,11 +809,14 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option hosts_randomize
 try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
+try option hosts_randomize
 try option interface
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
 try option dscp
@@ -1397,10 +1407,12 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option hosts_randomize
 try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
 ----------- end verify ------------
 accept: condition test succeeded in ACL cutthrough
@@ -1427,11 +1439,14 @@ processing address_data
 domain.com in "*"?
  list element: *
  domain.com in "*"? yes (matched "*")
+try option hosts_randomize
 try option errors_to
 try option headers_add
 try option headers_remove
 try option transport
+try option fallback_hosts
 try option unseen
+try option hosts_randomize
 try option interface
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
 try option dscp

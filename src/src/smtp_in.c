@@ -1407,7 +1407,10 @@ else if (f.is_inetd)
   g = string_append(g, 2, hostname, US" (via inetd)");
 
 else if (LOGGING(incoming_interface) && interface_address)
-  g = string_fmt_append(g, "%s I=[%s]:%d", hostname, interface_address, interface_port);
+  {
+  g = string_fmt_append(g, "%s I=[%s]", hostname, interface_address);
+  g = log_portnum(g, interface_port);
+  }
 
 else
   g = string_cat(g, hostname);

@@ -767,8 +767,7 @@ if (LOGGING(incoming_interface) && LOGGING(outgoing_interface)
     && sending_ip_address)
   {
   g = string_fmt_append(g, " I=[%s]", sending_ip_address);
-  if (LOGGING(outgoing_port))
-    g = string_fmt_append(g, ":%d", sending_port);
+  if (LOGGING(outgoing_port)) g = log_portnum(g, sending_port);
   }
 return g;
 }
@@ -788,7 +787,7 @@ if (LOGGING(dnssec) && h->dnssec == DS_YES)
 g = string_append(g, 3, US" [", h->address, US"]");
 
 if (LOGGING(outgoing_port))
-  g = string_fmt_append(g, ":%d", h->port);
+  g = log_portnum(g, h->port);
 
 if (testflag(addr, af_cont_conn))
   g = string_catn(g, US"*", 1);
@@ -797,8 +796,7 @@ if (testflag(addr, af_cont_conn))
 if (LOGGING(proxy) && proxy_local_address)
   {
   g = string_append(g, 3, US" PRX=[", proxy_local_address, US"]");
-  if (LOGGING(outgoing_port))
-    g = string_fmt_append(g, ":%d", proxy_local_port);
+  if (LOGGING(outgoing_port)) g = log_portnum(g, proxy_local_port);
   }
 #endif
 

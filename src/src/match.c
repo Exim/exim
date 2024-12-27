@@ -1028,7 +1028,7 @@ recursion.
 
 Arguments:
   s              string to search for
-  listptr        ptr to ptr to colon separated list of patterns, or NULL
+  listptr        ptr to ptr to (default colon sep) list of patterns, or NULL
   sep            a separator value for the list (see string_nextinlist())
 		 or zero for auto
   anchorptr      ptr to tree for named items, or NULL if no named items
