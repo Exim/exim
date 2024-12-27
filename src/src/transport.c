@@ -1204,7 +1204,7 @@ f.spool_file_wireformat = FALSE;
 
 if (tctx->options & topt_end_dot)
   {
-  smtp_debug_cmd(US".", 0);
+  smtp_debug_cmd(US".", tctx->options & topt_no_flush ? SCMD_MORE: 0);
   if (!write_chunk(tctx, US".\n", 2))
     return FALSE;
   }

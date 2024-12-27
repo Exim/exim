@@ -4284,9 +4284,11 @@ else
 
   if (tcw_done && !tcw)
     {
-    /*XXX jgh 2021/03/10 google et. al screwup.  G, at least, sends TCP FIN in response to TLS
-    close-notify.  Under TLS 1.3, violating RFC.
-    However, TLS 1.2 does not have half-close semantics. */
+    /*XXX jgh 2021/03/10 google et. al screwup.  G, at least, sends TCP FIN in
+    response to TLS close-notify.  Under TLS 1.3, violating RFC.
+    TLS 1.2 does not have half-close semantics.  Both of those mean we cannot
+    get the close-notify in the same segment as the QUIT (and therefore, not
+    the FIN either). If no TLS, we can set up a delayed QUIT. */
 
     if (     sx->cctx.tls_ctx
 #if 0 && !defined(DISABLE_TLS)
@@ -5214,7 +5216,6 @@ sx.outblock.ptr = outbuffer;
 sx.outblock.cmd_count = 0;
 sx.outblock.authenticating = FALSE;
 
-debug_printf("%s: atrn_domains '%s'\n", __FUNCTION__, atrn_domains);
 if (  (*atrn_domains
 	? smtp_write_command(&sx, SCMD_FLUSH, "ATRN %s\r\n", atrn_domains)
 	: smtp_write_command(&sx, SCMD_FLUSH, "ATRN\r\n"))
