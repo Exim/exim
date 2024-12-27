@@ -4583,7 +4583,7 @@ nonmatch domains
   if (  tp->setup
      && (tp->setup)(addr->transport, addr, NULL, uid, gid, NULL) != OK)
     {
-    DEBUG(D_deliver) debug_printf("tpt setup call failed\n");
+    panicmsg = US"Transport setup call failed";
     goto enq_continue;
     }
 
