@@ -2190,6 +2190,7 @@ up nonzero elements. */
 
 sx->conn_args.ob = ob;
 
+GET_OPTION("protocol");
 sx->lmtp = strcmpic(ob->protocol, US"lmtp") == 0;
 sx->smtps = strcmpic(ob->protocol, US"smtps") == 0;
 sx->send_rset = TRUE;
