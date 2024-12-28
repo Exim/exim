@@ -140,8 +140,6 @@ try option interface
 try option protocol
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
 try option dscp
- 127.0.0.1 in hosts_try_fastopen?
-  list element: 
 connected
 try option helo_data
  ╭considering: $primary_hostname
@@ -822,8 +820,6 @@ try option interface
 try option protocol
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
 try option dscp
- 127.0.0.1 in hosts_try_fastopen?
-  list element: 
 connected
 try option helo_data
  ╭considering: $primary_hostname
@@ -1453,8 +1449,6 @@ try option interface
 try option protocol
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
 try option dscp
- 127.0.0.1 in hosts_try_fastopen?
-  list element: 
 connected
 try option helo_data
  ╭considering: $primary_hostname

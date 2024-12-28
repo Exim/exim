@@ -1582,6 +1582,12 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^DKIM \[[^[]+\] (Header hash|b) computed:/;
 
     # Not all platforms support TCP Fast Open, and the compile omits the check
+    if (/ in hosts_try_fastopen\?$/)
+      {
+      $_ = <IN>;
+      next if /list element:\s*$/;
+      }
+
     next if /\S+ in hosts_try_fastopen\? (no \(option unset\)|no \(end of list\)|yes \(matched "\*"\))\n$/ ;
 
 #    if (s/\S+ in hosts_try_fastopen\? (no \(option unset\)|no \(end of list\)|yes \(matched "\*"\))\n$//)
@@ -1589,6 +1595,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 #      chomp;
 #      $_ .= <IN>;
 #      s/ \.\.\. >>> / ... /;
+
       if (s/ non-TFO mode connection attempt to 224.0.0.0, 0 data\b$//) { chomp; $_ .= <IN>; }
       s/Address family not supported by protocol family/Network Error/;
       s/Network(?: is)? unreachable/Network Error/;
@@ -1619,6 +1626,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 	  /Tue, 2 Mar 1999 09:44:33 +0000/gx;
 	}
       }
+
+    # Not all systems can monitor the listen queue size
+    next if /listen backlog/;
 
     # Specific pointer values reported for DB operations change from run to run
     s/(returned from EXIM_DBOPEN: )(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;

@@ -34,8 +34,6 @@
 >>>  ip4.ip4.ip4.ip4 in hosts_require_dane? yes (matched "ip4.ip4.ip4.ip4")
 >>> interface=NULL port=PORT_D
 >>> Connecting to dane256ee.test.ex [ip4.ip4.ip4.ip4]:PORT_D ...
->>>  ip4.ip4.ip4.ip4 in hosts_try_fastopen?
->>>   list element: 
 >>> connected
 >>>   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ip4.ip4.ip4.ip4 in hosts_avoid_esmtp? no (option unset)

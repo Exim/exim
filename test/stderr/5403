@@ -99,8 +99,6 @@ MUNGED: ::1 will be omitted in what follows
 >>> callout cache: disabled by no_cache
 >>> interface=ip4.ip4.ip4.ip4 port=PORT_S
 >>> Connecting to 127.0.0.1 [127.0.0.1]:PORT_S from ip4.ip4.ip4.ip4 ...
->>>  127.0.0.1 in hosts_try_fastopen?
->>>   list element: 
 >>> connected
 >>>   SMTP<< 220 server ready
 >>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
