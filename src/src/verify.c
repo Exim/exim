@@ -766,7 +766,7 @@ tls_retry_connection:
 	case ENETDOWN:
 	case ENETUNREACH:
 	  log_write(0, LOG_MAIN|LOG_PANIC,
-	    "%s verify %s (making calloout connection): T=%s %s",
+	    "%s verify %s (making callout connection): T=%s %s",
 	    options & vopt_is_recipient ? "sender" : "recipient",
 	    yield == FAIL ? "fail" : "defer",
 	    transport_name, strerror(errno));

@@ -128,7 +128,7 @@ unable to bind outgoing SMTP call to 1.1.1.1: Netwk addr not available
  failed: Netwk addr not available
 cmdlog: (unset)
 LOG: MAIN PANIC
-  recipient verify defer (making calloout connection): T=smtp Netwk addr not available
+  recipient verify defer (making callout connection): T=smtp Netwk addr not available
 LOG: MAIN REJECT
   H=(test) [V4NET.0.0.1] U=root sender verify defer for <bindfail@localhost1>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : Netwk addr not available
 LOG: MAIN REJECT
