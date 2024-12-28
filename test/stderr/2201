@@ -228,12 +228,10 @@ pid written to TESTSUITE/spool/exim-daemon.pid
 LOG: MAIN
   exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
-Listening...
 Connection request from 127.0.0.1 port sssss
 p1238 Process p1238 is handling incoming connection from [127.0.0.1]
 p1238 Process p1238 is ready for new message
 1 SMTP accept process running
-Listening...
 p1238 host in chunking_advertise_hosts? no (end of list)
 p1238 dnslists check: rbl.test.ex/V4NET.11.12.14
 p1238 new DNS lookup for 14.12.11.V4NET.rbl.test.ex
@@ -258,6 +256,5 @@ LOG: smtp_connection MAIN
 p1235 child p1238 ended: status=0x0
 p1235   normal exit, 0
 p1235 0 SMTP accept processes now running
-p1235 Listening...
 p1235 SIGTERM/SIGINT seen
 p1235 >>>>>>>>>>>>>>>> Exim pid=p1235 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

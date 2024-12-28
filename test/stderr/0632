@@ -28,7 +28,6 @@ pid written to TESTSUITE/spool/exim-daemon.pid
 LOG: MAIN
   exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
-Listening...
 Connection request from 127.0.0.1 port sssss
 try option smtp_accept_max_per_host
 search_tidyup called
@@ -511,28 +510,23 @@ try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection Ci=p1235 from (test.ex) [127.0.0.1] D=qqs closed by QUIT
 p1234 1 SMTP accept process running
-p1234 Listening...
 p1234 daemon_notification (from unknown addr)
 p1234 compiled caseless RE '^nomatch_list' not found in local cache
 p1234 compiling caseless RE '^nomatch_list'
 p1234 compiled RE '^nomatch_list' saved in local cache
-p1234 Listening...
 p1234 daemon_notification (from unknown addr)
 p1234 compiled RE 'static_RE' not found in local cache
 p1234 compiling RE 'static_RE'
 p1234 compiled RE 'static_RE' saved in local cache
-p1234 Listening...
 p1234 daemon_notification (from unknown addr)
 p1234 compiled RE 'tricky_static_RE$' not found in local cache
 p1234 compiling RE 'tricky_static_RE$'
 p1234 compiled RE 'tricky_static_RE$' saved in local cache
-p1234 Listening...
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1235 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 p1234 child p1235 ended: status=0x0
 p1234   normal exit, 0
 p1234 0 SMTP accept processes now running
-p1234 Listening...
 p1234 Connection request from 127.0.0.1 port sssss
 p1234 try option smtp_accept_max_per_host
 p1234 search_tidyup called
@@ -986,13 +980,11 @@ try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection Ci=p1236 from (test.ex) [127.0.0.1] D=qqs closed by QUIT
 p1234 1 SMTP accept process running
-p1234 Listening...
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 p1234 child p1236 ended: status=0x0
 p1234   normal exit, 0
 p1234 0 SMTP accept processes now running
-p1234 Listening...
 p1234 SIGTERM/SIGINT seen
 p1234 search_tidyup called
 p1234 >>>>>>>>>>>>>>>> Exim pid=p1234 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

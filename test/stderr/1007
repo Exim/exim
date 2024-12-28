@@ -19,7 +19,6 @@ LOG: MAIN
   exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D (IPv6 and IPv4)
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D (IPv6 and IPv4)
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
-Listening...
 SIGTERM/SIGINT seen
 p1242 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=PORT_D -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
@@ -45,7 +44,6 @@ LOG: MAIN
   exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D (IPv6 and IPv4) port PORT_D2 (IPv6 and IPv4)
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D (IPv6 and IPv4) port PORT_D2 (IPv6 and IPv4)
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
-Listening...
 SIGTERM/SIGINT seen
 p1243 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:1226 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
@@ -72,7 +70,6 @@ LOG: MAIN
   exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D (IPv6 and IPv4) port PORT_D2 (IPv6 and IPv4) [127.0.0.1]:PORT_D4
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D (IPv6 and IPv4) port PORT_D2 (IPv6 and IPv4) [127.0.0.1]:PORT_D4
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
-Listening...
 SIGTERM/SIGINT seen
 p1244 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.PORT_D4 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
@@ -99,7 +96,6 @@ LOG: MAIN
   exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D (IPv6 and IPv4) port PORT_D2 (IPv6 and IPv4) [127.0.0.1]:PORT_D4
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D (IPv6 and IPv4) port PORT_D2 (IPv6 and IPv4) [127.0.0.1]:PORT_D4
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
-Listening...
 SIGTERM/SIGINT seen
 p1245 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:1226 -DIFACE=local_interfaces = <;  0.0.0.0; 127.0.0.1.PORT_D4 ; ::0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
@@ -123,7 +119,6 @@ LOG: MAIN
   exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTP on [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]:{1225,1226}
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]:{1225,1226}
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
-Listening...
 SIGTERM/SIGINT seen
 p1246 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:1226 -DIFACE=local_interfaces = <;  ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
@@ -150,7 +145,6 @@ LOG: MAIN
   exim x.yz daemon started: pid=p1239, no queue runs, listening for SMTP on port PORT_D3 (IPv6 and IPv4) [127.0.0.1]:PORT_D4
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D3 (IPv6 and IPv4) [127.0.0.1]:PORT_D4
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
-Listening...
 SIGTERM/SIGINT seen
 p1247 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.PORT_D4 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
@@ -178,7 +172,6 @@ LOG: MAIN
   exim x.yz daemon started: pid=p1240, no queue runs, listening for SMTP on [127.0.0.1]:{1227,1225}
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on [127.0.0.1]:{1227,1225}
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
-Listening...
 SIGTERM/SIGINT seen
 p1248 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.PORT_D4 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called
@@ -205,7 +198,6 @@ LOG: MAIN
   exim x.yz daemon started: pid=p1241, no queue runs, listening for SMTP on port PORT_D (IPv6 and IPv4) port PORT_D2 (IPv4)
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port PORT_D (IPv6 and IPv4) port PORT_D2 (IPv4)
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
-Listening...
 SIGTERM/SIGINT seen
 p1249 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xf7795cfd -MCd daemon-del-pidfile -oP TESTSUITE/spool/exim-daemon.pid -oPX
 search_tidyup called

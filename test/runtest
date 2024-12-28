@@ -1174,6 +1174,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 		)
 	      /x;
 
+    # It seems unreliable whether this line appears or not before a daemon
+    # is killed; likely a timing issue
+    next if /^(\d+ )?Listening...$/n ;
+
     # Hints DB use of lockfiles is provider-dependent
     next if /lock(?:ing|ed) .*\/spool\/db\/[^.]+\.lockfile$/;
     s/closed hints database\K and lockfile$//;
@@ -1676,6 +1680,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     next;
     }
+    # $is_stderr
 
   # ======== log ========
 
