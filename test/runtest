@@ -3918,6 +3918,13 @@ $pwpw = $pwpw;       # Kill Perl warnings
 $pwquota = $pwquota;
 $pwcomm = $pwcomm;
 
+if ($parm_caller_gecos =~ /&/)
+  {
+  my $name = $parm_caller;
+  $name =~ s/^(.)/\u$1/;
+  $parm_caller_gecos =~ s/&/$name/g;
+  }
+
 $parm_caller_group = getgrgid($parm_caller_gid);
 
 print "Program caller is $parm_caller ($parm_caller_uid), whose group is $parm_caller_group ($parm_caller_gid)\n";
