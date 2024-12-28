@@ -74,7 +74,7 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
-  SMTP>> .
+  SMTP+> .
   SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
   SMTP(shutdown)>>
@@ -82,7 +82,7 @@ cmd buf flush ddd bytes (more expected)
   SMTP<< 250 OK id=10HmbC-000000005vi-0000
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
-cmdlog: 'MAIL|:RCPT|:DATA:250:250:354:.:QUIT+:250:221'
+cmdlog: 'MAIL|:RCPT|:DATA:250:250:354:.+:QUIT+:250:221'
 >>>>>>>>>>>>>>>> Exim pid=p1250 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbC-000000005vi-0000"
@@ -169,7 +169,7 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
-  SMTP>> .
+  SMTP+> .
   SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
   SMTP(shutdown)>>
@@ -177,7 +177,7 @@ cmd buf flush ddd bytes (more expected)
   SMTP<< 250 OK id=10HmbI-000000005vi-0000
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
-cmdlog: 'MAIL|:RCPT|:DATA:250:250:354:.:QUIT+:250:221'
+cmdlog: 'MAIL|:RCPT|:DATA:250:250:354:.+:QUIT+:250:221'
 >>>>>>>>>>>>>>>> Exim pid=p1261 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => userc@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbI-000000005vi-0000"
@@ -305,13 +305,13 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
-  SMTP>> .
+  SMTP+> .
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP<< 250 OK id=10HmbO-000000005vi-0000
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
-cmdlog: 'STARTTLS:220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:354:.:QUIT:250:221'
+cmdlog: 'STARTTLS:220:EHLO:250-:MAIL|:RCPT|:DATA:250:250:354:.+:QUIT:250:221'
 >>>>>>>>>>>>>>>> Exim pid=p1272 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => user_r@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbO-000000005vi-0000"
