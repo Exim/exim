@@ -8,7 +8,7 @@ exim -DSRV=smtp2 -bt x@srv03.test.ex
 ****
 exim -odi -N x@srv01.test.ex
 ****
-exim -odi -DSRV=smtp2 -N x@srv03.test.ex
+exim -odi -DSRV=nosuch1:smtp2:nosuch2 -N x@srv03.test.ex
 ****
 # Actually send a message to a port specified in the SRV record.
 server PORT_S

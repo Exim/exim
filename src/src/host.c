@@ -2486,7 +2486,7 @@ Arguments:
                           HOST_FIND_SEARCH_PARENTS   )   resolver
 			  HOST_FIND_IPV4_FIRST => reverse usual result ordering
 			  HOST_FIND_IPV4_ONLY  => MX results elide ipv6
-  srv_service           when SRV used, the service name
+  srv_svclist		when SRV used, the service name list
   srv_fail_domains      DNS errors for these domains => assume nonexist
   mx_fail_domains       DNS errors for these domains => assume nonexist
   dnssec_d.request =>   make dnssec request: domainlist
@@ -2509,8 +2509,8 @@ Returns:                HOST_FIND_FAILED  Failed to find the host or domain;
 int
 host_find_bydns(host_item * host, const uschar * ignore_target_hosts,
   int whichrrs,
-  uschar * srv_service, uschar * srv_fail_domains, uschar * mx_fail_domains,
-  const dnssec_domains * dnssec_d,
+  const uschar * srv_svclist, const uschar * srv_fail_domains,
+  const uschar * mx_fail_domains, const dnssec_domains * dnssec_d,
   const uschar ** fully_qualified_name, BOOL * removed)
 {
 host_item * h, * last;
@@ -2558,58 +2558,65 @@ characters, so the code below should be safe. */
 
 if (whichrrs & HOST_FIND_BY_SRV)
   {
-  uschar * s, * temp_fully_qualified_name;
-  int prefix_length;
-
-  s = string_sprintf("_%s._tcp.%n%.256s",
-	srv_service, &prefix_length, host->name);
-  temp_fully_qualified_name = s;
-  ind_type = T_SRV;
-
-  /* Search for SRV records. If the fully qualified name is different to
-  the input name, pass back the new original domain, without the prepended
-  magic. */
-
-  dnssec = DS_UNK;
-  lookup_dnssec_authenticated = NULL;
-  rc = dns_lookup_timerwrap(dnsa, temp_fully_qualified_name, ind_type,
-	CUSS &temp_fully_qualified_name);
-
-  DEBUG(D_dns)
-    if ((dnssec_request || dnssec_require)
-	&& !dns_is_secure(dnsa)
-	&& dns_is_aa(dnsa))
-      debug_printf_indent("DNS lookup of %.256s (SRV) requested AD, but got AA\n", host->name);
-
-  if (dnssec_request)
+  int sep = 0;
+  for (const uschar * srv_service;
+       srv_service = string_nextinlist(&srv_svclist, &sep, NULL, 0); )
     {
-    if (dns_is_secure(dnsa))
-      { dnssec = DS_YES; lookup_dnssec_authenticated = US"yes"; }
-    else
-      { dnssec = DS_NO; lookup_dnssec_authenticated = US"no"; }
-    }
+    uschar * s, * temp_fully_qualified_name;
+    int prefix_length;
 
-  if (temp_fully_qualified_name != s && fully_qualified_name)
-    *fully_qualified_name = temp_fully_qualified_name + prefix_length;
+    s = string_sprintf("_%s._tcp.%n%.256s",
+	  srv_service, &prefix_length, host->name);
+    temp_fully_qualified_name = s;
+    ind_type = T_SRV;
 
-  /* On DNS failures, we give the "try again" error unless the domain is
-  listed as one for which we continue. */
+    /* Search for SRV records. If the fully qualified name is different to
+    the input name, pass back the new original domain, without the prepended
+    magic. */
 
-  if (rc == DNS_SUCCEED && dnssec_require && !dns_is_secure(dnsa))
-    {
-    log_write(L_host_lookup_failed, LOG_MAIN,
-		"dnssec fail on SRV for %.256s", host->name);
-    rc = DNS_FAIL;
-    }
-  if (rc == DNS_FAIL || rc == DNS_AGAIN)
-    {
+    dnssec = DS_UNK;
+    lookup_dnssec_authenticated = NULL;
+    rc = dns_lookup_timerwrap(dnsa, temp_fully_qualified_name, ind_type,
+	  CUSS &temp_fully_qualified_name);
+
+    DEBUG(D_dns)
+      if ((dnssec_request || dnssec_require)
+	  && !dns_is_secure(dnsa)
+	  && dns_is_aa(dnsa))
+	debug_printf_indent("DNS lookup of %.256s (SRV) requested AD, but got AA\n", host->name);
+
+    if (dnssec_request)
+      {
+      if (dns_is_secure(dnsa))
+	{ dnssec = DS_YES; lookup_dnssec_authenticated = US"yes"; }
+      else
+	{ dnssec = DS_NO; lookup_dnssec_authenticated = US"no"; }
+      }
+
+    if (temp_fully_qualified_name != s && fully_qualified_name)
+      *fully_qualified_name = temp_fully_qualified_name + prefix_length;
+      
+    /* On DNS failures, we give the "try again" error unless the domain is
+    listed as one for which we continue. */
+
+    if (rc == DNS_SUCCEED && dnssec_require && !dns_is_secure(dnsa))
+      {
+      log_write(L_host_lookup_failed, LOG_MAIN,
+		  "dnssec fail on SRV for %.256s", host->name);
+      rc = DNS_FAIL;
+      }
+    if (rc == DNS_FAIL || rc == DNS_AGAIN)
+      {
 #ifndef STAND_ALONE
-    if (match_isinlist(host->name, CUSS &srv_fail_domains, 0,
-	&domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) != OK)
+      if (match_isinlist(host->name, &srv_fail_domains, 0,
+	  &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) != OK)
 #endif
-      { yield = HOST_FIND_AGAIN; goto out; }
-    DEBUG(D_host_lookup) debug_printf_indent("DNS_%s treated as DNS_NODATA "
-      "(domain in srv_fail_domains)\n", rc == DNS_FAIL ? "FAIL":"AGAIN");
+	{ yield = HOST_FIND_AGAIN; goto out; }
+      DEBUG(D_host_lookup) debug_printf_indent("DNS_%s treated as DNS_NODATA "
+	"(domain in srv_fail_domains)\n", rc == DNS_FAIL ? "FAIL":"AGAIN");
+      }
+    else if (rc == DNS_SUCCEED)
+      break;				/* walking the service names list */
     }
   }
 

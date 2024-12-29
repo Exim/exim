@@ -130,6 +130,7 @@ check_spool_space                    integer         0             main
 check_string                         string          "From "       appendfile        3.03
                                                      unset         pipe              3.03
 check_srv                            string*         unset         dnslookup         4.31
+				     string list*    unset	   dnslookup	     4.99
 client_authz                         string*         unset         gsasl             4.94
 client_condition                     string*         unset         authenticators    4.68
 client_ignore_invalid_base64         boolean         false         plaintext         4.61

@@ -20582,7 +20582,7 @@ differently to other domains. The way in which Exim decides whether a host is
 the local host is described in section &<<SECTreclocipadd>>&.
 
 
-.option check_srv dnslookup string&!! unset
+.option check_srv dnslookup string list&!! unset
 .cindex "SRV record" "enabling use of"
 The &(dnslookup)& router supports the use of SRV records
 (see &url(https://www.rfc-editor.org/rfc/rfc2782,RFC 2782))
@@ -20600,7 +20600,12 @@ option is ignored, and the router proceeds to look for MX records in the
 normal way.
 
 When the expansion succeeds, the router searches first for SRV records for
-the given service (it assumes TCP protocol). A single SRV record with a
+the given service (it assumes TCP protocol).
+.new
+If the list contains more than one service name, searches are made in
+the given order until one succeeds.
+.wen
+A single SRV record with a
 host name that consists of just a single dot indicates &"no such service for
 this domain"&; if this is encountered, the router declines. If other kinds of
 SRV record are found, they are used to construct a host list for delivery
