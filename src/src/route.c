@@ -203,11 +203,11 @@ for (rr = routers; rr; rr = rr->drinst.next)
   }
 
 if (!rr)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "new_router \"%s\" not found for \"%s\" router", name, r->drinst.name);
 
 if (after && !afterthis)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "new_router \"%s\" does not follow \"%s\" router", name, r->drinst.name);
 }
 
@@ -293,11 +293,11 @@ for (router_instance * r = routers; r; r = r->drinst.next)
   /* Check for transport or no transport on certain routers */
 
   if (ri->ri_flags & ri_yestransport && !r->transport_name && !r->verify_only)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "%s router:\n  "
+    log_write_die(0, LOG_CONFIG, "%s router:\n  "
       "a transport is required for this router", r->drinst.name);
 
   if (ri->ri_flags & ri_notransport && r->transport_name)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "%s router:\n  "
+    log_write_die(0, LOG_CONFIG, "%s router:\n  "
       "a transport must not be defined for this router", r->drinst.name);
 
   /* The "self" option needs to be decoded into a code value and possibly a
@@ -322,7 +322,7 @@ for (router_instance * r = routers; r; r = r->drinst.next)
     r->self_code = self_reroute;
     }
 
-  else log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+  else log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
       "%s is not valid for the self option", r->drinst.name, s);
 
   /* If any router has check_local_user set, default retry_use_local_part
@@ -1986,7 +1986,7 @@ if (yield == DISCARD) goto ROUTE_EXIT;
 /* The yield must be either OK or REROUTED. */
 
 if (yield != OK && yield != REROUTED)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s router returned unknown value %d",
+  log_write_die(0, LOG_MAIN, "%s router returned unknown value %d",
     rname_l, yield);
 
 /* If the yield was REROUTED, the router put a child address on the new chain

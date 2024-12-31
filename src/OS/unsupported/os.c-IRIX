@@ -58,13 +58,13 @@ mib[5] = 0;
 get the data into it. Any error causes a panic death. */
 
 if (sysctl(mib, 6, NULL, &needed, NULL, 0) < 0)
-  log_write(0, LOG_PANIC_DIE, "iflist-sysctl-estimate failed: %s",
+  log_write_die(0, LOG_PANIC_DIE, "iflist-sysctl-estimate failed: %s",
     strerror(errno));
 
 buf = store_get(needed, GET_UNTAINTED);
 
 if (sysctl(mib, 6, buf, &needed, NULL, 0) < 0)
-  log_write(0, LOG_PANIC_DIE, "sysctl of ifnet list failed: %s",
+  log_write_die(0, LOG_PANIC_DIE, "sysctl of ifnet list failed: %s",
     strerror(errno));
 
 /* Now fish out the data for each interface */

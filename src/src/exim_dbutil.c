@@ -204,6 +204,17 @@ fprintf(stderr, "\n");
 va_end(ap);
 }
 
+void
+log_write_die(unsigned int selector, int flags, const char *format, ...)
+{
+va_list ap;
+va_start(ap, format);
+vfprintf(stderr, format, ap);
+fprintf(stderr, "\n");
+va_end(ap);
+exit(EXIT_FAILURE);
+}
+
 
 
 /*************************************************

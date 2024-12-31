@@ -651,12 +651,12 @@ if (format)
 
   va_start(ap, format);
   if (!string_vformat(&gs, SVFMT_TAINT_NOCHK, CS format, ap))
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "
+    log_write_die(0, LOG_MAIN, "overlong write_command in outgoing "
       "SMTP");
   va_end(ap);
 
   if (gs.ptr > outblock->buffersize)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "
+    log_write_die(0, LOG_MAIN, "overlong write_command in outgoing "
       "SMTP");
 
   if (gs.ptr > outblock->buffersize - (outblock->ptr - outblock->buffer))

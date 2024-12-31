@@ -52,7 +52,7 @@ if (f) (void)fclose(f);
 if (errmsg)
   *errmsg = msg;
 else
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", msg);
+  log_write_die(0, LOG_MAIN, "%s", msg);
 
 return -1;
 }

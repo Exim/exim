@@ -95,7 +95,7 @@ autoreply_transport_options_block *ob =
 /* If a fixed uid field is set, then a gid field must also be set. */
 
 if (tblock->uid_set && !tblock->gid_set && tblock->expand_gid == NULL)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "user set without group for the %s transport", t->name);
 }
 

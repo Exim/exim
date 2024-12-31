@@ -728,7 +728,7 @@ g = string_vformat_trc(g, func, line, STRING_SPRINTF_BUFFER_SIZE,
 va_end(ap);
 
 if (!g)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "string_sprintf expansion was longer than %d; format string was (%s)\n"
     " called from %s %d\n",
     STRING_SPRINTF_BUFFER_SIZE, format, func, line);
@@ -1182,13 +1182,13 @@ existing length of the string. */
 unsigned inc = oldsize < 4096 ? 127 : 1023;
 
 if (g->ptr < 0 || g->ptr > g->size || g->size >= INT_MAX/2)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "internal error in gstring_grow (ptr %d size %d)", g->ptr, g->size);
 
 if (count <= 0) return;
 
 if (count >= INT_MAX/2 - g->ptr)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "internal error in gstring_grow (ptr %d count %d)", g->ptr, count);
 
 g->size = (p + count + inc + 1) & ~inc;		/* one for a NUL */
@@ -1239,7 +1239,7 @@ string_catn(gstring * g, const uschar * s, int count)
 int p;
 
 if (count < 0)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "internal error in string_catn (count %d)", count);
 if (count == 0) return g;
 
@@ -1264,7 +1264,7 @@ else if (is_incompatible(g->s, s))
   }
 
 if (g->ptr < 0 || g->ptr > g->size)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "internal error in string_catn (ptr %d size %d)", g->ptr, g->size);
 
 p = g->ptr;
@@ -1855,14 +1855,14 @@ while (*fp)
     default:
       strncpy(newformat, item_start, fp - item_start);
       newformat[fp-item_start] = 0;
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "string_format: unsupported type "
+      log_write_die(0, LOG_MAIN, "string_format: unsupported type "
 	"in \"%s\" in \"%s\"", newformat, format);
       break;
     }
   }
 
 if (g->ptr > g->size)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "string_format internal error: caller %s %d", func, line);
 return g;
 }

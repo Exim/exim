@@ -156,7 +156,7 @@ if (!(yield = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED,
   {
   uschar errbuf[128];
   pcre2_get_error_message(err, errbuf, sizeof(errbuf));
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "regular expression error: "
+  log_write_die(0, LOG_MAIN, "regular expression error: "
     "%s at offset %ld while compiling %s", errbuf, (long)offset, pattern);
   }
 

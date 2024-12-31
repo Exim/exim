@@ -77,7 +77,7 @@ ip_addrinfo(const uschar *address, struct sockaddr_in6 *saddr)
 #ifdef IPV6_USE_INET_PTON
 
   if (inet_pton(AF_INET6, CCS address, &saddr->sin6_addr) != 1)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "unable to parse \"%s\" as an "
+    log_write_die(0, LOG_MAIN, "unable to parse \"%s\" as an "
       "IP address", address);
   saddr->sin6_family = AF_INET6;
 
@@ -90,7 +90,7 @@ ip_addrinfo(const uschar *address, struct sockaddr_in6 *saddr)
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_NUMERICHOST;
   if ((rc = getaddrinfo(CCS address, NULL, &hints, &res)) != 0 || res == NULL)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "unable to parse \"%s\" as an "
+    log_write_die(0, LOG_MAIN, "unable to parse \"%s\" as an "
       "IP address: %s", address,
       (rc == 0)? "NULL result returned" : gai_strerror(rc));
   memcpy(saddr, res->ai_addr, res->ai_addrlen);

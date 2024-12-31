@@ -106,7 +106,7 @@ for (int i = 0; i < hff_count; i++)
     break;
     }
 if (ob->hff_code < 0)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
     "unrecognized setting for host_find_failed option", rblock->name);
 
 for (int i = 1; i < hff_count; i++)   /* NB starts at 1 to skip "ignore" */
@@ -116,14 +116,14 @@ for (int i = 1; i < hff_count; i++)   /* NB starts at 1 to skip "ignore" */
     break;
     }
 if (ob->hai_code < 0)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
     "unrecognized setting for host_all_ignored option", rblock->name);
 
 /* One of route_list or route_data must be specified */
 
 if (  !ob->route_list && !ob->route_data
    || ob->route_list && ob->route_data)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
     "route_list or route_data (but not both) must be specified",
     rblock->name);
 }

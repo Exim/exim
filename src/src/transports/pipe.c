@@ -190,14 +190,14 @@ tblock->setup = pipe_transport_setup;
 
 if (tblock->deliver_as_creator && (tblock->uid_set || tblock->gid_set ||
   tblock->expand_uid != NULL || tblock->expand_gid != NULL))
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+    log_write_die(0, LOG_CONFIG,
       "both pipe_as_creator and an explicit uid/gid are set for the %s "
         "transport", trname);
 
 /* If a fixed uid field is set, then a gid field must also be set. */
 
 if (tblock->uid_set && !tblock->gid_set && tblock->expand_gid == NULL)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "user set without group for the %s transport", trname);
 
 /* Temp_errors must consist only of digits and colons, but there can be
@@ -207,7 +207,7 @@ if (ob->temp_errors != NULL && Ustrcmp(ob->temp_errors, "*") != 0)
   {
   size_t p = Ustrspn(ob->temp_errors, "0123456789: ");
   if (ob->temp_errors[p] != 0)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+    log_write_die(0, LOG_CONFIG,
       "temp_errors must be a list of numbers or an asterisk for the %s "
       "transport", trname);
   }
@@ -216,12 +216,12 @@ if (ob->temp_errors != NULL && Ustrcmp(ob->temp_errors, "*") != 0)
 should be set. */
 
 if (tblock->return_output && tblock->return_fail_output)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "both return_output and return_fail_output set for %s transport",
     trname);
 
 if (tblock->log_output && tblock->log_fail_output)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "both log_output and log_fail_output set for the %s transport",
     trname);
 
@@ -248,14 +248,14 @@ else
 /* The restrict_to_path  and use_shell options are incompatible */
 
 if (ob->restrict_to_path && ob->use_shell)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "both restrict_to_path and use_shell set for %s transport",
     trname);
 
 /* The allow_commands and use_shell options are incompatible */
 
 if (ob->allow_commands && ob->use_shell)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "both allow_commands and use_shell set for %s transport",
     trname);
 

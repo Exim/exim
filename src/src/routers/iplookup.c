@@ -96,11 +96,11 @@ iplookup_router_options_block * ob =
 /* A port and a host list must be given */
 
 if (ob->port < 0)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
     "a port must be specified", r->name);
 
 if (!ob->hosts)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
     "a host list must be specified", r->name);
 
 /* Translate protocol name into value */
@@ -109,7 +109,7 @@ if (ob->protocol_name)
   {
   if (Ustrcmp(ob->protocol_name, "udp") == 0) ob->protocol = ip_udp;
   else if (Ustrcmp(ob->protocol_name, "tcp") == 0) ob->protocol = ip_tcp;
-  else log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+  else log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
     "protocol not specified as udp or tcp", r->name);
   }
 
@@ -398,7 +398,7 @@ new_addr->parent = addr;
 new_addr->prop = addr->prop;
 
 if (addr->child_count == USHRT_MAX)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s router generated more than %d "
+  log_write_die(0, LOG_MAIN, "%s router generated more than %d "
     "child addresses for <%s>", rblock->drinst.name, USHRT_MAX, addr->address);
 addr->child_count++;
 new_addr->next = *addr_new;

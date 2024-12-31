@@ -88,7 +88,7 @@ while (c && *p)
 return TRUE;
 
 bad:
-  if (panic) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  if (panic) log_write_die(0, LOG_MAIN,
     "Failed to %s directory \"%s\": %s\n", p, path, exim_errstr(errno));
   return FALSE;
 }

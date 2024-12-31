@@ -73,7 +73,7 @@ if (stat(CS utilname, &statbuf) >= 0)
 
   pid = child_open(argv, NULL, 0000, &infd, &outfd, FALSE, US"fakens-search");
   if (pid < 0)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to run fakens: %s",
+    log_write_die(0, LOG_MAIN, "failed to run fakens: %s",
       strerror(errno));
 
   len = 0;
@@ -93,7 +93,7 @@ if (stat(CS utilname, &statbuf) >= 0)
       len += rc;
 
   if (rc < 0)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "read from fakens failed: %s",
+    log_write_die(0, LOG_MAIN, "read from fakens failed: %s",
       strerror(errno));
 
   switch(child_close(pid, 0))

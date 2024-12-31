@@ -296,9 +296,12 @@ extern int     ip_streamsocket(const uschar *, uschar **, int, host_item *);
 extern int     ipv6_nmtoa(int *, uschar *);
 
 extern const uschar *local_part_quote(const uschar *);
-extern int     log_open_as_exim(const uschar * const);
 extern void    log_close_all(void);
+extern int     log_open_as_exim(const uschar * const);
 extern gstring *log_portnum(gstring *, int);
+extern void    log_write_die(unsigned, int, const char * format, ...)
+		PRINTF_FUNCTION(3,4) NORETURN;
+
 extern const lookup_info * lookup_with_acq_num(unsigned);
 #ifdef LOOKUP_MODULE_DIR
 extern BOOL    lookup_one_mod_load(const uschar *, uschar **);

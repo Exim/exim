@@ -64,7 +64,7 @@ transport_instance * tblock = (transport_instance *)t;
 queuefile_transport_options_block * ob = t->options_block;
 
 if (!ob->dirname)
-  log_write(0, LOG_PANIC_DIE | LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "directory must be set for the %s transport", t->name);
 }
 

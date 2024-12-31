@@ -84,14 +84,14 @@ lmtp_transport_options_block * ob = t->options_block;
 /* Either the command field or the socket field must be set */
 
 if ((ob->cmd == NULL) == (ob->skt == NULL))
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "one (and only one) of command or socket must be set for the %s transport",
     tblock->drinst.name);
 
 /* If a fixed uid field is set, then a gid field must also be set. */
 
 if (tblock->uid_set && !tblock->gid_set && tblock->expand_gid == NULL)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "user set without group for the %s transport", tblock->drinst.name);
 
 /* Set up the bitwise options for transport_write_message from the various

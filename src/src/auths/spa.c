@@ -110,7 +110,7 @@ if (!ablock->public_name)
 /* Both username and password must be set for a client */
 
 if ((ob->spa_username == NULL) != (ob->spa_password == NULL))
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s authenticator:\n  "
       "one of client_username and client_password cannot be set without "
       "the other", ablock->drinst.name);
 ablock->client = ob->spa_username != NULL;

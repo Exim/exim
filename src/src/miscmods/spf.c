@@ -273,11 +273,11 @@ but is broken now (May 18th, 2020) */
 
 GET_OPTION("spf_smtp_comment_template");
 if (!(s = expand_string(spf_smtp_comment_template)))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "expansion of spf_smtp_comment_template failed");
+  log_write_die(0, LOG_MAIN, "expansion of spf_smtp_comment_template failed");
 
 SPF_server_set_explanation(spf_server, CCS s, &spf_response);
 if (SPF_response_errcode(spf_response) != SPF_E_SUCCESS)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", SPF_strerror(SPF_response_errcode(spf_response)));
+  log_write_die(0, LOG_MAIN, "%s", SPF_strerror(SPF_response_errcode(spf_response)));
 
 return TRUE;
 }

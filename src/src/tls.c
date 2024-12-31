@@ -505,7 +505,7 @@ int
 tls_ungetc(int ch)
 {
 if (ssl_xfer_buffer_lwm <= 0)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "buffer underflow in tls_ungetc");
+  log_write_die(0, LOG_MAIN, "buffer underflow in tls_ungetc");
 
 ssl_xfer_buffer[--ssl_xfer_buffer_lwm] = ch;
 return ch;
@@ -800,7 +800,7 @@ oldsignal = signal(SIGCHLD, SIG_DFL);
 
 fflush(NULL);
 if ((pid = exim_fork(US"cipher-validate")) < 0)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "fork failed for TLS check");
+  log_write_die(0, LOG_MAIN, "fork failed for TLS check");
 
 if (pid == 0)
   {
@@ -810,7 +810,7 @@ if (pid == 0)
         US"calling tls_validate_require_cipher");
 
   if ((errmsg = tls_validate_require_cipher()))
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+    log_write_die(0, LOG_CONFIG,
         "tls_require_ciphers invalid: %s", errmsg);
   fflush(NULL);
   exim_underbar_exit(EXIT_SUCCESS);

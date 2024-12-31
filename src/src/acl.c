@@ -2647,7 +2647,7 @@ else switch(mode)
     anchor = &ratelimiters_cmd;
     break;
   default:
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    log_write_die(0, LOG_MAIN,
       "internal ACL error: unknown ratelimit mode %d", mode);
     /*NOTREACHED*/
     break;
@@ -4277,7 +4277,7 @@ for (; cb; cb = cb->next)
       break;
 
     default:
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "internal ACL error: unknown "
+      log_write_die(0, LOG_MAIN, "internal ACL error: unknown "
 	"condition %d", cb->type);
       break;
     }
@@ -4811,7 +4811,7 @@ while ((acl_current = acl))
       break;
 
     default:
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "internal ACL error: unknown verb %d",
+      log_write_die(0, LOG_MAIN, "internal ACL error: unknown verb %d",
 	acl->verb);
       break;
     }

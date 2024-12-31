@@ -100,7 +100,7 @@ int
 stdin_ungetc(int c)
 {
 if (stdin_inptr <= stdin_buf)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "buffer underflow in stdin_ungetc");
+  log_write_die(0, LOG_MAIN, "buffer underflow in stdin_ungetc");
 
 *--stdin_inptr = c;
 return c;
@@ -522,9 +522,7 @@ if (recipients_count >= recipients_list_max)
 
   const int safe_recipients_limit = INT_MAX / 2 / sizeof(recipient_item);
   if (recipients_list_max < 0 || recipients_list_max >= safe_recipients_limit)
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Too many recipients: %d", recipients_list_max);
-    }
+    log_write_die(0, LOG_MAIN, "Too many recipients: %d", recipients_list_max);
 
   recipients_list_max = recipients_list_max ? 2*recipients_list_max : 50;
   recipients_list = store_get(recipients_list_max * sizeof(recipient_item), GET_UNTAINTED);
@@ -1584,7 +1582,7 @@ if (!received)
   {
   if(spool_name[0] != 0)
     Uunlink(spool_name);           /* Lose the data file */
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" "
+  log_write_die(0, LOG_MAIN, "Expansion of \"%s\" "
     "(received_header_text) failed: %s", string_printing(received_header_text),
       expand_string_message);
   }
@@ -3222,7 +3220,7 @@ if ((data_fd = Uopen(spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE)) < 0)
     data_fd = Uopen(spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE);
     }
   if (data_fd < 0)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed to create spool file %s: %s",
+    log_write_die(0, LOG_MAIN, "Failed to create spool file %s: %s",
       spool_name, strerror(errno));
   }
 
@@ -3230,7 +3228,7 @@ if ((data_fd = Uopen(spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE)) < 0)
 because the group setting doesn't always get set automatically. */
 
 if (0 != exim_fchown(data_fd, exim_uid, exim_gid, spool_name))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "Failed setting ownership on spool file %s: %s",
     spool_name, strerror(errno));
 (void)fchmod(data_fd, SPOOL_MODE);
@@ -3247,7 +3245,7 @@ lock_data.l_start = 0;
 lock_data.l_len = spool_data_start_offset(message_id);
 
 if (fcntl(data_fd, F_SETLK, &lock_data) < 0)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Cannot lock %s (%d): %s", spool_name,
+  log_write_die(0, LOG_MAIN, "Cannot lock %s (%d): %s", spool_name,
     errno, strerror(errno));
 
 /* We have an open, locked data file. Write the message id to it to make it

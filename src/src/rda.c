@@ -613,7 +613,7 @@ we have to create the subprocess to do everything as the given user. The
 results of processing are passed back via a pipe. */
 
 if (pipe(pfd) != 0)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "creation of pipe for filter or "
+  log_write_die(0, LOG_MAIN, "creation of pipe for filter or "
     ":include: failed for %s: %s", rname, strerror(errno));
 
 /* Ensure that SIGCHLD is set to SIG_DFL before forking, so that the child
@@ -792,7 +792,7 @@ bad:
 /* Back in the main process: panic if the fork did not succeed. */
 
 if (pid < 0)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "fork failed for %s", rname);
+  log_write_die(0, LOG_MAIN, "fork failed for %s", rname);
 
 /* Read the pipe to get the data from the filter/forward. Our copy of the
 writing end must be closed first, as otherwise read() won't return zero on an

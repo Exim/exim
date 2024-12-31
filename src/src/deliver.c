@@ -334,7 +334,7 @@ static int
 open_msglog_file(uschar *filename, int mode, uschar **error)
 {
 if (Ustrstr(filename, US"/../"))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "Attempt to open msglog file path with upward-traversal: '%s'\n", filename);
 
 for (int i = 2; i > 0; i--)
@@ -2461,7 +2461,7 @@ better than returning an error - if forking is failing it is probably best
 not to try other deliveries for this message. */
 
 if (pid < 0)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Fork failed for local delivery to %s",
+  log_write_die(0, LOG_MAIN, "Fork failed for local delivery to %s",
     addr->address);
 
 /* Read the pipe to get the delivery status codes and error messages. Our copy
@@ -4088,7 +4088,7 @@ for (;;)   /* Normally we do not repeat this loop */
             pid_t endedpid = waitpid(pid, &status, 0);
             if (endedpid == pid) goto PROCESS_DONE;
             if (endedpid != (pid_t)(-1) || errno != EINTR)
-              log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Unexpected error return "
+              log_write_die(0, LOG_MAIN, "Unexpected error return "
                 "%d (errno = %d) from waitpid() for process %ld",
                 (int)endedpid, errno, (long)pid);
             }
@@ -4243,7 +4243,7 @@ ssize_t ret;
 
 if (size > BIG_BUFFER_SIZE-1)
   {
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "Failed writing transport result to pipe: can't handle buffers > %d bytes. truncating!\n",
       BIG_BUFFER_SIZE-1);
   size = BIG_BUFFER_SIZE;
@@ -4255,13 +4255,13 @@ that help? */
 /* convert size to human readable string prepended by id and subid */
 if (PIPE_HEADER_SIZE != snprintf(CS pipe_header, PIPE_HEADER_SIZE+1, "%c%c%05ld",
     id, subid, (long)size))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "header snprintf failed\n");
+  log_write_die(0, LOG_MAIN, "header snprintf failed\n");
 
 DEBUG(D_deliver) debug_printf("header write id:%c,subid:%c,size:%ld,final:%s\n",
                                  id, subid, (long)size, pipe_header);
 
 if ((ret = writev(fd, iov, 2)) != total_len)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "Failed writing transport result to pipe (%ld of %ld bytes): %s",
     (long)ret, (long)total_len, ret == -1 ? strerror(errno) : "short write");
 }
@@ -4870,7 +4870,7 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
 
     if (  (deliver_datafile = Uopen(fname, EXIM_CLOEXEC | O_RDWR | O_APPEND, 0))
 	< 0)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed to reopen %s for remote "
+      log_write_die(0, LOG_MAIN, "Failed to reopen %s for remote "
         "parallel delivery: %s", fname, strerror(errno));
     }
 
@@ -5857,7 +5857,7 @@ if (!(bounce_recipient = addr_failed->prop.errors_address))
 /* Make a subprocess to send a message, using its stdin */
 
 if ((pid = child_open_exim(&fd, US"bounce-message")) < 0)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %ld (parent %ld) failed to "
+  log_write_die(0, LOG_MAIN, "Process %ld (parent %ld) failed to "
     "create child process to send failure message: %s",
     (long)getpid(), (long)getppid(), strerror(errno));
 
@@ -6513,7 +6513,7 @@ if (addr_senddsn)
 
   if (pid < 0)  /* Creation of child failed */
     {
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %ld (parent %ld) failed to "
+    log_write_die(0, LOG_MAIN, "Process %ld (parent %ld) failed to "
       "create child process to send success-dsn message: %s",
       (long)getpid(), (long)getppid(), strerror(errno));
 
@@ -7158,7 +7158,7 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
     while (p)
       {
       if (parent->child_count == USHRT_MAX)
-        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "system filter generated more "
+        log_write_die(0, LOG_MAIN, "system filter generated more "
           "than %d delivery addresses", USHRT_MAX);
       parent->child_count++;
       p->parent = parent;
@@ -8287,7 +8287,7 @@ if (addr_local || addr_remote)
       log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't set perms on journal file %s: %s",
 	fname, strerror(errno));
       if(ret  &&  errno != ENOENT)
-	log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
+	log_write_die(0, LOG_MAIN, "failed to unlink %s: %s",
 	  fname, strerror(errno));
       return DELIVER_NOT_ATTEMPTED;
       }
@@ -8587,12 +8587,12 @@ if (!addr_defer)
         rc = Urename(fname, moname);
         }
       if (rc < 0)
-        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to move %s to the "
+        log_write_die(0, LOG_MAIN, "failed to move %s to the "
           "msglog.OLD directory", fname);
       }
     else
       if (Uunlink(fname) < 0)
-        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
+        log_write_die(0, LOG_MAIN, "failed to unlink %s: %s",
 		  fname, strerror(errno));
     }
 
@@ -8600,11 +8600,11 @@ if (!addr_defer)
 
   fname = spool_fname(US"input", message_subdir, id, US"-D");
   if (Uunlink(fname) < 0)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
+    log_write_die(0, LOG_MAIN, "failed to unlink %s: %s",
       fname, strerror(errno));
   fname = spool_fname(US"input", message_subdir, id, US"-H");
   if (Uunlink(fname) < 0)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
+    log_write_die(0, LOG_MAIN, "failed to unlink %s: %s",
       fname, strerror(errno));
 
   /* Log the end of this message, with queue time if requested. */
@@ -8883,7 +8883,7 @@ if (remove_journal)
   uschar * fname = spool_fname(US"input", message_subdir, id, US"-J");
 
   if (Uunlink(fname) < 0 && errno != ENOENT)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s", fname,
+    log_write_die(0, LOG_MAIN, "failed to unlink %s: %s", fname,
       strerror(errno));
 
   /* Move the message off the spool if requested */

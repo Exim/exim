@@ -973,7 +973,8 @@ if (!*pid_file_path)
   pid_file_path = string_sprintf("%s/exim-daemon.pid", spool_directory);
 
 if (pid_file_path[0] != '/')
-  log_write(0, LOG_PANIC_DIE, "pid file path %s must be absolute\n", pid_file_path);
+  log_write_die(0, LOG_PANIC_DIE,
+		"pid file path %s must be absolute\n", pid_file_path);
 }
 
 
@@ -1007,7 +1008,7 @@ if (pid_len < 2 || pid_len >= (int)sizeof(pid_line)) goto cleanup;
 
 path = string_copy(pid_file_path);
 if ((base = Ustrrchr(path, '/')) == NULL)	/* should not happen, but who knows */
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "pid file path \"%s\" does not contain a '/'", pid_file_path);
+  log_write_die(0, LOG_MAIN, "pid file path \"%s\" does not contain a '/'", pid_file_path);
 
 dir = base != path ? path : US"/";
 *base++ = '\0';
@@ -1024,7 +1025,7 @@ if (dir_fd < 0 || fstat(dir_fd, &sb) != 0 || !S_ISDIR(sb.st_mode)) goto cleanup;
 if (fchdir(dir_fd) != 0) goto cleanup;
 base_fd = open(CS base, O_RDONLY | base_flags);
 if (fchdir(cwd_fd) != 0)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
+  log_write_die(0, LOG_MAIN, "can't return to previous working dir: %s", strerror(errno));
 
 if (base_fd >= 0)
   {
@@ -1055,7 +1056,7 @@ if (operation == PID_WRITE)
       if (fchdir(dir_fd) != 0) goto cleanup;
       error = unlink(CS base);
       if (fchdir(cwd_fd) != 0)
-        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
+        log_write_die(0, LOG_MAIN, "can't return to previous working dir: %s", strerror(errno));
       if (error) goto cleanup;
       (void)close(base_fd);
       base_fd = -1;
@@ -1064,7 +1065,7 @@ if (operation == PID_WRITE)
     if (fchdir(dir_fd) != 0) goto cleanup;
     base_fd = open(CS base, O_WRONLY | O_CREAT | O_EXCL | base_flags, base_mode);
     if (fchdir(cwd_fd) != 0)
-        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
+        log_write_die(0, LOG_MAIN, "can't return to previous working dir: %s", strerror(errno));
     if (base_fd < 0) goto cleanup;
     if (fchmod(base_fd, base_mode) != 0) goto cleanup;
     if (write(base_fd, pid_line, pid_len) != pid_len) goto cleanup;
@@ -1081,7 +1082,7 @@ else
     if (fchdir(dir_fd) != 0) goto cleanup;
     error = unlink(CS base);
     if (fchdir(cwd_fd) != 0)
-        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "can't return to previous working dir: %s", strerror(errno));
+        log_write_die(0, LOG_MAIN, "can't return to previous working dir: %s", strerror(errno));
     if (error) goto cleanup;
     }
   }
@@ -1760,7 +1761,7 @@ if (f.inetd_wait_mode)
   listen_socket_count = 1;
   (void) close(3);
   if (dup2(0, 3) == -1)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    log_write_die(0, LOG_MAIN,
         "failed to dup inetd socket safely away: %s", strerror(errno));
 
   fd_polls[0].fd = 3;
@@ -1789,7 +1790,7 @@ if (f.inetd_wait_mode)
 
   if (tcp_nodelay)
     if (setsockopt(3, IPPROTO_TCP, TCP_NODELAY, US &on, sizeof(on)))
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to set socket NODELAY: %s",
+      log_write_die(0, LOG_MAIN, "failed to set socket NODELAY: %s",
 	strerror(errno));
   }
 
@@ -1950,13 +1951,13 @@ if (f.daemon_listen && !f.inetd_wait_mode)
       uschar * end;
       default_smtp_port[pct] = Ustrtol(s, &end, 0);
       if (*end)
-        log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "invalid SMTP port: %s", s);
+        log_write_die(0, LOG_CONFIG, "invalid SMTP port: %s", s);
       }
     else
       {
       struct servent * smtp_service = getservbyname(CS s, "tcp");
       if (!smtp_service)
-        log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "TCP port \"%s\" not found", s);
+        log_write_die(0, LOG_CONFIG, "TCP port \"%s\" not found", s);
       default_smtp_port[pct] = ntohs(smtp_service->s_port);
       }
   default_smtp_port[pct] = 0;
@@ -1981,7 +1982,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 	  {
 	  struct servent * smtp_service = getservbyname(CS s, "tcp");
 	  if (!smtp_service)
-	    log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "TCP port \"%s\" not found", s);
+	    log_write_die(0, LOG_CONFIG, "TCP port \"%s\" not found", s);
 	  g = string_append_listele_fmt(g, ':', FALSE, "%d",
 					      (int)ntohs(smtp_service->s_port));
 	  }
@@ -2019,7 +2020,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
     if (ipa->port > 0) continue;
 
     if (daemon_smtp_port[0] <= 0)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "no port specified for interface "
+      log_write_die(0, LOG_MAIN, "no port specified for interface "
         "%s and daemon_smtp_port is unset; cannot start daemon",
         ipa->address[0] == 0 ? US"\"all IPv4\"" :
         ipa->address[1] == 0 ? US"\"all IPv6\"" : ipa->address);
@@ -2158,7 +2159,7 @@ if (f.background_daemon)
     {
     BOOL daemon_listen = f.daemon_listen;
     pid_t pid = exim_fork(US"daemon");
-    if (pid < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    if (pid < 0) log_write_die(0, LOG_MAIN,
       "fork() failed when starting daemon: %s", strerror(errno));
     if (pid > 0) exim_exit(EXIT_SUCCESS); /* in parent process, just exit */
     (void)setsid();                       /* release controlling terminal */
@@ -2207,7 +2208,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
           "listening (%s): will use IPv4", strerror(errno));
         goto SKIP_SOCKET;
         }
-      log_write(0, LOG_PANIC_DIE, "IPv%c socket creation failed: %s",
+      log_write_die(0, LOG_PANIC_DIE, "IPv%c socket creation failed: %s",
         af == AF_INET6 ? '6' : '4', strerror(errno));
       }
 
@@ -2227,7 +2228,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
     smtp port for listening. */
 
     if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "setting SO_REUSEADDR on socket "
+      log_write_die(0, LOG_MAIN, "setting SO_REUSEADDR on socket "
         "failed when starting daemon: %s", strerror(errno));
 
     /* Set TCP_NODELAY; Exim does its own buffering. There is a switch to
@@ -2266,7 +2267,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 	: US"(any IPv4)"
 	: ipa->address;
       if (daemon_startup_retries <= 0)
-        log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+        log_write_die(0, LOG_MAIN,
           "socket bind() to port %d for address %s failed: %s: "
           "daemon abandoned", ipa->port, addr, msg);
       log_write(0, LOG_MAIN, "socket bind() to port %d for address %s "
@@ -2318,7 +2319,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
     where the IPv6 socket accepts both kinds of call. */
 
     if (!check_special_case(errno, addresses, ipa, TRUE))
-      log_write(0, LOG_PANIC_DIE, "listen() failed on interface %s: %s",
+      log_write_die(0, LOG_PANIC_DIE, "listen() failed on interface %s: %s",
         wildcard
 	? af == AF_INET6 ? US"(any IPv6)" : US"(any IPv4)" : ipa->address,
         strerror(errno));
@@ -2865,7 +2866,7 @@ for (;;)
     sighup_argv[0] = exim_path;
     exim_nullstd();
     execv(CS exim_path, (char *const *)sighup_argv);
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "pid %ld: exec of %s failed: %s",
+    log_write_die(0, LOG_MAIN, "pid %ld: exec of %s failed: %s",
       getpid(), exim_path, strerror(errno));
     log_close_all();
     }

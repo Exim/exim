@@ -200,11 +200,11 @@ for (transport_instance * t = transports; t; t = t->drinst.next)
   {
   transport_info * ti = t->drinst.info;
   if (!ti->local && t->shadow)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+    log_write_die(0, LOG_CONFIG,
       "shadow transport not allowed on non-local transport %s", t->drinst.name);
 
   if (t->body_only && t->headers_only)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+    log_write_die(0, LOG_CONFIG,
       "%s transport: body_only and headers_only are mutually exclusive",
       t->drinst.name);
   }
@@ -432,7 +432,7 @@ that the result will never be expanded. */
 
 va_start(ap, format);
 if (!string_vformat(&gs, SVFMT_TAINT_NOCHK, format, ap))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong formatted string in transport");
+  log_write_die(0, LOG_MAIN, "overlong formatted string in transport");
 va_end(ap);
 tctx.u.fd = fd;
 return transport_write_block(&tctx, gs.s, gs.ptr, FALSE);

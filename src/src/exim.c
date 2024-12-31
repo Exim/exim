@@ -51,7 +51,7 @@ static void *
 function_store_malloc(PCRE2_SIZE size, void * tag)
 {
 if (size > INT_MAX)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "excessive memory alloc request");
+  log_write_die(0, LOG_MAIN, "excessive memory alloc request");
 return store_malloc((int)size);
 }
 
@@ -67,7 +67,7 @@ static void *
 function_store_get(PCRE2_SIZE size, void * tag)
 {
 if (size > INT_MAX)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "excessive memory alloc request");
+  log_write_die(0, LOG_MAIN, "excessive memory alloc request");
 return store_get((int)size, GET_UNTAINTED);	/* loses track of taint */
 }
 
@@ -417,7 +417,7 @@ if (itval->it_value.tv_usec < 50 && itval->it_value.tv_sec == 0)
 (void)sigaddset(&sigmask, SIGALRM);                    /* Add SIGALRM */
 (void)sigprocmask(SIG_BLOCK, &sigmask, &old_sigmask);  /* Block SIGALRM */
 if (setitimer(ITIMER_REAL, itval, NULL) < 0)           /* Start timer */
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "setitimer() failed: %s", strerror(errno));
 (void)sigfillset(&sigmask);                            /* All signals */
 (void)sigdelset(&sigmask, SIGALRM);                    /* Remove SIGALRM */
@@ -665,7 +665,7 @@ for (int i = 0; i <= 2; i++)
   if (fstat(i, &statbuf) < 0 && errno == EBADF)
     {
     if (devnull < 0) devnull = open("/dev/null", O_RDWR);
-    if (devnull < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
+    if (devnull < 0) log_write_die(0, LOG_MAIN, "%s",
       string_open_failed("/dev/null", NULL));
     if (devnull != i) (void)dup2(devnull, i);
     }
@@ -777,16 +777,16 @@ if (euid == root_uid || euid != uid || egid != gid || igflag)
     {
     struct passwd *pw = getpwuid(uid);
     if (!pw)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "cannot run initgroups(): "
+      log_write_die(0, LOG_MAIN, "cannot run initgroups(): "
 	"no passwd entry for uid=%ld", (long int)uid);
 
     if (initgroups(pw->pw_name, gid) != 0)
-      log_write(0,LOG_MAIN|LOG_PANIC_DIE,"initgroups failed for uid=%ld: %s",
+      log_write_die(0,LOG_MAIN,"initgroups failed for uid=%ld: %s",
 	(long int)uid, strerror(errno));
     }
 
   if (setgid(gid) < 0 || setuid(uid) < 0)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "unable to set gid=%ld or uid=%ld "
+    log_write_die(0, LOG_MAIN, "unable to set gid=%ld or uid=%ld "
       "(euid=%ld): %s", (long int)gid, (long int)uid, (long int)euid, msg);
   }
 
@@ -4318,7 +4318,7 @@ defined) */
 /* Now in directory "/" */
 
 if (cleanup_environment() == FALSE)
-  log_write(0, LOG_PANIC_DIE, "Can't cleanup environment");
+  log_write_die(0, LOG_PANIC_DIE, "Can't cleanup environment");
 
 
 /* If an action on specific messages is requested, or if a daemon or queue
@@ -4418,22 +4418,22 @@ log_write() from here will cause the ultimate panic collapse if the complete
 file name exceeds the buffer length. */
 
 if (Ustrlen(log_file_path) > 200)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "log_file_path is longer than 200 chars: aborting");
 
 if (Ustrlen(pid_file_path) > 200)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "pid_file_path is longer than 200 chars: aborting");
 
 if (Ustrlen(spool_directory) > 200)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "spool_directory is longer than 200 chars: aborting");
 
 /* Length check on the process name given to syslog for its TAG field,
 which is only permitted to be 32 characters or less. See RFC 3164. */
 
 if (Ustrlen(syslog_processname) > 32)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "syslog_processname is longer than 32 chars: aborting");
 
 if (log_oneline)
@@ -4767,7 +4767,7 @@ if (smtp_input)
 
       if (real_uid == root_uid || real_uid == exim_uid || interface_port < 1024)
         {
-        if (mua_wrapper) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Input from "
+        if (mua_wrapper) log_write_die(0, LOG_MAIN, "Input from "
           "inetd is not supported when mua_wrapper is set");
         f.is_inetd = TRUE;
         sender_host_address = host_ntoa(-1, (struct sockaddr *)(&inetd_sock),
@@ -5292,7 +5292,7 @@ if (!originator_login || f.running_in_test_harness)
     if (!originator_name) originator_name = US"";
     }
   if (!originator_login)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed to get user name for uid %d",
+    log_write_die(0, LOG_MAIN, "Failed to get user name for uid %d",
       (int)real_uid);
   }
 
@@ -5321,7 +5321,7 @@ if (f.daemon_listen || f.inetd_wait_mode || is_multiple_qrun())
   if (mua_wrapper)
     {
     fprintf(stderr, "Daemon cannot be run when mua_wrapper is set\n");
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Daemon cannot be run when "
+    log_write_die(0, LOG_MAIN, "Daemon cannot be run when "
       "mua_wrapper is set");
     }
 
@@ -5597,7 +5597,7 @@ if (raw_active_hostname)
   if (!nah)
     {
     if (!f.expand_string_forcedfail)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand \"%s\" "
+      log_write_die(0, LOG_MAIN, "failed to expand \"%s\" "
         "(smtp_active_hostname): %s", raw_active_hostname,
         expand_string_message);
     }
@@ -5869,10 +5869,10 @@ else
   thismessage_size_limit = expand_string_integer(message_size_limit, TRUE);
   if (expand_string_message)
     if (thismessage_size_limit == -1)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand "
+      log_write_die(0, LOG_MAIN, "failed to expand "
         "message_size_limit: %s", expand_string_message);
     else
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "invalid value for "
+      log_write_die(0, LOG_MAIN, "invalid value for "
         "message_size_limit: %s", expand_string_message);
 
   setvbuf(stdin, NULL, _IONBF, 0);

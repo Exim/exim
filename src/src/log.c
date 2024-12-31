@@ -587,7 +587,7 @@ if (!panic_save_buffer)
   if ((panic_save_buffer = US malloc(LOG_BUFFER_SIZE)))
     memcpy(panic_save_buffer, log_buffer, LOG_BUFFER_SIZE);
 
-log_write(0, LOG_PANIC_DIE, "Cannot open %s log file \"%s\": %s: "
+log_write_die(0, LOG_PANIC_DIE, "Cannot open %s log file \"%s\": %s: "
   "euid=%d egid=%d", log_names[type], buffer, strerror(errno), euid, getegid());
 /* Never returns */
 }
@@ -707,9 +707,9 @@ if (!panic_save_buffer)
   if ((panic_save_buffer = US malloc(LOG_BUFFER_SIZE)))
     memcpy(panic_save_buffer, log_buffer, LOG_BUFFER_SIZE);
 
-log_write(0, LOG_PANIC_DIE, "failed to write to %s: length=%d result=%d "
+log_write_die(0, LOG_PANIC_DIE, "failed to write to %s: length=%d result=%d "
   "errno=%d (%s)", name, length, rc, save_errno,
-  (save_errno == 0)? "write incomplete" : strerror(save_errno));
+  save_errno == 0 ? "write incomplete" : strerror(save_errno));
 /* Never returns */
 }
 
@@ -853,14 +853,13 @@ Arguments:
 Returns:    nothing
 */
 
-void
-log_write(unsigned int selector, int flags, const char *format, ...)
+static void
+log_vwrite(unsigned int selector, int flags, const char * format, va_list ap)
 {
 int paniclogfd;
 ssize_t written_len;
 gstring gs = { .size = LOG_BUFFER_SIZE-2, .ptr = 0, .s = log_buffer };
 gstring * g = &gs;
-va_list ap;
 
 /* If panic_recurseflag is set, we have failed to open the panic log. This is
 the ultimate disaster. First try to write the message to a debug file and/or
@@ -970,6 +969,7 @@ in one go so that it doesn't get split when multi-processing. */
 
 DEBUG(D_any|D_v)
   {
+  va_list aq;
   string_fmt_append_noextend(g, "LOG:");
 
   /* Show the selector that was passed into the call. */
@@ -993,14 +993,14 @@ DEBUG(D_any|D_v)
   malloc'd.  So use deliberately taint-nonchecking routines to build into
   it, trusting that we will never expand the results. */
 
-  va_start(ap, format);
-  if (!string_vformat(g, SVFMT_TAINT_NOCHK, format, ap))
+  va_copy(aq, ap);
+  if (!string_vformat(g, SVFMT_TAINT_NOCHK, format, aq))
     {
     uschar * s = US"**** log string overflowed log buffer ****";
     gstring_trim(g, Ustrlen(s));
     string_fmt_append_noextend(g, "%s", s);
     }
-  va_end(ap);
+  va_end(aq);
 
   debug_printf("%Y\n", g);
 
@@ -1011,8 +1011,7 @@ DEBUG(D_any|D_v)
 /* If no log file is specified, we are in a mess. */
 
 if (!(flags & (LOG_MAIN|LOG_PANIC|LOG_REJECT)))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "log_write called with no log "
-    "flags set");
+  log_write_die(0, LOG_MAIN, "log_write called with no log flags set");
 
 /* There are some weird circumstances in which logging is disabled. */
 
@@ -1045,20 +1044,16 @@ if (f.really_exim && message_id[0])
 if (flags & LOG_CONFIG)
   log_config_info(g, flags);
 
-va_start(ap, format);
-  {
-  /* We want to be able to log tainted info, but log_buffer is directly
-  malloc'd.  So use deliberately taint-nonchecking routines to build into
-  it, trusting that we will never expand the results. */
+/* We want to be able to log tainted info, but log_buffer is directly
+malloc'd.  So use deliberately taint-nonchecking routines to build into
+it, trusting that we will never expand the results. */
 
-  if (!string_vformat(g, SVFMT_TAINT_NOCHK, format, ap))
-    {
-    uschar * s = US"**** log string overflowed log buffer ****";
-    gstring_trim(g, Ustrlen(s));
-    string_fmt_append_noextend(g, "%s", s);
-    }
+if (!string_vformat(g, SVFMT_TAINT_NOCHK, format, ap))
+  {
+  uschar * s = US"**** log string overflowed log buffer ****";
+  gstring_trim(g, Ustrlen(s));
+  string_fmt_append_noextend(g, "%s", s);
   }
-va_end(ap);
 
 /* Add the raw, unrewritten, sender to the message if required. This is done
 this way because it kind of fits with LOG_RECIPIENTS. */
@@ -1320,6 +1315,30 @@ if (flags & LOG_PANIC)
   }
 }
 
+/* The public interface */
+
+void
+log_write(unsigned int selector, int flags, const char * format, ...)
+{
+va_list ap;
+va_start(ap, format);
+log_vwrite(selector, flags, format, ap);
+va_end(ap);
+}
+
+/* As the above, but adds in LOG_PANIC_DIE.
+We have this as a wripper so that we can mark it as never returning,
+for the benefit of static analysers. */
+
+void
+log_write_die(unsigned int selector, int flags, const char * format, ...)
+{
+va_list ap;
+va_start(ap, format);
+log_vwrite(selector, flags | LOG_PANIC_DIE, format, ap);
+UNREACHABLE;
+}
+
 
 
 /*************************************************
@@ -1496,7 +1515,7 @@ if (Ustrcmp(which, "debug") == 0)
   fprintf(stderr, "exim: %s\n", errmsg);
   exim_exit(EXIT_FAILURE);
   }
-else log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "%s", errmsg);
+else log_write_die(0, LOG_CONFIG, "%s", errmsg);
 }
 
 

@@ -407,7 +407,7 @@ tblock->setup = smtp_transport_setup;
 
 if (ob->command_timeout <= 0 || ob->data_timeout <= 0 ||
     ob->final_timeout <= 0)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "command, data, or final timeout value is zero for %s transport",
       t->name);
 
@@ -4936,7 +4936,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 		}
 
 	      if (pid < 0)
-		log_write(0, LOG_PANIC_DIE, "fork failed");
+		log_write_die(0, LOG_PANIC_DIE, "fork failed");
 
 	      close(pfd[0]);
 	      continue_fd = pfd[1];

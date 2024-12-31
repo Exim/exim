@@ -42,6 +42,7 @@ The annotation on functions is still in place but does nothing. */
 # define WARN_UNUSED_RESULT	__attribute__((__warn_unused_result__))
 # define ALLOC			__attribute__((malloc))
 # define NORETURN		__attribute__((noreturn))
+# define UNREACHABLE		__builtin_unreachable()
 # ifndef __clang__
 #  define ALLOC_SIZE(A)		__attribute__((alloc_size(A)))
 # else
@@ -54,6 +55,7 @@ The annotation on functions is still in place but does nothing. */
 # define ALLOC			/**/
 # define ALLOC_SIZE(A)		/**/
 # define NORETURN		/**/
+# define UNREACHABLE		/**/
 #endif
 
 #ifndef PRINTF_FUNCTION

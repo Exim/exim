@@ -3105,7 +3105,7 @@ if (iplookup)
   /* Find the search type */
 
   if (!(li = search_findtype(t, endname - t)))
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
+    log_write_die(0, LOG_MAIN, "%s", search_error_message);
 
   /* Adjust parameters for the type of lookup. For a query-style lookup, there
   is no file name, and the "key" is just the query. For query-style with a file
@@ -3142,7 +3142,7 @@ if (iplookup)
   of the caching arrangements. */
 
   if (!(handle = search_open(filename, li, 0, NULL, NULL)))
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
+    log_write_die(0, LOG_MAIN, "%s", search_error_message);
 
   result = search_find(handle, filename, key, -1, NULL, 0, 0, NULL, opts);
   if (valueptr) *valueptr = result;

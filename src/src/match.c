@@ -286,7 +286,7 @@ li = search_findtype_partial(pattern, &partial, &affix, &affixlen,
   &starflags, &opts);
 *semicolon = ';';
 if (!li)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
+  log_write_die(0, LOG_MAIN, "%s", search_error_message);
 
 /* Partial matching is not appropriate for certain lookups (e.g. when looking
 up user@domain for sender rejection). There's a flag to disable it. */
@@ -302,7 +302,7 @@ for; partial matching is all handled inside search_find(). Note that there is
 no search_close() because of the caching arrangements. */
 
 if (!(handle = search_open(filename, li, 0, NULL, NULL)))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
+  log_write_die(0, LOG_MAIN, "%s", search_error_message);
 result = search_find(handle, filename, keyquery, partial, affix, affixlen,
   starflags, &expand_setup, opts);
 
@@ -682,7 +682,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
       const uschar * listname = readconf_find_option(listptr);
       if (!*listname)
         listname = string_sprintf("\"%s\"", *listptr);
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
+      log_write_die(0, LOG_MAIN, "%s",
         string_open_failed("%s when checking %s", sss, listname));
       }
 
@@ -1235,7 +1235,7 @@ if (pattern[0] == '@' && pattern[1] == '@')
   /* End of chain loop; panic if too many times */
 
   if (watchdog <= 0)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Loop detected in lookup of "
+    log_write_die(0, LOG_MAIN, "Loop detected in lookup of "
       "local part of %s in %s", subject, pattern);
 
   /* Otherwise the local part check has failed, so the whole match

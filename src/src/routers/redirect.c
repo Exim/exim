@@ -151,7 +151,7 @@ redirect_router_options_block * ob =
 /* Either file or data must be set, but not both */
 
 if ((ob->file == NULL) == (ob->data == NULL))
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
     "%sone of \"file\" or \"data\" must be specified",
     r->name, ob->file ? "only " : "");
 
@@ -164,11 +164,11 @@ if (ob->one_time)
   {
   ob->forbid_pipe = ob->forbid_file = ob->forbid_filter_reply = TRUE;
   if (rblock->extra_headers || rblock->remove_headers)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+    log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
       "\"headers_add\" and \"headers_remove\" are not permitted with "
       "\"one_time\"", r->name);
   if (rblock->unseen || rblock->expand_unseen)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+    log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
       "\"unseen\" may not be used with \"one_time\"", r->name);
   }
 
@@ -188,7 +188,7 @@ if (ob->check_group == TRUE_UNSET)
 /* If explicit qualify domain set, the preserve option is locked out */
 
 if (ob->qualify_domain && ob->qualify_preserve_domain)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
     "only one of \"qualify_domain\" or \"qualify_preserve_domain\" must be set",
     r->name);
 
@@ -198,7 +198,7 @@ if (!rblock->check_local_user &&
     !rblock->uid_set &&
     rblock->expand_uid == NULL &&
     (ob->bit_options & RDO_FILTER) != 0)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s router:\n  "
     "\"user\" or \"check_local_user\" must be set with \"allow_filter\"",
     r->name);
 }
@@ -289,7 +289,7 @@ while (generated)
   next->parent = addr;
   next->start_router = rblock->redirect_router;
   if (addr->child_count == USHRT_MAX)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s router generated more than %d "
+    log_write_die(0, LOG_MAIN, "%s router generated more than %d "
       "child addresses for <%s>", rblock->drinst.name, USHRT_MAX, addr->address);
   addr->child_count++;
 

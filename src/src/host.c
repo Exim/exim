@@ -678,7 +678,7 @@ while ((s = string_nextinlist(&list, &sep, NULL, 0)))
   int port = host_address_extract_port(s);            /* Leaves just the IP address */
 
   if (!(ipv = string_is_ip_address(s, NULL)))
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Malformed IP address \"%s\" in %s",
+    log_write_die(0, LOG_MAIN, "Malformed IP address \"%s\" in %s",
       s, name);
 
   /* Skip IPv6 addresses if IPv6 is disabled. */
@@ -952,7 +952,7 @@ if (Ustrchr(address, ':') != NULL)
     {
     int len = Ustrcspn(p, ":%");
     if (len == 0) nulloffset = ci;
-    if (ci > 7) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    if (ci > 7) log_write_die(0, LOG_MAIN,
       "Internal error: invalid IPv6 address \"%s\" passed to host_aton()",
       address);
     component[ci++] = p;
@@ -1449,7 +1449,7 @@ if (Ustrchr(sender_host_address, ':') != NULL)
   {
   struct in6_addr addr6;
   if (inet_pton(AF_INET6, CS sender_host_address, &addr6) != 1)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "unable to parse \"%s\" as an "
+    log_write_die(0, LOG_MAIN, "unable to parse \"%s\" as an "
       "IPv6 address", sender_host_address);
   #if HAVE_GETIPNODEBYADDR
   hosts = getipnodebyaddr(CS &addr6, sizeof(addr6), AF_INET6, &h_errno);
@@ -1460,7 +1460,7 @@ if (Ustrchr(sender_host_address, ':') != NULL)
 else
   {
   if (inet_pton(AF_INET, CS sender_host_address, &addr) != 1)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "unable to parse \"%s\" as an "
+    log_write_die(0, LOG_MAIN, "unable to parse \"%s\" as an "
       "IPv4 address", sender_host_address);
   #if HAVE_GETIPNODEBYADDR
   hosts = getipnodebyaddr(CS &addr, sizeof(addr), AF_INET, &h_errno);

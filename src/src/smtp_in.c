@@ -462,7 +462,7 @@ call the local functions instead of the standard C ones.  Place a NUL at the
 end of the buffer to safety-stop C-string reads from it. */
 
 if (!(smtp_inbuffer = US malloc(IN_BUFFER_SIZE)))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malloc() failed for SMTP input buffer");
+  log_write_die(0, LOG_MAIN, "malloc() failed for SMTP input buffer");
 smtp_inbuffer[IN_BUFFER_SIZE-1] = '\0';
 
 smtp_inptr = smtp_inend = smtp_inbuffer;
@@ -612,7 +612,7 @@ int
 smtp_ungetc(int ch)
 {
 if (smtp_inptr <= smtp_inbuffer)	/* NB: NOT smtp_hasc() ! */
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "buffer underflow in smtp_ungetc");
+  log_write_die(0, LOG_MAIN, "buffer underflow in smtp_ungetc");
 
 *--smtp_inptr = ch;
 return ch;
@@ -2517,7 +2517,7 @@ if (!f.sender_host_unknown)
 #ifdef USE_TCP_WRAPPERS
   errno = 0;
   if (!(tcp_wrappers_name = expand_string(tcp_wrappers_daemon_name)))
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" "
+    log_write_die(0, LOG_MAIN, "Expansion of \"%s\" "
       "(tcp_wrappers_name) failed: %s", string_printing(tcp_wrappers_name),
         expand_string_message);
 
@@ -4913,7 +4913,7 @@ while (done <= 0)
       /* We got really to many recipients. A check against configured
       limits is done later */
       if (rcpt_count < 0 || rcpt_count >= INT_MAX/2)
-        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Too many recipients: %d", rcpt_count);
+        log_write_die(0, LOG_MAIN, "Too many recipients: %d", rcpt_count);
       rcpt_count++;
       was_rcpt = fl.rcpt_in_progress = TRUE;
 
@@ -5767,7 +5767,7 @@ while (done <= 0)
 	  exim_nullstd();                   /* Ensure std{in,out,err} exist */
 	  /* argv[0] should be untainted, from child_exec_exim() */
 	  execv(CS argv[0], (char *const *)argv);
-	  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "exec of \"%s\" (ETRN) failed: %s",
+	  log_write_die(0, LOG_MAIN, "exec of \"%s\" (ETRN) failed: %s",
 	    etrn_command, strerror(errno));
 	  _exit(EXIT_FAILURE);         /* paranoia */
 	  }

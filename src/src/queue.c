@@ -656,7 +656,7 @@ for (int i = queue_run_in_order ? -1 : 0;
     pretty cheap. */
 
     if (pipe(pfd) < 0)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to create pipe in queue "
+      log_write_die(0, LOG_MAIN, "failed to create pipe in queue "
         "runner process %d: %s", queue_run_pid, strerror(errno));
     queue_run_pipe = pfd[pipe_write];  /* To ensure it gets passed on. */
 
@@ -701,7 +701,7 @@ single_item_retry:
 		? EXIT_FAILURE : EXIT_SUCCESS);
       }
     if (pid < 0)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "fork of delivery process from "
+      log_write_die(0, LOG_MAIN, "fork of delivery process from "
         "queue runner %d failed\n", queue_run_pid);
 
     /* Close the writing end of the synchronizing pipe in this process,

@@ -2002,7 +2002,7 @@ switch (vp->type)
     if (!(s = *((uschar **)(val)))) return US"";
     if (!(domain = Ustrrchr(s, '@'))) return s;
     if (domain - s > sizeof(var_buffer) - 1)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "local part longer than " SIZE_T_FMT
+      log_write_die(0, LOG_MAIN, "local part longer than " SIZE_T_FMT
 	  " in string expansion", sizeof(var_buffer));
     return string_copyn(s, domain - s);
 
@@ -2044,7 +2044,7 @@ switch (vp->type)
 	  }
 	}
       if (lseek(deliver_datafile, start_offset, SEEK_SET) < 0)
-	log_write(0, LOG_MAIN|LOG_PANIC_DIE, "deliver_datafile lseek: %s",
+	log_write_die(0, LOG_MAIN, "deliver_datafile lseek: %s",
 	  strerror(errno));
       if ((len = read(deliver_datafile, body, len)) > 0)
 	{
@@ -8918,7 +8918,7 @@ tree_walk(tree_nonrecipients, assert_variable_notin, &e);
 tree_walk(tree_unusable,      assert_variable_notin, &e);
 
 if (e.var_name)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  log_write_die(0, LOG_MAIN,
     "live variable '%s' destroyed by reset_store at %s:%d\n- value '%.64s'",
     e.var_name, filename, linenumber, e.var_data);
 }

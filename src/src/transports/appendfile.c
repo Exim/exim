@@ -343,7 +343,7 @@ if (ob->lock_retries == 0) ob->lock_retries = 1;
 /* Only one of a file name or directory name must be given. */
 
 if (ob->filename && ob->dirname)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s transport:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s transport:\n  "
   "only one of \"file\" or \"directory\" can be specified", trname);
 
 /* If a file name was specified, neither quota_filecount nor quota_directory
@@ -352,10 +352,10 @@ must be given. */
 if (ob->filename)
   {
   if (ob->quota_filecount)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s transport:\n  "
+    log_write_die(0, LOG_CONFIG_FOR, "%s transport:\n  "
       "quota_filecount must not be set without \"directory\"", trname);
   if (ob->quota_directory)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s transport:\n  "
+    log_write_die(0, LOG_CONFIG_FOR, "%s transport:\n  "
       "quota_directory must not be set without \"directory\"", trname);
   }
 
@@ -370,7 +370,7 @@ requested, the default for fcntl is FALSE. */
 if (ob->use_flock)
   {
   #ifdef NO_FLOCK
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s transport:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s transport:\n  "
     "flock() support was not available in the operating system when this "
     "binary was built", trname);
   #endif  /* NO_FLOCK */
@@ -395,7 +395,7 @@ if (ob->mbx_format)
 #endif  /* SUPPORT_MBX */
 
 if (!ob->use_fcntl && !ob->use_flock && !ob->use_lockfile && !ob->use_mbx_lock)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s transport:\n  "
+  log_write_die(0, LOG_CONFIG_FOR, "%s transport:\n  "
     "no locking configured", trname);
 
 /* Unset timeouts for non-used locking types */
@@ -410,20 +410,20 @@ be set. */
 if (ob->dirname)
   {
   if (ob->maildir_format && ob->mailstore_format)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s transport:\n  "
+    log_write_die(0, LOG_CONFIG_FOR, "%s transport:\n  "
       "only one of maildir and mailstore may be specified", trname);
   if (ob->quota_filecount != NULL && !ob->quota)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s transport:\n  "
+    log_write_die(0, LOG_CONFIG_FOR, "%s transport:\n  "
       "quota must be set if quota_filecount is set", trname);
   if (ob->quota_directory != NULL && !ob->quota)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s transport:\n  "
+    log_write_die(0, LOG_CONFIG_FOR, "%s transport:\n  "
       "quota must be set if quota_directory is set", trname);
   }
 
 /* If a fixed uid field is set, then a gid field must also be set. */
 
 if (tblock->uid_set && !tblock->gid_set && !tblock->expand_gid)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+  log_write_die(0, LOG_CONFIG,
     "user set without group for the %s transport", trname);
 
 /* If "create_file" is set, check that a valid option is given, and set the
@@ -436,7 +436,7 @@ if ((s = ob->create_file_string ) && *s)
   else if (*s == '/' || Ustrcmp(s, "belowhome") == 0)	val = create_belowhome;
   else if (Ustrcmp(s, "inhome") == 0)			val = create_inhome;
   else
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+    log_write_die(0, LOG_CONFIG,
       "invalid value given for \"create_file\" for the %s transport: '%s'",
       trname, s);
   ob->create_file = val;
