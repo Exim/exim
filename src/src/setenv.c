@@ -15,7 +15,6 @@ lacking them in libraries. It is #include'd by OS/os.c-foo files. */
 int
 setenv(const char * name, const char * val, int overwrite)
 {
-uschar * s;
 if (Ustrchr(name, '=')) return -1;
 if (overwrite || !getenv(name))
   putenv(CS string_copy_perm(string_sprintf("%s=%s", name, val), FALSE));

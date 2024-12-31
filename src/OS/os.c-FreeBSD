@@ -38,7 +38,7 @@ tfo_probe(void)
 int sock;
 
 if (  (sock = socket(AF_INET, SOCK_STREAM, 0)) >= 0
-   && setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN, &on, sizeof(on) >= 0)
+   && setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN, &on, sizeof(on)) >= 0
    )
   f.tcp_fastopen_ok = TRUE;
 close(sock);
