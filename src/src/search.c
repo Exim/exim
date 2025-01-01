@@ -393,9 +393,9 @@ void *
 search_open(const uschar * filename, const lookup_info * li, int modemask,
   uid_t * owners, gid_t * owngroups)
 {
-void *handle;
-tree_node *t;
-search_cache *c;
+void * handle;
+tree_node * t;
+search_cache * c;
 uschar keybuffer[256];
 int old_pool = store_pool;
 
@@ -445,7 +445,7 @@ if (li->type == lookup_absfile && open_filecount >= lookup_open_max)
       "one to close");
   else
     {
-    search_cache *c = (search_cache *)(open_bot->data.ptr);
+    search_cache * c = (search_cache *)(open_bot->data.ptr);
     DEBUG(D_lookup) debug_printf_indent("Too many lookup files open\n  closing %s\n",
       open_bot->name);
     if ((open_bot = c->up))
@@ -766,7 +766,7 @@ if (opts)
   int sep = ',';
   gstring * g = NULL;
 
-  for (uschar * ele; ele = string_nextinlist(&opts, &sep, NULL, 0); )
+  for (const uschar * ele; ele = string_nextinlist(&opts, &sep, NULL, 0); )
     if (Ustrcmp(ele, "ret=key") == 0) ret_key = TRUE;
     else if (Ustrcmp(ele, "cache=no_rd") == 0) cache_rd = FALSE;
     else g = string_append_listele(g, ',', ele);
@@ -812,7 +812,7 @@ if (open_top != (tree_node *)handle)
 DEBUG(D_lookup)
   {
   debug_printf_indent("LRU list:\n");
-  for (tree_node *t = open_top; t; )
+  for (tree_node * t = open_top; t; )
     {
     search_cache *c = (search_cache *)(t->data.ptr);
     debug_printf_indent("  %s\n", t->name);

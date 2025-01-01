@@ -27,8 +27,8 @@ backend provider. */
 
 /* Utility functionss */
 
-extern uschar *xtextencode(uschar *, int);
-extern int xtextdecode(uschar *, uschar**);
+extern uschar *xtextencode(const uschar *, int);
+extern int xtextdecode(const uschar *, uschar**);
 
 
 /* Access functions */

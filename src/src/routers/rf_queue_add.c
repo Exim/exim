@@ -49,7 +49,7 @@ addr->prop.localpart_data = deliver_localpart_data;   /* use in the transport */
 
 if (t)
   {
-  transport_info * ti = t->drinst.info;
+  const transport_info * ti = t->drinst.info;
   if (ti->local)
     {
     ugid_block ugid;

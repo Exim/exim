@@ -108,7 +108,7 @@ return NULL;
 
 
 static uschar *
-time_copy(time_t t, uschar * mod)
+time_copy(time_t t, const uschar * mod)
 {
 uschar * cp;
 size_t len = 32;
@@ -140,7 +140,7 @@ Return:
 */
 
 uschar *
-tls_cert_issuer(void * cert, uschar * mod)
+tls_cert_issuer(void * cert, const uschar * mod)
 {
 uschar * cp = NULL;
 int ret;
@@ -158,7 +158,7 @@ return mod ? tls_field_from_dn(cp, mod) : cp;
 }
 
 uschar *
-tls_cert_not_after(void * cert, uschar * mod)
+tls_cert_not_after(void * cert, const uschar * mod)
 {
 return time_copy(
   gnutls_x509_crt_get_expiration_time((gnutls_x509_crt_t)cert),
@@ -166,7 +166,7 @@ return time_copy(
 }
 
 uschar *
-tls_cert_not_before(void * cert, uschar * mod)
+tls_cert_not_before(void * cert, const uschar * mod)
 {
 return time_copy(
   gnutls_x509_crt_get_activation_time((gnutls_x509_crt_t)cert),
@@ -174,7 +174,7 @@ return time_copy(
 }
 
 uschar *
-tls_cert_serial_number(void * cert, uschar * mod)
+tls_cert_serial_number(void * cert, const uschar * mod)
 {
 uschar bin[50], txt[150];
 uschar * sp = bin;
@@ -192,7 +192,7 @@ return string_copy(sp);
 }
 
 uschar *
-tls_cert_signature(void * cert, uschar * mod)
+tls_cert_signature(void * cert, const uschar * mod)
 {
 uschar * cp1 = NULL;
 uschar * cp2;
@@ -216,7 +216,7 @@ return cp2;
 }
 
 uschar *
-tls_cert_signature_algorithm(void * cert, uschar * mod)
+tls_cert_signature_algorithm(void * cert, const uschar * mod)
 {
 gnutls_sign_algorithm_t algo =
   gnutls_x509_crt_get_signature_algorithm((gnutls_x509_crt_t)cert);
@@ -224,7 +224,7 @@ return algo < 0 ? NULL : string_copy(US gnutls_sign_get_name(algo));
 }
 
 uschar *
-tls_cert_subject(void * cert, uschar * mod)
+tls_cert_subject(void * cert, const uschar * mod)
 {
 uschar * cp = NULL;
 int ret;
@@ -242,7 +242,7 @@ return mod ? tls_field_from_dn(cp, mod) : cp;
 }
 
 uschar *
-tls_cert_version(void * cert, uschar * mod)
+tls_cert_version(void * cert, const uschar * mod)
 {
 return string_sprintf("%d", gnutls_x509_crt_get_version(cert));
 }
@@ -280,14 +280,13 @@ return cp2;
 }
 
 uschar *
-tls_cert_subject_altname(void * cert, uschar * mod)
+tls_cert_subject_altname(void * cert, const uschar * mod)
 {
 gstring * list = NULL;
 size_t siz;
 int ret;
 uschar sep = '\n';
-uschar * tag = US"";
-uschar * ele;
+uschar * tag = US"", * ele;
 int match = -1;
 
 if (mod) while (*mod)
@@ -342,7 +341,7 @@ for (int index = 0;; index++)
 }
 
 uschar *
-tls_cert_ocsp_uri(void * cert, uschar * mod)
+tls_cert_ocsp_uri(void * cert, const uschar * mod)
 {
 #if GNUTLS_VERSION_NUMBER >= 0x030000
 gnutls_datum_t uri;
@@ -378,18 +377,18 @@ return NULL;
 }
 
 uschar *
-tls_cert_crl_uri(void * cert, uschar * mod)
+tls_cert_crl_uri(void * cert, const uschar * mod)
 {
 int ret;
 uschar sep = '\n';
 gstring * list = NULL;
-uschar * ele;
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
 
 for (int index = 0;; index++)
   {
+  uschar * ele;
   size_t siz = 0;
   switch(ret = gnutls_x509_crt_get_crl_dist_points(
     (gnutls_x509_crt_t)cert, index, NULL, &siz, NULL, NULL))

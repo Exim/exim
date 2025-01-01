@@ -144,7 +144,7 @@ consistency checks to be done, or anything else that needs to be set up. */
 void
 redirect_router_init(driver_instance * r)
 {
-router_instance * rblock = (router_instance *)r;
+const router_instance * rblock = (router_instance *)r;
 redirect_router_options_block * ob =
   (redirect_router_options_block *)(r->options_block);
 

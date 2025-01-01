@@ -538,7 +538,7 @@ static int
 dkim_exim_acl_run(uschar * id, gstring ** res_ptr,
   uschar ** user_msgptr, uschar ** log_msgptr)
 {
-uschar * cmp_val;
+const uschar * cmp_val;
 int rc = -1;
 
 dkim_verify_status = US"none";
@@ -633,18 +633,15 @@ if (dkim_verify_signers && *dkim_verify_signers)
     no matter how often it appears in the expanded list. */
     if (seen_items)
       {
-      uschar * seen_item;
-      const uschar * seen_items_list = string_from_gstring(seen_items);
       int seen_sep = ':';
       BOOL seen_this_item = FALSE;
 
-      while ((seen_item = string_nextinlist(&seen_items_list, &seen_sep,
-					    NULL, 0)))
+      for (const uschar * seen_items_list = string_from_gstring(seen_items),
+	    * seen_item;
+	    seen_item = string_nextinlist(&seen_items_list, &seen_sep, NULL, 0);
+	  )
 	if (Ustrcmp(seen_item, item) == 0)
-	  {
-	  seen_this_item = TRUE;
-	  break;
-	  }
+	  { seen_this_item = TRUE; break; }
 
       if (seen_this_item)
 	{
@@ -697,7 +694,7 @@ dkim_exim_status_listmatch(const uschar * l)
 {						/* return good for any match */
 const uschar * s = dkim_verify_status ? dkim_verify_status : US"none";
 int sep = 0, rc = FAIL;
-for (uschar * ss; ss = string_nextinlist(&s, &sep, NULL, 0); )
+for (const uschar * ss; ss = string_nextinlist(&s, &sep, NULL, 0); )
   if (   (rc = match_isinlist(ss, &l, 0, NULL, NULL, MCL_STRING, TRUE, NULL))
       == OK) break;
 return rc;
@@ -956,9 +953,10 @@ if (dkim_domain)
     {
     uschar * dkim_canon_expanded;
     int pdkim_canon;
-    uschar * dkim_sign_headers_expanded = NULL;
+    const uschar * dkim_sign_headers_expanded = NULL;
     uschar * dkim_private_key_expanded, * dkim_hash_expanded;
-    uschar * dkim_identity_expanded = NULL, * dkim_timestamps_expanded = NULL;
+    const uschar * dkim_identity_expanded = NULL;
+    const uschar * dkim_timestamps_expanded = NULL;
     unsigned long tval = 0, xval = 0;
 
     /* Get canonicalization to use */
@@ -1040,8 +1038,8 @@ if (dkim_domain)
       dkim_private_key_expanded[0] = '\0';
 
     pdkim_set_optional(sig,
-			CS dkim_sign_headers_expanded,
-			CS dkim_identity_expanded,
+			CCS dkim_sign_headers_expanded,
+			CCS dkim_identity_expanded,
 			pdkim_canon,
 			pdkim_canon, -1, tval, xval);
 

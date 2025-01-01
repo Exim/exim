@@ -185,10 +185,10 @@ BOOL use_mbx = FALSE;
 BOOL verbose = FALSE;
 BOOL quiet = FALSE;
 BOOL restore_times = FALSE;
-char *filename;
-char *lockname = NULL, *hitchname = NULL;
-char *primary_hostname;
-const char *command;
+char * filename;
+char * lockname = NULL, *hitchname = NULL;
+const char * primary_hostname;
+const char * command;
 struct utsname s;
 char buffer[256];
 char tempname[256];
@@ -197,7 +197,7 @@ char tempname[256];
 
 for (i = 1; i < argc; i++)
   {
-  char *arg = argv[i];
+  const char * arg = argv[i];
   if (*arg != '-') break;
   if (strcmp(arg, "-fcntl") == 0) use_fcntl = TRUE;
   else if (strcmp(arg, "-flock") == 0) use_flock = TRUE;
@@ -255,20 +255,20 @@ filename = argv[i++];
 
 if (*filename == '~')
   {
-  struct passwd *pw;
+  const struct passwd * pw;
 
   if (*(++filename) == '/')
     pw = getpwuid(getuid());
   else
     {
-    char *s = buffer;
-    while (*filename != 0 && *filename != '/')
+    char * s = buffer;
+    while (*filename && *filename != '/')
       *s++ = *filename++;
     *s = 0;
     pw = getpwnam(buffer);
     }
 
-  if (pw == NULL)
+  if (!pw)
     {
     printf("exim_lock: unable to expand file name %s\n", argv[i-1]);
     exit(EXIT_FAILURE);

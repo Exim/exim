@@ -283,7 +283,7 @@ readconf_driver_init((driver_instance **)&routers,     /* chain anchor */
 for (router_instance * r = routers; r; r = r->drinst.next)
   {
   uschar * s = r->self;
-  router_info * ri = r->drinst.info;
+  const router_info * ri = r->drinst.info;
 
   /* If log_as_local is unset, its overall default is FALSE. (The accept
   router defaults it to TRUE.) */
@@ -453,10 +453,8 @@ int
 route_check_suffix(const uschar * local_part, const uschar * suffixes,
   unsigned * vp)
 {
-int sep = 0;
-int alen = Ustrlen(local_part);
-uschar *suffix;
-const uschar *listptr = suffixes;
+int sep = 0, alen = Ustrlen(local_part);
+const uschar * listptr = suffixes, * suffix;
 
 while ((suffix = string_nextinlist(&listptr, &sep, NULL, 0)))
   {
@@ -592,7 +590,7 @@ if (!rp) return FALSE;
 
 for (uschar * sp = rp + 1, * slash; slash = Ustrchr(sp, '/'); sp = slash + 1)
   {
-  *slash = 0;
+  *slash = '\0';
   DEBUG(D_route) debug_printf("stat %s\n", rp);
   if (Ustat(rp, &statbuf) < 0) return FALSE;
   if ((statbuf.st_mode &
@@ -1159,7 +1157,7 @@ Returns:      TRUE if s is numerical or was looked up successfully
 
 */
 
-static struct passwd pwcopy;
+static struct passwd pwcache;
 static struct passwd *lastpw = NULL;
 static uschar lastname[48] = { 0 };
 static uschar lastdir[128];
@@ -1176,8 +1174,6 @@ DEBUG(D_uid) debug_printf("seeking password data for user \"%s\": %s\n", s,
 
 if (!cache_set)
   {
-  int i = 0;
-
   if (return_uid && (isdigit(*s) || *s == '-') &&
        s[Ustrspn(s+1, "0123456789")+1] == 0)
     {
@@ -1199,7 +1195,7 @@ if (!cache_set)
 
   /* Try a few times if so configured; this handles delays in NIS etc. */
 
-  else for (;;)
+  else for (int i = 0;;)
     {
     errno = 0;
     if ((lastpw = getpwnam(CS s))) break;
@@ -1209,16 +1205,16 @@ if (!cache_set)
 
   if (lastpw)
     {
-    pwcopy.pw_uid = lastpw->pw_uid;
-    pwcopy.pw_gid = lastpw->pw_gid;
+    pwcache.pw_uid = lastpw->pw_uid;
+    pwcache.pw_gid = lastpw->pw_gid;
     (void)string_format(lastdir, sizeof(lastdir), "%s", lastpw->pw_dir);
     (void)string_format(lastgecos, sizeof(lastgecos), "%s", lastpw->pw_gecos);
     (void)string_format(lastshell, sizeof(lastshell), "%s", lastpw->pw_shell);
-    pwcopy.pw_name = CS lastname;
-    pwcopy.pw_dir = CS lastdir;
-    pwcopy.pw_gecos = CS lastgecos;
-    pwcopy.pw_shell = CS lastshell;
-    lastpw = &pwcopy;
+    pwcache.pw_name = CS lastname;
+    pwcache.pw_dir = CS lastdir;
+    pwcache.pw_gecos = CS lastgecos;
+    pwcache.pw_shell = CS lastshell;
+    lastpw = &pwcache;
     }
 
   else DEBUG(D_uid) if (errno != 0)
@@ -1262,8 +1258,7 @@ Returns:      TRUE if the group was found; FALSE otherwise
 BOOL
 route_findgroup(uschar *s, gid_t *return_gid)
 {
-int i = 0;
-struct group *gr;
+const struct group * gr;
 
 if ((isdigit(*s) || *s == '-') && s[Ustrspn(s+1, "0123456789")+1] == 0)
   {
@@ -1271,7 +1266,7 @@ if ((isdigit(*s) || *s == '-') && s[Ustrspn(s+1, "0123456789")+1] == 0)
   return TRUE;
   }
 
-for (;;)
+for (int i = 0;;)
   {
   if ((gr = getgrnam(CS s)))
     {
@@ -1543,7 +1538,6 @@ for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
       /* Caller will replace that for logging, if a DB lookup, to avoid exposing
       passwords */
       DEBUG(D_route) debug_printf("%s\n", addr->message);
-      if (!f.search_find_defer)
       return f.search_find_defer ? DEFER : FAIL;
       }
 
@@ -1615,8 +1609,7 @@ instead of at the first router. */
 for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   {
   uschar * error;
-  struct passwd * pw = NULL;
-  struct passwd pwcopy;
+  struct passwd * pw = NULL, pwcopy;
   BOOL loop_detected = FALSE, more;
   int loopcount = 0, rc;
 

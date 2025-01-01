@@ -600,7 +600,7 @@ const uschar * format = ob->file_format;
 uschar data[256];
 int len = read(cfd, data, sizeof(data));
 int sep = 0;
-uschar *s;
+const uschar * s;
 
 DEBUG(D_transport) debug_printf("checking file format\n");
 
@@ -701,7 +701,7 @@ for (struct dirent * ent; ent = readdir(dir); )
     pcre2_match_data * md = pcre2_match_data_create(2, pcre_gen_ctx);
     int rc = pcre2_match(re, (PCRE2_SPTR)name, PCRE2_ZERO_TERMINATED,
 			  0, 0, md, pcre_gen_mtc_ctx);
-    PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
+    const PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
     if (  rc >= 0
        && (rc = pcre2_get_ovector_count(md)) >= 2)
       {
@@ -952,8 +952,8 @@ if (deliver_dir  &&  create_file != create_anywhere)
   #ifndef NO_REALPATH
   if (yield && create_file == create_belowhome)
     {
-    uschar *next;
-    uschar *rp = NULL;
+    uschar * next;
+    uschar * rp = NULL;
     for (uschar * slash = Ustrrchr(file, '/');  /* There is known to be one */
          !rp && slash > file;			/* Stop if reached beginning */
          slash = next)
@@ -977,7 +977,7 @@ if (deliver_dir  &&  create_file != create_anywhere)
       const uschar * rph = deliver_dir;
       int rlen = Ustrlen(big_buffer);
 
-      if ((rp = US realpath(CS deliver_dir, CS hdbuffer)))
+      if (realpath(CS deliver_dir, CS hdbuffer))
         {
         rph = hdbuffer;
         len = Ustrlen(rph);
@@ -2271,8 +2271,8 @@ else
       struct stat statbuf;
       if (Ustat(string_sprintf("%s/maildirfolder", path), &statbuf) >= 0)
         {
-        uschar *new_check_path = string_copy(check_path);
-        uschar *slash = Ustrrchr(new_check_path, '/');
+        uschar * new_check_path = string_copy(check_path);
+        uschar * slash = Ustrrchr(new_check_path, '/');
         if (slash)
           {
           if (!slash[1])
@@ -2577,7 +2577,7 @@ else
     GET_OPTION("mailstore_prefix");
     if (ob->mailstore_prefix)
       {
-      uschar * s = expand_string(ob->mailstore_prefix);
+      const uschar * s = expand_string(ob->mailstore_prefix);
       if (!s)
         {
         if (!f.expand_string_forcedfail)
@@ -2606,7 +2606,7 @@ else
     GET_OPTION("mailstore_suffix");
     if (ob->mailstore_suffix)
       {
-      uschar * s = expand_string(ob->mailstore_suffix);
+      const uschar * s = expand_string(ob->mailstore_suffix);
       if (!s)
         {
         if (!f.expand_string_forcedfail)
@@ -3136,8 +3136,8 @@ else
 
       if (!newname)
         {
-        uschar *renameleaf;
-        uschar *old_renameleaf = US"";
+        uschar * renameleaf;
+        const uschar * old_renameleaf = US"";
 
         for (int i = 0; ; sleep(1), i++)
           {

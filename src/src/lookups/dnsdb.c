@@ -420,7 +420,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	  uint16_t payload_length;
 	  uschar s[MAX_TLSA_EXPANDED_SIZE];
 	  uschar * sp = s;
-	  uschar * p = US rr->data;
+	  const uschar * p = US rr->data;
 
 	  usage = *p++;
 	  selector = *p++;

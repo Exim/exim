@@ -25,7 +25,7 @@ Returns:      nothing
 */
 
 void
-rf_set_ugid(address_item *addr, ugid_block *ugid)
+rf_set_ugid(address_item * addr, const ugid_block * ugid)
 {
 if (ugid->uid_set)
   {

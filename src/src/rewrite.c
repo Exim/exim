@@ -99,15 +99,12 @@ Returns:         new address if rewritten; the input address if no change;
 */
 
 const uschar *
-rewrite_one(const uschar *s, int flag, BOOL *whole, BOOL add_header, uschar *name,
-  rewrite_rule *rewrite_rules)
+rewrite_one(const uschar * s, int flag, BOOL * whole, BOOL add_header,
+  uschar * name, rewrite_rule * rewrite_rules)
 {
-const uschar *yield = s;
-const uschar *subject = s;
-const uschar *domain = NULL;
+const uschar * yield = s, * subject = s, * domain = NULL;
 BOOL done = FALSE;
-int rule_number = 1;
-int yield_start = 0, yield_end = 0;
+int rule_number = 1, yield_start = 0, yield_end = 0;
 
 if (whole) *whole = FALSE;
 
@@ -119,10 +116,8 @@ for (rewrite_rule * rule = rewrite_rules;
   {
   int start, end, pdomain;
   int count = 0;
-  const uschar * save_localpart;
-  const uschar * save_domain;
+  const uschar * save_localpart, * save_domain, * newparsed;
   uschar * error, * new;
-  const uschar * newparsed;
 
   /* Come back here for a repeat after a successful rewrite. We do this
   only so many times. */
@@ -470,9 +465,8 @@ while (*s)
   {
   uschar * sprev = s;
   uschar * ss = parse_find_address_end(s, FALSE), * ss1 = ss;
-  uschar * recipient, * new;
+  uschar * recipient, * new, * errmess = NULL;
   rmark loop_reset_point = store_mark();
-  uschar * errmess = NULL;
   BOOL changed = FALSE;
   uschar terminator = *ss;
   int start, end, domain;
@@ -770,11 +764,12 @@ Returns:  nothing
 void
 rewrite_test(const uschar *s)
 {
-uschar *recipient, *error;
+const uschar * recipient;
+uschar * error;
 int start, end, domain;
 BOOL done_smtp = FALSE;
 
-if (rewrite_existflags == 0)
+if (!rewrite_existflags)
   {
   printf("No rewrite rules are defined\n");
   return;
@@ -783,7 +778,7 @@ if (rewrite_existflags == 0)
 /* Do SMTP rewrite only if a rule with the S flag exists. Allow <> by
 pretending it is a sender. */
 
-if ((rewrite_existflags & rewrite_smtp) != 0)
+if (rewrite_existflags & rewrite_smtp)
   {
   const uschar * new = rewrite_one(s, rewrite_smtp|rewrite_smtp_sender, NULL,
     FALSE, US"", global_rewrite_rules);
@@ -799,11 +794,11 @@ if ((rewrite_existflags & rewrite_smtp) != 0)
 
 /* Do the other rewrites only if a rule without the S flag exists */
 
-if ((rewrite_existflags & ~rewrite_smtp) == 0) return;
+if (!(rewrite_existflags & ~rewrite_smtp)) return;
 
 /* Qualify if necessary before extracting the address */
 
-if (parse_find_at(s) == NULL)
+if (!parse_find_at(s))
   s = string_sprintf("%s@%s", s, qualify_domain_recipient);
 
 recipient = parse_extract_address(s, &error, &start, &end, &domain, FALSE);
@@ -815,18 +810,17 @@ if (!recipient)
   return;
   }
 
-for (int i = 0; i < 8; i++)
+for (int i = 0, flag; (flag = 1<<i) & rewrite_all; i++)
   {
   BOOL whole = FALSE;
-  int flag = 1 << i;
   const uschar * new = rewrite_one(recipient, flag, &whole, FALSE, US"",
     global_rewrite_rules);
   printf("%s: ", rrname[i]);
-  if (*new == 0)
+  if (!*new)
     printf("<>\n");
-  else if (whole || (flag & rewrite_all_headers) == 0)
+  else if (whole || !(flag & rewrite_all_headers))
     printf("%s\n", CS new);
-  else printf("%.*s%s%s\n", start, s, new, s+end);
+  else printf("%.*s%s%s\n", start, s, new, s+end);	/* envelope rewrites */
   }
 }
 

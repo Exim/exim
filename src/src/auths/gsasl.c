@@ -386,7 +386,7 @@ auth_gsasl_server(auth_instance * ablock, uschar * initial_data)
 {
 auth_gsasl_options_block * ob = ablock->drinst.options_block;
 const uschar * auname = ablock->drinst.name;
-uschar * tmps;
+const uschar * tmps;
 char * to_send, * received;
 Gsasl_session * sctx = NULL;
 struct callback_exim_state cb_state;

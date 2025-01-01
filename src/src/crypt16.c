@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) The Exim Maintainers 2024
  * Copyright (c) 2000-2002
  *   Chris Adams <cmadams@iruntheinter.net>
  *   written for HiWAAY Internet Services
@@ -21,10 +22,10 @@
  */
 
 /*
- * Adapted for Exim by Tamas TEVESZ <ice@extreme.hu>
- * Further adapted by Philip Hazel to cut out this function for operating
- *   systems that have a built-in version.
- */
+Adapted for Exim by Tamas TEVESZ <ice@extreme.hu>
+Further adapted by Philip Hazel to cut out this function for operating
+  systems that have a built-in version.
+*/
 
 /* The OS has a built-in crypt16(). Some compilers don't like compiling empty
 modules, so keep them happy with a dummy when skipping the rest. */
@@ -46,11 +47,10 @@ static void dummy(int x) { dummy(x-1); }
 #endif
 
 char *
-crypt16(char *key, char *salt)
+crypt16(char * key, char * salt)
 {
 static char res[25];	/* Not threadsafe; like crypt() */
-static char s2[3];
-char *p;
+const char * p;
 
 /* Clear the string of any previous data */
 memset (res, 0, sizeof (res));
@@ -61,9 +61,10 @@ strncpy (res, p, 13);
 
 if (strlen (key) > 8)
   {
+  static char s2[3];
   /* crypt the rest
-   * the first two characters of the first block (not counting
-   * the salt) make up the new salt */
+  the first two characters of the first block (not counting
+  the salt) make up the new salt */
 
   strncpy (s2, res+2, 2);
   p = crypt (key+8, s2);

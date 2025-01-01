@@ -227,7 +227,7 @@ if (debug_ptr == debug_buffer)
     {
     struct timeval now;
     time_t tmp;
-    struct tm * t;
+    const struct tm * t;
 
     gettimeofday(&now, NULL);
     tmp = now.tv_sec;
@@ -278,7 +278,7 @@ we trust that we will never expand the results. */
 		.s = debug_buffer };
   if (!string_vformat(&gs, SVFMT_TAINT_NOCHK, format, ap))
     {
-    uschar * s = US"**** debug string too long - truncated ****\n";
+    const uschar * s = US"**** debug string too long - truncated ****\n";
     uschar * p = gs.s + gs.ptr;
     int maxlen = gs.size - Ustrlen(s) - 2;
     if (p > gs.s + maxlen) p = gs.s + maxlen;

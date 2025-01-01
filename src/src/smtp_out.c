@@ -333,7 +333,7 @@ Returns:      connected socket number, or -1 with errno set
 int
 smtp_sock_connect(smtp_connect_args * sc, int timeout, const blob * early_data)
 {
-smtp_transport_options_block * ob = sc->tblock->drinst.options_block;
+const smtp_transport_options_block * ob = sc->tblock->drinst.options_block;
 int sock;
 int save_errno = 0;
 const blob * fastopen_blob = NULL;
@@ -445,16 +445,14 @@ return -1;
 
 
 void
-smtp_port_for_connect(host_item * host, int port)
+smtp_port_for_connect(host_item * host, int tpt_port)
 {
-if (host->port != PORT_NONE)
-  {
-  HDEBUG(D_transport|D_acl|D_v) if (port != host->port)
-    debug_printf_indent("Transport port=%d replaced by host-specific port=%d\n", port,
-      host->port);
-  port = host->port;
-  }
-else host->port = port;    /* Set the port actually used */
+if (host->port == PORT_NONE)
+  host->port = tpt_port;    /* Set the port actually used */
+
+else HDEBUG(D_transport|D_acl|D_v) if (tpt_port != host->port)
+  debug_printf_indent("Transport port=%d replaced by host-specific port=%d\n",
+		      tpt_port, host->port);
 }
 
 
@@ -723,11 +721,11 @@ Returns:    length of a line that has been put in the buffer
 */
 
 static int
-read_response_line(smtp_inblock *inblock, uschar *buffer, int size, time_t timelimit)
+read_response_line(smtp_inblock * inblock, uschar * buffer, int size,
+  time_t timelimit)
 {
-uschar *p = buffer;
-uschar *ptr = inblock->ptr;
-uschar *ptrend = inblock->ptrend;
+uschar * p = buffer, * ptr = inblock->ptr;
+const uschar * ptrend = inblock->ptrend;
 client_conn_ctx * cctx = inblock->cctx;
 
 /* Loop for reading multiple packets or reading another packet after emptying

@@ -182,7 +182,7 @@ Returns:            nothing
 
 static void
 handle_smtp_call(struct pollfd * fd_polls, int listen_socket_count,
-  int accept_socket, struct sockaddr *accepted)
+  int accept_socket, const struct sockaddr * accepted)
 {
 pid_t pid;
 union sockaddr_46 interface_sockaddr;
@@ -1013,7 +1013,7 @@ if ((base = Ustrrchr(path, '/')) == NULL)	/* should not happen, but who knows */
 dir = base != path ? path : US"/";
 *base++ = '\0';
 
-if (!dir || !*dir || *dir != '/') goto cleanup;
+if (!dir || *dir != '/') goto cleanup;
 if (!base || !*base || Ustrchr(base, '/') != NULL) goto cleanup;
 
 cwd_fd = open(".", dir_flags);
@@ -1365,13 +1365,13 @@ switch (buf[0])
 
   case NOTIFY_QUEUE_SIZE_REQ:
     {
-    uschar buf[16];
-    int len = snprintf(CS buf, sizeof(buf), "%u", queue_count_cached());
+    uschar qsbuf[16];
+    int len = snprintf(CS qsbuf, sizeof(qsbuf), "%u", queue_count_cached());
 
     DEBUG(D_queue_run)
-      debug_printf("%s: queue size request: %s\n", __FUNCTION__, buf);
+      debug_printf("%s: queue size request: %s\n", __FUNCTION__, qsbuf);
 
-    if (sendto(daemon_notifier_fd, buf, len, 0,
+    if (sendto(daemon_notifier_fd, qsbuf, len, 0,
 		(const struct sockaddr *)&sa_un, msg.msg_namelen) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC,
 	"%s: sendto: %s\n", __FUNCTION__, strerror(errno));
@@ -2019,7 +2019,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
     if (ipa->port > 0) continue;
 
-    if (daemon_smtp_port[0] <= 0)
+    if (!*daemon_smtp_port)
       log_write_die(0, LOG_MAIN, "no port specified for interface "
         "%s and daemon_smtp_port is unset; cannot start daemon",
         ipa->address[0] == 0 ? US"\"all IPv4\"" :
@@ -2868,7 +2868,7 @@ for (;;)
     execv(CS exim_path, (char *const *)sighup_argv);
     log_write_die(0, LOG_MAIN, "pid %ld: exec of %s failed: %s",
       getpid(), exim_path, strerror(errno));
-    log_close_all();
+    /*NOTREACHED*/
     }
 
   }   /* End of main loop */

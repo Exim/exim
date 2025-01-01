@@ -76,7 +76,7 @@ full pathname for DB file rather than hintsdb name, readonly, no locking. */
 open_db *
 dbfn_open_path(const uschar * path, open_db * dbblock)
 {
-uschar * dirname = string_copy(path);
+const uschar * dirname = string_copy(path);
 
 dbblock->readonly = TRUE;
 dbblock->lockfd = -1;
@@ -686,27 +686,27 @@ while (Ufgets(buffer, 256, stdin) != NULL)
 
   if (Ustrncmp(cmd, "open", 4) == 0)
     {
-    int i;
-    open_db *odb;
-    uschar *s = cmd + 4;
+    int j;
+    const open_db * odb;
+    uschar * s = cmd + 4;
     Uskip_whitespace(&s);
 
-    for (i = 0; i < max_db; i++)
-      if (dbblock[i].dbptr == NULL) break;
+    for (j = 0; j < max_db; j++)
+      if (dbblock[j].dbptr == NULL) break;
 
-    if (i >= max_db)
+    if (j >= max_db)
       {
       printf("Too many open databases\n> ");
       continue;
       }
 
     start = clock();
-    odb = dbfn_open(s, O_RDWR|O_CREAT, dbblock + i, TRUE, TRUE);
+    odb = dbfn_open(s, O_RDWR|O_CREAT, dbblock + j, TRUE, TRUE);
     stop = clock();
 
     if (odb)
       {
-      current = i;
+      current = j;
       printf("opened %d\n", current);
       }
     /* Other error cases will have written messages */

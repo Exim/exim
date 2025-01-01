@@ -80,8 +80,6 @@ auth_dovecot_options_block auth_dovecot_option_defaults = {
 /* Dummy values */
 void auth_dovecot_init(driver_instance *ablock) {}
 int auth_dovecot_server(auth_instance *ablock, uschar *data) {return 0;}
-int auth_dovecot_client(auth_instance *ablock, void * sx,
-  int timeout, uschar *buffer, int buffsize) {return 0;}
 
 #else   /*!MACRO_PREDEF*/
 
@@ -105,7 +103,7 @@ void
 auth_dovecot_init(driver_instance * a)
 {
 auth_instance * ablock = (auth_instance *)a;
-auth_dovecot_options_block * ob =
+const auth_dovecot_options_block * ob =
        (auth_dovecot_options_block *)(a->options_block);
 
 if (!ablock->public_name)
@@ -257,7 +255,7 @@ return s;
 int
 auth_dovecot_server(auth_instance * ablock, uschar * data)
 {
-auth_dovecot_options_block * ob = ablock->drinst.options_block;
+const auth_dovecot_options_block * ob = ablock->drinst.options_block;
 uschar buffer[DOVECOT_AUTH_MAXLINELEN];
 uschar *args[DOVECOT_AUTH_MAXFIELDCOUNT];
 uschar *auth_command;
@@ -436,7 +434,7 @@ HDEBUG(D_auth) debug_printf("  DOVECOT>> '%s'\n", auth_command);
 while (1)
   {
   uschar * temp;
-  uschar * auth_id_pre = NULL;
+  const uschar * auth_id_pre = NULL;
 
   if (!dc_gets(buffer, sizeof(buffer), &cctx))
     {

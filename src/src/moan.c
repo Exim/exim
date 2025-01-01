@@ -160,13 +160,9 @@ Returns:         TRUE if message successfully sent
 
 BOOL
 moan_send_message(const uschar * recipient, int ident, error_block * eblock,
-  header_line * headers, FILE * message_file, uschar * firstline)
+  header_line * headers, FILE * message_file, const uschar * firstline)
 {
-int written = 0;
-int fd;
-int status;
-int count = 0;
-int size_limit = bounce_return_size_limit;
+int written = 0, fd, status, count = 0, size_limit = bounce_return_size_limit;
 FILE * fp;
 int pid;
 
@@ -369,7 +365,7 @@ if (bounce_return_message)
     if (size_limit > 0 && size_limit < message_size)
       {
       int x = size_limit;
-      uschar *k = US"";
+      const uschar * k = US"";
       if ((x & 1023) == 0)
         {
         k = US"K";
@@ -605,13 +601,12 @@ Returns:        nothing
 */
 
 void
-moan_tell_someone(uschar *who, address_item *addr,
-  const uschar *subject, const char *format, ...)
+moan_tell_someone(const uschar * who, address_item * addr,
+  const uschar * subject, const char * format, ...)
 {
-FILE *f;
+FILE * f;
 va_list ap;
-int fd;
-int pid = child_open_exim(&fd, US"moan_tell_someone");
+int fd, pid = child_open_exim(&fd, US"moan_tell_someone");
 
 if (pid < 0)
   {
@@ -674,7 +669,7 @@ Returns:       does not return; exits from the program
 */
 
 void
-moan_smtp_batch(uschar *cmd_buffer, const char *format, ...)
+moan_smtp_batch(const uschar * cmd_buffer, const char * format, ...)
 {
 va_list ap;
 int yield = (receive_messagecount > 0)? 1 : 2;
@@ -823,11 +818,11 @@ moan_skipped_syntax_errors(uschar *rname, error_block *eblock,
   uschar *syntax_errors_to, BOOL some, uschar *custom)
 {
 int pid, fd;
-uschar *s, *t;
-FILE *f;
+const uschar * s;
+FILE * f;
 
 for (error_block * e = eblock; e; e = e->next)
-  if (e->text2 != NULL)
+  if (e->text2)
     log_write(0, LOG_MAIN, "%s router: skipped error: %s in \"%s\"",
       rname, e->text1, e->text2);
   else
@@ -843,8 +838,7 @@ if (!(s = expand_string(syntax_errors_to)))
   return FALSE;
   }
 
-/* If we can't create a process to send the message, just forget about
-it. */
+/* If we can't create a process to send the message, just forget about it. */
 
 pid = child_open_exim(&fd, US"moan_skipped_syntax_errors");
 
@@ -864,13 +858,13 @@ moan_write_references(f, NULL);
 
 if (custom)
   {
-  if (!(t = expand_string(custom)))
+  if (!(s = expand_string(custom)))
     {
     log_write(0, LOG_MAIN, "%s router failed to expand %s: %s", rname,
       custom, expand_string_message);
     return FALSE;
     }
-  fprintf(f, "%s\n\n", t);
+  fprintf(f, "%s\n\n", s);
   }
 
 fprintf(f, "The %s router encountered the following error(s):\n\n",

@@ -147,27 +147,27 @@ int yield = DEFER;
 unsigned int num_fields;
 gstring * result = NULL;
 mysql_connection *cn;
-uschar *server_copy = NULL;
-uschar *sdata[4];
+uschar * server_copy = NULL;
+uschar * sdata[4];
 
 /* Disaggregate the parameters from the server argument. The order is host,
 database, user, password. We can write to the string, since it is in a
 nextinlist temporary buffer. The copy of the string that is used for caching
 has the password removed. This copy is also used for debugging output. */
 
-for (int i = 3; i > 0; i--)
+for (int j = 3; j > 0; j--)
   {
-  uschar *pp = Ustrrchr(server, '/');
+  uschar * pp = Ustrrchr(server, '/');
   if (!pp)
     {
     *errmsg = string_sprintf("incomplete MySQL server data: %s",
-      (i == 3)? server : server_copy);
+      j == 3 ? server : server_copy);
     *defer_break = TRUE;
     return DEFER;
     }
-  *pp++ = 0;
-  sdata[i] = pp;
-  if (i == 3) server_copy = string_copy(server);  /* sans password */
+  *pp++ = '\0';
+  sdata[j] = pp;
+  if (j == 3) server_copy = string_copy(server);  /* sans password */
   }
 sdata[0] = server;   /* What's left at the start */
 
@@ -316,14 +316,14 @@ fields = mysql_fetch_fields(mysql_result);
 
 while ((mysql_row_data = mysql_fetch_row(mysql_result)))
   {
-  unsigned long * lengths = mysql_fetch_lengths(mysql_result);
+  const unsigned long * lengths = mysql_fetch_lengths(mysql_result);
 
   if (result)
     result = string_catn(result, US"\n", 1);
 
   if (num_fields != 1)
-    for (int i = 0; i < num_fields; i++)
-      result = lf_quote(US fields[i].name, US mysql_row_data[i], lengths[i],
+    for (int j = 0; j < num_fields; j++)
+      result = lf_quote(US fields[j].name, US mysql_row_data[j], lengths[j],
 			result);
 
   else if (mysql_row_data[0] != NULL)    /* NULL value yields nothing */

@@ -122,7 +122,7 @@ switch(method)
     HDEBUG(D_transport|D_acl|D_v)
       {
       debug_printf_indent("  SOCKS>>");
-      for (int i = 0; i<len; i++) debug_printf(" %02x", s[i]);
+      for (int j = 0; j<len; j++) debug_printf(" %02x", s[j]);
       debug_printf("\n");
       }
     if (send(fd, s, len, 0) < 0)
@@ -158,8 +158,7 @@ static int
 socks_get_proxy(socks_opts * proxies, unsigned nproxies)
 {
 unsigned int i;
-socks_opts * sd;
-socks_opts * lim = &proxies[nproxies];
+const socks_opts * sd, * lim = &proxies[nproxies];
 long rnd, weights;
 unsigned pri;
 
@@ -320,7 +319,7 @@ if (  buf[0] != 5
 
  {
   int host_af = sc->host_af;
-  host_item * host = sc->host;
+  const host_item * host = sc->host;
   union sockaddr_46 sin;
   (void) ip_addr(&sin, host_af, host->address, host->port);
 

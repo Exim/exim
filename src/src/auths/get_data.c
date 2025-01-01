@@ -30,17 +30,18 @@ if (Ustrcmp(data, "=") == 0)
   }
 else
   {
-  uschar * clear, * end;
+  uschar * clear;
   int len;
 
   if ((len = b64decode(data, &clear, GET_TAINTED)) < 0) return BAD64;
   DEBUG(D_auth) debug_printf("auth input decode:");
-  for (end = clear + len; clear < end && expand_nmax < EXPAND_MAXN; )
+  for (const uschar * end = clear + len;
+      clear < end && expand_nmax < EXPAND_MAXN; )
     {
     DEBUG(D_auth) debug_printf(" '%s'", clear);
     if (expand_nmax < AUTH_VARS) auth_vars[expand_nmax] = clear;
     expand_nstring[++expand_nmax] = clear;
-    while (*clear != 0) clear++;
+    while (*clear) clear++;
     expand_nlength[expand_nmax] = clear++ - expand_nstring[expand_nmax];
     }
   DEBUG(D_auth) debug_printf("\n");
@@ -97,7 +98,8 @@ int
 auth_prompt(const uschar * challenge)
 {
 int rc, len;
-uschar * resp, * clear, * end;
+uschar * resp, * clear;
+const uschar * end;
 
 if ((rc = auth_get_data(&resp, challenge, Ustrlen(challenge))) != OK)
   return rc;
@@ -110,7 +112,7 @@ do
   {
   if (expand_nmax < AUTH_VARS) auth_vars[expand_nmax] = clear;
   expand_nstring[++expand_nmax] = clear;
-  while (*clear != 0) clear++;
+  while (*clear) clear++;
   expand_nlength[expand_nmax] = clear++ - expand_nstring[expand_nmax];
   }
 while (clear < end && expand_nmax < EXPAND_MAXN);
@@ -253,7 +255,6 @@ if (clear_len < 0)
   DEBUG(D_auth) debug_printf("bad b64 decode for '%s';"
        " ignoring due to client_ignore_invalid_base64\n", save_bad);
   clear = string_copy(US"");
-  clear_len = 0;
   }
 
 *inout = clear;

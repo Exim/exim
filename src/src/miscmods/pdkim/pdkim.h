@@ -333,7 +333,8 @@ DLLEXPORT
 pdkim_ctx *pdkim_init_verify  (uschar * (*)(const uschar *), BOOL);
 
 DLLEXPORT
-void       pdkim_set_optional (pdkim_signature *, char *, char *,int, int,
+void       pdkim_set_optional (pdkim_signature *, const char *, const char *,
+			       int, int,
                                long,
                                unsigned long,
                                unsigned long);

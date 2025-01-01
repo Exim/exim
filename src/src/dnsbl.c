@@ -223,21 +223,11 @@ if (cb->rc == DNS_SUCCEED)
     for (da = cb->rhs; da; da = da->next)
       {
       int ipsep = ',';
-      const uschar *ptr = iplist;
-      uschar *res;
-
-      /* Handle exact matching */
-
-      if (!bitmask)
-	{
-        while ((res = string_nextinlist(&ptr, &ipsep, NULL, 0)))
-          if (Ustrcmp(CS da->address, res) == 0)
-	    break;
-	}
+      const uschar * ptr = iplist, * res;
 
       /* Handle bitmask matching */
 
-      else
+      if (bitmask)
         {
         int address[4];
         int mask = 0;
@@ -266,6 +256,13 @@ if (cb->rc == DNS_SUCCEED)
 	    if ((address[0] & mask) == address[0])
 	      break;
         }
+
+      /* Handle exact matching */
+
+      else
+        while ((res = string_nextinlist(&ptr, &ipsep, NULL, 0)))
+          if (Ustrcmp(CS da->address, res) == 0)
+	    break;
 
       /* If either
 
@@ -573,8 +570,8 @@ while ((domain = string_nextinlist(&list, &sep, NULL, 0)))
   actually causing an error here, because that would no doubt hold up incoming
   mail. Instead, I'll just log it. */
 
-  for (uschar * s = domain; *s; s++)
-    if (!isalnum(*s) && *s != '-' && *s != '.' && *s != '_')
+  for (const uschar * t = domain; *t; t++)
+    if (!isalnum(*t) && *t != '-' && *t != '.' && *t != '_')
       {
       log_write(0, LOG_MAIN, "dnslists domain \"%s\" contains "
         "strange characters - is this right?", domain);
@@ -583,8 +580,8 @@ while ((domain = string_nextinlist(&list, &sep, NULL, 0)))
 
   /* Check the alternate domain if present */
 
-  if (domain_txt != domain) for (uschar * s = domain_txt; *s; s++)
-    if (!isalnum(*s) && *s != '-' && *s != '.' && *s != '_')
+  if (domain_txt != domain) for (const uschar * t = domain_txt; *t; t++)
+    if (!isalnum(*t) && *t != '-' && *t != '.' && *t != '_')
       {
       log_write(0, LOG_MAIN, "dnslists domain \"%s\" contains "
         "strange characters - is this right?", domain_txt);

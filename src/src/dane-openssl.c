@@ -635,7 +635,7 @@ return done;
 }
 
 static int
-set_trust_anchor(X509_STORE_CTX *ctx, ssl_dane *dane, X509 *cert)
+set_trust_anchor(const X509_STORE_CTX *ctx, ssl_dane *dane, X509 *cert)
 {
 int matched = 0;
 int depth = 0;

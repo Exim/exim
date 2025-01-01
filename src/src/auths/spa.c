@@ -100,7 +100,7 @@ void
 auth_spa_init(driver_instance * a)
 {
 auth_instance * ablock = (auth_instance *)a;
-auth_spa_options_block * ob = a->options_block;
+const auth_spa_options_block * ob = a->options_block;
 
 /* The public name defaults to the authenticator name */
 
@@ -144,7 +144,8 @@ SPAAuthChallenge challenge;
 SPAAuthResponse  response;
 SPAAuthResponse  *responseptr = &response;
 uschar msgbuf[2048];
-uschar *clearpass, *s;
+uschar * clearpass;
+const uschar * s;
 unsigned off;
 
 /* send a 334, MS Exchange style, and grab the client's request,

@@ -28,11 +28,9 @@ Returns:   boolean for Proxy Protocol needed
 BOOL
 proxy_protocol_host(void)
 {
-int rc;
-
 if (  sender_host_address
-   && (rc = verify_check_this_host(CUSS &hosts_proxy, NULL, NULL,
-                           sender_host_address, NULL)) == OK)
+   && verify_check_this_host(CUSS &hosts_proxy, NULL, NULL,
+                           sender_host_address, NULL) == OK)
   {
   DEBUG(D_receive)
     debug_printf("Detected proxy protocol configured host\n");
@@ -64,19 +62,17 @@ Return the amount read.
 */
 
 static int
-swallow_until_crlf(int fd, uschar *base, int already, int capacity)
+swallow_until_crlf(int fd, uschar * base, int already, int capacity)
 {
-uschar *to = base + already;
-uschar *cr;
-int have = 0;
-int ret;
-int last = 0;
+uschar * to = base + already;
+const uschar * cr;
+int have = 0, ret;
+BOOL last = FALSE;
 
 /* For "PROXY UNKNOWN\r\n" we, at time of writing, expect to have read
 up through the \r; for the _normal_ case, we haven't yet seen the \r. */
 
-cr = memchr(base, '\r', already);
-if (cr != NULL)
+if ((cr = memchr(base, '\r', already)))
   {
   if ((cr - base) < already - 1)
     {
@@ -85,19 +81,22 @@ if (cr != NULL)
     return 0;
     }
   /* \r is last character read, just need one more. */
-  last = 1;
+  last = TRUE;
   }
 
 while (capacity > 0)
   {
-  do { ret = read(fd, to, 1); } while (ret == -1 && errno == EINTR && !had_command_timeout);
+  do
+    { ret = read(fd, to, 1); }
+  while (ret == -1 && errno == EINTR && !had_command_timeout);
+
   if (ret == -1)
     return -1;
   have++;
   if (last)
     return have;
   if (*to == '\r')
-    last = 1;
+    last = TRUE;
   capacity--;
   to++;
   }
@@ -199,12 +198,10 @@ we have to do a minimum of 3 read calls, not 1.  Eww.
 #  error Code bug in sizes of data to read for proxy usage
 # endif
 
-int get_ok = 0;
 int size, ret;
 int fd = fileno(smtp_in);
 const char v2sig[12] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A";
 uschar * iptype;  /* To display debug info */
-socklen_t vslen = sizeof(struct timeval);
 BOOL yield = FALSE;
 
 ALARM(proxy_protocol_timeout);
@@ -505,7 +502,6 @@ proxyfail:
   DEBUG(D_receive) if (had_command_timeout)
     debug_printf("Timeout while reading proxy header\n");
 
-bad:
   if (yield)
     {
     sender_host_name = NULL;

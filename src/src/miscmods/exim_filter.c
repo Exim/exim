@@ -794,8 +794,7 @@ return nextsigchar(ptr, TRUE);
 static void
 indent(void)
 {
-int i;
-DEBUG(D_filter) for (i = 0; i < output_indent; i++) debug_printf(" ");
+DEBUG(D_filter) for (int i = 0; i < output_indent; i++) debug_printf(" ");
 }
 
 
@@ -1269,7 +1268,7 @@ switch (command)
 
     for (;;)
       {
-      const uschar *saveptr = ptr;
+      const uschar * saveptr = ptr;
       ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
       if (*error_pointer)
 	{ yield = FALSE; break; }
@@ -1493,7 +1492,7 @@ for (h = header_list; h; h = h->next)
 
   if (strncmpic(h->text, US"List-", 5) == 0)
     {
-    uschar * s = h->text + 5;
+    const uschar * s = h->text + 5;
     if (strncmpic(s, US"Id:", 3) == 0 ||
         strncmpic(s, US"Help:", 5) == 0 ||
         strncmpic(s, US"Subscribe:", 10) == 0 ||
@@ -1663,9 +1662,9 @@ switch (c->type)
 
     while (*pp)
       {
-      uschar *error;
+      uschar * error;
       int start, end, domain;
-      uschar * s;
+      const uschar * s;
 
       p = parse_find_address_end(pp, FALSE);
       s = string_copyn(pp, p - pp);
@@ -1905,9 +1904,9 @@ while (commands)
 	if (s != NULL)
 	  {
 	  int start, end, domain;
-	  uschar *error;
-	  uschar *ss = parse_extract_address(s, &error, &start, &end, &domain,
-	    FALSE);
+	  uschar * error;
+	  const uschar * ss = parse_extract_address(s, &error,
+						  &start, &end, &domain, FALSE);
 	  if (ss)
 	    expargs[i] = filter_options & RDO_REWRITE
 	      ? rewrite_address(ss, TRUE, FALSE, global_rewrite_rules,
@@ -1928,9 +1927,9 @@ while (commands)
 
       s = expargs[1];
 
-      if (s != NULL && !f.system_filtering)
+      if (s && !f.system_filtering)
 	{
-	uschar *ownaddress = expand_string(US"$local_part@$domain");
+	const uschar * ownaddress = expand_string(US"$local_part@$domain");
 	if (strcmpic(ownaddress, s) != 0)
 	  {
 	  *error_pointer = US"errors_to must point to the caller's address";
@@ -2060,8 +2059,8 @@ while (commands)
 	  addr->pipe_expandn = ss;
 	  if (!filter_thisaddress) filter_thisaddress = US"";
 	  *ss++ = string_copy(filter_thisaddress);
-	  for (int i = 0; i <= expand_nmax; i++)
-	    *ss++ = string_copyn(expand_nstring[i], expand_nlength[i]);
+	  for (int j = 0; j <= expand_nmax; j++)
+	    *ss++ = string_copyn(expand_nstring[j], expand_nlength[j]);
 	  *ss = NULL;
 	  }
 	}
@@ -2207,8 +2206,8 @@ while (commands)
       *error_pointer = fmsg = US string_printing(Ustrlen(expargs[0]) > 1024
 	? string_sprintf("%.1000s ... (truncated)", expargs[0])
 	: string_copy(expargs[0]));
-      for(uschar * s = fmsg; *s; s++)
-	if (!s[1] && *s == '\n') { *s = '\0'; break; }	/* drop trailing newline */
+      for(uschar * t = fmsg; *t; t++)
+	if (!t[1] && *t == '\n') { *t = '\0'; break; }	/* drop trailing newline */
 
       if (filter_test != FTEST_NONE)
 	{
@@ -2289,11 +2288,11 @@ while (commands)
 
 	for (i = 0; i < MAILARGS_STRING_COUNT; i++)
 	  {
-	  const uschar *s = expargs[i];
+	  const uschar * t = expargs[i];
 
-	  if (!s) continue;
+	  if (!t) continue;
 
-	  if (i != mailarg_index_text) for (const uschar * p = s; *p; p++)
+	  if (i != mailarg_index_text) for (const uschar * p = t; *p; p++)
 	    {
 	    int c = *p;
 	    if (i > mailarg_index_text)
@@ -2301,7 +2300,7 @@ while (commands)
 	      if (!mac_isprint(c))
 		{
 		*error_pointer = string_sprintf("non-printing character in \"%s\" "
-		  "in %s command", string_printing(s),
+		  "in %s command", string_printing(t),
 		  command_list[commands->command]);
 		return FF_ERROR;
 		}
@@ -2314,7 +2313,7 @@ while (commands)
 	      if (i < mailarg_index_headers)
 		{
 		*error_pointer = string_sprintf("\\n not followed by space in "
-		  "\"%.1024s\" in %s command", string_printing(s),
+		  "\"%.1024s\" in %s command", string_printing(t),
 		  command_list[commands->command]);
 		return FF_ERROR;
 		}
@@ -2332,7 +2331,7 @@ while (commands)
 		    {
 		    *error_pointer = string_sprintf("\\n not followed by space or "
 		      "valid header name in \"%.1024s\" in %s command",
-		      string_printing(s), command_list[commands->command]);
+		      string_printing(t), command_list[commands->command]);
 		    return FF_ERROR;
 		    }
 		  }
@@ -2343,7 +2342,7 @@ while (commands)
 
 	  /* The string is OK */
 
-	  commands->args[i].u = s;
+	  commands->args[i].u = t;
 	  }
 
 	/* Proceed with mail or vacation command */
@@ -2374,8 +2373,8 @@ while (commands)
 	  }
 	else
 	  {
-	  const uschar *tt;
-	  const uschar *to = commands->args[mailarg_index_to].u;
+	  const uschar * tt;
+	  const uschar * to = commands->args[mailarg_index_to].u;
 	  gstring * log_addr = NULL;
 
 	  if (!to) to = expand_string(US"$reply_address");
@@ -2384,10 +2383,10 @@ while (commands)
 	  for (tt = to; *tt; tt++)     /* Get rid of newlines */
 	    if (*tt == '\n')
 	      {
-	      uschar * s = string_copy(to);
-	      for (uschar * ss = s; *ss; ss++)
+	      uschar * p = string_copy(to);
+	      for (uschar * ss = p; *ss; ss++)
 		if (*ss == '\n') *ss = ' ';
-	      to = s;
+	      to = p;
 	      break;
 	      }
 
@@ -2421,14 +2420,14 @@ while (commands)
 	  tt = to;
 	  while (*tt)
 	    {
-	    uschar *ss = parse_find_address_end(tt, FALSE);
-	    uschar *recipient, *errmess;
+	    uschar * ss = parse_find_address_end(tt, FALSE), * errmess;
+	    const uschar * recipient;
 	    int start, end, domain;
 	    int temp = *ss;
 
 	    *ss = 0;
-	    recipient = parse_extract_address(tt, &errmess, &start, &end, &domain,
-	      FALSE);
+	    recipient = parse_extract_address(tt, &errmess,
+					      &start, &end, &domain, FALSE);
 	    *ss = temp;
 
 	    /* Ignore empty addresses and errors; an error will occur later if
@@ -2505,11 +2504,11 @@ while (commands)
     case TESTPRINT_COMMAND:
 	if (filter_test != FTEST_NONE || (debug_selector & D_filter) != 0)
 	  {
-	  const uschar *s = string_printing(expargs[0]);
+	  const uschar * t = string_printing(expargs[0]);
 	  if (filter_test == FTEST_NONE)
-	    debug_printf_indent("Filter: testprint: %s\n", s);
+	    debug_printf_indent("Filter: testprint: %s\n", t);
 	  else
-	    printf("Testprint: %s\n", s);
+	    printf("Testprint: %s\n", t);
 	  }
     }
 

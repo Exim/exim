@@ -136,7 +136,6 @@ static int
 dmarc_msg_init()
 {
 int *netmask   = NULL;   /* Ignored */
-int is_ipv6    = 0;
 uschar * s;
 
 /* Set some sane defaults.  Also clears previous results when
@@ -186,7 +185,7 @@ if (!sender_host_address)
 /* This catches locally originated email and startup errors above. */
 if (!dmarc_abort)
   {
-  is_ipv6 = string_is_ip_address(sender_host_address, netmask) == 6;
+  int is_ipv6 = string_is_ip_address(sender_host_address, netmask) == 6;
   if (!(dmarc_pctx = opendmarc_policy_connect_init(sender_host_address, is_ipv6)))
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
@@ -226,9 +225,8 @@ return OK;
 static void
 dmarc_send_forensic_report(u_char ** ruf)
 {
-uschar *recipient, *save_sender;
-BOOL  send_status = FALSE;
-error_block *eblock = NULL;
+uschar * recipient;
+error_block * eblock = NULL;
 FILE *message_file = NULL;
 
 /* Earlier ACL does not have *required* control=dmarc_enable_forensic */
@@ -365,14 +363,14 @@ g = string_fmt_append(g, "align_dkim %d\nalign_spf %d\naction %d\n",
 # ifdef EXPERIMENTAL_ARC
   {
   const misc_module_info * mi = misc_mod_findonly(US"arc");
-  const uschar * s;
+  const uschar * t;
   gstring * g2 = NULL;
   typedef const uschar * (*fn_t)(gstring **);
 
-  if (mi && (s = (((fn_t *) mi->functions)[ARC_ARCSET_INFO]) (&g2)))
+  if (mi && (t = (((fn_t *) mi->functions)[ARC_ARCSET_INFO]) (&g2)))
     {
-    int i = Ustrcmp(s, "pass") == 0 ? ARES_RESULT_PASS
-	    : Ustrcmp(s, "fail") == 0 ? ARES_RESULT_FAIL
+    int i = Ustrcmp(t, "pass") == 0 ? ARES_RESULT_PASS
+	    : Ustrcmp(t, "fail") == 0 ? ARES_RESULT_FAIL
 	    : ARES_RESULT_UNKNOWN;
 
     g = string_fmt_append(g, "arc %d\n"
@@ -431,8 +429,8 @@ Called for the first ACL dmarc= condition. */
 static int
 dmarc_process(void)
 {
-int sr, origin;             /* used in SPF section */
-int dmarc_spf_result  = 0;  /* stores spf into dmarc conn ctx */
+int sr, origin;			/* used in SPF section */
+int dmarc_spf_result;		/* stores spf into dmarc conn ctx */
 int tmp_ans, c;
 uschar * rr;
 BOOL has_dmarc_record = TRUE;

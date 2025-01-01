@@ -130,8 +130,8 @@ else
   /* If a cache database is available see if we can avoid the need to do an
   actual callout by making use of previously-obtained data. */
 
-  dbdata_callout_cache_address * cache_address_record;
-  dbdata_callout_cache * cache_record = get_callout_cache_record(dbm_file,
+  const dbdata_callout_cache_address * cache_address_record;
+  const dbdata_callout_cache * cache_record = get_callout_cache_record(dbm_file,
       addr->domain, US"domain",
       callout_cache_domain_positive_expire, callout_cache_domain_negative_expire);
 
@@ -881,8 +881,10 @@ tls_retry_connection:
 	    XXX We don't care about that for postmaster_full.  Should we? */
 
 	    if ((done =
-	      smtp_write_command(sx, SCMD_FLUSH, "RSET\r\n") >= 0 &&
-	      smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2', callout)))
+	      smtp_write_command(sx, SCMD_FLUSH, "RSET\r\n") >= 0
+	      &&
+	      smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
+				'2', callout)))
 	      break;
 
 	    HDEBUG(D_acl|D_v)
@@ -1044,7 +1046,6 @@ no_conn:
 #ifdef SUPPORT_I18N
       case ERRNO_UTF8_FWD:
 	{
-	extern int acl_where;	/* src/acl.c */
 	errno = 0;
 	addr->message = US"response to \"EHLO\" did not include SMTPUTF8";
 	addr->user_message = acl_where == ACL_WHERE_RCPT
@@ -1799,8 +1800,8 @@ if (global_rewrite_rules)
     global_rewrite_rules, rewrite_existflags);
   if (address != old)
     {
-    for (int i = 0; i < (MAX_NAMED_LIST * 2)/32; i++) vaddr->localpart_cache[i] = 0;
-    for (int i = 0; i < (MAX_NAMED_LIST * 2)/32; i++) vaddr->domain_cache[i] = 0;
+    for (int j = 0; j < (MAX_NAMED_LIST * 2)/32; j++) vaddr->localpart_cache[j] = 0;
+    for (int j = 0; j < (MAX_NAMED_LIST * 2)/32; j++) vaddr->domain_cache[j] = 0;
     if (fp && !expn) fprintf(fp, "Address rewritten as: %s\n", address);
     }
   }
@@ -1921,11 +1922,10 @@ while (addr_new)
 
   if (rc == OK)
     {
-    BOOL local_verify = FALSE;
-
     if (routed) *routed = TRUE;
     if (callout > 0)
       {
+      BOOL local_verify = FALSE;
       transport_instance * tp;
       host_item * host_list = addr->host_list;
 
@@ -1953,7 +1953,7 @@ while (addr_new)
 	{
 	const uschar * save_deliver_domain = deliver_domain;
 	const uschar * save_deliver_localpart = deliver_localpart;
-	transport_info * ti = tp->drinst.info;
+	const transport_info * ti = tp->drinst.info;
 
 	deliver_domain = addr->domain;
 	deliver_localpart = addr->local_part;
@@ -1970,13 +1970,11 @@ while (addr_new)
 
 	  if (tf.hosts && (!host_list || tf.hosts_override))
 	    {
-	    uschar *s;
+	    const uschar * s;
 
 	    host_list = NULL;    /* Ignore the router's hosts */
 
-	    s = expand_string(tf.hosts);
-
-	    if (!s)
+	    if (!(s = expand_string(tf.hosts)))
 	      log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand list of hosts "
 		"\"%s\" in %s transport for callout: %s", tf.hosts,
 		tp->drinst.name, expand_string_message);
@@ -2256,12 +2254,10 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
     /* If the address is a duplicate, show something about it. */
 
     if (!testflag(addr, af_pfr))
-      {
-      tree_node *tnode;
-      if ((tnode = tree_search(tree_duplicates, addr->unique)))
+      if (tree_search(tree_duplicates, addr->unique))
         fprintf(fp, "   [duplicate, would not be delivered]");
-      else tree_add_duplicate(addr->unique, addr);
-      }
+      else
+	tree_add_duplicate(addr->unique, addr);
 
     /* Now show its parents */
 
@@ -2279,7 +2275,7 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
 
     if (addr->host_list && tp && !tp->overrides_hosts)
       {
-      transport_info * ti = tp->drinst.info;
+      const transport_info * ti = tp->drinst.info;
       int maxlen = 0;
       int maxaddlen = 0;
       for (host_item * h = addr->host_list; h; h = h->next)
@@ -2364,15 +2360,15 @@ for (header_line * h = header_list; h && yield == OK; h = h->next)
 
   while (*s)
     {
-    uschar *ss = parse_find_address_end(s, FALSE);
-    uschar *recipient, *errmess;
-    int terminator = *ss;
+    uschar * ss = parse_find_address_end(s, FALSE), * errmess;
+    const uschar * recipient;
+    uschar terminator = *ss;
     int start, end, domain;
 
     /* Temporarily terminate the string at this point, and extract the
     operative address within, allowing group syntax. */
 
-    *ss = 0;
+    *ss = '\0';
     recipient = parse_extract_address(s,&errmess,&start,&end,&domain,FALSE);
     *ss = terminator;
 
@@ -2460,21 +2456,18 @@ Returns:     OK
 */
 
 int
-verify_check_header_names_ascii(uschar **msgptr)
+verify_check_header_names_ascii(uschar ** msgptr)
 {
-uschar *colon;
 
-for (header_line * h = header_list; h; h = h->next)
-  {
-  colon = Ustrchr(h->text, ':');
-  for(uschar * s = h->text; s < colon; s++)
+for (const header_line * h = header_list; h; h = h->next)
+  for (const uschar * colon = Ustrchr(h->text, ':'), *s = h->text;
+      s < colon; s++)
     if ((*s < 33) || (*s > 126))
       {
       *msgptr = string_sprintf("Invalid character in header \"%.*s\" found",
 			     (int)(colon - h->text), h->text);
       return FAIL;
       }
-  }
 return OK;
 }
 
@@ -2521,15 +2514,15 @@ for (int i = 0; i < recipients_count; i++)
 
     while (*s)
       {
-      uschar * ss = parse_find_address_end(s, FALSE);
-      uschar * recipient, * errmess;
-      int terminator = *ss;
+      uschar * ss = parse_find_address_end(s, FALSE), * errmess;
+      const uschar * recipient;
+      uschar terminator = *ss;
       int start, end, domain;
 
       /* Temporarily terminate the string at this point, and extract the
       operative address within, allowing group syntax. */
 
-      *ss = 0;
+      *ss = '\0';
       recipient = parse_extract_address(s,&errmess,&start,&end,&domain,FALSE);
       *ss = terminator;
 
@@ -2631,19 +2624,20 @@ Returns:           result of the verification attempt: OK, FAIL, or DEFER;
 */
 
 int
-verify_check_header_address(uschar **user_msgptr, uschar **log_msgptr,
-  int callout, int callout_overall, int callout_connect, uschar *se_mailfrom,
-  uschar *pm_mailfrom, int options, int *verrno)
+verify_check_header_address(uschar ** user_msgptr, uschar ** log_msgptr,
+  int callout, int callout_overall, int callout_connect, uschar * se_mailfrom,
+  uschar * pm_mailfrom, int options, int * verrno)
 {
-static int header_types[] = { htype_sender, htype_reply_to, htype_from };
+static const int const header_types[] =
+				  { htype_sender, htype_reply_to, htype_from };
 BOOL done = FALSE;
 int yield = FAIL;
 
 for (int i = 0; i < 3 && !done; i++)
-  for (header_line * h = header_list; h != NULL && !done; h = h->next)
+  for (const header_line * h = header_list; h && !done; h = h->next)
     {
-    int terminator, new_ok;
-    uschar *s, *ss, *endname;
+    const uschar * endname, * s;
+    uschar * ss;
 
     if (h->type != header_types[i]) continue;
     s = endname = Ustrchr(h->text, ':') + 1;
@@ -2655,6 +2649,7 @@ for (int i = 0; i < 3 && !done; i++)
 
     while (*s)
       {
+      int terminator, new_ok;
       address_item * vaddr;
 
       while (isspace(*s) || *s == ',') s++;
@@ -2695,9 +2690,8 @@ for (int i = 0; i < 3 && !done; i++)
       else
         {
         int start, end, domain;
-        uschar *address = parse_extract_address(s, log_msgptr, &start, &end,
-          &domain, FALSE);
-
+        const uschar * address = parse_extract_address(s, log_msgptr,
+						  &start, &end, &domain, FALSE);
         *ss = terminator;
 
         /* If we found an empty address, just carry on with the next one, but
@@ -2716,7 +2710,6 @@ for (int i = 0; i < 3 && !done; i++)
 
         if (!address)
           {
-          new_ok = FAIL;
           while (ss > s && isspace(ss[-1])) ss--;
           *log_msgptr = string_sprintf("syntax error in '%.*s' header when "
             "scanning for sender: %s in \"%.*s\"",
@@ -2730,13 +2723,10 @@ for (int i = 0; i < 3 && !done; i++)
         sender of the message, so set vopt_fake_sender to stop sender_address
         being replaced after rewriting or qualification. */
 
-        else
-          {
-          vaddr = deliver_make_addr(address, FALSE);
-          new_ok = verify_address(vaddr, NULL, options | vopt_fake_sender,
-            callout, callout_overall, callout_connect, se_mailfrom,
-            pm_mailfrom, NULL);
-          }
+	vaddr = deliver_make_addr(address, FALSE);
+	new_ok = verify_address(vaddr, NULL, options | vopt_fake_sender,
+	  callout, callout_overall, callout_connect, se_mailfrom,
+	  pm_mailfrom, NULL);
         }
 
       /* We now have the result, either newly found, or cached. If we are
@@ -2984,7 +2974,8 @@ int maskoffset;
 BOOL iplookup = FALSE, isquery = FALSE;
 BOOL isiponly = cb->host_name && !cb->host_name[0];
 const uschar * t;
-uschar * semicolon, * endname, * opts;
+uschar * semicolon, * opts;
+const uschar * endname;
 uschar ** aliases;
 
 /* Optimize for the special case when the pattern is "*". */
@@ -3097,9 +3088,8 @@ else
 if (iplookup)
   {
   const lookup_info * li;
-  int incoming[4], insize;
   void * handle;
-  uschar * filename, * key, * result;
+  const uschar * filename, * key, * result;
   uschar buffer[64];
 
   /* Find the search type */
@@ -3130,6 +3120,7 @@ if (iplookup)
     }
   else   /* Single-key style */
     {
+    int incoming[4], insize;
     int sep = Ustrcmp(li->name, "iplsearch") == 0 ? ':' : '.';
     insize = host_aton(cb->host_address, incoming);
     host_mask(insize, incoming, mlen);
@@ -3369,7 +3360,7 @@ return rc;
 *      Check the given host item matches a list  *
 *************************************************/
 int
-verify_check_given_host(const uschar **listptr, const host_item *host)
+verify_check_given_host(const uschar ** listptr, const host_item * host)
 {
 return verify_check_this_host(listptr, NULL, host->name, host->address, NULL);
 }
@@ -3532,7 +3523,7 @@ cached_quota_lookup(const uschar * rcpt, int * yield,
   int pos_cache, int neg_cache)
 {
 open_db dbblock, *dbm_file = NULL;
-dbdata_callout_cache_address * cache_address_record;
+const dbdata_callout_cache_address * cache_address_record;
 
 if (!pos_cache && !neg_cache)
   return FALSE;
@@ -3662,17 +3653,14 @@ else
   waitpid(pid, &status, 0);
   if (status == 0)
     {
-    uschar * s;
-
     if (n > 0) yield = buf[0];
     if (n > 4)
       save_errno = (buf[1] << 24) | (buf[2] << 16) | (buf[3] << 8) | buf[4];
     if ((recipient_verify_failure = n > 5
 	? string_copyn_taint(buf+5, n-5, GET_UNTAINTED) : NULL))
       {
-      int m;
-      s = buf + 5 + Ustrlen(recipient_verify_failure) + 1;
-      m = n - (s - buf);
+      const uschar * s = buf + 5 + Ustrlen(recipient_verify_failure) + 1;
+      int m = n - (s - buf);
       acl_verify_message = *msg =
 	m > 0 ? string_copyn_taint(s, m, GET_UNTAINTED) : NULL;
       }

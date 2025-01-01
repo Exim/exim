@@ -103,7 +103,7 @@ sigalrm_seen = 1;
 *************************************************/
 
 static void
-usage(uschar *name, uschar *options)
+usage(const uschar * name, const uschar * options)
 {
 printf("Usage: exim_%s%s  <spool-directory> <database-name>\n", name, options);
 printf("  <database-name> = retry | misc | wait-<transport-name> | callout | ratelimit | tls | seen\n");
@@ -139,11 +139,11 @@ va_start(ap, fmt); vfprintf(stderr, fmt, ap); va_end(ap);
 second of them to be sure it is a known database name. */
 
 static int
-check_args(int argc, uschar **argv, uschar *name, uschar *options)
+check_args(int argc, uschar **argv, const uschar * name, const uschar * options)
 {
-uschar * aname = argv[optind + 1];
 if (argc - optind == 2)
   {
+  const uschar * aname = argv[optind + 1];
   if (Ustrcmp(aname, "retry") == 0)	return type_retry;
   if (Ustrcmp(aname, "misc") == 0)	return type_misc;
   if (Ustrncmp(aname, "wait-", 5) == 0)	return type_wait;
@@ -226,7 +226,7 @@ static uschar time_buffer[sizeof("09-xxx-1999 hh:mm:ss  ")];
 uschar *
 print_time(time_t t)
 {
-struct tm *tmstr = utc ? gmtime(&t) : localtime(&t);
+const struct tm * tmstr = utc ? gmtime(&t) : localtime(&t);
 Ustrftime(time_buffer, sizeof(time_buffer), "%d-%b-%Y %H:%M:%S", tmstr);
 return time_buffer;
 }

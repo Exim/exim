@@ -1984,8 +1984,8 @@ return sig;
 
 DLLEXPORT void
 pdkim_set_optional(pdkim_signature * sig,
-                       char * sign_headers,
-                       char * identity,
+                       const char * sign_headers,
+                       const char * identity,
                        int canon_headers,
                        int canon_body,
                        long bodylength,

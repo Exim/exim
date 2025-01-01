@@ -164,7 +164,7 @@ call_perl_cat(gstring * yield, uschar **errstrp, uschar *name, uschar **arg)
   dSP;
   SV *sv;
   STRLEN len;
-  uschar *str;
+  const uschar *str;
   int items;
 
   if (!interp_perl)

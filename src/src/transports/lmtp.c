@@ -127,8 +127,8 @@ Returns:       TRUE if a "QUIT" command should be sent, else FALSE
 */
 
 static BOOL
-check_response(int *errno_value, int more_errno, uschar *buffer,
-  int *yield, uschar **message)
+check_response(int * errno_value, int more_errno, const uschar * buffer,
+  int * yield, uschar ** message)
 {
 *yield = '4';    /* Default setting is to give a temporary error */
 
@@ -276,11 +276,12 @@ Returns:    TRUE if a valid, non-error response was received; else FALSE
 */
 
 static BOOL
-lmtp_read_response(FILE *f, uschar *buffer, int size, int okdigit, int timeout)
+lmtp_read_response(FILE * f, uschar * buffer, int size, int okdigit,
+  int timeout)
 {
 int count;
-uschar *ptr = buffer;
-uschar *readptr = buffer;
+uschar * ptr = buffer;
+uschar * readptr = buffer;
 
 /* Ensure errno starts out zero */
 
@@ -294,7 +295,7 @@ for (;;)
 
   if (size < 10)
     {
-    *readptr = 0;
+    *readptr = '\0';
     errno = ERRNO_SMTPFORMAT;
     return FALSE;
     }
@@ -303,7 +304,7 @@ for (;;)
 
   for (;;)
     {
-    char *rc;
+    const char * rc;
     int save_errno;
 
     *readptr = 0;           /* In case nothing gets read */
@@ -314,7 +315,7 @@ for (;;)
     ALARM_CLR(0);
     errno = save_errno;
 
-    if (rc != NULL) break;  /* A line has been read */
+    if (rc) break;  /* A line has been read */
 
     /* Handle timeout; must do this first because it uses EINTR */
 
@@ -477,9 +478,9 @@ int fd_in = -1, fd_out = -1;
 int code, save_errno;
 BOOL send_data;
 BOOL yield = FALSE;
-uschar *igquotstr = US"";
-uschar *sockname = NULL;
-const uschar **argv;
+uschar * igquotstr = US"";
+const uschar * sockname = NULL;
+const uschar ** argv;
 uschar buffer[256];
 
 DEBUG(D_transport) debug_printf("%s transport entered\n", trname);

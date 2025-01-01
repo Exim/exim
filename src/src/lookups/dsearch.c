@@ -53,7 +53,6 @@ static BOOL
 dsearch_check(void * handle, const uschar * filename, int modemask,
   uid_t * owners, gid_t * owngroups, uschar ** errmsg)
 {
-handle = handle;
 if (*filename == '/')
   return lf_check_file(-1, filename, S_IFDIR, modemask, owners, owngroups,
     "dsearch", errmsg) == 0;

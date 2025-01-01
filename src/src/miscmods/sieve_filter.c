@@ -226,13 +226,12 @@ static gstring *
 quoted_printable_encode(const gstring * src)
 {
 gstring * dst = NULL;
-uschar ch;
 size_t line = 0;
 
 for (const uschar * start = src->s, * end = start + src->ptr;
      start < end; ++start)
   {
-  ch = *start;
+  uschar ch = *start;
   if (line >= 73)	/* line length limit */
     {
     dst = string_catn(dst, US"=\n", 2);	/* line split */
@@ -286,13 +285,12 @@ Returns
 static int
 check_mail_address(struct Sieve * filter, const gstring * address)
 {
-int start, end, domain;
-uschar * error, * ss;
-
 if (address->ptr > 0)
   {
-  ss = parse_extract_address(address->s, &error, &start, &end, &domain,
-    FALSE);
+  int start, end, domain;
+  uschar * error;
+  const uschar * ss = parse_extract_address(address->s, &error,
+					    &start, &end, &domain, FALSE);
   if (!ss)
     {
     filter->errmsg = string_sprintf("malformed address \"%s\" (%s)",
@@ -328,7 +326,8 @@ Returns
 static BOOL
 uri_decode(gstring * str)
 {
-uschar *s, *t, *e;
+uschar * s, * t;
+const uschar * e;
 
 if (str->ptr == 0) return TRUE;
 for (t = s = str->s, e = s + str->ptr; s < e; )
@@ -476,7 +475,7 @@ if (*uri == '?')
         {.s = US"received", .ptr = 8, .size = 9},
         {.s = US"auto-submitted", .ptr = 14, .size = 15}
         };
-      static gstring * end = ignore + nelem(ignore);
+      static const gstring * end = ignore + nelem(ignore);
       gstring * i;
 
       for (i = ignore; i < end && !eq_asciicase(hname, i,  FALSE); ++i);
@@ -1187,7 +1186,7 @@ Returns:      >= 0              number of decoded octets
 */
 
 static int
-hex_decode(uschar *src, uschar *end, uschar *dst)
+hex_decode(const uschar * src, const uschar * end, uschar * dst)
 {
 int decoded = 0;
 
@@ -1241,14 +1240,14 @@ Returns:      >= 0              number of decoded octets
 */
 
 static int
-unicode_decode(uschar *src, uschar *end, uschar *dst)
+unicode_decode(const uschar * src, const uschar * end, uschar * dst)
 {
 int decoded = 0;
 
 while (*src == ' ' || *src == '\t' || *src == '\n') ++src;
 do
   {
-  uschar *hex_seq;
+  const uschar * hex_seq;
   int c, d, n;
 
   unicode_hex:
@@ -1263,35 +1262,35 @@ do
     if (dst) *dst++ = c;
     ++decoded;
     }
-  else if (c>= 0x80 && c<= 0x7ff)
+  else if (c <= 0x7ff)
     {
-      if (dst)
-        {
-        *dst++ = 192+(c>>6);
-        *dst++ = 128+(c&0x3f);
-        }
-      decoded += 2;
+    if (dst)
+      {
+      *dst++ = 192+(c>>6);
+      *dst++ = 128+(c&0x3f);
+      }
+    decoded += 2;
     }
-  else if (c>= 0x800 && c<= 0xffff)
+  else if (c <= 0xffff)
     {
-      if (dst)
-        {
-        *dst++ = 224+(c>>12);
-        *dst++ = 128+((c>>6)&0x3f);
-        *dst++ = 128+(c&0x3f);
-        }
-      decoded += 3;
+    if (dst)
+      {
+      *dst++ = 224+(c>>12);
+      *dst++ = 128+((c>>6)&0x3f);
+      *dst++ = 128+(c&0x3f);
+      }
+    decoded += 3;
     }
-  else if (c>= 0x10000 && c<= 0x1fffff)
+  else if (c <= 0x1fffff)
     {
-      if (dst)
-        {
-        *dst++ = 240+(c>>18);
-        *dst++ = 128+((c>>10)&0x3f);
-        *dst++ = 128+((c>>6)&0x3f);
-        *dst++ = 128+(c&0x3f);
-        }
-      decoded += 4;
+    if (dst)
+      {
+      *dst++ = 240+(c>>18);
+      *dst++ = 128+((c>>10)&0x3f);
+      *dst++ = 128+((c>>6)&0x3f);
+      *dst++ = 128+(c&0x3f);
+      }
+    decoded += 4;
     }
   if (*src == ' ' || *src == '\t' || *src == '\n')
     {
@@ -1323,16 +1322,17 @@ Returns:      1                success
 */
 
 static int
-string_decode(struct Sieve *filter, gstring *data)
+string_decode(struct Sieve * filter, gstring * data)
 {
-uschar *src, *dst, *end;
+uschar * src, * dst;
+const uschar * end;
 
 src = data->s;
 dst = src;
 end = data->s+data->ptr;
 while (src < end)
   {
-  uschar *brace;
+  uschar * brace;
 
   if (
       strncmpic(src, US "${hex:", 6) == 0
@@ -1598,11 +1598,10 @@ Returns:      1                success
 static int
 parse_number(struct Sieve *filter, unsigned long *data)
 {
-unsigned long d, u;
-
 if (*filter->pc>= '0' && *filter->pc<= '9')
   {
-  uschar *e;
+  unsigned long d, u;
+  uschar * e;
 
   errno = 0;
   d = Ustrtoul(filter->pc, &e, 10);
@@ -2036,7 +2035,8 @@ if (parse_identifier(filter, CUS "address"))
   *cond = 0;
   for (gstring * h = hdr; h->ptr != -1 && !*cond; ++h)
     {
-    uschar * header_value = NULL, * extracted_addr, * end_addr;
+    const uschar * header_value = NULL;
+    uschar * extracted_addr, * end_addr;
 
     if (  !eq_asciicase(h, &str_from, FALSE)
        && !eq_asciicase(h, &str_to, FALSE)
@@ -2156,9 +2156,8 @@ else if (parse_identifier(filter, CUS "exists"))
     *cond = 1;
     for (gstring * h = hdr; h->ptr != -1 && *cond; ++h)
       {
-      uschar *header_def;
-
-      header_def = expand_string(string_sprintf("${if def:header_%s {true}{false}}", quote(h)));
+      const uschar * header_def = expand_string(string_sprintf(
+				"${if def:header_%s {true}{false}}", quote(h)));
       if (!header_def)
         {
         filter->errmsg = CUS "header string expansion failed";
@@ -2242,10 +2241,11 @@ else if (parse_identifier(filter, CUS "header"))
     if (exec)
       {
       gstring header_value;
-      uschar *header_def;
+      const uschar * header_def;
 
       expand_header(&header_value, h);
-      header_def = expand_string(string_sprintf("${if def:header_%s {true}{false}}", quote(h)));
+      header_def = expand_string(string_sprintf(
+				"${if def:header_%s {true}{false}}", quote(h)));
       if (!header_value.s || !header_def)
         {
         filter->errmsg = CUS "header string expansion failed";
@@ -2595,12 +2595,12 @@ Returns:      2                success by stop
 static int
 parse_block(struct Sieve * filter, int exec, address_item ** generated)
 {
-int r;
-
 if (parse_white(filter) == -1)
   return -1;
 if (*filter->pc == '{')
   {
+  int r;
+
   ++filter->pc;
   if ((r = parse_commands(filter, exec, generated)) == -1 || r == 2) return r;
   if (*filter->pc == '}')
@@ -3206,7 +3206,7 @@ while (*filter->pc)
       }
     if (reason_is_mime)
       {
-      uschar *s, *end;
+      const uschar * s, * end;
 
       for (s = reason.s, end = reason.s + reason.ptr;
 	  s<end && (*s&0x80) == 0; ) s++;
@@ -3222,7 +3222,6 @@ while (*filter->pc)
       {
       address_item * addr;
       md5 base;
-      uschar digest[16], hexdigest[33];
       gstring * once;
       misc_module_info * mi;
       typedef BOOL (*fn_t)(string_item *, BOOL);
@@ -3234,6 +3233,8 @@ while (*filter->pc)
         }
       if ((((fn_t *) mi->functions)[EXIM_FILTER_PERSONAL])(aliases, TRUE))
         {
+	uschar digest[16], hexdigest[33];
+
         if (filter_test == FTEST_NONE)
           {
           /* ensure oncelog directory exists; failure will be detected later */
@@ -3274,9 +3275,8 @@ while (*filter->pc)
 
           if (subject.ptr == -1)
             {
-            uschar * subject_def;
-
-            subject_def = expand_string(US"${if def:header_subject {true}{false}}");
+            const uschar * subject_def = expand_string(
+				    US"${if def:header_subject {true}{false}}");
             if (subject_def && Ustrcmp(subject_def,"true") == 0)
               {
 	      gstring * g = string_catn(NULL, US"Auto: ", 6);

@@ -422,12 +422,13 @@ enum {
 
 
 /* Type for entries pointing to address/length pairs. Not currently
-in use. */
+in use.
 
 typedef struct {
   uschar **address;
   int  *length;
 } alblock;
+*/
 
 typedef uschar * stringptr_fn_t(void);
 static uschar * fn_recipients(void);
@@ -959,10 +960,10 @@ Returns:      the offset in the table, or -1
 */
 
 static int
-chop_match(uschar *name, uschar **table, int table_size)
+chop_match(const uschar * name, uschar ** table, int table_size)
 {
-uschar **bot = table;
-uschar **top = table + table_size;
+uschar ** bot = table;
+uschar ** top = table + table_size;
 
 while (top > bot)
   {
@@ -1112,7 +1113,7 @@ Ustrchr() yields non-NULL if the character is zero (which is not something
 I expected). */
 
 static const uschar *
-read_name(uschar *name, int max, const uschar *s, uschar *extras)
+read_name(uschar * name, int max, const uschar * s, const uschar * extras)
 {
 int ptr = 0;
 while (*s && (isalnum(*s) || Ustrchr(extras, *s) != NULL))
@@ -1241,7 +1242,7 @@ return NULL;
 
 
 static var_entry *
-find_var_ent(uschar * name, var_entry * table, unsigned nent)
+find_var_ent(const uschar * name, var_entry * table, unsigned nent)
 {
 int first = 0;
 int last = nent;
@@ -1281,7 +1282,7 @@ Returns:      NULL if the field was not found,
 */
 
 static uschar *
-expand_gettokened (int field, uschar *separators, uschar *s)
+expand_gettokened (int field, const uschar * separators, uschar * s)
 {
 int sep = 1;
 int count;
@@ -1355,7 +1356,7 @@ typedef struct
 {
 uschar * name;
 int      namelen;
-uschar * (*getfn)(void * cert, uschar * mod);
+uschar * (*getfn)(void * cert, const uschar * mod);
 } certfield;
 static certfield certfields[] =
 {			/* linear search; no special order */
@@ -1632,7 +1633,8 @@ Returns:        NULL if the header does not exist, else a pointer to a new
 */
 
 static uschar *
-find_header(uschar * name, int * newsize, unsigned flags, const uschar * charset)
+find_header(const uschar * name, int * newsize, unsigned flags,
+  const uschar * charset)
 {
 BOOL found = !name;
 int len = name ? Ustrlen(name) : 0;
@@ -2304,7 +2306,6 @@ int i;
 int sav_narg = acl_narg;
 int ret;
 uschar * dummy_logmsg;
-extern int acl_where;
 
 if(--nsub > nelem(acl_arg)) nsub = nelem(acl_arg);
 for (i = 0; i < nsub && sub[i+1]; i++)
@@ -2849,8 +2850,8 @@ switch(cond_type = identify_operator(&s, &opname))
   case ECOND_ACL:
     /* ${if acl {{name}{arg1}{arg2}...}  {yes}{no}} */
     {
-    uschar *sub[10];
-    uschar *user_msg;
+    uschar * sub[10];
+    uschar * user_msg;
     BOOL cond = FALSE;
 
     Uskip_whitespace(&s);
@@ -3636,7 +3637,7 @@ switch(cond_type = identify_operator(&s, &opname))
       /* check the timestamp */
 	{
 	struct timeval now;
-	uschar * ss = sub[0] + ovec[4];	/* substring 2, the timestamp */
+	const uschar * ss = sub[0] + ovec[4];	/* substring 2, the timestamp */
 	long d;
 	int n;
 
@@ -3647,7 +3648,7 @@ switch(cond_type = identify_operator(&s, &opname))
 
 	for (d = 0, n = ovec[5]-ovec[4]; n; n--)
 	  {
-	  uschar * t = Ustrchr(base32_chars, *ss++);
+	  const uschar * t = Ustrchr(base32_chars, *ss++);
 	  d = d * 32 + (t - base32_chars);
 	  }
 
@@ -3767,8 +3768,8 @@ Returns:                nothing
 */
 
 static void
-restore_expand_strings(int save_expand_nmax, const uschar **save_expand_nstring,
-  int *save_expand_nlength)
+restore_expand_strings(int save_expand_nmax,
+  const uschar ** save_expand_nstring, const int * save_expand_nlength)
 {
 expand_nmax = save_expand_nmax;
 for (int i = 0; i <= expand_nmax; i++)
@@ -3814,9 +3815,8 @@ process_yesno(esi_flags flags, BOOL yes, uschar *save_lookup, const uschar **spt
   gstring ** yieldptr, uschar *type, BOOL *resetok)
 {
 int rc = 0;
-const uschar *s = *sptr;    /* Local value */
-uschar *sub1, *sub2;
-const uschar * errwhere;
+const uschar * s = *sptr;    /* Local value */
+const uschar * sub1, * sub2, * errwhere;
 
 flags &= ESI_SKIPPING;		/* Ignore all buf the skipping flag */
 
@@ -4017,16 +4017,15 @@ Returns:  pointer to string containing the first three
 */
 
 static uschar *
-prvs_hmac_sha1(uschar *address, uschar *key, uschar *key_num, uschar *daystamp)
+prvs_hmac_sha1(const uschar * address, const uschar * key,
+  const uschar * key_num, const uschar * daystamp)
 {
 gstring * hash_source;
 uschar * p;
 hctx h;
-uschar innerhash[20];
-uschar finalhash[20];
-uschar innerkey[64];
-uschar outerkey[64];
-uschar *finalhash_hex;
+uschar innerhash[20], finalhash[20];
+uschar innerkey[64],  outerkey[64];
+uschar * finalhash_hex;
 
 if (!key_num)
   key_num = US"0";
@@ -4091,7 +4090,7 @@ Returns:       new pointer for expandable string, terminated if non-null
 */
 
 gstring *
-cat_file(FILE * f, gstring * yield, uschar * eol)
+cat_file(FILE * f, gstring * yield, const uschar * eol)
 {
 uschar buffer[1024];
 
@@ -4109,7 +4108,7 @@ return yield;
 
 #ifndef DISABLE_TLS
 gstring *
-cat_file_tls(void * tls_ctx, gstring * yield, uschar * eol)
+cat_file_tls(void * tls_ctx, gstring * yield, const uschar * eol)
 {
 int rc;
 uschar buffer[1024];
@@ -4501,7 +4500,7 @@ rather than getting each in new memory */
 if (is_tainted(list)) buffer = store_get(LISTNAMED_BUF_SIZE, GET_TAINTED);
 while ((item = string_nextinlist(&list, &sep, buffer, LISTNAMED_BUF_SIZE)))
   {
-  uschar * buf = US" : ";
+  const uschar * buf = US" : ";
   if (needsep)
     yield = string_catn(yield, buf, 3);
   else
@@ -5004,8 +5003,8 @@ while (*s)
 #ifdef SUPPORT_I18N
     case EITEM_IMAPFOLDER:
       {				/* ${imapfolder {name}{sep}{specials}} */
-      uschar *sub_arg[3];
-      uschar *encoded;
+      uschar * sub_arg[3];
+      const uschar * encoded;
 
       switch(read_subs(sub_arg, nelem(sub_arg), 1, &s, flags, TRUE, name, &resetok, NULL))
         {
@@ -5050,9 +5049,8 @@ while (*s)
       int expand_setup = 0, nameptr = 0;
       int partial, affixlen, starflags;
       const lookup_info * li;
-      uschar * key, * filename;
-      const uschar * affix, * opts;
-      uschar * save_lookup_value = lookup_value;
+      const uschar * key, * affix, * opts;
+      uschar * save_lookup_value = lookup_value, * filename;
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
@@ -5323,7 +5321,8 @@ while (*s)
 
     case EITEM_PRVS:
       {
-      uschar * sub_arg[3], * p, * domain;
+      uschar * sub_arg[3], * domain;
+      const uschar * p;
 
       switch(read_subs(sub_arg, 3, 2, &s, flags, TRUE, name, &resetok, NULL))
         {
@@ -5445,8 +5444,8 @@ while (*s)
         if (Ustrcmp(p,hash) == 0)
           {
           /* Success, valid BATV address. Now check the expiry date. */
-          uschar *now = prvs_daystamp(0);
-          unsigned int inow = 0,iexpire = 1;
+          const uschar * now = prvs_daystamp(0);
+          unsigned int inow = 0, iexpire = 1;
 
           (void)sscanf(CS now,"%u",&inow);
           (void)sscanf(CS daystamp,"%u",&iexpire);
@@ -5546,7 +5545,7 @@ while (*s)
 
     case EITEM_READSOCK:
       {
-      uschar * arg;
+      const uschar * arg;
       uschar * sub_arg[4];
 
       if (expand_forbid & RDO_READSOCK)
@@ -5574,7 +5573,7 @@ while (*s)
 	gstring * g = NULL;
 	void * handle;
 	int expand_setup = -1;
-	uschar * s;
+	const uschar * t;
 
 	if (!li)
 	  {
@@ -5628,9 +5627,9 @@ while (*s)
 	/* Get (possibly cached) results for the lookup */
 	/* sspec: sub_arg[0]  req: sub_arg[1]  opts: g */
 
-	if ((s = search_find(handle, sub_arg[0], sub_arg[1], -1, NULL, 0, 0,
+	if ((t = search_find(handle, sub_arg[0], sub_arg[1], -1, NULL, 0, 0,
 				    &expand_setup, string_from_gstring(g))))
-	  yield = string_cat(yield, s);
+	  yield = string_cat(yield, t);
 	else if (f.search_find_defer)
 	  {
 	  expand_string_message = search_error_message;
@@ -5860,7 +5859,7 @@ while (*s)
          && (o2m = Ustrlen(sub[2]) - 1) >= 0)
 	  for (; oldptr < yield->ptr; oldptr++)
         {
-        uschar * m = Ustrrchr(sub[1], yield->s[oldptr]);
+        const uschar * m = Ustrrchr(sub[1], yield->s[oldptr]);
         if (m)
           {
           int o = m - sub[1];
@@ -6090,7 +6089,7 @@ while (*s)
 	PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
 	int n = pcre2_match(re, (PCRE2_SPTR)subject, slen, moffset + moffsetextra,
 	  PCRE_EOPT | emptyopt, md, pcre_gen_mtc_ctx);
-        uschar * insert;
+        const uschar * insert;
 
         /* No match - if we previously set PCRE_NOTEMPTY after a null match, this
         is not necessarily the end. We want to repeat the match from one
@@ -6293,13 +6292,13 @@ while (*s)
 	case extract_json:
 	case extract_jsons:
 	  {
-	  uschar * s, * item;
+	  uschar * t, * item;
 	  const uschar * list;
 
 	  /* Array: Bracket-enclosed and comma-separated.
 	  Object: Brace-enclosed, comma-sep list of name:value pairs */
 
-	  if (!(s = dewrap(sub[1], field_number_set ? US"[]" : US"{}")))
+	  if (!(t = dewrap(sub[1], field_number_set ? US"[]" : US"{}")))
 	    {
 	    expand_string_message =
 	      string_sprintf("%s wrapping %s for extract json",
@@ -6308,7 +6307,7 @@ while (*s)
 	    goto EXPAND_FAILED_CURLY;
 	    }
 
-	  list = s;
+	  list = t;
 	  if (field_number_set)
 	    {
 	    if (field_number <= 0)
@@ -6319,10 +6318,10 @@ while (*s)
 	      }
 	    while (field_number > 0 && (item = json_nextinlist(&list)))
 	      field_number--;
-	    if ((lookup_value = s = item))
+	    if ((lookup_value = t = item))
 	      {
-	      while (*s) s++;
-	      while (--s >= lookup_value && isspace(*s)) *s = '\0';
+	      while (*t) t++;
+	      while (--t >= lookup_value && isspace(*t)) *t = '\0';
 	      }
 	    }
 	  else
@@ -6342,16 +6341,16 @@ while (*s)
 		}
 	      if (Ustrcmp(item, sub[0]) == 0)	/*XXX should be a UTF8-compare */
 		{
-		s = item + Ustrlen(item) + 1;
-		if (Uskip_whitespace(&s) != ':')
+		t = item + Ustrlen(item) + 1;
+		if (Uskip_whitespace(&t) != ':')
 		  {
 		  expand_string_message =
 		    US"missing object value-separator for extract json";
 		  goto EXPAND_FAILED_CURLY;
 		  }
-		s++;
-		Uskip_whitespace(&s);
-		lookup_value = s;
+		t++;
+		Uskip_whitespace(&t);
+		lookup_value = t;
 		break;
 		}
 	      }
@@ -6817,7 +6816,7 @@ while (*s)
       const uschar * srclist, * cmp, * xtract;
       uschar * opname, * srcitem;
       const uschar * dstlist = NULL, * dstkeylist = NULL;
-      uschar * tmp, * save_iterate_item = iterate_item;
+      uschar * save_iterate_item = iterate_item;
 
       Uskip_whitespace(&s);
       if (*s++ != '{')							/*}*/
@@ -6879,8 +6878,8 @@ while (*s)
 	}
 
       xtract = s;
-      if (!(tmp = expand_string_internal(s,
-	ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | ESI_SKIPPING, &s, &resetok, NULL)))
+      if (!expand_string_internal(s,
+	ESI_BRACE_ENDS | ESI_HONOR_DOLLAR | ESI_SKIPPING, &s, &resetok, NULL))
 	goto EXPAND_FAILED;
       xtract = string_copyn(xtract, s - xtract);
 									/*{{*/
@@ -6900,7 +6899,7 @@ while (*s)
 
       while ((srcitem = string_nextinlist(&srclist, &sep, NULL, 0)))
 	{
-	uschar * srcfield, * dstitem;
+	const uschar * srcfield, * dstitem;
 	gstring * newlist = NULL, * newkeylist = NULL;
 
         DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, srcitem);
@@ -6921,7 +6920,7 @@ while (*s)
 	/* copy output list until new-item < list-item */
 	while ((dstitem = string_nextinlist(&dstlist, &sep, NULL, 0)))
 	  {
-	  uschar * dstfield;
+	  const uschar * dstfield;
 
 	  /* field for comparison */
 	  if (!(dstfield = string_nextinlist(&dstkeylist, &sep, NULL, 0)))
@@ -7081,8 +7080,8 @@ while (*s)
 
     case EITEM_ENV:	/* ${env {name} {val_if_found} {val_if_unfound}} */
       {
-      uschar * key;
-      uschar *save_lookup_value = lookup_value;
+      const uschar * key;
+      uschar * save_lookup_value = lookup_value;
 
       if (Uskip_whitespace(&s) != '{')					/*}*/
 	goto EXPAND_FAILED;
@@ -7157,7 +7156,7 @@ while (*s)
 	  int start, end, domain;
 	  uschar * t = parse_extract_address(sub[1], &expand_string_message,
 					    &start, &end, &domain, FALSE);
-	  uschar * s;
+	  uschar * ss;
 
 	  if (!t)
 	    goto EXPAND_FAILED;
@@ -7165,22 +7164,22 @@ while (*s)
 	  if (domain > 0) g = string_cat(g, t + domain);
 	  g = string_catn(g, US"=", 1);
 
-	  s = domain > 0 ? string_copyn(t, domain - 1) : t;
-	  if ((quoted = Ustrchr(s, '"') != NULL))
+	  ss = domain > 0 ? string_copyn(t, domain - 1) : t;
+	  if ((quoted = Ustrchr(ss, '"') != NULL))
 	    {
 	    gstring * h = NULL;
 	    DEBUG(D_expand) debug_printf_indent("auto-quoting local part\n");
-	    while (*s)		/* de-quote */
+	    while (*ss)		/* de-quote */
 	      {
-	      while (*s && *s != '"') h = string_catn(h, s++, 1);
-	      if (*s) s++;
-	      while (*s && *s != '"') h = string_catn(h, s++, 1);
-	      if (*s) s++;
+	      while (*ss && *ss != '"') h = string_catn(h, ss++, 1);
+	      if (*ss) ss++;
+	      while (*ss && *ss != '"') h = string_catn(h, ss++, 1);
+	      if (*ss) ss++;
 	      }
 	    gstring_release_unused(h);
-	    s = string_from_gstring(h);
+	    ss = string_from_gstring(h);
 	    }
-	  if (s) g = string_cat(g, s);
+	  if (ss) g = string_cat(g, ss);
 	  }
 
 	/* Assume that if the original local_part had quotes
@@ -7320,11 +7319,11 @@ NOT_ITEM: ;
 
       case EOP_BASE32D:
 	{
-	uschar *tt = sub;
+	const uschar * tt = sub;
 	unsigned long int n = 0;
 	while (*tt)
 	  {
-	  uschar * t = Ustrchr(base32_chars, *tt++);
+	  const uschar * t = Ustrchr(base32_chars, *tt++);
 	  if (!t)
 	    {
 	    expand_string_message = string_sprintf("argument for base32d "
@@ -7355,11 +7354,11 @@ NOT_ITEM: ;
 
       case EOP_BASE62D:
 	{
-	uschar *tt = sub;
+	const uschar * tt = sub;
 	unsigned long int n = 0;
 	while (*tt)
 	  {
-	  uschar *t = Ustrchr(base62_chars, *tt++);
+	  const uschar * t = Ustrchr(base62_chars, *tt++);
 	  if (!t)
 	    {
 	    expand_string_message = string_sprintf("argument for base62d "
@@ -7375,7 +7374,7 @@ NOT_ITEM: ;
 
       case EOP_EXPAND:
 	{
-	uschar *expanded = expand_string_internal(sub,
+	const uschar * expanded = expand_string_internal(sub,
 		ESI_HONOR_DOLLAR | flags & ESI_SKIPPING, NULL, &resetok, NULL);
 	if (!expanded)
 	  {
@@ -7408,7 +7407,7 @@ NOT_ITEM: ;
 #ifndef DISABLE_TLS
 	if (vp && *(void **)vp->value)
 	  {
-	  uschar * cp = tls_cert_fprt_md5(*(void **)vp->value);
+	  const uschar * cp = tls_cert_fprt_md5(*(void **)vp->value);
 	  yield = string_cat(yield, cp);
 	  }
 	else
@@ -7510,21 +7509,21 @@ NOT_ITEM: ;
       case EOP_HEADERWRAP:
 	{
 	unsigned col = 80, lim = 998;
-	uschar * s;
+	const uschar * t;
 
 	if (arg)
 	  {
 	  const uschar * list = arg;
 	  int sep = '_';
-	  if ((s = string_nextinlist(&list, &sep, NULL, 0)))
+	  if ((t = string_nextinlist(&list, &sep, NULL, 0)))
 	    {
-	    col = atoi(CS s);
-	    if ((s = string_nextinlist(&list, &sep, NULL, 0)))
-	      lim = atoi(CS s);
+	    col = atoi(CS t);
+	    if ((t = string_nextinlist(&list, &sep, NULL, 0)))
+	      lim = atoi(CS t);
 	    }
 	  }
-	  if ((s =  wrap_header(sub, col, lim, US"\t", 8)))
-	    yield = string_cat(yield, s);
+	  if ((t =  wrap_header(sub, col, lim, US"\t", 8)))
+	    yield = string_cat(yield, t);
 	}
 	break;
 
@@ -7711,8 +7710,8 @@ NOT_ITEM: ;
 	{
 	uschar * error;
 	int start, end, domain;
-	uschar * t = parse_extract_address(sub, &error, &start, &end, &domain,
-	  FALSE);
+	const uschar * t = parse_extract_address(sub, &error, &start, &end,
+						&domain, FALSE);
 	if (t)
 	  if (c != EOP_DOMAIN)
 	    yield = c == EOP_LOCAL_PART && domain > 0
@@ -7806,7 +7805,7 @@ NOT_ITEM: ;
 	if (!arg)
 	  {
 	  BOOL needs_quote = (!*sub);      /* TRUE for empty string */
-	  uschar *t = sub - 1;
+	  const uschar * t = sub - 1;
 
 	  if (c == EOP_QUOTE)
 	    while (!needs_quote && *++t)
@@ -7900,9 +7899,9 @@ NOT_ITEM: ;
       case EOP_RFC2047D:
 	{
 	int len;
-	uschar *error;
-	uschar *decoded = rfc2047_decode(sub, check_rfc2047_length,
-	  headers_charset, '?', &len, &error);
+	uschar * error;
+	const uschar * decoded = rfc2047_decode(sub, check_rfc2047_length,
+					    headers_charset, '?', &len, &error);
 	if (error)
 	  {
 	  expand_string_message = error;
@@ -7935,7 +7934,7 @@ NOT_ITEM: ;
 
       case EOP_UTF8CLEAN:
 	{
-	int seq_len = 0, index = 0, bytes_left = 0, complete;
+	int seq_len = 0, index = 0, bytes_left = 0;
 	u_long codepoint = (u_long)-1;
 	uschar seq_buff[4];			/* accumulate utf-8 here */
 
@@ -7955,7 +7954,7 @@ NOT_ITEM: ;
 
 	while (*sub)
 	  {
-	  complete = 0;
+	  int complete = 0;
 	  uschar c = *sub++;
 
 	  if (bytes_left)
@@ -8041,7 +8040,7 @@ NOT_ITEM: ;
       case EOP_UTF8_DOMAIN_TO_ALABEL:
 	{
 	uschar * error = NULL;
-	uschar * s = string_domain_utf8_to_alabel(sub, &error);
+	const uschar * s = string_domain_utf8_to_alabel(sub, &error);
 	if (error)
 	  {
 	  expand_string_message = string_sprintf(
@@ -8056,7 +8055,7 @@ NOT_ITEM: ;
       case EOP_UTF8_DOMAIN_FROM_ALABEL:
 	{
 	uschar * error = NULL;
-	uschar * s = string_domain_alabel_to_utf8(sub, &error);
+	const uschar * s = string_domain_alabel_to_utf8(sub, &error);
 	if (error)
 	  {
 	  expand_string_message = string_sprintf(
@@ -8071,7 +8070,7 @@ NOT_ITEM: ;
       case EOP_UTF8_LOCALPART_TO_ALABEL:
 	{
 	uschar * error = NULL;
-	uschar * s = string_localpart_utf8_to_alabel(sub, &error);
+	const uschar * s = string_localpart_utf8_to_alabel(sub, &error);
 	if (error)
 	  {
 	  expand_string_message = string_sprintf(
@@ -8087,7 +8086,7 @@ NOT_ITEM: ;
       case EOP_UTF8_LOCALPART_FROM_ALABEL:
 	{
 	uschar * error = NULL;
-	uschar * s = string_localpart_alabel_to_utf8(sub, &error);
+	const uschar * s = string_localpart_alabel_to_utf8(sub, &error);
 	if (error)
 	  {
 	  expand_string_message = string_sprintf(
@@ -8157,7 +8156,7 @@ NOT_ITEM: ;
       case EOP_TIME_INTERVAL:
 	{
 	int n;
-	uschar *t = read_number(&n, sub);
+	const uschar * t = read_number(&n, sub);
 	if (*t != 0) /* Not A Number*/
 	  {
 	  expand_string_message = string_sprintf("string \"%s\" is not a "
@@ -8175,7 +8174,7 @@ NOT_ITEM: ;
       case EOP_BASE64:
 	{
 #ifndef DISABLE_TLS
-	uschar * s = vp && *(void **)vp->value
+	const uschar * s = vp && *(void **)vp->value
 	  ? tls_cert_der_b64(*(void **)vp->value)
 	  : b64encode(CUS sub, Ustrlen(sub));
 #else
@@ -8232,9 +8231,9 @@ NOT_ITEM: ;
 	int sign = 1;
 	int value1 = 0;
 	int value2 = -1;
-	int *pn;
+	int * pn;
 	int len;
-	uschar *ret;
+	const uschar * ret;
 
 	if (!arg)
 	  {

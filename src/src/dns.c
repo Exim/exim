@@ -336,7 +336,7 @@ Returns:    next dns record, or NULL when no more
 */
 
 dns_record *
-dns_next_rr(const dns_answer *dnsa, dns_scan *dnss, int reset)
+dns_next_rr(const dns_answer * dnsa, dns_scan * dnss, int reset)
 {
 const HEADER * h = (const HEADER *)dnsa->answer;
 int namelen;
@@ -1236,9 +1236,9 @@ switch (type)
   assertion field. */
   case T_CSA:
     {
-    uschar *srvname, *namesuff, *tld;
-    int priority, dummy_weight, port;
-    int limit, rc, i;
+    const uschar * srvname;
+    uschar * namesuff, * tld;
+    int priority, dummy_weight, port, limit, rc, i;
     BOOL ipv6;
     dns_record *rr;
     dns_scan dnss;
@@ -1373,14 +1373,14 @@ Returns:     pointer to a chain of dns_address items; NULL when the dnsa was ove
 */
 
 dns_address *
-dns_address_from_rr(dns_answer *dnsa, dns_record *rr)
+dns_address_from_rr(const dns_answer * dnsa, dns_record * rr)
 {
 dns_address * yield = NULL;
-uschar * dnsa_lim = dnsa->answer + dnsa->answerlen;
+const uschar * dnsa_lim = dnsa->answer + dnsa->answerlen;
 
 if (rr->type == T_A)
   {
-  uschar *p = US rr->data;
+  const uschar * p = CUS rr->data;
   if (p + 4 <= dnsa_lim)
     {
     /* the IP is not regarded as tainted */

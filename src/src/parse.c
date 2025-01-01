@@ -632,8 +632,8 @@ Returns:      points to the extracted address, or NULL on error
 #define FAILED(s) { *errorptr = s; goto PARSE_FAILED; }
 
 uschar *
-parse_extract_address(const uschar *mailbox, uschar **errorptr, int *start, int *end,
-  int *domain, BOOL allow_null)
+parse_extract_address(const uschar * mailbox, uschar ** errorptr,
+  int * start, int * end, int * domain, BOOL allow_null)
 {
 uschar * yield = store_get(Ustrlen(mailbox) + 1, mailbox);
 const uschar *startptr, *endptr;
@@ -882,7 +882,6 @@ const uschar *
 parse_quote_2047(const uschar * string, int len, const uschar * charset,
   BOOL fold)
 {
-const uschar * s = string;
 int hlen, line_off;
 BOOL coded = FALSE;
 BOOL first_byte = FALSE;
@@ -891,7 +890,7 @@ gstring * g =
 
 line_off = hlen;
 
-for (s = string; len > 0; s++, len--)
+for (const uschar * s = string; len > 0; s++, len--)
   {
   int ch = *s;
 
@@ -982,11 +981,10 @@ Returns:       the fixed RFC822 phrase
 const uschar *
 parse_fix_phrase(const uschar *phrase, int len)
 {
-int ch, i;
+int i;
 BOOL quoted = FALSE;
-const uschar *s, *end;
-uschar * buffer;
-uschar *t, *yield;
+const uschar * s, * end;
+uschar * buffer, * t, * yield;
 
 while (len > 0 && isspace(*phrase)) { phrase++; len--; }
 
@@ -1012,7 +1010,7 @@ yield = t = buffer + 1;
 
 while (s < end)
   {
-  ch = *s++;
+  int ch = *s++;
 
   /* Copy over quoted strings, remembering we encountered one */
 
@@ -1357,16 +1355,16 @@ for (;;)
 
   if (special)
     {
-    uschar * ss = Ustrchr(s+1, ':') + 1; /* line after the special... */
+    uschar * p = Ustrchr(s+1, ':') + 1; /* line after the special... */
     if ((options & specopt) == specbit)
       {
       *error = string_sprintf("\"%.*s\" is not permitted", len, s);
       return FF_ERROR;
       }
-    Uskip_whitespace(&ss);		/* skip leading whitespace */
-    if ((len = Ustrlen(ss)) > 0)	/* ignore trailing newlines */
-      for (const uschar * t = ss + len - 1; t >= ss && *t == '\n'; t--) len--;
-    *error = string_copyn(ss, len);	/* becomes the error */
+    Uskip_whitespace(&p);		/* skip leading whitespace */
+    if ((len = Ustrlen(p)) > 0)		/* ignore trailing newlines */
+      for (const uschar * t = p + len - 1; t >= p && *t == '\n'; t--) len--;
+    *error = string_copyn(p, len);	/* becomes the error */
     return special;
     }
 
@@ -1377,13 +1375,10 @@ for (;;)
 
   if (Ustrncmp(s, ":include:", 9) == 0)
     {
-    uschar * filebuf;
-    uschar filename[256];
+    uschar * filebuf, * filename;
     const uschar * t = s+9;
-    int flen = len - 9;
-    int frc;
+    int flen = len - 9, frc;
     struct stat statbuf;
-    address_item * last;
     FILE * f;
 
     while (flen > 0 && isspace(*t)) { t++; flen--; }
@@ -1394,14 +1389,13 @@ for (;;)
       return FF_ERROR;
       }
 
-    if (flen > sizeof(filename)-1)
+    if (flen > 255)
       {
       *error = string_sprintf("included file name \"%s\" is too long", t);
       return FF_ERROR;
       }
 
-    Ustrncpy(filename, t, flen);
-    filename[flen] = 0;
+    filename = string_copyn(t, flen);
 
     /* Insist on absolute path */
 
@@ -1431,12 +1425,14 @@ for (;;)
 
     if (directory)
       {
-      int len = Ustrlen(directory);
+      int dlen = Ustrlen(directory);
       uschar * p;
 
-      while (len > 0 && directory[len-1] == '/') len--;		/* ignore trailing '/' */
-      p = filename + len;
-      if (Ustrncmp(filename, directory, len) != 0 || *p != '/')
+      /* ignore trailing '/' */
+      while (dlen > 0 && directory[dlen-1] == '/') dlen--;
+
+      p = filename + dlen;
+      if (Ustrncmp(filename, directory, dlen) != 0 || *p != '/')
         {
         *error = string_sprintf("included file %s is not in directory %s",
           filename, directory);
@@ -1569,6 +1565,7 @@ for (;;)
 
     if (addr)
       {
+      address_item * last;
       for (last = addr; last->next; last = last->next) count++;
       last->next = *anchor;
       *anchor = addr;

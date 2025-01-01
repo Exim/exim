@@ -22,7 +22,7 @@ dkt_sign_fail(struct ob_dkim * dkim, int * errp)
 GET_OPTION("dkim_strict");
 if (dkim->dkim_strict)
   {
-  uschar * dkim_strict_result = expand_string(dkim->dkim_strict);
+  const uschar * dkim_strict_result = expand_string(dkim->dkim_strict);
 
   if (dkim_strict_result)
     if (  strcmpic(dkim_strict_result, US"1") == 0
@@ -188,7 +188,7 @@ in wireformat. */
 dkim->dot_stuffed = f.spool_file_wireformat;
 if (!(dkim_signature = dkim_exim_sign(deliver_datafile,
 	      spool_data_start_offset(message_id), hdrs, dkim, &errstr)))
-  if (!(rc = dkt_sign_fail(dkim, &errno)))
+  if (!dkt_sign_fail(dkim, &errno))
     {
     *err = errstr;
     return FALSE;

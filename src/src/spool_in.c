@@ -365,7 +365,7 @@ malformed.
 As called from deliver_message() (at least) we are running as root.
 
 Arguments:
-  name          name of the header file, including the -H
+  fname         name of the header file, including the -H
   read_headers  TRUE if in-store header structures are to be built
   subdir_set    TRUE is message_subdir is already set
 
@@ -376,11 +376,10 @@ Returns:        spool_read_OK        success
 */
 
 int
-spool_read_header(uschar *name, BOOL read_headers, BOOL subdir_set)
+spool_read_header(uschar * fname, BOOL read_headers, BOOL subdir_set)
 {
 FILE * fp = NULL;
-int n;
-int rcount = 0;
+int rcount = 0, n;
 long int uid, gid;
 BOOL inheader = FALSE;
 const uschar * where;
@@ -395,21 +394,21 @@ spool_clear_header_globals();
 set, just look in the given directory. Otherwise, look in both the split
 and unsplit directories, as for the data file above. */
 
-for (int n = 0; n < 2; n++)
+for (int i = 0; i < 2; i++)
   {
   if (!subdir_set)
-    set_subdir_str(message_subdir, name, n);
+    set_subdir_str(message_subdir, fname, i);
 
-  if ((fp = Ufopen(spool_fname(US"input", message_subdir, name, US""), "rb")))
+  if ((fp = Ufopen(spool_fname(US"input", message_subdir, fname, US""), "rb")))
     break;
-  if (n != 0 || subdir_set || errno != ENOENT)
+  if (i != 0 || subdir_set || errno != ENOENT)
     return spool_read_notopen;
   }
 
 errno = 0;
 
 #ifndef COMPILE_UTILITY
-DEBUG(D_deliver) debug_printf_indent("reading spool file %s\n", name);
+DEBUG(D_deliver) debug_printf_indent("reading spool file %s\n", fname);
 #endif  /* COMPILE_UTILITY */
 
 /* The first line of a spool file contains the message id followed by -H (i.e.
@@ -421,8 +420,8 @@ where = US"first line length";
 if (  (  Ustrlen(big_buffer) != MESSAGE_ID_LENGTH + 3
       && Ustrlen(big_buffer) != MESSAGE_ID_LENGTH_OLD + 3
       )
-   || (  Ustrncmp(big_buffer, name, MESSAGE_ID_LENGTH + 2) != 0
-      && Ustrncmp(big_buffer, name, MESSAGE_ID_LENGTH_OLD + 2) != 0
+   || (  Ustrncmp(big_buffer, fname, MESSAGE_ID_LENGTH + 2) != 0
+      && Ustrncmp(big_buffer, fname, MESSAGE_ID_LENGTH_OLD + 2) != 0
    )  )
   goto SPOOL_FORMAT_ERROR;
 
@@ -554,19 +553,20 @@ for (;;)
     if (Ustrncmp(p, "clc ", 4) == 0 ||
         Ustrncmp(p, "clm ", 4) == 0)
       {
-      uschar *name, *endptr;
+      const uschar * vname, * endptr;
       int count;
-      tree_node *node;
+      tree_node * node;
+
       endptr = Ustrchr(var + 5, ' ');
       where = US"-aclXn";
       if (!endptr) goto SPOOL_FORMAT_ERROR;
-      name = string_sprintf("%c%.*s", var[3],
+      vname = string_sprintf("%c%.*s", var[3],
         (int)(endptr - var - 5), var + 5);
       if (sscanf(CS endptr, " %d", &count) != 1) goto SPOOL_FORMAT_ERROR;
-      node = acl_var_create(name);
+      node = acl_var_create(vname);
       node->data.ptr = store_get(count + 1, proto_mem);
       if (fread(node->data.ptr, 1, count+1, fp) < count) goto SPOOL_READ_ERROR;
-      ((uschar*)node->data.ptr)[count] = 0;
+      ((uschar*)node->data.ptr)[count] = '\0';
       }
 
     else if (Ustrcmp(p, "llow_unqualified_recipient") == 0)
@@ -591,7 +591,7 @@ for (;;)
     else if (Ustrncmp(p, "cl ", 3) == 0)
       {
       unsigned index, count;
-      uschar name[20];   /* Need plenty of space for %u format */
+      uschar vname[20];   /* Need plenty of space for %u format */
       tree_node * node;
       where = US"-acl (old)";
       if (  sscanf(CS var + 4, "%u %u", &index, &count) != 2
@@ -600,10 +600,10 @@ for (;;)
          )
         goto SPOOL_FORMAT_ERROR;
       if (index < 10)
-        (void) string_format(name, sizeof(name), "%c%u", 'c', index);
+        (void) string_format(vname, sizeof(vname), "%c%u", 'c', index);
       else
-        (void) string_format(name, sizeof(name), "%c%u", 'm', index - 10);
-      node = acl_var_create(name);
+        (void) string_format(vname, sizeof(vname), "%c%u", 'm', index - 10);
+      node = acl_var_create(vname);
       node->data.ptr = store_get(count + 1, proto_mem);
       /* We sanity-checked the count, so disable the Coverity error */
       /* coverity[tainted_data] */
@@ -1062,7 +1062,7 @@ if (errno != 0)
   n = errno;
 
 #ifndef COMPILE_UTILITY
-  DEBUG(D_any) debug_printf("Error while reading spool file %s\n", name);
+  DEBUG(D_any) debug_printf("Error while reading spool file %s\n", fname);
 #endif  /* COMPILE_UTILITY */
 
   fclose(fp);
@@ -1073,7 +1073,7 @@ if (errno != 0)
 SPOOL_FORMAT_ERROR:
 
 #ifndef COMPILE_UTILITY
-DEBUG(D_any) debug_printf("Format error in spool file %s%s%s\n", name,
+DEBUG(D_any) debug_printf("Format error in spool file %s%s%s\n", fname,
   where ? ": " : "", where ? where : US"");
 #else
 where = where;	/* compiler quietening */

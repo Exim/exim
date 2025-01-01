@@ -142,10 +142,10 @@ with their names. */
 eo = &(eno->zo_data.objdata_u.en_data);
 for (int i = 0; i < eo->en_cols.en_cols_len; i++)
   {
-  table_col *tc = ta->ta_cols.ta_cols_val + i;
-  entry_col *ec = eo->en_cols.en_cols_val + i;
+  const table_col * tc = ta->ta_cols.ta_cols_val + i;
+  const entry_col * ec = eo->en_cols.en_cols_val + i;
   int len = ec->ec_value.ec_value_len;
-  uschar *value = US ec->ec_value.ec_value_val;
+  const uschar * value = US ec->ec_value.ec_value_val;
 
   /* The value may be NULL for a zero-length field. Turn this into an
   empty string for consistency. Remove trailing whitespace and zero

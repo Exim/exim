@@ -37,7 +37,7 @@ static unsigned char mime_b64[256]={
 
 /* decode base64 MIME part */
 ssize_t
-mime_decode_base64(FILE * in, FILE * out, uschar * boundary)
+mime_decode_base64(FILE * in, FILE * out, const uschar * boundary)
 {
 uschar ibuf[MIME_MAX_LINE_LENGTH], obuf[MIME_MAX_LINE_LENGTH];
 uschar *opos;
@@ -48,7 +48,7 @@ opos = obuf;
 
 while (Ufgets(ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
   {
-  if (boundary != NULL
+  if (boundary
      && Ustrncmp(ibuf, "--", 2) == 0
      && Ustrncmp((ibuf+2), boundary, Ustrlen(boundary)) == 0
      )

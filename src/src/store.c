@@ -248,7 +248,7 @@ return US p >= bc && US p < bc + b->length;
 static pooldesc *
 pool_current_for_pointer(const void * p)
 {
-storeblock * b;
+const storeblock * b;
 
 for (quoted_pooldesc * qp = quoted_pools; qp; qp = qp->next)
   if ((b = qp->pool.current_block) && is_pointer_in_block(b, p))
@@ -663,7 +663,7 @@ is_quoted_like(const void * p, const void * v_q_li)
 {
 const uschar * p_name;
 const lookup_info * p_li, * q_li = v_q_li;
-void * p_qfn, * q_qfn;
+const void * p_qfn, * q_qfn;
 
 (void) quoter_for_address(p, &p_name);
 

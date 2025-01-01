@@ -294,7 +294,7 @@ r = store_mark();
 if (list)
   {
   int sep = 0;
-  for (uschar * s; s = string_nextinlist(&filename, &sep, NULL, 0); )
+  for (const uschar * s; s = string_nextinlist(&filename, &sep, NULL, 0); )
     if (!(rc = tls_set_one_watch(s))) break;
   }
 else
@@ -466,8 +466,8 @@ tzset();
 *        Many functions are package-specific     *
 *************************************************/
 /* Forward decl. */
-static void tls_client_resmption_key(tls_support *, smtp_connect_args *,
-  smtp_transport_options_block *);
+static void tls_client_resmption_key(tls_support *, const smtp_connect_args *,
+  const smtp_transport_options_block *);
 
 
 #ifdef USE_GNUTLS
@@ -624,8 +624,7 @@ tls_field_from_dn(uschar * dn, const uschar * mod)
 {
 int insep = ',';
 uschar outsep = '\n';
-uschar * ele;
-uschar * match = NULL;
+const uschar * match = NULL, * ele;
 int len;
 gstring * list = NULL;
 
@@ -655,7 +654,7 @@ Return TRUE for a match
 static BOOL
 is_name_match(const uschar * name, const uschar * pat)
 {
-uschar * cp;
+const uschar * cp;
 return *pat == '*'		/* possible wildcard match */
   ?    *++pat == '.'		/* starts star, dot              */
     && !Ustrchr(++pat, '*')	/* has no more stars             */
@@ -779,7 +778,7 @@ Returns:  bool for "okay"; false will cause caller to immediately exit.
 BOOL
 tls_dropprivs_validate_require_cipher(BOOL nowarn)
 {
-const uschar *errmsg;
+const uschar * errmsg;
 pid_t pid;
 int rc, status;
 void (*oldsignal)(int);
@@ -833,8 +832,8 @@ return status == 0;
 
 
 static void
-tls_client_resmption_key(tls_support * tlsp, smtp_connect_args * conn_args,
-  smtp_transport_options_block * ob)
+tls_client_resmption_key(tls_support * tlsp,
+  const smtp_connect_args * conn_args, const smtp_transport_options_block * ob)
 {
 #ifndef DISABLE_TLS_RESUME
 hctx * h = &tlsp->resume_hctx;

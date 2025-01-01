@@ -136,7 +136,7 @@ cdb_bread(int fd,
  * Internal function to parse 4 byte number (endian independent) */
 
 static uint32
-cdb_unpack(uschar *buf)
+cdb_unpack(const uschar * buf)
 {
 uint32 num;
 num =  buf[3]; num <<= 8;
@@ -243,7 +243,7 @@ static BOOL
 cdb_check(void * handle, const uschar * filename, int modemask,
   uid_t * owners, gid_t * owngroups, uschar ** errmsg)
 {
-struct cdb_state * cdbp = handle;
+const struct cdb_state * cdbp = handle;
 return lf_check_file(cdbp->fileno, filename, S_IFREG, modemask,
 		     owners, owngroups, "cdb", errmsg) == 0;
 }
@@ -306,8 +306,8 @@ end_offset = hash_offset + (hash_offlen * CDB_HASH_ENTRY);
 /* make sure the mmap was OK */
 if (cdbp->cdb_map != NULL)
   {
-  uschar * cur_pos = cur_offset + cdbp->cdb_map;
-  uschar * end_pos = end_offset + cdbp->cdb_map;
+  const uschar * cur_pos = cur_offset + cdbp->cdb_map;
+  const uschar * end_pos = end_offset + cdbp->cdb_map;
 
   for (int loop = 0; (loop < hash_offlen); ++loop)
     {

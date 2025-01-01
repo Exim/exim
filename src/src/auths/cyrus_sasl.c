@@ -110,12 +110,12 @@ auth_cyrus_sasl_init(driver_instance * a)
 {
 auth_instance * ablock = (auth_instance *)a;
 auth_cyrus_sasl_options_block * ob = a->options_block;
-const uschar *list, *listptr, *buffer;
-int rc, sep;
+const uschar * list, * listptr, * buffer;
+int sep;
 unsigned int len;
 rmark rs_point;
-uschar *expanded_hostname;
-char *realm_expanded;
+uschar * expanded_hostname;
+char * realm_expanded;
 
 sasl_conn_t *conn;
 sasl_callback_t cbs[] = {
@@ -144,16 +144,16 @@ authenticator of type whatever mechanism we're using */
 cbs[0].proc = (int(*)(void)) &mysasl_config;
 cbs[0].context = ob->server_mech;
 
-if ((rc = sasl_server_init(cbs, "exim")) != SASL_OK)
+if (sasl_server_init(cbs, "exim") != SASL_OK)
   log_write_die(0, LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't initialise Cyrus SASL library.", a->name);
 
-if ((rc = sasl_server_new(CS ob->server_service, CS expanded_hostname,
-                   realm_expanded, NULL, NULL, NULL, 0, &conn)) != SASL_OK)
+if (sasl_server_new(CS ob->server_service, CS expanded_hostname,
+                   realm_expanded, NULL, NULL, NULL, 0, &conn) != SASL_OK)
   log_write_die(0, LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't initialise Cyrus SASL server connection.", a->name);
 
-if ((rc = sasl_listmech(conn, NULL, "", ":", "", CCSS &list, &len, NULL)) != SASL_OK)
+if (sasl_listmech(conn, NULL, "", ":", "", CCSS &list, &len, NULL) != SASL_OK)
   log_write_die(0, LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't get Cyrus SASL mechanism list.", a->name);
 
@@ -291,7 +291,6 @@ for (int i = 0; i < 2; ++i)
   int propnum;
   const uschar * label;
   uschar * address_port;
-  const char *s_err;
 
   if (i)
     {
@@ -311,7 +310,7 @@ for (int i = 0; i < 2; ++i)
     {
     HDEBUG(D_auth)
       {
-      s_err = sasl_errdetail(conn);
+      const char * s_err = sasl_errdetail(conn);
       debug_printf("Failed to set %s SASL property: [%d] %s\n",
           label, rc, s_err ? s_err : "<unknown reason>");
       }
@@ -498,11 +497,11 @@ return g;
 
 int
 auth_cyrus_sasl_client(
-  auth_instance *ablock,                 /* authenticator block */
-  void * sx,			 	 /* connexction */
-  int timeout,                           /* command timeout */
-  uschar *buffer,                        /* for reading response */
-  int buffsize)                          /* size of buffer */
+  auth_instance * ablock,		/* authenticator block */
+  void * sx,				/* connexction */
+  int timeout,				/* command timeout */
+  uschar * buffer,			/* for reading response */
+  int buffsize)				/* size of buffer */
 {
 /* We don't support clients (yet) in this implementation of cyrus_sasl */
 return FAIL;

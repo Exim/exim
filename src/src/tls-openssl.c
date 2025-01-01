@@ -454,8 +454,8 @@ exim_openssl_state_st *client_static_state = NULL;	/*XXX should not use static; 
 exim_openssl_state_st state_server = {.is_server = TRUE};
 
 static int
-setup_certs(SSL_CTX * sctx, uschar ** certs, uschar * crl, host_item * host,
-    uschar ** errstr);
+setup_certs(SSL_CTX * sctx, uschar ** certs, const uschar * crl,
+    const host_item * host, uschar ** errstr);
 
 /* Callbacks */
 #ifndef DISABLE_OCSP
@@ -718,7 +718,7 @@ OpenSSL >= 1.1.0: we do not set anything, the libray does autoselection
 */
 
 static uschar *
-init_ecdh_auto(SSL_CTX * sctx)
+init_ecdh_auto(const SSL_CTX * sctx)
 {
 #if OPENSSL_VERSION_NUMBER < 0x10002000L
 DEBUG(D_tls) debug_printf(
@@ -1061,9 +1061,9 @@ fclose(fp);
 #ifndef DISABLE_EVENT
 static int
 verify_event(tls_support * tlsp, X509 * cert, int depth, const uschar * dn,
-  BOOL *calledp, const BOOL *optionalp, const uschar * what)
+  BOOL * calledp, const BOOL * optionalp, const uschar * what)
 {
-uschar * ev;
+const uschar * ev;
 uschar * yield;
 X509 * old_cert;
 
@@ -1133,7 +1133,7 @@ Returns:     0 if verification should fail, otherwise 1
 
 static int
 verify_callback(int preverify_ok, X509_STORE_CTX * x509ctx,
-  tls_support * tlsp, BOOL * calledp, BOOL * optionalp)
+  tls_support * tlsp, BOOL * calledp, const BOOL * optionalp)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
@@ -1544,8 +1544,8 @@ state->u_ocsp.server.olist = NULL;
 
 
 static int
-tls_add_certfile(SSL_CTX * sctx, exim_openssl_state_st * cbinfo, uschar * file,
-  uschar ** errstr)
+tls_add_certfile(SSL_CTX * sctx, const exim_openssl_state_st * cbinfo,
+  const uschar * file, uschar ** errstr)
 {
 DEBUG(D_tls) debug_printf("tls_certificate file '%s'\n", file);
 if (!SSL_CTX_use_certificate_chain_file(sctx, CS file))
@@ -1556,8 +1556,8 @@ return 0;
 }
 
 static int
-tls_add_pkeyfile(SSL_CTX * sctx, exim_openssl_state_st * cbinfo, uschar * file,
-  uschar ** errstr)
+tls_add_pkeyfile(SSL_CTX * sctx, const exim_openssl_state_st * cbinfo,
+  const uschar * file, uschar ** errstr)
 {
 DEBUG(D_tls) debug_printf("tls_privatekey file  '%s'\n", file);
 if (!SSL_CTX_use_PrivateKey_file(sctx, CS file, SSL_FILETYPE_PEM))
@@ -1617,9 +1617,8 @@ else
   if (expanded)
     if (state->is_server)
       {
-      const uschar * file_list = expanded;
+      const uschar * file_list = expanded, * file;
       int sep = 0;
-      uschar * file;
 #ifndef DISABLE_OCSP
       const uschar * olist = state->u_ocsp.server.file;
       int osep = 0;
@@ -1696,9 +1695,8 @@ else
   if (expanded && *expanded)
     if (state->is_server)
       {
-      const uschar * file_list = expanded;
+      const uschar * file_list = expanded, * file;
       int sep = 0;
-      uschar * file;
 
       while (file = string_nextinlist(&file_list, &sep, NULL, 0))
 	if ((err = tls_add_pkeyfile(sctx, state, file, errstr)))
@@ -2731,14 +2729,13 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
 	  }
 	DEBUG(D_tls)
 	  {
+	  uschar * s = NULL;
+	  int flen;
 	  BIO_printf(bp, "OCSP response verify failure\n");
 	  ERR_print_errors(bp);
-  {
-  uschar * s = NULL;
-  int len = (int) BIO_get_mem_data(bp, CSS &s);
-  if (len > 0) debug_printf("%.*s", len, s);
-  BIO_reset(bp);
-  }
+	  if ((flen = (int) BIO_get_mem_data(bp, CSS &s)) > 0)
+	    debug_printf("%.*s", flen, s);
+	  BIO_reset(bp);
 	  OCSP_RESPONSE_print(bp, rsp, 0);
 	  }
 	goto failed;
@@ -2828,12 +2825,13 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
     tls_out.ocsp = OCSP_FAILED;
     i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
   good:
-    {
-    uschar * s = NULL;
-    int len = (int) BIO_get_mem_data(bp, CSS &s);
-    if (len > 0) debug_printf("%.*s", len, s);
-    }
-    BIO_free(bp);
+    DEBUG(D_tls)
+      {
+      uschar * s = NULL;
+      int dlen = (int) BIO_get_mem_data(bp, CSS &s);
+      if (dlen > 0) debug_printf("%.*s", dlen, s);
+      BIO_free(bp);
+      }
   }
 
 OCSP_RESPONSE_free(rsp);
@@ -3153,9 +3151,10 @@ return cipher_stdname(id >> 8, id & 0xff);
 
 
 static const uschar *
-tlsver_name(SSL * ssl)
+tlsver_name(const SSL * ssl)
 {
-uschar * s, * p;
+const uschar * s;
+uschar * p;
 int pool = store_pool;
 
 store_pool = POOL_PERM;
@@ -3259,8 +3258,8 @@ Returns:        OK/DEFER/FAIL
 */
 
 static int
-setup_certs(SSL_CTX * sctx, uschar ** certsp, uschar * crl, host_item * host,
-    uschar ** errstr)
+setup_certs(SSL_CTX * sctx, uschar ** certsp, const uschar * crl,
+  const host_item * host, uschar ** errstr)
 {
 uschar * expcerts, * expcrl;
 
@@ -3418,7 +3417,7 @@ return OK;
 
 
 static void
-tls_dump_keylog(SSL * ssl)
+tls_dump_keylog(const SSL * ssl)
 {
 #ifdef EXIM_HAVE_OPENSSL_KEYLOG
   BIO * bp = BIO_new(BIO_s_mem());
@@ -3820,8 +3819,8 @@ return OK;
 
 static int
 tls_client_basic_ctx_init(SSL_CTX * ctx,
-    host_item * host, smtp_transport_options_block * ob, exim_openssl_state_st * state,
-    uschar ** errstr)
+    const host_item * host, const smtp_transport_options_block * ob,
+    exim_openssl_state_st * state, uschar ** errstr)
 {
 int rc;
 
@@ -3878,7 +3877,8 @@ return OK;
 
 #ifdef SUPPORT_DANE
 static int
-dane_tlsa_load(SSL * ssl, host_item * host, dns_answer * dnsa, uschar ** errstr)
+dane_tlsa_load(SSL * ssl, const host_item * host, const dns_answer * dnsa,
+  uschar ** errstr)
 {
 dns_scan dnss;
 const char * hostnames[2] = { CS host->name, NULL };
@@ -4048,8 +4048,9 @@ return 1;
 
 static void
 tls_client_ctx_resume_prehandshake(
-  exim_openssl_client_tls_ctx * exim_client_ctx, smtp_connect_args * conn_args,
-  tls_support * tlsp, smtp_transport_options_block * ob)
+  exim_openssl_client_tls_ctx * exim_client_ctx,
+  const smtp_connect_args * conn_args,
+  tls_support * tlsp, const smtp_transport_options_block * ob)
 {
 tlsp->host_resumable = TRUE;
 tls_client_resmption_key(tlsp, conn_args, ob);
@@ -4062,7 +4063,7 @@ SSL_CTX_sess_set_new_cb(exim_client_ctx->ctx, tls_save_session_cb);
 
 static BOOL
 tls_client_ssl_resume_prehandshake(SSL * ssl, tls_support * tlsp,
-  host_item * host, uschar ** errstr)
+  const host_item * host, uschar ** errstr)
 {
 if (tlsp->host_resumable)
   {
@@ -4160,7 +4161,7 @@ Returns:	TRUE for success with TLS session context set in connection context,
 */
 
 BOOL
-tls_client_start(client_conn_ctx * cctx, smtp_connect_args * conn_args,
+tls_client_start(client_conn_ctx * cctx, const smtp_connect_args * conn_args,
   void * cookie, tls_support * tlsp, uschar ** errstr)
 {
 host_item * host = conn_args->host;		/* for msgs and option-tests */
@@ -4811,16 +4812,16 @@ void
 tls_shutdown_wr(void * ct_ctx)
 {
 exim_openssl_client_tls_ctx * o_ctx = ct_ctx;
-SSL ** sslp = o_ctx ? &o_ctx->ssl : (SSL **) &state_server.lib_state.lib_ssl;
-int * fdp = o_ctx ? &tls_out.active.sock : &tls_in.active.sock;
+SSL * ssl = o_ctx ? o_ctx->ssl : (SSL *) state_server.lib_state.lib_ssl;
 int rc;
 
-if (*fdp < 0) return;  /* TLS was not active */
+if ((o_ctx ? tls_out.active.sock : tls_in.active.sock) < 0)
+  return;  /* TLS was not active */
 
 tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
 
 HDEBUG(D_transport|D_tls|D_acl|D_v) debug_printf_indent("  SMTP(TLS shutdown)>>\n");
-rc = SSL_shutdown(*sslp);
+rc = SSL_shutdown(ssl);
 if (rc < 0) DEBUG(D_tls)
   {
   ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
@@ -5104,7 +5105,7 @@ Returns   success or failure in parsing
 
 
 static BOOL
-tls_openssl_one_option_parse(uschar *name, long *value)
+tls_openssl_one_option_parse(const uschar * name, long * value)
 {
 int first = 0;
 int last = exim_openssl_options_size;
@@ -5143,7 +5144,7 @@ Returns        success or failure
 */
 
 BOOL
-tls_openssl_options_parse(uschar *option_spec, long *results)
+tls_openssl_options_parse(const uschar * option_spec, long * results)
 {
 long result, item;
 uschar * exp, * end;

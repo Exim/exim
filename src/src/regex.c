@@ -87,10 +87,10 @@ for (pcre_list * ri = re_list_head; ri; ri = ri->next)
 
     for (int nn = 1; nn < n; nn++)
       {
-      PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
-      int off = nn * 2;
-      int len = ovec[off + 1] - ovec[off];
-      regex_vars[nn-1] = string_copyn(linebuffer + ovec[off], len);
+      const PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
+      int moff = nn * 2;
+      int mlen = ovec[moff + 1] - ovec[moff];
+      regex_vars[nn-1] = string_copyn(linebuffer + ovec[moff], mlen);
       }
 
     store_pool = save_pool;
@@ -193,8 +193,7 @@ mime_regex(const uschar **listptr, BOOL cacheable)
 pcre_list * re_list_head = NULL;
 FILE * f;
 uschar * mime_subject = NULL;
-int mime_subject_len = 0;
-int ret = FAIL;
+int ret = FAIL, mime_subject_len;
 rmark reset_point;
 
 regex_vars_clear();

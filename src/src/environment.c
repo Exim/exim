@@ -52,11 +52,11 @@ else if (Ustrcmp(keep_environment, "*") != 0)
     /* It's considered broken if we do not find the '=', according to
     Florian Weimer. For now we ignore such strings. unsetenv() would complain,
     getenv() would complain. */
-    uschar * eqp = Ustrchr(*p, '=');
+    const uschar * eqp = Ustrchr(*p, '=');
 
     if (eqp)
       {
-      uschar * name = string_copyn(*p, eqp - *p);
+      const uschar * name = string_copyn(*p, eqp - *p);
 
       if (match_isinlist(name, CUSS &keep_environment,
           0, NULL, NULL, MCL_NOEXPAND, FALSE, NULL) == OK)

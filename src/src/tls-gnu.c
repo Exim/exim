@@ -545,16 +545,20 @@ Returns:   nothing
 */
 
 static void
-record_io_error(exim_gnutls_state_st *state, int rc, uschar *when, uschar *text)
+record_io_error(exim_gnutls_state_st * state, int rc, const uschar * when,
+  const uschar * text)
 {
 const uschar * msg;
 uschar * errstr;
 
-if (rc == GNUTLS_E_INVALID_SESSION && errno == 0)
-  {
-  DEBUG(D_tls) debug_printf("- INVALID_SESSION with zero errno\n");
-  return;
-  }
+if (errno == 0)
+  if (rc == GNUTLS_E_INVALID_SESSION)
+    {
+    DEBUG(D_tls) debug_printf("- INVALID_SESSION with zero errno\n");
+    return;
+    }
+  else if (text)
+    DEBUG(D_tls) debug_printf("- zero errno; %s\n", text);
 
 msg = rc == GNUTLS_E_FATAL_ALERT_RECEIVED
   ? string_sprintf("A TLS fatal alert has been received: %s",
@@ -743,11 +747,11 @@ int fd, rc;
 unsigned int dh_bits;
 gnutls_datum_t m;
 uschar filename_buf[PATH_MAX];
-uschar *filename = NULL;
+const uschar * filename = NULL;
 size_t sz;
-uschar *exp_tls_dhparam;
+uschar * exp_tls_dhparam;
 BOOL use_file_in_spool = FALSE;
-host_item *host = NULL; /* dummy for macros */
+const host_item * host = NULL; /* dummy for macros */
 
 DEBUG(D_tls) debug_printf("Initialising GnuTLS server params\n");
 
@@ -857,7 +861,7 @@ if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
     fclose(fp);
     return tls_error_sys(US"malloc failed", errno, NULL, errstr);
     }
-  if (!(sz = fread(m.data, m.size, 1, fp)))
+  if (!fread(m.data, m.size, 1, fp))
     {
     saved_errno = errno;
     fclose(fp);
@@ -952,18 +956,18 @@ if (rc < 0)
     }
   m.size = sz; /* shrink by 1, probably */
 
-  if ((sz = write_to_fd_buf(fd, m.data, (size_t) m.size)) != m.size)
+  if (write_to_fd_buf(fd, m.data, (size_t) m.size) != m.size)
     {
     store_free(m.data);
     return tls_error_sys(US"TLS cache write D-H params failed",
         errno, NULL, errstr);
     }
   store_free(m.data);
-  if ((sz = write_to_fd_buf(fd, US"\n", 1)) != 1)
+  if (write_to_fd_buf(fd, US"\n", 1) != 1)
     return tls_error_sys(US"TLS cache write D-H params final newline failed",
         errno, NULL, errstr);
 
-  if ((rc = close(fd)))
+  if (close(fd))
     return tls_error_sys(US"TLS cache write close() failed", errno, NULL, errstr);
 
   if (Urename(temp_fn, filename) < 0)
@@ -1292,12 +1296,11 @@ static int
 creds_load_server_certs(exim_gnutls_state_st * state, const uschar * cert,
   const uschar * pkey, const uschar * ocsp, uschar ** errstr)
 {
-const uschar * clist = cert;
-const uschar * klist = pkey;
-const uschar * olist;
-int csep = 0, ksep = 0, osep = 0, cnt = 0, rc;
-uschar * cfile, * kfile, * ofile;
+const uschar * clist = cert, * klist = pkey, * kfile, * cfile;
+int csep = 0, ksep = 0, cnt = 0, rc;
 #ifndef DISABLE_OCSP
+uschar * ofile;
+const uschar * olist;
 # ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
 gnutls_x509_crt_fmt_t ocsp_fmt = GNUTLS_X509_FMT_DER;
 # endif
@@ -1322,6 +1325,7 @@ while (cfile = string_nextinlist(&clist, &csep, NULL, 0))
 #ifndef DISABLE_OCSP
     if (ocsp)
       {
+      int osep = 0;
       /* Set the OCSP stapling server info */
       if (gnutls_buggy_ocsp)
 	{
@@ -1630,8 +1634,8 @@ return lifetime;
 /* Preload whatever creds are static, onto a transport.  The client can then
 just copy the pointer as it starts up. */
 
-/*XXX this is not called for a cmdline send. But one needing to use >1 conn would benefit,
-and there seems little downside. */
+/*XXX this is not called for a cmdline send. But one needing to use >1 conn
+would benefit, and there seems little downside. */
 
 static void
 tls_client_creds_init(transport_instance * t, BOOL watch)
@@ -1639,7 +1643,7 @@ tls_client_creds_init(transport_instance * t, BOOL watch)
 smtp_transport_options_block * ob = t->drinst.options_block;
 const uschar * trname = t->drinst.name;
 exim_gnutls_state_st tpt_dummy_state;
-host_item * dummy_host = (host_item *)1;
+const host_item * dummy_host = (host_item *)1;
 uschar * dummy_errstr;
 
 if (  !exim_gnutls_base_init_done
@@ -1780,12 +1784,11 @@ static int
 tls_expand_session_files(exim_gnutls_state_st * state, uschar ** errstr)
 {
 int rc;
-const host_item *host = state->host;  /* macro should be reconsidered? */
-const uschar *saved_tls_certificate = NULL;
-const uschar *saved_tls_privatekey = NULL;
-const uschar *saved_tls_verify_certificates = NULL;
-const uschar *saved_tls_crl = NULL;
-int cert_count;
+const host_item * host = state->host;  /* macro should be reconsidered? */
+const uschar * saved_tls_certificate = NULL;
+const uschar * saved_tls_privatekey = NULL;
+const uschar * saved_tls_verify_certificates = NULL;
+const uschar * saved_tls_crl = NULL;
 
 /* We check for tls_sni *before* expansion. */
 if (!host)	/* server */
@@ -2014,7 +2017,6 @@ static int
 tls_set_remaining_x509(exim_gnutls_state_st * state, uschar ** errstr)
 {
 int rc = OK;
-const host_item * host = state->host;  /* macro should be reconsidered? */
 
 /* Create D-H parameters, or read them from the cache file. This function does
 its own SMTP error messaging. This only happens for the server, TLS D-H ignores
@@ -2061,10 +2063,10 @@ Returns:          OK/DEFER/FAIL
 
 static int
 tls_init(
-    const host_item *host,
-    smtp_transport_options_block * ob,
+    const host_item * host,
+    const smtp_transport_options_block * ob,
     const uschar * require_ciphers,
-    exim_gnutls_state_st **caller_state,
+    exim_gnutls_state_st ** caller_state,
     tls_support * tlsp,
     uschar ** errstr)
 {
@@ -2808,7 +2810,7 @@ return 0;
 
 
 static gstring *
-ddump(gnutls_datum_t * d)
+ddump(const gnutls_datum_t * d)
 {
 gstring * g = string_get((d->size+1) * 2);
 uschar * s = d->data;
@@ -2821,7 +2823,7 @@ return g;
 }
 
 static void
-post_handshake_debug(exim_gnutls_state_st * state)
+post_handshake_debug(const exim_gnutls_state_st * state)
 {
 #ifdef SUPPORT_GNUTLS_SESS_DESC
 debug_printf("%s\n", gnutls_session_get_desc(state->session));
@@ -2841,7 +2843,7 @@ if (TRUE)
   gnutls_session_get_master_secret(state->session, &s);
   gc = ddump(&c);
   gs = ddump(&s);
-  debug_printf("CLIENT_RANDOM %.*s %.*s\n", (int)gc->ptr, gc->s, (int)gs->ptr, gs->s);
+  debug_printf("CLIENT_RANDOM %Y %Y\n", gc, gs);
   }
 else
   debug_printf("To get keying info for TLS1.3 is hard:\n"
@@ -3228,7 +3230,7 @@ return OK;
 
 static void
 tls_client_setup_hostname_checks(host_item * host, exim_gnutls_state_st * state,
-  smtp_transport_options_block * ob)
+  const smtp_transport_options_block * ob)
 {
 if (verify_check_given_host(CUSS &ob->tls_verify_cert_hostnames, host) == OK)
   {
@@ -3256,7 +3258,7 @@ We point at the dnsa data not copy it, so it must remain valid until
 after verification is done.*/
 
 static BOOL
-dane_tlsa_load(exim_gnutls_state_st * state, dns_answer * dnsa)
+dane_tlsa_load(exim_gnutls_state_st * state, const dns_answer * dnsa)
 {
 dns_scan dnss;
 int i;
@@ -3327,7 +3329,7 @@ however avoid storing and retrieving session information. */
 
 static void
 tls_retrieve_session(tls_support * tlsp, gnutls_session_t session,
-  smtp_connect_args * conn_args, smtp_transport_options_block * ob)
+  const smtp_connect_args * conn_args, const smtp_transport_options_block * ob)
 {
 tlsp->resumption = RESUME_SUPPORTED;
 
@@ -3435,7 +3437,7 @@ return 0;
 
 static void
 tls_client_resume_prehandshake(exim_gnutls_state_st * state,
-  tls_support * tlsp, smtp_connect_args * conn_args,
+  tls_support * tlsp, const smtp_connect_args * conn_args,
   smtp_transport_options_block * ob)
 {
 gnutls_session_set_ptr(state->session, state);
@@ -3478,7 +3480,7 @@ Returns:        TRUE for success with TLS session context set in smtp context,
 */
 
 BOOL
-tls_client_start(client_conn_ctx * cctx, smtp_connect_args * conn_args,
+tls_client_start(client_conn_ctx * cctx, const smtp_connect_args * conn_args,
   void * cookie ARG_UNUSED,
   tls_support * tlsp, uschar ** errstr)
 {
@@ -3773,7 +3775,7 @@ void
 tls_shutdown_wr(void * ct_ctx)
 {
 exim_gnutls_state_st * state = ct_ctx ? ct_ctx : &state_server;
-tls_support * tlsp = state->tlsp;
+const tls_support * tlsp = state->tlsp;
 
 if (!tlsp || tlsp->active.sock < 0) return;  /* TLS was not active */
 
@@ -3948,7 +3950,7 @@ return state->xfer_buffer[state->xfer_buffer_lwm++];
 BOOL
 tls_hasc(void)
 {
-exim_gnutls_state_st * state = &state_server;
+const exim_gnutls_state_st * state = &state_server;
 return state->xfer_buffer_lwm < state->xfer_buffer_hwm;
 }
 

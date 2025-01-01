@@ -78,16 +78,15 @@ static int
 perform_redis_search(const uschar *command, uschar *server, uschar **resultptr,
   uschar **errmsg, BOOL *defer_break, uint *do_cache, const uschar * opts)
 {
-redisContext *redis_handle = NULL;        /* Keep compilers happy */
-redisReply *redis_reply = NULL;
-redisReply *entry = NULL;
-redisReply *tentry = NULL;
+redisContext * redis_handle = NULL;        /* Keep compilers happy */
+redisReply * redis_reply = NULL;
+redisReply * entry = NULL;
+redisReply * tentry = NULL;
 redis_connection *cn;
 int yield = DEFER;
-int i, j;
 gstring * result = NULL;
-uschar *server_copy = NULL;
-uschar *sdata[3];
+uschar * server_copy = NULL;
+uschar * sdata[3];
 
 /* Disaggregate the parameters from the server argument.
 The order is host:port(socket)
@@ -95,20 +94,20 @@ We can write to the string, since it is in a nextinlist temporary buffer.
 This copy is also used for debugging output.  */
 
 memset(sdata, 0, sizeof(sdata)) /* Set all to NULL */;
-for (int i = 2; i > 0; i--)
+for (int j = 2; j > 0; j--)
   {
-  uschar *pp = Ustrrchr(server, '/');
+  uschar * pp = Ustrrchr(server, '/');
 
   if (!pp)
     {
     *errmsg = string_sprintf("incomplete Redis server data: %s",
-      i == 2 ? server : server_copy);
+      j == 2 ? server : server_copy);
     *defer_break = TRUE;
     return DEFER;
     }
-  *pp++ = 0;
-  sdata[i] = pp;
-  if (i == 2) server_copy = string_copy(server);  /* sans password */
+  *pp++ = '\0';
+  sdata[j] = pp;
+  if (j == 2) server_copy = string_copy(server);  /* sans password */
   }
 sdata[0] = server;   /* What's left at the start */
 
@@ -209,7 +208,7 @@ if(sdata[1])
   {
   uschar * argv[32];
   const uschar * s = command;
-  int siz, ptr, i;
+  int i;
   uschar c;
 
   Uskip_whitespace(&s);
@@ -282,9 +281,9 @@ switch (redis_reply->type)
     /* NOTE: For now support 1 nested array result. If needed a limitless
     result can be parsed */
 
-    for (int i = 0; i < redis_reply->elements; i++)
+    for (int k = 0; k < redis_reply->elements; k++)
       {
-      entry = redis_reply->element[i];
+      entry = redis_reply->element[k];
 
       if (result)
 	result = string_catn(result, US"\n", 1);
@@ -298,9 +297,9 @@ switch (redis_reply->type)
 	  result = string_catn(result, US entry->str, entry->len);
 	  break;
 	case REDIS_REPLY_ARRAY:
-	  for (int j = 0; j < entry->elements; j++)
+	  for (int n = 0; n < entry->elements; n++)
 	    {
-	    tentry = entry->element[j];
+	    tentry = entry->element[n];
 
 	    if (result)
 	      result = string_catn(result, US"\n", 1);

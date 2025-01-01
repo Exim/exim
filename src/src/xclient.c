@@ -66,7 +66,7 @@ Returns:      the number of bytes in the result, excluding the final zero;
 */
 
 static int
-xclient_xtextdecode(uschar * code, uschar * end, uschar ** ptr)
+xclient_xtextdecode(const uschar * code, const uschar * end, uschar ** ptr)
 {
 return xtextdecode(string_copyn(code, end-code), ptr);
 }
@@ -80,7 +80,7 @@ return xtextdecode(string_copyn(code, end-code), ptr);
 Arguments:
   s       	the data portion of the line (already past any white space)
   resp		result: smtp respose code
-  flag		input: helo seen  output: fail is fatal
+  flagp		input: helo seen  output: fail is fatal
 
 Return: NULL on success, or error message
 */
@@ -89,7 +89,7 @@ Return: NULL on success, or error message
 # define XCLIENT_TEMPUNAVAIL US"[TEMPUNAVAIL]"
 
 uschar *
-xclient_smtp_command(uschar * s, int * resp, BOOL * flag)
+xclient_smtp_command(uschar * s, int * resp, BOOL * flagp)
 {
 uschar * word = s;
 enum {
@@ -99,11 +99,11 @@ enum {
 } state = XCLIENT_SKIP_SPACES;
 enum xclient_cmd_e cmd;
 
-if (  !flag
+if (  !*flagp
    && verify_check_host(&hosts_require_helo) == OK)
   {
   *resp = 503;
-  *flag = FALSE;
+  *flagp= FALSE;
   return US"no HELO/EHLO given";
   }
 
@@ -114,14 +114,14 @@ session to avoid mixups. */
 if(!proxy_session && verify_check_host(&hosts_xclient) == FAIL)
   {
   *resp = 550;
-  *flag = TRUE;
+  *flagp= TRUE;
   return US"XCLIENT command used when not advertised";
   }
 
 if (sender_address)
   {
   *resp = 503;
-  *flag = FALSE;
+  *flagp= FALSE;
   return US"mail transaction in progress";
   }
 
@@ -272,7 +272,7 @@ proxy_session = TRUE;
 return NULL;
 
 fatal_501:
-  *flag = TRUE;
+  *flagp= TRUE;
   *resp = 501;
   return s;
 }

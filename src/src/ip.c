@@ -649,7 +649,7 @@ Arguments:
   timelimit   the timeout endpoint, seconds-since-epoch
 
 Returns:      > 0 => that much data read
-              <= 0 on error or EOF; errno set - zero for EOF
+              <= 0 on error or EOF; errno set - zero for EOF or zero buffer
 */
 
 int
@@ -657,6 +657,8 @@ ip_recv(client_conn_ctx * cctx, uschar * buffer, int buffsize, time_t timelimit)
 {
 int rc;
 
+if (buffsize == 0)
+  { errno = 0; return 0; }
 if (!fd_ready(cctx->sock, timelimit))
   return -1;
 

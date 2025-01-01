@@ -121,9 +121,9 @@ Returns:         nothing
 */
 
 static void
-add_generated(router_instance *rblock, address_item **addr_new,
-  address_item *addr, address_item *generated,
-  address_item_propagated *addr_prop)
+add_generated(router_instance * rblock, address_item ** addr_new,
+  address_item * addr, address_item * generated,
+  const address_item_propagated * addr_prop)
 {
 while (generated != NULL)
   {

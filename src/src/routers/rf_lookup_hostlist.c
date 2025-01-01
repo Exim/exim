@@ -50,9 +50,9 @@ Returns:               OK
 */
 
 int
-rf_lookup_hostlist(router_instance *rblock, address_item *addr,
-  uschar *ignore_target_hosts, int lookup_type, int hff_code,
-  address_item **addr_new)
+rf_lookup_hostlist(router_instance * rblock, address_item * addr,
+  const uschar * ignore_target_hosts, int lookup_type, int hff_code,
+  address_item ** addr_new)
 {
 BOOL self_send = FALSE;
 

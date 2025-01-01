@@ -136,7 +136,7 @@ BOOL yield;
 
 if ((yield = (res >= 0)))
   {
-  PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
+  const PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
   res = pcre2_get_ovector_count(md);
   expand_nmax = setup < 0 ? 0 : setup + 1;
   for (int matchnum = setup < 0 ? 0 : 1; matchnum < res; matchnum++)
@@ -146,9 +146,9 @@ if ((yield = (res >= 0)))
     matching zero letters.  So use the underlying ovec and hope (!) that the
     offsets are sane (including that case).  Should we go further and range-
     check each one vs. the subject string length? */
-    int off = matchnum * 2;
-    int len = ovec[off + 1] - ovec[off];
-    expand_nstring[expand_nmax] = string_copyn(subject + ovec[off], len);
+    int m_off = matchnum * 2;
+    int len = ovec[m_off + 1] - ovec[m_off];
+    expand_nstring[expand_nmax] = string_copyn(subject + ovec[m_off], len);
     expand_nlength[expand_nmax++] = len;
     }
   expand_nmax--;
@@ -182,7 +182,7 @@ pcre2_match_data * md = pcre2_match_data_create(1, pcre_gen_ctx);
 int rc = pcre2_match(re, (PCRE2_SPTR)subject,
 		      slen >= 0 ? slen : PCRE2_ZERO_TERMINATED,
 		      0, PCRE_EOPT, md, pcre_gen_mtc_ctx);
-PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
+const PCRE2_SIZE * ovec = pcre2_get_ovector_pointer(md);
 BOOL ret = FALSE;
 
 if (rc >= 0)
@@ -466,7 +466,7 @@ Returns:      -1, 0, or +1
 */
 
 static int
-exim_tvcmp(struct timeval *t1, struct timeval *t2)
+exim_tvcmp(const struct timeval * t1, const struct timeval * t2)
 {
 if (t1->tv_sec > t2->tv_sec) return +1;
 if (t1->tv_sec < t2->tv_sec) return -1;
@@ -979,11 +979,12 @@ Returns:       nothing
 */
 
 static void
-test_address(uschar *s, int flags, int *exit_value)
+test_address(const uschar * s, int flags, int * exit_value)
 {
 int start, end, domain;
-uschar *parse_error = NULL;
-uschar *address = parse_extract_address(s, &parse_error, &start, &end, &domain,
+uschar * parse_error = NULL;
+const uschar * address = parse_extract_address(s, &parse_error,
+					      &start, &end, &domain,
   FALSE);
 if (!address)
   {
@@ -1726,8 +1727,9 @@ static BOOL
 macros_trusted(BOOL opt_D_used)
 {
 #ifdef WHITELIST_D_MACROS
-uschar *whitelisted, *end, *p, **whites;
-int white_count, i, n;
+uschar * whitelisted, *p, ** whites;
+const uschar * end;
+int white_count, i;
 size_t len;
 BOOL prev_char_item, found;
 #endif
@@ -1830,7 +1832,7 @@ expansion_test_line(const uschar * line)
 {
 int len;
 BOOL dummy_macexp;
-uschar * s;
+const uschar * s;
 
 Ustrncpy(big_buffer, line, big_buffer_size);
 big_buffer[big_buffer_size-1] = '\0';
@@ -2748,34 +2750,34 @@ on the second character (the one after '-'), to save some effort. */
       #endif
       if (real_uid != root_uid)
         {
-        #ifdef TRUSTED_CONFIG_LIST
+#ifdef TRUSTED_CONFIG_LIST
 
         if (real_uid != exim_uid
-            #ifdef CONFIGURE_OWNER
+# ifdef CONFIGURE_OWNER
             && real_uid != config_uid
-            #endif
+# endif
             )
           f.trusted_config = FALSE;
         else
           {
-          FILE *trust_list = Ufopen(TRUSTED_CONFIG_LIST, "rb");
+          FILE * trust_list = Ufopen(TRUSTED_CONFIG_LIST, "rb");
           if (trust_list)
             {
-            struct stat statbuf;
+            struct stat st;
 
-            if (fstat(fileno(trust_list), &statbuf) != 0 ||
-                (statbuf.st_uid != root_uid        /* owner not root */
-                 #ifdef CONFIGURE_OWNER
-                 && statbuf.st_uid != config_uid   /* owner not the special one */
-                 #endif
+            if (fstat(fileno(trust_list), &st) != 0 ||
+                (st.st_uid != root_uid        /* owner not root */
+# ifdef CONFIGURE_OWNER
+                 && st.st_uid != config_uid   /* owner not the special one */
+# endif
                    ) ||                            /* or */
-                (statbuf.st_gid != root_gid        /* group not root */
-                 #ifdef CONFIGURE_GROUP
-                 && statbuf.st_gid != config_gid   /* group not the special one */
-                 #endif
+                (st.st_gid != root_gid        /* group not root */
+# ifdef CONFIGURE_GROUP
+                 && st.st_gid != config_gid   /* group not the special one */
+# endif
                  && (statbuf.st_mode & 020) != 0   /* group writeable */
                    ) ||                            /* or */
-                (statbuf.st_mode & 2) != 0)        /* world writeable */
+                (st.st_mode & 2) != 0)        /* world writeable */
               {
               f.trusted_config = FALSE;
               fclose(trust_list);
@@ -2784,9 +2786,8 @@ on the second character (the one after '-'), to save some effort. */
               {
               /* Well, the trust list at least is up to scratch... */
               rmark reset_point;
-              uschar *trusted_configs[32];
+              uschar * trusted_configs[32];
               int nr_configs = 0;
-              int i = 0;
 	      int old_pool = store_pool;
 	      store_pool = POOL_MAIN;
 
@@ -2807,19 +2808,16 @@ on the second character (the one after '-'), to save some effort. */
               if (nr_configs)
                 {
                 int sep = 0;
-                const uschar *list = argrest;
-                uschar *filename;
+                const uschar * list = argrest, * filename;
                 while (f.trusted_config && (filename = string_nextinlist(&list,
                         &sep, big_buffer, big_buffer_size)))
                   {
-                  for (i=0; i < nr_configs; i++)
+		  int i;
+                  for (i = 0; i < nr_configs; i++)
                     if (Ustrcmp(filename, trusted_configs[i]) == 0)
                       break;
                   if (i == nr_configs)
-                    {
-                    f.trusted_config = FALSE;
-                    break;
-                    }
+                    { f.trusted_config = FALSE; break; }
                   }
                 }
               else	/* No valid prefixes found in trust_list file. */
@@ -2831,10 +2829,10 @@ on the second character (the one after '-'), to save some effort. */
           else		/* Could not open trust_list file. */
             f.trusted_config = FALSE;
           }
-      #else
+#else
         /* Not root; don't trust config */
         f.trusted_config = FALSE;
-      #endif
+#endif	/*TRUSTED_CONFIG_LIST*/
         }
 
       config_main_filelist = argrest;
@@ -3720,7 +3718,7 @@ on the second character (the one after '-'), to save some effort. */
 
     if (*argrest)
       {
-      uschar * hn = Ustrchr(argrest, ':');
+      const uschar * hn = Ustrchr(argrest, ':');
 
       if (received_protocol)
         exim_fail("received_protocol is set already\n");
@@ -4479,7 +4477,7 @@ if (timezone_string && strcmpic(timezone_string, US"UTC") == 0)
   f.timestamps_utc = TRUE;
 else
   {
-  uschar *envtz = US getenv("TZ");
+  const uschar * envtz = US getenv("TZ");
   if (envtz
       ? !timezone_string || Ustrcmp(timezone_string, envtz) != 0
       : timezone_string != NULL
@@ -4588,8 +4586,8 @@ if (  (debug_selector & D_any  ||  LOGGING(arguments))
   for (int i = 0; i < argc; i++)
     {
     int len = Ustrlen(argv[i]);
-    const uschar *printing;
-    uschar *quote;
+    const uschar * printing, * quote;
+
     if (p + len + 8 >= big_buffer + big_buffer_size)
       {
       Ustrcpy(p, US" ...");
@@ -4640,19 +4638,21 @@ if (bi_option)
   if (bi_command && *bi_command)
     {
     int i = 0;
-    const uschar * argv[3];
-    argv[i++] = bi_command;	/* nonexpanded option so assume untainted */
-    if (alias_arg) argv[i++] = alias_arg;
-    argv[i++] = NULL;
+    const uschar * bi_argv[3];
+    bi_argv[i++] = bi_command;	/* nonexpanded option so assume untainted */
+    if (alias_arg) bi_argv[i++] = alias_arg;
+    bi_argv[i++] = NULL;
 
     setgroups(group_count, group_list);
     exim_setugid(real_uid, real_gid, FALSE, US"running bi_command");
 
-    DEBUG(D_exec) debug_printf("exec '%.256s' %s%.256s%s\n", argv[0],
-      argv[1] ? "'" : "", argv[1] ? argv[1] : US"", argv[1] ? "'" : "");
+    DEBUG(D_exec) debug_printf("exec '%.256s' %s%.256s%s\n", bi_argv[0],
+      bi_argv[1] ? "'" : "",
+      bi_argv[1] ? bi_argv[1] : US"",
+      bi_argv[1] ? "'" : "");
 
-    execv(CS argv[0], (char *const *)argv);
-    exim_fail("exim: exec '%s' failed: %s\n", argv[0], strerror(errno));
+    execv(CS bi_argv[0], (char *const *)bi_argv);
+    exim_fail("exim: exec '%s' failed: %s\n", bi_argv[0], strerror(errno));
     }
   else
     {
@@ -4845,10 +4845,8 @@ else
     if (!(unprivileged || removed_privilege))
       exim_fail("exim: changing group failed: %s\n", strerror(errno));
     else
-      {
       DEBUG(D_any) debug_printf("changing group to %ld failed: %s\n",
           (long int)exim_gid, strerror(errno));
-      }
   }
 
 /* Handle a request to scan a file for malware */
@@ -5012,10 +5010,10 @@ if (test_retry_arg >= 0)
 
   if (test_retry_arg < argc)
     {
-    const uschar *ss = exim_str_fail_toolong(argv[test_retry_arg], EXIM_DRIVERNAME_MAX, "-brt 3rd");
-    uschar *error =
+    const uschar * ss = exim_str_fail_toolong(argv[test_retry_arg], EXIM_DRIVERNAME_MAX, "-brt 3rd");
+    const uschar * error =
       readconf_retry_error(ss, ss + Ustrlen(ss), &basic_errno, &more_errno);
-    if (error != NULL)
+    if (error)
       {
       printf("%s\n", CS error);
       return EXIT_FAILURE;
@@ -5474,7 +5472,7 @@ if (verify_address_mode || f.address_test_mode)
 
   else for (;;)
     {
-    uschar * s = get_stdinput(NULL, NULL);
+    const uschar * s = get_stdinput(NULL, NULL);
     if (!s) break;
     test_address(string_copy_taint(
 	exim_str_fail_toolong(s, EXIM_DISPLAYMAIL_MAX, "address verification (stdin)"),
@@ -5516,7 +5514,7 @@ if (expansion_test)
 
   else if (expansion_test_message)
     {
-    uschar * rme = expand_string(recipients_max);
+    const uschar * rme = expand_string(recipients_max);
     int save_stdin = dup(0);
     int fd = Uopen(expansion_test_message, O_RDONLY, 0);
     if (fd < 0)
@@ -5557,7 +5555,7 @@ if (expansion_test)
     {
     char *(*fn_readline)(const char *) = NULL;
     void (*fn_addhist)(const char *) = NULL;
-    uschar * s;
+    const uschar * s;
 
 #ifdef USE_READLINE
     void *dlhandle = set_readline(&fn_readline, &fn_addhist);
@@ -5998,7 +5996,7 @@ for (BOOL more = TRUE; more; )
 
   else
     {
-    uschar * rme = expand_string(recipients_max);
+    const uschar * rme = expand_string(recipients_max);
     int rcount = 0, count = argc - recipients_arg;
     const uschar ** list = argv + recipients_arg;
 
@@ -6021,7 +6019,7 @@ for (BOOL more = TRUE; more; )
       uschar * errmess;
       /* There can be multiple addresses, so EXIM_DISPLAYMAIL_MAX (tuned for 1) is too short.
       We'll still want to cap it to something, just in case. */
-      uschar * s = string_copy_taint(
+      const uschar * s = string_copy_taint(
 	exim_str_fail_toolong(list[i], BIG_BUFFER_SIZE, "address argument"),
 	GET_TAINTED);
 
@@ -6030,7 +6028,7 @@ for (BOOL more = TRUE; more; )
       while (*s)
         {
         BOOL finished = FALSE;
-        uschar * recipient;
+        const uschar * recipient;
         uschar * ss = parse_find_address_end(s, FALSE);
 
         if (*ss == ',') *ss = 0; else finished = TRUE;

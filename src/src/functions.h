@@ -25,18 +25,18 @@ extern const char *
 extern const char *
                std_dh_prime_named(const uschar *);
 
-extern uschar * tls_cert_crl_uri(void *, uschar * mod);
+extern uschar * tls_cert_crl_uri(void *, const uschar *);
 extern uschar * tls_cert_ext_by_oid(void *, uschar *, int);
-extern uschar * tls_cert_issuer(void *, uschar * mod);
-extern uschar * tls_cert_not_before(void *, uschar * mod);
-extern uschar * tls_cert_not_after(void *, uschar * mod);
-extern uschar * tls_cert_ocsp_uri(void *, uschar * mod);
-extern uschar * tls_cert_serial_number(void *, uschar * mod);
-extern uschar * tls_cert_signature(void *, uschar * mod);
-extern uschar * tls_cert_signature_algorithm(void *, uschar * mod);
-extern uschar * tls_cert_subject(void *, uschar * mod);
-extern uschar * tls_cert_subject_altname(void *, uschar * mod);
-extern uschar * tls_cert_version(void *, uschar * mod);
+extern uschar * tls_cert_issuer(void *, const uschar *);
+extern uschar * tls_cert_not_before(void *, const uschar *);
+extern uschar * tls_cert_not_after(void *, const uschar *);
+extern uschar * tls_cert_ocsp_uri(void *, const uschar *);
+extern uschar * tls_cert_serial_number(void *, const uschar *);
+extern uschar * tls_cert_signature(void *, const uschar *);
+extern uschar * tls_cert_signature_algorithm(void *, const uschar *);
+extern uschar * tls_cert_subject(void *, const uschar *);
+extern uschar * tls_cert_subject_altname(void *, const uschar *);
+extern uschar * tls_cert_version(void *, const uschar *);
 
 extern uschar * tls_cert_der_b64(void * cert);
 extern uschar * tls_cert_fprt_md5(void *);
@@ -44,7 +44,7 @@ extern uschar * tls_cert_fprt_sha1(void *);
 extern uschar * tls_cert_fprt_sha256(void *);
 
 extern void    tls_clean_env(void);
-extern BOOL    tls_client_start(client_conn_ctx *, smtp_connect_args *,
+extern BOOL    tls_client_start(client_conn_ctx *, const smtp_connect_args *,
 		  void *, tls_support *, uschar **);
 extern BOOL    tls_client_adjunct_start(host_item *, client_conn_ctx *,
 		  const uschar *, uschar **);
@@ -69,7 +69,7 @@ extern void    tls_state_in_to_out(int, const uschar *, int);
 extern void    tls_state_out_to_in(int, const uschar *, int);
 extern BOOL    tls_is_name_for_cert(const uschar *, void *);
 # ifdef USE_OPENSSL
-extern BOOL    tls_openssl_options_parse(uschar *, long *);
+extern BOOL    tls_openssl_options_parse(const uschar *, long *);
 # endif
 extern int     tls_read(void *, uschar *, size_t);
 extern int     tls_server_start(uschar **);
@@ -99,7 +99,7 @@ extern uschar *acl_current_verb(void);
 extern int     acl_eval(int, uschar *, uschar **, uschar **);
 extern uschar *acl_standalone_setvar(const uschar *, BOOL);
 
-extern tree_node *acl_var_create(uschar *);
+extern tree_node *acl_var_create(const uschar *);
 extern void    acl_var_write(uschar *, uschar *, void *);
 extern void    add_driver_info(driver_info **, const driver_info *, size_t);
 
@@ -137,8 +137,8 @@ extern void    bits_clear(unsigned int *, size_t, int *);
 extern void    bits_set(unsigned int *, size_t, int *);
 
 extern void    cancel_cutthrough_connection(BOOL, const uschar *);
-extern gstring *cat_file(FILE *, gstring *, uschar *);
-extern gstring *cat_file_tls(void *, gstring *, uschar *);
+extern gstring *cat_file(FILE *, gstring *, const uschar *);
+extern gstring *cat_file_tls(void *, gstring *, const uschar *);
 extern int     check_host(void *, const uschar *, const uschar **, uschar **);
 extern uschar **child_exec_exim(int, BOOL, int *, BOOL, int, ...);
 extern pid_t   child_open_exim_function(int *, const uschar *);
@@ -197,7 +197,7 @@ extern void    delivery_re_exec(int);
 
 extern void    die_tainted(const uschar *, const uschar *, int);
 extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
-extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
+extern dns_address *dns_address_from_rr(const dns_answer *, dns_record *);
 extern int     dns_basic_lookup(dns_answer *, const uschar *, int);
 extern uschar *dns_build_reverse(const uschar *);
 extern time_t  dns_expire_from_soa(dns_answer *, int);
@@ -339,10 +339,10 @@ extern void    md5_start(md5 *);
 extern void    millisleep(int);
 #ifdef WITH_CONTENT_SCAN
 struct mime_boundary_context;
-extern int     mime_acl_check(uschar *acl, FILE *f,
+extern int     mime_acl_check(uschar *, FILE *,
                  struct mime_boundary_context *, uschar **, uschar **);
 extern int     mime_decode(const uschar **);
-extern ssize_t mime_decode_base64(FILE *, FILE *, uschar *);
+extern ssize_t mime_decode_base64(FILE *, FILE *, const uschar *);
 extern int     mime_regex(const uschar **, BOOL);
 extern void    mime_set_anomaly(int);
 #endif
@@ -357,10 +357,11 @@ extern void    misc_mod_smtp_reset(void);
 extern uschar *moan_check_errorcopy(const uschar *);
 extern BOOL    moan_skipped_syntax_errors(uschar *, error_block *, uschar *,
                  BOOL, uschar *);
-extern void    moan_smtp_batch(uschar *, const char *, ...) PRINTF_FUNCTION(2,3);
+extern void    moan_smtp_batch(const uschar *, const char *, ...)
+		  PRINTF_FUNCTION(2,3);
 extern BOOL    moan_send_message(const uschar *, int, error_block *eblock,
-		 header_line *, FILE *, uschar *);
-extern void    moan_tell_someone(uschar *, address_item *,
+		 header_line *, FILE *, const uschar *);
+extern void    moan_tell_someone(const uschar *, address_item *,
                  const uschar *, const char *, ...) PRINTF_FUNCTION(4,5);
 extern BOOL    moan_to_sender(int, error_block *, header_line *, FILE *, BOOL);
 extern void    moan_write_from(FILE *);
@@ -420,7 +421,7 @@ extern void    readconf_rest(void);
 extern uschar *readconf_retry_error(const uschar *, const uschar *, int *, int *);
 extern void    readconf_save_config(const uschar *);
 extern void    read_message_body(BOOL);
-extern void    receive_bomb_out(uschar *, uschar *) NORETURN;
+extern void    receive_bomb_out(const uschar *, uschar *) NORETURN;
 extern BOOL    receive_check_fs(int);
 extern BOOL    receive_check_set_sender(const uschar *);
 extern BOOL    receive_msg(BOOL);
@@ -435,12 +436,12 @@ extern void    regex_at_daemon(const uschar *);
 extern BOOL    regex_match(const pcre2_code *, const uschar *, int, uschar **);
 extern BOOL    regex_match_and_setup(const pcre2_code *, const uschar *, int, int);
 extern const pcre2_code *regex_compile(const uschar *, mcs_flags, uschar **,
-		pcre2_compile_context *);
+		  pcre2_compile_context *);
 extern const pcre2_code *regex_must_compile(const uschar *, mcs_flags, BOOL);
 
 extern void    retry_add_item(address_item *, const uschar *, int);
-extern BOOL    retry_check_address(const uschar *, host_item *, uschar *, BOOL,
-                 const uschar **, const uschar **);
+extern BOOL    retry_check_address(const uschar *, host_item *, const uschar *,
+		  BOOL, const uschar **, const uschar **);
 extern retry_config *retry_find_config(const uschar *, const uschar *, int, int);
 extern const uschar *retry_host_key_build(const host_item *, BOOL,
 		  const uschar *);
@@ -529,7 +530,7 @@ extern int     smtp_write_atrn(address_item *, cut_t *);
 extern int     smtp_write_command(void *, int, const char *, ...) PRINTF_FUNCTION(3,4);
 #ifdef WITH_CONTENT_SCAN
 extern int     spam(const uschar **);
-extern FILE   *spool_mbox(unsigned long *, const uschar *, uschar **);
+extern FILE   *spool_mbox(unsigned long *, const uschar *, const uschar **);
 #endif
 extern void    spool_clear_header_globals(void);
 extern int     spool_has_one_undelivered_dom(const uschar *);
@@ -607,7 +608,7 @@ extern uschar *string_nextinlist_trc(const uschar **listptr, int *separator, usc
 
 extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
-extern uschar *strstric(uschar *, uschar *, BOOL);
+extern uschar *strstric(const uschar *, const uschar *, BOOL);
 extern const uschar *strstric_c(const uschar *, const uschar *, BOOL);
 
 extern int     synprot_error(int, int, uschar *, uschar *);
@@ -685,8 +686,8 @@ extern uschar *wrap_header(const uschar *, unsigned, unsigned, const uschar *, u
 extern uschar * xclient_smtp_command(uschar *, int *, BOOL *);
 extern gstring * xclient_smtp_advertise_str(gstring *);
 #endif
-extern uschar *xtextencode(uschar *, int);
-extern int     xtextdecode(uschar *, uschar **);
+extern uschar *xtextencode(const uschar *, int);
+extern int     xtextdecode(const uschar *, uschar **);
 
 
 /******************************************************************************/
@@ -898,7 +899,7 @@ Returns:    copy of string in new store, with letters lowercased
 */
 
 static inline uschar *
-string_copynlc(uschar * s, int n)
+string_copynlc(const uschar * s, int n)
 {
 uschar * ss = store_get(n + 1, s);
 uschar * p = ss;
@@ -1004,7 +1005,7 @@ else
 }
 
 static inline uschar *
-string_copy_from_gstring(gstring * g)
+string_copy_from_gstring(const gstring * g)
 {
 return g ? string_copyn(g->s, g->ptr) : NULL;
 }
@@ -1016,7 +1017,7 @@ return g ? (unsigned)g->ptr : 0;
 }
 
 static inline uschar
-gstring_last_char(gstring * g)
+gstring_last_char(const gstring * g)
 {
 return g && g->ptr > 0 ? g->s[g->ptr-1] : '\0';
 }

@@ -230,14 +230,14 @@ content (to the ;) on return;
 static uschar *
 arc_insert_tagvalue(arc_line * al, unsigned loff, uschar ** ss)
 {
-uschar * s = *ss;
-uschar c = *++s;
+uschar * s = *ss, c;
 blob * b = (blob *)(US al + loff);
 size_t len = 0;
 
 /* [FWS] tag-value [FWS] */
 
 if (b->data) return US"fail";
+s++;
 s = skip_fws(s);						/* FWS */
 
 b->data = s;
@@ -283,7 +283,7 @@ while ((c = *s))
   uschar * t;
   unsigned i = 0;
   uschar * fieldstart = s;
-  uschar * bstart = NULL, * bend;
+  const uschar * bstart = NULL, * bend;
 
   /* tag-spec  =  [FWS] tag-name [FWS] "=" [FWS] tag-value [FWS] */
   /*X or just a naked FQDN, in a AAR ! */
@@ -481,7 +481,7 @@ memset(al, 0, sizeof(arc_line));
 
 if ((e = arc_parse_line(al, h, off, l_ext)))
   {
-  DEBUG(D_acl) if (e) debug_printf("ARC: %s\n", e);
+  DEBUG(D_acl) debug_printf("ARC: %s\n", e);
   return string_sprintf("line parse: %s", e);
   }
 if (!(i = arc_instance_from_hdr(al)))	return US"instance find";
@@ -607,7 +607,7 @@ return NULL;
 
 
 static BOOL
-arc_cv_match(arc_line * al, const uschar * s)
+arc_cv_match(const arc_line * al, const uschar * s)
 {
 return Ustrncmp(s, al->cv.data, al->cv.len) == 0;
 }
@@ -1253,7 +1253,6 @@ res = US"pass";
 out:
   {
   int csep = 0;
-  uschar * cond;
 
   if (!(arc_state = res))
     return DEFER;
@@ -1262,7 +1261,8 @@ out:
     arc_state_reason ? "(":"", arc_state_reason, arc_state_reason ? ")":"");
 
   if (!condlist) condlist = US"none:pass";
-  while ((cond = string_nextinlist(&condlist, &csep, NULL, 0)))
+  for (const uschar * cond;
+       cond = string_nextinlist(&condlist, &csep, NULL, 0); )
     if (Ustrcmp(res, cond) == 0) return OK;
   return FAIL;
   }
@@ -1474,10 +1474,10 @@ return g;
 
 static gstring *
 arc_sign_append_ams(gstring * g, arc_ctx * ctx, int instance,
-  const uschar * identity, const uschar * selector, blob * bodyhash,
+  const uschar * identity, const uschar * selector, const blob * bodyhash,
   hdr_rlist * rheaders, const uschar * privkey, unsigned options)
 {
-uschar * s;
+const uschar * s;
 gstring * hdata = NULL;
 int col;
 const blob ams_h = {.data = US"sha256", .len = 6};	/*XXX hardwired */
@@ -1571,7 +1571,7 @@ return g;
 happens to be a NUL-term string. */
 
 static uschar *
-arc_ar_cv_status(blob * ar)
+arc_ar_cv_status(const blob * ar)
 {
 const uschar * resinfo = ar->data;
 int sep = ';';
@@ -1593,7 +1593,7 @@ return US"none";
 /* Build the AS header and prepend it */
 
 static gstring *
-arc_sign_prepend_as(gstring * arcset_interim, arc_ctx * ctx,
+arc_sign_prepend_as(const gstring * arcset_interim, arc_ctx * ctx,
   int instance, const uschar * identity, const uschar * selector, blob * ar,
   const uschar * privkey, unsigned options)
 {
@@ -1672,7 +1672,7 @@ if (!arc_sig_from_pseudoheader(hdata, hashtype, privkey, &sig, US"AS"))
   return NULL;
 
 /* Lose the trailing semicolon */
-arcset->ptr--;
+gstring_trim(arcset, 1);
 arcset = arc_sign_append_sig(arcset, &sig);
 DEBUG(D_transport) debug_printf("ARC: AS  '%.*s'\n", arcset->ptr - 2, arcset->s);
 
@@ -1731,9 +1731,9 @@ into the copies.
 */
 
 static const uschar *
-arc_header_sign_feed(gstring * g)
+arc_header_sign_feed(const gstring * g)
 {
-uschar * s = string_copy_from_gstring(g);
+const uschar * s = string_copy_from_gstring(g);
 headers_rlist = arc_rlist_entry(headers_rlist, s, g->ptr);
 return arc_try_header(&arc_sign_ctx, headers_rlist->h, TRUE);
 }
@@ -1952,7 +1952,6 @@ arc_header_vfy_feed(gstring * g)
 {
 header_line h;
 arc_line al;
-pdkim_bodyhash * b;
 uschar * errstr;
 
 if (strncmpic(ARC_HDR_AMS, g->s, ARC_HDRLEN_AMS) != 0) return US"not AMS";
@@ -1965,7 +1964,7 @@ h.next = NULL;
 h.slen = len_string_from_gstring(g, &h.text);
 if ((errstr = arc_parse_line(&al, &h, ARC_HDRLEN_AMS, le_all)))
   {
-  DEBUG(D_acl) if (errstr) debug_printf("ARC: %s\n", errstr);
+  DEBUG(D_acl) debug_printf("ARC: %s\n", errstr);
   goto badline;
   }
 
@@ -1984,7 +1983,7 @@ if (!al.c.data)
 
 /* Ask the dkim code to calc a bodyhash with those specs */
 
-if (!(b = arc_ams_setup_vfy_bodyhash(&al)))
+if (!arc_ams_setup_vfy_bodyhash(&al))
   return US"dkim hash setup fail";
 
 /* Discard the reference; search again at verify time, knowing that one
@@ -2033,7 +2032,7 @@ for (as = arc_verify_ctx.arcset_chain, inst = 1; as; as = as->next, inst++)
   arc_line * hdr_as = as->hdr_as;
   if (hdr_as)
     {
-    blob * d = &hdr_as->d;
+    const blob * d = &hdr_as->d;
 
     for (; inst < as->instance; inst++)
       g = string_catn(g, US":", 1);

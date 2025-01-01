@@ -25,7 +25,7 @@ version_init(void)
 static uschar cnumber_buffer[24];
 static uschar date_buffer[32];
 
-uschar *version_cnumber_format;
+const uschar * version_cnumber_format;
 
 int cnumber =
 #include "cnumber.h"

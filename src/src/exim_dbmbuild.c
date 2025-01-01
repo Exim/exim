@@ -337,8 +337,8 @@ while (Ufgets(line, max_insize, f) != NULL)
   else
     {
     int i, rc;
-    uschar *s = line;
-    uschar *keystart;
+    uschar * s = line;
+    const uschar * keystart;
 
     if (started)
       {
@@ -378,16 +378,16 @@ while (Ufgets(line, max_insize, f) != NULL)
 
     if (*s == '\"')
       {
-      uschar *t = s++;
+      uschar * t = s++;
       keystart = t;
-      while (*s != 0 && *s != '\"')
+      while (*s && *s != '\"')
         {
 	*t++ = *s == '\\'
 	? string_interpret_escape((const uschar **)&s)
 	: *s;
         s++;
         }
-      if (*s != 0) s++;               /* Past terminating " */
+      if (*s) s++;               /* Past terminating " */
       exim_datum_size_set(&key, t - keystart + add_zero);
       }
     else
@@ -421,7 +421,7 @@ while (Ufgets(line, max_insize, f) != NULL)
       s++;
       while (isspace(*s)) s++;
       }
-    if (*s != 0)
+    if (*s)
       {
       Ustrcpy(bptr, s);
       bptr += p - s;

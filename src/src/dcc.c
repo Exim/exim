@@ -55,28 +55,23 @@ dcc_process(uschar **listptr)
 {
 int sep = 0;
 const uschar *list = *listptr;
-FILE *data_file;
-uschar *dcc_default_ip_option = US"127.0.0.1";
-uschar *dcc_helo_option = US"localhost";
-uschar *xtra_hdrs = NULL;
-uschar *override_client_ip  = NULL;
+FILE * data_file;
+const uschar * dcc_default_ip_option = US"127.0.0.1";
+uschar * dcc_helo_option = US"localhost";
+const uschar * override_client_ip  = NULL, * dcc_acl_options;
 
 /* from local_scan */
-int dcc_resplen, retval, sockfd, resp;
+int dcc_resplen, retval, sockfd;
 unsigned int portnr;
 struct sockaddr_un  serv_addr;
 struct sockaddr_in  serv_addr_in;
-struct hostent *ipaddress;
 uschar sockpath[128];
 #define SOCKIP_USE 39
 uschar sockip[SOCKIP_USE+1], client_ip[40];
-gstring *dcc_headers;
-gstring *sendbuf;
-uschar *dcc_return_text = US"''";
-struct header_line *mail_headers;
-uschar *dcc_acl_options;
-gstring *dcc_xtra_hdrs;
-gstring *dcc_header_str;
+gstring * dcc_headers, * sendbuf;
+uschar * dcc_return_text = US"''";
+struct header_line * mail_headers;
+gstring * dcc_header_str;
 
 /* grep 1st option */
 if ((dcc_acl_options = string_nextinlist(&list, &sep, NULL, 0)))
@@ -173,7 +168,8 @@ dcc_headers = string_catn(dcc_headers, US"\n", 1);
 /* If sockip contains an ip, we use a tcp socket, otherwise a UNIX socket */
 if(Ustrcmp(sockip, ""))
   {
-  ipaddress = gethostbyname(CS sockip);
+  struct hostent * ipaddress = gethostbyname(CS sockip);
+
   bzero(CS  &serv_addr_in, sizeof(serv_addr_in));
   serv_addr_in.sin_family = AF_INET;
   bcopy(CS ipaddress->h_addr, CS &serv_addr_in.sin_addr.s_addr, ipaddress->h_length);
@@ -320,17 +316,10 @@ int line = 1;    /* we start at the first line of the output */
 int bufoffset;
 
 dcc_header_str = string_get(DCC_HEADER_LIMIT + 2);
+
 /* Let's read from the socket until there's nothing left to read */
 while((dcc_resplen = read(sockfd, big_buffer, big_buffer_size-1)) > 0)
   {
-  /* fail on read error */
-  if(dcc_resplen < 0)
-    {
-    DEBUG(D_acl)
-      debug_printf("DCC: Error reading from socket: %s\n", strerror(errno));
-    (void)fclose(data_file);
-    return retval;
-    }
   /* make the answer 0-terminated. only needed for debug_printf */
   DEBUG(D_acl)
     debug_printf("DCC: Length of the output buffer is: %d\nDCC: Output buffer is:\n"
@@ -433,15 +422,25 @@ while((dcc_resplen = read(sockfd, big_buffer, big_buffer_size-1)) > 0)
 	(big_buffer[dcc_resplen-2] == '\n'))
       dcc_resplen -= 2;
     dcc_resplen -= bufoffset;
-    if (dcc_header_str->ptr + dcc_resplen > DCC_HEADER_LIMIT)
+    if (gstring_length(dcc_header_str) + dcc_resplen > DCC_HEADER_LIMIT)
       {
-      dcc_resplen = DCC_HEADER_LIMIT - dcc_header_str->ptr;
+      dcc_resplen = DCC_HEADER_LIMIT - gstring_length(dcc_header_str);
       DEBUG(D_acl) debug_printf("DCC: We got more output than we can store"
 			 "in the X-DCC header. Truncating at 120 characters.\n");
       }
     dcc_header_str = string_catn(dcc_header_str, &big_buffer[bufoffset], dcc_resplen);
     }
   }
+
+/* fail on read error */
+if(dcc_resplen < 0)
+  {
+  DEBUG(D_acl)
+    debug_printf("DCC: Error reading from socket: %s\n", strerror(errno));
+  (void)fclose(data_file);
+  return retval;
+  }
+
 /* We have read everything from the socket. make sure the header ends with "\n" */
 dcc_header_str = string_catn(dcc_header_str, US"\n", 1);
 
@@ -470,9 +469,10 @@ else
 /* check if we should add additional headers passed in acl_m_dcc_add_header */
 if (dcc_direct_add_header)
   {
-  if (((xtra_hdrs = expand_string(US"$acl_m_dcc_add_header")) != NULL) && (xtra_hdrs[0] != '\0'))
+  const uschar * xtra_hdrs;
+  if ((xtra_hdrs = expand_string(US"$acl_m_dcc_add_header")) && *xtra_hdrs)
     {
-    dcc_xtra_hdrs = string_cat(NULL, xtra_hdrs);
+    gstring * dcc_xtra_hdrs = string_cat(NULL, xtra_hdrs);
     if (dcc_xtra_hdrs->s[dcc_xtra_hdrs->ptr - 1] != '\n')
       dcc_xtra_hdrs = string_catn(dcc_xtra_hdrs, US"\n", 1);
     header_add(' ', "%s", string_from_gstring(dcc_xtra_hdrs));

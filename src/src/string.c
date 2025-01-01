@@ -44,9 +44,9 @@ The legacy string_is_ip_address() function follows below.
 int
 string_is_ip_addressX(const uschar * ip_addr, int * maskptr, const uschar ** errp)
 {
-uschar * slash, * percent, * endp = NULL;
+uschar * slash, * percent;
 long int mask = 0;
-const uschar * addr = NULL;
+const uschar * endp = NULL, * addr = NULL;
 int af;
 union { /* we do not need this, but inet_pton() needs a place for storage */
   struct in_addr sa4;
@@ -269,7 +269,7 @@ int
 string_interpret_escape(const uschar **pp)
 {
 #ifdef COMPILE_UTILITY
-const uschar *hex_digits= CUS"0123456789abcdef";
+const uschar * hex_digits= CUS"0123456789abcdef";
 #endif
 int ch;
 const uschar *p = *pp;
@@ -399,10 +399,10 @@ Returns:        string with printing escapes parsed back
 */
 
 uschar *
-string_unprinting(uschar *s)
+string_unprinting(uschar * s)
 {
-uschar *p, *q, *r, *ss;
-int len, off;
+uschar * p, * q, * r, * ss;
+int len, offset;
 
 p = Ustrchr(s, '\\');
 if (!p) return s;
@@ -411,11 +411,10 @@ len = Ustrlen(s) + 1;
 ss = store_get(len, s);
 
 q = ss;
-off = p - s;
-if (off)
+if ((offset = p - s))
   {
-  memcpy(q, s, off);
-  q += off;
+  memcpy(q, s, offset);
+  q += offset;
   }
 
 while (*p)
@@ -430,17 +429,17 @@ while (*p)
     r = Ustrchr(p, '\\');
     if (!r)
       {
-      off = Ustrlen(p);
-      memcpy(q, p, off);
-      p += off;
-      q += off;
+      offset = Ustrlen(p);
+      memcpy(q, p, offset);
+      p += offset;
+      q += offset;
       break;
       }
     else
       {
-      off = r - p;
-      memcpy(q, p, off);
-      q += off;
+      offset = r - p;
+      memcpy(q, p, offset);
+      q += offset;
       p = r;
       }
     }
@@ -842,8 +841,12 @@ while (*s)
 return NULL;
 }
 
+/*XXX C11 apparently has "generic functions", which allow the tracking
+of a parameter's type through to the return type.  Thit would neatly
+permit a single function name to be used, with better dev-safety, for this. */
+
 uschar *
-strstric(uschar * s, uschar * t, BOOL space_follows)
+strstric(const uschar * s, const uschar * t, BOOL space_follows)
 {
 return US strstric_c(s, t, space_follows);
 }
@@ -852,7 +855,7 @@ return US strstric_c(s, t, space_follows);
 #ifdef COMPILE_UTILITY
 /* Dummy version for this function; it should never be called */
 static void
-gstring_grow(gstring * g, int count)
+gstring_grow(const gstring * g, int count)
 {
 assert(FALSE);
 }
@@ -1106,7 +1109,7 @@ string_append_listele_fmt(gstring * list, uschar sep, BOOL check,
 {
 va_list ap;
 unsigned start;
-gstring * g;
+const gstring * g;
 
 if (list && list->ptr)
   {
@@ -1305,11 +1308,7 @@ string_append(gstring * g, int count, ...)
 va_list ap;
 
 va_start(ap, count);
-while (count-- > 0)
-  {
-  uschar * t = va_arg(ap, uschar *);
-  g = string_cat(g, t);
-  }
+while (count-- > 0) g = string_cat(g, va_arg(ap, uschar *));
 va_end(ap);
 
 return g;
@@ -1401,7 +1400,7 @@ string_vformat_trc(gstring * g, const uschar * func, unsigned line,
 {
 enum ltypes { L_NORMAL=1, L_SHORT=2, L_LONG=3, L_LONGLONG=4, L_LONGDOUBLE=5, L_SIZE=6 };
 
-int width, precision, off, lim, need;
+int width, precision, initial_off, lim, need;
 const char * fp = format;	/* Deliberately not unsigned */
 
 string_datestamp_offset = -1;	/* Datestamp not inserted */
@@ -1428,7 +1427,7 @@ if (!(flags & SVFMT_TAINT_NOCHK) && is_incompatible(g->s, format))
 #endif	/*!COMPILE_UTILITY*/
 
 lim = g->size - 1;	/* leave one for a nul */
-off = g->ptr;		/* remember initial offset in gstring */
+initial_off = g->ptr;	/* remember initial offset in gstring */
 
 /* Scan the format and handle the insertions */
 
@@ -1510,7 +1509,7 @@ while (*fp)
     {
     case 'n':
       nptr = va_arg(ap, int *);
-      *nptr = g->ptr - off;
+      *nptr = g->ptr - initial_off;
       break;
 
     case 'd':
@@ -1548,7 +1547,7 @@ while (*fp)
 
     case 'p':
       {
-      void * ptr;
+      const void * ptr;
       if ((need = g->ptr + 24) > lim)
 	{
 	if (!(flags & SVFMT_EXTEND || need >= size_limit)) return NULL;

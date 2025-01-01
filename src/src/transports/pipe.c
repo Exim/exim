@@ -123,10 +123,10 @@ Returns:     OK, FAIL, or DEFER
 */
 
 static int
-pipe_transport_setup(transport_instance *tblock, address_item *addrlist,
-  transport_feedback *dummy, uid_t uid, gid_t gid, uschar **errmsg)
+pipe_transport_setup(transport_instance * tblock, address_item * addrlist,
+  transport_feedback * dummy, uid_t uid, gid_t gid, uschar ** errmsg)
 {
-pipe_transport_options_block * ob = tblock->drinst.options_block;
+const pipe_transport_options_block * ob = tblock->drinst.options_block;
 
 #ifdef HAVE_SETCLASSRESOURCES
 if (ob->use_classresources)
@@ -321,8 +321,7 @@ GET_OPTION("allow_commands");
 if (ob->allow_commands)
   {
   int sep = 0;
-  const uschar *s;
-  uschar *p;
+  const uschar * s, *p;
 
   if (!(s = expand_string(ob->allow_commands)))
     {
@@ -371,7 +370,7 @@ for it. */
 if (argv[0][0] != '/')
   {
   int sep = 0;
-  uschar * p;
+  const uschar * p;
 
   GET_OPTION("path");
   for (const uschar * listptr = expand_string(ob->path);
@@ -521,8 +520,7 @@ int envcount = 0, envsep = 0, expand_fail, timeout = ob->timeout;
 BOOL written_ok = FALSE, expand_arguments;
 const uschar ** argv;
 uschar * envp[50];
-const uschar * envlist = ob->environment, * cmd;
-uschar * ss;
+const uschar * envlist = ob->environment, * cmd, * ss;
 uschar * eol = ob->use_crlf ? US"\r\n" : US"\n";
 transport_ctx tctx = {
   .tblock = tblock,
@@ -596,7 +594,7 @@ addr->pipe_expandn for use here. */
 
 if (expand_arguments && addr->pipe_expandn)
   {
-  uschar **ss = addr->pipe_expandn;
+  uschar ** ss = addr->pipe_expandn;
   expand_nmax = -1;
   if (*ss) filter_thisaddress = *ss++;
   while (*ss)
@@ -1040,7 +1038,7 @@ if ((rc = child_close(pid, timeout)) != 0)
 
     else if (!ob->ignore_status)
       {
-      uschar *ss;
+      const uschar * ss;
       gstring * g;
 
       /* If temp_errors is "*" all codes are temporary. Initialization checks
@@ -1071,10 +1069,10 @@ if ((rc = child_close(pid, timeout)) != 0)
       /* If the return code is > 128, it often means that a shell command
       was terminated by a signal. */
 
-      ss = (rc > 128)?
-        string_sprintf("(could mean shell command ended by signal %d (%s))",
-          rc-128, os_strsignal(rc-128)) :
-        US os_strexit(rc);
+      ss = rc > 128
+        ? string_sprintf("(could mean shell command ended by signal %d (%s))",
+			  rc-128, os_strsignal(rc-128))
+        : US os_strexit(rc);
 
       if (*ss)
         {

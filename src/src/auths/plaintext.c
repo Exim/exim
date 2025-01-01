@@ -63,7 +63,7 @@ void
 auth_plaintext_init(driver_instance * a)
 {
 auth_instance * ablock = (auth_instance *)a;
-auth_plaintext_options_block * ob = a->options_block;
+const auth_plaintext_options_block * ob = a->options_block;
 
 if (!ablock->public_name)
   ablock->public_name = ablock->drinst.name;

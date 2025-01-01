@@ -318,7 +318,7 @@ smtp_transport_setup(transport_instance *tblock, address_item *addrlist,
   transport_feedback *tf, uid_t uid, gid_t gid, uschar **errmsg)
 {
 smtp_transport_options_block * ob = tblock->drinst.options_block;
-uschar * s;
+const uschar * s;
 
 /* Pass back options if required. This interface is getting very messy. */
 
@@ -383,7 +383,7 @@ smtp_transport_init(driver_instance * t)
 {
 transport_instance * tblock = (transport_instance *)t;
 smtp_transport_options_block * ob = t->options_block;
-uschar * s;
+const uschar * s;
 
 /* Retry_use_local_part defaults FALSE if unset */
 
@@ -463,7 +463,7 @@ set_errno(address_item *addrlist, int errno_value, uschar *msg, int rc,
 #ifdef EXPERIMENTAL_DSN_INFO
   const uschar * smtp_greeting, const uschar * helo_response,
 #endif
-  struct timeval * start
+  const struct timeval * start
   )
 {
 int orvalue = 0;
@@ -543,8 +543,8 @@ Returns:         TRUE if an SMTP "QUIT" command should be sent, else FALSE
 */
 
 static BOOL
-check_response(host_item *host, int *errno_value, int more_errno,
-  uschar *buffer, int *yield, uschar **message, BOOL *pass_message)
+check_response(host_item * host, int * errno_value, int more_errno,
+  const uschar * buffer, int * yield, uschar ** message, BOOL * pass_message)
 {
 uschar * pl = pipelining_active ? US"pipelined " : US"";
 const uschar * s;
@@ -695,9 +695,10 @@ Returns:   nothing
 */
 
 static void
-deferred_event_raise(address_item * addr, host_item * host, uschar * evstr)
+deferred_event_raise(address_item * addr, host_item * host,
+  const uschar * evstr)
 {
-uschar * action = addr->transport->event_action;
+const uschar * action = addr->transport->event_action;
 const uschar * save_domain, * save_local;
 const uschar * save_rn, * save_tn;
 
@@ -740,8 +741,8 @@ router_name = save_tn;
 *           Reap SMTP specific responses         *
 *************************************************/
 static int
-smtp_discard_responses(smtp_context * sx, smtp_transport_options_block * ob,
-  int count)
+smtp_discard_responses(smtp_context * sx,
+  const smtp_transport_options_block * ob, int count)
 {
 uschar flushbuffer[4096];
 
@@ -942,7 +943,7 @@ sx->ehlo_resp.limit_rcptdom = sx->peer_limit_rcptdom;
 
 if ((dbm_file = dbfn_open(US"misc", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)))
   {
-  uschar * ehlo_resp_key = ehlo_cache_key(sx);
+  const uschar * ehlo_resp_key = ehlo_cache_key(sx);
   dbdata_ehlo_resp er = { .data = sx->ehlo_resp };
 
   HDEBUG(D_transport)
@@ -965,17 +966,17 @@ if ((dbm_file = dbfn_open(US"misc", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)))
 }
 
 static void
-invalidate_ehlo_cache_entry(smtp_context * sx)
+invalidate_ehlo_cache_entry(const smtp_context * sx)
 {
 open_db dbblock, * dbm_file;
 
 if (  sx->early_pipe_active
    && (dbm_file = dbfn_open(US"misc", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)))
   {
-  uschar * ehlo_resp_key = ehlo_cache_key(sx);
+  const uschar * ehlo_resp_key = ehlo_cache_key(sx);
   HDEBUG(D_transport)
     {
-    dbdata_ehlo_resp * er;
+    const dbdata_ehlo_resp * er;
 
     if (!(er = dbfn_read_enforce_length(dbm_file, ehlo_resp_key, sizeof(dbdata_ehlo_resp))))
       debug_printf("no ehlo-resp record!\n");
@@ -999,17 +1000,23 @@ if (!(dbm_file = dbfn_open(US"misc", O_RDONLY, &dbblock, FALSE, TRUE)))
   { DEBUG(D_transport) debug_printf("ehlo-cache: no misc DB\n"); }
 else
   {
-  uschar * ehlo_resp_key = ehlo_cache_key(sx);
-  dbdata_ehlo_resp * er;
+  const uschar * ehlo_resp_key = ehlo_cache_key(sx);
+  const dbdata_ehlo_resp * er;
 
   if (!(er = dbfn_read_enforce_length(dbm_file, ehlo_resp_key, sizeof(dbdata_ehlo_resp))))
-    { DEBUG(D_transport) debug_printf("no ehlo-resp record\n"); }
+    {
+    dbfn_close(dbm_file);
+    DEBUG(D_transport) debug_printf("no ehlo-resp record\n");
+    }
   else if (time(NULL) - er->time_stamp > retry_data_expire)
     {
     DEBUG(D_transport) debug_printf("ehlo-resp record too old\n");
     dbfn_close(dbm_file);
     if ((dbm_file = dbfn_open(US"misc", O_RDWR|O_CREAT, &dbblock, TRUE, TRUE)))
+      {
       dbfn_delete(dbm_file, ehlo_resp_key);
+      dbfn_close(dbm_file);
+      }
     }
   else
     {
@@ -1035,7 +1042,6 @@ else
     dbfn_close(dbm_file);
     return TRUE;
     }
-  dbfn_close(dbm_file);
   }
 return FALSE;
 }
@@ -1062,8 +1068,7 @@ names = string_copyn(expand_nstring[1], expand_nlength[1]);
 for (au = auths, authnum = 0; au; au = au->drinst.next, authnum++)
   if (au->client)
     {
-    const uschar * list = names;
-    uschar * s;
+    const uschar * list = names, * s;
     for (int sep = ' '; s = string_nextinlist(&list, &sep, NULL, 0); )
       if (strcmpic(au->public_name, s) == 0)
 	{ authbits |= BIT(authnum); break; }
@@ -1351,8 +1356,8 @@ while (count-- > 0)
 
     if (testflag(addr, af_dr_retry_exists))
       {
-      uschar * altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
-        sender_address);
+      const uschar * altkey = string_sprintf("%s:<%s>",
+				      addr->address_retry_key, sender_address);
       retry_add_item(addr, altkey, rf_delete);
       retry_add_item(addr, addr->address_retry_key, rf_delete);
       }
@@ -1645,7 +1650,7 @@ Returns:
 static int
 smtp_auth(smtp_context * sx)
 {
-host_item * host = sx->conn_args.host;			/* host to deliver to */
+const host_item * host = sx->conn_args.host;		/* host to deliver to */
 smtp_transport_options_block * ob = sx->conn_args.ob;	/* transport options */
 int require_auth = verify_check_given_host(CUSS &ob->hosts_require_auth, host);
 #ifndef DISABLE_PIPE_CONNECT
@@ -1914,11 +1919,11 @@ message.  If the incoming message is using a different local identity then
 we will veto this new message.  */
 
 static BOOL
-smtp_are_same_identities(uschar * message_id, smtp_compare_t * s_compare)
+smtp_are_same_identities(const uschar * message_id, smtp_compare_t * s_compare)
 {
-uschar * message_local_identity,
-       * current_local_identity,
-       * new_sender_address;
+const uschar * message_local_identity,
+	     * current_local_identity,
+	     * new_sender_address;
 
 current_local_identity =
   smtp_local_identity(s_compare->current_sender_address, s_compare->tblock);
@@ -2027,7 +2032,7 @@ static int
 smtp_chunk_cmd_callback(transport_ctx * tctx, unsigned chunk_size,
   unsigned flags)
 {
-smtp_transport_options_block * ob = tctx->tblock->drinst.options_block;
+const smtp_transport_options_block * ob = tctx->tblock->drinst.options_block;
 smtp_context * sx = tctx->smtp_context;
 int cmd_count = 0;
 int prev_cmd_count;
@@ -2935,9 +2940,9 @@ if (tls_out.active.sock >= 0)
     GET_OPTION("helo_data");
     if (!(sx->helo_data = expand_string(ob->helo_data)))
       {
-      uschar *message = string_sprintf("failed to expand helo_data: %s",
+      uschar * msg = string_sprintf("failed to expand helo_data: %s",
 	expand_string_message);
-      set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, &sx->delivery_start);
+      set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, msg, DEFER, FALSE, &sx->delivery_start);
       yield = DEFER;
       goto SEND_QUIT;
       }
@@ -3410,11 +3415,11 @@ request that */
 
 sx->prdr_active = FALSE;
 if (smtp_peer_options & OPTION_PRDR)
-  for (address_item * addr = addrlist; addr; addr = addr->next)
-    if (addr->transport_return == PENDING_DEFER)
+  for (const address_item * a = addrlist; a; a = a->next)
+    if (a->transport_return == PENDING_DEFER)
       {
-      for (addr = addr->next; addr; addr = addr->next)
-        if (addr->transport_return == PENDING_DEFER)
+      for (a = a->next; a; a = a->next)
+        if (a->transport_return == PENDING_DEFER)
 	  {			/* at least two recipients to send */
 	  sx->prdr_active = TRUE;
 	  sprintf(CS p, " PRDR"); p += 5;
@@ -3784,7 +3789,7 @@ do
   /* handle inbound data */
   if (p[0].revents & POLLIN)
     if ((rc = tls_read(ct_ctx, buf, bsize)) <= 0)	/* Expect -1 for EOF; */
-    {				    /* that reaps the TLS Close Notify record */
+      {				    /* that reaps the TLS Close Notify record */
       p[0].fd = -1;
       shutdown(pfd[0], SHUT_WR);
       timeout = 5;
@@ -4834,7 +4839,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	       (oicf)smtp_are_same_identities, (void*)&t_compare)
        )  )
       {
-      uschar *msg;
+      uschar * msg;
       BOOL pass_message;
 
       if (sx->send_rset)
@@ -5163,7 +5168,7 @@ Returns:    nothing
 void
 smtp_transport_closedown(transport_instance * tblock)
 {
-smtp_transport_options_block * ob = tblock->drinst.options_block;
+const smtp_transport_options_block * ob = tblock->drinst.options_block;
 client_conn_ctx cctx;
 smtp_context sx = {0};
 uschar buffer[256];
@@ -5198,7 +5203,7 @@ sx.outblock.authenticating = FALSE;
 int
 smtp_write_atrn(address_item * addr, cut_t * cutp)
 {
-smtp_transport_options_block * ob = addr->transport->drinst.options_block;
+const smtp_transport_options_block * ob = addr->transport->drinst.options_block;
 smtp_context sx = {0};
 uschar buffer[256];
 uschar inbuffer[4096];
@@ -5251,7 +5256,7 @@ Returns:       the first address for this delivery
 */
 
 static address_item *
-prepare_addresses(address_item * addrlist, host_item * host)
+prepare_addresses(address_item * addrlist, const host_item * host)
 {
 address_item * first_addr = NULL;
 for (address_item * addr = addrlist; addr; addr = addr->next)
@@ -5313,8 +5318,8 @@ DEBUG(D_transport)
   if (hostlist)
     {
     debug_printf("hostlist:\n");
-    for (host_item * host = hostlist; host; host = host->next)
-      debug_printf("  '%s' IP %s port %d\n", host->name, host->address, host->port);
+    for (const host_item * h = hostlist; h; h = h->next)
+      debug_printf("  '%s' IP %s port %d\n", h->name, h->address, h->port);
     }
   if (continue_hostname)
     debug_printf("already connected to %s [%s] (on fd %d)\n",

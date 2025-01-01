@@ -37,7 +37,7 @@ Returns:         TRUE if OK to proceed; FALSE otherwise
 BOOL
 enq_start(uschar *key, unsigned lim)
 {
-dbdata_serialize *serial_record;
+const dbdata_serialize * serial_record;
 dbdata_serialize new_record;
 open_db dbblock;
 open_db *dbm_file;

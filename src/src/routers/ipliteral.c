@@ -54,7 +54,7 @@ int ipliteral_router_entry(router_instance *rblock, address_item *addr,
 consistency checks to be done, or anything else that needs to be set up. */
 
 void
-ipliteral_router_init(driver_instance *rblock)
+ipliteral_router_init(driver_instance * rblock)
 {
 /*
 ipliteral_router_options_block *ob =
@@ -112,9 +112,9 @@ ipliteral_router_entry(
 ipliteral_router_options_block *ob =
   (ipliteral_router_options_block *)(rblock->options_block);
 */
-host_item *h;
-const uschar *domain = addr->domain;
-const uschar *ip;
+host_item * h;
+const uschar * domain = addr->domain;
+const uschar * ip;
 int len = Ustrlen(domain);
 int rc, ipv;
 

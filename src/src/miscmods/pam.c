@@ -79,7 +79,7 @@ if (  pam_arg_ended
 
 for (int i = 0; i < num_msg; i++)
   {
-  uschar *arg;
+  const uschar * arg;
   switch (msg[i]->msg_style)
     {
     case PAM_PROMPT_ECHO_ON:

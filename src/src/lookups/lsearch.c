@@ -81,9 +81,7 @@ uschar buffer[4096];
 if (opts)
   {
   int sep = ',';
-  uschar * ele;
-
-  while ((ele = string_nextinlist(&opts, &sep, NULL, 0)))
+  for (const uschar * ele; ele = string_nextinlist(&opts, &sep, NULL, 0); )
     if (Ustrcmp(ele, "ret=full") == 0)
       { ret_full = TRUE; break; }
   }

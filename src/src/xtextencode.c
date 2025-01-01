@@ -28,7 +28,7 @@ Returns:      a pointer to the zero-terminated xtext string, which
 
 #ifndef COMPILE_UTILITY
 uschar *
-xtextencode(uschar * clear, int len)
+xtextencode(const uschar * clear, int len)
 {
 gstring * g = NULL;
 for(uschar ch; len > 0; len--, clear++)
@@ -41,18 +41,18 @@ return string_from_gstring(g);
 
 #else	/*COMPILE_UTILITY*/
 uschar *
-xtextencode(uschar * clear, int len)
+xtextencode(const uschar * clear, int len)
 {
 int enc_len = 1, i = len;	/* enc_len includes space for terminating NUL */
 uschar * yield, * s;
 
-for (s = clear; i; i--, s++)
+for (const uschar * t = clear; i; i--, t++)
   {
-  uschar ch = *s;
+  uschar ch = *t;
   enc_len += ch < 33 || ch > 126 || ch == '+' || ch == '='
 	      ? 3 : 1;
   }
-if (!(yield = s = malloc(enc_len)))
+if (!(s = yield = malloc(enc_len)))
   return NULL;
 for(uschar ch; len > 0; len--, clear++)
   if ((ch = *clear) < 33 || ch > 126 || ch == '+' || ch == '=')
@@ -87,7 +87,7 @@ Returns:      the number of bytes in the result, excluding the final zero;
 */
 
 int
-xtextdecode(uschar * code, uschar ** ptr)
+xtextdecode(const uschar * code, uschar ** ptr)
 {
 int x;
 #ifdef COMPILE_UTILITY

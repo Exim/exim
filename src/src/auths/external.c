@@ -143,7 +143,7 @@ auth_external_client(
   uschar *buffer,                        /* buffer for reading response */
   int buffsize)                          /* size of buffer */
 {
-auth_external_options_block * ob = ablock->drinst.options_block;
+const auth_external_options_block * ob = ablock->drinst.options_block;
 const uschar * text = ob->client_send;
 int rc;
 

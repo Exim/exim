@@ -128,8 +128,8 @@ dbmjz_find(void * handle, const uschar * filename, const uschar * keystring,
   int length, uschar ** result, uschar ** errmsg, uint * do_cache,
   const uschar * opts)
 {
-uschar *key_item, *key_buffer, *key_p;
-const uschar *key_elems = keystring;
+uschar * key_buffer, * key_p;
+const uschar * key_elems = keystring, * key_item;
 int buflen, bufleft, key_item_len, sep = 0;
 
 /* To a first approximation, the size of the lookup key needs to be about,

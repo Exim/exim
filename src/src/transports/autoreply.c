@@ -86,7 +86,7 @@ to be set up. */
 void
 autoreply_transport_init(driver_instance * t)
 {
-transport_instance * tblock = (transport_instance *)t;
+const transport_instance * tblock = (transport_instance *)t;
 /*
 autoreply_transport_options_block *ob =
   (autoreply_transport_options_block *)(tblock->options_block);
@@ -276,10 +276,8 @@ const uschar * from, * reply_to, * to, * cc, * bcc, * subject, * headers;
 const uschar * text, * file, * logfile, * oncelog;
 uschar * cache_buff = NULL, * cache_time = NULL, * message_id = NULL;
 header_line * h;
-time_t now = time(NULL);
-time_t once_repeat_sec = 0;
-FILE *fp;
-FILE *ff = NULL;
+time_t now = time(NULL), once_repeat_sec = 0;
+FILE * ff = NULL, * fp;
 
 DEBUG(D_transport) debug_printf("%s transport entered\n", trname);
 
@@ -474,8 +472,8 @@ if (oncelog && *oncelog && to)
   else
     {
     EXIM_DATUM key_datum, result_datum;
-    uschar * s = Ustrrchr(oncelog, '/');
-    uschar * dirname = s ? string_copyn(oncelog, s - oncelog) : NULL;
+    const uschar * s = Ustrrchr(oncelog, '/');
+    const uschar * dirname = s ? string_copyn(oncelog, s - oncelog) : NULL;
 
     if (!(dbm_file = exim_dbopen(oncelog, dirname, O_RDWR|O_CREAT, ob->mode)))
       {
@@ -613,20 +611,17 @@ if (text)
 if (ff)
   {
   while (Ufgets(big_buffer, big_buffer_size, ff) != NULL)
-    {
     if (file_expand)
       {
-      uschar *s = expand_string(big_buffer);
-      DEBUG(D_transport)
-        {
-        if (!s)
-          debug_printf("error while expanding line from file:\n  %s\n  %s\n",
-            big_buffer, expand_string_message);
-        }
+      const uschar * s = expand_string(big_buffer);
+      if (!s) DEBUG(D_transport)
+	debug_printf("error while expanding line from file:\n  %s\n  %s\n",
+	  big_buffer, expand_string_message);
       fprintf(fp, "%s", s ? CS s : CS big_buffer);
       }
-    else fprintf(fp, "%s", CS big_buffer);
-    }
+    else
+      fprintf(fp, "%s", CS big_buffer);
+
   (void) fclose(ff);
   }
 
@@ -635,7 +630,7 @@ limit if we are returning the body. */
 
 if (return_message)
   {
-  uschar *rubric = tblock->headers_only
+  const uschar * rubric = tblock->headers_only
     ? US"------ This is a copy of the message's header lines.\n"
     : tblock->body_only
     ? US"------ This is a copy of the body of the message, without the headers.\n"
@@ -694,11 +689,11 @@ between multiple simultaneous deliveries. */
 
 if (cache_fd >= 0)
   {
-  uschar *from = cache_buff;
-  int size = cache_size;
-
   if (lseek(cache_fd, 0, SEEK_SET) == 0)
     {
+    uschar * from = cache_buff;
+    int size = cache_size;
+
     if (!cache_time)
       {
       cache_time = from + size;

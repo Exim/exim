@@ -146,9 +146,9 @@ Returns:    TRUE if the host has expired but is usable because
 */
 
 BOOL
-retry_check_address(const uschar *domain, host_item *host, uschar *portstring,
-  BOOL include_ip_address,
-  const uschar **retry_host_key, const uschar **retry_message_key)
+retry_check_address(const uschar * domain, host_item * host,
+  const uschar * portstring, BOOL include_ip_address,
+  const uschar ** retry_host_key, const uschar ** retry_message_key)
 {
 BOOL yield = FALSE;
 time_t now = time(NULL);
@@ -581,7 +581,7 @@ to the failed chain if they have timed out. */
 
 for (int i = 0; i < 3; i++)
   {
-  address_item * endaddr, *addr;
+  address_item * endaddr, * addr;
   address_item * last_first = NULL;
   address_item ** paddr = i==0 ? addr_succeed : i==1 ? addr_failed : addr_defer;
   address_item ** saved_paddr = NULL;

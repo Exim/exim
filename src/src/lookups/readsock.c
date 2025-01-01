@@ -13,7 +13,7 @@
 
 static int
 internal_readsock_open(client_conn_ctx * cctx, const uschar * sspec,
-  int timeout, uschar * do_tls, uschar ** errmsg)
+  int timeout, const uschar * do_tls, uschar ** errmsg)
 {
 const uschar * server_name;
 host_item host;
@@ -171,7 +171,7 @@ struct {
 	BOOL cache:1;
 	uschar * do_tls;	/* NULL, empty-string, or SNI */
 } lf = {.do_shutdown = TRUE};
-uschar * eol = NULL;
+const uschar * eol = NULL;
 int timeout = 5;
 gstring * yield;
 int ret = DEFER;

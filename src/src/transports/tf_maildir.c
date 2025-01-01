@@ -43,12 +43,12 @@ Argument:
 Returns:            TRUE on success; FALSE on failure
 */
 
-BOOL maildir_ensure_directories(uschar *path, address_item *addr,
-  BOOL create_directory, int dirmode, uschar *maildirfolder_create_regex)
+BOOL maildir_ensure_directories(const uschar * path, address_item * addr,
+  BOOL create_directory, int dirmode, const uschar * maildirfolder_create_regex)
 {
 int i;
 struct stat statbuf;
-const char *subdirs[] = { "/tmp", "/new", "/cur" };
+const char * const subdirs[] = { "/tmp", "/new", "/cur" };
 
 DEBUG(D_transport)
   debug_printf("ensuring maildir directories exist in %s\n", path);
@@ -62,7 +62,7 @@ loop so that code can be shared. */
 for (i = 0; i < 4; i++)
   {
   int j;
-  const uschar *dir, *mdir;
+  const uschar * dir, * mdir;
 
   if (i == 0)
     {
@@ -243,10 +243,10 @@ Returns:      the sum of the sizes of the messages
 */
 
 off_t
-maildir_compute_size(uschar *path, int *filecount, time_t *latest,
-  const pcre2_code *regex, const pcre2_code *dir_regex, BOOL timestamp_only)
+maildir_compute_size(const uschar * path, int * filecount, time_t * latest,
+  const pcre2_code * regex, const pcre2_code * dir_regex, BOOL timestamp_only)
 {
-DIR *dir;
+DIR * dir;
 off_t sum = 0;
 
 if (!(dir = exim_opendir(path)))
@@ -254,7 +254,7 @@ if (!(dir = exim_opendir(path)))
 
 for (struct dirent *ent; ent = readdir(dir); )
   {
-  uschar * s, * name = US ent->d_name;
+  const uschar * s, * name = US ent->d_name;
   struct stat statbuf;
 
   if (Ustrcmp(name, ".") == 0 || Ustrcmp(name, "..") == 0) continue;
@@ -350,20 +350,16 @@ Returns:           >=0  a file descriptor for an open maildirsize file
 */
 
 int
-maildir_ensure_sizefile(uschar *path, appendfile_transport_options_block *ob,
-  const pcre2_code *regex, const pcre2_code *dir_regex, off_t *returned_size,
-  int *returned_filecount)
+maildir_ensure_sizefile(uschar * path, appendfile_transport_options_block * ob,
+  const pcre2_code * regex, const pcre2_code * dir_regex, off_t * returned_size,
+  int * returned_filecount)
 {
 int count, fd;
-off_t cached_quota = 0;
-int cached_quota_filecount = 0;
-int filecount = 0;
-int linecount = 0;
-off_t size = 0;
-uschar *filename;
+off_t cached_quota = 0, size = 0;
+int cached_quota_filecount = 0, filecount = 0, linecount = 0;
+const uschar * filename;
 uschar buffer[MAX_FILE_SIZE];
-uschar *ptr = buffer;
-uschar *endptr;
+uschar * ptr = buffer, * endptr;
 
 /* Try a few times to open or create the file, in case another process is doing
 the same thing. */
@@ -414,7 +410,7 @@ for (;;)
         buffer);
     goto RECALCULATE;
     }
-  if (*endptr == '\n' || *endptr == 0) break;
+  if (*endptr == '\n' || !*endptr) break;
   if (*endptr++ != ',')
     {
     DEBUG(D_transport)
@@ -445,9 +441,8 @@ stage, *endptr points either to 0 or to '\n'.  */
 DEBUG(D_transport)
   debug_printf("computing maildir size from maildirsize data\n");
 
-while (*endptr++ == '\n')
+for (; *endptr++ == '\n' && *endptr; )
   {
-  if (*endptr == 0) break;
   linecount++;
   ptr = endptr;
   size += (off_t)Ustrtod(ptr, &endptr);
@@ -463,7 +458,7 @@ more than one entry in the file, or if the file is older than 15 minutes. Also,
 just in case there are weird values in the file, recalculate if either of the
 values is negative. */
 
-if (*endptr == 0)
+if (!*endptr)
   {
   if (size < 0 || filecount < 0)
     {
@@ -503,14 +498,13 @@ if (*endptr == 0)
 
 else
   {
-  int len;
   time_t old_latest, new_latest;
   uschar *tempname;
   struct timeval tv;
 
   DEBUG(D_transport)
     {
-    uschar *p = endptr;
+    const uschar * p = endptr;
     while (p > buffer && p[-1] != '\n') p--;
     endptr[1] = 0;
 
@@ -539,9 +533,8 @@ else
   fd = Uopen(tempname, O_RDWR|O_CREAT|O_EXCL, ob->mode ? ob->mode : 0600);
   if (fd >= 0)
     {
-    (void)sprintf(CS buffer, OFF_T_FMT "S,%dC\n" OFF_T_FMT " %d\n",
+    int len = sprintf(CS buffer, OFF_T_FMT "S,%dC\n" OFF_T_FMT " %d\n",
       ob->quota_value, ob->quota_filecount_value, size, filecount);
-    len = Ustrlen(buffer);
     if (write(fd, buffer, len) != len || Urename(tempname, filename) < 0)
       {
       (void)close(fd);

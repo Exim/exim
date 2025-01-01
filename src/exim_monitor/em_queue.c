@@ -132,9 +132,9 @@ so this is a cut-down version, to save including the whole acl.c module (which
 would need conditional compilation to cut most of it out). */
 
 tree_node *
-acl_var_create(uschar *name)
+acl_var_create(const uschar * name)
 {
-tree_node *node, **root;
+tree_node * node, ** root;
 root = name[0] == 'c' ? &acl_var_c : &acl_var_m;
 node = store_get(sizeof(tree_node) + Ustrlen(name), GET_UNTAINTED);
 Ustrcpy(node->name, name);

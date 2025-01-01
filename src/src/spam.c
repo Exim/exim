@@ -20,8 +20,8 @@ uschar spam_score_int_buffer[16];
 uschar spam_bar_buffer[128];
 uschar spam_action_buffer[32];
 uschar spam_report_buffer[32600];
-uschar * prev_user_name = NULL;
-int spam_ok = 0;
+const uschar * cached_user_name = NULL;
+BOOL spam_ok = FALSE;
 int spam_rc = 0;
 uschar *prev_spamd_address_work = NULL;
 
@@ -84,7 +84,7 @@ if (Ustrncmp(param, "time=", 5) == 0)
   if (timesinceday < 0)
     {
     time_t now = time(NULL);
-    struct tm *tmp = localtime(&now);
+    const struct tm * tmp = localtime(&now);
     timesinceday = tmp->tm_hour*3600 + tmp->tm_min*60 + tmp->tm_sec;
     }
 
@@ -137,10 +137,8 @@ badval:
 static int
 spamd_get_server(spamd_address_container ** spamds, int num_servers)
 {
-unsigned int i;
-spamd_address_container * sd;
+unsigned i, pri;
 long weights;
-unsigned pri;
 
 /* speedup, if we have only 1 server */
 if (num_servers == 1)
@@ -149,14 +147,14 @@ if (num_servers == 1)
 /* scan for highest pri */
 for (pri = 0, i = 0; i < num_servers; i++)
   {
-  sd = spamds[i];
+  const spamd_address_container * sd = spamds[i];
   if (!sd->is_failed && sd->priority > pri) pri = sd->priority;
   }
 
 /* get sum of weights */
 for (weights = 0, i = 0; i < num_servers; i++)
   {
-  sd = spamds[i];
+  const spamd_address_container * sd = spamds[i];
   if (!sd->is_failed && sd->priority == pri) weights += sd->weight;
   }
 if (weights == 0)	/* all servers failed */
@@ -164,7 +162,7 @@ if (weights == 0)	/* all servers failed */
 
 for (long rnd = random_number(weights), i = 0; i < num_servers; i++)
   {
-  sd = spamds[i];
+  const spamd_address_container * sd = spamds[i];
   if (!sd->is_failed && sd->priority == pri)
     if ((rnd -= sd->weight) < 0)
       return i;
@@ -180,27 +178,22 @@ int
 spam(const uschar **listptr)
 {
 int sep = 0;
-const uschar *list = *listptr;
-uschar *user_name;
+const uschar * list = *listptr, * user_name;
 unsigned long mbox_size;
-FILE *mbox_file;
+FILE * mbox_file;
 client_conn_ctx spamd_cctx = {.sock = -1};
 uschar spamd_buffer[32600];
-int i, j, offset, result;
-uschar spamd_version[8];
-uschar spamd_short_result[8];
+int i, j, offset;
+uschar spamd_version[8], spamd_short_result[8];
 uschar spamd_score_char;
 double spamd_threshold, spamd_score, spamd_reject_score;
 int spamd_report_offset;
 uschar *p,*q;
-int override = 0;
+BOOL override = FALSE;
 time_t start;
-size_t read, wrote;
-uschar *spamd_address_work;
+ssize_t wrote;
+uschar * spamd_address_work;
 spamd_address_container * sd;
-
-/* stop compiler warning */
-result = 0;
 
 /* find the username from the option list */
 if (!(user_name = string_nextinlist(&list, &sep, NULL, 0)))
@@ -216,7 +209,7 @@ if (Ustrcmp(user_name, "0") == 0 || strcmpic(user_name, US"false") == 0)
 /* if there is an additional option, check if it is "true" */
 if (strcmpic(list,US"true") == 0)
   /* in that case, always return true later */
-  override = 1;
+  override = TRUE;
 
 /* expand spamd_address if needed */
 if (*spamd_address != '$')
@@ -236,10 +229,10 @@ if (  spam_ok
    && prev_spamd_address_work != NULL
    && Ustrcmp(prev_spamd_address_work, spamd_address_work) != 0
    )
-  spam_ok = 0;
+  spam_ok = FALSE;
 
 /* if we scanned for this username last time, just return */
-if (spam_ok && Ustrcmp(prev_user_name, user_name) == 0)
+if (spam_ok && Ustrcmp(cached_user_name, user_name) == 0)
   return override ? OK : spam_rc;
 
 /* make sure the eml mbox file is spooled up */
@@ -323,7 +316,7 @@ start = time(NULL);
       {
       /*XXX could potentially use TFO early-data here */
       if (  (spamd_cctx.sock = ip_streamsocket(sd->hostspec, &errstr, 5, NULL)) >= 0
-         || sd->retry <= 0
+         || sd->retry == 0
 	 )
 	break;
       DEBUG(D_acl) debug_printf_indent("spamd: server %s: retry conn\n", sd->hostspec);
@@ -385,8 +378,8 @@ else
 if (wrote == -1)
   {
   (void)close(spamd_cctx.sock);
-  log_write(0, LOG_MAIN|LOG_PANIC,
-       "%s spamd %s send failed: %s", loglabel, callout_address, strerror(errno));
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s spamd %s send failed: %s",
+	    loglabel, callout_address, strerror(errno));
   goto defer;
   }
 
@@ -407,7 +400,9 @@ Note: poll() is not supported in OSX 10.2 and is reported to be broken in more
 (void)fcntl(spamd_cctx.sock, F_SETFL, O_NONBLOCK);
 do
   {
-  read = fread(spamd_buffer,1,sizeof(spamd_buffer),mbox_file);
+  size_t read = fread(spamd_buffer, 1, sizeof(spamd_buffer), mbox_file);
+  int result;
+
   if (read > 0)
     {
     offset = 0;
@@ -464,16 +459,14 @@ if (!sd->is_rspamd)
 
 /* read spamd response using what's left of the timeout.  */
 memset(spamd_buffer, 0, sizeof(spamd_buffer));
-offset = 0;
-while ((i = ip_recv(&spamd_cctx,
+for (offset = 0; (i = ip_recv(&spamd_cctx,
 		   spamd_buffer + offset,
 		   sizeof(spamd_buffer) - offset - 1,
-		   sd->timeout + start)) > 0)
-  offset += i;
+		   sd->timeout + start)) > 0; ) offset += i;
 spamd_buffer[offset] = '\0';	/* guard byte */
 
 /* error handling */
-if (i <= 0 && errno != 0)
+if (errno != 0)
   {
   log_write(0, LOG_MAIN|LOG_PANIC,
        "%s error reading from spamd %s, socket: %s", loglabel, callout_address, strerror(errno));
@@ -590,7 +583,7 @@ spam_score_int = spam_score_int_buffer;
 
 /* compare threshold against score */
 spam_rc = spamd_score >= spamd_threshold
-  ? OK	/* spam as determined by user's threshold */
+  ? OK		/* spam as determined by user's threshold */
   : FAIL;	/* not spam */
 
 /* remember expanded spamd_address if needed */
@@ -598,8 +591,8 @@ if (spamd_address_work != spamd_address)
   prev_spamd_address_work = string_copy(spamd_address_work);
 
 /* remember user name and "been here" for it */
-prev_user_name = user_name;
-spam_ok = 1;
+cached_user_name = user_name;		/*XXX is this safe vs. store_rst ops? */
+spam_ok = TRUE;
 
 return override
   ? OK		/* always return OK, no matter what the score */

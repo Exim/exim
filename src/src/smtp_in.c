@@ -892,7 +892,7 @@ bdat_getbuf(unsigned * len)
 {
 uschar * buf;
 
-if (chunking_data_left <= 0)
+if (chunking_data_left == 0)
   { *len = 0; return NULL; }
 
 if (*len > chunking_data_left) *len = chunking_data_left;
@@ -1190,7 +1190,7 @@ Returns:       a code identifying the command (enumerated above)
 static int
 smtp_read_command(BOOL check_sync, unsigned buffer_lim)
 {
-int ptr = 0, c, rc;
+int ptr = 0, c;
 BOOL hadnull = FALSE;
 
 had_command_timeout = 0;
@@ -2615,7 +2615,7 @@ if (!f.sender_host_unknown)
 
 /* Expand recipients_max, if needed */
  {
-  uschar * rme = expand_string(recipients_max);
+  const uschar * rme = expand_string(recipients_max);
   recipients_max_expanded = atoi(CCS rme);
  }
 /* For batch SMTP input we are now done. */
@@ -2725,7 +2725,7 @@ p = s;
 do       /* At least once, in case we have an empty string */
   {
   int len;
-  uschar *linebreak = Ustrchr(p, '\n');
+  const uschar * linebreak = Ustrchr(p, '\n');
   ss = string_catn(ss, code, 3);
   if (!linebreak)
     {
@@ -3288,12 +3288,10 @@ smtp_notquit_reason = reason;
 
 GET_OPTION("acl_smtp_notquit");
 if (acl_smtp_notquit && reason)
-  {
-  if ((rc = acl_check(ACL_WHERE_NOTQUIT, NULL, acl_smtp_notquit, &user_msg,
-		      &log_msg)) == ERROR)
+  if (acl_check(ACL_WHERE_NOTQUIT, NULL, acl_smtp_notquit, &user_msg,
+		      &log_msg) == ERROR)
     log_write(0, LOG_MAIN|LOG_PANIC, "ACL for not-QUIT returned ERROR: %s",
       log_msg);
-  }
 
 /* Write an SMTP response if we are expected to give one. As the default
 responses are all internal, they should be reasonable size. */
@@ -3595,12 +3593,11 @@ return rc;
 static int
 qualify_recipient(uschar ** recipient, uschar * smtp_cmd_data, uschar * tag)
 {
-int rd;
 if (f.allow_unqualified_recipient || strcmpic(*recipient, US"postmaster") == 0)
   {
+  int rd = Ustrlen(recipient) + 1;
   DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
     *recipient);
-  rd = Ustrlen(recipient) + 1;
   /* deconst ok as *recipient was not const */
   *recipient = US rewrite_address_qualify(*recipient, TRUE);
   return rd;
@@ -3739,10 +3736,8 @@ int
 smtp_setup_msg(void)
 {
 int done = 0;
-BOOL toomany = FALSE;
-BOOL discarded = FALSE;
-BOOL last_was_rej_mail = FALSE;
-BOOL last_was_rcpt = FALSE;
+BOOL toomany = FALSE, discarded = FALSE, last_was_rej_mail = FALSE,
+    last_was_rcpt = FALSE;
 rmark reset_point = store_mark();
 
 DEBUG(D_receive) debug_printf("smtp_setup_msg entered\n");
@@ -4155,15 +4150,15 @@ while (done <= 0)
 
       else
 	{
-	char * ss;
+	char * t;
 	int codelen = 4;
 	smtp_message_code(&smtp_code, &codelen, &user_msg, NULL, TRUE);
 	s = string_sprintf("%.*s%s", codelen, smtp_code, user_msg);
-	if ((ss = strpbrk(CS s, "\r\n")) != NULL)
+	if ((t= strpbrk(CS s, "\r\n")) != NULL)
 	  {
 	  log_write(0, LOG_MAIN|LOG_PANIC, "EHLO/HELO response must not contain "
 	    "newlines: message truncated: %s", string_printing(s));
-	  *ss = 0;
+	  *t = '\0';
 	  }
 	g = string_cat(NULL, s);
 	}
@@ -4542,8 +4537,7 @@ while (done <= 0)
 
       if (fl.esmtp) for(;;)
 	{
-	uschar *name, *value, *end;
-	unsigned long int size;
+	uschar * name, * value;
 	BOOL arg_error = FALSE;
 
 	if (!extract_option(&name, &value)) break;
@@ -4559,10 +4553,13 @@ while (done <= 0)
 
 	switch(mail_args->value)
 	  {
-	  /* Handle SIZE= by reading the value. We don't do the check till later,
-	  in order to be able to log the sender address on failure. */
+	  /* Handle SIZE= by reading the value. We don't do the check till
+	  later, in order to be able to log the sender address on failure. */
 	  case ENV_MAIL_OPT_SIZE:
-	    if (((size = Ustrtoul(value, &end, 10)), *end == 0))
+	    {
+	    const uschar * s_end;
+	    unsigned long int size = Ustrtoul(value, &s_end, 10);
+	    if (!*s_end)
 	      {
 	      if ((size == ULONG_MAX && errno == ERANGE) || size > INT_MAX)
 		size = INT_MAX;
@@ -4571,14 +4568,15 @@ while (done <= 0)
 	    else
 	      arg_error = TRUE;
 	    break;
+	    }
 
 	  /* If this session was initiated with EHLO and accept_8bitmime is set,
 	  Exim will have indicated that it supports the BODY=8BITMIME option. In
-	  fact, it does not support this according to the RFCs, in that it does not
-	  take any special action for forwarding messages containing 8-bit
-	  characters. That is why accept_8bitmime is not the default setting, but
-	  some sites want the action that is provided. We recognize both "8BITMIME"
-	  and "7BIT" as body types, but take no action. */
+	  fact, it does not support this according to the RFCs, in that it does
+	  not take any special action for forwarding messages containing 8-bit
+	  characters. That is why accept_8bitmime is not the default setting,
+	  but some sites want the action that is provided. We recognize both
+	  "8BITMIME" and "7BIT" as body types, but take no action. */
 	  case ENV_MAIL_OPT_BODY:
 	    if (accept_8bitmime) {
 	      if (strcmpic(value, US"8BITMIME") == 0)
@@ -4599,8 +4597,8 @@ while (done <= 0)
 	    break;
 
 	  /* Handle the two DSN options, but only if configured to do so (which
-	  will have caused "DSN" to be given in the EHLO response). The code itself
-	  is included only if configured in at build time. */
+	  will have caused "DSN" to be given in the EHLO response). The code
+	  itself is included only if configured in at build time. */
 
 	  case ENV_MAIL_OPT_RET:
 	    if (fl.dsn_advertised)
@@ -4642,18 +4640,18 @@ while (done <= 0)
 	      }
 	    break;
 
-	  /* Handle the AUTH extension. If the value given is not "<>" and either
-	  the ACL says "yes" or there is no ACL but the sending host is
-	  authenticated, we set it up as the authenticated sender. However, if the
-	  authenticator set a condition to be tested, we ignore AUTH on MAIL unless
-	  the condition is met. The value of AUTH is an xtext, which means that +,
-	  = and cntrl chars are coded in hex; however "<>" is unaffected by this
-	  coding. */
+	  /* Handle the AUTH extension. If the value given is not "<>" and
+	  either the ACL says "yes" or there is no ACL but the sending host is
+	  authenticated, we set it up as the authenticated sender. However, if
+	  the authenticator set a condition to be tested, we ignore AUTH on MAIL
+	  unless the condition is met. The value of AUTH is an xtext, which
+	  means that +, = and cntrl chars are coded in hex; however "<>" is
+	  unaffected by this coding. */
 	  case ENV_MAIL_OPT_AUTH:
 	    if (Ustrcmp(value, "<>") != 0)
 	      {
 	      int rc;
-	      uschar *ignore_msg;
+	      const uschar * ignore_msg;
 
 	      if (xtextdecode(value, &authenticated_sender) < 0)
 		{
@@ -5351,7 +5349,7 @@ while (done <= 0)
 	done = smtp_handle_acl_fail(ACL_WHERE_VRFY, rc, user_msg, log_msg);
       else
 	{
-	uschar * s = NULL;
+	const uschar * s = NULL;
 	address_item * addr = deliver_make_addr(address, FALSE);
 
 	switch(verify_address(addr, NULL, vopt_is_recipient | vopt_qualify, -1,
@@ -5362,15 +5360,15 @@ while (done <= 0)
 	    break;
 
 	  case DEFER:
-	    s = (addr->user_message != NULL)?
-	      string_sprintf("451 <%s> %s", address, addr->user_message) :
-	      string_sprintf("451 Cannot resolve <%s> at this time", address);
+	    s = addr->user_message
+	      ? string_sprintf("451 <%s> %s", address, addr->user_message)
+	      : string_sprintf("451 Cannot resolve <%s> at this time", address);
 	    break;
 
 	  case FAIL:
-	    s = (addr->user_message != NULL)?
-	      string_sprintf("550 <%s> %s", address, addr->user_message) :
-	      string_sprintf("550 <%s> is not deliverable", address);
+	    s = addr->user_message
+	      ? string_sprintf("550 <%s> %s", address, addr->user_message)
+	      : string_sprintf("550 <%s> is not deliverable", address);
 	    log_write(0, LOG_MAIN, "VRFY failed for %s %s",
 	      smtp_cmd_argument, host_and_ident(TRUE));
 	    break;
@@ -5683,7 +5681,7 @@ while (done <= 0)
       GET_OPTION("smtp_etrn_command");
       if (smtp_etrn_command)
 	{
-	uschar *error;
+	uschar * error;
 	BOOL rc;
 	etrn_command = smtp_etrn_command;
 	deliver_domain = smtp_cmd_data;

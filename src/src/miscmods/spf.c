@@ -159,12 +159,12 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 	  }
 
 	/* require 1 byte for the chunk_len */
-	for (int off = 0; off < rr->size - 1; off += chunk_len)
+	for (int offset = 0; offset < rr->size - 1; offset += chunk_len)
 	  {
-	  if (  !(chunk_len = s[off++])
-	     || rr->size < off + chunk_len	/* ignore bogus size chunks */
+	  if (  !(chunk_len = s[offset++])
+	     || rr->size < offset + chunk_len	/* ignore bogus size chunks */
 	     ) break;
-	  g = string_catn(g, s+off, chunk_len);
+	  g = string_catn(g, s+offset , chunk_len);
 	  }
 	if (!g)
 	  continue;

@@ -53,7 +53,7 @@ static BOOL
 stdin_refill(void)
 {
 size_t rc = fread(stdin_buf, 1, sizeof(stdin_buf), stdin);
-if (rc <= 0)
+if (rc == 0)
   {
   if (had_data_timeout)
     {
@@ -351,9 +351,10 @@ Returns:     it doesn't
 */
 
 void
-receive_bomb_out(uschar *reason, uschar *msg)
+receive_bomb_out(const uschar * reason, uschar * msg)
 {
-  static BOOL already_bombing_out;
+static BOOL already_bombing_out;
+
 /* The smtp_notquit_exit() below can call ACLs which can trigger recursive
 timeouts, if someone has something slow in their quit ACL.  Since the only
 things we should be doing are to close down cleanly ASAP, on the second
@@ -517,7 +518,7 @@ receive_add_recipient(const uschar * recipient, int pno)
 {
 if (recipients_count >= recipients_list_max)
   {
-  recipient_item *oldlist = recipients_list;
+  const recipient_item * oldlist = recipients_list;
   int oldmax = recipients_list_max;
 
   const int safe_recipients_limit = INT_MAX / 2 / sizeof(recipient_item);
@@ -794,7 +795,7 @@ were saved up while testing for an ending dot. */
 
 if (ch_state != 1)
   {
-  static uschar *ends[] = { US"\n", NULL, US"\n", US".\n", US".\n" };
+  static const uschar * ends[] = { US"\n", NULL, US"\n", US".\n", US".\n" };
   if (fputs(CS ends[ch_state], fout) == EOF) return END_WERROR;
   message_size += Ustrlen(ends[ch_state]);
   body_linecount++;
@@ -1100,7 +1101,7 @@ for (;;)
   if (chunking_data_left > 0)
     {
     unsigned len = MAX(chunking_data_left, thismessage_size_limit - message_size + 1);
-    uschar * buf = bdat_getbuf(&len);
+    const uschar * buf = bdat_getbuf(&len);
 
     if (!buf) return END_EOF;
     message_size += len;
@@ -1443,7 +1444,7 @@ uschar * rfc822_file_path = NULL;
 unsigned long mbox_size;
 uschar *user_msg, *log_msg;
 int mime_part_count_buffer = -1;
-uschar * mbox_filename;
+const uschar * mbox_filename;
 int rc = OK;
 
 /* check if it is a MIME message */
@@ -2198,7 +2199,7 @@ OVERSIZE:
     {
     if (!f.sender_address_forced)
       {
-      uschar * uucp_sender;
+      const uschar * uucp_sender;
       GET_OPTION("uucp_from_sender");
       if (!(uucp_sender = expand_string(uucp_from_sender)))
         log_write(0, LOG_MAIN|LOG_PANIC,
@@ -2207,8 +2208,8 @@ OVERSIZE:
       else
         {
         int start, end, domain;
-        uschar *errmess;
-        uschar *newsender = parse_extract_address(uucp_sender, &errmess,
+        uschar * errmess;
+        uschar * newsender = parse_extract_address(uucp_sender, &errmess,
           &start, &end, &domain, TRUE);
         if (newsender)
           {
@@ -2271,8 +2272,8 @@ OVERSIZE:
     the line, stomp on them here. */
 
     if (had_zero > 0)
-      for (uschar * p = next->text; p < next->text + ptr; p++) if (*p == 0)
-       	*p = '?';
+      for (uschar * t = next->text; t < next->text + ptr; t++) if (*t == '\0')
+       	*t = '?';
 
     /* It is perfectly legal to have an empty continuation line
     at the end of a header, but it is confusing to humans
@@ -2645,8 +2646,8 @@ if (extract_recip)
 
       while (*s)
         {
-        uschar *ss = parse_find_address_end(s, FALSE);
-        uschar *recipient, *errmess, *pp;
+        uschar * ss = parse_find_address_end(s, FALSE);
+        uschar * recipient, * errmess, * pp;
         int start, end, domain;
 
         /* Check on maximum */
@@ -3258,7 +3259,7 @@ of fwrite() isn't inspected; instead we call ferror() below. */
 fprintf(spool_data_file, "%s-D\n", message_id);
 if (next)
   {
-  uschar *s = next->text;
+  const uschar * s = next->text;
   int len = next->slen;
   if (fwrite(s, 1, len, spool_data_file) == len) /* "if" for compiler quietening */
     body_linecount++;                 /* Assumes only 1 line */
@@ -4204,8 +4205,8 @@ text. By expanding $h_subject: we make use of the MIME decoding. */
 
 if (LOGGING(subject) && subject_header)
   {
-  uschar *p = big_buffer;
-  uschar *ss = expand_string(US"$h_subject:");
+  uschar * p = big_buffer;
+  const uschar * ss = expand_string(US"$h_subject:");
 
   /* Backslash-quote any double quotes or backslashes so as to make a
   a C-like string, and turn any non-printers into escape sequences. */
@@ -4260,7 +4261,7 @@ if (message_logs && !blackholed_by)
       }
     else
       {
-      uschar * now = tod_stamp(tod_log);
+      const uschar * now = tod_stamp(tod_log);
       /* Drop the initial "<= " */
       fprintf(message_log, "%s Received from %s\n", now, g->s+3);
       if (f.deliver_freeze) fprintf(message_log, "%s frozen by %s\n", now,
@@ -4345,7 +4346,8 @@ for this message. */
 */
 if (cutthrough.cctx.sock >= 0 && cutthrough.delivery)
   {
-  uschar * msg = cutthrough_finaldot();	/* Ask the target system to accept the message */
+  /* Ask the target system to accept the message */
+  const uschar * msg = cutthrough_finaldot();
 					/* Logging was done in finaldot() */
   switch(msg[0])
     {

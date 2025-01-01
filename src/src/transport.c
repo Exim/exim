@@ -198,7 +198,7 @@ transport is permitted only for local transports. */
 
 for (transport_instance * t = transports; t; t = t->drinst.next)
   {
-  transport_info * ti = t->drinst.info;
+  const transport_info * ti = t->drinst.info;
   if (!ti->local && t->shadow)
     log_write_die(0, LOG_CONFIG,
       "shadow transport not allowed on non-local transport %s", t->drinst.name);
@@ -467,7 +467,7 @@ Arguments:
   tctx       transport context - processing to be done during output,
 		and file descriptor to write to
   chunk      pointer to data to write
-  len        length of data to write
+  dlen       length of data to write
 
 In addition, the static nl_xxx variables must be set as required.
 
@@ -475,10 +475,9 @@ Returns:     TRUE on success, FALSE on failure (with errno preserved)
 */
 
 BOOL
-write_chunk(transport_ctx * tctx, const uschar * chunk, int len)
+write_chunk(transport_ctx * tctx, const uschar * chunk, int dlen)
 {
-const uschar * start = chunk;
-const uschar * end = chunk + len;
+const uschar * start = chunk, * end = chunk + dlen;
 int mlen = DELIVER_OUT_BUFFER_SIZE - nl_escape_length - 2;
 
 /* The assumption is made that the check string will never stretch over move
@@ -490,7 +489,7 @@ match. */
 
 if (nl_partial_match >= 0)
   {
-  if (nl_check_length > 0 && len >= nl_check_length &&
+  if (nl_check_length > 0 && dlen >= nl_check_length &&
       Ustrncmp(start, nl_check + nl_partial_match,
         nl_check_length - nl_partial_match) == 0)
     {
@@ -517,13 +516,14 @@ possible. */
 
 for (const uschar * ptr = start; ptr < end; ptr++)
   {
-  int ch, len;
+  int fl_len;
+  uschar ch;
 
   /* Flush the buffer if it has reached the threshold - we want to leave enough
   room for the next uschar, plus a possible extra CR for an LF, plus the escape
   string. */
 
-  if ((len = chunk_ptr - deliver_out_buffer) > mlen)
+  if ((fl_len = chunk_ptr - deliver_out_buffer) > mlen)
     {
     DEBUG(D_transport) debug_printf("flushing headers buffer\n");
 
@@ -532,14 +532,14 @@ for (const uschar * ptr = start; ptr < end; ptr++)
 
     if (tctx->options & topt_use_bdat  &&  tctx->chunk_cb)
       {
-      if (  tctx->chunk_cb(tctx, (unsigned)len, 0) != OK
-	 || !transport_write_block(tctx, deliver_out_buffer, len, FALSE)
+      if (  tctx->chunk_cb(tctx, (unsigned)fl_len, 0) != OK
+	 || !transport_write_block(tctx, deliver_out_buffer, fl_len, FALSE)
 	 || tctx->chunk_cb(tctx, 0, tc_reap_prev) != OK
 	 )
 	return FALSE;
       }
     else
-      if (!transport_write_block(tctx, deliver_out_buffer, len, FALSE))
+      if (!transport_write_block(tctx, deliver_out_buffer, fl_len, FALSE))
 	return FALSE;
     chunk_ptr = deliver_out_buffer;
     }
@@ -1005,7 +1005,7 @@ if (!(tctx->options & topt_no_headers))
   if (tctx->options & topt_add_return_path)
     {
     int n;
-    uschar * s = string_sprintf("Return-path: <%.*s>\n%n",
+    const uschar * s = string_sprintf("Return-path: <%.*s>\n%n",
                           EXIM_EMAILADDR_MAX, return_path, &n);
     if (!write_chunk(tctx, s, n)) goto bad;
     }
@@ -1039,7 +1039,7 @@ if (!(tctx->options & topt_no_headers))
 
   if (tctx->options & topt_add_delivery_date)
     {
-    uschar * s = tod_stamp(tod_full);
+    const uschar * s = tod_stamp(tod_full);
 
     if (  !write_chunk(tctx, US"Delivery-date: ", 15)
        || !write_chunk(tctx, s, Ustrlen(s))
@@ -1176,18 +1176,18 @@ DEBUG(D_transport)
 
 if (!(tctx->options & topt_no_body))
   {
-  unsigned long size = size_limit > 0 ? size_limit : ULONG_MAX;
+  unsigned long bsize = size_limit > 0 ? size_limit : ULONG_MAX;
 
   nl_check_length = abs(nl_check_length);
   nl_partial_match = 0;
   if (lseek(deliver_datafile, spool_data_start_offset(message_id), SEEK_SET) < 0)
     return FALSE;
-  while (  (len = MIN(DELIVER_IN_BUFFER_SIZE, size)) > 0
+  while (  (len = MIN(DELIVER_IN_BUFFER_SIZE, bsize)) > 0
 	&& (len = read(deliver_datafile, deliver_in_buffer, len)) > 0)
     {
     if (!write_chunk(tctx, deliver_in_buffer, len))
       return FALSE;
-    size -= len;
+    bsize -= len;
     }
 
   /* A read error on the body will have left len == -1 and errno set. */
@@ -1304,7 +1304,7 @@ smtp dots, or check string processing. */
 if (pipe(pfd) != 0) goto TIDY_UP;      /* errno set */
 if ((write_pid = exim_fork(US"tpt-filter-writer")) == 0)
   {
-  BOOL rc;
+  BOOL written_ok;
   (void)close(fd_read);
   (void)close(pfd[pipe_read]);
   nl_check_length = nl_escape_length = 0;
@@ -1313,10 +1313,10 @@ if ((write_pid = exim_fork(US"tpt-filter-writer")) == 0)
   tctx->check_string = tctx->escape_string = NULL;
   tctx->options &= ~(topt_use_crlf | topt_end_dot | topt_use_bdat | topt_no_flush);
 
-  rc = internal_transport_write_message(tctx, size_limit);
+  written_ok = internal_transport_write_message(tctx, size_limit);
 
   save_errno = errno;
-  if (  write(pfd[pipe_write], (void *)&rc, sizeof(BOOL))
+  if (  write(pfd[pipe_write], (void *)&written_ok, sizeof(BOOL))
         != sizeof(BOOL)
      || write(pfd[pipe_write], (void *)&save_errno, sizeof(int))
         != sizeof(int)
@@ -1325,7 +1325,7 @@ if ((write_pid = exim_fork(US"tpt-filter-writer")) == 0)
      || write(pfd[pipe_write], (void *)&tctx->addr->delivery_time, sizeof(struct timeval))
         != sizeof(struct timeval)
      )
-    rc = FALSE;	/* compiler quietening */
+    written_ok = FALSE;	/* compiler quietening */
   exim_underbar_exit(EXIT_SUCCESS);
   }
 save_errno = errno;
@@ -1905,9 +1905,9 @@ while (1)
 
     /* Search for a continuation */
 
-    for (int i = host_record->sequence - 1; i >= 0 && !newr; i--)
+    for (int j = host_record->sequence - 1; j >= 0 && !newr; j--)
       {
-      sprintf(CS buffer, "%.200s:%d", hostname, i);
+      sprintf(CS buffer, "%.200s:%d", hostname, j);
       newr = dbfn_read(dbp, buffer);
       }
 
@@ -2331,14 +2331,10 @@ if (flags & TSUC_EXPAND_ARGS)
       /* If *s != 0 we have run out of argument slots. */
       if (*s)
         {
-        uschar *msg = string_sprintf("Too many arguments in $address_pipe "
+        uschar * msg = string_sprintf("Too many arguments in $address_pipe "
           "\"%s\" in %s", addr->local_part + 1, etext);
-        if (addr)
-          {
-          addr->transport_return = FAIL;
-          addr->message = msg;
-          }
-        else *errptr = msg;
+	addr->transport_return = FAIL;
+	addr->message = msg;
         return FALSE;
         }
 
@@ -2378,9 +2374,9 @@ if (flags & TSUC_EXPAND_ARGS)
            address_pipe_argv[address_pipe_i];
            address_pipe_i++, argcount++)
 	{
-        uschar * s = address_pipe_argv[address_pipe_i];
-	if (arg_is_tainted(s, i, addr, etext, errptr)) return FALSE;
-        argv[i++] = s;
+        uschar * t = address_pipe_argv[address_pipe_i];
+	if (arg_is_tainted(t, i, addr, etext, errptr)) return FALSE;
+        argv[i++] = t;
 	}
 
       /* Subtract one since we replace $address_pipe */

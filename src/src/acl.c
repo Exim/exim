@@ -30,7 +30,7 @@ enum { ACL_ACCEPT, ACL_DEFER, ACL_DENY, ACL_DISCARD, ACL_DROP, ACL_REQUIRE,
 
 /* ACL verbs */
 
-static uschar *verbs[] = {
+static const uschar * verbs[] = {
     [ACL_ACCEPT] =	US"accept",
     [ACL_DEFER] =	US"defer",
     [ACL_DENY] =	US"deny",
@@ -732,7 +732,7 @@ find_control(const uschar * name, control_def * ol, int last)
 for (int first = 0; last > first; )
   {
   int middle = (first + last)/2;
-  uschar * s =  ol[middle].name;
+  const uschar * s =  ol[middle].name;
   int c = Ustrncmp(name, s, Ustrlen(s));
   if (c == 0) return middle;
   else if (c > 0) first = middle + 1;
@@ -758,7 +758,7 @@ Returns:      offset in list, or -1 if not found
 */
 
 static int
-acl_findcondition(uschar * name, condition_def * list, int end)
+acl_findcondition(const uschar * name, const condition_def * list, int end)
 {
 for (int start = 0; start < end; )
   {
@@ -787,7 +787,7 @@ Returns:      offset in list, or -1 if not found
 */
 
 static int
-acl_checkname(uschar *name, uschar **list, int end)
+acl_checkname(const uschar * name, const uschar ** list, int end)
 {
 for (int start = 0; start < end; )
   {
@@ -1111,10 +1111,10 @@ else
 
 for (p = q; *p; p = q)
   {
-  const uschar *s;
+  const uschar * s;
   uschar * hdr;
   int newtype = htype_add_bot;
-  header_line **hptr = &acl_added_headers;
+  header_line ** hptr = &acl_added_headers;
 
   /* Find next header line within the string */
 
@@ -1181,7 +1181,6 @@ for (p = q; *p; p = q)
     h->type = newtype;
     h->slen = hlen;
     *hptr = h;
-    hptr = &h->next;
     }
   }
 }
@@ -1250,7 +1249,7 @@ Returns:         nothing
 */
 
 static void
-acl_warn(int where, uschar * user_message, uschar * log_message)
+acl_warn(int where, const uschar * user_message, const uschar * log_message)
 {
 if (log_message && log_message != user_message)
   {
@@ -1389,8 +1388,8 @@ Returns:     CSA_OK             successfully authorized
 */
 
 static int
-acl_verify_csa_address(dns_answer *dnsa, dns_scan *dnss, int reset,
-                       uschar *target)
+acl_verify_csa_address(const dns_answer * dnsa, dns_scan * dnss, int reset,
+                       const uschar * target)
 {
 int rc = CSA_FAIL_NOADDR;
 
@@ -2389,7 +2388,7 @@ static int
 decode_control(const uschar *arg, const uschar **pptr, int where, uschar **log_msgptr)
 {
 int idx, len;
-control_def * d;
+const control_def * d;
 uschar c;
 
 if (  (idx = find_control(arg, controls_list, nelem(controls_list))) < 0
@@ -3123,16 +3122,13 @@ Returns:       OK        - Completed.
 */
 
 static int
-acl_udpsend(const uschar *arg, uschar **log_msgptr)
+acl_udpsend(const uschar * arg, uschar ** log_msgptr)
 {
 int sep = 0;
-uschar *hostname;
-uschar *portstr;
-uschar *portend;
-host_item *h;
-int portnum;
-int len;
-int r, s;
+uschar * hostname;
+const uschar * portstr, * portend;
+host_item * h;
+int portnum, len, r, s;
 uschar * errstr;
 
 hostname = string_nextinlist(&arg, &sep, NULL, 0);
@@ -3535,7 +3531,7 @@ for (; cb; cb = cb->next)
 	case CONTROL_DSCP:
 	  if (*p == '/')
 	    {
-	    int fd, af, level, optname, value;
+	    int fd, af, socklevel, optname, value;
 	    /* If we are acting on stdin, the setsockopt may fail if stdin is not
 	    a socket; we can accept that, we'll just debug-log failures anyway. */
 	    fd = fileno(smtp_in);
@@ -3546,8 +3542,8 @@ for (; cb; cb = cb->next)
 		    strerror(errno));
 	      break;
 	      }
-	    if (dscp_lookup(p+1, af, &level, &optname, &value))
-	      if (setsockopt(fd, level, optname, &value, sizeof(value)) < 0)
+	    if (dscp_lookup(p+1, af, &socklevel, &optname, &value))
+	      if (setsockopt(fd, socklevel, optname, &value, sizeof(value)) < 0)
 		{
 		HDEBUG(D_acl) debug_printf_indent("failed to set input DSCP[%s]: %s\n",
 		    p+1, strerror(errno));
@@ -3696,7 +3692,7 @@ for (; cb; cb = cb->next)
 
 	case CONTROL_DEBUG:
 	  {
-	  uschar * debug_tag = NULL, * debug_opts = NULL;
+	  const uschar * debug_tag = NULL, * debug_opts = NULL;
 	  BOOL kill = FALSE, stop = FALSE;
 
 	  while (*p == '/')
@@ -3972,7 +3968,7 @@ for (; cb; cb = cb->next)
       {
       misc_module_info * mi = misc_mod_find(US"dmarc", &log_message);
       typedef uschar * (*efn_t)(int);
-      uschar * expanded_query;
+      const uschar * expanded_query;
 
       if (!mi)
 	{ rc = DEFER; break; }			/* shouldn't happen */
@@ -4015,14 +4011,16 @@ for (; cb; cb = cb->next)
       if (!tls_in.cipher) rc = FAIL;
       else
 	{
-	uschar *endcipher = NULL;
-	uschar *cipher = Ustrchr(tls_in.cipher, ':');
-	if (!cipher) cipher = tls_in.cipher; else
+	uschar * endcipher = NULL;
+	const uschar * cipher = Ustrchr(tls_in.cipher, ':');
+
+	if (!cipher) cipher = tls_in.cipher;
+	else
 	  {
 	  endcipher = Ustrchr(++cipher, ':');
 	  if (endcipher) *endcipher = 0;
 	  }
-	rc = match_isinlist(cipher, &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
+	rc = match_isinlist(cipher, &arg, 0, NULL,NULL, MCL_STRING, TRUE, NULL);
 	if (endcipher) *endcipher = ':';
 	}
       break;
@@ -4107,7 +4105,7 @@ for (; cb; cb = cb->next)
       const uschar * list = arg;
       BOOL defer_ok = FALSE;
       int timeout = 0, sep = -'/';
-      uschar * ss = string_nextinlist(&list, &sep, NULL, 0);
+      const uschar * ss = string_nextinlist(&list, &sep, NULL, 0);
 
       for (uschar * opt; opt = string_nextinlist(&list, &sep, NULL, 0); )
         if (strcmpic(opt, US"defer_ok") == 0)
@@ -4575,7 +4573,7 @@ read an ACL from a file, and save it so it can be re-used. */
 
 if (Ustrchr(ss, ' ') == NULL)
   {
-  tree_node * t = tree_search(acl_anchor, ss);
+  const tree_node * t = tree_search(acl_anchor, ss);
   if (t)
     {
     if (!(acl = (acl_block *)(t->data.ptr)))
@@ -5130,7 +5128,7 @@ Returns   the pointer to variable's tree node
 */
 
 tree_node *
-acl_var_create(uschar * name)
+acl_var_create(const uschar * name)
 {
 tree_node * node, ** root = name[0] == 'c' ? &acl_var_c : &acl_var_m;
 if (!(node = tree_search(*root, name)))

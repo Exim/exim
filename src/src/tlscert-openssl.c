@@ -50,10 +50,10 @@ if ((fail = PEM_write_bio_X509(bp, (X509 *)cert) ? 0 : 1))
 else
   {
   char * cp = CS buf;
-  int n;
   buflen -= 2;
   for(;;)
     {
+    int n;
     if ((n = BIO_gets(bp, cp, (int)buflen)) <= 0) break;
     cp += n+1;
     buflen -= n+1;
@@ -124,7 +124,7 @@ return cp;
 }
 
 static uschar *
-asn1_time_copy(const ASN1_TIME * asntime, uschar * mod)
+asn1_time_copy(const ASN1_TIME * asntime, const uschar * mod)
 {
 uschar * s = NULL;
 BIO * bp = BIO_new(BIO_s_mem());
@@ -140,7 +140,6 @@ if (mod && Ustrcmp(mod, "raw") == 0)		/* native ASN */
 else
   {
   struct tm tm;
-  struct tm * tm_p = &tm;
   BOOL mod_tz = TRUE;
   uschar * tz = to_tz(US"GMT0");    /* need to call strptime with baseline TZ */
 
@@ -163,6 +162,7 @@ else
 
     else
       {
+      const struct tm * tm_p = &tm;
       if (!f.timestamps_utc)	/* decoded string in local TZ */
 	{				/* shift to local TZ */
 	restore_tz(tz);
@@ -210,26 +210,26 @@ Return:
 */
 
 uschar *
-tls_cert_issuer(void * cert, uschar * mod)
+tls_cert_issuer(void * cert, const uschar * mod)
 {
 uschar * cp = x509_name_copy(X509_get_issuer_name((X509 *)cert));
 return mod ? tls_field_from_dn(cp, mod) : cp;
 }
 
 uschar *
-tls_cert_not_before(void * cert, uschar * mod)
+tls_cert_not_before(void * cert, const uschar * mod)
 {
 return asn1_time_copy(X509_get_notBefore((X509 *)cert), mod);
 }
 
 uschar *
-tls_cert_not_after(void * cert, uschar * mod)
+tls_cert_not_after(void * cert, const uschar * mod)
 {
 return asn1_time_copy(X509_get_notAfter((X509 *)cert), mod);
 }
 
 uschar *
-tls_cert_serial_number(void * cert, uschar * mod)
+tls_cert_serial_number(void * cert, const uschar * mod)
 {
 uschar txt[256];
 BIO * bp = BIO_new(BIO_s_mem());
@@ -247,7 +247,7 @@ return string_copynlc(txt, len);	/* lowercase */
 }
 
 uschar *
-tls_cert_signature(void * cert, uschar * mod)
+tls_cert_signature(void * cert, const uschar * mod)
 {
 uschar * cp = NULL;
 BIO * bp = BIO_new(BIO_s_mem());
@@ -281,7 +281,7 @@ return cp;
 }
 
 uschar *
-tls_cert_signature_algorithm(void * cert, uschar * mod)
+tls_cert_signature_algorithm(void * cert, const uschar * mod)
 {
 uschar * cp = NULL;
 BIO * bp = BIO_new(BIO_s_mem());
@@ -299,7 +299,7 @@ if (X509_print_ex(bp, (X509 *)cert, 0,
 
   /* Strip leading "    Signature Algorithm: " and trailing newline */
   while (*cp && *cp != ':') { cp++; len--; }
-  do { cp++; len--; } while (*cp && *cp == ' ');
+  do { cp++; len--; } while (*cp == ' ');
   if (cp[len-1] == '\n') len--;
 
   cp = string_copyn(cp, len);
@@ -309,14 +309,14 @@ return cp;
 }
 
 uschar *
-tls_cert_subject(void * cert, uschar * mod)
+tls_cert_subject(void * cert, const uschar * mod)
 {
 uschar * cp = x509_name_copy(X509_get_subject_name((X509 *)cert));
 return mod ? tls_field_from_dn(cp, mod) : cp;
 }
 
 uschar *
-tls_cert_version(void * cert, uschar * mod)
+tls_cert_version(void * cert, const uschar * mod)
 {
 return string_sprintf("%ld", X509_get_version((X509 *)cert));
 }
@@ -358,7 +358,7 @@ return cp3;
 }
 
 uschar *
-tls_cert_subject_altname(void * cert, uschar * mod)
+tls_cert_subject_altname(void * cert, const uschar * mod)
 {
 gstring * list = NULL;
 STACK_OF(GENERAL_NAME) * san = (STACK_OF(GENERAL_NAME) *)
@@ -421,7 +421,7 @@ return string_from_gstring(list);
 }
 
 uschar *
-tls_cert_ocsp_uri(void * cert, uschar * mod)
+tls_cert_ocsp_uri(void * cert, const uschar * mod)
 {
 STACK_OF(ACCESS_DESCRIPTION) * ads = (STACK_OF(ACCESS_DESCRIPTION) *)
   X509_get_ext_d2i((X509 *)cert, NID_info_access, NULL, NULL);
@@ -446,7 +446,7 @@ return string_from_gstring(list);
 }
 
 uschar *
-tls_cert_crl_uri(void * cert, uschar * mod)
+tls_cert_crl_uri(void * cert, const uschar * mod)
 {
 STACK_OF(DIST_POINT) * dps = (STACK_OF(DIST_POINT) *)
   X509_get_ext_d2i((X509 *)cert,  NID_crl_distribution_points,

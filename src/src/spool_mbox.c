@@ -31,13 +31,12 @@ Normally, source_file_override is NULL
 
 FILE *
 spool_mbox(unsigned long *mbox_file_size, const uschar *source_file_override,
-  uschar ** mbox_fname)
+  const uschar ** mbox_fname)
 {
 uschar message_subdir[2];
 uschar buffer[16384];
-uschar *temp_string;
-uschar *mbox_path;
-FILE *mbox_file = NULL, *l_data_file = NULL, *yield = NULL;
+const uschar * s, * mbox_path;
+FILE * mbox_file = NULL, * l_data_file = NULL, * yield = NULL;
 struct stat statbuf;
 int j;
 rmark reset_point;
@@ -52,11 +51,11 @@ reset_point = store_mark();
 if (!spool_mbox_ok)
   {
   /* create temp directory inside scan dir, directory_make works recursively */
-  temp_string = string_sprintf("scan/%s", message_id);
-  if (!directory_make(spool_directory, temp_string, 0750, FALSE))
+  s = string_sprintf("scan/%s", message_id);
+  if (!directory_make(spool_directory, s, 0750, FALSE))
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "%s",
-      string_open_failed("scan directory %s/scan/%s", spool_directory, temp_string));
+      string_open_failed("scan directory %s/scan/%s", spool_directory, s));
     goto OUT;
     }
 
@@ -74,13 +73,13 @@ if (!spool_mbox_ok)
   contents of the Received: header line. However, the code below will use it
   if it should become available in future. */
 
-  temp_string = expand_string(
+  s = expand_string(
     US"From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n"
     "${if def:sender_address{X-Envelope-From: <${sender_address}>\n}}"
     "${if def:recipients{X-Envelope-To: ${recipients}\n}}");
 
-  if (temp_string)
-    if (fwrite(temp_string, Ustrlen(temp_string), 1, mbox_file) != 1)
+  if (s)
+    if (fwrite(s, Ustrlen(s), 1, mbox_file) != 1)
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "Error/short write while writing \
 	  mailbox headers to %s", mbox_path);
@@ -120,8 +119,8 @@ if (!spool_mbox_ok)
     for (int i = 0; i < 2; i++)
       {
       set_subdir_str(message_subdir, message_id, i);
-      temp_string = spool_fname(US"input", message_subdir, message_id, US"-D");
-      if ((l_data_file = Ufopen(temp_string, "rb"))) break;
+      s = spool_fname(US"input", message_subdir, message_id, US"-D");
+      if ((l_data_file = Ufopen(s, "rb"))) break;
       }
 
   if (!l_data_file)

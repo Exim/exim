@@ -407,18 +407,14 @@ if (!recurse)
     p += sprintf(CS p, " -q%s", extras);
 
   if (deliver_selectstring)
-    {
-    snprintf(CS p, big_buffer_size - (p - big_buffer), " -R%s %s",
+    p += snprintf(CS p, big_buffer_size - (p - big_buffer), " -R%s %s",
       f.deliver_selectstring_regex ? "r" : "", deliver_selectstring);
-    p += Ustrlen(CCS p);
-    }
 
   if (deliver_selectstring_sender)
-    {
+    /* p +=	finished with p */
     snprintf(CS p, big_buffer_size - (p - big_buffer), " -S%s %s",
-      f.deliver_selectstring_sender_regex ? "r" : "", deliver_selectstring_sender);
-    p += Ustrlen(CCS p);
-    }
+      f.deliver_selectstring_sender_regex ? "r" : "",
+      deliver_selectstring_sender);
 
   log_detail = string_copy(big_buffer);
   if (q->name)
@@ -516,7 +512,7 @@ for (int i = queue_run_in_order ? -1 : 0;
 
     if (q->queue_2stage && !queue_run_in_order)
       {
-      int i;
+      int j;
       if (qpid[
 #ifndef MEASURE_TIMING
 	      f.running_in_test_harness ? 0 :
@@ -529,14 +525,14 @@ for (int i = queue_run_in_order ? -1 : 0;
 	DEBUG(D_queue_run)
 	  debug_printf("q2stage reaped child %d\n", (int)qpid[0]);
 #ifndef MEASURE_TIMING
-	if (f.running_in_test_harness) i = 0; else
+	if (f.running_in_test_harness) j = 0; else
 #endif
-	  for (i = 0; i < nelem(qpid) - 1; i++) qpid[i] = qpid[i+1];
-	qpid[i] = 0;
+	  for (j = 0; j < nelem(qpid) - 1; j++) qpid[j] = qpid[j+1];
+	qpid[j] = 0;
 	}
       else
-	for (i = 0; qpid[i]; ) i++;		/* find first spare slot */
-      if ((qpid[i] = exim_fork(US"qrun-phase-one")))
+	for (j = 0; qpid[j]; ) j++;		/* find first spare slot */
+      if ((qpid[j] = exim_fork(US"qrun-phase-one")))
 	continue;	/* parent loops around */
       }
 
@@ -899,7 +895,7 @@ for (queue_filename * fq = queue_get_spool_list(-1,	/* entire queue */
      && spool_read_header(fq->text, FALSE, TRUE) == spool_read_OK
      )
     {
-    uschar * s;
+    const uschar * s;
     for (const recipient_item * r = recipients_list;
 	r < recipients_list + recipients_count && yield != OK; r++)
 
@@ -1196,12 +1192,10 @@ BOOL
 queue_action(const uschar * id, int action, const uschar ** argv, int argc,
   int recipients_arg)
 {
-BOOL yield = TRUE;
-BOOL removed = FALSE;
-struct passwd *pw;
-uschar *doing = NULL;
-uschar *username;
-uschar *errmsg;
+BOOL yield = TRUE, removed = FALSE;
+const struct passwd * pw;
+const uschar * doing = NULL;
+uschar * username, * errmsg;
 uschar spoolname[32];
 
 /* Set the global message_id variable, used when re-writing spool files. This
@@ -1215,7 +1209,7 @@ done. Only admin users may read the spool files. */
 if (action >= MSG_SHOW_BODY)
   {
   int fd, rc;
-  uschar *subdirectory, *suffix;
+  const uschar * subdirectory, * suffix;
 
   if (!f.admin_user)
     {
@@ -1329,8 +1323,8 @@ if (!f.admin_user && (action != MSG_REMOVE || real_uid != originator_uid))
 /* Set up the user name for logging. */
 
 pw = getpwuid(real_uid);
-username = (pw != NULL)?
-  US pw->pw_name : string_sprintf("uid %ld", (long int)real_uid);
+username = pw
+  ? US pw->pw_name : string_sprintf("uid %ld", (long int)real_uid);
 
 /* Take the necessary action. */
 
@@ -1432,8 +1426,6 @@ switch(action)
 
       for (int i = 0; i < 3; i++)
 	{
-	uschar * fname;
-
 	suffix[1] = (US"DHJ")[i];
 	fname = spool_fname(US"input", message_subdir, id, suffix);
 
@@ -1465,19 +1457,19 @@ switch(action)
 #ifndef DISABLE_EVENT
       if (event_action) for (int i = 0; i < recipients_count; i++)
 	{
-	tree_node *delivered =
+	const tree_node * delivered =
 	  tree_search(tree_nonrecipients, recipients_list[i].address);
 	if (!delivered)
 	  {
 	  const uschar * save_local = deliver_localpart;
 	  const uschar * save_domain = deliver_domain;
 	  const uschar * addr = recipients_list[i].address;
-	  uschar * errmsg = NULL;
+	  uschar * err = NULL;
 	  int start, end, dom;
 
-	  if (!parse_extract_address(addr, &errmsg, &start, &end, &dom, TRUE))
+	  if (!parse_extract_address(addr, &err, &start, &end, &dom, TRUE))
 	    log_write(0, LOG_MAIN|LOG_PANIC,
-	      "failed to parse address '%.100s'\n: %s", addr, errmsg);
+	      "failed to parse address '%.100s'\n: %s", addr, err);
 	  else
 	    {
 	    deliver_localpart =
@@ -1657,8 +1649,7 @@ queue_check_only(void)
 {
 int sep = 0;
 struct stat statbuf;
-const uschar * s = queue_only_file;
-uschar * ss;
+const uschar * s = queue_only_file, * ss;
 
 if (s)
   while ((ss = string_nextinlist(&s, &sep, NULL, 0)))

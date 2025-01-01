@@ -48,7 +48,7 @@ nis_find(void * handle, const uschar * filename, const uschar * keystring,
   const uschar * opts)
 {
 int rc;
-uschar *nis_data;
+uschar * nis_data;
 int nis_data_length;
 do_cache = do_cache;   /* Placate picky compilers */
 if ((rc = yp_match(CCS handle, CCS filename, CCS keystring, length,

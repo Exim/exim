@@ -71,10 +71,10 @@ mime_anomaly_text =  anom[idx].text;
            0-255 - char to write
 */
 
-static uschar *
-mime_decode_qp_char(uschar *qp_p, int *c)
+static const uschar *
+mime_decode_qp_char(const uschar * qp_p, int * c)
 {
-uschar *initial_pos = qp_p;
+const uschar * initial_pos = qp_p;
 
 /* advance one char */
 qp_p++;
@@ -107,14 +107,14 @@ return initial_pos;
 
 /* just dump MIME part without any decoding */
 static ssize_t
-mime_decode_asis(FILE* in, FILE* out, uschar* boundary)
+mime_decode_asis(FILE * in, FILE * out, const uschar * boundary)
 {
 ssize_t len, size = 0;
 uschar buffer[MIME_MAX_LINE_LENGTH];
 
 while(fgets(CS buffer, MIME_MAX_LINE_LENGTH, mime_stream) != NULL)
   {
-  if (boundary != NULL
+  if (  boundary
      && Ustrncmp(buffer, "--", 2) == 0
      && Ustrncmp((buffer+2), boundary, Ustrlen(boundary)) == 0
      )
@@ -132,10 +132,11 @@ return size;
 
 /* decode quoted-printable MIME part */
 static ssize_t
-mime_decode_qp(FILE* in, FILE* out, uschar* boundary)
+mime_decode_qp(FILE * in, FILE * out, const uschar * boundary)
 {
 uschar ibuf[MIME_MAX_LINE_LENGTH], obuf[MIME_MAX_LINE_LENGTH];
-uschar *ipos, *opos;
+const uschar * ipos;
+uschar * opos;
 ssize_t len, size = 0;
 
 while (fgets(CS ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
@@ -149,7 +150,7 @@ while (fgets(CS ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
   ipos = ibuf;
   opos = obuf;
 
-  while (*ipos != 0)
+  while (*ipos)
     {
     if (*ipos == '=')
       {
@@ -173,8 +174,7 @@ while (fgets(CS ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
       *opos++ = *ipos++;
     }
   /* something to write? */
-  len = opos - obuf;
-  if (len > 0)
+  if ((len = opos - obuf) > 0)
     {
     if (fwrite(obuf, 1, len, out) != len) return -1; /* error */
     size += len;
@@ -185,9 +185,10 @@ return size;
 
 
 /*
- * Return open filehandle for combo of path and file.
- * Side-effect: set mime_decoded_filename, to copy in allocated mem
- */
+Return open filehandle for combo of path and file.
+Side-effect: set mime_decoded_filename, to copy in allocated mem
+*/
+
 static FILE *
 mime_get_decode_file(uschar *pname, uschar *fname)
 {
@@ -217,16 +218,16 @@ return modefopen(mime_decoded_filename, "wb+", SPOOL_MODE);
 
 
 int
-mime_decode(const uschar **listptr)
+mime_decode(const uschar ** listptr)
 {
 int sep = 0;
-const uschar *list = *listptr;
+const uschar * list = *listptr;
 uschar * option;
 uschar * decode_path;
-FILE *decode_file = NULL;
+FILE * decode_file = NULL;
 long f_pos = 0;
 ssize_t size_counter = 0;
-ssize_t (*decode_function)(FILE*, FILE*, uschar*);
+ssize_t (*decode_function)(FILE *, FILE *, const uschar *);
 
 if (!mime_stream || (f_pos = ftell(mime_stream)) < 0)
   return FAIL;
@@ -301,61 +302,55 @@ return OK;
 
 
 static int
-mime_get_header(FILE *f, uschar *header)
+mime_get_header(FILE * f, uschar * header)
 {
 int c = EOF;
-int done = 0;
-int header_value_mode = 0;
-int header_open_brackets = 0;
-int num_copied = 0;
+enum hdr_parse_state {
+  hdr_nonvalue, hdr_val_whitespace, hdr_value, hdr_quotedvalue
+  } header_value_mode = hdr_nonvalue;
+int header_open_brackets = 0, num_copied = 0;
 
-while(!done)
+for (BOOL done = FALSE; !done && (c = fgetc(f)) != EOF; )
   {
-  if ((c = fgetc(f)) == EOF) break;
-
-  /* always skip CRs */
-  if (c == '\r') continue;
-
   if (c == '\n')
     {
     if (num_copied > 0)
       {
       /* look if next char is '\t' or ' ' */
       if ((c = fgetc(f)) == EOF) break;
-      if ( (c == '\t') || (c == ' ') ) continue;
+      if (c == '\t' || c == ' ') continue;
       (void)ungetc(c,f);
       }
     /* end of the header, terminate with ';' */
     c = ';';
-    done = 1;
+    done = TRUE;
     }
 
-  /* skip control characters */
-  if (c < 32) continue;
+  if (c < 32 && c != '\t') continue;	/* skip non-tab control chars, inc CR */
 
-  if (header_value_mode)
+  if (header_value_mode > hdr_nonvalue)			/* value modes */
     {
-    /* --------- value mode ----------- */
-    /* skip leading whitespace */
-    if ( ((c == '\t') || (c == ' ')) && (header_value_mode == 1) )
-      continue;
+    if (header_value_mode == hdr_val_whitespace)	/* leading WS mode */
+      {
+      if (c == '\t' || c == ' ')
+	continue;				/* skip leading whitespace */
 
-    /* we have hit a non-whitespace char, start copying value data */
-    header_value_mode = 2;
+      /* we have hit a non-whitespace char, start copying value data */
+      header_value_mode = hdr_value;
+      }
 
-    if (c == '"')       /* flip "quoted" mode */
-      header_value_mode = header_value_mode==2 ? 3 : 2;
+    if (c == '"')				/* flip "quoted" mode */
+      header_value_mode = header_value_mode == hdr_value
+			? hdr_quotedvalue : hdr_value;
 
     /* leave value mode on unquoted ';' */
-    if (header_value_mode == 2 && c == ';')
-      header_value_mode = 0;
-    /* -------------------------------- */
+    if (header_value_mode == hdr_value && c == ';')
+      header_value_mode = hdr_nonvalue;
     }
-  else
+  else							/* non-value mode */
     {
-    /* -------- non-value mode -------- */
     /* skip whitespace + tabs */
-    if ( (c == ' ') || (c == '\t') )
+    if (c == ' ' || c == '\t')
       continue;
     if (c == '\\')
       {
@@ -373,13 +368,12 @@ while(!done)
       header_open_brackets--;
       continue;
       }
-    else if ( (c == '=') && !header_open_brackets ) /* enter value mode */
-      header_value_mode = 1;
+    else if (c == '=' && !header_open_brackets)		/* enter value mode */
+      header_value_mode = hdr_val_whitespace;
 
     /* skip chars while we are in a comment */
     if (header_open_brackets > 0)
       continue;
-    /* -------------------------------- */
     }
 
   /* copy the char to the buffer */
@@ -387,7 +381,7 @@ while(!done)
 
   /* break if header buffer is full */
   if (num_copied > MIME_MAX_HEADER_SIZE-1)
-    done = 1;
+    done = TRUE;
   }
 
 if ((num_copied > 0) && (header[num_copied-1] != ';'))
@@ -563,22 +557,20 @@ while(1)
 	 mh < mime_header_list + mime_header_list_size;
 	 mh++) if (strncmpic(mh->name, header, mh->namelen) == 0)
       {
-      uschar * p = header + mh->namelen;
-      uschar * q;
+      uschar * p = header + mh->namelen, * p1;
 
       /* grab the value (normalize to lower case)
       and copy to its corresponding expansion variable */
 
-      for (q = p; *q != ';' && *q; q++) ;
-      *mh->value = string_copynlc(p, q-p);
+      for (p1 = p; *p1 != ';' && *p1; p1++) ;
+      *mh->value = string_copynlc(p, p1-p);
       DEBUG(D_acl) debug_printf_indent("MIME: found %s header, value is '%s'\n",
 	mh->name, *mh->value);
 
-      if (*(p = q)) p++;			/* jump past the ; */
+      if (*(p = p1)) p++;			/* jump past the ; */
 
 	{
-	gstring * mime_fname = NULL;
-	gstring * mime_fname_rfc2231 = NULL;
+	gstring * mime_fname = NULL, * mime_fname_rfc2231 = NULL;
 	uschar * mime_filename_charset = NULL;
 	BOOL decoding_failed = FALSE;
 
@@ -603,25 +595,25 @@ while(1)
 	      if (*p == '*') p++;		/* step over sep chset mark */
 	      if (*p == '=')
 		{
-		uschar * q;
+		uschar * p2;
 		p++;				/* step over = */
-		q = mime_param_val(&p);		/* p now trailing ; or NUL */
+		p2 = mime_param_val(&p);	/* p now trailing ; or NUL */
 
-		if (q && *q)			/* q is the dequoted value */
+		if (p2 && *p2)			/* p2 is the dequoted value */
 		  {
-		  uschar * err_msg, * fname = q;
+		  uschar * err_msg, * fname = p2;
 		  int slen;
 
 		  /* build up an un-decoded filename over successive
 		  filename*= parameters (for use when 2047 decode fails) */
 
-		  mime_fname_rfc2231 = string_cat(mime_fname_rfc2231, q);
+		  mime_fname_rfc2231 = string_cat(mime_fname_rfc2231, p2);
 
 		  if (!decoding_failed)
 		    {
 		    if (!mime_filename_charset)
 		      {			/* try for RFC 2231 chset/lang */
-		      uschar * s = q;
+		      uschar * s = p2;
 
 		      /* look for a ' in the raw paramval */
 		      while(*s != '\'' && *s) s++;	/* s is 1st ' or NUL */
@@ -629,8 +621,8 @@ while(1)
 		      if (*s)				/* there was a ' */
 			{
 			int size;
-			if ((size = s-q) > 0)
-			  mime_filename_charset = string_copyn(q, size);
+			if ((size = s-p2) > 0)
+			  mime_filename_charset = string_copyn(p2, size);
 
 			if (*(fname = s)) fname++;
 			while(*fname == '\'') fname++;    /*fname is after 2nd '*/
@@ -663,7 +655,7 @@ while(1)
 		      mime_filename = string_from_gstring(mime_fname);
 		      }
 		    }	/*!decoding_failed*/
-		  }	/*q*/
+		  }	/*p2*/
 
 		if (*p) p++;			/* p is past ; */
 		goto param_done;		/* done matching param names */
@@ -671,15 +663,15 @@ while(1)
 	      }
 	    else if (*p == '=')
 	      {		/* non-2231 param */
-	      uschar * q, * dummy_errstr;
+	      uschar * p3, * dummy_errstr;
 
 	      /* grab the value and copy to its expansion variable */
 
-	      if (*p) p++;			/* step over = */
-	      q = mime_param_val(&p);		/* p now trailing ; or NUL */
+	      p++;				/* step over = */
+	      p3 = mime_param_val(&p);		/* p now trailing ; or NUL */
 
-	      *mp->value = q && *q
-		? rfc2047_decode(q, check_rfc2047_length, NULL, 32, NULL,
+	      *mp->value = p3 && *p3
+		? rfc2047_decode(p3, check_rfc2047_length, NULL, 32, NULL,
 		    &dummy_errstr)
 		: NULL;
 	      DEBUG(D_acl) debug_printf_indent(

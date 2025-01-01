@@ -492,7 +492,7 @@ Returns:     the processed string or NULL for a bad option
 */
 
 static uschar *
-ibase_quote(uschar * s, uschar * opt, unsigned idx)
+ibase_quote(uschar * s, const uschar * opt, unsigned idx)
 {
 gstring * quoted = store_get_quoted(1, s, idx, US"ibase");
 

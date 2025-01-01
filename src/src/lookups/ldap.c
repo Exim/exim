@@ -325,7 +325,7 @@ if (!lcp)
 
   else
     {
-    uschar * init_ptr = Ustrchr(ldap_url, '/');
+    const uschar * init_ptr = Ustrchr(ldap_url, '/');
     g = string_catn(NULL, ldap_url, init_ptr - ldap_url);
     g = string_fmt_append(g, "//%s:%d/", shost, port);
     }

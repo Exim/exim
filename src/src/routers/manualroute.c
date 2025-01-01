@@ -405,7 +405,7 @@ single text string that ends up in $host. */
 
 if (transport)
   {
-  transport_info * ti = transport->drinst.info;
+  const transport_info * ti = transport->drinst.info;
   if (ti->local)
     {
     if (hostlist[0])
