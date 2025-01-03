@@ -66,6 +66,8 @@ smtp:
   driver =		smtp
   hosts_try_fastopen =	CONNECTCOND
   hosts_pipe_connect =	CONTROL
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
   tls_verify_hosts =
   tls_try_verify_hosts =
 

@@ -3829,7 +3829,7 @@ int rc;
 tls_verify_hosts and tls_try_verify_hosts are not set. Check only the specified
 host patterns if one of them is set with content. */
 
-if (  (  (  !ob->tls_verify_hosts || !ob->tls_verify_hosts
+if (  (  (  !ob->tls_verify_hosts || !*ob->tls_verify_hosts
 	 || Ustrcmp(ob->tls_try_verify_hosts, ":") == 0
 	 )
       && (  !ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts

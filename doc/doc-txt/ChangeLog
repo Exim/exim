@@ -104,6 +104,10 @@ JH/20 Bug 3036: Fix smuggling attack on DKIM verification. A crafted insertion
 JH/21 Bug 2995: For dsearch lookups, remove the requirement for read permission
       on the directory.  Only search permission is now needed.
 
+JH/22 Fix OpenSSL client tls_verify_certificates vs. tls_verify_hosts behaviour
+      for the case where _hosts is set-but-empty. A previous fix, for 4.95,
+      missed this case.
+
 Exim version 4.98
 -----------------
 
