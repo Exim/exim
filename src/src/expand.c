@@ -1579,6 +1579,8 @@ if (value2 < 0)
 
 /* Otherwise do a div/mod hash */
 
+else if (value1 == 0 || value2 == 0)
+  return NULL;
 else
   {
   total = total % (value1 * value2);
@@ -5913,10 +5915,10 @@ while (*s)
       for (int i = 0; i < 2; i++) if (sub[i])
         {
         val[i] = (int)Ustrtol(sub[i], &ret, 10);
-        if (*ret != 0 || (i != 0 && val[i] < 0))
+        if (*ret != 0  ||  i != 0 && val[i] < 0)
           {
           expand_string_message = string_sprintf("\"%s\" is not a%s number "
-            "(in \"%s\" expansion)", sub[i], (i != 0)? " positive" : "", name);
+            "(in \"%s\" expansion)", sub[i], i != 0 ? " positive" : "", name);
           goto EXPAND_FAILED;
           }
         }

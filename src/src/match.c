@@ -684,6 +684,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
         listname = string_sprintf("\"%s\"", *listptr);
       log_write_die(0, LOG_MAIN, "%s",
         string_open_failed("%s when checking %s", sss, listname));
+      goto cppcheck_silencing;
       }
 
     /* Trailing comments are introduced by #, but in an address list or local
@@ -784,6 +785,8 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 
     yield = file_yield;
     (void)fclose(f);
+
+    cppcheck_silencing: ;
     }
 
   /* If the item does not begin with '/', it might be a + item for a named

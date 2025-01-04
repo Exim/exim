@@ -459,7 +459,7 @@ extern uschar *continue_proxy_sni;     /* proxied conn SNI */
 extern const uschar *continue_hostname;      /* Host for continued delivery */
 extern const uschar *continue_host_address;  /* IP address for ditto */
 extern uschar  continue_next_id[];     /* Next message_id from hintsdb */
-extern int     continue_sequence;      /* Sequence num for continued delivery */
+extern unsigned continue_sequence;     /* Sequence num for continued delivery */
 extern const uschar *continue_transport; /* Transport for continued delivery */
 #ifndef COMPILE_UTILITY
 extern open_db *continue_retry_db;     /* Hintsdb for retries */
@@ -814,9 +814,9 @@ extern BOOL    prod_requires_admin;    /* TRUE if prodding requires admin */
 #if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS) || defined(EXPERIMENTAL_XCLIENT)
 extern uschar *hosts_proxy;            /* Hostlist which (require) use proxy protocol */
 extern uschar *proxy_external_address; /* IP of remote interface of proxy */
-extern int     proxy_external_port;    /* Port on remote interface of proxy */
+extern unsigned proxy_external_port;   /* Port on remote interface of proxy */
 extern uschar *proxy_local_address;    /* IP of local interface of proxy */
-extern int     proxy_local_port;       /* Port on local interface of proxy */
+extern unsigned proxy_local_port;      /* Port on local interface of proxy */
 extern int     proxy_protocol_timeout; /* Timeout for proxy negotiation */
 extern BOOL    proxy_session;          /* TRUE if receiving mail from valid proxy
 					  or sending via one */

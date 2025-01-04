@@ -25,11 +25,11 @@ uschar * syslog_facility_str;
 void
 builtin_macro_create_var(const uschar * name, const uschar * val)
 {
-printf ("static macro_item p%d = { ", mp_index);
+printf ("static macro_item p%u = { ", mp_index);
 if (mp_index == 0)
   printf(".next=NULL,");
 else
-  printf(".next=&p%d,", mp_index-1);
+  printf(".next=&p%u,", mp_index-1);
 
 printf(" .command_line=FALSE, .namelen=%d, .replen=%d,"
 	" .name=US\"%s\", .replacement=US\"%s\" };\n",
@@ -365,7 +365,7 @@ options();
 expansions();
 params();
 
-printf("macro_item * macros = &p%d;\n", mp_index-1);
+printf("macro_item * macros = &p%u;\n", mp_index-1);
 printf("macro_item * mlast = &p0;\n");
 exit(0);
 }

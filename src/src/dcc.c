@@ -68,7 +68,8 @@ struct sockaddr_un  serv_addr;
 struct sockaddr_in  serv_addr_in;
 struct hostent *ipaddress;
 uschar sockpath[128];
-uschar sockip[40], client_ip[40];
+#define SOCKIP_USE 39
+uschar sockip[SOCKIP_USE+1], client_ip[40];
 gstring *dcc_headers;
 gstring *sendbuf;
 uschar *dcc_return_text = US"''";
@@ -114,20 +115,19 @@ if (!data_file)
 
 /* Initialize the variables */
 
-bzero(sockip,sizeof(sockip));
+bzero(sockip, sizeof(sockip));
 if (dccifd_address)
-  {
   if (dccifd_address[0] == '/')
     Ustrncpy(sockpath, dccifd_address, sizeof(sockpath));
   else
-    if( sscanf(CS dccifd_address, "%s %u", sockip, &portnr) != 2)
+    if(sscanf(CS dccifd_address, "%" mac_expanded_string(SOCKIP_USE) "s %u",
+	      sockip, &portnr) != 2)
       {
       log_write(0, LOG_MAIN,
 	"DCC: warning - invalid dccifd address: '%s'", dccifd_address);
       (void)fclose(data_file);
       return DEFER;
       }
-  }
 
 /* dcc_headers is what we send as dccifd options - see man dccifd */
 /* We don't support any other option than 'header' so just copy that */

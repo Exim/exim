@@ -775,7 +775,7 @@ if (euid == root_uid || euid != uid || egid != gid || igflag)
 
   if (igflag)
     {
-    struct passwd *pw = getpwuid(uid);
+    struct passwd * pw = getpwuid(uid);
     if (!pw)
       log_write_die(0, LOG_MAIN, "cannot run initgroups(): "
 	"no passwd entry for uid=%ld", (long int)uid);

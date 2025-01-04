@@ -664,7 +664,7 @@ uschar *continue_proxy_sni     = NULL;
 const uschar *continue_hostname      = NULL;
 const uschar *continue_host_address  = NULL;
 uschar  continue_next_id[MESSAGE_ID_LENGTH +1] = {[0]='\0'};
-int     continue_sequence      = 1;
+unsigned continue_sequence     = 1;
 const uschar *continue_transport = NULL;
 #ifndef COMPILE_UTILITY
 open_db *continue_retry_db     = NULL;
@@ -1138,9 +1138,9 @@ const uschar *process_purpose  = US"fresh-exec";
 
 #if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS) || defined(EXPERIMENTAL_XCLIENT)
 uschar *proxy_external_address = NULL;
-int     proxy_external_port    = 0;
+unsigned proxy_external_port   = 0;
 uschar *proxy_local_address    = NULL;
-int     proxy_local_port       = 0;
+unsigned proxy_local_port      = 0;
 int     proxy_protocol_timeout = 3;
 #endif
 

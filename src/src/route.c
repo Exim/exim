@@ -580,32 +580,29 @@ Returns:        TRUE
 */
 
 static BOOL
-route_check_access(uschar *path, uid_t uid, gid_t gid, int bits)
+route_check_access(const uschar * path, uid_t uid, gid_t gid, int bits)
 {
 struct stat statbuf;
-uschar *slash;
-uschar *rp = US realpath(CS path, CS big_buffer);
-uschar *sp = rp + 1;
+uschar * rp = US realpath(CCS path, CS big_buffer);
 
 DEBUG(D_route) debug_printf("route_check_access(%s,%d,%d,%o)\n", path,
   (int)uid, (int)gid, bits);
 
 if (!rp) return FALSE;
 
-while ((slash = Ustrchr(sp, '/')))
+for (uschar * sp = rp + 1, * slash; slash = Ustrchr(sp, '/'); sp = slash + 1)
   {
   *slash = 0;
   DEBUG(D_route) debug_printf("stat %s\n", rp);
   if (Ustat(rp, &statbuf) < 0) return FALSE;
   if ((statbuf.st_mode &
-       ((statbuf.st_uid == uid)? 0100 : (statbuf.st_gid == gid)? 0010 : 001)
+       (statbuf.st_uid == uid ? 0100 : statbuf.st_gid == gid ? 0010 : 001)
       ) == 0)
     {
     errno = EACCES;
     return FALSE;
     }
   *slash = '/';
-  sp = slash + 1;
   }
 
 /* Down to the final component */
@@ -615,7 +612,8 @@ DEBUG(D_route) debug_printf("stat %s\n", rp);
 if (Ustat(rp, &statbuf) < 0) return FALSE;
 
 if (statbuf.st_uid == uid) bits = bits << 6;
-  else if (statbuf.st_gid == gid) bits = bits << 3;
+else if (statbuf.st_gid == gid) bits = bits << 3;
+
 if ((statbuf.st_mode & bits) != bits)
   {
   errno = EACCES;

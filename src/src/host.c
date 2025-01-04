@@ -955,7 +955,7 @@ if (Ustrchr(address, ':') != NULL)
     if (ci > 7) log_write_die(0, LOG_MAIN,
       "Internal error: invalid IPv6 address \"%s\" passed to host_aton()",
       address);
-    component[ci++] = p;
+    else component[ci++] = p;
     p += len;
     if (*p == ':') p++;
     }

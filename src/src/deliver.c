@@ -1548,6 +1548,7 @@ if (addr->return_file >= 0 && addr->return_filename)
           "from %s transport: %s", addr->return_filename, tb->drinst.name,
           strerror(errno));
       else
+	{
         if ((s = US Ufgets(big_buffer, big_buffer_size, f)))
           {
           uschar *p = big_buffer + Ustrlen(big_buffer);
@@ -1558,7 +1559,8 @@ if (addr->return_file >= 0 && addr->return_filename)
           log_write(0, LOG_MAIN, "<%s>: %s transport output: %s",
             addr->address, tb->drinst.name, sp);
           }
-      (void)fclose(f);
+	(void)fclose(f);			/* {} for cppcheck silencing */
+	}
       }
 
     /* Handle returning options, but only if there is an address to return
@@ -6064,6 +6066,7 @@ wording. */
 	addr = addr->next;
 	}
       fputc('\n', fp);
+      if (!addr) break;			/* cppcheck silencing */
 
       /* Now copy the file */
 

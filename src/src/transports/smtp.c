@@ -3820,7 +3820,6 @@ while (p[0].fd >= 0 || p[1].fd >= 0);
 
 done:
   if (send_tls_shutdown) tls_close(ct_ctx, TLS_SHUTDOWN_NOWAIT);
-  ct_ctx = NULL;
   testharness_pause_ms(100);	/* let logging complete */
   exim_exit(EXIT_SUCCESS);
 }
@@ -4441,13 +4440,15 @@ else
             ob->final_timeout))
           {
           if (errno != 0 || sx->buffer[0] == 0) goto RESPONSE_FAILED;
-          addr->message = string_sprintf(
 #ifndef DISABLE_PRDR
+          addr->message = string_sprintf(
 	    "%s error after %s: %s", sx->prdr_active ? "PRDR":"LMTP",
-#else
-	    "LMTP error after %s: %s",
-#endif
 	    data_command, string_printing(sx->buffer));
+#else
+          addr->message = string_sprintf(
+	    "LMTP error after %s: %s",
+	    data_command, string_printing(sx->buffer));
+#endif
           setflag(addr, af_pass_message);   /* Allow message to go to user */
           if (sx->buffer[0] == '5')
             addr->transport_return = FAIL;
