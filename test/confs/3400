@@ -41,6 +41,8 @@ check_recipient:
   deny     hosts = +auth_hosts
            message = authentication required
           !authenticated = *
+  warn	   condition = ${if def:acl_c0}
+	   logwrite = acl_c0: '$acl_c0'
   accept   domains = +local_domains
   accept   hosts = +relay_hosts
   accept   hosts = +auth_relay_hosts
@@ -69,6 +71,9 @@ check_vrfy:
           !authenticated = *
   accept
 
+set_variable:
+  accept   set acl_c0 = $acl_arg1
+	   message =	$acl_arg1
 
 # ----- Authentication -----
 
@@ -103,7 +108,7 @@ expanded_prompt_plain:
   server_prompts = $primary_hostname
   server_condition = "\
     ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
-  server_set_id = $auth2
+  server_set_id = ${acl {set_variable} {$auth2}}
 
 expanded_prompt_plain_fail:
   driver = plaintext

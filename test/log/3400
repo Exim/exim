@@ -21,6 +21,8 @@
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 501 Authentication cancelled
 1999-03-02 09:44:33 plain authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data (set_id=eserx)
+1999-03-02 09:44:33 acl_c0: 'userx'
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= userx@cus.cam.ac.uk H=(test.host) [10.0.0.1] U=CALLER P=esmtpa A=expanded_prompt_plain:userx S=sss
 1999-03-02 09:44:33 expanded_prompt_plain_fail authenticator failed for (test.host) [10.0.0.1] U=CALLER: 435 Unable to authenticate at present: unknown variable name "nonexistent"
 1999-03-02 09:44:33 expanded_prompt_plain authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data (set_id=userx)
 1999-03-02 09:44:33 expanded_prompt_plain authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data (set_id=userx)
@@ -44,13 +46,15 @@
 1999-03-02 09:44:33 expanded_prompt_plain authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data (set_id=userx)
 1999-03-02 09:44:33 expanded_prompt_plain authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data (set_id=userx)
 1999-03-02 09:44:33 SMTP call from (test.host) [10.0.0.1] U=CALLER dropped: too many nonmail commands (last was "auth")
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= x@y H=(testing.testing) [10.0.0.5] U=CALLER P=esmtp S=sss
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= x@y H=(testing.testing) [10.0.0.5] U=CALLER P=esmtp S=sss
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 => userx <userx@test.ex> R=localuser T=appendfile
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= x@y H=(testing.testing) [10.0.0.5] U=CALLER P=esmtpa A=mylogin S=sss
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 => userx <userx@test.ex> R=localuser T=appendfile
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= x@y H=(testing.testing) [10.0.0.5] U=CALLER P=esmtpa A=mylogin S=sss
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 => userx <userx@test.ex> R=localuser T=appendfile
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= x@y H=(testing.testing) [10.0.0.5] U=CALLER P=esmtpa A=mylogin S=sss
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 => userx <userx@test.ex> R=localuser T=appendfile
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
 1999-03-02 09:44:33 login authenticator failed for (test.host) [10.0.0.1] U=CALLER: 535 Incorrect authentication data

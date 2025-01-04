@@ -139,10 +139,18 @@ auth explain
 AHVzZXJ4AHNlY3JldA==
 quit
 ****
+# Test expansion of server_prompt
+# also, check that a variable created by an acl expansion is usable
+# later in ACLs
 exim -bs -oMa 10.0.0.1
 ehlo test.host
 auth expanded
 AHVzZXJ4AHNlY3JldA==
+mail from:<userx@cus.cam.ac.uk>
+rcpt to:<userx@test.ex>
+data
+Testing authenticated.
+.
 quit
 ****
 exim -bs -oMa 10.0.0.1
