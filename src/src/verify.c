@@ -2628,8 +2628,7 @@ verify_check_header_address(uschar ** user_msgptr, uschar ** log_msgptr,
   int callout, int callout_overall, int callout_connect, uschar * se_mailfrom,
   uschar * pm_mailfrom, int options, int * verrno)
 {
-static const int const header_types[] =
-				  { htype_sender, htype_reply_to, htype_from };
+static const int header_types[] = { htype_sender, htype_reply_to, htype_from };
 BOOL done = FALSE;
 int yield = FAIL;
 
