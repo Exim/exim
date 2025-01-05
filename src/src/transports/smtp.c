@@ -822,7 +822,7 @@ uschar * save_item = iterate_item;
 if (sx->conn_args.have_lbserver)
   return;
 iterate_item = sx->buffer;
-s = expand_cstring(name_extract);
+s = expand_string(name_extract);
 iterate_item = save_item;
 sx->conn_args.host_lbserver = s && !*s ? NULL : s;
 sx->conn_args.have_lbserver = TRUE;
@@ -2288,7 +2288,7 @@ if (continue_hostname && continue_proxy_cipher)
   /* If the SNI or the DANE status required for the new message differs from the
   existing conn drop the connection to force a new one. */
 
-  if (ob->tls_sni && !(sni = expand_cstring(ob->tls_sni)))
+  if (ob->tls_sni && !(sni = expand_string(ob->tls_sni)))
     log_write(0, LOG_MAIN|LOG_PANIC,
       "<%s>: failed to expand transport's tls_sni value: %s",
       sx->addrlist->address, expand_string_message);

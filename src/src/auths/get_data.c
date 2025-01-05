@@ -126,7 +126,7 @@ return OK;
 
 /* Expand and send one client auth item and read the response.
 Include the AUTH command and method if tagged as "first".  Use the given buffer
-for receiving the b6-encoded reply; decode it it return it in the string arg.
+for receiving the b64-encoded reply; decode it and return it in the string arg.
 
 Return:
   OK          success
@@ -145,10 +145,7 @@ auth_client_item(void * sx, auth_instance * ablock, const uschar ** inout,
   unsigned flags, int timeout, uschar * buffer, int buffsize)
 {
 int len, clear_len;
-uschar * ss, * clear;
-
-ss = US expand_cstring(*inout);
-if (ss == *inout) ss = string_copy(ss);
+uschar * ss = expand_string_copy(*inout), * clear;
 
 /* Forced expansion failure is not an error; authentication is abandoned. On
 all but the first string, we have to abandon the authentication attempt by
@@ -243,7 +240,7 @@ into $auth<n>. */
 
 if (clear_len < 0)
   {
-  uschar *save_bad = string_copy(buffer);
+  const uschar * save_bad = string_copy(buffer);
   if (!(flags & AUTH_ITEM_IGN64))
     {
     if (smtp_write_command(sx, SCMD_FLUSH, "*\r\n") >= 0)

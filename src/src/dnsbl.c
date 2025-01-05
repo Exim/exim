@@ -482,7 +482,7 @@ but we want to first strip any change-of-list-separator */
 
 sep = matchlist_parse_sep(&s);
 
-if (!(s= expand_cstring(s)))
+if (!(s = expand_string(s)))
   {
   if (f.expand_string_forcedfail) return OK;
   *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",

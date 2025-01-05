@@ -657,7 +657,7 @@ HDEBUG(D_auth) debug_printf(" %s\n", gsasl_prop_code_to_name(prop));
 if (option)
   {
   set_exim_authvars_from_a_az_r_props(sctx);
-  option = expand_cstring(option);
+  option = expand_string(option);
   HDEBUG(D_auth) debug_printf("  '%s'\n", option);
   if (*option)
     gsasl_property_set(sctx, prop, CCS option);

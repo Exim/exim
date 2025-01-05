@@ -3587,7 +3587,7 @@ if (syslog_facility_str)
 
 if (*pid_file_path)
   {
-  const uschar * t = expand_cstring(pid_file_path);
+  const uschar * t = expand_string(pid_file_path);
   if (!t)
     log_write_die(0, LOG_MAIN, "failed to expand pid_file_path "
       "\"%s\": %s", pid_file_path, expand_string_message);

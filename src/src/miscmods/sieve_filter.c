@@ -3541,7 +3541,7 @@ sieve.filter = filter;
 GET_OPTION("sieve_vacation_directory");
 if (!sb || !sb->vacation_dir)
   sieve.vacation_directory = NULL;
-else if (!(sieve.vacation_directory = expand_cstring(sb->vacation_dir)))
+else if (!(sieve.vacation_directory = expand_string(sb->vacation_dir)))
   {
   *error = string_sprintf("failed to expand \"%s\" "
     "(sieve_vacation_directory): %s", sb->vacation_dir, expand_string_message);
@@ -3551,7 +3551,7 @@ else if (!(sieve.vacation_directory = expand_cstring(sb->vacation_dir)))
 GET_OPTION("sieve_vacation_directory");
 if (!sb || !sb->inbox)
   sieve.inbox = US"inbox";
-else if (!(sieve.inbox = expand_cstring(sb->inbox)))
+else if (!(sieve.inbox = expand_string(sb->inbox)))
   {
   *error = string_sprintf("failed to expand \"%s\" "
     "(sieve_inbox): %s", sb->inbox, expand_string_message);
@@ -3561,7 +3561,7 @@ else if (!(sieve.inbox = expand_cstring(sb->inbox)))
 GET_OPTION("sieve_enotify_mailto_owner");
 if (!sb || !sb->enotify_mailto_owner)
   sieve.enotify_mailto_owner = NULL;
-else if (!(sieve.enotify_mailto_owner = expand_cstring(sb->enotify_mailto_owner)))
+else if (!(sieve.enotify_mailto_owner = expand_string(sb->enotify_mailto_owner)))
   {
   *error = string_sprintf("failed to expand \"%s\" "
     "(sieve_enotify_mailto_owner): %s", sb->enotify_mailto_owner,

@@ -127,7 +127,7 @@ static const uschar *
 checkexpand(const uschar * s, address_item * addr, const uschar * name,
   int type)
 {
-const uschar * ss = expand_cstring(s);
+const uschar * ss = expand_string(s);
 
 if (!ss)
   {

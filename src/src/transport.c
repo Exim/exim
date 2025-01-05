@@ -2300,7 +2300,7 @@ if (flags & TSUC_EXPAND_ARGS)
       address_pipe_argv = store_get((address_pipe_max_args+1)*sizeof(uschar *), GET_UNTAINTED);
 
       /* +1 because addr->local_part[0] == '|' since af_force_command is set */
-      s = expand_cstring(addr->local_part + 1);
+      s = expand_string(addr->local_part + 1);
 
       if (!s || !*s)
         {
@@ -2388,10 +2388,10 @@ if (flags & TSUC_EXPAND_ARGS)
 
     else
       {
-      const uschar *expanded_arg;
+      const uschar * expanded_arg;
       BOOL enable_dollar_recipients_g = f.enable_dollar_recipients;
       f.enable_dollar_recipients = allow_dollar_recipients;
-      expanded_arg = expand_cstring(argv[i]);
+      expanded_arg = expand_string(argv[i]);
       f.enable_dollar_recipients = enable_dollar_recipients_g;
 
       if (!expanded_arg)

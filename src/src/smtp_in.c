@@ -3702,7 +3702,7 @@ return 0;
 static int
 expand_mailmax(const uschar * s)
 {
-if (!(s = expand_cstring(s)))
+if (!(s = expand_string(s)))
   log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand smtp_accept_max_per_connection");
 return *s ? Uatoi(s) : 0;
 }
@@ -4228,7 +4228,7 @@ while (done <= 0)
 	GET_OPTION("acl_smtp_atrn");
 	if (acl_smtp_atrn && !atrn_mode)
 	  {
-	  const uschar * s = expand_cstring(acl_smtp_atrn);
+	  const uschar * s = expand_string(acl_smtp_atrn);
 	  if (s && *s)
 	    {
 	    g = string_catn(g, smtp_code, 3);

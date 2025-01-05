@@ -232,9 +232,20 @@ extern int     exp_bool(address_item *,
   const uschar *, BOOL *);
 extern BOOL    expand_check_condition(const uschar *, const uschar *, const uschar *);
 extern uschar *expand_file_big_buffer(const uschar *);
-extern uschar *expand_string(uschar *);	/* public, cannot make const */
+
 extern const uschar *expand_string_2(const uschar *, BOOL *);
-extern const uschar *expand_cstring(const uschar *); /* ... so use this one */
+
+static inline uschar * expand_nc_string(uschar * s)
+{ return US expand_string_2(s, NULL); }
+static inline const uschar * expand_c_string(const uschar * s)
+{ return expand_string_2(s, NULL); }
+
+/* A macro that picks which function to use depending on the type of the arg */
+#define expand_string(X) _Generic((X),     \
+	      uschar *:		expand_nc_string, \
+	      const uschar *:	expand_c_string   \
+	      )(X)
+
 extern BOOL   expand_string_nonempty(const uschar *);
 extern uschar *expand_getkeyed(const uschar *, const uschar *);
 
@@ -1491,7 +1502,7 @@ else
 static inline int
 expand_max_rcpt(const uschar * str_max_rcpt)
 {
-const uschar * s = expand_cstring(str_max_rcpt);
+const uschar * s = expand_string(str_max_rcpt);
 int res;
 return !s || !*s || (res = Uatoi(s)) == 0 ? UNLIMITED_ADDRS : res;
 }

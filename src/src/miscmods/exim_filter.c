@@ -1650,7 +1650,7 @@ switch (c->type)
 
   case cond_foranyaddress:
     p = c->left.u;
-    if (!(pp = expand_cstring(p)))
+    if (!(pp = expand_string(p)))
       {
       *error_pointer = string_sprintf("failed to expand \"%s\" in "
 	"filter file: %s", p, expand_string_message);
@@ -1849,7 +1849,7 @@ while (commands)
     const uschar *ss = commands->args[i].u;
     if (!ss)
       expargs[i] = NULL;
-    else if (!(expargs[i] = expand_cstring(ss)))
+    else if (!(expargs[i] = expand_string(ss)))
       {
       *error_pointer = string_sprintf("failed to expand \"%s\" in "
 	"%s command: %s", ss, command_list[commands->command],

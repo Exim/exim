@@ -871,7 +871,7 @@ if (action)
   event_name = event;
   event_data = ev_data;
 
-  if (!(s = expand_cstring(action)) && *expand_string_message)
+  if (!(s = expand_string(action)) && *expand_string_message)
     log_write(0, LOG_MAIN|LOG_PANIC,
       "failed to expand event_action %s in %s: %s\n",
       event, transport_name ? transport_name : US"main", expand_string_message);
@@ -880,8 +880,8 @@ if (action)
 
   /* If the expansion returns anything but an empty string, flag for
   the caller to modify his normal processing.  Copy the string to
-  de-const it.
-  */
+  de-const it. */
+
   if (s && *s)
     {
     DEBUG(D_deliver)
@@ -5794,7 +5794,7 @@ static FILE *
 expand_open(const uschar * filename,
   const uschar * optname, const uschar * reason)
 {
-const uschar * s = expand_cstring(filename);
+const uschar * s = expand_string(filename);
 FILE * fp = NULL;
 
 if (!s || !*s)

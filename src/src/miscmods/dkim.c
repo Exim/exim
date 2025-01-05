@@ -604,7 +604,7 @@ GET_OPTION("dkim_verify_signers");
 if (dkim_verify_signers && *dkim_verify_signers)
   {
   const uschar * dkim_verify_signers_expanded =
-		      expand_cstring(dkim_verify_signers);
+		      expand_string(dkim_verify_signers);
   gstring * results = NULL, * seen_items = NULL;
   int signer_sep = 0, old_pool = store_pool;
 
@@ -916,7 +916,7 @@ if (dkim->dot_stuffed)
 store_pool = POOL_MAIN;
 
 GET_OPTION("dkim_domain");
-if ((s = dkim->dkim_domain) && !(dkim_domain = expand_cstring(s)))
+if ((s = dkim->dkim_domain) && !(dkim_domain = expand_string(s)))
   /* expansion error, do not send message. */
   { errwhen = US"dkim_domain"; goto expand_bad; }
 

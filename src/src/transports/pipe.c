@@ -466,10 +466,10 @@ if (expand_arguments)
       }
 
     g = string_cat(g, q);
-    argv[2] = (cmd = string_from_gstring(g)) ? expand_cstring(cmd) : NULL;
+    argv[2] = (cmd = string_from_gstring(g)) ? expand_string(cmd) : NULL;
     }
   else
-    argv[2] = expand_cstring(cmd);
+    argv[2] = expand_string(cmd);
 
   f.enable_dollar_recipients = FALSE;
 
@@ -652,7 +652,7 @@ else if (timezone_string && timezone_string[0])
 
 GET_OPTION("environment");
 if (envlist)
-  if (!(envlist = expand_cstring(envlist)))
+  if (!(envlist = expand_string(envlist)))
     {
     addr->transport_return = DEFER;
     addr->message = string_sprintf("failed to expand string \"%s\" "

@@ -1004,7 +1004,7 @@ BOOL
 expand_check_condition(const uschar * condition,
   const uschar * m1, const uschar * m2)
 {
-const uschar * ss = expand_cstring(condition);
+const uschar * ss = expand_string(condition);
 if (!ss)
   {
   if (!f.expand_string_forcedfail && !f.search_find_defer)
@@ -3324,7 +3324,7 @@ switch(cond_type = identify_operator(&s, &opname))
       /* grab any listsep spec, then expand the list */
 
       sep = matchlist_parse_sep(&list);
-      if (!(list = expand_cstring(list)))
+      if (!(list = expand_string(list)))
 	goto failout;
 
       tempcond = FALSE;
@@ -8584,14 +8584,6 @@ if (textonly_p) *textonly_p = TRUE;
 return string;
 }
 
-const uschar *
-expand_cstring(const uschar * string)
-{ return expand_string_2(string, NULL); }
-
-uschar *
-expand_string(uschar * string)
-{ return US expand_string_2(CUS string, NULL); }
-
 
 /* Just return whether the string is non-empty after expansion */
 
@@ -8621,9 +8613,9 @@ Returns:  the expanded string, always in a new bit of store, or NULL
 */
 
 uschar *
-expand_string_copy(const uschar *string)
+expand_string_copy(const uschar * string)
 {
-const uschar *yield = expand_cstring(string);
+const uschar * yield = expand_string(string);
 if (yield == string) yield = string_copy(string);
 return US yield;
 }
@@ -8769,7 +8761,7 @@ const uschar * expanded;
 DEBUG(D_expand) debug_printf("try option %s\n", oname);
 if (!svalue) { *rvalue = bvalue; return OK; }
 
-if (!(expanded = expand_cstring(svalue)))
+if (!(expanded = expand_string(svalue)))
   {
   if (f.expand_string_forcedfail)
     {

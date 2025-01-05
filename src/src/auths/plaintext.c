@@ -94,7 +94,7 @@ int sep = 0;
 /* Expand a non-empty list of prompt strings */
 
 if (prompts)
-  if (!(prompts = expand_cstring(prompts)))
+  if (!(prompts = expand_string(prompts)))
     {
     auth_defer_msg = expand_string_message;
     return DEFER;
