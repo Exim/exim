@@ -18,7 +18,6 @@ various macros in config.h that ultimately come from Local/Makefile. They are
 all described in src/EDITME. */
 
 
-//lookup_info **lookup_list;
 tree_node * lookups_tree = NULL;
 unsigned lookup_list_count = 0;
 

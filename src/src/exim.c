@@ -1227,8 +1227,16 @@ Returns:    nothing
 static void
 show_whats_supported(BOOL is_stdout)
 {
-rmark reset_point = store_mark();
+int old_pool = store_pool;
+rmark reset_point;
 gstring * g = NULL;
+
+/* We want to free the mem just used for printing but still be sure that
+perm-pool side-effect use (eg. lookups tree) is not destroyed. So flip to
+the main pool. */
+
+store_pool = POOL_MAIN;
+reset_point = store_mark();
 
 DEBUG(D_any) {} else g = show_db_version(g);
 
@@ -1470,6 +1478,7 @@ Currently they are output in misc_mod_add() */
 
 show_string(is_stdout, g);
 store_reset(reset_point);
+store_pool = old_pool;
 }
 
 
