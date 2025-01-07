@@ -5152,11 +5152,12 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
       }
 
     /* Local interface address/port */
-#ifdef EXPERIMENTAL_DSN_INFO
-    if (sending_ip_address)
-#else
-    if (LOGGING(incoming_interface) && sending_ip_address)
+    if (  sending_ip_address
+#ifndef EXPERIMENTAL_DSN_INFO
+       && (  LOGGING(incoming_interface)
+	  || continue_hostname && continue_fd >= 0 && continue_sequence == 1)
 #endif
+       )
       {
       uschar * ptr = big_buffer
 		    + sprintf(CS big_buffer, "%.128s", sending_ip_address) + 1;

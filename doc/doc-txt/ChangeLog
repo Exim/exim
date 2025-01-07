@@ -108,6 +108,14 @@ JH/22 Fix OpenSSL client tls_verify_certificates vs. tls_verify_hosts behaviour
       for the case where _hosts is set-but-empty. A previous fix, for 4.95,
       missed this case.
 
+JH/23 Fix continued-connection.  When a transport identified a further message
+      due for the connection, tls was being used, tls-proxying configured (the
+      default), and an interface specified (not default but not uncommon) a
+      null-pointer indirection could result, crashing the transport process.
+      Although no mails would be lost this would pollute logs and potentially
+      take up filesystem space. Observed on OpenSBD but possibly platform
+      dependent; present since 4.90.
+
 Exim version 4.98
 -----------------
 
