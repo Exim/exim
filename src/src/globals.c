@@ -134,6 +134,7 @@ bit-count as "NORMAL" (2432) and Thunderbird dropping connection. */
 int     tls_dh_max_bits        = 2236;
 uschar *tls_dhparam            = NULL;
 uschar *tls_eccurve            = US"auto";
+BOOL    tls_ignore_missing_close_notify = TRUE;
 # ifndef DISABLE_OCSP
 uschar *tls_ocsp_file          = NULL;
 # endif
