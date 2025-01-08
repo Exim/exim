@@ -51,37 +51,10 @@ uschar *spool_directory;
 BOOL keyonly = FALSE;
 BOOL utc = FALSE;
 
-
-/******************************************************************************/
-      /* dummies needed by Solaris build */
-void
-millisleep(int msec)
-{}
-uschar *
-readconf_printtime(int t)
-{ return NULL; }
-gstring *
-string_catn(gstring * g, const uschar * s, int count)
-{ return NULL; }
-gstring *
-string_vformat_trc(gstring * g, const uschar * func, unsigned line,
-  unsigned size_limit, unsigned flags, const char *format, va_list ap)
-{ return NULL; }
-uschar *
-string_sprintf_trc(const char * fmt, const uschar * func, unsigned line, ...)
-{ return NULL; }
-BOOL
-string_format_trc(uschar * buf, int len, const uschar * func, unsigned line,
-  const char * fmt, ...)
-{ return FALSE; }
-
 struct global_flags	f;
 unsigned int		log_selector[1];
 uschar *		queue_name;
 BOOL			split_spool_directory;
-
-
-/******************************************************************************/
 
 
 /*************************************************
