@@ -9,7 +9,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 daemon_smtp_port overridden by -oX:
-  <: 1225
+  <: PORT_D
 creating notifier socket
  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv4) port PORT_D
@@ -33,7 +33,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 daemon_smtp_port overridden by -oX:
-  <: 1225
+  <: PORT_D
 creating notifier socket
  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv4) port PORT_D
@@ -57,7 +57,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 daemon_smtp_port overridden by -oX:
-  <: 1225
+  <: PORT_D
 creating notifier socket
  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv4) port PORT_D

@@ -22,7 +22,7 @@
 221 myhost.test.ex closing connection
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex
@@ -34,7 +34,7 @@ RCPT TO:<dest@domain.com>
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex

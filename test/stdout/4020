@@ -36,11 +36,11 @@
 221 myhost.test.ex closing connection
 
 ******** SERVER ********
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [ip4.ip4.ip4.ip4]
 <<\x05\x01\x00
 >>\x05\x00
-<<\x05\x01\x00\x01\x7f\x00\x00\x01\x04\xc8
+<<\x05\x01\x00\x01\x7f\x00\x00\x01\x00\x19
 >>\x05\x00\x00\x01\x7f\x00\x00\x01\xbe\xef
 220 Connected OK
 EHLO
@@ -57,13 +57,13 @@ R
 QUIT
 250 bye
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [ip4.ip4.ip4.ip4]
 <<\x05\x01\x02
 >>\x05\x02
 <<\x01\x04fred\x05fubar
 >>\x01\x00
-<<\x05\x01\x00\x01\x7f\x00\x00\x01\x04\xc8
+<<\x05\x01\x00\x01\x7f\x00\x00\x01\x00\x19
 >>\x05\x00\x00\x01\x7f\x00\x00\x01\xbe\xef
 220 Connected OK
 EHLO
@@ -80,7 +80,7 @@ R
 QUIT
 250 bye
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 Connected OK
 EHLO myhost.test.ex

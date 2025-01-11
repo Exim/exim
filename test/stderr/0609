@@ -6,7 +6,7 @@ configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 daemon_smtp_port overridden by -oX:
-  <: 1225
+  <: PORT_D
 creating notifier socket
  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv4) port PORT_D

@@ -24,7 +24,7 @@ Success. You can now start the database server using:
     TESTSUITE/bin.sys/pg_ctl -D TESTSUITE/pgsql/data -l logfile start
 
 pg_ctl: server is running (PID: p1234)
-POSTGRES "-D" "TESTSUITE/pgsql/data" "-p" "1223" "-k" "TESTSUITE/pgsql"
+POSTGRES "-D" "TESTSUITE/pgsql/data" "-p" "PORT_N" "-k" "TESTSUITE/pgsql"
 CREATE TABLE
 INSERT 0 1
 INSERT 0 1

@@ -121,7 +121,7 @@
 221 myhost.test.ex closing connection
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex
@@ -148,7 +148,7 @@ X-hdr-rtr-new: +++
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex
@@ -160,7 +160,7 @@ RCPT TO:<userb@domain.com>
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex
@@ -172,7 +172,7 @@ RCPT TO:<userc@domain.com>
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex
@@ -184,7 +184,7 @@ RCPT TO:<userd@domain.com>
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex
@@ -211,7 +211,7 @@ X-hdr-rtr-new: +++
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex
@@ -238,7 +238,7 @@ X-hdr-rtr-new: +++
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex
@@ -265,7 +265,7 @@ X-hdr-rtr-new: +++
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex
@@ -290,7 +290,7 @@ X-hdr-rtr-new: +++
 .
 >*eof
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex
@@ -317,7 +317,7 @@ X-hdr-rtr-new: +++
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex

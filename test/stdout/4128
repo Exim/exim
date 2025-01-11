@@ -7,7 +7,7 @@ TTT   sss 10HmbG-000000005vi-0000 <CALLER@test.ex> *** frozen ***
 
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 ESMTP
 EHLO the.local.host.name

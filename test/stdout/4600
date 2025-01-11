@@ -1,4 +1,4 @@
-Connecting to 127.0.0.1 port 1224 ... connected
+Connecting to 127.0.0.1 port PORT_S ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> helo testclient
@@ -12,7 +12,7 @@ Connecting to 127.0.0.1 port 1224 ... connected
 <<< 250 Accepted
 >>> quit
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1224 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_S ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> helo testclient
@@ -26,7 +26,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1224 ... connected
 <<< 250 Accepted
 >>> quit
 End of script
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> helo testclient
@@ -40,7 +40,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250 Accepted
 >>> quit
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> helo testclient
@@ -54,7 +54,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 <<< 550 Administrative prohibition
 >>> quit
 End of script
-Connecting to 127.0.0.1 port 1226 ... connected
+Connecting to 127.0.0.1 port PORT_D2 ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> helo testclient
@@ -68,7 +68,7 @@ Connecting to 127.0.0.1 port 1226 ... connected
 <<< 550 Administrative prohibition
 >>> quit
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1224 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_S ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> helo passme.helo.example.com
@@ -82,7 +82,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1224 ... connected
 <<< 250 Accepted
 >>> quit
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1224 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_S ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> helo passme.helo.example.com

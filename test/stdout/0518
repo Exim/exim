@@ -12,7 +12,7 @@
 221 myhost.test.ex closing connection
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex
@@ -24,7 +24,7 @@ RCPT TO:<abc@include>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex
@@ -36,7 +36,7 @@ RCPT TO:<abc@exclude>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex
@@ -48,7 +48,7 @@ RCPT TO:<p+abc@include>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex
@@ -60,7 +60,7 @@ RCPT TO:<abc@exclude>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex
@@ -72,7 +72,7 @@ RCPT TO:<abc-s@include>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex
@@ -84,7 +84,7 @@ RCPT TO:<abc@exclude>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex
@@ -96,7 +96,7 @@ RCPT TO:<p+abc-s@include>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex

@@ -24,12 +24,12 @@
 221 myhost.test.ex closing connection
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [IP_LOOPBACK_ADDR]
 TESTSUITE/spool/scan/10HmaY-000000005vi-0000/10HmaY-000000005vi-0000.eml
 >LF>RESULT: OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [IP_LOOPBACK_ADDR]
 TESTSUITE/spool/scan/10HmaX-000000005vi-0000/10HmaX-000000005vi-0000.eml
 >LF>RESULT: BAD

@@ -1,4 +1,4 @@
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 Certificate file = aux-fixed/cert2
 Key file = aux-fixed/cert2
 ??? 220
@@ -37,7 +37,7 @@ Succeeded in starting TLS (with OCSP)
 ??? 221
 <<< 221 server1.example.com closing connection
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 Certificate file = aux-fixed/cert2
 Key file = aux-fixed/cert2
 ??? 220
@@ -64,7 +64,7 @@ Attempting to start TLS
 no OCSP response received
 Succeeded in starting TLS (with OCSP)
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 Certificate file = aux-fixed/cert2
 Key file = aux-fixed/cert2
 ??? 220
@@ -91,7 +91,7 @@ Attempting to start TLS
 no OCSP response received
 Succeeded in starting TLS (with OCSP)
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 Certificate file = aux-fixed/cert2
 Key file = aux-fixed/cert2
 ??? 220

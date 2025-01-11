@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 ESMTP
 EHLO myhost.test.ex
@@ -31,7 +31,7 @@ X-TAID: >CALLER<
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 ESMTP
 EHLO myhost.test.ex

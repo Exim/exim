@@ -29,7 +29,7 @@
 221 myhost.test.ex closing connection
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex
@@ -39,7 +39,7 @@ MAIL FROM:<>
 QUIT
 221 Bye
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex

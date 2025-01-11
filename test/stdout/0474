@@ -1,15 +1,15 @@
 +++++++++++++++++++++++++++
-  T:[127.0.0.1]:127.0.0.1:1224:10HmaX-000000005vi-0000 0 65 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 850 NONSENSE
+  T:[127.0.0.1]:127.0.0.1:PORT_S:10HmaX-000000005vi-0000 0 65 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 850 NONSENSE
 first failed = time last try = time2 next try = time2 + 10
 +++++++++++++++++++++++++++
-  T:[127.0.0.1]:127.0.0.1:1224:10HmaX-000000005vi-0000 0 65 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@the.local.host.name>: 850 RUBBISH
+  T:[127.0.0.1]:127.0.0.1:PORT_S:10HmaX-000000005vi-0000 0 65 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@the.local.host.name>: 850 RUBBISH
 first failed = time last try = time2 next try = time2 + 10
 +++++++++++++++++++++++++++
   R:abcd@xyz:<CALLER@the.local.host.name> -44 12865 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<abcd@xyz>: 850 RUBBISH
 first failed = time last try = time2 next try = time2 + 10
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO the.local.host.name
@@ -35,7 +35,7 @@ Test data.
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO the.local.host.name
@@ -45,7 +45,7 @@ MAIL FROM:<CALLER@the.local.host.name>
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO the.local.host.name

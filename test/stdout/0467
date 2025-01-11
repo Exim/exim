@@ -18,7 +18,7 @@ x@srv03.test.ex
   host ten-4.test.ex [V4NET.0.0.4] MX=0 port=88
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex

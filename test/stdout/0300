@@ -1,11 +1,11 @@
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ehlo abcd\r\nmail from:<userx@test.ex>
 ??? 554
 <<< 554 SMTP synchronization error
 End of script
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ehlo abcd
@@ -43,7 +43,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 554
 <<< 554 SMTP synchronization error
 End of script
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> helo abcd
@@ -53,7 +53,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 554
 <<< 554 SMTP synchronization error
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ehlo abcd
@@ -71,7 +71,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 554
 <<< 554 SMTP synchronization error
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> junk0
@@ -81,7 +81,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 554
 <<< 554 SMTP synchronization error
 End of script
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ehlo abcd
@@ -103,7 +103,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ehlo abcd
@@ -121,7 +121,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 554
 <<< 554 SMTP synchronization error
 End of script
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ehlo dis.able
@@ -151,10 +151,10 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 >>> helo abcd
 ??? 554
 <<< 554 SMTP synchronization error
 End of script
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 End of script

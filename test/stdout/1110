@@ -1,4 +1,4 @@
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 Attempting to start TLS
 Succeeded in starting TLS
 ??? 220
@@ -33,7 +33,7 @@ Succeeded in starting TLS
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 Certificate file = aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.pem
 Key file = aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.unlocked.key
 Attempting to start TLS

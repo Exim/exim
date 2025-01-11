@@ -4,7 +4,7 @@ first failed = time last try = time2 next try = time2 + 2
 +++++++++++++++++++++++++++
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -16,7 +16,7 @@ RCPT TO:<x@y>
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex

@@ -22,7 +22,7 @@
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 the.local.host.name Hello a.b.c [1.2.3.4]
 221 the.local.host.name closing connection
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 220
 <<< 220 host.127.0.0.1 ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> helo foobar
@@ -44,7 +44,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 221
 <<< 221 host.127.0.0.1 closing connection
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> helo foobar

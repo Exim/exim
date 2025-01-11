@@ -1,12 +1,12 @@
 +++++++++++++++++++++++++++
-  T:[127.0.0.1]:127.0.0.1:1224:10HmaX-000000005vi-0000 -45 13377 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
+  T:[127.0.0.1]:127.0.0.1:PORT_S:10HmaX-000000005vi-0000 -45 13377 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
 first failed = time last try = time2 next try = time2 + 0 *
 +++++++++++++++++++++++++++
   R:userx@x.y:<CALLER@myhost.test.ex> -44 13377 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@x.y>: 452 temporary error
 first failed = time last try = time2 next try = time2 + 0 *
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -17,7 +17,7 @@ MAIL FROM:<CALLER@myhost.test.ex>
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -30,7 +30,7 @@ RCPT TO:<userx@x.y>
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -45,7 +45,7 @@ DATA
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -71,7 +71,7 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -83,7 +83,7 @@ MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<userx@x.y>
 Comparison failed - bailing out
 Expected: QUIT
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -97,7 +97,7 @@ RCPT TO:<userx@x.y>
 DATA
 Comparison failed - bailing out
 Expected: QUIT
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -113,7 +113,7 @@ DATA
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -140,7 +140,7 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex

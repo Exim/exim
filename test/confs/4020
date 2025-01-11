@@ -42,10 +42,11 @@ begin transports
 my_smtp:
   driver =		smtp
   interface =		HOSTIPV4
-  port =		PORT_S
 .ifdef FALLBACK
+  port =		PORT_S
   socks_proxy =		${if eq {1}{1} {}}
 .else
+  port =		25
   hide socks_proxy =	HOSTIPV4 port=PORT_D OPT
 .endif
   hosts_try_fastopen =	${if eq {$local_part}{user_tfo} {*}}

@@ -295,19 +295,23 @@ There are some options for the ./runtest script itself:
             testing that the test suite correctly skips tests that require
             a running IPv6 interface.
 
-  -UPDATE   If this option is set, any detected changes in test output are
-            automatically accepted and used to update the stored copies of the
-            output. It is a dangerous option, but it useful for the test suite
-            maintainer after making a change to the code that affects a lot of
-            tests (for example, the wording of a message).
+  -PORTBASE <n>  Use ports starting at the given number for tests.
 
   -SLOW     For very slow hosts that appear to have Heisenbugs, delay before
             comparing output files from a testcase
+
+  -TEST <n> Run the specified testcase. May be given multiple times
 
   -TLS <client>  For cross-library testing. Specify 'openssl" or 'gnutls'
             as the client; the other is used as the server (assumes that
 	    both have been built: set up Local/Makefile for OpenSSL and
 	    "make exim_openssl", then for GnuTLS and "make exim_gnutls")
+
+  -UPDATE   If this option is set, any detected changes in test output are
+            automatically accepted and used to update the stored copies of the
+            output. It is a dangerous option, but it useful for the test suite
+            maintainer after making a change to the code that affects a lot of
+            tests (for example, the wording of a message).
 
 The options for ./runtest must be given first (but after the name of the
 binary, if present). Any further options, that is, items on the command line
@@ -574,7 +578,9 @@ here:
   V4NET          is replaced by an IPv4 network number for testing
   V6NET          is replaced by an IPv6 network number for testing
 
-PORT_D is currently hard-wired to 1225, PORT_N to 1223, and PORT_S to 1224.
+PORT_D is defaults to 1225, PORT_N to 1223, and PORT_S to 1224.
+Also PORT_D2,D3,D4 to 1226,7,8.
+These can all be changed by a command-line option.
 V4NET is hardwired to 224 and V6NET to ff00. These networks are used for DNS
 testing purposes, and for testing Exim with -bh. The only requirement is that
 they are networks that can never be used for an IP address of a real host. I've

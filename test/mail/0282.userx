@@ -5,8 +5,8 @@ Received: from [127.0.0.1] (port=1111 helo=rhu.barb)
 	id 10HmaX-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-interface-port: 1225
-received-port:  1225
+interface-port: PORT_D
+received-port:  PORT_D
 
 This is a test message.
 
@@ -17,8 +17,8 @@ Received: from [127.0.0.1] (port=1112 helo=rhu.barb)
 	id 10HmaY-000000005vi-0000
 	for userx@test.ex;
 	Tue, 2 Mar 1999 09:44:33 +0000
-interface-port: 1226
-received-port:  1226
+interface-port: PORT_D2
+received-port:  PORT_D2
 
 This is a test message.
 

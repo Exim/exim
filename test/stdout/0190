@@ -111,7 +111,7 @@ userx@bdomain3
   host the.local.host.name [ip4.ip4.ip4.ip4]
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO the.local.host.name
@@ -137,7 +137,7 @@ Test message
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO the.local.host.name
@@ -163,7 +163,7 @@ Test message
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 ESMTP
 EHLO the.local.host.name
@@ -189,7 +189,7 @@ Test message
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 ESMTP
 EHLO the.local.host.name
@@ -217,7 +217,7 @@ Test message
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 ESMTP
 EHLO the.local.host.name
@@ -243,7 +243,7 @@ Test message
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO the.local.host.name

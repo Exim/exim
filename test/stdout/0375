@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220
 EHLO myhost.test.ex
@@ -24,7 +24,7 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220
 EHLO myhost.test.ex
@@ -36,7 +36,7 @@ RCPT TO:<d2@myhost.test.ex>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220
 EHLO myhost.test.ex
@@ -48,7 +48,7 @@ RCPT TO:<d3@myhost.test.ex>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220
 EHLO myhost.test.ex
@@ -60,7 +60,7 @@ RCPT TO:<e1@myhost.test.ex>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220
 EHLO myhost.test.ex
@@ -84,7 +84,7 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220
 EHLO myhost.test.ex
@@ -96,7 +96,7 @@ RCPT TO:<f2@myhost.test.ex>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220
 EHLO myhost.test.ex

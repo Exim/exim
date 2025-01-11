@@ -117,7 +117,7 @@ Connection request
 >LF>scanned_file_name: OK
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 <zINSTREAM
 <X-Envelope-From: <CALLER@myhost.test.ex>

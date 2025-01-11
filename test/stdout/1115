@@ -1,4 +1,4 @@
-Connecting to 127.0.0.1 port 1226 ... connected
+Connecting to 127.0.0.1 port PORT_D2 ... connected
 Attempting to start TLS
 Failed to start TLS
 ???*

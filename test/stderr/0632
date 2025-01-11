@@ -12,7 +12,7 @@ try option gecos_pattern
 try option gecos_name
 try option unknown_login
 daemon_smtp_port overridden by -oX:
-  <: 1225
+  <: PORT_D
 creating notifier socket
 try option notifier_socket
  ╭considering: $spool_directory/exim_daemon_notify

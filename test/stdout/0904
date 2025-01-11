@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Greetings
 EHLO testhost.test.ex
@@ -16,7 +16,7 @@ QUIT
 225 OK
 Expected EOF read from client
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Greetings
 EHLO testhost.test.ex
@@ -28,7 +28,7 @@ RCPT TO:<b@test.ex>
 250 acceptable rcpt cmd
 BDAT 345 LAST
 Unexpected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Greetings
 EHLO testhost.test.ex
@@ -43,7 +43,7 @@ BDAT 345 LAST
 
 Comparison failed - bailing out
 Expected: QUIT
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Greetings
 EHLO testhost.test.ex
@@ -58,7 +58,7 @@ BDAT 345 LAST
 QUIT
 225 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Greetings
 EHLO testhost.test.ex
@@ -73,7 +73,7 @@ BDAT 345 LAST
 QUIT
 225 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Greetings
 EHLO testhost.test.ex

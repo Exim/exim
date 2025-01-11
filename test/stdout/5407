@@ -13,7 +13,7 @@
 221 myhost.test.ex closing connection
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [IP_LOOPBACK_ADDR]
 220 ESMTP
 EHLO myhost.test.ex

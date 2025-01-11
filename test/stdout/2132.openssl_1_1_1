@@ -1,5 +1,5 @@
 ### Should accept message
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ehlo rhu.barb
@@ -43,7 +43,7 @@ Succeeded in starting TLS
 <<< 221 myhost.test.ex closing connection
 End of script
 ### Should accept message (with a difficult env-from)
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ehlo rhu.barb
@@ -87,7 +87,7 @@ Succeeded in starting TLS
 <<< 221 myhost.test.ex closing connection
 End of script
 ### client cert verify required; none given
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ehlo rhu.barb
@@ -119,7 +119,7 @@ TLS terminated
 <<< 554 Security failure
 End of script
 ### client cert verify required; good one supplied
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 Certificate file = TESTSUITE/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
 Key file = TESTSUITE/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
 ??? 220

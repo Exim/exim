@@ -1,4 +1,4 @@
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 Certificate file = TESTSUITE/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.pem
 Key file = TESTSUITE/aux-fixed/exim-ca/example.org/server2.example.org/server2.example.org.unlocked.key
 ??? 220

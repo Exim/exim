@@ -1,4 +1,4 @@
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO testclient
@@ -11,7 +11,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250 HELP
 <<< 250 HELP
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO testclient
@@ -45,7 +45,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO testclient
@@ -76,7 +76,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO testclient
@@ -107,7 +107,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO testclient
@@ -138,7 +138,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO testclient
@@ -171,7 +171,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 End of script
 Message 10HmbD-000000005vi-0000 has been removed
 Message 10HmbE-000000005vi-0000 has been removed
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO testclient

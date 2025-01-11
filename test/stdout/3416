@@ -35,7 +35,7 @@
 221 myhost.test.ex closing connection
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex
@@ -51,7 +51,7 @@ RCPT TO:<abc@force>
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex
@@ -67,7 +67,7 @@ RCPT TO:<abc@normal>
 QUIT
 250 OK
 End of script
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Welcome
 EHLO myhost.test.ex

@@ -94,7 +94,7 @@ my @test_list = ();
 my $parm_ipv4_test_net = 224;
 my $parm_ipv6_test_net = 'ff00';
 
-# Port numbers are currently hard-wired
+# Port numbers are currently hard-wired, unless a cmdline option changes them
 
 my $parm_port_n = 1223;         # Nothing listening on this port
 my $parm_port_s = 1224;         # Used for the "server" command
@@ -165,7 +165,7 @@ s?\bEXIMUSER\b?$parm_eximuser?g;
 s?\bHOSTIPV4\b?$parm_ipv4?g;
 s?\bHOSTIPV6\b?$parm_ipv6?g;
 s?\bHOSTNAME\b?$parm_hostname?g;
-s?\bPORT_D\b?$parm_port_d?g;
+s?(\b|_)PORT_D\b?$1$parm_port_d?g;
 s?\bPORT_D2\b?$parm_port_d2?g;
 s?\bPORT_D3\b?$parm_port_d3?g;
 s?\bPORT_D4\b?$parm_port_d4?g;
@@ -1058,6 +1058,42 @@ RESET_AFTER_EXTRA_LINE_READ:
         }
       }
 
+    # port numbers
+    {
+    my $re = "((Listening on|Connecting to (127\\.0\\.0\\.1|(ip4\\.){3}ip4|(ip6:){7}ip6)) port |host host .+ port=)";
+    s/$re\K$parm_port_n/PORT_N/n;
+    s/$re\K$parm_port_s/PORT_S/n;
+    s/$re\K$parm_port_d/PORT_D/n;
+    s/$re\K$parm_port_d2/PORT_D2/n;
+    s/$re\K$parm_port_d3/PORT_D3/n;
+    s/$re\K$parm_port_d4/PORT_D4/n;
+
+    $re = "T:.*:(127\\.0\\.0\\.1|.::1.):";
+    s/$re\K$parm_port_n/PORT_N/n;
+    s/$re\K$parm_port_s/PORT_S/n;
+    s/$re\K$parm_port_d/PORT_D/n;
+    s/$re\K$parm_port_d2/PORT_D2/n;
+    s/$re\K$parm_port_d3/PORT_D3/n;
+    s/$re\K$parm_port_d4/PORT_D4/n;
+
+    $re = "^\\s*port = ";
+    s/$re\K$parm_port_n/PORT_N/;
+    s/$re\K$parm_port_s/PORT_S/;
+    s/$re\K$parm_port_d/PORT_D/;
+    s/$re\K$parm_port_d2/PORT_D2/;
+    s/$re\K$parm_port_d3/PORT_D3/;
+    s/$re\K$parm_port_d4/PORT_D4/;
+
+    $re = "lookup of .*127.0.0.1::";
+    s/$re\K$parm_port_n/PORT_N/;
+    $re = "postgres .* \"";
+    s/$re\K$parm_port_n/PORT_N/;
+
+    # dumpdb misc, for early-pipe
+    $re = "^\\d{2}-\\w{3}-\\d{4} \\d{2}:\\d{2}:\\d{2} [^:]+:";
+    s/$re\K$parm_port_d/PORT_D/;
+    }
+
     # remote IPv6 addrs vary
     s/^(Connection request from) \[.*:.*:.*\]$/$1 \[ipv6\]/;
 
@@ -1227,12 +1263,66 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^Reset TZ to/;
 
     # port numbers
-    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d/PORT_D/;
-    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d2/PORT_D2/;
-    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d3/PORT_D3/;
-    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_d4/PORT_D4/;
-    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_s/PORT_S/;
-    s/(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ])\K$parm_port_n/PORT_N/;
+      {
+      my $re = "(?:\[[^\]]*\]:|V4NET\.0\.0\.0:|localhost::?|127\.0\.0\.1[.:]:?|port[= ](?:[^:]+:)?)";
+      s/$re\K$parm_port_d/PORT_D/;
+      s/$re\K$parm_port_d2/PORT_D2/;
+      s/$re\K$parm_port_d3/PORT_D3/;
+      s/$re\K$parm_port_d4/PORT_D4/;
+      s/$re\K$parm_port_s/PORT_S/;
+      s/$re\K$parm_port_n/PORT_N/;
+
+      $re = "listening for SMTP on [^:]+:.*";
+      s/$re\K$parm_port_d/PORT_D/;
+      s/$re\K$parm_port_d2/PORT_D2/;
+      s/$re\K$parm_port_d3/PORT_D3/;
+      s/$re\K$parm_port_d4/PORT_D4/;
+
+      $re = "listening for SMTP on .*? port ";
+      s/$re\K$parm_port_d/PORT_D/g;
+      s/$re\K$parm_port_d2/PORT_D2/g;
+      s/$re\K$parm_port_d3/PORT_D3/g;
+      s/$re\K$parm_port_d4/PORT_D4/g;
+
+      # $re = "<[:;].* ";
+      if (/<[:;] /)
+	{
+	s/$parm_port_d/PORT_D/g;
+	s/$parm_port_d2/PORT_D2/g;
+	s/$parm_port_d3/PORT_D3/g;
+	s/$parm_port_d4/PORT_D4/g;
+	s/$parm_port_s/PORT_S/g;
+	s/$parm_port_n/PORT_N/g;
+	}
+
+      $re = "Connecting to .*]:";
+      s/$re\K$parm_port_d/PORT_D/;
+      s/$re\K$parm_port_d2/PORT_D2/;
+      s/$re\K$parm_port_d3/PORT_D3/;
+      s/$re\K$parm_port_d4/PORT_D4/;
+      s/$re\K$parm_port_s/PORT_S/;
+      s/$re\K$parm_port_n/PORT_N/;
+
+      $re = "=[>=] .*\\[[^\\]]+\\]:";
+      s/$re\K$parm_port_s/PORT_S/;
+      s/$re\K$parm_port_d/PORT_D/g;
+      s/$re\K$parm_port_d2/PORT_D2/g;
+      s/$re\K$parm_port_d3/PORT_D3/g;
+      s/$re\K$parm_port_d4/PORT_D4/g;
+
+      $re = "key=.*servers=.*\.";
+      s/$re\K$parm_port_n/PORT_N/;
+      $re = "(?:database lookup required for |(?:My|Postgre)SQL query: .*)servers=.*\.";
+      s/$re\K$parm_port_n/PORT_N/;
+      $re = "(?:using cached connection for|close (?:MY|PG)SQL connection:) .*\.";
+      s/$re\K$parm_port_n/PORT_N/;
+      $re = "(?:PGSQL new connection|PostgreSQL query): .*PGSQL\.";
+      s/$re\K$parm_port_n/PORT_N/;
+      $re = "(?:DEFER:|list match deferred for).*:";
+      s/$re\K$parm_port_n/PORT_N/;
+      $re = "POSTGRES .*\"";
+      s/$re\K$parm_port_n/PORT_N/;
+      }
 
     # ========= Exim lookups ==================
     # Lookups have a char which depends on the number of lookup types compiled in,
@@ -1702,6 +1792,60 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   elsif ($is_log)
     {
+      # port numbers
+      {
+      my $re = "listening for SMTP on [^:]+:.*";
+      s/$re\K$parm_port_n/PORT_N/;
+      s/$re\K$parm_port_s/PORT_S/;
+      s/$re\K$parm_port_d/PORT_D/;
+      s/$re\K$parm_port_d2/PORT_D2/;
+      s/$re\K$parm_port_d3/PORT_D3/;
+      s/$re\K$parm_port_d4/PORT_D4/;
+
+      $re = "listening for .*? port ";
+      s/$re\K$parm_port_d/PORT_D/g;
+      s/$re\K$parm_port_d2/PORT_D2/g;
+      s/$re\K$parm_port_d3/PORT_D3/g;
+      s/$re\K$parm_port_d4/PORT_D4/g;
+      s/$re\K$parm_port_s/PORT_S/g;
+      s/$re\K$parm_port_n/PORT_N/g;
+
+      $re = " I=\\[[^\\]]+\\]:";
+      s/$re\K$parm_port_d/PORT_D/n;
+      s/$re\K$parm_port_d2/PORT_D2/n;
+
+      $re = "Received from .* I=\\[[^\\]]+\\]:";
+      s/$re\K$parm_port_d/PORT_D/n;
+
+      $re = " \\[(127\\.0\\.0\\.1|(ip4\\.){3}ip4)\\]:";
+      my $trail = "(?= Connection refused)";
+      s/$re\K$parm_port_n$trail/PORT_N/n;
+      s/$re\K$parm_port_s$trail/PORT_S/n;
+      s/$re\K$parm_port_d$trail/PORT_D/n;
+      s/$re\K$parm_port_d2$trail/PORT_D2/n;
+      s/$re\K$parm_port_d3$trail/PORT_D3/n;
+      s/$re\K$parm_port_d4$trail/PORT_D4/n;
+
+      $re = "(=>|->|==) .* (PRX=)?\\[[^\\]]+\\]:";
+      s/$re\K$parm_port_d/PORT_D/n;
+      s/$re\K$parm_port_d2/PORT_D2/n;
+      s/$re\K$parm_port_d3/PORT_D3/n;
+      s/$re\K$parm_port_d4/PORT_D4/n;
+
+      $re = ".*\\]:";
+      s/$re\K$parm_port_s/PORT_S/g;
+      $re = "port <";
+      s/$re\K$parm_port_s/PORT_S/g;
+      $re = "plp ";
+      s/$re\K$parm_port_d/PORT_D/g;
+
+      $re = "Expansion of .*received_port\\}\\{";
+      s/$re\K$parm_port_d4/PORT_D4/g;
+      }
+
+    # ephem port numbers
+    s/I=\[[^\]]*\]:\K\d+/ppppp/;
+
     # Berkeley DB version differences
     next if / Berkeley DB error: /;
 
@@ -1749,15 +1893,6 @@ RESET_AFTER_EXTRA_LINE_READ:
     # with GnuTLS we cannot log single bad ALPN.  So ignore the with-OpenSSL log line.
     # next if /TLS ALPN (http) rejected$/;
 
-    # port numbers
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_d/PORT_D/;
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_d2/PORT_D2/;
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_d3/PORT_D3/;
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_d4/PORT_D4/;
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_s/PORT_S/;
-    s/(?:\[[^\]]*\]:|port )\K$parm_port_n/PORT_N/;
-    s/I=\[[^\]]*\]:\K\d+/ppppp/;
-
     # Platform differences for errno values (eg. Hurd).  Leave 0 and negative numbers alone.
     s/R=\w+ T=\w+ defer\K \([1-9]\d*\): / (EEE): /;
 
@@ -1779,6 +1914,17 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   elsif ($is_mail)
     {
+    # port numbers
+      {
+      my $re = "(interface|received)-port:\\s+";
+      s/$re\K$parm_port_n/PORT_N/;
+      s/$re\K$parm_port_s/PORT_S/;
+      s/$re\K$parm_port_d/PORT_D/;
+      s/$re\K$parm_port_d2/PORT_D2/;
+      s/$re\K$parm_port_d3/PORT_D3/;
+      s/$re\K$parm_port_d4/PORT_D4/;
+      }
+
     # DKIM timestamps, and signatures depending thereon
     if ( /^(\s+)t=([0-9]*); x=([0-9]*); b=[A-Za-z0-9+\/]+$/ )
       {
@@ -3535,7 +3681,8 @@ GetOptions(
     'keep'     => \$save_output,
     'slow'     => \$slow,
     'tls=s'    => \my $tls,
-    'valgrind' => \$valgrind,
+    'portbase=i'	=> \my $portbase,
+    'valgrind'		=> \$valgrind,
     'range=s{2}'       => \my @range_wanted,
     'test=i@'          => \my @tests_wanted,
     'fail-any!'        => \my $fail_any,
@@ -4035,6 +4182,8 @@ else
 
 print "IPv4 address is $parm_ipv4\n";
 print "IPv6 address is $parm_ipv6\n";
+printf("Ports %d to %d\n", $portbase, $portbase+5)  if (defined($portbase));
+
 $parm_ipv6 =~ /^[^%\/]*/;
 # drop any %scope from the ipv6, for some uses
 ($parm_ipv6_stripped = $parm_ipv6) =~ s/%.*//g;
@@ -4164,6 +4313,17 @@ else
   { $exim_client = $exim_server = 'eximdir/exim'; }
 print ">> \$exim_client <$exim_client>\n";;
 print ">> \$exim_server <$exim_server>\n";;
+
+if (defined($portbase))
+  {
+  printf(">>Ports %d to %d\n", $portbase, $portbase+5)  if $debug;
+  $parm_port_n = $portbase;	# Nothing listening on this port
+  $parm_port_s = $portbase+1;	# Used for the "server" command
+  $parm_port_d = $portbase+2;	# Used for the Exim daemon
+  $parm_port_d2 = $portbase+3;	# Additional for daemon
+  $parm_port_d3 = $portbase+4;	# Additional for daemon
+  $parm_port_d4 = $portbase+5;	# Additional for daemon
+  }
 
 # From this point on, exits from the program must go via the subroutine
 # tests_exit(), so that suitable cleaning up can be done when required.
@@ -5035,6 +5195,10 @@ Skip IPv6 related setup and tests (default: use ipv6)
 
 Keep the various output files produced during a test run. (default: don't keep)
 
+=item B<--portbase> I<n>
+
+Use ports starting at the given number for testing. (default: 1223)
+
 =item B<--range> I<n0> I<n1>
 
 Run tests between (including) I<n0> and I<n1>. A "+" may be used to specify the "last
@@ -5047,6 +5211,10 @@ Insert some delays to compensate for a slow host system. (default: off)
 =item B<--test> I<n>
 
 Run the specified test. This option may used multiple times.
+
+=item B<--tls> (gnutls|openssl)
+
+Use the specified version of client server test utility, for cross-library testing. The other library version is used for the server test utility.
 
 =item B<--update>
 

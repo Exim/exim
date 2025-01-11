@@ -1,7 +1,7 @@
 +++++++++++++++++++++++++++
-  T:[127.0.0.1]:127.0.0.1:1224:10HmaX-000000005vi-0000 -45 12865 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@the.local.host.name>: 450 Temporary error
+  T:[127.0.0.1]:127.0.0.1:PORT_S:10HmaX-000000005vi-0000 -45 12865 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@the.local.host.name>: 450 Temporary error
 first failed = time last try = time2 next try = time2 + 7200
-  T:[::1]:[::1]:1224:10HmaX-000000005vi-0000 -45 12865 H=::1 [::1]: SMTP error from remote mail server after MAIL FROM:<CALLER@the.local.host.name>: 450 Temporary error
+  T:[::1]:[::1]:PORT_S:10HmaX-000000005vi-0000 -45 12865 H=::1 [::1]: SMTP error from remote mail server after MAIL FROM:<CALLER@the.local.host.name>: 450 Temporary error
 first failed = time last try = time2 next try = time2 + 7200
 Transport: [127.0.0.1] 127.0.0.1:PORT_S 10HmaX-000000005vi-0000 error -45: H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@the.local.host.name>: 450 Temporary error
   first failed: 07-Mar-2000 12:21:52
@@ -15,7 +15,7 @@ Transport: [::1] [::1]:PORT_S 10HmaX-000000005vi-0000 error -45: H=::1 [::1]: SM
 exinext exit code = 0
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO the.local.host.name
@@ -26,7 +26,7 @@ MAIL FROM:<CALLER@the.local.host.name>
 QUIT
 250 OK
 Expected EOF read from client
-Listening on port 1224 ... 
+Listening on port PORT_S ... 
 Connection request from [ipv6]
 220 Server ready
 EHLO the.local.host.name

@@ -14,7 +14,7 @@
 1999-03-02 09:44:33 [1235] H=[127.0.0.1] dropped by 'connect' ACL: we dislike you
 1999-03-02 09:44:33 [1240] eval host_reject_connection
 1999-03-02 09:44:33 [1240] ACL conn
-1999-03-02 09:44:33 [1240] Expansion of "${if != {$received_port}{1228} {my banner}fail}" (smtp_banner) failed: "if" failed and "fail" requested
+1999-03-02 09:44:33 [1240] Expansion of "${if != {$received_port}{PORT_D4} {my banner}fail}" (smtp_banner) failed: "if" failed and "fail" requested
 1999-03-02 09:44:33 [1241] eval host_reject_connection
 1999-03-02 09:44:33 [1241] ACL conn
 1999-03-02 09:44:33 [1241] EV tls:fail:connect

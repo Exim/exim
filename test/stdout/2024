@@ -1,4 +1,4 @@
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 Certificate file = aux-fixed/cert2
 Key file = aux-fixed/cert2
 ??? 220
@@ -27,7 +27,7 @@ Failed to start TLS
 >>> nop
 ????554
 End of script
-Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Connecting to ip4.ip4.ip4.ip4 port PORT_D ... connected
 Certificate file = aux-fixed/cert2
 Key file = aux-fixed/cert2
 ??? 220

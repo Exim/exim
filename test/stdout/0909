@@ -37,7 +37,7 @@ Message 10HmaZ-000000005vi-0000 has been removed
 Message 10HmbB-000000005vi-0000 has been removed
 
 ******** SERVER ********
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -54,7 +54,7 @@ QUIT
 250 OK chunked message data
 221 Closing connection
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -70,7 +70,7 @@ BDAT 331 LAST
 QUIT
 221 Closing connection
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -88,7 +88,7 @@ QUIT
 221 Closing connection
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
@@ -106,7 +106,7 @@ QUIT
 221 Closing connection
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex

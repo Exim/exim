@@ -1,8 +1,8 @@
 +++++++++++++++++++++++++++
-07-Mar-2000 12:21:52 127.0.0.1:1225.EHLO
+07-Mar-2000 12:21:52 127.0.0.1:PORT_D.EHLO
 
 ******** SERVER ********
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 >220 banner
 <EHLO the.local.host.name
@@ -32,7 +32,7 @@ body 2
 >220 bye
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 >220 banner
 <EHLO the.local.host.name
@@ -62,7 +62,7 @@ body 2a
 >220 bye
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 *sleep 2
 <EHLO
@@ -78,7 +78,7 @@ Connection request from [127.0.0.1]
 >>220 bye
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 >220 banner
 <EHLO the.local.host.name
@@ -108,7 +108,7 @@ body
 >220 bye
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 >220 banner
 <EHLO the.local.host.name
@@ -138,7 +138,7 @@ body
 >220 bye
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 *sleep 2
 <EHLO
@@ -157,7 +157,7 @@ Connection request from [127.0.0.1]
 >>220 bye
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 *sleep 2
 <EHLO
@@ -176,7 +176,7 @@ Connection request from [127.0.0.1]
 >>220 bye
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 *sleep 2
 <EHLO
@@ -195,7 +195,7 @@ Connection request from [127.0.0.1]
 >>220 bye
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 *sleep 2
 >220 banner
@@ -226,7 +226,7 @@ body
 >220 bye
 Expected EOF read from client
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 >220 banner
 <EHLO the.local.host.name

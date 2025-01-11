@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 220 Hi there
 EHLO the.local.host.name
@@ -33,7 +33,7 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 QUIT
 220 bye
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 220 Hi there
 EHLO the.local.host.name
@@ -94,7 +94,7 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 QUIT
 220 bye
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 220 Hi there
 EHLO the.local.host.name
@@ -137,7 +137,7 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 QUIT
 220 bye
 End of script
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 220 Hi there
 EHLO the.local.host.name
@@ -164,7 +164,7 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 QUIT
 220 bye
 Expected EOF read from client
-Listening on port 1225 ... 
+Listening on port PORT_D ... 
 Connection request from [127.0.0.1]
 220 Hi there
 EHLO the.local.host.name

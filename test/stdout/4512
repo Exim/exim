@@ -1,5 +1,5 @@
 ### sha256, 1024b + message in 1 chunk
-Connecting to 127.0.0.1 port 1224 ... connected
+Connecting to 127.0.0.1 port PORT_S ... connected
 ??? 220
 <<< 220 testhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO xxx
@@ -44,7 +44,7 @@ Connecting to 127.0.0.1 port 1224 ... connected
 <<< 221 testhost.test.ex closing connection
 End of script
 ### sha256, 1024b + message in 2 chunks
-Connecting to 127.0.0.1 port 1224 ... connected
+Connecting to 127.0.0.1 port PORT_S ... connected
 ??? 220
 <<< 220 testhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> EHLO xxx

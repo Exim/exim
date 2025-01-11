@@ -6,6 +6,6 @@
 1999-03-02 09:44:33 End queue run: pid=p1234
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on [127.0.0.1]:{1225,1226,1228} [ip4.ip4.ip4.ip4]:PORT_D3
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on [127.0.0.1]:{PORT_D,PORT_D2,PORT_D4} [ip4.ip4.ip4.ip4]:PORT_D3
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= userx@test.ex H=(rhu.barb) [127.0.0.1]:1111 I=[127.0.0.1]:PORT_D P=esmtp S=sss
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= userx@test.ex H=(rhu.barb) [127.0.0.1]:1112 I=[127.0.0.1]:PORT_D2 P=esmtp S=sss
