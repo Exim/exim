@@ -33,6 +33,12 @@ characters. */
 #include "exim.h"
 #include "dummies.h"
 
+/* dummies for Solaris compiler */
+struct global_flags	f;
+unsigned int		log_selector[1];
+uschar *		queue_name;
+BOOL			split_spool_directory;
+
 uschar * spool_directory = NULL;	/* dummy for hintsdb.h */
 
 /******************************************************************************/

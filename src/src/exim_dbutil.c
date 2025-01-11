@@ -51,6 +51,7 @@ uschar *spool_directory;
 BOOL keyonly = FALSE;
 BOOL utc = FALSE;
 
+/* dummies for Solaris compiler */
 struct global_flags	f;
 unsigned int		log_selector[1];
 uschar *		queue_name;
