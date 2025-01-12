@@ -1,4 +1,4 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 bind of [99.99.99.99]:1111 failed
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 bind of [99.99.99.99]:10001 failed
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=127.0.0.1 [127.0.0.1] Netwk addr not available
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 == userx@test.ex R=r1 T=t1 defer (EEE): Netwk addr not available

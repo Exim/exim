@@ -37,7 +37,7 @@ Action: failed
 Final-Recipient: rfc822;userx@domain1
 Status: 5.0.0
 Remote-MTA: dns; localhost4.test.ex
-Remote-MTA: X-ip; [127.0.0.1]:1111
+Remote-MTA: X-ip; [127.0.0.1]:10001
 X-Remote-MTA-smtp-greeting: X-str; 550 Go away
 Diagnostic-Code: smtp; 550 Go away
 
@@ -102,7 +102,7 @@ Action: failed
 Final-Recipient: rfc822;userx@domain1
 Status: 5.0.0
 Remote-MTA: dns; localhost4.test.ex
-Remote-MTA: X-ip; [127.0.0.1]:1111
+Remote-MTA: X-ip; [127.0.0.1]:10001
 X-Remote-MTA-smtp-greeting: X-str; 220 Connected OK
 X-Remote-MTA-helo-response: X-str; 550 Go away
 Diagnostic-Code: smtp; 550 Go away
@@ -111,7 +111,7 @@ Action: failed
 Final-Recipient: rfc822;usery@domain2
 Status: 5.0.0
 Remote-MTA: dns; localhost4.test.ex
-Remote-MTA: X-ip; [127.0.0.1]:1111
+Remote-MTA: X-ip; [127.0.0.1]:10001
 X-Remote-MTA-smtp-greeting: X-str; 220 Connected OK
 X-Remote-MTA-helo-response: X-str; 550 Go away
 Diagnostic-Code: smtp; 550 Go away

@@ -1,5 +1,5 @@
 From userx@test.ex Tue Mar 02 09:44:33 1999
-Received: from [127.0.0.1] (port=1111 helo=rhu.barb)
+Received: from [127.0.0.1] (port=10001 helo=rhu.barb)
 	by myhost.test.ex with esmtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaX-000000005vi-0000
@@ -11,7 +11,7 @@ received-port:  PORT_D
 This is a test message.
 
 From userx@test.ex Tue Mar 02 09:44:33 1999
-Received: from [127.0.0.1] (port=1112 helo=rhu.barb)
+Received: from [127.0.0.1] (port=10002 helo=rhu.barb)
 	by myhost.test.ex with esmtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaY-000000005vi-0000

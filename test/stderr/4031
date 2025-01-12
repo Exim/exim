@@ -27,8 +27,8 @@ LOG: proxy internal []:0
 >>>                = proxy external []:0
 LOG: proxy external []:0
 >>> check logwrite = remote         [$sender_host_address]:$sender_host_port
->>>                = remote         [127.0.0.2]:1111
-LOG: remote         [127.0.0.2]:1111
+>>>                = remote         [127.0.0.2]:10001
+LOG: remote         [127.0.0.2]:10001
 >>> accept: condition test succeeded in ACL r_acl
 >>> end of ACL r_acl: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
@@ -58,18 +58,18 @@ LOG: proxy session: yes
 >>>                = local          []:-1
 LOG: local          []:-1
 >>> check logwrite = proxy internal [$proxy_local_address]:$proxy_local_port
->>>                = proxy internal [ip4.ip4.ip4.ip4]:1111
-LOG: proxy internal [ip4.ip4.ip4.ip4]:1111
+>>>                = proxy internal [ip4.ip4.ip4.ip4]:10001
+LOG: proxy internal [ip4.ip4.ip4.ip4]:10001
 >>> check logwrite = proxy external [$proxy_external_address]:$proxy_external_port
->>>                = proxy external [127.42.42.42]:1112
-LOG: proxy external [127.42.42.42]:1112
+>>>                = proxy external [127.42.42.42]:10002
+LOG: proxy external [127.42.42.42]:10002
 >>> check logwrite = remote         [$sender_host_address]:$sender_host_port
->>>                = remote         [127.0.0.2]:1113
-LOG: remote         [127.0.0.2]:1113
+>>>                = remote         [127.0.0.2]:10003
+LOG: remote         [127.0.0.2]:10003
 >>> accept: condition test succeeded in ACL r_acl
 >>> end of ACL r_acl: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
-LOG: 10HmaY-000000005vi-0000 <= a@test.ex H=(clientname) [127.0.0.2]:1113 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
+LOG: 10HmaY-000000005vi-0000 <= a@test.ex H=(clientname) [127.0.0.2]:10003 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
 ### protocol v2 receive
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -95,18 +95,18 @@ LOG: proxy session: yes
 >>>                = local          []:-1
 LOG: local          []:-1
 >>> check logwrite = proxy internal [$proxy_local_address]:$proxy_local_port
->>>                = proxy internal [ip4.ip4.ip4.ip4]:1111
-LOG: proxy internal [ip4.ip4.ip4.ip4]:1111
+>>>                = proxy internal [ip4.ip4.ip4.ip4]:10001
+LOG: proxy internal [ip4.ip4.ip4.ip4]:10001
 >>> check logwrite = proxy external [$proxy_external_address]:$proxy_external_port
->>>                = proxy external [127.42.42.42]:1114
-LOG: proxy external [127.42.42.42]:1114
+>>>                = proxy external [127.42.42.42]:10004
+LOG: proxy external [127.42.42.42]:10004
 >>> check logwrite = remote         [$sender_host_address]:$sender_host_port
->>>                = remote         [127.0.0.2]:1115
-LOG: remote         [127.0.0.2]:1115
+>>>                = remote         [127.0.0.2]:10005
+LOG: remote         [127.0.0.2]:10005
 >>> accept: condition test succeeded in ACL r_acl
 >>> end of ACL r_acl: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
-LOG: 10HmaZ-000000005vi-0000 <= a@test.ex H=(clientname) [127.0.0.2]:1115 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
+LOG: 10HmaZ-000000005vi-0000 <= a@test.ex H=(clientname) [127.0.0.2]:10005 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
 ### proxy timeout
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)

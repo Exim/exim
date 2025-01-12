@@ -1844,7 +1844,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
 
     # ephem port numbers
-    s/I=\[[^\]]*\]:\K\d+/ppppp/;
+    s/I=\[[^\]]*\]:\K\d+/new_value($0, "%s", \$next_port)/e;
 
     # Berkeley DB version differences
     next if / Berkeley DB error: /;
@@ -4830,7 +4830,7 @@ foreach $test (@test_list)
   $next_msgid_old = "aX";
   $next_msgid = "aX";
   $next_pid = 1234;
-  $next_port = 1111;
+  $next_port = 10001;
   $next_conn = 1111;
   $message_skip = 0;
   $msglog_skip = 0;

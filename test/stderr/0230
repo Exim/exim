@@ -1,5 +1,5 @@
 >>> host in hosts_connection_nolog? no (option unset)
-LOG: SMTP connection Ci=p1244 from [192.168.1.2]:1117
+LOG: SMTP connection Ci=p1244 from [192.168.1.2]:10007
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
@@ -7,6 +7,6 @@ LOG: SMTP connection Ci=p1244 from [192.168.1.2]:1117
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
-LOG: SMTP connection Ci=p1244 from [192.168.1.2]:1117 D=qqs closed by QUIT
+LOG: SMTP connection Ci=p1244 from [192.168.1.2]:10007 D=qqs closed by QUIT
 
 ******** SERVER ********
