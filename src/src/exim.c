@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2024 */
+/* Copyright (c) The Exim Maintainers 2020 - 2025 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -5628,7 +5628,7 @@ if (host_checking)
     sender_ident = NULL;
     if (f.running_in_test_harness && sender_host_port
        && interface_address && interface_port)
-      verify_get_ident(1223);		/* note hardwired port number */
+      verify_get_ident(test_harness_identd_port);
     }
 
   /* In case the given address is a non-canonical IPv6 address, canonicalize

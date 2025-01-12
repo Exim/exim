@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2024 */
+/* Copyright (c) The Exim Maintainers 2020 - 2025 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -1061,6 +1061,7 @@ extern tfo_state_t tcp_out_fastopen;   /* TCP fast open */
 #ifdef USE_TCP_WRAPPERS
 extern uschar *tcp_wrappers_daemon_name; /* tcpwrappers daemon lookup name */
 #endif
+extern int     test_harness_identd_port; /* For use when testing */
 extern int     test_harness_load_avg;  /* For use when testing */
 extern int     thismessage_size_limit; /* Limit for this message */
 extern int     timeout_frozen_after;   /* Max time to keep frozen messages */

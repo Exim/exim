@@ -1,7 +1,8 @@
 # ident queries
+# NB: this relies on an (ugly) testsuite-only main-config option to
+#     set the port for the simulated identd.
 need_ipv4
 #
-# The port used for (testing only) identd is hard-coded in exim
 #
 server PORT_N
 <999 , 25

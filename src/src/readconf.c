@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2024 */
+/* Copyright (c) The Exim Maintainers 2020 - 2025 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -310,6 +310,7 @@ static optionlist optionlist_config[] = {
   { "return_path_remove",       opt_bool,        {&return_path_remove} },
   { "return_size_limit",        opt_mkint|opt_hidden, {&bounce_return_size_limit} },
   { "rfc1413_hosts",            opt_stringptr,   {&rfc1413_hosts} },
+  { "rfc1413_port",		opt_int|opt_hidden, {&test_harness_identd_port} },
   { "rfc1413_query_timeout",    opt_time,        {&rfc1413_query_timeout} },
   { "sender_unqualified_hosts", opt_stringptr,   {&sender_unqualified_hosts} },
   { "slow_lookup_log",          opt_int,         {&slow_lookup_log} },
