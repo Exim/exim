@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2025 */
+/* Copyright (c) The Exim Maintainers 2020 - 2024 */
 /* Copyright (c) Jeremy Harris 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -12,7 +12,6 @@ included in the main Exim build */
 
 #include "exim.h"
 #include "macro_predef.h"
-#include "dummies.h"
 
 unsigned mp_index = 0;
 
@@ -20,7 +19,6 @@ unsigned mp_index = 0;
 
 void fn_smtp_receive_timeout(const uschar * name, const uschar * str) {}
 uschar * syslog_facility_str;
-
 
 /******************************************************************************/
 
