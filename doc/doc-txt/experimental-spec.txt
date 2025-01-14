@@ -662,6 +662,33 @@ After a success:
 
 
 
+SRV SMTPS
+---------------------------------------------------------------
+Per https://www.ietf.org/archive/id/draft-nurpmeso-smtp-tls-srv-03.html
+
+If compiled with EXPERIMENTAL_SRV_SMTPS=yes :-
+
+This supports a DNS record which specifies that a given server for
+a domain accepts tls-on-connect connections on a specified port,
+or can do STARTTLS on the usual port (25).  In either case the
+record is equivalent to an MX record.
+
+The Exim implementation uses the existing smtp transport "check_srv"
+option; if it has a value of "smtps" and the SRV lookup succeeds
+with a given nonzero port number then that port is used for a tls-on-connect
+connection.  If zero, a standard connection is used but STARTTLS must
+succeed.
+
+Note that the option value can be a list.  Elements are used in
+left-to-right order for SRV lookups, until one succeeds or there are
+none left.  If a SRV lookup succeeds then no MX lookup is done.
+If none succeed then the normal sequence of MX and A/AAAA lookups is done.
+
+
+There are no changes for server-side support; only suitable configuration
+for listening on a separate port (for tls-on-connect), opening any required
+firewall holes for that port, and provisioning a DNS record are needed.
+
 
 --------------------------------------------------------------
 End of file

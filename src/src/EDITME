@@ -708,6 +708,9 @@ DISABLE_MAL_MKS=yes
 # Uncomment the following line to add queuefile transport support
 # EXPERIMENTAL_QUEUEFILE=yes
 #
+# Uncomment the following line to add SRV smtps support
+# EXPERIMENTAL_SRV_SMTPS=yes
+#
 # Uncomment the following line to add XCLIENT support
 # EXPERIMENTAL_XCLIENT=yes
 

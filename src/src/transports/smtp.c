@@ -2137,6 +2137,9 @@ if(  sx->dane_required
   switch (rc = tlsa_lookup(sx->conn_args.host, &sx->conn_args.tlsa_dnsa, sx->dane_required))
     {
     case OK:		sx->conn_args.dane = TRUE;
+#ifdef EXPERIMENTAL_SRV_SMTPS
+			sx->require_tls = TRUE;
+#endif
 			ob->tls_tempfail_tryclear = FALSE;	/* force TLS */
 			ob->tls_sni = sx->conn_args.host->name; /* force SNI */
 			break;
@@ -2195,9 +2198,27 @@ up nonzero elements. */
 
 sx->conn_args.ob = ob;
 
-GET_OPTION("protocol");
-sx->lmtp = strcmpic(ob->protocol, US"lmtp") == 0;
-sx->smtps = strcmpic(ob->protocol, US"smtps") == 0;
+#ifdef EXPERIMENTAL_SRV_SMTPS
+if ((sx->smtps = sx->conn_args.host->tls_needs == SRV_TLS_ON_CONNECT))
+  {
+  DEBUG(D_transport) debug_printf("tls-on-connect required by smtp context\n");
+  }
+else
+#endif
+  {
+  GET_OPTION("protocol");
+  if ((sx->smtps = strcmpic(ob->protocol, US"smtps") == 0))
+    {
+    DEBUG(D_transport)
+      debug_printf(" tls-on-connect required by transport option\n");
+    }
+  else if ((sx->lmtp = strcmpic(ob->protocol, US"lmtp") == 0))
+    DEBUG(D_transport)
+      debug_printf(" LMTP required by transport option\n");
+  }
+#ifdef EXPERIMENTAL_SRV_SMTPS
+sx->require_tls = sx->smtps;
+#endif
 sx->send_rset = TRUE;
 sx->send_quit = TRUE;
 sx->setting_up = TRUE;
@@ -2727,7 +2748,20 @@ goto SEND_QUIT;
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
 
 #ifndef DISABLE_TLS
-    smtp_peer_options |= sx->peer_offered & OPTION_TLS;
+    if (sx->peer_offered & OPTION_TLS)
+      smtp_peer_options |= OPTION_TLS;
+# ifdef EXPERIMENTAL_SRV_SMTPS
+    /*XXX could retire this check if SRV_STARTTLS_CAN does not need support */
+    else if (  sx->conn_args.host->tls_needs == SRV_STARTTLS_CAN
+	    || sx->conn_args.host->tls_needs == SRV_STARTTLS_MUST)
+      {
+      log_write(0, LOG_MAIN,
+	  "Connection aborted; STARTTLS support by %s [%s] required by DNS SRV"
+	  " but STARTTLS not offered",
+	sx->conn_args.host->name, sx->conn_args.host->address);
+      goto TLS_FAILED;
+      }
+# endif
 #endif
     }
   }
@@ -3034,10 +3068,15 @@ if (tls_out.active.sock >= 0)
 /* If the host is required to use a secure channel, ensure that we
 have one. */
 
-else if (  sx->smtps
+else if (
+#ifdef EXPERIMENTAL_SRV_SMTPS
+	   sx->require_tls
+#else
+	   sx->smtps
 # ifdef SUPPORT_DANE
 	|| sx->conn_args.dane
 # endif
+#endif
 	|| verify_check_given_host(CUSS &ob->hosts_require_tls, sx->conn_args.host) == OK
 	)
   {
@@ -3911,6 +3950,10 @@ sx->conn_args.host = host;
 sx->conn_args.host_af = host_af;
 sx->port = defport;
 sx->conn_args.interface = interface;
+#ifdef EXPERIMENTAL_SRV_SMTPS
+if (host->tls_needs == SRV_STARTTLS_MUST)
+  { sx->require_tls = TRUE; ob->tls_tempfail_tryclear = FALSE; }
+#endif
 sx->helo_data = NULL;
 sx->conn_args.tblock = tblock;
 sx->conn_args.sock = -1;
@@ -5497,7 +5540,7 @@ else if (hostlist->mx == MX_NONE && !continue_hostname)
     }
   }
 
-/* Sort out the default port.  */
+/* Sort out the default port (used when the host item has none).  */
 
 if (!smtp_get_port(ob->port, addrlist, &defport, tid)) return FALSE;
 

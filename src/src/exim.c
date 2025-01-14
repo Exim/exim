@@ -1362,6 +1362,9 @@ g = string_cat(g, US"Support for:");
 #ifdef EXPERIMENTAL_QUEUEFILE
   g = string_cat(g, US" Experimental_QUEUEFILE");
 #endif
+#ifdef EXPERIMENTAL_SRV_SMTPS
+  g = string_cat(g, US" Experimental_SRV_smtps");
+#endif
 #ifdef EXPERIMENTAL_XCLIENT
   g = string_cat(g, US" Experimental_XCLIENT");
 #endif

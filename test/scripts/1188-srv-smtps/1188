@@ -1,0 +1,33 @@
+# SRV lookup for tls-on-connect
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# Actually send a message to a port specified in the SRV record.
+exim -odi x1@test.ex
+****
+#
+# Check what happens when tpt says to check, and there is no RR
+# a) use the tpt port option. No connection with this config.
+exim -odi x2@thishost.test.ex
+****
+# b) use the routing-supplied port.
+# - cannot test as dnslookup router returns defaultport; undefined
+#   if there is a listener there (and it's not under our control either)
+#
+# c) use the tpt port option. Conn but bad protocol with this config;
+#    times out waiting for banner.
+exim -DPORT=PORT_D -odi x3@thishost.test.ex
+****
+# d) use the tpt port and protocol options, Conn but TLS expected by srvr;
+#    times out waiting for banner
+exim -DPORT=PORT_D -DVALUE=smtp -odi x4@thishost.test.ex
+****
+#
+# multiple-entry check_srv option
+exim -DOPTION=bogus:smtps:smtp -odi x5@test.ex
+****
+#
+killdaemon
+no_msglog_check

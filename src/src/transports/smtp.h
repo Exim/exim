@@ -150,6 +150,10 @@ typedef struct {
   BOOL verify:1;
   BOOL lmtp:1;
   BOOL smtps:1;
+#ifdef EXPERIMENTAL_SRV_SMTPS
+  BOOL require_tls:1;
+#endif
+
   BOOL ok:1;
   BOOL setting_up:1;
 #ifndef DISABLE_PIPE_CONNECT
@@ -167,7 +171,7 @@ typedef struct {
 #endif
   BOOL dsn_all_lasthop:1;
 #if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
-  BOOL dane_required:1;
+  BOOL dane_required:1;		/* required by transport option */
 #endif
 #ifndef DISABLE_PIPE_CONNECT
   BOOL pending_BANNER:1;

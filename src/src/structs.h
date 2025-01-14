@@ -81,6 +81,11 @@ host addresses is done using this structure. */
 
 typedef enum {DS_UNK=-1, DS_NO, DS_YES} dnssec_status_t;
 
+#ifdef EXPERIMENTAL_SRV_SMTPS
+typedef enum {SRV_TLS_UNK, SRV_STARTTLS_CAN, SRV_STARTTLS_MUST,
+	      SRV_TLS_ON_CONNECT} srv_tls_t;
+#endif
+
 typedef struct host_item {
   struct host_item *next;
   const uschar *name;		/* Host name */
@@ -88,13 +93,16 @@ typedef struct host_item {
   const uschar *certname;	/* Name used for certificate checks */
 #endif
   const uschar *address;	/* IP address in text form */
-  int     port;			/* port value in host order (if SRV lookup) */
-  int     mx;			/* MX value if found via MX records */
-  int     sort_key;		/* MX*1000 plus random "fraction" */
-  int     status;		/* Usable, unusable, or unknown */
-  int     why;			/* Why host is unusable */
-  int     last_try;		/* Time of last try if known */
-  dnssec_status_t dnssec;
+  int		port;		/* port value in host order (if SRV lookup) */
+  int		mx;		/* MX value if found via MX records */
+  uschar	status;		/* Usable, unusable, or unknown */
+  uschar	why;		/* Why host is unusable */
+  dnssec_status_t dnssec:2;
+#ifdef EXPERIMENTAL_SRV_SMTPS
+  srv_tls_t	  tls_needs:2;
+#endif
+  int		sort_key;		/* MX*1000 plus random "fraction" */
+  time_t	last_try;		/* Time of last try if known */
 } host_item;
 
 /* Chain of rewrite rules, read from the rewrite config, or parsed from the
@@ -820,7 +828,7 @@ typedef struct {
   BOOL			have_lbserver:1;	/* host_lbserver is valid */
 
 #ifdef SUPPORT_DANE
-  BOOL dane:1;			/* connection must do dane */
+  BOOL dane:1;				/* TLSA says connection must do dane */
   dns_answer		tlsa_dnsa;	/* strictly, this should use tainted mem */
 #endif
 } smtp_connect_args;

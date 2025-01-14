@@ -56,21 +56,12 @@ int dnslookup_router_entry(router_instance *rblock, address_item *addr,
 
 
 
-/* Default private options block for the dnslookup router. */
+/* Default private options block for the dnslookup router.
+All non-mentioned are NULL/0/FALSE. */
 
 dnslookup_router_options_block dnslookup_router_option_defaults = {
-  .check_secondary_mx =	FALSE,
   .qualify_single =	TRUE,
-  .search_parents =	FALSE,
   .rewrite_headers =	TRUE,
-  .widen_domains =	NULL,
-  .mx_domains =		NULL,
-  .mx_fail_domains =	NULL,
-  .srv_fail_domains =	NULL,
-  .check_srv =		NULL,
-  .fail_defer_domains =	NULL,
-  .ipv4_only =		NULL,
-  .ipv4_prefer =	NULL,
 };
 
 
@@ -292,8 +283,7 @@ for (;;)
     expand_level++;
     rc = host_find_bydns(&h, CUS rblock->ignore_target_hosts, flags,
       srv_service, ob->srv_fail_domains, ob->mx_fail_domains,
-      &rblock->dnssec,
-      &fully_qualified_name, &removed);
+      &rblock->dnssec, &fully_qualified_name, &removed);
     expand_level--;
    }
 

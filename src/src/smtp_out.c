@@ -101,7 +101,7 @@ produces the number in network byte order.
 Arguments:
   rstring     raw (unexpanded) string representation of the port
   addr        the mail address being handled (for setting errors)
-  port        stick the port in here
+  port        return the port in here
   msg         for adding to error message
 
 Returns:      TRUE on success, FALSE on failure, with error message set

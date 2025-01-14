@@ -2061,6 +2061,9 @@ for (int i = 1; i <= times;
       host->status = hstatus_unknown;
       host->why = hwhy_unknown;
       host->dnssec = DS_UNK;
+#ifdef EXPERIMENTAL_SRV_SMTPS
+      host->tls_needs = SRV_TLS_UNK;
+#endif
       last = host;
       }
 
@@ -2080,6 +2083,9 @@ for (int i = 1; i <= times;
       next->status = hstatus_unknown;
       next->why = hwhy_unknown;
       next->dnssec = DS_UNK;
+#ifdef EXPERIMENTAL_SRV_SMTPS
+      next->tls_needs = SRV_TLS_UNK;
+#endif
       next->last_try = 0;
       next->next = last->next;
       last->next = next;
@@ -2414,7 +2420,7 @@ for (; i >= 0; i--)
 
 	if (new_sort_key < host->sort_key)
 	  {
-	  *next = *host;                                  /* Copies port */
+	  *next = *host;                          /* Copies port & tls_needs */
 	  host->next = next;
 	  host->address = da->address;
 	  host->sort_key = new_sort_key;
@@ -2514,6 +2520,9 @@ host_find_bydns(host_item * host, const uschar * ignore_target_hosts,
   const uschar ** fully_qualified_name, BOOL * removed)
 {
 host_item * h, * last;
+#ifdef EXPERIMENTAL_SRV_SMTPS
+BOOL srv_smtps = FALSE;
+#endif
 int rc = DNS_FAIL, ind_type = 0, yield;
 dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
@@ -2616,7 +2625,13 @@ if (whichrrs & HOST_FIND_BY_SRV)
 	"(domain in srv_fail_domains)\n", rc == DNS_FAIL ? "FAIL":"AGAIN");
       }
     else if (rc == DNS_SUCCEED)
+      {
+#ifdef EXPERIMENTAL_SRV_SMTPS
+      if (Ustrcmp(srv_service, "smtps") == 0)
+	srv_smtps = TRUE;			/* force tls-on-connect */
+#endif
       break;				/* walking the service names list */
+      }
     }
   }
 
@@ -2701,6 +2716,9 @@ if (rc != DNS_SUCCEED)
   host->mx = MX_NONE;
   host->port = PORT_NONE;
   host->dnssec = DS_UNK;
+#ifdef EXPERIMENTAL_SRV_SMTPS
+  host->tls_needs = SRV_TLS_UNK;
+#endif
   lookup_dnssec_authenticated = NULL;
   rc = set_address_from_dns(host, &last, ignore_target_hosts, FALSE,
     fully_qualified_name, dnssec_request, dnssec_require, whichrrs);
@@ -2731,7 +2749,7 @@ if (rc != DNS_SUCCEED)
   goto out;
   }
 
-/* We have found one or more MX or SRV records. Sort them according to
+/* We have found one or more SRV or MX records. Sort them according to
 precedence. Put the data for the first one into the existing host block, and
 insert new host_item blocks into the chain for the remainder. For equal
 precedences one is supposed to randomize the order. To make this happen, the
@@ -2758,7 +2776,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == ind_type)
   {
   int precedence, weight, sort_key;
-  int port = PORT_NONE;
+  int port = PORT_NONE;		/* MX lookups get PORT_NONE */
   const uschar * s = rr->data;	/* MUST be unsigned for GETSHORT */
   host_item * next;
   uschar data[256];
@@ -2780,6 +2798,9 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
     if (rr_bad_increment(rr, s, 2 * sizeof(uint16_t))) continue;
     GETSHORT(weight, s);
     GETSHORT(port, s);
+#ifdef EXPERIMENTAL_SRV_SMTPS
+    if (port == 0 && srv_smtps) port = PORT_NONE;	/* no-fallback STARTTLS */
+#endif
     }
   sort_key = precedence * 1000 + weight;
 
@@ -2795,7 +2816,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
 
   if (last)       /* This is not the first record */
     {
-    host_item *prev = NULL;
+    host_item * prev = NULL;
 
     for (h = host; h != last->next; prev = h, h = h->next)
       if (strcmpic(h->name, data) == 0)
@@ -2832,13 +2853,16 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   next->status = hstatus_unknown;
   next->why = hwhy_unknown;
   next->dnssec = dnssec;
+#ifdef EXPERIMENTAL_SRV_SMTPS
+  next->tls_needs = srv_smtps
+    ? port == PORT_NONE ? SRV_STARTTLS_MUST : SRV_TLS_ON_CONNECT
+    : SRV_TLS_UNK;
+#endif
   next->sort_key = sort_key;
 
   if (!last)		/* we're using the first, supplied, host block */
     last = host;
   else			/* a newly allocated block */
-
-  /* Make a new host item and seek the correct insertion place */
     {
     next->last_try = 0;
 
