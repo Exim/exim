@@ -15,10 +15,14 @@ included in the main Exim build */
 
 unsigned mp_index = 0;
 
-/* Global dummy variables */
+/* Global dummy variables and functions */
 
 void fn_smtp_receive_timeout(const uschar * name, const uschar * str) {}
 uschar * syslog_facility_str;
+
+/* Solaris needs this one for the macro expand_string() */
+const uschar * expand_string_2(const uschar * string, BOOL * textonly_p)
+{return NULL; }
 
 /******************************************************************************/
 

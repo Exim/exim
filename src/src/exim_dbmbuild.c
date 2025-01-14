@@ -42,6 +42,8 @@ millisleep(int msec)
 uschar *
 readconf_printtime(int t)
 { return NULL; }
+const uschar * expand_string_2(const uschar * string, BOOL * textonly_p)
+{return NULL; }
 void *
 store_get_3(int size, const void * proto_mem, const char *filename, int linenumber)
 { return NULL; }
