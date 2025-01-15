@@ -3817,9 +3817,15 @@ if (do_shutdown)
 
   tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
 
-#ifdef EXIM_TCP_CORK
+  /* Library appears to uncork at the socket level in gnutls_byte(), so
+  no need to do it here - and we get data and Close Alert in one TCP segment.
+  Assume this works at least from the introduction of gnutls_record_cork(). */
+
+#ifndef SUPPORT_CORK
+# ifdef EXIM_TCP_CORK
   if (do_shutdown == TLS_SHUTDOWN_WAIT)
     (void) setsockopt(tlsp->active.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &off, sizeof(off));
+# endif
 #endif
 
   /* The library seems to have no way to only wait for a peer's
