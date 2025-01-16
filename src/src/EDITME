@@ -711,6 +711,9 @@ DISABLE_MAL_MKS=yes
 # Uncomment the following line to add SRV smtps support
 # EXPERIMENTAL_SRV_SMTPS=yes
 #
+# Uncomment this to support using TLS Early Data for SMTP Banner
+# EXPERIMENTAL_TLS_EARLY_BANNER=yes
+#
 # Uncomment the following line to add XCLIENT support
 # EXPERIMENTAL_XCLIENT=yes
 

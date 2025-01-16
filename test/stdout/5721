@@ -27,7 +27,7 @@ Expected EOF read
 End of script
 Connecting to 127.0.0.1 port PORT_D4 ... connected
 Attempting to start TLS
-Succeeded in starting TLS
+Failed to start TLS
 ???*
 Expected EOF read
 End of script

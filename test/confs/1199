@@ -1,0 +1,77 @@
+# Exim test configuration 1199
+# ALPN
+
+SERVER =
+CONTROL =
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : *.test.ex
+
+acl_smtp_rcpt = accept
+
+tls_advertise_hosts = *
+tls_certificate = DIR/aux-fixed/cert1
+
+.ifdef STRICT
+tls_alpn = STRICT
+.endif
+.ifdef REQUIRE
+hosts_require_alpn = *
+.endif
+
+.ifdef _HAVE_OPENSSL
+tls_require_ciphers = ALL:@SECLEVEL=0
+openssl_options = -no_sslv3 -no_tlsv1_1 -no_tlsv1
+.endif
+
+# ------ ACL ------
+
+begin acl
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver = accept
+  condition = ${if eq {SERVER}{server} {no}{yes}}
+  transport = send_to_server
+
+server:
+  driver = redirect
+  data = :blackhole:
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver =	smtp
+  allow_localhost
+  hosts =	HOSTIPV4
+  port =	PORT_D
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
+
+  hosts_require_tls = *
+  hosts_try_fastopen =	:
+  tls_alpn =	CONTROL
+.ifdef REQUIRE
+  hosts_require_alpn = *
+.endif
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

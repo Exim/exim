@@ -1,8 +1,4 @@
 # Exim test configuration 1190
-# ALPN
-
-SERVER =
-CONTROL =
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -10,68 +6,72 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-domainlist local_domains = test.ex : *.test.ex
+acl_smtp_rcpt = check_recipient
 
-acl_smtp_rcpt = accept
+queue_only
+queue_run_in_order
 
 tls_advertise_hosts = *
-tls_certificate = DIR/aux-fixed/cert1
 
-.ifdef STRICT
-tls_alpn = STRICT
-.endif
-.ifdef REQUIRE
-hosts_require_alpn = *
-.endif
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey = DIR/aux-fixed/cert1
+
+tls_verify_hosts = HOSTIPV4
+tls_verify_certificates = DIR/aux-fixed/exim-ca/example.org/server2.example.org/ca_chain.pem
+
+tls_early_banner_hosts = *
+
+.ifdef OPTION
 
 .ifdef _HAVE_OPENSSL
-tls_require_ciphers = ALL:@SECLEVEL=0
-openssl_options = -no_sslv3 -no_tlsv1_1 -no_tlsv1
+.ifdef _OPT_OPENSSL_NO_TLSV1_3_X
+openssl_options = +no_sslv2 +no_sslv3 +single_dh_use +no_tlsv1_3
+.else
+openssl_options = +no_sslv2 +no_sslv3 +single_dh_use
+.endif
+.endif
+
+.ifdef _HAVE_GNUTLS
+tls_require_ciphers = NORMAL:!VERS-ALL:+VERS-TLS1.2
+.endif
+
 .endif
 
 # ------ ACL ------
 
 begin acl
 
+check_recipient:
+  accept  hosts = :
+  deny    hosts = HOSTIPV4
+         !encrypted = *
+  accept
+
+
 # ----- Routers -----
 
 begin routers
 
-client:
+abc:
   driver = accept
-  condition = ${if eq {SERVER}{server} {no}{yes}}
-  transport = send_to_server
-
-server:
-  driver = redirect
-  data = :blackhole:
+  retry_use_local_part
+  transport = local_delivery
 
 
 # ----- Transports -----
 
 begin transports
 
-send_to_server:
-  driver =	smtp
-  allow_localhost
-  hosts =	HOSTIPV4
-  port =	PORT_D
-  tls_verify_certificates = DIR/aux-fixed/cert1
-  tls_verify_cert_hostnames = :
-
-  hosts_require_tls = *
-  hosts_try_fastopen =	:
-  tls_alpn =	CONTROL
-.ifdef REQUIRE
-  hosts_require_alpn = *
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  create_file = DIR/test-mail
+.ifdef _HAVE_GNUTLS
+  headers_add = TLS: cipher=$tls_cipher peerdn/cn '${listextract {-1} {<, $tls_in_peerdn}}'
 .endif
-
-# ----- Retry -----
-
-
-begin retry
-
-* * F,5d,10s
-
+.ifdef _HAVE_OPENSSL
+  headers_add = TLS: cipher=$tls_cipher peerdn/cn '${listextract {-1} {</ $tls_in_peerdn}}'
+.endif
+  user = CALLER
 
 # End

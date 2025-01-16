@@ -137,6 +137,9 @@ extern uschar *tls_certificate;        /* Certificate file */
 extern uschar *tls_crl;                /* CRL File */
 extern int     tls_dh_max_bits;        /* don't accept higher lib suggestions */
 extern uschar *tls_dhparam;            /* DH param file */
+#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+extern uschar *tls_early_banner_hosts; /* use Early Data for SMTP banner */
+#endif
 extern uschar *tls_eccurve;            /* EC curve */
 # ifndef DISABLE_OCSP
 extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */

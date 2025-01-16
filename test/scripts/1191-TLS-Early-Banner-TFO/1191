@@ -1,0 +1,29 @@
+# TLS server: -tls-on-connect, TFO, Early Banner
+gnutls
+#
+#
+#
+# First clear any previously-obtained cookie:
+sudo perl
+open(INFO, "-|", "/usr/bin/uname -s");
+$_ = <INFO>;
+if (/^FreeBSD/) {
+system("sysctl net.inet.tcp.fastopen.client_enable=0"); system("sysctl net.inet.tcp.fastopen.client_enable=1");
+} else {
+system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
+system ("ip tcp_metrics delete 127.0.0.1");
+}
+****
+#
+#
+exim -DSERVER=server -tls-on-connect -bd -oX PORT_D
+****
+#
+exim -odi ncookie@test.ex
+****
+exim -odi hazcookie@test.ex
+Subject: test
+****
+#
+killdaemon
+no_msglog_check

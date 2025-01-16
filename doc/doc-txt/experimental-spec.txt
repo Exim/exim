@@ -690,6 +690,23 @@ for listening on a separate port (for tls-on-connect), opening any required
 firewall holes for that port, and provisioning a DNS record are needed.
 
 
+
+TLS Early Banner
+---------------------------------------------------------------
+
+If compiled with EXPERIMENTAL_TLS_EARLY_BANNER=yes  :-
+
+TLS-on-connect connections using TLSv1.3 will, if permitted by the new
+main-config option "tls_early_banner_hosts" (default empty) and no need for
+client certificate verification, have the server transmit the SMTP banner
+immediately after it's TLS Finished record rather than waiting for the client's
+Certificate and Finished.
+
+The GnuTLS documentation describes this use of TLS as
+"part of protocol design with no known security implications".
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

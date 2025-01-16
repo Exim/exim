@@ -1,0 +1,56 @@
+# Exim test configuration 1191
+
+SERVER =
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+acl_smtp_rcpt = accept
+queue_only
+
+tls_advertise_hosts = *
+tls_on_connect_ports = PORT_D
+
+tls_certificate = DIR/aux-fixed/cert1
+tls_early_banner_hosts = *
+
+log_selector = +millisec
+
+# ----- Routers -----
+
+begin routers
+
+r:
+  driver = accept
+  condition = ${if eq {SERVER}{server}{no}{yes}}
+  transport = t
+
+# ----- Transports -----
+
+begin transports
+
+t:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_D
+  hosts_try_fastopen = *
+  protocol = smtps
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

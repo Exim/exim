@@ -2658,19 +2658,7 @@ if (acl_smtp_connect)
     }
   }
 
-/* Start up TLS if tls_on_connect is set. This is for supporting the legacy
-smtps port for use with older style SSL MTAs. */
-
-#ifndef DISABLE_TLS
-if (tls_in.on_connect)
-  {
-  if (tls_server_start(&user_msg) != OK)
-    return smtp_log_tls_fail(user_msg);
-  cmd_list[CL_TLAU].is_mail_cmd = TRUE;
-  }
-#endif
-
-/* Output the initial message for a two-way SMTP connection. It may contain
+/* Set up the initial message for a two-way SMTP connection. It may contain
 newlines, which then cause a multi-line response to be given. */
 
 code = US"220";   /* Default status code */
@@ -2745,42 +2733,75 @@ do       /* At least once, in case we have an empty string */
   }
 while (*p);
 
-/* Before we write the banner, check that there is no input pending, unless
-this synchronisation check is disabled. */
+/* Start up TLS if tls_on_connect is set. This is for supporting the legacy
+smtps port for use with older style SSL MTAs. */
 
-#ifndef DISABLE_PIPE_CONNECT
-fl.pipe_connect_acceptable =
-  sender_host_address && verify_check_host(&pipe_connect_advertise_hosts) == OK;
+#ifndef DISABLE_TLS
+if (tls_in.on_connect)
+  {
+  gstring * g = NULL;
+# ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+  if (verify_check_host(&tls_early_banner_hosts) == OK) g = ss;
+# endif
 
-if (!check_sync())
-  if (fl.pipe_connect_acceptable)
-    f.smtp_in_early_pipe_used = TRUE;
-  else
-#else
-if (!check_sync())
+  if (tls_server_start(&user_msg, g) != OK)
+    return smtp_log_tls_fail(user_msg);
+  cmd_list[CL_TLAU].is_mail_cmd = TRUE;
+  }
 #endif
+
+#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+if (gstring_length(ss) == 0)			/* banner already sent */
+  {
+  if (f.running_in_test_harness)		/* make visible to testsuite */
     {
-    unsigned n = smtp_inend - smtp_inptr;
-    if (n > 128) n = 128;
-
-    log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
-      "synchronization error (input sent without waiting for greeting): "
-      "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
-      string_printing(string_copyn(smtp_inptr, n)));
-    smtp_printf("554 SMTP synchronization error\r\n", SP_NO_MORE);
-    return FALSE;
+    millisleep(100);
+    if (!check_sync())
+      log_write(0, LOG_MAIN, "SMTP peer appears to have seen our banner");
     }
-
-/* Now output the banner */
-/*XXX the ehlo-resp code does its own tls/nontls bit.  Maybe subroutine that? */
-
-smtp_printf("%Y",
-#ifndef DISABLE_PIPE_CONNECT
-  fl.pipe_connect_acceptable && pipeline_connect_sends(),
-#else
-  SP_NO_MORE,
+  }
+else						/* not already sent */
 #endif
-  ss);
+
+  {
+  /* Before we write the banner, check that there is no input pending, unless
+  this synchronisation check is disabled. */
+
+#ifndef DISABLE_PIPE_CONNECT
+  fl.pipe_connect_acceptable =
+       sender_host_address
+    && verify_check_host(&pipe_connect_advertise_hosts) == OK;
+
+  if (!check_sync())
+    if (fl.pipe_connect_acceptable)
+      f.smtp_in_early_pipe_used = TRUE;
+    else
+#else
+  if (!check_sync())
+#endif
+      {
+      unsigned n = smtp_inend - smtp_inptr;
+      if (n > 128) n = 128;
+
+      log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
+	"synchronization error (input sent without waiting for greeting): "
+	"rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
+	string_printing(string_copyn(smtp_inptr, n)));
+      smtp_printf("554 SMTP synchronization error\r\n", SP_NO_MORE);
+      return FALSE;
+      }
+
+  /* Now output the banner */
+  /*XXX the ehlo-resp code does its own tls/nontls bit.  Maybe subroutine that? */
+
+    smtp_printf("%Y",
+#ifndef DISABLE_PIPE_CONNECT
+      fl.pipe_connect_acceptable && pipeline_connect_sends(),
+#else
+      SP_NO_MORE,
+#endif
+      ss);
+  }
 
 /* Attempt to see if we sent the banner before the last ACK of the 3-way
 handshake arrived.  If so we must have managed a TFO. */
@@ -3633,7 +3654,7 @@ if (  acl_smtp_quit
 if (*user_msgp)
   smtp_respond(US"221", 3, SR_FINAL, *user_msgp);
 else
-  smtp_printf("221 %s closing connection\r\n", SP_NO_MORE, smtp_active_hostname);
+  smtp_printf("221 %s closing connection\r\n", SP_MORE, smtp_active_hostname);
 
 #ifdef SERVERSIDE_CLOSE_NOWAIT
 # ifndef DISABLE_TLS
@@ -5438,8 +5459,8 @@ while (done <= 0)
       when used afterwards; we use segregated input buffers, so are not
       vulnerable, but we want to note when it happens and, for sheer paranoia,
       ensure that the buffer is "wiped".
-      Pipelining sync checks will normally have protected us too, unless disabled
-      by configuration. */
+      Pipelining sync checks will normally have protected us too, unless
+      disabled by configuration. */
 
       if (receive_hasc())
 	{
@@ -5468,7 +5489,7 @@ while (done <= 0)
       STARTTLS that don't add to the nonmail command count. */
 
       s = NULL;
-      if ((rc = tls_server_start(&s)) == OK)
+      if ((rc = tls_server_start(&s, NULL)) == OK)
 	{
 	if (!tls_remember_esmtp)
 	  fl.helo_seen = fl.esmtp = fl.auth_advertised = f.smtp_in_pipelining_advertised = FALSE;

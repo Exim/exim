@@ -92,6 +92,9 @@ change this guard and punt the issue for a while longer. */
     && (OPENSSL_VERSION_NUMBER & 0x0000ff000L) >= 0x000002000L
 #  define EXIM_HAVE_OPENSSL_CHECKHOST
 # endif
+# if OPENSSL_VERSION_NUMBER >= 0x010101000L
+#  define OPENSSL_EARLY_DATA
+# endif
 # if OPENSSL_VERSION_NUMBER <  0x030200020L
 #  define EXIM_OPENSSL_BOGUS_SERVER_ALPN	/*XXX when was this fixed? */
 # endif
@@ -160,6 +163,12 @@ change this guard and punt the issue for a while longer. */
 # endif
 # ifndef MACRO_PREDEF
 #  include "tls-cipher-stdname.c"
+# endif
+#endif
+
+#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+# ifndef OPENSSL_EARLY_DATA
+#  error Need at least OpenSSL 1.1.1 for early-data
 # endif
 #endif
 
@@ -3064,6 +3073,12 @@ if (!host)		/* server */
       tls_alpn = NULL;
     }
 # endif
+
+# ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+  if (  tls_in.on_connect			/* Not usable for STARTTLS */
+     && !SSL_CTX_set_max_early_data(ctx, 128))	/* enough for a banner */
+    DEBUG(D_tls) debug_printf("failed to set max_early_data limit\n");
+# endif
   }
 # ifndef DISABLE_OCSP
 else			/* client */
@@ -3486,6 +3501,8 @@ a TLS session.
 
 Arguments:
   errstr	    pointer to error message
+  banner	    if non-null, a benner to try to send using early-data.
+		    if sent, length is zeroed for caller.
 
 Returns:            OK on success
                     DEFER for errors before the start of the negotiation
@@ -3494,13 +3511,14 @@ Returns:            OK on success
 */
 
 int
-tls_server_start(uschar ** errstr)
+tls_server_start(uschar ** errstr, gstring * banner)
 {
 int rc;
 uschar * expciphers;
 exim_openssl_state_st * dummy_statep;
 SSL_CTX * ctx;
 SSL * ssl;
+BOOL verify_client_cert = FALSE;
 static uschar peerdn[256];
 
 /* Check for previous activation */
@@ -3563,6 +3581,7 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
 else
   goto skip_certs;
 
+verify_client_cert = TRUE;
  {
   uschar * v_certs = tls_verify_certificates;
 
@@ -3638,6 +3657,59 @@ that the OpenSSL library doesn't. */
 SSL_set_wfd(ssl, fileno(smtp_out));
 SSL_set_rfd(ssl, fileno(smtp_in));
 SSL_set_accept_state(ssl);
+
+# ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+if (  tls_in.on_connect			/* Not usable for STARTTLS */
+   && !verify_client_cert		/* Avoid tx before we see client cert */
+   && banner)
+  {
+  size_t n_read;
+  uschar buf[1];
+
+  switch (SSL_read_early_data(ssl, buf, sizeof(buf), &n_read))
+    {
+    case SSL_READ_EARLY_DATA_ERROR:
+      DEBUG(D_tls) debug_printf("SSL_read_early_data: %d\n",
+	SSL_get_error(ssl, SSL_READ_EARLY_DATA_ERROR));
+      return tls_error(US"SSL_read_early_data", NULL, NULL, errstr);
+
+    case SSL_READ_EARLY_DATA_SUCCESS:
+      DEBUG(D_tls) debug_printf("TLS: unexpected early data from client!\n");
+      return tls_error(US"SSL_read_early_data", NULL, NULL, errstr);
+
+    case SSL_READ_EARLY_DATA_FINISH:
+      DEBUG(D_tls) debug_printf("TLS: No early-data from client; good\n");
+    }
+
+    if (SSL_is_init_finished(ssl) == 0)	/* not yet finished; can early data */
+      {
+      int len = gstring_length(banner);
+      size_t n_bytes;
+
+      DEBUG(D_tls) debug_printf("TLS: writing early-data\n");
+      if (!SSL_write_early_data(ssl, banner->s, len, &n_bytes))
+	{
+	DEBUG(D_tls)
+	  debug_printf("SSL_write_early_data: %d\n", SSL_get_error(ssl, 0));
+	return tls_error(US"SSL_write_early_data", NULL, NULL, errstr);
+	}
+      if (n_bytes != len)
+	{
+	DEBUG(D_tls)
+	  debug_printf("SSL_write_early_data: wrote %d (expected %d)\n",
+			(int)n_bytes, len);
+	return tls_error(US"SSL_write_early_data", NULL, NULL, errstr);
+	}
+
+      DEBUG(D_receive) 
+	{ gstring_trim(banner, 2); debug_printf("SMTP>> %Y\n", banner); }
+
+      /* Ensure smtp_start_session does not repeat the banner */
+
+      gstring_reset(banner);
+      }
+  }
+# endif /*EXPERIMENTAL_TLS_EARLY_BANNER*/
 
 DEBUG(D_tls) debug_printf("Calling SSL_accept\n");
 

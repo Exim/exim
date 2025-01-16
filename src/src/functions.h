@@ -72,7 +72,7 @@ extern BOOL    tls_is_name_for_cert(const uschar *, void *);
 extern BOOL    tls_openssl_options_parse(const uschar *, long *);
 # endif
 extern int     tls_read(void *, uschar *, size_t);
-extern int     tls_server_start(uschar **);
+extern int     tls_server_start(uschar **, gstring *);
 extern void    tls_shutdown_wr(void *);
 extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);

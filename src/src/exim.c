@@ -1365,6 +1365,9 @@ g = string_cat(g, US"Support for:");
 #ifdef EXPERIMENTAL_SRV_SMTPS
   g = string_cat(g, US" Experimental_SRV_smtps");
 #endif
+#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+  g = string_cat(g, US" Experimental_TLS_Early_Banner");
+#endif
 #ifdef EXPERIMENTAL_XCLIENT
   g = string_cat(g, US" Experimental_XCLIENT");
 #endif

@@ -3,34 +3,34 @@
 exim -DSERVER=server -tls-on-connect -bd -oX PORT_D:PORT_D2:PORT_D3:PORT_D4
 ****
 #
-# Normal, full connect and quit
+### Normal, full connect and quit
 client-anytls -tls-on-connect 127.0.0.1 PORT_D
 ??? 220
 quit
 ??? 221
 ****
 #
-# full connect but no quit
+### full connect but no quit
 client-anytls -tls-on-connect 127.0.0.1 PORT_D
 ??? 220
 ****
 #
-# server rejects using host_reject_connection option
+### server rejects using host_reject_connection option
 client-anytls -tls-on-connect 127.0.0.1 PORT_D2
 ???*
 ****
 #
-# server rejects using conn ACL
+### server rejects using conn ACL
 client-anytls -tls-on-connect 127.0.0.1 PORT_D3
 ???*
 ****
 #
-# server fails banner expansion
+### server fails banner expansion
 client-anytls -tls-on-connect 127.0.0.1 PORT_D4
 ???*
 ****
 #
-# client disconnects before server TLS accept completes
+### client disconnects before server TLS accept completes
 client 127.0.0.1 PORT_D
 +++ 1
 ****

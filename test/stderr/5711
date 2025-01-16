@@ -1,0 +1,14 @@
+### Normal, full connect and quit
+### full connect but no quit
+### server rejects using host_reject_connection option
+### server rejects using conn ACL
+### server fails banner expansion
+### client disconnects before server TLS accept completes
+
+******** SERVER ********
+### Normal, full connect and quit
+### full connect but no quit
+### server rejects using host_reject_connection option
+### server rejects using conn ACL
+### server fails banner expansion
+### client disconnects before server TLS accept completes

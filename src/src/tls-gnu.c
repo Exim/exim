@@ -116,6 +116,14 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # endif
 #endif
 
+#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+# if GNUTLS_VERSION_NUMBER >= 0x030604
+#  define GNUTLS_EARLY_DATA
+# else
+#  error GnuTLS version too old for early-banner
+# endif
+#endif
+
 #if GNUTLS_VERSION_NUMBER >= 0x030200
 # ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
 #  define EXIM_HAVE_ALPN
@@ -200,6 +208,9 @@ typedef struct exim_gnutls_state {
   int			fd_in;
   int			fd_out;
 
+#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+  BOOL			early_banner:1;
+#endif
   BOOL			peer_cert_verified:1;
   BOOL			peer_dane_verified:1;
   BOOL			trigger_sni_changes:1;
@@ -584,6 +595,71 @@ else
 }
 
 
+
+static BOOL
+tls_refill(unsigned lim)
+{
+exim_gnutls_state_st * state = &state_server;
+ssize_t inbytes;
+
+DEBUG(D_tls) debug_printf("Calling gnutls_record_recv"
+  "(session=%p, buffer=%p, buffersize=%u)\n",
+  state->session, state->xfer_buffer, ssl_xfer_buffer_size);
+
+sigalrm_seen = FALSE;
+if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
+
+errno = 0;
+do
+  inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
+    MIN(ssl_xfer_buffer_size, lim));
+while (inbytes == GNUTLS_E_AGAIN);
+
+if (smtp_receive_timeout > 0) ALARM_CLR(0);
+
+if (had_command_timeout)		/* set by signal handler */
+  smtp_command_timeout_exit();		/* does not return */
+if (had_command_sigterm)
+  smtp_command_sigterm_exit();
+if (had_data_timeout)
+  smtp_data_timeout_exit();
+if (had_data_sigint)
+  smtp_data_sigint_exit();
+
+/* Timeouts do not get this far.  A zero-byte return appears to mean that the
+TLS session has been closed down, not that the socket itself has been closed
+down. Revert to non-TLS handling. */
+
+if (sigalrm_seen)
+  {
+  DEBUG(D_tls) debug_printf("Got tls read timeout\n");
+  state->xfer_error = TRUE;
+  return FALSE;
+  }
+
+else if (inbytes == 0)
+  {
+  DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
+  tls_close(NULL, TLS_NO_SHUTDOWN);
+  return FALSE;
+  }
+
+/* Handle genuine errors */
+
+else if (inbytes < 0)
+  {
+  DEBUG(D_tls) debug_printf("%s: err from gnutls_record_recv\n", __FUNCTION__);
+  record_io_error(state, (int) inbytes, US"recv", NULL);
+  state->xfer_error = TRUE;
+  return FALSE;
+  }
+#ifndef DISABLE_DKIM
+smtp_verify_feed(state->xfer_buffer, inbytes);
+#endif
+state->xfer_buffer_hwm = (int) inbytes;
+state->xfer_buffer_lwm = 0;
+return TRUE;
+}
 
 
 /*************************************************
@@ -1229,7 +1305,8 @@ static int
 tls_server_hook_cb(gnutls_session_t sess, u_int htype, unsigned when,
   unsigned incoming, const gnutls_datum_t * msg)
 {
-/* debug_printf("%s: htype %u\n", __FUNCTION__, htype); */
+/* debug_printf("%s: htype %u when %s in %u\n", __FUNCTION__,
+	      htype, when?"POST":"PRE", incoming); */
 switch (htype)
   {
 # ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
@@ -2102,14 +2179,24 @@ if (host)
   }
 else
   {
+  unsigned flags = GNUTLS_SERVER;
   /* Server operations always use the one state_server context.  It is not
   shared because we have forked a fresh process for every receive.  However it
   can get re-used for successive TLS sessions on a single TCP connection. */
 
   state = &state_server;
   state->tlsp = tlsp;
+
   DEBUG(D_tls) debug_printf("initialising GnuTLS server session\n");
-  rc = gnutls_init(&state->session, GNUTLS_SERVER);
+
+#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+  if (state->early_banner)
+    {
+    DEBUG(D_tls) debug_printf("TLS: setting early-start flag\n");
+    flags |= GNUTLS_ENABLE_EARLY_START;
+    }
+#endif
+  rc = gnutls_init(&state->session, flags);
 
   state->tls_certificate =	tls_certificate;
   state->tls_privatekey =	tls_privatekey;
@@ -2304,6 +2391,13 @@ old_pool = store_pool;
     {
     gstring * g = NULL;
     uschar * s = US gnutls_session_get_desc(session), c;
+
+    if (!s)
+      {
+      DEBUG(D_tls) debug_printf("TLS: session init still incomplete\n");
+      store_pool = old_pool;
+      return DEFER;
+      }
 
     /* Nikos M suggests we use this by preference.  It returns like:
     (TLS1.3)-(ECDHE-SECP256R1)-(RSA-PSS-RSAE-SHA256)-(AES-256-GCM)
@@ -2998,6 +3092,8 @@ a TLS session.
 
 Arguments:
   errstr	   pointer to error string
+  banner	   if non-null, a banner to try to get sent using early-data.
+		   if sent, length is zeroed for caller.
 
 Returns:           OK on success
                    DEFER for errors before the start of the negotiation
@@ -3006,7 +3102,7 @@ Returns:           OK on success
 */
 
 int
-tls_server_start(uschar ** errstr)
+tls_server_start(uschar ** errstr, gstring * banner)
 {
 int rc;
 exim_gnutls_state_st * state = NULL;
@@ -3017,6 +3113,27 @@ if (tls_in.active.sock >= 0)
   tls_error(US"STARTTLS received after TLS started", US "", NULL, errstr);
   smtp_printf("554 Already in TLS\r\n", SP_NO_MORE);
   return FAIL;
+  }
+
+/* Sort out the need for client-certificate verification */
+
+if (verify_check_host(&tls_verify_hosts) == OK)
+  {
+  DEBUG(D_tls)
+    debug_printf("TLS: a client certificate will be required\n");
+  state_server.verify_requirement = VERIFY_REQUIRED;
+  }
+else if (verify_check_host(&tls_try_verify_hosts) == OK)
+  {
+  DEBUG(D_tls)
+    debug_printf("TLS: a client certificate will be requested but not required\n");
+  state_server.verify_requirement = VERIFY_OPTIONAL;
+  }
+else
+  {
+  DEBUG(D_tls)
+    debug_printf("TLS: a client certificate will not be requested\n");
+  state_server.verify_requirement = VERIFY_NONE;
   }
 
 /* Initialize the library. If it fails, it will already have logged the error
@@ -3030,6 +3147,10 @@ DEBUG(D_tls) debug_printf("initialising GnuTLS as a server\n");
   gettimeofday(&t0, NULL);
 #endif
 
+#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+  if (banner && state_server.verify_requirement == VERIFY_NONE)
+    state_server.early_banner = TRUE;
+#endif
   if ((rc = tls_init(NULL, NULL,
       tls_require_ciphers, &state, &tls_in, errstr)) != OK) return rc;
 
@@ -3049,27 +3170,10 @@ tls_server_resume_prehandshake(state);
 /* If this is a host for which certificate verification is mandatory or
 optional, set up appropriately. */
 
-if (verify_check_host(&tls_verify_hosts) == OK)
-  {
-  DEBUG(D_tls)
-    debug_printf("TLS: a client certificate will be required\n");
-  state->verify_requirement = VERIFY_REQUIRED;
-  gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUIRE);
-  }
-else if (verify_check_host(&tls_try_verify_hosts) == OK)
-  {
-  DEBUG(D_tls)
-    debug_printf("TLS: a client certificate will be requested but not required\n");
-  state->verify_requirement = VERIFY_OPTIONAL;
-  gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUEST);
-  }
-else
-  {
-  DEBUG(D_tls)
-    debug_printf("TLS: a client certificate will not be requested\n");
-  state->verify_requirement = VERIFY_NONE;
-  gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_IGNORE);
-  }
+gnutls_certificate_server_set_request(state->session,
+  state->verify_requirement == VERIFY_REQUIRED ? GNUTLS_CERT_REQUIRE
+  : state->verify_requirement == VERIFY_OPTIONAL ? GNUTLS_CERT_REQUEST
+  : GNUTLS_CERT_IGNORE);
 
 #ifndef DISABLE_EVENT
 if (event_action)
@@ -3153,6 +3257,21 @@ if (rc != GNUTLS_E_SUCCESS)
   return FAIL;
   }
 
+state->xfer_buffer = store_malloc(ssl_xfer_buffer_size);
+
+#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+if (state->early_banner)
+  {
+  tls_write(NULL, banner->s, banner->ptr, SP_NO_MORE);
+  DEBUG(D_receive) 
+    { gstring_trim(banner, 2); debug_printf("SMTP>> %Y\n", banner); }
+  gstring_reset(banner);
+
+  DEBUG(D_tls) debug_printf("TLS: wait for handshake complete\n");
+  tls_refill(GETC_BUFFER_UNLIMITED);
+  }
+#endif
+
 #ifdef GNUTLS_SFLAGS_EXT_MASTER_SECRET
 if (gnutls_session_get_flags(state->session) & GNUTLS_SFLAGS_EXT_MASTER_SECRET)
   tls_in.ext_master_secret = TRUE;
@@ -3211,8 +3330,6 @@ extract_exim_vars_from_tls_state(state);
 
 /* TLS has been set up. Adjust the input functions to read via TLS,
 and initialize appropriately. */
-
-state->xfer_buffer = store_malloc(ssl_xfer_buffer_size);
 
 receive_getc = tls_getc;
 receive_getbuf = tls_getbuf;
@@ -3860,70 +3977,6 @@ if (state->xfer_buffer) store_free(state->xfer_buffer);
 
 
 
-
-static BOOL
-tls_refill(unsigned lim)
-{
-exim_gnutls_state_st * state = &state_server;
-ssize_t inbytes;
-
-DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(session=%p, buffer=%p, buffersize=%u)\n",
-  state->session, state->xfer_buffer, ssl_xfer_buffer_size);
-
-sigalrm_seen = FALSE;
-if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
-
-errno = 0;
-do
-  inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
-    MIN(ssl_xfer_buffer_size, lim));
-while (inbytes == GNUTLS_E_AGAIN);
-
-if (smtp_receive_timeout > 0) ALARM_CLR(0);
-
-if (had_command_timeout)		/* set by signal handler */
-  smtp_command_timeout_exit();		/* does not return */
-if (had_command_sigterm)
-  smtp_command_sigterm_exit();
-if (had_data_timeout)
-  smtp_data_timeout_exit();
-if (had_data_sigint)
-  smtp_data_sigint_exit();
-
-/* Timeouts do not get this far.  A zero-byte return appears to mean that the
-TLS session has been closed down, not that the socket itself has been closed
-down. Revert to non-TLS handling. */
-
-if (sigalrm_seen)
-  {
-  DEBUG(D_tls) debug_printf("Got tls read timeout\n");
-  state->xfer_error = TRUE;
-  return FALSE;
-  }
-
-else if (inbytes == 0)
-  {
-  DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
-  tls_close(NULL, TLS_NO_SHUTDOWN);
-  return FALSE;
-  }
-
-/* Handle genuine errors */
-
-else if (inbytes < 0)
-  {
-  DEBUG(D_tls) debug_printf("%s: err from gnutls_record_recv\n", __FUNCTION__);
-  record_io_error(state, (int) inbytes, US"recv", NULL);
-  state->xfer_error = TRUE;
-  return FALSE;
-  }
-#ifndef DISABLE_DKIM
-smtp_verify_feed(state->xfer_buffer, inbytes);
-#endif
-state->xfer_buffer_hwm = (int) inbytes;
-state->xfer_buffer_lwm = 0;
-return TRUE;
-}
 
 /*************************************************
 *            TLS version of getc                 *

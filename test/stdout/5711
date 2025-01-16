@@ -1,3 +1,4 @@
+### Normal, full connect and quit
 Connecting to 127.0.0.1 port PORT_D ... connected
 Attempting to start TLS
 Succeeded in starting TLS
@@ -7,30 +8,43 @@ Succeeded in starting TLS
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
+### full connect but no quit
 Connecting to 127.0.0.1 port PORT_D ... connected
 Attempting to start TLS
 Succeeded in starting TLS
 ??? 220
 <<< 220 my banner
 End of script
+### server rejects using host_reject_connection option
 Connecting to 127.0.0.1 port PORT_D2 ... connected
 Attempting to start TLS
 Failed to start TLS
 ???*
 Expected EOF read
 End of script
+### server rejects using conn ACL
 Connecting to 127.0.0.1 port PORT_D3 ... connected
 Attempting to start TLS
 Failed to start TLS
 ???*
 Expected EOF read
 End of script
+### server fails banner expansion
 Connecting to 127.0.0.1 port PORT_D4 ... connected
 Attempting to start TLS
-Succeeded in starting TLS
+Failed to start TLS
 ???*
 Expected EOF read
 End of script
+### client disconnects before server TLS accept completes
 Connecting to 127.0.0.1 port PORT_D ... connected
 +++ 1
 End of script
+
+******** SERVER ********
+### Normal, full connect and quit
+### full connect but no quit
+### server rejects using host_reject_connection option
+### server rejects using conn ACL
+### server fails banner expansion
+### client disconnects before server TLS accept completes
