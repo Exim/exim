@@ -7,10 +7,9 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTPS on port PORT_D
-1999-03-02 09:44:33 SMTP peer appears to have seen our banner
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= userx@test.ex H=(rhu.barb) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
-1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTPS on port PORT_D
-1999-03-02 09:44:33 SMTP peer appears to have seen our banner
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= userx@test.ex H=(rhu.barb) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
+1999-03-02 09:44:33 Ci=p1235 SMTP peer appears to have seen our banner
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= userx1_3@test.ex H=(rhu.barb) [127.0.0.1] Ci=p1235 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTPS on port PORT_D
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= userx@test.ex H=(rhu.barb) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= userx1_2@test.ex H=(rhu.barb) [127.0.0.1] Ci=p1237 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
+1999-03-02 09:44:33 exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTPS on port PORT_D
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= userx_clientcert@test.ex H=(rhu.barb) [ip4.ip4.ip4.ip4] Ci=p1239 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes S=sss

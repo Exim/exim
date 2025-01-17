@@ -8,6 +8,7 @@ primary_hostname = myhost.test.ex
 
 acl_smtp_rcpt = check_recipient
 
+log_selector = +connection_id
 queue_only
 queue_run_in_order
 

@@ -2756,8 +2756,8 @@ if (gstring_length(ss) == 0)			/* banner already sent */
   if (f.running_in_test_harness)		/* make visible to testsuite */
     {
     millisleep(100);
-    if (!check_sync())
-      log_write(0, LOG_MAIN, "SMTP peer appears to have seen our banner");
+    log_write(0, LOG_MAIN, "Ci=%s SMTP peer appears to have %s our banner",
+		connection_id, check_sync() ? "NOT SEEN" : "seen");
     }
   }
 else						/* not already sent */
@@ -4885,7 +4885,10 @@ while (done <= 0)
 	{
 	rc = acl_check(ACL_WHERE_MAIL, NULL, acl_smtp_mail, &user_msg, &log_msg);
 	if (rc == OK && !f.smtp_in_pipelining_advertised && !check_sync())
+{
+debug_printf("bad check_sync() after mailfrom\n");
 	  goto SYNC_FAILURE;
+}
 	}
       else
 	rc = OK;

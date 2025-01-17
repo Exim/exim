@@ -3681,7 +3681,8 @@ if (  tls_in.on_connect			/* Not usable for STARTTLS */
       DEBUG(D_tls) debug_printf("TLS: No early-data from client; good\n");
     }
 
-    if (SSL_is_init_finished(ssl) == 0)	/* not yet finished; can early data */
+    if (  SSL_version(ssl) > TLS1_2_VERSION	/* not sure is safe pre 1.3 */
+       && SSL_is_init_finished(ssl) == 0) /* not yet finished; can early data */
       {
       int len = gstring_length(banner);
       size_t n_bytes;
@@ -4711,8 +4712,15 @@ if (n > 0)
 BOOL
 tls_could_getc(void)
 {
-return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm
-    || SSL_pending(state_server.lib_state.lib_ssl) > 0;
+fd_set fds;
+struct timeval tzero = {.tv_sec = 0, .tv_usec = 0};
+
+if (ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm) return TRUE;
+
+FD_ZERO(&fds);
+FD_SET(tls_in.active.sock, &fds);
+return select(tls_in.active.sock+ 1, (SELECT_ARG2_TYPE *)&fds,
+	      NULL, NULL, &tzero) > 0;
 }
 
 

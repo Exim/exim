@@ -3260,7 +3260,8 @@ if (rc != GNUTLS_E_SUCCESS)
 state->xfer_buffer = store_malloc(ssl_xfer_buffer_size);
 
 #ifdef EXPERIMENTAL_TLS_EARLY_BANNER
-if (state->early_banner)
+if (  gnutls_protocol_get_version(state->session) > GNUTLS_TLS1_2
+   && state->early_banner)
   {
   tls_write(NULL, banner->s, banner->ptr, SP_NO_MORE);
   DEBUG(D_receive) 

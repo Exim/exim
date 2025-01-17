@@ -16,7 +16,7 @@ Succeeded in starting TLS
 <<< 250-PIPELINING
 ??? 250
 <<< 250 HELP
->>> mail from:<userx@test.ex>
+>>> mail from:<userx1_3@test.ex>
 ??? 250
 <<< 250 OK
 >>> rcpt to:<userx@test.ex>
@@ -52,7 +52,7 @@ Succeeded in starting TLS
 <<< 250-PIPELINING
 ??? 250
 <<< 250 HELP
->>> mail from:<userx@test.ex>
+>>> mail from:<userx1_2@test.ex>
 ??? 250
 <<< 250 OK
 >>> rcpt to:<userx@test.ex>
@@ -90,7 +90,7 @@ Succeeded in starting TLS
 <<< 250-PIPELINING
 ??? 250
 <<< 250 HELP
->>> mail from:<userx@test.ex>
+>>> mail from:<userx_clientcert@test.ex>
 ??? 250
 <<< 250 OK
 >>> rcpt to:<userx@test.ex>
