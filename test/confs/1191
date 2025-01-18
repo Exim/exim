@@ -19,6 +19,7 @@ tls_on_connect_ports = PORT_D
 tls_certificate = DIR/aux-fixed/cert1
 tls_early_banner_hosts = *
 
+helo_lookup_domains =
 log_selector = +millisec
 
 # ----- Routers -----

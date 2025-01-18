@@ -1,5 +1,13 @@
 # TLS client: tls-on-connect, TFO
 #
+# Enable the TFO feature in the kernel
+# (Linux: /etc/sysctl.conf net.ipv4.tcp_fastopen=3)
+#
+# (On Fedora) install iproute-tc to get the tc command
+# and kernel-modules-extra to get the netem packet scheduler.
+# Also you may need to edit /etc/modprobe.d/sch_netem-blacklist.conf
+# if that file exists.
+#
 # For packet-capture, use "runtest -keep" and add (at least) tls debug on the daemon line.
 # For GnuTLS, additionally run the daemon under sudo.
 # Tell wireshark to use DIR/spool/sslkeys for Master Secret log, and decode TCP/1225 as TLS, TLS/1225 as SMTP
@@ -35,8 +43,7 @@
 #
 # (otherwise the same).  The extra segments are piplined and do not incur an extra roundtrip time.
 #
-# To see that pipelining
-# (and you may need to edit /etc/modprobe.d/sch_netem-blacklist.conf) :-
+# To see that pipelining :-
 sudo perl
 system("tc qdisc add dev lo root netem delay 50ms");
 ****

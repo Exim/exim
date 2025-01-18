@@ -1,5 +1,5 @@
-2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@test.ex
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@test.ex abcd@test.ex xyz@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=p1234 -qf
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmaZ-000000005vi-0000"
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 Completed
@@ -11,9 +11,9 @@
 
 ******** SERVER ********
 2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTPS on port PORT_D
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] TFO* P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex
-2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] TFO* P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex
+2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for CALLER@test.ex
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] TFO* P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex for CALLER@test.ex xyz@test.ex
+2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] TFO* P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex for abcd@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=p1236 -qf
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 => CALLER <CALLER@test.ex> R=server T=local_delivery
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Completed
