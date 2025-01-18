@@ -26247,9 +26247,20 @@ See section &<<SECDANE>>&.
 This option provides a list of servers to which, provided
 the facility is supported by this system, Exim will attempt to
 perform a TCP Fast Open (&url(https://www.rfc-editor.org/rfc/rfc7413,RFC 7413).
-No data is sent on the SYN segment but, if the remote server also
+No data is sent on the SYN segment
+.new
+(except for TLS-on-connect connections)
+.wen
+but, if the remote server also
 supports the facility, it can send its SMTP banner immediately after
 the SYN,ACK segment.  This can save up to one round-trip time.
+
+.new
+For TLS-on-connect, if supported by the remote server
+the TLS Client Hello is sent on the TCP SYN segment
+and the entire server-provided TLS startup can be sent immediately
+after the SYN,ACK.
+.wen
 
 The facility is only active for previously-contacted servers,
 as the initiator must present a cookie in the SYN segment.

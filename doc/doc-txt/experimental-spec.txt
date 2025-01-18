@@ -702,6 +702,8 @@ client certificate verification, have the server transmit the SMTP banner
 immediately after it's TLS Finished record rather than waiting for the client's
 Certificate and Finished.
 
+This saves one full round-trip time.
+
 The GnuTLS documentation describes this use of TLS as
 "part of protocol design with no known security implications".
 
