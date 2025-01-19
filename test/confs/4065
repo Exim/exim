@@ -32,8 +32,11 @@ dmarc_tld_file =
 pipelining_connect_advertise_hosts = *
 auth_advertise_hosts = *
 
-log_selector = +received_recipients +pipelining
+log_selector = +received_recipients +pipelining -tls_certificate_verified
+
+.ifdef SERVER
 queue_only
+.endif
 
 acl_smtp_rcpt = accept
 

@@ -40,8 +40,12 @@ tls_require_ciphers = DEFAULT:!kECDHE
 .endif
 
 pipelining_connect_advertise_hosts = CONTROL
-log_selector = +received_recipients +millisec +pipelining
+log_selector = +received_recipients +millisec +pipelining \
+		-tls_certificate_verified
+
+.ifdef SERVER
 queue_only
+.endif
 
 acl_smtp_rcpt = accept
 

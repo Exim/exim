@@ -1,2 +1,2 @@
+feature _HAVE_TLS
 support PIPECONNECT
-support OpenSSL

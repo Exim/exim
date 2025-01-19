@@ -1,14 +1,12 @@
-# tls-on-connect
+# early-pipe & tls-on-connect
 #
 # Not attempted without a cache entry
 exim -bd -DSERVER=server -oX PORT_D
 ****
 #
-exim nocache@test.ex
+exim -odi nocache@test.ex
 Subject test 1
 
-****
-exim -q
 ****
 exim -DNOTDAEMON -DSERVER=server -q
 ****
@@ -16,15 +14,22 @@ exim -DNOTDAEMON -DSERVER=server -q
 #
 #
 # Go for it.  This one should do early-pipelinng.
-exim hascache@test.ex
+exim -odi hascache@test.ex
 Subject test 2
 
-****
-exim -q
 ****
 exim -DNOTDAEMON -DSERVER=server -q
 ****
 #
+#
+# Check that client doesn't try when not told to, even now there is
+# a cache entry
+exim -odi -DCONTROL=: clientno@test.ex
+Subject test 3
+
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
 #
 #
 killdaemon
