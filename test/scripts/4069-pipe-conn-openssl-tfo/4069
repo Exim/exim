@@ -7,12 +7,19 @@
 # Clear any previously-obtained tfo cookie:
 sudo perl
 system ("tc qdisc add dev lo root netem delay 50ms");
+open(INFO, "-|", "/usr/bin/uname -s");
+$_ = <INFO>;
+if (/^FreeBSD/) {
+system("sysctl net.inet.tcp.fastopen.client_enable=0");
+system("sysctl net.inet.tcp.fastopen.client_enable=1");
+} else {
 system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
 system ("ip tcp_metrics delete 127.0.0.1");
+}
 ****
 #
 #
-# Early-pipe not attempted without a cache entry
+# Early-pipe not attempted without a cache entry, and no TFO
 exim -bd -DSERVER=server -oX PORT_D
 ****
 #
@@ -27,7 +34,9 @@ exim -DNOTDAEMON -DSERVER=server -q
 #
 #
 #
-# Go for it.  This one should do early-pipelinng.
+# Go for it.  This one should do early-pipelinng and TFO;
+# the EHLO and STARTTLS in the SYN segment, and (after TLS handshake)
+# the secondary EHLO bundled with the MAIL/RCPT/DATA.
 exim b@test.ex
 Subject test 2
 

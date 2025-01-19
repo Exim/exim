@@ -2755,7 +2755,7 @@ if (gstring_length(ss) == 0)			/* banner already sent */
   {
   if (f.running_in_test_harness)		/* make visible to testsuite */
     {
-    millisleep(100);
+    for (int i = 20; i && check_sync(); i--) millisleep(5);
     log_write(0, LOG_MAIN, "Ci=%s SMTP peer appears to have %s our banner",
 		connection_id, check_sync() ? "NOT SEEN" : "seen");
     }

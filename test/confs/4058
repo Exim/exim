@@ -26,7 +26,9 @@ dmarc_tld_file =
 .endif
 
 pipelining_connect_advertise_hosts = *
+.ifdef SERVER
 queue_only
+.endif
 
 acl_smtp_rcpt = accept
 

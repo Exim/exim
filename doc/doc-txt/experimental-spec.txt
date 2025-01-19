@@ -707,6 +707,8 @@ This saves one full round-trip time.
 The GnuTLS documentation describes this use of TLS as
 "part of protocol design with no known security implications".
 
+The feature can be usefully combined with TCP Fast Open.
+
 
 
 --------------------------------------------------------------

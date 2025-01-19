@@ -3,6 +3,20 @@
 # NOTE: ensure that TFO is fully enabled in the kernel.
 # For linux: sysctl net.ipv4.tcp_fastopen=3
 # 
+# First clear any previously-obtained TFO cookie:
+sudo perl
+open(INFO, "-|", "/usr/bin/uname -s");
+$_ = <INFO>;
+if (/^FreeBSD/) {
+system("sysctl net.inet.tcp.fastopen.client_enable=0");
+system("sysctl net.inet.tcp.fastopen.client_enable=1");
+} else {
+system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
+system ("ip tcp_metrics delete 127.0.0.1");
+}
+****
+#
+#
 # Not attempted without a cache entry
 exim -bd -DSERVER=server -oX PORT_D
 ****

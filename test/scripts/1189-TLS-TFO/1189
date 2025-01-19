@@ -61,10 +61,12 @@ sudo perl
 open(INFO, "-|", "/usr/bin/uname -s");
 $_ = <INFO>;
 if (/^FreeBSD/) {
-system("sysctl net.inet.tcp.fastopen.client_enable=0"); system("sysctl net.inet.tcp.fastopen.client_enable=1");
+system("sysctl net.inet.tcp.fastopen.client_enable=0");
+system("sysctl net.inet.tcp.fastopen.client_enable=1");
 } else {
 system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
 system ("ip tcp_metrics delete 127.0.0.1");
+system ("ip tcp_metrics delete HOSTIPV4");
 }
 ****
 #
@@ -72,9 +74,12 @@ system ("ip tcp_metrics delete 127.0.0.1");
 # sudo exim -DSERVER=server -d+tls -bd -oX PORT_D
 exim -DSERVER=server -bd -oX PORT_D
 ****
+# Queue an initial message.  This one will request a cookie for later TFOs.
 exim CALLER@test.ex
 Test message. Contains FF: ÿ
 ****
+# Queue two more recipients, to be sent to different IPs. The first should
+# get TFO using the cookie just obtained, then second should not.
 exim CALLER@test.ex abcd@test.ex xyz@test.ex
 Test message to two different hosts
 ****

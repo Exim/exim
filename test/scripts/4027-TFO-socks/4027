@@ -1,4 +1,5 @@
 # socks5 proxy on smtp transport, TCP Fast Open
+# We are only emulating the proxy, hardwiring its responses
 #
 # NOTE: ensure that TFO is fully enabled in the kernel.
 # For linux: sysctl net.ipv4.tcp_fastopen=3

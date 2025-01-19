@@ -9,8 +9,15 @@
 # Disable TFO blackhole-detection as we seem to be running afoul of that
 sudo perl
 system ("tc qdisc add dev lo root netem delay 50ms");
-system ("ip tcp_metrics delete HOSTIPV4");
+open(INFO, "-|", "/usr/bin/uname -s");
+$_ = <INFO>;
+if (/^FreeBSD/) {
+system("sysctl net.inet.tcp.fastopen.client_enable=0");
+system("sysctl net.inet.tcp.fastopen.client_enable=1");
+} else {
 system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
+system ("ip tcp_metrics delete HOSTIPV4");
+}
 ****
 #
 #
@@ -20,12 +27,10 @@ exim -bd -DSERVER=server -oX PORT_D
 # No early-pipe cache yet.  Run one through to prime it;
 # this should not use early-pipe despite both the client & server being enabled.
 # Should also prime the TFO cookie cache.
-exim nocache@test.ex
+exim -odi nocache@test.ex
 Subject: tfo test
 
 Testing
-****
-exim -q
 ****
 exim -DNOTDAEMON -DSERVER=server -q
 ****
@@ -33,12 +38,10 @@ exim -DNOTDAEMON -DSERVER=server -q
 #
 #
 # Having primed the cache, this one should use it.
-exim hascache@test.ex
+exim -odi hascache@test.ex
 Subject: tfo test 2
 
 Testing
-****
-exim -q
 ****
 exim -DNOTDAEMON -DSERVER=server -q
 ****
@@ -51,21 +54,17 @@ sudo rm DIR/spool/db/misc
 exim -bd -DSERVER=server -DOPT=* -oX PORT_D
 ****
 #
-exim nocache@test.ex
+exim -odi nocache@test.ex
 Subject: tfo test 3
 
 Testing
 ****
-exim -q
-****
 exim -DNOTDAEMON -DSERVER=server -q
 ****
-exim chunking@test.ex
+exim -odi chunking@test.ex
 Subject: tfo test 4
 
 Testing
-****
-exim -q
 ****
 exim -DNOTDAEMON -DSERVER=server -q
 ****
