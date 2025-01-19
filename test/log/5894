@@ -94,7 +94,7 @@
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 peer dn	/CN=server1.example.com
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 bits	256
-1999-03-02 09:44:33 10HmbM-000000005vi-0000 => resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D2 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbN-000000005vi-0000"
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 => resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1]:PORT_D2 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbN-000000005vi-0000"
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 Completed
 
 ******** SERVER ********
@@ -185,7 +185,7 @@
 1999-03-02 09:44:33 peer dn	
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] TFO* P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbK-000000005vi-0000@myhost.test.ex for getticket@test.ex
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbK-000000005vi-0000@myhost.test.ex for getticket@test.ex
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 => :blackhole: <getticket@test.ex> R=server
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_ver	TLS1.3
@@ -196,6 +196,6 @@
 1999-03-02 09:44:33 peer dn	
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] TFO* P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbM-000000005vi-0000@myhost.test.ex for resume@test.ex
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbM-000000005vi-0000@myhost.test.ex for resume@test.ex
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 => :blackhole: <resume@test.ex> R=server
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 Completed

@@ -1,0 +1,76 @@
+# tfo, early-pipe, tls-on-connect
+#
+# NOTE: ensure that TFO is fully enabled in the kernel.
+# For linux: sysctl net.ipv4.tcp_fastopen=3
+# 
+# Network delay so we can see tfo efects
+# Clear any previously-obtained tfo cookie:
+sudo perl
+system ("tc qdisc add dev lo root netem delay 50ms");
+open(INFO, "-|", "/usr/bin/uname -s");
+$_ = <INFO>;
+if (/^FreeBSD/) {
+system("sysctl net.inet.tcp.fastopen.client_enable=0");
+system("sysctl net.inet.tcp.fastopen.client_enable=1");
+} else {
+system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
+system ("ip tcp_metrics delete 127.0.0.1");
+}
+****
+#
+#
+# Early-pipe not attempted without a cache entry, and no TFO
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+exim -odi -DCONNECTCOND=127.0.0.1 a@test.ex
+Subject test 1
+
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+#
+# Go for it.  This one should do early-pipelinng and TFO;
+# the (crypted) EHLO is bundled with the MAIL/RCPT/DATA.
+exim -odi -DCONNECTCOND=127.0.0.1 b@test.ex
+Subject test 2
+
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+killdaemon
+#
+#
+# And again with CHUNKING
+#
+exim -bd -DSERVER=server -DOPT=* -oX PORT_D
+****
+#
+# First try has wrong cached info for early-pipe; the chunking advertisement
+# changed.  Get it refreshed.
+# We get an early-pipe, and use DATA (before we see the advertisement).
+exim -odi -DCONNECTCOND=127.0.0.1 wrongcache@test.ex
+Subject test 4
+
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+# Now this one should do early-pipe (again) but this time using BDAT
+exim -odi -DCONNECTCOND=127.0.0.1 chunking@test.ex
+Subject test 5
+
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+killdaemon
+#
+sudo perl
+system ("tc qdisc delete dev lo root");
+****
+no_msglog_check

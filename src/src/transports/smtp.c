@@ -2923,6 +2923,10 @@ if (  smtp_peer_options & OPTION_TLS
       }
     sx->send_tlsclose = TRUE;
 
+# ifdef TCP_FASTOPEN
+    if (sx->smtps) tfo_out_check(sx->cctx.sock);
+# endif
+
     /* TLS session is set up.  Check the inblock fill level.  If there is
     content then as we have not yet done a tls read it must have arrived before
     the TLS handshake, in-clear.  That violates the sync requirement of the

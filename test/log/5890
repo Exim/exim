@@ -393,7 +393,7 @@
 1999-03-02 09:44:33 peer dn	
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbR-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] TFO* P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbQ-000000005vi-0000@myhost.test.ex for getticket@test.ex
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbQ-000000005vi-0000@myhost.test.ex for getticket@test.ex
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 => :blackhole: <getticket@test.ex> R=server
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_ver	TLS1.2
@@ -404,7 +404,7 @@
 1999-03-02 09:44:33 peer dn	
 1999-03-02 09:44:33 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbT-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] TFO* P=smtps X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbS-000000005vi-0000@myhost.test.ex for resume@test.ex
+1999-03-02 09:44:33 10HmbT-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=smtps X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbS-000000005vi-0000@myhost.test.ex for resume@test.ex
 1999-03-02 09:44:33 10HmbT-000000005vi-0000 => :blackhole: <resume@test.ex> R=server
 1999-03-02 09:44:33 10HmbT-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D and for SMTPS on port PORT_D2
@@ -538,7 +538,7 @@
 1999-03-02 09:44:33 peer dn	
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmcQ-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] TFO* P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmcP-000000005vi-0000@myhost.test.ex for getticket@test.ex
+1999-03-02 09:44:33 10HmcQ-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmcP-000000005vi-0000@myhost.test.ex for getticket@test.ex
 1999-03-02 09:44:33 10HmcQ-000000005vi-0000 => :blackhole: <getticket@test.ex> R=server
 1999-03-02 09:44:33 10HmcQ-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_ver	TLS1.3
@@ -549,6 +549,6 @@
 1999-03-02 09:44:33 peer dn	
 1999-03-02 09:44:33 cipher	TLS1.x:ke-PSK-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmcS-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] TFO* P=smtps X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmcR-000000005vi-0000@myhost.test.ex for resume@test.ex
+1999-03-02 09:44:33 10HmcS-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=smtps X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmcR-000000005vi-0000@myhost.test.ex for resume@test.ex
 1999-03-02 09:44:33 10HmcS-000000005vi-0000 => :blackhole: <resume@test.ex> R=server
 1999-03-02 09:44:33 10HmcS-000000005vi-0000 Completed

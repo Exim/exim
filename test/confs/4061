@@ -2,8 +2,11 @@
 # Pipelining the early part of the SMTP conversation, tls-on-connect
 
 CONTROL=*
+CONNECTCOND=
+OPT=
 
 keep_environment = PATH
+add_environment = SSLKEYLOGFILE=DIR/spool/sslkeys
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 spool_directory = DIR/spool
@@ -17,7 +20,7 @@ log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 dns_cname_loops = 9
-chunking_advertise_hosts =
+chunking_advertise_hosts = OPT
 tls_on_connect_ports = PORT_D
 tls_advertise_hosts = *
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
@@ -59,9 +62,9 @@ begin transports
 
 smtp:
   driver =		smtp
+  hosts_try_fastopen =	CONNECTCOND
   hosts_pipe_connect =	CONTROL
   port =		PORT_D
-  hosts_try_fastopen =	:
   protocol =		smtps
   tls_verify_certificates = DIR/aux-fixed/cert1
   tls_verify_cert_hostnames = :

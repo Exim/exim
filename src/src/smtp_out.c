@@ -156,7 +156,7 @@ return TRUE;
 #ifdef TCP_FASTOPEN
 /* Try to record if TFO was attmepted and if it was successfully used.  */
 
-static void
+void
 tfo_out_check(int sock)
 {
 static BOOL done_once = FALSE;
@@ -387,6 +387,7 @@ if (!save_errno)
       DEBUG(D_transport|D_acl|D_v) debug_printf(" set up lazy-connect\n");
       setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN_CONNECT, US &on, sizeof(on));
       /* fastopen_blob = NULL;		 lazy TFO, triggered by data write */
+      tcp_out_fastopen = TFO_ATTEMPTED_DATA;
       }
 # endif
     }

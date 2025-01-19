@@ -25,6 +25,10 @@ extern const char *
 extern const char *
                std_dh_prime_named(const uschar *);
 
+# ifdef TCP_FASTOPEN
+extern void	tfo_out_check(int);
+# endif
+
 extern uschar * tls_cert_crl_uri(void *, const uschar *);
 extern uschar * tls_cert_ext_by_oid(void *, uschar *, int);
 extern uschar * tls_cert_issuer(void *, const uschar *);
