@@ -60,7 +60,6 @@ queuefile_transport_options_block queuefile_transport_option_defaults = {
 
 void queuefile_transport_init(driver_instance * t)
 {
-transport_instance * tblock = (transport_instance *)t;
 queuefile_transport_options_block * ob = t->options_block;
 
 if (!ob->dirname)

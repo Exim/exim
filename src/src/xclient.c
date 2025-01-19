@@ -243,6 +243,7 @@ for (state = XCLIENT_SKIP_SPACES; *s; )
 	    { store_pool = old_pool; s = US"bad proto for XCLIENT"; goto fatal_501; }
 	  break;
 # endif
+	default: break;	/* stupid compiler silencing */
 	}
       store_pool = old_pool;
       state = XCLIENT_SKIP_SPACES;

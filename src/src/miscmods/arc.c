@@ -1707,9 +1707,6 @@ return arc_set_bodyhash(TRUE, &canon, &hash, -1);
 static void
 arc_sign_init(void)
 {
-blob canon = {.data = US"relaxed", .len = 7};	/*XXX hardwired */
-blob hash =  {.data = US"sha256",  .len = 6};	/*XXX hardwired */
-
 memset(&arc_sign_ctx, 0, sizeof(arc_sign_ctx));
 headers_rlist = NULL;
 

@@ -3518,7 +3518,9 @@ uschar * expciphers;
 exim_openssl_state_st * dummy_statep;
 SSL_CTX * ctx;
 SSL * ssl;
+#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
 BOOL verify_client_cert = FALSE;
+#endif
 static uschar peerdn[256];
 
 /* Check for previous activation */
@@ -3581,7 +3583,9 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
 else
   goto skip_certs;
 
+#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
 verify_client_cert = TRUE;
+#endif
  {
   uschar * v_certs = tls_verify_certificates;
 

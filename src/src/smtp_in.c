@@ -3284,9 +3284,7 @@ void
 smtp_notquit_exit(const uschar * reason, uschar * code,
   const uschar * defaultrespond, ...)
 {
-int rc;
-uschar *user_msg = NULL;
-uschar *log_msg = NULL;
+uschar * user_msg = NULL, * log_msg = NULL;
 
 /* When a bad-command-excess is seen in the CHUNKING sub-handler, it only
 reports as EOF to the toplevel command loop - which handles EOF for the
@@ -4885,10 +4883,7 @@ while (done <= 0)
 	{
 	rc = acl_check(ACL_WHERE_MAIL, NULL, acl_smtp_mail, &user_msg, &log_msg);
 	if (rc == OK && !f.smtp_in_pipelining_advertised && !check_sync())
-{
-debug_printf("bad check_sync() after mailfrom\n");
 	  goto SYNC_FAILURE;
-}
 	}
       else
 	rc = OK;
