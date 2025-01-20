@@ -15,6 +15,7 @@ domainlist local_domains = test.ex : *.test.ex
 acl_smtp_rcpt = accept
 
 tls_advertise_hosts = *
+tls_on_connect_ports = PORT_D2
 tls_certificate = DIR/aux-fixed/cert1
 
 .ifdef STRICT
@@ -23,6 +24,8 @@ tls_alpn = STRICT
 .ifdef REQUIRE
 hosts_require_alpn = *
 .endif
+
+tls_early_banner_hosts = *
 
 .ifdef _HAVE_OPENSSL
 tls_require_ciphers = ALL:@SECLEVEL=0
@@ -55,7 +58,12 @@ send_to_server:
   driver =	smtp
   allow_localhost
   hosts =	HOSTIPV4
+.ifdef OPTION
+  protocol =	smtps
+  port =	PORT_D2
+.else
   port =	PORT_D
+.endif
   tls_verify_certificates = DIR/aux-fixed/cert1
   tls_verify_cert_hostnames = :
 

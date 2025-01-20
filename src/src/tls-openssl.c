@@ -405,6 +405,7 @@ static SSL_CTX *server_sni = NULL;
 #endif
 #ifdef EXIM_HAVE_ALPN
 static BOOL server_seen_alpn = FALSE;
+static const gstring * server_fail_alpn = NULL;
 #endif
 
 static char ssl_errstring[256];
@@ -2363,7 +2364,7 @@ when client offers ALPN, after the SNI callback.
 If set and not matching the list then we dump the connection */
 
 static int
-tls_server_alpn_cb(SSL *ssl, const uschar ** out, uschar * outlen,
+tls_server_alpn_cb(SSL * ssl, const uschar ** out, uschar * outlen,
   const uschar * in, unsigned int inlen, void * arg)
 {
 gstring * g = NULL;
@@ -2412,13 +2413,9 @@ for (int pos = 0, siz; pos < inlen; pos += siz+1)
   if (pos + 1 + siz > inlen) siz = inlen - pos - 1;
   g = string_append_listele_n(g, ':', in + pos + 1, siz);
   }
-log_write(0, LOG_MAIN, "TLS ALPN (%Y) rejected", g);
 gstring_release_unused(g);
-
-/* We want a connection-fatal result.
-Do not use the documented SSL_TLSEXT_ERR_NOACK return. */
-
-return SSL_TLSEXT_ERR_ALERT_FATAL;
+server_fail_alpn = g;
+return SSL_TLSEXT_ERR_NOACK;
 }
 #endif	/* EXIM_HAVE_ALPN */
 
@@ -3686,7 +3683,11 @@ if (  tls_in.on_connect			/* Not usable for STARTTLS */
     }
 
     if (  SSL_version(ssl) > TLS1_2_VERSION	/* not sure is safe pre 1.3 */
-       && SSL_is_init_finished(ssl) == 0) /* not yet finished; can early data */
+       && SSL_is_init_finished(ssl) == 0  /* not yet finished; can early data */
+# ifdef EXIM_HAVE_ALPN
+       && !server_fail_alpn
+# endif
+       )
       {
       int len = gstring_length(banner);
       size_t n_bytes;
@@ -3713,6 +3714,7 @@ if (  tls_in.on_connect			/* Not usable for STARTTLS */
 
       gstring_reset(banner);
       }
+  skip_early_data: ;
   }
 # endif /*EXPERIMENTAL_TLS_EARLY_BANNER*/
 
@@ -3803,6 +3805,13 @@ if (SSL_session_reused(ssl))
 /* If require-alpn, check server_seen_alpn here.  Else abort TLS */
 if (!tls_alpn || !*tls_alpn)
   { DEBUG(D_tls) debug_printf("TLS: was not watching for ALPN\n"); }
+else if (server_fail_alpn)
+    {
+    uschar * s = string_sprintf("Bad ALPN presented (%Y)", server_fail_alpn);
+    SSL_shutdown(ssl);
+    tls_error(US"handshake", NULL, s, errstr);
+    return FAIL;
+    }
 else if (!server_seen_alpn)
   if (verify_check_host(&hosts_require_alpn) == OK)
     {

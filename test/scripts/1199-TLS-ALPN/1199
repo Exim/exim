@@ -1,28 +1,28 @@
 # TLS: ALPN
 gnutls
-exim -DSERVER=server -bd -oX PORT_D
+exim -DSERVER=server -bd -oX PORT_D:PORT_D2
 ****
 #
 # Basic: is good ALPN set on tpt acceptable to server
-exim -DCONTROL=smtp -odf a@test.ex
+exim -DCONTROL=smtp -odf good_alpn@test.ex
 Test message.
 ****
 #
 # Bad ALPN rejected
-exim -DCONTROL=http -odf b@test.ex
+exim -DCONTROL=http -odf bad_alpn@test.ex
 ****
 sudo rm -f DIR/spool/db/retry* DIR/spool/input/*-D DIR/spool/input/*-H
 #
 # Multiple ALPN rejected
-exim -DCONTROL=smtp:smtp -odf c@test.ex
+exim -DCONTROL=smtp:smtp -odf multiple_alpn@test.ex
 ****
 sudo rm -f DIR/spool/db/retry* DIR/spool/input/*-D DIR/spool/input/*-H
 #
 # Empty client option is ok
-exim -DCONTROL="" -odf d@test.ex
+exim -DCONTROL="" -odf empty_client_option@test.ex
 ****
 # Content-free client option is ok
-exim -DCONTROL=" " -odf e@test.ex
+exim -DCONTROL=" " -odf nocontent_client_option@test.ex
 ****
 #
 # Really dumb (IOT?) client, offering no TLS extensions at all in the Client Hello
@@ -50,20 +50,25 @@ STARTTLS
 millisleep 500
 #
 #
+# Bad ALPN rejected, tls-on-connect
+exim -DCONTROL=http -DOPTION -odf bad_alpn@test.ex
+****
+sudo rm -f DIR/spool/db/retry* DIR/spool/input/*-D DIR/spool/input/*-H
+#
 killdaemon
 millisleep 500
 #
 # Server can be told to ignore (bad) ALPN from client
 exim -DSERVER=server -DSTRICT="" -bd -oX PORT_D
 ****
-exim -DCONTROL=http -odf f@test.ex
+exim -DCONTROL=http -odf bad_alpn_ignored@test.ex
 ****
 killdaemon
 #
 # Server can be told custom names list
 exim -DSERVER=server -DSTRICT='${if eq {$sender_host_address}{HOSTIPV4} {smtp:weird} {smtp}}' -bd -oX PORT_D
 ****
-exim -DCONTROL=weird -odf g@test.ex
+exim -DCONTROL=weird -odf custom_alpn@test.ex
 ****
 killdaemon
 #
