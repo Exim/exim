@@ -17,16 +17,16 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 client claims: OCSP status 3 (failed)
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-000000005vi-0000@server1.example.com
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaX-000000005vi-0000@server1.example.com
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <norequire@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 client claims: OCSP status 0 (notreq)
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-000000005vi-0000@server1.example.com
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaZ-000000005vi-0000@server1.example.com
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 => :blackhole: <nostaple@test.ex> R=server
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 client claims: OCSP status 4 (verified)
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= CALLER@server1.example.com H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbA-000000005vi-0000@server1.example.com
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= CALLER@server1.example.com H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbA-000000005vi-0000@server1.example.com
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 => :blackhole: <CALLER@test.ex> R=server
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D

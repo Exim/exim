@@ -1429,8 +1429,8 @@ Arguments:
 
 Returns:	Allocated string or NULL
 */
-static gstring *
-s_tlslog(gstring * g)
+gstring *
+add_tls_info_for_log(gstring * g)
 {
 if (LOGGING(tls_cipher) && tls_in.cipher)
   {
@@ -1440,7 +1440,7 @@ if (LOGGING(tls_cipher) && tls_in.cipher)
     g = string_catn(g, US"*", 1);
 #endif
   }
-if (LOGGING(tls_certificate_verified) && tls_in.cipher)
+if (LOGGING(tls_certificate_verified) && tls_in.peercert)
   g = string_append(g, 2, US" CV=", tls_in.certificate_verified? "yes":"no");
 if (LOGGING(tls_peerdn) && tls_in.peerdn)
   g = string_append(g, 3, US" DN=\"", string_printing(tls_in.peerdn), US"\"");
@@ -1498,7 +1498,7 @@ if (sender_host_authenticated)
   }
 
 #ifndef DISABLE_TLS
-g = s_tlslog(g);
+g = add_tls_info_for_log(g);
 #endif
 
 g = s_connhad_log(g);
@@ -2090,7 +2090,7 @@ if (log_reject_target)
 #ifdef DISABLE_TLS
   uschar * tls = NULL;
 #else
-  gstring * g = s_tlslog(NULL);
+  gstring * g = add_tls_info_for_log(NULL);
   uschar * tls = string_from_gstring(g);
 #endif
   log_write(L_connection_reject,
@@ -3211,7 +3211,7 @@ is closing if required and return 2.  */
 if (log_reject_target)
   {
 #ifndef DISABLE_TLS
-  gstring * g = s_tlslog(NULL);
+  gstring * g = add_tls_info_for_log(NULL);
   uschar * tls = string_from_gstring(g);
   if (!tls) tls = US"";
 #else

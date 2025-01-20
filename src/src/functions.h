@@ -20,10 +20,9 @@ are in in fact in separate headers. */
 
 
 #ifndef DISABLE_TLS
-extern const char *
-               std_dh_prime_default(void);
-extern const char *
-               std_dh_prime_named(const uschar *);
+extern gstring *	add_tls_info_for_log(gstring *);
+extern const char *	std_dh_prime_default(void);
+extern const char *	std_dh_prime_named(const uschar *);
 
 # ifdef TCP_FASTOPEN
 extern void	tfo_out_check(int);

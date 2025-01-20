@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=(xxx) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no rejected DKIM 
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=(xxx) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx rejected DKIM 
 Envelope-from: <shouldfail@bloggs.com>
 Envelope-to: <a@test.ex>
 P Received: from [127.0.0.1] (helo=xxx)

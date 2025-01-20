@@ -14,6 +14,6 @@
 
 ******** SERVER ********
 2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTP on port PORT_S
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] Ci=p1239 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaX-000000005vi-0000@testhost.test.ex for other-user@test.ex
-2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] Ci=p1240 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaZ-000000005vi-0000@testhost.test.ex for first-user@test.ex
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] Ci=p1240 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmbA-000000005vi-0000@testhost.test.ex for second-user@test.ex
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] Ci=p1239 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx K S=sss id=E10HmaX-000000005vi-0000@testhost.test.ex for other-user@test.ex
+2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] Ci=p1240 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx K S=sss id=E10HmaZ-000000005vi-0000@testhost.test.ex for first-user@test.ex
+2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 <= <> H=localhost (testhost.test.ex) [127.0.0.1] Ci=p1240 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx K S=sss id=E10HmbA-000000005vi-0000@testhost.test.ex for second-user@test.ex

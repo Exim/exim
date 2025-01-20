@@ -6,4 +6,4 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 signer: test.ex bits: 1024
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 DKIM: d=test.ex s=sel c=relaxed/relaxed a=rsa-sha512 b=1024 [verification succeeded]
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha512
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss DKIM=test.ex id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss DKIM=test.ex id=E10HmaX-0005vi-00@myhost.test.ex

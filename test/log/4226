@@ -11,9 +11,9 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= userV.වැල්_මී@test.ex H=localhost (the.local.host.name) [127.0.0.1] P=utf8esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-000000005vi-0000@the.local.host.name for user.அதிமதுரம்@test.ex
-1999-03-02 09:44:33 H=localhost (the.local.host.name) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no F=<> rejected RCPT <the.local.host.name-dddddddd-testing@test.ex>: relay not permitted
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= userW@test.ex H=localhost (the.local.host.name) [127.0.0.1] P=utf8esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-000000005vi-0000@the.local.host.name for user.ഇരട്ടിമധുരം@test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= userV.වැල්_මී@test.ex H=localhost (the.local.host.name) [127.0.0.1] P=utf8esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaX-000000005vi-0000@the.local.host.name for user.அதிமதுரம்@test.ex
+1999-03-02 09:44:33 H=localhost (the.local.host.name) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx F=<> rejected RCPT <the.local.host.name-dddddddd-testing@test.ex>: relay not permitted
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= userW@test.ex H=localhost (the.local.host.name) [127.0.0.1] P=utf8esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaZ-000000005vi-0000@the.local.host.name for user.ഇരട്ടിമധുരം@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1235 -qqff
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <user.அதிமதுரம்@test.ex> R=localuser
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed

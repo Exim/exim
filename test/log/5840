@@ -81,64 +81,64 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1237, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256ee.test.ex S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for t1@dane256ee.test.ex
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane256ee.test.ex S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for t1@dane256ee.test.ex
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => :blackhole: <t1@dane256ee.test.ex> R=server
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex for t2@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmaY-000000005vi-0000@myhost.test.ex for t2@mxdane512ee.test.ex
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <t2@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL"
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1238, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256ta.test.ex S=sss id=E10HmbB-000000005vi-0000@myhost.test.ex for t4@mxdane256ta.test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane256ta.test.ex S=sss id=E10HmbB-000000005vi-0000@myhost.test.ex for t4@mxdane256ta.test.ex
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 => :blackhole: <t4@mxdane256ta.test.ex> R=server
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1239, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmbD-000000005vi-0000@myhost.test.ex for t5@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane256tak.test.ex S=sss id=E10HmbD-000000005vi-0000@myhost.test.ex for t5@mxdane256tak.test.ex
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 => :blackhole: <t5@mxdane256tak.test.ex> R=server
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1240, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbF-000000005vi-0000@myhost.test.ex for t6@thishost.test.ex
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbF-000000005vi-0000@myhost.test.ex for t6@thishost.test.ex
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 => :blackhole: <t6@thishost.test.ex> R=server
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1241, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbH-000000005vi-0000@myhost.test.ex for t7@thishost.test.ex
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbH-000000005vi-0000@myhost.test.ex for t7@thishost.test.ex
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 => :blackhole: <t7@thishost.test.ex> R=server
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1242, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbP-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbL-000000005vi-0000@myhost.test.ex for t10@dane.no.2.test.ex
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbL-000000005vi-0000@myhost.test.ex for t10@dane.no.2.test.ex
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 => :blackhole: <t10@dane.no.2.test.ex> R=server
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbQ-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbO-000000005vi-0000@myhost.test.ex for t13@dane.no.4.test.ex
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbO-000000005vi-0000@myhost.test.ex for t13@dane.no.4.test.ex
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 => :blackhole: <t13@dane.no.4.test.ex> R=server
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 Completed
 1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbT-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbS-000000005vi-0000@myhost.test.ex for t15@danebroken3.test.ex
+1999-03-02 09:44:33 10HmbT-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbS-000000005vi-0000@myhost.test.ex for t15@danebroken3.test.ex
 1999-03-02 09:44:33 10HmbT-000000005vi-0000 => :blackhole: <t15@danebroken3.test.ex> R=server
 1999-03-02 09:44:33 10HmbT-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmbW-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbV-000000005vi-0000@myhost.test.ex for t17@danebroken5.test.ex
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbV-000000005vi-0000@myhost.test.ex for t17@danebroken5.test.ex
 1999-03-02 09:44:33 10HmbW-000000005vi-0000 => :blackhole: <t17@danebroken5.test.ex> R=server
 1999-03-02 09:44:33 10HmbW-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1243, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmcA-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=danebroken8.example.com S=sss id=E10HmbZ-000000005vi-0000@myhost.test.ex for t20@danebroken8.example.com
+1999-03-02 09:44:33 10HmcA-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=danebroken8.example.com S=sss id=E10HmbZ-000000005vi-0000@myhost.test.ex for t20@danebroken8.example.com
 1999-03-02 09:44:33 10HmcA-000000005vi-0000 => :blackhole: <t20@danebroken8.example.com> R=server
 1999-03-02 09:44:33 10HmcA-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1244, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmcC-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmcB-000000005vi-0000@myhost.test.ex for t21@danebroken2.test.ex
+1999-03-02 09:44:33 10HmcC-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmcB-000000005vi-0000@myhost.test.ex for t21@danebroken2.test.ex
 1999-03-02 09:44:33 10HmcC-000000005vi-0000 => :blackhole: <t21@danebroken2.test.ex> R=server
 1999-03-02 09:44:33 10HmcC-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 10HmcD-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbR-000000005vi-0000@myhost.test.ex for t14@danebroken2.test.ex
+1999-03-02 09:44:33 10HmcD-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbR-000000005vi-0000@myhost.test.ex for t14@danebroken2.test.ex
 1999-03-02 09:44:33 10HmcD-000000005vi-0000 => :blackhole: <t14@danebroken2.test.ex> R=server
 1999-03-02 09:44:33 10HmcD-000000005vi-0000 Completed

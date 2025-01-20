@@ -4,4 +4,4 @@
  Suggested action: either install a certificate or change tls_advertise_hosts option
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Authentication-Results: myhost.test.ex
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=qwerty1234@disco-zombie.net
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=qwerty1234@disco-zombie.net

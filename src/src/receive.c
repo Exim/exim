@@ -4099,20 +4099,7 @@ if (message_reference)
 g = add_host_info_for_log(g);
 
 #ifndef DISABLE_TLS
-if (LOGGING(tls_cipher) && tls_in.cipher)
-  {
-  g = string_append(g, 2, US" X=", tls_in.cipher);
-# ifndef DISABLE_TLS_RESUME
-  if (LOGGING(tls_resumption) && tls_in.resumption & RESUME_USED)
-    g = string_catn(g, US"*", 1);
-# endif
-  }
-if (LOGGING(tls_certificate_verified) && tls_in.cipher)
-  g = string_append(g, 2, US" CV=", tls_in.certificate_verified ? "yes":"no");
-if (LOGGING(tls_peerdn) && tls_in.peerdn)
-  g = string_append(g, 3, US" DN=\"", string_printing(tls_in.peerdn), US"\"");
-if (LOGGING(tls_sni) && tls_in.sni)
-  g = string_append(g, 2, US" SNI=", string_printing2(tls_in.sni, SP_TAB|SP_SPACE));
+g = add_tls_info_for_log(g);
 #endif
 
 if (sender_host_authenticated)

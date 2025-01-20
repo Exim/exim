@@ -72,60 +72,60 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1242, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for t@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for t@mxdane512ee.test.ex
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <t@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for t00@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for t00@mxdane512ee.test.ex
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <t00@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for t01@mxdane512ee1.test.ex
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for t01@mxdane512ee1.test.ex
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 => :blackhole: <t01@mxdane512ee1.test.ex> R=server
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbC-000000005vi-0000@myhost.test.ex for t10@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmbC-000000005vi-0000@myhost.test.ex for t10@mxdane512ee.test.ex
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 => :blackhole: <t10@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbD-000000005vi-0000@myhost.test.ex for t11@mxdane512ee1.test.ex
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmbD-000000005vi-0000@myhost.test.ex for t11@mxdane512ee1.test.ex
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 => :blackhole: <t11@mxdane512ee1.test.ex> R=server
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbG-000000005vi-0000@myhost.test.ex for t20@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmbG-000000005vi-0000@myhost.test.ex for t20@mxdane512ee.test.ex
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 => :blackhole: <t20@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbH-000000005vi-0000@myhost.test.ex for t21@mxdane512ee1.test.ex
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmbH-000000005vi-0000@myhost.test.ex for t21@mxdane512ee1.test.ex
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 => :blackhole: <t21@mxdane512ee1.test.ex> R=server
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbM-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbK-000000005vi-0000@myhost.test.ex for t30@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbM-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmbK-000000005vi-0000@myhost.test.ex for t30@mxdane512ee.test.ex
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 => :blackhole: <t30@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbM-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbL-000000005vi-0000@myhost.test.ex for t31@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbL-000000005vi-0000@myhost.test.ex for t31@mxnondane512ee.test.ex
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 => :blackhole: <t31@mxnondane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbQ-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbO-000000005vi-0000@myhost.test.ex for t40@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmbO-000000005vi-0000@myhost.test.ex for t40@mxdane512ee.test.ex
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 => :blackhole: <t40@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbR-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbP-000000005vi-0000@myhost.test.ex for t41@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbP-000000005vi-0000@myhost.test.ex for t41@mxnondane512ee.test.ex
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 => :blackhole: <t41@mxnondane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbU-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbS-000000005vi-0000@myhost.test.ex for t50@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbU-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmbS-000000005vi-0000@myhost.test.ex for t50@mxdane512ee.test.ex
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 => :blackhole: <t50@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbV-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=MY-SNI S=sss id=E10HmbT-000000005vi-0000@myhost.test.ex for t51@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmbV-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=MY-SNI S=sss id=E10HmbT-000000005vi-0000@myhost.test.ex for t51@mxnondane512ee.test.ex
 1999-03-02 09:44:33 10HmbV-000000005vi-0000 => :blackhole: <t51@mxnondane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbV-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbY-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmbW-000000005vi-0000@myhost.test.ex for t60@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmbW-000000005vi-0000@myhost.test.ex for t60@mxdane512ee.test.ex
 1999-03-02 09:44:33 10HmbY-000000005vi-0000 => :blackhole: <t60@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbY-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbZ-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=MY-SNI S=sss id=E10HmbX-000000005vi-0000@myhost.test.ex for t61@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmbZ-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=MY-SNI S=sss id=E10HmbX-000000005vi-0000@myhost.test.ex for t61@mxnondane512ee.test.ex
 1999-03-02 09:44:33 10HmbZ-000000005vi-0000 => :blackhole: <t61@mxnondane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbZ-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmcC-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmcA-000000005vi-0000@myhost.test.ex for t70@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmcC-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmcA-000000005vi-0000@myhost.test.ex for t70@mxnondane512ee.test.ex
 1999-03-02 09:44:33 10HmcC-000000005vi-0000 => :blackhole: <t70@mxnondane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmcC-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmcD-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmcB-000000005vi-0000@myhost.test.ex for t71@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmcD-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmcB-000000005vi-0000@myhost.test.ex for t71@mxdane512ee.test.ex
 1999-03-02 09:44:33 10HmcD-000000005vi-0000 => :blackhole: <t71@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmcD-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmcG-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=SNISNISNISNI S=sss id=E10HmcE-000000005vi-0000@myhost.test.ex for t80@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmcG-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=SNISNISNISNI S=sss id=E10HmcE-000000005vi-0000@myhost.test.ex for t80@mxnondane512ee.test.ex
 1999-03-02 09:44:33 10HmcG-000000005vi-0000 => :blackhole: <t80@mxnondane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmcG-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmcH-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane512ee.test.ex S=sss id=E10HmcF-000000005vi-0000@myhost.test.ex for t91@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmcH-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane512ee.test.ex S=sss id=E10HmcF-000000005vi-0000@myhost.test.ex for t91@mxdane512ee.test.ex
 1999-03-02 09:44:33 10HmcH-000000005vi-0000 => :blackhole: <t91@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmcH-000000005vi-0000 Completed

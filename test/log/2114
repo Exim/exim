@@ -2,7 +2,7 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=
 1999-03-02 09:44:33 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.net
 1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 [127.0.0.1] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.net

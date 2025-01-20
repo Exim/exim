@@ -183,7 +183,7 @@
 1999-03-02 09:44:33 ocsp	4
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for getticket@test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for getticket@test.ex
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <getticket@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	session resumed
@@ -194,7 +194,7 @@
 1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=no S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for resume@test.ex xyz@test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for resume@test.ex xyz@test.ex
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <xyz@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <resume@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
@@ -206,7 +206,7 @@
 1999-03-02 09:44:33 ocsp	4
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for abcd@test.ex
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for abcd@test.ex
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 => :blackhole: <abcd@test.ex> R=server
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	session resumed
@@ -217,7 +217,7 @@
 1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbC-000000005vi-0000@myhost.test.ex for renewal@test.ex
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* S=sss id=E10HmbC-000000005vi-0000@myhost.test.ex for renewal@test.ex
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 => :blackhole: <renewal@test.ex> R=server
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	session resumed
@@ -228,7 +228,7 @@
 1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbE-000000005vi-0000@myhost.test.ex for postrenewal@test.ex
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* S=sss id=E10HmbE-000000005vi-0000@myhost.test.ex for postrenewal@test.ex
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 => :blackhole: <postrenewal@test.ex> R=server
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	client offered session, server only provided new ticket
@@ -239,7 +239,7 @@
 1999-03-02 09:44:33 ocsp	4
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbG-000000005vi-0000@myhost.test.ex for timeout@test.ex
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbG-000000005vi-0000@myhost.test.ex for timeout@test.ex
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 => :blackhole: <timeout@test.ex> R=server
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	client offered session, server only provided new ticket
@@ -250,7 +250,7 @@
 1999-03-02 09:44:33 ocsp	4
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbI-000000005vi-0000@myhost.test.ex for notreq@test.ex
+1999-03-02 09:44:33 10HmbJ-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbI-000000005vi-0000@myhost.test.ex for notreq@test.ex
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 => :blackhole: <notreq@test.ex> R=server
 1999-03-02 09:44:33 10HmbJ-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	client offered session, server only provided new ticket
@@ -261,7 +261,7 @@
 1999-03-02 09:44:33 ocsp	4
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbK-000000005vi-0000@myhost.test.ex for noverify_getticket@test.ex
+1999-03-02 09:44:33 10HmbL-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbK-000000005vi-0000@myhost.test.ex for noverify_getticket@test.ex
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 => :blackhole: <noverify_getticket@test.ex> R=server
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	session resumed
@@ -272,7 +272,7 @@
 1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbM-000000005vi-0000@myhost.test.ex for noverify_resume@test.ex
+1999-03-02 09:44:33 10HmbN-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* S=sss id=E10HmbM-000000005vi-0000@myhost.test.ex for noverify_resume@test.ex
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 => :blackhole: <noverify_resume@test.ex> R=server
 1999-03-02 09:44:33 10HmbN-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
@@ -284,7 +284,7 @@
 1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbP-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbO-000000005vi-0000@myhost.test.ex for getticket@test.ex
+1999-03-02 09:44:33 10HmbP-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbO-000000005vi-0000@myhost.test.ex for getticket@test.ex
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 => :blackhole: <getticket@test.ex> R=server
 1999-03-02 09:44:33 10HmbP-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	session resumed, also new ticket
@@ -295,7 +295,7 @@
 1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-PSK-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbR-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbQ-000000005vi-0000@myhost.test.ex for resume@test.ex xyz@test.ex
+1999-03-02 09:44:33 10HmbR-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* S=sss id=E10HmbQ-000000005vi-0000@myhost.test.ex for resume@test.ex xyz@test.ex
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 => :blackhole: <xyz@test.ex> R=server
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 => :blackhole: <resume@test.ex> R=server
 1999-03-02 09:44:33 10HmbR-000000005vi-0000 Completed
@@ -307,7 +307,7 @@
 1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbS-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbQ-000000005vi-0000@myhost.test.ex for abcd@test.ex
+1999-03-02 09:44:33 10HmbS-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbQ-000000005vi-0000@myhost.test.ex for abcd@test.ex
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 => :blackhole: <abcd@test.ex> R=server
 1999-03-02 09:44:33 10HmbS-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	session resumed
@@ -318,7 +318,7 @@
 1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-PSK-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbU-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbT-000000005vi-0000@myhost.test.ex for renewal@test.ex
+1999-03-02 09:44:33 10HmbU-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* S=sss id=E10HmbT-000000005vi-0000@myhost.test.ex for renewal@test.ex
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 => :blackhole: <renewal@test.ex> R=server
 1999-03-02 09:44:33 10HmbU-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	session resumed
@@ -329,7 +329,7 @@
 1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-PSK-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbW-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbV-000000005vi-0000@myhost.test.ex for postrenewal@test.ex
+1999-03-02 09:44:33 10HmbW-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* S=sss id=E10HmbV-000000005vi-0000@myhost.test.ex for postrenewal@test.ex
 1999-03-02 09:44:33 10HmbW-000000005vi-0000 => :blackhole: <postrenewal@test.ex> R=server
 1999-03-02 09:44:33 10HmbW-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	client requested new ticket, server provided
@@ -340,7 +340,7 @@
 1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmbY-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbX-000000005vi-0000@myhost.test.ex for timeout@test.ex
+1999-03-02 09:44:33 10HmbY-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbX-000000005vi-0000@myhost.test.ex for timeout@test.ex
 1999-03-02 09:44:33 10HmbY-000000005vi-0000 => :blackhole: <timeout@test.ex> R=server
 1999-03-02 09:44:33 10HmbY-000000005vi-0000 Completed
 1999-03-02 09:44:33 tls_in_resumption	client requested new ticket, server provided
@@ -351,6 +351,6 @@
 1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
-1999-03-02 09:44:33 10HmcA-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbZ-000000005vi-0000@myhost.test.ex for notreq@test.ex
+1999-03-02 09:44:33 10HmcA-000000005vi-0000 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbZ-000000005vi-0000@myhost.test.ex for notreq@test.ex
 1999-03-02 09:44:33 10HmcA-000000005vi-0000 => :blackhole: <notreq@test.ex> R=server
 1999-03-02 09:44:33 10HmcA-000000005vi-0000 Completed

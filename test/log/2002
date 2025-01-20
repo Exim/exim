@@ -15,10 +15,10 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@test.ex H=(rhu.barb) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@test.ex H=(rhu.barb) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= "name with spaces"@test.ex H=(test) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= "name with spaces"@test.ex H=(test) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss
 1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (gnutls_handshake): The peer did not send any certificate.
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
@@ -47,7 +47,7 @@
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@test.ex H=(test) [ip4.ip4.ip4.ip4] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="CN=server2.example.com" S=sss
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@test.ex H=(test) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@test.ex H=(test) [127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example_ec.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@test.ex H=(test) [127.0.0.1] P=smtps X=TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx CV=no S=sss
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@test.ex H=(test) [127.0.0.1] P=smtps X=TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx S=sss

@@ -40279,11 +40279,15 @@ unchanged, or whether they should be rendered as escape sequences.
 .cindex log DANE
 .cindex DANE logging
 &%tls_certificate_verified%&: An extra item is added to <= and => log lines
-when TLS is in use. The item is &`CV=yes`& if the peer's certificate was
+when TLS is in use
+.new
+and the peer presented a certificate (servers must, but clients need not).
+.wen
+The item is &`CV=yes`& if the peer's certificate was
 verified
 using a CA trust anchor,
 &`CV=dane`& if using a DNS trust anchor,
-and &`CV=no`& if not.
+and &`CV=no`& if verification failed.
 .next
 .cindex "log" "TLS cipher"
 .cindex "TLS" "logging cipher"

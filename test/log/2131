@@ -20,11 +20,11 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 SNI <normal>
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=normal S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for normal@test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=normal S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for normal@test.ex
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <normal@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 SNI <alternate>
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=alternate S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for alternate@test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=alternate S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for alternate@test.ex
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <alternate@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 (SSL_CTX_use_PrivateKey_file file=TESTSUITE/aux-fixed/cert2): error:05800074:x509 certificate routines::key values mismatch

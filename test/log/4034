@@ -9,21 +9,21 @@
 1999-03-02 09:44:33 proxy internal []:0
 1999-03-02 09:44:33 proxy external []:0
 1999-03-02 09:44:33 remote         [127.0.0.1]:10004
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= a@test.ex H=(plainclient) [127.0.0.1]:10004 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= a@test.ex H=(plainclient) [127.0.0.1]:10004 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss
 1999-03-02 09:44:33 tls session:   yes
 1999-03-02 09:44:33 proxy session: yes
 1999-03-02 09:44:33 local          [ip4.ip4.ip4.ip4]:10003
 1999-03-02 09:44:33 proxy internal [ip4.ip4.ip4.ip4]:10005
 1999-03-02 09:44:33 proxy external [10.42.42.42]:10006
 1999-03-02 09:44:33 remote         [127.0.0.2]:10007
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= c@test.ex H=proxylookedupname.net (clienthelo) [127.0.0.2]:10007 P=esmtpsa X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no A=xclient:hisloginname PRX=ip4.ip4.ip4.ip4 S=sss
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= c@test.ex H=proxylookedupname.net (clienthelo) [127.0.0.2]:10007 P=esmtpsa X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx A=xclient:hisloginname PRX=ip4.ip4.ip4.ip4 S=sss
 1999-03-02 09:44:33 tls session:   yes
 1999-03-02 09:44:33 proxy session: yes
 1999-03-02 09:44:33 local          [ip4.ip4.ip4.ip4]:10003
 1999-03-02 09:44:33 proxy internal [127.0.0.2]:10007
 1999-03-02 09:44:33 proxy external [10.42.42.42]:10006
 1999-03-02 09:44:33 remote         [127.0.0.3]:10001
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= c2@test.ex H=(anotherhelo) [127.0.0.3]:10001 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no PRX=127.0.0.2 S=sss
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= c2@test.ex H=(anotherhelo) [127.0.0.3]:10001 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx PRX=127.0.0.2 S=sss
 1999-03-02 09:44:33 rejected XCLIENT from (anotherhelo) [127.0.0.3]:10001: mail transaction in progress
 1999-03-02 09:44:33 rejected MAIL from miss.ehlo.after.xclient (anotherhelo) [127.0.0.3]:10001: no HELO/EHLO given
 1999-03-02 09:44:33 SMTP call from (xclientproxy) [ip4.ip4.ip4.ip4]:10002 dropped: too many syntax or protocol errors (last command was "XCLIENT SIXSIX=",  C=EHLO,STARTTLS,EHLO,XCLIENT,XCLIENT,XCLIENT,XCLIENT)

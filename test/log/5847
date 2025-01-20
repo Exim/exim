@@ -26,16 +26,16 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 client claims: ocsp status 1 (notresp)
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmaX-000000005vi-0000@server1.example.com for norequire@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane256tak.test.ex S=sss id=E10HmaX-000000005vi-0000@server1.example.com for norequire@mxdane256tak.test.ex
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <norequire@mxdane256tak.test.ex> R=server
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1235, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 client claims: ocsp status 0 (notreq)
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmaZ-000000005vi-0000@server1.example.com for norequest@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane256tak.test.ex S=sss id=E10HmaZ-000000005vi-0000@server1.example.com for norequest@mxdane256tak.test.ex
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <norequest@mxdane256tak.test.ex> R=server
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 client claims: ocsp status 4 (verified)
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> H=(helo.data.changed) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmbB-000000005vi-0000@server1.example.com for goodstaple@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> H=(helo.data.changed) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane256tak.test.ex S=sss id=E10HmbB-000000005vi-0000@server1.example.com for goodstaple@mxdane256tak.test.ex
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 => :blackhole: <goodstaple@mxdane256tak.test.ex> R=server
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
@@ -46,6 +46,6 @@
 1999-03-02 09:44:33 TLS error on connection from (helo.data.changed) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1239, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 client claims: ocsp status 4 (verified)
-1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= <> H=(helo.data.changed) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=dane256tak.test.ex S=sss id=E10HmbG-000000005vi-0000@server1.example.com for goodstaple_le@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= <> H=(helo.data.changed) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx SNI=dane256tak.test.ex S=sss id=E10HmbG-000000005vi-0000@server1.example.com for goodstaple_le@mxdane256tak.test.ex
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 => :blackhole: <goodstaple_le@mxdane256tak.test.ex> R=server
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 Completed

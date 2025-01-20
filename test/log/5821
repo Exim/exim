@@ -14,18 +14,18 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL: tls_in_bits 128"
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for CALLER@localhost.test.ex
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex for CALLER@localhost.test.ex
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <CALLER@localhost.test.ex> R=server
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL: tls_in_bits 128"
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for CALLER@dane256ee.test.ex
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaZ-000000005vi-0000@myhost.test.ex for CALLER@dane256ee.test.ex
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <CALLER@dane256ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL: tls_in_bits 128"
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbB-000000005vi-0000@myhost.test.ex for CALLER@localhost.test.ex
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbB-000000005vi-0000@myhost.test.ex for CALLER@localhost.test.ex
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 => :blackhole: <CALLER@localhost.test.ex> R=server
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 "rcpt ACL: tls_in_bits 256"
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbD-000000005vi-0000@myhost.test.ex for CALLER@dane256ee.test.ex
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbD-000000005vi-0000@myhost.test.ex for CALLER@dane256ee.test.ex
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 => :blackhole: <CALLER@dane256ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed

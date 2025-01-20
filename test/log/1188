@@ -25,7 +25,7 @@
 
 ******** SERVER ********
 2017-07-30 18:51:05.712 exim x.yz daemon started: pid=p1234, no queue runs, listening for SMTPS on port PORT_D
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmaX-000000005vi-0000@myhost.test.ex
 2017-07-30 18:51:05.712 TLS error on connection from [127.0.0.1] (tls lib accept fn): TCP connection closed by peer
 2017-07-30 18:51:05.712 TLS error on connection from [127.0.0.1] (tls lib accept fn): TCP connection closed by peer
-2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbC-000000005vi-0000@myhost.test.ex
+2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbC-000000005vi-0000@myhost.test.ex
