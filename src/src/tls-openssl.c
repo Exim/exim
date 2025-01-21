@@ -3070,12 +3070,6 @@ if (!host)		/* server */
       tls_alpn = NULL;
     }
 # endif
-
-# ifdef EXPERIMENTAL_TLS_EARLY_BANNER
-  if (  tls_in.on_connect			/* Not usable for STARTTLS */
-     && !SSL_CTX_set_max_early_data(ctx, 128))	/* enough for a banner */
-    DEBUG(D_tls) debug_printf("failed to set max_early_data limit\n");
-# endif
   }
 # ifndef DISABLE_OCSP
 else			/* client */
