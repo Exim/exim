@@ -14,9 +14,8 @@
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 => nocontent_client_option@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbE-000000005vi-0000"
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbF-000000005vi-0000 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: Remote host closed connection in response to 
-
-1999-03-02 09:44:33 10HmbF-000000005vi-0000 == bad_alpn@test.ex R=client T=send_to_server defer (-18) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: Remote host closed connection in response to \n
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: Remote host closed connection in response to TLS-on-connect
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 == bad_alpn@test.ex R=client T=send_to_server defer (-18) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: Remote host closed connection in response to TLS-on-connect
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 => bad_alpn_ignored@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbH-000000005vi-0000"
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed

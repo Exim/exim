@@ -2235,7 +2235,10 @@ sx->max_rcpt = expand_max_rcpt(sx->conn_args.tblock->max_addresses);
 sx->igquotstr = US"";
 if (!sx->helo_data) sx->helo_data = ob->helo_data;
 
-smtp_command = atrn_domains ? US"ATRN line turnaround" : US"initial connection";
+smtp_command = big_buffer;
+
+Ustrcpy(smtp_command,
+  atrn_domains ? US"ATRN line turnaround" : US"initial connection");
 
 /* Set up the buffer for reading SMTP response packets. */
 
@@ -2561,8 +2564,6 @@ goto SEND_QUIT;
   /* Errors that occur after this point follow an SMTP command, which is
   left in big_buffer by smtp_write_command() for use in error messages. */
 
-  smtp_command = big_buffer;
-
   /* Tell the remote who we are...
 
   February 1998: A convention has evolved that ESMTP-speaking MTAs include the
@@ -2601,7 +2602,7 @@ goto SEND_QUIT;
     smtp_peer_options |= OPTION_TLS;
     suppress_tls = FALSE;
     ob->tls_tempfail_tryclear = FALSE;
-    smtp_command = US"SSL-on-connect";
+    Ustrcpy(smtp_command, "TLS-on-connect");
 
 # ifndef DISABLE_TLS_RESUME
     /* Having no EHLO response yet, cannot peek there for a servername to detect
@@ -2791,7 +2792,6 @@ else
     sx->cctx.tls_ctx = NULL;
     smtp_port_for_connect(sx->conn_args.host, sx->port); /* Record the port that was used */
     }
-  smtp_command = big_buffer;
   sx->inblock.cctx = sx->outblock.cctx = &sx->cctx;
   sx->peer_offered = smtp_peer_options;
 #ifndef DISABLE_ESMTP_LIMITS
@@ -2958,10 +2958,6 @@ if (  smtp_peer_options & OPTION_TLS
         }
     }
   }
-
-/* if smtps, we'll have smtp_command set to something else; always safe to
-reset it here. */
-smtp_command = big_buffer;
 
 /* If we started TLS, redo the EHLO/LHLO exchange over the secure channel. If
 helo_data is null, we are dealing with a connection that was passed from

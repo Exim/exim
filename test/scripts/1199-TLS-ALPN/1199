@@ -1,4 +1,9 @@
 # TLS: ALPN
+#
+# XXX Munging for the GnuTLS runs, to match the OpenSSL,
+#     has not been done.  There are many log differences
+#     (but the ALPN feature mainly works, overall)
+#
 gnutls
 exim -DSERVER=server -bd -oX PORT_D:PORT_D2
 ****
