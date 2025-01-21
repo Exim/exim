@@ -17431,6 +17431,11 @@ TCP connection and hello command (cleatext phase),
 or TLS-establishment and hello command (encrypted phase),
 on later connections to the same host.
 
+This saves a roundtrip time for the initial banner, and
+(if STARTTLS is being used) one each for the STARTTLS and
+the subsequent banner.
+If AUTH is used the another is saved for that.
+
 
 .option prdr_enable main boolean false
 .cindex "PRDR" "enabling on server"
