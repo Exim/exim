@@ -1,6 +1,9 @@
 # SRV lookup for tls-on-connect
 need_ipv4
 #
+# We can only test the on-connect case; the testsuite cannot handle
+# (in fact, specifically avoids using) port 25.
+#
 exim -DSERVER=server -bd -oX PORT_D
 ****
 #

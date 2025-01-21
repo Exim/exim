@@ -2217,7 +2217,7 @@ else
       debug_printf(" LMTP required by transport option\n");
   }
 #ifdef EXPERIMENTAL_SRV_SMTPS
-sx->require_tls = sx->smtps;
+if (sx->smtps) sx->require_tls = TRUE;
 #endif
 sx->send_rset = TRUE;
 sx->send_quit = TRUE;
@@ -2507,9 +2507,10 @@ if (!continue_hostname || atrn_domains)
     }
 #endif
 
-  /* The first thing is to wait for an initial OK response. The dreaded "goto"
-  is nevertheless a reasonably clean way of programming this kind of logic,
-  where you want to escape on any error. */
+  /* For non- tls-on-connect the first thing is to wait for an initial OK
+  response (the "banner").  The dreaded "goto" is nevertheless a reasonably
+  clean way of programming this kind of logic, where you want to escape on any
+  error. */
 
   if (!sx->smtps)
     {
@@ -2752,9 +2753,7 @@ goto SEND_QUIT;
     if (sx->peer_offered & OPTION_TLS)
       smtp_peer_options |= OPTION_TLS;
 # ifdef EXPERIMENTAL_SRV_SMTPS
-    /*XXX could retire this check if SRV_STARTTLS_CAN does not need support */
-    else if (  sx->conn_args.host->tls_needs == SRV_STARTTLS_CAN
-	    || sx->conn_args.host->tls_needs == SRV_STARTTLS_MUST)
+    else if (sx->conn_args.host->tls_needs == SRV_STARTTLS_MUST)
       {
       log_write(0, LOG_MAIN,
 	  "Connection aborted; STARTTLS support by %s [%s] required by DNS SRV"

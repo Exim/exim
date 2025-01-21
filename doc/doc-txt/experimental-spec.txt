@@ -675,14 +675,20 @@ record is equivalent to an MX record.
 
 The Exim implementation uses the existing smtp transport "check_srv"
 option; if it has a value of "smtps" and the SRV lookup succeeds
-with a given nonzero port number then that port is used for a tls-on-connect
-connection.  If zero, a standard connection is used but STARTTLS must
-succeed.
+with a port number other than 25 then that port is used for a tls-on-connect
+connection.  If the port number is 25, a standard connection is used but
+STARTTLS must succeed.
 
 Note that the option value can be a list.  Elements are used in
 left-to-right order for SRV lookups, until one succeeds or there are
 none left.  If a SRV lookup succeeds then no MX lookup is done.
 If none succeed then the normal sequence of MX and A/AAAA lookups is done.
+
+Requirement for TLS activated by this means takes priority over the
+"hosts_require_tls" transport option; requirement for tls-on-connect takes
+priority over the "protocol" option.  Connections requiring STARTTLS acivated
+by this means will fail if the host matches the "hosts_avoid_tls" option or
+(if appropriate) the "hosts_verify_avoid_tls" option.
 
 
 There are no changes for server-side support; only suitable configuration

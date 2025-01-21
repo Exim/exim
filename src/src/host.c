@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2024 */
+/* Copyright (c) The Exim Maintainers 2020 - 2025 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -2799,7 +2799,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
     GETSHORT(weight, s);
     GETSHORT(port, s);
 #ifdef EXPERIMENTAL_SRV_SMTPS
-    if (port == 0 && srv_smtps) port = PORT_NONE;	/* no-fallback STARTTLS */
+    if (port == 25 && srv_smtps) port = PORT_NONE;	/* no-fallback STARTTLS */
 #endif
     }
   sort_key = precedence * 1000 + weight;
