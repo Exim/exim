@@ -15,8 +15,8 @@ file system structure. Exim needs write access to the spool directory
 config option: `log_file_path`). For improved security you can even set
 `NoNewPrivileges`, if you don't do local deliveries.
 
-The provides Systemd units are examples, containing placeholders
-`{{…}}`. The [install script](./install) helps substituting them.v
+The provided Systemd units are examples, containing placeholders
+`{{…}}`. The [install script](./install) helps substituting them.
 The following placeholders are used currently:
 - `exim`:
 - `spooldir:`
