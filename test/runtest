@@ -1287,12 +1287,12 @@ RESET_AFTER_EXTRA_LINE_READ:
       # $re = "<[:;].* ";
       if (/<[:;] /)
 	{
-	s/$parm_port_d/PORT_D/g;
-	s/$parm_port_d2/PORT_D2/g;
-	s/$parm_port_d3/PORT_D3/g;
-	s/$parm_port_d4/PORT_D4/g;
-	s/$parm_port_s/PORT_S/g;
-	s/$parm_port_n/PORT_N/g;
+	s/(?<!p)$parm_port_d/PORT_D/g;
+	s/(?<!p)$parm_port_d2/PORT_D2/g;
+	s/(?<!p)$parm_port_d3/PORT_D3/g;
+	s/(?<!p)$parm_port_d4/PORT_D4/g;
+	s/(?<!p)$parm_port_s/PORT_S/g;
+	s/(?<!p)$parm_port_n/PORT_N/g;
 	}
 
       $re = "Connecting to .*]:";
