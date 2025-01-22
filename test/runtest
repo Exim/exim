@@ -38,7 +38,7 @@ use Exim::Runtest;
 use Exim::Utils qw(uniq numerically cp);
 
 use if $ENV{DEBUG} && scalar($ENV{DEBUG} =~ /\bruntest\b/) => 'Smart::Comments' => '####';
-use if $ENV{DEBUG} && scalar($ENV{DEBUG} =~ /\bruntest\b/) => 'Data::Dumper';
+use Data::Dumper;
 
 use constant TEST_TOP => 8999;
 use constant TEST_SPECIAL_TOP => 9999;
@@ -2732,6 +2732,7 @@ if (/^dump\s+(\S+)/)
                #map  { [ (split)[0] =~ s/\Q$parm_ipv4/ip4.ip4.ip4.ip4/gr, $_ ] }  # this is too modern for 5.10.1
                map  {
                 (my $k = (split)[0]) =~ s/\Q$parm_ipv4\E/ip4.ip4.ip4.ip4/g;
+		$k =~ s/$parm_port_n/PORT_N/;
                 [ $k, $_ ]
                }
                do { local $/ = "\n  "; <$in> };
