@@ -19,3 +19,4 @@ Add to the list as we think of them
 - some of the malware scanners and/or variants
 - identd support
 - ldap "LDAP_DEPRECATED" feature use (cf. bug 2948)
+- TCP Wrappers
