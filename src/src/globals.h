@@ -97,8 +97,6 @@ typedef struct {
   const uschar *cipher_stdname; /* Cipher used, RFC version */
   const uschar *ver;	      /* TLS version */
 
-  BOOL    on_connect;         /* For older MTAs that don't STARTTLS */
-  uschar *on_connect_ports;   /* Ports always tls-on-connect */
   void   *ourcert;            /* Certificate we presented, binary */
   void	 *peercert;           /* Certificate of peer, binary */
   uschar *peerdn;             /* DN from peer */
@@ -119,9 +117,11 @@ typedef struct {
   BOOL	  host_resumable:1;
   BOOL	  ticket_received:1;
 #endif
-  BOOL	  verify_override:1;	/* certificate_verified only due to tls_try_verify_hosts */
+
   BOOL	  ext_master_secret:1;	/* extended-master-secret was used */
   BOOL	  channelbind_exporter:1; /* channelbinding is EXPORTER not UNIQUE */
+  BOOL    on_connect:1;         /* For older MTAs that don't STARTTLS */
+  BOOL	  verify_override:1;	/* certificate_verified only due to tls_try_verify_hosts */
 } tls_support;
 extern tls_support tls_in;
 extern tls_support tls_out;
@@ -144,6 +144,7 @@ extern uschar *tls_eccurve;            /* EC curve */
 # ifndef DISABLE_OCSP
 extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
 # endif
+extern uschar *tls_on_connect_ports;   /* Ports always tls-on-connect */
 extern uschar *tls_privatekey;         /* Private key file */
 extern BOOL    tls_remember_esmtp;     /* For YAEB */
 extern uschar *tls_require_ciphers;    /* So some can be avoided */
@@ -302,6 +303,7 @@ extern struct global_flags {
  BOOL   tcp_in_fastopen_data		:1; /* fastopen carried data */
  BOOL   tcp_in_fastopen_logged		:1; /* one-time logging */
  BOOL   tcp_out_fastopen_logged		:1; /* one-time logging */
+ BOOL	tls_on_connect			:1; /* all listen ports are t-o-c */
  BOOL   timestamps_utc			:1; /* Use UTC for all times */
  BOOL   transport_filter_timed_out	:1; /* True if it did */
  BOOL   trusted_caller			:1; /* Caller is trusted */

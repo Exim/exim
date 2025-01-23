@@ -385,14 +385,14 @@ static optionlist optionlist_config[] = {
   { "tls_crl",                  opt_stringptr,   {&tls_crl} },
   { "tls_dh_max_bits",          opt_int,         {&tls_dh_max_bits} },
   { "tls_dhparam",              opt_stringptr,   {&tls_dhparam} },
-#ifdef EXPERIMENTAL_TLS_EARLY_BANNER
+# ifdef EXPERIMENTAL_TLS_EARLY_BANNER
   { "tls_early_banner_hosts",   opt_stringptr,   {&tls_early_banner_hosts} },
-#endif
+# endif
   { "tls_eccurve",              opt_stringptr,   {&tls_eccurve} },
 # ifndef DISABLE_OCSP
   { "tls_ocsp_file",            opt_stringptr,   {&tls_ocsp_file} },
 # endif
-  { "tls_on_connect_ports",     opt_stringptr,   {&tls_in.on_connect_ports} },
+  { "tls_on_connect_ports",     opt_stringptr,   {&tls_on_connect_ports} },
   { "tls_privatekey",           opt_stringptr,   {&tls_privatekey} },
   { "tls_remember_esmtp",       opt_bool,        {&tls_remember_esmtp} },
   { "tls_require_ciphers",      opt_stringptr,   {&tls_require_ciphers} },

@@ -3936,7 +3936,7 @@ on the second character (the one after '-'), to save some effort. */
     /* -tls-on-connect: don't wait for STARTTLS (for old clients) */
 
     #ifndef DISABLE_TLS
-    else if (Ustrcmp(argrest, "ls-on-connect") == 0) tls_in.on_connect = TRUE;
+    else if (Ustrcmp(argrest, "ls-on-connect") == 0) f.tls_on_connect = TRUE;
     #endif
 
     else badarg = TRUE;

@@ -1964,7 +1964,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
   /* Check the list of TLS-on-connect ports and do name lookups if needed */
 
-  list = tls_in.on_connect_ports;
+  list = tls_on_connect_ports;
   /* the list isn't expanded so cannot be tainted.  If it ever is we will trap here */
   for (int sep = 0;
       s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size); )
@@ -1972,8 +1972,8 @@ if (f.daemon_listen && !f.inetd_wait_mode)
       {
       gstring * g = NULL;
 
-      list = tls_in.on_connect_ports;
-      tls_in.on_connect_ports = NULL;
+      list = tls_on_connect_ports;
+      tls_on_connect_ports = NULL;
       sep = 0;
       while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
         if (isdigit(*s))
@@ -1988,7 +1988,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 	  }
 
       if (g)
-	tls_in.on_connect_ports = g->s;
+	tls_on_connect_ports = g->s;
       break;
       }
 
