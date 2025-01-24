@@ -30,7 +30,7 @@
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 dmarc_domain_policy <none>
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Authentication-Results: test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	spf=pass smtp.mailfrom=test.ex;\n	dmarc=pass header.from=test.ex;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@test.ex H=localhost (test.ex) [127.0.0.1] P=esmtp K S=sss ARC for za@test.ex
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 => za@test.ex <zza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] K C="250- 1nn byte chunk, total 1nn\\n250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => za@test.ex <zza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmaY-000000005vi-0000"
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1235
 1999-03-02 09:44:33 Start queue run: pid=p1236
@@ -48,7 +48,7 @@
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 dmarc_domain_policy <none>
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Authentication-Results: test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	spf=pass smtp.mailfrom=test.ex;\n	dmarc=pass header.from=test.ex;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@test.ex H=localhost (test.ex) [127.0.0.1] P=esmtp K S=sss ARC for a@test.ex
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] K C="250- 2nn byte chunk, total 2nn\\n250 OK id=10HmaZ-000000005vi-0000"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmaZ-000000005vi-0000"
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1236
 1999-03-02 09:44:33 Start queue run: pid=p1237
