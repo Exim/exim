@@ -47,6 +47,9 @@ Version 4.98
  15. Additional delivery log line element, under the "protocol detail" control,
      giving the smtp protocol startup sequence
 
+ 16. Log selector "tls_on_connect" to give distinguishable protocol labels
+     for that case in received log lines. Also affects $received_protocol
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

@@ -268,26 +268,35 @@ uschar * smtp_names[] =
   };
 
 static uschar *protocols_local[] = {
-  US"local-smtp",        /* HELO */
-  US"local-smtps",       /* The rare case EHLO->STARTTLS->HELO */
-  US"local-esmtp",       /* EHLO */
-  US"local-esmtps",      /* EHLO->STARTTLS->EHLO */
-  US"local-esmtpa",      /* EHLO->AUTH */
-  US"local-esmtpsa"      /* EHLO->STARTTLS->EHLO->AUTH */
+  US"local-smtp",	/* HELO */
+  US"local-smtps",	/* The rare case EHLO->STARTTLS->HELO */
+  US"local-esmtp",	/* EHLO */
+  US"local-esmtps",	/* EHLO->STARTTLS->EHLO */
+  US"local-esmtpa",	/* EHLO->AUTH */
+  US"local-esmtpsa",	/* EHLO->STARTTLS->EHLO->AUTH */
+
+  US"local-ssmtp",	/* tls-on-connect, HELO */
+  US"local-essmtp",	/* tls-on-connect, EHLO */
+  US"local-essmtpa",	/* tls-on-connect, EHLO, AUTH */
   };
 static uschar *protocols[] = {
-  US"smtp",              /* HELO */
-  US"smtps",             /* The rare case EHLO->STARTTLS->HELO */
-  US"esmtp",             /* EHLO */
-  US"esmtps",            /* EHLO->STARTTLS->EHLO */
-  US"esmtpa",            /* EHLO->AUTH */
-  US"esmtpsa"            /* EHLO->STARTTLS->EHLO->AUTH */
+  US"smtp",		/* HELO */
+  US"smtps",		/* The rare case EHLO->STARTTLS->HELO */
+  US"esmtp",		/* EHLO */
+  US"esmtps",		/* EHLO->STARTTLS->EHLO */
+  US"esmtpa",		/* EHLO->AUTH */
+  US"esmtpsa",		/* EHLO->STARTTLS->EHLO->AUTH */
+
+  US"ssmtp",		/* tls-on-connect, HELO */
+  US"essmtp",		/* tls-on-connect, EHLO */
+  US"essmtpa",		/* tls-on-connect, EHLO, AUTH */
   };
 
 #define pnormal  0
 #define pextend  2
 #define pcrpted  1  /* added to pextend or pnormal */
 #define pauthed  2  /* added to pextend */
+#define ponconn  6
 
 /* Sanity check and validate optional args to MAIL FROM: envelope */
 enum {
@@ -3556,7 +3565,11 @@ switch(rc)
 
       received_protocol =
 	(sender_host_address ? protocols : protocols_local)
-	  [pextend + pauthed + (tls_in.active.sock >= 0 ? pcrpted:0)];
+	  [
+	  tls_in.on_connect && LOGGING(tls_on_connect)
+	  ? ponconn + (pextend + pauthed)/2
+	  : pnormal + pextend + pauthed + (tls_in.active.sock >= 0 ? pcrpted:0)
+	  ];
       *smtp_resp = *errmsg = US"235 Authentication succeeded";
       authenticated_by = au;
       break;
@@ -4439,10 +4452,13 @@ while (done <= 0)
       /* Reset the protocol and the state, abandoning any previous message. */
       received_protocol =
 	(sender_host_address ? protocols : protocols_local)
-	  [ (fl.esmtp
-	    ? pextend + (sender_host_authenticated ? pauthed : 0)
-	    : pnormal)
-	  + (tls_in.active.sock >= 0 ? pcrpted : 0)
+	  [
+	  tls_in.on_connect && LOGGING(tls_on_connect)
+	  ? ponconn + (pextend + (sender_host_authenticated ? pauthed : 0))/2
+	  :   (fl.esmtp
+	      ? pextend + (sender_host_authenticated ? pauthed : 0)
+	      : pnormal)
+	    + (tls_in.active.sock >= 0 ? pcrpted : 0)
 	  ];
       cancel_cutthrough_connection(TRUE, US"sent EHLO response");
       reset_point = smtp_reset(reset_point);
@@ -5503,10 +5519,13 @@ while (done <= 0)
 	  }
 	received_protocol =
 	  (sender_host_address ? protocols : protocols_local)
-	    [ (fl.esmtp
-	      ? pextend + (sender_host_authenticated ? pauthed : 0)
-	      : pnormal)
-	    + (tls_in.active.sock >= 0 ? pcrpted : 0)
+	    [
+	    tls_in.on_connect && LOGGING(tls_on_connect)
+	    ? ponconn + (pextend + (sender_host_authenticated ? pauthed : 0))/2
+	    :   (fl.esmtp
+		? pextend + (sender_host_authenticated ? pauthed : 0)
+		: pnormal)
+	      + (tls_in.active.sock >= 0 ? pcrpted : 0)
 	    ];
 
 	sender_host_auth_pubname = sender_host_authenticated = NULL;

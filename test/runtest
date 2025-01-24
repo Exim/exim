@@ -1278,7 +1278,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       s/$re\K$parm_port_d3/PORT_D3/;
       s/$re\K$parm_port_d4/PORT_D4/;
 
-      $re = "listening for SMTP on .*? port ";
+      $re = "listening for SMTP on .* port ";
       s/$re\K$parm_port_d/PORT_D/g;
       s/$re\K$parm_port_d2/PORT_D2/g;
       s/$re\K$parm_port_d3/PORT_D3/g;
@@ -1802,13 +1802,13 @@ RESET_AFTER_EXTRA_LINE_READ:
       s/$re\K$parm_port_d3/PORT_D3/;
       s/$re\K$parm_port_d4/PORT_D4/;
 
-      $re = "listening for .*? port ";
-      s/$re\K$parm_port_d/PORT_D/g;
-      s/$re\K$parm_port_d2/PORT_D2/g;
-      s/$re\K$parm_port_d3/PORT_D3/g;
-      s/$re\K$parm_port_d4/PORT_D4/g;
-      s/$re\K$parm_port_s/PORT_S/g;
-      s/$re\K$parm_port_n/PORT_N/g;
+      $re = "(listening|and) for .*? port ";
+      s/$re\K$parm_port_d/PORT_D/ng;
+      s/$re\K$parm_port_d2/PORT_D2/ng;
+      s/$re\K$parm_port_d3/PORT_D3/ng;
+      s/$re\K$parm_port_d4/PORT_D4/ng;
+      s/$re\K$parm_port_s/PORT_S/ng;
+      s/$re\K$parm_port_n/PORT_N/ng;
 
       $re = " I=\\[[^\\]]+\\]:";
       s/$re\K$parm_port_d/PORT_D/n;

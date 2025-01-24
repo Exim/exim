@@ -13609,12 +13609,23 @@ by RFCs 821, 2821, and 3848. They start with &"smtp"& (the client used HELO) or
 is set to &"esmtpsa"&, the message was received over an encrypted SMTP
 connection and the client was successfully authenticated.
 
-Exim uses the protocol name &"smtps"& for the case when encryption is
+.new
+Exim uses the protocol name &"smtps"& for the unusual case when
+the client initially uses EHLO, sets up an encrypted connection using
+STARTTLS, and then uses HELO afterwards.
+
+If the log selector &"tls_on_connect"& is <emphasis>not</emphhasis>
+used (the default), &"smtps"& is also used for the case when encryption is
 automatically set up on connection without the use of STARTTLS (see
 &%tls_on_connect_ports%&), and the client uses HELO to initiate the
-encrypted SMTP session. The name &"smtps"& is also used for the rare situation
-where the client initially uses EHLO, sets up an encrypted connection using
-STARTTLS, and then uses HELO afterwards.
+encrypted SMTP session,
+and &"esmtps"& is also used for the equivalent using EHLO.
+
+If the log selector &"tls_on_connect"& is used then the possible
+values for tls-on-connect sessions are
+&"ssmtp"&, &"essmtp"& and &"essmtpa"&
+for (respectively) HELO, EHLO and EHLO with authentication.
+.wen
 
 The &%-oMr%& option provides a way of specifying a custom protocol name for
 messages that are injected locally by trusted callers. This is commonly used to
@@ -39888,6 +39899,7 @@ selection marked by asterisks:
 .irow &`subject`&			&nbsp; "contents of &'Subject:'& on <= lines"
 .irow &`tls_certificate_verified`&	*	"certificate verification status"
 .irow &`tls_cipher`&			*	"TLS cipher suite on <= and => lines"
+.irow &`tls_on_connect`&		&nbsp; "alternate set of protocol labels"
 .irow &`tls_peerdn`&			&nbsp; "TLS peer DN on <= and => lines"
 .irow &`tls_resumption`&		&nbsp; "append * to cipher field"
 .irow &`tls_sni`&			&nbsp; "TLS SNI on <= lines"
@@ -40138,7 +40150,6 @@ These letters may be used:
 .endlist
 
 
-
 .next
 .cindex "log" "queue run"
 .cindex "queue runner" "logging"
@@ -40338,6 +40349,18 @@ connection, the cipher suite used is added to the log line, preceded by X=.
 &%tls_peerdn%&: When a message is sent or received over an encrypted
 connection, and a certificate is supplied by the remote host, the peer DN is
 added to the log line, preceded by DN=.
+
+.next
+.cindex "TLS" "logging tls-on-connect"
+.cindex tls-on-connect logging
+.new
+&%tls_on_connect%&: When a message is received over an encrypted connection
+started at connect time rather than by STARTTLS,
+use one of an alternate set of protocol names for both the &"P="& log
+element and the &$received_protocol$& variable.
+For details see the entry for that variable.
+.wen
+
 .next
 .cindex "log" "TLS resumption"
 .cindex "TLS" "logging session resumption"

@@ -1,6 +1,6 @@
 From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from [127.0.0.1] (helo=helo.data.changed)
-	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+	by myhost.test.ex with essmtp (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaZ-000000005vi-0000
@@ -20,7 +20,7 @@ Test message. Contains FF: ÿ
 
 From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from [127.0.0.1] (helo=helo.data.changed)
-	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+	by myhost.test.ex with essmtp (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbA-000000005vi-0000;

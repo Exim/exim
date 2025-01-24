@@ -345,7 +345,7 @@ and the first word of the log selector. */
 
 #define BIT_CLEAR(s,z,n) ((s)[BITWORD(n)] &= ~BITMASK(n))
 #define BIT_SET(s,z,n)   ((s)[BITWORD(n)] |=  BITMASK(n))
-#define BIT_TEST(s,z,n) (((s)[BITWORD(n)] &   BITMASK(n)) != 0)
+#define BIT_TEST(s,z,n)	 ((s)[BITWORD(n)]  &  BITMASK(n))
 
 /* Used in globals.c for initializing bit_table structures. T will be either
 D or L corresponding to the debug and log selector bits declared below. */
@@ -503,6 +503,7 @@ enum logbit {
   Li_subject,
   Li_tls_certificate_verified,
   Li_tls_cipher,
+  Li_tls_on_connect,
   Li_tls_peerdn,
   Li_tls_resumption,
   Li_tls_sni,
