@@ -7,13 +7,13 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
->>> processing ACL check_connect "warn" (TESTSUITE/test-config 32)
+>>> processing ACL check_connect "warn" (TESTSUITE/test-config 33)
 >>> check hosts = 10.0.0.6
 >>> host in "10.0.0.6"?
 >>>  list element: 10.0.0.6
 >>> host in "10.0.0.6"? no (end of list)
 >>> warn: condition test failed in ACL check_connect
->>> processing ACL check_connect "accept" (TESTSUITE/test-config 34)
+>>> processing ACL check_connect "accept" (TESTSUITE/test-config 35)
 >>> accept: condition test succeeded in ACL check_connect
 >>> end of ACL check_connect: ACCEPT
 >>> test in helo_lookup_domains?
@@ -24,7 +24,7 @@
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing ACL check_vrfy "deny" (TESTSUITE/test-config 69)
+>>> processing ACL check_vrfy "deny" (TESTSUITE/test-config 70)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -35,7 +35,7 @@
 >>>   end sublist auth_hosts
 >>> host in "+auth_hosts"? no (end of list)
 >>> deny: condition test failed in ACL check_vrfy
->>> processing ACL check_vrfy "accept" (TESTSUITE/test-config 72)
+>>> processing ACL check_vrfy "accept" (TESTSUITE/test-config 73)
 >>> accept: condition test succeeded in ACL check_vrfy
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -55,7 +55,7 @@
 >>> calling localuser router
 >>> routed by localuser router
 >>> using ACL "check_expn"
->>> processing ACL check_expn "deny" (TESTSUITE/test-config 63)
+>>> processing ACL check_expn "deny" (TESTSUITE/test-config 64)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -64,7 +64,7 @@
 >>>  cached lookup data = NULL
 >>> host in "+auth_hosts"? no (end of list)
 >>> deny: condition test failed in ACL check_expn
->>> processing ACL check_expn "accept" (TESTSUITE/test-config 66)
+>>> processing ACL check_expn "accept" (TESTSUITE/test-config 67)
 >>> check hosts = 10.0.0.0/24
 >>> host in "10.0.0.0/24"?
 >>>  list element: 10.0.0.0/24
@@ -88,7 +88,7 @@
 >>> no more routers
 LOG: ETRN #abcd received from (test) [10.0.0.2]
 >>> using ACL "check_etrn"
->>> processing ACL check_etrn "deny" (TESTSUITE/test-config 55)
+>>> processing ACL check_etrn "deny" (TESTSUITE/test-config 56)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -97,17 +97,17 @@ LOG: ETRN #abcd received from (test) [10.0.0.2]
 >>>  cached lookup data = NULL
 >>> host in "+auth_hosts"? no (end of list)
 >>> deny: condition test failed in ACL check_etrn
->>> processing ACL check_etrn "require" (TESTSUITE/test-config 58)
+>>> processing ACL check_etrn "require" (TESTSUITE/test-config 59)
 >>> check hosts = 10.0.0.0/24
 >>> host in "10.0.0.0/24"?
 >>>  list element: 10.0.0.0/24
 >>>  host in "10.0.0.0/24"? yes (matched "10.0.0.0/24")
 >>> require: condition test succeeded in ACL check_etrn
->>> processing ACL check_etrn "warn" (TESTSUITE/test-config 59)
+>>> processing ACL check_etrn "warn" (TESTSUITE/test-config 60)
 >>> l_message: accepted ETRN $smtp_command_argument
 >>> warn: condition test succeeded in ACL check_etrn
 LOG: H=(test) [10.0.0.2] Warning: accepted ETRN #abcd
->>> processing ACL check_etrn "accept" (TESTSUITE/test-config 60)
+>>> processing ACL check_etrn "accept" (TESTSUITE/test-config 61)
 >>> accept: condition test succeeded in ACL check_etrn
 >>> end of ACL check_etrn: ACCEPT
 >>> ETRN command is: exim -R
@@ -121,13 +121,13 @@ LOG: H=(test) [10.0.0.2] Warning: accepted ETRN #abcd
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
->>> processing ACL check_connect "warn" (TESTSUITE/test-config 32)
+>>> processing ACL check_connect "warn" (TESTSUITE/test-config 33)
 >>> check hosts = 10.0.0.6
 >>> host in "10.0.0.6"?
 >>>  list element: 10.0.0.6
 >>> host in "10.0.0.6"? no (end of list)
 >>> warn: condition test failed in ACL check_connect
->>> processing ACL check_connect "accept" (TESTSUITE/test-config 34)
+>>> processing ACL check_connect "accept" (TESTSUITE/test-config 35)
 >>> accept: condition test succeeded in ACL check_connect
 >>> end of ACL check_connect: ACCEPT
 >>> test.host in helo_lookup_domains?
@@ -154,7 +154,7 @@ LOG: H=(test) [10.0.0.2] Warning: accepted ETRN #abcd
 >>>  list element: *
 >>>  host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing ACL check_vrfy "deny" (TESTSUITE/test-config 69)
+>>> processing ACL check_vrfy "deny" (TESTSUITE/test-config 70)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -168,7 +168,7 @@ LOG: H=(test) [10.0.0.2] Warning: accepted ETRN #abcd
 >>> end of ACL check_vrfy: DENY
 LOG: H=(test.host) [10.0.0.1] rejected VRFY userx@test.ex: authentication required
 >>> using ACL "check_expn"
->>> processing ACL check_expn "deny" (TESTSUITE/test-config 63)
+>>> processing ACL check_expn "deny" (TESTSUITE/test-config 64)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -183,7 +183,7 @@ LOG: H=(test.host) [10.0.0.1] rejected VRFY userx@test.ex: authentication requir
 LOG: H=(test.host) [10.0.0.1] rejected EXPN list@test.ex: authentication required
 LOG: ETRN abcd received from (test.host) [10.0.0.1]
 >>> using ACL "check_etrn"
->>> processing ACL check_etrn "deny" (TESTSUITE/test-config 55)
+>>> processing ACL check_etrn "deny" (TESTSUITE/test-config 56)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -197,25 +197,25 @@ LOG: ETRN abcd received from (test.host) [10.0.0.1]
 >>> end of ACL check_etrn: DENY
 LOG: H=(test.host) [10.0.0.1] rejected ETRN abcd: authentication required
 >>> using ACL "check_recipient"
->>> processing ACL check_recipient "warn" (TESTSUITE/test-config 37)
+>>> processing ACL check_recipient "warn" (TESTSUITE/test-config 38)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> warn: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 39)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 40)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 40)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 41)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "deny" (TESTSUITE/test-config 41)
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 42)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -234,25 +234,25 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> +++MYLOGIN $1="userx secret" $2="" $3=""
 >>> expanded string: yes
 >>> using ACL "check_recipient"
->>> processing ACL check_recipient "warn" (TESTSUITE/test-config 37)
+>>> processing ACL check_recipient "warn" (TESTSUITE/test-config 38)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> warn: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 39)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 40)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 40)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 41)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "deny" (TESTSUITE/test-config 41)
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 42)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -266,11 +266,11 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>>  list element: *
 >>>  mylogin in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "warn" (TESTSUITE/test-config 44)
+>>> processing ACL check_recipient "warn" (TESTSUITE/test-config 45)
 >>> check condition = ${if def:acl_c0}
 >>>                 = 
 >>> warn: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 46)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 47)
 >>> check domains = +local_domains
 >>> test.ex in "+local_domains"?
 >>>  list element: +local_domains
@@ -284,25 +284,25 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> accept: condition test succeeded in ACL check_recipient
 >>> end of ACL check_recipient: ACCEPT
 >>> using ACL "check_recipient"
->>> processing ACL check_recipient "warn" (TESTSUITE/test-config 37)
+>>> processing ACL check_recipient "warn" (TESTSUITE/test-config 38)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> warn: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 39)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 40)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 40)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 41)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "deny" (TESTSUITE/test-config 41)
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 42)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -316,11 +316,11 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>>  list element: *
 >>>  mylogin in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "warn" (TESTSUITE/test-config 44)
+>>> processing ACL check_recipient "warn" (TESTSUITE/test-config 45)
 >>> check condition = ${if def:acl_c0}
 >>>                 = 
 >>> warn: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 46)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 47)
 >>> check domains = +local_domains
 >>> cus.cam.ac.uk in "+local_domains"?
 >>>  list element: +local_domains
@@ -332,7 +332,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>>   end sublist local_domains
 >>> cus.cam.ac.uk in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 47)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 48)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
@@ -343,7 +343,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>>   end sublist relay_hosts
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 48)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 49)
 >>> check hosts = +auth_relay_hosts
 >>> host in "+auth_relay_hosts"?
 >>>  list element: +auth_relay_hosts
@@ -355,13 +355,13 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>>   end sublist auth_relay_hosts
 >>> host in "+auth_relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "deny" (TESTSUITE/test-config 52)
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 53)
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL check_recipient
 >>> end of ACL check_recipient: DENY
 LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT <userx@cus.cam.ac.uk>: relay not permitted
 >>> using ACL "check_vrfy"
->>> processing ACL check_vrfy "deny" (TESTSUITE/test-config 69)
+>>> processing ACL check_vrfy "deny" (TESTSUITE/test-config 70)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -375,7 +375,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>>  list element: *
 >>>  mylogin in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL check_vrfy
->>> processing ACL check_vrfy "accept" (TESTSUITE/test-config 72)
+>>> processing ACL check_vrfy "accept" (TESTSUITE/test-config 73)
 >>> accept: condition test succeeded in ACL check_vrfy
 >>> end of ACL check_vrfy: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -395,7 +395,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>> calling localuser router
 >>> routed by localuser router
 >>> using ACL "check_expn"
->>> processing ACL check_expn "deny" (TESTSUITE/test-config 63)
+>>> processing ACL check_expn "deny" (TESTSUITE/test-config 64)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -409,7 +409,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>>  list element: *
 >>>  mylogin in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL check_expn
->>> processing ACL check_expn "accept" (TESTSUITE/test-config 66)
+>>> processing ACL check_expn "accept" (TESTSUITE/test-config 67)
 >>> check hosts = 10.0.0.0/24
 >>> host in "10.0.0.0/24"?
 >>>  list element: 10.0.0.0/24
@@ -433,7 +433,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>> no more routers
 LOG: ETRN #abcd received from (test.host) [10.0.0.1]
 >>> using ACL "check_etrn"
->>> processing ACL check_etrn "deny" (TESTSUITE/test-config 55)
+>>> processing ACL check_etrn "deny" (TESTSUITE/test-config 56)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -447,17 +447,17 @@ LOG: ETRN #abcd received from (test.host) [10.0.0.1]
 >>>  list element: *
 >>>  mylogin in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL check_etrn
->>> processing ACL check_etrn "require" (TESTSUITE/test-config 58)
+>>> processing ACL check_etrn "require" (TESTSUITE/test-config 59)
 >>> check hosts = 10.0.0.0/24
 >>> host in "10.0.0.0/24"?
 >>>  list element: 10.0.0.0/24
 >>>  host in "10.0.0.0/24"? yes (matched "10.0.0.0/24")
 >>> require: condition test succeeded in ACL check_etrn
->>> processing ACL check_etrn "warn" (TESTSUITE/test-config 59)
+>>> processing ACL check_etrn "warn" (TESTSUITE/test-config 60)
 >>> l_message: accepted ETRN $smtp_command_argument
 >>> warn: condition test succeeded in ACL check_etrn
 LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
->>> processing ACL check_etrn "accept" (TESTSUITE/test-config 60)
+>>> processing ACL check_etrn "accept" (TESTSUITE/test-config 61)
 >>> accept: condition test succeeded in ACL check_etrn
 >>> end of ACL check_etrn: ACCEPT
 >>> ETRN command is: exim -R
@@ -471,13 +471,13 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
->>> processing ACL check_connect "warn" (TESTSUITE/test-config 32)
+>>> processing ACL check_connect "warn" (TESTSUITE/test-config 33)
 >>> check hosts = 10.0.0.6
 >>> host in "10.0.0.6"?
 >>>  list element: 10.0.0.6
 >>> host in "10.0.0.6"? no (end of list)
 >>> warn: condition test failed in ACL check_connect
->>> processing ACL check_connect "accept" (TESTSUITE/test-config 34)
+>>> processing ACL check_connect "accept" (TESTSUITE/test-config 35)
 >>> accept: condition test succeeded in ACL check_connect
 >>> end of ACL check_connect: ACCEPT
 >>> test.host in helo_lookup_domains?
@@ -513,25 +513,25 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>> host in chunking_advertise_hosts?
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_recipient"
->>> processing ACL check_recipient "warn" (TESTSUITE/test-config 37)
+>>> processing ACL check_recipient "warn" (TESTSUITE/test-config 38)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> warn: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 39)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 40)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 40)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 41)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "deny" (TESTSUITE/test-config 41)
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 42)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -540,11 +540,11 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>>  cached lookup data = NULL
 >>> host in "+auth_hosts"? no (end of list)
 >>> deny: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "warn" (TESTSUITE/test-config 44)
+>>> processing ACL check_recipient "warn" (TESTSUITE/test-config 45)
 >>> check condition = ${if def:acl_c0}
 >>>                 = 
 >>> warn: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 46)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 47)
 >>> check domains = +local_domains
 >>> cus.cam.ac.uk in "+local_domains"?
 >>>  list element: +local_domains
@@ -556,7 +556,7 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>>   end sublist local_domains
 >>> cus.cam.ac.uk in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 47)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 48)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
@@ -565,7 +565,7 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>>  cached lookup data = NULL
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 48)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 49)
 >>> check hosts = +auth_relay_hosts
 >>> host in "+auth_relay_hosts"?
 >>>  list element: +auth_relay_hosts
@@ -584,25 +584,25 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>> +++MYLOGIN $1="userx secret" $2="" $3=""
 >>> expanded string: yes
 >>> using ACL "check_recipient"
->>> processing ACL check_recipient "warn" (TESTSUITE/test-config 37)
+>>> processing ACL check_recipient "warn" (TESTSUITE/test-config 38)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> warn: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 39)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 40)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"?
 >>>  list element: 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 40)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 41)
 >>> check hosts = :
 >>> host in ":"?
 >>>  list element: 
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "deny" (TESTSUITE/test-config 41)
+>>> processing ACL check_recipient "deny" (TESTSUITE/test-config 42)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"?
 >>>  list element: +auth_hosts
@@ -611,11 +611,11 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>>  cached lookup data = NULL
 >>> host in "+auth_hosts"? no (end of list)
 >>> deny: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "warn" (TESTSUITE/test-config 44)
+>>> processing ACL check_recipient "warn" (TESTSUITE/test-config 45)
 >>> check condition = ${if def:acl_c0}
 >>>                 = 
 >>> warn: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 46)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 47)
 >>> check domains = +local_domains
 >>> cus.cam.ac.uk in "+local_domains"?
 >>>  list element: +local_domains
@@ -627,7 +627,7 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>>   end sublist local_domains
 >>> cus.cam.ac.uk in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 47)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 48)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"?
 >>>  list element: +relay_hosts
@@ -636,7 +636,7 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>>  cached lookup data = NULL
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL check_recipient
->>> processing ACL check_recipient "accept" (TESTSUITE/test-config 48)
+>>> processing ACL check_recipient "accept" (TESTSUITE/test-config 49)
 >>> check hosts = +auth_relay_hosts
 >>> host in "+auth_relay_hosts"?
 >>>  list element: +auth_relay_hosts
@@ -660,13 +660,13 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
->>> processing ACL check_connect "warn" (TESTSUITE/test-config 32)
+>>> processing ACL check_connect "warn" (TESTSUITE/test-config 33)
 >>> check hosts = 10.0.0.6
 >>> host in "10.0.0.6"?
 >>>  list element: 10.0.0.6
 >>> host in "10.0.0.6"? no (end of list)
 >>> warn: condition test failed in ACL check_connect
->>> processing ACL check_connect "accept" (TESTSUITE/test-config 34)
+>>> processing ACL check_connect "accept" (TESTSUITE/test-config 35)
 >>> accept: condition test succeeded in ACL check_connect
 >>> end of ACL check_connect: ACCEPT
 >>> test.host in helo_lookup_domains?
@@ -726,13 +726,13 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "check_connect"
-processing ACL check_connect "warn" (TESTSUITE/test-config 32)
+processing ACL check_connect "warn" (TESTSUITE/test-config 33)
 check hosts = 10.0.0.6
 host in "10.0.0.6"?
  list element: 10.0.0.6
 host in "10.0.0.6"? no (end of list)
 warn: condition test failed in ACL check_connect
-processing ACL check_connect "accept" (TESTSUITE/test-config 34)
+processing ACL check_connect "accept" (TESTSUITE/test-config 35)
 accept: condition test succeeded in ACL check_connect
 end of ACL check_connect: ACCEPT
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

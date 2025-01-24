@@ -1,21 +1,21 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= unknown@test.ex U=root P=local S=sss
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 == freeze@test.ex R=freeze defer (-17): error in redirect data: missing or malformed local part (expected word or "<") in "bad address"
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** nonexist@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** nonexist@test.ex : Unrouteable address
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 ** unknown@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 ** unknown@test.ex : Unrouteable address
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Frozen (delivery error message)
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 frozen by root
 1999-03-02 09:44:33 Start queue run: pid=p1234 -qf
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Message is frozen
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Unfrozen by errmsg timer
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 ** unknown@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 ** unknown@test.ex : Unrouteable address
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 unknown@test.ex: error ignored
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234 -qf
 1999-03-02 09:44:33 Start queue run: pid=p1235
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 cancelled by timeout_frozen_after
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** unknown@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** unknown@test.ex : Unrouteable address
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Frozen (delivery error message)
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1235

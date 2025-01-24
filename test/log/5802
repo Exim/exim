@@ -10,7 +10,7 @@
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 => t2@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbE-000000005vi-0000"
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t3@mxdaneinsecchain.test.ex
-1999-03-02 09:44:33 10HmbF-000000005vi-0000 ** t3@mxdaneinsecchain.test.ex R=client T=send_to_server: DANE error: dane512ee.test.ex lookup not DNSSEC
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 ** t3@mxdaneinsecchain.test.ex R=client T=send_to_server : DANE error: dane512ee.test.ex lookup not DNSSEC
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 t3@mxdaneinsecchain.test.ex: error ignored
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t4@mxdaneinsecchain.test.ex
@@ -26,11 +26,11 @@
 1999-03-02 09:44:33 10HmbL-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t7@mxdanesecchain.test.ex t7@mxdaneinsecchain.test.ex
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 => t7@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbP-000000005vi-0000"
-1999-03-02 09:44:33 10HmbO-000000005vi-0000 ** t7@mxdaneinsecchain.test.ex R=client T=send_to_server: DANE error: dane512ee.test.ex lookup not DNSSEC
+1999-03-02 09:44:33 10HmbO-000000005vi-0000 ** t7@mxdaneinsecchain.test.ex R=client T=send_to_server : DANE error: dane512ee.test.ex lookup not DNSSEC
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 t7@mxdaneinsecchain.test.ex: error ignored
 1999-03-02 09:44:33 10HmbO-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t8@mxdaneinsecchain.test.ex t8@mxdanesecchain.test.ex
-1999-03-02 09:44:33 10HmbQ-000000005vi-0000 ** t8@mxdaneinsecchain.test.ex R=client T=send_to_server: DANE error: dane512ee.test.ex lookup not DNSSEC
+1999-03-02 09:44:33 10HmbQ-000000005vi-0000 ** t8@mxdaneinsecchain.test.ex R=client T=send_to_server : DANE error: dane512ee.test.ex lookup not DNSSEC
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 => t8@mxdanesecchain.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbR-000000005vi-0000"
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 t8@mxdaneinsecchain.test.ex: error ignored
 1999-03-02 09:44:33 10HmbQ-000000005vi-0000 Completed

@@ -1216,6 +1216,9 @@ else
 #endif
     }
 
+  if (LOGGING(protocol_detail) && addr->protocol_sequence)
+    g = string_fmt_append(g, " PS=%Y", addr->protocol_sequence);
+
 #ifndef DISABLE_TLS
   g = d_tlslog(g, addr);
 #endif
@@ -1415,15 +1418,18 @@ if (addr->transport)
 if (addr->host_used)
   g = d_hostlog(g, addr);
 
+if (LOGGING(protocol_detail) && addr->protocol_sequence)
+  g = string_fmt_append(g, " PS=%Y", addr->protocol_sequence);
+
 #ifndef DISABLE_TLS
 g = d_tlslog(g, addr);
 #endif
 
 if (addr->basic_errno > 0)
-  g = string_append(g, 2, US": ", US strerror(addr->basic_errno));
+  g = string_append(g, 2, US" : ", US strerror(addr->basic_errno));
 
 if (addr->message)
-  g = string_append(g, 2, US": ", addr->message);
+  g = string_append(g, 2, US" : ", addr->message);
 
 if (LOGGING(deliver_time))
   g = string_append(g, 2, US" DT=", string_timediff(&addr->delivery_time));
@@ -3415,7 +3421,8 @@ while (!done)
     }
 
   /* Handle each possible type of item, assuming the complete item is
-  available in store. */
+  available in store. Toplevel key letters used:
+  A B C D H I K L P R S T X Z */
 
   switch (*id)
     {
@@ -3584,6 +3591,10 @@ while (!done)
       setflag(addr, af_tcp_fastopen_conn);
       if (*subid > '0') setflag(addr, af_tcp_fastopen);
       if (*subid > '1') setflag(addr, af_tcp_fastopen_data);
+      break;
+
+    case 'B':		/* smtp session protocol startup sequence */
+      addr->protocol_sequence = string_cat(NULL, US ptr);
       break;
 
     case 'D':		/* DSN */
@@ -5037,6 +5048,11 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
 	  testflag(addr, af_tcp_fastopen) ? testflag(addr, af_tcp_fastopen_data)
 	  ? '2' : '1' : '0',
 	  NULL, 0);
+
+      if (addr->protocol_sequence)
+	rmt_dlv_checked_write(fd, 'B', '0',
+	  string_from_gstring(addr->protocol_sequence),
+	  gstring_length(addr->protocol_sequence)+1);
 
       memcpy(big_buffer, &addr->dsn_aware, sizeof(addr->dsn_aware));
       rmt_dlv_checked_write(fd, 'D', '0', big_buffer, sizeof(addr->dsn_aware));

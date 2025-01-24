@@ -340,6 +340,12 @@ if (tf)
     return DEFER;
   }
 
+/* Allocate for the session start protocol sequence record, on the top
+addresss. The largest we should ever need is 4 elements, though some
+error sequences can go larger. Use an extandable string. */
+
+addrlist->protocol_sequence = string_get(4);
+
 /* Set the fallback host list for all the addresses that don't have fallback
 host lists, provided that the local host wasn't present in the original host
 list.  If the transport fallback_hosts option was static, a hostlist
@@ -1535,6 +1541,14 @@ return yield;
 
 
 
+static void
+smtp_record_protocol_sequence(smtp_context * sx, const uschar * item)
+{
+gstring ** gp = &sx->first_addr->protocol_sequence;
+*gp = string_catn(*gp, item, 1);
+}
+
+
 
 
 /* Try an authenticator's client entry */
@@ -1545,6 +1559,8 @@ try_authenticator(smtp_context * sx, auth_instance * au)
 smtp_transport_options_block * ob = sx->conn_args.ob;	/* transport options */
 host_item * host = sx->conn_args.host;			/* host to deliver to */
 int rc;
+
+smtp_record_protocol_sequence(sx, US"a");
 
 /* Set up globals for error messages */
 
@@ -2614,6 +2630,7 @@ goto SEND_QUIT;
     if (!(s = ob->host_name_extract)) s = US"never-LB";
     ehlo_response_lbserver(sx, s);
 # endif
+    smtp_record_protocol_sequence(sx, US"s");
     goto TLS_NEGOTIATE;
     }
 #endif
@@ -2628,6 +2645,7 @@ goto SEND_QUIT;
 	  "%s %s\r\n", sx->lmtp ? "LHLO" : "EHLO", sx->helo_data) < 0)
       goto SEND_FAILED;
     sx->esmtp_sent = TRUE;
+    smtp_record_protocol_sequence(sx, sx->lmtp ? US"l" : US"e");
 
 #ifndef DISABLE_PIPE_CONNECT
     if (sx->early_pipe_active)
@@ -2677,6 +2695,7 @@ goto SEND_QUIT;
 
       if (smtp_write_command(sx, SCMD_FLUSH, "HELO %s\r\n", sx->helo_data) < 0)
 	goto SEND_FAILED;
+      smtp_record_protocol_sequence(sx, US"h");
       good_response = smtp_read_response(sx, rsp, n, '2', ob->command_timeout);
 #ifdef EXPERIMENTAL_DSN_INFO
       sx->helo_response = string_copy(rsp);
@@ -2846,6 +2865,7 @@ if (  smtp_peer_options & OPTION_TLS
 
   if (smtp_write_command(sx, SCMD_FLUSH, "STARTTLS\r\n") < 0)
     goto SEND_FAILED;
+  smtp_record_protocol_sequence(sx, US"s");
 
 #ifndef DISABLE_PIPE_CONNECT
   /* If doing early-pipelining reap the banner and EHLO-response but leave
@@ -2996,7 +3016,7 @@ if (tls_out.active.sock >= 0)
       DEBUG(D_transport) debug_printf("Using cached crypted PIPECONNECT\n");
     }
 #endif
-#ifdef EXPERIMMENTAL_ESMTP_LIMITS
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
   /* As we are about to send another EHLO, forget any LIMITS received so far. */
   sx->peer_limit_mail = sx->peer_limit_rcpt = sx->peer_limit_rcptdom = 0;
   if ((sx->max_mail = sx->conn_args.tblock->connection_max_message) == 0)
@@ -3036,6 +3056,8 @@ if (tls_out.active.sock >= 0)
 	  SCMD_FLUSH,
 	"%s %s\r\n", greeting_cmd, sx->helo_data) < 0)
     goto SEND_FAILED;
+
+  smtp_record_protocol_sequence(sx, US(sx->lmtp ? "l" : sx->esmtp ? "e" : "h"));
 
 #ifndef DISABLE_PIPE_CONNECT
   if (sx->early_pipe_active)

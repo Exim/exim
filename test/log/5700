@@ -94,7 +94,7 @@
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 . ehlo-resp <250-OK\n250 HELP>
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 event tcp:close
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 . [127.0.0.1] -> [127.0.0.1]:PORT_S
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** userx@domain1 R=others T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@domain1>: 550 GO AWAY
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** userx@domain1 R=others T=smtp H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<userx@domain1>: 550 GO AWAY
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 event msg:fail:delivery
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 . refused by fdqn <127.0.0.1> local_part <userx> domain <domain1> errstr <SMTP error from remote mail server after RCPT TO:<userx@domain1>: 550 GO AWAY>
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 userx@domain1: error ignored

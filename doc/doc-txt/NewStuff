@@ -44,6 +44,9 @@ Version 4.98
 
  14. Main-section option "log_ports" to filter logged port numbers
 
+ 15. Additional delivery log line element, under the "protocol detail" control,
+     giving the smtp protocol startup sequence
+
 Version 4.98
 ------------
  1. The dkim_status ACL condition may now be used in data ACLs

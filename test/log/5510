@@ -11,16 +11,16 @@
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 == userz@test.ex R=r0 T=t1 defer (0) H=127.0.0.1 [127.0.0.1]: PRDR error after DATA: 450 cannot handle second rcpt right now
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => userp@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 first rcpt was good\\n250 OK, overall"
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 ** userq@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1]: PRDR error after DATA: 550 second rcpt does not like content
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 ** userq@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] : PRDR error after DATA: 550 second rcpt does not like content
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Frozen (delivery error message)
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 == userz@test.ex routing defer (-52): retry time not reached
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= <> U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** user5.1@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 550 oops, overall rejection
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** user5.2@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 550 oops, overall rejection
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** user5.1@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after end of data: 550 oops, overall rejection
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** user5.2@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after end of data: 550 oops, overall rejection
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 Frozen (delivery error message)
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 ** user6.1@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 550 naah mate
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 ** user6.2@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 550 naah mate
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 ** user6.1@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after end of data: 550 naah mate
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 ** user6.2@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after end of data: 550 naah mate
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Frozen (delivery error message)
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= <> U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 450 oops, try again later please

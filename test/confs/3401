@@ -2,8 +2,9 @@
 
 .include DIR/aux-var/std_conf_prefix
 
-log_selector = +smtp_mailauth
+log_selector = +smtp_mailauth +protocol_detail
 primary_hostname = myhost.test.ex
+
 
 # ----- Main settings -----
 

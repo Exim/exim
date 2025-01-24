@@ -56,7 +56,7 @@ After routing:
 cmdlog: '220:EHLO:250:MAIL:250:RCPT:550:QUIT+:250'
 >>>>>>>>>>>>>>>> Exim pid=p1236 (transport) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
-  ** x@uppercase.test.ex R=r1 T=t1 H=uppercase.test.ex [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@UpperCase.test.ex>: 550 Unknown
+  ** x@uppercase.test.ex R=r1 T=t1 H=uppercase.test.ex [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<x@UpperCase.test.ex>: 550 Unknown
 Exim version x.yz ....
 Hints DB:
 configuration file is TESTSUITE/test-config

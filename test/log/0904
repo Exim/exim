@@ -8,13 +8,13 @@
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 => c@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] K C="250 OK"
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= sender@source.dom U=root Ci=p1237 P=local-bsmtp S=sss for d@test.ex
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 ** d@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 500 oops
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 ** d@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after end of data: 500 oops
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 d@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 <= sender@source.dom U=root Ci=p1238 P=local-bsmtp S=sss for e@test.ex
 2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 400 not right now
 2017-07-30 18:51:05.712 10HmbB-000000005vi-0000 == e@test.ex R=to_server T=remote_smtp defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 400 not right now
 2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 <= sender@source.dom U=root Ci=p1239 P=local-bsmtp S=sss for ebad@test.ex
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 ** ebad@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<ebad@test.ex>: 550 sorry, no
+2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 ** ebad@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<ebad@test.ex>: 550 sorry, no
 2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 ebad@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 Completed

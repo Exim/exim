@@ -36,7 +36,7 @@ changed uid/gid: local delivery to somebody <somebody@myhost.test.ex> transport=
 transport error EPIPE ignored
 >>>>>>>>>>>>>>>> Exim pid=p1236 (delivery-local) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
-  ** somebody@myhost.test.ex R=rest T=t1: return message generated
+  ** somebody@myhost.test.ex R=rest T=t1 : return message generated
 changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=p1235
 Exim version x.yz ....

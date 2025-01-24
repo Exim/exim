@@ -1,5 +1,5 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** x@test.ex R=local: no deliveries made locally
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** x@test.ex R=local : no deliveries made locally
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => CALLER@myhost.test.ex R=remote T=smtp H=127.0.0.1 [127.0.0.1] A=plain C="250 OK"
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed

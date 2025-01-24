@@ -25,7 +25,7 @@
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> R=10HmbD-000000005vi-0000 U=root P=local S=sss
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 => postmaster <postmaster@test.ex> R=r3 T=t1
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 ** nmlist@test.ex: syntax error in redirection data
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 ** nmlist@test.ex : syntax error in redirection data
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= <> R=10HmbD-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 => CALLER <CALLER@test.ex> R=r3 T=t1
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed

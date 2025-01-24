@@ -576,6 +576,8 @@ typedef struct address_item {
   uid_t   uid;                    /* uid for transporting */
   gid_t   gid;                    /* gid for transporting */
 
+  gstring *protocol_sequence;	  /* smtp session start sequence */
+
 #ifndef DISABLE_TLS
   const uschar *tlsver;           /* version used for transport */
   uschar *cipher;                 /* Cipher used for transport */

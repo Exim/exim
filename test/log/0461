@@ -11,7 +11,7 @@
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbA-000000005vi-0000 ** userx@test.ex R=r1 T=t1: all hosts for 'test.ex' have been failing for a long time (and retry time not reached)
+1999-03-02 09:44:33 10HmbA-000000005vi-0000 ** userx@test.ex R=r1 T=t1 : all hosts for 'test.ex' have been failing for a long time (and retry time not reached)
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= <> R=10HmbA-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 => CALLER <CALLER@test.ex> R=r0 T=t2
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
@@ -29,7 +29,7 @@
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 ** userx@test.ex R=r1 T=t1: all hosts for 'test.ex' have been failing for a long time (and retry time not reached)
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 ** userx@test.ex R=r1 T=t1 : all hosts for 'test.ex' have been failing for a long time (and retry time not reached)
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= <> R=10HmbE-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 => CALLER <CALLER@test.ex> R=r0 T=t2
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed

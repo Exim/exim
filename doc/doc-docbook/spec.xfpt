@@ -39755,6 +39755,7 @@ the following table:
 &`    `&        on &`=>`& and &`**`& lines: return path
 &`PRDR`&        PRDR extension used
 &`PRX `&        on &`<=`& and &`=>`& lines: proxy address
+&`PS  `&        on &`=>`& and &`**`& lines: protocol sequence
 &`Q   `&        alternate queue name
 &`QT  `&        on &`=>`& lines: time spent on queue so far
 &`    `&        on &"Completed"& lines: time spent on queue
@@ -39859,6 +39860,7 @@ selection marked by asterisks:
 .irow &`msg_id_created`&		&nbsp; "on <= lines, Message-ID: header value when one had to be added"
 .irow &`outgoing_interface`&		&nbsp; "local interface on => lines"
 .irow &`outgoing_port`&			&nbsp; "add remote port to => lines"
+.irow &`protocol_detail`&		&nbsp; "detail on protocol use"
 .irow &`queue_run`&			*	"start and end queue runs"
 .irow &`queue_time`&			&nbsp; "time on queue for one recipient"
 .irow &`queue_time_exclusive`&		&nbsp; "exclude recieve time from QT times"
@@ -40108,9 +40110,40 @@ offered but not used, or an asterisk appended if used.
 Delivery "L" fields have an asterisk appended if used.
 
 .next
+.cindex log "protocol detail"
+&%protocol_detail%&: Additional details on protocol use are logged.
+.ilist
+Under OpenSSL in server mode,
+log an extra line when a TCP RST is received directly after a QUIT.
+
+Outlook is consistently doing this as of writing;
+not waiting for the SMTP response to its QUIT,
+not properly closing the TLS session
+and not properly closing the TCP connection.
+
+.next
+In a delivery (&"=>"&) log line for a remote transport
+add an element showing the sequence of
+protocol actions used during SMTP session startup.
+The element is tagged &"PS="& and contains a left-to-right set of letters
+for the time-order of actions.
+These letters may be used:
+.table2 100pt
+.row s "TLS startup, either tls-on-connect or STARTTLS"
+.row e "EHLO"
+.row h "HELO"
+.row l "LHLO"
+.row a "Authentication"
+.endtable
+.endlist
+
+
+
+.next
 .cindex "log" "queue run"
 .cindex "queue runner" "logging"
 &%queue_run%&: The start and end of every queue run are logged.
+
 .next
 .cindex "log" "queue time"
 &%queue_time%&: The amount of time the message has been in the queue on the

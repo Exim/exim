@@ -1,12 +1,12 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] A=login:userx:CALLER@myhost.test.ex C="250 OK"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] PS=ea A=login:userx:CALLER@myhost.test.ex C="250 OK"
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] A=plain C="250 OK"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] PS=ea A=plain C="250 OK"
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 plain authenticator failed H=127.0.0.1 [127.0.0.1] 535 Sorry, authentication failed
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] C="250 OK"
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] PS=ea C="250 OK"
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to AUTH LOGIN
@@ -16,26 +16,26 @@
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 == userx@authdomain.com R=force T=smtp_force defer (-42): authentication required but authentication attempt(s) failed
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** userx@authdomain.com: retry timeout exceeded
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> R=10HmbB-000000005vi-0000 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 ** CALLER@myhost.test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 ** CALLER@myhost.test.ex : Unrouteable address
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Frozen (delivery error message)
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 == userx@authdomain.com R=force T=smtp_force defer (-42): authentication required but server did not advertise AUTH support
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 ** userx@authdomain.com: retry timeout exceeded
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> R=10HmbD-000000005vi-0000 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 ** CALLER@myhost.test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 ** CALLER@myhost.test.ex : Unrouteable address
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Frozen (delivery error message)
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbF-000000005vi-0000 => forcesender@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] A=login:userx:force@x.y.z C="250 OK"
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 => forcesender@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] PS=ea A=login:userx:force@x.y.z C="250 OK"
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 login authenticator cancelled authentication H=127.0.0.1 [127.0.0.1] Invalid base64 string in server response "334 User?"
-1999-03-02 09:44:33 10HmbG-000000005vi-0000 ** userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 550 Not now
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 ** userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] PS=ea : SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 550 Not now
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= <> R=10HmbG-000000005vi-0000 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbH-000000005vi-0000 ** CALLER@myhost.test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmbH-000000005vi-0000 ** CALLER@myhost.test.ex : Unrouteable address
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 Frozen (delivery error message)
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbI-000000005vi-0000 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] A=xlogin:challenge-1:CALLER@myhost.test.ex C="250 OK"
+1999-03-02 09:44:33 10HmbI-000000005vi-0000 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] PS=ea A=xlogin:challenge-1:CALLER@myhost.test.ex C="250 OK"
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed

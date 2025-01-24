@@ -2,7 +2,7 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 => remote_user@remote.ex <redirect@test.ex> P=<SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex> R=external T=forwarded_external H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-000000005vi-0000"
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 Start queue run: pid=p1234
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 ** remote_user@remote.ex R=remote_bouncer: account disabled
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 ** remote_user@remote.ex R=remote_bouncer : account disabled
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= <> R=10HmaY-000000005vi-0000 U=EXIMUSER P=local S=sss for SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234
@@ -18,7 +18,7 @@
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 => remote_user@remote.ex <redirect@test.ex> P=<"SRS0=ZZZZ=YY=test.ex=fred["@test.ex> R=external T=forwarded_external H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-000000005vi-0000"
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 Completed
 1999-03-02 09:44:33 Start queue run: pid=p1237
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 ** remote_user@remote.ex R=remote_bouncer: account disabled
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 ** remote_user@remote.ex R=remote_bouncer : account disabled
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= <> R=10HmbC-000000005vi-0000 U=EXIMUSER P=local S=sss for "SRS0=ZZZZ=YY=test.ex=fred["@test.ex
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1237

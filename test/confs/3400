@@ -23,6 +23,7 @@ smtp_accept_max_nonmail = 20
 system_filter = DIR/aux-fixed/TESTNUM.filter
 trusted_users = CALLER
 
+log_selector = +protocol_detail
 
 # ----- ACL -----
 

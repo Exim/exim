@@ -18,7 +18,7 @@ system filter returned 1
 test.ex in ""? no (end of list)
 CALLER@test.ex in senders? yes (end of list)
 LOG: MAIN
-  ** userx@test.ex R=r1: forced fail
+  ** userx@test.ex R=r1 : forced fail
 Exim version x.yz ....
 Hints DB:
 configuration file is TESTSUITE/test-config
@@ -37,7 +37,7 @@ running system filter
  Normal delivery will occur.
 system filter returned 1
 LOG: MAIN
-  ** CALLER@test.ex: Unrouteable address
+  ** CALLER@test.ex : Unrouteable address
 LOG: MAIN
   Frozen (delivery error message)
 >>>>>>>>>>>>>>>> Exim pid=p1238 (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>

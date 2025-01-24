@@ -8,7 +8,7 @@
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 => good@test.ex F=<CALLER@test.ex> R=smtp_try T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmaZ-000000005vi-0000"
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 Completed
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 ** bad@test.ex F=<CALLER@test.ex> R=smtp_try T=send_to_server: message has lines too long for transport (received 999, limit 998)
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 ** bad@test.ex F=<CALLER@test.ex> R=smtp_try T=send_to_server : message has lines too long for transport (received 999, limit 998)
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= <> R=10HmaY-000000005vi-0000 U=EXIMUSER P=local S=sss for CALLER@test.ex
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 => :blackhole: <CALLER@test.ex> R=rx_dump
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 Completed

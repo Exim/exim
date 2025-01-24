@@ -1,11 +1,11 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= not_limited@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** fred@undeliverable.org: Unrouteable address
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** fred@undeliverable.org : Unrouteable address
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => not_limited <not_limited@myhost.test.ex> R=my_main_router T=t1
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= limited@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** fred@undeliverable.org: Unrouteable address
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** fred@undeliverable.org : Unrouteable address
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> R=10HmaZ-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => limited <limited@myhost.test.ex> R=my_main_router T=t1
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed

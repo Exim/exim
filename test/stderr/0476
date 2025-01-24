@@ -59,7 +59,7 @@ set_process_info: pppp running queue: waiting for 10HmaX-000000005vi-0000 (pppp)
 set_process_info: pppp delivering 10HmaX-000000005vi-0000: waiting for a remote delivery subprocess to finish
 set_process_info: pppp delivering 10HmaX-000000005vi-0000
 LOG: MAIN
-  ** userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 550 NO
+  ** userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 550 NO
 set_process_info: pppp tidying up after delivering 10HmaX-000000005vi-0000
 Exim version x.yz ....
 Hints DB:

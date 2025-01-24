@@ -15,7 +15,7 @@ MAIL FROM
 QUIT
 <<< QUIT
 250 OK
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** userx@myhost.test.ex R=smartuser T=lmtp: LMTP error after MAIL FROM:<CALLER@myhost.test.ex>: 550 Don't like that sender
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** userx@myhost.test.ex R=smartuser T=lmtp : LMTP error after MAIL FROM:<CALLER@myhost.test.ex>: 550 Don't like that sender
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> R=10HmaZ-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=bounces
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
@@ -89,9 +89,9 @@ QUIT
 250 OK
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 => userx <userx@myhost.test.ex> R=smartuser T=lmtp C="250 Number 1 is OK"
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 == jack@myhost.test.ex R=smartuser T=lmtp defer (-46): LMTP error after end of data: 450 Number 2 is now delayed
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 ** jill@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 3 is now rejected
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 ** jill@myhost.test.ex R=smartuser T=lmtp : LMTP error after end of data: 550 Number 3 is now rejected
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 == tom@myhost.test.ex R=smartuser T=lmtp defer (-44): LMTP error after RCPT TO:<tom@myhost.test.ex>: 450 This one is delayed on RCPT
-1999-03-02 09:44:33 10HmbD-000000005vi-0000 ** dick@myhost.test.ex R=smartuser T=lmtp: LMTP error after RCPT TO:<dick@myhost.test.ex>: 550 This one is unknown on RCPT
+1999-03-02 09:44:33 10HmbD-000000005vi-0000 ** dick@myhost.test.ex R=smartuser T=lmtp : LMTP error after RCPT TO:<dick@myhost.test.ex>: 550 This one is unknown on RCPT
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 -> harry <harry@myhost.test.ex> R=smartuser T=lmtp C="250 Number 6 is OK"
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= <> R=10HmbD-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=bounces
@@ -143,7 +143,7 @@ DATA
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 == jack@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after end of data (ddd bytes written)
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 == jill@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after end of data (ddd bytes written)
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 == tom@myhost.test.ex R=smartuser T=lmtp defer (-44): LMTP error after RCPT TO:<tom@myhost.test.ex>: 450 This one is delayed on RCPT
-1999-03-02 09:44:33 10HmbF-000000005vi-0000 ** dick@myhost.test.ex R=smartuser T=lmtp: LMTP error after RCPT TO:<dick@myhost.test.ex>: 550 This one is unknown on RCPT
+1999-03-02 09:44:33 10HmbF-000000005vi-0000 ** dick@myhost.test.ex R=smartuser T=lmtp : LMTP error after RCPT TO:<dick@myhost.test.ex>: 550 This one is unknown on RCPT
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 == harry@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after end of data (ddd bytes written)
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= <> R=10HmbF-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 => :blackhole: <CALLER@myhost.test.ex> R=bounces

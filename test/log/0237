@@ -1,12 +1,12 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** /a/b/c <file1@no.test.ex> R=notallowed: delivery to file forbidden
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** |/p/q/r <pipe1@no.test.ex> R=notallowed: delivery to pipe forbidden
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** /a/b/c <file1@no.test.ex> R=notallowed : delivery to file forbidden
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** |/p/q/r <pipe1@no.test.ex> R=notallowed : delivery to pipe forbidden
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => CALLER <CALLER@test.ex> R=bounces T=local_delivery
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** |TESTSUITE/aux-fixed/showenv <pipe2@yes.test.ex> R=allowed T=address_pipe: return message generated
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** |TESTSUITE/aux-fixed/showenv <pipe2@yes.test.ex> R=allowed T=address_pipe : return message generated
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 => TESTSUITE/test-mail/file <file2@yes.test.ex> R=allowed T=address_file
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> R=10HmaZ-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => CALLER <CALLER@test.ex> R=bounces T=local_delivery

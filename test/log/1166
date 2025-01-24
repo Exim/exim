@@ -1,7 +1,7 @@
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= sender@source.dom U=root Ci=p1235 P=local-bsmtp S=sss for f1@test.ex
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 H=127.0.0.1 [127.0.0.1] TLS error on connection (recv): The TLS connection was non-properly terminated.
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 peer close after all rcpt responses; converting i/o-error to no-error
-2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 ** f1@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes: SMTP error from remote mail server after RCPT TO:<f1@test.ex>: 550 we really do not like you
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 ** f1@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes : SMTP error from remote mail server after RCPT TO:<f1@test.ex>: 550 we really do not like you
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 f1@test.ex: error ignored
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 Completed
 

@@ -16,7 +16,7 @@
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= CALLER@test.ex U=CALLER P=scanned-ok S=sss id=E10HmbB-000000005vi-0000@the.local.host.name
-1999-03-02 09:44:33 10HmbC-000000005vi-0000 ** userx@non-local.example R=fail_remote_domains: unrouteable mail domain "non-local.example" (:fail:)
+1999-03-02 09:44:33 10HmbC-000000005vi-0000 ** userx@non-local.example R=fail_remote_domains : unrouteable mail domain "non-local.example" (:fail:)
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 => userx <userx@test.ex> R=all T=appendfile
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 <= <> R=10HmbC-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbD-000000005vi-0000 => CALLER <CALLER@test.ex> R=all T=appendfile

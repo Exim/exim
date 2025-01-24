@@ -12,7 +12,7 @@
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 == userz@domain.com R=all T=smtp defer (-45) H=127.0.0.1 [127.0.0.1]:PORT_S I=[127.0.0.1]:10001: SMTP error from remote mail server after MAIL FROM:<>: 450 not right now, sorry
 1999-03-02 09:44:33 End queue run: pid=p1235 -qqf
 1999-03-02 09:44:33 Start queue run: pid=p1236 -qqf
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** userz@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]:PORT_S I=[127.0.0.1]:10001: SMTP error from remote mail server after RCPT TO:<userz@domain.com>: 550 Recipient refused
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** userz@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]:PORT_S I=[127.0.0.1]:10001 : SMTP error from remote mail server after RCPT TO:<userz@domain.com>: 550 Recipient refused
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 userz@domain.com: error ignored
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1236 -qqf

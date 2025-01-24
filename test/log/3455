@@ -1,10 +1,10 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=p1234 -qf
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 => userz@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no A=plain C="250 OK id=10HmaY-000000005vi-0000"
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 => userz@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] PS=esea X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no A=plain C="250 OK id=10HmaY-000000005vi-0000"
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234 -qf
 1999-03-02 09:44:33 Start queue run: pid=p1235 -qf
-1999-03-02 09:44:33 10HmaY-000000005vi-0000 => userz@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] A=login C="250 OK id=10HmaZ-000000005vi-0000"
+1999-03-02 09:44:33 10HmaY-000000005vi-0000 => userz@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] PS=ea A=login C="250 OK id=10HmaZ-000000005vi-0000"
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1235 -qf
 

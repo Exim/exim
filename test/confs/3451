@@ -11,7 +11,7 @@ primary_hostname = myhost.test.ex
 
 acl_smtp_rcpt = accept
 
-log_selector = +tls_peerdn
+log_selector = +tls_peerdn +protocol_detail
 
 queue_only
 queue_run_in_order

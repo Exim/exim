@@ -32,7 +32,7 @@
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 "should give filter error (1)" first delivery
-1999-03-02 09:44:33 10HmbE-000000005vi-0000 ** |cat <filter-pipe@test.ex> R=userfilter: delivery to pipe forbidden
+1999-03-02 09:44:33 10HmbE-000000005vi-0000 ** |cat <filter-pipe@test.ex> R=userfilter : delivery to pipe forbidden
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 <= <> R=10HmbE-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 "Mail delivery failed: returning message to sender" first delivery
 1999-03-02 09:44:33 10HmbF-000000005vi-0000 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
@@ -40,7 +40,7 @@
 1999-03-02 09:44:33 10HmbE-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 "should give filter error (2)" first delivery
-1999-03-02 09:44:33 10HmbG-000000005vi-0000 ** /tmp/junk <filter-file@test.ex> R=userfilter: delivery to file forbidden
+1999-03-02 09:44:33 10HmbG-000000005vi-0000 ** /tmp/junk <filter-file@test.ex> R=userfilter : delivery to file forbidden
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 <= <> R=10HmbG-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 "Mail delivery failed: returning message to sender" first delivery
 1999-03-02 09:44:33 10HmbH-000000005vi-0000 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile

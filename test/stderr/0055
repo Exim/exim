@@ -2,7 +2,7 @@ LOG: MAIN
   <= CALLER@myhost.ex U=CALLER P=local S=sss
 delivering 10HmaX-000000005vi-0000
 LOG: MAIN
-  ** xxx@unknown.test.ex: unknown.test.ex is not local, and can't route by DNS
+  ** xxx@unknown.test.ex : unknown.test.ex is not local, and can't route by DNS
 LOG: MAIN
   <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 delivering 10HmaY-000000005vi-0000

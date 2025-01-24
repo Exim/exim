@@ -7,7 +7,7 @@
 1999-03-02 09:44:33 End queue run: pid=p1234 -qf
 1999-03-02 09:44:33 Start queue run: pid=p1235 -qf
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 550 Go away
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** userx@domain1 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 550 Go away
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** userx@domain1 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1] : SMTP error from remote mail server after initial connection: 550 Go away
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => CALLER <CALLER@test.ex> F=<> R=all T=local_delivery
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
@@ -15,8 +15,8 @@
 1999-03-02 09:44:33 End queue run: pid=p1235 -qf
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaZ-000000005vi-0000 H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after HELO the.local.host.name: 550 Go away
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** userx@domain1 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after HELO the.local.host.name: 550 Go away
-1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** usery@domain2 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after HELO the.local.host.name: 550 Go away
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** userx@domain1 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1] : SMTP error from remote mail server after HELO the.local.host.name: 550 Go away
+1999-03-02 09:44:33 10HmaZ-000000005vi-0000 ** usery@domain2 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1] : SMTP error from remote mail server after HELO the.local.host.name: 550 Go away
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 <= <> R=10HmaZ-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => CALLER <CALLER@test.ex> F=<> R=all T=local_delivery
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed

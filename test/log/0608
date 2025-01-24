@@ -1,24 +1,24 @@
 2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for a@test.ex
-2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 ** a@test.ex: Unrouteable address
+2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 ** a@test.ex : Unrouteable address
 2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 <= <> R=10HmbC-000000005vi-0000 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
 2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
 2017-07-30 18:51:05.712 10HmbD-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmbC-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for b@test.ex
-2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 ** b@test.ex: Unrouteable address
+2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 ** b@test.ex : Unrouteable address
 2017-07-30 18:51:05.712 10HmbF-000000005vi-0000 <= <> R=10HmbE-000000005vi-0000 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
 2017-07-30 18:51:05.712 10HmbF-000000005vi-0000 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
 2017-07-30 18:51:05.712 10HmbF-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmbE-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for c@test.ex
-2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 ** c@test.ex: Unrouteable address
+2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 ** c@test.ex : Unrouteable address
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 Failed to open TESTSUITE/aux-fixed/0608.nonexist.tmpl for error message texts: No such file or directory
 2017-07-30 18:51:05.712 10HmbG-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
 2017-07-30 18:51:05.712 10HmbG-000000005vi-0000 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
 2017-07-30 18:51:05.712 10HmbG-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmaX-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for d@test.ex
-2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 ** d@test.ex: Unrouteable address
+2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 ** d@test.ex : Unrouteable address
 2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 bounce_message_file is not absolute after expansion: 'relative_file_path'
 
 2017-07-30 18:51:05.712 10HmbH-000000005vi-0000 <= <> R=10HmaY-000000005vi-0000 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
@@ -26,7 +26,7 @@
 2017-07-30 18:51:05.712 10HmbH-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmaY-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for e@test.ex
-2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 ** e@test.ex: Unrouteable address
+2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 ** e@test.ex : Unrouteable address
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Failed to expand bounce_message_file: '$acl_m_unset'
 
 2017-07-30 18:51:05.712 10HmbI-000000005vi-0000 <= <> R=10HmaZ-000000005vi-0000 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
@@ -34,7 +34,7 @@
 2017-07-30 18:51:05.712 10HmbI-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmaZ-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for f@test.ex
-2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 ** f@test.ex: Unrouteable address
+2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 ** f@test.ex : Unrouteable address
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 bounce_message_file is not untainted after expansion: 'TESTSUITE/aux-fixed/0608.CALLER@myhost.test.ex'
 
 2017-07-30 18:51:05.712 10HmbJ-000000005vi-0000 <= <> R=10HmbA-000000005vi-0000 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
@@ -42,7 +42,7 @@
 2017-07-30 18:51:05.712 10HmbJ-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmbA-000000005vi-0000 Completed
 2017-07-30 18:51:05.712 10HmbK-000000005vi-0000 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for g@test.ex
-2017-07-30 18:51:05.712 10HmbK-000000005vi-0000 ** g@test.ex: Unrouteable address
+2017-07-30 18:51:05.712 10HmbK-000000005vi-0000 ** g@test.ex : Unrouteable address
 2017-07-30 18:51:05.712 10HmbL-000000005vi-0000 <= <> R=10HmbK-000000005vi-0000 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
 2017-07-30 18:51:05.712 10HmbL-000000005vi-0000 => CALLER <CALLER@myhost.test.ex> R=bounces T=savebounce
 2017-07-30 18:51:05.712 10HmbL-000000005vi-0000 Completed

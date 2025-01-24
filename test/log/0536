@@ -30,7 +30,7 @@
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => user2 <user2@test.ex> R=r2 T=t1
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= oksender@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** user22@test.ex R=r1: 590 5.4.3 Main and extended code
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** user22@test.ex R=r1 : 590 5.4.3 Main and extended code
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> R=10HmbB-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 => oksender <oksender@test.ex> R=r2 T=t1
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed

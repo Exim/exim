@@ -1,5 +1,5 @@
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@myhost.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** xx99@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmaX-000000005vi-0000 ** xx99@test.ex : Unrouteable address
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 <= <> R=10HmaX-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => CALLER <CALLER@myhost.ex> R=localuser T=local_delivery
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
@@ -11,7 +11,7 @@
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => !one <!one@test.ex> R=smartuser T=local_delivery
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 10HmbB-000000005vi-0000 <= CALLER@myhost.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** !two@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmbB-000000005vi-0000 ** !two@test.ex : Unrouteable address
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= <> R=10HmbB-000000005vi-0000 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 => CALLER <CALLER@myhost.ex> R=localuser T=local_delivery
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
