@@ -5833,19 +5833,22 @@ retry_non_continued:
 	if (!smtp_get_interface(s, host_af, addrlist, &interface, tid))
 	  return FALSE;
 
-	if (  continue_sequence > 1
-	   && (  !sending_ip_address
-	      || Ustrcmp(interface, sending_ip_address) != 0)
-	   )
+	if (interface)
 	  {
-	  DEBUG(D_transport) debug_printf_indent(
-	    "tpt interface option mismatch with continued-connection\n");
-	  /* Close the conn and recheck retry info */
-	  continue_host_tried = FALSE;
-	  break;
-	  }
+	  if (  continue_sequence > 1
+	     && (  !sending_ip_address
+		|| Ustrcmp(interface, sending_ip_address) != 0)
+	     )
+	    {
+	    DEBUG(D_transport) debug_printf_indent(
+	      "tpt interface option mismatch with continued-connection\n");
+	    /* Close the conn and recheck retry info */
+	    continue_host_tried = FALSE;
+	    break;
+	    }
 
-	pistring = string_sprintf("%s/%s", pistring, interface);
+	  pistring = string_sprintf("%s/%s", pistring, interface);
+	  }
 	}
       }
 

@@ -28,7 +28,8 @@ Arguments:
                which case the function does nothing
   host_af    AF_INET or AF_INET6 for the outgoing IP address
   addr       the mail address being handled (for setting errors)
-  interface  point this to the interface if there is one defined
+  interface  point this to the interface if there is one defined,
+	     otherwise leave untouched
   msg        to add to any error message
 
 Returns:     TRUE on success, FALSE on failure, with error message
