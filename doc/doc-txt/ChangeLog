@@ -127,6 +127,13 @@ JH/26 Logging of client certificate verification status is no longer done when
       was recorded as "CV=no"; that item and value is now only used for a
       failed verify of a presented certificate.
 
+JH/27 OpenSSL: remove version 0.9.x library support. Version 1.0.0 was tagged
+      in 2010; it's time we cleaned up the Exim ifdeffery. As part of this we
+      assume that various OpenSSL features are included in its build - TLS
+      extensions, sha256, ecdh, ocsp; builds could fail due to missing APIs
+      on trying to link with cut-down libraries.
+
+
 Exim version 4.98
 -----------------
 

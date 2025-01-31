@@ -24,9 +24,7 @@ functions from the OpenSSL library. */
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
-#ifndef OPENSSL_NO_ECDH
-# include <openssl/ec.h>
-#endif
+#include <openssl/ec.h>
 #ifndef DISABLE_OCSP
 # include <openssl/ocsp.h>
 #endif
@@ -40,12 +38,6 @@ functions from the OpenSSL library. */
 # define EXIM_OCSP_MAX_AGE (-1L)
 #endif
 
-#if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
-# define EXIM_HAVE_OPENSSL_TLSEXT
-#endif
-#if OPENSSL_VERSION_NUMBER >= 0x00908000L
-# define EXIM_HAVE_RSA_GENKEY_EX
-#endif
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 # define EXIM_HAVE_OCSP_RESP_COUNT
 # define OPENSSL_AUTO_SHA256
@@ -53,9 +45,6 @@ functions from the OpenSSL library. */
 #else
 # define EXIM_HAVE_EPHEM_RSA_KEX
 # define EXIM_HAVE_RAND_PSEUDO
-#endif
-#if (OPENSSL_VERSION_NUMBER >= 0x0090800fL) && !defined(OPENSSL_NO_SHA256)
-# define EXIM_HAVE_SHA256
 #endif
 
 /* X509_check_host provides sane certificate hostname checking, but was added
@@ -115,13 +104,8 @@ change this guard and punt the issue for a while longer. */
 
 #if !defined(LIBRESSL_VERSION_NUMBER) \
     || LIBRESSL_VERSION_NUMBER >= 0x20010000L
-# if !defined(OPENSSL_NO_ECDH)
-#  if OPENSSL_VERSION_NUMBER >= 0x0090800fL
-#   define EXIM_HAVE_ECDH
-#  endif
-#  if OPENSSL_VERSION_NUMBER >= 0x10002000L
-#   define EXIM_HAVE_OPENSSL_EC_NIST2NID
-#  endif
+# if OPENSSL_VERSION_NUMBER >= 0x10002000L
+#  define EXIM_HAVE_OPENSSL_EC_NIST2NID
 # endif
 #endif
 
@@ -140,11 +124,6 @@ change this guard and punt the issue for a while longer. */
 
 #if !defined(LIBRESSL_VERSION_NUMBER) && (OPENSSL_VERSION_NUMBER >= 0x010002000L)
 # define EXIM_HAVE_EXPORT_CHNL_BNGNG
-#endif
-
-#if !defined(EXIM_HAVE_OPENSSL_TLSEXT) && !defined(DISABLE_OCSP)
-# warning "OpenSSL library version too old; define DISABLE_OCSP in Makefile"
-# define DISABLE_OCSP
 #endif
 
 #ifndef DISABLE_TLS_RESUME
@@ -400,9 +379,7 @@ typedef struct {
 /* static SSL_CTX *server_ctx = NULL; */
 /* static SSL     *server_ssl = NULL; */
 
-#ifdef EXIM_HAVE_OPENSSL_TLSEXT
 static SSL_CTX *server_sni = NULL;
-#endif
 #ifdef EXIM_HAVE_ALPN
 static BOOL server_seen_alpn = FALSE;
 static const gstring * server_fail_alpn = NULL;
@@ -567,12 +544,6 @@ once = TRUE;
 #ifdef EXIM_NEED_OPENSSL_INIT
 SSL_load_error_strings();          /* basic set up */
 OpenSSL_add_ssl_algorithms();
-#endif
-
-#if defined(EXIM_HAVE_SHA256) && !defined(OPENSSL_AUTO_SHA256)
-/* SHA256 is becoming ever more popular. This makes sure it gets added to the
-list of available digests. */
-EVP_add_digest(EVP_sha256());
 #endif
 
 (void) lib_rand_init(NULL);
@@ -779,16 +750,6 @@ Returns:    TRUE if OK (nothing to set up, or setup worked)
 static BOOL
 init_ecdh(SSL_CTX * sctx, uschar ** errstr)
 {
-#ifdef OPENSSL_NO_ECDH
-return TRUE;
-#else
-
-# ifndef EXIM_HAVE_ECDH
-DEBUG(D_tls)
-  debug_printf(" No OpenSSL API to define ECDH parameters, skipping\n");
-return TRUE;
-# else
-
 uschar * exp_curve;
 int ngroups, rc, sep;
 const uschar * curves_list,  * curve;
@@ -870,9 +831,6 @@ else
 #  endif	/*!EXIM_HAVE_OPENSSL_SET1_GROUPS*/
 
 return !!rc;
-
-# endif	/*EXIM_HAVE_ECDH*/
-#endif /*OPENSSL_NO_ECDH*/
 }
 
 
@@ -895,20 +853,14 @@ static RSA *
 rsa_callback(SSL *s, int export, int keylength)
 {
 RSA *rsa_key;
-#ifdef EXIM_HAVE_RSA_GENKEY_EX
 BIGNUM *bn = BN_new();
-#endif
 
 DEBUG(D_tls) debug_printf("Generating %d bit RSA key...\n", keylength);
 
-# ifdef EXIM_HAVE_RSA_GENKEY_EX
 if (  !BN_set_word(bn, (unsigned long)RSA_F4)
    || !(rsa_key = RSA_new())
    || !RSA_generate_key_ex(rsa_key, keylength, bn, NULL)
    )
-# else
-if (!(rsa_key = RSA_generate_key(keylength, RSA_F4, NULL, NULL)))
-# endif
 
   {
   ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
@@ -2261,7 +2213,6 @@ XXX might need to change to using ClientHello callback,
 per https://www.openssl.org/docs/manmaster/man3/SSL_client_hello_cb_fn.html
 */
 
-#ifdef EXIM_HAVE_OPENSSL_TLSEXT
 static int
 tls_servername_cb(SSL * s, int * ad ARG_UNUSED, void * arg)
 {
@@ -2349,7 +2300,6 @@ bad:
   log_write(0, LOG_MAIN|LOG_PANIC, "%s", errstr);
   return SSL_TLSEXT_ERR_ALERT_FATAL;
 }
-#endif /* EXIM_HAVE_OPENSSL_TLSEXT */
 
 
 
@@ -3029,18 +2979,17 @@ else
 
 /* If we need to handle SNI or OCSP, do so */
 
-#ifdef EXIM_HAVE_OPENSSL_TLSEXT
-# ifndef DISABLE_OCSP
+#ifndef DISABLE_OCSP
   if (!host && !(state->u_ocsp.server.verify_stack = sk_X509_new_null()))
     {
     DEBUG(D_tls) debug_printf("failed to create stack for stapling verify\n");
     return FAIL;
     }
-# endif
+#endif
 
 if (!host)		/* server */
   {
-# ifndef DISABLE_OCSP
+#ifndef DISABLE_OCSP
   /* We check u_ocsp.server.file, not server.olist, because we care about if
   the option exists, not what the current expansion might be, as SNI might
   change the certificate and OCSP file in use between now and the time the
@@ -3050,13 +2999,13 @@ if (!host)		/* server */
     SSL_CTX_set_tlsext_status_cb(ctx, tls_server_stapling_cb);
     SSL_CTX_set_tlsext_status_arg(ctx, state);
     }
-# endif
+#endif
   /* We always do this, so that $tls_sni is available even if not used in
   tls_certificate */
   SSL_CTX_set_tlsext_servername_callback(ctx, tls_servername_cb);
   SSL_CTX_set_tlsext_servername_arg(ctx, state);
 
-# ifdef EXIM_HAVE_ALPN
+#ifdef EXIM_HAVE_ALPN
   if (tls_alpn && *tls_alpn)
     {
     uschar * exp_alpn;
@@ -3069,9 +3018,9 @@ if (!host)		/* server */
     else
       tls_alpn = NULL;
     }
-# endif
+#endif
   }
-# ifndef DISABLE_OCSP
+#ifndef DISABLE_OCSP
 else			/* client */
   if(ocsp_file)		/* wanting stapling */
     {
@@ -3084,8 +3033,7 @@ else			/* client */
     SSL_CTX_set_tlsext_status_cb(ctx, tls_client_stapling_cb);
     SSL_CTX_set_tlsext_status_arg(ctx, state);
     }
-# endif
-#endif	/*EXIM_HAVE_OPENSSL_TLSEXT*/
+#endif
 
 state->verify_cert_hostnames = NULL;
 
@@ -3365,8 +3313,6 @@ This is inconsistent with the need to verify the OCSP proof of the server cert.
 
   /* Handle a certificate revocation list. */
 
-#if OPENSSL_VERSION_NUMBER > 0x00907000L
-
   /* This bit of code is now the version supplied by Lars Mainka. (I have
   merely reformatted it into the Exim code style.)
 
@@ -3413,8 +3359,6 @@ This is inconsistent with the need to verify the OCSP proof of the server cert.
         X509_V_FLAG_CRL_CHECK|X509_V_FLAG_CRL_CHECK_ALL);
       }
     }
-
-#endif  /* OPENSSL_VERSION_NUMBER > 0x00907000L */
   }
 
 return OK;
@@ -4392,14 +4336,6 @@ if (ob->tls_sni)
     { DEBUG(D_tls) debug_printf("Setting TLS SNI forced to fail, not sending\n"); }
   else if (!Ustrlen(tlsp->sni))
     tlsp->sni = NULL;
-  else
-    {
-#ifndef EXIM_HAVE_OPENSSL_TLSEXT
-    log_write(0, LOG_MAIN, "SNI unusable with this OpenSSL library version; ignoring \"%s\"\n",
-          tlsp->sni);
-    tlsp->sni = NULL;
-#endif
-    }
   }
 
 if (ob->tls_alpn)
@@ -4444,13 +4380,11 @@ SSL_set_session_id_context(exim_client_ctx->ssl, sid_ctx, Ustrlen(sid_ctx));
 SSL_set_fd(exim_client_ctx->ssl, cctx->sock);
 SSL_set_connect_state(exim_client_ctx->ssl);
 
-#ifdef EXIM_HAVE_OPENSSL_TLSEXT
 if (tlsp->sni)
   {
   DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tlsp->sni);
   SSL_set_tlsext_host_name(exim_client_ctx->ssl, tlsp->sni);
   }
-#endif
 
 #ifdef SUPPORT_DANE
 if (conn_args->dane)
