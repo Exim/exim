@@ -2134,6 +2134,8 @@ drop the detailed parsing and logging. */
 #  endif
 # elif defined DARWIN_IP_OPTIONS
 #  define OPTSTYLE 2
+# elif defined MUSL_IP_OPTIONS
+#  define OPTSTYLE 2
 # else
 #  define OPTSTYLE 3
 #  endif
