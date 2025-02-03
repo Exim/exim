@@ -1962,6 +1962,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
       }
   default_smtp_port[pct] = 0;
 
+#ifndef DISABLE_TLS
   /* Check the list of TLS-on-connect ports and do name lookups if needed */
 
   list = tls_on_connect_ports;
@@ -1991,6 +1992,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 	tls_on_connect_ports = g->s;
       break;
       }
+#endif	/*DISABLE_TLS*/
 
   /* Create the list of local interfaces, possibly with ports included. This
   list may contain references to 0.0.0.0 and ::0 as wildcards. These special
