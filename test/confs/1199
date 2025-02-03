@@ -25,7 +25,9 @@ tls_alpn = STRICT
 hosts_require_alpn = *
 .endif
 
+.ifdef _OPT_MAIN_TLS_EARLY_BANNER_HOSTS
 tls_early_banner_hosts = *
+.endif
 
 .ifdef _HAVE_OPENSSL
 tls_require_ciphers = ALL:@SECLEVEL=0
