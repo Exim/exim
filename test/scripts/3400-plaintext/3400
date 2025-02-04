@@ -14,14 +14,14 @@ vrfy userx@test.ex
 expn list@test.ex
 etrn abcd
 mail from:<junk@jink.jonk.test.ex>
-rcpt to:<userx@test.ex>
+rcpt to:<userx1@test.ex>
 noop
 rset
 auth mylogin dXNlcnggc2VjcmV0
 auth mylogin dXNlcnggc2VjcmV0
 mail from:<junk@jink.jonk.test.ex>
-rcpt to:<userx@test.ex>
-rcpt to:<userx@cus.cam.ac.uk>
+rcpt to:<userx2@test.ex>
+rcpt to:<userx3@cus.cam.ac.uk>
 rset
 vrfy userx@test.ex
 expn list@test.ex
@@ -33,40 +33,40 @@ quit
 exim -bh 10.0.0.3
 ehlo test.host
 mail from:<junk@jink.jonk.test.ex>
-rcpt to:<userx@cus.cam.ac.uk>
+rcpt to:<userx4@cus.cam.ac.uk>
 rset
 auth mylogin dXNlcnggc2VjcmV0
 mail from:<junk@jink.jonk.test.ex>
-rcpt to:<userx@cus.cam.ac.uk>
+rcpt to:<userx5@cus.cam.ac.uk>
 quit
 ****
 exim -odi -bs -oMa 10.0.0.3
 ehlo testclient.ex
 mail from:<userx@cus.cam.ac.uk>
-rcpt to:<userx@test.ex>
+rcpt to:<userx6@test.ex>
 data
 Testing unauthenticated.
 .
 mail from:<userx@cus.cam.ac.uk> auth=auth@cus.cam.ac.uk
-rcpt to:<userx@test.ex>
+rcpt to:<userx7@test.ex>
 data
 Testing unauthenticated (2).
 .
 auth mylogin dXNlcnggc2VjcmV0
 mail from:<userx@cus.cam.ac.uk>
-rcpt to:<userx@test.ex>
+rcpt to:<userx8@test.ex>
 data
 Testing authenticated.
 .
 mail from:<userx@cus.cam.ac.uk> auth=auth@cus.cam.ac.uk
-rcpt to:<userx@test.ex>
+rcpt to:<userx9@test.ex>
 data
 Testing authenticated (2).
 .
 mail from:<userx@cus.cam.ac.uk> auth=au+zzth@cus.cam.ac.uk
 rset
 mail from:<userx@cus.cam.ac.uk> auth=<>
-rcpt to:<userx@test.ex>
+rcpt to:<userx10@test.ex>
 data
 Testing authenticated (3).
 .
@@ -94,7 +94,7 @@ AUTH LOGIN
 dXNlcng=
 c2VjcmV0
 mail from:<userx@cus.cam.ac.uk>
-rcpt to:<userx@test.ex>
+rcpt to:<userx11@test.ex>
 data
 Testing authenticated.
 .
@@ -142,12 +142,12 @@ quit
 # Test expansion of server_prompt
 # also, check that a variable created by an acl expansion is usable
 # later in ACLs
-exim -bs -oMa 10.0.0.1
+exim -odi -bs -oMa 10.0.0.1
 ehlo test.host
 auth expanded
 AHVzZXJ4AHNlY3JldA==
 mail from:<userx@cus.cam.ac.uk>
-rcpt to:<userx@test.ex>
+rcpt to:<userx12@test.ex>
 data
 Testing authenticated.
 .
@@ -196,19 +196,19 @@ auth expanded AHVzZXJ4AHNlY3JlVw==
 exim -odi -bs -oMa 10.0.0.5
 ehlo testing.testing
 mail from:<x@y>
-rcpt to:<userx@test.ex>
+rcpt to:<userx13@test.ex>
 data
 Without authenticating
 .
 auth mylogin dXNlcnggc2VjcmV0
 mail from:<x@y>
-rcpt to:<userx@test.ex>
+rcpt to:<userx14@test.ex>
 data
 Authentication failed
 .
 auth mylogin dXNlcnggc2VjcmV0
 mail from:<x@y>
-rcpt to:<userx@test.ex>
+rcpt to:<userx15@test.ex>
 data
 Authentication succeeded
 .

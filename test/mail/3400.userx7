@@ -1,0 +1,13 @@
+From userx@cus.cam.ac.uk Tue Mar 02 09:44:33 1999
+Return-path: <userx@cus.cam.ac.uk>
+Envelope-to: userx7@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.3] (helo=testclient.ex ident=CALLER)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <userx@cus.cam.ac.uk>)
+	id 10HmaY-000000005vi-0000
+	for userx7@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+
+Testing unauthenticated (2).
+

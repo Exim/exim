@@ -1,0 +1,14 @@
+From x@y Tue Mar 02 09:44:33 1999
+Return-path: <x@y>
+Envelope-to: userx13@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.5] (helo=testing.testing ident=CALLER)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmbE-000000005vi-0000
+	for userx13@test.ex;
+	Tue, 2 Mar 1999 09:44:33 +0000
+authentication-failed: 0
+
+Without authenticating
+
