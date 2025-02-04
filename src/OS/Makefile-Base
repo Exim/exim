@@ -262,7 +262,7 @@ buildconfig: buildconfig.c
 
 
 # Target for the exicyclog utility script
-exicyclog: config ../src/exicyclog.src
+exicyclog: config ../src/utils/exicyclog.src
 	@rm -f exicyclog
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
@@ -283,14 +283,14 @@ exicyclog: config ../src/exicyclog.src
 	  -e "s?TOUCH_COMMAND?$(TOUCH_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/exicyclog.src > exicyclog-t
+	  ../src/utils/exicyclog.src > exicyclog-t
 	@mv exicyclog-t exicyclog
 	@chmod a+x exicyclog
 	@./exicyclog -v 2>&1 >/dev/null
 	@echo ">>> exicyclog script built"
 
 # Target for the exinext utility script
-exinext: config ../src/exinext.src
+exinext: config ../src/utils/exinext.src
 	@rm -f exinext
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
@@ -301,14 +301,14 @@ exinext: config ../src/exinext.src
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/exinext.src > exinext-t
+	  ../src/utils/exinext.src > exinext-t
 	@mv exinext-t exinext
 	@chmod a+x exinext
 	@./exinext -v 2>&1 >/dev/null
 	@echo ">>> exinext script built"
 
 # Target for the exiwhat utility script
-exiwhat: config ../src/exiwhat.src
+exiwhat: config ../src/utils/exiwhat.src
 	@rm -f exiwhat
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
@@ -326,14 +326,14 @@ exiwhat: config ../src/exiwhat.src
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  -e "s?RM_COMMAND?$(RM_COMMAND)?" \
-	  ../src/exiwhat.src > exiwhat-t
+	  ../src/utils/exiwhat.src > exiwhat-t
 	@mv exiwhat-t exiwhat
 	@chmod a+x exiwhat
 	@./exiwhat -v 2>&1 >/dev/null
 	@echo ">>> exiwhat script built"
 
 # Target for the exim_checkaccess utility script
-exim_checkaccess: config ../src/exim_checkaccess.src
+exim_checkaccess: config ../src/utils/exim_checkaccess.src
 	@rm -f exim_checkaccess
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
@@ -345,14 +345,14 @@ exim_checkaccess: config ../src/exim_checkaccess.src
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/exim_checkaccess.src > exim_checkaccess-t
+	  ../src/utils/exim_checkaccess.src > exim_checkaccess-t
 	@mv exim_checkaccess-t exim_checkaccess
 	@chmod a+x exim_checkaccess
 	# @./exim_checkaccess -v 2>&1 >/dev/null
 	@echo ">>> exim_checkaccess script built"; echo ""
 
 # Target for the Exim monitor start-up script
-eximon: config ../src/eximon.src ../OS/eximon.conf-Default \
+eximon: config ../src/utils/eximon.src ../OS/eximon.conf-Default \
           ../Local/eximon.conf
 	@rm -f eximon
 	$(SHELL) $(SCRIPTS)/Configure-eximon
@@ -368,14 +368,14 @@ eximon: config ../src/eximon.src ../OS/eximon.conf-Default \
 	  -e "s?X11_LD_LIBRARY?$(X11_LD_LIB)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/eximon.src >> eximon
+	  ../src/utils/eximon.src >> eximon
 	@./eximon -v 2>&1 >/dev/null
 	@echo ">>> eximon script built"; echo ""
 
 # Targets for utilities; these are all Perl scripts that have to get the
 # location of Perl put in them. A few need other things as well.
 
-exigrep: config ../src/exigrep.src
+exigrep: config ../src/utils/exigrep.src
 	@rm -f exigrep
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
@@ -386,13 +386,13 @@ exigrep: config ../src/exigrep.src
           -e "s?COMPRESS_SUFFIX?$(COMPRESS_SUFFIX)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/exigrep.src > exigrep-t
+	  ../src/utils/exigrep.src > exigrep-t
 	@mv exigrep-t exigrep
 	@chmod a+x exigrep
 	@./exigrep --version 2>&1 >/dev/null
 	@echo ">>> exigrep script built"
 
-exim_msgdate: config ../src/exim_msgdate.src
+exim_msgdate: config ../src/utils/exim_msgdate.src
 	@rm -f exim_msgdate
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
@@ -404,25 +404,25 @@ exim_msgdate: config ../src/exim_msgdate.src
 	  -e "s?CONFIGURE_FILE\"?$(CONFIGURE_FILE)\"?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/exim_msgdate.src > exim_msgdate-t
+	  ../src/utils/exim_msgdate.src > exim_msgdate-t
 	@mv exim_msgdate-t exim_msgdate
 	@chmod a+x exim_msgdate
 	@./exim_msgdate -v 2>&1 >/dev/null
 	@echo ">>> exim_msgdate script built"
 
-eximstats: config ../src/eximstats.src
+eximstats: config ../src/utils/eximstats.src
 	@rm -f eximstats
 	@. ./version.sh && sed \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/eximstats.src > eximstats-t
+	  ../src/utils/eximstats.src > eximstats-t
 	@mv eximstats-t eximstats
 	@chmod a+x eximstats
 	@./eximstats -v 2>&1 >/dev/null
 	@echo ">>> eximstats script built"
 
-exiqgrep: config ../src/exiqgrep.src
+exiqgrep: config ../src/utils/exiqgrep.src
 	@rm -f exiqgrep
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
@@ -432,25 +432,25 @@ exiqgrep: config ../src/exiqgrep.src
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/exiqgrep.src > exiqgrep-t
+	  ../src/utils/exiqgrep.src > exiqgrep-t
 	@mv exiqgrep-t exiqgrep
 	@chmod a+x exiqgrep
 	@./exiqgrep -v 2>&1 >/dev/null
 	@echo ">>> exiqgrep script built"
 
-exiqsumm: config ../src/exiqsumm.src
+exiqsumm: config ../src/utils/exiqsumm.src
 	@rm -f exiqsumm
 	@. ./version.sh && sed \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/exiqsumm.src > exiqsumm-t
+	  ../src/utils/exiqsumm.src > exiqsumm-t
 	@mv exiqsumm-t exiqsumm
 	@chmod a+x exiqsumm
 	@./exiqsumm -v 2>&1 >/dev/null
 	@echo ">>> exiqsumm script built"
 
-exipick: config ../src/exipick.src
+exipick: config ../src/utils/exipick.src
 	@rm -f exipick
 	@. ./version.sh && sed \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
@@ -458,13 +458,13 @@ exipick: config ../src/exipick.src
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/exipick.src > exipick-t
+	  ../src/utils/exipick.src > exipick-t
 	@mv exipick-t exipick
 	@chmod a+x exipick
 	@./exipick -v 2>&1 >/dev/null
 	@echo ">>> exipick script built"
 
-exim_id_update: config ../src/exim_id_update.src
+exim_id_update: config ../src/utils/exim_id_update.src
 	@rm -f exim_id_update
 	@. ./version.sh && sed \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
@@ -472,7 +472,7 @@ exim_id_update: config ../src/exim_id_update.src
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
-	  ../src/exim_id_update.src > exim_id_update-t
+	  ../src/utils/exim_id_update.src > exim_id_update-t
 	@mv exim_id_update-t exim_id_update
 	@chmod a+x exim_id_update
 	@./exim_id_update -v 2>&1 >/dev/null
