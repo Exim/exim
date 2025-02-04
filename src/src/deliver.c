@@ -5828,6 +5828,7 @@ return fp;
 }
 
 
+#ifdef EXPERIMENTAL_DSN_INFO
 /* Output the given header and string, converting either
 the sequence "\n" or a real newline into newline plus space.
 If that still takes us past column 78, look for the last space
@@ -5845,6 +5846,7 @@ gstring_release_unused(g);
 fprintf(fp, "%s\n", wrap_header(string_from_gstring(g), 79, 1023, US" ", 1));
 }
 
+#endif
 
 
 
