@@ -3,7 +3,7 @@
 # Utility for searching and displaying queue information.
 # Written by Matt Hubbard 15 August 2002
 #
-# Copyright (c) The Exim Maintainers 2021 - 2023
+# Copyright (c) The Exim Maintainers 2021 - 2025
 # SPDX-License-Identifier: GPL-2.0-or-later
 # See the file NOTICE for conditions of use and distribution.
 
@@ -12,6 +12,7 @@
 #
 # BIN_DIRECTORY
 # PERL_COMMAND
+# MSGID_RE
 
 # PROCESSED_FLAG
 
@@ -19,13 +20,15 @@
 # Routine for extracting the UTC timestamp from message ID
 # lifted from eximstat utility
 
-# Version 1.3
+# Version 1.4
 
 use strict;
 BEGIN { pop @INC if $INC[-1] eq '.' };
 
 use Getopt::Std;
 use File::Basename;
+
+MSGID_RE
 
 # Have this variable point to your exim binary.
 my $exim = 'BIN_DIRECTORY/exim';
@@ -113,7 +116,7 @@ sub collect() {
 		#Should be 1st line of record, if not error.
 		if ($line =~ /^\s*(?<age>\w+)
 			      \s+(?<size>(?:\d+(?:\.\d+)?[A-Z]?)?)
-			      \s*(?<msgid>(?:\w{6}-\w{6}-\w{2}|\w{6}-\w{11}-\w{4}))	# old, 2023 msgid formats
+			      \s*(?<msgid>$msgid_re)
 			      \s+(?<from><.*?>)/x) {
 			my $msg = $+{msgid};
 			$id{$msg}{age} = $+{age};

@@ -261,13 +261,16 @@ buildconfig: buildconfig.c
 	$(FE)$(CC) $(CFLAGS) $(INCLUDE) -o buildconfig buildconfig.c $(LIBS)
 
 
+util_deps: config ../src/utils/msgid.frag
+
 # Target for the exicyclog utility script
-exicyclog: config ../src/utils/exicyclog.src
+exicyclog: util_deps ../src/utils/exicyclog.src
 	@rm -f exicyclog
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
+	  -e "/^MSGID_RE/b insert_msgid_frag" \
 	  -e "s?CONFIGURE_FILE_USE_NODE?$(CONFIGURE_FILE_USE_NODE)?" \
 	  -e "s?CONFIGURE_FILE_USE_EUID?$(CONFIGURE_FILE_USE_EUID)?" \
 	  -e "s?CONFIGURE_FILE?$(CONFIGURE_FILE)?" \
@@ -283,6 +286,11 @@ exicyclog: config ../src/utils/exicyclog.src
 	  -e "s?TOUCH_COMMAND?$(TOUCH_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
+	  -e "p" \
+	  -e "d" \
+	  -e ": insert_msgid_frag" \
+	  -e "s?^?# Insert ?" \
+	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exicyclog.src > exicyclog-t
 	@mv exicyclog-t exicyclog
 	@chmod a+x exicyclog
@@ -290,17 +298,23 @@ exicyclog: config ../src/utils/exicyclog.src
 	@echo ">>> exicyclog script built"
 
 # Target for the exinext utility script
-exinext: config ../src/utils/exinext.src
+exinext: util_deps ../src/utils/exinext.src
 	@rm -f exinext
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
+	  -e "/^MSGID_RE/b insert_msgid_frag" \
 	  -e "s?CONFIGURE_FILE_USE_NODE?$(CONFIGURE_FILE_USE_NODE)?" \
 	  -e "s?CONFIGURE_FILE?$(CONFIGURE_FILE)?" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
+	  -e "p" \
+	  -e "d" \
+	  -e ": insert_msgid_frag" \
+	  -e "s?^?# Insert ?" \
+	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exinext.src > exinext-t
 	@mv exinext-t exinext
 	@chmod a+x exinext
@@ -375,35 +389,47 @@ eximon: config ../src/utils/eximon.src ../OS/eximon.conf-Default \
 # Targets for utilities; these are all Perl scripts that have to get the
 # location of Perl put in them. A few need other things as well.
 
-exigrep: config ../src/utils/exigrep.src
+exigrep: util_deps ../src/utils/exigrep.src
 	@rm -f exigrep
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
+	  -e "/^MSGID_RE/b insert_msgid_frag" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?ZCAT_COMMAND?$(ZCAT_COMMAND)?" \
           -e "s?COMPRESS_SUFFIX?$(COMPRESS_SUFFIX)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
+	  -e "p" \
+	  -e "d" \
+	  -e ": insert_msgid_frag" \
+	  -e "s?^?# Insert ?" \
+	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exigrep.src > exigrep-t
 	@mv exigrep-t exigrep
 	@chmod a+x exigrep
 	@./exigrep --version 2>&1 >/dev/null
 	@echo ">>> exigrep script built"
 
-exim_msgdate: config ../src/utils/exim_msgdate.src
+exim_msgdate: util_deps ../src/utils/exim_msgdate.src
 	@rm -f exim_msgdate
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^[ \t]*# /p" \
 	  -e "/^[ \t]*# /d" \
+	  -e "/^MSGID_RE/b insert_msgid_frag" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?BASE_62?$${BASE_62:-62}?" \
 	  -e "s?CONFIGURE_FILE\"?$(CONFIGURE_FILE)\"?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
+	  -e "p" \
+	  -e "d" \
+	  -e ": insert_msgid_frag" \
+	  -e "s?^?# Insert ?" \
+	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exim_msgdate.src > exim_msgdate-t
 	@mv exim_msgdate-t exim_msgdate
 	@chmod a+x exim_msgdate
@@ -422,28 +448,40 @@ eximstats: config ../src/utils/eximstats.src
 	@./eximstats -v 2>&1 >/dev/null
 	@echo ">>> eximstats script built"
 
-exiqgrep: config ../src/utils/exiqgrep.src
+exiqgrep: util_deps ../src/utils/exiqgrep.src
 	@rm -f exiqgrep
 	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
+	  -e "/^MSGID_RE/b insert_msgid_frag" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
+	  -e "p" \
+	  -e "d" \
+	  -e ": insert_msgid_frag" \
+	  -e "s?^?# Insert ?" \
+	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exiqgrep.src > exiqgrep-t
 	@mv exiqgrep-t exiqgrep
 	@chmod a+x exiqgrep
 	@./exiqgrep -v 2>&1 >/dev/null
 	@echo ">>> exiqgrep script built"
 
-exiqsumm: config ../src/utils/exiqsumm.src
+exiqsumm: util_deps ../src/utils/exiqsumm.src
 	@rm -f exiqsumm
 	@. ./version.sh && sed \
+	  -e "/^MSGID_RE/b insert_msgid_frag" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
+	  -e "p" \
+	  -e "d" \
+	  -e ": insert_msgid_frag" \
+	  -e "s?^?# Insert ?" \
+	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exiqsumm.src > exiqsumm-t
 	@mv exiqsumm-t exiqsumm
 	@chmod a+x exiqsumm
@@ -464,14 +502,20 @@ exipick: config ../src/utils/exipick.src
 	@./exipick -v 2>&1 >/dev/null
 	@echo ">>> exipick script built"
 
-exim_id_update: config ../src/utils/exim_id_update.src
+exim_id_update: util_deps ../src/utils/exim_id_update.src
 	@rm -f exim_id_update
 	@. ./version.sh && sed \
+	  -e "/^MSGID_RE/b insert_msgid_frag" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?SPOOL_DIRECTORY?$(SPOOL_DIRECTORY)?" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
+	  -e "p" \
+	  -e "d" \
+	  -e ": insert_msgid_frag" \
+	  -e "s?^?# Insert ?" \
+	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exim_id_update.src > exim_id_update-t
 	@mv exim_id_update-t exim_id_update
 	@chmod a+x exim_id_update

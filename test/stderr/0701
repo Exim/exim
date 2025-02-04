@@ -1,33 +1,33 @@
 ### Each msg-id type, all zone
-localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 19 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 9 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
+localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 19 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 9 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
 ### All msg-id types, all zones,  localhost_number = 3
-localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 19 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 9 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
+localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 19 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 9 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
 ### All msg-id types, all zones,  localhost_number = 13
-localhost 0 from message-id != given number 13 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 0 from message-id != given number 13 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 19 from message-id != given number 13 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 9 from message-id != given number 13 at DIR/test/eximdir/exim_msgdate line 387.
+localhost 0 from message-id != given number 13 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 0 from message-id != given number 13 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 19 from message-id != given number 13 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 9 from message-id != given number 13 at DIR/test/eximdir/exim_msgdate line 421.
 ### All msg-id types, all zones,  localhost_number = 20
 localhost_number > 16
 localhost_number > 16
 localhost_number > 16
 localhost_number > 16
 ### All msg-id types, all zones,  base=36
-localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
+localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
 zz is not base 36
 zzzzzz is not base 36
 ### All msg-id types, all zones,  base=62
-localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 19 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
-localhost 9 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 387.
+localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 0 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 19 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
+localhost 9 from message-id != given number 3 at DIR/test/eximdir/exim_msgdate line 421.
 
 ******** SERVER ********
 ### Each msg-id type, all zone

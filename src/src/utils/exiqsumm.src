@@ -3,7 +3,7 @@
 # Mail Queue Summary
 # Christoph Lameter, 21 May 1997
 #
-# Copyright (c) The Exim Maintainers 2023
+# Copyright (c) The Exim Maintainers 2023 - 2025
 # SPDX-License-Identifier: GPL-2.0-or-later
 # See the file NOTICE for conditions of use and distribution.
 
@@ -49,6 +49,8 @@
 use warnings;
 BEGIN { pop @INC if $INC[-1] eq '.' };
 use File::Basename;
+
+MSGID_RE
 
 if (@ARGV && ($ARGV[0] eq '--version' || ($ARGV[0] eq '-v'))) {
     print basename($0) . ": $0\n",
@@ -124,7 +126,7 @@ if (/^$/o || /^\s*D\s\S+/o) { next; }
 
 if (/^	   (?<age>[\d\s]{2,3}\w)
       \s+  (?<size>\S+)
-      \s   (?<id>\S+)
+      \s   (?<id>$msgid_re)
       \s\< (?<src>\S*) \>/ox)
   {
   ($age,$size,$id,$src)=($+{age},$+{size},$+{id},$+{src});

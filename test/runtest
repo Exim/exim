@@ -402,7 +402,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Munging is a no-op, except for exim_msgdate specials.
     # Useful when testing exim_msgdate so that
     # we compare unmunged dates and message-ids.
-    s%^localhost \d+ from message-id != given number \d+ at \K/.+(?=/test/eximdir/exim_msgdate line 387.$)%DIR%;
+    s%^localhost \d+ from message-id != given number \d+ at \K/.+(?=/test/eximdir/exim_msgdate line \d+\.$)%DIR%;
 
     print MUNGED;
     next;
@@ -3882,7 +3882,7 @@ die "CONFIGURE_GROUP ($parm_configure_group) does not match the group invoking $
 	and $parm_configure_group != $);
 
 die "aux-fixed file is group-writeable; best to strip them all, recursively\n"
-	if 0020 & (stat "aux-fixed/0037.f-1")[2];
+	if 0020 & (stat "$parm_cwd/aux-fixed/0002.alias1")[2];
 
 
 open(EXIMINFO, "$parm_exim -d-all+transport -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |") ||

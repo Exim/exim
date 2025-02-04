@@ -1,5 +1,5 @@
 #! PERL_COMMAND
-# Copyright (c) 2023 The Exim Maintainers
+# Copyright (c) The Exim Maintainers 2023 - 2025
 # SPDX-License-Identifier: GPL-2.0-or-later
 # See the file NOTICE for conditions of use and distribution.
 
@@ -15,6 +15,7 @@ use File::Find;
 use Getopt::Long;
 use IO::Handle;
 
+MSGID_RE
 
 my $ME = basename($0);
 my $help = <<"EOF";
@@ -119,8 +120,8 @@ File::FcntlLock->import;
 my $id;
 my $pattern = do {
         # setup the pattern, creating match groups already
-        my $b62 = qr/(?i:[\da-z])/; # one of the base62 characters
-        $opt{upgrade} ? qr/^(?<prefix>($b62{6})-($b62{6})-($b62{2}))-D$/ : qr/^(?<prefix>($b62{6})-$b62{5}($b62{6})-($b62{2})$b62{2})-D$/;
+
+        $opt{upgrade} ? qr/^(?<prefix>(${b62}{6})-(${b62}{6})-(${b62}{2}))-D$/ : qr/^(?<prefix>(${b62}{6})-${b62}{5}(${b62}{6})-(${b62}{2})${b62}{2})-D$/;
 };
 
 chdir $spool or die "chdir to $spool: $!\n";

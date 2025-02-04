@@ -1901,7 +1901,7 @@ sub generate_parser {
     }
 
     # $id = substr($_, 20 + $extra, 16);	# old ID was 16 chars
-    $id = substr($_, 20 + $extra, 23);		# new IS is 23 chars
+    $id = substr($_, 20 + $extra, 23);		# new ID is 23 chars
     $id =~ s/(\S+).*/$1/;
     $extra += length($id) - 16;
 

@@ -1,6 +1,6 @@
 #! PERL_COMMAND
 
-# Copyright (c) The Exim Maintainers 2020 - 2023
+# Copyright (c) The Exim Maintainers 2020 - 2025
 # Copyright (c) 2007-2017 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
 # SPDX-License-Identifier: GPL-2.0-or-later
@@ -19,6 +19,7 @@ use File::Basename;
 # PERL_COMMAND
 # ZCAT_COMMAND
 # COMPRESS_SUFFIX
+# MSGID_RE
 
 # PROCESSED_FLAG
 
@@ -41,6 +42,7 @@ use File::Basename;
 
 use POSIX qw(mktime);
 
+MSGID_RE
 
 # This subroutine converts a time/date string from an Exim log line into
 # the number of seconds since the epoch. It handles optional timezone
@@ -88,7 +90,7 @@ sub do_line
   if (!/^\d{4}-/o) { $_ =~ s/^.*? exim\b.*?: //o; }
 
   return unless
-    my($date,$id) = /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? (?:[+-]\d{4} )?)(?:\[\d+\] )?(\w{6}\-\w{6}\-\w{2}|\w{6}-\w{11}-\w{4})?/o;
+    my($date,$id) = /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? (?:[+-]\d{4} )?)(?:\[\d+\] )?($msgid_re)?/o;
 
   # Handle the case when the log line belongs to a specific message. We save
   # lines for specific messages until the message is complete. Then either print
@@ -129,7 +131,7 @@ sub do_line
     if (index($_, 'Completed') != -1 ||
 	index($_, 'SMTP data timeout') != -1 ||
 	  (index($_, 'rejected') != -1 &&
-	    /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? (?:[+-]\d{4} )?)(?:\[\d+\] )?(?:\w{6}\-\w{6}\-\w{2}|\w{6}-\w{11}-\w{4}) rejected/o))
+	    /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? (?:[+-]\d{4} )?)(?:\[\d+\] )?$msgid_re rejected/o))
       {
       if ($queue_time != -1 &&
 	  $saved{$id} =~ /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d ([+-]\d{4} )?)/o)

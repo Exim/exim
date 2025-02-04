@@ -825,7 +825,7 @@ while (p > 0 && s[p+11] == ' ')
 
 /* Now pointing at first character of a main line. */
 
-Ustrncpy(message_id, s+p+11, MESSAGE_ID_LENGTH);	/*III*/
+Ustrncpy(message_id, s+p+11, MESSAGE_ID_LENGTH);
 message_id[MESSAGE_ID_LENGTH] = 0;
 
 /* Highlight the line being menued, and save its parameters so that it

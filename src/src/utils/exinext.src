@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) The Exim Maintainers 2023 - 2024
+# Copyright (c) The Exim Maintainers 2023 - 2025
 # Copyright (c) University of Cambridge, 1995 - 2007
 # See the file NOTICE for conditions of use and distribution.
 
@@ -10,6 +10,7 @@
 # CONFIGURE_FILE_USE_NODE
 # CONFIGURE_FILE
 # BIN_DIRECTORY
+# MSGID_RE
 
 # PROCESSED_FLAG
 
@@ -135,6 +136,8 @@ perl - $exim_path "$eximmacdef" $argone $spool_directory $qualify_domain $config
   $qualify = $ARGV[4];
   $config = $ARGV[5];
 
+MSGID_RE
+
   # If the subject doesn't contain an @ then construct an address
   # for the domain, and ensure that in both cases the domain is
   # lower cased.
@@ -163,8 +166,7 @@ perl - $exim_path "$eximmacdef" $argone $spool_directory $qualify_domain $config
 
   if (scalar(@list) == 0)
     {
-    push(@list, $subject) if $subject =~ /^\w{6}-\w{11}-\w{4}$/;
-    push(@list, $subject) if $subject =~ /^\w{6}-\w{6}-\w{2}$/;
+    push(@list, $subject) if $subject =~ /^$msgid_re$/;
 
     if ($subject !~ /\@/ && $subject !~ /\./)
       {

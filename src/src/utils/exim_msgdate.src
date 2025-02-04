@@ -1,6 +1,6 @@
 #!PERL_COMMAND -T
 #
-# Copyright (c) The Exim Maintainers 2023
+# Copyright (c) The Exim Maintainers 2023 - 2025
 # SPDX-License-Identifier: GPL-2.0-or-later
 #
 # Utility to convert an exim message-id to a human readable form
@@ -24,6 +24,7 @@
 # PERL_COMMAND
 # EXIM_RELEASE_VERSION
 # EXIM_VARIANT_VERSION
+# MSGID_RE
 #
 # PROCESSED_FLAG
 
@@ -38,6 +39,8 @@ use Getopt::Long;
 use Pod::Usage;
 
 use constant { TRUE => 1, FALSE => 0 };
+
+MSGID_RE
 
 if (defined $ENV{TZ}) {
    my $zonefile = "/usr/share/zoneinfo/$ENV{TZ}";
@@ -56,9 +59,9 @@ my $localhost_number;  # An Exim config value
 my $nolocalhost_number;
 
 my $p_name    = basename $0;
-my $p_version = "20230501.0";
+my $p_version = "20250204.0";
 my $p_cp      = <<EOM;
- Copyright (c) 2023 The Exim Maintainers 2023
+ Copyright (c) The Exim Maintainers 2023 - 2025
 
  Portions taken from exicyclog.src, which is
    Copyright (c) University of Cambridge, 1995 - 2015
@@ -448,16 +451,7 @@ sub print_time($$$$$$)
 foreach my $msgid (@ARGV) {
     my ($seconds, $pid, $fractions, $decimal);
 
-    if ($msgid =~
-        /(?:(?:^|[\s<])E?
-	    (?<seconds>[a-zA-Z0-9]{6})			# new format
-	    -(?<pid>[a-zA-Z0-9]{11})
-	    -(?<fractions>[a-zA-Z0-9]{4})
-	  |
-	    (?<seconds>[a-zA-Z0-9]{6})			# old format
-	    -(?<pid>[a-zA-Z0-9]{6})
-	    -(?<fractions>[a-zA-Z0-9]{2})
-	 )/x)
+    if ($msgid =~ /(?:^|[\s<])E?$msgid_cap_re/)
     {
 print "saw full mesgid\n" if $debug;
 
@@ -466,14 +460,12 @@ print "saw full mesgid\n" if $debug;
         ($seconds, $decimal) = unpack_time($+{seconds}, $+{fractions});
         $pid = decode62($+{pid});
         #warn "$seconds, $pid, $+{fractions}\n";
-    } elsif ($msgid =~ /(?:^|[^0-9A-Za-z])
-			(?<seconds>
-			[a-zA-Z0-9]{11}			# new format
-			|[a-zA-Z0-9]{6}			# old format
-			)$/x) {
+
+    } elsif ($msgid =~ /(?:^|[^[:alnum:]])$msgid_sec_cap_re$/) {
         # ... or just the timecode section before the first '-'
 print "saw just timecode\n" if $debug;
         ($seconds, $pid, $decimal) = (decode62($+{seconds}), undef, 0);
+
     } else {
         warn "$msgid not parsed\n";
         next;
