@@ -246,6 +246,20 @@ return s;
 }
 
 
+static int
+dc_write(client_conn_ctx * cctx, const uschar * s)
+{
+int len = Ustrlen(s), res;
+
+HDEBUG(D_auth) debug_printf("  DOVECOT>> '%s'\n", s);
+#ifndef DISABLE_TLS
+res = cctx->tls_ctx
+  ? tls_write(cctx->tls_ctx, s, len, FALSE)
+#endif
+  : write(cctx->sock, s, len);
+
+return res;
+}
 
 
 /*************************************************
@@ -257,11 +271,8 @@ auth_dovecot_server(auth_instance * ablock, uschar * data)
 {
 const auth_dovecot_options_block * ob = ablock->drinst.options_block;
 uschar buffer[DOVECOT_AUTH_MAXLINELEN];
-uschar *args[DOVECOT_AUTH_MAXFIELDCOUNT];
-uschar *auth_command;
-uschar *version_command;
-uschar *auth_extra_data = US"";
-uschar *p;
+uschar * args[DOVECOT_AUTH_MAXFIELDCOUNT];
+uschar * auth_extra_data = US"", * auth_command;
 int nargs, tmp;
 int crequid = 1, ret = DEFER;
 host_item host;
@@ -313,6 +324,8 @@ auth_defer_msg = US"authentication socket protocol error";
 socket_buffer_left = 0;  /* Global, used to read more than a line but return by line */
 for (;;)
   {
+  uschar * p;
+
   if (!dc_gets(buffer, sizeof(buffer), &cctx))
     OUT("authentication socket read error or premature eof");
   p = buffer + Ustrlen(buffer) - 1;
@@ -326,18 +339,20 @@ for (;;)
 
   HDEBUG(D_auth) debug_strcut(args, nargs, nelem(args));
 
-  /* Code below rewritten by Kirill Miazine (km@krot.org). Only check commands that
-    Exim will need. Original code also failed if Dovecot server sent unknown
-    command. E.g. COOKIE in version 1.1 of the protocol would cause troubles. */
+  /* Code below rewritten by Kirill Miazine (km@krot.org). Only check commands
+  that Exim will need. Original code also failed if Dovecot server sent unknown
+  command. E.g. COOKIE in version 1.1 of the protocol would cause troubles. */
   /* pdp: note that CUID is a per-connection identifier sent by the server,
-    which increments at server discretion.
-    By contrast, the "id" field of the protocol is a connection-specific request
-    identifier, which needs to be unique per request from the client and is not
-    connected to the CUID value, so we ignore CUID from server.  It's purely for
-    diagnostics. */
+  which increments at server discretion.
+  By contrast, the "id" field of the protocol is a connection-specific request
+  identifier, which needs to be unique per request from the client and is not
+  connected to the CUID value, so we ignore CUID from server.  It's purely for
+  diagnostics. */
 
   if (Ustrcmp(args[0], US"VERSION") == 0)
     {
+    uschar * version_command;
+
     CHECK_COMMAND("VERSION", 2, 2);
     if (Uatoi(args[1]) != VERSION_MAJOR)
       OUT("authentication socket protocol version mismatch");
@@ -345,15 +360,9 @@ for (;;)
     version_command = string_sprintf("VERSION\t%d\t%d\n",
 	   VERSION_MAJOR, VERSION_MINOR);
     
-    if ((
-    #ifndef DISABLE_TLS
-	cctx.tls_ctx ? tls_write(cctx.tls_ctx, version_command, Ustrlen(version_command), FALSE) :
-    #endif
-	write(cctx.sock, version_command, Ustrlen(version_command))) < 0)
+    if (dc_write(&cctx, version_command) < 0)
       HDEBUG(D_auth) debug_printf("error sending version_command: %s\n",
 	strerror(errno));
-    
-    HDEBUG(D_auth) debug_printf("  DOVECOT>> '%s'\n", version_command);
     }
   else if (Ustrcmp(args[0], US"MECH") == 0)
     {
@@ -435,15 +444,9 @@ auth_command = string_sprintf("CPID\t%d\n"
        ablock->public_name, auth_extra_data, sender_host_address,
        interface_address, data);
 
-if ((
-#ifndef DISABLE_TLS
-    cctx.tls_ctx ? tls_write(cctx.tls_ctx, auth_command, Ustrlen(auth_command), FALSE) :
-#endif
-    write(cctx.sock, auth_command, Ustrlen(auth_command))) < 0)
+if (dc_write(&cctx, auth_command) < 0)
   HDEBUG(D_auth) debug_printf("error sending auth_command: %s\n",
     strerror(errno));
-
-HDEBUG(D_auth) debug_printf("  DOVECOT>> '%s'\n", auth_command);
 
 while (1)
   {
@@ -485,14 +488,9 @@ while (1)
 	}
 
       temp = string_sprintf("CONT\t%d\t%s\n", crequid, data);
-      if ((
-#ifndef DISABLE_TLS
-	  cctx.tls_ctx ? tls_write(cctx.tls_ctx, temp, Ustrlen(temp), FALSE) :
-#endif
-	  write(cctx.sock, temp, Ustrlen(temp))) < 0)
+      if (dc_write(&cctx, temp) < 0)
 	OUT("authentication socket write error");
 
-      HDEBUG(D_auth) debug_printf("  DOVECOT>> '%s'\n", temp);
       break;
 
     case 'F':
