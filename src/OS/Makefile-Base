@@ -270,7 +270,7 @@ exicyclog: util_deps ../src/utils/exicyclog.src
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
-	  -e "/^MSGID_RE/b insert_msgid_frag" \
+	  -e "/^MSGID_RE/b mi" \
 	  -e "s?CONFIGURE_FILE_USE_NODE?$(CONFIGURE_FILE_USE_NODE)?" \
 	  -e "s?CONFIGURE_FILE_USE_EUID?$(CONFIGURE_FILE_USE_EUID)?" \
 	  -e "s?CONFIGURE_FILE?$(CONFIGURE_FILE)?" \
@@ -288,7 +288,7 @@ exicyclog: util_deps ../src/utils/exicyclog.src
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  -e "p" \
 	  -e "d" \
-	  -e ": insert_msgid_frag" \
+	  -e ": mi" \
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exicyclog.src > exicyclog-t
@@ -304,7 +304,7 @@ exinext: util_deps ../src/utils/exinext.src
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
-	  -e "/^MSGID_RE/b insert_msgid_frag" \
+	  -e "/^MSGID_RE/b mi" \
 	  -e "s?CONFIGURE_FILE_USE_NODE?$(CONFIGURE_FILE_USE_NODE)?" \
 	  -e "s?CONFIGURE_FILE?$(CONFIGURE_FILE)?" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
@@ -312,7 +312,7 @@ exinext: util_deps ../src/utils/exinext.src
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  -e "p" \
 	  -e "d" \
-	  -e ": insert_msgid_frag" \
+	  -e ": mi" \
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exinext.src > exinext-t
@@ -395,7 +395,7 @@ exigrep: util_deps ../src/utils/exigrep.src
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
-	  -e "/^MSGID_RE/b insert_msgid_frag" \
+	  -e "/^MSGID_RE/b mi" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?ZCAT_COMMAND?$(ZCAT_COMMAND)?" \
           -e "s?COMPRESS_SUFFIX?$(COMPRESS_SUFFIX)?" \
@@ -403,7 +403,7 @@ exigrep: util_deps ../src/utils/exigrep.src
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  -e "p" \
 	  -e "d" \
-	  -e ": insert_msgid_frag" \
+	  -e ": mi" \
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exigrep.src > exigrep-t
@@ -418,7 +418,7 @@ exim_msgdate: util_deps ../src/utils/exim_msgdate.src
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^[ \t]*# /p" \
 	  -e "/^[ \t]*# /d" \
-	  -e "/^MSGID_RE/b insert_msgid_frag" \
+	  -e "/^MSGID_RE/b mi" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?BASE_62?$${BASE_62:-62}?" \
@@ -427,7 +427,7 @@ exim_msgdate: util_deps ../src/utils/exim_msgdate.src
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  -e "p" \
 	  -e "d" \
-	  -e ": insert_msgid_frag" \
+	  -e ": mi" \
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exim_msgdate.src > exim_msgdate-t
@@ -454,14 +454,14 @@ exiqgrep: util_deps ../src/utils/exiqgrep.src
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
-	  -e "/^MSGID_RE/b insert_msgid_frag" \
+	  -e "/^MSGID_RE/b mi" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  -e "p" \
 	  -e "d" \
-	  -e ": insert_msgid_frag" \
+	  -e ": mi" \
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exiqgrep.src > exiqgrep-t
@@ -473,13 +473,13 @@ exiqgrep: util_deps ../src/utils/exiqgrep.src
 exiqsumm: util_deps ../src/utils/exiqsumm.src
 	@rm -f exiqsumm
 	@. ./version.sh && sed \
-	  -e "/^MSGID_RE/b insert_msgid_frag" \
+	  -e "/^MSGID_RE/b mi" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  -e "p" \
 	  -e "d" \
-	  -e ": insert_msgid_frag" \
+	  -e ": mi" \
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exiqsumm.src > exiqsumm-t
@@ -505,7 +505,7 @@ exipick: config ../src/utils/exipick.src
 exim_id_update: util_deps ../src/utils/exim_id_update.src
 	@rm -f exim_id_update
 	@. ./version.sh && sed \
-	  -e "/^MSGID_RE/b insert_msgid_frag" \
+	  -e "/^MSGID_RE/b mi" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?SPOOL_DIRECTORY?$(SPOOL_DIRECTORY)?" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
@@ -513,7 +513,7 @@ exim_id_update: util_deps ../src/utils/exim_id_update.src
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  -e "p" \
 	  -e "d" \
-	  -e ": insert_msgid_frag" \
+	  -e ": mi" \
 	  -e "s?^?# Insert ?" \
 	  -e "r ../src/utils/msgid.frag" \
 	  ../src/utils/exim_id_update.src > exim_id_update-t
