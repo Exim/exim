@@ -259,6 +259,7 @@ const auth_dovecot_options_block * ob = ablock->drinst.options_block;
 uschar buffer[DOVECOT_AUTH_MAXLINELEN];
 uschar *args[DOVECOT_AUTH_MAXFIELDCOUNT];
 uschar *auth_command;
+uschar *version_command;
 uschar *auth_extra_data = US"";
 uschar *p;
 int nargs, tmp;
@@ -340,6 +341,19 @@ for (;;)
     CHECK_COMMAND("VERSION", 2, 2);
     if (Uatoi(args[1]) != VERSION_MAJOR)
       OUT("authentication socket protocol version mismatch");
+
+    version_command = string_sprintf("VERSION\t%d\t%d\n",
+	   VERSION_MAJOR, VERSION_MINOR);
+    
+    if ((
+    #ifndef DISABLE_TLS
+	cctx.tls_ctx ? tls_write(cctx.tls_ctx, version_command, Ustrlen(version_command), FALSE) :
+    #endif
+	write(cctx.sock, version_command, Ustrlen(version_command))) < 0)
+      HDEBUG(D_auth) debug_printf("error sending version_command: %s\n",
+	strerror(errno));
+    
+    HDEBUG(D_auth) debug_printf("  DOVECOT>> '%s'\n", version_command);
     }
   else if (Ustrcmp(args[0], US"MECH") == 0)
     {
@@ -415,9 +429,9 @@ Subsequently, the command was modified to add "secured" and "valid-client-
 cert" when relevant.
 ****************************************************************************/
 
-auth_command = string_sprintf("VERSION\t%d\t%d\nCPID\t%d\n"
+auth_command = string_sprintf("CPID\t%d\n"
        "AUTH\t%d\t%s\tservice=smtp\t%srip=%s\tlip=%s\tnologin\tresp=%s\n",
-       VERSION_MAJOR, VERSION_MINOR, getpid(), crequid,
+       getpid(), crequid,
        ablock->public_name, auth_extra_data, sender_host_address,
        interface_address, data);
 
