@@ -25767,7 +25767,7 @@ option.
 
 .cindex "ESMTP extensions" LIMITS
 If the peer advertises a LIMITS extension with a MAILMAX value,
-and either TLSS is in use or was not advertised,
+and either TLS is in use or was not advertised,
 that value also constrains the result of this option.
 
 
@@ -26360,7 +26360,7 @@ permits this.
 
 .cindex "ESMTP extensions" LIMITS
 If the peer advertises a LIMITS extension with a RCPTMAX value,
-and either TLSS is in use or was not advertised,
+and either TLS is in use or was not advertised,
 that value also constrains the result of this option
 and no parallel connections will be caused on meeting the RCPTMAX limit.
 
@@ -26397,7 +26397,7 @@ sent on the connection.
 
 .cindex "ESMTP extensions" LIMITS
 If the peer advertises a LIMITS extension with a RCPTDOMAINMAX value,
-and either TLSS is in use or was not advertised,
+and either TLS is in use or was not advertised,
 this option is regarded as being false.
 
 
