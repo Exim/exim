@@ -26403,6 +26403,7 @@ this option is regarded as being false.
 
 .option port smtp string&!! "see below"
 .cindex "port" "sending TCP/IP"
+.cindex submissions "port, outbound"
 .cindex "TCP/IP" "setting outgoing port"
 This option specifies the TCP/IP port on the server to which Exim connects.
 &*Note:*& Do not confuse this with the port that was used when a message was
@@ -26413,13 +26414,16 @@ variable that contains an outgoing port.
 If the value of this option begins with a digit it is taken as a port number;
 otherwise it is looked up using &[getservbyname()]&. The default value is
 normally &"smtp"&,
-but if &%protocol%& is set to &"lmtp"& the default is &"lmtp"&
-and if &%protocol%& is set to &"smtps"& the default is &"smtps"&.
+.new
+but if &%protocol%& is set to one of &"lmtp"&, &"smtps"& or &"submissions"&
+then the default becomes that value.
+.wen
 If the expansion fails, or if a port number cannot be found, delivery
 is deferred.
 
-Note that at least one Linux distribution has been seen failing
-to put &"smtps"& in its &"/etc/services"& file, resulting is such deferrals.
+&*Note:*& some Linux distributions have been seen failing
+to put (variously) &"smtps"& or &"submissions"& in their &"/etc/services"& file,
+resulting is such deferrals.
 
 
 
@@ -26439,8 +26443,11 @@ over a pipe to a local process &-- see chapter &<<CHAPLMTP>>&.
 &*Note*&: When using LMTP it should be considered whether the default values
 for some other features, such as DANE, are appropriate.
 
-If this option is set to &"smtps"&, the default value for the &%port%& option
-changes to &"smtps"&, and the transport initiates TLS immediately after
+.new
+If this option is set to either &"smtps"& or &"submissions"&,
+the default value for the &%port%& option changes to the same value,
+.wen
+and the transport initiates TLS immediately after
 connecting, as an outbound SSL-on-connect, instead of using STARTTLS to upgrade.
 The Internet standards bodies used to strongly discourage use of this mode,
 but as of &url(https://www.rfc-editor.org/rfc/rfc8314,RFC 8314) it is preferred

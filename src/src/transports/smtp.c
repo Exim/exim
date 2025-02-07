@@ -402,6 +402,7 @@ if (!ob->port)
   ob->port = atrn_mode && *atrn_mode == 'C' ? US"odmr"
 	    : strcmpic(ob->protocol, US"lmtp") == 0 ? US"lmtp"
 	    : strcmpic(ob->protocol, US"smtps") == 0 ? US"smtps"
+	    : strcmpic(ob->protocol, US"submissions") == 0 ? US"submissions"
 	    : US"smtp";
 
 /* Set up the setup entry point, to be called before subprocesses for this
@@ -2223,14 +2224,22 @@ else
 #endif
   {
   GET_OPTION("protocol");
-  if ((sx->smtps = strcmpic(ob->protocol, US"smtps") == 0))
+  if ((sx->smtps = strcmpic(ob->protocol, US"smtps") == 0
+		|| strcmpic(ob->protocol, US"submissions") == 0))
     {
     DEBUG(D_transport)
       debug_printf(" tls-on-connect required by transport option\n");
     }
   else if ((sx->lmtp = strcmpic(ob->protocol, US"lmtp") == 0))
+    {
     DEBUG(D_transport)
       debug_printf(" LMTP required by transport option\n");
+    }
+  else if (strcmpic(ob->protocol, US"smtp") != 0)
+    {
+    DEBUG(D_transport) debug_printf(" bad protocol '%s'\n", ob->protocol);
+    return ERROR;
+    }
   }
 #ifdef EXPERIMENTAL_SRV_SMTPS
 if (sx->smtps) sx->require_tls = TRUE;

@@ -64,7 +64,7 @@ send_to_server1:
   hosts = 127.0.0.1
   port = PORT_D
   hosts_try_fastopen = :
-  protocol = smtps
+  protocol = submissions
   tls_verify_certificates =	DIR/aux-fixed/cert1
   tls_verify_cert_hostnames =	:
   helo_data = helo.data.changed
