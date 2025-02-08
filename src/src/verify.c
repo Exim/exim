@@ -1933,8 +1933,8 @@ while (addr_new)
 
       transport_feedback tf = {
         .interface =		NULL,                       /* interface (=> any) */
-        .port =			US"smtp",
-        .protocol =		US"smtp",
+        .port =			US"25",
+        .protocol =		NULL,
         .hosts =		NULL,
         .helo_data =		US"$smtp_active_hostname",
         .hosts_override =	FALSE,

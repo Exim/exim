@@ -174,7 +174,6 @@ void smtp_transport_closedown(transport_instance *tblock) {}
 smtp_transport_options_block smtp_transport_option_defaults = {
   /* All non-mentioned elements 0/NULL/FALSE */
   .helo_data =			US"$primary_hostname",
-  .protocol =			US"smtp",
   .hosts_try_chunking =		US"*",
 #ifdef SUPPORT_DANE
   .hosts_try_dane =		US"*",
@@ -326,7 +325,7 @@ if (tf)
   {
   tf->interface = ob->interface;
   tf->port = ob->port;
-  tf->protocol = ob->protocol;
+  tf->protocol = ob->protocol;		/*XXX never used? */
   tf->hosts = ob->hosts;
   tf->hosts_override = ob->hosts_override;
   tf->gethostbyname = ob->gethostbyname;
@@ -400,10 +399,12 @@ if (tblock->retry_use_local_part == TRUE_UNSET)
 
 if (!ob->port)
   ob->port = atrn_mode && *atrn_mode == 'C' ? US"odmr"
+	    : !ob->protocol ? US"25"
 	    : strcmpic(ob->protocol, US"lmtp") == 0 ? US"lmtp"
+	    : strcmpic(ob->protocol, US"smtp") == 0 ? US"smtp"
 	    : strcmpic(ob->protocol, US"smtps") == 0 ? US"smtps"
 	    : strcmpic(ob->protocol, US"submissions") == 0 ? US"submissions"
-	    : US"smtp";
+	    : US"25";
 
 /* Set up the setup entry point, to be called before subprocesses for this
 transport. */
@@ -2224,22 +2225,23 @@ else
 #endif
   {
   GET_OPTION("protocol");
-  if ((sx->smtps = strcmpic(ob->protocol, US"smtps") == 0
-		|| strcmpic(ob->protocol, US"submissions") == 0))
-    {
-    DEBUG(D_transport)
-      debug_printf(" tls-on-connect required by transport option\n");
-    }
-  else if ((sx->lmtp = strcmpic(ob->protocol, US"lmtp") == 0))
-    {
-    DEBUG(D_transport)
-      debug_printf(" LMTP required by transport option\n");
-    }
-  else if (strcmpic(ob->protocol, US"smtp") != 0)
-    {
-    DEBUG(D_transport) debug_printf(" bad protocol '%s'\n", ob->protocol);
-    return ERROR;
-    }
+  if (ob->protocol)
+    if ((sx->smtps = strcmpic(ob->protocol, US"smtps") == 0
+		  || strcmpic(ob->protocol, US"submissions") == 0))
+      {
+      DEBUG(D_transport)
+	debug_printf(" tls-on-connect required by transport option\n");
+      }
+    else if ((sx->lmtp = strcmpic(ob->protocol, US"lmtp") == 0))
+      {
+      DEBUG(D_transport)
+	debug_printf(" LMTP required by transport option\n");
+      }
+    else if (strcmpic(ob->protocol, US"smtp") != 0)
+      {
+      DEBUG(D_transport) debug_printf(" bad protocol '%s'\n", ob->protocol);
+      return ERROR;
+      }
   }
 #ifdef EXPERIMENTAL_SRV_SMTPS
 if (sx->smtps) sx->require_tls = TRUE;

@@ -26413,10 +26413,10 @@ variable that contains an outgoing port.
 
 If the value of this option begins with a digit it is taken as a port number;
 otherwise it is looked up using &[getservbyname()]&. The default value is
-normally &"smtp"&,
 .new
-but if &%protocol%& is set to one of &"lmtp"&, &"smtps"& or &"submissions"&
-then the default becomes that value.
+normally &"25"&,
+but if &%protocol%& is set to one of &"lmtp"&, &"smtp"&, &"smtps"&
+or &"submissions"& then the default becomes that value.
 .wen
 If the expansion fails, or if a port number cannot be found, delivery
 is deferred.
@@ -26427,12 +26427,18 @@ resulting is such deferrals.
 
 
 
-.option protocol smtp string smtp
+.option protocol smtp string unset
 .cindex "LMTP" "over TCP/IP"
 .cindex "ssmtp protocol" "outbound"
 .cindex "TLS" "SSL-on-connect outbound"
 .vindex "&$port$&"
-If this option is set to &"lmtp"& instead of &"smtp"&, the default value for
+.new
+If the option is not set (the default), or is set to &"smtp"&,
+then the transport operates using the SMTP protocol
+and the default for the &%port%& option becomes &"25"&.
+.wen
+
+If this option is set to &"lmtp"&, the default value for
 the &%port%& option changes to &"lmtp"&, and the transport operates the LMTP
 protocol
 (&url(https://www.rfc-editor.org/rfc/rfc2033,RFC 2033)) instead of SMTP.

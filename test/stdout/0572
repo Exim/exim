@@ -67,7 +67,7 @@ max_rcpt = 100
 message_linelength_limit = 998
 multi_domain
 port = PORT_S
-protocol = smtp
+protocol = 
 retry_include_ip_address
 serialize_hosts = 
 size_addition = 1024
