@@ -818,11 +818,11 @@ typedef struct sha1 {
 
 /* Information for making an smtp connection */
 typedef struct {
-  transport_instance *  tblock;
+  transport_instance *	tblock;
   void *		ob;	/* smtp_transport_options_block * */
-  host_item *           host;
-  int                   host_af;
-  uschar *              interface;
+  host_item *		host;
+  int			host_af;
+  const uschar *	interface;
 
   int			sock;	/* used for a bound but not connected socket */
   uschar *		sending_ip_address;	/* used for TLS resumption */
@@ -830,7 +830,7 @@ typedef struct {
   BOOL			have_lbserver:1;	/* host_lbserver is valid */
 
 #ifdef SUPPORT_DANE
-  BOOL dane:1;				/* TLSA says connection must do dane */
+  BOOL			dane:1;		/* TLSA says connection must do dane */
   dns_answer		tlsa_dnsa;	/* strictly, this should use tainted mem */
 #endif
 } smtp_connect_args;

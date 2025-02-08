@@ -3950,9 +3950,9 @@ Returns:          OK    - the connection was made and the delivery attempted;
 */
 
 static int
-smtp_deliver(address_item *addrlist, host_item *host, int host_af, int defport,
-  uschar *interface, transport_instance *tblock,
-  BOOL *message_defer, BOOL suppress_tls)
+smtp_deliver(address_item * addrlist, host_item * host, int host_af,
+  int defport, const uschar * interface, transport_instance * tblock,
+  BOOL * message_defer, BOOL suppress_tls)
 {
 smtp_transport_options_block * ob = tblock->drinst.options_block;
 const uschar * trname = tblock->drinst.name;
@@ -5637,7 +5637,7 @@ retry_non_continued:
     int rc, host_af;
     BOOL host_is_expired = FALSE, message_defer = FALSE, some_deferred = FALSE;
     address_item * first_addr = NULL;
-    uschar * interface = NULL;
+    const uschar * interface = NULL;
     const uschar * retry_host_key = NULL, * retry_message_key = NULL;
     uschar * serialize_key = NULL;
 

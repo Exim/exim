@@ -157,7 +157,7 @@ Returns:         the result of bind()
 */
 
 int
-ip_bind(int sock, int af, uschar *address, int port)
+ip_bind(int sock, int af, const uschar * address, int port)
 {
 union sockaddr_46 sin;
 int s_len = ip_addr(&sin, af, address, port);

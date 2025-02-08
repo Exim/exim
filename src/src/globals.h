@@ -483,7 +483,7 @@ typedef struct {
   client_conn_ctx cctx;                /* Open connection */
   int          nrcpt;                  /* Count of addresses */
   uschar *     transport;	       /* Name of transport */
-  uschar *     interface;              /* (address of) */
+  const uschar * interface;            /* (address of) */
   uschar *     snd_ip;		       /* sending_ip_address */
   int	       snd_port;	       /* sending_port */
   unsigned     peer_options;	       /* smtp_peer_options */

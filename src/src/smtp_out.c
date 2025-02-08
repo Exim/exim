@@ -37,11 +37,11 @@ Returns:     TRUE on success, FALSE on failure, with error message
 */
 
 BOOL
-smtp_get_interface(uschar *istring, int host_af, address_item *addr,
-  uschar **interface, uschar *msg)
+smtp_get_interface(const uschar * istring, int host_af, address_item * addr,
+  const uschar ** interface, const uschar * msg)
 {
 const uschar * expint;
-uschar *iface;
+uschar * iface;
 int sep = 0;
 
 if (!istring) return TRUE;
@@ -110,9 +110,10 @@ Returns:      TRUE on success, FALSE on failure, with error message set
 */
 
 BOOL
-smtp_get_port(uschar *rstring, address_item *addr, int *port, uschar *msg)
+smtp_get_port(const uschar * rstring, address_item * addr,
+  int * port, const uschar * msg)
 {
-uschar *pstring = expand_string(rstring);
+const uschar * pstring = expand_string(rstring);
 
 if (!pstring)
   {
@@ -124,7 +125,7 @@ if (!pstring)
 
 if (isdigit(*pstring))
   {
-  uschar *end;
+  uschar * end;
   *port = Ustrtol(pstring, &end, 0);
   if (end != pstring + Ustrlen(pstring))
     {
@@ -137,7 +138,7 @@ if (isdigit(*pstring))
 
 else
   {
-  struct servent *smtp_service = getservbyname(CS pstring, "tcp");
+  struct servent *smtp_service = getservbyname(CCS pstring, "tcp");
   if (!smtp_service)
     {
     addr->transport_return = PANIC;

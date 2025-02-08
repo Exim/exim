@@ -356,9 +356,8 @@ if (addr->transport == cutthrough.addr.transport)
   for (host_item * host = host_list; host; host = host->next)
     if (Ustrcmp(host->address, cutthrough.host.address) == 0)
       {
-      int host_af;
-      uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
-      int port = 25;
+      int port = 25, host_af;
+      const uschar * interface = NULL;  /* Outgoing i/f to use; NULL => any */
 
       deliver_host = host->name;
       deliver_host_address = host->address;
@@ -661,9 +660,8 @@ coding means skipping this whole loop and doing the append separately.  */
 
   for (host_item * host = host_list; host && !done; host = host->next)
     {
-    int host_af;
-    int port = 25;
-    uschar * interface = NULL;  /* Outgoing interface to use; NULL => any */
+    int port = 25, host_af;
+    const uschar * interface = NULL;  /* Outgoing interface to use; NULL=>any */
 
     if (!host->address)
       {
@@ -697,6 +695,7 @@ coding means skipping this whole loop and doing the append separately.  */
     transport_name = addr->transport->drinst.name;
 
     GET_OPTION("interface");
+    GET_OPTION("port");
     if (  !smtp_get_interface(tf->interface, host_af, addr, &interface,
             US"callout")
        || !smtp_get_port(tf->port, addr, &port, US"callout")
