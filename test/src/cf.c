@@ -129,9 +129,8 @@ printf("cmp large1 large2 -buffer 200000 -noecho -to diffs\n");
 *               Errors -- all serious           *
 ************************************************/
 
-void moan(code, text)
-int code;
-char *text;
+void
+moan(int code, char * text)
 {
 fprintf(stderr, "\n** ");
 switch (code)
@@ -169,9 +168,8 @@ exit(99);
 *         Write line identification              *
 *************************************************/
 
-void write_id(n1, n2, c, name, p1, p2)
-int n1, n2, c;
-char *name, *p1, *p2;
+void
+write_id(int n1, int n2, int c, char * name, char * p1, char * p2)
 {
 if (n2 < 0) n2 = -n2;
 n2 -= 1;
@@ -185,8 +183,8 @@ if (n1 == n2) fprintf(f_out, " %d of \"%s\"%s", n1, name, p1);
 *           Write sequence of lines              *
 *************************************************/
 
-void write_lines(s, t)
-line *s, *t;
+void
+write_lines(line * s, line * t)
 {
 while (s != t)
   {
@@ -203,8 +201,8 @@ while (s != t)
 *           Write separator rule                 *
 *************************************************/
 
-void rule(s, l)
-int s, l;
+void
+rule(int s, int l)
 {
 while (l-- > 0) fprintf(f_out, "%c", s);
 fprintf(f_out, "\n");
@@ -216,8 +214,8 @@ fprintf(f_out, "\n");
 *          Write message on re-sync or eof       *
 *************************************************/
 
-void write_message(tline_one, tline_two)
-line *tline_one, *tline_two;
+void
+write_message(line * tline_one, line * tline_two)
 {
 int s1 = rootline_one->number;
 int t1 = tline_one->number;
@@ -292,14 +290,16 @@ else
 /* A separate procedure exists for each file, for
 simplicity and efficiency. */
 
-int nextline_one(pvoid)
+int
+nextline_one(pvoid)
 {
 if (pline_one == NULL || pline_one->next == NULL) return FALSE;
 pline_one = pline_one->next;
 return TRUE;
 }
 
-int nextline_two(pvoid)
+int
+nextline_two(pvoid)
 {
 if (pline_two == NULL || pline_two->next == NULL) return FALSE;
 pline_two = pline_two->next;
@@ -314,7 +314,8 @@ return TRUE;
 /* A separate procedure exists for each file, for
 simplicity and efficiency. */
 
-void readline_one(pvoid)
+void
+readline_one(pvoid)
 {
 int count = 0;
 int c = fgetc(f_one);
@@ -363,7 +364,8 @@ bufnext_one = (char *) (((intptr_t)bufnext_one+ sizeof (intptr_t) - 1)  & (-(siz
 
 
 
-void readline_two(pvoid)
+void
+readline_two(pvoid)
 {
 int count = 0;
 int c = fgetc(f_two);
@@ -416,8 +418,8 @@ bufnext_two = (char *) (((intptr_t)bufnext_two+ sizeof (intptr_t) - 1)  & (-(siz
 *              Compare two lines                  *
 **************************************************/
 
-int compare_lines(a, b)
-line *a, *b;
+int
+compare_lines(line * a, line * b)
 {
 int n1 = a->number;
 int n2 = b->number;
@@ -441,7 +443,8 @@ return FALSE;
 *             Re-synchronizing code              *
 *************************************************/
 
-int resync(pvoid)
+int
+resync(pvoid)
 {
 int i;
 int matched = TRUE;
@@ -474,7 +477,8 @@ return matched;
 *                 Main compare code              *
 *************************************************/
 
-void compare(pvoid)
+void
+compare(pvoid)
 {
 int matched = TRUE;
 
@@ -574,9 +578,8 @@ write_message(lastline_one, lastline_two);
 *                   Entry Point                  *
 *************************************************/
 
-int main(argc, argv)
-int argc;
-char **argv;
+int
+main(int argc, char ** argv)
 {
 int argp = 1;
 int arg_id = FALSE;

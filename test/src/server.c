@@ -227,7 +227,7 @@ while (na < argc && argv[na][0] == '-')
   else if (strcmp(argv[na], "-tfo") == 0) tfo = 1;
   else if (strcmp(argv[na], "-t") == 0)
     {
-    if (tmo_noerror = ((timeout = atoi(argv[++na])) < 0)) timeout = -timeout;
+    if ((tmo_noerror = ((timeout = atoi(argv[++na])) < 0))) timeout = -timeout;
     }
   else if (strcmp(argv[na], "-i") == 0) initial_pause = atoi(argv[++na]);
   else if (strcmp(argv[na], "-noipv4") == 0) use_ipv4 = 0;
