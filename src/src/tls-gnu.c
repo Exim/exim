@@ -3249,9 +3249,7 @@ if (rc != GNUTLS_E_SUCCESS)
     millisleep(500);
     shutdown(state->fd_out, SHUT_WR);
     for (int i = 1024; fgetc(smtp_in) != EOF && i > 0; ) i--;	/* drain skt */
-    (void)fclose(smtp_out);
-    (void)fclose(smtp_in);
-    smtp_out = smtp_in = NULL;
+    smtp_inout_fclose();
     }
 
   return FAIL;

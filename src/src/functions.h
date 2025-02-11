@@ -1510,6 +1510,17 @@ int res;
 return !s || !*s || (res = Uatoi(s)) == 0 ? UNLIMITED_ADDRS : res;
 }
 
+
+
+static inline void
+smtp_inout_fclose(void)
+{
+(void) fclose(smtp_in);
+(void) fclose(smtp_out);
+smtp_in = smtp_out = NULL;
+}
+
+
 /******************************************************************************/
 /* Queue-runner operations */
 

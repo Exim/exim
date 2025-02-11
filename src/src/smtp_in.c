@@ -2888,8 +2888,7 @@ if (code > 0)
 #ifndef DISABLE_TLS
     tls_close(NULL, TLS_SHUTDOWN_WAIT);
 #endif
-    (void) fclose(smtp_in);
-    (void) fclose(smtp_out);
+    smtp_inout_fclose();
     }
   }
 
@@ -3257,8 +3256,7 @@ close() results in the socket always lingering). */
 
 (void) poll_one_fd(fileno(smtp_in), POLLIN, 200);
 DEBUG(D_any) debug_printf_indent("SMTP(close)>>\n");
-(void) fclose(smtp_in);
-(void) fclose(smtp_out);
+smtp_inout_fclose();
 
 return 2;
 }
@@ -5790,8 +5788,7 @@ while (done <= 0)
       if ((pid = exim_fork(US"etrn-command")) == 0)
 	{
 	smtp_input = FALSE;       /* This process is not associated with the */
-	(void)fclose(smtp_in);    /* SMTP call any more. */
-	(void)fclose(smtp_out);
+	smtp_inout_fclose();	  /* SMTP call any more. */
 
 	signal(SIGCHLD, SIG_DFL);      /* Want to catch child */
 
