@@ -426,11 +426,19 @@ if (alternate)    alternate = string_sprintf("*@%s", alternate);
 
 /* Scan the configured retry items. */
 
+DEBUG(D_retry) acl_level++;
 for (yield = retries; yield; yield = yield->next)
   {
-  const uschar *plist = yield->pattern;
-  const uschar *slist = yield->senders;
+  const uschar * plist = yield->pattern, * slist = yield->senders;
 
+  DEBUG(D_retry)
+    {
+    acl_level--;
+    debug_printf_indent("Check retry rule (%s:%d) '%s'\n",
+				      yield->srcfile, yield->srcline, plist);
+    acl_level++;
+    }
+  
   /* If a specific error is set for this item, check that we are handling that
   specific error, and if so, check any additional error information if
   required. */
@@ -535,6 +543,7 @@ for (yield = retries; yield; yield = yield->next)
      )  )
     break;
   }
+DEBUG(D_retry) acl_level--;
 
 return yield;
 }

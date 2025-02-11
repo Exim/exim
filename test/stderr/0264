@@ -88,10 +88,14 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   rz.b@outside
-   *@outside in "^\*@r5domain.ex"? no (end of list)
-   *@outside in "userx@test.ex"? no (end of list)
-   outside in "test.ex"? no (end of list)
-   *@outside in "test.ex"? no (end of list)
+   Check retry rule (TESTSUITE/test-config:78) '^\\*@r5domain.ex'
+   ╎*@outside in "^\*@r5domain.ex"? no (end of list)
+   Check retry rule (TESTSUITE/test-config:79) 'userx@test.ex'
+   ╎*@outside in "userx@test.ex"? no (end of list)
+   Check retry rule (TESTSUITE/test-config:80) 'test.ex'
+   ╎outside in "test.ex"? no (end of list)
+   ╎*@outside in "test.ex"? no (end of list)
+   Check retry rule (TESTSUITE/test-config:82) '*'
    retry for R:outside = * 0 0
    failing_interval=ttt message_age=ttt
    Writing retry data for R:outside

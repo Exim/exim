@@ -30,6 +30,7 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   x@y
+   Check retry rule (TESTSUITE/test-config:34) '*'
    retry for R:x@y:<CALLER@myhost.test.ex> = * 0 0
    failing_interval=ttt message_age=ttt
    Writing retry data for R:x@y:<CALLER@myhost.test.ex>

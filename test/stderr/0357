@@ -38,6 +38,7 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   userx@test.ex
+   Check retry rule (TESTSUITE/test-config:36) '*'
    retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
    failing_interval=ttt message_age=ttt
    Writing retry data for R:userx@test.ex:<CALLER@test.ex>
@@ -94,6 +95,7 @@ Processing retry items
   userx@test.ex
    deleted retry information for R:userx@test.ex
    deleted retry information for R:test.ex
+   Check retry rule (TESTSUITE/test-config:36) '*'
    retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
    failing_interval=ttt message_age=ttt
    Writing retry data for R:userx@test.ex:<CALLER@test.ex>
@@ -152,6 +154,7 @@ Processing retry items
   userx@test.ex
    deleted retry information for R:userx@test.ex
    deleted retry information for R:test.ex
+   Check retry rule (TESTSUITE/test-config:36) '*'
    retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
    failing_interval=ttt message_age=ttt
    Writing retry data for R:userx@test.ex:<CALLER@test.ex>
@@ -176,6 +179,7 @@ checking router retry status
  have address retry record; next_try = now+0
 retry time not reached: checking ultimate address timeout
   now=tttt first_failed=tttt next_try=tttt expired=F
+Check retry rule (TESTSUITE/test-config:36) '*'
   received_time=tttt diff=tttt timeout=3600
 LOG: retry_defer MAIN
   == userx@test.ex routing defer (-52): retry time not reached

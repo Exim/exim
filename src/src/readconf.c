@@ -4259,6 +4259,8 @@ while ((p = get_config_line()))
   next->next = NULL;
   *chain = next;
   chain = &(next->next);
+  next->srcline = config_lineno; 
+  next->srcfile = config_filename;
   next->basic_errno = next->more_errno = 0;
   next->senders = NULL;
   next->rules = NULL;

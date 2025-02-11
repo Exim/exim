@@ -710,12 +710,14 @@ typedef struct retry_rule {
 } retry_rule;
 
 typedef struct retry_config {
-  struct retry_config *next;
-  uschar *pattern;
-  int     basic_errno;
-  int     more_errno;
-  uschar *senders;
-  retry_rule *rules;
+  struct retry_config *	next;
+  int			srcline;
+  const uschar *	srcfile;
+  uschar *		pattern;
+  int			basic_errno;
+  int			more_errno;
+  uschar *		senders;
+  retry_rule *		rules;
 } retry_config;
 
 /* Structure for each node in a tree, of which there are various kinds */

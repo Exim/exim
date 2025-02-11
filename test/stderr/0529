@@ -38,6 +38,8 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   TESTSUITE/test-mail/rmbox
+   Check retry rule (TESTSUITE/test-config:35) '*@test.ex'
+   Check retry rule (TESTSUITE/test-config:36) '*@test.ex'
    retry for T:TESTSUITE/test-mail/rmbox:x@test.ex = *@test.ex -22 0
    failing_interval=ttt message_age=ttt
    Writing retry data for T:TESTSUITE/test-mail/rmbox:x@test.ex
@@ -72,6 +74,8 @@ retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
 retry time not reached: checking ultimate address timeout
   now=tttt first_failed=tttt next_try=tttt expired=F
+Check retry rule (TESTSUITE/test-config:35) '*@test.ex'
+Check retry rule (TESTSUITE/test-config:36) '*@test.ex'
   received_time=tttt diff=tttt timeout=259200
 LOG: retry_defer MAIN
   == TESTSUITE/test-mail/rmbox <x@test.ex> R=r1 T=t1 defer (-53): Retry time not yet reached

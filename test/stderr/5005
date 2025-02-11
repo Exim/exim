@@ -538,13 +538,14 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   userx@test.ex
-   userx@test.ex in "*"?
-   ╎list element: *
-   ╎address match test: subject=userx@test.ex pattern=*
-   ╎test.ex in "*"?
+   Check retry rule (TESTSUITE/test-config:42) '*'
+   ╎userx@test.ex in "*"?
    ╎ list element: *
-   ╎ test.ex in "*"? yes (matched "*")
-   ╎userx@test.ex in "*"? yes (matched "*")
+   ╎ address match test: subject=userx@test.ex pattern=*
+   ╎ test.ex in "*"?
+   ╎  list element: *
+   ╎  test.ex in "*"? yes (matched "*")
+   ╎ userx@test.ex in "*"? yes (matched "*")
    retry for T:userx@test.ex = * 0 0
    dbfn_read: key=T:userx@test.ex
    dbfn_read: null return
@@ -725,13 +726,14 @@ Processing retry items
  Failed addresses:
  Deferred addresses:
   userx@test.ex
-   userx@test.ex in "*"?
-   ╎list element: *
-   ╎address match test: subject=userx@test.ex pattern=*
-   ╎test.ex in "*"?
+   Check retry rule (TESTSUITE/test-config:42) '*'
+   ╎userx@test.ex in "*"?
    ╎ list element: *
-   ╎ test.ex in "*"? yes (matched "*")
-   ╎userx@test.ex in "*"? yes (matched "*")
+   ╎ address match test: subject=userx@test.ex pattern=*
+   ╎ test.ex in "*"?
+   ╎  list element: *
+   ╎  test.ex in "*"? yes (matched "*")
+   ╎ userx@test.ex in "*"? yes (matched "*")
    retry for T:userx@test.ex = * 0 0
    dbfn_read: key=T:userx@test.ex
    dbfn_read: size nnn return
