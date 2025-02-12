@@ -52,6 +52,8 @@ atrn_mode = US"P";
 atrn_host = string_sprintf("[%s]:%d",
 			  sender_host_address, sender_host_port);
 
+if (!smtp_out) return FAIL;
+
 #ifndef DISABLE_TLS
 if (tls_in.active.sock >= 0)
   tls_state_in_to_out(0, sender_host_address, sender_host_port);

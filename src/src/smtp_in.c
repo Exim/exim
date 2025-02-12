@@ -506,7 +506,7 @@ smtp_refill(unsigned lim)
 {
 int rc, save_errno;
 
-if (!smtp_out) return FALSE;
+if (!smtp_out || !smtp_in) return FALSE;
 fflush(smtp_out);
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 
@@ -1065,12 +1065,13 @@ if (fl.rcpt_in_progress)
 
 /* Now write the string */
 
-if (
+if (  !smtp_out
+   || (
 #ifndef DISABLE_TLS
-    tls_in.active.sock >= 0 ? (tls_write(NULL, gs.s, gs.ptr, more) < 0) :
+      tls_in.active.sock >= 0 ? (tls_write(NULL, gs.s, gs.ptr, more) < 0) :
 #endif
-    (fwrite(gs.s, gs.ptr, 1, smtp_out) == 0)
-   )
+      (fwrite(gs.s, gs.ptr, 1, smtp_out) == 0)
+   )  )
     smtp_write_error = -1;
 }
 
@@ -2045,6 +2046,8 @@ return FALSE;
 static void
 tfo_in_check(void)
 {
+if (!smtp_out)  return;
+
 # ifdef __FreeBSD__
 int is_fastopen;
 socklen_t len = sizeof(is_fastopen);
@@ -2441,8 +2444,9 @@ if (!f.sender_host_unknown)
 
     DEBUG(D_receive) debug_printf("checking for IP options\n");
 
-    if (getsockopt(fileno(smtp_out), IPPROTO_IP, IP_OPTIONS, US ipopt,
-          &optlen) < 0)
+    if (  !smtp_out
+       || getsockopt(fileno(smtp_out), IPPROTO_IP, IP_OPTIONS, US ipopt,
+		    &optlen) < 0)
       {
       if (errno != ENOPROTOOPT)
         {
@@ -2471,7 +2475,7 @@ if (!f.sender_host_unknown)
   setting is an attempt to get rid of some hanging connections that stick in
   read() when the remote end (usually a dialup) goes away. */
 
-  if (smtp_accept_keepalive && !f.sender_host_notsocket)
+  if (smtp_accept_keepalive && !f.sender_host_notsocket && smtp_out)
     ip_keepalive(fileno(smtp_out), sender_host_address, FALSE);
 
   /* If the current host matches host_lookup, set the name by doing a
@@ -3659,7 +3663,9 @@ if (  acl_smtp_quit
       *log_msgp);
 
 #ifdef EXIM_TCP_CORK
-(void) setsockopt(fileno(smtp_out), IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
+if (smtp_out)
+  (void) setsockopt(fileno(smtp_out), IPPROTO_TCP, EXIM_TCP_CORK,
+		    US &on, sizeof(on));
 #endif
 
 if (*user_msgp)
@@ -4425,7 +4431,8 @@ while (done <= 0)
       /* Terminate the string (for debug), write it, and note that HELO/EHLO
       has been seen. */
 
-       {
+      if (smtp_out)
+        {
 	uschar * ehlo_resp;
 	int len = len_string_from_gstring(g, &ehlo_resp);
 #ifndef DISABLE_TLS
@@ -4447,7 +4454,7 @@ while (done <= 0)
 			  s == g->s ? "SMTP>>" : "      ",
 			  (int)(t - s), s);
 	fl.helo_seen = TRUE;
-       }
+        }
 
       /* Reset the protocol and the state, abandoning any previous message. */
       received_protocol =
@@ -5421,7 +5428,7 @@ while (done <= 0)
       rc = acl_check(ACL_WHERE_EXPN, NULL, acl_smtp_expn, &user_msg, &log_msg);
       if (rc != OK)
 	done = smtp_handle_acl_fail(ACL_WHERE_EXPN, rc, user_msg, log_msg);
-      else
+      else if (smtp_out)
 	{
 	BOOL save_log_testing_mode = f.log_testing_mode;
 	f.address_test_mode = f.log_testing_mode = TRUE;

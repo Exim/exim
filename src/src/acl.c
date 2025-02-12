@@ -3534,6 +3534,7 @@ for (; cb; cb = cb->next)
 	    int fd, af, socklevel, optname, value;
 	    /* If we are acting on stdin, the setsockopt may fail if stdin is not
 	    a socket; we can accept that, we'll just debug-log failures anyway. */
+	    if (!smtp_in) return ERROR;
 	    fd = fileno(smtp_in);
 	    if ((af = ip_get_address_family(fd)) < 0)
 	      {

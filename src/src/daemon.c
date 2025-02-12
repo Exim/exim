@@ -564,7 +564,7 @@ if (pid == 0)
 
     if ((rc = smtp_setup_msg()) <= 0)		/* bad smtp_setup_msg() */
       {
-      if (smtp_out)
+      if (smtp_out && smtp_in)
 	{
 	int fd = fileno(smtp_in);
 	uschar buf[128];

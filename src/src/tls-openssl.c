@@ -3458,6 +3458,8 @@ BOOL verify_client_cert = FALSE;
 #endif
 static uschar peerdn[256];
 
+if (!smtp_out) return FAIL;
+
 /* Check for previous activation */
 
 if (tls_in.active.sock >= 0)

@@ -720,9 +720,9 @@ if (smtp_input)
 #ifndef DISABLE_TLS
   tls_close(NULL, TLS_NO_SHUTDOWN);      /* Shut down the TLS library */
 #endif
-  (void)close(fileno(smtp_in));
-  (void)close(fileno(smtp_out));
-  smtp_in = NULL;
+  (void)close(fileno(smtp_in));		/* Not smtp_inout_fclose() here       */
+  (void)close(fileno(smtp_out));	/* as we want to discard stdio buffer */
+  smtp_out = smtp_in = NULL;
   }
 else
   {

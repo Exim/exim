@@ -3107,6 +3107,8 @@ tls_server_start(uschar ** errstr, gstring * banner)
 int rc;
 exim_gnutls_state_st * state = NULL;
 
+if (!smtp_out) return FAIL;
+
 /* Check for previous activation */
 if (tls_in.active.sock >= 0)
   {
