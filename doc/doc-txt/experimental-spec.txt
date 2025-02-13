@@ -649,7 +649,7 @@ After a success:
 
 SRV SMTPS
 ---------------------------------------------------------------
-Per https://www.ietf.org/archive/id/draft-nurpmeso-smtp-tls-srv-03.html
+Per https://www.ietf.org/archive/id/draft-nurpmeso-smtp-tls-srv-05.html
 
 If compiled with EXPERIMENTAL_SRV_SMTPS=yes :-
 
@@ -659,12 +659,18 @@ or can do STARTTLS on the usual port (25).  In either case the
 record is equivalent to an MX record.
 
 The Exim implementation uses the existing smtp transport "check_srv"
-option; if it has a value of "smtps" and the SRV lookup succeeds
+option; if it has a value of "smtp-tls" and the SRV lookup succeeds
 with a port number other than 25 then that port is used for a tls-on-connect
-connection.  If the port number is 25, a standard connection is used but
-STARTTLS must succeed.
+connection.  If the connect fails then a fallback of STARTTLS on 25 (or the
+port from the transport option, if set) is tried.
 
-Note that the option value can be a list.  Elements are used in
+If the SRV-discovered port number is 25 a standard connection is used,
+with STARTTLS.
+
+In all cases, if the SRV lookup succeeds for the "smtp-tls" value
+only encrypted connections are used.
+
+Note that the "check_srv" option value can be a list.  Elements are used in
 left-to-right order for SRV lookups, until one succeeds or there are
 none left.  If a SRV lookup succeeds then no MX lookup is done.
 If none succeed then the normal sequence of MX and A/AAAA lookups is done.

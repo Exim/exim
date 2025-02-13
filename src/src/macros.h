@@ -1221,6 +1221,12 @@ When doing en extended loop of matching, release store periodically. */
 #define GET_OPTION(name) \
   DEBUG(D_expand) debug_printf("try option " name "\n");
 
+
+#ifdef EXPERIMENTAL_SRV_SMTPS
+/* Service name for the feature; used in DNS SRV RRs */
+# define SRV_SMTPS_SERVICE_NAME	"smtp-tls"	/* Per version 5 draft */
+#endif
+
 #endif	/* whole file */
 /* End of macros.h */
 /* vi: aw ai sw=2

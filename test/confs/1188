@@ -1,6 +1,6 @@
 # Exim test configuration 1188
 
-OPTION = smtps
+OPTION = smtp-tls
 PORT = PORT_N
 VALUE = lmtp
 

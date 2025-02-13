@@ -2629,7 +2629,7 @@ if (whichrrs & HOST_FIND_BY_SRV)
     else if (rc == DNS_SUCCEED)
       {
 #ifdef EXPERIMENTAL_SRV_SMTPS
-      if (Ustrcmp(srv_service, "smtps") == 0)
+      if (Ustrcmp(srv_service, SRV_SMTPS_SERVICE_NAME) == 0)
 	srv_smtps = TRUE;			/* force tls-on-connect */
 #endif
       break;				/* walking the service names list */

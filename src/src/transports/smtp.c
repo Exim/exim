@@ -2485,11 +2485,35 @@ if (!continue_hostname || atrn_domains)
       {
       blob lazy_conn = {.data = NULL};
       /* For TLS-connect, a TFO lazy-connect is useful since the Client Hello
-      can go on the TCP SYN. */
+      can go on the TCP SYN. However this means we also have to deal with
+      SRV_SMTPS fallback on connect fail below at tls-startup. */
 
       if ((sx->cctx.sock = smtp_connect(&sx->conn_args,
 			      sx->smtps ? &lazy_conn : NULL)) < 0)
 	{
+# ifdef EXPERIMENTAL_SRV_SMTPS
+	/* Possibly the path was blocked for the port. Per version 5 draft,
+	retry in a more traditional mode. */
+
+	if (sx->conn_args.host->tls_needs == SRV_TLS_ON_CONNECT)
+	  {
+  SRV_SMTPS_RETRY:
+	  DEBUG(D_transport)
+	    debug_printf(" TCP connect failed for port %d;"
+	      " retrying with require-STARTTLS on tpt option port\n", sx->port);
+	  sx->smtps = FALSE;
+	  /* sx->require_tls remains set */
+	  sx->conn_args.host->tls_needs = SRV_STARTTLS_MUST;
+
+	  GET_OPTION("port");
+	  if (smtp_get_port(ob->port, sx->addrlist, &sx->port,
+				    sx->conn_args.tblock->drinst.name))
+	    {
+	    sx->conn_args.host->port = sx->port;
+	    goto PIPE_CONNECT_RETRY;
+	    }
+	  }
+# endif
 	set_errno_nohost(sx->addrlist,
 	  errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : errno,
 	  sx->verify ? US strerror(errno) : NULL,
@@ -2927,6 +2951,14 @@ if (  smtp_peer_options & OPTION_TLS
        && !tls_client_start(&sx->cctx, &sx->conn_args, sx->addrlist, &tls_out,
 			    &tls_errstr))
       {
+# ifdef EXPERIMENTAL_SRV_SMTPS
+      /* Possibly the path was blocked for the port. Per version 5 draft,
+      retry in a more traditional mode. */
+
+      if (sx->conn_args.host->tls_needs == SRV_TLS_ON_CONNECT)
+	goto SRV_SMTPS_RETRY;
+# endif
+
       /* TLS negotiation failed; give an error. From outside, this function may
       be called again to try in clear on a new connection, if the options permit
       it for this host. */

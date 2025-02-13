@@ -4,7 +4,7 @@ need_ipv4
 # We can only test the on-connect case; the testsuite cannot handle
 # (in fact, specifically avoids using) port 25.
 #
-exim -DSERVER=server -bd -oX PORT_D
+exim -DSERVER=server -bd -oX PORT_D:PORT_D2
 ****
 #
 # Actually send a message to a port specified in the SRV record.
@@ -29,7 +29,11 @@ exim -DPORT=PORT_D -DVALUE=smtp -odi x4@thishost.test.ex
 ****
 #
 # multiple-entry check_srv option
-exim -DOPTION=bogus:smtps:smtp -odi x5@test.ex
+exim -DOPTION=bogus:smtp-tls:smtp -odi x5@test.ex
+****
+#
+# test for fallback to required-STARTTLS-25 (actually, port per tpt option)
+exim -DPORT=PORT_D2 -odi x6@noport.test.ex
 ****
 #
 killdaemon

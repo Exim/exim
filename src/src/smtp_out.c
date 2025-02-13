@@ -355,7 +355,6 @@ int sock;
 int save_errno = 0;
 const blob * fastopen_blob = NULL;
 
-
 #ifndef DISABLE_EVENT
 deliver_host_address = sc->host->address;
 deliver_host_port = sc->host->port;

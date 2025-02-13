@@ -407,7 +407,8 @@ _smtp2._tcp.srv03   SRV  0 0 88 ten-4.test.ex.
 
 _smtp._tcp.srv27    SRV  0 0 PORT_S localhost
 
-_smtps._tcp         SRV  42 2 PORT_D localhost
+_smtp-tls._tcp        SRV  42 2 PORT_D localhost
+_smtp-tls._tcp.noport SRV  42 2 PORT_N localhost
 
 
 ; -------- With some for CSA testing plus their A records -------
