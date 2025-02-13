@@ -4132,6 +4132,26 @@ return yield;
 *          Evaluate numeric expression           *
 *************************************************/
 
+static inline void
+eval_dbg_op_2(const uschar * op, int_eximarith_t a, int_eximarith_t b)
+{
+DEBUG(D_expand)
+  debug_printf_indent("eval " PR_EXIM_ARITH " %s " PR_EXIM_ARITH, a, op, b);
+}
+static inline void
+eval_dbg_res(int_eximarith_t res)
+{
+DEBUG(D_expand) debug_printf(" => " PR_EXIM_ARITH "\n", res);
+}
+static inline void
+eval_dbg(const uschar * op, int_eximarith_t res)
+{
+DEBUG(D_expand)
+  debug_printf_indent("eval '%s' res: " PR_EXIM_ARITH "\n", op, res);
+}
+
+
+
 /* This is a set of mutually recursive functions that evaluate an arithmetic
 expression involving + - * / % & | ^ ~ << >> and parentheses. The only one of
 these functions that is called from elsewhere is eval_expr, whose interface is:
@@ -4152,7 +4172,7 @@ static int_eximarith_t eval_op_or(uschar **, BOOL, uschar **);
 static int_eximarith_t
 eval_expr(uschar **sptr, BOOL decimal, uschar **error, BOOL endket)
 {
-uschar *s = *sptr;
+uschar * s = *sptr;
 int_eximarith_t x = eval_op_or(&s, decimal, error);
 
 if (!*error)
@@ -4173,33 +4193,39 @@ eval_number(uschar **sptr, BOOL decimal, uschar **error)
 {
 int c;
 int_eximarith_t n;
-uschar *s = *sptr;
+uschar * s = *sptr;
 
-if (isdigit((c = Uskip_whitespace(&s))))
+expand_level++;
   {
-  int count;
-  (void)sscanf(CS s, (decimal? SC_EXIM_DEC "%n" : SC_EXIM_ARITH "%n"), &n, &count);
-  s += count;
-  switch (tolower(*s))
+  if (isdigit((c = Uskip_whitespace(&s))))
     {
-    default: break;
-    case 'k': n *= 1024; s++; break;
-    case 'm': n *= 1024*1024; s++; break;
-    case 'g': n *= 1024*1024*1024; s++; break;
+    int count;
+    (void)sscanf(CS s, (decimal? SC_EXIM_DEC "%n" : SC_EXIM_ARITH "%n"), &n, &count);
+    s += count;
+    switch (tolower(*s))
+      {
+      default: break;
+      case 'k': n *= 1024; s++; break;
+      case 'm': n *= 1024*1024; s++; break;
+      case 'g': n *= 1024*1024*1024; s++; break;
+      }
+    Uskip_whitespace(&s);
+    eval_dbg(US"number", n);
     }
-  Uskip_whitespace(&s);
+  else if (c == '(')
+    {
+    s++;
+    n = eval_expr(&s, decimal, error, 1);
+    eval_dbg(US"paren", n);
+    }
+  else
+    {
+    *error = US"expecting number or opening parenthesis";
+    n = 0;
+    }
+  *sptr = s;
   }
-else if (c == '(')
-  {
-  s++;
-  n = eval_expr(&s, decimal, error, 1);
-  }
-else
-  {
-  *error = US"expecting number or opening parenthesis";
-  n = 0;
-  }
-*sptr = s;
+expand_level--;
 return n;
 }
 
@@ -4207,15 +4233,30 @@ return n;
 static int_eximarith_t
 eval_op_unary(uschar **sptr, BOOL decimal, uschar **error)
 {
-uschar *s = *sptr;
+uschar * s = *sptr;
 int_eximarith_t x;
+
 Uskip_whitespace(&s);
 if (*s == '+' || *s == '-' || *s == '~')
   {
   int op = *s++;
-  x = eval_op_unary(&s, decimal, error);
-  if (op == '-') x = -x;
-    else if (op == '~') x = ~x;
+  expand_level++;
+    {
+    x = eval_op_unary(&s, decimal, error);
+    if (op == '-')
+      {
+      x = -x;
+      eval_dbg(US"negate", x);
+      }
+    else if (op == '~')
+      {
+      x = ~x;
+      eval_dbg(US"invert", x);
+      }
+    else
+      eval_dbg(US"unary-plus", x);
+    expand_level--;
+    }
   }
 else
   x = eval_number(&s, decimal, error);
@@ -4228,56 +4269,71 @@ return x;
 static int_eximarith_t
 eval_op_mult(uschar **sptr, BOOL decimal, uschar **error)
 {
-uschar *s = *sptr;
+uschar * s = *sptr;
 int_eximarith_t x = eval_op_unary(&s, decimal, error);
 if (!*error)
   {
   while (*s == '*' || *s == '/' || *s == '%')
     {
-    int op = *s++;
-    int_eximarith_t y = eval_op_unary(&s, decimal, error);
-    if (*error) break;
-    /* SIGFPE both on div/mod by zero and on INT_MIN / -1, which would give
-     * a value of INT_MAX+1. Note that INT_MIN * -1 gives INT_MIN for me, which
-     * is a bug somewhere in [gcc 4.2.1, FreeBSD, amd64].  In fact, -N*-M where
-     * -N*M is INT_MIN will yield INT_MIN.
-     * Since we don't support floating point, this is somewhat simpler.
-     * Ideally, we'd return an error, but since we overflow for all other
-     * arithmetic, consistency suggests otherwise, but what's the correct value
-     * to use?  There is none.
-     * The C standard guarantees overflow for unsigned arithmetic but signed
-     * overflow invokes undefined behaviour; in practice, this is overflow
-     * except for converting INT_MIN to INT_MAX+1.  We also can't guarantee
-     * that long/longlong larger than int are available, or we could just work
-     * with larger types.  We should consider whether to guarantee 32bit eval
-     * and 64-bit working variables, with errors returned.  For now ...
-     * So, the only SIGFPEs occur with a non-shrinking div/mod, thus -1; we
-     * can just let the other invalid results occur otherwise, as they have
-     * until now.  For this one case, we can coerce.
-     */
-    if (y == -1 && x == EXIM_ARITH_MIN && op != '*')
+    expand_level++;
       {
-      DEBUG(D_expand)
-        debug_printf("Integer exception dodging: " PR_EXIM_ARITH "%c-1 coerced to " PR_EXIM_ARITH "\n",
-            EXIM_ARITH_MIN, op, EXIM_ARITH_MAX);
-      x = EXIM_ARITH_MAX;
-      continue;
-      }
-    if (op == '*')
-      x *= y;
-    else
-      {
-      if (y == 0)
-        {
-        *error = (op == '/') ? US"divide by zero" : US"modulo by zero";
-        x = 0;
-        break;
-        }
-      if (op == '/')
-        x /= y;
+      int op = *s++;
+      int_eximarith_t y = eval_op_unary(&s, decimal, error);
+      if (*error) break;
+
+      /* SIGFPE both on div/mod by zero and on INT_MIN / -1, which would give
+      a value of INT_MAX+1. Note that INT_MIN * -1 gives INT_MIN for me, which
+      is a bug somewhere in [gcc 4.2.1, FreeBSD, amd64].  In fact, -N*-M where
+      -N*M is INT_MIN will yield INT_MIN.
+      Since we don't support floating point, this is somewhat simpler.
+      Ideally, we'd return an error, but since we overflow for all other
+      arithmetic, consistency suggests otherwise, but what's the correct value
+      to use?  There is none.
+      The C standard guarantees overflow for unsigned arithmetic but signed
+      overflow invokes undefined behaviour; in practice, this is overflow
+      except for converting INT_MIN to INT_MAX+1.  We also can't guarantee
+      that long/longlong larger than int are available, or we could just work
+      with larger types.  We should consider whether to guarantee 32bit eval
+      and 64-bit working variables, with errors returned.  For now ...
+      So, the only SIGFPEs occur with a non-shrinking div/mod, thus -1; we
+      can just let the other invalid results occur otherwise, as they have
+      until now.  For this one case, we can coerce.  */
+
+      if (y == -1 && x == EXIM_ARITH_MIN && op != '*')
+	{
+	DEBUG(D_expand)
+	  debug_printf("Integer exception dodging: " PR_EXIM_ARITH "%c-1 coerced to " PR_EXIM_ARITH "\n",
+	      EXIM_ARITH_MIN, op, EXIM_ARITH_MAX);
+	x = EXIM_ARITH_MAX;
+	continue;
+	}
+      if (op == '*')
+	{
+	eval_dbg_op_2(US"mul", x, y);
+	x *= y;
+	}
       else
-        x %= y;
+	{
+	if (y == 0)
+	  {
+	  *error = (op == '/') ? US"divide by zero" : US"modulo by zero";
+	  x = 0;
+	  break;
+	  }
+	if (op == '/')
+	  {
+	  eval_dbg_op_2(US"div", x, y);
+	  x /= y;
+	  }
+	else
+	  {
+	  eval_dbg_op_2(US"mod", x, y);
+	  x %= y;
+	  }
+	}
+      eval_dbg_res(x);
       }
+    expand_level--;
     }
   }
 *sptr = s;
@@ -4288,23 +4344,29 @@ return x;
 static int_eximarith_t
 eval_op_sum(uschar **sptr, BOOL decimal, uschar **error)
 {
-uschar *s = *sptr;
+uschar * s = *sptr;
 int_eximarith_t x = eval_op_mult(&s, decimal, error);
 if (!*error)
   {
-  while (*s == '+' || *s == '-')
+  BOOL isplus;
+  while ((isplus = (*s == '+')) || *s == '-')
     {
-    int op = *s++;
-    int_eximarith_t y = eval_op_mult(&s, decimal, error);
-    if (*error) break;
-    if (  (x >=   EXIM_ARITH_MAX/2  && x >=   EXIM_ARITH_MAX/2)
-       || (x <= -(EXIM_ARITH_MAX/2) && y <= -(EXIM_ARITH_MAX/2)))
-      {			/* over-conservative check */
-      *error = op == '+'
-	? US"overflow in sum" : US"overflow in difference";
-      break;
+    s++;
+    expand_level++;
+      {
+      int_eximarith_t y = eval_op_mult(&s, decimal, error);
+      if (*error) break;
+      if (  (x >=   EXIM_ARITH_MAX/2  && x >=   EXIM_ARITH_MAX/2)
+	 || (x <= -(EXIM_ARITH_MAX/2) && y <= -(EXIM_ARITH_MAX/2)))
+	{			/* over-conservative check */
+	*error = isplus ? US"overflow in sum" : US"overflow in difference";
+	break;
+	}
+      eval_dbg_op_2(isplus ? US"plus" : US"minus", x, y);
+      if (isplus) x += y; else x -= y;
+      eval_dbg_res(x);
       }
-    if (op == '+') x += y; else x -= y;
+    expand_level--;
     }
   }
 *sptr = s;
@@ -4315,18 +4377,23 @@ return x;
 static int_eximarith_t
 eval_op_shift(uschar **sptr, BOOL decimal, uschar **error)
 {
-uschar *s = *sptr;
+uschar * s = *sptr;
 int_eximarith_t x = eval_op_sum(&s, decimal, error);
 if (!*error)
   {
   while ((*s == '<' || *s == '>') && s[1] == s[0])
     {
-    int_eximarith_t y;
     int op = *s++;
     s++;
-    y = eval_op_sum(&s, decimal, error);
-    if (*error) break;
-    if (op == '<') x <<= y; else x >>= y;
+    expand_level++;
+      {
+      int_eximarith_t y = eval_op_sum(&s, decimal, error);
+      if (*error) break;
+      eval_dbg_op_2(US"shift", x, y);
+      if (op == '<') x <<= y; else x >>= y;
+      eval_dbg_res(x);
+      }
+    expand_level--;
     }
   }
 *sptr = s;
@@ -4337,19 +4404,24 @@ return x;
 static int_eximarith_t
 eval_op_and(uschar **sptr, BOOL decimal, uschar **error)
 {
-uschar *s = *sptr;
-int_eximarith_t x = eval_op_shift(&s, decimal, error);
+uschar * s = *sptr;
+int_eximarith_t x;
+
+x = eval_op_shift(&s, decimal, error);
 if (!*error)
-  {
   while (*s == '&')
     {
-    int_eximarith_t y;
     s++;
-    y = eval_op_shift(&s, decimal, error);
-    if (*error) break;
-    x &= y;
+    expand_level++;
+      {
+      int_eximarith_t y = eval_op_shift(&s, decimal, error);
+      if (*error) break;
+      eval_dbg_op_2(US"and", x, y);
+      x &= y;
+      eval_dbg_res(x);
+      }
+    expand_level--;
     }
-  }
 *sptr = s;
 return x;
 }
@@ -4358,19 +4430,22 @@ return x;
 static int_eximarith_t
 eval_op_xor(uschar **sptr, BOOL decimal, uschar **error)
 {
-uschar *s = *sptr;
+uschar * s = *sptr;
 int_eximarith_t x = eval_op_and(&s, decimal, error);
 if (!*error)
-  {
   while (*s == '^')
     {
-    int_eximarith_t y;
     s++;
-    y = eval_op_and(&s, decimal, error);
-    if (*error) break;
-    x ^= y;
+    expand_level++;
+      {
+      int_eximarith_t y = eval_op_and(&s, decimal, error);
+      if (*error) break;
+      eval_dbg_op_2(US"xor", x, y);
+      x ^= y;
+      eval_dbg_res(x);
+      }
+    expand_level--;
     }
-  }
 *sptr = s;
 return x;
 }
@@ -4379,19 +4454,22 @@ return x;
 static int_eximarith_t
 eval_op_or(uschar **sptr, BOOL decimal, uschar **error)
 {
-uschar *s = *sptr;
+uschar * s = *sptr;
 int_eximarith_t x = eval_op_xor(&s, decimal, error);
 if (!*error)
-  {
   while (*s == '|')
     {
-    int_eximarith_t y;
     s++;
-    y = eval_op_xor(&s, decimal, error);
-    if (*error) break;
-    x |= y;
+    expand_level++;
+      {
+      int_eximarith_t y = eval_op_xor(&s, decimal, error);
+      if (*error) break;
+      eval_dbg_op_2(US"or", x, y);
+      x |= y;
+      eval_dbg_res(x);
+      }
+    expand_level--;
     }
-  }
 *sptr = s;
 return x;
 }
