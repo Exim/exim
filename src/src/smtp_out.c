@@ -102,18 +102,17 @@ produces the number in network byte order.
 Arguments:
   rstring     raw (unexpanded) string representation of the port
   addr        the mail address being handled (for setting errors)
-  port        return the port in here
   msg         for adding to error message
 
-Returns:      TRUE on success, FALSE on failure, with error message set
+Returns:      port on success, -1 on failure, with error message set
                 in addr, and transport_return set to PANIC
 */
 
-BOOL
-smtp_get_port(const uschar * rstring, address_item * addr,
-  int * port, const uschar * msg)
+int
+smtp_get_port(const uschar * rstring, address_item * addr, const uschar * msg)
 {
 const uschar * pstring = expand_string(rstring);
+int port;
 
 if (!pstring)
   {
@@ -126,13 +125,13 @@ if (!pstring)
 if (isdigit(*pstring))
   {
   uschar * end;
-  *port = Ustrtol(pstring, &end, 0);
+  port = Ustrtol(pstring, &end, 0);
   if (end != pstring + Ustrlen(pstring))
     {
     addr->transport_return = PANIC;
     addr->message = string_sprintf("invalid port number for %s: %s", msg,
       pstring);
-    return FALSE;
+    return -1;
     }
   }
 
@@ -144,12 +143,12 @@ else
     addr->transport_return = PANIC;
     addr->message = string_sprintf("TCP port \"%s\" is not defined for %s",
       pstring, msg);
-    return FALSE;
+    return -1;
     }
-  *port = ntohs(smtp_service->s_port);
+  port = ntohs(smtp_service->s_port);
   }
 
-return TRUE;
+return port;
 }
 
 

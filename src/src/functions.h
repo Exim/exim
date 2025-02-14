@@ -519,7 +519,7 @@ extern int     smtp_ferror(void);
 extern uschar *smtp_get_connection_info(void);
 extern BOOL    smtp_get_interface(const uschar *, int, address_item *,
                  const uschar **, const uschar *);
-extern BOOL    smtp_get_port(const uschar *, address_item *, int *, const uschar *);
+extern int     smtp_get_port(const uschar *, address_item *, const uschar *);
 extern int     smtp_getc(unsigned);
 extern uschar *smtp_getbuf(unsigned *);
 extern void    smtp_get_cache(unsigned);

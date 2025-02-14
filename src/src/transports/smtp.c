@@ -2506,8 +2506,8 @@ if (!continue_hostname || atrn_domains)
 	  sx->conn_args.host->tls_needs = SRV_STARTTLS_MUST;
 
 	  GET_OPTION("port");
-	  if (smtp_get_port(ob->port, sx->addrlist, &sx->port,
-				    sx->conn_args.tblock->drinst.name))
+	  if ((sx->port = smtp_get_port(ob->port, sx->addrlist,
+				    sx->conn_args.tblock->drinst.name)) >= 0)
 	    {
 	    sx->conn_args.host->port = sx->port;
 	    goto PIPE_CONNECT_RETRY;
@@ -5606,7 +5606,7 @@ else if (hostlist->mx == MX_NONE && !continue_hostname)
 
 /* Sort out the default port (used when the host item has none).  */
 
-if (!smtp_get_port(ob->port, addrlist, &defport, tid)) return FALSE;
+if ((defport = smtp_get_port(ob->port, addrlist, tid)) < 0) return FALSE;
 
 /* For each host-plus-IP-address on the list:
 

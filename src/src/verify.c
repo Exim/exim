@@ -370,7 +370,7 @@ if (addr->transport == cutthrough.addr.transport)
       GET_OPTION("interface");
       if (  !smtp_get_interface(tf->interface, host_af, addr, &interface,
 	      US"callout")
-	 || !smtp_get_port(tf->port, addr, &port, US"callout")
+	 || (port = smtp_get_port(tf->port, addr, US"callout")) < 0
 	 )
 	log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
 	  addr->message);
@@ -698,7 +698,7 @@ coding means skipping this whole loop and doing the append separately.  */
     GET_OPTION("port");
     if (  !smtp_get_interface(tf->interface, host_af, addr, &interface,
             US"callout")
-       || !smtp_get_port(tf->port, addr, &port, US"callout")
+       || (port = smtp_get_port(tf->port, addr, US"callout")) < 0
        )
       log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
         addr->message);
