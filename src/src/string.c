@@ -1389,6 +1389,7 @@ Precision:		dot, followed by decimal digits or *
 Length modifiers:	h  L  l  ll  z
 Conversion specifiers:	n d o u x X p f e E g G % c s S T W V Y D M H Z b
 Alternate-form:		#: s/Y/b are silent about a null string
+			   H uppercase result
 
 Returns the possibly-new (if copy for growth or taint-handling was needed)
 string, not nul-terminated.
@@ -1756,14 +1757,16 @@ while (*fp)
       goto INSERT_GSTRING;
 
     case 'H':			/* pdkim-style "hexprint" */
-      {
+      {				/*XXX could we do a space-interleaved form? */
       s = va_arg(ap, char *);
       if (precision < 0) break;	/* precision must be given */
       if (s)
 	{
 	gstring * zg = NULL;
+	if (width >= 0 && precision*2 > width)
+	  precision = width/2;
 	for (int p = precision; p > 0; p--)
-	  zg = string_fmt_append(zg, "%02x", * US s++);
+	  zg = string_fmt_append(zg, *null ? "%02x" : "%02X", * US s++);
 
 	if (zg) { s = CS zg->s; precision = slen = gstring_length(zg); }
 	else    { s = "";	slen = 0; }

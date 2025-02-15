@@ -7495,8 +7495,7 @@ NOT_ITEM: ;
 	  uschar digest[16];
 	  md5_start(&base);
 	  md5_end(&base, sub, Ustrlen(sub), digest);
-	  for (int j = 0; j < 16; j++)
-	    yield = string_fmt_append(yield, "%02x", digest[j]);
+	  yield = string_fmt_append(yield, "%.16H", digest);
 	  }
 	break;
 
@@ -7514,8 +7513,7 @@ NOT_ITEM: ;
 	  uschar digest[20];
 	  sha1_start(&h);
 	  sha1_end(&h, sub, Ustrlen(sub), digest);
-	  for (int j = 0; j < 20; j++)
-	    yield = string_fmt_append(yield, "%02X", digest[j]);
+	  yield = string_fmt_append(yield, "%#.20H", digest);
 	  }
 	break;
 
@@ -7545,8 +7543,7 @@ NOT_ITEM: ;
 
 	  exim_sha_update_string(&h, sub);
 	  exim_sha_finish(&h, &b);
-	  while (b.len-- > 0)
-	    yield = string_fmt_append(yield, "%02X", *b.data++);
+	  yield = string_fmt_append(yield, "%#.*H", (int)b.len, b.data);
 	  }
 #else
 	  expand_string_message = US"sha256 only supported with TLS";
@@ -7573,8 +7570,7 @@ NOT_ITEM: ;
 
 	exim_sha_update_string(&h, sub);
 	exim_sha_finish(&h, &b);
-	while (b.len-- > 0)
-	  yield = string_fmt_append(yield, "%02X", *b.data++);
+	yield = string_fmt_append(yield, "%#.*H", (int)b.len, b.data);
 	}
 	break;
 #else
@@ -7655,14 +7651,11 @@ NOT_ITEM: ;
 
       case EOP_HEXQUOTE:
 	{
-	uschar *t = sub - 1;
-	while (*(++t) != 0)
-	  {
-	  if (*t < 0x21 || 0x7E < *t)
-	    yield = string_fmt_append(yield, "\\x%02x", *t);
-	  else
-	    yield = string_catn(yield, t, 1);
-	  }
+	uschar * t = sub - 1;
+	while (*++t)
+	  yield = *t < 0x21 || 0x7E < *t
+	    ?  string_fmt_append(yield, "\\x%02x", *t)
+	    : string_catn(yield, t, 1);
 	break;
 	}
 

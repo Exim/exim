@@ -3212,16 +3212,14 @@ switch (rc)
 	     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
 	  if (rr->type == T_TLSA && rr->size > 3)
 	    {
-	    uint16_t payload_length = rr->size - 3;
-	    uschar s[MAX_TLSA_EXPANDED_SIZE], * sp = s, * p = US rr->data;
+	    int payload_length = rr->size - 3;
+	    uschar * p = US rr->data;
+	    uint8_t usage = *p++, selector = *p++, matching_type = *p++;
 
-	    sp += sprintf(CS sp, "%d ", *p++); /* usage */
-	    sp += sprintf(CS sp, "%d ", *p++); /* selector */
-	    sp += sprintf(CS sp, "%d ", *p++); /* matchtype */
-	    while (payload_length-- > 0 && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4))
-	      sp += sprintf(CS sp, "%02x", *p++);
-
-	    debug_printf(" %s\n", s);
+	    if (payload_length > MAX_TLSA_EXPANDED_SIZE)
+	      payload_length = MAX_TLSA_EXPANDED_SIZE;
+	    debug_printf(" %d %d %d %.*H\n",
+			  usage, selector, matching_type, payload_length, p);
 	    }
 	}
       return OK;

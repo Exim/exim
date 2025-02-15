@@ -230,13 +230,10 @@ compute_cram_md5(secret, challenge, digest);
 
 HDEBUG(D_auth)
   {
-  uschar buff[64];
   debug_printf("CRAM-MD5: user name = %s\n", auth_vars[0]);
   debug_printf("          challenge = %s\n", challenge);
   debug_printf("          received  = %s\n", clear);
-  Ustrcpy(buff, US"          digest    = ");
-  for (i = 0; i < 16; i++) sprintf(CS buff+22+2*i, "%02x", digest[i]);
-  debug_printf("%.54s\n", buff);
+  debug_printf("          digest    = %.16H\n", digest);
   }
 
 /* We now have to compare the digest, which is 16 bytes in binary, with the
@@ -314,22 +311,14 @@ if (b64decode(buffer + 4, &challenge, buffer + 4) < 0)
 
 compute_cram_md5(secret, challenge, digest);
 
-/* Create the response from the user name plus the CRAM-MD5 digest */
-
-string_format(big_buffer, big_buffer_size - 36, "%s", name);
-for (p = big_buffer; *p; ) p++;
-*p++ = ' ';
-
-for (i = 0; i < 16; i++)
-  p += sprintf(CS p, "%02x", digest[i]);
-
-/* Send the response, in base 64, and check the result. The response is
-in big_buffer, but b64encode() returns its result in working store,
-so calling smtp_write_command(), which uses big_buffer, is OK. */
-
-buffer[0] = 0;
-if (smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", b64encode(CUS big_buffer,
-  p - big_buffer)) < 0) return FAIL_SEND;
+/* Create the response from the user name plus the CRAM-MD5 digest.
+Send it, in base 64, and check the result. */
+  {
+  int len;
+  p = string_sprintf("%s %.16H%n", name, digest, &len);
+  if (smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", b64encode(p, len)) < 0)
+    return FAIL_SEND;
+  }
 
 return smtp_read_response(sx, US buffer, buffsize, '2', timeout)
   ? OK : FAIL;

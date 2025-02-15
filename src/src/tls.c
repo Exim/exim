@@ -863,9 +863,7 @@ exim_sha_update_string(h, tlsp->sni);
 exim_sha_update_string(h, ob->tls_alpn);
 # endif
 exim_sha_finish(h, &b);
-for (g = string_get(b.len*2+1); b.len-- > 0; )
-  g = string_fmt_append(g, "%02x", *b.data++);
-tlsp->resume_index = string_from_gstring(g);
+tlsp->resume_index = string_sprintf("%.*H", (int)b.len, b.data);
 DEBUG(D_tls) debug_printf("TLS: resume session index %s\n", tlsp->resume_index);
 #endif
 }
