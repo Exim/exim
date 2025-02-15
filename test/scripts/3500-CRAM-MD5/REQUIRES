@@ -1,2 +1,2 @@
 authenticator cram_md5
-support Exim-filter
+support Exim_filter
