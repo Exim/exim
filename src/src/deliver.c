@@ -3687,6 +3687,8 @@ while (!done)
 		      : *ptr == '1' ? DS_NO
 		      : DS_UNK;
 	    addr->host_used = h;
+
+	    continue_host_port = h->port;
 	    }
 	  ptr++;
 
@@ -3754,9 +3756,11 @@ while (!done)
 	  close(recvd_fd);
 
 	  DEBUG(D_deliver)
-	    debug_printf("continue: fd %d tpt %s host '%s' addr '%s' seq %d\n",
+	    debug_printf("continue: fd %d tpt %s host '%s' addr '%s':%d"
+			 " seq %d\n",
 			  recvd_fd, continue_transport, continue_hostname,
-			  continue_host_address, continue_sequence);
+			  continue_host_address, deliver_host_port,
+			  continue_sequence);
 	  break;
 	  }
 	case '3':				/* Continued conn info */

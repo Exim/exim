@@ -2474,7 +2474,7 @@ if (!continue_hostname || atrn_domains)
       else DEBUG(D_transport)
 	debug_printf("helo needs $sending_ip_address; avoid early-pipelining\n");
 
-  PIPE_CONNECT_RETRY:
+  CONNECT_RETRY:
     if (sx->early_pipe_active)
       {
       sx->outblock.conn_args = &sx->conn_args;
@@ -2510,7 +2510,7 @@ if (!continue_hostname || atrn_domains)
 				    sx->conn_args.tblock->drinst.name)) >= 0)
 	    {
 	    sx->conn_args.host->port = sx->port;
-	    goto PIPE_CONNECT_RETRY;
+	    goto CONNECT_RETRY;
 	    }
 	  }
 # endif
@@ -2834,6 +2834,7 @@ separate - we could match up by host ip+port as a bodge. */
 
 else
   {
+  /* Find the port that was, or should be, used */
   if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
     {
     sx->cctx = cutthrough.cctx;
@@ -2844,7 +2845,22 @@ else
     sx->cctx.sock = 0;				/* stdin */
     sx->cctx.tls_ctx = NULL;
     smtp_port_for_connect(sx->conn_args.host, sx->port); /* Record the port that was used */
+
+    if (sx->conn_args.host->port != continue_host_port)
+      {
+      DEBUG(D_transport)
+	debug_printf("Closing continue connection due to port mismatch\n");
+      smtp_debug_cmd(US"QUIT", 0);
+      if (write(0, "QUIT\r\n", 6) < 0)
+	DEBUG(D_any) debug_printf("stupid compiler\n");
+      close(0);
+      continue_hostname = continue_proxy_cipher = NULL;
+      f.continue_more = FALSE;
+      continue_sequence = 1;	/* Ensure proper logging of non-cont-conn */
+      return smtp_setup_conn(sx, suppress_tls);
+      }
     }
+
   sx->inblock.cctx = sx->outblock.cctx = &sx->cctx;
   sx->peer_offered = smtp_peer_options;
 #ifndef DISABLE_ESMTP_LIMITS
@@ -2916,7 +2932,7 @@ if (  smtp_peer_options & OPTION_TLS
       close(sx->cctx.sock);
       sx->cctx.sock = -1;
       sx->early_pipe_active = FALSE;
-      goto PIPE_CONNECT_RETRY;
+      goto CONNECT_RETRY;
       }
     }
 #endif

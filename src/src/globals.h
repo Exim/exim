@@ -463,6 +463,7 @@ extern BOOL    continue_proxy_dane;    /* proxied conn is DANE */
 extern uschar *continue_proxy_sni;     /* proxied conn SNI */
 extern const uschar *continue_hostname;      /* Host for continued delivery */
 extern const uschar *continue_host_address;  /* IP address for ditto */
+extern int     continue_host_port;     /* TCP port for ditto */
 extern uschar  continue_next_id[];     /* Next message_id from hintsdb */
 extern unsigned continue_sequence;     /* Sequence num for continued delivery */
 extern const uschar *continue_transport; /* Transport for continued delivery */

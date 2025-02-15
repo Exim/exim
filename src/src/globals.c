@@ -667,6 +667,7 @@ BOOL    continue_proxy_dane    = FALSE;
 uschar *continue_proxy_sni     = NULL;
 const uschar *continue_hostname      = NULL;
 const uschar *continue_host_address  = NULL;
+int     continue_host_port     = 0;
 uschar  continue_next_id[MESSAGE_ID_LENGTH +1] = {[0]='\0'};
 unsigned continue_sequence     = 1;
 const uschar *continue_transport = NULL;

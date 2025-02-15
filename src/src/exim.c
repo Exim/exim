@@ -3109,8 +3109,8 @@ on the second character (the one after '-'), to save some effort. */
 
     if (Ustrcmp(argrest, "C") == 0)
       {
-      union sockaddr_46 interface_sock;
-      EXIM_SOCKLEN_T size = sizeof(interface_sock);
+      union sockaddr_46 tmp_sock;
+      EXIM_SOCKLEN_T size = sizeof(tmp_sock);
 
       if (argc != i + 6)
         exim_fail("exim: too many or too few arguments after -MC\n");
@@ -3138,16 +3138,23 @@ on the second character (the one after '-'), to save some effort. */
         exim_fail("exim: malformed message id %s after -MC option\n",
           argv[i]);
 
-      /* Set up $sending_ip_address and $sending_port, unless proxied */
+      /* Set $sending_ip_address, $sending_port, $host_port, unless proxied */
+/*XXX how does it work when proxied? */
 
       if (!continue_proxy_cipher)
-	if (getsockname(fileno(stdin), (struct sockaddr *)(&interface_sock),
-	    &size) == 0)
-	  sending_ip_address = host_ntoa(-1, &interface_sock, NULL,
-	    &sending_port);
+	{
+	if (getsockname(0, (struct sockaddr *)(&tmp_sock), &size) == 0)
+	  sending_ip_address = host_ntoa(-1, &tmp_sock, NULL, &sending_port);
 	else
 	  exim_fail("exim: getsockname() failed after -MC option: %s\n",
 	    strerror(errno));
+
+	if (getpeername(0, (struct sockaddr *)(&tmp_sock), &size) == 0)
+	  (void) host_ntoa(-1, &tmp_sock, NULL, &continue_host_port);
+	else
+	  exim_fail("exim: getpeername() failed after -MC option: %s\n",
+	    strerror(errno));
+	}
 
       testharness_pause_ms(500);
       break;
