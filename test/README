@@ -135,7 +135,8 @@ In order to run this test suite, the following requirements must be met:
 (11) If building any dynamically-loaded lookups, LOOKUP_MODULE_DIR should
      be set to .../exim/test/eximdir.
 
-
+(12) Exim must be able to create the panic log at the location specified
+     by the build time config LOG_FILE_PATH.
 
 OPTIONAL EXTRAS
 ---------------
