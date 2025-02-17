@@ -12,6 +12,7 @@
 
 
 #include "exim.h"
+#include <assert.h>
 
 #ifdef MACRO_PREDEF
 # include "macro_predef.h"
@@ -1100,6 +1101,9 @@ return random_number(max);
 
 /* If the name is too long, it is silently truncated.
 
+In theory all callers present a non-tainted string, so the non-tracking
+copy into the buffer is ok.
+
 Arguments:
   name      points to a buffer into which to put the name
   max       is the length of the buffer
@@ -1116,6 +1120,7 @@ static const uschar *
 read_name(uschar * name, int max, const uschar * s, const uschar * extras)
 {
 int ptr = 0;
+if (f.running_in_test_harness) assert(!is_tainted(s));
 while (*s && (isalnum(*s) || Ustrchr(extras, *s) != NULL))
   {
   if (ptr < max-1) name[ptr++] = *s;
@@ -1504,11 +1509,12 @@ Returns:      pointer to the output string, or NULL if there is an error
 */
 
 static uschar *
-compute_hash(uschar *subject, int value1, int value2, int *len)
+compute_hash(uschar * subject, int value1, int value2, int * len)
 {
 int sublen = Ustrlen(subject);
 
-if (value2 < 0) value2 = 26;
+if (value2 <= 0)
+  value2 = 26;
 else if (value2 > Ustrlen(hashcodes))
   {
   expand_string_message =
@@ -4729,7 +4735,7 @@ if (is_tainted(s))
   if (len) yield = string_get(len + 64);
  }
 
-while (*s)
+while (*s)	/* known to be untainted */
   {
   uschar name[256];
 
@@ -5991,6 +5997,14 @@ while (*s)
 
       for (int i = 0; i < 2; i++) if (sub[i])
         {
+	if (is_tainted(sub[i]))
+	  {
+	  expand_string_message =
+	    string_sprintf("attempt to use tainted string '%s' for %s",
+			sub[i], name);
+	  log_write(0, LOG_MAIN|LOG_PANIC, "%s", expand_string_message);
+	  goto EXPAND_FAILED;
+	  }
         val[i] = (int)Ustrtol(sub[i], &ret, 10);
         if (*ret != 0  ||  i != 0 && val[i] < 0)
           {
@@ -8334,21 +8348,23 @@ NOT_ITEM: ;
 	/* Read up to two numbers, separated by underscores */
 
 	ret = arg;
-	while (*arg != 0)
+	while (*arg)
 	  {
 	  if (arg != ret && *arg == '_' && pn == &value1)
 	    {
 	    pn = &value2;
 	    value2 = 0;
-	    if (arg[1] != 0) arg++;
+	    if (arg[1]) arg++;
 	    }
-	  else if (!isdigit(*arg))
+	  else if (!isdigit(*arg) || INT_MAX/10 - 1 < *pn)
 	    {
-	    expand_string_message =
-	      string_sprintf("non-digit after underscore in \"%s\"", name);
+	    expand_string_message = string_sprintf("%s in \"%s\"",
+	      !isdigit(*arg) ? "non-digit after underscore" : "value too large",
+	      name);
 	    goto EXPAND_FAILED;
 	    }
-	  else *pn = (*pn)*10 + *arg++ - '0';
+	  else
+	    *pn = (*pn)*10 + *arg++ - '0';
 	  }
 	value1 *= sign;
 

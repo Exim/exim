@@ -163,6 +163,41 @@ LOG: MAIN PANIC
  ├─────op-res:  
  ├───expanded: protected:░${expand:\N░\N}
  ╰─────result: protected:░░
+ ╭considering: expand:░SHOULD░FAIL░TAINT░${expand:$sender_address}
+ ├───────text: expand:░SHOULD░FAIL░TAINT░
+ ├considering: ${expand:$sender_address}
+  ╭considering: $sender_address}
+  ├──────value: sndr@dom
+             ╰──(tainted)
+  ├considering: }
+  ├───expanded: $sender_address
+  ╰─────result: sndr@dom
+             ╰──(tainted)
+LOG: MAIN PANIC
+  attempt to expand tainted string 'sndr@dom'
+  ├failed to expand: sndr@dom
+  ╰───error message: attempt to expand tainted string 'sndr@dom'
+ ├failed to expand: expand: SHOULD FAIL TAINT ${expand:$sender_address}
+ ╰───error message: internal expansion of "sndr@dom" failed: attempt to expand tainted string 'sndr@dom'
+ ╭considering: hash:░░░SHOULD░FAIL░TAINT░${hash{$sender_address}{monty}}
+ ├───────text: hash:░░░SHOULD░FAIL░TAINT░
+ ├considering: ${hash{$sender_address}{monty}}
+  ╭considering: $sender_address}{monty}}
+  ├──────value: sndr@dom
+             ╰──(tainted)
+  ├considering: }{monty}}
+  ├───expanded: $sender_address
+  ╰─────result: sndr@dom
+             ╰──(tainted)
+  ╭considering: monty}}
+  ├───────text: monty
+  ├considering: }}
+  ├───expanded: monty
+  ╰─────result: monty
+LOG: MAIN PANIC
+  attempt to use tainted string 'sndr@dom' for hash
+ ├failed to expand: hash:   SHOULD FAIL TAINT ${hash{$sender_address}{monty}}
+ ╰───error message: attempt to use tainted string 'sndr@dom' for hash
 >>>>>>>>>>>>>>>> Exim pid=p1234 (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 Hints DB:
@@ -816,6 +851,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
+set_process_info: pppp expansion-test
   1.2.3.4 in "1.2.3"?
    list element: 1.2.3
    1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask: 1.2.3)

@@ -1012,6 +1012,8 @@ match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
 ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
 match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
 protected: ${expand:\N \N}
+expand: SHOULD FAIL TAINT ${expand:$sender_address}
+hash:   SHOULD FAIL TAINT ${hash{$sender_address}{monty}}
 ****
 exim -d-all+expand+noutf8 -be
 primary_hostname: $primary_hostname

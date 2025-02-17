@@ -971,6 +971,8 @@ xyz
 > yes
 > match_address:   no
 > protected:  
+> Failed: internal expansion of "sndr@dom" failed: attempt to expand tainted string 'sndr@dom'
+> Failed: attempt to use tainted string 'sndr@dom' for hash
 > 
 > primary_hostname: myhost.test.ex
 > match:  cdab

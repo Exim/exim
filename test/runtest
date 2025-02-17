@@ -370,6 +370,7 @@ my(@saved) = ();
 
 local $_;
 
+print "<< munge $file\n" if $debug;
 open(IN, "$file") || tests_exit(-1, "Failed to open $file: $!");
 
 my($is_log) = $file =~ /log/;
@@ -397,6 +398,7 @@ $spid = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 LINE: while(<IN>)
   {
 RESET_AFTER_EXTRA_LINE_READ:
+#  print "<< $_" if $debug;
   if ($munge_skip)
     {
     # Munging is a no-op, except for exim_msgdate specials.
@@ -509,10 +511,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     next;
     }
 
-  # more_errno values in exim_dumpdb output which are times
+  # more_errno values in retry dumpdb output which are times
   s/T:(\S+)\s-22\s(\S+)\s/T:$1 -22 xxxx /;
 
-  # port numbers in dumpdb output
+  # port numbers in retry dumpdb output
   s/T:([a-z0-9.]+(:[0-9.]+|:\[[^]]+])?):$parm_port_n /T:$1:PORT_N /;
   s/T:([a-z0-9.[\]]+(:[0-9.]+|:\[[^]]+])?):$parm_port_s /T:$1:PORT_S /;
   # and exinext
@@ -1089,8 +1091,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     $re = "postgres .* \"";
     s/$re\K$parm_port_n/PORT_N/;
 
-    # dumpdb misc, for early-pipe
-    $re = "^\\d{2}-\\w{3}-\\d{4} \\d{2}:\\d{2}:\\d{2} [^:]+:";
+    # port number in misc dumpdb output, for early-pipe
+    $re = "^$date [^:]+:";
     s/$re\K$parm_port_d/PORT_D/;
     }
 

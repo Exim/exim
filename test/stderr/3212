@@ -7,6 +7,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
+set_process_info: pppp expansion-test
  search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
  search_find: file="TESTSUITE/aux-fixed/3212.aliases"
    key="list" partial=-1 affix=NULL starflags=0 opts=NULL

@@ -5506,6 +5506,7 @@ Otherwise, if -bem was used, read a message from stdin. */
 
 if (expansion_test)
   {
+  set_process_info("expansion-test");
   dns_init(FALSE, FALSE, FALSE);
   if (msg_action_arg > 0 && msg_action == MSG_LOAD)
     {
