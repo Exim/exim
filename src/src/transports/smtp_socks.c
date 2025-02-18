@@ -116,15 +116,11 @@ switch(method)
       sob->auth_name, sob->auth_pwd);
     i = Ustrlen(sob->auth_name);
     j = Ustrlen(sob->auth_pwd);
-    s = string_sprintf("%c%c%.255s%c%.255s", AUTH_NAME_VER,
-      i, sob->auth_name, j, sob->auth_pwd);
-    len = i + j + 3;
+    s = string_sprintf("%c%c%.255s%c%.255s%n", AUTH_NAME_VER,
+      i, sob->auth_name, j, sob->auth_pwd, &len);
+
     HDEBUG(D_transport|D_acl|D_v)
-      {
-      debug_printf_indent("  SOCKS>>");
-      for (int j = 0; j<len; j++) debug_printf(" %02x", s[j]);
-      debug_printf("\n");
-      }
+      debug_printf_indent("  SOCKS>>%3.*H\n", len, s);
     if (send(fd, s, len, 0) < 0)
       return FAIL;
 #ifdef TCP_QUICKACK
@@ -132,8 +128,7 @@ switch(method)
 #endif
     if (!fd_ready(fd, tmo) || read(fd, s, 2) != 2)
       return FAIL;
-    HDEBUG(D_transport|D_acl|D_v)
-      debug_printf_indent("  SOCKS<< %02x %02x\n", s[0], s[1]);
+    HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SOCKS<<%3.2H\n", s);
     if (s[0] == AUTH_NAME_VER && s[1] == 0)
       {
       HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  socks auth OK\n");
@@ -310,8 +305,7 @@ if (  !fd_ready(fd, tmo)
    || read(fd, buf, 2) != 2
    )
   goto rcv_err;
-HDEBUG(D_transport|D_acl|D_v)
-  debug_printf_indent("  SOCKS<< %02x %02x\n", buf[0], buf[1]);
+HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SOCKS<<%3.2H\n", buf);
 if (  buf[0] != 5
    || socks_auth(fd, buf[1], sob, tmo) != OK
    )
@@ -346,11 +340,7 @@ if (  buf[0] != 5
 
 state = US"connect";
 HDEBUG(D_transport|D_acl|D_v)
-  {
-  debug_printf_indent("  SOCKS>>");
-  for (int i = 0; i<size; i++) debug_printf(" %02x", buf[i]);
-  debug_printf("\n");
-  }
+  debug_printf_indent("  SOCKS>>%3.*H\n", (int)size, buf);
 if (send(fd, buf, size, 0) < 0)
   goto snd_err;
 
@@ -362,11 +352,8 @@ if (  !fd_ready(fd, tmo)
    )
   goto rcv_err;
 HDEBUG(D_transport|D_acl|D_v)
-  {
-  debug_printf_indent("  SOCKS>>");
-  for (int i = 0; i<size; i++) debug_printf(" %02x", buf[i]);
-  debug_printf("\n");
-  }
+  debug_printf_indent("  SOCKS<<%3.*H\n", (int)size, buf);
+
 if (  buf[0] != 5
    || buf[1] != 0
    )

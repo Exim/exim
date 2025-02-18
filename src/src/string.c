@@ -1757,16 +1757,18 @@ while (*fp)
       goto INSERT_GSTRING;
 
     case 'H':			/* pdkim-style "hexprint" */
-      {				/*XXX could we do a space-interleaved form? */
+      {
       s = va_arg(ap, char *);
-      if (precision < 0) break;	/* precision must be given */
+      if (precision < 0) break;	/* precision must be given; src byte count */
       if (s)
 	{
 	gstring * zg = NULL;
-	if (width >= 0 && precision*2 > width)
-	  precision = width/2;
+	width -= 2;	/* min field width for each i/p byte. Spaces left-pad */
 	for (int p = precision; p > 0; p--)
+	  {
+	  for (int w = width; w > 0; w--) zg = string_catn(zg, US" ", 1);
 	  zg = string_fmt_append(zg, *null ? "%02x" : "%02X", * US s++);
+	  }
 
 	if (zg) { s = CS zg->s; precision = slen = gstring_length(zg); }
 	else    { s = "";	slen = 0; }

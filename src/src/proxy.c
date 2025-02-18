@@ -110,9 +110,7 @@ return -1;
 static void
 proxy_debug(uschar * buf, unsigned start, unsigned end)
 {
-debug_printf("PROXY<<");
-while (start < end) debug_printf(" %02x", buf[start++]);
-debug_printf("\n");
+debug_printf("PROXY<<%3.*H\n", (int)(end - start), buf + start);
 }
 
 

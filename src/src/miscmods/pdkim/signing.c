@@ -259,8 +259,7 @@ uschar tag_class;
 int taglen;
 long tag, len;
 
-debug_printf_indent("as_tag: %02x %02x %02x %02x\n",
-	der->data[0], der->data[1], der->data[2], der->data[3]);
+debug_printf_indent("as_tag:%3.4H\n", der->data);
 
 if ((rc = asn1_get_tag_der(der->data++, der->len--, &tag_class, &taglen, &tag))
     != ASN1_SUCCESS)
