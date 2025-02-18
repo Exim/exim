@@ -3946,6 +3946,7 @@ can be used only by an admin user.
 
 .vitem "&%-MC%&&~<&'transport'&>&~<&'hostname'&>&&&
 	&~<&'host&~IP'&>&&&
+	&~<&'host&~port'&>&&&
 	&~<&'sequence&~number'&>&&&
         &~<&'message&~id'&>"
 .oindex "&%-MC%&"

@@ -639,7 +639,7 @@ extern BOOL    transport_check_waiting(const uschar *, const uschar *, int, usch
                  oicf, void*);
 extern uschar *transport_current_name(void);
 extern void    transport_do_pass_socket(const uschar *, const uschar *,
-		 const uschar *, uschar *, int);
+		 const uschar *, int, uschar *, int);
 extern void    transport_init(void);
 extern const uschar *transport_rcpt_address(address_item *, BOOL);
 extern BOOL    transport_set_up_command(const uschar ***, const uschar *,

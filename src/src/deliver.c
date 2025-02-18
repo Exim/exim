@@ -9008,7 +9008,7 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
 #endif
 
   transport_do_pass_socket(cutthrough.transport, cutthrough.host.name,
-    cutthrough.host.address, message_id, channel_fd);
+    cutthrough.host.address, cutthrough.host.port, message_id, channel_fd);
   }
 else
   {

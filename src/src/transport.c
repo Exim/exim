@@ -1994,9 +1994,9 @@ retfalse:
 /* Just the regain-root-privilege exec portion */
 void
 transport_do_pass_socket(const uschar * transport_name, const uschar * hostname,
-  const uschar * hostaddress, uschar * id, int socket_fd)
+  const uschar * hostaddress, int hostport, uschar * id, int socket_fd)
 {
-int i = 13;
+int i = 14;
 const uschar **argv;
 
 #ifndef DISABLE_TLS
@@ -2076,6 +2076,7 @@ argv[i++] = US"-MC";
 argv[i++] = US transport_name;
 argv[i++] = US hostname;
 argv[i++] = US hostaddress;
+argv[i++] = string_sprintf("%d", hostport);
 argv[i++] = string_sprintf("%d", continue_sequence + 1);
 argv[i++] = id;
 argv[i++] = NULL;

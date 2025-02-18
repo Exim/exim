@@ -2849,7 +2849,8 @@ else
     if (sx->conn_args.host->port != continue_host_port)
       {
       DEBUG(D_transport)
-	debug_printf("Closing continue connection due to port mismatch\n");
+	debug_printf("Closing continued connection due to port mismatch:"
+	  " %d/%d\n", sx->conn_args.host->port, continue_host_port);
       smtp_debug_cmd(US"QUIT", 0);
       if (write(0, "QUIT\r\n", 6) < 0)
 	DEBUG(D_any) debug_printf("stupid compiler\n");
@@ -5445,8 +5446,8 @@ DEBUG(D_transport)
       debug_printf("  '%s' IP %s port %d\n", h->name, h->address, h->port);
     }
   if (continue_hostname)
-    debug_printf("already connected to %s [%s] (on fd %d)\n",
-      continue_hostname, continue_host_address,
+    debug_printf("already connected to %s [%s]:%d (on fd %d)\n",
+      continue_hostname, continue_host_address, continue_host_port,
       cutthrough.cctx.sock >= 0 ? cutthrough.cctx.sock : 0);
   }
 
