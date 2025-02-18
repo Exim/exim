@@ -17978,6 +17978,21 @@ a 250 success response. Exim is normally running under its own uid when
 receiving SMTP, so it is not possible for it to change the uid before running
 the command.
 
+Serialization of ETRN commands is based on the MD5 hash of the command's
+argument. No more than one ETRN command with the same hash of its
+arguments can run at a given time. Other ETRN commands get a 458 SMTP
+rejection.
+
+To protect against attacks flooding the ETRN serialization table, you
+should consider rate limiting the ETRN command.
+
+.code
+deny
+  ratelimit = 3 / 1m / per_cmd / $sender_host_address
+  message = rate for ETRN is over the limit ($sender_rate > $sender_rate_limit)
+
+accept
+.endd
 
 .option smtp_etrn_serialize main boolean true
 .cindex "ETRN" "serializing"

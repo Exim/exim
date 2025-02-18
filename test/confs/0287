@@ -1,5 +1,7 @@
 # Exim test configuration 0287
 
+SLEEP = 1
+
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
@@ -7,6 +9,6 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 acl_smtp_etrn = accept
-smtp_etrn_command = /bin/sleep 1
+smtp_etrn_command = /bin/sleep SLEEP
 
 # End
