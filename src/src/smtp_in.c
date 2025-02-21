@@ -5714,14 +5714,27 @@ while (done <= 0)
 	break;
 	}
 
-      /* Compute the serialization key for this command. */
+      /* Compute the serialization key for this command. We used (all the way
+      back to 4.00) to include the given string as part of the key, but this
+      opens a security hole for hintsdb types that use a command-string for
+      operations. All ETRN with the same command hash are serialized */
 
-      etrn_serialize_key = string_sprintf("etrn-%s\n", smtp_cmd_data);
+      md5 hash;
+      uschar *digest = store_get(16, GET_TAINTED);
+
+      md5_start(&hash);
+      md5_end(&hash, smtp_cmd_argument, Ustrlen(smtp_cmd_argument), digest);
+
+      etrn_serialize_key = string_sprintf("etrn-" /* don't we have a function doing exactly this? */
+          "%02x%02x%02x%02x" "%02x%02x%02x%02x"   /* we have, since 2024-09-xx we can use %.16H */
+          "%02x%02x%02x%02x" "%02x%02x%02x%02x",
+          digest[0], digest[1], digest[2], digest[3], digest[4], digest[5], digest[6], digest[7],
+          digest[8], digest[9], digest[10], digest[11], digest[12], digest[13], digest[14], digest[15]);
 
       /* If a command has been specified for running as a result of ETRN, we
-      permit any argument to ETRN. If not, only the # standard form is permitted,
-      since that is strictly the only kind of ETRN that can be implemented
-      according to the RFC. */
+      permit any argument to ETRN. If not, only the # standard form is
+      permitted, since that is strictly the only kind of ETRN that can be
+      implemented according to the RFC. */
 
       GET_OPTION("smtp_etrn_command");
       if (smtp_etrn_command)
@@ -5730,8 +5743,8 @@ while (done <= 0)
 	BOOL rc;
 	etrn_command = smtp_etrn_command;
 	deliver_domain = smtp_cmd_data;
-	rc = transport_set_up_command(&argv, smtp_etrn_command, TSUC_EXPAND_ARGS, 0, NULL,
-	  US"ETRN processing", &error);
+	rc = transport_set_up_command(&argv, smtp_etrn_command,
+			TSUC_EXPAND_ARGS, 0, NULL, US"ETRN processing", &error);
 	deliver_domain = NULL;
 	if (!rc)
 	  {

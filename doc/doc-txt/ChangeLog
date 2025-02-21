@@ -2,6 +2,13 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Changes since 4.98
+------------------
+
+JH/01 Serialization of SMTP commands is based on the MD5 sum of
+      the command's argument (related to CVE02025-26794, it addresses
+      the vulnerability of the ETRN command only)
+
 Exim version 4.98
 -----------------
 
