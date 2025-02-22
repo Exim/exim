@@ -656,6 +656,12 @@ for (;;)
       sender_host_auth_pubname = string_copy_taint(var + 18, proto_mem);
     else if (Ustrncmp(p, "ost_auth", 8) == 0)
       sender_host_authenticated = string_copy_taint(var + 10, proto_mem);
+
+    /* host_name and helo_name are potentially different for each message read
+    from spool (so they should be present for every one). Therefore it is
+    reasonable, unlike during reception from the wire, to use the main
+    pool and ok if that pool is reset between message reads. */
+
     else if (Ustrncmp(p, "ost_name", 8) == 0)
       sender_host_name = string_copy_taint(var + 10, proto_mem);
     else if (Ustrncmp(p, "elo_name", 8) == 0)

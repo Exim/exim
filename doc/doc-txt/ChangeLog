@@ -149,6 +149,9 @@ JH/29 Smtp transport: the default for the protocol and port options now avoid
 
 JH/30 Add debug detail for the workings of the ${expr:} expansion.
 
+JH/31 Free delivery-process memory between each message passed to a
+      continued-transport.
+
 
 Exim version 4.98
 -----------------

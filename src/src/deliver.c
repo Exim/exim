@@ -170,7 +170,7 @@ Returns:        nothing
 */
 
 void
-deliver_set_expansions(address_item *addr)
+deliver_set_expansions(address_item * addr)
 {
 if (!addr)
   {
@@ -3711,7 +3711,7 @@ while (!done)
 
     /* Local interface address/port */
     case 'I':
-      if (*ptr) sending_ip_address = string_copy(ptr);
+      if (*ptr) sending_ip_address = string_copy_perm(ptr, FALSE);
       while (*ptr++) ;
       if (*ptr) sending_port = atoi(CS ptr);
       while (*ptr++) ;
@@ -3728,6 +3728,9 @@ while (!done)
     continued-transport sequence. */
 
     case 'Z':
+      {
+      int old_pool = store_pool;
+      store_pool = POOL_PERM;	/* put strings read in non-resettable mem */
       switch (*subid)
 	{
 	case '0':			/* End marker */
@@ -3795,7 +3798,9 @@ while (!done)
 	  break;
 #endif
 	}
+      store_pool = old_pool;
       break;
+      }
 
     /* Anything else is a disaster. */
 
@@ -4312,8 +4317,7 @@ Returns:    TRUE normally
 static BOOL
 do_remote_deliveries(BOOL fallback)
 {
-int parmax;
-int poffset;
+int parmax, poffset;
 
 parcount = 0;    /* Number of executing subprocesses */
 
@@ -4329,10 +4333,12 @@ set up, do so. */
 
 if (!parlist)
   {
-  parlist = store_get(remote_max_parallel * sizeof(pardata), GET_UNTAINTED);
+  parlist = store_get_perm(remote_max_parallel * sizeof(pardata),
+			  GET_UNTAINTED);
   for (poffset = 0; poffset < remote_max_parallel; poffset++)
     parlist[poffset].pid = 0;
-  parpoll = store_get(remote_max_parallel * sizeof(struct pollfd), GET_UNTAINTED);
+  parpoll = store_get_perm(remote_max_parallel * sizeof(struct pollfd),
+			  GET_UNTAINTED);
   }
 
 /* Now loop for each remote delivery */
@@ -6651,10 +6657,8 @@ If the give_up flag is set true, do not attempt any deliveries, but instead
 fail all outstanding addresses and return the message to the sender (or
 whoever).
 
-A delivery operation has a process all to itself; we never deliver more than
-one message in the same process. Therefore we needn't worry too much about
-store leakage.
-XXX No longer true with new continued-transport ops; cf. goto CONTINUED_ID
+A delivery operation has a process all to itself.  We may continue with
+a whole chain of messages, for the same transport as the first.
 
 Liable to be called as root.
 
@@ -6682,8 +6686,11 @@ time_t now;
 address_item * addr_last;
 uschar * filter_message, * info;
 open_db dbblock, * dbm_file = NULL;
+rmark reset_point;
 
 CONTINUED_ID:
+reset_point = store_mark();
+
 final_yield = DELIVER_ATTEMPTED_NORMAL;
 now = time(NULL);
 addr_last = NULL;
@@ -8930,6 +8937,13 @@ if (final_yield == DELIVER_ATTEMPTED_NORMAL && *continue_next_id)
   {
   addr_defer = addr_failed = addr_succeed = NULL;
   tree_duplicates = NULL;	/* discard dups info from old message */
+
+  spool_clear_header_globals();
+  deliver_set_expansions(NULL);
+  deliver_host_address = return_path = NULL;
+
+  store_reset(reset_point);
+
   id = string_copyn(continue_next_id, MESSAGE_ID_LENGTH);
   continue_next_id[0] = '\0';
   goto CONTINUED_ID;

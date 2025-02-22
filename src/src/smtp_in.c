@@ -1684,11 +1684,11 @@ return TRUE;
 within either of the setup functions; also from the daemon loop.
 
 Argument:   the stacking pool storage reset point
-Returns:    nothing
+Returns:    a replacement reset point
 */
 
-void *
-smtp_reset(void *reset_point)
+rmark
+smtp_reset(rmark reset_point)
 {
 recipients_list = NULL;
 rcpt_count = rcpt_defer_count = rcpt_fail_count =
@@ -1811,7 +1811,7 @@ bsmtp_transaction_linecount = receive_linecount;
 if ((receive_feof)()) return 0;   /* Treat EOF as QUIT */
 
 cancel_cutthrough_connection(TRUE, US"smtp_setup_batch_msg");
-reset_point = smtp_reset(reset_point);                /* Reset for start of message */
+reset_point = smtp_reset(reset_point);		/* Reset for start of message */
 
 /* Deal with SMTP commands. This loop is exited by setting done to a POSITIVE
 value. The values are 2 larger than the required yield of the function. */

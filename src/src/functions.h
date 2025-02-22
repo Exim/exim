@@ -531,7 +531,7 @@ extern void    smtp_notquit_exit(const uschar *, uschar *, const uschar *, ...);
 extern void    smtp_port_for_connect(host_item *, int);
 extern void    smtp_proxy_tls(void *, uschar *, size_t, int *, int, const uschar *) NORETURN;
 extern BOOL    smtp_read_response(void *, uschar *, int, int, int);
-extern void   *smtp_reset(void *);
+rmark	       smtp_reset(rmark);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);
 extern void    smtp_send_prohibition_message(int, uschar *);
 extern int     smtp_setup_msg(void);
