@@ -88,7 +88,7 @@ done
 )
 
 # miscellaneous modules
-# Note that the file in the miscmods/pdkim/ source subdir get linked to the 
+# Note that the file in the miscmods/pdkim/ source subdir get linked to the
 # destination miscmods/ dir
 d="miscmods"
 mkdir $d
@@ -114,12 +114,7 @@ done
 # and the hintsdb implementations
 d="hintsdb"
 mkdir $d
-( cd $d
-for f in hints_bdb.h hints_gdbm.h hints_ndbm.h hints_sqlite.h hints_tdb.h
-do
-  ln -s ../../src/$d/$f $f
-done
-)
+( cd $d && ln -s ../../src/$d/* . )
 
 # The basic source files for Exim and utilities. NB local_scan.h gets linked,
 # but local_scan.c does not, because its location is taken from the build-time
