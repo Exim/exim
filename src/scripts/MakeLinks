@@ -115,10 +115,7 @@ done
 d="hintsdb"
 mkdir $d
 ( cd $d
-for f in hints_bdb.h hints_gdbm.h hints_ndbm.h hints_sqlite.h hints_tdb.h
-do
-  ln -s ../../src/$d/$f $f
-done
+ln -s ../../src/$d/* .
 )
 
 # The basic source files for Exim and utilities. NB local_scan.h gets linked,
