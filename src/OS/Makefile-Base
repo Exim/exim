@@ -247,7 +247,7 @@ macro.c: macro_predef
 .PHONY: all config utils dynmodules clean
 
 
-utils: $(EXIM_MONITOR) exicyclog exinext exiwhat \
+utils:  $(EXIM_MONITOR) exicyclog exinext exiwhat \
         exigrep eximstats exipick exiqgrep exiqsumm \
         transport-filter.pl exim_checkaccess \
         exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb \
@@ -546,13 +546,13 @@ OBJ_EXPERIMENTAL =	dane.o \
 
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
-
 OBJ_LOOKUPS = lf_quote.o lf_check_file.o lf_sqlperform.o
 OBJ_ROUTERS = rf_change_domain.o rf_expand_data.o rf_get_errors_address.o \
 	rf_get_munge_headers.o rf_get_transport.o rf_get_ugid.o \
 	rf_lookup_hostlist.o rf_queue_add.o rf_self_action.o rf_set_ugid.o
 OBJ_AUTHS = call_saslauthd.o check_serv_cond.o \
 	get_data.o get_no64_data.o pwcheck.o
+OBJ_HINTS = hintsdb/hints_sqlite.o
 
 OBJ_EXIM = acl.o atrn.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o \
 	deliver.o directory.o dns.o drtables.o enq.o exim.o expand.o \
@@ -565,7 +565,8 @@ OBJ_EXIM = acl.o atrn.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o \
         xtextencode.o environment.o macro.o \
         $(OBJ_LOOKUPS) $(OBJ_ROUTERS) $(OBJ_AUTHS) \
         local_scan.o $(OBJ_WITH_CONTENT_SCAN) \
-        $(OBJ_EXPERIMENTAL)
+        $(OBJ_EXPERIMENTAL) \
+        $(OBJ_HINTS)
 
 exim:   buildlookups buildauths buildrouters buildtransports buildmisc \
         	$(OBJ_EXIM) version.o
@@ -587,11 +588,11 @@ exim:   buildlookups buildauths buildrouters buildtransports buildmisc \
 
 # The utility for dumping the contents of an exim database
 
-OBJ_DUMPDB = exim_dumpdb.o util-os.o util-store.o util-xtextencode.o
+OBJ_DUMPDB = exim_dumpdb.o util-os.o util-store.o util-xtextencode.o $(OBJ_HINTS)
 
 exim_dumpdb: $(OBJ_DUMPDB)
 	@echo "$(LNCC) -o exim_dumpdb"
-	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_dumpdb $(LFLAGS) $(OBJ_DUMPDB) \
+	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_dumpdb $(LFLAGS) $^ \
 	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_dumpdb; \
@@ -602,11 +603,11 @@ exim_dumpdb: $(OBJ_DUMPDB)
 
 # The utility for interrogating/fixing the contents of an exim database
 
-OBJ_FIXDB = exim_fixdb.o util-os.o util-store.o util-md5.o util-xtextencode.o
+OBJ_FIXDB = exim_fixdb.o util-os.o util-store.o util-md5.o util-xtextencode.o $(OBJ_HINTS)
 
 exim_fixdb:  $(OBJ_FIXDB)
 	@echo "$(LNCC) -o exim_fixdb"
-	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_fixdb $(LFLAGS) $(OBJ_FIXDB) \
+	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_fixdb $(LFLAGS) $^ \
 	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_fixdb; \
@@ -617,12 +618,11 @@ exim_fixdb:  $(OBJ_FIXDB)
 
 # The utility for tidying the contents of an exim database
 
-OBJ_TIDYDB = exim_tidydb.o util-os.o util-store.o util-xtextencode.o
+OBJ_TIDYDB = exim_tidydb.o util-os.o util-store.o util-xtextencode.o $(OBJ_HINTS)
 
 exim_tidydb: $(OBJ_TIDYDB)
 	@echo "$(LNCC) -o exim_tidydb"
-	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_tidydb $(LFLAGS) \
-	  $(OBJ_TIDYDB) \
+	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_tidydb $(LFLAGS) $^ \
 	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_tidydb; \
@@ -633,12 +633,11 @@ exim_tidydb: $(OBJ_TIDYDB)
 
 # The utility for building dbm files
 
-OBJ_DBMBUILD = exim_dbmbuild.o util-xtextencode.o
+OBJ_DBMBUILD = exim_dbmbuild.o util-xtextencode.o $(OBJ_HINTS)
 
 exim_dbmbuild: $(OBJ_DBMBUILD)
 	@echo "$(LNCC) -o exim_dbmbuild"
-	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_dbmbuild $(LFLAGS) \
-	  $(OBJ_DBMBUILD) \
+	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_dbmbuild $(LFLAGS) $^ \
 	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_dbmbuild; \
@@ -758,7 +757,7 @@ PHDRS = ../config.h \
 	../os.h
 
 .SUFFIXES: .o .c
-.c.o:;  @echo "$(CC) $*.c"
+.c.o:   ;@echo "$(CC) $*.c"
 	$(FE)$(CC) -o $@ -c $(CFLAGS) -I. $(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) $*.c
 
 # Update Exim's version information and build the version object.  The dependency
@@ -923,6 +922,8 @@ transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
 verify.o:        $(HDRS) transports/smtp.h verify.c
 xtextencode.o:   $(HDRS) xtextencode.c
+
+hintsdb/hintsdb.o:       $(HDRS) hintsdb/hints_bdb.h  hintsdb/hints_gdbm.h  hintsdb/hints_ndbm.h  hintsdb/hints_sqlite.h  hintsdb/hints_tdb.h
 
 # Dependencies for WITH_CONTENT_SCAN modules
 
