@@ -30,7 +30,7 @@ echo ">>> Creating links to source files..."
 # Firstly the lookups
 d="lookups"
 mkdir $d
-cd $d
+( cd $d
 # Makefile is generated
 for f in README cdb.c dbmdb.c dnsdb.c dsearch.c ibase.c json.c ldap.c \
   lmdb.c lsearch.c mysql.c nis.c nisplus.c oracle.c passwd.c \
@@ -39,13 +39,13 @@ for f in README cdb.c dbmdb.c dnsdb.c dsearch.c ibase.c json.c ldap.c \
 do
   ln -s ../../src/$d/$f $f
 done
+)
 
-cd ..
 
 # Likewise for the code for the routers
 d="routers"
 mkdir $d
-cd $d
+( cd $d
 # Makefile is generated
 for f in README accept.h accept.c dnslookup.h dnslookup.c \
   ipliteral.h ipliteral.c iplookup.h iplookup.c manualroute.h \
@@ -56,13 +56,12 @@ for f in README accept.h accept.c dnslookup.h dnslookup.c \
 do
   ln -s ../../src/$d/$f $f
 done
-
-cd ..
+)
 
 # Likewise for the code for the transports
 d="transports"
 mkdir $d
-cd $d
+( cd $d
 # Makefile is generated
 for f in README appendfile.h appendfile.c autoreply.h \
   autoreply.c lmtp.h lmtp.c pipe.h pipe.c queuefile.c queuefile.h \
@@ -70,13 +69,12 @@ for f in README appendfile.h appendfile.c autoreply.h \
 do
   ln -s ../../src/$d/$f $f
 done
-
-cd ..
+)
 
 # Likewise for the code for the authentication drivers
 d="auths"
 mkdir $d
-cd $d
+( cd $d
 # Makefile is generated
 for f in README call_pwcheck.c \
   check_serv_cond.c cyrus_sasl.c cyrus_sasl.h gsasl.c \
@@ -87,14 +85,14 @@ for f in README call_pwcheck.c \
 do
   ln -s ../../src/$d/$f $f
 done
-cd ..
+)
 
 # miscellaneous modules
 # Note that the file in the miscmods/pdkim/ source subdir get linked to the 
 # destination miscmods/ dir
 d="miscmods"
 mkdir $d
-cd $d
+( cd $d
 # Makefile is generated
 for f in dummy.c \
 	arc.c arc_api.h \
@@ -111,17 +109,17 @@ for f in dummy.c \
 do
   ln -s ../../src/$d/$f `basename $f`
 done
-cd ..
+)
 
 # and the hintsdb implementations
 d="hintsdb"
 mkdir $d
-cd $d
+( cd $d
 for f in hints_bdb.h hints_gdbm.h hints_ndbm.h hints_sqlite.h hints_tdb.h
 do
   ln -s ../../src/$d/$f $f
 done
-cd ..
+)
 
 # The basic source files for Exim and utilities. NB local_scan.h gets linked,
 # but local_scan.c does not, because its location is taken from the build-time
