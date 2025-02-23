@@ -1,12 +1,6 @@
 #include "exim.h"
 #include "hints_sqlite.h"
 
-BOOL
-exim_lockfile_needed(void)
-{
-return FALSE;	/* We do transaction; no extra locking needed */
-}
-
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 EXIM_DB *
 exim_dbopen_multi__(const uschar * name, const uschar * dirname, int flags,
@@ -349,4 +343,3 @@ exim_datum_init(EXIM_DATUM * dp)
 void
 exim_datum_free(EXIM_DATUM * dp)
 { }
-

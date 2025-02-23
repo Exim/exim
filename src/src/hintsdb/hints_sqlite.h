@@ -30,36 +30,42 @@ backend provider. */
 # define EXIM_DBPUTB_OK  0
 # define EXIM_DBPUTB_DUP (-1)
 
-/* Utility functions */
+/* size limit, currently checked in retry.c while putting data into the retry DB. */
+# define EXIM_DB_RLIMIT	150
 
-extern uschar *xtextencode(const uschar *, int);
-extern int xtextdecode(const uschar *, uschar**);
-
-extern unsigned exim_datum_size_get(EXIM_DATUM * dp);
-int exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data);
+/* open/close */
 EXIM_DB * exim_dbopen__(const uschar * name, const uschar * dirname, int flags, unsigned mode);
 EXIM_DB * exim_dbopen_multi__(const uschar * name, const uschar * dirname, int flags, unsigned mode);
 void exim_dbclose__(EXIM_DB * dbp);
 void exim_dbclose_multi__(EXIM_DB * dbp);
-void exim_datum_init(EXIM_DATUM * dp);
-void exim_datum_data_set(EXIM_DATUM * dp, void * s);
-unsigned exim_datum_size_get(EXIM_DATUM * dp);
-void exim_datum_size_set(EXIM_DATUM * dp, unsigned n);
+
+/* accessors: single key */
+int exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data);
 int exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data);
-void exim_dbdelete_cursor(EXIM_CURSOR * cursor);
-BOOL exim_lockfile_needed(void);
-BOOL exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res);
-uschar * exim_datum_data_get(EXIM_DATUM * dp);
-void exim_datum_free(EXIM_DATUM * dp);
-EXIM_CURSOR * exim_dbcreate_cursor(EXIM_DB * dbp);
-BOOL exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res, BOOL first, EXIM_CURSOR * cursor);
 int exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key);
+BOOL exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res);
+
+/* accessors: enumeration */
+EXIM_CURSOR * exim_dbcreate_cursor(EXIM_DB * dbp);
+void exim_dbdelete_cursor(EXIM_CURSOR * cursor);
+BOOL exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res, BOOL first, EXIM_CURSOR * cursor);
+
+/* transactions */
 BOOL exim_dbtransaction_start(EXIM_DB * dbp);
 void exim_dbtransaction_commit(EXIM_DB * dbp);
 
-/* size limit */
+/* datum */
+void exim_datum_init(EXIM_DATUM * dp);
+void exim_datum_free(EXIM_DATUM * dp);
+uschar * exim_datum_data_get(EXIM_DATUM * dp);
+void exim_datum_data_set(EXIM_DATUM * dp, void * s);
+unsigned exim_datum_size_get(EXIM_DATUM * dp);
+void exim_datum_size_set(EXIM_DATUM * dp, unsigned n);
 
-# define EXIM_DB_RLIMIT	150
+/* utility */
+
+inline BOOL exim_lockfile_needed(void) { return FALSE; /* We do transaction; no extra locking needed */ }
+
 
 # endif /* _hints_sqlite_h_
 /* End of hints_sqlite.h */

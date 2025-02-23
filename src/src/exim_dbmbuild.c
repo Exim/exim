@@ -48,8 +48,14 @@ const uschar * expand_string_2(const uschar * string, BOOL * textonly_p)
 void *
 store_get_3(int size, const void * proto_mem, const char *filename, int linenumber)
 { return NULL; }
+void
+store_free_3(void*, const char*, int)
+{ return; }
 void **
 store_reset_3(void **ptr, const char *filename, int linenumber)
+{ return NULL; }
+void *
+store_malloc_3(size_t, const char *, int)
 { return NULL; }
 void
 store_release_above_3(void *ptr, const char *func, int linenumber)
