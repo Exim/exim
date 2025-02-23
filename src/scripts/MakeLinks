@@ -6,8 +6,8 @@
 # Copyright (c) The Exim Maintainers 1995 - 2025
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-test ! -d ../src && \
-  echo "*** $0 should be run in a system-specific subdirectory." && \
+test ! -f ../scripts/"$(basename "$0")" && \
+  echo "*** $0 should be run in a system-specific subdirectory of the toplevel src/ directory." && \
   exit 1
 test -r version.c && \
   echo "*** It appears that $0 has already been run." && \
