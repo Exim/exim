@@ -40,6 +40,8 @@ void exim_dbclose__(EXIM_DB * dbp);
 void exim_dbclose_multi__(EXIM_DB * dbp);
 
 /* accessors: single key */
+/* TODO: move these declarations to hintsdb.h, as *all* hints backends
+use them */
 int exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data);
 int exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data);
 int exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key);
