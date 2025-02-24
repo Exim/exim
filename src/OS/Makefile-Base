@@ -552,7 +552,7 @@ OBJ_ROUTERS = rf_change_domain.o rf_expand_data.o rf_get_errors_address.o \
 	rf_lookup_hostlist.o rf_queue_add.o rf_self_action.o rf_set_ugid.o
 OBJ_AUTHS = call_saslauthd.o check_serv_cond.o \
 	get_data.o get_no64_data.o pwcheck.o
-OBJ_HINTS = hintsdb/hints_sqlite.o
+OBJ_HINTS = hintsdb/hints_sqlite.o hintsdb/hints_gdbm.o
 
 # before building the objects of the hints db, we need to have a valid
 # config.h
