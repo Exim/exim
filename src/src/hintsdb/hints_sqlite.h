@@ -66,7 +66,7 @@ void exim_datum_size_set(EXIM_DATUM * dp, unsigned n);
 
 /* utility */
 
-inline BOOL exim_lockfile_needed(void) { return FALSE; /* We do transaction; no extra locking needed */ }
+static inline BOOL exim_lockfile_needed(void) { return FALSE; /* We do transaction; no extra locking needed */ }
 
 
 # endif /* _hints_sqlite_h_
