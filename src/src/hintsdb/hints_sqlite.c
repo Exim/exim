@@ -1,5 +1,8 @@
-#include "exim.h"
-#include "hints_sqlite.h"
+# include "config.h"
+# ifdef USE_SQLITE
+
+# include "exim.h"
+# include "hints_sqlite.h"
 
 /* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
 EXIM_DB *
@@ -332,8 +335,6 @@ void
 exim_datum_size_set(EXIM_DATUM * dp, unsigned n)
 { dp->len = n; }
 
-
-
 void
 exim_datum_init(EXIM_DATUM * dp)
 { dp->data = NULL; }			/* compiler quietening */
@@ -343,3 +344,5 @@ exim_datum_init(EXIM_DATUM * dp)
 void
 exim_datum_free(EXIM_DATUM * dp)
 { }
+
+# endif
