@@ -13,7 +13,8 @@ backend provider. */
 /********************* gdbm interface definitions **********************/
 
 /*XXX TODO: exim's lockfile not needed? */
-
+# ifndef _hints_gdbm_h_
+# define _hints_gdbm_h_
 # include <gdbm.h>
 
 /* Basic DB type */
@@ -32,136 +33,36 @@ typedef struct {
 
 # define EXIM_DBTYPE "gdbm"
 
-/* Access functions (gdbm) */
+# define EXIM_DBPUTB_OK  0
+# define EXIM_DBPUTB_DUP 1
+# define EXIM_DB_RLIMIT	150
 
-static inline BOOL
-exim_lockfile_needed(void)
-{
-return TRUE;
-}
+/* trivial functions are here, the rest is in hints_gdbm.c */
+static inline BOOL exim_lockfile_needed(void) { return TRUE; }
 
-static inline EXIM_DB *
-exim_dbopen_multi__(const uschar * name, const uschar * dirname, int flags,
-  unsigned mode) { return NULL; }
+static inline EXIM_DB * exim_dbopen_multi__(const uschar * name, const uschar * dirname, int flags, unsigned mode) { return NULL; }
 static inline void exim_dbclose_multi__(EXIM_DB * dbp) {}
+
+static inline int exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data) { return gdbm_store(dbp->gdbm, *key, *data, GDBM_REPLACE); }
+static inline int exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data) { return gdbm_store(dbp->gdbm, *key, *data, GDBM_INSERT); }
+static inline int exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key) { return gdbm_delete(dbp->gdbm, *key); }
+
 static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
 static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
 
-/* EXIM_DBOPEN - return pointer to an EXIM_DB, NULL if failed */
-static inline EXIM_DB *
-exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
-  unsigned mode)
-{
-EXIM_DB * dbp = malloc(sizeof(EXIM_DB));	/*XXX why not exim mem-mgmt? */
-if (dbp)
-  {
-  dbp->lkey.dptr = NULL;
-  dbp->gdbm = gdbm_open(CS name, 0,
-    flags & O_CREAT ? GDBM_WRCREAT
-    : (flags & O_ACCMODE) == O_RDONLY ? GDBM_READER : GDBM_WRITER,
-    mode, 0);
-  if (dbp->gdbm)
-    return dbp;
+static inline EXIM_CURSOR * exim_dbcreate_cursor(EXIM_DB * dbp) { return NULL; }
+static inline void exim_dbdelete_cursor(EXIM_CURSOR * cursor) { }
 
-  DEBUG(D_hints_lookup)
-    debug_printf_indent("gdbm_open(flags 0x%x mode %04o) %s\n",
-	      flags, mode, strerror(errno));
-  free(dbp);
-  }
-return NULL;
-}
+static inline void exim_datum_init(EXIM_DATUM * d) { }
+static inline void exim_datum_free(EXIM_DATUM * d) { free(d->dptr); }
+static inline void exim_datum_data_set(EXIM_DATUM * dp, void * s) { dp->dptr = s; }
+static inline void exim_datum_size_set(EXIM_DATUM * dp, unsigned n) { dp->dsize = n; }
+static inline uschar * exim_datum_data_get(EXIM_DATUM * dp) { return US dp->dptr; }
+static inline unsigned exim_datum_size_get(EXIM_DATUM * dp) { return dp->dsize; }
 
-/* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
-static inline BOOL
-exim_dbget(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * res)
-{
-*res = gdbm_fetch(dbp->gdbm, *key);	/* A struct arg & return! */
-return res->dptr != NULL;
-}
-
-/* EXIM_DBPUT - returns nothing useful, assumes replace mode */
-static inline int
-exim_dbput(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
-{ return gdbm_store(dbp->gdbm, *key, *data, GDBM_REPLACE); }
-
-/* EXIM_DBPUTB - non-overwriting for use by dbmbuild */
-static inline int
-exim_dbputb(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data)
-{ return gdbm_store(dbp->gdbm, *key, *data, GDBM_INSERT); }
-
-/* Returns from EXIM_DBPUTB */
-
-# define EXIM_DBPUTB_OK  0
-# define EXIM_DBPUTB_DUP 1
-
-/* EXIM_DBDEL */
-static inline int
-exim_dbdel(EXIM_DB * dbp, EXIM_DATUM * key)
-{ return gdbm_delete(dbp->gdbm, *key); }
-
-/* EXIM_DBCREATE_CURSOR - initialize for scanning operation (null) */
-static inline EXIM_CURSOR *
-exim_dbcreate_cursor(EXIM_DB * dbp)
-{ return NULL; }
-
-/* EXIM_DBSCAN */
-static inline BOOL
-exim_dbscan(EXIM_DB * dbp, EXIM_DATUM * key, EXIM_DATUM * data, BOOL first,
-  EXIM_CURSOR * cursor)
-{
-char * s;
-*key = first ? gdbm_firstkey(dbp->gdbm) : gdbm_nextkey(dbp->gdbm, dbp->lkey);
-if ((s = dbp->lkey.dptr)) free(s);
-dbp->lkey = *key;
-return key->dptr != NULL;
-}
-
-/* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). */
-static inline void
-exim_dbdelete_cursor(EXIM_CURSOR * cursor)
-{ }
-
-/* EXIM_DBCLOSE */
-static inline void
-exim_dbclose__(EXIM_DB * dbp)
-{
-char * s;
-gdbm_close(dbp->gdbm);
-if ((s = dbp->lkey.dptr)) free(s);
-free(dbp);
-}
-
-/* Datum access types */
-
-static inline uschar *
-exim_datum_data_get(EXIM_DATUM * dp)
-{ return US dp->dptr; }
-static inline void
-exim_datum_data_set(EXIM_DATUM * dp, void * s)
-{ dp->dptr = s; }
-
-static inline unsigned
-exim_datum_size_get(EXIM_DATUM * dp)
-{ return dp->dsize; }
-static inline void
-exim_datum_size_set(EXIM_DATUM * dp, unsigned n)
-{ dp->dsize = n; }
-
-/* There's no clearing required before use, but we have to free the dptr
-after reading data. */
-
-static inline void
-exim_datum_init(EXIM_DATUM * d)
-{ }
-
-static inline void
-exim_datum_free(EXIM_DATUM * d)
-{ free(d->dptr); }
-
-/* size limit. GDBM is int-max limited, but we want to be less silly */
-
-# define EXIM_DB_RLIMIT	150
+# endif /* _hints_gdbm_h_ */
 
 /* End of hintsdb/hints_gdbm.h */
 /* vi: aw ai sw=2
 */
+
