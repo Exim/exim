@@ -8,7 +8,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* This header file contains macro definitions for one possible hintsdb
-backend provider. */
+backend provider. It is included by exim.h */
 
 /* ********************* sqlite3 interface ************************ */
 # ifndef _hints_sqlite_h
