@@ -126,4 +126,8 @@ cscope.files: FRC
 
 FRC:
 
+# https://www.gnu.org/software/make/manual/html_node/Parallel-Disable.html
+.NOTPARALLEL:
+
+
 # End of top-level makefile
