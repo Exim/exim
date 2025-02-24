@@ -554,6 +554,10 @@ OBJ_AUTHS = call_saslauthd.o check_serv_cond.o \
 	get_data.o get_no64_data.o pwcheck.o
 OBJ_HINTS = hintsdb/hints_sqlite.o
 
+# before building the objects of the hints db, we need to have a valid
+# config.h
+${OBJ_HINTS}: config
+
 OBJ_EXIM = acl.o atrn.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o \
 	deliver.o directory.o dns.o drtables.o enq.o exim.o expand.o \
         filtertest.o globals.o dnsbl.o hash.o \
@@ -922,8 +926,6 @@ transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
 verify.o:        $(HDRS) transports/smtp.h verify.c
 xtextencode.o:   $(HDRS) xtextencode.c
-
-hintsdb/hintsdb.o:       $(HDRS) hintsdb/hints_bdb.h  hintsdb/hints_gdbm.h  hintsdb/hints_ndbm.h  hintsdb/hints_sqlite.h  hintsdb/hints_tdb.h
 
 # Dependencies for WITH_CONTENT_SCAN modules
 
