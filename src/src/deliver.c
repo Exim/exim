@@ -8940,7 +8940,7 @@ if (final_yield == DELIVER_ATTEMPTED_NORMAL && *continue_next_id)
 
   spool_clear_header_globals();
   deliver_set_expansions(NULL);
-  deliver_host_address = return_path = NULL;
+  deliver_host_address = return_path = bounce_recipient = NULL;
 
   store_reset(reset_point);
 
