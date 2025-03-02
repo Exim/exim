@@ -106,9 +106,10 @@ In order to run this test suite, the following requirements must be met:
 
 (7) Some of the tests run Exim as a daemon, and others use a testing server
     (described below). These require TCP ports. In the configurations and
-    scripts, the ports are parameterized, but at present, fixed values are
-    written into the controlling script. These are ports 1224 to 1229. If these
-    ports are not available for use, some of the tests will fail.
+    scripts, the ports are parameterized, with values set by the controlling
+    script.  The defaults are ports 1224 to 1229 but the range can be set by a
+    commandline option on the script. If these ports are not available for use,
+    some of the tests will fail.
 
 (8) There is an underlying assumption that the host on which the tests are
     being run has an IPv4 address (which the test script seeks out). If there
