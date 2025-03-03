@@ -373,9 +373,6 @@ static optionlist optionlist_config[] = {
   { "system_filter_reply_transport",opt_stringptr,{&system_filter_reply_transport} },
   { "system_filter_user",       opt_uid,         {&system_filter_uid} },
   { "tcp_nodelay",              opt_bool,        {&tcp_nodelay} },
-#ifdef USE_TCP_WRAPPERS
-  { "tcp_wrappers_daemon_name", opt_stringptr,   {&tcp_wrappers_daemon_name} },
-#endif
   { "timeout_frozen_after",     opt_time,        {&timeout_frozen_after} },
   { "timezone",                 opt_stringptr,   {&timezone_string} },
   { "tls_advertise_hosts",      opt_stringptr,   {&tls_advertise_hosts} },

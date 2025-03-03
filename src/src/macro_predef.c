@@ -135,9 +135,6 @@ due to conflicts with other common macros. */
 #ifdef EXPAND_DLFUNC
   builtin_macro_create(US"_HAVE_DLFUNC");
 #endif
-#ifdef USE_TCP_WRAPPERS
-  builtin_macro_create(US"_HAVE_TCPWRAPPERS");
-#endif
 #ifndef DISABLE_TLS
   builtin_macro_create(US"_HAVE_TLS");
 # ifdef USE_GNUTLS

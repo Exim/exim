@@ -2,14 +2,7 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
-Changes since 4.98
-------------------
-
-JH/01 Serialization of SMTP commands is based on the MD5 sum of
-      the command's argument (related to CVE02025-26794, it addresses
-      the vulnerability of the ETRN command only)
-
-Exim version 4.98
+Exim version 4.99
 -----------------
 
 JH/01 Use fewer forks & execs for sending many messages to a single host.
@@ -147,10 +140,18 @@ JH/28 Smtp transport: the protocol option now accepts "submissions" as a
 JH/29 Smtp transport: the default for the protocol and port options now avoid
       doing a name-lookup for the port, hardwiring "25".
 
-JH/30 Add debug detail for the workings of the ${expr:} expansion.
+JH/30 Serialization of SMTP commands is based on the MD5 sum of
+      the command's argument (related to CVE02025-26794, it addresses
+      the vulnerability of the ETRN command only)
 
-JH/31 Free delivery-process memory between each message passed to a
+JH/31 Add debug detail for the workings of the ${expr:} expansion.
+
+JH/32 Free delivery-process memory between each message passed to a
       continued-transport.
+
+JH/33 Support for TCP-wrappers is withdrawn. The functionality has always
+      been in the Exim configuration, and systems generally also run a packet
+      level firewall layer.
 
 
 Exim version 4.98

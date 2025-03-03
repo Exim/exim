@@ -14,28 +14,6 @@
 #include <assert.h>
 
 
-/* Initialize for TCP wrappers if so configured. It appears that the macro
-HAVE_IPV6 is used in some versions of the tcpd.h header, so we unset it before
-including that header, and restore its value afterwards. */
-
-#ifdef USE_TCP_WRAPPERS
-
-  #if HAVE_IPV6
-  #define EXIM_HAVE_IPV6
-  #endif
-  #undef HAVE_IPV6
-  #include <tcpd.h>
-  #undef HAVE_IPV6
-  #ifdef EXIM_HAVE_IPV6
-  #define HAVE_IPV6 TRUE
-  #endif
-
-int allow_severity = LOG_INFO;
-int deny_severity  = LOG_NOTICE;
-uschar *tcp_wrappers_name;
-#endif
-
-
 /* Size of buffer for reading SMTP commands. We used to use 512, as defined
 by RFC 821. However, RFC 1869 specifies that this must be increased for SMTP
 commands that accept arguments, and this in particular applies to AUTH, where
@@ -2519,49 +2497,6 @@ if (!f.sender_host_unknown)
       smtp_printf("554 SMTP service not available\r\n", SP_NO_MORE);
     return FALSE;
     }
-
-  /* Test with TCP Wrappers if so configured. There is a problem in that
-  hosts_ctl() returns 0 (deny) under a number of system failure circumstances,
-  such as disks dying. In these cases, it is desirable to reject with a 4xx
-  error instead of a 5xx error. There isn't a "right" way to detect such
-  problems. The following kludge is used: errno is zeroed before calling
-  hosts_ctl(). If the result is "reject", a 5xx error is given only if the
-  value of errno is 0 or ENOENT (which happens if /etc/hosts.{allow,deny} does
-  not exist). */
-
-#ifdef USE_TCP_WRAPPERS
-  errno = 0;
-  if (!(tcp_wrappers_name = expand_string(tcp_wrappers_daemon_name)))
-    log_write_die(0, LOG_MAIN, "Expansion of \"%s\" "
-      "(tcp_wrappers_name) failed: %s", string_printing(tcp_wrappers_name),
-        expand_string_message);
-
-  if (!hosts_ctl(tcp_wrappers_name,
-         sender_host_name ? CS sender_host_name : STRING_UNKNOWN,
-         sender_host_address ? CS sender_host_address : STRING_UNKNOWN,
-         sender_ident ? CS sender_ident : STRING_UNKNOWN))
-    {
-    if (errno == 0 || errno == ENOENT)
-      {
-      HDEBUG(D_receive) debug_printf("tcp wrappers rejection\n");
-      log_write(L_connection_reject,
-                LOG_MAIN|LOG_REJECT, "refused connection from %s "
-                "(tcp wrappers)", host_and_ident(FALSE));
-      smtp_printf("554 SMTP service not available\r\n", SP_NO_MORE);
-      }
-    else
-      {
-      int save_errno = errno;
-      HDEBUG(D_receive) debug_printf("tcp wrappers rejected with unexpected "
-        "errno value %d\n", save_errno);
-      log_write(L_connection_reject,
-                LOG_MAIN|LOG_REJECT, "temporarily refused connection from %s "
-                "(tcp wrappers errno=%d)", host_and_ident(FALSE), save_errno);
-      smtp_printf("451 Temporary local problem - please try later\r\n", SP_NO_MORE);
-      }
-    return FALSE;
-    }
-#endif
 
   /* Check for reserved slots. The value of smtp_accept_count has already been
   incremented to include this process. */

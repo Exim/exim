@@ -1416,9 +1416,6 @@ uid_t   system_filter_uid      = (uid_t)-1;
 
 blob	tcp_fastopen_nodata    = { .data = NULL, .len = 0 };
 tfo_state_t tcp_out_fastopen   = TFO_NOT_USED;
-#ifdef USE_TCP_WRAPPERS
-uschar *tcp_wrappers_daemon_name = US TCP_WRAPPERS_DAEMON_NAME;
-#endif
 int	test_harness_identd_port  = IDENT_PORT;
 int     test_harness_load_avg  = 0;
 int     thismessage_size_limit = 0;

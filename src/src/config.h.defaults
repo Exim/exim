@@ -180,7 +180,6 @@ Do not put spaces between # and the 'define'.
 #define SYSLOG_LOG_PID
 #define SYSLOG_LONG_LINES
 
-#define TCP_WRAPPERS_DAEMON_NAME "exim"
 #define TIMEZONE_DEFAULT
 #define EXIM_TMPDIR
 
@@ -197,7 +196,6 @@ Do not put spaces between # and the 'define'.
 #define USE_NDBM
 #define USE_OPENSSL
 #define USE_READLINE
-#define USE_TCP_WRAPPERS
 #define USE_SQLITE
 #define USE_TDB
 

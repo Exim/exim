@@ -1289,9 +1289,6 @@ g = string_cat(g, US"Support for:");
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
   g = string_cat(g, US" translate_ip_address");
 #endif
-#ifdef USE_TCP_WRAPPERS
-  g = string_cat(g, US" TCPwrappers");
-#endif
 #ifdef HAVE_SETCLASSRESOURCES
   g = string_cat(g, US" use_setclassresources");
 #endif

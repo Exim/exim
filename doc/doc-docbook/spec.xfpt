@@ -2026,40 +2026,6 @@ given in chapter &<<CHAPTLS>>&.
 
 
 
-.section "Use of tcpwrappers" "SECID27"
-
-.cindex "tcpwrappers, building Exim to support"
-.cindex "USE_TCP_WRAPPERS"
-.cindex "TCP_WRAPPERS_DAEMON_NAME"
-.cindex "tcp_wrappers_daemon_name"
-Exim can be linked with the &'tcpwrappers'& library in order to check incoming
-SMTP calls using the &'tcpwrappers'& control files. This may be a convenient
-alternative to Exim's own checking facilities for installations that are
-already making use of &'tcpwrappers'& for other purposes. To do this, you
-should set USE_TCP_WRAPPERS in &_Local/Makefile_&, arrange for the file
-&_tcpd.h_& to be available at compile time, and also ensure that the library
-&_libwrap.a_& is available at link time, typically by including &%-lwrap%& in
-EXTRALIBS_EXIM. For example, if &'tcpwrappers'& is installed in &_/usr/local_&,
-you might have
-.code
-USE_TCP_WRAPPERS=yes
-CFLAGS=-O -I/usr/local/include
-EXTRALIBS_EXIM=-L/usr/local/lib -lwrap
-.endd
-in &_Local/Makefile_&. The daemon name to use in the &'tcpwrappers'& control
-files is &"exim"&. For example, the line
-.code
-exim : LOCAL  192.168.1.  .friendly.domain.example
-.endd
-in your &_/etc/hosts.allow_& file allows connections from the local host, from
-the subnet 192.168.1.0/24, and from all hosts in &'friendly.domain.example'&.
-All other connections are denied. The daemon name used by &'tcpwrappers'&
-can be changed at build time by setting TCP_WRAPPERS_DAEMON_NAME in
-&_Local/Makefile_&, or by setting tcp_wrappers_daemon_name in the
-configure file. Consult the &'tcpwrappers'& documentation for
-further details.
-
-
 .section "Including support for IPv6" "SECID28"
 .cindex "IPv6" "including support for"
 Exim contains code for use on systems that have IPv6 support. Setting

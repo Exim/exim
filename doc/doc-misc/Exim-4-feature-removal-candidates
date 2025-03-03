@@ -7,7 +7,7 @@ Add to the list as we think of them
 - IP options
 - DSCP
 - OCSP stapling: Despite IMHO being a seriously better idea than Revocation
-	lists, the Big Boy CAs are removing support in the 2025 timeframe
+	Lists, the Big Boy CAs are removing support in the 2025 timeframe
 	(possibly in favour of shortlived leaf certs, which increases their
 	loading on renewals and doesn't handle revocation of intermediates)
 - ibase lookup
@@ -19,4 +19,3 @@ Add to the list as we think of them
 - some of the malware scanners and/or variants
 - identd support
 - ldap "LDAP_DEPRECATED" feature use (cf. bug 2948)
-- TCP Wrappers

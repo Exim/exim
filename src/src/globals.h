@@ -1064,9 +1064,6 @@ extern BOOL    system_filter_uid_set;  /* TRUE if uid set */
 extern blob    tcp_fastopen_nodata;    /* for zero-data TFO connect requests */
 extern BOOL    tcp_nodelay;            /* Controls TCP_NODELAY on daemon */
 extern tfo_state_t tcp_out_fastopen;   /* TCP fast open */
-#ifdef USE_TCP_WRAPPERS
-extern uschar *tcp_wrappers_daemon_name; /* tcpwrappers daemon lookup name */
-#endif
 extern int     test_harness_identd_port; /* For use when testing */
 extern int     test_harness_load_avg;  /* For use when testing */
 extern int     thismessage_size_limit; /* Limit for this message */

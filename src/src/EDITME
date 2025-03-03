@@ -1252,31 +1252,6 @@ ZCAT_COMMAND=/usr/bin/zcat
 
 
 #------------------------------------------------------------------------------
-# TCP wrappers: If you want to use tcpwrappers from within Exim, uncomment
-# this setting. See the manual section entitled "Use of tcpwrappers" in the
-# chapter on building and installing Exim.
-#
-# USE_TCP_WRAPPERS=yes
-#
-# You may well also have to specify a local "include" file and an additional
-# library for TCP wrappers, so you probably need something like this:
-#
-# USE_TCP_WRAPPERS=yes
-# CFLAGS=-O -I/usr/local/include
-# EXTRALIBS_EXIM=-L/usr/local/lib -lwrap
-#
-# but of course there may need to be other things in CFLAGS and EXTRALIBS_EXIM
-# as well.
-#
-# To use a name other than exim in the tcpwrappers config file,
-# e.g. if you're running multiple daemons with different access lists,
-# or multiple MTAs with the same access list, define
-# TCP_WRAPPERS_DAEMON_NAME accordingly
-#
-# TCP_WRAPPERS_DAEMON_NAME="exim"
-
-
-#------------------------------------------------------------------------------
 # The default action of the exim_install script (which is run by "make
 # install") is to install the Exim binary with a unique name such as
 # exim-4.43-1, and then set up a symbolic link called "exim" to reference it,
