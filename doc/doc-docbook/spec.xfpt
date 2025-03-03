@@ -2084,20 +2084,27 @@ withdrawn.
 .cindex "router modules"
 .cindex "transport modules"
 .cindex "authenticator modules"
+.cindex "filter modules"
 .cindex "dynamic modules"
 .cindex ".so building"
-On some platforms, Exim supports not compiling all lookup types directly into
+.new
+On some platforms, Exim supports not compiling all feature support directly into
 the main binary, instead putting some into external modules which can be loaded
 on demand.
-This permits packagers to build Exim with support for lookups with extensive
+This permits packagers to build Exim with support for features with extensive
 library dependencies without requiring all systems to install all of those
 dependencies.
-.new
 Any combination of lookup types can be built this way.
 Lookup types that provide several variants will be loaded as
 Exim starts.
 Types that provide only one method are not loaded until used by
 the runtime configuration.
+
+Other features that can be built this way include all the router and
+authentication drivers,
+all the transport drivers except smtp,
+both filter types (exim and sieve),
+SPF, DKIM, DMARC, ARC and perl.
 .wen
 
 For building
@@ -2108,7 +2115,7 @@ for your OS; see &_OS/Makefile-Linux_& for an example.
 Some other requirements for adjusting &`EXTRALIBS`& may also be necessary,
 see &_src/EDITME_& for details.
 
-Then, for each module to be loaded dynamically, define the relevant
+Then, for each lookup module to be loaded dynamically, define the relevant
 &`LOOKUP_`&<&'lookup_type'&> flags to have the value "2" instead of "yes".
 For example, this will build in lsearch but load sqlite and mysql support
 only if each is installed:
@@ -2129,6 +2136,8 @@ permitting a smaller Exim binary.
 
 For building, as above but using
 &`AUTH_*`&, &`ROUTER_*`& and &`TRANSPORT_*`& instead of &`LOOKUP_*`&,
+
+Detail for each module type is given in the EDITME file.
 .wen
 
 
