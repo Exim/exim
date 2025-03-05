@@ -4828,11 +4828,16 @@ do_remote_deliveries par_reduce par_wait par_read_pipe
   if (continue_transport && !exim_lockfile_needed())
     if (!continue_wait_db)
       {
+      /* Any mem allocated here needs to be in a non-resettable pool
+      because we reset between continued" re-use of the transport. */
+      int old_pool = store_pool;
+      store_pool = POOL_PERM;
       continue_wait_db = dbfn_open_multi(
 		    string_sprintf("wait-%.200s", continue_transport),
 		    O_RDWR,
 		    (open_db *) store_get(sizeof(open_db), GET_UNTAINTED));
       continue_next_id[0] = '\0';
+      store_pool = old_pool;
       }
 
   if ((pid = exim_fork(f.queue_2stage ? US"transport ph1":US"transport")) == 0)
