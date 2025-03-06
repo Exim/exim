@@ -48,7 +48,7 @@ killdaemon
 #
 #
 # And again with CHUNKING
-sudo rm DIR/spool/db/misc
+sudo rm DIR/spool/db/misc*
 exim -bd -DSERVER=server -DOPT=* -oX PORT_D
 ****
 #

@@ -44,7 +44,7 @@ killdaemon
 #
 #
 #
-sudo rm DIR/spool/db/misc
+sudo rm DIR/spool/db/misc*
 #
 # Check that the cache is invalidated on SMTP errors from the server for the banner
 #

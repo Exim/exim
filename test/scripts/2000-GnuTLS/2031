@@ -17,18 +17,18 @@ exim -odf alternate@test.ex
 # server picks a key file with bad content
 exim -odf badkey@test.ex
 ****
-sudo rm DIR/spool/db/retry
+sudo rm DIR/spool/db/retry*
 #
 # server picks a non-existing filenam for key
 exim -odf noneistkeyfile@test.ex
 ****
-sudo rm DIR/spool/db/retry
+sudo rm DIR/spool/db/retry*
 #
 #
 # server gets an expansion-fail for the keyfile
 exim -odf expansionfailkey@test.ex
 ****
-sudo rm DIR/spool/db/retry
+sudo rm DIR/spool/db/retry*
 #
 #
 #
@@ -36,18 +36,18 @@ sudo rm DIR/spool/db/retry
 # server picks a cert file with bad content
 exim -odf badcert@test.ex
 ****
-sudo rm DIR/spool/db/retry
+sudo rm DIR/spool/db/retry*
 #
 # server picks a non-existing filenam for cert
 exim -odf nonexistcertfile@test.ex
 ****
-sudo rm DIR/spool/db/retry
+sudo rm DIR/spool/db/retry*
 #
 #
 # server picks a non-existing filenam for cert
 exim -odf expansionfailedcert@test.ex
 ****
-sudo rm DIR/spool/db/retry
+sudo rm DIR/spool/db/retry*
 #
 #
 #
