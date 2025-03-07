@@ -104,6 +104,7 @@ ATRN
 ???*
 ****
 #
+millisleep 500
 #
 # A mixture of spooled messages
 exim a@otherdomain.net
