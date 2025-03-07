@@ -43,7 +43,7 @@ static inline BOOL exim_dbtransaction_start(EXIM_DB * dbp) { return FALSE; }
 static inline void exim_dbtransaction_commit(EXIM_DB * dbp) {}
 
 /* EXIM_DBOPEN - returns a EXIM_DB *, NULL if failed */
-/* Check that the name given is not present. This catches
+/* When creating, check that the name given is not present. This catches
 a directory name; otherwise we would create the name.pag and
 name.dir files in the directory's parent. */
 
@@ -51,14 +51,20 @@ static inline EXIM_DB *
 exim_dbopen__(const uschar * name, const uschar * dirname, int flags,
   unsigned mode)
 {
+EXIM_DB * res;
 struct stat st;
-if (!(flags & O_CREAT) || lstat(CCS name, &st) != 0 && errno == ENOENT)
-  return dbm_open(CS name, flags, mode);
 
-DEBUG(D_hints_lookup)
-  debug_printf_indent("ndbm_open(flags 0x%x mode %04o) %s\n",
+if (  (flags & O_CREAT)
+   && (lstat(CCS name, &st) == 0 || errno != ENOENT))
+  errno = (st.st_mode & S_IFMT) == S_IFDIR ? EISDIR : EEXIST;
+
+else if ((res = dbm_open(CS name, flags, mode)))
+  return res;
+
+else
+  DEBUG(D_hints_lookup)
+    debug_printf_indent("ndbm_open(flags 0x%x mode %04o) %s\n",
 	      flags, mode, strerror(errno));
-errno = (st.st_mode & S_IFMT) == S_IFDIR ? EISDIR : EEXIST;
 return NULL;
 }
 
