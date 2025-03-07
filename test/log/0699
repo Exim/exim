@@ -1,13 +1,17 @@
+1999-03-02 09:44:33 Check that delivery of old-format spoolfiles works
 1999-03-02 09:44:33 Start queue run: pid=p1234
 1999-03-02 09:44:33 10HmaX-0005vi-00 => :blackhole: <nulldeliver@test.ex> R=nulldeliver
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=p1234
+1999-03-02 09:44:33 Check that the format-mangler utility can downgrade spoolfiles
 1999-03-02 09:44:33 10HmaX-000000005vi-0000 <= CALLER@the.local.host.name U=CALLER P=local S=sss T="originally-new id format spoolfile" for nulldeliver@test.ex
 1999-03-02 09:44:33 Start queue run: pid=p1235
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <nulldeliver@test.ex> R=nulldeliver
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=p1235
+1999-03-02 09:44:33 Check that the format-mangler utility can upgrade spoolfiles
 1999-03-02 09:44:33 Start queue run: pid=p1236
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 => :blackhole: <nulldeliver@test.ex> R=nulldeliver
 1999-03-02 09:44:33 10HmaY-000000005vi-0000 Completed
 1999-03-02 09:44:33 End queue run: pid=p1236
+1999-03-02 09:44:33 done

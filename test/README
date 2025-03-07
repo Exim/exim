@@ -740,7 +740,7 @@ These commands are not followed by any input data, or by a line of asterisks.
   ### This is a verbose comment
 
 A line starting with three hashmarks and some space copies the following text to
-both stdout and stderr file being written by the test.
+stdout and stderr files being written by the test.
 
   dbmbuild <file1> <file1>
 

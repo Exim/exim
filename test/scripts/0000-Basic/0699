@@ -6,8 +6,10 @@
 sudo mkdir -p DIR/spool/input
 #
 ### Check that delivery of old-format spoolfiles works
+exim -z 'Check that delivery of old-format spoolfiles works'
+****
 sudo cp DIR/aux-fixed/TESTNUM/* DIR/spool/input/
-sudo chown -R EXIMUSER:EXIMGROUP DIR/spool/input/
+sudo chown -R EXIMUSER:EXIMGROUP DIR/spool/input/ DIR/spool/log/
 sudo chmod -R 640 DIR/spool/input/*
 exim -bp
 ****
@@ -15,6 +17,8 @@ exim -q
 ****
 #
 ### Check that the format-mangler utility can downgrade spoolfiles
+exim -z 'Check that the format-mangler utility can downgrade spoolfiles'
+****
 exim -odq nulldeliver@test.ex
 Subject: originally-new id format spoolfile
 
@@ -29,6 +33,8 @@ exim -q
 ****
 #
 ### Check that the format-mangler utility can upgrade spoolfiles
+exim -z 'Check that the format-mangler utility can upgrade spoolfiles'
+****
 sudo cp DIR/aux-fixed/TESTNUM/* DIR/spool/input/
 sudo chown -R EXIMUSER:EXIMGROUP DIR/spool/input/
 sudo chmod -R 640 DIR/spool/input/*
@@ -40,5 +46,6 @@ exim -q
 #
 #
 ### done
+exim -z 'done'
+****
 no_msglog_check
-no_stderr_check
