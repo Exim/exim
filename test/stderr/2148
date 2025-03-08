@@ -1,5 +1,3 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 TLS error (D-H param setting 'TESTSUITE/aux-fixed/dh512'): error:xxxxxxxx:SSL routines::dh key too small
 1999-03-02 09:44:33 WARNING: deprecated Diffie-Hellman parameter 'ike22' used
-1999-03-02 09:44:33 TLS error (D-H param setting 'ike22'): error:xxxxxxxx:SSL routines::dh key too small

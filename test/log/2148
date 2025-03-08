@@ -27,7 +27,6 @@
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 => userx <userx@test.ex> R=server T=local_delivery
 1999-03-02 09:44:33 10HmbA-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1236, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 TLS error (D-H param setting 'TESTSUITE/aux-fixed/dh512'): error:xxxxxxxx:SSL routines::dh key too small
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbB-000000005vi-0000@myhost.test.ex
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 => usery <usery@test.ex> R=server T=local_delivery
 1999-03-02 09:44:33 10HmbC-000000005vi-0000 Completed
@@ -42,7 +41,6 @@
 1999-03-02 09:44:33 10HmbG-000000005vi-0000 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=p1239, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 WARNING: deprecated Diffie-Hellman parameter 'ike22' used
-1999-03-02 09:44:33 TLS error (D-H param setting 'ike22'): error:xxxxxxxx:SSL routines::dh key too small
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx S=sss id=E10HmbH-000000005vi-0000@myhost.test.ex
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 => userb <userb@test.ex> R=server T=local_delivery
 1999-03-02 09:44:33 10HmbI-000000005vi-0000 Completed
