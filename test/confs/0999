@@ -11,6 +11,10 @@ SERVER =
 rfc1413_query_timeout = 0s
 log_selector = +sender_on_delivery +millisec
 
+# Just so we do not spend time generating a selfsigned
+.ifdef _HAVE_TLS
+tls_certificate = DIR/aux-fixed/cert1
+.endif
 # ----- Main settings -----
 
 acl_smtp_rcpt = chk_rcpt

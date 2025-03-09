@@ -13,7 +13,11 @@
 #
 exim -DSERVER=server -bd -q30m -odd -oX PORT_D
 ****
+# Allow time for daemon startup and the initial (empty) queue run to complete,
+# so that anything handled by the daemon must have been triggered by a notify.
+sleep 1
 #
+# Set up a queue long enough that a notify should be sent:  81 messages.
 exim -bs
 helo test
 mail from:ralph@dustyshoes.tld
@@ -667,9 +671,14 @@ quit
 ****
 #
 #
+# Run the queue, 2-phase mode.
+# The -odd option is not publicly documented, but turns off the inter-process
+# delays that running under the testsuite usually introduces.
 exim -odd -qq
 ****
 #
+# Allow time for the daemon to finish off, just in case. Probably not needed.
+sleep 1
 #
 killdaemon
 sleep 1
@@ -680,9 +689,10 @@ sudo perl
 system "grep -E -v '(Completed|<=|=>|is locked)' DIR/spool/log/mainlog 1>&2";
 system "awk '/OK id=/{i++} END{print i, \"messages in\"}' DIR/test-stdout 1>&2";
 system "grep 'notify' DIR/spool/log/servermainlog 1>&2";
+system "grep -q '=> bob' DIR/spool/log/mainlog && echo 'queue-run cmd did make at least one delivery' 1>&2";
 system "grep -q '=> bob' DIR/spool/log/servermainlog && echo 'daemon did make at least one delivery' 1>&2";
 system "awk '/<=/{i++} END{print i, \"messages received by dest\"}' DIR/spool/log/servermainlog 1>&2";
-system "ls DIR/spool/input 1>&2";
+system "ls DIR/spool/input | wc -w 1>&2; echo files left in spool 1>&2";
 ****
 sudo rm -f DIR/spool/log/mainlog DIR/spool/log/servermainlog
 no_stdout_check
