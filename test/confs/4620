@@ -77,9 +77,11 @@ begin transports
 
 to_external:
   driver =	smtp
+  hosts_try_fastopen =
 
 forwarded_external:
   driver =	smtp
+  hosts_try_fastopen =
   max_rcpt =	1
   return_path =	${srs_encode {SRS_SECRET} {$return_path} {$original_domain}}
 

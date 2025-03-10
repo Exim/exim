@@ -32,6 +32,7 @@ smtp:
   hosts =		127.0.0.1
   allow_localhost
   port =		PORT_D
+  hosts_try_fastopen =
 .ifdef TRUSTED
   hosts_require_tls =	*
   tls_verify_certificates = DIR/aux-fixed/cert1

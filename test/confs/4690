@@ -102,6 +102,7 @@ tsmtp:
   hosts =	127.0.0.1
   port =	PORT_D
   allow_localhost
+  hosts_try_fastopen =
   arc_sign =	$primary_hostname : sel : DIR/aux-fixed/dkim/dkim.private
 
 tmlist:
@@ -109,6 +110,7 @@ tmlist:
   hosts =	127.0.0.1
   port =	PORT_D
   allow_localhost
+  hosts_try_fastopen =
   transport_filter =	/bin/cat - DIR/aux-fixed/TESTNUM.mlistfooter
   arc_sign =	$primary_hostname : sel : DIR/aux-fixed/dkim/dkim.private
 

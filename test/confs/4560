@@ -87,6 +87,7 @@ tsmtp:
   hosts =	127.0.0.1
   port =	PORT_D
   allow_localhost
+  hosts_try_fastopen =
 .ifndef OPTION
 .ifdef BAD
   arc_sign =	$primary_hostname : sel : MISSING_KEY
@@ -99,6 +100,7 @@ tmlist:
   driver =	smtp
   hosts =	127.0.0.1
   port =	PORT_D
+  hosts_try_fastopen =
   allow_localhost
   transport_filter =	/bin/cat - DIR/aux-fixed/TESTNUM.mlistfooter
 .ifndef OPTION

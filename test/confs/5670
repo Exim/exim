@@ -78,6 +78,7 @@ begin transports
 remote_delivery:
   driver =			smtp
   port =			PORT_D
+  hosts_try_fastopen =
   hosts_require_tls =		*
 
 .ifdef _HAVE_GNUTLS

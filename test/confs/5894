@@ -90,7 +90,7 @@ send_to_server1:
 .else
   port =			PORT_D
 .endif
-  hosts_try_fastopen =		:
+  hosts_try_fastopen =
   helo_data =			helo.data.changed
 .ifdef VALUE
   tls_resumption_hosts =	*
@@ -109,7 +109,7 @@ send_to_server2:
   allow_localhost
   hosts =			HOSTIPV4
   port =			PORT_D
-  hosts_try_fastopen =		:
+  hosts_try_fastopen =
   tls_verify_certificates =	CDIR/CA/CA.pem
   tls_verify_cert_hostnames =	:
 .ifdef _HAVE_EVENT

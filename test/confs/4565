@@ -69,6 +69,7 @@ tsmtp:
   hosts =	127.0.0.1
   port =	PORT_D
   allow_localhost
+  hosts_try_fastopen =
   dkim_domain =	$primary_hostname
   dkim_selector = sel
   dkim_private_key = DIR/aux-fixed/dkim/dkim.private
