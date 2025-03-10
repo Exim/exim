@@ -137,6 +137,7 @@ try option fallback_hosts
 try option unseen
 try option hosts_randomize
 try option interface
+try option port
 try option protocol
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
 try option dscp
@@ -817,6 +818,7 @@ try option fallback_hosts
 try option unseen
 try option hosts_randomize
 try option interface
+try option port
 try option protocol
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
 try option dscp
@@ -1446,6 +1448,7 @@ try option fallback_hosts
 try option unseen
 try option hosts_randomize
 try option interface
+try option port
 try option protocol
 Connecting to 127.0.0.1 [127.0.0.1]:PORT_D from ip4.ip4.ip4.ip4 ...
 try option dscp
