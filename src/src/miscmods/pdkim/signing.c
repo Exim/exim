@@ -200,7 +200,7 @@ return ret;
 
 /* verify signature (of hash if RSA sig, of data if EC sig.  No way to do incremental)
 (given pubkey & alleged sig)
-Return: NULL for success, or an error string */
+Return: NULL for success, an empty string for a simple non-match, or an error string */
 
 const uschar *
 exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, const blob * data_hash,
@@ -209,15 +209,11 @@ exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, const blob * data_hash,
 gnutls_datum_t k = { .data = data_hash->data, .size = data_hash->len };
 gnutls_datum_t s = { .data = sig->data,       .size = sig->len };
 int rc;
-const uschar * ret = NULL;
 
 #ifdef SIGN_HAVE_ED25519
 if (verify_ctx->keytype == KEYTYPE_ED25519)
-  {
-  if ((rc = gnutls_pubkey_verify_data2(verify_ctx->key,
-				      GNUTLS_SIGN_EDDSA_ED25519, 0, &k, &s)) < 0)
-    ret = US gnutls_strerror(rc);
-  }
+  rc = gnutls_pubkey_verify_data2(verify_ctx->key,
+				      GNUTLS_SIGN_EDDSA_ED25519, 0, &k, &s);
 else
 #endif
   {
@@ -230,13 +226,15 @@ else
     default:		return US"nonhandled hash type";
     }
 
-  if ((rc = gnutls_pubkey_verify_hash2(verify_ctx->key, algo,
-	      GNUTLS_VERIFY_ALLOW_BROKEN, &k, &s)) < 0)
-    ret = US gnutls_strerror(rc);
+  rc = gnutls_pubkey_verify_hash2(verify_ctx->key, algo,
+	      GNUTLS_VERIFY_ALLOW_BROKEN, &k, &s);
   }
 
 gnutls_pubkey_deinit(verify_ctx->key);
-return ret;
+
+return rc < 0
+  ? rc == GNUTLS_E_PK_SIG_VERIFY_FAILED ? US"" : US gnutls_strerror(rc)
+  : NULL;
 }
 
 
@@ -675,21 +673,21 @@ switch (hash)
   }
 
 if (  (stage = US"pkey sexp build",
-       gerr = gcry_sexp_build (&s_pkey, NULL, "(public-key(rsa(n%m)(e%m)))",
+       gerr = gcry_sexp_build(&s_pkey, NULL, "(public-key(rsa(n%m)(e%m)))",
 		        verify_ctx->n, verify_ctx->e))
    || (stage = US"data sexp build",
-       gerr = gcry_sexp_build (&s_hash, NULL, sexp_hash,
+       gerr = gcry_sexp_build(&s_hash, NULL, sexp_hash,
 		(int) data_hash->len, CS data_hash->data))
    || (stage = US"sig mpi scan",
        gerr = gcry_mpi_scan(&m_sig, GCRYMPI_FMT_USG, sig->data, sig->len, NULL))
    || (stage = US"sig sexp build",
-       gerr = gcry_sexp_build (&s_sig, NULL, "(sig-val(rsa(s%m)))", m_sig))
+       gerr = gcry_sexp_build(&s_sig, NULL, "(sig-val(rsa(s%m)))", m_sig))
    || (stage = US"verify",
-       gerr = gcry_pk_verify (s_sig, s_hash, s_pkey))
+       gerr = gcry_pk_verify(s_sig, s_hash, s_pkey))
    )
   {
   DEBUG(D_acl) debug_printf_indent("verify: error in stage '%s'\n", stage);
-  return US gcry_strerror(gerr);
+  return gerr == GCRY_ERR_BAD_SIGNATURE ? US"" : US gcry_strerror(gerr);
   }
 
 if (s_sig) gcry_sexp_release (s_sig);
@@ -899,7 +897,10 @@ else
     }
   }
 
-return US ERR_error_string(ERR_get_error(), NULL);
+/* Several error codes indicate "bad sig" (eg. RSA vs. EC). Check the string. */
+
+return Ustrcmp(ERR_reason_error_string(ERR_peek_error()), "bad signature") == 0
+  ? US"" : US ERR_error_string(ERR_get_error(), NULL);
 }
 
 

@@ -317,7 +317,7 @@ dkim_collect_input = 0;
 
 rc = pdkim_feed_finish(dkim_verify_ctx, (pdkim_signature **)&dkim_signatures,
 			&errstr);
-if (rc != PDKIM_OK && errstr)
+if (rc != PDKIM_OK && errstr && *errstr)
   log_write(0, LOG_MAIN, "DKIM: validation error: %s", errstr);
 
 /* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */

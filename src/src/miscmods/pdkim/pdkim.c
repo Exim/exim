@@ -1848,7 +1848,8 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
 
     if ((*err = exim_dkim_verify(&vctx, hm, &hhash, &sig->sighash)))
       {
-      DEBUG(D_acl) debug_printf("headers verify: %s\n", *err);
+      DEBUG(D_acl)
+	debug_printf("headers verify: %s\n", **err ? *err : US"fail");
       sig->verify_status =      PDKIM_VERIFY_FAIL;
       sig->verify_ext_status =  PDKIM_VERIFY_FAIL_MESSAGE;
       goto NEXT_VERIFY;

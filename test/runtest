@@ -1865,7 +1865,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /TLS error \(SSL_read\): .*error:0A000126:SSL routines::unexpected eof while reading$/ ;
     s/EVDATA: \K\(SSL_accept\): error:0A000126:SSL routines::unexpected eof while reading/SSL_accept: TCP connection closed by peer/;
     s/(DANE attempt failed.*error:)[0-9A-F]{8}(:SSL routines:)(?:(?i)ssl3_get_server_certificate|tls_process_server_certificate|CONNECT_CR_CERT|)(?=:certificate verify failed$)/$1xxxxxxxx$2ssl3_get_server_certificate/;
-    s/(DKIM: validation error: )error:[0-9A-F]{8}:rsa routines:(?:(?i)int_rsa_verify|CRYPTO_internal):(?:bad signature|algorithm mismatch)$/$1Public key signature verification has failed./;
+    #s/(DKIM: validation error: )error:[0-9A-F]{8}:rsa routines:(?:(?i)int_rsa_verify|CRYPTO_internal):(?:bad signature|algorithm mismatch)$/$1Public key signature verification has failed./;
     s/ARC: AMS signing: privkey PEM-block import: error:\K[0-9A-F]{8}:(PEM routines):get_name:(no start line)/0906D06C:$1:PEM_read_bio:$2/;
 
     # GnuTLS version variances
