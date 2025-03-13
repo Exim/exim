@@ -850,6 +850,7 @@ exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, const blob * data,
   const blob * sig)
 {
 const EVP_MD * md;
+const uschar * res;
 
 switch (hash)
   {
@@ -899,8 +900,8 @@ else
 
 /* Several error codes indicate "bad sig" (eg. RSA vs. EC). Check the string. */
 
-return Ustrcmp(ERR_reason_error_string(ERR_peek_error()), "bad signature") == 0
-  ? US"" : US ERR_error_string(ERR_get_error(), NULL);
+res = US ERR_error_string(ERR_get_error(), NULL);
+return Ustrcmp(res, "bad signature") == 0 ? US"" : res;
 }
 
 
