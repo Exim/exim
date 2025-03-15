@@ -30,6 +30,11 @@ quit
 ??? 221
 ****
 killdaemon
+# Allow time for 1-second ETRN jobs to complete
+sleep 2
+#
+#
+#
 exim -DSLEEP=3 -DSERVER=server -bd -oX PORT_D
 ****
 client 127.0.0.1 PORT_D
