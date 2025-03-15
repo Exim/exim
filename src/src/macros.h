@@ -827,7 +827,8 @@ local_scan.h */
 #define DEBUG_FROM_CONFIG       0x0001
 
 /* SMTP command identifiers for the smtp_connection_had field that records the
-most recent SMTP commands. SCH_NONE is "empty". */
+most recent SMTP commands. SCH_NONE is "empty".  The smtp_names array must have
+an entry for each. */
 
 enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_BDAT,
        SCH_EHLO, SCH_ATRN, SCH_ETRN, SCH_EXPN, SCH_HELO,

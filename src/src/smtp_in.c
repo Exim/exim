@@ -217,7 +217,8 @@ static smtp_cmd_list cmd_list[] = {
 #endif
 };
 
-/* This list of names is used for performing the smtp_no_mail logging action. */
+/* This list of names is used for performing the smtp_no_mail logging action.
+It must have an entry for each SCH_ command code. */
 
 uschar * smtp_names[] =
   {
@@ -226,6 +227,7 @@ uschar * smtp_names[] =
   [SCH_DATA] = US"DATA",
   [SCH_BDAT] = US"BDAT",
   [SCH_EHLO] = US"EHLO",
+  [SCH_ATRN] = US"ATRN",
   [SCH_ETRN] = US"ETRN",
   [SCH_EXPN] = US"EXPN",
   [SCH_HELO] = US"HELO",
@@ -3981,6 +3983,7 @@ while (done <= 0)
 	  *smtp_cmd_argument == 0 ? US"(no argument given)" :
 			     string_printing(smtp_cmd_argument));
 
+	GET_OPTION("smtp_max_synprot_errors");
 	if (++synprot_error_count > smtp_max_synprot_errors)
 	  {
 	  log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
@@ -5858,6 +5861,7 @@ while (done <= 0)
 #endif
 
     default:
+      GET_OPTION("smtp_max_unknown_commands");
       if (unknown_command_count++ >= smtp_max_unknown_commands)
 	{
 	log_write(L_smtp_syntax_error, LOG_MAIN,
