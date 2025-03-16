@@ -720,9 +720,9 @@ if (smtp_input)
 #ifndef DISABLE_TLS
   tls_close(NULL, TLS_NO_SHUTDOWN);      /* Shut down the TLS library */
 #endif
-  (void)close(fileno(smtp_in));		/* Not smtp_inout_fclose() here       */
-  (void)close(fileno(smtp_out));	/* as we want to discard stdio buffer */
-  smtp_out = smtp_in = NULL;
+  (void)close(smtp_in_fd);
+  (void)close(smtp_out_fd);
+  smtp_out_fd = smtp_in_fd = -1;
   }
 else
   {
@@ -984,8 +984,7 @@ test_address(const uschar * s, int flags, int * exit_value)
 int start, end, domain;
 uschar * parse_error = NULL;
 const uschar * address = parse_extract_address(s, &parse_error,
-					      &start, &end, &domain,
-  FALSE);
+					      &start, &end, &domain, FALSE);
 if (!address)
   {
   fprintf(stdout, "syntax error: %s\n", parse_error);
@@ -993,8 +992,9 @@ if (!address)
   }
 else
   {
-  int rc = verify_address(deliver_make_addr(address,TRUE), stdout, flags, -1,
-    -1, -1, NULL, NULL, NULL);
+  /* NB we lose stdio buffering here */
+  int rc = verify_address(deliver_make_addr(address,TRUE), fileno(stdout),
+    flags, -1, -1, -1, NULL, NULL, NULL);
   if (rc == FAIL) *exit_value = 2;
   else if (rc == DEFER && *exit_value == 0) *exit_value = 1;
   }
@@ -5649,13 +5649,13 @@ if (host_checking)
 
   host_build_sender_fullhost();
   smtp_input = TRUE;
-  smtp_in = stdin;
-  smtp_out = stdout;
+  smtp_in_fd = fileno(stdin);
+  smtp_out_fd = fileno(stdout);
   f.sender_local = FALSE;
   f.sender_host_notsocket = TRUE;
   debug_file = stderr;
   debug_fd = fileno(debug_file);
-  fprintf(stdout, "\n**** SMTP testing session as if from host %s\n"
+  dprintf(smtp_out_fd, "\n**** SMTP testing session as if from host %s\n"
     "**** but without any ident (RFC 1413) callback.\n"
     "**** This is not for real!\n\n",
       sender_host_address);
@@ -5854,8 +5854,8 @@ unnecessary clutter. */
 set_connection_id();
 if (smtp_input)
   {
-  smtp_in = stdin;
-  smtp_out = stdout;
+  smtp_in_fd = fileno(stdin);
+  smtp_out_fd = fileno(stdout);
 
   memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (verify_check_host(&hosts_connection_nolog) == OK)
@@ -5866,7 +5866,7 @@ if (smtp_input)
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
   if (!smtp_start_session())
     {
-    mac_smtp_fflush();
+    smtp_fflush();
     exim_exit(EXIT_SUCCESS);
     }
   }

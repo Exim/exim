@@ -672,7 +672,7 @@ extern int     vaguely_random_number(int);
 #ifndef DISABLE_TLS
 extern int     vaguely_random_number_fallback(int);
 #endif
-extern int     verify_address(address_item *, FILE *, int, int, int, int,
+extern int     verify_address(address_item *, int, int, int, int, int,
                  uschar *, uschar *, BOOL *);
 extern int     verify_check_dnsbl(int, const uschar *, uschar **);
 extern int     verify_check_header_address(uschar **, uschar **, int, int, int,
@@ -1513,11 +1513,11 @@ return !s || !*s || (res = Uatoi(s)) == 0 ? UNLIMITED_ADDRS : res;
 
 
 static inline void
-smtp_inout_fclose(void)
+smtp_inout_close(void)
 {
-if (smtp_in)  (void) fclose(smtp_in);
-if (smtp_out) (void) fclose(smtp_out);
-smtp_in = smtp_out = NULL;
+if (smtp_in_fd)  (void) close(smtp_in_fd);
+if (smtp_out_fd) (void) close(smtp_out_fd);
+smtp_in_fd = smtp_out_fd = -1;
 }
 
 

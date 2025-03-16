@@ -989,7 +989,7 @@ extern double  smtp_delay_rcpt;        /* Current RCPT delay */
 extern BOOL    smtp_enforce_sync;      /* Enforce sync rules */
 extern uschar *smtp_etrn_command;      /* Command to run */
 extern BOOL    smtp_etrn_serialize;    /* Only one at once */
-extern FILE   *smtp_in;                /* Incoming SMTP input file */
+extern int     smtp_in_fd;	       /* Incoming SMTP input file */
 extern int     smtp_listen_backlog;    /* Current listener socket backlog, if monitored */
 extern int     smtp_load_reserve;      /* Only from reserved if load > this */
 extern int     smtp_mailcmd_count;     /* Count of MAIL commands */
@@ -998,7 +998,7 @@ extern int     smtp_max_synprot_errors;/* Max syntax/protocol errors */
 extern int     smtp_max_unknown_commands; /* As it says */
 extern uschar *smtp_names[];	       /* decode for command codes */
 extern const uschar *smtp_notquit_reason; /* Global for disconnect reason */
-extern FILE   *smtp_out;               /* Incoming SMTP output file */
+extern int     smtp_out_fd;	       /* Incoming SMTP output file */
 extern uschar *smtp_ratelimit_hosts;   /* Rate limit these hosts */
 extern uschar *smtp_ratelimit_mail;    /* Parameters for MAIL limiting */
 extern uschar *smtp_ratelimit_rcpt;    /* Parameters for RCPT limiting */

@@ -109,7 +109,7 @@ else
 
   DEBUG(D_route|D_verify)
     debug_printf("------ Verifying errors address %s ------\n", s);
-  if (verify_address(snew, NULL,
+  if (verify_address(snew, -1,
       vopt_is_recipient /* vopt_fake_sender is the alternative */
       | vopt_qualify, -1, -1, -1, NULL, NULL, NULL) == OK)
     *errors_to = snew->address;

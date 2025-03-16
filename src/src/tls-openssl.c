@@ -3458,7 +3458,7 @@ BOOL verify_client_cert = FALSE;
 #endif
 static uschar peerdn[256];
 
-if (!smtp_out) return FAIL;
+if (smtp_out_fd< 0) return FAIL;
 
 /* Check for previous activation */
 
@@ -3587,16 +3587,13 @@ mode, the fflush() happens when smtp_getc() is called. */
 
 SSL_set_session_id_context(ssl, sid_ctx, Ustrlen(sid_ctx));
 if (!tls_in.on_connect)
-  {
   smtp_printf("220 TLS go ahead\r\n", SP_NO_MORE);
-  fflush(smtp_out);
-  }
 
 /* Now negotiate the TLS session. We put our own timer on it, since it seems
 that the OpenSSL library doesn't. */
 
-SSL_set_wfd(ssl, fileno(smtp_out));
-SSL_set_rfd(ssl, fileno(smtp_in));
+SSL_set_wfd(ssl, smtp_out_fd);
+SSL_set_rfd(ssl, smtp_in_fd);
 SSL_set_accept_state(ssl);
 
 # ifdef EXPERIMENTAL_TLS_EARLY_BANNER
@@ -3835,7 +3832,7 @@ receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
 receive_ferror = tls_ferror;
 
-tls_in.active.sock = fileno(smtp_out);
+tls_in.active.sock = smtp_out_fd;
 tls_in.active.tls_ctx = NULL;	/* not using explicit ctx for server-side */
 return OK;
 }
@@ -4753,7 +4750,7 @@ one stream does it, in one context (i.e. no store reset).  Currently it is used
 for the responses to the received SMTP MAIL , RCPT, DATA sequence, only.
 We support callouts done by the server process by using a separate client
 context for the stashed information. */
-/* + if PIPE_COMMAND, banner & ehlo-resp for smmtp-on-connect. Suspect there's
+/* + if PIPE_COMMAND, banner & ehlo-resp for smtp-on-connect. Suspect there's
 a store reset there, so use POOL_PERM. */
 /* + if CHUNKING, cmds EHLO,MAIL,RCPT(s),BDAT */
 

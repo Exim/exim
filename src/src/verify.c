@@ -630,7 +630,7 @@ else
   and cause the client to time out. So in this case we forgo the PIPELINING
   optimization. */
 
-  if (smtp_out && !f.disable_callout_flush) mac_smtp_fflush();
+  if (smtp_out_fd >= 0 && !f.disable_callout_flush) smtp_fflush();
 
   clearflag(addr, af_verify_pmfail);  /* postmaster callout flag */
   clearflag(addr, af_verify_nsfail);  /* null sender callout flag */
@@ -1294,7 +1294,7 @@ vopt = transport_sender
   ? vopt_is_recipient | vopt_callout_r_tptsender | vopt_callout_no_cache
   : vopt_is_recipient | vopt_callout_recipsender | vopt_callout_no_cache;
 
-rc = verify_address(&addr2, NULL, vopt, CUTTHROUGH_CMD_TIMEOUT, -1, -1,
+rc = verify_address(&addr2, -1, vopt, CUTTHROUGH_CMD_TIMEOUT, -1, -1,
 	NULL, NULL, NULL);
 addr->message = addr2.message;
 addr->user_message = addr2.user_message;
@@ -1650,10 +1650,10 @@ return yield;
 /* This function is used by verify_address() as a substitute for all fprintf()
 calls; a direct fprintf() will not produce output in a TLS SMTP session, such
 as a response to an EXPN command.  smtp_in.c makes smtp_printf available but
-that assumes that we always use the smtp_out FILE* when not using TLS or the
-ssl buffer when we are.  Instead we take a FILE* parameter and check to see if
-that is smtp_out; if so, smtp_printf() with TLS support, otherwise regular
-fprintf().
+that assumes that we always use the smtp_out_fd when not using TLS or the
+ssl buffer when we are.  Instead we take an fd parameter and check to see if
+that is smtp_out_fd; if so, smtp_printf() with TLS support, otherwise regular
+dprintf().
 
 Arguments:
   f           the candidate FILE* to write to
@@ -1665,15 +1665,15 @@ Returns:
 */
 
 static void PRINTF_FUNCTION(2,3)
-respond_printf(FILE *f, const char *format, ...)
+respond_printf(int fd, const char * format, ...)
 {
 va_list ap;
 
 va_start(ap, format);
-if (smtp_out && (f == smtp_out))
+if (smtp_out_fd >= 0 && fd == smtp_out_fd)
   smtp_vprintf(format, FALSE, ap);
 else
-  vfprintf(f, format, ap);
+  vdprintf(fd, format, ap);
 va_end(ap);
 }
 
@@ -1689,7 +1689,7 @@ address testing (-bt), which is indicated by address_test_mode being set.
 Arguments:
   vaddr            contains the address to verify; the next field in this block
                      must be NULL
-  fp               if not NULL, write the result to this file
+  fd               if >= 0, write the result to this file
   options          various option bits:
                      vopt_fake_sender => this sender verify is not for the real
                        sender (it was verify=sender=xxxx or an address from a
@@ -1731,12 +1731,12 @@ Returns:           OK      address verified
 */
 
 int
-verify_address(address_item * vaddr, FILE * fp, int options, int callout,
+verify_address(address_item * vaddr, int fd, int options, int callout,
   int callout_overall, int callout_connect, uschar * se_mailfrom,
-  uschar *pm_mailfrom, BOOL *routed)
+  uschar * pm_mailfrom, BOOL * routed)
 {
 BOOL allok = TRUE;
-BOOL full_info = fp ? debug_selector != 0 : FALSE;
+BOOL full_info = fd >= 0 ? debug_selector != 0 : FALSE;
 BOOL expn         = (options & vopt_expn) != 0;
 BOOL success_on_redirect = (options & vopt_success_on_redirect) != 0;
 int i;
@@ -1773,8 +1773,8 @@ if (parse_find_at(address) == NULL)
   {
   if (!(options & vopt_qualify))
     {
-    if (fp)
-      respond_printf(fp, "%sA domain is required for \"%s\"%s\n",
+    if (fd >= 0)
+      respond_printf(fd, "%sA domain is required for \"%s\"%s\n",
         ko_prefix, address, cr);
     *failure_ptr = US"qualify";
     return FAIL;
@@ -1801,7 +1801,7 @@ if (global_rewrite_rules)
     {
     for (int j = 0; j < (MAX_NAMED_LIST * 2)/32; j++) vaddr->localpart_cache[j] = 0;
     for (int j = 0; j < (MAX_NAMED_LIST * 2)/32; j++) vaddr->domain_cache[j] = 0;
-    if (fp && !expn) fprintf(fp, "Address rewritten as: %s\n", address);
+    if (fd > 0 && !expn) dprintf(fd, "Address rewritten as: %s\n", address);
     }
   }
 
@@ -1867,29 +1867,29 @@ while (addr_new)
   if (testflag(addr, af_pfr))
     {
     allok = FALSE;
-    if (fp)
+    if (fd > 0)
       {
       BOOL allow;
 
       if (addr->address[0] == '>')
         {
         allow = testflag(addr, af_allow_reply);
-        fprintf(fp, "%s -> mail %s", addr->parent->address, addr->address + 1);
+        dprintf(fd, "%s -> mail %s", addr->parent->address, addr->address + 1);
         }
       else
         {
         allow = addr->address[0] == '|'
           ? testflag(addr, af_allow_pipe) : testflag(addr, af_allow_file);
-        fprintf(fp, "%s -> %s", addr->parent->address, addr->address);
+        dprintf(fd, "%s -> %s", addr->parent->address, addr->address);
         }
 
       if (addr->basic_errno == ERRNO_BADTRANSPORT)
-        fprintf(fp, "\n*** Error in setting up pipe, file, or autoreply:\n"
+        dprintf(fd, "\n*** Error in setting up pipe, file, or autoreply:\n"
           "%s\n", addr->message);
       else if (allow)
-        fprintf(fp, "\n  transport = %s\n", addr->transport->drinst.name);
+        dprintf(fd, "\n  transport = %s\n", addr->transport->drinst.name);
       else
-        fprintf(fp, " *** forbidden ***\n");
+        dprintf(fd, " *** forbidden ***\n");
       }
     continue;
     }
@@ -2079,29 +2079,29 @@ while (addr_new)
   if (rc == FAIL)
     {
     allok = FALSE;
-    if (fp)
+    if (fd > 0)
       {
       address_item *p = addr->parent;
 
-      respond_printf(fp, "%s%s %s", ko_prefix,
+      respond_printf(fd, "%s%s %s", ko_prefix,
         full_info ? addr->address : address,
         f.address_test_mode ? "is undeliverable" : "failed to verify");
       if (!expn && f.admin_user)
         {
         if (addr->basic_errno > 0)
-          respond_printf(fp, ": %s", strerror(addr->basic_errno));
+          respond_printf(fd, ": %s", strerror(addr->basic_errno));
         if (addr->message)
-          respond_printf(fp, ": %s", addr->message);
+          respond_printf(fd, ": %s", addr->message);
         }
 
       /* Show parents iff doing full info */
 
       if (full_info) while (p)
         {
-        respond_printf(fp, "%s\n    <-- %s", cr, p->address);
+        respond_printf(fd, "%s\n    <-- %s", cr, p->address);
         p = p->parent;
         }
-      respond_printf(fp, "%s\n", cr);
+      respond_printf(fd, "%s\n", cr);
       }
     cancel_cutthrough_connection(TRUE, US"routing hard fail");
 
@@ -2118,29 +2118,29 @@ while (addr_new)
   else if (rc == DEFER)
     {
     allok = FALSE;
-    if (fp)
+    if (fd > 0)
       {
       address_item *p = addr->parent;
-      respond_printf(fp, "%s%s cannot be resolved at this time", ko_prefix,
+      respond_printf(fd, "%s%s cannot be resolved at this time", ko_prefix,
         full_info? addr->address : address);
       if (!expn && f.admin_user)
         {
         if (addr->basic_errno > 0)
-          respond_printf(fp, ": %s", strerror(addr->basic_errno));
+          respond_printf(fd, ": %s", strerror(addr->basic_errno));
         if (addr->message)
-          respond_printf(fp, ": %s", addr->message);
+          respond_printf(fd, ": %s", addr->message);
         else if (addr->basic_errno <= 0)
-          respond_printf(fp, ": unknown error");
+          respond_printf(fd, ": unknown error");
         }
 
       /* Show parents iff doing full info */
 
       if (full_info) while (p)
         {
-        respond_printf(fp, "%s\n    <-- %s", cr, p->address);
+        respond_printf(fd, "%s\n    <-- %s", cr, p->address);
         p = p->parent;
         }
-      respond_printf(fp, "%s\n", cr);
+      respond_printf(fd, "%s\n", cr);
       }
     cancel_cutthrough_connection(TRUE, US"routing soft fail");
 
@@ -2161,16 +2161,16 @@ while (addr_new)
 
     if (!addr_new)
       if (!addr_local && !addr_remote)
-        respond_printf(fp, "250 mail to <%s> is discarded\r\n", address);
+        respond_printf(fd, "250 mail to <%s> is discarded\r\n", address);
       else
-        respond_printf(fp, "250 <%s>\r\n", address);
+        respond_printf(fd, "250 <%s>\r\n", address);
 
     else do
       {
       address_item *addr2 = addr_new;
       addr_new = addr2->next;
       if (!addr_new) ok_prefix = US"250 ";
-      respond_printf(fp, "%s<%s>\r\n", ok_prefix, addr2->address);
+      respond_printf(fd, "%s<%s>\r\n", ok_prefix, addr2->address);
       } while (addr_new);
     yield = OK;
     goto out;
@@ -2204,7 +2204,7 @@ while (addr_new)
 	  )  )
        )
       {
-      if (fp) fprintf(fp, "%s %s\n",
+      if (fd > 0) dprintf(fd, "%s %s\n",
         address, f.address_test_mode ? "is deliverable" : "verified");
 
       /* If we have carried on to verify a child address, we want the value
@@ -2226,8 +2226,8 @@ while (addr_new)
   }     /* Loop for generated addresses */
 
 /* Display the full results of the successful routing, including any generated
-addresses. Control gets here only when full_info is set, which requires fp not
-to be NULL, and this occurs only when a top-level verify is called with the
+addresses. Control gets here only when full_info is set, which requires fd
+valid, and this occurs only when a top-level verify is called with the
 debugging switch on.
 
 If there are no local and no remote addresses, and there were no pipes, files,
@@ -2236,7 +2236,7 @@ discarded, usually because of the use of :blackhole: in an alias file. */
 
 if (allok && !addr_local && !addr_remote)
   {
-  fprintf(fp, "mail to %s is discarded\n", address);
+  dprintf(fd, "mail to %s is discarded\n", address);
   goto out;
   }
 
@@ -2248,25 +2248,25 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
 
     addr_list = addr->next;
 
-    fprintf(fp, "%s", CS addr->address);
+    dprintf(fd, "%s", CS addr->address);
 
     /* If the address is a duplicate, show something about it. */
 
     if (!testflag(addr, af_pfr))
       if (tree_search(tree_duplicates, addr->unique))
-        fprintf(fp, "   [duplicate, would not be delivered]");
+        dprintf(fd, "   [duplicate, would not be delivered]");
       else
 	tree_add_duplicate(addr->unique, addr);
 
     /* Now show its parents */
 
     for (address_item * p = addr->parent; p; p = p->parent)
-      fprintf(fp, "\n    <-- %s", p->address);
-    fprintf(fp, "\n  ");
+      dprintf(fd, "\n    <-- %s", p->address);
+    dprintf(fd, "\n  ");
 
     /* Show router, and transport */
 
-    fprintf(fp, "router = %s, transport = %s\n",
+    dprintf(fd, "router = %s, transport = %s\n",
       addr->router->drinst.name, tp ? tp->drinst.name : US"unset");
 
     /* Show any hosts that are set up by a router unless the transport
@@ -2286,20 +2286,24 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
         }
       for (host_item * h = addr->host_list; h; h = h->next)
 	{
-	fprintf(fp, "  host %-*s ", maxlen, h->name);
+	dprintf(fd, "  host %-*s ", maxlen, h->name);
 
 	if (h->address)
-	  fprintf(fp, "[%s%-*c", h->address, maxaddlen+1 - Ustrlen(h->address), ']');
+	  dprintf(fd, "[%s%-*c", h->address, maxaddlen+1 - Ustrlen(h->address), ']');
 	else if (ti->local)
-	  fprintf(fp, " %-*s ", maxaddlen, "");  /* Omit [unknown] for local */
+	  dprintf(fd, " %-*s ", maxaddlen, "");  /* Omit [unknown] for local */
 	else
-	  fprintf(fp, "[%s%-*c", "unknown", maxaddlen+1 - 7, ']');
+	  dprintf(fd, "[%s%-*c", "unknown", maxaddlen+1 - 7, ']');
 
-        if (h->mx >= 0) fprintf(fp, " MX=%d", h->mx);
-        if (h->port != PORT_NONE) fprintf(fp, " port=%d", h->port);
-        if (f.running_in_test_harness  &&  h->dnssec == DS_YES) fputs(" AD", fp);
-        if (h->status == hstatus_unusable) fputs(" ** unusable **", fp);
-	fputc('\n', fp);
+        if (h->mx >= 0)
+	  dprintf(fd, " MX=%d", h->mx);
+        if (h->port != PORT_NONE)
+	  dprintf(fd, " port=%d", h->port);
+        if (f.running_in_test_harness  &&  h->dnssec == DS_YES)
+	  write(fd, " AD", 3);
+        if (h->status == hstatus_unusable)
+	  dprintf(fd, " ** unusable **");
+	write(fd, "\n", 1);
         }
       }
     }
@@ -2722,7 +2726,7 @@ for (int i = 0; i < 3 && !done; i++)
         being replaced after rewriting or qualification. */
 
 	vaddr = deliver_make_addr(address, FALSE);
-	new_ok = verify_address(vaddr, NULL, options | vopt_fake_sender,
+	new_ok = verify_address(vaddr, -1, options | vopt_fake_sender,
 	  callout, callout_overall, callout_connect, se_mailfrom,
 	  pm_mailfrom, NULL);
         }
@@ -3482,7 +3486,7 @@ BOOL routed;
 uschar * msg = US"\0";
 int rc, len = 1;
 
-if ((rc = verify_address(&vaddr, NULL, vopt_is_recipient | vopt_quota,
+if ((rc = verify_address(&vaddr, -1, vopt_is_recipient | vopt_quota,
     1, 0, 0, NULL, NULL, &routed)) != OK)
   {
   uschar * where = recipient_verify_failure;

@@ -2104,7 +2104,7 @@ if (!host->address)
   {
   uschar *msg =
 #ifndef STAND_ALONE
-    !message_id[0] && smtp_in
+    !message_id[0] && smtp_in_fd >= 0
       ? string_sprintf("no IP address found for host %s (during %s)", host->name,
           smtp_get_connection_info()) :
 #endif

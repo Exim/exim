@@ -4289,7 +4289,7 @@ response, but the chance of this happening should be small. */
 if (  smtp_input && sender_host_address && !f.sender_host_notsocket
    && !receive_hasc())
   {
-  if (poll_one_fd(fileno(smtp_in), POLLIN, 0) != 0)
+  if (poll_one_fd(smtp_in_fd, POLLIN, 0) != 0)
     {
     int c = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (c >= 0) (receive_ungetc)(c);
@@ -4514,8 +4514,8 @@ if (smtp_input)
         smtp_printf("250 OK id=%s\r\n", receive_hasc(), message_id);
 
       if (host_checking)
-        fprintf(stdout,
-          "\n**** SMTP testing: that is not a real message id!\n\n");
+        smtp_printf("\n**** SMTP testing: that is not a real message id!\n\n",
+		    SP_NO_MORE);
       }
 
     /* smtp_reply is set non-empty */
@@ -4595,6 +4595,7 @@ when they shouldn't. */
 
 header_list = header_last = NULL;
 
+smtp_fflush();
 return yield;  /* TRUE if more messages (SMTP only) */
 }
 

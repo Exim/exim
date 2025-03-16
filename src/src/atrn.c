@@ -52,15 +52,15 @@ atrn_mode = US"P";
 atrn_host = string_sprintf("[%s]:%d",
 			  sender_host_address, sender_host_port);
 
-if (!smtp_out) return FAIL;
+if (smtp_out_fd < 0) return FAIL;
 
 #ifndef DISABLE_TLS
 if (tls_in.active.sock >= 0)
   tls_state_in_to_out(0, sender_host_address, sender_host_port);
 #endif
-fflush(smtp_out);
-force_fd(fileno(smtp_in), 0);
-smtp_in = smtp_out = NULL;
+smtp_fflush();
+force_fd(smtp_in_fd, 0);
+smtp_in_fd = smtp_out_fd = -1;
 
 /* Set up a onetime queue run, filtering for messages with the
 given domains. Later filtering will leave out addresses for other domains
@@ -109,7 +109,7 @@ set_process_info("handling ATRN customer request for host '%s'", atrn_host);
 Then send the ATRN. */
 
 rcpt_count = 1;
-if ((rc = verify_address(addr, NULL,
+if ((rc = verify_address(addr, -1,
 	vopt_atrn | vopt_callout_hold | vopt_callout_recipsender
 	| vopt_callout_no_cache,
 	30, -1, -1, NULL, NULL, NULL)) != OK)

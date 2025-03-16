@@ -197,7 +197,6 @@ we have to do a minimum of 3 read calls, not 1.  Eww.
 # endif
 
 int size, ret;
-int fd = fileno(smtp_in);
 const char v2sig[12] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A";
 uschar * iptype;  /* To display debug info */
 BOOL yield = FALSE;
@@ -210,7 +209,7 @@ do
   don't do a PEEK into the data, actually slurp up enough to be
   "safe". Can't take it all because TLS-on-connect clients follow
   immediately with TLS handshake. */
-  ret = read(fd, &hdr, PROXY_INITIAL_READ);
+  ret = read(smtp_in_fd, &hdr, PROXY_INITIAL_READ);
   } while (ret == -1 && errno == EINTR && !had_command_timeout);
 
 if (ret == -1)
@@ -228,7 +227,7 @@ if ((ret == PROXY_INITIAL_READ) && (memcmp(&hdr.v2, v2sig, sizeof(v2sig)) == 0))
   /* First get the length fields. */
   do
     {
-    retmore = read(fd, (uschar*)&hdr + ret, PROXY_V2_HEADER_SIZE - PROXY_INITIAL_READ);
+    retmore = read(smtp_in_fd, US &hdr + ret, PROXY_V2_HEADER_SIZE - PROXY_INITIAL_READ);
     } while (retmore == -1 && errno == EINTR && !had_command_timeout);
   if (retmore == -1)
     goto proxyfail;
@@ -267,7 +266,7 @@ if ((ret == PROXY_INITIAL_READ) && (memcmp(&hdr.v2, v2sig, sizeof(v2sig)) == 0))
     {
     do
       {
-      retmore = read(fd, (uschar*)&hdr + ret, size-ret);
+      retmore = read(smtp_in_fd, US &hdr + ret, size-ret);
       } while (retmore == -1 && errno == EINTR && !had_command_timeout);
     if (retmore == -1)
       goto proxyfail;
@@ -371,7 +370,7 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
   char   *endc;
 
   /* get the rest of the line */
-  r2 = swallow_until_crlf(fd, (uschar*)&hdr, ret, sizeof(hdr)-ret);
+  r2 = swallow_until_crlf(smtp_in_fd, US &hdr, ret, sizeof(hdr)-ret);
   if (r2 == -1)
     goto proxyfail;
   ret += r2;
@@ -379,7 +378,7 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
   p = string_copy(hdr.v1.line);
   end = memchr(p, '\r', ret - 1);
 
-  if (!end || (end == (uschar*)&hdr + ret) || end[1] != '\n')
+  if (!end || (end == US &hdr + ret) || end[1] != '\n')
     {
     DEBUG(D_receive) debug_printf("Partial or invalid PROXY header\n");
     goto proxyfail;
@@ -484,7 +483,7 @@ else
   {
   /* Wrong protocol */
   DEBUG(D_receive) debug_printf("Invalid proxy protocol version negotiation\n");
-  (void) swallow_until_crlf(fd, (uschar*)&hdr, ret, sizeof(hdr)-ret);
+  (void) swallow_until_crlf(smtp_in_fd, US &hdr, ret, sizeof(hdr)-ret);
   goto proxyfail;
   }
 

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) The Exim Maintainers 2020 - 2024 */
+/* Copyright (c) The Exim Maintainers 2020 - 2025 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
@@ -24,11 +24,15 @@ The maximum size of a Kerberos ticket under Windows 2003 is 12000 bytes, and
 we need room to handle large base64-encoded AUTHs for GSSAPI.
 */
 
-#define SMTP_CMD_BUFFER_SIZE  16384
+#define SMTP_CMD_BUFFER_SIZE	16384
 
 /* Size of buffer for reading SMTP incoming packets */
 
-#define IN_BUFFER_SIZE  8192
+#define IN_BUFFER_SIZE		8192
+
+/* Buffer for SMTP responses */
+
+#define SMTP_RESP_BUFFER_SIZE	256
 
 /* Structure for SMTP command list */
 
@@ -149,10 +153,12 @@ static int  synprot_error_count;
 static int  unknown_command_count;
 static int  sync_cmd_limit;
 static int  smtp_write_error = 0;
+static int  smtp_resp_ptr = 0;
 
 static uschar *rcpt_smtp_response;
 static uschar *smtp_data_buffer;
 static uschar *smtp_cmd_data;
+static uschar *smtp_resp_buffer;
 
 /* We need to know the position of RSET, HELO, EHLO, AUTH, and STARTTLS. Their
 final fields of all except AUTH are forced TRUE at the start of a new message
@@ -486,14 +492,15 @@ smtp_refill(unsigned lim)
 {
 int rc, save_errno;
 
-if (!smtp_out || !smtp_in) return FALSE;
-fflush(smtp_out);
+if (smtp_out_fd < 0 || smtp_in_fd < 0) return FALSE;
+
+smtp_fflush();
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 
 /* Limit amount read, so non-message data is not fed to DKIM.
 Take care to not touch the safety NUL at the end of the buffer. */
 
-rc = read(fileno(smtp_in), smtp_inbuffer, MIN(IN_BUFFER_SIZE-1, lim));
+rc = read(smtp_in_fd, smtp_inbuffer, MIN(IN_BUFFER_SIZE-1, lim));
 save_errno = errno;
 if (smtp_receive_timeout > 0) ALARM_CLR(0);
 if (rc <= 0)
@@ -643,17 +650,16 @@ return smtp_had_error;
 static BOOL
 smtp_could_getc(void)
 {
-int fd, rc;
+int rc;
 fd_set fds;
 struct timeval tzero = {.tv_sec = 0, .tv_usec = 0};
 
 if (smtp_inptr < smtp_inend)
   return TRUE;
 
-fd = fileno(smtp_in);
 FD_ZERO(&fds);
-FD_SET(fd, &fds);
-rc = select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tzero);
+FD_SET(smtp_in_fd, &fds);
+rc = select(smtp_in_fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tzero);
 
 if (rc <= 0) return FALSE;     /* Not ready to read */
 rc = smtp_getc(GETC_BUFFER_UNLIMITED);
@@ -1002,7 +1008,7 @@ This function is exposed to the local_scan API; do not change the signature.
 /*XXX consider passing caller-info in, for string_vformat-onward */
 
 void
-smtp_vprintf(const char *format, BOOL more, va_list ap)
+smtp_vprintf(const char * format, BOOL more, va_list ap)
 {
 gstring gs = { .size = big_buffer_size, .ptr = 0, .s = big_buffer };
 BOOL yield;
@@ -1045,14 +1051,59 @@ if (fl.rcpt_in_progress)
 
 /* Now write the string */
 
-if (  !smtp_out
-   || (
+if (smtp_out_fd < 0)
+  smtp_write_error = -1;
 #ifndef DISABLE_TLS
-      tls_in.active.sock >= 0 ? (tls_write(NULL, gs.s, gs.ptr, more) < 0) :
+else if (tls_in.active.sock >= 0)
+  { if (tls_write(NULL, gs.s, gs.ptr, more) < 0) smtp_write_error = -1; }
 #endif
-      (fwrite(gs.s, gs.ptr, 1, smtp_out) == 0)
-   )  )
-    smtp_write_error = -1;
+else
+  if (more)				/* stash for later if possible */
+    {
+    if (smtp_resp_ptr + gs.ptr <= SMTP_RESP_BUFFER_SIZE)
+      {					/* can fit new */
+      memcpy(smtp_resp_buffer + smtp_resp_ptr, gs.s, gs.ptr);
+      smtp_resp_ptr += gs.ptr;
+      }
+    else
+      {
+      if (smtp_resp_ptr > 0)
+	{					/* flush the old */
+	if (write(smtp_out_fd, smtp_resp_buffer, smtp_resp_ptr) != smtp_resp_ptr)
+	  smtp_write_error = -1;
+	smtp_resp_ptr = 0;
+	}
+      if (gs.ptr <= SMTP_RESP_BUFFER_SIZE)
+	{					/* can fit new */
+	memcpy(smtp_resp_buffer + smtp_resp_ptr, gs.s, gs.ptr);
+	smtp_resp_ptr = gs.ptr;
+	}
+      else					/* new too big */
+	if (write (smtp_out_fd, gs.s, gs.ptr) != gs.ptr)
+	  smtp_write_error = -1;
+      }
+    }
+  else					/* send it now */
+    if (smtp_resp_ptr > 0)			/* previously buffered */
+      {
+      if (smtp_resp_ptr + gs.ptr <= SMTP_RESP_BUFFER_SIZE)
+	{					/* can fit new */
+	int n = smtp_resp_ptr + gs.ptr;
+	memcpy(smtp_resp_buffer + smtp_resp_ptr, gs.s, gs.ptr);
+	if (write(smtp_out_fd, smtp_resp_buffer, n) != n)
+	  smtp_write_error = -1;
+	}
+      else
+	if (  write(smtp_out_fd, smtp_resp_buffer, smtp_resp_ptr)
+	      != smtp_resp_ptr
+	   || write (smtp_out_fd, gs.s, gs.ptr) != gs.ptr
+	   )
+	  smtp_write_error = -1;
+      smtp_resp_ptr = 0;
+      }
+    else					/* nothing buffered */
+      if (write (smtp_out_fd, gs.s, gs.ptr) != gs.ptr)
+	smtp_write_error = -1;
 }
 
 
@@ -1061,8 +1112,7 @@ if (  !smtp_out
 *        Flush SMTP out and check for error      *
 *************************************************/
 
-/* This function isn't currently used within Exim (it detects errors when it
-tries to read the next SMTP input), but is available for use in local_scan().
+/* This function sets a flag for errors checked on read of the next SMTP input.
 It flushes the output and checks for errors.
 
 Arguments:  none
@@ -1072,18 +1122,28 @@ Returns:    0 for no error; -1 after an error
 int
 smtp_fflush(void)
 {
-if (tls_in.active.sock < 0 && fflush(smtp_out) != 0) smtp_write_error = -1;
-
-if (
 #ifndef DISABLE_TLS
-    tls_in.active.sock >= 0 ? (tls_write(NULL, NULL, 0, FALSE) < 0) :
+if (tls_in.active.sock >= 0)
+  { if (tls_write(NULL, NULL, 0, FALSE) < 0) smtp_write_error = -1; }
+else
 #endif
-    (fflush(smtp_out) != 0)
-   )
+
+  {
+  if (smtp_resp_ptr > 0)
+    {
+    if (write(smtp_out_fd, smtp_resp_buffer, smtp_resp_ptr) != smtp_resp_ptr)
+      smtp_write_error = -1;
+    smtp_resp_ptr = 0;
+    }
+
+  if (setsockopt(smtp_out_fd, IPPROTO_TCP, EXIM_TCP_CORK,
+					  &off, sizeof(off)) != 0)
     smtp_write_error = -1;
+  }
 
 return smtp_write_error;
 }
+
 
 
 
@@ -1332,7 +1392,7 @@ Returns:    nothing
 void
 smtp_closedown(uschar * message)
 {
-if (!smtp_in || smtp_batched_input) return;
+if (smtp_in_fd < 0 || smtp_batched_input) return;
 receive_swallow_smtp();
 smtp_printf("421 %s\r\n", SP_NO_MORE, message);
 
@@ -1343,8 +1403,8 @@ for (;;) switch(smtp_read_command(FALSE, GETC_BUFFER_UNLIMITED))
 
   case QUIT_CMD:
     f.smtp_in_quit = TRUE;
-    smtp_printf("221 %s closing connection\r\n", SP_NO_MORE, smtp_active_hostname);
-    mac_smtp_fflush();
+    smtp_printf("221 %s closing connection\r\n", SP_NO_MORE,
+		smtp_active_hostname);
     return;
 
   case RSET_CMD:
@@ -2026,7 +2086,7 @@ return FALSE;
 static void
 tfo_in_check(void)
 {
-if (!smtp_out)  return;
+if (smtp_out_fd < 0)  return;
 
 # ifdef __FreeBSD__
 int is_fastopen;
@@ -2035,7 +2095,7 @@ socklen_t len = sizeof(is_fastopen);
 /* The tinfo TCPOPT_FAST_OPEN bit seems unreliable, and we don't see state
 TCP_SYN_RCV (as of 12.1) so no idea about data-use. */
 
-if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_FASTOPEN, &is_fastopen, &len) == 0)
+if (getsockopt(smtp_out_fd, IPPROTO_TCP, TCP_FASTOPEN, &is_fastopen, &len) == 0)
   {
   if (is_fastopen)
     {
@@ -2051,7 +2111,7 @@ else DEBUG(D_receive)
 struct tcp_info tinfo;
 socklen_t len = sizeof(tinfo);
 
-if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
+if (getsockopt(smtp_out_fd, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
 #  ifdef TCPI_OPT_SYN_DATA	/* FreeBSD 11,12 do not seem to have this yet */
   if (tinfo.tcpi_options & TCPI_OPT_SYN_DATA)
     {
@@ -2299,13 +2359,13 @@ smtp_cmd_buffer = store_get_perm(2*SMTP_CMD_BUFFER_SIZE + 2, GET_TAINTED);
 smtp_cmd_buffer[0] = 0;
 smtp_data_buffer = smtp_cmd_buffer + SMTP_CMD_BUFFER_SIZE + 1;
 
+smtp_resp_buffer = store_get_perm(SMTP_RESP_BUFFER_SIZE, GET_UNTAINTED);
+
 /* For batched input, the protocol setting can be overridden from the
 command line by a trusted caller. */
 
 if (smtp_batched_input)
-  {
-  if (!received_protocol) received_protocol = US"local-bsmtp";
-  }
+  { if (!received_protocol) received_protocol = US"local-bsmtp"; }
 
 /* For non-batched SMTP input, the protocol setting is forced here. It will be
 reset later if any of EHLO/AUTH/STARTTLS are received. */
@@ -2424,8 +2484,8 @@ if (!f.sender_host_unknown)
 
     DEBUG(D_receive) debug_printf("checking for IP options\n");
 
-    if (  !smtp_out
-       || getsockopt(fileno(smtp_out), IPPROTO_IP, IP_OPTIONS, US ipopt,
+    if (  smtp_out_fd < 0
+       || getsockopt(smtp_out_fd, IPPROTO_IP, IP_OPTIONS, US ipopt,
 		    &optlen) < 0)
       {
       if (errno != ENOPROTOOPT)
@@ -2455,8 +2515,8 @@ if (!f.sender_host_unknown)
   setting is an attempt to get rid of some hanging connections that stick in
   read() when the remote end (usually a dialup) goes away. */
 
-  if (smtp_accept_keepalive && !f.sender_host_notsocket && smtp_out)
-    ip_keepalive(fileno(smtp_out), sender_host_address, FALSE);
+  if (smtp_accept_keepalive && !f.sender_host_notsocket && smtp_out_fd >= 0)
+    ip_keepalive(smtp_out_fd, sender_host_address, FALSE);
 
   /* If the current host matches host_lookup, set the name by doing a
   reverse lookup. On failure, sender_host_name will be NULL and
@@ -2744,7 +2804,6 @@ else						/* not already sent */
       }
 
   /* Now output the banner */
-  /*XXX the ehlo-resp code does its own tls/nontls bit.  Maybe subroutine that? */
 
     smtp_printf("%Y",
 #ifndef DISABLE_PIPE_CONNECT
@@ -2829,7 +2888,7 @@ if (code > 0)
 #ifndef DISABLE_TLS
     tls_close(NULL, TLS_SHUTDOWN_WAIT);
 #endif
-    smtp_inout_fclose();
+    smtp_inout_close();
     }
   }
 
@@ -3195,9 +3254,9 @@ resources. Close the socket explicitly to try to avoid that (there's a note in
 the Linux socket(7) manpage, SO_LINGER para, to the effect that exit() without
 close() results in the socket always lingering). */
 
-(void) poll_one_fd(fileno(smtp_in), POLLIN, 200);
+(void) poll_one_fd(smtp_in_fd, POLLIN, 200);
 DEBUG(D_any) debug_printf_indent("SMTP(close)>>\n");
-smtp_inout_fclose();
+smtp_inout_close();
 
 return 2;
 }
@@ -3279,7 +3338,7 @@ if (code && defaultrespond)
     va_end(ap);
     smtp_printf("%s %Y\r\n", SP_NO_MORE, code, g);
     }
-  mac_smtp_fflush();
+  smtp_fflush();
   }
 }
 
@@ -3600,8 +3659,8 @@ if (  acl_smtp_quit
       *log_msgp);
 
 #ifdef EXIM_TCP_CORK
-if (smtp_out)
-  (void) setsockopt(fileno(smtp_out), IPPROTO_TCP, EXIM_TCP_CORK,
+if (smtp_out_fd >= 0)
+  (void) setsockopt(smtp_out_fd, IPPROTO_TCP, EXIM_TCP_CORK,
 		    US &on, sizeof(on));
 #endif
 
@@ -3627,7 +3686,7 @@ log_close_event(US"by QUIT");
 /* Pause, hoping client will FIN first so that they get the TIME_WAIT.
 The socket should become readble (though with no data) */
 
-(void) poll_one_fd(fileno(smtp_in), POLLIN, 200);
+(void) poll_one_fd(smtp_in_fd, POLLIN, 200);
 #endif	/*!SERVERSIDE_CLOSE_NOWAIT*/
 }
 
@@ -3753,8 +3812,8 @@ os_non_restarting_signal(SIGTERM, command_sigterm_handler);
 if (smtp_batched_input) return smtp_setup_batch_msg();
 
 #ifdef TCP_QUICKACK
-if (smtp_in)		/* Avoid pure-ACKs while in cmd pingpong phase */
-  (void) setsockopt(fileno(smtp_in), IPPROTO_TCP, TCP_QUICKACK,
+if (smtp_in_fd >= 0)	/* Avoid pure-ACKs while in cmd pingpong phase */
+  (void) setsockopt(smtp_in_fd, IPPROTO_TCP, TCP_QUICKACK,
 	  US &off, sizeof(off));
 #endif
 
@@ -4369,28 +4428,9 @@ while (done <= 0)
       /* Terminate the string (for debug), write it, and note that HELO/EHLO
       has been seen. */
 
-      if (smtp_out)
+      if (smtp_out_fd >= 0)
         {
-	uschar * ehlo_resp;
-	int len = len_string_from_gstring(g, &ehlo_resp);
-#ifndef DISABLE_TLS
-	if (tls_in.active.sock >= 0)
-	  (void) tls_write(NULL, ehlo_resp, len,
-# ifndef DISABLE_PIPE_CONNECT
-			  fl.pipe_connect_acceptable && pipeline_connect_sends());
-# else
-			  FALSE);
-# endif
-	else
-#endif
-	  (void) fwrite(ehlo_resp, 1, len, smtp_out);
-
-	DEBUG(D_receive) for (const uschar * t, * s = ehlo_resp;
-			      s && (t = Ustrchr(s, '\r'));
-			      s = t + 2)				/* \r\n */
-	    debug_printf("%s %.*s\n",
-			  s == g->s ? "SMTP>>" : "      ",
-			  (int)(t - s), s);
+	smtp_printf("%Y", SP_NO_MORE, g);
 	fl.helo_seen = TRUE;
         }
 
@@ -5295,8 +5335,8 @@ while (done <= 0)
 	bdat_push_receive_functions();
 
 #ifdef TCP_QUICKACK
-      if (smtp_in)	/* all ACKs needed to ramp window up for bulk data */
-	(void) setsockopt(fileno(smtp_in), IPPROTO_TCP, TCP_QUICKACK,
+      /* all ACKs needed to ramp window up for bulk data */
+      (void) setsockopt(smtp_in_fd, IPPROTO_TCP, TCP_QUICKACK,
 		US &on, sizeof(on));
 #endif
       done = 3;
@@ -5332,7 +5372,7 @@ while (done <= 0)
 	const uschar * s = NULL;
 	address_item * addr = deliver_make_addr(address, FALSE);
 
-	switch(verify_address(addr, NULL, vopt_is_recipient | vopt_qualify, -1,
+	switch(verify_address(addr, -1, vopt_is_recipient | vopt_qualify, -1,
 	       -1, -1, NULL, NULL, NULL))
 	  {
 	  case OK:
@@ -5366,12 +5406,12 @@ while (done <= 0)
       rc = acl_check(ACL_WHERE_EXPN, NULL, acl_smtp_expn, &user_msg, &log_msg);
       if (rc != OK)
 	done = smtp_handle_acl_fail(ACL_WHERE_EXPN, rc, user_msg, log_msg);
-      else if (smtp_out)
+      else if (smtp_out_fd >= 0)
 	{
 	BOOL save_log_testing_mode = f.log_testing_mode;
 	f.address_test_mode = f.log_testing_mode = TRUE;
 	(void) verify_address(deliver_make_addr(smtp_cmd_data, FALSE),
-	  smtp_out, vopt_is_recipient | vopt_qualify | vopt_expn, -1, -1, -1,
+	  smtp_out_fd, vopt_is_recipient | vopt_qualify | vopt_expn, -1, -1, -1,
 	  NULL, NULL, NULL);
 	f.address_test_mode = FALSE;
 	f.log_testing_mode = save_log_testing_mode;    /* true for -bh */
@@ -5523,7 +5563,8 @@ while (done <= 0)
 	  if (user_msg)
 	    smtp_respond(US"221", 3, SR_FINAL, user_msg);
 	  else
-	    smtp_printf("221 %s closing connection\r\n", SP_NO_MORE, smtp_active_hostname);
+	    smtp_printf("221 %s closing connection\r\n", SP_NO_MORE,
+			smtp_active_hostname);
 	  log_close_event(US"by QUIT");
 	  done = 2;
 	  break;
@@ -5746,7 +5787,7 @@ while (done <= 0)
       if ((pid = exim_fork(US"etrn-command")) == 0)
 	{
 	smtp_input = FALSE;       /* This process is not associated with the */
-	smtp_inout_fclose();	  /* SMTP call any more. */
+	smtp_inout_close();	  /* SMTP call any more. */
 
 	signal(SIGCHLD, SIG_DFL);      /* Want to catch child */
 
@@ -5890,6 +5931,7 @@ while (done <= 0)
   last_was_rcpt = was_rcpt;             /* protocol error handling */
   }
 
+smtp_fflush();
 return done - 2;  /* Convert yield values */
 }
 

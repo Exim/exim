@@ -128,7 +128,7 @@ never_error(uschar *log_msg, uschar *smtp_msg, int was_errno)
 uschar *emsg = was_errno <= 0
   ? US"" : string_sprintf(": %s", strerror(was_errno));
 log_write(0, LOG_MAIN|LOG_PANIC, "%s%s", log_msg, emsg);
-if (smtp_out) smtp_printf("421 %s\r\n", SP_NO_MORE, smtp_msg);
+if (smtp_out_fd >= 0) smtp_printf("421 %s\r\n", SP_NO_MORE, smtp_msg);
 }
 
 
@@ -187,7 +187,6 @@ handle_smtp_call(struct pollfd * fd_polls, int listen_socket_count,
 pid_t pid;
 union sockaddr_46 interface_sockaddr;
 EXIM_SOCKLEN_T ifsize = sizeof(interface_sockaddr);
-int dup_accept_socket = -1;
 int max_for_this_host = 0;
 int save_log_selector = *log_selector;
 gstring * whofrom;
@@ -205,22 +204,11 @@ DEBUG(D_any) debug_printf("Connection request from %s port %d\n",
 input stream. These operations fail only the exceptional circumstances. Note
 that never_error() won't use smtp_out if it is NULL. */
 
-if (!(smtp_out = fdopen(accept_socket, "wb")))
-  {
-  never_error(US"daemon: fdopen() for smtp_out failed", US"", errno);
-  goto ERROR_RETURN;
-  }
+smtp_out_fd = accept_socket;
 
-if ((dup_accept_socket = dup(accept_socket)) < 0)
+if ((smtp_in_fd = dup(accept_socket)) < 0)
   {
   never_error(US"daemon: couldn't dup socket descriptor",
-    US"Connection setup failed", errno);
-  goto ERROR_RETURN;
-  }
-
-if (!(smtp_in = fdopen(dup_accept_socket, "rb")))
-  {
-  never_error(US"daemon: fdopen() for smtp_in failed",
     US"Connection setup failed", errno);
   goto ERROR_RETURN;
   }
@@ -452,7 +440,6 @@ if (pid == 0)
           expand_string_message);
         smtp_printf("421 Local configuration error; "
           "please try again later.\r\n", SP_NO_MORE);
-        mac_smtp_fflush();
         search_tidyup();
         exim_underbar_exit(EXIT_FAILURE);
         }
@@ -478,8 +465,8 @@ if (pid == 0)
   to be able to communicate with them, under any circumstances. */
   (void)fcntl(accept_socket, F_SETFD,
               fcntl(accept_socket, F_GETFD) | FD_CLOEXEC);
-  (void)fcntl(dup_accept_socket, F_SETFD,
-              fcntl(dup_accept_socket, F_GETFD) | FD_CLOEXEC);
+  (void)fcntl(smtp_in_fd, F_SETFD,
+              fcntl(smtp_in_fd, F_GETFD) | FD_CLOEXEC);
 
 #ifdef SA_NOCLDWAIT
   act.sa_handler = SIG_IGN;
@@ -540,7 +527,7 @@ if (pid == 0)
 
   if (!smtp_start_session())
     {
-    mac_smtp_fflush();
+    smtp_fflush();
     search_tidyup();
     exim_underbar_exit(EXIT_SUCCESS);
     }
@@ -564,15 +551,14 @@ if (pid == 0)
 
     if ((rc = smtp_setup_msg()) <= 0)		/* bad smtp_setup_msg() */
       {
-      if (smtp_out && smtp_in)
+      if (smtp_out_fd >= 0 && smtp_in_fd >= 0)
 	{
-	int fd = fileno(smtp_in);
 	uschar buf[128];
 
-	mac_smtp_fflush();
 	/* drain socket, for clean TCP FINs */
-	if (fcntl(fd, F_SETFL, O_NONBLOCK) == 0)
-	  for(int i = 16; read(fd, buf, sizeof(buf)) > 0 && i > 0; ) i--;
+	if (fcntl(smtp_in_fd, F_SETFL, O_NONBLOCK) == 0)
+	  for(int i = 16; read(smtp_in_fd, buf, sizeof(buf)) > 0 && i > 0; )
+	    i--;
 	}
       cancel_cutthrough_connection(TRUE, US"message setup dropped");
       search_tidyup();
@@ -590,7 +576,7 @@ if (pid == 0)
       if (!ok)                            /* Connection was dropped */
         {
 	cancel_cutthrough_connection(TRUE, US"receive dropped");
-        mac_smtp_fflush();
+        smtp_fflush();
         smtp_log_no_mail();               /* Log no mail if configured */
         exim_underbar_exit(EXIT_SUCCESS);
         }
@@ -702,10 +688,9 @@ if (pid == 0)
 
       if ((dpid = exim_fork(US"daemon-accept-delivery")) == 0)
         {
-        (void)fclose(smtp_in);
-	(void)close(fileno(smtp_out));
-        (void)fclose(smtp_out);
-	smtp_in = smtp_out = NULL;
+        (void)close(smtp_in_fd);
+	(void)close(smtp_out_fd);
+	smtp_in_fd = smtp_out_fd = -1;
 
         /* Don't ever molest the parent's SSL connection, but do clean up
         the data structures if necessary. */
@@ -785,23 +770,21 @@ manifest itself as a broken pipe, so drop that one too. If the streams don't
 exist, something went wrong while setting things up. Make sure the socket
 descriptors are closed, in order to drop the connection. */
 
-if (smtp_out)
+if (smtp_out_fd >= 0)
   {
-  if (fclose(smtp_out) != 0 && errno != ECONNRESET && errno != EPIPE)
-    log_write(0, LOG_MAIN|LOG_PANIC, "daemon: fclose(smtp_out) failed: %s",
+  if (close(smtp_out_fd) != 0 && errno != ECONNRESET && errno != EPIPE)
+    log_write(0, LOG_MAIN|LOG_PANIC, "daemon: close(smtp_out_fd) failed: %s",
       strerror(errno));
-  smtp_out = NULL;
+  smtp_out_fd = -1;
   }
-else (void)close(accept_socket);
 
-if (smtp_in)
+if (smtp_in_fd >= 0)
   {
-  if (fclose(smtp_in) != 0 && errno != ECONNRESET && errno != EPIPE)
-    log_write(0, LOG_MAIN|LOG_PANIC, "daemon: fclose(smtp_in) failed: %s",
+  if (close(smtp_in_fd) != 0 && errno != ECONNRESET && errno != EPIPE)
+    log_write(0, LOG_MAIN|LOG_PANIC, "daemon: close(smtp_in_fd) failed: %s",
       strerror(errno));
-  smtp_in = NULL;
+  smtp_in_fd = -1;
   }
-else (void)close(dup_accept_socket);
 
 /* Release any store used in this process, including the store used for holding
 the incoming host address and an expanded active_hostname. */

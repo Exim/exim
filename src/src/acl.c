@@ -2246,7 +2246,7 @@ else if (verify_sender_address)
       /* The recipient, qualify, and expn options are never set in
       verify_options. */
 
-      rc = verify_address(sender_vaddr, NULL, verify_options, callout,
+      rc = verify_address(sender_vaddr, -1, verify_options, callout,
         callout_overall, callout_connect, se_mailfrom, pm_mailfrom, &routed);
 
       HDEBUG(D_acl) debug_printf_indent("----------- end verify ------------\n");
@@ -2298,7 +2298,7 @@ else
   get rewritten. */
 
   addr2 = *addr;
-  rc = verify_address(&addr2, NULL, verify_options|vopt_is_recipient, callout,
+  rc = verify_address(&addr2, -1, verify_options|vopt_is_recipient, callout,
     callout_overall, callout_connect, se_mailfrom, pm_mailfrom, NULL);
   HDEBUG(D_acl) debug_printf_indent("----------- end verify ------------\n");
 
@@ -3531,12 +3531,11 @@ for (; cb; cb = cb->next)
 	case CONTROL_DSCP:
 	  if (*p == '/')
 	    {
-	    int fd, af, socklevel, optname, value;
+	    int af, socklevel, optname, value;
 	    /* If we are acting on stdin, the setsockopt may fail if stdin is not
 	    a socket; we can accept that, we'll just debug-log failures anyway. */
-	    if (!smtp_in) return ERROR;
-	    fd = fileno(smtp_in);
-	    if ((af = ip_get_address_family(fd)) < 0)
+	    if (smtp_in_fd < 0) return ERROR;
+	    if ((af = ip_get_address_family(smtp_in_fd)) < 0)
 	      {
 	      HDEBUG(D_acl)
 		debug_printf_indent("smtp input is probably not a socket [%s], not setting DSCP\n",
@@ -3544,7 +3543,8 @@ for (; cb; cb = cb->next)
 	      break;
 	      }
 	    if (dscp_lookup(p+1, af, &socklevel, &optname, &value))
-	      if (setsockopt(fd, socklevel, optname, &value, sizeof(value)) < 0)
+	      if (setsockopt(smtp_in_fd, socklevel, optname,
+			    &value, sizeof(value)) < 0)
 		{
 		HDEBUG(D_acl) debug_printf_indent("failed to set input DSCP[%s]: %s\n",
 		    p+1, strerror(errno));
@@ -3911,16 +3911,16 @@ for (; cb; cb = cb->next)
 
         else
           {
-          if (smtp_out && !f.disable_delay_flush)
-	    mac_smtp_fflush();
+          if (smtp_out_fd >= 0 && !f.disable_delay_flush)
+	    smtp_fflush();
 
 #if !defined(NO_POLL_H) && defined (POLLRDHUP)
 	    {
 	    struct pollfd p;
 	    nfds_t n = 0;
-	    if (smtp_out)
+	    if (smtp_out_fd >= 0)
 	      {
-	      p.fd = fileno(smtp_out);
+	      p.fd = smtp_out_fd;
 	      p.events = POLLRDHUP;
 	      n = 1;
 	      }

@@ -3107,7 +3107,7 @@ tls_server_start(uschar ** errstr, gstring * banner)
 int rc;
 exim_gnutls_state_st * state = NULL;
 
-if (!smtp_out) return FAIL;
+if (smtp_out_fd < 0) return FAIL;
 
 /* Check for previous activation */
 if (tls_in.active.sock >= 0)
@@ -3199,10 +3199,7 @@ the response. Other smtp_printf() calls do not need it, because in non-TLS
 mode, the fflush() happens when smtp_getc() is called. */
 
 if (!state->tlsp->on_connect)
-  {
   smtp_printf("220 TLS go ahead\r\n", SP_NO_MORE);
-  fflush(smtp_out);
-  }
 
 /* Now negotiate the TLS session. We put our own timer on it, since it seems
 that the GnuTLS library doesn't.
@@ -3211,10 +3208,10 @@ to set (and clear down afterwards) up a pull-timeout callback function that does
 a select, so we're no better off unless avoiding signals becomes an issue. */
 
 gnutls_transport_set_ptr2(state->session,
-    (gnutls_transport_ptr_t)(long) fileno(smtp_in),
-    (gnutls_transport_ptr_t)(long) fileno(smtp_out));
-state->fd_in = fileno(smtp_in);
-state->fd_out = fileno(smtp_out);
+    (gnutls_transport_ptr_t)(long) smtp_in_fd,
+    (gnutls_transport_ptr_t)(long) smtp_out_fd);
+state->fd_in = smtp_in_fd;
+state->fd_out = smtp_out_fd;
 
 sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
@@ -3242,6 +3239,7 @@ if (rc != GNUTLS_E_SUCCESS)
     }
   else
     {
+    uschar buf[128];
     tls_error_gnu(state, US"gnutls_handshake", rc, errstr);
 #ifndef DISABLE_EVENT
     (void) event_raise(event_action, US"tls:fail:connect", *errstr, NULL);
@@ -3250,8 +3248,9 @@ if (rc != GNUTLS_E_SUCCESS)
     gnutls_deinit(state->session);
     millisleep(500);
     shutdown(state->fd_out, SHUT_WR);
-    for (int i = 1024; fgetc(smtp_in) != EOF && i > 0; ) i--;	/* drain skt */
-    smtp_inout_fclose();
+    if (fcntl(smtp_in_fd, F_SETFL, O_NONBLOCK) == 0)
+      for(int i = 16; read(smtp_in_fd, buf, sizeof(buf)) > 0 && i > 0; ) i--;
+    smtp_inout_close();
     }
 
   return FAIL;
