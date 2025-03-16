@@ -3458,7 +3458,7 @@ BOOL verify_client_cert = FALSE;
 #endif
 static uschar peerdn[256];
 
-if (smtp_out_fd< 0) return FAIL;
+if (smtp_out_fd < 0) return FAIL;
 
 /* Check for previous activation */
 

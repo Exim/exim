@@ -1135,10 +1135,11 @@ else
       smtp_write_error = -1;
     smtp_resp_ptr = 0;
     }
-
+#ifdef EXIM_TCP_CORK
   if (setsockopt(smtp_out_fd, IPPROTO_TCP, EXIM_TCP_CORK,
 					  &off, sizeof(off)) != 0)
     smtp_write_error = -1;
+#endif
   }
 
 return smtp_write_error;
