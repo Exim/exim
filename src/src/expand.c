@@ -4819,7 +4819,7 @@ while (*s)	/* known to be untainted */
   if (isalpha(*++s))
     {
     const uschar * value;
-    int newsize = 0, len;
+    int newsize = 0;
     gstring * g = NULL;
     uschar * t;
 
@@ -4885,9 +4885,15 @@ while (*s)	/* known to be untainted */
     structure that is not allocated after that new-buffer, else a later store
     reset in the middle of the buffer will make it inaccessible. */
 
-    len = Ustrlen(value);
-    DEBUG(D_expand) debug_expansion_interim(US"value", value, len, flags);
-    if (!(flags & ESI_SKIPPING))
+    if (flags & ESI_SKIPPING)
+      {
+      DEBUG(D_expand)
+	debug_expansion_interim(US"var", name, Ustrlen(name), flags);
+      }
+    else
+      {
+      int len = Ustrlen(value);
+      DEBUG(D_expand) debug_expansion_interim(US"value", value, len, flags);
       if (!yield && newsize != 0)
 	{
 	yield = g;
@@ -4897,6 +4903,7 @@ while (*s)	/* known to be untainted */
 	}
       else
 	yield = string_catn(yield, value, len);
+      }
 
     continue;
     }

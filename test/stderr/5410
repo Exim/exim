@@ -176,7 +176,7 @@ try option host_name_extract
    ╎╰─────result: .outlook.com$
    cond: match
    ╎╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├──────value: 
+   ╎├────────var: item
    ╎├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
    ╎├───expanded: $item
    ╎├─────result:  ◀skipped▶
@@ -338,7 +338,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
-  ├──────value: 
+  ├────────var: sender_rcvhost
   ├───scanning: ↩
   ␉}{${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
   ␉}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
@@ -555,7 +555,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
-  ├──────value: 
+  ├────────var: tls_in_cipher_std
   ├───scanning: ↩
   ␉}}(Exim░$version_number)↩
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
@@ -857,7 +857,7 @@ try option host_name_extract
    ╎╰─────result: .outlook.com$
    cond: match
    ╎╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├──────value: 
+   ╎├────────var: item
    ╎├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
    ╎├───expanded: $item
    ╎├─────result:  ◀skipped▶
@@ -968,7 +968,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
-  ├──────value: 
+  ├────────var: sender_rcvhost
   ├───scanning: ↩
   ␉}{${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
   ␉}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
@@ -1185,7 +1185,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
-  ├──────value: 
+  ├────────var: tls_in_cipher_std
   ├───scanning: ↩
   ␉}}(Exim░$version_number)↩
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
@@ -1487,7 +1487,7 @@ try option host_name_extract
    ╎╰─────result: .outlook.com$
    cond: match
    ╎╭───scanning: $item}{\N^250-([\w.]+)\s\N}}}░{$1}}
-   ╎├──────value: 
+   ╎├────────var: item
    ╎├───scanning: }{\N^250-([\w.]+)\s\N}}}░{$1}}
    ╎├───expanded: $item
    ╎├─────result:  ◀skipped▶
@@ -1598,7 +1598,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
-  ├──────value: 
+  ├────────var: sender_rcvhost
   ├───scanning: ↩
   ␉}{${if░def:sender_ident░{from░${quote_local_part:$sender_ident}░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
   ␉}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
@@ -1815,7 +1815,7 @@ try option received_header_text
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
   ␉}}id░$message_exim_id${if░def:received_for░{↩
   ␉for░$received_for}}
-  ├──────value: 
+  ├────────var: tls_in_cipher_std
   ├───scanning: ↩
   ␉}}(Exim░$version_number)↩
   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩

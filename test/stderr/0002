@@ -524,7 +524,7 @@ try option unknown_login
  ├──condition: eq{black}{white}
  ├─────result: false
   ╭───scanning: $sender_host_name}{No}}
-  ├──────value: 
+  ├────────var: sender_host_name
   ├───scanning: }{No}}
   ├───expanded: $sender_host_name
   ├─────result:  ◀skipped▶

@@ -230,7 +230,7 @@ p1235    ╎␉}}(Exim░$version_number)↩
 p1235    ╎␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235    ╎␉}}id░$message_exim_id${if░def:received_for░{↩
 p1235    ╎␉for░$received_for}}
-p1235    ╎├──────value: 
+p1235    ╎├────────var: sender_ident
 p1235    ╎├───scanning: }░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
 p1235    ╎␉}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
 p1235    ╎␉}}(Exim░$version_number)↩
@@ -279,7 +279,7 @@ p1235    ␉}}(Exim░$version_number)↩
 p1235    ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235    ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1235    ␉for░$received_for}}
-p1235    ├──────value: 
+p1235    ├────────var: sender_helo_name
 p1235    ├───scanning: )↩
 p1235    ␉}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
 p1235    ␉}}(Exim░$version_number)↩
@@ -395,7 +395,7 @@ p1235   ␉}}(Exim░$version_number)↩
 p1235   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1235   ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1235   ␉for░$received_for}}
-p1235   ├──────value: 
+p1235   ├────────var: tls_in_cipher_std
 p1235   ├───scanning: ↩
 p1235   ␉}}(Exim░$version_number)↩
 p1235   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
@@ -700,7 +700,7 @@ p1236    ╎␉}}(Exim░$version_number)↩
 p1236    ╎␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236    ╎␉}}id░$message_exim_id${if░def:received_for░{↩
 p1236    ╎␉for░$received_for}}
-p1236    ╎├──────value: 
+p1236    ╎├────────var: sender_ident
 p1236    ╎├───scanning: }░}}${if░def:sender_helo_name░{(helo=$sender_helo_name)↩
 p1236    ╎␉}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
 p1236    ╎␉}}(Exim░$version_number)↩
@@ -749,7 +749,7 @@ p1236    ␉}}(Exim░$version_number)↩
 p1236    ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236    ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1236    ␉for░$received_for}}
-p1236    ├──────value: 
+p1236    ├────────var: sender_helo_name
 p1236    ├───scanning: )↩
 p1236    ␉}}}}by░$primary_hostname░${if░def:received_protocol░{with░$received_protocol░}}${if░def:tls_in_ver░░░░░░░░{░($tls_in_ver)}}${if░def:tls_in_cipher_std░{░tls░$tls_in_cipher_std↩
 p1236    ␉}}(Exim░$version_number)↩
@@ -865,7 +865,7 @@ p1236   ␉}}(Exim░$version_number)↩
 p1236   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
 p1236   ␉}}id░$message_exim_id${if░def:received_for░{↩
 p1236   ␉for░$received_for}}
-p1236   ├──────value: 
+p1236   ├────────var: tls_in_cipher_std
 p1236   ├───scanning: ↩
 p1236   ␉}}(Exim░$version_number)↩
 p1236   ␉${if░def:sender_address░{(envelope-from░<$sender_address>)↩
