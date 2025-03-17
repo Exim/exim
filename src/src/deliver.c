@@ -4496,11 +4496,15 @@ nonmatch domains
   for how it is computed).
   If the transport does not handle multiple domains, enforce that also,
   and if it might need a per-address check for this, re-evaluate it.
+XXX should also check for any variables set as they could differ, and
+the tpt might make whole-conn choices depending thereon,
+and it's too hard to check actual values.
+Does that also apply to address_data?
   */
 
   while ((next = *anchor) && address_count < address_count_max)
     {
-    BOOL md;
+    BOOL md = FALSE;
     if (  (multi_domain || Ustrcmp(next->domain, addr->domain) == 0)
        && tp == next->transport
        && same_hosts(next->host_list, addr->host_list)
