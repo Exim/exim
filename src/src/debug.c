@@ -453,6 +453,18 @@ The routines here set up the buffer, and unload it to file (and release it).
 What ends up in the buffer is subject to the usual debug_selector. */
 
 void
+debug_pretrigger_discard(void)
+{
+dtrigger_selector = 0;
+if (debug_pretrigger_buf)
+  {
+  uschar * buf = debug_pretrigger_buf;
+  debug_pretrigger_buf = NULL;
+  store_free(buf);
+  }
+}
+
+void
 debug_pretrigger_setup(const uschar * size_string)
 {
 long size = Ustrtol(size_string, NULL, 0);
@@ -460,10 +472,10 @@ if (size > 0)
   {
   unsigned bufsize = MIN(size, 16384);
 
-  dtrigger_selector |= BIT(DTi_pretrigger);
-  if (debug_pretrigger_buf) store_free(debug_pretrigger_buf);
-  debug_pretrigger_buf = store_malloc((size_t)(debug_pretrigger_bsize = bufsize));
+  debug_pretrigger_discard();
   pretrigger_readoff = pretrigger_writeoff = 0;
+  debug_pretrigger_buf = store_malloc((size_t)(debug_pretrigger_bsize = bufsize));
+  dtrigger_selector |= BIT(DTi_pretrigger);
   }
 }
 
@@ -485,14 +497,6 @@ if (debug_file && (nbytes = pretrigger_writeoff - pretrigger_readoff) != 0)
     }
 
 debug_pretrigger_discard();
-}
-
-void
-debug_pretrigger_discard(void)
-{
-if (debug_pretrigger_buf) store_free(debug_pretrigger_buf);
-debug_pretrigger_buf = NULL;
-dtrigger_selector = 0;
 }
 
 
