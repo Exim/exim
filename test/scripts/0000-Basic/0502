@@ -26,7 +26,7 @@ mail from:<a@b>
 quit
 ****
 #
-# Check the server closes conn after a quit-response
+# Check the server closes conn (eventually) after a quit-response
 exim -DSERVER=server -DLAST=accept -bd -oX PORT_D
 ****
 client 127.0.0.1 PORT_D

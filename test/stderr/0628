@@ -25,6 +25,9 @@
 01:01:01 p1237  SMTP>> 221 myhost.test.ex closing connection
 01:01:01 p1237  LOG: smtp_connection MAIN
 01:01:01 p1237    SMTP connection from (test.ex) [127.0.0.1] D=qqs closed by QUIT
+01:01:01 p1237  search_tidyup called
+01:01:01 p1237  SMTP>>(close on process exit)
+01:01:01 p1237  >>>>>>>>>>>>>>>> Exim pid=p1237 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 01:01:01 p1239  Exim version x.yz uid=EXIM_UID gid=EXIM_GID pid=p1239 D=fff9ffff
 01:01:01 p1239  Hints DB:
 01:01:01 p1239  macros_trusted overridden to true by whitelisting
@@ -109,9 +112,6 @@
 01:01:01 p1239  search_tidyup called
 01:01:01 p1239  search_tidyup called
 01:01:01 p1239  >>>>>>>>>>>>>>>> Exim pid=p1239 (daemon-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-01:01:01 p1237  search_tidyup called
-01:01:01 p1237  SMTP>>(close on process exit)
-01:01:01 p1237  >>>>>>>>>>>>>>>> Exim pid=p1237 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 01:01:01 p1240  check control = queue_only
 01:01:01 p1240  warn: condition test succeeded in ACL chk_data
 01:01:01 p1240  processing ACL chk_data "accept" (TESTSUITE/test-config 28)

@@ -3214,6 +3214,8 @@ else
     smtp_respond(smtp_code, codelen, SR_FINAL,
       US"Temporary local problem - please try later");
 
+smtp_fflush();
+
 /* Log the incident to the logs that are specified by log_reject_target
 (default main, reject). This can be empty to suppress logging of rejections. If
 the connection is not forcibly to be dropped, return 0. Otherwise, log why it
@@ -3683,6 +3685,13 @@ tls_close(NULL, TLS_SHUTDOWN_WAIT);
 # endif
 
 log_close_event(US"by QUIT");
+
+#ifdef EXIM_TCP_CORK
+/* If we corked, trigger transmit of the ack-of-QUIT since that could be the
+peer's wakeup to close the TCP connection. */
+
+if (smtp_out_fd > 0 && tls_in.active.sock < 0) smtp_fflush();
+#endif
 
 /* Pause, hoping client will FIN first so that they get the TIME_WAIT.
 The socket should become readble (though with no data) */

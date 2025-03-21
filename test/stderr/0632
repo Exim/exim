@@ -509,7 +509,12 @@ Process p1235 is ready for new message
 try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection Ci=p1235 from (test.ex) [127.0.0.1] D=qqs closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=p1235 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
 p1234 1 SMTP accept process running
+p1234 child p1235 ended: status=0x0
+p1234   normal exit, 0
+p1234 0 SMTP accept processes now running
 p1234 daemon_notification (from unknown addr)
 p1234 compiled caseless RE '^nomatch_list' not found in local cache
 p1234 compiling caseless RE '^nomatch_list'
@@ -522,11 +527,6 @@ p1234 daemon_notification (from unknown addr)
 p1234 compiled RE 'tricky_static_RE$' not found in local cache
 p1234 compiling RE 'tricky_static_RE$'
 p1234 compiled RE 'tricky_static_RE$' saved in local cache
-search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=p1235 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
-p1234 child p1235 ended: status=0x0
-p1234   normal exit, 0
-p1234 0 SMTP accept processes now running
 p1234 Connection request from 127.0.0.1 port sssss
 p1234 try option smtp_accept_max_per_host
 p1234 search_tidyup called
@@ -979,12 +979,9 @@ Process p1236 is ready for new message
 try option acl_smtp_quit
 LOG: smtp_connection MAIN
   SMTP connection Ci=p1236 from (test.ex) [127.0.0.1] D=qqs closed by QUIT
-p1234 1 SMTP accept process running
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=p1236 (daemon-accept) terminating with rc=0 >>>>>>>>>>>>>>>>
-p1234 child p1236 ended: status=0x0
-p1234   normal exit, 0
-p1234 0 SMTP accept processes now running
+p1234 1 SMTP accept process running
 p1234 SIGTERM/SIGINT seen
 p1234 search_tidyup called
 p1234 >>>>>>>>>>>>>>>> Exim pid=p1234 (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

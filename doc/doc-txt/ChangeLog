@@ -153,6 +153,10 @@ JH/33 Support for TCP-wrappers is withdrawn. The functionality has always
       been in the Exim configuration, and systems generally also run a packet
       level firewall layer.
 
+JH/34 Bug 3142: Ensure ack-of-QUIT is pushed. Previously, on a non-TLS
+      connection, this would be delayed by the pause needed to try to get
+      the TCP TIMEWAIT state held by the client rather than the server.
+
 
 Exim version 4.98
 -----------------
