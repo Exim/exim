@@ -3,7 +3,8 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 2016 */
-/* Copyright (c) Jeremy Harris 2016 */
+/* Copyright (c) Jeremy Harris 2016 - 2025 */
+/* Copyright (c) The Exim Maintainers 2025 */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* See the file NOTICE for conditions of use and distribution. */
 
@@ -12,6 +13,33 @@ src/os.c file. */
 
 #if defined(MISSING_UNSETENV_3) && !defined(COMPILE_UTILITY)
 # include "setenv.c"
+#endif
+
+
+#if _POSIX_C_SOURCE + 0 < 200809L
+int
+vdprintf(int fd, const char * fmt, va_list ap)
+{
+gstring * g;
+rmark reset_point = store_mark();
+
+g = string_vformat(NULL, SVFMT_EXTEND | SVFMT_TAINT_NOCHK, fmt, ap);
+(void) write(fd, string_from_gstring(g), gstring_length(g));
+
+store_reset(reset_point);
+return 0;
+}
+
+int
+dprintf(int fd, const char * fmt, ...)
+{
+int ret;
+va_list ap;
+va_start(ap, fmt);
+ret = vdprintf(fd, fmt, ap);
+va_end(ap);
+return ret;
+}
 #endif
 
 /* End of os.c-SunOS5 */
