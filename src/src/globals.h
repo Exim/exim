@@ -1002,7 +1002,6 @@ extern int     smtp_out_fd;	       /* Incoming SMTP output file */
 extern uschar *smtp_ratelimit_hosts;   /* Rate limit these hosts */
 extern uschar *smtp_ratelimit_mail;    /* Parameters for MAIL limiting */
 extern uschar *smtp_ratelimit_rcpt;    /* Parameters for RCPT limiting */
-extern uschar *smtp_read_error;        /* Message for SMTP input error */
 extern int     smtp_receive_timeout;   /* Applies to each received line */
 extern uschar *smtp_receive_timeout_s; /* ... expandable version */
 extern uschar *smtp_reserve_hosts;     /* Hosts for reserved slots */

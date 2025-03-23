@@ -211,7 +211,7 @@ const uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT] = {
   CUSS &self_hostname,
   NULL };
 
-int address_expansions_count = sizeof(address_expansions)/sizeof(uschar **);
+int address_expansions_count = nelem(address_expansions);
 
 /******************************************************************************/
 /* General global variables.  Boolean flags are done as a group
@@ -1366,7 +1366,6 @@ unsigned smtp_peer_options_wrap= 0;
 uschar *smtp_ratelimit_hosts   = NULL;
 uschar *smtp_ratelimit_mail    = NULL;
 uschar *smtp_ratelimit_rcpt    = NULL;
-uschar *smtp_read_error        = US"";
 int     smtp_receive_timeout   = 5*60;
 uschar *smtp_receive_timeout_s = NULL;
 uschar *smtp_reserve_hosts     = NULL;

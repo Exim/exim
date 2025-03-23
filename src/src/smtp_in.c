@@ -505,8 +505,6 @@ save_errno = errno;
 if (smtp_receive_timeout > 0) ALARM_CLR(0);
 if (rc <= 0)
   {
-  /* Must put the error text in fixed store, because this might be during
-  header reading, where it releases unused store above the header. */
   if (rc < 0)
     {
     if (had_command_timeout)		/* set by signal handler */
@@ -519,8 +517,6 @@ if (rc <= 0)
       smtp_data_sigint_exit();
 
     smtp_had_error = save_errno;
-    smtp_read_error = string_copy_perm(
-      string_sprintf(" (error: %s)", strerror(save_errno)), FALSE);
     }
   else
     smtp_had_eof = 1;
@@ -5645,6 +5641,10 @@ while (done <= 0)
 
 
     case EOF_CMD:
+      {
+      uschar * errstr = smtp_ferror()
+	? string_sprintf(" (error: %s)", strerror(errno)) : US"";
+
       incomplete_transaction_log(US"connection lost");
       smtp_notquit_exit(US"connection-lost", US"421",
 	US"%s lost input connection", smtp_active_hostname);
@@ -5662,7 +5662,7 @@ while (done <= 0)
 	  : f.tcp_in_fastopen
 	  ? f.tcp_in_fastopen_data ? US"TFO* " : US"TFO "
 	  : US"",
-	  host_and_ident(FALSE), smtp_read_error,
+	  host_and_ident(FALSE), errstr,
 	  string_timesince(&smtp_connection_start)
 	  );
 
@@ -5670,13 +5670,13 @@ while (done <= 0)
 	log_write(L_smtp_connection, LOG_MAIN, "%s %slost%s D=%s",
 	  smtp_get_connection_info(),
 	  f.tcp_in_fastopen && !f.tcp_in_fastopen_logged ? US"TFO " : US"",
-	  smtp_read_error,
+	  errstr,
 	  string_timesince(&smtp_connection_start)
 	  );
 
       done = 1;
       break;
-
+      }
 
     case ATRN_CMD:
       HAD(SCH_ATRN);
