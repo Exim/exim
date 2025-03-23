@@ -1917,6 +1917,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Not all buildfarm animals have ipv6
     next if /<dns:fail> <DNS_(?:NOMATCH|AGAIN):.*:AAAA>$/ ;
+
+    # Ignore an errno with "unexpected discon"; BSDs see an ECONNRESET
+    s/unexpected disconnection while reading SMTP command from \S+ \S* \K(?:\([^)]*\) )?(?=D=)//;
     }
 
   # ======== mail ========
